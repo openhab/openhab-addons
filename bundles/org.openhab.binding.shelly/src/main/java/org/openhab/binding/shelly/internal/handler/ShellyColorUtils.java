@@ -17,7 +17,6 @@ import static org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.*;
 import java.math.BigDecimal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -29,10 +28,34 @@ import org.eclipse.smarthome.core.library.types.PercentType;
  */
 @NonNullByDefault
 public class ShellyColorUtils {
+    OnOffType power = OnOffType.OFF;
+    String mode = "";
+
+    int red = 0;
+    int green = 0;
+    int blue = 0;
+    int white = 0;
+    PercentType percentRed = new PercentType(0);
+    PercentType percentGreen = new PercentType(0);
+    PercentType percentBlue = new PercentType(0);
+    PercentType percentWhite = new PercentType(0);
+
+    int gain = 0;
+    int brightness = 0;
+    int temp = 0;
+    int minTemp = 0;
+    int maxTemp = 0;
+    PercentType percentGain = new PercentType(0);
+    PercentType percentBrightness = new PercentType(0);
+    PercentType percentTemp = new PercentType(0);
+    Integer effect = 0;
+
     public ShellyColorUtils() {
     }
 
     public ShellyColorUtils(ShellyColorUtils col) {
+        minTemp = col.minTemp;
+        maxTemp = col.maxTemp;
         setRed(col.red);
         setGreen(col.green);
         setBlue(col.blue);
@@ -42,19 +65,13 @@ public class ShellyColorUtils {
         setTemp(col.temp);
     }
 
-    OnOffType power = OnOffType.OFF;
-    String mode = "";
-    Integer red = 0;
-    Integer green = 0;
-    Integer blue = 0;
-    Integer white = 0;
-    PercentType percentRed = new PercentType(0);
-    PercentType percentGreen = new PercentType(0);
-    PercentType percentBlue = new PercentType(0);
-    PercentType percentWhite = new PercentType(0);
-
     void setMode(String mode) {
         this.mode = mode;
+    }
+
+    void setMinMaxTemp(int min, int max) {
+        minTemp = min;
+        maxTemp = max;
     }
 
     boolean setRGBW(int red, int green, int blue, int white) {
@@ -93,13 +110,6 @@ public class ShellyColorUtils {
         return changed;
     }
 
-    Integer gain = 0;
-    Integer brightness = 0;
-    Integer temp = 0;
-    PercentType percentGain = new PercentType(0);
-    PercentType percentBrightness = new PercentType(0);
-    PercentType percentTemp = new PercentType(0);
-
     boolean setBrightness(int value) {
         boolean changed = brightness != value;
         brightness = value;
@@ -117,11 +127,9 @@ public class ShellyColorUtils {
     boolean setTemp(int value) {
         boolean changed = temp != value;
         temp = value;
-        percentTemp = toPercent(temp, MIN_COLOR_TEMPERATURE, MAX_COLOR_TEMPERATURE);
+        percentTemp = toPercent(temp, minTemp, maxTemp);
         return changed;
     }
-
-    Integer effect = 0;
 
     boolean setEffect(int value) {
         boolean changed = effect != value;
@@ -137,19 +145,11 @@ public class ShellyColorUtils {
         Integer values[] = new Integer[4];
         values[0] = values[1] = values[2] = values[3] = -1;
         try {
-            /*
-             * TEST
-             * StringTokenizer st = new StringTokenizer(rgbw, ",");
-             * int i = 0;
-             * while (st.hasMoreElements()) {
-             * values[i++] = Integer.parseInt((String) st.nextElement());
-             * }
-             */
             String rgbw[] = rgbwString.split(",");
             for (int i = 0; i < rgbw.length; i++) {
                 values[i] = Integer.parseInt(rgbw[i]);
             }
-        } catch (NullPointerException e) {
+        } catch (NullPointerException e) { // might be a format problem
             throw new IllegalArgumentException(
                     "Unable to convert fullColor value: " + rgbwString + ", " + e.getMessage());
         }
@@ -172,9 +172,9 @@ public class ShellyColorUtils {
         return toPercent(value, 0, SHELLY_MAX_COLOR);
     }
 
-    public static PercentType toPercent(@Nullable Integer _value, Integer min, Integer max) {
+    public static PercentType toPercent(Integer _value, Integer min, Integer max) {
         Double range = max.doubleValue() - min.doubleValue();
-        Double value = _value != null ? _value.doubleValue() : 0;
+        Double value = _value.doubleValue();
         value = value < min ? min.doubleValue() : value;
         value = value > max ? max.doubleValue() : value;
         Double percent = 0.0;

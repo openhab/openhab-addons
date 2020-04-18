@@ -7,12 +7,23 @@
 	<thing-type id="shellybulb">
 		<label>Shelly Bulb (SHBULB)</label>
 		<description>Shelly Bulb</description>
-		<category>Lightbulb</category>
-
 		<channel-groups>
 			<channel-group id="control" typeId="bulbControl" />
 			<channel-group id="color" typeId="colorSettingsBulb" />
 			<channel-group id="white" typeId="whiteSettings" />
+			<channel-group id="device" typeId="deviceStatus" />
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:shelly:light" />
+	</thing-type>
+
+	<thing-type id="shellybulbduo">
+		<label>Shelly Duo (SHBDUO-1)</label>
+		<description>Shelly Duo</description>
+		<channel-groups>
+			<channel-group id="control" typeId="duoControl" />
+			<channel-group id="white" typeId="whiteSettings" />
+			<channel-group id="meter" typeId="meter" />
 			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
@@ -24,21 +35,20 @@
 		<description>Shelly RGBW2 Controller - Color Mode</description>
 		<category>Lightbulb</category>
 		<channel-groups>
-			<channel-group id="control" typeId="lightControl" />
+			<channel-group id="control" typeId="rgbw2ColorControl" />
 			<channel-group id="color" typeId="colorSettingsRGBW2" />
-			<channel-group id="meter" typeId="basicMeter" />
+			<channel-group id="meter" typeId="meter" />
 			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:shelly:light" />
+		<config-description-ref uri="thing-type:shelly:rgbw2" />
 	</thing-type>
 
 	<thing-type id="shellyrgbw2-white">
 		<label>Shelly RGBW2 White Mode (SHRGBW2)</label>
 		<description>Shelly RGBW2 Controller - White Mode</description>
-		<category>Lightbulb</category>
-
 		<channel-groups>
+			<channel-group id="control" typeId="rgbw2WhiteControl" />
 			<channel-group id="channel1" typeId="rgbw2Channel">
 				<label>Channel 1</label>
 			</channel-group>
@@ -51,22 +61,11 @@
 			<channel-group id="channel4" typeId="rgbw2Channel">
 				<label>Channel 4</label>
 			</channel-group>
-			<channel-group id="meter1" typeId="basicMeter">
-				<label>Power Meter Channel 1</label>
-			</channel-group>
-			<channel-group id="meter2" typeId="basicMeter">
-				<label>Power Meter Channel 2</label>
-			</channel-group>
-			<channel-group id="meter3" typeId="basicMeter">
-				<label>Power Meter Channel 3</label>
-			</channel-group>
-			<channel-group id="meter4" typeId="basicMeter">
-				<label>Power Meter Channel 4</label>
-			</channel-group>
+			<channel-group id="meter" typeId="meter" />
 			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:shelly:light" />
+		<config-description-ref uri="thing-type:shelly:rgbw2" />
 	</thing-type>
 
 	<channel-group-type id="bulbControl">
@@ -80,17 +79,27 @@
 			<channel id="timerActive" typeId="timerActive" />
 		</channels>
 	</channel-group-type>
-	<channel-group-type id="lightControl">
+	<channel-group-type id="duoControl">
 		<label>Light Control</label>
-		<description>Control your light channels</description>
+		<description>Control your light</description>
 		<channels>
-			<channel id="power" typeId="system.power" />
-			<channel id="input" typeId="inputState" />
-			<channel id="button" typeId="system.button" />
 			<channel id="autoOn" typeId="timerAutoOn" />
 			<channel id="autoOff" typeId="timerAutoOff" />
 			<channel id="timerActive" typeId="timerActive" />
 		</channels>
+	</channel-group-type>
+	<channel-group-type id="rgbw2ColorControl">
+		<label>Light Control</label>
+		<description>Control your light channels</description>
+		<channels>
+			<channel id="power" typeId="system.power" />
+			<channel id="autoOn" typeId="timerAutoOn" />
+			<channel id="autoOff" typeId="timerAutoOff" />
+			<channel id="timerActive" typeId="timerActive" />
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="rgbw2WhiteControl">
+		<label>White Control</label>
 	</channel-group-type>
 	<channel-group-type id="colorSettingsBulb">
 		<label>Colors</label>
@@ -132,14 +141,103 @@
 		<label>Control</label>
 		<description>Switch channel and adjust settings</description>
 		<channels>
-			<channel id="power" typeId="system.power" />
-			<channel id="input" typeId="inputState" />
-			<channel id="button" typeId="system.button" />
 			<channel id="autoOn" typeId="timerAutoOn" />
 			<channel id="autoOff" typeId="timerAutoOff" />
 			<channel id="timerActive" typeId="timerActive" />
 			<channel id="brightness" typeId="whiteBrightness" />
 		</channels>
 	</channel-group-type>
+
+
+	<channel-type id="colorMode">
+		<item-type>Switch</item-type>
+		<label>Mode (ON=color, OFF=white)</label>
+		<description>ON: Device is in color mode, OFF: Device is in White Mode</description>
+	</channel-type>
+	<channel-type id="colorFull">
+		<item-type>String</item-type>
+		<label>Full Color</label>
+		<description>Setting this channel sets the selected color to 255, all others to 0</description>
+		<state>
+			<options>
+				<option value="red">Red</option>
+				<option value="green">Green</option>
+				<option value="blue">Blue</option>
+				<option value="yellow">Yellow</option>
+				<option value="white">White</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="colorRed" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>Red</label>
+		<description>red, 0..255, only in Color Mode</description>
+		<state min="0" max="255" step="1" readOnly="false"></state>
+	</channel-type>
+	<channel-type id="colorGreen" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>Green</label>
+		<description>green, 0..255, applies Color Mode</description>
+		<state min="0" max="255" step="1" readOnly="false"></state>
+	</channel-type>
+	<channel-type id="colorBlue" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>Blue</label>
+		<description>blue, 0..255, only in Color Mode</description>
+		<state min="0" max="255" step="1" readOnly="false"></state>
+	</channel-type>
+	<channel-type id="colorWhite" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>White</label>
+		<description>white, 0..255, applies in Color Mode</description>
+		<state min="0" max="255" step="1" readOnly="false"></state>
+	</channel-type>
+	<channel-type id="colorGain">
+		<item-type>Dimmer</item-type>
+		<label>Gain</label>
+		<description>gain for all channels, 0..100, applies in Color Mode</description>
+		<state min="0" max="100" step="1" readOnly="false"></state>
+	</channel-type>
+	<channel-type id="whiteTemp">
+		<item-type>Dimmer</item-type>
+		<label>Light Temperature</label>
+		<description>Light Temperature 3000..6500K</description>
+		<state min="3000" max="6500" step="10" readOnly="false"></state>
+	</channel-type>
+	<channel-type id="whiteBrightness">
+		<item-type>Dimmer</item-type>
+		<label>Brightness</label>
+		<description>Brightness: 0..100%</description>
+		<category>DimmableLight</category>
+	</channel-type>
+	<channel-type id="colorEffectBulb">
+		<item-type>Number</item-type>
+		<label>Effect</label>
+		<description>Currently applied effect, description: 0: Off, 1: Meteor Shower, 2: Gradual Change, 3: Breath, 4: Flash, 5: On/Off Gradual, 6: Red/Green Change</description>
+		<state>
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Meteor Shower</option>
+				<option value="2">Gradual Change</option>
+				<option value="3">Breath</option>
+				<option value="4">Flash</option>
+				<option value="5">On/Off Gradual</option>
+				<option value="6">Red/Green Change</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="colorEffectRGBW2">
+		<item-type>Number</item-type>
+		<label>Effect</label>
+		<description>Currently applied effect, description: 0: Off, 1: Meteor Shower, 2: Gradual Change, 3: Flash</description>
+		<state>
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Meteor Shower</option>
+				<option value="2">Gradual Change</option>
+				<option value="3">Flash</option>
+			</options>
+		</state>
+	</channel-type>
 
 </thing:thing-descriptions>

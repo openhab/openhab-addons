@@ -10,15 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.shelly.internal;
+package org.openhab.binding.shelly.internal.util;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.DateTimeException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -27,7 +27,6 @@ import java.time.ZonedDateTime;
 import javax.measure.Unit;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
@@ -38,6 +37,7 @@ import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 
 /**
@@ -53,6 +53,11 @@ public class ShellyUtils {
 
     public static String getString(@Nullable String value) {
         return value != null ? value : "";
+    }
+
+    public static String getMessage(Exception e) {
+        String message = e.getMessage();
+        return message != null ? message : "";
     }
 
     public static Integer getInteger(@Nullable Integer value) {
@@ -97,10 +102,12 @@ public class ShellyUtils {
         return value == 0 ? OnOffType.OFF : OnOffType.ON;
     }
 
-    @SuppressWarnings("null")
     public static State toQuantityType(@Nullable Double value, int digits, Unit<?> unit) {
+        if (value == null) {
+            return UnDefType.NULL;
+        }
         BigDecimal bd = new BigDecimal(value.doubleValue());
-        return value == null ? UnDefType.NULL : toQuantityType(bd.setScale(digits, BigDecimal.ROUND_HALF_DOWN), unit);
+        return toQuantityType(bd.setScale(digits, BigDecimal.ROUND_HALF_UP), unit);
     }
 
     public static State toQuantityType(@Nullable Number value, Unit<?> unit) {
@@ -111,29 +118,17 @@ public class ShellyUtils {
         return value == null ? UnDefType.NULL : toQuantityType(value.toBigDecimal(), unit);
     }
 
-    public static void validateRange(String name, Integer value, Integer min, Integer max) {
-        Validate.isTrue((value >= min) && (value <= max),
-                "Value " + name + " is out of range (" + min.toString() + "-" + max.toString() + ")");
+    public static void validateRange(String name, Integer value, int min, int max) {
+        if ((value < min) || (value > max)) {
+            throw new IllegalArgumentException("Value " + name + " is out of range (" + min + "-" + max + ")");
+        }
     }
 
-    public static String buildSetEventUrl(String localIp, String localPort, String deviceName, Integer index,
-            String deviceType, String urlParm) throws IOException {
-        return SHELLY_URL_SETTINGS + "/" + deviceType + "/" + index + "?" + urlParm + "="
-                + buildCallbackUrl(localIp, localPort, deviceName, index, deviceType, urlParm);
-    }
-
-    public static String buildCallbackUrl(String localIp, String localPort, String deviceName, Integer index,
-            String type, String parameter) throws IOException {
-        String url = "http://" + localIp + ":" + localPort + SHELLY_CALLBACK_URI + "/" + deviceName + "/" + type + "/"
-                + index + "?type=" + StringUtils.substringBefore(parameter, "_url");
-        return urlEncode(url);
-    }
-
-    public static String urlEncode(String input) throws IOException {
+    public static String urlEncode(String input) throws ShellyApiException {
         try {
             return URLEncoder.encode(input, StandardCharsets.UTF_8.toString());
         } catch (UnsupportedEncodingException e) {
-            throw new IOException(
+            throw new ShellyApiException(e,
                     "Unsupported encoding format: " + StandardCharsets.UTF_8.toString() + ", input=" + input);
         }
     }
@@ -147,29 +142,34 @@ public class ShellyUtils {
     }
 
     public static DateTimeType getTimestamp(String zone, long timestamp) {
-        ZoneId zoneId = ZoneId.of(zone);
-        ZonedDateTime zdt = LocalDateTime.now().atZone(zoneId);
-        int delta = zdt.getOffset().getTotalSeconds();
-        return new DateTimeType(ZonedDateTime.ofInstant(Instant.ofEpochSecond(timestamp - delta), zoneId));
+        try {
+            if (timestamp == 0) {
+                return getTimestamp();
+            }
+            ZoneId zoneId = !zone.isEmpty() ? ZoneId.of(zone) : ZoneId.systemDefault();
+            ZonedDateTime zdt = LocalDateTime.now().atZone(zoneId);
+            int delta = zdt.getOffset().getTotalSeconds();
+            return new DateTimeType(ZonedDateTime.ofInstant(Instant.ofEpochSecond(timestamp - delta), zoneId));
+        } catch (DateTimeException e) {
+            // Unable to convert device's timezone, use system one
+            return getTimestamp();
+        }
     }
 
-    public static Integer getLightIdFromGroup(@Nullable String groupName) {
-        Validate.notNull(groupName);
+    public static Integer getLightIdFromGroup(String groupName) {
         if (groupName.startsWith(CHANNEL_GROUP_LIGHT_CHANNEL)) {
             return Integer.parseInt(StringUtils.substringAfter(groupName, CHANNEL_GROUP_LIGHT_CHANNEL)) - 1;
         }
         return 0; // only 1 light, e.g. bulb or rgbw2 in color mode
     }
 
-    public static String buildControlGroupName(@Nullable ShellyDeviceProfile profile, Integer channelId) {
-        Validate.notNull(profile);
-        return profile.isBulb || profile.inColor ? CHANNEL_GROUP_LIGHT_CONTROL
+    public static String buildControlGroupName(ShellyDeviceProfile profile, Integer channelId) {
+        return profile.isBulb || profile.isDuo || profile.inColor ? CHANNEL_GROUP_LIGHT_CONTROL
                 : CHANNEL_GROUP_LIGHT_CHANNEL + channelId.toString();
     }
 
-    public static String buildWhiteGroupName(@Nullable ShellyDeviceProfile profile, Integer channelId) {
-        Validate.notNull(profile);
-        return profile.isBulb && !profile.inColor ? CHANNEL_GROUP_WHITE_CONTROL
+    public static String buildWhiteGroupName(ShellyDeviceProfile profile, Integer channelId) {
+        return profile.isBulb || profile.isDuo && !profile.inColor ? CHANNEL_GROUP_WHITE_CONTROL
                 : CHANNEL_GROUP_LIGHT_CHANNEL + channelId.toString();
     }
 

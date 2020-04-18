@@ -4,11 +4,7 @@
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="thing-type:shelly:generic">
-		<parameter-group name="advancedOptions">
-			<label>Advanced Options</label>
-		</parameter-group>
-
+	<config-description uri="thing-type:shelly:relay">
 		<parameter name="userId" type="text" required="false">
 			<label>User</label>
 			<description>User ID for HTTP API access.</description>
@@ -33,7 +29,7 @@
 			<label>Enable Switch Events (Out on/off)</label>
 			<description>True if the binding should register to get the Relay Switch Events.</description>
 			<advanced>true</advanced>
-			<default>true</default>
+			<default>false</default>
 		</parameter>
 		<parameter name="eventsPush" type="boolean" required="false">
 			<label>Enable Push Events (short/long)</label>
@@ -45,22 +41,106 @@
 			<label>Enable CoIoT Events</label>
 			<description>If enabled, the CoAP protocol is used to receive status updates.</description>
 			<advanced>true</advanced>
+			<default>true</default>
+		</parameter>
+		<parameter name="updateInterval" type="integer" required="true" unit="s">
+			<label>Update Interval</label>
+			<description>Interval to query an update from the device.</description>
+			<default>60</default>
+			<unitLabel>seconds</unitLabel>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:shelly:roller">
+		<parameter name="userId" type="text" required="false">
+			<label>User</label>
+			<description>User ID for HTTP API access.</description>
+		</parameter>
+		<parameter name="password" type="text" required="false">
+			<label>Password</label>
+			<description>Password for HTTP API access.</description>
+			<context>password</context>
+		</parameter>
+		<parameter name="deviceIp" type="text" required="true">
+			<label>Device IP Address</label>
+			<description>IP-Address of the Shelly device.</description>
+			<context>network-address</context>
+		</parameter>
+		<parameter name="eventsRoller" type="boolean" required="false">
+			<label>Enable Roller Events (Roller only)</label>
+			<description>True if the binding should register to get Roller Events.</description>
+			<advanced>true</advanced>
+			<default>true</default>
+		</parameter>
+		<parameter name="eventsCoIoT" type="boolean" required="false">
+			<label>Enable CoIoT Events</label>
+			<description>If enabled, the CoAP protocol is used to receive status updates.</description>
+			<advanced>true</advanced>
+			<default>true</default>
+		</parameter>
+		<parameter name="updateInterval" type="integer" required="true" unit="s">
+			<label>Update Interval</label>
+			<description>Interval to query an update from the device.</description>
+			<default>60</default>
+			<unitLabel>seconds</unitLabel>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+	<config-description uri="thing-type:shelly:dimmer">
+		<parameter name="userId" type="text" required="false">
+			<label>User</label>
+			<description>User ID for HTTP API access.</description>
+		</parameter>
+		<parameter name="password" type="text" required="false">
+			<label>Password</label>
+			<description>Password for HTTP API access.</description>
+			<context>password</context>
+		</parameter>
+		<parameter name="deviceIp" type="text" required="true">
+			<label>Device IP Address</label>
+			<description>IP-Address of the Shelly device.</description>
+			<context>network-address</context>
+		</parameter>
+		<parameter name="brightnessAutoOn" type="boolean" required="false">
+			<label>Brightness Auto-ON</label>
+			<description>true: Turn device ON if brightness>0 is set; false: don't touch power status when brightness is set.</description>
+			<default>true</default>
+		</parameter>
+		<parameter name="eventsButton" type="boolean" required="false">
+			<label>Enable Button Events</label>
+			<description>True if the binding should register to get the Buttons Events.</description>
+			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
-		<parameter name="updateInterval" type="integer" required="true">
+		<parameter name="eventsSwitch" type="boolean" required="false">
+			<label>Enable Switch Events (Out on/off)</label>
+			<description>True if the binding should register to get the Relay Switch Events.</description>
+			<advanced>true</advanced>
+			<default>false</default>
+		</parameter>
+		<parameter name="eventsPush" type="boolean" required="false">
+			<label>Enable Push Events (short/long)</label>
+			<description>True if the binding should register to get the Short/Long Push Events.</description>
+			<advanced>true</advanced>
+			<default>false</default>
+		</parameter>
+		<parameter name="eventsCoIoT" type="boolean" required="false">
+			<label>Enable CoIoT Events</label>
+			<description>If enabled, the CoAP protocol is used to receive status updates.</description>
+			<advanced>true</advanced>
+			<default>true</default>
+		</parameter>
+		<parameter name="updateInterval" type="integer" required="true" unit="s">
 			<label>Update Interval</label>
-			<description>Interval in seconds to query an update from the device.</description>
+			<description>Interval to query an update from the device.</description>
 			<default>60</default>
-			<unitLabel>s</unitLabel>
+			<unitLabel>seconds</unitLabel>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>
 
 	<config-description uri="thing-type:shelly:light">
-		<parameter-group name="advancedOptions">
-			<label>Advanced Options</label>
-		</parameter-group>
-
 		<parameter name="userId" type="text" required="false">
 			<label>User</label>
 			<description>User ID for HTTP API access.</description>
@@ -80,21 +160,9 @@
 			<description>true: Turn device ON if brightness > 0 is set; false: don't touch power status when brightness is set.</description>
 			<default>true</default>
 		</parameter>
-		<parameter name="eventsButton" type="boolean" required="false">
-			<label>Enable Button Events</label>
-			<description>True if the binding should register to get the Buttons Events.</description>
-			<advanced>true</advanced>
-			<default>false</default>
-		</parameter>
 		<parameter name="eventsSwitch" type="boolean" required="false">
 			<label>Enable Switch Events (Out on/off)</label>
 			<description>True if the binding should register to get the Relay Switch Events.</description>
-			<advanced>true</advanced>
-			<default>true</default>
-		</parameter>
-		<parameter name="eventsPush" type="boolean" required="false">
-			<label>Enable Push Events (short/long)</label>
-			<description>True if the binding should register to get the Short/Long Push Events.</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
@@ -102,16 +170,52 @@
 			<label>Enable CoIoT Events</label>
 			<description>If enabled, the CoAP protocol is used to receive status updates.</description>
 			<advanced>true</advanced>
-			<default>false</default>
+			<default>true</default>
 		</parameter>
-		<parameter name="updateInterval" type="integer" required="true">
+		<parameter name="updateInterval" type="integer" required="true" unit="s">
 			<label>Update Interval</label>
-			<description>Interval in seconds to query an update from the device.</description>
+			<description>Interval to query an update from the device.</description>
 			<default>60</default>
-			<unitLabel>sec</unitLabel>
+			<unitLabel>seconds</unitLabel>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>
+
+	<config-description uri="thing-type:shelly:rgbw2">
+		<parameter name="userId" type="text" required="false">
+			<label>User</label>
+			<description>User ID for HTTP API access.</description>
+		</parameter>
+		<parameter name="password" type="text" required="false">
+			<label>Password</label>
+			<description>Password for HTTP API access.</description>
+			<context>password</context>
+		</parameter>
+		<parameter name="deviceIp" type="text" required="true">
+			<label>Device IP Address</label>
+			<description>IP-Address of the Shelly device.</description>
+			<context>network-address</context>
+		</parameter>
+		<parameter name="brightnessAutoOn" type="boolean" required="false">
+			<label>Brightness Auto-ON</label>
+			<description>true: Turn device ON if brightness > 0 is set; false: don't touch power status when brightness is set.</description>
+			<default>true</default>
+		</parameter>
+		<parameter name="eventsCoIoT" type="boolean" required="false">
+			<label>Enable CoIoT Events</label>
+			<description>If enabled, the CoAP protocol is used to receive status updates.</description>
+			<advanced>true</advanced>
+			<default>true</default>
+		</parameter>
+		<parameter name="updateInterval" type="integer" required="true" unit="s">
+			<label>Update Interval</label>
+			<description>Interval to query an update from the device.</description>
+			<default>60</default>
+			<unitLabel>seconds</unitLabel>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
 
 	<config-description uri="thing-type:shelly:battery">
 		<parameter name="userId" type="text" required="false">
@@ -136,9 +240,9 @@
 		</parameter>
 		<parameter name="eventsSensorReport" type="boolean" required="false">
 			<label>Enable Sensor Events</label>
-			<description>True: Register event URL for sensor updates. When settings this to false the sensor will not notify the binding about changes!</description>
+			<description>True: Register event URL for sensor updates.</description>
 			<advanced>true</advanced>
-			<default>true</default>
+			<default>false</default>
 		</parameter>
 		<parameter name="eventsCoIoT" type="boolean" required="false">
 			<label>Enable CoIoT Events</label>
@@ -146,11 +250,11 @@
 			<advanced>true</advanced>
 			<default>true</default>
 		</parameter>
-		<parameter name="updateInterval" type="integer" required="true">
+		<parameter name="updateInterval" type="integer" required="true" unit="s">
 			<label>Update Interval</label>
-			<description>Interval in seconds to query an update from the device.</description>
+			<description>Interval to query an update from the device.</description>
 			<default>3600</default>
-			<unitLabel>sec</unitLabel>
+			<unitLabel>seconds</unitLabel>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>

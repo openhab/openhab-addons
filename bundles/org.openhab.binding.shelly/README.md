@@ -4,30 +4,33 @@ This Binding integrated Shelly devices.
 
 ## Supported Devices
 
-|Thing               |Type                                                    |
-|--------------------|--------------------------------------------------------|
-| shelly1            | Shelly Single Relay Switch                             |
-| shelly1pm          | Shelly Single Relay Switch with integrated Power Meter |
-| shellyem           | Shelly EM with integrated Power Meter                  |
-| shelly2-relay      | Shelly Double Relay Switch in relay mode               |
-| shelly2-roller     | Shelly2 in Roller Mode                                 |
-| shelly25-relay     | Shelly 2.5 in Relay Switch                             |
-| shelly25-roller    | Shelly 2.5 in Roller Mode                              |
-| shelly4pro         | Shelly 4x Relay Switch                                 |
-| shellydimmer       | Shelly Dimmer                                          |
-| shellyplugs        | Shelly Plug-S                                          |
-| shellyplug         | Shelly Plug                                            |
-| shellyrgbw2        | Shelly RGB Controller                                  |
-| shellybulb         | Shelly Bulb in Color or White Mode                     |
-| shellyht           | Shelly Sensor (temp+humidity)                          |
-| shellyflood        | Shelly Flood Sensor                                    |
-| shellysmoke        | Shelly Smoke Sensor                                    |
-| shellysense        | Shelly Motion and IR Controller                        |
-| shellydevice       | A password protected Shelly device or an unknown type  |
+| Thing Type         | Model                                                  | Vendor ID |
+|--------------------|--------------------------------------------------------|-----------|
+| shelly1            | Shelly Single Relay Switch                             | SHSW-1    |
+| shelly1pm          | Shelly Single Relay Switch with integrated Power Meter | SHSW-PM   |
+| shelly2-relay      | Shelly Double Relay Switch in relay mode               | SHSW-21   |
+| shelly2-roller     | Shelly2 in Roller Mode                                 | SHSW-21   |
+| shelly25-relay     | Shelly 2.5 in Relay Switch                             | SHSW-25   |
+| shelly25-roller    | Shelly 2.5 in Roller Mode                              | SHSW-25   |
+| shelly4pro         | Shelly 4x Relay Switch                                 | SHSW-44   |
+| shellydimmer       | Shelly Dimmer                                          | SHDM-1    |
+| shellyplug         | Shelly Plug                                            | SHPLG2-1  |
+| shellyplugs        | Shelly Plug-S                                          | SHPLG-S   |
+| shellyem           | Shelly EM with integrated Power Meters                 | SHEM      |
+| shellyem3          | Shelly EM3 with 3 integrated Power Meter               | SHEM-3    |
+| shellyrgbw2        | Shelly RGB Controller                                  | SHRGBW2   |
+| shellybulb         | Shelly Bulb in Color or White Mode                     | SHBLB-1   |
+| shellybulbduo      | Shelly Duo (White Mode)                                | SHBDUO-1  |
+| shellyht           | Shelly Sensor (temp+humidity)                          | SHHT-1    |
+| shellyflood        | Shelly Flood Sensor                                    | SHWT-1    |
+| shellysmoke        | Shelly Smoke Sensor                                    |           |
+| shellydw           | Shelly Door/Window                                     | SHDW-1    |
+| shellysense        | Shelly Motion and IR Controller                        | SHSEN-1   |
+| shellydevice       | A password protected Shelly device or an unknown type  |           |
 
 ## Firmware
 
-To utilize all features the binding requires firmware version 1.5.2 or newer.
+To utilize all features the binding requires firmware version 1.5.7 or newer, version 1.6 is strongly recommended.
 This should be available for all devices.
 Older versions work in general, but have impacts to functionality (e.g. no events for battery powered devices).
 
@@ -35,19 +38,52 @@ The binding displays a WARNING in the log if the firmware is older.
 It also informs you when an update is available.
 Use the device' web ui or the Shelly App to perform the update.
 
+## Other resources
+
+Check the following resources for additional information
+
+
 ## Discovery
 
 The binding uses mDNS to discover the Shelly devices.
 They periodically announce their presence, which is used by the binding to find them on the local network.
 
-Make sure to wake-up battery powered devices (press the button inside the device), so that they show up on the network.
 Sometimes you need to run the manual discovery multiple times until you see all your devices.
 
+### Dynamic creation of channels
+
+The Shelly series of devices has many combinations of relays, meters (different versions), sensors etc. For this the binding creates various channels dynamically based on the status information provided by the device at initialization time. 
+If a channel is missing make sure the thing was discovered correctly and is ONLINE. If a channel is missing delete the thing and re-discover it.
+
+### Important for battery power devices
+
+Make sure to wake up battery powered devices (press the button inside the device), so that they show up on the network.
+The device has a push button inside, open the case, press that button and the LED starts blinking.
+The device should show up in the Inbox and can be added.
+
+`
+Important: If device is in sleep mode and can't be reached by the binding, the Thing will change into UNKNOWN state.
+Once the device wakes up, the thing will perform initialization and the state will change to ONLINE.
+`
+
+The first time a device is discovered and initialized successfully, the binding will be able to perform auto-initialization when OH is restarted. 
+Waking up the device triggers the event URL and/or CoIoT packet, which is processed by the binding and triggers initialization.
+Once a device is initialized, it is no longer necessary to manually wake it up after an openHAB restart.
+
+Devices that have no battery are expected to be ON/reachable on the network at all times.
+Otherwise the thing will go OFFLINE with COMMUNICATION_ERROR as status.
+
+### Re-discover when IP address has changed
+ 
 Important: The IP address should not be changed after the device is added to openHAB.
+
 This can be achieved by
 
 - assigning a static IP address or
 - using DHCP and setup the router to always assign the same IP address to the device
+
+When the IP address changes for a device you need to delete the Thing and then re-discover the device.
+In this case channel linkage gets lost and you need to re-link the channels/items.
 
 ### Password Protected Devices
 
@@ -90,27 +126,46 @@ The binding has the following configuration options:
 
 Every device has a channel group `device` with the following channels:
 
-|Group     |Channel      |Type     |read-only|Desciption                                                                       |
-|----------|-------------|---------|---------|---------------------------------------------------------------------------------|
-|device    |uptime       |Number   |yes      |Number of seconds since the device was powered up                                |
-|          |wifiSignal   |Number   |yes      |WiFi signal strength (4=excellent, 3=good, 2=not string, 1=unreliable, 0=none)   |
-|          |alarm        |Trigger  |yes      |Most recent alarm for health check                                               |
+|Group     |Channel            |Type    |read-only|Desciption                                                                       |
+|----------|-------------------|--------|---------|---------------------------------------------------------------------------------|
+|device    |uptime             |Number  |yes      |Number of seconds since the device was powered up                                |
+|          |wifiSignal         |Number  |yes      |WiFi signal strength (4=excellent, 3=good, 2=not string, 1=unreliable, 0=none)   |
+|          |innerTemp          |Number  |yes      |Internal device temperature (when provided by the device)                        |
+|          |wakeupReason       |String  |yes      |Sensors only: Last wake-up reason (POWERON/PERIODIC/BUTTON/BATTERY/ALARM)        |
+|          |alarm              |Trigger |yes      |Most recent alarm for health check                                               |
+|          |accumulatedWatts   |Number  |yes      |Accumulated power in W of the device (including all meters)                      |
+|          |accumulatedTotal   |Number  |yes      |Accumulated total power in kw/h of the device (including all meters)             |
+|          |accumulatedReturned|Number  |yes      |Accumulated returned power in kw/h of the device (including all meters)          |
 
+The accumulated channels are only available for devices with more than 1 meter. accumulatedReturned only for the EM and EM3.
 
-### Alarm Events
+### Events / Alarms
 
 The binding provides health monitoring functions for the device.
 When an alarm condition is detected the channel alarm gets triggered and provides one of the following alarm types:
 
+### Non-battery powerd devices
+
 |Event Type|Description|
 |------------|-----------------------------------------------------------------------------------------------------------------|
-|WEAK_SIGNAL |An alarm is triggered when RSSI is < -80, which indicates an unstable connection.                                |
 |RESTARTED   |The device has been restarted. This could be an indicator for a firmware problem.                                |
+|WEAK_SIGNAL |An alarm is triggered when RSSI is < -80, which indicates an unstable connection.                                |
 |OVER_TEMP   |The device is over heating, check installation and housing.                                                      |
 |OVER_LOAD   |An over load condition has been detected, e.g. from the roller motor.                                            |
 |OVER_POWER  |Maximum allowed power was exceeded. The relay was turned off.                                                    |
-|LOAD_ERROR  |Device reported a load problem.                                                                                  |
-|LOW_BATTERY |Device reported a load problem.                                                                                  |
+|LOAD_ERROR  |Device reported a load problem, so far Dimmer only.                                                              |
+
+### Sensors
+
+|Event Type|Description|
+|------------|-----------------------------------------------------------------------------------------------------------------|
+|POWERON     |Device was powered on.                                                                                           |
+|PERIODIC    |Periodic wakeup.                                                                                                 |
+|BUTTON      |Button was pressed, e.g. to wakeup the device.                                                                   |
+|SENSOR      |Wake-up due to updated sensor data.                                                                              |
+|ALARM       |Alarm condition was detected, check status, could be OPENED for the DW, flood alarm, smoke alarm                 |
+|BATTERY     |Device reported an update to the battery status.                                                                 |
+
 
 A new alarm will be triggered on a new condition or every 5 minutes if the condition persists.
 
@@ -129,9 +184,10 @@ end
 |----------|-------------|---------|---------|---------------------------------------------------------------------------------|
 |relay     |output       |Switch   |r/w      |Controls the relay's output channel (on/off)                                     |
 |          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
-|sensors   |temperature1 |Number   |yes      |Temperature value of external sensor #1 (if connected to device)                 |
-|          |temperature2 |Number   |yes      |Temperature value of external sensor #2 (if connected to device)                 |
-|          |temperature3 |Number   |yes      |Temperature value of external sensor #3 (if connected to device)                 |
+|sensors   |temperature1 |Number   |yes      |Temperature value of external sensor #1 (if connected to temp/hum addon)         |
+|          |temperature2 |Number   |yes      |Temperature value of external sensor #2 (if connected to temp/hum addon)         |
+|          |temperature3 |Number   |yes      |Temperature value of external sensor #3 (if connected to temp/hum addon)         |
+|          |humidity     |Number   |yes      |Humidity in percent (if connected to temp/hum addon)                             |
 
 ### Shelly 1PM (thing-type: shelly1pm)
 
@@ -144,11 +200,12 @@ end
 |          |lastPower1   |Number   |yes      |Energy consumption in Watts for a round minute, 1 minute  ago                    |
 |          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                    |
 |          |lastPower3   |Number   |yes      |Energy consumption in Watts for a round minute, 3 minutes ago                    |
-|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (reset on restart) |
+|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
 |          |timestamp    |String   |yes      |Timestamp of the last measurement                                                |
-|sensors   |temperature1 |Number   |yes      |Temperature value of external sensor #1 (if connected to device)                 |
-|          |temperature2 |Number   |yes      |Temperature value of external sensor #2 (if connected to device)                 |
-|          |temperature3 |Number   |yes      |Temperature value of external sensor #3 (if connected to device)                 |
+|sensors   |temperature1 |Number   |yes      |Temperature value of external sensor #1 (if connected to temp/hum addon)         |
+|          |temperature2 |Number   |yes      |Temperature value of external sensor #2 (if connected to temp/hum addon)         |
+|          |temperature3 |Number   |yes      |Temperature value of external sensor #3 (if connected to temp/hum addon)         |
+|          |humidity     |Number   |yes      |Humidity in percent (if connected to temp/hum addon)                             |
 
 ### Shelly EM (thing-type: shellyem)
 
@@ -158,17 +215,50 @@ end
 |          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
 |          |button       |Trigger  |yes      |Event trigger with payload SHORT_PRESSED or LONG_PRESSED (FW 1.5.6+)             |
 |meter1    |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
-|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (reset on restart) |
+|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
 |          |returnedKWH  |Number   |yes      |Total returned energy, kw/h                                                      |
 |          |reactiveWatts|Number   |yes      |Instantaneous reactive power, Watts                                              |
 |          |voltage      |Number   |yes      |RMS voltage, Volts                                                               |
 |          |timestamp    |String   |yes      |Timestamp of the last measurement                                                |
 |meter2    |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
-|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (reset on restart) |
+|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
 |          |returnedKWH  |Number   |yes      |Total returned energy, kw/h                                                      |
 |          |reactiveWatts|Number   |yes      |Instantaneous reactive power, Watts                                              |
 |          |voltage      |Number   |yes      |RMS voltage, Volts                                                               |
 |          |timestamp    |String   |yes      |Timestamp of the last measurement                                                |
+
+### Shelly EM3 (thing-type: shellyem3)
+
+|Group     |Channel      |Type     |read-only|Desciption                                                                       |
+|----------|-------------|---------|---------|---------------------------------------------------------------------------------|
+|relay     |output       |Switch   |r/w      |Controls the relay's output channel (on/off)                                     |
+|          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
+|          |button       |Trigger  |yes      |Event trigger with payload SHORT_PRESSED or LONG_PRESSED (FW 1.5.6+)             |
+|meter1    |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
+|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
+|          |returnedKWH  |Number   |yes      |Total returned energy, kw/h                                                      |
+|          |reactiveWatts|Number   |yes      |Instantaneous reactive power, Watts                                              |
+|          |voltage      |Number   |yes      |RMS voltage, Volts                                                               |
+|          |current      |Number   |yes      |Current in A                                                                     |
+|          |powerFactor  |Number   |yes      |Power Factor                                                                     |
+|          |timestamp    |String   |yes      |Timestamp of the last measurement                                                |
+|meter2    |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
+|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
+|          |returnedKWH  |Number   |yes      |Total returned energy, kw/h                                                      |
+|          |reactiveWatts|Number   |yes      |Instantaneous reactive power, Watts                                              |
+|          |voltage      |Number   |yes      |RMS voltage, Volts                                                               |
+|          |current      |Number   |yes      |Current in A                                                                     |
+|          |powerFactor  |Number   |yes      |Power Factor                                                                     |
+|          |timestamp    |String   |yes      |Timestamp of the last measurement                                                |
+|meter3    |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
+|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
+|          |returnedKWH  |Number   |yes      |Total returned energy, kw/h                                                      |
+|          |reactiveWatts|Number   |yes      |Instantaneous reactive power, Watts                                              |
+|          |voltage      |Number   |yes      |RMS voltage, Volts                                                               |
+|          |current      |Number   |yes      |Current in A                                                                     |
+|          |powerFactor  |Number   |yes      |Power Factor                                                                     |
+|          |timestamp    |String   |yes      |Timestamp of the last measurement                                                |
+
 
 ### Shelly 2 - relay mode thing-type: shelly2-relay)
 
@@ -190,7 +280,7 @@ end
 |          |lastPower1   |Number   |yes      |Energy consumption in Watts for a round minute, 1 minute  ago                    |
 |          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                    |
 |          |lastPower3   |Number   |yes      |Energy consumption in Watts for a round minute, 3 minutes ago                    |
-|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (reset on restart) |
+|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
 |          |timestamp    |String   |yes      |Timestamp of the last measurement                                                |
 
 ### Shelly 2 - roller mode thing-type: shelly2-roller)
@@ -210,6 +300,8 @@ end
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (reset on restart)      |
 |          |timestamp    |String   |yes      |Timestamp of the last measurement                                                     |
 
+The roller positioning calibration has to be performed using the Shelly App before the position can be set in percent. 
+
 ### Shelly 2.5 - relay mode (thing-type:shelly25-relay) 
 
 The Shelly 2.5 includes 2 meters, one for each channel.
@@ -227,17 +319,17 @@ The Shelly 2.5 includes 2 meters, one for each channel.
 However, it doesn't make sense to differ power consumption for the roller moving up vs. moving down.
 For this the binding aggregates the power consumption of both relays and includes the values in "meter1".
 
-|Group     |Channel      |Type     |read-only|Description                                                                                |
-|----------|-------------|---------|---------|-------------------------------------------------------------------------------------------|
-|roller    |control      |Rollershutter   |r/w      |can be open (0%), stop, or close (100%); could also handle ON (open) and OFF (close)|
-|          |rollerpos    |Dimmer  |r/w      |Roller position: 100%=open...0%=closed; gets updated when the roller stopped                |
-|          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                                 |
-|          |lastDirection|String   |yes      |Last direction: open or close                                                              |
-|          |stopReason   |String   |yes      |Last stop reasons: normal, safety_switch or obstacle                                       |
-|          |calibrating  |Switch   |yes      |ON: Roller is in calibration mode, OFF: normal mode (no calibration)                       |
-|          |positioning  |Switch   |yes      |ON: Roller is positioning/moving                                                           |
-|          |event        |Trigger  |yes      |Roller event/trigger with payload ROLLER_OPEN / ROLLER_CLOSE / ROLLER_STOP                 |
-|meter     |             |         |         |See group meter1 for Shelly 2                                                              |
+|Group     |Channel      |Type     |read-only|Description                                                                          |
+|----------|-------------|---------|---------|-------------------------------------------------------------------------------------|
+|roller    |control      |Rollershutter |r/w |can be open (0%), stop, or close (100%); could also handle ON (open) and OFF (close) |
+|          |rollerpos    |Dimmer   |r/w      |Roller position: 100%=open...0%=closed; gets updated when the roller stopped         |
+|          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                           |
+|          |lastDirection|String   |yes      |Last direction: open or close                                                        |
+|          |stopReason   |String   |yes      |Last stop reasons: normal, safety_switch or obstacle                                 |
+|          |event        |Trigger  |yes      |Roller event/trigger with payload ROLLER_OPEN / ROLLER_CLOSE / ROLLER_STOP           |
+|meter     |             |         |         |See group meter1 for Shelly 2                                                        |
+
+The roller positioning calibration has to be performed using the Shelly App before the position can be set in percent. 
 
 ### Shelly4 Pro (thing-type: shelly4pro)
 
@@ -280,8 +372,10 @@ The Shelly 4Pro provides 4 relays and 4 power meters.
 |          |lastPower1   |Number   |yes      |Energy consumption in Watts for a round minute, 1 minute  ago                    |
 |          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                    |
 |          |lastPower3   |Number   |yes      |Energy consumption in Watts for a round minute, 3 minutes ago                    |
-|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (reset on restart) |
+|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
 |          |timestamp    |String   |yes      |Timestamp of the last measurement                                                |
+
+The Dimmer should be calibrated using the Shelly App.
 
 ### Shelly Bulb (thing-type: shellybulb)
 
@@ -308,11 +402,30 @@ The Shelly 4Pro provides 4 relays and 4 power meters.
 |          |temperature  |Number   |r/w      |color temperature (K): 0..100% or 3000..6500                           |
 |          |brightness   |Dimmer   |         |Brightness: 0..100% or 0..100                                          |
  
-### Shelly RGBW2 in Color Mode (thing-type: shellyrgbw2-color)
+#### Shelly Duo (thing-type: shellybulbduo)
+
+|Group     |Channel      |Type     |read-only|Description                                                            |
+|----------|-------------|---------|---------|-----------------------------------------------------------------------|
+|control   |power        |Switch   |r/w      |Switch light ON/OFF                                                    |
+|          |autoOn       |Number   |r/w      |Sets a  timer to turn the device ON after every OFF; in sec            |
+|          |autoOff      |Number   |r/w      |Sets a  timer to turn the device OFF after every ON: in sec            |
+|          |timerActive  |Switch   |yes      |ON: An auto-on/off timer is active                                     |
+|white     |             |         |         |Color settings: only valid in WHITE mode                               |
+|          |temperature  |Number   |r/w      |color temperature (K): 0..100% or 2700..6500                           |
+|          |brightness   |Dimmer   |         |Brightness: 0..100% or 0..100                                          |
+|meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
+|          |lastPower1   |Number   |yes      |Energy consumption in Watts for a round minute, 1 minute  ago                    |
+|          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                    |
+|          |lastPower3   |Number   |yes      |Energy consumption in Watts for a round minute, 3 minutes ago                    |
+|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
+|          |timestamp    |String   |yes      |Timestamp of the last measurement                                                |
+ 
+ ## Shelly RGBW2 in Color Mode (thing-type: shellyrgbw2-color)
 
 |Group     |Channel      |Type     |read-only|Desciption                                                             |
 |----------|-------------|---------|---------|-----------------------------------------------------------------------|
 |control   |power        |Switch   |r/w      |Switch light ON/OFF                                                    |
+|          |button       |Trigger  |yes      |Event trigger with payload SHORT_PRESSED or LONG_PRESSED (FW 1.5.6+)   |
 |          |autoOn       |Number   |r/w      |Sets a  timer to turn the device ON after every OFF command; in seconds|
 |          |autoOff      |Number   |r/w      |Sets a  timer to turn the device OFF after every ON command; in seconds|
 |          |timerActive  |Switch   |yes      |ON: An auto-on/off timer is active                                     |
@@ -332,34 +445,51 @@ The Shelly 4Pro provides 4 relays and 4 power meters.
 
 |Group     |Channel      |Type     |read-only|Desciption                                                             |
 |----------|-------------|---------|---------|-----------------------------------------------------------------------|
-|control   |autoOn       |Number   |r/w      |Sets a  timer to turn the device ON after every OFF command; in seconds|
+|control   |input        |Switch   |yes      |State of Input                                                         |
+|channel1  |brightness   |Dimmer   |r/w      |Channel 1: Brightness: 0..100, control power state with ON/OFF         |
+|          |button       |Trigger  |yes      |Event trigger with payload SHORT_PRESSED or LONG_PRESSED (FW 1.5.6+)   |
+|          |autoOn       |Number   |r/w      |Sets a  timer to turn the device ON after every OFF command; in seconds|
 |          |autoOff      |Number   |r/w      |Sets a  timer to turn the device OFF after every ON command; in seconds|
 |          |timerActive  |Switch   |yes      |ON: An auto-on/off timer is active                                     |
-|channel1  |power        |Switch   |r/w      |Channel 1: Turn channel on/off                                         |
-|          |brightness   |Dimmer   |r/w      |Channel 1: Brightness: 0..100                                          |
-|channel2  |power        |Switch   |r/w      |Channel 2: Turn channel on/off                                         |
-|          |brightness   |Dimmer   |r/w      |Channel 2: Brightness: 0..100                                          |
-|channel3  |power        |Switch   |r/w      |Channel 3: Turn channel on/off                                         |
-|          |brightness   |Dimmer   |r/w      |Channel 3: Brightness: 0..100                                          |
-|channel4  |power        |Switch   |r/w      |Channel 4: Turn channel on/off                                         |
-|          |brightness   |Dimmer   |r/w      |Channel 4: Brightness: 0..100                                          |
-|meter1    |currentWatts |Number   |yes      |Channel 1: Current power consumption in Watts                          |
-|meter2    |currentWatts |Number   |yes      |Channel 2: Current power consumption in Watts                          |
-|meter3    |currentWatts |Number   |yes      |Channel 3: Current power consumption in Watts                          |
-|meter4    |currentWatts |Number   |yes      |Channel 4: Current power consumption in Watts                          |
+|channel2  |brightness   |Dimmer   |r/w      |Channel 2: Brightness: 0..100, control power state with ON/OFF         |
+|          |button       |Trigger  |yes      |Event trigger with payload SHORT_PRESSED or LONG_PRESSED (FW 1.5.6+)   |
+|          |autoOn       |Number   |r/w      |Sets a  timer to turn the device ON after every OFF command; in seconds|
+|          |autoOff      |Number   |r/w      |Sets a  timer to turn the device OFF after every ON command; in seconds|
+|          |timerActive  |Switch   |yes      |ON: An auto-on/off timer is active                                     |
+|channel3  |brightness   |Dimmer   |r/w      |Channel 3: Brightness: 0..100, control power state with ON/OFF         |
+|          |button       |Trigger  |yes      |Event trigger with payload SHORT_PRESSED or LONG_PRESSED (FW 1.5.6+)   |
+|          |autoOn       |Number   |r/w      |Sets a  timer to turn the device ON after every OFF command; in seconds|
+|          |autoOff      |Number   |r/w      |Sets a  timer to turn the device OFF after every ON command; in seconds|
+|          |timerActive  |Switch   |yes      |ON: An auto-on/off timer is active                                     |
+|channel4  |brightness   |Dimmer   |r/w      |Channel 5: Brightness: 0..100, control power state with ON/OFF         |
+|          |button       |Trigger  |yes      |Event trigger with payload SHORT_PRESSED or LONG_PRESSED (FW 1.5.6+)   |
+|          |autoOn       |Number   |r/w      |Sets a  timer to turn the device ON after every OFF command; in seconds|
+|          |autoOff      |Number   |r/w      |Sets a  timer to turn the device OFF after every ON command; in seconds|
+|          |timerActive  |Switch   |yes      |ON: An auto-on/off timer is active                                     |
+|meter     |currentWatts |Number   |yes      |Current power consumption in Watts (all channels)                                   |
 
 Please note that the settings of channel group color are only valid in color mode and vice versa for white mode.
-The current firmware doesn't support the timestamp report for the meters.
-In this case "n/a" is returned.
-Maybe an upcoming firmware release adds this attribute, then the correct value is returned;
+The current firmware doesn't support the timestamp report for the meters. 
+The binding emulates this by using the system time on every update.
 
-### Shelly HT (thing-type: shellyht)
+In white mode each RGBW2 channel is defined as DimmableLight.
+This means that the brightness channel has 2 functions
+- Sending ON/OFF (OnOffType) to power on/off the channel
+- Sending a Number to set the brightness (percentage 0..100)
+
+Sending brightness 0 will automatically turn off the channel if it's currently on.
+Sending brightness > 0 will automatically turn on the channel if it's currently off. 
+You can define 2 items (1 Switch, 1 Number) mapping to the same channel, see example rules.
+
+### Shelly H&T (thing-type: shellyht)
 
 |Group     |Channel      |Type     |read-only|Description                                                            |
 |----------|-------------|---------|---------|-----------------------------------------------------------------------|
 |sensors   |temperature  |Number   |yes      |Temperature, unit is reported by tempUnit                              |
 |          |humidity     |Number   |yes      |Relative humidity in %                                                 |
-|          |last_update  |String   |yes      |Timestamp of the last update (values read by the binding)              |
+|          |charger      |Number   |yes      |ON: USB charging cable is                                              |
+|          |wakeupReason |String   |yes      |Last reason for a device wake-up (battery, button, periodic, poweron, sensor or alarm) |
+|          |lastUpdate   |DateTime |yes      |Timestamp of the last update (any sensor value changed)                |
 |battery   |batteryLevel |Number   |yes      |Battery Level in %                                                     |
 |          |voltage      |Number   |yes      |Voltage of the battery                                                 |
 |          |lowBattery   |Switch   |yes      |Low battery alert (< 20%)                                              |
@@ -370,7 +500,39 @@ Maybe an upcoming firmware release adds this attribute, then the correct value i
 |----------|-------------|---------|---------|-----------------------------------------------------------------------|
 |sensors   |temperature  |Number   |yes      |Temperature, unit is reported by tempUnit                              |
 |          |flood        |Switch   |yes      |ON: Flooding condition detected, OFF: no flooding                      |
-|          |last_update  |String   |yes      |Timestamp of the last update (values read by the binding)              |
+|          |wakeupReason |String   |yes      |Last reason for a device wake-up (battery, button, periodic, poweron, sensor or alarm) |
+|          |lastUpdate   |DateTime |yes      |Timestamp of the last update (any sensor value changed)                |
+|battery   |batteryLevel |Number   |yes      |Battery Level in %                                                     |
+|          |voltage      |Number   |yes      |Voltage of the battery                                                 |
+|          |lowBattery   |Switch   |yes      |Low battery alert (< 20%)                                              |
+
+### Shelly Door/Window (thing type: shellydw)
+
+|Group     |Channel      |Type     |read-only|Description                                                            |
+|----------|-------------|---------|---------|-----------------------------------------------------------------------|
+|sensors   |state        |Contact  |yes      |OPEN: Contact is open, CLOSED: Contact is closed                       |
+|          |lux          |Number   |yes      |Brightness in Lux                                                      |
+|          |illumination |String   |yes      |Current illumination: dark/twilight/bright                             |
+|          |titl         |Number   |yes      |Tilt in ° (angle), -1 indicates that the sensor is not calibrated      |
+|          |vibration    |Switch   |yes      |ON: Vibration detected                                                 |
+|          |wakeupReason |String   |yes      |Last reason for a device wake-up (battery, button, periodic, poweron, sensor or alarm) |
+|          |lastUpdate   |DateTime |yes      |Timestamp of the last update (any sensor value changed)                |
+|          |lastError    |String   |yes      |Last device error.                                                     |
+|battery   |batteryLevel |Number   |yes      |Battery Level in %                                                     |
+|          |voltage      |Number   |yes      |Voltage of the battery                                                 |
+|          |lowBattery   |Switch   |yes      |Low battery alert (< 20%)                                              |
+
+You should calibrate the sensor using the Shelly App to get information on the tilt status.
+
+### Shelly Smoke(thing type: shellysmoke)
+
+|Group     |Channel      |Type     |read-only|Description                                                            |
+|----------|-------------|---------|---------|-----------------------------------------------------------------------|
+|sensors   |temperature  |Number   |yes      |Temperature, unit is reported by tempUnit                              |
+|          |smoke        |Number   |yes      |ON: Smoke detected                                                     |
+|          |wakeupReason |String   |yes      |Last reason for a device wake-up (battery, button, periodic, poweron, sensor or alarm) |
+|          |lastUpdate   |DateTime |yes      |Timestamp of the last update (any sensor value changed)                |
+|          |lastError    |String   |yes      |Last device error.                                                     |
 |battery   |batteryLevel |Number   |yes      |Battery Level in %                                                     |
 |          |voltage      |Number   |yes      |Voltage of the battery                                                 |
 |          |lowBattery   |Switch   |yes      |Low battery alert (< 20%)                                              |
@@ -390,7 +552,7 @@ Maybe an upcoming firmware release adds this attribute, then the correct value i
 |          |humidity     |Number   |yes      |Relative humidity in %                                                 |
 |          |lux          |Number   |yes      |Brightness in Lux                                                      |
 |          |motion       |Switch   |yes      |ON: Motion detected, OFF: No motion (check also motionTimer)           |
-|          |last_update  |String   |yes      |Timestamp of the last update (values read by the binding)              |
+|          |lastUpdate   |DateTime |yes      |Timestamp of the last update (any sensor value changed)                |
 |battery   |batteryLevel |Number   |yes      |Battery Level in %                                                     |
 |          |batteryAlert |Switch   |yes      |Low battery alert                                                      |
 
@@ -421,8 +583,6 @@ Thing shelly:shellyflood:XXXXXX "ShellyFlood" @ "cellar" [ deviceIp="10.0.0.103"
 ```
 /* Relays */
 Switch Shelly_XXXXX3_Relay        "Garage Light"                  {channel="shelly:shelly1:XXXXX3:relay#output"}
-Switch Shelly_XXXXX3_OverPower    "Garage Light Over Power"       {channel="shelly:shelly1:XXXXX3:relay#overpower"}
-Switch Shelly_XXXXX3_OverTemp     "Garage Light Over Temperature" {channel="shelly:shelly1:XXXXX3:relay#overtemperature"}
 Number Shelly_XXXXX3_AutoOnTimer  "Garage Light Auto On Timer"    {channel="shelly:shelly1:XXXXX3:relay#autoOn"}
 Number Shelly_XXXXX3_AutoOffTimer "Garage Light Auto Off Timer"   {channel="shelly:shelly1:BA2F18:relay#autoOff"}
 Switch Shelly_XXXXX3_Relay        "Garage Light"                  {channel="shelly:shelly1:XXXXX3:relay#output"}
