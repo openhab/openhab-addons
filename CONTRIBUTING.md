@@ -4,15 +4,10 @@ Want to hack on openHAB? Awesome! Here are instructions to get you
 started. They are probably not perfect, please let us know if anything
 feels wrong or incomplete.
 
-## Reporting Issues
-
-Please report [openHAB2 specific issues here](https://github.com/openhab/openhab2-addons/issues), while issues that are related to the core framework should be reported in the [issue tracker of Eclipse SmartHome](https://github.com/eclipse/smarthome/issues).
-Do not worry, if you are not clear, which category your issue belongs to - we will redirect you, if necessary.
-
 ## Build Environment
 
 For instructions on setting up your development environment, please
-see our dedicated [IDE setup guide](https://www.openhab.org/docs/developer/development/ide.html).
+see our dedicated [IDE setup guide](https://www.openhab.org/docs/developer/).
 
 ## Contribution guidelines
 
@@ -42,7 +37,7 @@ else is working on the same thing.
 ### Create issues...
 
 Any significant improvement should be documented as [a GitHub
-issue](https://github.com/openhab/openhab2-addons/issues?labels=enhancement&page=1&state=open) before anybody
+issue](https://github.com/openhab/openhab-addons/issues?labels=enhancement&page=1&state=open) before anybody
 starts working on it.
 
 ### ...but check for existing issues first!
@@ -54,12 +49,7 @@ help prioritize the most common problems and requests.
 
 ### Conventions
 
-Fork the repo and make changes on your fork in a feature branch:
-
-- If it's a bugfix branch, name it XXX-something where XXX is the number of the
-  issue
-- If it's a feature branch, create an enhancement issue to announce your
-  intentions, and name it XXX-something where XXX is the number of the issue.
+Fork the repo and make changes on your fork in a feature branch.
 
 Submit unit tests for your changes.  openHAB has a great test framework built in; use
 it! Take a look at existing tests for inspiration. Run the full test suite on
@@ -87,30 +77,8 @@ sure to post a comment after pushing. The new commits will show up in the pull
 request automatically, but the reviewers will not be notified unless you
 comment.
 
-Before the pull request is merged, make sure that you squash your commits into
-logical units of work using `git rebase -i` and `git push -f`. After every
-commit the test suite should be passing. Include documentation changes in the
-same commit so that a revert would remove all traces of the feature or fix.
-
-Commits that fix or close an issue should include a reference like `Closes #XXX`
-or `Fixes #XXX`, which will automatically close the issue when merged.
-
-Add your name to the AUTHORS file, but make sure the list is sorted and your
-name and email address match your git configuration. The AUTHORS file is
-regenerated occasionally from the git commit history, so a mismatch may result
-in your changes being overwritten.
-
-### Merge approval
-
-openHAB maintainers use LGTM (Looks Good To Me) in comments on the code review
-to indicate acceptance.
-
-A change requires LGTMs from an absolute majority of the maintainers of each
-component affected. For example, if a change affects `docs/` and `addons/`, it
-needs an absolute majority from the maintainers of `docs/` AND, separately, an
-absolute majority of the maintainers of `addons/`.
-
-For more details see [MAINTAINERS.md](project-orga/MAINTAINERS.md)
+Commits that fix or close an issue should include a reference like `Fixes #XXX`,
+which will automatically close the issue when merged.
 
 ### Sign your work
 
@@ -118,7 +86,7 @@ The sign-off is a simple line at the end of the explanation for the
 patch, which certifies that you wrote it or otherwise have the right to
 pass it on as an open-source patch.  The rules are pretty simple: if you
 can certify the below (from
-[developercertificate.org](http://developercertificate.org/)):
+[developercertificate.org](https://developercertificate.org/)):
 
 ```
 Developer Certificate of Origin
@@ -161,34 +129,20 @@ By making a contribution to this project, I certify that:
 
 then you just add a line to every git commit message:
 
-    Signed-off-by: Joe Smith <joe.smith@email.com> (github: github_handle)
+    Signed-off-by: Joe Smith <joe.smith@email.com>
 
 using your real name (sorry, no pseudonyms or anonymous contributions.) and an
 e-mail address under which you can be reached (sorry, no github noreply e-mail
 addresses (such as username@users.noreply.github.com) or other non-reachable
 addresses are allowed).
 
-One way to automate this, is customise your get ``commit.template`` by adding
-a ``prepare-commit-msg`` hook to your openHAB checkout:
-
-```
-curl -L -o .git/hooks/prepare-commit-msg https://raw.githubusercontent.com/openhab/openhab-core/master/contrib/prepare-commit-msg.hook && chmod +x .git/hooks/prepare-commit-msg
-```
-
-* Note: the above script expects to find your GitHub user name in ``git config --get github.user``
-
-#### Small patch exception
-
-There are several exceptions to the signing requirement. Currently these are:
-
-* Your patch fixes spelling or grammar errors.
-* Your patch is a single line change to documentation.
+On the command line you can use `git commit -s` to sign off the commit.
 
 ### How can I become a maintainer?
 
 * Step 1: learn the component inside out
 * Step 2: make yourself useful by contributing code, bugfixes, support etc.
-* Step 3: volunteer on [the discussion group](https://github.com/openhab/openhab2-addons/issues?labels=question&page=1&state=open)
+* Step 3: volunteer on [the discussion group](https://github.com/openhab/openhab-addons/issues?labels=question&page=1&state=open)
 
 Don't forget: being a maintainer is a time investment. Make sure you will have time to make yourself available.
 You don't have to be a maintainer to make a difference on the project!
@@ -196,7 +150,7 @@ You don't have to be a maintainer to make a difference on the project!
 ## Community Guidelines
 
 We want to keep the openHAB community awesome, growing and collaborative. We
-need your help to keep it that way. To help with this we've come up with some
+need your help to keep it that way. To help with this we have come up with some
 general guidelines for the community as a whole:
 
 * Be nice: Be courteous, respectful and polite to fellow community members: no

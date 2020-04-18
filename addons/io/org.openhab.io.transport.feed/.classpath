@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<classpath>
-	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry exported="true" kind="lib" path="lib/jdom2-2.0.6.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/rome-1.7.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/rome-utils-1.7.0.jar"/>
-	<classpathentry kind="output" path="target/classes"/>
-</classpath>

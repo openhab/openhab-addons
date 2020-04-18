@@ -1,24 +1,128 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.openhab</groupId>
-    <artifactId>pom-addons2</artifactId>
-    <version>2.4.0-SNAPSHOT</version>
+    <groupId>org.openhab.addons</groupId>
+    <artifactId>org.openhab.addons.reactor</artifactId>
+    <version>3.0.0-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.openhab</groupId>
-  <artifactId>features</artifactId>
-
+  <groupId>org.openhab.addons.features.karaf</groupId>
+  <artifactId>org.openhab.addons.reactor.features.karaf</artifactId>
   <packaging>pom</packaging>
 
-  <name>openHAB Features</name>
+  <name>openHAB Add-ons :: Features :: Karaf</name>
+
+  <properties>
+    <!-- JDBC database driver versions -->
+    <derby.version>10.12.1.1</derby.version>
+    <h2.version>1.4.191</h2.version>
+    <hsqldb.version>2.3.3</hsqldb.version>
+    <mariadb.version>1.3.5</mariadb.version>
+    <mysql.version>8.0.13</mysql.version>
+    <postgresql.version>9.4.1212</postgresql.version>
+    <sqlite.version>3.16.1</sqlite.version>
+  </properties>
 
   <modules>
     <module>openhab-addons</module>
     <module>openhab-addons-external</module>
-    <module>openhab-addons-verify</module>
   </modules>
+
+  <dependencies>
+    <!-- BOM, so features are build after bundles in parallel builds -->
+    <dependency>
+      <groupId>org.openhab.addons.bom</groupId>
+      <artifactId>org.openhab.addons.bom.openhab-addons</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+    </dependency>
+
+    <!-- Distribution -->
+    <dependency>
+      <groupId>org.apache.karaf.features</groupId>
+      <artifactId>framework</artifactId>
+      <version>${karaf.version}</version>
+      <type>kar</type>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <!-- This should have been an optional dependency and will be fixed in Karaf 4.2.8 (KARAF-6462). -->
+          <groupId>org.knopflerfish.kf6</groupId>
+          <artifactId>log-API</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <!-- Repositories -->
+    <dependency>
+      <groupId>org.apache.karaf.features</groupId>
+      <artifactId>standard</artifactId>
+      <version>${karaf.version}</version>
+      <classifier>features</classifier>
+      <type>xml</type>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.karaf.tooling</groupId>
+          <artifactId>karaf-maven-plugin</artifactId>
+          <version>${karaf.version}</version>
+          <extensions>true</extensions>
+          <configuration>
+            <startLevel>80</startLevel>
+            <aggregateFeatures>true</aggregateFeatures>
+            <checkDependencyChange>true</checkDependencyChange>
+            <failOnDependencyChange>false</failOnDependencyChange>
+            <logDependencyChanges>true</logDependencyChanges>
+            <overwriteChangedDependencies>true</overwriteChangedDependencies>
+          </configuration>
+          <executions>
+            <execution>
+              <id>compile</id>
+              <goals>
+                <goal>features-generate-descriptor</goal>
+              </goals>
+              <phase>generate-resources</phase>
+            </execution>
+            <execution>
+              <id>karaf-feature-verification</id>
+              <goals>
+                <goal>verify</goal>
+              </goals>
+              <phase>process-resources</phase>
+              <configuration>
+                <descriptors combine.children="append">
+                  <!-- Apache Karaf -->
+                  <descriptor>mvn:org.apache.karaf.features/framework/${karaf.version}/xml/features</descriptor>
+                  <descriptor>mvn:org.apache.karaf.features/standard/${karaf.version}/xml/features</descriptor>
+                  <!-- Current feature under verification -->
+                  <descriptor>file:${project.build.directory}/feature/feature.xml</descriptor>
+                </descriptors>
+                <distribution>org.apache.karaf.features:framework</distribution>
+                <javase>${oh.java.version}</javase>
+                <framework>
+                  <feature>framework</feature>
+                </framework>
+                <features>
+                  <feature>openhab-*</feature>
+                </features>
+                <verifyTransitive>false</verifyTransitive>
+                <ignoreMissingConditions>true</ignoreMissingConditions>
+                <fail>first</fail>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
 </project>

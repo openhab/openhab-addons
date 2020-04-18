@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>openhab2-addons</name>
+	<name>org.openhab.addons.features.karaf.openhab-addons</name>
 	<comment></comment>
 	<projects>
 	</projects>
