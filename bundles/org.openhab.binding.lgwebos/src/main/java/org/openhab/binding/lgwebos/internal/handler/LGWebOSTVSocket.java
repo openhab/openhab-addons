@@ -476,10 +476,6 @@ public class LGWebOSTVSocket {
 
     }
 
-    public boolean isConnected() {
-        return state == State.REGISTERED;
-    }
-
     public interface WebOSTVSocketListener {
 
         public void onStateChanged(State state);

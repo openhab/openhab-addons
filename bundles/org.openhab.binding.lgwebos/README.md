@@ -32,28 +32,29 @@ If automatic discovery is not possible you may still manually configure a device
 
 ## Thing Configuration
 
-WebOS TV has two configuration parameters.
+WebOS TV has three configuration parameters.
 
 Parameters:
 
-| Name    | Description                                                                  |
-|---------|------------------------------------------------------------------------------|
-| host    | Hostname or IP address of TV                                                 |
-| key     | Key exchanged with TV after pairing (enter it after you paired the device)   |
+| Name       | Description                                                                                         |
+|------------|-----------------------------------------------------------------------------------------------------|
+| host       | Hostname or IP address of TV                                                                        |
+| key        | Key exchanged with TV after pairing (enter it after you paired the device)                          |
+| macAddress | The MAC address of your TV to turn on via Wake On Lan (WOL). The binding will attempt to detect it. |
 
 ### Configuration in .things file
 
 Set host and key parameter as in the following example:
 
 ```
-Thing lgwebos:WebOSTV:tv1 [host="192.168.2.119", key="6ef1dff6c7c936c8dc5056fc85ea3aef"]
+Thing lgwebos:WebOSTV:tv1 [host="192.168.2.119", key="6ef1dff6c7c936c8dc5056fc85ea3aef", macAddress="3c:cd:93:c2:20:e0"]
 ```
 
 ## Channels
 
 | Channel Type ID | Item Type | Description                                                                                                                                                                                                             | Read/Write |
 |-----------------|-----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
-| power           | Switch    | Current power setting. TV can only be powered off, not on.                                                                                                                                                              | RW         |
+| power           | Switch    | Current power setting. TV can only be powered off, not on, via the TV's API. Turning on is implemented via Wake On Lan, for which the MAC address must be set in the thing configuration. | RW         |
 | mute            | Switch    | Current mute setting.                                                                                                                                                                                                   | RW         |
 | volume          | Dimmer    | Current volume setting. Setting and reporting absolute percent values only works when using internal speakers. When connected to an external amp, the volume should be controlled using increase and decrease commands. | RW         |
 | channel         | String    | Current channel. Use only the channel number as command to update the channel.                                                                                                                                          | RW         |
@@ -99,7 +100,7 @@ A sample HABPanel remote control widget can be found [in this github repository.
 demo.things:
 
 ```
-Thing lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46 [host="192.168.2.119", key="6ef1dff6c7c936c8dc5056fc85ea3aef"]
+Thing lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46 [host="192.168.2.119", key="6ef1dff6c7c936c8dc5056fc85ea3aef", macAddress="3c:cd:93:c2:20:e0"]
 ```
 
 demo.items:
@@ -116,8 +117,6 @@ Switch LG_TV0_Stop "Stop"                    { autoupdate="false", channel="lgwe
 String LG_TV0_Application "Application [%s]" { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:appLauncher"}
 Player LG_TV0_Player                         { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:mediaPlayer"}
 
-// this assumes you also have the wake on lan binding configured and your TV's IP address is on this network - You would need to update your broadcast and mac address accordingly
-Switch LG_TV0_WOL                            { wol="192.168.2.255#3c:cd:93:c2:20:e0" }
 ```
 
 demo.sitemap:
@@ -142,14 +141,6 @@ sitemap demo label="Main Menu"
 demo.rules:
 
 ```
-// this assumes you also have the wake on lan binding configured.
-rule "Power on TV via Wake on LAN"
-when
-Item LG_TV0_Power received command ON
-then
-    LG_TV0_WOL.sendCommand(ON)
-end
-
 // for relative volume changes
 rule "VolumeUpDown"
 when Item LG_TV0_VolDummy received command
