@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
@@ -30,9 +29,7 @@ import org.eclipse.smarthome.config.discovery.upnp.UpnpDiscoveryParticipant;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.jupnp.model.meta.RemoteDevice;
-import org.openhab.binding.magentatv.internal.MagentaTVHandlerFactory;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,8 +44,6 @@ import org.slf4j.LoggerFactory;
 public class MagentaTVDiscoveryParticipant implements UpnpDiscoveryParticipant {
     private final Logger logger = LoggerFactory.getLogger(MagentaTVDiscoveryParticipant.class);
 
-    private @Nullable MagentaTVHandlerFactory handlerFactory;
-
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
         return Collections.singleton(THING_TYPE_RECEIVER);
@@ -58,16 +53,11 @@ public class MagentaTVDiscoveryParticipant implements UpnpDiscoveryParticipant {
      * New discovered result.
      */
     @Override
-    @SuppressWarnings("null")
     public @Nullable DiscoveryResult createResult(RemoteDevice device) {
         DiscoveryResult result = null;
         try {
             logger.trace("Device discovered: {} - {}", device.getDetails().getManufacturerDetails().getManufacturer(),
                     device.getDetails().getModelDetails().getModelName());
-            if (handlerFactory == null) {
-                logger.debug("handlerFactory not yet initialized!");
-                return null;
-            }
 
             ThingUID uid = getThingUID(device);
             if (uid != null) {
@@ -97,12 +87,9 @@ public class MagentaTVDiscoveryParticipant implements UpnpDiscoveryParticipant {
                 logger.debug("Create Thing for device {} with UDN {}, Model{}", device.getDetails().getFriendlyName(),
                         device.getIdentity().getUdn().getIdentifierString(),
                         device.getDetails().getModelDetails().getModelName());
-                // TO-DO: Check if thing with this name already exist
                 result = DiscoveryResultBuilder.create(uid).withProperties(properties)
                         .withLabel(device.getDetails().getFriendlyName()).withRepresentationProperty(PROPERTY_UDN)
                         .build();
-                Validate.notNull(handlerFactory);
-                handlerFactory.deviceDiscoverd(properties);
             }
         } catch (Exception e) {
             logger.debug("Unable to create thing for device {}/{} - {}", device.getDetails().getFriendlyName(),
@@ -114,9 +101,8 @@ public class MagentaTVDiscoveryParticipant implements UpnpDiscoveryParticipant {
     /**
      * Get the UID for a device
      */
-    @SuppressWarnings("null")
     @Override
-    public @Nullable ThingUID getThingUID(RemoteDevice device) {
+    public @Nullable ThingUID getThingUID(@Nullable RemoteDevice device) {
         if (device != null) {
             if (device.getDetails().getManufacturerDetails().getManufacturer() != null) {
                 String manufacturer = device.getDetails().getManufacturerDetails().getManufacturer().toUpperCase();
@@ -133,18 +119,5 @@ public class MagentaTVDiscoveryParticipant implements UpnpDiscoveryParticipant {
             }
         }
         return null;
-    }
-
-    @SuppressWarnings("null")
-    @Reference
-    public void setMagentaTVHandlerFactory(MagentaTVHandlerFactory handlerFactory) {
-        if (handlerFactory != null) {
-            this.handlerFactory = handlerFactory;
-            logger.debug("HandlerFactory bound to MagentaTVDiscoveryParticipant");
-        }
-    }
-
-    public void unsetMagentaTVHandlerFactory(MagentaTVHandlerFactory handlerFactory) {
-        this.handlerFactory = null;
     }
 }

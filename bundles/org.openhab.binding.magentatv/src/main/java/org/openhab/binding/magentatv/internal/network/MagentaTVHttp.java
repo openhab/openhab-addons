@@ -46,12 +46,11 @@ import org.slf4j.LoggerFactory;
 public class MagentaTVHttp {
     private final Logger logger = LoggerFactory.getLogger(MagentaTVHttp.class);
 
-    @SuppressWarnings("null")
     public String httpGet(String host, String urlBase, String urlParameters) throws MagentaTVException {
         String url = "";
         String response = "";
         try {
-            url = ((urlParameters != null) && !urlParameters.isEmpty()) ? urlBase + "?" + urlParameters : urlBase;
+            url = !urlParameters.isEmpty() ? urlBase + "?" + urlParameters : urlBase;
             Properties httpHeader = new Properties();
             httpHeader.setProperty(HEADER_USER_AGENT, USER_AGENT);
             httpHeader.setProperty(HEADER_HOST, host);

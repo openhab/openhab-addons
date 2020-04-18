@@ -44,16 +44,15 @@ public class MagentaTVPoweroffListener extends Thread {
     public static final int UPNP_PORT = 1900;
     public static final String UPNP_BYEBYE_MESSAGE = "ssdp:byebye";
 
-    protected @Nullable MulticastSocket socket = null;
-    protected @Nullable NetworkInterface networkInterface = null;
+    protected final MulticastSocket socket;
+    protected @Nullable NetworkInterface networkInterface;
     protected byte[] buf = new byte[256];
 
     public MagentaTVPoweroffListener(MagentaTVHandlerFactory handlerFactory,
-            @Nullable NetworkInterface networkInterface) {
-        Validate.notNull(handlerFactory);
-        Validate.notNull(networkInterface);
+            @Nullable NetworkInterface networkInterface) throws IOException {
         this.handlerFactory = handlerFactory;
         this.networkInterface = networkInterface;
+        socket = new MulticastSocket(UPNP_PORT);
     }
 
     @Override
@@ -67,13 +66,10 @@ public class MagentaTVPoweroffListener extends Thread {
      * such a packet is received the handlerFactory is called, which then dispatches
      * the event to the thing handler.
      */
-    @SuppressWarnings("null")
     @Override
     public void run() {
         try {
             logger.debug("SSDP listener started");
-            socket = new MulticastSocket(UPNP_PORT);
-            Validate.notNull(socket);
             socket.setReceiveBufferSize(1024);
             socket.setReuseAddress(true);
 
@@ -90,7 +86,7 @@ public class MagentaTVPoweroffListener extends Thread {
                 String message = new String(packet.getData(), 0, packet.getLength());
                 try {
                     String ipAddress = StringUtils.substringAfter(packet.getAddress().toString(), "/");
-                    if ((message != null) && message.contains("NTS: ")) {
+                    if (message.contains("NTS: ")) {
                         String ssdpMsg = StringUtils.substringBetween(message, "NTS: ", "\r");
                         if (ssdpMsg != null) {
                             if (message.contains(MR400_DEF_DESCRIPTION_URL)
@@ -114,18 +110,16 @@ public class MagentaTVPoweroffListener extends Thread {
     }
 
     public boolean isStarted() {
-        return socket != null;
+        return socket.isBound();
     }
 
     /**
      * Make sure the socket gets closed
      */
-    @SuppressWarnings("null")
     public void close() {
         if (isStarted()) {
             Validate.notNull(socket);
             socket.close();
-            socket = null;
             logger.debug("No longer listening to SSDP messages");
         }
     }

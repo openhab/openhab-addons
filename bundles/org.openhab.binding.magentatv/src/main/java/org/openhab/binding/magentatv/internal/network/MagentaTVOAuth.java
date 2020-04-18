@@ -64,7 +64,6 @@ import com.google.gson.GsonBuilder;
 public class MagentaTVOAuth {
     private final Logger logger = LoggerFactory.getLogger(MagentaTVOAuth.class);
 
-    @SuppressWarnings("null")
     public String getOAuthCredentials(String accountName, String accountPassword) throws MagentaTVException {
         logger.debug("Authenticate with account {}", accountName);
         if (accountName.isEmpty() || accountPassword.isEmpty()) {
