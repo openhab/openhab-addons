@@ -27,10 +27,8 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.magentatv.internal.MagentaTVHandlerFactory;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
-import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
@@ -48,28 +46,20 @@ public class MagentaTVNotifyServlet extends HttpServlet {
     private static final long serialVersionUID = 2119809008606371618L;
     private final Logger logger = LoggerFactory.getLogger(MagentaTVNotifyServlet.class);
 
-    private @Nullable HttpService httpService;
-    private @Nullable MagentaTVHandlerFactory handlerFactory;
+    private final MagentaTVHandlerFactory handlerFactory;
 
-    @SuppressWarnings("null")
-    @Activate
-    protected void activate(Map<String, Object> config) {
+    public MagentaTVNotifyServlet(@Reference MagentaTVHandlerFactory handlerFactory, @Reference HttpService httpService,
+            Map<String, Object> config) {
+        this.handlerFactory = handlerFactory;
         try {
             httpService.registerServlet(PAIRING_NOTIFY_URI, this, null, httpService.createDefaultHttpContext());
             logger.info("Servlet started at {}", PAIRING_NOTIFY_URI);
-            if ((handlerFactory != null) && !handlerFactory.getNotifyServletStatus()) {
+            if (!handlerFactory.getNotifyServletStatus()) {
                 handlerFactory.setNotifyServletStatus(true);
             }
         } catch (ServletException | NamespaceException e) {
             logger.warn("Could not start MagentaTVNotifyServlet: {}", e.getMessage());
         }
-    }
-
-    @SuppressWarnings("null")
-    @Deactivate
-    protected void deactivate() {
-        httpService.unregister(PAIRING_NOTIFY_URI);
-        logger.debug("MagentaTV Servlet stopped");
     }
 
     /**
@@ -93,12 +83,15 @@ public class MagentaTVNotifyServlet extends HttpServlet {
      *
      * @throws ServletException, IOException
      */
-    @SuppressWarnings("null")
     @Override
-    protected void service(@Nullable HttpServletRequest request, @Nullable HttpServletResponse resp)
+    protected void service(@Nullable HttpServletRequest request, @Nullable HttpServletResponse response)
             throws ServletException, IOException {
+
         String data = inputStreamToString(request);
         try {
+            if ((request == null) || (response == null)) {
+                return;
+            }
             String ipAddress = request.getHeader("HTTP_X_FORWARDED_FOR");
             if (ipAddress == null) {
                 ipAddress = request.getRemoteAddr();
@@ -143,45 +136,19 @@ public class MagentaTVNotifyServlet extends HttpServlet {
             logger.debug("Unable to process http request, data={}", data != null ? data : "<empty>");
         } finally {
             // send response
-            resp.setCharacterEncoding(UTF_8);
-            resp.getWriter().write("");
+            if (response != null) {
+                response.setCharacterEncoding(UTF_8);
+                response.getWriter().write("");
+            }
         }
     }
 
     @SuppressWarnings("resource")
     private String inputStreamToString(@Nullable HttpServletRequest request) throws IOException {
-        @SuppressWarnings("null")
+        if (request == null) {
+            return "";
+        }
         Scanner scanner = new Scanner(request.getInputStream()).useDelimiter("\\A");
         return scanner.hasNext() ? scanner.next() : "";
-    }
-
-    @SuppressWarnings("null")
-    @Reference
-    public void setMagentaTVHandlerFactory(MagentaTVHandlerFactory handlerFactory) {
-        logger.debug("HandlerFactory bound");
-        this.handlerFactory = handlerFactory;
-        if (handlerFactory != null) {
-            handlerFactory.setNotifyServletStatus(true);
-        }
-    }
-
-    @SuppressWarnings("null")
-    public void unsetMagentaTVHandlerFactory(MagentaTVHandlerFactory handlerFactory) {
-        if (handlerFactory != null) {
-            handlerFactory.setNotifyServletStatus(false);
-        }
-        this.handlerFactory = null;
-        logger.debug("HandlerFactory unbound");
-    }
-
-    @Reference
-    public void setHttpService(HttpService httpService) {
-        this.httpService = httpService;
-        logger.debug("httpService bound");
-    }
-
-    public void unsetHttpService(HttpService httpService) {
-        this.httpService = null;
-        logger.debug("httpService unbound");
     }
 }

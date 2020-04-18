@@ -40,12 +40,18 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class MagentaTVControl {
     private final Logger logger = LoggerFactory.getLogger(MagentaTVControl.class);
+    private final static HashMap<String, String> keyMap = new HashMap<String, String>();
 
     private final MagentaTVNetwork network;
     private final MagentaTVHttp http = new MagentaTVHttp();
     private final MagentaTVOAuth oauth = new MagentaTVOAuth();
     private final MagentaTVConfiguration thingConfig;
-    private final HashMap<String, String> keyMap = new HashMap<String, String>();
+    private boolean initialized = false;
+
+    public MagentaTVControl() {
+        thingConfig = new MagentaTVConfiguration();
+        network = new MagentaTVNetwork();
+    }
 
     public MagentaTVControl(MagentaTVConfiguration config, MagentaTVNetwork network) {
         this.network = network;
@@ -54,6 +60,11 @@ public class MagentaTVControl {
         thingConfig.setLocalIP(network.getLocalIP());
         thingConfig.setLocalMAC(network.getLocalMAC());
         initializeKeyMap();
+        initialized = true;
+    }
+
+    public boolean isInitialized() {
+        return initialized;
     }
 
     /**
@@ -514,7 +525,7 @@ public class MagentaTVControl {
      * for a list of valid key codes see
      * http://support.huawei.com/hedex/pages/DOC1100366313CEH0713H/01/DOC1100366313CEH0713H/01/resources/dsv_hdx_idp/DSV/en/en-us_topic_0094619112.html
      */
-    private void initializeKeyMap() {
+    private static void initializeKeyMap() {
         keyMap.put("POWER", "0x0100");
         keyMap.put("TV", "0x");
         keyMap.put("RADIO", "0x");
@@ -576,5 +587,4 @@ public class MagentaTVControl {
         keyMap.put("F2", "0x0071");
         keyMap.put("PORTAL", "0x0110");
     }
-
 }
