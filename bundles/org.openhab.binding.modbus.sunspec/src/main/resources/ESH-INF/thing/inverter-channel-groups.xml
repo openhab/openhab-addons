@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="device-information">
+		<label>Device Information</label>
+		<channels>
+			<channel id="cabinet-temperature" typeId="cabinet-temperature-type"/>
+			<channel id="heatsink-temperature" typeId="heatsink-temperature-type"/>
+			<channel id="transformer-temperature" typeId="transformer-temperature-type"/>
+			<channel id="other-temperature" typeId="other-temperature-type"/>
+			<channel id="status" typeId="status-type"/>
+		</channels>
+	</channel-group-type>
+	
+	<channel-group-type id="ac-general">
+		<label>AC Summary</label>
+		<channels>
+			<channel id="ac-total-current" typeId="ac-total-current-type"/>
+			<channel id="ac-power" typeId="ac-power-type"/>
+			<channel id="ac-frequency" typeId="ac-frequency-type"/>
+			<channel id="ac-apparent-power" typeId="ac-apparent-power-type"/>
+			<channel id="ac-reactive-power" typeId="ac-reactive-power-type"/>
+			<channel id="ac-power-factor" typeId="ac-power-factor-type"/>
+			<channel id="ac-lifetime-energy" typeId="ac-lifetime-energy-type"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>
