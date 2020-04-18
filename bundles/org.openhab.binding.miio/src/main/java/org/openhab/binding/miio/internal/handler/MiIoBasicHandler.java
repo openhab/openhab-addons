@@ -153,7 +153,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                             Color color = Color.getHSBColor(hsb.getHue().floatValue() / 360,
                                     hsb.getSaturation().floatValue() / 100, hsb.getBrightness().floatValue() / 100);
                             value = new JsonPrimitive(
-                                    (color.getRed() * 65536) + (color.getGreen() * 256) + color.getBlue());
+                                    (color.getRed() << 16) + (color.getGreen() << 8) + color.getBlue());
                         } else if (command instanceof DecimalType) {
                             // actually brightness is being set instead of a color
                             cmd = "set_bright";
@@ -419,10 +419,11 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         for (int i = 0; i < para.size(); i++) {
             // This is a miot parameter
             String param;
-            if (para.get(i).isJsonObject()) { // miot channel
-                param = para.get(i).getAsJsonObject().get("did").getAsString();
+            final JsonElement paraElement = para.get(i);
+            if (paraElement.isJsonObject()) { // miot channel
+                param = paraElement.getAsJsonObject().get("did").getAsString();
             } else {
-                param = para.get(i).getAsString();
+                param = paraElement.getAsString();
             }
             JsonElement val = res.get(i);
             if (val.isJsonNull()) {
