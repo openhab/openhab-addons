@@ -20,6 +20,8 @@ import java.util.Set;
 
 import javax.jmdns.ServiceInfo;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.mdns.MDNSDiscoveryParticipant;
@@ -35,6 +37,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Markus Eckhardt - Initial contribution
  */
+@NonNullByDefault
 @Component(immediate = true, configurationPid = "binding.km200")
 public class KM200GatewayDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
@@ -48,11 +51,10 @@ public class KM200GatewayDiscoveryParticipant implements MDNSDiscoveryParticipan
     }
 
     @Override
-    public DiscoveryResult createResult(ServiceInfo info) {
-        logger.debug("createResult: {}", info);
+    public @Nullable DiscoveryResult createResult(ServiceInfo info) {
         DiscoveryResult discoveryResult = null;
         ThingUID uid = getThingUID(info);
-        logger.debug("uid: {}", uid);
+        logger.debug("MDNS info: {}, uid: {}", info, uid);
         if (uid != null) {
             InetAddress[] addrs = info.getInetAddresses();
             logger.debug("ip: {} id:{}", addrs[0].getHostAddress(), uid.getId());
@@ -66,22 +68,26 @@ public class KM200GatewayDiscoveryParticipant implements MDNSDiscoveryParticipan
     }
 
     @Override
-    public ThingUID getThingUID(ServiceInfo info) {
+    public @Nullable ThingUID getThingUID(ServiceInfo info) {
         ThingTypeUID typeUID = getThingTypeUID(info);
         if (typeUID != null) {
             logger.debug("getType: {}", info.getType());
             if (info.getType() != null) {
                 if (info.getType().equalsIgnoreCase(getServiceType())) {
                     String devId = info.getPropertyString("uuid");
-                    logger.info("Discovered a KMXXX gateway with name: '{}' id: '{}'", info.getName(), devId);
-                    if (devId.isEmpty()) {
-                        /* If something is wrong then we are generating a random UUID */
-                        logger.debug("Error in automatic device-id detection. Using random value");
-                        Random rnd = new Random();
-                        devId = String.valueOf(rnd.nextLong());
+                    if (null != devId) {
+                        logger.info("Discovered a KMXXX gateway with name: '{}' id: '{}'", info.getName(), devId);
+                        if (devId.isEmpty()) {
+                            /* If something is wrong then we are generating a random UUID */
+                            logger.debug("Error in automatic device-id detection. Using random value");
+                            Random rnd = new Random();
+                            devId = String.valueOf(rnd.nextLong());
+                        }
+                        ThingUID thinguid = new ThingUID(typeUID, devId);
+                        return thinguid;
+                    } else {
+                        logger.debug("No uuid property found");
                     }
-                    ThingUID thinguid = new ThingUID(typeUID, devId);
-                    return thinguid;
                 }
             }
         }
@@ -93,7 +99,7 @@ public class KM200GatewayDiscoveryParticipant implements MDNSDiscoveryParticipan
         return "_http._tcp.local.";
     }
 
-    private ThingTypeUID getThingTypeUID(ServiceInfo info) {
+    private @Nullable ThingTypeUID getThingTypeUID(ServiceInfo info) {
         InetAddress[] addrs = info.getInetAddresses();
         if (addrs.length > 0) {
             String hardwareID;
