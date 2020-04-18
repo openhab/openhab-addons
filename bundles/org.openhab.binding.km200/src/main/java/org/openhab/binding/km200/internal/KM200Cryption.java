@@ -96,7 +96,7 @@ public class KM200Cryption {
             byte[] decryptedDataWOZP = removeZeroPadding(decryptedData);
             return (new String(decryptedDataWOZP, remoteDevice.getCharSet()));
         } catch (UnsupportedEncodingException | GeneralSecurityException e) {
-            logger.debug("Exception on encoding", e);
+            logger.warn("Exception on encoding", e);
             return null;
         }
     }
@@ -112,15 +112,15 @@ public class KM200Cryption {
             final Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
             cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(remoteDevice.getCryptKeyPriv(), "AES"));
             int bsize = cipher.getBlockSize();
-            logger.debug("Add Padding, encrypt AES and B64..");
+            /* Add Padding, encrypt AES and B64 */
             byte[] encryptedData = cipher.doFinal(addZeroPadding(bdata, bsize, remoteDevice.getCharSet()));
             try {
                 return (Base64.getMimeEncoder().encode(encryptedData));
             } catch (IllegalArgumentException e) {
-                logger.info("Base64encoding not possible: {}", e.getMessage());
+                logger.debug("Base64encoding not possible: {}", e.getMessage());
             }
         } catch (UnsupportedEncodingException | GeneralSecurityException e) {
-            logger.error("Exception on encoding", e);
+            logger.warn("Exception on encoding", e);
         }
         return null;
     }
@@ -146,7 +146,7 @@ public class KM200Cryption {
             try {
                 md = MessageDigest.getInstance("MD5");
             } catch (NoSuchAlgorithmException e) {
-                logger.error("No such algorithm, MD5: {}", e.getMessage());
+                logger.warn("No such algorithm, MD5: {}", e.getMessage());
                 return;
             }
 

@@ -180,7 +180,7 @@ public class KM200ThingHandler extends BaseThingHandler {
             itemType = "StringType";
             category = "Text";
         } else {
-            logger.error("Channeltype {} not supported", type);
+            logger.info("Channeltype {} not supported", type);
             return null;
         }
         try {
@@ -257,7 +257,7 @@ public class KM200ThingHandler extends BaseThingHandler {
                         currentPathName, "Current selected weekday for cycle selection", "Weekday", true, true, state,
                         "");
                 if (null == newChannel) {
-                    logger.error("Creation of the channel {} was niot possible", thing.getUID());
+                    logger.warn("Creation of the channel {} was not possible", thing.getUID());
                 } else {
                     subChannels.add(newChannel);
                 }
@@ -269,7 +269,7 @@ public class KM200ThingHandler extends BaseThingHandler {
                         CoreItemFactory.NUMBER, currentPathName, "Number of switching cycles", "Number", true, true,
                         state, "");
                 if (null == newChannel) {
-                    logger.error("Creation of the channel {} was niot possible", thing.getUID());
+                    logger.warn("Creation of the channel {} was not possible", thing.getUID());
                 } else {
                     subChannels.add(newChannel);
                 }
@@ -280,7 +280,7 @@ public class KM200ThingHandler extends BaseThingHandler {
                         new ChannelUID(thing.getUID(), "cycle"), service + "/" + "cycle", CoreItemFactory.NUMBER,
                         currentPathName, "Current selected cycle", "Cycle", true, true, state, "");
                 if (null == newChannel) {
-                    logger.error("Creation of the channel {} was niot possible", thing.getUID());
+                    logger.warn("Creation of the channel {} was not possible", thing.getUID());
                 } else {
                     subChannels.add(newChannel);
                 }
@@ -293,7 +293,7 @@ public class KM200ThingHandler extends BaseThingHandler {
                         currentPathName, "Positive switch of the cycle, like 'Day' 'On'", posName, true, true, state,
                         "minutes");
                 if (null == newChannel) {
-                    logger.error("Creation of the channel {} was niot possible", thing.getUID());
+                    logger.warn("Creation of the channel {} was not possible", thing.getUID());
                 } else {
                     subChannels.add(newChannel);
                 }
@@ -304,7 +304,7 @@ public class KM200ThingHandler extends BaseThingHandler {
                         currentPathName, "Negative switch of the cycle, like 'Night' 'Off'", negName, true, true, state,
                         "minutes");
                 if (null == newChannel) {
-                    logger.error("Creation of the channel {} was niot possible", thing.getUID());
+                    logger.warn("Creation of the channel {} was not possible", thing.getUID());
                 } else {
                     subChannels.add(newChannel);
                 }
@@ -378,7 +378,7 @@ public class KM200ThingHandler extends BaseThingHandler {
             if ("temperatures".compareTo(thing.getUID().getId()) == 0) {
                 unitOfMeasure = "°C";
             }
-            logger.debug("Create things: {} id: {} channel: {}", thing.getUID(), subKey, thing.getUID().getId());
+            logger.trace("Create things: {} id: {} channel: {}", thing.getUID(), subKey, thing.getUID().getId());
             switch (subKeyType) {
                 case DATA_TYPE_STRING_VALUE:
                     /* Creating an new channel type with capabilities from service */

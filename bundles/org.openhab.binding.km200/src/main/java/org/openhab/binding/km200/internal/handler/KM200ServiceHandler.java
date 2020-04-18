@@ -87,15 +87,15 @@ public class KM200ServiceHandler {
         /* Check the service features and set the flags */
         if (nodeRoot.has("writeable")) {
             Integer val = nodeRoot.get("writeable").getAsInt();
-            logger.debug("writable: {}", val);
+            logger.trace("writable: {}", val);
             writeable = val;
         }
         if (nodeRoot.has("recordable")) {
             Integer val = nodeRoot.get("recordable").getAsInt();
-            logger.debug("recordable: {}", val);
+            logger.trace("recordable: {}", val);
             recordable = val;
         }
-        logger.debug("Typ: {}", type);
+        logger.trace("Typ: {}", type);
         serviceObject = new KM200ServiceObject(id, type, readable, writeable, recordable, 0, null);
         serviceObject.setJSONData(nodeRoot);
         return serviceObject;
@@ -115,7 +115,7 @@ public class KM200ServiceHandler {
                                               * Check whether the type is a single value containing a
                                               * string value
                                               */
-                    logger.debug("initDevice: type string value: {}", dataObject);
+                    logger.trace("initDevice: type string value: {}", dataObject);
                     valObject = new String(nodeRoot.get("value").getAsString());
                     serviceObject.setValue(valObject);
                     if (nodeRoot.has("allowedValues")) {
@@ -130,13 +130,12 @@ public class KM200ServiceHandler {
                     break;
 
                 case DATA_TYPE_FLOAT_VALUE: /* Check whether the type is a single value containing a float value */
-                    logger.debug("initDevice: type float value: {}", dataObject);
+                    logger.trace("initDevice: type float value: {}", dataObject);
                     valObject = nodeRoot.get("value");
                     try {
                         valObject = nodeRoot.get("value").getAsBigDecimal();
                         serviceObject.setValue(valObject);
                     } catch (NumberFormatException e) {
-                        logger.debug("float value is a string: {}", valObject);
                         Double tmpObj = Double.NaN;
                         serviceObject.setValue(tmpObj);
                     }
@@ -152,7 +151,7 @@ public class KM200ServiceHandler {
                     break;
 
                 case DATA_TYPE_SWITCH_PROGRAM: /* Check whether the type is a switchProgram */
-                    logger.debug("initDevice: type switchProgram {}", dataObject);
+                    logger.trace("initDevice: type switchProgram {}", dataObject);
                     KM200SwitchProgramServiceHandler sPService = new KM200SwitchProgramServiceHandler();
                     sPService.setMaxNbOfSwitchPoints(nodeRoot.get("maxNbOfSwitchPoints").getAsInt());
                     sPService.setMaxNbOfSwitchPointsPerDay(nodeRoot.get("maxNbOfSwitchPointsPerDay").getAsInt());
@@ -165,7 +164,7 @@ public class KM200ServiceHandler {
                     break;
 
                 case DATA_TYPE_ERROR_LIST: /* Check whether the type is a errorList */
-                    logger.debug("initDevice: type errorList: {}", dataObject);
+                    logger.trace("initDevice: type errorList: {}", dataObject);
                     KM200ErrorServiceHandler eService = new KM200ErrorServiceHandler();
                     eService.updateErrors(nodeRoot);
                     serviceObject.setValueParameter(eService);
@@ -174,7 +173,7 @@ public class KM200ServiceHandler {
                     break;
 
                 case DATA_TYPE_REF_ENUM: /* Check whether the type is a refEnum */
-                    logger.debug("initDevice: type refEnum: {}", dataObject);
+                    logger.trace("initDevice: type refEnum: {}", dataObject);
                     JsonArray refers = nodeRoot.get("references").getAsJsonArray();
                     for (int i = 0; i < refers.size(); i++) {
                         JsonObject subJSON = refers.get(i).getAsJsonObject();
@@ -185,7 +184,7 @@ public class KM200ServiceHandler {
                     break;
 
                 case DATA_TYPE_MODULE_LIST: /* Check whether the type is a moduleList */
-                    logger.debug("initDevice: type moduleList: {}", dataObject);
+                    logger.trace("initDevice: type moduleList: {}", dataObject);
                     JsonArray vals = nodeRoot.get("values").getAsJsonArray();
                     for (int i = 0; i < vals.size(); i++) {
                         JsonObject subJSON = vals.get(i).getAsJsonObject();
@@ -196,30 +195,30 @@ public class KM200ServiceHandler {
                     break;
 
                 case DATA_TYPE_Y_RECORDING: /* Check whether the type is a yRecording */
-                    logger.debug("initDevice: type yRecording: {}", dataObject);
+                    logger.trace("initDevice: type yRecording: {}", dataObject);
                     /* have to be completed */
                     break;
 
                 case DATA_TYPE_SYSTEM_INFO: /* Check whether the type is a systeminfo */
-                    logger.debug("initDevice: type systeminfo: {}", dataObject);
+                    logger.trace("initDevice: type systeminfo: {}", dataObject);
                     JsonArray sInfo = nodeRoot.get("values").getAsJsonArray();
                     serviceObject.setValue(sInfo);
                     /* have to be completed */
                     break;
                 case DATA_TYPE_ARRAY_DATA:
-                    logger.debug("initDevice: type arrayData: {}", dataObject);
+                    logger.trace("initDevice: type arrayData: {}", dataObject);
                     serviceObject.setJSONData(dataObject);
                     /* have to be completed */
                     break;
 
                 case DATA_TYPE_E_MONITORING_LIST:
-                    logger.debug("initDevice: type eMonitoringList: {}", dataObject);
+                    logger.trace("initDevice: type eMonitoringList: {}", dataObject);
                     serviceObject.setJSONData(dataObject);
                     /* have to be completed */
                     break;
 
                 case DATA_TYPE_PROTECTED:
-                    logger.debug("initDevice: readonly");
+                    logger.trace("initDevice: readonly");
                     serviceObject.setJSONData(dataObject);
                     break;
 

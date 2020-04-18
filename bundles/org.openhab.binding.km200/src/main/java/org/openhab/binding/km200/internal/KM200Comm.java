@@ -144,7 +144,6 @@ public class KM200Comm<KM200BindingProvider> {
         } catch (TimeoutException e) {
             logger.debug("Call to {} {} timed out.", remoteDevice.getIP4Address(), service);
         }
-        logger.debug("Returncode: {}", rCode);
         return rCode;
 
     }

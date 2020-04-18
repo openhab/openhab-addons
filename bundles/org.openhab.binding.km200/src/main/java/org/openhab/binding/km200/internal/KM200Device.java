@@ -353,7 +353,7 @@ public class KM200Device {
             } else {
                 decodedData = comCryption.decodeMessage(recData);
                 if (decodedData == null) {
-                    logger.error("Decoding of the KM200 message is not possible!");
+                    logger.warn("Decoding of the KM200 message is not possible!");
                     return null;
                 }
             }
@@ -365,11 +365,11 @@ public class KM200Device {
                     nodeRoot = (JsonObject) jsonParser.parse(decodedData);
                 }
             } else {
-                logger.warn("Get empty reply");
+                logger.debug("Get empty reply");
                 return null;
             }
         } catch (JsonParseException e) {
-            logger.error("Parsingexception in JSON: {} service: {}", e.getMessage(), service);
+            logger.warn("Parsingexception in JSON: {} service: {}", e.getMessage(), service);
             return null;
         }
         return nodeRoot;
@@ -381,11 +381,10 @@ public class KM200Device {
      *
      */
     public void setServiceNode(String service, JsonObject newObject) {
-        logger.debug("Encoding: {}", newObject);
         int retVal;
         byte[] encData = comCryption.encodeMessage(newObject.toString());
         if (encData == null) {
-            logger.error("Couldn't encrypt data");
+            logger.warn("Couldn't encrypt data");
             return;
         } else {
             logger.debug("Send: {}", service);

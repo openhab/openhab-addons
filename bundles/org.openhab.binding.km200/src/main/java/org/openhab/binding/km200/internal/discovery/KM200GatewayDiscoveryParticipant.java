@@ -52,10 +52,9 @@ public class KM200GatewayDiscoveryParticipant implements MDNSDiscoveryParticipan
 
     @Override
     public @Nullable DiscoveryResult createResult(ServiceInfo info) {
-        logger.debug("createResult: {}", info);
         DiscoveryResult discoveryResult = null;
         ThingUID uid = getThingUID(info);
-        logger.debug("uid: {}", uid);
+        logger.debug("MDNS info: {}, uid: {}", info, uid);
         if (uid != null) {
             InetAddress[] addrs = info.getInetAddresses();
             logger.debug("ip: {} id:{}", addrs[0].getHostAddress(), uid.getId());

@@ -68,7 +68,7 @@ public class KM200ErrorServiceHandler {
                 Map<String, String> valMap = new HashMap<>();
                 Set<Map.Entry<String, JsonElement>> oMap = subJSON.entrySet();
                 oMap.forEach(item -> {
-                    logger.debug("Set: {} val: {}", item.getKey(), item.getValue().getAsString());
+                    logger.trace("Set: {} val: {}", item.getKey(), item.getValue().getAsString());
                     valMap.put(item.getKey(), item.getValue().getAsString());
                 });
                 errorMap.add(valMap);

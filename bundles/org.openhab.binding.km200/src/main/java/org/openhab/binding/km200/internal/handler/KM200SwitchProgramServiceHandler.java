@@ -104,9 +104,9 @@ public class KM200SwitchProgramServiceHandler {
      * This function adds a switch to the switchmap
      */
     void addSwitch(String day, String setpoint, int time) {
-        logger.debug("Adding day: {} setpoint: {} time: {}", day, setpoint, time);
+        logger.trace("Adding day: {} setpoint: {} time: {}", day, setpoint, time);
         if (!days.contains(day)) {
-            logger.error("This type of weekday is not supported, get day: {}", day);
+            logger.warn("This type of weekday is not supported, get day: {}", day);
             throw new IllegalArgumentException("This type of weekday is not supported, get day: " + day);
         }
         if (!setpoints.contains(setpoint)) {
@@ -161,8 +161,8 @@ public class KM200SwitchProgramServiceHandler {
      */
     public void setActiveDay(String day) {
         if (!days.contains(day)) {
-            logger.error("This type of weekday is not supported, get day: {}", day);
-            throw new IllegalArgumentException("This type of weekday is not supported, get day: " + day);
+            logger.warn("This type of weekday is not supported, get day: {}", day);
+            return;
         }
         activeDay = day;
     }
@@ -172,8 +172,8 @@ public class KM200SwitchProgramServiceHandler {
      */
     public void setActiveCycle(Integer cycle) {
         if (cycle > this.getMaxNbOfSwitchPoints() / 2 || cycle > this.getMaxNbOfSwitchPointsPerDay() / 2 || cycle < 1) {
-            logger.error("The value of cycle is not valid, get cycle: {}", cycle);
-            throw new IllegalArgumentException("The value of cycle is not valid, get cycle: " + cycle.toString());
+            logger.warn("The value of cycle is not valid, get cycle: {}", cycle);
+            return;
         }
         /* limit the cycle to the next one after last (for creating a new one) */
         if (cycle > (getNbrCycles() + 1) || getNbrCycles() == 0) {
@@ -310,14 +310,12 @@ public class KM200SwitchProgramServiceHandler {
      */
     public boolean determineSwitchNames(KM200Device device) {
         if (!setpointProperty.isEmpty()) {
-            logger.debug("Determine switch names..");
             KM200ServiceObject setpObject = device.getServiceObject(setpointProperty);
             if (null != setpObject) {
                 if (setpObject.serviceTreeMap.keySet().isEmpty()) {
                     return false;
                 }
                 for (String key : setpObject.serviceTreeMap.keySet()) {
-                    logger.debug("Key: {}", key);
                     setpoints.add(key);
                 }
             } else {
@@ -335,7 +333,7 @@ public class KM200SwitchProgramServiceHandler {
             /* Update the list of switching points */
             removeAllSwitches();
             JsonArray sPoints = nodeRoot.get("switchPoints").getAsJsonArray();
-            logger.debug("sPoints: {}", nodeRoot);
+            logger.trace("sPoints: {}", nodeRoot);
             if (positiveSwitch.isEmpty() || negativeSwitch.isEmpty()) {
                 /* First start. Determine the positive and negative switching points */
                 if (sPoints.size() > 0) {
@@ -528,7 +526,6 @@ public class KM200SwitchProgramServiceHandler {
                 List<Integer> daysList = week.get(getActiveDay());
                 if (!daysList.isEmpty()) {
                     Integer cycl = getActiveCycle();
-                    logger.debug("cycl: {}", cycl);
                     if (cycl <= daysList.size()) {
                         return (daysList.get(getActiveCycle() - 1));
                     }
@@ -545,11 +542,9 @@ public class KM200SwitchProgramServiceHandler {
         synchronized (switchMap) {
             Map<String, List<Integer>> week = switchMap.get(getNegativeSwitch());
             if (week != null) {
-                logger.debug("Day: {}", getActiveDay());
                 List<Integer> daysList = week.get(getActiveDay());
                 if (!daysList.isEmpty()) {
                     Integer cycl = getActiveCycle();
-                    logger.debug("cycl: {}", cycl);
                     if (cycl <= daysList.size()) {
                         return (daysList.get(getActiveCycle() - 1));
                     }

@@ -95,7 +95,7 @@ public class KM200VirtualServiceHandler {
                 }
             }
         } catch (JsonParseException e) {
-            logger.error("Parsingexception in JSON: {}", e.getMessage());
+            logger.warn("Parsingexception in JSON: {}", e.getMessage());
         }
     }
 }

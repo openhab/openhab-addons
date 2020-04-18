@@ -89,14 +89,12 @@ public class KM200HandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID) {
-        logger.debug("Create thing UID: {}", thingUID);
         return createThing(thingTypeUID, configuration, thingUID);
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        logger.debug("Create thing handler for: {}", thingTypeUID.getAsString());
         if (KM200GatewayHandler.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             logger.debug("It's a gataway: {}", thingTypeUID.getAsString());
             KM200GatewayHandler gatewayHandler = new KM200GatewayHandler((Bridge) thing, httpClient);
