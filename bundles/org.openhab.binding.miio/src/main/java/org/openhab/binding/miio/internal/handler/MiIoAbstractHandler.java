@@ -372,6 +372,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         if (info.mcuFwVer != null) {
             properties.put("mcuFirmware", info.mcuFwVer);
         }
+        deviceVariables.putAll(properties);
         updateProperties(properties);
     }
 
