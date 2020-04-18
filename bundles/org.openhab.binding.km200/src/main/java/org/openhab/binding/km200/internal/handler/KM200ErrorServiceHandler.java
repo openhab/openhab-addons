@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +32,7 @@ import com.google.gson.JsonObject;
  *
  * @author Markus Eckhardt - Initial contribution
  */
+@NonNullByDefault
 public class KM200ErrorServiceHandler {
 
     private final Logger logger = LoggerFactory.getLogger(KM200ErrorServiceHandler.class);
@@ -48,9 +51,7 @@ public class KM200ErrorServiceHandler {
      */
     void removeAllErrors() {
         synchronized (errorMap) {
-            if (errorMap != null) {
-                errorMap.clear();
-            }
+            errorMap.clear();
         }
     }
 
@@ -67,7 +68,7 @@ public class KM200ErrorServiceHandler {
                 Map<String, String> valMap = new HashMap<>();
                 Set<Map.Entry<String, JsonElement>> oMap = subJSON.entrySet();
                 oMap.forEach(item -> {
-                    logger.debug("Set: {} val: {}", item.getKey(), item.getValue().getAsString());
+                    logger.trace("Set: {} val: {}", item.getKey(), item.getValue().getAsString());
                     valMap.put(item.getKey(), item.getValue().getAsString());
                 });
                 errorMap.add(valMap);
@@ -106,18 +107,14 @@ public class KM200ErrorServiceHandler {
      */
     public int getActiveError() {
         synchronized (activeError) {
-            if (activeError == null) {
-                return 0;
-            } else {
-                return activeError;
-            }
+            return activeError;
         }
     }
 
     /**
      * This function returns a error string with all parameters
      */
-    public String getErrorString() {
+    public @Nullable String getErrorString() {
         String value = "";
         synchronized (errorMap) {
             int actN = getActiveError();
