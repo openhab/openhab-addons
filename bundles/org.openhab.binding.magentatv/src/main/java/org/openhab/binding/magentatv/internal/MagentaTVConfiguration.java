@@ -28,7 +28,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class MagentaTVConfiguration {
-    private Map<String, Object> properties = new HashMap<String, Object>();
+    private Map<String, Object> properties = new HashMap<>();
 
     /**
      * Initialize config
@@ -219,28 +219,28 @@ public class MagentaTVConfiguration {
         setValue(PROPERTY_EPGHTTPSURL, egphttpsurl);
     }
 
-    @SuppressWarnings({ "null", "unused" })
-    private void setDefault(String key, String value) {
-        synchronized (properties) {
-            if ((properties.get(key) != null) && properties.get(key).toString().isEmpty()) {
-                properties.remove(key);
-            }
-            if (properties.get(key) == null) {
-                properties.put(key, value);
-            }
-        }
-    }
-
-    @SuppressWarnings("null")
-    private String getValue(String key, String defValue) {
-        return properties.get(key) == null ? defValue : properties.get(key).toString();
-    }
-
-    @SuppressWarnings("null")
-    private synchronized void setValue(String key, String value) {
-        if (properties.get(key) != null) {
+    private synchronized void setDefault(String key, String value) {
+        if (properties.containsKey(key) && properties.get(key).toString().isEmpty()) {
             properties.remove(key);
         }
-        properties.put(key, value);
+
+        if (!properties.containsKey(key)) {
+            properties.put(key, value);
+        }
+    }
+
+    private String getValue(String key, String defValue) {
+        if (!properties.containsKey(key)) {
+            return properties.get(key).toString();
+        }
+        return defValue;
+    }
+
+    private synchronized void setValue(String key, String value) {
+        if (properties.containsKey(key)) {
+            properties.replace(key, value);
+        } else {
+            properties.put(key, value);
+        }
     }
 }

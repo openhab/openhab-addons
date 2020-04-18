@@ -27,7 +27,7 @@ import org.openhab.binding.magentatv.internal.MagentaTVException;
 public interface MagentaTVListener {
     public void onPairingResult(String pairingCode) throws MagentaTVException;
 
-    public void onWakeup(Map<String, Object> discoveredProperties) throws MagentaTVException;
+    public void onWakeup(Map<String, String> discoveredProperties) throws MagentaTVException;
 
     public void onMREvent(String playContent) throws MagentaTVException;
 

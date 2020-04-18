@@ -58,7 +58,6 @@ import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.OAuthTokenRespons
 import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.OauthCredentials;
 import org.openhab.binding.magentatv.internal.MagentaTVHandlerFactory;
 import org.openhab.binding.magentatv.internal.network.MagentaTVNetwork;
-import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,13 +75,13 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     private final Logger logger = LoggerFactory.getLogger(MagentaTVHandler.class);
     protected final MagentaTVConfiguration thingConfig = new MagentaTVConfiguration();
     private final Gson gson;
-    protected MagentaTVNetwork network;
-    protected @Nullable MagentaTVControl control;
-    protected @Nullable MagentaTVHandlerFactory handlerFactory;
+    protected final MagentaTVNetwork network;
+    protected final MagentaTVHandlerFactory handlerFactory;
+    protected MagentaTVControl control = new MagentaTVControl();
 
     private volatile int idRefresh = 0;
-    private @Nullable ScheduledFuture<?> pairingWatchdogJob;
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private @Nullable ScheduledFuture<?> pairingWatchdogJob;
 
     /**
      * Constructor, save bindingConfig (services as default for thingConfig)
@@ -124,15 +123,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
         scheduler.execute(() -> {
             String errorMessage = "";
             try {
-                // Example for background initialization:
-                // All relevant parameters will be derived from the thing config
-                // the final result will be saved to the thing properties and can be viewed in
-                // PaperUI
                 thingConfig.initializeConfig(getConfig().getProperties());
-                Map<String, Object> discoveredProperties = handlerFactory.getDiscoveredProperties(thingConfig.getUDN());
-                if (discoveredProperties != null) {
-                    thingConfig.updateConfig(discoveredProperties); // get network parameters from control
-                }
                 if (thingConfig.getUDN().isEmpty()) {
                     // get UDN from device name
                     String uid = this.getThing().getUID().getAsString();
@@ -409,11 +400,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
      * @throws MagentaTVException
      */
     @Override
-    public void onWakeup(Map<String, Object> discoveredProperties) throws MagentaTVException {
-        if (control == null) { // should never happen
-            logger.debug("Unable to process wakeup (control == null)");
-            return;
-        }
+    public void onWakeup(Map<String, String> discoveredProperties) throws MagentaTVException {
         if ((this.getThing().getStatus() == ThingStatus.OFFLINE) || thingConfig.getVerificationCode().isEmpty()) {
             // Device sent a UPnP discovery information, trigger to reconnect
             connectReceiver();
@@ -433,7 +420,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     @SuppressWarnings("null")
     @Override
     public void onPairingResult(String pairingCode) throws MagentaTVException {
-        if (control != null) {
+        if (control.isInitialized()) {
             thingConfig.updateConfig(control.getConfig().getProperties()); // get description data
 
             if (control.generateVerificationCode(pairingCode)) {
@@ -452,11 +439,10 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                 }
             }
         } else {
-            logger.debug("Pairing: control is null!!");
+            logger.debug("control not yet initialized!");
         }
     }
 
-    @SuppressWarnings({ "null", "unused" })
     @Override
     public void onMREvent(String jsonInput) {
         logger.trace("Process MR event for device {}, json={}", deviceName(), jsonInput);
@@ -605,9 +591,8 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
      * Check device status, if pairing
      * events (if callbackUrl is configured)
      */
-    @SuppressWarnings("null")
     private void renewEventSubscription() {
-        if (control == null) {
+        if (!control.isInitialized()) {
             return;
         }
         logger.debug("Check receiver status, current state  {}/{}",
@@ -637,12 +622,11 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
         }
     }
 
-    @SuppressWarnings("null")
-    public void updateThingProperties(Map<String, Object> properties) {
+    public void updateThingProperties(Map<String, String> properties) {
         // copy all attributes except thos, which begin with $
         Map<String, String> map = new HashMap<String, String>();
         for (String key : properties.keySet()) {
-            if ((key.charAt(0) != '$') && !key.contains("component.") && properties.get(key) != null) {
+            if ((key.charAt(0) != '$') && !key.contains("component.")) {
                 map.put(key, properties.get(key).toString());
             }
         }
@@ -669,14 +653,5 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
         }
         scheduler.shutdownNow();
         super.dispose();
-    }
-
-    @Reference
-    public void setMagentaTVHandlerFactory(MagentaTVHandlerFactory handlerFactory) {
-        this.handlerFactory = handlerFactory;
-    }
-
-    public void unsetMagentaVHandlerFactory(MagentaTVHandlerFactory handlerFactory) {
-        this.handlerFactory = null;
     }
 }
