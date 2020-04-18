@@ -41,8 +41,8 @@ public enum ChannelDescriptor {
     FAN_SPEED               (CHANNEL_GROUP_FAN + "fanSpeed", new FanChannel(0x29)),
     FAN_SPEED_MAX           (CHANNEL_GROUP_FAN + "fanSpeedMax", new FanChannel(0xA5)),
     FAN_SPEED_MIN           (CHANNEL_GROUP_FAN + "fanSpeedMin", new FanChannel(0xA9)),
-    DC_FAN_INPUT_ADJUSTMENT (CHANNEL_GROUP_FAN + "dcFanInputAdjustment", new IntegerChannel(0xB0)),
-    DC_FAN_OUTPUT_ADJUSTMENT(CHANNEL_GROUP_FAN + "dcFanOutputAdjustment", new IntegerChannel(0xB1)),
+    DC_FAN_INPUT_ADJUSTMENT (CHANNEL_GROUP_FAN + "dcFanInputAdjustment", new IntegerChannel.DcFan(0xB0)),
+    DC_FAN_OUTPUT_ADJUSTMENT(CHANNEL_GROUP_FAN + "dcFanOutputAdjustment", new IntegerChannel.DcFan(0xB1)),
     SUPPLY_FAN_OFF        (CHANNEL_GROUP_FAN + "supplyFanOff", new BooleanChannel(0x08, "ioPortMultiPurpose2")),
     EXHAUST_FAN_OFF       (CHANNEL_GROUP_FAN + "exhaustFanOff", new BooleanChannel(0x20, "ioPortMultiPurpose2")),
 

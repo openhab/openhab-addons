@@ -12,8 +12,12 @@
  */
 package org.openhab.binding.vallox.internal.se.mapper;
 
+import javax.measure.quantity.Dimensionless;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.types.State;
 
 /**
@@ -61,7 +65,7 @@ public class IntegerChannel extends ValloxChannel {
         @Override
         public State convertToState(byte value) {
             int index = Byte.toUnsignedInt(value);
-            return new DecimalType((index - 51) / 2.04);
+            return new QuantityType<Dimensionless>(((index - 51) / 2.04), SmartHomeUnits.PERCENT);
         }
 
         @Override
@@ -96,6 +100,28 @@ public class IntegerChannel extends ValloxChannel {
         @Override
         public byte convertFromState(byte value) {
             return 0x00; // Not used
+        }
+    }
+
+    /**
+     * Class for channels holding DC fan percent values.
+     *
+     * @author Miika Jukka - Initial contributor
+     */
+    public static class DcFan extends IntegerChannel {
+
+        /**
+         * Create new instance.
+         *
+         * @param variable channel as byte
+         */
+        public DcFan(int variable) {
+            super(variable);
+        }
+
+        @Override
+        public State convertToState(byte value) {
+            return new QuantityType<Dimensionless>(Byte.toUnsignedInt(value), SmartHomeUnits.PERCENT);
         }
     }
 }

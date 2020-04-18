@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -138,8 +138,8 @@ public class ValloxSEHandler extends BaseThingHandler implements ValloxEventList
             }
             if (command instanceof RefreshType) {
                 handleRefreshTypeCommand(command, descriptor);
-            } else if (command instanceof DecimalType) {
-                handleDecimalCommand((DecimalType) command, descriptor);
+            } else if (command instanceof QuantityType) {
+                handleDecimalCommand((QuantityType<?>) command, descriptor);
             } else if (command instanceof OnOffType) {
                 handleOnOffCommand(command, descriptor);
             } else {
@@ -338,7 +338,7 @@ public class ValloxSEHandler extends BaseThingHandler implements ValloxEventList
      * @param channelID the channel where the command is sent
      * @param descriptor the descriptor of the channel
      */
-    private void handleDecimalCommand(DecimalType command, ChannelDescriptor descriptor) {
+    private void handleDecimalCommand(QuantityType<?> command, ChannelDescriptor descriptor) {
         if (descriptor.equals(ChannelDescriptor.CO2_SETPOINT)) {
             int commandValue = command.intValue();
             byte lowByte = (byte) (commandValue & 0xFF);

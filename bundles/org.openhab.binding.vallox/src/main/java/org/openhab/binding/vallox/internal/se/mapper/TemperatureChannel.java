@@ -14,8 +14,11 @@ package org.openhab.binding.vallox.internal.se.mapper;
 
 import java.util.Arrays;
 
+import javax.measure.quantity.Temperature;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.vallox.internal.se.ValloxSEConstants;
 
@@ -39,7 +42,7 @@ public class TemperatureChannel extends ValloxChannel {
     @Override
     public State convertToState(byte value) {
         int index = Byte.toUnsignedInt(value);
-        return new DecimalType(ValloxSEConstants.TEMPERATURE_MAPPING[index]);
+        return new QuantityType<Temperature>(ValloxSEConstants.TEMPERATURE_MAPPING[index], SIUnits.CELSIUS);
     }
 
     @Override

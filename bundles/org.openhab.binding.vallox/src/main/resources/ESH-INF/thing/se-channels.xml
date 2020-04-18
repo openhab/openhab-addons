@@ -119,35 +119,35 @@
 	</channel-type>
 
 	<channel-type id="seTempInside">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Inside Temperature</label>
 		<description>Current temperature inside the building.</description>
 		<category>Temperature</category>
-		<state min="-20" max="40" step="1" pattern="%d °C" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true" />
 	</channel-type>
 
 	<channel-type id="seTempOutside">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Outside Temperature</label>
 		<description>Current temperature outside the building.</description>
 		<category>Temperature</category>
-		<state min="-20" max="40" step="1" pattern="%d °C" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true" />
 	</channel-type>
 
 	<channel-type id="seTempExhaust">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Exhaust Temperature</label>
 		<description>Current temperature of the air flow exiting the building.</description>
 		<category>Temperature</category>
-		<state min="-20" max="40" step="1" pattern="%d °C" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true" />
 	</channel-type>
 
 	<channel-type id="seTempIncoming">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Incoming Temperature</label>
 		<description>Current temperature of the air flow incoming to the building.</description>
 		<category>Temperature</category>
-		<state min="-20" max="40" step="1" pattern="%d °C" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true" />
 	</channel-type>
 
 	<channel-type id="sePowerState">
@@ -175,47 +175,47 @@
 	</channel-type>
 
 	<channel-type id="seDcFanInputAdjustment" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Input Fan Speed</label>
 		<description>Adjust input fan speed in scale of 0-100%</description>
 		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false"></state>
 	</channel-type>
 
 	<channel-type id="seDcFanOutputAdjustment" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Output Fan Speed</label>
 		<description>Adjust output fan speed in scale of 0-100%</description>
-		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false"></state>
+		<state min="0" max="1" pattern="%d %unit%" readOnly="false"></state>
 	</channel-type>
 
 	<channel-type id="seHrcBypassThreshold" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Heat Recovery Cell Bypass Threshold</label>
 		<description>Heat recovery cell bypass set point temperature</description>
 		<category>Temperature</category>
-		<state min="-20" max="40" step="1" pattern="%d °C" readOnly="false"></state>
+		<state pattern="%.1f %unit%" readOnly="false"></state>
 	</channel-type>
 
 	<channel-type id="seInputFanStopThreshold" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Input Fan Stop Threshold</label>
 		<description>Input fan stops if incoming temperature falls below this.</description>
 		<category>Temperature</category>
-		<state min="-20" max="40" step="1" pattern="%d °C" readOnly="false"></state>
+		<state pattern="%.1f %unit%" readOnly="false"></state>
 	</channel-type>
 
 	<channel-type id="sePostHeatingSetPoint" advanced="false">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Post Heating Set Point</label>
 		<category>Temperature</category>
-		<state min="-20" max="40" step="1" pattern="%d °C" readOnly="false"></state>
+		<state pattern="%.1f %unit%" readOnly="false"></state>
 	</channel-type>
 
 	<channel-type id="sePreHeatingSetPoint" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Pre Heating Set Point</label>
 		<category>Temperature</category>
-		<state min="-20" max="40" step="1" pattern="%d °C" readOnly="false"></state>
+		<state pattern="%.1f %unit%" readOnly="false"></state>
 	</channel-type>
 
 	<channel-type id="seFilterGuardIndicator" advanced="true">
@@ -247,31 +247,31 @@
 	</channel-type>
 
 	<channel-type id="seHumidity" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Highest measured relative humidity.</description>
-		<state min="0" max="255" step="1" pattern="%d %%" readOnly="true"></state>
+		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="seBasicHumidityLevel" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Basic Humidity Level</label>
 		<description>When humidity adjust on ON, this is the target humidity what the machine tries to achieve</description>
-		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false"></state>
+		<state min="0" max="100" pattern="%d %unit%" readOnly="false"></state>
 	</channel-type>
 
 	<channel-type id="seHumiditySensor1" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity Sensor 1</label>
 		<description>Relative Humidity measured from sensor 1</description>
-		<state min="0" max="255" step="1" pattern="%d %%" readOnly="true"></state>
+		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="seHumiditySensor2" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity Sensor 2</label>
 		<description>Relative Humidity measured from sensor 2</description>
-		<state min="0" max="255" step="1" pattern="%d %%" readOnly="true"></state>
+		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="seCo2" advanced="true">
@@ -421,10 +421,11 @@
 	</channel-type>
 
 	<channel-type id="sePostHeatingTargetValue" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Post heating target value</label>
 		<description>Target value for post heating</description>
-		<state readOnly="true"></state>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="seCo2Alarm" advanced="true">
