@@ -128,7 +128,6 @@ public class KM200ServiceHandler {
                         serviceObject.setValueParameter(valParas);
                     }
                     break;
-
                 case DATA_TYPE_FLOAT_VALUE: /* Check whether the type is a single value containing a float value */
                     logger.trace("initDevice: type float value: {}", dataObject);
                     valObject = nodeRoot.get("value");
@@ -149,7 +148,6 @@ public class KM200ServiceHandler {
                         serviceObject.setValueParameter(valParas);
                     }
                     break;
-
                 case DATA_TYPE_SWITCH_PROGRAM: /* Check whether the type is a switchProgram */
                     logger.trace("initDevice: type switchProgram {}", dataObject);
                     KM200SwitchProgramServiceHandler sPService = new KM200SwitchProgramServiceHandler();
@@ -162,7 +160,6 @@ public class KM200ServiceHandler {
                     serviceObject.setJSONData(dataObject);
                     remoteDevice.virtualList.add(serviceObject);
                     break;
-
                 case DATA_TYPE_ERROR_LIST: /* Check whether the type is a errorList */
                     logger.trace("initDevice: type errorList: {}", dataObject);
                     KM200ErrorServiceHandler eService = new KM200ErrorServiceHandler();
@@ -171,7 +168,6 @@ public class KM200ServiceHandler {
                     serviceObject.setJSONData(dataObject);
                     remoteDevice.virtualList.add(serviceObject);
                     break;
-
                 case DATA_TYPE_REF_ENUM: /* Check whether the type is a refEnum */
                     logger.trace("initDevice: type refEnum: {}", dataObject);
                     JsonArray refers = nodeRoot.get("references").getAsJsonArray();
@@ -182,7 +178,6 @@ public class KM200ServiceHandler {
                         serviceHandler.initObject();
                     }
                     break;
-
                 case DATA_TYPE_MODULE_LIST: /* Check whether the type is a moduleList */
                     logger.trace("initDevice: type moduleList: {}", dataObject);
                     JsonArray vals = nodeRoot.get("values").getAsJsonArray();
@@ -193,12 +188,10 @@ public class KM200ServiceHandler {
                         serviceHandler.initObject();
                     }
                     break;
-
                 case DATA_TYPE_Y_RECORDING: /* Check whether the type is a yRecording */
                     logger.trace("initDevice: type yRecording: {}", dataObject);
                     /* have to be completed */
                     break;
-
                 case DATA_TYPE_SYSTEM_INFO: /* Check whether the type is a systeminfo */
                     logger.trace("initDevice: type systeminfo: {}", dataObject);
                     JsonArray sInfo = nodeRoot.get("values").getAsJsonArray();
@@ -216,12 +209,10 @@ public class KM200ServiceHandler {
                     serviceObject.setJSONData(dataObject);
                     /* have to be completed */
                     break;
-
                 case DATA_TYPE_PROTECTED:
                     logger.trace("initDevice: readonly");
                     serviceObject.setJSONData(dataObject);
                     break;
-
                 default: /* Unknown type */
                     logger.info("initDevice: type: {} unknown for service: {} Data: {}", serviceObject.getServiceType(),
                             service, dataObject);

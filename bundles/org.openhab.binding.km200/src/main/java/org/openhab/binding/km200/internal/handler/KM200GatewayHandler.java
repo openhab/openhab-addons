@@ -35,6 +35,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.common.NamedThreadFactory;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -92,7 +93,7 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
         updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.CONFIGURATION_PENDING);
         remoteDevice = new KM200Device(httpClient);
         dataHandler = new KM200DataHandler(remoteDevice);
-        executor = Executors.newScheduledThreadPool(2);
+        executor = Executors.newScheduledThreadPool(2, new NamedThreadFactory("org.openhab.binding.km200", true));
     }
 
     @Override
@@ -128,7 +129,8 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
             SendKM200Runnable sendRunnable = new SendKM200Runnable(sendMap, getDevice());
             GetKM200Runnable receivingRunnable = new GetKM200Runnable(sendMap, this, getDevice());
             if (!executor.isTerminated()) {
-                executor = Executors.newScheduledThreadPool(2);
+                executor = Executors.newScheduledThreadPool(2,
+                        new NamedThreadFactory("org.openhab.binding.km200", true));
                 executor.scheduleWithFixedDelay(receivingRunnable, 30, refreshInterval, TimeUnit.SECONDS);
                 executor.scheduleWithFixedDelay(sendRunnable, 60, refreshInterval * 2, TimeUnit.SECONDS);
             }

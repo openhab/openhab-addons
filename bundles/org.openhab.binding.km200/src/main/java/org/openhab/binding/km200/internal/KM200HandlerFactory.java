@@ -61,25 +61,18 @@ public class KM200HandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(KM200HandlerFactory.class);
 
-    private @Nullable KM200ChannelTypeProvider channelTypeProvider;
+    private final KM200ChannelTypeProvider channelTypeProvider;
 
     /**
      * shared instance of HTTP client for asynchronous calls
      */
-    private HttpClient httpClient;
+    private final HttpClient httpClient;
 
     @Activate
-    public KM200HandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+    public KM200HandlerFactory(@Reference HttpClientFactory httpClientFactory,
+            @Reference KM200ChannelTypeProvider channelTypeProvider) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
-    }
-
-    @Reference
-    protected void setChannelTypeProvider(KM200ChannelTypeProvider channelTypeProvider) {
         this.channelTypeProvider = channelTypeProvider;
-    }
-
-    protected void unsetChannelTypeProvider(KM200ChannelTypeProvider channelTypeProvider) {
-        this.channelTypeProvider = null;
     }
 
     @Override
@@ -102,11 +95,7 @@ public class KM200HandlerFactory extends BaseThingHandlerFactory {
             return gatewayHandler;
         } else if (KM200ThingHandler.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             logger.debug("It's a thing: {}", thingTypeUID.getAsString());
-            if (null != channelTypeProvider) {
-                return new KM200ThingHandler(thing, channelTypeProvider);
-            } else {
-                return null;
-            }
+            return new KM200ThingHandler(thing, channelTypeProvider);
         } else {
             return null;
         }

@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 public class KM200Comm<KM200BindingProvider> {
 
     private final Logger logger = LoggerFactory.getLogger(KM200Comm.class);
-    private HttpClient httpClient;
+    private final HttpClient httpClient;
     private final KM200Device remoteDevice;
     private Integer maxNbrRepeats;
 

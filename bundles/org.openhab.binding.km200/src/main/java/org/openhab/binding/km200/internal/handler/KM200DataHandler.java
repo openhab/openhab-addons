@@ -198,7 +198,6 @@ public class KM200DataHandler {
                         return null;
                     }
                     return state;
-
                 case DATA_TYPE_FLOAT_VALUE: /* Check whether the type is a single value containing a float value */
                     logger.trace("state of type float value: {}", nodeRoot);
                     Object bdVal = null;
@@ -223,7 +222,6 @@ public class KM200DataHandler {
                         return null;
                     }
                     return state;
-
                 case DATA_TYPE_SWITCH_PROGRAM: /* Check whether the type is a switchProgram */
                     KM200SwitchProgramServiceHandler sPService = null;
                     logger.trace("state of type switchProgram: {}", nodeRoot);
@@ -262,7 +260,6 @@ public class KM200DataHandler {
                         }
                     }
                     return null;
-
                 case DATA_TYPE_ERROR_LIST: /* Check whether the type is a errorList */
                     KM200ErrorServiceHandler eService = null;
                     logger.trace("state of type errorList: {}", nodeRoot);
@@ -298,22 +295,18 @@ public class KM200DataHandler {
                             }
                         }
                     }
-
                 case DATA_TYPE_Y_RECORDING: /* Check whether the type is a yRecording */
                     logger.info("state of: type yRecording is not supported yet: {}", nodeRoot);
                     /* have to be completed */
                     break;
-
                 case DATA_TYPE_SYSTEM_INFO: /* Check whether the type is a systeminfo */
                     logger.info("state of: type systeminfo is not supported yet: {}", nodeRoot);
                     /* have to be completed */
                     break;
-
                 case DATA_TYPE_ARRAY_DATA: /* Check whether the type is a arrayData */
                     logger.info("state of: type arrayData is not supported yet: {}", nodeRoot);
                     /* have to be completed */
                     break;
-
                 case DATA_TYPE_E_MONITORING_LIST: /* Check whether the type is a eMonitoringList */
                     logger.info("state of: type eMonitoringList is not supported yet: {}", nodeRoot);
                     /* have to be completed */
@@ -449,7 +442,6 @@ public class KM200DataHandler {
                         } else {
                             return null;
                         }
-
                 }
             }
         }

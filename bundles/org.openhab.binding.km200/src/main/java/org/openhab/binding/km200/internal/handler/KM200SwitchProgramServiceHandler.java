@@ -14,11 +14,13 @@ package org.openhab.binding.km200.internal.handler;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.km200.internal.KM200Device;
@@ -48,13 +50,13 @@ public class KM200SwitchProgramServiceHandler {
 
     protected final Integer MIN_TIME = 0;
     protected final Integer MAX_TIME = 1430;
-    protected final String TYPE_MONDAY = "Mo";
-    protected final String TYPE_TUESDAY = "Tu";
-    protected final String TYPE_WEDNESDAY = "We";
-    protected final String TYPE_THURSDAY = "Th";
-    protected final String TYPE_FRIDAY = "Fr";
-    protected final String TYPE_SATURDAY = "Sa";
-    protected final String TYPE_SUNDAY = "Su";
+    protected final static String TYPE_MONDAY = "Mo";
+    protected final static String TYPE_TUESDAY = "Tu";
+    protected final static String TYPE_WEDNESDAY = "We";
+    protected final static String TYPE_THURSDAY = "Th";
+    protected final static String TYPE_FRIDAY = "Fr";
+    protected final static String TYPE_SATURDAY = "Sa";
+    protected final static String TYPE_SUNDAY = "Su";
 
     private String activeDay = TYPE_MONDAY;
     private Integer activeCycle = 1;
@@ -63,28 +65,17 @@ public class KM200SwitchProgramServiceHandler {
     public Map<String, Map<String, List<Integer>>> switchMap = new HashMap<>();
 
     /* List with all days */
-    private List<String> days = new ArrayList<>();
-    public static List<StateOption> daysList = new ArrayList<>();
-    /* List with setpoints */
-    private List<String> setpoints;
+    private static List<String> days = new ArrayList<>(Arrays.asList(TYPE_MONDAY, TYPE_TUESDAY, TYPE_WEDNESDAY,
+            TYPE_THURSDAY, TYPE_FRIDAY, TYPE_SATURDAY, TYPE_SUNDAY));
 
-    public KM200SwitchProgramServiceHandler() {
-        this.days.add(TYPE_MONDAY);
-        this.days.add(TYPE_TUESDAY);
-        this.days.add(TYPE_WEDNESDAY);
-        this.days.add(TYPE_THURSDAY);
-        this.days.add(TYPE_FRIDAY);
-        this.days.add(TYPE_SATURDAY);
-        this.days.add(TYPE_SUNDAY);
-        KM200SwitchProgramServiceHandler.daysList.add(new StateOption(TYPE_MONDAY, "Monday"));
-        KM200SwitchProgramServiceHandler.daysList.add(new StateOption(TYPE_TUESDAY, "Tuesday"));
-        KM200SwitchProgramServiceHandler.daysList.add(new StateOption(TYPE_WEDNESDAY, "Wednesday"));
-        KM200SwitchProgramServiceHandler.daysList.add(new StateOption(TYPE_THURSDAY, "Thursday"));
-        KM200SwitchProgramServiceHandler.daysList.add(new StateOption(TYPE_FRIDAY, "Friday"));
-        KM200SwitchProgramServiceHandler.daysList.add(new StateOption(TYPE_SATURDAY, "Saturday"));
-        KM200SwitchProgramServiceHandler.daysList.add(new StateOption(TYPE_SUNDAY, "Sunday"));
-        setpoints = new ArrayList<>();
-    }
+    public static List<@NonNull StateOption> daysList = new ArrayList<>(
+            Arrays.asList(new StateOption(TYPE_MONDAY, "Monday"), new StateOption(TYPE_TUESDAY, "Tuesday"),
+                    new StateOption(TYPE_WEDNESDAY, "Wednesday"), new StateOption(TYPE_THURSDAY, "Thursday"),
+                    new StateOption(TYPE_FRIDAY, "Friday"), new StateOption(TYPE_SATURDAY, "Saturday"),
+                    new StateOption(TYPE_SUNDAY, "Sunday")));
+
+    /* List with setpoints */
+    private List<String> setpoints = new ArrayList<>();
 
     /**
      * This function inits the week list

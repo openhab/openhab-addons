@@ -78,9 +78,9 @@ public class KM200ThingHandler extends BaseThingHandler {
                     THING_TYPE_GATEWAY, THING_TYPE_NOTIFICATION, THING_TYPE_SYSTEM, THING_TYPE_SYSTEMSTATES)
             .collect(Collectors.toSet()));
 
-    private @Nullable KM200ChannelTypeProvider channelTypeProvider;
+    private final KM200ChannelTypeProvider channelTypeProvider;
 
-    public KM200ThingHandler(Thing thing, @Nullable KM200ChannelTypeProvider channelTypeProvider) {
+    public KM200ThingHandler(Thing thing, KM200ChannelTypeProvider channelTypeProvider) {
         super(thing);
         this.channelTypeProvider = channelTypeProvider;
     }
@@ -199,11 +199,7 @@ public class KM200ThingHandler extends BaseThingHandler {
                     .withCategory(checkCategory(unitOfMeasure, category, state.isReadOnly())) //
                     .withTags(checkTags(unitOfMeasure, state.isReadOnly())).build();
         }
-        if (null != channelTypeProvider) {
-            channelTypeProvider.addChannelType(channelType);
-        } else {
-            logger.warn("channelTypeProvider is not availible");
-        }
+        channelTypeProvider.addChannelType(channelType);
 
         chProperties.put("root", KM200Utils.translatesPathToName(root));
         if (null != currentPathName && switchProgram) {
@@ -322,11 +318,7 @@ public class KM200ThingHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        if (null != channelTypeProvider) {
-            channelTypeProvider.removeChannelTypesForThing(getThing().getUID());
-        } else {
-            logger.warn("channelTypeProvider is not availible");
-        }
+        channelTypeProvider.removeChannelTypesForThing(getThing().getUID());
     }
 
     /**
@@ -404,7 +396,6 @@ public class KM200ThingHandler extends BaseThingHandler {
                     newChannel = createChannel(channelTypeUID, channelUID, root, CoreItemFactory.STRING, null, subKey,
                             subKey, true, false, state, unitOfMeasure);
                     break;
-
                 case DATA_TYPE_FLOAT_VALUE:
                     /*
                      * Check whether the value is a NaN. Usually all floats are BigDecimal. If it's a double then it's
@@ -438,7 +429,7 @@ public class KM200ThingHandler extends BaseThingHandler {
                             maxVal = (BigDecimal) subValParas.get(1);
                             if (subValParas.size() > 2) {
                                 unitOfMeasure = (String) subValParas.get(2);
-                                if ("C".compareTo(unitOfMeasure) == 0) {
+                                if ("C".equals(unitOfMeasure)) {
                                     unitOfMeasure = "°C";
                                 }
                             }
@@ -460,7 +451,6 @@ public class KM200ThingHandler extends BaseThingHandler {
                     newChannel = createChannel(channelTypeUID, channelUID, root, CoreItemFactory.NUMBER, null, subKey,
                             subKey, true, false, state, unitOfMeasure);
                     break;
-
                 case DATA_TYPE_REF_ENUM:
                     /* Check whether the sub service should be ignored */
                     boolean ignoreIt = false;
@@ -479,7 +469,6 @@ public class KM200ThingHandler extends BaseThingHandler {
                     /* Search for new services in sub path */
                     addChannels(serObj.serviceTreeMap.get(subKey), thing, subChannels, subKey + "_");
                     break;
-
                 case DATA_TYPE_ERROR_LIST:
                     if ("nbrErrors".equals(subKey) || "error".equals(subKey)) {
                         state = StateDescriptionFragmentBuilder.create().withPattern("%.0f").withReadOnly(readOnly)
