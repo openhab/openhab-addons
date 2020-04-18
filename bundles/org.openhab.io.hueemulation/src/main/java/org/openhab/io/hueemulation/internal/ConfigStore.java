@@ -175,7 +175,8 @@ public class ConfigStore {
 
     @Modified
     public void modified(Map<String, Object> properties) {
-        this.config = new Configuration(properties).as(HueEmulationConfig.class);
+        final Configuration configuration = new Configuration(properties);
+        this.config = configuration.as(HueEmulationConfig.class);
 
         switchFilter = Collections.unmodifiableSet(
                 Stream.of(config.restrictToTagsSwitches.split(",")).map(String::trim).collect(Collectors.toSet()));
@@ -193,8 +194,20 @@ public class ConfigStore {
         InetAddress configuredAddress = null;
         int networkPrefixLength = 24; // Default for most networks: 255.255.255.0
 
-        if (config.discoveryIps != null) {
-            discoveryIps = Collections.unmodifiableSet(Stream.of(config.discoveryIps.split(",")).map(String::trim)
+        /**
+         * This is a fallback since for some time the value was called discoveryIp in the frontend. It should be named
+         * discoveryIps though so this property takes higher priority when this ConfigStore is build.
+         */
+        String discoveryIpsTemp = null;
+        if(config.discoveryIp != null) {
+            discoveryIpsTemp = config.discoveryIp;
+        }
+        if(config.discoveryIps != null) {
+            discoveryIpsTemp = config.discoveryIps;
+        }
+
+        if (discoveryIpsTemp != null) {
+            discoveryIps = Collections.unmodifiableSet(Stream.of(discoveryIpsTemp.split(",")).map(String::trim)
                     .map(this::byName).filter(e -> e != null).collect(Collectors.toSet()));
         } else {
             discoveryIps = new LinkedHashSet<>();

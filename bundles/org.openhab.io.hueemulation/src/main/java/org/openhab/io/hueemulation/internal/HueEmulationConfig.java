@@ -39,6 +39,12 @@ public class HueEmulationConfig {
     /** Pairing timeout in seconds */
     public int pairingTimeout = 60;
     public @Nullable String discoveryIps;
+    /**
+     * The field discoveryIps was named discoveryIp in the frontend for some time and thus user probably
+     * have it in their local config saved under this name. We need to keep it here as a possible fallback when
+     * selecting the ips.
+     */
+    public @Nullable String discoveryIp;
     public int discoveryHttpPort = 0;
     /** Comma separated list of tags */
     public String restrictToTagsSwitches = "Switchable";
