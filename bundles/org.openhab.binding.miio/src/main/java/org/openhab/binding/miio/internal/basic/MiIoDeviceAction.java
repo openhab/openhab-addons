@@ -33,19 +33,12 @@ public class MiIoDeviceAction {
     @SerializedName("parameterType")
     @Expose
     private CommandParameterType commandParameterType = CommandParameterType.EMPTY;
-    @SerializedName("preCommandParameter1")
+    @SerializedName("parameters")
     @Expose
-    private @Nullable String preCommandParameter1;
-    @SerializedName("parameter1")
-    @Expose
-    private @Nullable String parameter1;
-    @SerializedName("parameter2")
-    @Expose
-    private @Nullable String parameter2;
-    @SerializedName("parameter3")
-    @Expose
-    private @Nullable String parameter3;
     private @Nullable JsonArray parameters;
+    @SerializedName("condition")
+    @Expose
+    private @Nullable MiIoDeviceActionCondition condition;
 
     public JsonArray getParameters() {
         final @Nullable JsonArray parameter = this.parameters;
@@ -77,42 +70,17 @@ public class MiIoDeviceAction {
         this.commandParameterType = org.openhab.binding.miio.internal.basic.CommandParameterType.fromString(type);
     }
 
-    public @Nullable String getPreCommandParameter1() {
-        return preCommandParameter1;
+    public @Nullable MiIoDeviceActionCondition getCondition() {
+        return condition;
     }
 
-    public void setPreCommandParameter1(String preCommandParameter1) {
-        this.preCommandParameter1 = preCommandParameter1;
-    }
-
-    public @Nullable String getParameter1() {
-        return parameter1;
-    }
-
-    public void setParameter1(String parameter1) {
-        this.parameter1 = parameter1;
-    }
-
-    public @Nullable String getParameter2() {
-        return parameter2;
-    }
-
-    public void setParameter2(String parameter2) {
-        this.parameter1 = parameter2;
-    }
-
-    public @Nullable String getParameter3() {
-        return parameter3;
-    }
-
-    public void setParameter3(String parameter3) {
-        this.parameter1 = parameter3;
+    public void setCondition(@Nullable MiIoDeviceActionCondition condition) {
+        this.condition = condition;
     }
 
     @Override
     public String toString() {
         return "MiIoDeviceAction [command=" + command + ", commandParameterType=" + commandParameterType
-                + ", preCommandParameter1=" + preCommandParameter1 + ", parameter1=" + parameter1 + ", parameter2="
-                + parameter2 + ", parameter3=" + parameter3 + "]";
+                + (parameters != null ? ", parameters=" + getParameters().toString() : "") + "]";
     }
 }

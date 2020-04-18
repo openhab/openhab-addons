@@ -438,4 +438,24 @@
 		<label>Filter Pro Days Remaining</label>
 		<state pattern="%.0f" readOnly="true" />
 	</channel-type>
+	<channel-type id="miot_uint8">
+		<item-type>Number</item-type>
+		<label>Generic Number</label>
+	</channel-type>
+	<channel-type id="miot_int32">
+		<item-type>Number</item-type>
+		<label>Generic Number</label>
+	</channel-type>
+	<channel-type id="miot_float">
+		<item-type>Number</item-type>
+		<label>Generic Number</label>
+	</channel-type>
+	<channel-type id="miot_string">
+		<item-type>String</item-type>
+		<label>Generic String</label>
+	</channel-type>
+	<channel-type id="miot_bool">
+		<item-type>Switch</item-type>
+		<label>Generic Bool</label>
+	</channel-type>
 </thing:thing-descriptions>

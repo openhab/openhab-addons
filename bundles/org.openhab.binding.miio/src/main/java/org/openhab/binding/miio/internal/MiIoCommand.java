@@ -37,6 +37,7 @@ public enum MiIoCommand {
     SET_BRIGHT("set_bright"),
     SET_WIFI_LET("set_wifi_led"),
     SET_FAVORITE("set_level_favorite"),
+    ACTION("action"),
 
     // vacuum commands
     START_VACUUM("app_start"),

@@ -47,6 +47,7 @@ public enum MiIoDevices {
     AIR_PURIFIERMA1("zhimi.airpurifier.ma1", "Mi Air Purifier MS1", THING_TYPE_BASIC),
     AIR_PURIFIERMA2("zhimi.airpurifier.ma2", "Mi Air Purifier MS2", THING_TYPE_BASIC),
     AIR_PURIFIERMA4("zhimi.airpurifier.ma4", "Mi Air Purifier 3", THING_TYPE_BASIC),
+    AIR_PURIFIERMMB3("zhimi.airpurifier.mb3", "Mi Air Purifier 3", THING_TYPE_BASIC),
     AIR_PURIFIERSA1("zhimi.airpurifier.sa1", "Mi Air Purifier Super", THING_TYPE_BASIC),
     AIR_PURIFIERSA2("zhimi.airpurifier.sa2", "Mi Air Purifier Super 2", THING_TYPE_BASIC),
     AIRFRESH_T2017("dmaker.airfresh.t2017", "Mi Fresh Air Ventilator", THING_TYPE_BASIC),

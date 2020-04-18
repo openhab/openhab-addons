@@ -1,0 +1,715 @@
+{
+	"deviceMapping": {
+		"id": [
+			"zhimi.airpurifier.ma4"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 2,
+		"channels": [
+			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Air Purifier-Device Fault",
+				"channel": "Fault",
+				"channelType": "miot_uint8",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "on",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Air Purifier-Switch Status",
+				"channel": "On",
+				"channelType": "miot_bool",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			},
+			{
+				"property": "fan-level",
+				"siid": 2,
+				"piid": 4,
+				"friendlyName": "Air Purifier-Fan Level",
+				"channel": "FanLevel",
+				"channelType": "miot_uint8",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "mode",
+				"siid": 2,
+				"piid": 5,
+				"friendlyName": "Air Purifier-Mode",
+				"channel": "Mode",
+				"channelType": "miot_uint8",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "firmware-revision",
+				"siid": 1,
+				"piid": 4,
+				"friendlyName": "Device Information-Current Firmware Version",
+				"channel": "FirmwareRevision",
+				"channelType": "miot_string",
+				"type": "String",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "manufacturer",
+				"siid": 1,
+				"piid": 1,
+				"friendlyName": "Device Information-Device Manufacturer",
+				"channel": "Manufacturer",
+				"channelType": "miot_string",
+				"type": "String",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "model",
+				"siid": 1,
+				"piid": 2,
+				"friendlyName": "Device Information-Device Model",
+				"channel": "Model",
+				"channelType": "miot_string",
+				"type": "String",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "serial-number",
+				"siid": 1,
+				"piid": 3,
+				"friendlyName": "Device Information-Device Serial Number",
+				"channel": "SerialNumber",
+				"channelType": "miot_string",
+				"type": "String",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "pm2.5-density",
+				"siid": 3,
+				"piid": 6,
+				"friendlyName": "Environment-PM2.5 Density",
+				"channel": "Pm25Density",
+				"channelType": "miot_float",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "relative-humidity",
+				"siid": 3,
+				"piid": 7,
+				"friendlyName": "Environment-Relative Humidity",
+				"channel": "RelativeHumidity",
+				"channelType": "miot_uint8",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "temperature",
+				"siid": 3,
+				"piid": 8,
+				"friendlyName": "Environment-Temperature",
+				"channel": "Temperature",
+				"channelType": "miot_float",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "filter-life-level",
+				"siid": 4,
+				"piid": 3,
+				"friendlyName": "Filter-Filter Life Level",
+				"channel": "FilterLifeLevel",
+				"channelType": "miot_uint8",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "filter-used-time",
+				"siid": 4,
+				"piid": 5,
+				"friendlyName": "Filter-Filter Used Time",
+				"channel": "FilterUsedTime",
+				"channelType": "miot_uint16",
+				"type": "String",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "alarm",
+				"siid": 5,
+				"piid": 1,
+				"friendlyName": "Alarm-Alarm",
+				"channel": "Alarm",
+				"channelType": "miot_bool",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			},
+			{
+				"property": "brightness",
+				"siid": 6,
+				"piid": 1,
+				"friendlyName": "Indicator Light-Brightness",
+				"channel": "Brightness",
+				"channelType": "miot_uint8",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "on1",
+				"siid": 6,
+				"piid": 6,
+				"friendlyName": "Indicator Light-Switch Status",
+				"channel": "On1",
+				"channelType": "miot_bool",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			},
+			{
+				"property": "physical-controls-locked",
+				"siid": 7,
+				"piid": 1,
+				"friendlyName": "Physical Control Locked-Physical Control Locked",
+				"channel": "PhysicalControlsLocked",
+				"channelType": "miot_bool",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			},
+			{
+				"property": "button-pressed",
+				"siid": 8,
+				"piid": 1,
+				"friendlyName": "button-button_pressed",
+				"channel": "ButtonPressed",
+				"channelType": "miot_string",
+				"type": "String",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "filter-max-time",
+				"siid": 9,
+				"piid": 1,
+				"friendlyName": "filter-time-filter-max-time",
+				"channel": "FilterMaxTime",
+				"channelType": "miot_int32",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "filter-hour-used-debug",
+				"siid": 9,
+				"piid": 2,
+				"friendlyName": "filter-time-filter-hour-used-debug",
+				"channel": "FilterHourUsedDebug",
+				"channelType": "miot_int32",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "m1-strong",
+				"siid": 10,
+				"piid": 1,
+				"friendlyName": "motor-speed-m1-strong",
+				"channel": "M1Strong",
+				"channelType": "miot_int32",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "m1-high",
+				"siid": 10,
+				"piid": 2,
+				"friendlyName": "motor-speed-m1-high",
+				"channel": "M1High",
+				"channelType": "miot_int32",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "m1-med",
+				"siid": 10,
+				"piid": 3,
+				"friendlyName": "motor-speed-m1-med",
+				"channel": "M1Med",
+				"channelType": "miot_int32",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "m1-med-l",
+				"siid": 10,
+				"piid": 4,
+				"friendlyName": "motor-speed-m1-med-l",
+				"channel": "M1MedL",
+				"channelType": "miot_int32",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "m1-low",
+				"siid": 10,
+				"piid": 5,
+				"friendlyName": "motor-speed-m1-low",
+				"channel": "M1Low",
+				"channelType": "miot_int32",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "m1-silent",
+				"siid": 10,
+				"piid": 6,
+				"friendlyName": "motor-speed-m1-silent",
+				"channel": "M1Silent",
+				"channelType": "miot_int32",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "m1-favorite",
+				"siid": 10,
+				"piid": 7,
+				"friendlyName": "motor-speed-m1-favorite",
+				"channel": "M1Favorite",
+				"channelType": "miot_int32",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "motor1-speed",
+				"siid": 10,
+				"piid": 8,
+				"friendlyName": "motor-speed-motor1-speed",
+				"channel": "Motor1Speed",
+				"channelType": "miot_int32",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "motor1-set-speed",
+				"siid": 10,
+				"piid": 9,
+				"friendlyName": "motor-speed-motor1-set-speed",
+				"channel": "Motor1SetSpeed",
+				"channelType": "miot_int32",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "favorite-fan-level",
+				"siid": 10,
+				"piid": 10,
+				"friendlyName": "motor-speed-favorite fan level",
+				"channel": "FavoriteFanLevel",
+				"channelType": "miot_int32",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "use-time",
+				"siid": 12,
+				"piid": 1,
+				"friendlyName": "use-time-use-time",
+				"channel": "UseTime",
+				"channelType": "miot_int32",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "purify-volume",
+				"siid": 13,
+				"piid": 1,
+				"friendlyName": "aqi-purify-volume",
+				"channel": "PurifyVolume",
+				"channelType": "miot_int32",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "average-aqi",
+				"siid": 13,
+				"piid": 2,
+				"friendlyName": "aqi-average-aqi",
+				"channel": "AverageAqi",
+				"channelType": "miot_int32",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "average-aqi-cnt",
+				"siid": 13,
+				"piid": 3,
+				"friendlyName": "aqi-average-aqi-cnt",
+				"channel": "AverageAqiCnt",
+				"channelType": "miot_int32",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "aqi-zone",
+				"siid": 13,
+				"piid": 4,
+				"friendlyName": "aqi-aqi-zone",
+				"channel": "AqiZone",
+				"channelType": "miot_string",
+				"type": "String",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "sensor-state",
+				"siid": 13,
+				"piid": 5,
+				"friendlyName": "aqi-sensor-state",
+				"channel": "SensorState",
+				"channelType": "miot_string",
+				"type": "String",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "aqi-goodh",
+				"siid": 13,
+				"piid": 6,
+				"friendlyName": "aqi-aqi-goodh",
+				"channel": "AqiGoodh",
+				"channelType": "miot_int32",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "aqi-runstate",
+				"siid": 13,
+				"piid": 7,
+				"friendlyName": "aqi-aqi-runstate",
+				"channel": "AqiRunstate",
+				"channelType": "miot_int32",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "aqi-state",
+				"siid": 13,
+				"piid": 8,
+				"friendlyName": "aqi-aqi-state",
+				"channel": "AqiState",
+				"channelType": "miot_int32",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "aqi-updata-heartbeat",
+				"siid": 13,
+				"piid": 9,
+				"friendlyName": "aqi-aqi-updata-heartbeat",
+				"channel": "AqiUpdataHeartbeat",
+				"channelType": "miot_int32",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "rfid-tag",
+				"siid": 14,
+				"piid": 1,
+				"friendlyName": "rfid-rfid-tag",
+				"channel": "RfidTag",
+				"channelType": "miot_string",
+				"type": "String",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "rfid-factory-id",
+				"siid": 14,
+				"piid": 2,
+				"friendlyName": "rfid-rfid-factory-id",
+				"channel": "RfidFactoryId",
+				"channelType": "miot_string",
+				"type": "String",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "rfid-product-id",
+				"siid": 14,
+				"piid": 3,
+				"friendlyName": "rfid-rfid-product-id",
+				"channel": "RfidProductId",
+				"channelType": "miot_string",
+				"type": "String",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "rfid-time",
+				"siid": 14,
+				"piid": 4,
+				"friendlyName": "rfid-rfid-time",
+				"channel": "RfidTime",
+				"channelType": "miot_string",
+				"type": "String",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "rfid-serial-num",
+				"siid": 14,
+				"piid": 5,
+				"friendlyName": "rfid-rfid-serial-num",
+				"channel": "RfidSerialNum",
+				"channelType": "miot_string",
+				"type": "String",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "app-extra",
+				"siid": 15,
+				"piid": 1,
+				"friendlyName": "others-app-extra",
+				"channel": "AppExtra",
+				"channelType": "miot_int32",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "main-channel",
+				"siid": 15,
+				"piid": 2,
+				"friendlyName": "others-main-channel",
+				"channel": "MainChannel",
+				"channelType": "miot_int32",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "slave-channel",
+				"siid": 15,
+				"piid": 3,
+				"friendlyName": "others-slave-channel",
+				"channel": "SlaveChannel",
+				"channelType": "miot_int32",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "cola",
+				"siid": 15,
+				"piid": 4,
+				"friendlyName": "others-cola",
+				"channel": "Cola",
+				"channelType": "miot_string",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "buttom-door",
+				"siid": 15,
+				"piid": 5,
+				"friendlyName": "others-buttom-door",
+				"channel": "ButtomDoor",
+				"channelType": "miot_bool",
+				"type": "Switch",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "reboot-cause",
+				"siid": 15,
+				"piid": 6,
+				"friendlyName": "others-reboot_cause",
+				"channel": "RebootCause",
+				"channelType": "miot_int32",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "hw-version",
+				"siid": 15,
+				"piid": 8,
+				"friendlyName": "others-hw-version",
+				"channel": "HwVersion",
+				"channelType": "miot_int32",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "i2c-error-count",
+				"siid": 15,
+				"piid": 9,
+				"friendlyName": "others-i2c-error-count",
+				"channel": "I2cErrorCount",
+				"channelType": "miot_int32",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "manual-level",
+				"siid": 15,
+				"piid": 10,
+				"friendlyName": "others-manual-level",
+				"channel": "ManualLevel",
+				"channelType": "miot_int32",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			}
+		]
+	}
+}
