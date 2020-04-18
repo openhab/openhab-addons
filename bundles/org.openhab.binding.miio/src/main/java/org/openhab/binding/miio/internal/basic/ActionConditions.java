@@ -16,6 +16,8 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.HSBType;
+import org.eclipse.smarthome.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,24 +49,22 @@ public class ActionConditions {
 
     /**
      * Check if the value is a valid brightness between 1-99.
-     * If <1 returns Off, if >99 returns On to activate the power On/Off switch
+     * If <1 returns Off, otherwise returns On to activate the power On/Off switch
      *
      * @param value
      * @return
      */
     private static @Nullable JsonElement brightness(@Nullable JsonElement value) {
         if (value != null && value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber()) {
-            int intVal = value.getAsInt();
-            if (intVal > 99) {
-                return new JsonPrimitive("on");
-            }
-            if (intVal < 1) {
+            if (value.getAsInt() < 1) {
                 return new JsonPrimitive("off");
+            } else {
+                return new JsonPrimitive("on");
             }
         } else {
             LOGGER.debug("Could not parse brightness. Value '{}' is not an int", value);
         }
-        return null;
+        return value;
     }
 
     /**
@@ -77,17 +77,34 @@ public class ActionConditions {
     private static @Nullable JsonElement brightnessExists(@Nullable JsonElement value) {
         if (value != null && value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber()) {
             int intVal = value.getAsInt();
-            if (intVal > 0 && intVal < 99) {
+            if (intVal > 0 && intVal <= 100) {
                 return value;
             }
+            return null;
         } else {
             LOGGER.debug("Could not parse brightness. Value '{}' is not an int", value);
+        }
+        return value;
+    }
+
+    /**
+     * Check if the value is a color which can be send to Color channel.
+     * If not returns a null
+     *
+     * @param command
+     *
+     * @param value
+     * @return
+     */
+    private static @Nullable JsonElement isHSV(Command command, @Nullable JsonElement value) {
+        if (command instanceof HSBType) {
+            return value;
         }
         return null;
     }
 
     public static @Nullable JsonElement executeAction(MiIoDeviceActionCondition condition,
-            Map<String, Object> deviceVariables, @Nullable JsonElement value) {
+            Map<String, Object> deviceVariables, @Nullable JsonElement value, Command command) {
         switch (condition.getName().toUpperCase()) {
             case "FIRMWARE":
                 return firmwareCheck(condition, deviceVariables, value);
@@ -95,6 +112,8 @@ public class ActionConditions {
                 return brightnessExists(value);
             case "BRIGHTNESSONOFF":
                 return brightness(value);
+            case "ISHSV":
+                return isHSV(command, value);
             default:
                 LOGGER.debug("Condition {} not found. Returning '{}'", condition,
                         value != null ? value.toString() : "");
