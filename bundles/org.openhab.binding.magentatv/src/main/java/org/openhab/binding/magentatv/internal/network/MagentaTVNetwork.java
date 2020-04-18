@@ -47,7 +47,6 @@ public class MagentaTVNetwork {
      * @param networkAddressService
      * @return
      */
-    @SuppressWarnings({ "null", "unused" })
     public void initLocalNet(String localIP, String localPort) throws MagentaTVException {
         try {
             if (localIP.isEmpty() || localIP.equals("0.0.0.0") || localIP.equals("127.0.0.1")) {
@@ -85,9 +84,8 @@ public class MagentaTVNetwork {
      * @param ipList like "127.0.0.1;192.168.0.0/24;10.0.0.0/8"
      * @return true if client ip from the list os ips and networks
      */
-    @SuppressWarnings("null")
     public static boolean isIpInSubnet(String clientIp, String ipList) {
-        if ((ipList == null) || ipList.equals("")) {
+        if (ipList.isEmpty()) {
             // No ip address provided
             return true;
         }
@@ -111,9 +109,8 @@ public class MagentaTVNetwork {
         return localInterface;
     }
 
-    @SuppressWarnings("null")
     public String getLocalIP() {
-        return localIP != null ? localIP : "";
+        return localIP;
     }
 
     public String getLocalPort() {
