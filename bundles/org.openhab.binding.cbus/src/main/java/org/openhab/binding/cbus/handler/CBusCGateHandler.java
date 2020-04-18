@@ -357,9 +357,6 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                         commentTokenizer.poll();
                         @Nullable
                         String commentToken = commentTokenizer.peek();
-                        /// var/log/openhab2/openhab.log.7:2020-04-05 22:09:47.786 [DEBUG]
-                        /// [inding.cbus.handler.CBusCGateHandler] - ProcessStatusChange lighting SyncUpdate
-                        /// //OURHOME/254/56/34 level=255 #sourceunit=-1 OID=9a8df460-59af-1038-a5d2-cd4f3d2671ad
 
                         if ("SyncUpdate".equals(commentToken)) {
                             commentTokenizer.poll();
