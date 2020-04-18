@@ -14,6 +14,8 @@ package org.openhab.binding.lgwebos.internal.handler;
 
 import static org.openhab.binding.lgwebos.internal.LGWebOSBindingConstants.*;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -49,6 +51,7 @@ import org.openhab.binding.lgwebos.internal.TVControlChannel;
 import org.openhab.binding.lgwebos.internal.ToastControlToast;
 import org.openhab.binding.lgwebos.internal.VolumeControlMute;
 import org.openhab.binding.lgwebos.internal.VolumeControlVolume;
+import org.openhab.binding.lgwebos.internal.WakeOnLanUtility;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSTVSocket.WebOSTVSocketListener;
 import org.openhab.binding.lgwebos.internal.handler.core.AppInfo;
 import org.openhab.binding.lgwebos.internal.handler.core.ResponseListener;
@@ -62,7 +65,8 @@ import org.slf4j.LoggerFactory;
  * @author Sebastian Prehn - initial contribution
  */
 @NonNullByDefault
-public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.ConfigProvider, WebOSTVSocketListener {
+public class LGWebOSHandler extends BaseThingHandler
+        implements LGWebOSTVSocket.ConfigProvider, WebOSTVSocketListener, PowerControlPower.ConfigProvider {
 
     /*
      * constants for device polling
@@ -104,7 +108,7 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
 
         Map<String, ChannelHandler> handlers = new HashMap<>();
         handlers.put(CHANNEL_VOLUME, new VolumeControlVolume());
-        handlers.put(CHANNEL_POWER, new PowerControlPower());
+        handlers.put(CHANNEL_POWER, new PowerControlPower(this, scheduler));
         handlers.put(CHANNEL_MUTE, new VolumeControlMute());
         handlers.put(CHANNEL_CHANNEL, new TVControlChannel());
         handlers.put(CHANNEL_APP_LAUNCHER, appLauncher);
@@ -240,6 +244,11 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
     }
 
     @Override
+    public String getMacAddress() {
+        return getLGWebOSConfig().getMacAddress();
+    }
+
+    @Override
     public String getKey() {
         return getLGWebOSConfig().getKey();
     }
@@ -288,6 +297,7 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
             case REGISTERING:
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
                         "Registering - You may need to confirm pairing on TV.");
+                findMacAddress();
                 break;
             case REGISTERED:
                 startKeepAliveJob();
@@ -367,5 +377,29 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Collections.singleton(LGWebOSActions.class);
+    }
+
+    /**
+     * Make a best effort to automatically detect the MAC address of the TV.
+     * If this does not work automatically, users can still set it manually in the Thing config.
+     */
+    private void findMacAddress() {
+        LGWebOSConfiguration c = getLGWebOSConfig();
+        String host = c.getHost();
+        if (!host.isEmpty()) {
+            try {
+                // validate host, so that no command can be injected
+                String macAddress = WakeOnLanUtility.getMACAddress(InetAddress.getByName(host).getHostAddress());
+                if (macAddress != null && !macAddress.equals(c.macAddress)) {
+                    c.macAddress = macAddress;
+                    // persist the configuration change
+                    Configuration configuration = editConfiguration();
+                    configuration.put(LGWebOSBindingConstants.CONFIG_MAC_ADDRESS, macAddress);
+                    updateConfiguration(configuration);
+                }
+            } catch (UnknownHostException e) {
+                logger.debug("Unable to determine MAC address: {}", e.getMessage());
+            }
+        }
     }
 }
