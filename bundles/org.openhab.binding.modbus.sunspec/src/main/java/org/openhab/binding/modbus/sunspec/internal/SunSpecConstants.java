@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.modbus.sunspec.internal;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -33,17 +33,27 @@ public class SunSpecConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_INVERTER_SINGLE_PHASE = new ThingTypeUID(BINDING_ID,
             "inverter-single-phase");
+    public static final ThingTypeUID THING_TYPE_INVERTER_SPLIT_PHASE = new ThingTypeUID(BINDING_ID,
+            "inverter-split-phase");
+    public static final ThingTypeUID THING_TYPE_INVERTER_THREE_PHASE = new ThingTypeUID(BINDING_ID,
+            "inverter-three-phase");
 
     // Block types
     public static final int COMMON_BLOCK = 1;
     public static final int INVERTER_SINGLE_PHASE = 101;
+    public static final int INVERTER_SPLIT_PHASE = 102;
+    public static final int INVERTER_THREE_PHASE = 103;
     public static final int FINAL_BLOCK = 0xffff;
 
     /**
      * Map of the supported thing type uids, with their block type id
      */
-    public static final Map<Integer, ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .singletonMap(INVERTER_SINGLE_PHASE, THING_TYPE_INVERTER_SINGLE_PHASE);
+    public static final Map<Integer, ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashMap<>();
+    static {
+        SUPPORTED_THING_TYPES_UIDS.put(INVERTER_SINGLE_PHASE, THING_TYPE_INVERTER_SINGLE_PHASE);
+        SUPPORTED_THING_TYPES_UIDS.put(INVERTER_SPLIT_PHASE, THING_TYPE_INVERTER_SPLIT_PHASE);
+        SUPPORTED_THING_TYPES_UIDS.put(INVERTER_THREE_PHASE, THING_TYPE_INVERTER_THREE_PHASE);
+    }
 
     // properties
     public static final String PROPERTY_VENDOR = "vendor";
@@ -59,6 +69,8 @@ public class SunSpecConstants {
     public static final String GROUP_DEVICE_INFO = "deviceInformation";
     public static final String GROUP_AC_GENERAL = "acGeneral";
     public static final String GROUP_AC_PHASE_A = "acPhaseA";
+    public static final String GROUP_AC_PHASE_B = "acPhaseB";
+    public static final String GROUP_AC_PHASE_C = "acPhaseC";
     public static final String GROUP_DC_GENERAL = "dcGeneral";
 
     // List of all Channel ids in device information group

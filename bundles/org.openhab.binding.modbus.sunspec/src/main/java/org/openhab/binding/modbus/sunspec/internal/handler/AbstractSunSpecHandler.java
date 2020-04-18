@@ -514,6 +514,20 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
      * @param scaleFactor the scale factor to use (may be negative)
      * @return the scaled value as a DecimalType
      */
+    protected State getScaled(Optional<? extends Number> value, Short scaleFactor, Unit<?> unit) {
+        if (!value.isPresent()) {
+            return UnDefType.UNDEF;
+        }
+        return getScaled(value.get().longValue(), scaleFactor, unit);
+    }
+
+    /**
+     * Returns value multiplied by the 10 on the power of scaleFactory
+     *
+     * @param value the value to alter
+     * @param scaleFactor the scale factor to use (may be negative)
+     * @return the scaled value as a DecimalType
+     */
     protected State getScaled(Number value, Short scaleFactor, Unit<?> unit) {
         if (scaleFactor == 1) {
             return new QuantityType<>(value.longValue(), unit);

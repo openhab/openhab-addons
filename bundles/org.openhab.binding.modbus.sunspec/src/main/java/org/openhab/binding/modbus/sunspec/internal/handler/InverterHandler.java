@@ -122,9 +122,32 @@ public class InverterHandler extends AbstractSunSpecHandler {
         updateState(new ChannelUID(getThing().getUID(), GROUP_AC_PHASE_A, CHANNEL_AC_PHASE_CURRENT),
                 getScaled(block.acCurrentPhaseA, block.acCurrentSF, AMPERE));
         updateState(new ChannelUID(getThing().getUID(), GROUP_AC_PHASE_A, CHANNEL_AC_VOLTAGE_TO_NEXT),
-                getScaled(block.acVoltageAB, Optional.of(block.acVoltageSF), VOLT));
+                getScaled(block.acVoltageAB, block.acVoltageSF, VOLT));
         updateState(new ChannelUID(getThing().getUID(), GROUP_AC_PHASE_A, CHANNEL_AC_VOLTAGE_TO_N),
                 getScaled(block.acVoltageAtoN, block.acVoltageSF, VOLT));
+
+        // Split phase and three phase
+        if ((thing.getThingTypeUID().equals(THING_TYPE_INVERTER_SPLIT_PHASE)
+                || thing.getThingTypeUID().equals(THING_TYPE_INVERTER_THREE_PHASE))
+                && block.phaseConfiguration >= INVERTER_SPLIT_PHASE) {
+            updateState(new ChannelUID(getThing().getUID(), GROUP_AC_PHASE_B, CHANNEL_AC_PHASE_CURRENT),
+                    getScaled(block.acCurrentPhaseB, block.acCurrentSF, AMPERE));
+            updateState(new ChannelUID(getThing().getUID(), GROUP_AC_PHASE_B, CHANNEL_AC_VOLTAGE_TO_NEXT),
+                    getScaled(block.acVoltageBC, block.acVoltageSF, VOLT));
+            updateState(new ChannelUID(getThing().getUID(), GROUP_AC_PHASE_B, CHANNEL_AC_VOLTAGE_TO_N),
+                    getScaled(block.acVoltageBtoN, block.acVoltageSF, VOLT));
+        }
+
+        // Three phase only
+        if (thing.getThingTypeUID().equals(THING_TYPE_INVERTER_THREE_PHASE)
+                && block.phaseConfiguration >= INVERTER_THREE_PHASE) {
+            updateState(new ChannelUID(getThing().getUID(), GROUP_AC_PHASE_C, CHANNEL_AC_PHASE_CURRENT),
+                    getScaled(block.acCurrentPhaseC, block.acCurrentSF, AMPERE));
+            updateState(new ChannelUID(getThing().getUID(), GROUP_AC_PHASE_C, CHANNEL_AC_VOLTAGE_TO_NEXT),
+                    getScaled(block.acVoltageCA, block.acVoltageSF, VOLT));
+            updateState(new ChannelUID(getThing().getUID(), GROUP_AC_PHASE_C, CHANNEL_AC_VOLTAGE_TO_N),
+                    getScaled(block.acVoltageCtoN, block.acVoltageSF, VOLT));
+        }
 
         resetCommunicationError();
     }

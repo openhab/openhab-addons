@@ -43,6 +43,16 @@ public class InverterModelBlock {
     public Integer acCurrentPhaseA;
 
     /**
+     * AC Phase B Current value
+     */
+    public Optional<Integer> acCurrentPhaseB;
+
+    /**
+     * AC Phase C Current value
+     */
+    public Optional<Integer> acCurrentPhaseC;
+
+    /**
      * AC Current scale factor
      */
     public Short acCurrentSF;
@@ -53,9 +63,29 @@ public class InverterModelBlock {
     public Optional<Integer> acVoltageAB;
 
     /**
+     * AC Voltage Phase BC value
+     */
+    public Optional<Integer> acVoltageBC;
+
+    /**
+     * AC Voltage Phase CA value
+     */
+    public Optional<Integer> acVoltageCA;
+
+    /**
      * AC Voltage Phase A to N value
      */
     public Integer acVoltageAtoN;
+
+    /**
+     * AC Voltage Phase B to N value
+     */
+    public Optional<Integer> acVoltageBtoN;
+
+    /**
+     * AC Voltage Phase C to N value
+     */
+    public Optional<Integer> acVoltageCtoN;
 
     /**
      * AC Voltage scale factor

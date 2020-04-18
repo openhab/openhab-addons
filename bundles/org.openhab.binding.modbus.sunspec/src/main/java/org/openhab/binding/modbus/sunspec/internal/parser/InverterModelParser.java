@@ -34,10 +34,16 @@ public class InverterModelParser extends AbstractBaseParser implements SunspecPa
         block.length = extractUInt16(raw, 1, raw.size());
         block.acCurrentTotal = extractUInt16(raw, 2, 0);
         block.acCurrentPhaseA = extractUInt16(raw, 3, 0);
+        block.acCurrentPhaseB = extractOptionalUInt16(raw, 4);
+        block.acCurrentPhaseC = extractOptionalUInt16(raw, 5);
         block.acCurrentSF = extractSunSSF(raw, 6);
 
         block.acVoltageAB = extractOptionalUInt16(raw, 7);
+        block.acVoltageBC = extractOptionalUInt16(raw, 8);
+        block.acVoltageCA = extractOptionalUInt16(raw, 9);
         block.acVoltageAtoN = extractUInt16(raw, 10, 0);
+        block.acVoltageBtoN = extractOptionalUInt16(raw, 11);
+        block.acVoltageCtoN = extractOptionalUInt16(raw, 12);
         block.acVoltageSF = extractSunSSF(raw, 13);
 
         block.acPower = extractInt16(raw, 14, (short) 0);
