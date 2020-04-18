@@ -64,8 +64,8 @@ public class SerialBridgeHandler extends ADBridgeHandler {
         config = getConfigAs(SerialBridgeConfig.class);
         discovery = config.discovery;
 
-        if (config.serialPort == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "bridge configuration missing");
+        if (config.serialPort == null || config.serialPort.isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "no serial port configured");
             return;
         } else {
             serialDeviceName = config.serialPort;
@@ -73,6 +73,14 @@ public class SerialBridgeHandler extends ADBridgeHandler {
 
         if (config.bitrate > 0) {
             serialPortSpeed = config.bitrate;
+        }
+
+        // Exit if no identifiers exist to work around possible library bug. May not be needed in 3.0.
+        Stream<SerialPortIdentifier> serialPortIdentifiers = serialPortManager.getIdentifiers();
+        if (!serialPortIdentifiers.findAny().isPresent()) {
+            logger.debug("No serial communication ports found. Cannot connect to [{}]", serialDeviceName);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No serial ports found");
+            return;
         }
 
         connect();
@@ -85,14 +93,6 @@ public class SerialBridgeHandler extends ADBridgeHandler {
         disconnect(); // make sure we are disconnected
         try {
             if (!serialDeviceName.isEmpty()) {
-                // Exit if no identifiers exist to work around possible bug
-                Stream<SerialPortIdentifier> serialPortIdentifiers = serialPortManager.getIdentifiers();
-                if (!serialPortIdentifiers.findAny().isPresent()) {
-                    logger.debug("No serial communication ports found. Cannot connect to [{}]", serialDeviceName);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No serial ports found");
-                    return;
-                }
-
                 SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(serialDeviceName);
                 if (portIdentifier == null) {
                     logger.debug("Serial Error: Port {} does not exist.", serialDeviceName);
@@ -106,8 +106,7 @@ public class SerialBridgeHandler extends ADBridgeHandler {
                 serialPort.setSerialPortParams(serialPortSpeed, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
                         SerialPort.PARITY_NONE);
                 serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN | SerialPort.FLOWCONTROL_RTSCTS_OUT);
-                // serialPort.disableReceiveFraming();
-                // serialPort.disableReceiveThreshold();
+                // Note: The V1 code called disableReceiveFraming() and disableReceiveThreshold() here
 
                 reader = new BufferedReader(new InputStreamReader(serialPort.getInputStream()));
                 writer = new BufferedWriter(new OutputStreamWriter(serialPort.getOutputStream()));

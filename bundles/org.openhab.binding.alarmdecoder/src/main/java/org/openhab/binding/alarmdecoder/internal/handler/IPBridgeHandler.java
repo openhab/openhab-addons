@@ -58,7 +58,11 @@ public class IPBridgeHandler extends ADBridgeHandler {
         discovery = config.discovery;
 
         if (config.hostname == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "hostname parameter not supplied");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "hostname not configured");
+            return;
+        }
+        if (config.tcpPort <= 0 || config.tcpPort > 65535) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "invalid port number configured");
             return;
         }
 
@@ -73,24 +77,19 @@ public class IPBridgeHandler extends ADBridgeHandler {
         disconnect(); // make sure we are disconnected
         writeException = false;
         try {
-            if (config.hostname != null && config.tcpPort > 0 && config.tcpPort < 65536) {
-                socket = new Socket(config.hostname, config.tcpPort);
-                reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-                logger.debug("connected to {}:{}", config.hostname, config.tcpPort);
-                panelReadyReceived = false;
-                startMsgReader();
-                updateStatus(ThingStatus.ONLINE);
+            socket = new Socket(config.hostname, config.tcpPort);
+            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            logger.debug("connected to {}:{}", config.hostname, config.tcpPort);
+            panelReadyReceived = false;
+            startMsgReader();
+            updateStatus(ThingStatus.ONLINE);
 
-                // Start connection check job
-                logger.debug("Scheduling connection check job with interval {} minutes.", config.reconnect);
-                lastReceivedTime = new Date();
-                connectionCheckJob = scheduler.scheduleWithFixedDelay(this::connectionCheck, config.reconnect,
-                        config.reconnect, TimeUnit.MINUTES);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "invalid hostname/tcpPort configured");
-            }
+            // Start connection check job
+            logger.debug("Scheduling connection check job with interval {} minutes.", config.reconnect);
+            lastReceivedTime = new Date();
+            connectionCheckJob = scheduler.scheduleWithFixedDelay(this::connectionCheck, config.reconnect,
+                    config.reconnect, TimeUnit.MINUTES);
         } catch (UnknownHostException e) {
             logger.debug("unknown hostname: {}", config.hostname);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "unknown host");

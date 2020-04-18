@@ -31,7 +31,7 @@ public class IntCommandMap {
     private static final Pattern VALID_COMMAND_PATTERN = Pattern.compile(ADCommand.KEYPAD_COMMAND_REGEX);
 
     public IntCommandMap(String mappingString) throws IllegalArgumentException {
-        commandMap = new HashMap<Integer, String>();
+        commandMap = new HashMap<>();
 
         String mstring = mappingString.replace("POUND", "#");
         String[] elements = mstring.split(",");

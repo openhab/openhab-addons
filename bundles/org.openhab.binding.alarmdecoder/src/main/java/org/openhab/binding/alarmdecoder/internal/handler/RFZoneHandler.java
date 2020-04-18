@@ -49,7 +49,7 @@ public class RFZoneHandler extends ADThingHandler {
     /**
      * Returns true if this handler is responsible for the zone with the supplied address and channel.
      */
-    public Boolean responsibleFor(final int serial) {
+    public boolean responsibleFor(final int serial) {
         return (config.serial != null && config.serial.equals(serial));
     }
 

@@ -127,6 +127,7 @@ public abstract class ADBridgeHandler extends BaseBridgeHandler {
     protected void startMsgReader() {
         synchronized (msgReaderThreadLock) {
             msgReaderThread = new Thread(this::readerThread, "AD Reader");
+            msgReaderThread.setDaemon(true);
             msgReaderThread.start();
         }
     }

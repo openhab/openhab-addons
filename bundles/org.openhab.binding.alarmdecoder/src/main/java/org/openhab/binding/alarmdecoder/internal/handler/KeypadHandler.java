@@ -61,7 +61,7 @@ public class KeypadHandler extends ADThingHandler {
      * This is true if this handler's address mask is 0 (all), the supplied address mask is 0 (all), or if any bits in
      * this handler's address mask match bits set in the supplied address mask.
      */
-    public Boolean responsibleFor(final int addressMask) {
+    public boolean responsibleFor(final int addressMask) {
         return (config.addressMask != null
                 && (((config.addressMask & addressMask) != 0) || config.addressMask.equals(0) || addressMask == 0));
     }

@@ -56,12 +56,7 @@ public class LRRMessage extends ADMessage {
 
         eventData = parts.get(0);
         cidMessage = parts.get(2);
-
-        if (parts.size() == 4) {
-            reportCode = parts.get(3);
-        } else {
-            reportCode = "";
-        }
+        reportCode = parts.size() == 4 ? parts.get(3) : "";
 
         try {
             int p = 0;

@@ -52,7 +52,7 @@ public class ZoneHandler extends ADThingHandler {
     /**
      * Returns true if this handler is responsible for the zone with the supplied address and channel.
      */
-    public Boolean responsibleFor(final int address, final int channel) {
+    public boolean responsibleFor(final int address, final int channel) {
         return (config.address != null && config.channel != null && config.address.equals(address)
                 && config.channel.equals(channel));
     }

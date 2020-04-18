@@ -96,7 +96,7 @@ public class KeypadMessage extends ADMessage {
      * Returns a string containing the keypad text
      */
     public String getText() {
-        return new String(alphaMessage);
+        return alphaMessage;
     }
 
     /**
@@ -134,14 +134,21 @@ public class KeypadMessage extends ADMessage {
     /**
      * Compares two KeypadMessage objects
      *
-     * @param other KeypadMessage to compare against
-     * @return true if messages are equal, false if other is null or messages are not equal
+     * @param obj KeypadMessage to compare against
+     * @return true if messages are equal, false if obj is null, messages are not equal, or obj is not a KeypadMessage
+     *         object.
      */
-    public boolean equals(@Nullable KeypadMessage other) {
-        if (other == null) {
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj == null) {
             return false;
-        } else {
+        } else if (this == obj) {
+            return true;
+        } else if (obj instanceof KeypadMessage) {
+            KeypadMessage other = (KeypadMessage) obj;
             return this.message.equals(other.message);
+        } else {
+            return false;
         }
     }
 }

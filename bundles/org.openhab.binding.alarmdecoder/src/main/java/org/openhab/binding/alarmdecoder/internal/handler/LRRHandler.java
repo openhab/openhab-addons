@@ -50,7 +50,7 @@ public class LRRHandler extends ADThingHandler {
      * This is true is this handler's partition is 0 (all), the supplied partition is 0 (all), or if this handler's
      * partition matches the supplied partition.
      */
-    public Boolean responsibleFor(final int partition) {
+    public boolean responsibleFor(final int partition) {
         return (config.partition == partition || config.partition == 0 || partition == 0);
     }
 
