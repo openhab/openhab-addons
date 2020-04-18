@@ -61,6 +61,7 @@
     <module>org.openhab.binding.bosesoundtouch</module>
     <module>org.openhab.binding.bsblan</module>
     <module>org.openhab.binding.buienradar</module>
+    <module>org.openhab.binding.cbus</module>
     <module>org.openhab.binding.chromecast</module>
     <module>org.openhab.binding.cm11a</module>
     <module>org.openhab.binding.coolmasternet</module>
