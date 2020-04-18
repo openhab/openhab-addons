@@ -51,7 +51,7 @@
 			<description>All items that are tagged with the given tags are ignore by the Hue Emulation Service. Use commas to separate multiple entries.</description>
 			<default>internal</default>
 		</parameter>
-		<parameter name="discoveryIp" type="text" required="false">
+		<parameter name="discoveryIps" type="text" required="false">
 			<label>Optional Discovery Address</label>
 			<description>If your host has multiple IP addresses you may specify the IP you would like to advertise in the UPNP discovery process. You may safely leave this empty on most systems.</description>
 		</parameter>
