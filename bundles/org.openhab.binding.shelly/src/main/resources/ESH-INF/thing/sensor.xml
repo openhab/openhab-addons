@@ -32,7 +32,7 @@
 
 	<thing-type id="shellyflood">
 		<label>Shelly Flood (SHWT-1)</label>
-		<description>Shelly Flood sensor device (battery powered)</description>
+		<description>Shelly Flood Sensor (battery powered)</description>
 		<channel-groups>
 			<channel-group id="sensors" typeId="floodSensor" />
 			<channel-group id="battery" typeId="batteryStatus" />
@@ -42,13 +42,26 @@
 		<config-description-ref uri="thing-type:shelly:battery" />
 	</thing-type>
 
+	<thing-type id="shellydw">
+		<label>Shelly Door/Window (SHDW-1)</label>
+		<description>Shelly Door/Window Sensor (battery powered)</description>
+
+		<channel-groups>
+			<channel-group id="sensors" typeId="doorWinSensors" />
+			<channel-group id="battery" typeId="batteryStatus" />
+			<channel-group id="device" typeId="deviceStatus" />
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:shelly:battery" />
+	</thing-type>
+
 	<thing-type id="shellysense">
 		<label>Shelly Sense (SHSEN-1)</label>
-		<description>Shelly Sense Remote IR controller</description>
+		<description>Shelly Sense Remote IR Controller</description>
 		<channel-groups>
 			<channel-group id="control" typeId="senseControl" />
 			<channel-group id="sensors" typeId="senseSensors" />
-			<channel-group id="battery" typeId="shortBatteryStatus" />
+			<channel-group id="battery" typeId="batteryStatus" />
 			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
@@ -58,63 +71,29 @@
 	<channel-group-type id="htSensor">
 		<label>Sensor Data</label>
 		<description>Data from the HT Sensor</description>
-		<channels>
-			<channel id="temperature" typeId="sensorTemp" />
-			<channel id="humidity" typeId="sensorHumidity" />
-			<channel id="lastUpdate" typeId="timestamp" />
-		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="floodSensor">
 		<label>Sensor Data</label>
 		<description>Data from the Flood Sensor</description>
-		<channels>
-			<channel id="temperature" typeId="sensorTemp" />
-			<channel id="flood" typeId="sensorFlood" />
-			<channel id="lastUpdate" typeId="timestamp" />
-		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="smokeSensor">
 		<label>Sensor Data</label>
 		<description>Data from the Flood Sensor</description>
-		<channels>
-			<channel id="temperature" typeId="sensorTemp" />
-			<channel id="skmoke" typeId="sensorSmoke" />
-			<channel id="lastUpdate" typeId="timestamp" />
-		</channels>
+	</channel-group-type>
+	<channel-group-type id="doorWinSensors">
+		<label>Sensors</label>
+		<description>Data from the sensors</description>
 	</channel-group-type>
 
 	<channel-group-type id="senseSensors">
 		<label>Sensors</label>
 		<description>Data from the Sense sensors</description>
-		<channels>
-			<channel id="temperature" typeId="sensorTemp" />
-			<channel id="humidity" typeId="sensorHumidity" />
-			<channel id="lux" typeId="sensorLux" />
-			<channel id="motion" typeId="system.motion" />
-			<channel id="charger" typeId="sensorCharger" />
-			<channel id="lastUpdate" typeId="timestamp" />
-		</channels>
 	</channel-group-type>
 	<channel-group-type id="batteryStatus">
 		<label>Battery Status</label>
-		<description>Status of the device's battery</description>
-		<channels>
-			<channel id="batteryLevel" typeId="system.battery-level" />
-			<channel id="voltage" typeId="batVoltage" />
-			<channel id="lowBattery" typeId="system.low-battery" />
-		</channels>
 	</channel-group-type>
-	<channel-group-type id="shortBatteryStatus">
-		<label>Battery Status</label>
-		<description>Status of the device's battery</description>
-		<channels>
-			<channel id="batteryLevel" typeId="system.battery-level" />
-			<channel id="lowBattery" typeId="system.low-battery" />
-		</channels>
-	</channel-group-type>
-
 	<channel-group-type id="senseControl">
 		<label>Sense Control</label>
 		<description>Sense Settings</description>
@@ -122,5 +101,137 @@
 			<channel id="key" typeId="senseKey" />
 		</channels>
 	</channel-group-type>
+
+
+	<channel-type id="sensorState">
+		<item-type>Contact</item-type>
+		<label>Contact</label>
+		<description>State of the contact: open/close</description>
+		<category>Contact</category>
+		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="OPEN">Open</option>
+				<option value="CLOSED">Closed</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="sensorWakeup" advanced="true">
+		<item-type>String</item-type>
+		<label>Wakeup Reason</label>
+		<description>Last reason, which woke up the device: battery, button, periodic, poweron, sensor, alarm</description>
+		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="button">Button</option>
+				<option value="battery">Battery</option>
+				<option value="periodic">Periodic</option>
+				<option value="poweron">Power-On</option>
+				<option value="sensor">Sensor</option>
+				<option value="alarm">Alarm</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="sensorTemp">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Temperature from the sensor</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>CurrentTemperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%f %unit%">
+		</state>
+	</channel-type>
+	<channel-type id="sensorExtTemp">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Temperature from the external sensor</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>CurrentTemperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%f %unit%">
+		</state>
+	</channel-type>
+	<channel-type id="sensorExtHum">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Humidity</label>
+		<description>Relative humidity in % (0..100%) from external sensor</description>
+		<category>Humidity</category>
+		<tags>
+			<tag>CurrentHumidity</tag>
+		</tags>
+		<state readOnly="true" pattern="%f %unit%">
+		</state>
+	</channel-type>
+	<channel-type id="sensorHumidity">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Humidity</label>
+		<description>Relative humidity in % (0..100%)</description>
+		<tags>
+			<tag>CurrentHumidity</tag>
+		</tags>
+		<state readOnly="true" min="0" max="100" pattern="%f %unit%" />
+	</channel-type>
+	<channel-type id="sensorFlood">
+		<item-type>Switch</item-type>
+		<label>Flood Alarm</label>
+		<description>ON: Indicates flood condition / water detected</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="sensorSmoke">
+		<item-type>Switch</item-type>
+		<label>Smoke Alarm</label>
+		<description>ON: Indicates smoke detection</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="sensorLux">
+		<item-type>Number:Illuminance</item-type>
+		<label>Lux</label>
+		<description>Brightness from the sensor (Lux)</description>
+		<state readOnly="true" pattern="%f %unit%">
+		</state>
+	</channel-type>
+	<channel-type id="sensorIllumination">
+		<item-type>String</item-type>
+		<label>Illumination</label>
+		<description>Current illumination: dark/twilight/bright</description>
+		<state readOnly="true">
+			<options>
+				<option value="dark">Dark</option>
+				<option value="twilight">Twilight</option>
+				<option value="bright">Bright</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="sensorVibration">
+		<item-type>Switch</item-type>
+		<label>Vibration</label>
+		<description>ON: Vibration detected</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="sensorTilt">
+		<item-type>Switch</item-type>
+		<label>Tilt</label>
+		<description>Tilt in degrees (requires calibration)</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="sensorError">
+		<item-type>String</item-type>
+		<label>Last Error</label>
+		<description>Only valid in case of error</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+
+	<channel-type id="senseKey">
+		<item-type>String</item-type>
+		<label>IR Key to Send</label>
+		<description>Send a defined key code</description>
+	</channel-type>
 
 </thing:thing-descriptions>
