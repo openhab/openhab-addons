@@ -54,9 +54,11 @@ public class PowerControlPower extends BaseChannelHandler<CommandConfirmation> {
             switch (state) {
                 case CONNECTING:
                 case REGISTERING:
+                    logger.debug("Received ON - TV is currently connecting.");
+                    handler.postUpdate(channelId, OnOffType.OFF);
+                    break;
                 case REGISTERED:
                     logger.debug("Received ON - TV is already on.");
-                    handler.postUpdate(channelId, OnOffType.ON);
                     break;
                 case DISCONNECTING: // WOL will not stop the shutdown process, but we must not update the state to ON
                 case DISCONNECTED:
@@ -85,7 +87,6 @@ public class PowerControlPower extends BaseChannelHandler<CommandConfirmation> {
                 case REGISTERING:
                     // in both states no message will sent to TV, thus the operation won't have an effect
                     logger.debug("Received OFF - TV is currently connecting.");
-                    handler.postUpdate(channelId, OnOffType.ON);
                     break;
                 case REGISTERED:
                     handler.getSocket().powerOff(getDefaultResponseListener());
@@ -93,7 +94,6 @@ public class PowerControlPower extends BaseChannelHandler<CommandConfirmation> {
                 case DISCONNECTING:
                 case DISCONNECTED:
                     logger.debug("Received OFF - TV is already off.");
-                    handler.postUpdate(channelId, OnOffType.OFF);
                     break;
             }
         } else {
