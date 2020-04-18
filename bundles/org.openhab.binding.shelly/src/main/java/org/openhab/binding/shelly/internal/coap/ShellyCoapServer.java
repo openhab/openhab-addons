@@ -77,7 +77,7 @@ public class ShellyCoapServer {
         }
     }
 
-    synchronized void start(String localIp, ShellyCoapListener listener) throws UnknownHostException {
+    public synchronized void start(String localIp, ShellyCoapListener listener) throws UnknownHostException {
         if (!started) {
             logger.debug("Initializing CoIoT listener (local IP={}:{})", localIp, COIOT_PORT);
             NetworkConfig nc = NetworkConfig.getStandard();
@@ -129,12 +129,13 @@ public class ShellyCoapServer {
         }
     }
 
-    private void stop() {
+    private synchronized void stop() {
         if (started) {
             // Last listener
             server.stop();
             statusEndpoint.stop();
             coapListeners.clear();
+            started = false;
             logger.debug("CoAP Listener stopped");
         }
 
