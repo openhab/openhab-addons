@@ -55,7 +55,6 @@ public class SoundTouchDiscoveryParticipant implements MDNSDiscoveryParticipant 
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public DiscoveryResult createResult(ServiceInfo info) {
         DiscoveryResult result = null;
         ThingUID uid = getThingUID(info);
@@ -66,7 +65,7 @@ public class SoundTouchDiscoveryParticipant implements MDNSDiscoveryParticipant 
             Map<String, Object> properties = new HashMap<>(2);
 
             String label = null;
-            if (BST_10_THING_TYPE_UID.equals(uid.getThingTypeUID())) {
+            if (BST_10_THING_TYPE_UID.equals(getThingTypeUID(info))) {
                 try {
                     String group = DiscoveryUtil.executeUrl("http://" + addrs[0].getHostAddress() + ":8090/getGroup");
                     label = DiscoveryUtil.getContentOfFirstElement(group, "name");
