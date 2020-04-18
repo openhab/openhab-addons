@@ -49,7 +49,7 @@ public class PowerControlPower extends BaseChannelHandler<CommandConfirmation> {
     public void onReceiveCommand(String channelId, LGWebOSHandler handler, Command command) {
         final State state = handler.getSocket().getState();
         if (RefreshType.REFRESH == command) {
-            handler.postUpdate(channelId, handler.getSocket().isConnected() ? OnOffType.ON : OnOffType.OFF);
+            handler.postUpdate(channelId, state == State.REGISTERED ? OnOffType.ON : OnOffType.OFF);
         } else if (OnOffType.ON == command) {
             switch (state) {
                 case CONNECTING:
