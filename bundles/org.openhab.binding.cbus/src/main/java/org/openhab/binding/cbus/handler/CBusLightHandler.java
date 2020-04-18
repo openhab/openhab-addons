@@ -69,9 +69,9 @@ public class CBusLightHandler extends CBusGroupHandler {
                 logger.debug("Channel State command for {}: {}", channelUID, command);
                 if (command instanceof OnOffType) {
                     try {
-                        if (command.equals(OnOffType.ON)) {
+                        if (command == OnOffType.ON) {
                             group.on();
-                        } else if (command.equals(OnOffType.OFF)) {
+                        } else if (command == OnOffType.OFF) {
                             group.off();
                         }
                     } catch (CGateException e) {
@@ -83,9 +83,9 @@ public class CBusLightHandler extends CBusGroupHandler {
                 logger.debug("Channel Level command for {}: {}", channelUID, command);
                 try {
                     if (command instanceof OnOffType) {
-                        if (command.equals(OnOffType.ON)) {
+                        if (command == OnOffType.ON) {
                             group.on();
-                        } else if (command.equals(OnOffType.OFF)) {
+                        } else if (command == OnOffType.OFF) {
                             group.off();
                         }
                     } else if (command instanceof PercentType) {
@@ -93,9 +93,9 @@ public class CBusLightHandler extends CBusGroupHandler {
                         group.ramp((int) Math.round(value.doubleValue() / 100 * 255), 0);
                     } else if (command instanceof IncreaseDecreaseType) {
                         int level = group.getLevel();
-                        if (command.equals(IncreaseDecreaseType.DECREASE)) {
+                        if (command == IncreaseDecreaseType.DECREASE) {
                             level = Math.max(level - 1, 0);
-                        } else if (command.equals(IncreaseDecreaseType.INCREASE)) {
+                        } else if (command == IncreaseDecreaseType.INCREASE) {
                             level = Math.min(level + 1, 255);
                         }
                         group.ramp(level, 0);

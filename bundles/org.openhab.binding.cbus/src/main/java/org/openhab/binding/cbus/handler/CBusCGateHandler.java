@@ -16,16 +16,12 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -36,6 +32,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.cbus.CBusBindingConstants;
 import org.openhab.binding.cbus.internal.CBusCGateConfiguration;
+import org.openhab.binding.cbus.internal.CBusThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,51 +40,8 @@ import com.daveoxley.cbus.CGateConnectException;
 import com.daveoxley.cbus.CGateException;
 import com.daveoxley.cbus.CGateInterface;
 import com.daveoxley.cbus.CGateSession;
-import com.daveoxley.cbus.CGateThreadPool;
-import com.daveoxley.cbus.CGateThreadPoolExecutor;
 import com.daveoxley.cbus.events.EventCallback;
 import com.daveoxley.cbus.status.StatusChangeCallback;
-
-/**
- * The {@link CBusThreadPool} is responsible for executing jobs from a threadpool
- *
- * @author John Harvey - Initial contribution
- */
-
-@NonNullByDefault
-final class CBusThreadPool extends CGateThreadPool {
-
-    private final Map<@Nullable String, @Nullable CGateThreadPoolExecutor> executorMap = new HashMap<>();
-
-    @Override
-    protected synchronized CGateThreadPoolExecutor CreateExecutor(@Nullable String name) {
-        @Nullable
-        CGateThreadPoolExecutor executor = executorMap.get(name);
-
-        if (executor != null) {
-            return executor;
-        }
-        CGateThreadPoolExecutor newExecutor = new CBusThreadPoolExecutor(name);
-        executorMap.put(name, newExecutor);
-        return newExecutor;
-    }
-
-    @NonNullByDefault
-    public class CBusThreadPoolExecutor extends CGateThreadPoolExecutor {
-        private final ThreadPoolExecutor threadPool;
-
-        public CBusThreadPoolExecutor(@Nullable String poolName) {
-            threadPool = (ThreadPoolExecutor) ThreadPoolManager.getPool("binding.cbus-" + poolName);
-        }
-
-        @Override
-        protected void execute(@Nullable Runnable runnable) {
-            if (runnable != null) {
-                threadPool.execute(runnable);
-            }
-        }
-    }
-}
 
 /**
  * The {@link CBusCGateHandler} is responsible for handling commands, which are
@@ -100,9 +54,9 @@ final class CBusThreadPool extends CGateThreadPool {
 public class CBusCGateHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(CBusCGateHandler.class);
-    private @Nullable InetAddress ipAddress = null;
-    public @Nullable CGateSession cGateSession = null;
-    private @Nullable ScheduledFuture<?> keepAliveFuture = null;
+    private @Nullable InetAddress ipAddress;
+    public @Nullable CGateSession cGateSession;
+    private @Nullable ScheduledFuture<?> keepAliveFuture;
 
     public CBusCGateHandler(Bridge br) {
         super(br);
@@ -119,17 +73,14 @@ public class CBusCGateHandler extends BaseBridgeHandler {
         logger.debug("Initializing CGate Bridge handler. {} {}", getThing().getThingTypeUID(), getThing().getUID());
         CBusCGateConfiguration configuration = getConfigAs(CBusCGateConfiguration.class);
         logger.debug("Using configuration {}", configuration);
-        if ("127.0.0.1".equals(configuration.ipAddress) || "localhost".equals(configuration.ipAddress)) {
-            this.ipAddress = InetAddress.getLoopbackAddress();
-        } else {
-            try {
-                this.ipAddress = InetAddress.getByName(configuration.ipAddress);
-            } catch (UnknownHostException e1) {
-                updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                        "IP Address not resolvable");
-                return;
-            }
+        try {
+            this.ipAddress = InetAddress.getByName(configuration.ipAddress);
+        } catch (UnknownHostException e1) {
+            updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                    "IP Address not resolvable");
+            return;
         }
+
         InetAddress address = this.ipAddress;
         if (address != null) {
             logger.debug("CGate IP         {}.", address.getHostAddress());
@@ -166,10 +117,10 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                 updateStatus();
             } catch (CGateConnectException e) {
                 updateStatus();
-                logger.debug("Failed to connect to CGate: {}", e.getMessage());
+                logger.debug("Failed to connect to CGate:", e);
                 try {
                     cGateSession.close();
-                } catch (CGateException e2) {
+                } catch (CGateException ignore) {
                     // We dont really care if an exception is thrown when clossing the connection after a failure
                     // connecting.
                 }
@@ -186,7 +137,7 @@ public class CBusCGateHandler extends BaseBridgeHandler {
         if (cGateSession.isConnected()) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            if (!lastStatus.equals(ThingStatus.OFFLINE)) {
+            if (lastStatus != ThingStatus.OFFLINE) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
         }
@@ -278,7 +229,7 @@ public class CBusCGateHandler extends BaseBridgeHandler {
     private class EventMonitor extends EventCallback {
 
         @Override
-        public boolean acceptEvent(int event_code) {
+        public boolean acceptEvent(int eventCode) {
             return true;
         }
 
@@ -406,6 +357,10 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                         commentTokenizer.poll();
                         @Nullable
                         String commentToken = commentTokenizer.peek();
+                        /// var/log/openhab2/openhab.log.7:2020-04-05 22:09:47.786 [DEBUG]
+                        /// [inding.cbus.handler.CBusCGateHandler] - ProcessStatusChange lighting SyncUpdate
+                        /// //OURHOME/254/56/34 level=255 #sourceunit=-1 OID=9a8df460-59af-1038-a5d2-cd4f3d2671ad
+
                         if ("SyncUpdate".equals(commentToken)) {
                             commentTokenizer.poll();
                             @Nullable

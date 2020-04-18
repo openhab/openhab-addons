@@ -1,11 +1,11 @@
 # C-Bus Binding
 
 This is the binding for the [Clipsal C-Bus System](http://www2.clipsal.com/cis/technical/product_groups/cbus).
-This binding allows you to view and control groups on C-Bus networks from openHAB2.
+This binding allows you to view and control groups on C-Bus networks from openHAB.
 
 ## Configuration
 
-This binding connects to C-Gate software which can be downloaded from the [Clipsal Downloads Site](https://updates.clipsal.com/ClipsalSoftwareDownload/mainsite/cis/technical/index.html). There is information about setting up the C-Gate software in the [CBus Forums](https://www.cbusforums.com/forums/c-bus-toolkit-and-c-gate-software.4). Make sure that the config/access.txt file allows a connection from computer running openhab.
+This binding connects to C-Gate software which can be downloaded from the [Clipsal Downloads Site](https://updates.clipsal.com/ClipsalSoftwareDownload/mainsite/cis/technical/index.html). There is information about setting up the C-Gate software in the [CBus Forums](https://www.cbusforums.com/forums/c-bus-toolkit-and-c-gate-software.4). Make sure that the config/access.txt file allows a connection from computer running openHAB.
 
 Whilst all versions of C-Gate should work 2.11.2 contained a fix for handling Indicator Kill messages for trigger groups. Without that they will remain on the last value set and wont match what is shown on CBus devices.
 

@@ -45,8 +45,8 @@ import com.daveoxley.cbus.Network;
 public abstract class CBusGroupHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(CBusGroupHandler.class);
-    protected @Nullable CBusNetworkHandler cBusNetworkHandler = null;
-    protected @Nullable Group group = null;
+    protected @Nullable CBusNetworkHandler cBusNetworkHandler;
+    protected @Nullable Group group;
     protected int applicationId = -1;
     protected int groupId = -1;
 
@@ -106,7 +106,7 @@ public abstract class CBusGroupHandler extends BaseThingHandler {
                         Map<String, String> updatedProperties = editProperties();
                         updatedProperties.put(CBusBindingConstants.PROPERTY_GROUP_NAME, group.getName());
                         updateProperties(updatedProperties);
-                    } catch (CGateException e) {
+                    } catch (CGateException ignore) {
                         // Cant get name so properties wont be updated
                     }
                 } else {
@@ -145,7 +145,6 @@ public abstract class CBusGroupHandler extends BaseThingHandler {
     }
 
     private @Nullable CBusNetworkHandler getCBusNetworkHandler() {
-        CBusNetworkHandler bridgeHandler = null;
         Bridge bridge = getBridge();
         if (bridge == null) {
             logger.debug("Required bridge not defined for device .");
@@ -153,10 +152,9 @@ public abstract class CBusGroupHandler extends BaseThingHandler {
         }
         ThingHandler handler = bridge.getHandler();
         if (handler instanceof CBusNetworkHandler) {
-            bridgeHandler = (CBusNetworkHandler) handler;
-        } else {
-            logger.debug("No available bridge handler found for bridge: {}", bridge.getUID());
+            return (CBusNetworkHandler) handler;
         }
-        return bridgeHandler;
+        logger.debug("No available bridge handler found for bridge: {}", bridge.getUID());
+        return null;
     }
 }

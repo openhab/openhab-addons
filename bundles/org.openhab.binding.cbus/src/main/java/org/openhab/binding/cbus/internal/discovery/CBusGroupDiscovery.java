@@ -99,12 +99,10 @@ public class CBusGroupDiscovery extends AbstractDiscoveryService {
                     }
                 }
             } catch (CGateException e) {
-                logger.warn("Failed to discover groups", e);
+                logger.debug("Failed to discover groups", e);
             }
-
         }
         scanFinished();
-
     }
 
     private synchronized void scanFinished() {

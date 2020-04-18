@@ -44,11 +44,11 @@ import com.daveoxley.cbus.Project;
 public class CBusNetworkHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(CBusNetworkHandler.class);
-    private @Nullable CBusNetworkConfiguration configuration = null;
-    private @Nullable Network network = null;
-    private @Nullable Project projectObject = null;
-    private @Nullable ScheduledFuture<?> initNetwork = null;
-    private @Nullable ScheduledFuture<?> networkSync = null;
+    private @Nullable CBusNetworkConfiguration configuration;
+    private @Nullable Network network;
+    private @Nullable Project projectObject;
+    private @Nullable ScheduledFuture<?> initNetwork;
+    private @Nullable ScheduledFuture<?> networkSync;
 
     public CBusNetworkHandler(Bridge thing) {
         super(thing);
@@ -125,7 +125,7 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
                     try {
                         projectObject = (Project) session.getCGateObject("//" + project);
                         this.projectObject = projectObject;
-                    } catch (CGateException e2) {
+                    } catch (CGateException ignore) {
                         // We dont need to do anything other than stop this propagating
                     }
                 }
@@ -140,7 +140,7 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
                     try {
                         network = (Network) session.getCGateObject("//" + project + "/" + networkID);
                         this.network = network;
-                    } catch (CGateException e2) {
+                    } catch (CGateException ignore) {
                         // We dont need to do anything other than stop this propagating
                     }
                 }
@@ -169,7 +169,6 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
                 updateStatus();
                 return;
             }
-            logger.debug("State should be ok !!!!!!");
         } catch (CGateException e) {
             logger.warn("Cannot load C-Bus network {}", networkID, e);
             updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.COMMUNICATION_ERROR);
@@ -256,7 +255,7 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
     }
 
     private @Nullable CBusCGateHandler getCBusCGateHandler() {
-        logger.debug("getCBusCGateHandler --");
+        logger.debug("getCBusCGateHandler");
         Bridge bridge = getBridge();
         if (bridge == null) {
             logger.debug("Required bridge not defined for device.");

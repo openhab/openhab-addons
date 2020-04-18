@@ -56,26 +56,26 @@ public class CBusHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        if (thingTypeUID.equals(CBusBindingConstants.BRIDGE_TYPE_CGATE)) {
+        if (CBusBindingConstants.BRIDGE_TYPE_CGATE.equals(thingTypeUID)) {
             CBusCGateHandler handler = new CBusCGateHandler((Bridge) thing);
             registerDeviceDiscoveryService(handler);
             return handler;
         }
-        if (thingTypeUID.equals(CBusBindingConstants.BRIDGE_TYPE_NETWORK)) {
+        if (CBusBindingConstants.BRIDGE_TYPE_NETWORK.equals(thingTypeUID)) {
             CBusNetworkHandler handler = new CBusNetworkHandler((Bridge) thing);
             registerDeviceDiscoveryService(handler);
             return handler;
         }
-        if (thingTypeUID.equals(CBusBindingConstants.THING_TYPE_LIGHT)) {
+        if (CBusBindingConstants.THING_TYPE_LIGHT.equals(thingTypeUID)) {
             return new CBusLightHandler(thing);
         }
-        if (thingTypeUID.equals(CBusBindingConstants.THING_TYPE_TEMPERATURE)) {
+        if (CBusBindingConstants.THING_TYPE_TEMPERATURE.equals(thingTypeUID)) {
             return new CBusTemperatureHandler(thing);
         }
-        if (thingTypeUID.equals(CBusBindingConstants.THING_TYPE_TRIGGER)) {
+        if (CBusBindingConstants.THING_TYPE_TRIGGER.equals(thingTypeUID)) {
             return new CBusTriggerHandler(thing);
         }
-        if (thingTypeUID.equals(CBusBindingConstants.THING_TYPE_DALI)) {
+        if (CBusBindingConstants.THING_TYPE_DALI.equals(thingTypeUID)) {
             return new CBusDaliHandler(thing);
         }
         return null;
