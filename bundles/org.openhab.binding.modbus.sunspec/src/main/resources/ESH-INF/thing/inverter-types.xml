@@ -17,6 +17,7 @@
 		<channel-groups>
 			<channel-group id="deviceInformation" typeId="device-information" />
 			<channel-group id="acGeneral" typeId="ac-general" />
+			<channel-group id="dcGeneral" typeId="dc-general" />
 		</channel-groups>
 
 		<properties>

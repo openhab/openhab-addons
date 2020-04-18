@@ -103,6 +103,36 @@ public class InverterModelBlock {
     public Short acEnergyLifetimeSF;
 
     /**
+     * DC Current value
+     */
+    public Optional<Integer> dcCurrent;
+
+    /**
+     * DC Current scale factor
+     */
+    public Optional<Short> dcCurrentSF;
+
+    /**
+     * DC Voltage value
+     */
+    public Optional<Integer> dcVoltage;
+
+    /**
+     * DC Voltage scale factor
+     */
+    public Optional<Short> dcVoltageSF;
+
+    /**
+     * DC Power value
+     */
+    public Optional<Short> dcPower;
+
+    /**
+     * DC Power scale factor
+     */
+    public Optional<Short> dcPowerSF;
+
+    /**
      * Cabinet temperature
      */
     public Short temperatureCabinet;

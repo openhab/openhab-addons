@@ -46,6 +46,14 @@ public class InverterModelParser extends AbstractBaseParser implements SunspecPa
         block.acPowerFactorSF = extractOptionalSunSSF(raw, 23);
         block.acEnergyLifetime = extractAcc32(raw, 24, 0);
         block.acEnergyLifetimeSF = extractSunSSF(raw, 26);
+
+        block.dcCurrent = extractOptionalUInt16(raw, 27);
+        block.dcCurrentSF = extractOptionalSunSSF(raw, 28);
+        block.dcVoltage = extractOptionalUInt16(raw, 29);
+        block.dcVoltageSF = extractOptionalSunSSF(raw, 30);
+        block.dcPower = extractOptionalInt16(raw, 31);
+        block.dcPowerSF = extractOptionalSunSSF(raw, 32);
+
         block.temperatureCabinet = extractInt16(raw, 33, (short) 0);
         block.temperatureHeatsink = extractOptionalInt16(raw, 34);
         block.temperatureTransformer = extractOptionalInt16(raw, 35);

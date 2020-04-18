@@ -45,6 +45,26 @@
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	
+	<channel-type id="dc-current-type">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>DC Current value</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="dc-voltage-type">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>DC Voltage value</label>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="dc-power-type">
+		<item-type>Number:Power</item-type>
+		<label>DC Power value</label>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+
+
 	<channel-type id="cabinet-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Cabinet Temperature</label>
@@ -68,7 +88,6 @@
 		<label>Other Temperature</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-
 
 	<channel-type id="status-type">
 		<item-type>String</item-type>

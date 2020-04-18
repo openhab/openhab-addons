@@ -103,6 +103,14 @@ public class InverterHandler extends AbstractSunSpecHandler {
                                                                                   // see:
                                                                                   // https://github.com/openhab/openhab-core/pull/1347
 
+        // DC General group
+        updateState(new ChannelUID(getThing().getUID(), GROUP_DC_GENERAL, CHANNEL_DC_CURRENT),
+                getScaled(block.dcCurrent, block.dcCurrentSF, AMPERE));
+        updateState(new ChannelUID(getThing().getUID(), GROUP_DC_GENERAL, CHANNEL_DC_VOLTAGE),
+                getScaled(block.dcVoltage, block.dcVoltageSF, VOLT));
+        updateState(new ChannelUID(getThing().getUID(), GROUP_DC_GENERAL, CHANNEL_DC_POWER),
+                getScaled(block.dcPower, block.dcPowerSF, VOLT));
+
         updateState(channelUID(GROUP_AC_GENERAL, CHANNEL_AC_POWER_FACTOR),
                 getScaled(block.acPowerFactor, block.acPowerFactorSF, PERCENT));
 
