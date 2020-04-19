@@ -86,8 +86,8 @@ public class MagentaTVDiscoveryParticipant implements UpnpDiscoveryParticipant {
                 logger.debug("Create Thing for device {} with UDN {}, Model{}", device.getDetails().getFriendlyName(),
                         device.getIdentity().getUdn().getIdentifierString(),
                         device.getDetails().getModelDetails().getModelName());
-                result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                        .withLabel(device.getDetails().getFriendlyName()).build();
+                result = DiscoveryResultBuilder.create(uid).withLabel(device.getDetails().getFriendlyName())
+                        .withProperties(properties).withRepresentationProperty(mac).build();
             }
         } catch (Exception e) {
             logger.debug("Unable to create thing for device {}/{} - {}", device.getDetails().getFriendlyName(),
