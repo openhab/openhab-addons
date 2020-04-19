@@ -125,6 +125,8 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
     private MonopriceAudioZoneData zone17data = new MonopriceAudioZoneData();
     private MonopriceAudioZoneData zone18data = new MonopriceAudioZoneData();
 
+    private Long lastPollingUpdate = System.currentTimeMillis();
+
     private Object sequenceLock = new Object();
 
     /**
@@ -590,8 +592,16 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                 if (openConnection()) {
                     synchronized (sequenceLock) {
                         try {
+                            Long prevUpdateTime = lastPollingUpdate;
                             connector.queryZone(MonopriceAudioZone.ZONE1);
-                        } catch (MonopriceAudioException e) {
+                            Thread.sleep(500);
+
+                            // prevUpdateTime should have changed if a zone update was received
+                            if (prevUpdateTime.equals(lastPollingUpdate)) {
+                                error = "Controller not responding to status requests";
+                            }
+
+                        } catch (MonopriceAudioException | InterruptedException e) {
                             error = "First command after connection failed";
                             logger.error("{}: {}", error, e.getMessage());
                             closeConnection();
@@ -604,6 +614,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
                 } else {
                     updateStatus(ThingStatus.ONLINE);
+                    lastPollingUpdate = System.currentTimeMillis();
                 }
             }
         }, 1, RECON_POLLING_INTERVAL, TimeUnit.SECONDS);
@@ -643,7 +654,15 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                             logger.debug("Polling error: {}", e.getMessage());
                         }
                     });
- 
+
+                    // if the last successful polling update was more than 2.25 intervals ago, the controller
+                    // is either switched off or not responding even though the connection is still good
+                    if ((System.currentTimeMillis() - lastPollingUpdate) > (pollingInterval * 2.25 * 1000)) {
+                        logger.error("Controller not responding to status requests");
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Controller not responding to status requests");
+                        closeConnection();
+                        scheduleReconnectJob();
+                    } 
                 }
             }
         }, INITIAL_POLLING_DELAY, pollingInterval, TimeUnit.SECONDS);
@@ -744,6 +763,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                 updateChannelState(zone, channelType, zoneData);
             });
         }
+        lastPollingUpdate = System.currentTimeMillis();
     }
 
 }
