@@ -1,4 +1,4 @@
-# Modbus: SunSpec Bundle
+# Modbus SunSpec Bundle
 
 This bundle is an extension for the Modbus binding to support the SunSpec protocol.
 
@@ -8,7 +8,7 @@ It defines how common parameters like AC/DC voltage and current, lifetime produc
 SunSpec is supported by several manufacturers like ABB, Fronius, LG, SMA, SolarEdge, Schneider Electric.
 For a list of certified products see this page: https://sunspec.org/sunspec-certified-products/
 
-# IMPORTANT: under merge
+# IMPORTANT under merge
 
 ** IMPORTANT: this version of this bundle is being merged into openHAB. This will be done in small steps - this means that not everything in this readme is supported at the moment **
 
