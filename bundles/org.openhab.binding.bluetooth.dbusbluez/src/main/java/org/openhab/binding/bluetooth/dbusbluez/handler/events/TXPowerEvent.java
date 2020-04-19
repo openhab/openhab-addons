@@ -12,20 +12,22 @@
  */
 package org.openhab.binding.bluetooth.dbusbluez.handler.events;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.dbusbluez.handler.DBusBlueZEvent;
 
 /**
  *
- * @author blafois
+ * @author Benjamin Lafois
  *
  */
+@NonNullByDefault
 public class TXPowerEvent extends DBusBlueZEvent {
 
     private short txPower;
 
-    public TXPowerEvent(BluetoothAddress device, short txpower) {
-        super(EVENT_TYPE.TXPOWER, device);
+    public TXPowerEvent(BluetoothAddress address, short txpower) {
+        super(EVENT_TYPE.TXPOWER, address);
         this.txPower = txpower;
     }
 

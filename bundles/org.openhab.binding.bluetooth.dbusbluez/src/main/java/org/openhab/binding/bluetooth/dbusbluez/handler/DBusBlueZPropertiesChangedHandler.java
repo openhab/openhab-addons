@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.freedesktop.dbus.DBusMap;
 import org.freedesktop.dbus.handlers.AbstractPropertiesChangedHandler;
 import org.freedesktop.dbus.interfaces.Properties.PropertiesChanged;
@@ -40,25 +42,22 @@ import org.slf4j.LoggerFactory;
  * @author Benjamin Lafois - Initial contribution and API
  *
  */
+@NonNullByDefault
 public class DBusBlueZPropertiesChangedHandler extends AbstractPropertiesChangedHandler {
 
     private final Logger logger = LoggerFactory.getLogger(DBusBlueZPropertiesChangedHandler.class);
 
     private final List<DBusBlueZEventListener> listeners = new CopyOnWriteArrayList<>();
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     public void addListener(DBusBlueZEventListener listener) {
         this.listeners.add(listener);
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     @Override
-    public void handle(PropertiesChanged properties) {
+    public void handle(@Nullable PropertiesChanged properties) {
 
         try {
-            if (properties.getPropertiesChanged() == null) {
+            if (properties == null || properties.getPropertiesChanged() == null) {
                 logger.debug("Null properties. Skipping.");
                 return;
             }
@@ -119,33 +118,33 @@ public class DBusBlueZPropertiesChangedHandler extends AbstractPropertiesChanged
 
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     private void onServicesResolved(String dbusPath, boolean resolved) {
         BluetoothAddress addr = DBusBlueZUtils.dbusPathToMac(dbusPath);
-        notifyListeners(new ServicesResolvedEvent(addr, resolved));
+        if (addr != null) {
+            notifyListeners(new ServicesResolvedEvent(addr, resolved));
+        }
     }
 
     private void onNameUpdate(String dbusPath, String value) {
         BluetoothAddress addr = DBusBlueZUtils.dbusPathToMac(dbusPath);
-        notifyListeners(new NameEvent(addr, value));
+        if (addr != null) {
+            notifyListeners(new NameEvent(addr, value));
+        }
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     private void onTXPowerUpdate(String dbusPath, Short txPower) {
         BluetoothAddress addr = DBusBlueZUtils.dbusPathToMac(dbusPath);
-        notifyListeners(new TXPowerEvent(addr, txPower));
+        if (addr != null) {
+            notifyListeners(new TXPowerEvent(addr, txPower));
+        }
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     private void onConnectedUpdate(String dbusPath, boolean connected) {
         BluetoothAddress addr = DBusBlueZUtils.dbusPathToMac(dbusPath);
-        notifyListeners(new ConnectedEvent(addr, connected));
+        if (addr != null) {
+            notifyListeners(new ConnectedEvent(addr, connected));
+        }
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private void onManufacturerDataUpdate(String dbusPath, Variant v) {
@@ -159,33 +158,31 @@ public class DBusBlueZPropertiesChangedHandler extends AbstractPropertiesChanged
         }
 
         BluetoothAddress addr = DBusBlueZUtils.dbusPathToMac(dbusPath);
-        notifyListeners(new ManufacturerDataEvent(addr, eventData));
+        if (addr != null) {
+            notifyListeners(new ManufacturerDataEvent(addr, eventData));
+        }
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     private void onValueUpdate(String dbusPath, byte[] value) {
         BluetoothAddress addr = DBusBlueZUtils.dbusPathToMac(dbusPath);
-        notifyListeners(new CharacteristicUpdateEvent(addr, dbusPath, value));
+        if (addr != null) {
+            notifyListeners(new CharacteristicUpdateEvent(addr, dbusPath, value));
+        }
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     private void onRSSIUpdate(String dbusPath, Short rssi) {
         BluetoothAddress addr = DBusBlueZUtils.dbusPathToMac(dbusPath);
-        notifyListeners(new RssiEvent(addr, rssi));
+        if (addr != null) {
+            notifyListeners(new RssiEvent(addr, rssi));
+        }
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     private void notifyListeners(DBusBlueZEvent event) {
         for (DBusBlueZEventListener listener : this.listeners) {
-            if (listener.getAddress() != null && listener.getAddress().equals(event.getDevice())) {
+            if (listener.getAddress().equals(event.getDevice())) {
                 listener.onDBusBlueZEvent(event);
             }
         }
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
 }

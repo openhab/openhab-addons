@@ -12,13 +12,15 @@
  */
 package org.openhab.binding.bluetooth.dbusbluez.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.BluetoothAddress;
 
 /**
  *
- * @author blafois
+ * @author Benjamin Lafois
  *
  */
+@NonNullByDefault
 public interface DBusBlueZEventListener {
 
     public void onDBusBlueZEvent(DBusBlueZEvent event);

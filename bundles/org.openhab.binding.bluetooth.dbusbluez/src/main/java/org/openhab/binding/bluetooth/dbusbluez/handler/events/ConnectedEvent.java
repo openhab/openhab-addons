@@ -12,20 +12,22 @@
  */
 package org.openhab.binding.bluetooth.dbusbluez.handler.events;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.dbusbluez.handler.DBusBlueZEvent;
 
 /**
  *
- * @author blafois
+ * @author Benjamin Lafois
  *
  */
+@NonNullByDefault
 public class ConnectedEvent extends DBusBlueZEvent {
 
     private boolean connected;
 
-    public ConnectedEvent(BluetoothAddress device, boolean connected) {
-        super(EVENT_TYPE.CONNECTED, device);
+    public ConnectedEvent(BluetoothAddress address, boolean connected) {
+        super(EVENT_TYPE.CONNECTED, address);
         this.connected = connected;
     }
 

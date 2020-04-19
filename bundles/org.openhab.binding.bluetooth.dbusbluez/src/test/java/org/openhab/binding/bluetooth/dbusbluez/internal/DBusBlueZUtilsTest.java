@@ -19,7 +19,7 @@ import org.openhab.binding.bluetooth.BluetoothAddress;
 
 /**
  *
- * @author blafois
+ * @author Benjamin Lafois
  *
  */
 public class DBusBlueZUtilsTest {
@@ -29,11 +29,7 @@ public class DBusBlueZUtilsTest {
 
         // /org/bluez/hci0/dev_A4_34_D9_ED_D3_74/service0026/char0027
 
-        BluetoothAddress addr = DBusBlueZUtils.dbusPathToMac(null);
-
-        assertNull(addr);
-
-        addr = DBusBlueZUtils.dbusPathToMac("/org/bluez/dsqdq/dsqdsq/ds/dd");
+        BluetoothAddress addr = DBusBlueZUtils.dbusPathToMac("/org/bluez/dsqdq/dsqdsq/ds/dd");
         assertNull(addr);
 
         addr = DBusBlueZUtils.dbusPathToMac("/org/bluez/hci0/dev_00!CC!3F!B2!7E!60");

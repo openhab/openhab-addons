@@ -12,20 +12,22 @@
  */
 package org.openhab.binding.bluetooth.dbusbluez.handler.events;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.dbusbluez.handler.DBusBlueZEvent;
 
 /**
  *
- * @author blafois
+ * @author Benjamin Lafois
  *
  */
+@NonNullByDefault
 public class ServicesResolvedEvent extends DBusBlueZEvent {
 
     private boolean resolved;
 
-    public ServicesResolvedEvent(BluetoothAddress device, boolean resolved) {
-        super(EVENT_TYPE.SERVICES_RESOLVED, device);
+    public ServicesResolvedEvent(BluetoothAddress address, boolean resolved) {
+        super(EVENT_TYPE.SERVICES_RESOLVED, address);
         this.resolved = resolved;
     }
 

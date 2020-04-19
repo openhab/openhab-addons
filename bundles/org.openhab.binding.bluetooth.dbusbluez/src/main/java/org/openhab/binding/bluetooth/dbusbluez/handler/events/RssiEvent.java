@@ -12,20 +12,22 @@
  */
 package org.openhab.binding.bluetooth.dbusbluez.handler.events;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.dbusbluez.handler.DBusBlueZEvent;
 
 /**
  *
- * @author blafois
+ * @author Benjamin Lafois
  *
  */
+@NonNullByDefault
 public class RssiEvent extends DBusBlueZEvent {
 
     private short rssi;
 
-    public RssiEvent(BluetoothAddress device, short rssi) {
-        super(EVENT_TYPE.RSSI_UPDATE, device);
+    public RssiEvent(BluetoothAddress address, short rssi) {
+        super(EVENT_TYPE.RSSI_UPDATE, address);
         this.rssi = rssi;
     }
 

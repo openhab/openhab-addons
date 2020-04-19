@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
@@ -25,11 +26,12 @@ import org.freedesktop.dbus.exceptions.DBusException;
 import org.openhab.binding.bluetooth.AbstractBluetoothBridgeHandler;
 import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.dbusbluez.DBusBlueZBluetoothDevice;
-import org.openhab.binding.bluetooth.dbusbluez.internal.DBusBlueZUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.hypfvieh.bluetooth.DeviceManager;
+import com.github.hypfvieh.bluetooth.wrapper.BluetoothAdapter;
+import com.github.hypfvieh.bluetooth.wrapper.BluetoothDevice;
 
 /**
  * The {@link DBusBlueZBridgeHandler} is responsible for talking to the BlueZ stack, using DBus Unix Socket.
@@ -45,8 +47,8 @@ public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusB
     private final Logger logger = LoggerFactory.getLogger(DBusBlueZBridgeHandler.class);
 
     // ADAPTER from BlueZ-DBus Library
-    private @NonNullByDefault({}) com.github.hypfvieh.bluetooth.wrapper.BluetoothAdapter adapter;
-    private @NonNullByDefault({}) com.github.hypfvieh.bluetooth.DeviceManager deviceManager;
+    private @NonNullByDefault({}) BluetoothAdapter adapter;
+    private @NonNullByDefault({}) DeviceManager deviceManager;
 
     // Our BT address
     private @NonNullByDefault({}) BluetoothAddress adapterAddress;
@@ -55,9 +57,7 @@ public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusB
 
     private final ReentrantLock lockDiscoveryJob = new ReentrantLock();
 
-    private @NonNullByDefault({}) ScheduledFuture<?> discoveryJob;
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
+    private @Nullable ScheduledFuture<?> discoveryJob;
 
     /**
      * Constructor
@@ -68,30 +68,10 @@ public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusB
         super(bridge);
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     @Override
     public void initialize() {
         super.initialize();
-
-        logger.debug(
-                "  _____  ____              ____  _            ______  ____  _            _              _   _      ");
-        logger.debug(
-                " |  __ \\|  _ \\            |  _ \\| |          |___  / |  _ \\| |          | |            | | | |     ");
-        logger.debug(
-                " | |  | | |_) |_   _ ___  | |_) | |_   _  ___   / /  | |_) | |_   _  ___| |_ ___   ___ | |_| |__   ");
-        logger.debug(
-                " | |  | |  _ <| | | / __| |  _ <| | | | |/ _ \\ / /   |  _ <| | | | |/ _ \\ __/ _ \\ / _ \\| __| '_ \\  ");
-        logger.debug(
-                " | |__| | |_) | |_| \\__ \\ | |_) | | |_| |  __// /__  | |_) | | |_| |  __/ || (_) | (_) | |_| | | | ");
-        logger.debug(
-                " |_____/|____/ \\__,_|___/ |____/|_|\\__,_|\\___/_____| |____/|_|\\__,_|\\___|\\__\\___/ \\___/ \\__|_| |_| ");
-        logger.debug("");
-
-        logger.debug("Initializing DBusBlueZBridgeHandler...");
-
         initializeInternal();
-
     }
 
     /**
@@ -108,12 +88,6 @@ public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusB
         } catch (DBusException e1) {
             logger.error("failed create instance caused by D-BUS.", e1);
             return false;
-        }
-
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e1) {
-            Thread.currentThread().interrupt();
         }
 
         // This call will return for sure the DM, otherwize createInstance
@@ -140,8 +114,6 @@ public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusB
         return (this.deviceManager != null);
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     private void initializeDeviceManagerInternal() throws DBusException {
         try {
             // if this is the first call to the library, this call
@@ -149,15 +121,13 @@ public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusB
             this.deviceManager = DeviceManager.getInstance();
 
             // Experimental - seems reuse does not work
-            this.deviceManager.closeConnection();
-            DeviceManager.createInstance(false);
+            // this.deviceManager.closeConnection();
+            // DeviceManager.createInstance(false);
         } catch (IllegalStateException e) {
             // Exception caused by first call to the library
             DeviceManager.createInstance(false);
         }
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * This function finds the adapter providing the address in param
@@ -166,13 +136,13 @@ public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusB
      */
     private boolean initializeAdapter() {
 
-        List<com.github.hypfvieh.bluetooth.wrapper.BluetoothAdapter> adapters = this.deviceManager.getAdapters();
+        List<BluetoothAdapter> adapters = this.deviceManager.getAdapters();
 
         if (adapters == null || adapters.isEmpty()) {
             return false;
         }
 
-        for (com.github.hypfvieh.bluetooth.wrapper.BluetoothAdapter btAdapter : adapters) {
+        for (BluetoothAdapter btAdapter : adapters) {
             if (btAdapter.getAddress() != null
                     && btAdapter.getAddress().equalsIgnoreCase(this.adapterAddress.toString())) {
                 // Found the good adapter
@@ -183,20 +153,19 @@ public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusB
                 this.adapter.setPowered(false);
                 logger.debug("Adapter state: {}", this.adapter.isPowered());
 
-                DBusBlueZUtils.sleep(1000);
-                logger.debug("Turning on adapter...");
+                // Only restart the adapter 1 second at least after stopping it. stop/start too quick will not work.
+                scheduler.schedule(() -> {
+                    logger.debug("Turning on adapter...");
+                    this.adapter.setPowered(true);
+                    logger.debug("Adapter DBUS path: {}", this.adapter.getDbusPath());
+                }, 1, TimeUnit.SECONDS);
 
-                this.adapter.setPowered(true);
-
-                logger.debug("Adapter DBUS path: {}", this.adapter.getDbusPath());
                 return true;
             }
         }
 
         return false;
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     private void initializeInternal() {
 
@@ -231,13 +200,7 @@ public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusB
         this.discoveryJob = scheduler.scheduleAtFixedRate(this::refreshDevices, 10, 10, TimeUnit.SECONDS);
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     /**
-     * This method is essential as most cheap USB chips will not supporte scanning
-     * AND connecting simultaneously. The scanning state can also be changed by
-     * the operating system or bluetoothctl command, so it is mandatory to check
-     * state before trying to connect.
      *
      * @return
      */
@@ -247,14 +210,10 @@ public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusB
         return scanning;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     @Override
     public BluetoothAddress getAddress() {
         return adapterAddress;
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public void dispose() {
@@ -279,8 +238,6 @@ public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusB
         super.dispose();
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     private void startDiscovery() {
         // we need to make sure the adapter is powered first
         if (!adapter.isPowered()) {
@@ -291,8 +248,6 @@ public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusB
         }
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     private void refreshDevices() {
         logger.debug("refreshDevices()");
 
@@ -300,12 +255,11 @@ public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusB
 
             try {
 
-                List<com.github.hypfvieh.bluetooth.wrapper.BluetoothDevice> dBusBlueZDevices = this.deviceManager
-                        .getDevices(true);
+                List<BluetoothDevice> dBusBlueZDevices = this.deviceManager.getDevices(true);
 
                 logger.debug("Found {} Bluetooth devices.", dBusBlueZDevices.size());
 
-                for (com.github.hypfvieh.bluetooth.wrapper.BluetoothDevice dBusBlueZDevice : dBusBlueZDevices) {
+                for (BluetoothDevice dBusBlueZDevice : dBusBlueZDevices) {
                     if (dBusBlueZDevice.getAddress() == null) {
                         // For some reasons, sometimes the address is null..
                         continue;
@@ -329,15 +283,11 @@ public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusB
 
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     @Override
     protected DBusBlueZBluetoothDevice createDevice(BluetoothAddress address) {
         DBusBlueZBluetoothDevice device = new DBusBlueZBluetoothDevice(this, address);
         this.propertiesChangedHandler.addListener(device);
         return device;
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
 }

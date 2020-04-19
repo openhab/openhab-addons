@@ -15,20 +15,21 @@ package org.openhab.binding.bluetooth.dbusbluez.internal;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.BluetoothAddress;
 
 /**
  *
- * @author blafois
+ * @author Benjamin Lafois
  *
  */
+@NonNullByDefault
 public class DBusBlueZUtils {
 
     private DBusBlueZUtils() {
 
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     public static void sleep(int ms) {
         try {
@@ -38,13 +39,7 @@ public class DBusBlueZUtils {
         }
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
-    public static BluetoothAddress dbusPathToMac(String dbusPath) {
-
-        if (dbusPath == null) {
-            return null;
-        }
+    public static @Nullable BluetoothAddress dbusPathToMac(String dbusPath) {
 
         // /org/bluez/hci0/dev_00_CC_3F_B2_7E_60
         // /org/bluez/hci0/dev_A4_34_D9_ED_D3_74/service0026/char0027
@@ -62,7 +57,5 @@ public class DBusBlueZUtils {
             return null;
         }
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
 }

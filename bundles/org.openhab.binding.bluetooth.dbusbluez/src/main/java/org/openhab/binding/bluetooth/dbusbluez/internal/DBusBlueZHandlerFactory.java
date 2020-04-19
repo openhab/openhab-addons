@@ -41,21 +41,15 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.bluetooth.dbusbluez")
 public class DBusBlueZHandlerFactory extends BaseThingHandlerFactory {
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .singleton(DBusBlueZAdapterConstants.THING_TYPE_DBUSBLUEZ);
 
     private final Map<ThingUID, ServiceRegistration<?>> serviceRegs = new HashMap<>();
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
@@ -70,14 +64,10 @@ public class DBusBlueZHandlerFactory extends BaseThingHandlerFactory {
         }
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     private synchronized void registerBluetoothAdapter(BluetoothAdapter adapter) {
         this.serviceRegs.put(adapter.getUID(), bundleContext.registerService(BluetoothAdapter.class.getName(), adapter,
                 new Hashtable<String, Object>()));
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
@@ -89,7 +79,5 @@ public class DBusBlueZHandlerFactory extends BaseThingHandlerFactory {
             }
         }
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
 }

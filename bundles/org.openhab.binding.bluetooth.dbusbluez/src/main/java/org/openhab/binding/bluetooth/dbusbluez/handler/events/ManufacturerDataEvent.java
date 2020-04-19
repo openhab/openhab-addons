@@ -14,20 +14,22 @@ package org.openhab.binding.bluetooth.dbusbluez.handler.events;
 
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.dbusbluez.handler.DBusBlueZEvent;
 
 /**
  *
- * @author blafois
+ * @author Benjamin Lafois
  *
  */
+@NonNullByDefault
 public class ManufacturerDataEvent extends DBusBlueZEvent {
 
     private Map<Short, byte[]> data;
 
-    public ManufacturerDataEvent(BluetoothAddress device, Map<Short, byte[]> data) {
-        super(EVENT_TYPE.MANUFACTURER_DATA, device);
+    public ManufacturerDataEvent(BluetoothAddress address, Map<Short, byte[]> data) {
+        super(EVENT_TYPE.MANUFACTURER_DATA, address);
         this.data = data;
     }
 

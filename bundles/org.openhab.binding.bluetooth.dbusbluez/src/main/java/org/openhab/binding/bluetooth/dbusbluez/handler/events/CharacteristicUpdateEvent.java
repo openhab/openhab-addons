@@ -12,21 +12,23 @@
  */
 package org.openhab.binding.bluetooth.dbusbluez.handler.events;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.dbusbluez.handler.DBusBlueZEvent;
 
 /**
  *
- * @author blafois
+ * @author Benjamin Lafois
  *
  */
+@NonNullByDefault
 public class CharacteristicUpdateEvent extends DBusBlueZEvent {
 
     private String dbusPath;
     private byte[] data;
 
-    public CharacteristicUpdateEvent(BluetoothAddress device, String dbusPath, byte[] data) {
-        super(EVENT_TYPE.CHARACTERISTIC_NOTIFY, device);
+    public CharacteristicUpdateEvent(BluetoothAddress address, String dbusPath, byte[] data) {
+        super(EVENT_TYPE.CHARACTERISTIC_NOTIFY, address);
         this.dbusPath = dbusPath;
         this.data = data;
     }

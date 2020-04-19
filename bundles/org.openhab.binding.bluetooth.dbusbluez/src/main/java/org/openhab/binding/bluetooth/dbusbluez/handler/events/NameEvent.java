@@ -12,20 +12,22 @@
  */
 package org.openhab.binding.bluetooth.dbusbluez.handler.events;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.dbusbluez.handler.DBusBlueZEvent;
 
 /**
  *
- * @author blafois
+ * @author Benjamin Lafois
  *
  */
+@NonNullByDefault
 public class NameEvent extends DBusBlueZEvent {
 
     private String name;
 
-    public NameEvent(BluetoothAddress device, String name) {
-        super(EVENT_TYPE.NAME, device);
+    public NameEvent(BluetoothAddress address, String name) {
+        super(EVENT_TYPE.NAME, address);
         this.name = name;
     }
 

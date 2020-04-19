@@ -18,6 +18,8 @@ import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.freedesktop.dbus.errors.NoReply;
@@ -53,20 +55,15 @@ import com.github.hypfvieh.bluetooth.wrapper.BluetoothGattService;
  * @author Benjamin Lafois - Initial contribution and API
  *
  */
+@NonNullByDefault
 public class DBusBlueZBluetoothDevice extends BluetoothDevice implements DBusBlueZEventListener {
-
-    // TODO implement characteristic read notification
-    // TODO implement characteristic write notification
-    // TODO implement descriptor notifications ?
 
     private final Logger logger = LoggerFactory.getLogger(DBusBlueZBluetoothDevice.class);
 
     // Device from native lib
-    private com.github.hypfvieh.bluetooth.wrapper.BluetoothDevice device;
+    private com.github.hypfvieh.bluetooth.wrapper.@Nullable BluetoothDevice device = null;
 
     private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("bluetooth");
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Constructor
@@ -80,8 +77,6 @@ public class DBusBlueZBluetoothDevice extends BluetoothDevice implements DBusBlu
         logger.debug("Creating DBusBlueZ device with address '{}'", address);
 
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public boolean connect() {
@@ -118,8 +113,6 @@ public class DBusBlueZBluetoothDevice extends BluetoothDevice implements DBusBlu
 
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     @Override
     public boolean disconnect() {
 
@@ -136,17 +129,13 @@ public class DBusBlueZBluetoothDevice extends BluetoothDevice implements DBusBlu
 
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     private void ensureConnected() {
         if (device == null || !device.isConnected()) {
             throw new IllegalStateException("DBusBlueZ device is not set or not connected");
         }
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
-    private BluetoothGattCharacteristic getDBusBlueZCharacteristicByUUID(String uuid) {
+    private @Nullable BluetoothGattCharacteristic getDBusBlueZCharacteristicByUUID(String uuid) {
         for (BluetoothGattService service : device.getGattServices()) {
             for (BluetoothGattCharacteristic c : service.getGattCharacteristics()) {
                 if (c.getUuid().equalsIgnoreCase(uuid)) {
@@ -157,7 +146,7 @@ public class DBusBlueZBluetoothDevice extends BluetoothDevice implements DBusBlu
         return null;
     }
 
-    private BluetoothGattCharacteristic getDBusBlueZCharacteristicByDBusPath(String dBusPath) {
+    private @Nullable BluetoothGattCharacteristic getDBusBlueZCharacteristicByDBusPath(String dBusPath) {
         for (BluetoothGattService service : this.device.getGattServices()) {
             if (dBusPath.startsWith(service.getDbusPath())) {
                 for (BluetoothGattCharacteristic characteristic : service.getGattCharacteristics()) {
@@ -171,7 +160,7 @@ public class DBusBlueZBluetoothDevice extends BluetoothDevice implements DBusBlu
     }
 
     @SuppressWarnings("unused")
-    private BluetoothGattDescriptor getDBusBlueZDescriptorByUUID(String uuid) {
+    private @Nullable BluetoothGattDescriptor getDBusBlueZDescriptorByUUID(String uuid) {
         for (BluetoothGattService service : device.getGattServices()) {
             for (BluetoothGattCharacteristic c : service.getGattCharacteristics()) {
                 for (BluetoothGattDescriptor d : c.getGattDescriptors()) {
@@ -183,8 +172,6 @@ public class DBusBlueZBluetoothDevice extends BluetoothDevice implements DBusBlu
         }
         return null;
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public boolean enableNotifications(BluetoothCharacteristic characteristic) {
@@ -211,8 +198,6 @@ public class DBusBlueZBluetoothDevice extends BluetoothDevice implements DBusBlu
             return false;
         }
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public boolean writeCharacteristic(BluetoothCharacteristic characteristic) {
@@ -241,8 +226,6 @@ public class DBusBlueZBluetoothDevice extends BluetoothDevice implements DBusBlu
         });
         return true;
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public void onDBusBlueZEvent(DBusBlueZEvent event) {
@@ -282,23 +265,17 @@ public class DBusBlueZBluetoothDevice extends BluetoothDevice implements DBusBlu
 
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     private void onServicesResolved(ServicesResolvedEvent event) {
         if (event.isResolved()) {
             notifyListeners(BluetoothEventType.SERVICES_DISCOVERED);
         }
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     private void onNameUpdate(NameEvent event) {
         BluetoothScanNotification notification = new BluetoothScanNotification();
         notification.setDeviceName(event.getName());
         notifyListeners(BluetoothEventType.SCAN_RECORD, notification);
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     private void onManufacturerDataUpdate(ManufacturerDataEvent event) {
 
@@ -320,13 +297,9 @@ public class DBusBlueZBluetoothDevice extends BluetoothDevice implements DBusBlu
 
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     private void onTxPowerUpdate(TXPowerEvent event) {
         this.txPower = (int) event.getTxPower();
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     private void onCharacteristicNotify(CharacteristicUpdateEvent event) {
         // Here it is a bit special - as the event is linked to the DBUS path, not characteristic UUID.
@@ -344,8 +317,6 @@ public class DBusBlueZBluetoothDevice extends BluetoothDevice implements DBusBlu
         }
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     @SuppressWarnings("null")
     private void onRssiUpdate(RssiEvent event) {
         this.rssi = (int) event.getRssi();
@@ -359,8 +330,6 @@ public class DBusBlueZBluetoothDevice extends BluetoothDevice implements DBusBlu
         notifyListeners(BluetoothEventType.CONNECTION_STATE,
                 new BluetoothConnectionStatusNotification(connectionState));
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     protected void refreshServices() {
         if (device.getGattServices().size() > getServices().size()) {
@@ -389,8 +358,6 @@ public class DBusBlueZBluetoothDevice extends BluetoothDevice implements DBusBlu
         }
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     public synchronized void updateDBusBlueZDevice(
             com.github.hypfvieh.bluetooth.wrapper.BluetoothDevice dBusBlueZDevice) {
 
@@ -400,9 +367,6 @@ public class DBusBlueZBluetoothDevice extends BluetoothDevice implements DBusBlu
 
         this.device = dBusBlueZDevice;
 
-        if (this.device == null) {
-            return;
-        }
         updateLastSeenTime();
 
         this.name = device.getName();
@@ -414,8 +378,6 @@ public class DBusBlueZBluetoothDevice extends BluetoothDevice implements DBusBlu
         refreshServices();
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     /**
      * Clean up and release memory.
      */
@@ -423,7 +385,5 @@ public class DBusBlueZBluetoothDevice extends BluetoothDevice implements DBusBlu
     public void dispose() {
         this.device = null;
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
 }
