@@ -71,7 +71,7 @@ public class SunspecDiscoveryProcess {
     /**
      * The endpoint where we can reach the device
      */
-    private final Optional<ModbusSlaveEndpoint> endpoint;
+    private final ModbusSlaveEndpoint endpoint;
 
     /**
      * Listener for the discovered devices. We get this
@@ -124,11 +124,12 @@ public class SunspecDiscoveryProcess {
     public SunspecDiscoveryProcess(ModbusEndpointThingHandler handler, ModbusDiscoveryListener listener)
             throws EndpointNotInitializedException {
         this.handler = handler;
+
         ModbusSlaveEndpoint endpoint = this.handler.asSlaveEndpoint();
         if (endpoint != null) {
-            this.endpoint = Optional.of(endpoint);
+            this.endpoint = endpoint;
         } else {
-            this.endpoint = Optional.empty();
+            throw new EndpointNotInitializedException();
         }
         slaveId = handler.getSlaveId();
         this.listener = listener;
@@ -147,12 +148,7 @@ public class SunspecDiscoveryProcess {
      * @param uid the thing type to look for
      * @throws EndpointNotInitializedException
      */
-    public void detectModel() throws EndpointNotInitializedException {
-
-        if (!this.endpoint.isPresent()) {
-            logger.debug("Endpoint is null, can not continue with discovery");
-            throw new EndpointNotInitializedException();
-        }
+    public void detectModel() {
 
         if (possibleAddresses.size() < 1) {
             parsingFinished();
@@ -167,7 +163,7 @@ public class SunspecDiscoveryProcess {
                 SUNSPEC_ID_SIZE, // number or words to return
                 maxTries);
 
-        PollTask task = new BasicPollTaskImpl(endpoint.get(), request, new ModbusReadCallback() {
+        PollTask task = new BasicPollTaskImpl(endpoint, request, new ModbusReadCallback() {
 
             @Override
             public void onRegisters(ModbusReadRequestBlueprint request, ModbusRegisterArray registers) {
@@ -200,12 +196,7 @@ public class SunspecDiscoveryProcess {
             logger.debug("Could not find SunSpec DID at address {}, received: {}, expected: {}", baseAddress, id,
                     SUNSPEC_ID);
             possibleAddresses.remove(0);
-            try {
-                detectModel();
-            } catch (EndpointNotInitializedException ex) {
-                // This should not happen
-                parsingFinished();
-            }
+            detectModel();
             return;
         }
 
@@ -219,12 +210,13 @@ public class SunspecDiscoveryProcess {
      * Look for a valid model block at the current base address
      */
     private void lookForModelBlock() {
+
         BasicModbusReadRequestBlueprint request = new BasicModbusReadRequestBlueprint(slaveId,
                 ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, baseAddress, // Start address
                 MODEL_HEADER_SIZE, // number or words to return
                 maxTries);
 
-        PollTask task = new BasicPollTaskImpl(endpoint.get(), request, new ModbusReadCallback() {
+        PollTask task = new BasicPollTaskImpl(endpoint, request, new ModbusReadCallback() {
 
             @Override
             public void onRegisters(ModbusReadRequestBlueprint request, ModbusRegisterArray registers) {
@@ -294,7 +286,7 @@ public class SunspecDiscoveryProcess {
                 block.length, // number or words to return
                 maxTries);
 
-        PollTask task = new BasicPollTaskImpl(endpoint.get(), request, new ModbusReadCallback() {
+        PollTask task = new BasicPollTaskImpl(endpoint, request, new ModbusReadCallback() {
 
             @Override
             public void onRegisters(ModbusReadRequestBlueprint request, ModbusRegisterArray registers) {
@@ -397,12 +389,7 @@ public class SunspecDiscoveryProcess {
         logger.warn("Error with read at address {}: {} {}", baseAddress, cls, msg);
 
         possibleAddresses.remove(0); // Drop the current base address, and continue with the next one
-        try {
-            detectModel();
-        } catch (EndpointNotInitializedException ex) {
-            // This should not happen, but if it does then give up the discovery
-            parsingFinished();
-        }
+        detectModel();
     }
 
 }

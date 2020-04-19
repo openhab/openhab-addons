@@ -51,6 +51,7 @@ public class SunspecDiscoveryParticipant implements ModbusDiscoveryParticipant {
             new SunspecDiscoveryProcess(handler, listener).detectModel();
         } catch (EndpointNotInitializedException ex) {
             logger.debug("Could not start discovery process");
+            listener.discoveryFinished();
         }
     }
 
