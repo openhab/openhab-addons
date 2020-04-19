@@ -26,17 +26,17 @@ public class CommonModelBlock {
     /**
      * Value = 0x0001. Uniquely identifies this as a SunSpec Common Model Block
      */
-    public Integer sunSpecDID = 0x0001;
+    public int sunSpecDID = 0x0001;
 
     /**
      * Length of block in 16-bit registers
      */
-    public Integer length = 0;
+    public int length = 0;
 
     /**
      * Modbus unit ID - this is a unique identifier of the device
      */
-    public Integer deviceAddress = 0;
+    public int deviceAddress = 0;
 
     // Manufacturer specific values
     public String manufacturer = "";

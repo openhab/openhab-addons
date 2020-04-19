@@ -83,12 +83,12 @@ public class SunspecDiscoveryProcess {
     /**
      * The endpoint's slave id
      */
-    private Integer slaveId;
+    private int slaveId;
 
     /**
      * Number of maximum retries
      */
-    private Integer maxTries = 3;
+    private static final int maxTries = 3;
 
     /**
      * List of start addresses to try
@@ -142,17 +142,6 @@ public class SunspecDiscoveryProcess {
     }
 
     /**
-     * Set the maximum number of retries for operations
-     *
-     * @param num the new value to set
-     * @return
-     */
-    public SunspecDiscoveryProcess setMaxTries(Integer num) {
-        this.maxTries = num;
-        return this;
-    }
-
-    /**
      * Start model detection
      *
      * @param uid the thing type to look for
@@ -182,9 +171,7 @@ public class SunspecDiscoveryProcess {
 
             @Override
             public void onRegisters(ModbusReadRequestBlueprint request, ModbusRegisterArray registers) {
-
                 headerReceived(registers);
-
             }
 
             @Override
@@ -241,9 +228,7 @@ public class SunspecDiscoveryProcess {
 
             @Override
             public void onRegisters(ModbusReadRequestBlueprint request, ModbusRegisterArray registers) {
-
                 modelBlockReceived(registers);
-
             }
 
             @Override
@@ -313,9 +298,7 @@ public class SunspecDiscoveryProcess {
 
             @Override
             public void onRegisters(ModbusReadRequestBlueprint request, ModbusRegisterArray registers) {
-
                 parseCommonBlock(registers);
-
             }
 
             @Override
