@@ -113,7 +113,6 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
      * - perform Oath if userID is not configured and credentials are available
      * - wait for NotifyServlet to initialize (solves timing issues on fast startup)
      */
-    @SuppressWarnings("null")
     @Override
     public void initialize() {
         // The framework requires you to return from this method quickly. For that the initialization itself is executed
@@ -179,7 +178,6 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
      * @param command - the actual command (could be instance of StringType,
      *            DecimalType or OnOffType)
      */
-    @SuppressWarnings("null")
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command == RefreshType.REFRESH) {
@@ -344,7 +342,6 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
      *
      * @throws MagentaTVException
      */
-    @SuppressWarnings("null")
     private void authenticateUser() throws MagentaTVException {
         if (thingConfig.getUserID().isEmpty()) {
             // run OAuth authentication, this finally provides the userID
@@ -417,7 +414,6 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
      * @param pairingCode pairing code received from MR (NOTIFY event data)
      * @throws MagentaTVException
      */
-    @SuppressWarnings("null")
     @Override
     public void onPairingResult(String pairingCode) throws MagentaTVException {
         if (control.isInitialized()) {
@@ -622,7 +618,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
         }
     }
 
-    public void updateThingProperties(Map<String, String> properties) {
+    public void updateThingProperties(Map<String, Object> properties) {
         // copy all attributes except thos, which begin with $
         Map<String, String> map = new HashMap<String, String>();
         for (String key : properties.keySet()) {
@@ -637,7 +633,6 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
         return thingConfig.getFriendlyName() + "(" + thingConfig.getTerminalID() + ")";
     }
 
-    @SuppressWarnings("null")
     protected void cancelPairingCheck() {
         if (pairingWatchdogJob != null) {
             pairingWatchdogJob.cancel(true);
@@ -645,7 +640,6 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     }
 
     @Override
-    @SuppressWarnings("null")
     public void dispose() {
         cancelPairingCheck();
         if (handlerFactory != null) {
