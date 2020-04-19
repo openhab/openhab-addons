@@ -133,7 +133,7 @@ public abstract class AbstractWeatherHandler extends BaseThingHandler {
         }
     }
 
-    protected int lastValidIndex(Data data) {
+    protected static int lastValidIndex(Data data) {
         if (data.values.length < 2) {
             throw new IllegalStateException("Excepted at least two data items");
         }
@@ -151,12 +151,12 @@ public abstract class AbstractWeatherHandler extends BaseThingHandler {
         return data.values.length - 1;
     }
 
-    protected long floorToEvenMinutes(long epochSeconds, int roundMinutes) {
+    protected static long floorToEvenMinutes(long epochSeconds, int roundMinutes) {
         long roundSecs = roundMinutes * 60;
         return (epochSeconds / roundSecs) * roundSecs;
     }
 
-    protected long ceilToEvenMinutes(long epochSeconds, int roundMinutes) {
+    protected static long ceilToEvenMinutes(long epochSeconds, int roundMinutes) {
         double epochDouble = epochSeconds;
         long roundSecs = roundMinutes * 60;
         double roundSecsDouble = (roundMinutes * 60);

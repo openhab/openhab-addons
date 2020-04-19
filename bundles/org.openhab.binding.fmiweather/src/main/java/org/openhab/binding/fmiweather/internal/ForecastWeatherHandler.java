@@ -175,7 +175,7 @@ public class ForecastWeatherHandler extends AbstractWeatherHandler {
         }
     }
 
-    private int getHours(ChannelUID uid) {
+    private static int getHours(ChannelUID uid) {
         String groupId = uid.getGroupId();
         if (groupId == null) {
             throw new IllegalStateException("All channels should be in group!");
@@ -187,12 +187,12 @@ public class ForecastWeatherHandler extends AbstractWeatherHandler {
         }
     }
 
-    private int getTimeIndex(int hours) {
+    private static int getTimeIndex(int hours) {
         return (int) (TimeUnit.HOURS.toMinutes(hours) / QUERY_RESOLUTION_MINUTES);
     }
 
     @SuppressWarnings({ "unused", "null" })
-    private @Nullable String getDataField(ChannelUID channelUID) {
+    private static @Nullable String getDataField(ChannelUID channelUID) {
         Entry<String, @Nullable Unit<?>> entry = CHANNEL_TO_FORECAST_FIELD_NAME_AND_UNIT
                 .get(channelUID.getIdWithoutGroup());
         if (entry == null) {
@@ -202,7 +202,7 @@ public class ForecastWeatherHandler extends AbstractWeatherHandler {
     }
 
     @SuppressWarnings({ "unused", "null" })
-    private @Nullable Unit<?> getUnit(ChannelUID channelUID) {
+    private static @Nullable Unit<?> getUnit(ChannelUID channelUID) {
         Entry<String, @Nullable Unit<?>> entry = CHANNEL_TO_FORECAST_FIELD_NAME_AND_UNIT
                 .get(channelUID.getIdWithoutGroup());
         if (entry == null) {

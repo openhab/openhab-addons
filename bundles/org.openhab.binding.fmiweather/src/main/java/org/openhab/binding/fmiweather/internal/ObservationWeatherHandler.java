@@ -165,7 +165,7 @@ public class ObservationWeatherHandler extends AbstractWeatherHandler {
     }
 
     @SuppressWarnings({ "unused", "null" })
-    private @Nullable String getDataField(ChannelUID channelUID) {
+    private static @Nullable String getDataField(ChannelUID channelUID) {
         Entry<String, @Nullable Unit<?>> entry = CHANNEL_TO_OBSERVATION_FIELD_NAME_AND_UNIT
                 .get(channelUID.getIdWithoutGroup());
         if (entry == null) {
@@ -175,7 +175,7 @@ public class ObservationWeatherHandler extends AbstractWeatherHandler {
     }
 
     @SuppressWarnings({ "unused", "null" })
-    private @Nullable Unit<?> getUnit(ChannelUID channelUID) {
+    private static @Nullable Unit<?> getUnit(ChannelUID channelUID) {
         Entry<String, @Nullable Unit<?>> entry = CHANNEL_TO_OBSERVATION_FIELD_NAME_AND_UNIT
                 .get(channelUID.getIdWithoutGroup());
         if (entry == null) {

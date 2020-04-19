@@ -214,7 +214,7 @@ public class FMIWeatherDiscoveryService extends AbstractDiscoveryService {
                 .replace("Å", "a").replaceAll("[^a-zA-Z0-9_]", "_");
     }
 
-    private boolean isClose(@Nullable PointType location, Location location2) {
+    private static boolean isClose(@Nullable PointType location, Location location2) {
         return location == null ? true
                 : new PointType(new DecimalType(location2.latitude), new DecimalType(location2.longitude))
                         .distanceFrom(location).doubleValue() < FIND_STATION_METERS;
