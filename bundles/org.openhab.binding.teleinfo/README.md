@@ -31,28 +31,37 @@ Before the binding can be used, a serial controller must be added. This needs to
 
 Channel availabity depends on the electricity connection (single or three phase) and on the meter mode (Base, HCHP, EJP or Tempo).
 
-| Channel  | Type                      | Description                                              | Single-phase | Three-phase | Base | HCHP | EJP | Tempo |
-|----------|---------------------------|----------------------------------------------------------|--------------|-------------|------|------|-----|-------|
-| isousc   | `Number:ElectricCurrent`  | Subscribed electric current                              | [x]          |             | [x]  | [x]  | [x] | [x]   |
-| ptec     | `String`                  | Current pricing period                                   | [x]          |             | [x]  | [x]  | [x] | [x]   |
-| imax     | `Number:ElectricCurrent`  | Maximum consumed electric current                        | [x]          |             | [x]  | [x]  | [x] | [x]   |
-| adps     | `Number:ElectricCurrent`  | Excess electric current warning                          | [x]          |             | [x]  | [x]  | [x] | [x]   |
-| iinst    | `Number:ElectricCurrent`  | Instantaneous electric current                           | [x]          |             | [x]  | [x]  | [x] | [x]   |
-| papp     | `Number`                  | Instantaneous apparent power (Unit: `VA`)                | [x]          |             | [x]  | [x]  | [x] | [x]   |
-| hhphc    | `String`                  | Pricing schedule group                                   | [x]          |             |      | [x]  |   |     |
-| hchc     | `Number:Energy`           | Total consumed energy at low rate pricing                | [x]          |             |      | [x]  |   |     |
-| hchp     | `Number:Energy`           | Total consumed energy at high rate pricing               | [x]          |             |      | [x]  |   |     |
-| base     | `Number:Energy`           | Total consumed energy                                    | [x]          |             | [x]  |      |      |      |
-| ejphn    | `Number:Energy`           | Total consumed energy at low rate pricing                | [x]          |             |      |      | [x]  |      |
-| ejphpm   | `Number:Energy`           | Total consumed energy at high rate pricing               | [x]          |             |      |      | [x]  |      |
-| bbrhcjb  | `Number:Energy`           | Total consumed energy at low rate pricing on blue days   | [x]          |             |      |      |      | [x]  |
-| bbrhpjb  | `Number:Energy`           | Total consumed energy at high rate pricing on blue days  | [x]          |             |      |      |      | [x]  |
-| bbrhcjw  | `Number:Energy`           | Total consumed energy at low rate pricing on white days  | [x]          |             |      |      |      | [x]  |
-| bbrhpjw  | `Number:Energy`           | Total consumed energy at high rate pricing on white days | [x]          |             |      |      |      | [x]  |
-| bbrhcjr  | `Number:Energy`           | Total consumed energy at low rate pricing on red days    | [x]          |             |      |      |      | [x]  |
-| bbrhpjr  | `Number:Energy`           | Total consumed energy at high rate pricing on red days   | [x]          |             |      |      |      | [x]  |
-| pejp     | `Number:Duration`         | Prior notice to EJP start                                | [x]          |             |      |      | [x]  |      |
-| demain   | `String`                  | Following day color                                      | [x]          |
+| Channel  | Type                      | Description                                              | Phase  | Mode  |
+|----------|---------------------------|----------------------------------------------------------|--------|-------|
+| isousc   | `Number:ElectricCurrent`  | Subscribed electric current                              | All    | All   |
+| ptec     | `String`                  | Current pricing period                                   | All    | All   |
+| imax     | `Number:ElectricCurrent`  | Maximum consumed electric current                        | Single | All   |
+| imax1    | `Number:ElectricCurrent`  | Maximum consumed electric current on phase 1             | Three  | All   |
+| imax2    | `Number:ElectricCurrent`  | Maximum consumed electric current on phase 2             | Three  | All   |
+| imax3    | `Number:ElectricCurrent`  | Maximum consumed electric current on phase 3             | Three  | All   |
+| adps     | `Number:ElectricCurrent`  | Excess electric current warning                          | Single | All   |
+| adir1    | `Number:ElectricCurrent`  | Excess electric current on phase 1 warning               | Three  | All   |
+| adir2    | `Number:ElectricCurrent`  | Excess electric current on phase 1 warning               | Three  | All   |
+| adir3    | `Number:ElectricCurrent`  | Excess electric current on phase 1 warning               | Three  | All   |
+| iinst    | `Number:ElectricCurrent`  | Instantaneous electric current                           | Single | All   |
+| iinst1   | `Number:ElectricCurrent`  | Instantaneous electric current on phase 1                | Three  | All   |
+| iinst2   | `Number:ElectricCurrent`  | Instantaneous electric current on phase 2                | Three  | All   |
+| iinst3   | `Number:ElectricCurrent`  | Instantaneous electric current on phase 3                | Three  | All   |
+| papp     | `Number`                  | Instantaneous apparent power (Unit: `VA`)                | All    | All   |
+| hhphc    | `String`                  | Pricing schedule group                                   | All    | HCHP  |
+| hchc     | `Number:Energy`           | Total consumed energy at low rate pricing                | All    | HCHP  |
+| hchp     | `Number:Energy`           | Total consumed energy at high rate pricing               | All    | HCHP  |
+| base     | `Number:Energy`           | Total consumed energy                                    | All    | Base  |
+| ejphn    | `Number:Energy`           | Total consumed energy at low rate pricing                | All    | EJP   |
+| ejphpm   | `Number:Energy`           | Total consumed energy at high rate pricing               | All    | EJP   |
+| bbrhcjb  | `Number:Energy`           | Total consumed energy at low rate pricing on blue days   | All    | Tempo |
+| bbrhpjb  | `Number:Energy`           | Total consumed energy at high rate pricing on blue days  | All    | Tempo |
+| bbrhcjw  | `Number:Energy`           | Total consumed energy at low rate pricing on white days  | All    | Tempo |
+| bbrhpjw  | `Number:Energy`           | Total consumed energy at high rate pricing on white days | All    | Tempo |
+| bbrhcjr  | `Number:Energy`           | Total consumed energy at low rate pricing on red days    | All    | Tempo |
+| bbrhpjr  | `Number:Energy`           | Total consumed energy at high rate pricing on red days   | All    | Tempo |
+| pejp     | `Number:Duration`         | Prior notice to EJP start                                | All    | EJP   |
+| demain   | `String`                  | Following day color                                      | All    | Tempo |
 
 ## Full Example
 
