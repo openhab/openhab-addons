@@ -30,7 +30,7 @@ import org.openhab.binding.rfxcom.internal.handler.DeviceState;
  *
  * @author Peter Janson / Pål Edman - Initial contribution
  * @author Pauli Anttila - Migration to OH2
- * @author Fabien Le Bars - Added support for Cherubini
+ * @author Fabien Le Bars - Added support for Cherubini blinds
  */
 public class RFXComBlinds1Message extends RFXComBatteryDeviceMessage<RFXComBlinds1Message.SubType> {
 
