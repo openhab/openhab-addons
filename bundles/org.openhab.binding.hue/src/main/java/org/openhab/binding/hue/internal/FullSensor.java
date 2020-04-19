@@ -29,6 +29,8 @@ public class FullSensor extends FullHueObject {
     public static final String STATE_BUTTON_EVENT = "buttonevent";
     public static final String STATE_PRESENCE = "presence";
     public static final String STATE_TEMPERATURE = "temperature";
+    public static final String STATE_HUMIDITY = "humidity";
+    public static final String STATE_PRESSURE = "pressure";
     public static final String STATE_LIGHT_LEVEL = "lightlevel";
     public static final String STATE_DARK = "dark";
     public static final String STATE_DAYLIGHT = "daylight";

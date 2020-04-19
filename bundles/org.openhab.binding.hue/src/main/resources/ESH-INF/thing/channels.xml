@@ -167,6 +167,24 @@
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
+	
+	<!-- Humidity Channel -->
+	<channel-type id="humidity">
+		<item-type>Number</item-type>
+		<label>Relative Humidity</label>
+		<description>Current relative humidity.</description>
+		<category>Humidity</category>
+		<state readOnly="true" pattern="%.1f %%" />
+	</channel-type>	
+
+	<!-- Pressure Channel -->
+	<channel-type id="pressure">
+		<item-type>Number:Pressure</item-type>
+		<label>Relative Humidity</label>
+		<description>Current relative humidity.</description>
+		<category>Pressure</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
 
 	<!-- Color Temperature Channel -->
 	<channel-type id="color_temperature">

@@ -38,10 +38,12 @@ import org.openhab.binding.hue.internal.handler.HueBridgeHandler;
 import org.openhab.binding.hue.internal.handler.HueLightHandler;
 import org.openhab.binding.hue.internal.handler.sensors.ClipHandler;
 import org.openhab.binding.hue.internal.handler.sensors.DimmerSwitchHandler;
+import org.openhab.binding.hue.internal.handler.sensors.HumidityHandler;
 import org.openhab.binding.hue.internal.handler.sensors.LightLevelHandler;
 import org.openhab.binding.hue.internal.handler.sensors.PresenceHandler;
 import org.openhab.binding.hue.internal.handler.sensors.TapSwitchHandler;
 import org.openhab.binding.hue.internal.handler.sensors.TemperatureHandler;
+import org.openhab.binding.hue.internal.handler.sensors.PressureHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 
@@ -61,6 +63,7 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
             .of(HueBridgeHandler.SUPPORTED_THING_TYPES.stream(), HueLightHandler.SUPPORTED_THING_TYPES.stream(),
                     DimmerSwitchHandler.SUPPORTED_THING_TYPES.stream(), TapSwitchHandler.SUPPORTED_THING_TYPES.stream(),
                     PresenceHandler.SUPPORTED_THING_TYPES.stream(), TemperatureHandler.SUPPORTED_THING_TYPES.stream(),
+                    HumidityHandler.SUPPORTED_THING_TYPES.stream(), PressureHandler.SUPPORTED_THING_TYPES.stream(),
                     LightLevelHandler.SUPPORTED_THING_TYPES.stream(), ClipHandler.SUPPORTED_THING_TYPES.stream())
             .flatMap(i -> i).collect(Collectors.toSet()));
 
@@ -78,6 +81,8 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
                 || TapSwitchHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)
                 || PresenceHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)
                 || TemperatureHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)
+                || HumidityHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)
+                || PressureHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)
                 || LightLevelHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)
                 || ClipHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             ThingUID hueSensorUID = getSensorUID(thingTypeUID, thingUID, configuration, bridgeUID);
@@ -134,6 +139,10 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
             return new PresenceHandler(thing);
         } else if (TemperatureHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             return new TemperatureHandler(thing);
+        } else if (HumidityHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
+            return new HumidityHandler(thing);
+        } else if (PressureHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
+            return new PressureHandler(thing);
         } else if (LightLevelHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             return new LightLevelHandler(thing);
         } else if (ClipHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {

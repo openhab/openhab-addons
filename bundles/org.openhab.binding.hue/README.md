@@ -23,7 +23,7 @@ The Hue binding supports all seven types of lighting devices defined for ZigBee 
 These are:
 
 | Device type              | ZigBee Device ID | Thing type |
-|--------------------------|------------------|------------|
+| ------------------------ | ---------------- | ---------- |
 | On/Off Light             | 0x0000           | 0000       |
 | On/Off Plug-in Unit      | 0x0010           | 0010       |
 | Dimmable Light           | 0x0100           | 0100       |
@@ -36,15 +36,15 @@ All different models of Hue, OSRAM, or other bulbs nicely fit into one of these 
 This type also determines the capability of a device and with that the possible ways of interacting with it.
 The following matrix lists the capabilities (channels) for each type:
 
-| Thing type  | On/Off | Brightness | Color | Color Temperature |
-|-------------|:------:|:----------:|:-----:|:-----------------:|
-|  0000       |    X   |            |       |                   |
-|  0010       |    X   |            |       |                   |
-|  0100       |    X   |     X      |       |                   |
-|  0110       |    X   |     X      |       |                   |
-|  0200       |    X   |            |   X   |                   |
-|  0210       |    X   |            |   X   |          X        |
-|  0220       |    X   |     X      |       |          X        |
+| Thing type | On/Off | Brightness | Color | Color Temperature |
+| ---------- | :----: | :--------: | :---: | :---------------: |
+| 0000       |   X    |            |       |                   |
+| 0010       |   X    |            |       |                   |
+| 0100       |   X    |     X      |       |                   |
+| 0110       |   X    |     X      |       |                   |
+| 0200       |   X    |            |   X   |                   |
+| 0210       |   X    |            |   X   |         X         |
+| 0220       |   X    |     X      |       |         X         |
 
 Beside bulbs and luminaires the Hue binding supports some ZigBee sensors.
 Currently only Hue specific sensors are tested successfully (e.g. Hue Motion Sensor, Hue Dimmer Switch, Hue Tap, CLIP Sensor).
@@ -53,10 +53,12 @@ The Hue CLIP Sensor saves scene states with status or flag for HUE rules.
 They are presented by the following ZigBee Device ID and _Thing type_:
 
 | Device type                 | ZigBee Device ID | Thing type |
-|-----------------------------|------------------|------------|
+| --------------------------- | ---------------- | ---------- |
 | Light Sensor                | 0x0106           | 0106       |
 | Occupancy Sensor            | 0x0107           | 0107       |
 | Temperature Sensor          | 0x0302           | 0302       |
+| Pressure Sensor             | 0x0403           | 0403       |
+| Humidity Sensor             | 0x0405           | 0405       |
 | Non-Colour Controller       | 0x0820           | 0820       |
 | Non-Colour Scene Controller | 0x0830           | 0830       |
 | CLIP Generic Status Sensor  | 0x0840           | 0840       |
@@ -100,9 +102,9 @@ Bridge hue:bridge:1 [ ipAddress="192.168.0.64", userName="qwertzuiopasdfghjklyxc
 ```
 
 | Parameter             | Description                                                                                                                                                                                                                              |
-|-----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | ipAddress             | Network address of the Hue bridge. **Mandatory**                                                                                                                                                                                         |
-| port                  |  Port of the Hue bridge. Optional, default value is 80 or 443, derived from protocol, otherwise user-defined.                                                                                                                            |
+| port                  | Port of the Hue bridge. Optional, default value is 80 or 443, derived from protocol, otherwise user-defined.                                                                                                                             |
 | userName              | Name of a registered Hue bridge user, that allows to access the API. **Mandatory**                                                                                                                                                       |
 | pollingInterval       | Seconds between fetching light values from the Hue bridge. Optional, the default value is 10 (min="1", step="1").                                                                                                                        |
 | sensorPollingInterval | Milliseconds between fetching sensor-values from the Hue bridge. A higher value means more delay for the sensor values, but a too low value can cause congestion on the bridge. Optional, the default value is 500 (min="50", step="1"). |
@@ -133,7 +135,7 @@ The following device types also have an optional configuration value to specify 
 * Colour Temperature Light
 
 | Parameter | Description                                                                   |
-|-----------|-------------------------------------------------------------------------------|
+| --------- | ----------------------------------------------------------------------------- |
 | lightId   | Number of the device provided by the Hue bridge. **Mandatory**                |
 | fadetime  | Fade time in Milliseconds to a new state (min="0", step="100", default="400") |
 
@@ -142,40 +144,40 @@ The following device types also have an optional configuration value to specify 
 
 The devices support some of the following channels:
 
-| Channel Type ID   | Item Type          | Description                                                                                                                             | Thing types supporting this channel |
-|-------------------|--------------------|-----------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------|
-| switch            | Switch             | This channel supports switching the device on and off.                                                                                  | 0000, 0010                          |
-| color             | Color              | This channel supports full color control with hue, saturation and brightness values.                                                    | 0200, 0210                          |
-| brightness        | Dimmer             | This channel supports adjusting the brightness value. Note that this is not available, if the color channel is supported.               | 0100, 0110, 0220                    |
-| color_temperature | Dimmer             | This channel supports adjusting the color temperature from cold (0%) to warm (100%).                                                    | 0210, 0220                          |
-| alert             | String             | This channel supports displaying alerts by flashing the bulb either once or multiple times. Valid values are: NONE, SELECT and LSELECT. | 0000, 0100, 0200, 0210, 0220        |
-| effect            | Switch             | This channel supports color looping.                                                                                                    | 0200, 0210, 0220                    |
-| dimmer_switch     | Number             | This channel shows which button was last pressed on the dimmer switch.                                                                  | 0820                                |
-| illuminance       | Number:Illuminance | This channel shows the current illuminance measured by the sensor.                                                                      | 0106                                |
-| light_level       | Number             | This channel shows the current light level measured by the sensor. **Advanced**                                                         | 0106                                |
-| dark              | Switch             | This channel indicates whether the light level is below the darkness threshold or not.                                                  | 0106                                |
-| daylight          | Switch             | This channel indicates whether the light level is below the daylight threshold or not.                                                  | 0106                                |
-| presence          | Switch             | This channel indicates whether a motion is detected by the sensor or not.                                                               | 0107                                |
-| temperature       | Number:Temperature | This channel shows the current temperature measured by the sensor.                                                                      | 0302                                |
-| flag              | Switch             | This channel save flag state for a CLIP sensor.                                                                                         | 0850                                |
-| status            | Number             | This channel save status state for a CLIP sensor.                                                                                       | 0840                                |
-| last_updated      | DateTime           | This channel the date and time when the sensor was last updated.                                                                        | 0820, 0830, 0840, 0850, 0106, 0107, 0302|
-| battery_level     | Number             | This channel shows the battery level.                                                                                                   | 0820, 0106, 0107, 0302             |
-| battery_low       | Switch             | This channel indicates whether the battery is low or not.                                                                               | 0820, 0106, 0107, 0302             |
+| Channel Type ID   | Item Type          | Description                                                                                                                             | Thing types supporting this channel      |
+| ----------------- | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| switch            | Switch             | This channel supports switching the device on and off.                                                                                  | 0000, 0010                               |
+| color             | Color              | This channel supports full color control with hue, saturation and brightness values.                                                    | 0200, 0210                               |
+| brightness        | Dimmer             | This channel supports adjusting the brightness value. Note that this is not available, if the color channel is supported.               | 0100, 0110, 0220                         |
+| color_temperature | Dimmer             | This channel supports adjusting the color temperature from cold (0%) to warm (100%).                                                    | 0210, 0220                               |
+| alert             | String             | This channel supports displaying alerts by flashing the bulb either once or multiple times. Valid values are: NONE, SELECT and LSELECT. | 0000, 0100, 0200, 0210, 0220             |
+| effect            | Switch             | This channel supports color looping.                                                                                                    | 0200, 0210, 0220                         |
+| dimmer_switch     | Number             | This channel shows which button was last pressed on the dimmer switch.                                                                  | 0820                                     |
+| illuminance       | Number:Illuminance | This channel shows the current illuminance measured by the sensor.                                                                      | 0106                                     |
+| light_level       | Number             | This channel shows the current light level measured by the sensor. **Advanced**                                                         | 0106                                     |
+| dark              | Switch             | This channel indicates whether the light level is below the darkness threshold or not.                                                  | 0106                                     |
+| daylight          | Switch             | This channel indicates whether the light level is below the daylight threshold or not.                                                  | 0106                                     |
+| presence          | Switch             | This channel indicates whether a motion is detected by the sensor or not.                                                               | 0107                                     |
+| temperature       | Number:Temperature | This channel shows the current temperature measured by the sensor.                                                                      | 0302                                     |
+| flag              | Switch             | This channel save flag state for a CLIP sensor.                                                                                         | 0850                                     |
+| status            | Number             | This channel save status state for a CLIP sensor.                                                                                       | 0840                                     |
+| last_updated      | DateTime           | This channel the date and time when the sensor was last updated.                                                                        | 0820, 0830, 0840, 0850, 0106, 0107, 0302 |
+| battery_level     | Number             | This channel shows the battery level.                                                                                                   | 0820, 0106, 0107, 0302                   |
+| battery_low       | Switch             | This channel indicates whether the battery is low or not.                                                                               | 0820, 0106, 0107, 0302                   |
 
 ### Trigger Channels
 
 The dimmer switch additionally supports a trigger channel.
 
 | Channel ID          | Description                      | Thing types supporting this channel |
-|---------------------|----------------------------------|-------------------------------------|
+| ------------------- | -------------------------------- | ----------------------------------- |
 | dimmer_switch_event | Event for dimmer switch pressed. | 0820                                |
 | tap_switch_event    | Event for tap switch pressed.    | 0830                                |
 
 The `dimmer_switch_event` can trigger one of the following events:
 
 | Button              | State           | Event |
-|---------------------|-----------------|-------|
+| ------------------- | --------------- | ----- |
 | Button 1 (ON)       | INITIAL_PRESSED | 1000  |
 |                     | HOLD            | 1001  |
 |                     | SHORT RELEASED  | 1002  |
@@ -196,7 +198,7 @@ The `dimmer_switch_event` can trigger one of the following events:
 The `tap_switch_event` can trigger one of the following events:
 
 | Button   | State    | Event |
-|----------|----------|-------|
+| -------- | -------- | ----- |
 | Button 1 | Button 1 | 34    |
 | Button 2 | Button 2 | 16    |
 | Button 3 | Button 3 | 17    |
@@ -219,11 +221,11 @@ Once this action instance is retrieved, you can invoke the `fadingLightCommand(S
 hueActions.fadingLightCommand("color", new PercentType(100), new DecimalType(1000))
 ```
 
-| Parameter | Description                                                                                      |
-|-----------|--------------------------------------------------------------------------------------------------|
-| channel   | The following channels have fade time support: **brightness, color, color_temperature, switch**  |
-| command   | All commands supported by the channel can be used                                                |
-| fadeTime  | Fade time in Milliseconds to a new light value (min="0", step="100")                             |
+| Parameter | Description                                                                                     |
+| --------- | ----------------------------------------------------------------------------------------------- |
+| channel   | The following channels have fade time support: **brightness, color, color_temperature, switch** |
+| command   | All commands supported by the channel can be used                                               |
+| fadeTime  | Fade time in Milliseconds to a new light value (min="0", step="100")                            |
 
 ## Full Example
 
