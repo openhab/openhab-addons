@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.smarthome.config.core.Configuration;
@@ -103,7 +102,8 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
      * A HashMap which saves all the 'channel-acceppted_item_type' pairs.
      * It is set before all the tests.
      */
-    private static Map<String, String> acceptedItemTypes;
+    private static HashMap<String, String> acceptedItemTypes;
+    private static HashMap<String, String> ACCEPTED_ITEM_TYPES = acceptedItemTypes;
 
     /**
      * ArrayList of channels which is used to initialize a radioThing in the test cases.
@@ -145,13 +145,13 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
         httpClient.stop();
     }
 
-    private static @NonNull Channel getChannel(final @NonNull Thing thing, final @NonNull String channelId) {
+    private static Channel getChannel(final Thing thing, final String channelId) {
         final Channel channel = thing.getChannel(channelId);
         Assert.assertNotNull(channel);
         return channel;
     }
 
-    private static @NonNull ChannelUID getChannelUID(final @NonNull Thing thing, final @NonNull String channelId) {
+    private static ChannelUID getChannelUID(final Thing thing, final String channelId) {
         final ChannelUID channelUID = getChannel(thing, channelId).getUID();
         Assert.assertNotNull(channelUID);
         return channelUID;
@@ -212,7 +212,7 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
     public void offlineIfParseError() {
         // create a thing with two channels - the power channel and any of the others
         String modeChannelID = FSInternetRadioBindingConstants.CHANNEL_MODE;
-        String acceptedItemType = acceptedItemTypes.get(modeChannelID);
+        String acceptedItemType = ACCEPTED_ITEM_TYPES.get(modeChannelID);
         createChannel(DEFAULT_THING_UID, modeChannelID, acceptedItemType);
 
         Thing radioThing = initializeRadioThing(DEFAULT_COMPLETE_CONFIGURATION);
@@ -243,7 +243,7 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
     public void httpStatusNokHandling() {
         // create a thing with two channels - the power channel and any of the others
         String modeChannelID = FSInternetRadioBindingConstants.CHANNEL_MODE;
-        String acceptedItemType = acceptedItemTypes.get(modeChannelID);
+        String acceptedItemType = ACCEPTED_ITEM_TYPES.get(modeChannelID);
         createChannel(DEFAULT_THING_UID, modeChannelID, acceptedItemType);
 
         Thing radioThing = initializeRadioThing(DEFAULT_COMPLETE_CONFIGURATION);
@@ -286,7 +286,7 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
 
         ChannelUID powerChannelUID = powerChannel.getUID();
         initializeItem(powerChannelUID, DEFAULT_TEST_ITEM_NAME,
-                acceptedItemTypes.get(FSInternetRadioBindingConstants.CHANNEL_POWER));
+                ACCEPTED_ITEM_TYPES.get(FSInternetRadioBindingConstants.CHANNEL_POWER));
 
         radioHandler.handleCommand(powerChannelUID, OnOffType.ON);
         waitForAssert(() -> {
@@ -320,7 +320,7 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
     @Test
     public void muteChhannelUpdated() {
         String muteChannelID = FSInternetRadioBindingConstants.CHANNEL_MUTE;
-        String acceptedItemType = acceptedItemTypes.get(muteChannelID);
+        String acceptedItemType = ACCEPTED_ITEM_TYPES.get(muteChannelID);
         createChannel(DEFAULT_THING_UID, muteChannelID, acceptedItemType);
 
         Thing radioThing = initializeRadioThing(DEFAULT_COMPLETE_CONFIGURATION);
@@ -357,7 +357,7 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
     @Test
     public void modeChannelUdpated() {
         String modeChannelID = FSInternetRadioBindingConstants.CHANNEL_MODE;
-        String acceptedItemType = acceptedItemTypes.get(modeChannelID);
+        String acceptedItemType = ACCEPTED_ITEM_TYPES.get(modeChannelID);
         createChannel(DEFAULT_THING_UID, modeChannelID, acceptedItemType);
 
         Thing radioThing = initializeRadioThing(DEFAULT_COMPLETE_CONFIGURATION);
@@ -393,7 +393,7 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
     @Test
     public void volumechannelUpdatedAbsIncDec() {
         String absoluteVolumeChannelID = FSInternetRadioBindingConstants.CHANNEL_VOLUME_ABSOLUTE;
-        String absoluteAcceptedItemType = acceptedItemTypes.get(absoluteVolumeChannelID);
+        String absoluteAcceptedItemType = ACCEPTED_ITEM_TYPES.get(absoluteVolumeChannelID);
         createChannel(DEFAULT_THING_UID, absoluteVolumeChannelID, absoluteAcceptedItemType);
 
         Thing radioThing = initializeRadioThing(DEFAULT_COMPLETE_CONFIGURATION);
@@ -414,7 +414,7 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
     @Test
     public void volumeChannelUpdatedAbsUpDown() {
         String absoluteVolumeChannelID = FSInternetRadioBindingConstants.CHANNEL_VOLUME_ABSOLUTE;
-        String absoluteAcceptedItemType = acceptedItemTypes.get(absoluteVolumeChannelID);
+        String absoluteAcceptedItemType = ACCEPTED_ITEM_TYPES.get(absoluteVolumeChannelID);
         createChannel(DEFAULT_THING_UID, absoluteVolumeChannelID, absoluteAcceptedItemType);
 
         Thing radioThing = initializeRadioThing(DEFAULT_COMPLETE_CONFIGURATION);
@@ -435,7 +435,7 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
     @Test
     public void invalidAbsVolumeValues() {
         String absoluteVolumeChannelID = FSInternetRadioBindingConstants.CHANNEL_VOLUME_ABSOLUTE;
-        String absoluteAcceptedItemType = acceptedItemTypes.get(absoluteVolumeChannelID);
+        String absoluteAcceptedItemType = ACCEPTED_ITEM_TYPES.get(absoluteVolumeChannelID);
         createChannel(DEFAULT_THING_UID, absoluteVolumeChannelID, absoluteAcceptedItemType);
 
         Thing radioThing = initializeRadioThing(DEFAULT_COMPLETE_CONFIGURATION);
@@ -505,11 +505,11 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
          * the absolute volume will be updated properly.
          */
         String absoluteVolumeChannelID = FSInternetRadioBindingConstants.CHANNEL_VOLUME_ABSOLUTE;
-        String absoluteAcceptedItemType = acceptedItemTypes.get(absoluteVolumeChannelID);
+        String absoluteAcceptedItemType = ACCEPTED_ITEM_TYPES.get(absoluteVolumeChannelID);
         createChannel(DEFAULT_THING_UID, absoluteVolumeChannelID, absoluteAcceptedItemType);
 
         String percentVolumeChannelID = FSInternetRadioBindingConstants.CHANNEL_VOLUME_PERCENT;
-        String percentAcceptedItemType = acceptedItemTypes.get(percentVolumeChannelID);
+        String percentAcceptedItemType = ACCEPTED_ITEM_TYPES.get(percentVolumeChannelID);
         createChannel(DEFAULT_THING_UID, percentVolumeChannelID, percentAcceptedItemType);
 
         Thing radioThing = initializeRadioThing(DEFAULT_COMPLETE_CONFIGURATION);
@@ -536,11 +536,11 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
          * the absolute volume will be updated properly.
          */
         String absoluteVolumeChannelID = FSInternetRadioBindingConstants.CHANNEL_VOLUME_ABSOLUTE;
-        String absoluteAcceptedItemType = acceptedItemTypes.get(absoluteVolumeChannelID);
+        String absoluteAcceptedItemType = ACCEPTED_ITEM_TYPES.get(absoluteVolumeChannelID);
         createChannel(DEFAULT_THING_UID, absoluteVolumeChannelID, absoluteAcceptedItemType);
 
         String percentVolumeChannelID = FSInternetRadioBindingConstants.CHANNEL_VOLUME_PERCENT;
-        String percentAcceptedItemType = acceptedItemTypes.get(percentVolumeChannelID);
+        String percentAcceptedItemType = ACCEPTED_ITEM_TYPES.get(percentVolumeChannelID);
         createChannel(DEFAULT_THING_UID, percentVolumeChannelID, percentAcceptedItemType);
 
         Thing radioThing = initializeRadioThing(DEFAULT_COMPLETE_CONFIGURATION);
@@ -563,11 +563,11 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
     @Test
     public void validInvalidPercVolume() {
         String absoluteVolumeChannelID = FSInternetRadioBindingConstants.CHANNEL_VOLUME_ABSOLUTE;
-        String absoluteAcceptedItemType = acceptedItemTypes.get(absoluteVolumeChannelID);
+        String absoluteAcceptedItemType = ACCEPTED_ITEM_TYPES.get(absoluteVolumeChannelID);
         createChannel(DEFAULT_THING_UID, absoluteVolumeChannelID, absoluteAcceptedItemType);
 
         String percentVolumeChannelID = FSInternetRadioBindingConstants.CHANNEL_VOLUME_PERCENT;
-        String percentAcceptedItemType = acceptedItemTypes.get(percentVolumeChannelID);
+        String percentAcceptedItemType = ACCEPTED_ITEM_TYPES.get(percentVolumeChannelID);
         createChannel(DEFAULT_THING_UID, percentVolumeChannelID, percentAcceptedItemType);
 
         Thing radioThing = initializeRadioThing(DEFAULT_COMPLETE_CONFIGURATION);
@@ -675,7 +675,7 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
     @Test
     public void presetChannelUpdated() {
         String presetChannelID = FSInternetRadioBindingConstants.CHANNEL_PRESET;
-        String acceptedItemType = acceptedItemTypes.get(presetChannelID);
+        String acceptedItemType = ACCEPTED_ITEM_TYPES.get(presetChannelID);
         createChannel(DEFAULT_THING_UID, presetChannelID, acceptedItemType);
 
         Thing radioThing = initializeRadioThing(DEFAULT_COMPLETE_CONFIGURATION);
@@ -699,7 +699,7 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
     @Test
     public void playInfoNameChannelUpdated() {
         String playInfoNameChannelID = FSInternetRadioBindingConstants.CHANNEL_PLAY_INFO_NAME;
-        String acceptedItemType = acceptedItemTypes.get(playInfoNameChannelID);
+        String acceptedItemType = ACCEPTED_ITEM_TYPES.get(playInfoNameChannelID);
         createChannel(DEFAULT_THING_UID, playInfoNameChannelID, acceptedItemType);
 
         Thing radioThing = initializeRadioThingWithMockedHandler(DEFAULT_COMPLETE_CONFIGURATION);
@@ -722,7 +722,7 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
     @Test
     public void playInfoTextChannelUpdated() {
         String playInfoTextChannelID = FSInternetRadioBindingConstants.CHANNEL_PLAY_INFO_TEXT;
-        String acceptedItemType = acceptedItemTypes.get(playInfoTextChannelID);
+        String acceptedItemType = ACCEPTED_ITEM_TYPES.get(playInfoTextChannelID);
         createChannel(DEFAULT_THING_UID, playInfoTextChannelID, acceptedItemType);
 
         Thing radioThing = initializeRadioThingWithMockedHandler(DEFAULT_COMPLETE_CONFIGURATION);
@@ -753,20 +753,20 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
     }
 
     private static void setTheChannelsMap() {
-        acceptedItemTypes = new HashMap<>();
-        acceptedItemTypes.put(FSInternetRadioBindingConstants.CHANNEL_POWER, "Switch");
-        acceptedItemTypes.put(FSInternetRadioBindingConstants.CHANNEL_MODE, "Number");
-        acceptedItemTypes.put(FSInternetRadioBindingConstants.CHANNEL_MUTE, "Switch");
-        acceptedItemTypes.put(FSInternetRadioBindingConstants.CHANNEL_PLAY_INFO_NAME, "String");
-        acceptedItemTypes.put(FSInternetRadioBindingConstants.CHANNEL_PLAY_INFO_TEXT, "String");
-        acceptedItemTypes.put(FSInternetRadioBindingConstants.CHANNEL_PRESET, "Number");
-        acceptedItemTypes.put(FSInternetRadioBindingConstants.CHANNEL_VOLUME_ABSOLUTE, "Number");
-        acceptedItemTypes.put(FSInternetRadioBindingConstants.CHANNEL_VOLUME_PERCENT, "Dimmer");
+        ACCEPTED_ITEM_TYPES = new HashMap<String, String>();
+        ACCEPTED_ITEM_TYPES.put(FSInternetRadioBindingConstants.CHANNEL_POWER, "Switch");
+        ACCEPTED_ITEM_TYPES.put(FSInternetRadioBindingConstants.CHANNEL_MODE, "Number");
+        ACCEPTED_ITEM_TYPES.put(FSInternetRadioBindingConstants.CHANNEL_MUTE, "Switch");
+        ACCEPTED_ITEM_TYPES.put(FSInternetRadioBindingConstants.CHANNEL_PLAY_INFO_NAME, "String");
+        ACCEPTED_ITEM_TYPES.put(FSInternetRadioBindingConstants.CHANNEL_PLAY_INFO_TEXT, "String");
+        ACCEPTED_ITEM_TYPES.put(FSInternetRadioBindingConstants.CHANNEL_PRESET, "Number");
+        ACCEPTED_ITEM_TYPES.put(FSInternetRadioBindingConstants.CHANNEL_VOLUME_ABSOLUTE, "Number");
+        ACCEPTED_ITEM_TYPES.put(FSInternetRadioBindingConstants.CHANNEL_VOLUME_PERCENT, "Dimmer");
     }
 
     private void createThePowerChannel() {
         String powerChannelID = FSInternetRadioBindingConstants.CHANNEL_POWER;
-        String acceptedItemType = acceptedItemTypes.get(powerChannelID);
+        String acceptedItemType = ACCEPTED_ITEM_TYPES.get(powerChannelID);
         powerChannel = createChannel(DEFAULT_THING_UID, powerChannelID, acceptedItemType);
     }
 
@@ -826,7 +826,6 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
         return true;
     }
 
-    @SuppressWarnings("null")
     private Thing initializeRadioThing(Configuration config) {
         radioThing = ThingBuilder.create(DEFAULT_THING_TYPE_UID, DEFAULT_THING_UID).withConfiguration(config)
                 .withChannels(channels).build();
@@ -841,7 +840,6 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
         return radioThing;
     }
 
-    @SuppressWarnings("null")
     private Thing initializeRadioThingWithMockedHandler(Configuration config) {
         radioThing = ThingBuilder.create(DEFAULT_THING_TYPE_UID, DEFAULT_THING_UID).withConfiguration(config)
                 .withChannels(channels).build();

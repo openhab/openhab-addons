@@ -32,6 +32,10 @@ import org.openhab.binding.fsinternetradio.internal.radio.FrontierSiliconRadioCo
  * Radio service mock.
  *
  * @author Markus Rathgeb - Initial contribution
+<<<<<<< HEAD
+=======
+ * @author Markus Rathgeb - Migrated from Groovy to pure Java, made more robust
+>>>>>>> 6a4d73e9232d61db0bb473088bf979610666284f
  * @author Velin Yordanov - Small adjustments
  */
 public class RadioServiceDummy extends HttpServlet {

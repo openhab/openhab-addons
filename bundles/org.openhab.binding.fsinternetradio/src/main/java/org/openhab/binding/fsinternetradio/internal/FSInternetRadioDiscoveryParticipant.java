@@ -218,59 +218,60 @@ public class FSInternetRadioDiscoveryParticipant implements UpnpDiscoveryPartici
      * If <code>device</code> is a supported device, a unique thing ID (e.g. serial number) must be returned. Further
      * supported devices should be added here, based on the available UPnP information.
      */
-    @SuppressWarnings("null")
     @Override
     public ThingUID getThingUID(RemoteDevice device) {
         final DeviceDetails details = device.getDetails();
+        if (details == null) {
+            return null;
+        }
+
         final String friendlyName = details.getFriendlyName();
         logger.debug("Discovered unit:  {}", friendlyName);
-
-        if (details != null) {
-            final ManufacturerDetails manufacturerDetails = details.getManufacturerDetails();
-            final ModelDetails modelDetails = details.getModelDetails();
-            if (modelDetails != null) {
-                // check manufacturer and model number
-                final String manufacturer = manufacturerDetails == null ? null : manufacturerDetails.getManufacturer();
-                final String modelNumber = modelDetails.getModelNumber();
-                String serialNumber = details.getSerialNumber();
-                logger.debug("Discovered unit: {} {} - {}", manufacturer, modelNumber, friendlyName);
-                if (modelNumber != null) {
-                    if (manufacturer != null) {
-                        final Set<String> supportedRadios = SUPPORTED_RADIO_MODELS
-                                .get(manufacturer.trim().toUpperCase());
-                        if (supportedRadios != null && supportedRadios.contains(modelNumber.toUpperCase())) {
-                            return new ThingUID(THING_TYPE_RADIO, serialNumber);
-                        }
+        final ManufacturerDetails manufacturerDetails = details.getManufacturerDetails();
+        final ModelDetails modelDetails = details.getModelDetails();
+        if (modelDetails != null) {
+            // check manufacturer and model number
+            final String manufacturer = manufacturerDetails == null ? null : manufacturerDetails.getManufacturer();
+            final String modelNumber = modelDetails.getModelNumber();
+            String serialNumber = details.getSerialNumber();
+            logger.debug("Discovered unit: {} {} - {}", manufacturer, modelNumber, friendlyName);
+            if (modelNumber != null) {
+                if (manufacturer != null) {
+                    final Set<String> supportedRadios = SUPPORTED_RADIO_MODELS.get(manufacturer.trim().toUpperCase());
+                    if (supportedRadios != null && supportedRadios.contains(modelNumber.toUpperCase())) {
+                        return new ThingUID(THING_TYPE_RADIO, serialNumber);
                     }
-                    // check model name and number
-                    final String modelName = modelDetails.getModelName();
-                    if (modelName != null) {
-                        final Set<String> supportedRadios = SUPPORTED_RADIO_MODELS.get(modelName.trim().toUpperCase());
-                        if (supportedRadios != null && supportedRadios.contains(modelNumber.toUpperCase())) {
-                            return new ThingUID(THING_TYPE_RADIO, serialNumber);
-                        }
-                        // Teufel reports empty manufacturer and model, but friendly name
-                        if (friendlyName.contains("Teufel")) {
-                            logger.debug("haha");
-                        }
-                        if (!friendlyName.isEmpty()) {
-                            for (Set<String> models : SUPPORTED_RADIO_MODELS.values()) {
-                                for (String model : models) {
-                                    if ((model != null) && !model.isEmpty() && friendlyName.contains(model)) {
-                                        return new ThingUID(THING_TYPE_RADIO, serialNumber);
-                                    }
+                }
+                // check model name and number
+                final String modelName = modelDetails.getModelName();
+                if (modelName != null) {
+                    final Set<String> supportedRadios = SUPPORTED_RADIO_MODELS.get(modelName.trim().toUpperCase());
+                    if (supportedRadios != null && supportedRadios.contains(modelNumber.toUpperCase())) {
+                        return new ThingUID(THING_TYPE_RADIO, serialNumber);
+                    }
+                    // Teufel reports empty manufacturer and model, but friendly name
+                    if (friendlyName.contains("Teufel")) {
+                        logger.debug("haha");
+                    }
+                    if (!friendlyName.isEmpty()) {
+                        for (Set<String> models : SUPPORTED_RADIO_MODELS.values()) {
+                            for (String model : models) {
+                                if ((model != null) && !model.isEmpty() && friendlyName.contains(model)) {
+                                    return new ThingUID(THING_TYPE_RADIO, serialNumber);
                                 }
                             }
                         }
                     }
                 }
+            }
 
-                if (((manufacturer == null) || manufacturer.trim().isEmpty())
-                        && ((modelNumber == null) || modelNumber.trim().isEmpty())) {
-                    // Some devices report crappy UPnP device description so manufacturer and model are ""
-                    // In this case we try to find the match in friendlyName
-                    final String uname = friendlyName.toUpperCase();
-                    for (Map.Entry<String, Set<String>> entry : SUPPORTED_RADIO_MODELS.entrySet()) {
+            if (((manufacturer == null) || manufacturer.trim().isEmpty())
+                    && ((modelNumber == null) || modelNumber.trim().isEmpty())) {
+                // Some devices report crappy UPnP device description so manufacturer and model are ""
+                // In this case we try to find the match in friendlyName
+                final String uname = friendlyName.toUpperCase();
+                for (Map.Entry<String, Set<String>> entry : SUPPORTED_RADIO_MODELS.entrySet()) {
+                    if (entry != null) {
                         for (Set<String> set : SUPPORTED_RADIO_MODELS.values()) {
                             for (String model : set) {
                                 if ((model != null) && !model.isEmpty() && uname.contains(model)) {
@@ -281,8 +282,8 @@ public class FSInternetRadioDiscoveryParticipant implements UpnpDiscoveryPartici
                     }
                 }
             }
-            // maybe we can add further indicators, whether the device is a supported one
         }
+
         // device not supported
         return null;
     }
