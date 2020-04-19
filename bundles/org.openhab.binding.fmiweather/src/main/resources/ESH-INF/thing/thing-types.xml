@@ -18,7 +18,7 @@
 				<label>FMISID of the weather station</label>
 				<description><![CDATA[Station ID (FMISID) of the weather observation station
 				<br />
-				<br />See https://en.ilmatieteenlaitos.fi/observation-stations for a list of observation stations]]></description>
+				<br />See https://en.ilmatieteenlaitos.fi/observation-stations for a list of observation stations. Select 'Weather' station for widest set of observations.]]></description>
 			</parameter>
 		</config-description>
 
