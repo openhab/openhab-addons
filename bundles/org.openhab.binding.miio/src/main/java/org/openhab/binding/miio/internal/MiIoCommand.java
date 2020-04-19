@@ -29,10 +29,15 @@ public enum MiIoCommand {
 
     // Basic device commands
     GET_PROPERTY("get_prop"),
+    GET_PROPERTIES("get_properties"),
     GET_VALUE("get_value"),
+    SET_PROPERTIES("set_properties"),
     SET_MODE_BASIC("set_mode"),
     SET_POWER("set_power"),
     SET_BRIGHT("set_bright"),
+    SET_WIFI_LET("set_wifi_led"),
+    SET_FAVORITE("set_level_favorite"),
+    ACTION("action"),
 
     // vacuum commands
     START_VACUUM("app_start"),

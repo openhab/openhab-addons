@@ -15,6 +15,7 @@ package org.openhab.binding.netatmo.internal.handler;
 import static org.eclipse.smarthome.core.library.unit.MetricPrefix.*;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -27,6 +28,7 @@ import javax.measure.quantity.Speed;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
@@ -51,6 +53,7 @@ import org.slf4j.LoggerFactory;
  * common behaviors of all netatmo things
  *
  * @author Gaël L'hopital - Initial contribution OH2 version
+ * @author Rob Nielsen - Added day, week, and month measurements to the weather station and modules
  *
  */
 public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
@@ -173,5 +176,32 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
             properties.put(Thing.PROPERTY_MODEL_ID, modelId);
         }
         updateProperties(properties);
+    }
+
+    public void updateMeasurements() {
+    }
+
+    public void getMeasurements(NetatmoBridgeHandler handler, String device, @Nullable String module, String scale,
+            List<String> types, List<String> channels, Map<String, Float> channelMeasurements) {
+        if (types.size() != channels.size()) {
+            throw new IllegalArgumentException("types and channels lists are different sizes.");
+        }
+
+        List<Float> measurements = handler.getStationMeasureResponses(device, module, scale, types);
+        if (measurements.size() != types.size()) {
+            throw new IllegalArgumentException("types and measurements lists are different sizes.");
+        }
+
+        int i = 0;
+        for (Float measurement : measurements) {
+            channelMeasurements.put(channels.get(i++), measurement);
+        }
+    }
+
+    public void addMeasurement(List<String> channels, List<String> types, String channel, String type) {
+        if (isLinked(channel)) {
+            channels.add(channel);
+            types.add(type);
+        }
     }
 }

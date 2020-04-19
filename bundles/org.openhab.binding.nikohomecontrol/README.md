@@ -170,7 +170,8 @@ The Thing configuration for **Niko Home Control thermostats** has the following 
 
 ```
 Thing nikohomecontrol:thermostat:<bridgeId>:<thingId> "Label" @ "Location"
-                        [ thermostatId="<Niko Home Control thermostat ID>" ]
+                        [ thermostatId="<Niko Home Control thermostat ID>",
+                          overruleTime=<default duration for overrule temperature in minutes> ]
 ```
 
 or nested in the bridge configuration:
@@ -194,7 +195,7 @@ For Niko Home Control II, the `thermostatId` parameter is a unique ID for the th
 It can only be auto-discovered.
 If you want to define the thermostat through textual configuration, you may first need to do discovery on the bridge to get the correct `thermostatId` to use in the textual configuration.
 
-The `overruleTime` parameter is used to set the standard overrule duration when you set a new setpoint without providing an overrule duration.
+The `overruleTime` parameter is used to set the standard overrule duration in minutes when you set a new setpoint without providing an overrule duration.
 The default value is 60 minutes.
 
 The Thing configuration for **Niko Home Control energy meters** has the following syntax:
@@ -250,6 +251,7 @@ When updating `setpoint`, it will overrule the temperature setpoint defined by t
 `demand` is a number indicating of the system is actively heating/cooling.
 The value will be 1 for heating, -1 for cooling and 0 if not heating or cooling.
 Note that cooling in NHC I is set by the binding, and will incorrectly show cooling demand when the system does not have cooling capabilities.
+In NHC II, `measured` and `setpoint` temperatures will always report in 0.5°C increments due to a Niko Home Control II API restriction.
 
 For thing type `energymeter` the only supported channel is `power`.
 This channel is read only and give a current power consumption/production reading (positive for consumption) every 2 seconds.

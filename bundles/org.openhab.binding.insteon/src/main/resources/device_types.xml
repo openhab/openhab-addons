@@ -360,6 +360,7 @@ Example entry:
      <feature_group name="ext_group" type="ExtStatusGroup">
         <feature name="ledbrightness">LEDBrightness</feature>
         <feature name="ramprate">RampRate</feature>
+        <feature name="onlevel">OnLevel</feature>
      </feature_group>
      <feature name="ledonoff">LEDOnOff</feature>
      <feature name="beep">Beep</feature>
@@ -403,6 +404,7 @@ Example entry:
      <feature_group name="ext_group" type="ExtStatusGroup">
         <feature name="ledbrightness">LEDBrightness</feature>
         <feature name="ramprate">RampRate</feature>
+        <feature name="onlevel">OnLevel</feature>
      </feature_group>
      <feature name="ledonoff">LEDOnOff</feature>
      <feature name="beep">Beep</feature>
