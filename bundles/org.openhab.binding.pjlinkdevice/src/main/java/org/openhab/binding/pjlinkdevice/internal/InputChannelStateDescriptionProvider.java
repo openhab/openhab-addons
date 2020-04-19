@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,14 +27,14 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = { DynamicStateDescriptionProvider.class, InputChannelStateDescriptionProvider.class })
 @NonNullByDefault
 public class InputChannelStateDescriptionProvider extends BaseDynamicStateDescriptionProvider {
-  @Reference
-  protected void setChannelTypeI18nLocalizationService(
-      final ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService) {
-    this.channelTypeI18nLocalizationService = channelTypeI18nLocalizationService;
-  }
+    @Reference
+    protected void setChannelTypeI18nLocalizationService(
+            final ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService) {
+        this.channelTypeI18nLocalizationService = channelTypeI18nLocalizationService;
+    }
 
-  protected void unsetChannelTypeI18nLocalizationService(
-      final ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService) {
-    this.channelTypeI18nLocalizationService = null;
-  }
+    protected void unsetChannelTypeI18nLocalizationService(
+            final ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService) {
+        this.channelTypeI18nLocalizationService = null;
+    }
 }

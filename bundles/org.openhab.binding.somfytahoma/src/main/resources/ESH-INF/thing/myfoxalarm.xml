@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="somfytahoma" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="myfoxalarm">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+		<label>Somfy Myfox Alarm</label>
+		<channels>
+			<channel id="cloud_status" typeId="cloud_status"></channel>
+			<channel id="myfox_alarm_command" typeId="myfox_alarm_command"></channel>
+			<channel id="alarm_state" typeId="alarm_state"></channel>
+			<channel id="intrusion_state" typeId="intrusion_state"></channel>
+		</channels>
+		<config-description-ref uri="thing-type:somfytahoma:device"/>
+	</thing-type>
+
+</thing:thing-descriptions>

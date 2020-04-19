@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,8 +37,7 @@ public class Partition extends Entity {
 
     public Partition setState(PartitionState state) {
         this.state = state;
-        logger.debug("Partition {}:\t{},\tAdditional:{}", getLabel(), getState().getMainState(),
-                getState().getAdditionalState());
+        logger.debug("Partition {}:\t{}", getLabel(), getState().getMainState());
         return this;
     }
 }

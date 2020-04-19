@@ -59,7 +59,7 @@ An Arduino-based solution has been tested with Arduino uno + RS485 and Ethernet 
 The [ProDiNo](https://www.kmpelectronics.eu/en-us/products/prodinoethernet.aspx) NetBoards are also supported.
 A ProDiNo has an Ethernet and RS-485 port on the board.
 
-Arduino code is available [here](https://github.com/openhab/openhab2-addons/tree/master/bundles/org.openhab.binding.nibeheatpump/contrib/NibeGW/Arduino/NibeGW).
+Arduino code is available [here](https://github.com/openhab/openhab-addons/tree/master/bundles/org.openhab.binding.nibeheatpump/contrib/NibeGW/Arduino/NibeGW).
 
 Arduino code can be build via Arduino IDE.
 For more details see [www.arduino.cc](https://www.arduino.cc/en/Main/Software). 
@@ -67,7 +67,7 @@ NibeGW configuration (such IP addresses, ports, etc) can be adapted directly by 
 
 ### Raspberry Pi (or other Linux/Unix based boards)
 
-C code is available [here](https://github.com/openhab/openhab2-addons/tree/master/bundles/org.openhab.binding.nibeheatpump/contrib/NibeGW/RasPi).
+C code is available [here](https://github.com/openhab/openhab-addons/tree/master/bundles/org.openhab.binding.nibeheatpump/contrib/NibeGW/RasPi).
 
 To build the C code use: 
 

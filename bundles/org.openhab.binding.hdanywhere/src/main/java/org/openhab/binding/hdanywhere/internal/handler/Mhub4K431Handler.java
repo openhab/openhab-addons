@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -158,7 +158,7 @@ public class Mhub4K431Handler extends BaseThingHandler {
                     String response = HttpUtil.executeUrl(httpMethod, url, httpHeaders, stream,
                             "application/x-www-form-urlencoded; charset=UTF-8", timeout);
                 } catch (IOException e) {
-                    logger.debug("Communication with device failed: {}", e);
+                    logger.debug("Communication with device failed", e);
                     updateStatus(ThingStatus.OFFLINE);
                 }
             }

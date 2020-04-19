@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,11 +14,14 @@ package org.openhab.binding.satel.internal.event;
 
 import java.time.LocalDateTime;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Event class describing basic status bits and current time.
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public class IntegraStatusEvent implements SatelEvent {
 
     private LocalDateTime integraTime;
@@ -33,12 +36,9 @@ public class IntegraStatusEvent implements SatelEvent {
     /**
      * Constructs new event.
      *
-     * @param integraTime
-     *                        current Integra date and time
-     * @param statusByte1
-     *                        status bits, byte #1
-     * @param statusByte2
-     *                        status bits, byte #2
+     * @param integraTime current Integra date and time
+     * @param statusByte1 status bits, byte #1
+     * @param statusByte2 status bits, byte #2
      */
     public IntegraStatusEvent(LocalDateTime integraTime, byte statusByte1, byte statusByte2) {
         this.integraTime = integraTime;

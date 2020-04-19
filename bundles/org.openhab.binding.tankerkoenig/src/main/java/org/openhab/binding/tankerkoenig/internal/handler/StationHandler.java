@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -95,8 +95,7 @@ public class StationHandler extends BaseThingHandler {
                 logger.debug("Try to refresh detail data");
                 updateDetailData();
             } catch (RuntimeException r) {
-                logger.debug("Caught exception in ScheduledExecutorService of TankerkoenigHandler. RuntimeExcetion: {}",
-                        r);
+                logger.debug("Caught exception in ScheduledExecutorService of TankerkoenigHandler", r);
                 // no status change, since in case of error in here,
                 // the old values for opening time will be continue to be used
             }

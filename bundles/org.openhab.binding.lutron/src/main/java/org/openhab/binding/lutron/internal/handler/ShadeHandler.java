@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import static org.openhab.binding.lutron.internal.LutronBindingConstants.CHANNEL
 
 import java.math.BigDecimal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
@@ -35,6 +36,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Bob Adair - Initial contribution based on Alan Tong's DimmerHandler
  */
+@NonNullByDefault
 public class ShadeHandler extends LutronHandler {
     private static final Integer ACTION_ZONELEVEL = 1;
     private static final Integer ACTION_STARTRAISING = 2;

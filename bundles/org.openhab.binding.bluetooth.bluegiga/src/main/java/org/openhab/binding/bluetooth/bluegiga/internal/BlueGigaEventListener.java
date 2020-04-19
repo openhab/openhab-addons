@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Listener interface for events
  *
  * @author Chris Jackson - Initial contribution and API
  *
  */
+@NonNullByDefault
 public interface BlueGigaEventListener {
     /**
      * Called when an event is received

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,10 @@
 package org.openhab.binding.somfytahoma.internal.model;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -26,7 +29,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class SomfyTahomaEvent {
     private String name = "";
     private String deviceURL = "";
-    private ArrayList<SomfyTahomaState> deviceStates = new ArrayList<>();
+    private String newState = "";
+    private String execId = "";
+    private String gatewayId = "";
+    private List<SomfyTahomaState> deviceStates = new ArrayList<>();
+    private JsonElement action = new JsonObject();
 
     public String getName() {
         return name;
@@ -36,7 +43,23 @@ public class SomfyTahomaEvent {
         return deviceURL;
     }
 
-    public ArrayList<SomfyTahomaState> getDeviceStates() {
+    public String getGatewayId() {
+        return gatewayId;
+    }
+
+    public String getNewState() {
+        return newState;
+    }
+
+    public String getExecId() {
+        return execId;
+    }
+
+    public List<SomfyTahomaState> getDeviceStates() {
         return deviceStates;
+    }
+
+    public JsonElement getAction() {
+        return action;
     }
 }

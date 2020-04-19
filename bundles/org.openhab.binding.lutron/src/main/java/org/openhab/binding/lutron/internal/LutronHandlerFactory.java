@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,6 @@ import static org.openhab.binding.lutron.internal.LutronBindingConstants.*;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -58,6 +57,7 @@ import org.openhab.binding.lutron.internal.handler.TabletopKeypadHandler;
 import org.openhab.binding.lutron.internal.handler.TimeclockHandler;
 import org.openhab.binding.lutron.internal.handler.VcrxHandler;
 import org.openhab.binding.lutron.internal.handler.VirtualKeypadHandler;
+import org.openhab.binding.lutron.internal.handler.WciHandler;
 import org.openhab.binding.lutron.internal.hw.HwConstants;
 import org.openhab.binding.lutron.internal.hw.HwDimmerHandler;
 import org.openhab.binding.lutron.internal.hw.HwSerialBridgeHandler;
@@ -83,11 +83,12 @@ import org.slf4j.LoggerFactory;
 public class LutronHandlerFactory extends BaseThingHandlerFactory {
 
     // Used by LutronDeviceDiscoveryService to discover these types
-    public static final Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPES_UIDS = Collections.unmodifiableSet(Stream.of(
-            THING_TYPE_DIMMER, THING_TYPE_SWITCH, THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_KEYPAD, THING_TYPE_TTKEYPAD,
-            THING_TYPE_INTLKEYPAD, THING_TYPE_PICO, THING_TYPE_VIRTUALKEYPAD, THING_TYPE_VCRX, THING_TYPE_CCO_PULSED,
-            THING_TYPE_CCO_MAINTAINED, THING_TYPE_SHADE, THING_TYPE_TIMECLOCK, THING_TYPE_GREENMODE, THING_TYPE_QSIO,
-            THING_TYPE_GRAFIKEYEKEYPAD, THING_TYPE_BLIND, THING_TYPE_PALLADIOMKEYPAD).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPES_UIDS = Collections.unmodifiableSet(
+            Stream.of(THING_TYPE_DIMMER, THING_TYPE_SWITCH, THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_KEYPAD,
+                    THING_TYPE_TTKEYPAD, THING_TYPE_INTLKEYPAD, THING_TYPE_PICO, THING_TYPE_VIRTUALKEYPAD,
+                    THING_TYPE_VCRX, THING_TYPE_CCO_PULSED, THING_TYPE_CCO_MAINTAINED, THING_TYPE_SHADE,
+                    THING_TYPE_TIMECLOCK, THING_TYPE_GREENMODE, THING_TYPE_QSIO, THING_TYPE_GRAFIKEYEKEYPAD,
+                    THING_TYPE_BLIND, THING_TYPE_PALLADIOMKEYPAD, THING_TYPE_WCI).collect(Collectors.toSet()));
 
     // Used by the HwDiscoveryService
     public static final Set<ThingTypeUID> HW_DISCOVERABLE_DEVICE_TYPES_UIDS = Collections
@@ -123,7 +124,8 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
                 || HW_DISCOVERABLE_DEVICE_TYPES_UIDS.contains(thingTypeUID);
     }
 
-    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegMap = new HashMap<>();
+    private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegMap = new HashMap<>();
+    // Marked as Nullable only to fix incorrect redundant null check complaints after adding null annotations
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
@@ -131,8 +133,7 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
 
         if (thingTypeUID.equals(THING_TYPE_IPBRIDGE)) {
             IPBridgeHandler bridgeHandler = new IPBridgeHandler((Bridge) thing);
-            LutronDeviceDiscoveryService discoveryService = registerDiscoveryService(bridgeHandler);
-            bridgeHandler.setDiscoveryService(discoveryService);
+            registerDiscoveryService(bridgeHandler);
             return bridgeHandler;
         } else if (thingTypeUID.equals(THING_TYPE_DIMMER)) {
             return new DimmerHandler(thing);
@@ -164,6 +165,8 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
             return new VirtualKeypadHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_VCRX)) {
             return new VcrxHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_WCI)) {
+            return new WciHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_TIMECLOCK)) {
             return new TimeclockHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_GREENMODE)) {
@@ -209,11 +212,11 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
      *
      * @param bridgeHandler bridge handler for which to register the discovery service
      */
-    private synchronized LutronDeviceDiscoveryService registerDiscoveryService(IPBridgeHandler bridgeHandler) {
+    private synchronized void registerDiscoveryService(IPBridgeHandler bridgeHandler) {
         logger.debug("Registering discovery service.");
         LutronDeviceDiscoveryService discoveryService = new LutronDeviceDiscoveryService(bridgeHandler, httpClient);
+        bridgeHandler.setDiscoveryService(discoveryService);
         discoveryServiceRegMap.put(bridgeHandler.getThing().getUID(),
-                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
-        return discoveryService;
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, null));
     }
 }

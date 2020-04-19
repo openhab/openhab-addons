@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,7 @@ import org.openhab.binding.yamahareceiver.internal.protocol.ReceivedMessageParse
 import org.openhab.binding.yamahareceiver.internal.state.DeviceInformationState;
 import org.openhab.binding.yamahareceiver.internal.state.NavigationControlState;
 import org.openhab.binding.yamahareceiver.internal.state.NavigationControlStateListener;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -47,6 +48,8 @@ import org.w3c.dom.Node;
  * @author Tomasz Maruszak - Refactor
  */
 public class InputWithNavigationControlXML extends AbstractInputControlXML implements InputWithNavigationControl {
+
+    private final Logger logger = LoggerFactory.getLogger(InputWithNavigationControlXML.class);
 
     public static final int MAX_PER_PAGE = 8;
     private boolean useAlternativeBackToHomeCmd = false;
@@ -297,8 +300,10 @@ public class InputWithNavigationControlXML extends AbstractInputControlXML imple
 
             totalWaitingTime += YamahaReceiverBindingConstants.MENU_RETRY_DELAY;
             if (totalWaitingTime > YamahaReceiverBindingConstants.MENU_MAX_WAITING_TIME) {
-                throw new IOException(
-                        "Menu still not ready after " + YamahaReceiverBindingConstants.MENU_MAX_WAITING_TIME + "ms");
+                logger.info("Menu still not ready after " + YamahaReceiverBindingConstants.MENU_MAX_WAITING_TIME + "ms. The menu state will be out of sync.");
+                // ToDo: this needs to redesigned to allow for some sort of async update
+                // Note: there is not really that much we can do here.
+                return;
             }
 
             try {

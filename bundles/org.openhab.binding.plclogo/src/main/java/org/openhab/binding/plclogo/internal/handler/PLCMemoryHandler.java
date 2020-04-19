@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -264,7 +264,7 @@ public class PLCMemoryHandler extends PLCCommonHandler {
     @Override
     protected void doInitialization() {
         Thing thing = getThing();
-        logger.debug("Initialize LOGO! {} memory handler.");
+        logger.debug("Initialize LOGO! memory handler.");
 
         config.set(getConfigAs(PLCMemoryConfiguration.class));
 

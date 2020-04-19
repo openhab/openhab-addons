@@ -507,6 +507,28 @@
 		</config-description>
 	</thing-type>
 
+	<thing-type id="wci">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>WCI</label>
+		<description>QS Wallbox Closure Interface</description>
+
+		<config-description>
+			<parameter name="integrationId" type="integer" required="true">
+				<label>Integration ID</label>
+				<description>Address of WCI in the Lutron control system</description>
+			</parameter>
+			<parameter name="autorelease" type="boolean">
+				<label>Auto-release</label>
+				<description>Automatically release pressed buttons</description>
+				<default>true</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+
 	<thing-type id="virtualkeypad">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="ipbridge"/>

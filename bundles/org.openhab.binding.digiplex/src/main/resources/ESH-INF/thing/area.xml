@@ -86,8 +86,8 @@
 		<description>Indicates if area is ready (no open zones)</description>
 		<state readOnly="true">
 			<options>
-				<option value="CLOSED">Ready</option>
-				<option value="OPEN">Not ready</option>
+				<option value="CLOSED">Not ready</option>
+				<option value="OPEN">Ready</option>
 			</options>
 		</state>
 	</channel-type>
