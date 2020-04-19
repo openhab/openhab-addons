@@ -31,7 +31,7 @@ import org.openhab.binding.fsinternetradio.internal.radio.FrontierSiliconRadioCo
 /**
  * Radio service mock.
  *
- * @author Markus Rathgeb - Migrated from Groovy to pure Java, made more robust
+ * @author Markus Rathgeb - Initial contribution
  * @author Velin Yordanov - Small adjustments
  */
 public class RadioServiceDummy extends HttpServlet {
@@ -49,7 +49,6 @@ public class RadioServiceDummy extends HttpServlet {
     private static final String REQUEST_GET_VOLUME = "/" + FrontierSiliconRadioConstants.REQUEST_GET_VOLUME;
     private static final String REQUEST_SET_MUTE = "/" + FrontierSiliconRadioConstants.REQUEST_SET_MUTE;
     private static final String REQUEST_GET_MUTE = "/" + FrontierSiliconRadioConstants.REQUEST_GET_MUTE;
-    private static final String REQUEST_SET_PRESET = "/" + FrontierSiliconRadioConstants.REQUEST_SET_PRESET;
     private static final String REQUEST_SET_PRESET_ACTION = "/"
             + FrontierSiliconRadioConstants.REQUEST_SET_PRESET_ACTION;
     private static final String REQUEST_GET_PLAY_INFO_TEXT = "/"
@@ -70,26 +69,26 @@ public class RadioServiceDummy extends HttpServlet {
 
     private final int httpStatus;
 
-    private String tagToReturn;
-    private String responseToReturn;
+    private String tagToReturn = "";
+    private String responseToReturn = "";
 
     private boolean isInvalidResponseExpected;
     private boolean isInvalidValueExpected;
     private boolean isOKAnswerExpected = true;
 
     private String powerValue;
-    private String powerTag;
+    private String powerTag = "";
 
     private String muteValue;
-    private String muteTag;
+    private String muteTag = "";
 
     private String absoluteVolumeValue;
-    private String absoluteVolumeTag;
+    private String absoluteVolumeTag = "";
 
     private String modeValue;
-    private String modeTag;
+    private String modeTag = "";
 
-    private String radioStation;
+    private String radioStation = "";
 
     public RadioServiceDummy() {
         this.httpStatus = HttpStatus.OK_200;
