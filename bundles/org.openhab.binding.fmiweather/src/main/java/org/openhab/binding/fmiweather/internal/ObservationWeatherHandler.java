@@ -108,7 +108,7 @@ public class ObservationWeatherHandler extends AbstractWeatherHandler {
             // IllegalStateException: Unexpected (possibly bug) issue with response
             response = null;
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    String.format("{}: {}", e.getClass().getName(), e.getMessage()));
+                    String.format("%s: %s", e.getClass().getName(), e.getMessage()));
             return;
         }
         updateChannels();
@@ -140,7 +140,7 @@ public class ObservationWeatherHandler extends AbstractWeatherHandler {
                 } else if (channelUID.getIdWithoutGroup().equals(CHANNEL_TIME)) {
                     String field = ObservationRequest.PARAM_TEMPERATURE;
                     Data data = unwrap(response.getData(location, field),
-                            "Field {} not present for location {} in response. Bug?", field, location);
+                            "Field %s not present for location %s in response. Bug?", field, location);
                     updateEpochSecondStateIfLinked(channelUID, data.timestampsEpochSecs[lastValidIndex]);
                 } else {
                     String field = getDataField(channelUID);
@@ -151,14 +151,14 @@ public class ObservationWeatherHandler extends AbstractWeatherHandler {
                         continue;
                     }
                     Data data = unwrap(response.getData(location, field),
-                            "Field {} not present for location {} in response. Bug?", field, location);
+                            "Field %s not present for location % in response. Bug?", field, location);
                     updateStateIfLinked(channelUID, data.values[lastValidIndex], unit);
                 }
             }
         } catch (IllegalStateException e) {
             // IllegalStateException: Unexpected (possibly bug) issue with response
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    String.format("{}: {}", e.getClass().getName(), e.getMessage()));
+                    String.format("%s: %s", e.getClass().getName(), e.getMessage()));
         } finally {
             updateStatus(ThingStatus.ONLINE);
         }
