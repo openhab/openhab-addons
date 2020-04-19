@@ -120,6 +120,15 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
     }
 
     /**
+     * Remove handler of things.
+     */
+    @Override
+    protected synchronized void removeHandler(ThingHandler thingHandler) {
+        if (thingHandler instanceof MagentaTVHandler) {
+        }
+    }
+
+    /**
      * A device was discovered by UPnP. A new device gets inserted into the
      * deviceList table, otherwise the properties will be updated.
      *
