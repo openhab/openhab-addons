@@ -47,6 +47,7 @@ public class SerialBridgeHandler extends ADBridgeHandler {
 
     private @NonNullByDefault({}) SerialBridgeConfig config;
     private final SerialPortManager serialPortManager;
+    private @NonNullByDefault({}) SerialPortIdentifier portIdentifier;
 
     /** name of serial device */
     private String serialDeviceName = "";
@@ -83,6 +84,19 @@ public class SerialBridgeHandler extends ADBridgeHandler {
             return;
         }
 
+        if (!serialDeviceName.isEmpty()) {
+            SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(serialDeviceName);
+            if (portIdentifier == null) {
+                logger.debug("Serial Error: Port {} does not exist.", serialDeviceName);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Configured serial port does not exist");
+                return;
+            }
+        } else {
+            logger.debug("Serial device name not configured");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "port name not configured");
+        }
+
         connect();
 
         logger.trace("Finished initializing serial bridge handler");
@@ -92,32 +106,18 @@ public class SerialBridgeHandler extends ADBridgeHandler {
     protected synchronized void connect() {
         disconnect(); // make sure we are disconnected
         try {
-            if (!serialDeviceName.isEmpty()) {
-                SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(serialDeviceName);
-                if (portIdentifier == null) {
-                    logger.debug("Serial Error: Port {} does not exist.", serialDeviceName);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Configured serial port does not exist");
-                    return;
-                }
+            serialPort = portIdentifier.open("org.openhab.binding.alarmdecoder", 100);
+            serialPort.setSerialPortParams(serialPortSpeed, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
+                    SerialPort.PARITY_NONE);
+            serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN | SerialPort.FLOWCONTROL_RTSCTS_OUT);
+            // Note: The V1 code called disableReceiveFraming() and disableReceiveThreshold() here
 
-                serialPort = portIdentifier.open("org.openhab.binding.alarmdecoder", 100);
-
-                serialPort.setSerialPortParams(serialPortSpeed, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
-                        SerialPort.PARITY_NONE);
-                serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN | SerialPort.FLOWCONTROL_RTSCTS_OUT);
-                // Note: The V1 code called disableReceiveFraming() and disableReceiveThreshold() here
-
-                reader = new BufferedReader(new InputStreamReader(serialPort.getInputStream(), AD_CHARSET_NAME));
-                writer = new BufferedWriter(new OutputStreamWriter(serialPort.getOutputStream(), AD_CHARSET_NAME));
-                logger.debug("connected to serial port: {}", serialDeviceName);
-                panelReadyReceived = false;
-                startMsgReader();
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                logger.debug("Serial device name not configured");
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "port name not configured");
-            }
+            reader = new BufferedReader(new InputStreamReader(serialPort.getInputStream(), AD_CHARSET_NAME));
+            writer = new BufferedWriter(new OutputStreamWriter(serialPort.getOutputStream(), AD_CHARSET_NAME));
+            logger.debug("connected to serial port: {}", serialDeviceName);
+            panelReadyReceived = false;
+            startMsgReader();
+            updateStatus(ThingStatus.ONLINE);
         } catch (PortInUseException e) {
             logger.debug("Cannot open serial port: {}, it is already in use", serialDeviceName);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Serial port already in use");
