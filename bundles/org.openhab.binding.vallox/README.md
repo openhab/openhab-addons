@@ -4,6 +4,8 @@ This binding connects to Vallox central venting units and supports only older SE
 [See here: Vallox MV binding](https://www.openhab.org/addons/bindings/valloxmv/)
 Please note that in 3.0.0 release of openHAB it is planned that the MV binding is merged into this. After that there would be only one Vallox binding that supports all models.
 
+This binding acts as a Vallox control panel. All linked channels are polled regularly and refreshed at least every 15 minutes.
+
 ## Supported Things
 
 This binding supports two different things.
@@ -42,19 +44,15 @@ Binding has following configuration parameters depending on thing type:
 | fanSpeed                  | Number | ✓ | Fan speed |
 | fanSpeedMax               | Number | ✓ | Maximum fan speed |
 | fanSpeedMin               | Number | ✓ | Minimum fan speed |
-| dcFanInputAdjustment      | Number | ✓ | Input fan speed % |
-| dcFanOutputAdjustment     | Number | ✓ | Output fan speed % |
+| dcFanInputAdjustment      | Number:Dimensionless | ✓ | Input fan speed % |
+| dcFanOutputAdjustment     | Number:Dimensionless | ✓ | Output fan speed % |
 | supplyFanOff              | Switch | ✓ | Stop supply fan |
 | exhaustFanOff             | Switch | ✓ | Stop exhaust fan |
 | **Temperature**        
-| tempInside                | Number |  | Inside temperature |
-| tempOutside               | Number |  | Outside temperature|
-| tempExhaust               | Number |  | Exhaust temperature |
-| tempIncoming              | Number |  | Incoming temperature |
-| **Efficiency**        
-| inEfficiency              | Number |  | Incoming efficiency. How good the machine transfers the recovered heat to incoming air |
-| outEfficiency             | Number |  | Outgoing efficiency. How good the machine recovers heat from exhaust air |
-| averageEfficiency         | Number |  | Average of efficiencies |
+| tempInside                | Number:Temperature |  | Inside temperature |
+| tempOutside               | Number:Temperature |  | Outside temperature|
+| tempExhaust               | Number:Temperature |  | Exhaust temperature |
+| tempIncoming              | Number:Temperature |  | Incoming temperature |
 | **Setting**       
 | powerState                | Switch | ✓ | Power switch |
 | co2AdjustState            | Switch | ✓ | Adjust fan speed according to CO2 levels |
@@ -62,24 +60,24 @@ Binding has following configuration parameters depending on thing type:
 | postHeatingState          | Switch | ✓ | Use post heating |
 | preHeatingState           | Switch | ✓ | Use pre heating |
 | cascadeAdjust             | Switch | ✓ | Adjust depending on inside temperature |
-| hrcBypassThreshold        | Number | ✓ | Bypass heat recovery cell when outside temperature is above this |
-| inputFanStopThreshold     | Number | ✓ | Stop input fan when incoming temperature is below this |
-| postHeatingSetPoint       | Number | ✓ | Temperature setpoint for post heating |
-| preHeatingSetPoint        | Number | ✓ | Temperature setpoint for pre heating |
+| hrcBypassThreshold        | Number:Temperature | ✓ | Bypass heat recovery cell when outside temperature is above this |
+| inputFanStopThreshold     | Number:Temperature | ✓ | Stop input fan when incoming temperature is below this |
+| postHeatingSetPoint       | Number:Temperature | ✓ | Temperature setpoint for post heating |
+| preHeatingSetPoint        | Number:Temperature | ✓ | Temperature setpoint for pre heating |
 | postHeatingOnCounter      | Number | ✓ | Post heating ON-time in seconds |
 | postHeatingOffCounter     | Number | ✓ | Pre heating OFF-time in seconds |
 | co2SetPoint               | Number | ✓ | Setpoint for CO2 adjustment |             
 | adjustmentIntervalMinutes | Number | ✓ | Minutes between adjustments |
 | maxSpeedLimitMode         | Number | ✓ | Maximum speed limiter. Always on or with adjustments |
-| basicHumidityLevel        | Number | ✓ | Basic humidity level |
+| basicHumidityLevel        | Number:Dimensionless | ✓ | Basic humidity level |
 | boostSwitchMode           | Switch | ✓ | Boost switch function. Boost or fireplace |
 | radiatorType              | Switch | ✓ | Radiator type. Electric or water |
 | activateFirePlaceBooster  | Switch | ✓ | Activate booster switch |
 | automaticHumidityLevelSeekerState | Switch | ✓ | Automatic humidity level seeker |       
 | **Status**       
-| humidity                  | Number |  | Highest humidity level |
-| humiditySensor1           | Number |  | Humidity sensor 2 |
-| humiditySensor2           | Number |  | Humidity sensor 1 |
+| humidity                  | Number:Dimensionless |  | Highest humidity level |
+| humiditySensor1           | Number:Dimensionless |  | Humidity sensor 2 |
+| humiditySensor2           | Number:Dimensionless |  | Humidity sensor 1 |
 | co2                       | Number |  | Highest CO2 level |
 | postHeatingIndicator      | Switch |  | Post heating enabled |
 | installedCo2Sensors       | String |  | Show currently installed CO2 sensors |
@@ -96,8 +94,8 @@ Binding has following configuration parameters depending on thing type:
 | **Maintenance**      
 | filterGuardIndicator          | Switch |  | Filter guard active. Check filters |
 | serviceReminderIndicator      | Switch |  | Service reminder. Do service |
-| maintenanceMonthCounter       | Number |  | Shows how many months to next service |
-| serviceReminder               | Number | ✓ | How many months between services |
+| serviceMonthCounter           | Number |  | Shows how many months to next service |
+| serviceReminderMonths         | Number | ✓ | How many months between services |
 | **Alarm**       
 | co2Alarm                      | Switch |  | CO2 alarm active |
 | faultIndicator                | Switch |  | Fault active |
@@ -131,17 +129,16 @@ Thing vallox:se-serial:main [ serialPort="COM3", panelNumber=8 ]
 ### Item definition
 
 ```
-Number FanSpeed          "Fan speed"          { channel="vallox:se-tcp:vallox:fanControl#fanSpeed" } 
-Number TempInside        "Inside temperature" { channel="vallox:se-tcp:vallox:temperature#tempInside" }
-Number AverageEfficiency "Average efficiency" { channel="vallox:se-tcp:vallox:efficiency#averageEfficiency" }
-Switch PowerState        "Power state"        { channel="vallox:se-tcp:vallox:setting#powerState" }
+Number             FanSpeed   "Fan speed"                           { channel="vallox:se-tcp:main:fanControl#fanSpeed" } 
+Number:Temperature TempInside "Inside temperature ["%.1f %unit%"]"  { channel="vallox:se-tcp:main:temperature#tempInside" }
+Switch             PowerState "Power state"                         { channel="vallox:se-tcp:main:setting#powerState" }
 
 
-Number CO2               "Measured CO2 level                     { channel="vallox:se-serial:main:status#co2" }
+Number CO2               "Measured CO2 level"                    { channel="vallox:se-serial:main:status#co2" }
 Number CO2SetPoint       "CO2 setpoint for automatic adjustment" { channel="vallox:se-serial:main:setting#co2SetPoint" }
 
-Switch ServiceReminderIndicator "Service reminder"  { channel="vallox:se-tcp:vallox:maintenance#serviceReminderIndicator" }
-Switch FaultIndicator           "Fault indicator"   { channel="vallox:se-tcp:vallox:alarm#faultIndicator" }
-Number LastErrorNumber          "Last error number" { channel="vallox:se-tcp:vallox:alarm#lastErrorNumber" }
+Switch ServiceReminderIndicator "Service reminder"  { channel="vallox:se-tcp:main:maintenance#serviceReminderIndicator" }
+Switch FaultIndicator           "Fault indicator"   { channel="vallox:se-tcp:main:alarm#faultIndicator" }
+Number LastErrorNumber          "Last error number" { channel="vallox:se-tcp:main:alarm#lastErrorNumber" }
 ```
 
