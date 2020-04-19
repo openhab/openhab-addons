@@ -164,16 +164,6 @@ public class NikobusPcLinkHandler extends BaseBridgeHandler {
         if (commandListeners.put(command, listener) != null) {
             logger.warn("Multiple registrations for '{}'", command);
         }
-        
-        // the connection must be open to be able to receive messages from the bus
-        try {
-            connectIfNeeded(connection);
-        } catch (IOException e) {
-            logger.debug("Sending command failed due {}", e.getMessage(), e);
-            connection.close();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-
-        }
     }
 
     public void removeListener(String command) {
@@ -318,9 +308,15 @@ public class NikobusPcLinkHandler extends BaseBridgeHandler {
         List<Thing> things = getThing().getThings().stream()
                 .filter(thing -> thing.getHandler() instanceof NikobusModuleHandler).collect(Collectors.toList());
 
-        if (things.isEmpty()) {
-            logger.debug("Nothing to refresh");
-            return;
+        if (!commandListeners.isEmpty()) {
+            // the connection must be open to be able to receive messages from the bus
+            try {
+                connectIfNeeded(connection);
+            } catch (IOException e) {
+                logger.debug("Sending command failed due {}", e.getMessage(), e);
+                connection.close();
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            }
         }
 
         refreshThingIndex = (refreshThingIndex + 1) % things.size();
@@ -339,8 +335,8 @@ public class NikobusPcLinkHandler extends BaseBridgeHandler {
             connection.connect();
 
             // Send connection sequence, mimicking the Nikobus software. If this is not
-            // send, PC-Link
-            // sometimes does not forward button presses via serial interface.
+            // sent, PC-Link
+            // sometimes does not forward button presses via the serial interface.
             Stream.of(new String[] { "++++", "ATH0", "ATZ", "$10110000B8CF9D", "#L0", "#E0", "#L0", "#E1" })
                     .map(NikobusCommand::new).forEach(this::sendCommand);
 

@@ -238,7 +238,8 @@ when
 then
     logInfo("LivingRoomActivateSecondLight", "Rule running!")
     PushButtonKitchen_ButtonEvent.sendCommand(ON)  
-end```
+end
+```
 
 ## Full Example
 
