@@ -242,7 +242,7 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
         String sysinfo;
 
         try {
-            sysinfo = HttpUtil.executeUrl("GET", url, 10000);
+            sysinfo = HttpUtil.executeUrl("GET", url, 15000);
             content = new JsonParser().parse(sysinfo).getAsJsonObject();
             uuid = content.get("uuid").getAsString();
         } catch (Exception e) {
@@ -251,7 +251,7 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
         }
 
         try {
-            String nameinfo = HttpUtil.executeUrl("GET", url + "name", 10000);
+            String nameinfo = HttpUtil.executeUrl("GET", url + "name", 15000);
             content = new JsonParser().parse(nameinfo).getAsJsonObject();
             name = content.get("name").getAsString();
         } catch (Exception e) {

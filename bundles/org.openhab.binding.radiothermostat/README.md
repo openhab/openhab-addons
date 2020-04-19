@@ -19,6 +19,10 @@ There is exactly one supported thing type, which represents the thermostat.
 It has the `rtherm` id.
 Multiple Things can be added if more than one thermostat is to be controlled.
 
+## Discovery
+
+Auto-discovery is supported if the thermostat can be located on the local network using SSDP. Otherwise the thing must be manually added.
+
 ## Binding Configuration
 
 The binding has no configuration options, all configuration is done at Thing level.
@@ -164,10 +168,12 @@ sitemap radiotherm label="My Thermostat" {
         Text item=Therm_Model
 
         Text item=Therm_Temp icon="temperature" valuecolor=[>76="orange",>67.5="green",<=67.5="blue"]
+        // Humidity only supported on CT80
         Text item=Therm_Hum icon="humidity"
         Setpoint item=Therm_Setpt label="Target temperature [%d °F]" visibility=[Therm_Mode==1,Therm_Mode==2] icon="temperature" minValue=60 maxValue=85 step=1
         Selection item=Therm_Mode icon="climate"
         Selection item=Therm_Fmode icon="fan"
+        // Program Mode only supported on CT80 Rev B
         Selection item=Therm_Pmode icon="smoke"
         Text item=Therm_Status icon="climate"
         Text item=Therm_FanStatus icon="flow"

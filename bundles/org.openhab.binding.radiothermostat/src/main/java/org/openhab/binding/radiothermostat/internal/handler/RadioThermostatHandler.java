@@ -161,7 +161,15 @@ public class RadioThermostatHandler extends BaseThingHandler {
         // populate fan mode options based on thermostat model
         List<StateOption> fanModeOptions = getFanModeOptions();
         stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), FAN_MODE), fanModeOptions);
-        
+
+        // if we are not a CT-80, remove the humidity & program mode channel
+        if (!isCT80()) {
+            List<Channel> channels = new ArrayList<>(this.getThing().getChannels());
+            channels.removeIf(c -> (c.getUID().getId().equals(HUMIDITY)));
+            channels.removeIf(c -> (c.getUID().getId().equals(PROGRAM_MODE)));
+            updateThing(editThing().withChannels(channels).build());
+        }
+
         if (errorMsg == null) {
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, rthermData.getName() + " " + rthermData.getModel());
             initialized = 1;
