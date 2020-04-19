@@ -257,10 +257,10 @@ preceding hour but not at the time of observation -->
 				<option value="24">Snow</option>
 				<option value="25">Freezing drizzle or freezing rain</option>
 				<option value="26">Thunderstorm (with or without precipitation)</option>
-				<option value="27">BLOWING OR DRIFTING SNOW OR SAND</option>
+				<option value="27">Blowing or drifting snow or sand</option>
 				<option value="28">Blowing or drifting snow or sand, visibility equal to, or greater than, 1 km</option>
 				<option value="29">Blowing or drifting snow or sand, visibility less than 1 km</option>
-				<option value="30">FOG</option>
+				<option value="30">Fog</option>
 				<option value="31">Fog or ice fog in patches</option>
 				<option value="32">Fog or ice fog, has become thinner during the past hour</option>
 				<option value="33">Fog or ice fog, no appreciable change during the past hour</option>
@@ -297,7 +297,7 @@ preceding hour but not at the time of observation -->
 				<option value="67">Rain (or drizzle) and snow, slight</option>
 				<option value="68">Rain (or drizzle) and snow, moderate or heavy</option>
 				<option value="69">Reserved</option>
-				<option value="70">SNOW</option>
+				<option value="70">Snow</option>
 				<option value="71">Snow, slight</option>
 				<option value="72">Snow, moderate</option>
 				<option value="73">Snow, heavy</option>
