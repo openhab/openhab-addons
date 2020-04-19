@@ -153,16 +153,17 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
         }
 
         // Try properties first
-        Optional<ModelBlock> mainBlock = getAddressFromProperties();
+        @Nullable
+        ModelBlock mainBlock = getAddressFromProperties();
 
-        if (!mainBlock.isPresent()) {
+        if (mainBlock == null) {
             mainBlock = getAddressFromConfig();
         }
 
-        if (mainBlock.isPresent()) {
-            publishUniqueAddress(mainBlock.get());
+        if (mainBlock != null) {
+            publishUniqueAddress(mainBlock);
             updateStatus(ThingStatus.UNKNOWN);
-            registerPollTask(mainBlock.get());
+            registerPollTask(mainBlock);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "SunSpec item should either have the address and length configuration set or should been created by auto discovery");
@@ -174,35 +175,35 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
      * Load and parse configuration from the properties
      * These will be set by the auto discovery process
      */
-    private Optional<ModelBlock> getAddressFromProperties() {
+    private @Nullable ModelBlock getAddressFromProperties() {
         Map<String, String> properties = thing.getProperties();
         if (!properties.containsKey(PROPERTY_BLOCK_ADDRESS) || !properties.containsKey(PROPERTY_BLOCK_LENGTH)) {
-            return Optional.empty();
+            return null;
         }
         try {
             ModelBlock block = new ModelBlock();
             block.address = (int) Double.parseDouble(thing.getProperties().get(PROPERTY_BLOCK_ADDRESS));
             block.length = (int) Double.parseDouble(thing.getProperties().get(PROPERTY_BLOCK_LENGTH));
-            return Optional.of(block);
+            return block;
         } catch (NumberFormatException ex) {
             logger.debug("Could not parse address and length properties, error: {}", ex.getMessage());
-            return Optional.empty();
+            return null;
         }
     }
 
     /**
      * Load configuration from main configuration
      */
-    private Optional<ModelBlock> getAddressFromConfig() {
+    private @Nullable ModelBlock getAddressFromConfig() {
         @Nullable
         SunSpecConfiguration myconfig = config;
         if (myconfig == null) {
-            return Optional.empty();
+            return null;
         }
         ModelBlock block = new ModelBlock();
         block.address = myconfig.address;
         block.length = myconfig.length;
-        return Optional.of(block);
+        return block;
     }
 
     /**

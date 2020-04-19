@@ -114,7 +114,7 @@ public class SunspecDiscoveryProcess {
      * The last common block found. This is used
      * to get the details of any found devices
      */
-    private Optional<CommonModelBlock> lastCommonBlock = Optional.empty();
+    private @Nullable CommonModelBlock lastCommonBlock = null;
 
     /**
      * New instances of this class should get a reference to the handler
@@ -315,7 +315,7 @@ public class SunspecDiscoveryProcess {
      */
     private void parseCommonBlock(ModbusRegisterArray registers) {
         logger.trace("Got common block data: {}", registers);
-        lastCommonBlock = Optional.of(commonBlockParser.parse(registers));
+        lastCommonBlock = commonBlockParser.parse(registers);
         lookForModelBlock(); // Continue parsing
     }
 
@@ -330,7 +330,9 @@ public class SunspecDiscoveryProcess {
             return;
         }
 
-        if (!lastCommonBlock.isPresent()) {
+        CommonModelBlock commonBlock = lastCommonBlock;
+
+        if (commonBlock == null) {
             logger.warn(
                     "Found model block without a preceding common block. Can't add device because details are unkown");
             return;
@@ -340,17 +342,17 @@ public class SunspecDiscoveryProcess {
                 Integer.toString(block.address));
 
         Map<String, Object> properties = new HashMap<>();
-        properties.put(PROPERTY_VENDOR, lastCommonBlock.get().manufacturer);
-        properties.put(PROPERTY_MODEL, lastCommonBlock.get().model);
-        properties.put(PROPERTY_SERIAL_NUMBER, lastCommonBlock.get().serialNumber);
-        properties.put(PROPERTY_VERSION, lastCommonBlock.get().version);
+        properties.put(PROPERTY_VENDOR, commonBlock.manufacturer);
+        properties.put(PROPERTY_MODEL, commonBlock.model);
+        properties.put(PROPERTY_SERIAL_NUMBER, commonBlock.serialNumber);
+        properties.put(PROPERTY_VERSION, commonBlock.version);
         properties.put(PROPERTY_BLOCK_ADDRESS, block.address);
         properties.put(PROPERTY_BLOCK_LENGTH, block.length);
         properties.put(PROPERTY_UNIQUE_ADDRESS, handler.getUID().getAsString() + ":" + block.address);
 
         DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                 .withRepresentationProperty(PROPERTY_UNIQUE_ADDRESS).withBridge(handler.getUID())
-                .withLabel(lastCommonBlock.get().manufacturer + " " + lastCommonBlock.get().model).build();
+                .withLabel(commonBlock.manufacturer + " " + commonBlock.model).build();
 
         listener.thingDiscovered(result);
     }
