@@ -16,9 +16,9 @@ import static org.eclipse.smarthome.core.thing.Thing.*;
 import static org.openhab.binding.magentatv.internal.MagentaTVBindingConstants.*;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -65,31 +65,29 @@ public class MagentaTVDiscoveryParticipant implements UpnpDiscoveryParticipant {
                         device.getDetails().getFriendlyName(), device.getIdentity().getUdn().getIdentifierString(),
                         device.getDetails().getModelDetails().getModelName(),
                         device.getDetails().getModelDetails().getModelNumber());
-                Map<String, Object> properties = new HashMap<>();
-                properties.put(PROPERTY_VENDOR,
-                        VENDOR + "(" + device.getDetails().getManufacturerDetails().getManufacturer() + ")");
-                properties.put(PROPERTY_MODEL_ID, device.getDetails().getModelDetails().getModelName().toUpperCase());
-                properties.put(PROPERTY_HARDWARE_VERSION, device.getDetails().getModelDetails().getModelNumber());
-                properties.put(PROPERTY_SERIAL_NUMBER, device.getDetails().getSerialNumber());
-                properties.put(PROPERTY_UDN, device.getIdentity().getUdn().getIdentifierString().toUpperCase());
-                String descriptorURL = device.getIdentity().getDescriptorURL().toString();
-                properties.put(PROPERTY_IP, StringUtils.substringBetween(descriptorURL, "http://", ":"));
-                String port = StringUtils.substringBefore(StringUtils.substringAfterLast(descriptorURL, ":"), "/");
-                properties.put(PROPERTY_PORT, port);
-                properties.put(PROPERTY_DESC_URL, StringUtils.substringAfterLast(descriptorURL, ":" + port));
 
+                Map<String, Object> properties = new TreeMap<>();
+                String descriptorURL = device.getIdentity().getDescriptorURL().toString();
+                String port = StringUtils.substringBefore(StringUtils.substringAfterLast(descriptorURL, ":"), "/");
                 String hex = device.getIdentity().getUdn().getIdentifierString()
                         .substring(device.getIdentity().getUdn().getIdentifierString().length() - 12);
                 String mac = hex.substring(0, 2) + ":" + hex.substring(2, 4) + ":" + hex.substring(4, 6) + ":"
                         + hex.substring(6, 8) + ":" + hex.substring(8, 10) + ":" + hex.substring(10, 12);
+                properties.put(PROPERTY_VENDOR,
+                        VENDOR + "(" + device.getDetails().getManufacturerDetails().getManufacturer() + ")");
+                properties.put(PROPERTY_MODEL_ID, device.getDetails().getModelDetails().getModelName().toUpperCase());
+                properties.put(PROPERTY_HARDWARE_VERSION, device.getDetails().getModelDetails().getModelNumber());
                 properties.put(PROPERTY_MAC_ADDRESS, mac);
+                properties.put(PROPERTY_UDN, device.getIdentity().getUdn().getIdentifierString().toUpperCase());
+                properties.put(PROPERTY_IP, StringUtils.substringBetween(descriptorURL, "http://", ":"));
+                properties.put(PROPERTY_PORT, port);
+                properties.put(PROPERTY_DESC_URL, StringUtils.substringAfterLast(descriptorURL, ":" + port));
 
                 logger.debug("Create Thing for device {} with UDN {}, Model{}", device.getDetails().getFriendlyName(),
                         device.getIdentity().getUdn().getIdentifierString(),
                         device.getDetails().getModelDetails().getModelName());
                 result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                        .withLabel(device.getDetails().getFriendlyName()).withRepresentationProperty(PROPERTY_UDN)
-                        .build();
+                        .withLabel(device.getDetails().getFriendlyName()).build();
             }
         } catch (Exception e) {
             logger.debug("Unable to create thing for device {}/{} - {}", device.getDetails().getFriendlyName(),
