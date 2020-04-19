@@ -230,6 +230,7 @@
 	<channel-type id="present-weather-channel">
 		<item-type>Number</item-type>
 		<label>Prevailing weather</label>
+		<description>Prevailing weather code (WaWa field) according to WMO code 4680. For Finnish explanation, consult https://www.ilmatieteenlaitos.fi/latauspalvelun-pikaohje</description>
 		<state readOnly="true" min="0" max="99" pattern="%s">
 			<options>
 				<!-- This corresponds to WaWa field in observations -->
@@ -344,7 +345,7 @@ preceding hour but not at the time of observation -->
 	<channel-type id="weather-id-channel">
 		<item-type>Number</item-type>
 		<label>Prevailing weather id</label>
-		<category>Pressure</category>
+		<description>Prevailing weather code (WeatherSymbol3 field). For Finnish explanation, consult https://www.ilmatieteenlaitos.fi/latauspalvelun-pikaohje</description>
 		<state readOnly="true" min="1" max="177" pattern="%s">
 			<options>
 				<!-- This corresponds to WeatherSymbol3 -->
