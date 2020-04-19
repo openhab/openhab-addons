@@ -15,7 +15,7 @@ package org.openhab.binding.bluetooth.daikinmadoka.internal;
 import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.ResponseListener;
@@ -30,28 +30,20 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class BRC1HUartProcessor {
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     /**
      * In the unlikely event of messages arrive in wrong order, this comparator will sort the queue
      */
     private Comparator<byte[]> chunkSorter = (byte[] m1, byte[] m2) -> m1[0] - m2[0];
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     private final Logger logger = LoggerFactory.getLogger(BRC1HUartProcessor.class);
 
-    private PriorityBlockingQueue<byte[]> uartMessages = new PriorityBlockingQueue<>(10, chunkSorter);
+    private ConcurrentSkipListSet<byte[]> uartMessages = new ConcurrentSkipListSet<>(chunkSorter);
 
     private ResponseListener responseListener;
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     public BRC1HUartProcessor(ResponseListener responseListener) {
         this.responseListener = responseListener;
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      *
@@ -65,7 +57,7 @@ public class BRC1HUartProcessor {
             return false;
         }
 
-        byte[] firstMessageInQueue = uartMessages.peek();
+        byte[] firstMessageInQueue = uartMessages.first();
         if (firstMessageInQueue[0] != 0) {
             return false;
         }
@@ -80,9 +72,8 @@ public class BRC1HUartProcessor {
         }
         {
             // Check that we have every single ID
-            byte[][] messages = this.uartMessages.toArray(new byte[][] {});
             int expected = 0;
-            for (byte[] m : messages) {
+            for (byte[] m : this.uartMessages) {
                 if (m.length < 2) {
                     return false;
                 }
@@ -96,8 +87,6 @@ public class BRC1HUartProcessor {
 
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     public void chunkReceived(byte[] byteValue) {
 
         this.uartMessages.add(byteValue);
@@ -106,7 +95,7 @@ public class BRC1HUartProcessor {
             // Beyond this point, full message received
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
-            for (byte[] msg : uartMessages.toArray(new byte[][] {})) {
+            for (byte[] msg : uartMessages) {
                 try {
                     bos.write(Arrays.copyOfRange(msg, 1, msg.length));
                 } catch (Exception e) {
@@ -124,7 +113,5 @@ public class BRC1HUartProcessor {
     public void abandon() {
         this.uartMessages.clear();
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
 }

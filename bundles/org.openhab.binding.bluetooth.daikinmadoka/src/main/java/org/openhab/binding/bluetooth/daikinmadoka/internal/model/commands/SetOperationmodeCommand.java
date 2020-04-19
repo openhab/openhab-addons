@@ -29,27 +29,19 @@ import org.slf4j.LoggerFactory;
  */
 public class SetOperationmodeCommand extends BRC1HCommand {
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     private final Logger logger = LoggerFactory.getLogger(SetOperationmodeCommand.class);
 
     private OPERATION_MODE operationMode;
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     public SetOperationmodeCommand(OPERATION_MODE operationMode) {
         this.operationMode = operationMode;
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public byte[] getRequest() {
         MadokaValue mv = new MadokaValue(0x20, 1, new byte[] { (byte) this.operationMode.value() });
         return MadokaMessage.createRequest(this, mv);
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public boolean handleResponse(Executor executor, ResponseListener listener, byte @Nullable [] response) {
@@ -68,19 +60,13 @@ public class SetOperationmodeCommand extends BRC1HCommand {
         return true;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     @Override
     public int getCommandId() {
         return 16432;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     public OPERATION_MODE getOperationMode() {
         return operationMode;
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
 }

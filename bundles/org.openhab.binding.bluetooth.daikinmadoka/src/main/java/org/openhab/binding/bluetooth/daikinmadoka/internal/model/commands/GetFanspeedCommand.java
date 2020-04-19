@@ -14,6 +14,7 @@ package org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands;
 
 import java.util.concurrent.Executor;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaProperties.FAN_SPEED;
@@ -25,21 +26,18 @@ import org.slf4j.LoggerFactory;
  * @author blafois
  *
  */
+@NonNullByDefault
 public class GetFanspeedCommand extends BRC1HCommand {
 
     private final Logger logger = LoggerFactory.getLogger(GetFanspeedCommand.class);
 
-    private FAN_SPEED coolingFanSpeed;
-    private FAN_SPEED heatingFanSpeed;
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
+    private @Nullable FAN_SPEED coolingFanSpeed;
+    private @Nullable FAN_SPEED heatingFanSpeed;
 
     @Override
     public byte[] getRequest() {
         return MadokaMessage.createRequest(this);
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public boolean handleResponse(Executor executor, ResponseListener listener, byte @Nullable [] response) {
@@ -68,25 +66,17 @@ public class GetFanspeedCommand extends BRC1HCommand {
         return false;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     @Override
     public int getCommandId() {
         return 80;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
-    public FAN_SPEED getCoolingFanSpeed() {
+    public @Nullable FAN_SPEED getCoolingFanSpeed() {
         return coolingFanSpeed;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
-    public FAN_SPEED getHeatingFanSpeed() {
+    public @Nullable FAN_SPEED getHeatingFanSpeed() {
         return heatingFanSpeed;
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
 }

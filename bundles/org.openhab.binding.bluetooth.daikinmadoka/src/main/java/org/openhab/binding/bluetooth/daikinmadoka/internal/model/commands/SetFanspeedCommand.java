@@ -34,14 +34,10 @@ public class SetFanspeedCommand extends BRC1HCommand {
     private FAN_SPEED coolingFanSpeed;
     private FAN_SPEED heatingFanSpeed;
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     public SetFanspeedCommand(FAN_SPEED coolingFanSpeed, FAN_SPEED heatingFanSpeed) {
         this.coolingFanSpeed = coolingFanSpeed;
         this.heatingFanSpeed = heatingFanSpeed;
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public byte[] getRequest() {
@@ -50,8 +46,6 @@ public class SetFanspeedCommand extends BRC1HCommand {
 
         return MadokaMessage.createRequest(this, paramCoolingFanSpeed, paramHeatingFanSpeed);
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public boolean handleResponse(Executor executor, ResponseListener listener, byte @Nullable [] response) {
@@ -69,25 +63,17 @@ public class SetFanspeedCommand extends BRC1HCommand {
         return true;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     @Override
     public int getCommandId() {
         return 16464;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     public FAN_SPEED getCoolingFanSpeed() {
         return coolingFanSpeed;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     public FAN_SPEED getHeatingFanSpeed() {
         return heatingFanSpeed;
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
 }

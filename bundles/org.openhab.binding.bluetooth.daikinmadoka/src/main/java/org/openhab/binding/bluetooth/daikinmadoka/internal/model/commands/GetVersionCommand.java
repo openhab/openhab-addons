@@ -30,14 +30,10 @@ public class GetVersionCommand extends BRC1HCommand {
     private String remoteControllerVersion;
     private String communicationControllerVersion;
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     @Override
     public byte[] getRequest() {
         return MadokaMessage.createRequest(this);
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public boolean handleResponse(Executor executor, ResponseListener listener, byte @Nullable [] response) {
@@ -71,25 +67,17 @@ public class GetVersionCommand extends BRC1HCommand {
         return false;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     @Override
     public int getCommandId() {
         return 304;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     public String getRemoteControllerVersion() {
         return remoteControllerVersion;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     public String getCommunicationControllerVersion() {
         return communicationControllerVersion;
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
 }

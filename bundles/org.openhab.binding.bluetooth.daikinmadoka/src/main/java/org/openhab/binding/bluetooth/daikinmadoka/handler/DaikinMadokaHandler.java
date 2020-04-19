@@ -13,7 +13,6 @@
 package org.openhab.binding.bluetooth.daikinmadoka.handler;
 
 import java.util.Arrays;
-import java.util.UUID;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -69,8 +68,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements ResponseListener {
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     private final Logger logger = LoggerFactory.getLogger(DaikinMadokaHandler.class);
 
     private @Nullable DaikinMadokaConfiguration config;
@@ -86,25 +83,14 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
 
     private MadokaSettings madokaSettings = new MadokaSettings();
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     public DaikinMadokaHandler(Thing thing) {
         super(thing);
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     @SuppressWarnings("null")
     @Override
     public void initialize() {
         super.initialize();
-
-        logger.debug("     ____        _ __   _          __  ___          __      __             ");
-        logger.debug("    / __ \\____ _(_) /__(_)___     /  |/  /___ _____/ /___  / /______ _    ");
-        logger.debug("   / / / / __ `/ / //_/ / __ \\   / /|_/ / __ `/ __  / __ \\/ //_/ __ `/   ");
-        logger.debug("  / /_/ / /_/ / / ,< / / / / /  / /  / / /_/ / /_/ / /_/ / ,< / /_/ /      ");
-        logger.debug(" /_____/\\__,_/_/_/|_/_/_/ /_/  /_/  /_/\\__,_/\\__,_/\\____/_/|_|\\__,_/  ");
-        logger.debug("");
 
         logger.debug("[{}] Start initializing!", super.thing.getUID().getId());
 
@@ -138,8 +124,6 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
 
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     @Override
     public void dispose() {
 
@@ -152,7 +136,7 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
         // Unsubscribe to characteristic notifications
         if (this.device != null) {
             BluetoothCharacteristic charNotif = this.device
-                    .getCharacteristic(UUID.fromString(DaikinMadokaBindingConstants.CHAR_NOTIF_UUID));
+                    .getCharacteristic(DaikinMadokaBindingConstants.CHAR_NOTIF_UUID);
 
             if (charNotif != null) {
                 @NonNull
@@ -168,8 +152,6 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
 
         super.dispose();
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     private static void dispose(@Nullable ExecutorService executor) {
         if (executor != null) {
@@ -192,8 +174,6 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
         }
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("[{}] Channel: {}, Command: {}", super.thing.getUID().getId(), channelUID, command);
@@ -212,7 +192,7 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
                     DecimalType dt = new DecimalType(setpoint.intValue());
                     submitCommand(new SetSetpointCommand(dt, dt));
                 } catch (Exception e) {
-                    logger.error("Data received is not a valid temperature", e);
+                    logger.info("Data received is not a valid temperature", e);
                 }
                 break;
             case DaikinMadokaBindingConstants.CHANNEL_ID_ONOFF_STATUS:
@@ -220,7 +200,7 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
                     OnOffType oot = (OnOffType) command;
                     submitCommand(new SetPowerstateCommand(oot));
                 } catch (Exception e) {
-                    logger.error("Data received is not a valid on/off status", e);
+                    logger.info("Data received is not a valid on/off status", e);
                 }
                 break;
             case DaikinMadokaBindingConstants.CHANNEL_ID_FAN_SPEED:
@@ -229,7 +209,7 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
                     FAN_SPEED fs = FAN_SPEED.valueOf(fanSpeed.intValue());
                     submitCommand(new SetFanspeedCommand(fs, fs));
                 } catch (Exception e) {
-                    logger.error("Data received is not a valid FanSpeed status", e);
+                    logger.info("Data received is not a valid FanSpeed status", e);
                 }
                 break;
             case DaikinMadokaBindingConstants.CHANNEL_ID_OPERATION_MODE:
@@ -239,7 +219,7 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
 
                     submitCommand(new SetOperationmodeCommand(m));
                 } catch (Exception e) {
-                    logger.error("Data received is not a valid OPERATION MODE", e);
+                    logger.info("Data received is not a valid OPERATION MODE", e);
                 }
                 break;
             case DaikinMadokaBindingConstants.CHANNEL_ID_HOMEKIT_TARGET_HEATING_COOLING_MODE:
@@ -273,7 +253,7 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
                     }
 
                 } catch (Exception e) {
-                    logger.error("Error while setting mode through HomeKIt received Mode");
+                    logger.info("Error while setting mode through HomeKIt received Mode");
                 }
             default:
                 break;
@@ -281,8 +261,6 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
         }
 
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public void onCharacteristicUpdate(BluetoothCharacteristic characteristic) {
@@ -294,7 +272,7 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
         }
 
         // We are only interested in the Notify Characteristic of UART service
-        if (!characteristic.getUuid().equals(UUID.fromString(DaikinMadokaBindingConstants.CHAR_NOTIF_UUID))) {
+        if (!characteristic.getUuid().equals(DaikinMadokaBindingConstants.CHAR_NOTIF_UUID)) {
             return;
         }
 
@@ -307,8 +285,6 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
 
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     private void submitCommand(BRC1HCommand command) {
         Executor executor = commandExecutor;
 
@@ -316,8 +292,6 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
             executor.execute(() -> processCommand(command));
         }
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     private void processCommand(BRC1HCommand command) {
         logger.debug("[{}] ProcessCommand {}", super.thing.getUID().getId(), command.getClass().getSimpleName());
@@ -348,7 +322,7 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
             }
 
             BluetoothCharacteristic charWrite = device
-                    .getCharacteristic(UUID.fromString(DaikinMadokaBindingConstants.CHAR_WRITE_WITHOUT_RESPONSE_UUID));
+                    .getCharacteristic(DaikinMadokaBindingConstants.CHAR_WRITE_WITHOUT_RESPONSE_UUID);
             if (charWrite == null) {
                 logger.warn("Unable to execute {}. Characteristic '{}' could not be found.",
                         command.getClass().getSimpleName(),
@@ -358,7 +332,7 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
             }
 
             BluetoothCharacteristic charNotif = this.device
-                    .getCharacteristic(UUID.fromString(DaikinMadokaBindingConstants.CHAR_NOTIF_UUID));
+                    .getCharacteristic(DaikinMadokaBindingConstants.CHAR_NOTIF_UUID);
 
             if (charNotif != null) {
                 @NonNull
@@ -389,8 +363,6 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
             Thread.currentThread().interrupt();
         }
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public void onCharacteristicWriteComplete(BluetoothCharacteristic characteristic,
@@ -423,8 +395,6 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
 
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     /**
      * When the method is triggered, it means that all message chunks have been received, re-assembled in the right
      * order and that the payload is ready to be processed.
@@ -446,8 +416,6 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
         }
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     @Override
     public void receivedResponse(GetVersionCommand command) {
         this.madokaSettings.setCommunicationControllerVersion(command.getCommunicationControllerVersion());
@@ -462,8 +430,6 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
                 new ChannelUID(getThing().getUID(), DaikinMadokaBindingConstants.CHANNEL_ID_REMOTE_CONTROLLER_VERSION),
                 new StringType(command.getRemoteControllerVersion()));
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public void receivedResponse(GetFanspeedCommand command) {
@@ -507,8 +473,6 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
 
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     @Override
     public void receivedResponse(GetSetpointCommand command) {
         if (command.getCoolingSetpoint() == null || command.getHeatingSetpoint() == null) {
@@ -546,13 +510,13 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
 
         this.madokaSettings.setSetpoint(sp);
         if (this.madokaSettings.getSetpoint() != null) {
+            @NonNull
+            DecimalType dt = (@NonNull DecimalType) this.madokaSettings.getSetpoint();
             updateStateIfLinked(new ChannelUID(getThing().getUID(), DaikinMadokaBindingConstants.CHANNEL_ID_SETPOINT),
-                    this.madokaSettings.getSetpoint());
+                    dt);
         }
 
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public void receivedResponse(GetOperationmodeCommand command) {
@@ -613,8 +577,6 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
 
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     @Override
     public void receivedResponse(GetPowerstateCommand command) {
         if (command.isPowerState() == null) {
@@ -645,8 +607,6 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
 
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     @Override
     public void receivedResponse(GetIndoorOutoorTemperatures command) {
 
@@ -670,8 +630,6 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
         }
 
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public void receivedResponse(SetPowerstateCommand command) {
@@ -718,8 +676,6 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
         }
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     @Override
     public void receivedResponse(SetSetpointCommand command) {
 
@@ -742,9 +698,13 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
                 return;
         }
 
+        if (madokaSettings.getSetpoint() != null) {
+            @NonNull
+            DecimalType dt = (@NonNull DecimalType) madokaSettings.getSetpoint();
+            updateStateIfLinked(new ChannelUID(getThing().getUID(), DaikinMadokaBindingConstants.CHANNEL_ID_SETPOINT),
+                    dt);
+        }
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Received response to "SetOperationmodeCommand" command
@@ -755,8 +715,6 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
         updateStateIfLinked(new ChannelUID(getThing().getUID(), DaikinMadokaBindingConstants.CHANNEL_ID_OPERATION_MODE),
                 new StringType(command.getOperationMode().toString()));
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Received response to "SetFanSpeed" command
@@ -782,16 +740,15 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
             default:
                 return;
         }
-    }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
+        updateStateIfLinked(new ChannelUID(getThing().getUID(), DaikinMadokaBindingConstants.CHANNEL_ID_FAN_SPEED),
+                new DecimalType(madokaSettings.getFanspeed().value()));
+    }
 
     private void updateStateIfLinked(ChannelUID channelUID, State state) {
         if (isLinked(channelUID)) {
             updateState(channelUID, state);
         }
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
 }

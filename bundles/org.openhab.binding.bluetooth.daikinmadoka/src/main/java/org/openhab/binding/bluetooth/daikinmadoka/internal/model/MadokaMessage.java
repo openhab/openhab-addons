@@ -12,12 +12,13 @@
  */
 package org.openhab.binding.bluetooth.daikinmadoka.internal.model;
 
-import java.nio.ByteBuffer;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.BRC1HCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,11 +28,10 @@ import org.slf4j.LoggerFactory;
  * @author blafois
  *
  */
+@NonNullByDefault
 public class MadokaMessage {
 
     private static final Logger logger = LoggerFactory.getLogger(MadokaMessage.class);
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Maximum number of bytes per message chunk, including headers
@@ -41,62 +41,58 @@ public class MadokaMessage {
     private int messageId;
     private Map<Integer, MadokaValue> values;
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     private MadokaMessage() {
         values = new HashMap<>();
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     public static byte[] createRequest(BRC1HCommand command, MadokaValue... parameters) {
+        try {
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            DataOutputStream request = new DataOutputStream(output);
 
-        byte[] request = ArrayUtils.EMPTY_BYTE_ARRAY;
+            // Message Length - Computed in the end
+            request.writeByte(0);
+            request.writeByte(0);
 
-        // Message Length - Computed in the end
-        request = ArrayUtils.add(request, (byte) 0);
-        request = ArrayUtils.add(request, (byte) 0);
+            // Command ID, coded on 3 bytes
+            request.writeByte(0);
+            request.writeShort(command.getCommandId());
 
-        // Command ID, coded on 3 bytes
-        request = ArrayUtils.add(request, (byte) 0);
-        ByteBuffer bb = ByteBuffer.allocate(2);
-        bb.putShort((short) command.getCommandId());
-        request = ArrayUtils.addAll(request, bb.array());
+            if (parameters.length == 0) {
+                request.writeByte(0);
+                request.writeByte(0);
+            } else {
 
-        if (parameters == null || parameters.length == 0) {
-            request = ArrayUtils.add(request, (byte) 0);
-            request = ArrayUtils.add(request, (byte) 0);
-        } else {
+                for (MadokaValue mv : parameters) {
+                    request.writeByte(mv.getId());
+                    request.writeByte(mv.getSize());
+                    request.write(mv.getRawValue());
+                }
 
-            for (MadokaValue mv : parameters) {
-                request = ArrayUtils.add(request, (byte) mv.getId());
-                request = ArrayUtils.add(request, (byte) mv.getSize());
-                request = ArrayUtils.addAll(request, mv.getRawValue());
             }
 
+            // Finally, compute array size
+            byte[] ret = output.toByteArray();
+            ret[1] = (byte) (ret.length - 1);
+
+            return ret;
+        } catch (Exception e) {
+            logger.info("Error while building request", e);
+            return new byte[] {};
         }
-
-        // Finally, compute array size
-        request[1] = (byte) (request.length - 1);
-
-        return request;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
-    public static MadokaMessage parse(byte[] msg) {
-        if (msg == null) {
-            return null;
-        }
+    public static MadokaMessage parse(byte[] msg) throws MadokaParsingException {
         if (msg.length < 1) {
-            return null;
+            throw new MadokaParsingException("Message received is too short to be parsed.");
         }
         if (msg[0] != msg.length) {
-            return null;
+            throw new MadokaParsingException("Message size is not valid (different from byte[0]).");
         }
 
         MadokaMessage m = new MadokaMessage();
-        m.messageId = ByteBuffer.wrap(msg, 2, 2).getShort();
+        // m.messageId = ByteBuffer.wrap(msg, 2, 2).getShort();
+        m.messageId = ((msg[0] & 0xff) << 8) | (msg[1] & 0xff);
 
         MadokaValue mv = null;
 
@@ -121,22 +117,16 @@ public class MadokaMessage {
         return m;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     public int getMessageId() {
         return messageId;
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     public Map<Integer, MadokaValue> getValues() {
         return values;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     public static int expectedMessageChunks(byte[] firstMessage) {
-        if (firstMessage == null || firstMessage.length < 2) {
+        if (firstMessage.length < 2) {
             return -1;
         }
 
@@ -152,8 +142,6 @@ public class MadokaMessage {
 
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -167,7 +155,5 @@ public class MadokaMessage {
         sb.append("] }");
         return sb.toString();
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
 }

@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.bluetooth.daikinmadoka.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  *
  * @author blafois
  *
  */
+@NonNullByDefault
 public class MadokaProperties {
 
     public enum FAN_SPEED {
@@ -35,10 +38,8 @@ public class MadokaProperties {
                 return MAX;
             } else if (v >= 2 && v <= 4) {
                 return MEDIUM;
-            } else if (v == 1) {
-                return LOW;
             } else {
-                return null;
+                return LOW;
             }
         }
 
@@ -67,7 +68,8 @@ public class MadokaProperties {
                     return m;
                 }
             }
-            return null;
+            // Should never happen
+            return HEAT;
         }
 
         public int value() {

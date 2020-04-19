@@ -43,14 +43,10 @@ public class DaikinMadokaHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(DaikinMadokaHandlerFactory.class);
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
@@ -66,7 +62,5 @@ public class DaikinMadokaHandlerFactory extends BaseThingHandlerFactory {
 
         return null;
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
 }

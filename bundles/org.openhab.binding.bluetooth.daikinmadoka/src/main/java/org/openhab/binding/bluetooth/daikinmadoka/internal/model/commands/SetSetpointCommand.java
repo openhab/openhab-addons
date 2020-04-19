@@ -30,21 +30,15 @@ import org.slf4j.LoggerFactory;
  */
 public class SetSetpointCommand extends BRC1HCommand {
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     private final Logger logger = LoggerFactory.getLogger(SetSetpointCommand.class);
 
     private DecimalType coolingSetpoint;
     private DecimalType heatingSetpoint;
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     public SetSetpointCommand(DecimalType coolingSetpoint, DecimalType heatingSetpoint) {
         this.coolingSetpoint = coolingSetpoint;
         this.heatingSetpoint = heatingSetpoint;
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public byte[] getRequest() {
@@ -62,8 +56,6 @@ public class SetSetpointCommand extends BRC1HCommand {
         return MadokaMessage.createRequest(this, mvCoolingSetpoint, mvHeatingSetpoint);
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     @Override
     public boolean handleResponse(Executor executor, ResponseListener listener, byte @Nullable [] response) {
         if (response == null) {
@@ -80,8 +72,6 @@ public class SetSetpointCommand extends BRC1HCommand {
         return true;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     @Override
     public int getCommandId() {
         return 16448;
@@ -94,7 +84,5 @@ public class SetSetpointCommand extends BRC1HCommand {
     public DecimalType getHeatingSetpoint() {
         return heatingSetpoint;
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
 }

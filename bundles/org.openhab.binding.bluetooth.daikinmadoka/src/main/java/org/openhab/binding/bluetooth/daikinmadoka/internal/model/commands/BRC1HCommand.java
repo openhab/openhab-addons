@@ -18,6 +18,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -25,9 +26,8 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author blafois
  *
  */
+@NonNullByDefault
 public abstract class BRC1HCommand {
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     public enum State {
         NEW,
@@ -37,19 +37,13 @@ public abstract class BRC1HCommand {
         FAILED
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
-    private volatile State state;
+    private volatile @Nullable State state;
 
     private final Lock stateLock = new ReentrantLock();
 
     private final Condition stateCondition = stateLock.newCondition();
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     public abstract boolean handleResponse(Executor executor, ResponseListener listener, byte @Nullable [] response);
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * THis command returns the message to be sent
@@ -58,8 +52,6 @@ public abstract class BRC1HCommand {
      */
     public abstract byte[] getRequest();
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     /**
      * This is the command number, in the protocol
      *
@@ -67,14 +59,12 @@ public abstract class BRC1HCommand {
      */
     public abstract int getCommandId();
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     /**
      * Returns current state of the command.
      *
      * @return current state
      */
-    public State getState() {
+    public @Nullable State getState() {
         return state;
     }
 
@@ -93,8 +83,6 @@ public abstract class BRC1HCommand {
         }
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     public boolean awaitStateChange(long timeout, TimeUnit unit, State... expectedStates) throws InterruptedException {
         stateLock.lock();
         try {
@@ -111,8 +99,6 @@ public abstract class BRC1HCommand {
         return true;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     private boolean isInAnyState(State[] acceptedStates) {
         for (State acceptedState : acceptedStates) {
             if (acceptedState == state) {
@@ -121,7 +107,5 @@ public abstract class BRC1HCommand {
         }
         return false;
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
 }

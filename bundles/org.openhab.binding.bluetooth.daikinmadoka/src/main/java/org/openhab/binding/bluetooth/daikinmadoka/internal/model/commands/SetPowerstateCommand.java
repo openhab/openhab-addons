@@ -29,8 +29,6 @@ import org.slf4j.LoggerFactory;
  */
 public class SetPowerstateCommand extends BRC1HCommand {
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     private final Logger logger = LoggerFactory.getLogger(SetPowerstateCommand.class);
 
     private OnOffType powerState;
@@ -39,8 +37,6 @@ public class SetPowerstateCommand extends BRC1HCommand {
         this.powerState = powerState;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     @Override
     public byte[] getRequest() {
         MadokaValue mv = new MadokaValue(0x20, 1,
@@ -48,8 +44,6 @@ public class SetPowerstateCommand extends BRC1HCommand {
 
         return MadokaMessage.createRequest(this, mv);
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public boolean handleResponse(Executor executor, ResponseListener listener, byte @Nullable [] response) {
@@ -67,19 +61,13 @@ public class SetPowerstateCommand extends BRC1HCommand {
         return true;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     @Override
     public int getCommandId() {
         return 16416;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     public OnOffType getPowerState() {
         return powerState;
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
 }

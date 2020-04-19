@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.bluetooth.daikinmadoka;
 
+import java.util.UUID;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.bluetooth.BluetoothBindingConstants;
@@ -45,8 +47,8 @@ public class DaikinMadokaBindingConstants {
     /**
      * BLUETOOTH UUID (service + chars)
      */
-    public static final String SERVICE_UART_UUID = "2141E110-213A-11E6-B67B-9E71128CAE77";
-    public static final String CHAR_WRITE_WITHOUT_RESPONSE_UUID = "2141E112-213A-11E6-B67B-9E71128CAE77";
-    public static final String CHAR_NOTIF_UUID = "2141E111-213A-11E6-B67B-9E71128CAE77";
+    public static final UUID SERVICE_UART_UUID = UUID.fromString("2141E110-213A-11E6-B67B-9E71128CAE77");
+    public static final UUID CHAR_WRITE_WITHOUT_RESPONSE_UUID = UUID.fromString("2141E112-213A-11E6-B67B-9E71128CAE77");
+    public static final UUID CHAR_NOTIF_UUID = UUID.fromString("2141E111-213A-11E6-B67B-9E71128CAE77");
 
 }

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.bluetooth.daikinmadoka.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaProperties.FAN_SPEED;
@@ -22,26 +24,27 @@ import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaPropertie
  * @author blafois
  *
  */
+@NonNullByDefault
 public class MadokaSettings {
 
-    private OnOffType onOffState;
+    private @Nullable OnOffType onOffState;
 
-    private DecimalType setpoint;
+    private @Nullable DecimalType setpoint;
 
-    private DecimalType indoorTemperature;
-    private DecimalType outdoorTemperature;
+    private @Nullable DecimalType indoorTemperature;
+    private @Nullable DecimalType outdoorTemperature;
 
-    private FAN_SPEED fanspeed;
+    private @Nullable FAN_SPEED fanspeed;
 
-    private OPERATION_MODE operationMode;
+    private @Nullable OPERATION_MODE operationMode;
 
-    private String homekitCurrentMode;
-    private String homekitTargetMode;
+    private @Nullable String homekitCurrentMode;
+    private @Nullable String homekitTargetMode;
 
-    private String communicationControllerVersion;
-    private String remoteControllerVersion;
+    private @Nullable String communicationControllerVersion;
+    private @Nullable String remoteControllerVersion;
 
-    public OnOffType getOnOffState() {
+    public @Nullable OnOffType getOnOffState() {
         return onOffState;
     }
 
@@ -49,7 +52,7 @@ public class MadokaSettings {
         this.onOffState = onOffState;
     }
 
-    public DecimalType getSetpoint() {
+    public @Nullable DecimalType getSetpoint() {
         return setpoint;
     }
 
@@ -57,7 +60,7 @@ public class MadokaSettings {
         this.setpoint = setpoint;
     }
 
-    public DecimalType getIndoorTemperature() {
+    public @Nullable DecimalType getIndoorTemperature() {
         return indoorTemperature;
     }
 
@@ -65,7 +68,7 @@ public class MadokaSettings {
         this.indoorTemperature = indoorTemperature;
     }
 
-    public DecimalType getOutdoorTemperature() {
+    public @Nullable DecimalType getOutdoorTemperature() {
         return outdoorTemperature;
     }
 
@@ -73,7 +76,7 @@ public class MadokaSettings {
         this.outdoorTemperature = outdoorTemperature;
     }
 
-    public FAN_SPEED getFanspeed() {
+    public @Nullable FAN_SPEED getFanspeed() {
         return fanspeed;
     }
 
@@ -81,7 +84,7 @@ public class MadokaSettings {
         this.fanspeed = fanspeed;
     }
 
-    public OPERATION_MODE getOperationMode() {
+    public @Nullable OPERATION_MODE getOperationMode() {
         return operationMode;
     }
 
@@ -89,7 +92,7 @@ public class MadokaSettings {
         this.operationMode = operationMode;
     }
 
-    public String getHomekitCurrentMode() {
+    public @Nullable String getHomekitCurrentMode() {
         return homekitCurrentMode;
     }
 
@@ -97,7 +100,7 @@ public class MadokaSettings {
         this.homekitCurrentMode = homekitCurrentMode;
     }
 
-    public String getHomekitTargetMode() {
+    public @Nullable String getHomekitTargetMode() {
         return homekitTargetMode;
     }
 
@@ -105,7 +108,7 @@ public class MadokaSettings {
         this.homekitTargetMode = homekitTargetMode;
     }
 
-    public String getCommunicationControllerVersion() {
+    public @Nullable String getCommunicationControllerVersion() {
         return communicationControllerVersion;
     }
 
@@ -113,7 +116,7 @@ public class MadokaSettings {
         this.communicationControllerVersion = communicationControllerVersion;
     }
 
-    public String getRemoteControllerVersion() {
+    public @Nullable String getRemoteControllerVersion() {
         return remoteControllerVersion;
     }
 

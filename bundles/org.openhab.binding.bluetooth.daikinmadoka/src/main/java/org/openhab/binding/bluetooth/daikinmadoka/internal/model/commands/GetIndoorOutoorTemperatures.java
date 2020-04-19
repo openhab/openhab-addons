@@ -32,14 +32,10 @@ public class GetIndoorOutoorTemperatures extends BRC1HCommand {
     private DecimalType indoorTemperature;
     private DecimalType outdoorTemperature;
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     @Override
     public byte[] getRequest() {
         return MadokaMessage.createRequest(this);
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public boolean handleResponse(Executor executor, ResponseListener listener, byte @Nullable [] response) {
@@ -83,25 +79,17 @@ public class GetIndoorOutoorTemperatures extends BRC1HCommand {
         return false;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     public DecimalType getIndoorTemperature() {
         return indoorTemperature;
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     public DecimalType getOutdoorTemperature() {
         return outdoorTemperature;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
     @Override
     public int getCommandId() {
         return 272;
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
 }

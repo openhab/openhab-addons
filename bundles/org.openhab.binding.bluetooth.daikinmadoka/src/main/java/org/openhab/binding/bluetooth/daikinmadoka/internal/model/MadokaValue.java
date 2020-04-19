@@ -14,16 +14,19 @@ package org.openhab.binding.bluetooth.daikinmadoka.internal.model;
 
 import java.nio.ByteBuffer;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  *
  * @author blafois
- *
  */
+@NonNullByDefault
 public class MadokaValue {
 
     private int id;
     private int size;
-    private byte[] rawValue;
+    private byte @Nullable [] rawValue;
 
     public MadokaValue(int id, int size, byte[] rawValue) {
         this.id = id;
@@ -50,7 +53,7 @@ public class MadokaValue {
         this.size = size;
     }
 
-    public byte[] getRawValue() {
+    public byte @Nullable [] getRawValue() {
         return rawValue;
     }
 
@@ -59,16 +62,18 @@ public class MadokaValue {
     }
 
     public long getComputedValue() {
-        switch (size) {
-            case 1:
-                return rawValue[0];
-            case 2:
-                return ByteBuffer.wrap(rawValue, 0, 2).getShort();
-            case 4:
-                return ByteBuffer.wrap(rawValue, 0, 4).getInt();
-            default:
-                // unsupported
-                break;
+        if (rawValue != null) {
+            switch (size) {
+                case 1:
+                    return rawValue[0];
+                case 2:
+                    return ByteBuffer.wrap(rawValue, 0, 2).getShort();
+                case 4:
+                    return ByteBuffer.wrap(rawValue, 0, 4).getInt();
+                default:
+                    // unsupported
+                    break;
+            }
         }
         return 0;
     }
