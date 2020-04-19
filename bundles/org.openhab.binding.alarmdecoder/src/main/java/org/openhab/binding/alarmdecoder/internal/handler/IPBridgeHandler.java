@@ -78,8 +78,8 @@ public class IPBridgeHandler extends ADBridgeHandler {
         writeException = false;
         try {
             socket = new Socket(config.hostname, config.tcpPort);
-            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), AD_CHARSET_NAME));
+            writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), AD_CHARSET_NAME));
             logger.debug("connected to {}:{}", config.hostname, config.tcpPort);
             panelReadyReceived = false;
             startMsgReader();

@@ -27,8 +27,9 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class IntCommandMap {
-    private final Map<Integer, String> commandMap;
     private static final Pattern VALID_COMMAND_PATTERN = Pattern.compile(ADCommand.KEYPAD_COMMAND_REGEX);
+
+    private final Map<Integer, String> commandMap;
 
     public IntCommandMap(String mappingString) throws IllegalArgumentException {
         commandMap = new HashMap<>();

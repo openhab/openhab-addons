@@ -56,6 +56,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class ADBridgeHandler extends BaseBridgeHandler {
+    protected static final String AD_CHARSET_NAME = "UTF-8";
 
     private final Logger logger = LoggerFactory.getLogger(ADBridgeHandler.class);
 

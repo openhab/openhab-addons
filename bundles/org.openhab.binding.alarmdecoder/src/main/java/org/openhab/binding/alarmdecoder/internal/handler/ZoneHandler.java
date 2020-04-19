@@ -105,7 +105,6 @@ public class ZoneHandler extends ADThingHandler {
         if (firstUpdateReceived.compareAndSet(false, true)) {
             updateState(CHANNEL_CONTACT, OpenClosedType.CLOSED);
         }
-
     }
 
     @Override

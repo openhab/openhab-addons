@@ -108,8 +108,8 @@ public class SerialBridgeHandler extends ADBridgeHandler {
                 serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN | SerialPort.FLOWCONTROL_RTSCTS_OUT);
                 // Note: The V1 code called disableReceiveFraming() and disableReceiveThreshold() here
 
-                reader = new BufferedReader(new InputStreamReader(serialPort.getInputStream()));
-                writer = new BufferedWriter(new OutputStreamWriter(serialPort.getOutputStream()));
+                reader = new BufferedReader(new InputStreamReader(serialPort.getInputStream(), AD_CHARSET_NAME));
+                writer = new BufferedWriter(new OutputStreamWriter(serialPort.getOutputStream(), AD_CHARSET_NAME));
                 logger.debug("connected to serial port: {}", serialDeviceName);
                 panelReadyReceived = false;
                 startMsgReader();
