@@ -334,9 +334,8 @@ public class NikobusPcLinkHandler extends BaseBridgeHandler {
         if (!connection.isConnected()) {
             connection.connect();
 
-            // Send connection sequence, mimicking the Nikobus software. If this is not
-            // sent, PC-Link
-            // sometimes does not forward button presses via the serial interface.
+            // Send connection sequence, mimicking the Nikobus software. If this is not sent,
+            //  PC-Link sometimes does not forward button presses via the serial interface.
             Stream.of(new String[] { "++++", "ATH0", "ATZ", "$10110000B8CF9D", "#L0", "#E0", "#L0", "#E1" })
                     .map(NikobusCommand::new).forEach(this::sendCommand);
 
