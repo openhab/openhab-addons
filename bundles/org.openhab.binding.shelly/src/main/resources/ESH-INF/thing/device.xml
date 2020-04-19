@@ -4,14 +4,67 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-group-type id="deviceStatus" advanced="true">
+	<channel-group-type id="deviceStatus">
 		<label>Device Status</label>
-		<description>Some details on the device status</description>
+		<description>Information about the device status</description>
 		<channels>
-			<channel id="uptime" typeId="uptime" />
-			<channel id="wifiSignal" typeId="system.signal-strength" />
 			<channel id="alarm" typeId="alarmTrigger" />
+			<channel id="wifiSignal" typeId="system.signal-strength" />
+			<channel id="uptime" typeId="uptime" />
 		</channels>
 	</channel-group-type>
 
+	<channel-type id="alarmTrigger">
+		<kind>trigger</kind>
+		<label>Alarm</label>
+		<description>Alarm Trigger, e.g. weak WiFi Signal detected or over heating.</description>
+		<event>
+			<options>
+				<option value="NONE">None</option>
+				<option value="WEAK_SIGNAL">Weak WiFi</option>
+				<option value="RESTARTED">Device restarted</option>
+				<option value="OVERTEMP">Device is overheating</option>
+				<option value="OVERLOAD">Device is overloaded</option>
+				<option value="OVERPOWER">Device is over max power</option>
+				<option value="LOAD_ERROR">Load error</option>
+				<option value="LOW_BATTERY">Low battery</option>
+				<option value="BATTERY">Wakeup by battery</option>
+				<option value="POWERON">Device was powered on</option>
+				<option value="BUTTON">Button was pressed</option>
+				<option value="SENSOR">Sensor data updated</option>
+			</options>
+		</event>
+	</channel-type>
+	<channel-type id="charger">
+		<item-type>Switch</item-type>
+		<label>Charger Connected</label>
+		<description>ON: Device is charging, OFF: No charger connected</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="batVoltage" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Battery Voltage</label>
+		<description>Battery voltage in V</description>
+		<state readOnly="true" pattern="%f %unit%">
+		</state>
+	</channel-type>
+	<channel-type id="uptime" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Uptime</label>
+		<description>Number of seconds since the device was powered up</description>
+		<state readOnly="true" pattern="%d %unit%">
+		</state>
+	</channel-type>
+	<channel-type id="deviceTemp" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Internal Temperature</label>
+		<description>Internal device temperature, helps to detect overheating due to installation issues</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>CurrentTemperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%f %unit%">
+		</state>
+	</channel-type>
 </thing:thing-descriptions>

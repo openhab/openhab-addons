@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.dwdpollenflug.internal;
 
+import java.util.Collections;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
@@ -28,9 +33,19 @@ public class DWDPollenflugBindingConstants {
 
     // bridge
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
+    public static final String DWD = "dwd";
+    public static final String BRIDGE_LABEL = "DWD Pollen Count Index (Bridge)";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_REGION = new ThingTypeUID(BINDING_ID, "region");
+
+    // @formatter:off
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = 
+        Collections.unmodifiableSet(Stream
+            .of(THING_TYPE_BRIDGE, THING_TYPE_REGION)
+            .collect(Collectors.toSet())
+        );
+    // @formatter:on
 
     // Channels of pollen groups
     public static final String CHANNEL_TODAY = "today";

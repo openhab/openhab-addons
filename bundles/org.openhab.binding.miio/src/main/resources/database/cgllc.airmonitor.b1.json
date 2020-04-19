@@ -1,66 +1,66 @@
 {
-  "deviceMapping": {
-    "id": [
-      "cgllc.airmonitor.b1"
-    ],
-    "propertyMethod": "get_value",
-    "maxProperties": 6,
-    "channels": [
-      {
-        "property": "battery",
-        "friendlyName": "Battery",
-        "channel": "battery",
-        "channelType": "system:battery-level",
-        "type": "Number",
-        "refresh": true,
-        "ChannelGroup": "Status",
-        "actions": []
-      },
-      {
-        "property": "pm25",
-        "friendlyName": "PM2.5",
-        "channel": "pm25",
-        "type": "Number",
-        "refresh": true,
-        "ChannelGroup": "Status",
-        "actions": []
-      },
-      {
-        "property": "co2e",
-        "friendlyName": "CO2e",
-        "channel": "co2",
-        "type": "Number",
-        "refresh": true,
-        "ChannelGroup": "Status",
-        "actions": []
-      },
-      {
-        "property": "tvoc",
-        "friendlyName": "tVOC",
-        "channel": "tvoc",
-        "type": "Number",
-        "refresh": true,
-        "ChannelGroup": "Status",
-        "actions": []
-      },
-      {
-        "property": "humidity",
-        "friendlyName": "Humidity",
-        "channel": "humidity",
-        "type": "Number",
-        "refresh": true,
-        "ChannelGroup": "Status",
-        "actions": []
-      },
-      {
-        "property": "temperature",
-        "friendlyName": "Temperature",
-        "channel": "temperature",
-        "type": "Number",
-        "refresh": true,
-        "ChannelGroup": "Status",
-        "actions": []
-      }
-    ]
-  }
+	"deviceMapping": {
+		"id": [
+			"cgllc.airmonitor.b1"
+		],
+		"propertyMethod": "get_value",
+		"maxProperties": 6,
+		"channels": [
+			{
+				"property": "battery",
+				"friendlyName": "Battery",
+				"channel": "battery",
+				"channelType": "system:battery-level",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "pm25",
+				"friendlyName": "PM2.5",
+				"channel": "pm25",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "co2e",
+				"friendlyName": "CO2e",
+				"channel": "co2",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "tvoc",
+				"friendlyName": "tVOC",
+				"channel": "tvoc",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "humidity",
+				"friendlyName": "Humidity",
+				"channel": "humidity",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "temperature",
+				"friendlyName": "Temperature",
+				"channel": "temperature",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			}
+		]
+	}
 }
