@@ -16,12 +16,14 @@ package org.openhab.binding.daikin.internal.config;
  * Holds configuration data for a Daikin air conditioning unit.
  *
  * @author Tim Waterhouse - Initial contribution
+ * @author Jimmy Tanagra - Add secure, uuid
  *
  */
 public class DaikinConfiguration {
     public static final String HOST = "host";
 
     public String host;
-
+    public Boolean secure;
+    public String uuid;
     public long refresh;
 }

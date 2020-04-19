@@ -29,11 +29,20 @@ import org.openhab.binding.daikin.internal.api.airbase.AirbaseZoneInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.TimeUnit;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
+
 /**
  * Handles performing the actual HTTP requests for communicating with Daikin air conditioning units.
  *
  * @author Tim Waterhouse - Initial Contribution
  * @author Paul Smedley <paul@smedley.id.au> - Modifications to support Airbase Controllers
+ * @author Jimmy Tanagra - Add support for Daikin's secure authentication
  *
  */
 public class DaikinWebTargets {
@@ -50,10 +59,15 @@ public class DaikinWebTargets {
     private String getAirbaseZoneInfoUri;
     private String setAirbaseZoneInfoUri;
 
+    private String uuid;
+    private HttpClient httpClient;
+
     private Logger logger = LoggerFactory.getLogger(DaikinWebTargets.class);
 
-    public DaikinWebTargets(String ipAddress) {
-        String baseUri = "http://" + ipAddress + "/";
+    public DaikinWebTargets(HttpClient httpClient, String host, Boolean secure, String uuid) {
+        this.httpClient = httpClient;
+        String baseUri = (secure != null && secure.booleanValue() ? "https://" : "http://") + host + "/";
+        this.uuid = uuid;
         setControlInfoUri = baseUri + "aircon/set_control_info";
         getControlInfoUri = baseUri + "aircon/get_control_info";
         getSensorInfoUri = baseUri + "aircon/get_sensor_info";
@@ -136,8 +150,13 @@ public class DaikinWebTargets {
         String response;
         synchronized (this) {
             try {
-                response = HttpUtil.executeUrl("GET", uriWithParams, TIMEOUT_MS);
+                if (httpClient == null) {
+                    response = HttpUtil.executeUrl("GET", uriWithParams, TIMEOUT_MS);
+                } else {
+                    response = executeUrl(uriWithParams);
+                }
             } catch (IOException ex) {
+                logger.debug("executeUrl threw an exception {}", ex.toString());
                 // Response will also be set to null if parsing in executeUrl fails so we use null here to make the
                 // error check below consistent.
                 response = null;
@@ -150,6 +169,33 @@ public class DaikinWebTargets {
         }
 
         return response;
+    }
+
+    private String executeUrl(String url) throws IOException, DaikinCommunicationException {
+        try {
+            Request request = httpClient.newRequest(url);
+            request.method(HttpMethod.GET);
+            request.timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            if (uuid != null) {
+                request.header("X-Daikin-uuid", uuid);
+            }
+            ContentResponse response = request.send();
+
+            if (response.getStatus() == HttpStatus.FORBIDDEN_403) {
+                logger.error("Daikin controller access denied. Check uuid");
+                throw new DaikinCommunicationException("Daikin controller access denied. Check uuid");
+            }
+
+            if (response.getStatus() != HttpStatus.OK_200) {
+                throw new DaikinCommunicationException(
+                    String.format("Daikin controller HTTP error status: %d - %s", response.getStatus(), response.getReason()));
+            }
+
+            return response.getContentAsString();
+        } catch (Exception e) {
+            logger.error("Daikin HTTP error", e);
+            throw new DaikinCommunicationException("Daikin HTTP error", e);
+        }
     }
 
     private String paramsToQueryString(Map<String, String> params) {

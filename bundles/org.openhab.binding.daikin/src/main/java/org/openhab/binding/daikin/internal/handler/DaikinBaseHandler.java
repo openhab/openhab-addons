@@ -43,6 +43,8 @@ import org.openhab.binding.daikin.internal.api.Enums.HomekitMode;
 import org.openhab.binding.daikin.internal.config.DaikinConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 /**
  * Base class that handles common tasks with a Daikin air conditioning unit.
@@ -61,6 +63,7 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
     protected @Nullable DaikinWebTargets webTargets;
     private @Nullable ScheduledFuture<?> pollFuture;
     protected final DaikinDynamicStateDescriptionProvider stateDescriptionProvider;
+    protected final HttpClient httpClient;
 
     // Abstract methods to be overridden by specific Daikin implementation class
     protected abstract void pollStatus() throws IOException;
@@ -80,6 +83,12 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
     public DaikinBaseHandler(Thing thing, DaikinDynamicStateDescriptionProvider stateDescriptionProvider) {
         super(thing);
         this.stateDescriptionProvider = stateDescriptionProvider;
+        httpClient = new HttpClient(new SslContextFactory(true)); // allow mismatched CN
+        try {
+            httpClient.start();
+        } catch (Exception ex) {
+            logger.error("HttpClient won't start.", ex);
+        }
     }
 
     @Override
@@ -134,7 +143,7 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
         if (config.host == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Host address must be set");
         } else {
-            webTargets = new DaikinWebTargets(config.host);
+            webTargets = new DaikinWebTargets(httpClient, config.host, config.secure, config.uuid);
             refreshInterval = config.refresh;
 
             schedulePoll();

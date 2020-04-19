@@ -1,11 +1,11 @@
 # Daikin Binding
 
 The Daikin binding allows you to control your Daikin air conditioning units with openHAB.
-In order to do so, your Daikin air conditioning unit must have a BRP072A42 or BRP15B61 WiFi adapter installed.
+In order to do so, your Daikin air conditioning unit must have a BRP072A42, BRP072C42 or BRP15B61 WiFi adapter installed.
 
 ## Supported Things
 
-Daikin air conditioning units with a BRP072A42 or BRP15B61 installed.
+Daikin air conditioning units with a BRP072A42, BRP072C42 or BRP15B61 installed.
 This may work with the older KRP series of wired adapters, but has not been tested with them.
 
 ## Discovery
@@ -15,13 +15,27 @@ You can also manually add a new item if you know the IP address.
 
 ## Thing Configuration
 
-* host - The hostname of the Daikin air conditioner. Typically you'd use an IP address such as `192.168.0.5` for this field.
-* refresh - The frequency with which to refresh information from the Daikin air conditioner specified in seconds. Defaults to 60 seconds.
+* `host` - The hostname of the Daikin air conditioner. Typically you'd use an IP address such as `192.168.0.5` for this field.
+* `secure` - Whether to access the adapter with https. Defaults to false. Set to true for BRP072C42, false (or omitted) for BRP072A42 and BRP15B61.
+* `uuid` - The UUID used to access the BRP072C42 adapter. Omit for other adapters.
+* `refresh` - The frequency with which to refresh information from the Daikin air conditioner specified in seconds. Defaults to 60 seconds.
+
+### Note for BRP072C42 adapter:
+This adapter communicates via https and requires a UUID for authentication. 
+You must first generate a UUID and authenticate it against the adapter. To do this:
+* Generate a UUID4 (https://www.uuidgenerator.net/ is one way to do it). eg. 26d00ecd-3e28-46fe-93b9-a688bb0dd495
+* Strip the hyphens from the UUID. eg. 26d00ecd3e2846fe93b9a688bb0dd495
+* Obtain the 13-digit key from the sticker on the back of the controller. eg. 0123456789012
+* Register your UUID as a valid token:
+```
+url --insecure -H "X-Daikin-uuid: 26d00ecd3e2846fe93b9a688bb0dd495" "https://<controller-ip>/common/register_terminal?key=0123456789012"
+```
+* Use the UUID in the thing configuration, and specify `secure=true`
 
 ## Channels
 
 The temperature channels have a precision of one half degree Celsius.
-For the BRP072A42:
+For the BRP072A42 or BRP072C42:
 
 | Channel Name | Description |
 |--------------|---------------------------------------------------------------------------------------------|
@@ -60,9 +74,14 @@ For the BRP15B61:
 daikin.things:
 
 ```
+// for BRP072A42
 daikin:ac_unit:living_room_ac [ host="192.168.0.5" ]
+// for BRP072C42
+daikin:ac_unit:living_room_ac [ host="192.168.0.5", secure=true, uuid="xxxxxxxxx" ]
+// for Airbase (BRP15B61)
 daikin:airbase_ac_unit:living_room_ac [ host="192.168.0.5" ]
 ```
+
 
 daikin.items:
 
