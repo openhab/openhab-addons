@@ -2,7 +2,7 @@
 	"deviceMapping": {
 		"id": [
 			"philips.light.moonlight"
-			],
+		],
 		"channels": [
 			{
 				"property": "pow",
@@ -28,7 +28,17 @@
 				"actions": [
 					{
 						"command": "set_bright",
-						"parameterType": "NUMBER"
+						"parameterType": "NUMBER",
+						"condition": {
+							"name": "BrightnessExisting"
+						}
+					},
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF",
+						"condition": {
+							"name": "BrightnessOnOff"
+						}
 					}
 				]
 			},
@@ -69,7 +79,7 @@
 				"ChannelGroup": "actions",
 				"actions": [
 					{
-						
+						"parameterType": "EMPTY"
 					}
 				]
 			},

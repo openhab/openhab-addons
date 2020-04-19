@@ -1,0 +1,51 @@
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:ecobee:account">
+		<parameter name="apiKey" type="text" required="true">
+			<label>API Key</label>
+			<description>Enter the API key</description>
+			<context>password</context>
+		</parameter>
+		<parameter name="refreshIntervalNormal" type="integer" min="2" required="false" unit="s">
+			<label>Refresh Interval (Normal)</label>
+			<description>Specifies the refresh interval in seconds</description>
+			<default>30</default>
+		</parameter>
+		<parameter name="refreshIntervalQuick" type="integer" min="2" required="false" unit="s">
+			<label>Refresh Interval (Quick)</label>
+			<description>Specifies time in seconds to wait after successful update, command or action before refresh</description>
+			<default>5</default>
+		</parameter>
+		<parameter name="apiTimeout" type="integer" min="2" required="false" unit="s">
+			<label>API Timeout</label>
+			<description>Time in seconds to allow API request to complete</description>
+			<default>22</default>
+		</parameter>
+		<parameter name="discoveryEnabled" type="boolean" required="false">
+			<label>Discovery Enabled</label>
+			<description>Enable/disable automatic discovery</description>
+			<default>true</default>
+		</parameter>
+		<parameter name="discoveryInterval" type="integer" min="60" required="false" unit="s">
+			<label>Thermostat Discovery Interval</label>
+			<description>Specifies time in seconds in which the binding will attempt to discover thermostats</description>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:ecobee:thermostat">
+		<parameter name="thermostatId" type="text" required="true">
+			<label>Thermostat ID</label>
+			<description>Thermostat ID assigned to this thermostat by Ecobee</description>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:ecobee:sensor">
+		<parameter name="sensorId" type="text" required="true">
+			<label>Sensor Id</label>
+			<description>Id assigned to this sensor (e.g. rs:101)</description>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

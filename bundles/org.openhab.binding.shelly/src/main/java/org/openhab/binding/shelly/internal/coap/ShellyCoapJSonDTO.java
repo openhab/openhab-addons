@@ -16,8 +16,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.Validate;
-
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
@@ -29,6 +27,17 @@ import com.google.gson.stream.JsonWriter;
  * @author Markus Michels - Initial contribution
  */
 public class ShellyCoapJSonDTO {
+    // Coap
+    public static final int COIOT_PORT = 5683;
+    public static final String COAP_MULTICAST_ADDRESS = "224.0.1.187";
+
+    public static final String COLOIT_URI_BASE = "/cit/";
+    public static final String COLOIT_URI_DEVDESC = COLOIT_URI_BASE + "d";
+    public static final String COLOIT_URI_DEVSTATUS = COLOIT_URI_BASE + "s";
+
+    public static final int COIOT_OPTION_GLOBAL_DEVID = 3332;
+    public static final int COIOT_OPTION_STATUS_VALIDITY = 3412;
+    public static final int COIOT_OPTION_STATUS_SERIAL = 3420;
 
     public static final String COIOT_TAG_BLK = "blk";
     public static final String COIOT_TAG_SEN = "sen";
@@ -86,11 +95,12 @@ public class ShellyCoapJSonDTO {
     public static class CoIotDevDescription {
         public List<CoIotDescrBlk> blk;
         public List<CoIotDescrSen> sen;
-        public List<CoIotDescrAct> act;
+        // public List<CoIotDescrAct> act;
     }
 
     public static class CoIotSensor {
-        public String index; // id
+        @SerializedName("index")
+        public String id; // id
         public double value; // value
     }
 
@@ -110,14 +120,13 @@ public class ShellyCoapJSonDTO {
 
             in.beginObject();
             String generic = in.nextName();
-            Validate.notNull(generic, "Invalid JSon format for CoIotSensorList");
             if (generic.equals(COIOT_TAG_GENERIC)) {
                 in.beginArray();
                 while (in.hasNext()) {
                     in.beginArray();
                     final CoIotSensor sensor = new CoIotSensor();
                     in.nextInt(); // alway 0
-                    sensor.index = new Integer(in.nextInt()).toString();
+                    sensor.id = Integer.toString(in.nextInt());
                     sensor.value = in.nextDouble();
                     in.endArray();
                     list.generic.add(sensor);
@@ -138,7 +147,7 @@ public class ShellyCoapJSonDTO {
                 for (int i = 0; i < sensors.generic.size(); i++) {
                     out.beginArray();
                     out.value(0);
-                    out.value(sensors.generic.get(i).index);
+                    out.value(sensors.generic.get(i).id);
                     out.value(sensors.generic.get(i).value);
                     out.endArray();
                 }
@@ -146,7 +155,5 @@ public class ShellyCoapJSonDTO {
             }
             out.endObject();
         }
-
     }
-
 }
