@@ -230,7 +230,7 @@ public class MagentaTVConfiguration {
     }
 
     private String getValue(String key, String defValue) {
-        if (!properties.containsKey(key)) {
+        if (properties.containsKey(key)) {
             return properties.get(key).toString();
         }
         return defValue;
