@@ -38,7 +38,13 @@ public class MagentaTVConfiguration {
     public void initializeConfig(Map<String, Object> newConfig) {
         updateConfig(newConfig);
         setDefault(PROPERTY_PORT, MR400_DEF_REMOTE_PORT);
-    } // initialzeConfig()
+    }
+
+    public void fromProperties(Map<String, String> newConfig) {
+        for (Map.Entry<String, String> p : newConfig.entrySet()) {
+            setValue(p.getKey(), p.getValue());
+        }
+    }
 
     /**
      * Update config

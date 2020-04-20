@@ -123,7 +123,8 @@ public class MagentaTVBindingConstants {
     /**
      * OAuth authentication for Deutsche Telekom MatengaTV portal
      */
-    public static final String OAUTH_GET_CRED_URL = "https://slbedmfk11100.prod.sngtv.t-online.de";
+    // public static final String OAUTH_GET_CRED_URL = "https://slbedmfk11100.prod.sngtv.t-online.de";
+    public static final String OAUTH_GET_CRED_URL = "https://appepmfk10007.prod.sngtv.t-online.de";
     public static final String OAUTH_GET_CRED_PORT = "33428";
     public static final String OAUTH_GET_CRED_URI = "/EDS/JSON/Login?UserID=Guest";
     public static final String OAUTH_USER_AGENT = "Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_3 like Mac OS X) AppleWebKit/603.3.8 (KHTML, like Gecko) Mobile/14G60 (400962928)";
