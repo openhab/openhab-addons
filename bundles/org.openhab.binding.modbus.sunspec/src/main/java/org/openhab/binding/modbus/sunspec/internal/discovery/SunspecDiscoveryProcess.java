@@ -15,10 +15,10 @@ package org.openhab.binding.modbus.sunspec.internal.discovery;
 import static org.openhab.binding.modbus.sunspec.internal.SunSpecConstants.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -93,7 +93,7 @@ public class SunspecDiscoveryProcess {
     /**
      * List of start addresses to try
      */
-    private List<Integer> possibleAddresses;
+    private Queue<Integer> possibleAddresses;
 
     /**
      * This is the base address where the next block should be searched for
@@ -134,7 +134,7 @@ public class SunspecDiscoveryProcess {
         slaveId = handler.getSlaveId();
         this.listener = listener;
         commonBlockParser = new CommonModelParser();
-        possibleAddresses = new CopyOnWriteArrayList<>();
+        possibleAddresses = new ConcurrentLinkedQueue<>();
         // Preferred and alternate base registers
         // @see SunSpec Information Model Overview
         possibleAddresses.add(40000);
@@ -150,12 +150,12 @@ public class SunspecDiscoveryProcess {
      */
     public void detectModel() {
 
-        if (possibleAddresses.size() < 1) {
+        if (possibleAddresses.isEmpty()) {
             parsingFinished();
             return;
         }
         // Try the next address from the possibles
-        baseAddress = possibleAddresses.get(0);
+        baseAddress = possibleAddresses.poll();
         logger.trace("Beginning scan for SunSpec device at address {}", baseAddress);
 
         BasicModbusReadRequestBlueprint request = new BasicModbusReadRequestBlueprint(slaveId,
@@ -195,7 +195,6 @@ public class SunspecDiscoveryProcess {
         if (!id.isPresent() || id.get().longValue() != SUNSPEC_ID) {
             logger.debug("Could not find SunSpec DID at address {}, received: {}, expected: {}", baseAddress, id,
                     SUNSPEC_ID);
-            possibleAddresses.remove(0);
             detectModel();
             return;
         }
@@ -390,7 +389,6 @@ public class SunspecDiscoveryProcess {
 
         logger.warn("Error with read at address {}: {} {}", baseAddress, cls, msg);
 
-        possibleAddresses.remove(0); // Drop the current base address, and continue with the next one
         detectModel();
     }
 
