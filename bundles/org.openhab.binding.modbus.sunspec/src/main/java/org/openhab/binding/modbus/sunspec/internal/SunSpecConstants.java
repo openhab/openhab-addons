@@ -37,6 +37,7 @@ public class SunSpecConstants {
     // Block types
     public static final int COMMON_BLOCK = 1;
     public static final int INVERTER_SINGLE_PHASE = 101;
+    public static final int FINAL_BLOCK = 0xffff;
 
     /**
      * Map of the supported thing type uids, with their block type id
