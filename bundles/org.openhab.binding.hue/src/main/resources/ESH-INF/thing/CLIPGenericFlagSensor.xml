@@ -18,17 +18,6 @@
 		</channels>
 
 		<representation-property>uniqueId</representation-property>
-
-		<config-description>
-			<parameter name="sensorId" type="text">
-				<label>Sensor ID</label>
-				<description>The identifier that is used within the hue bridge.</description>
-				<required>true</required>
-			</parameter>
-			<parameter name="on" type="boolean">
-				<label>Sensor Status</label>
-				<description>Enables or disables the sensor.</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:hue:sensor" />
 	</thing-type>
 </thing:thing-descriptions>

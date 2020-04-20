@@ -17,13 +17,6 @@
 		</channels>
 
 		<representation-property>uniqueId</representation-property>
-
-		<config-description>
-			<parameter name="lightId" type="text">
-				<label>Light ID</label>
-				<description>The identifier that is used within the hue bridge.</description>
-				<required>true</required>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:hue:plug" />
 	</thing-type>
 </thing:thing-descriptions>

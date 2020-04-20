@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:hue:light">
+		<parameter name="lightId" type="text">
+			<label>Light ID</label>
+			<description>The identifier that is used within the hue bridge.</description>
+			<required>true</required>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:hue:light_with_fade">
+		<parameter name="lightId" type="text">
+			<label>Light ID</label>
+			<description>The identifier that is used within the hue bridge.</description>
+			<required>true</required>
+		</parameter>
+		<parameter name="fadetime" type="integer" min="0" step="100">
+			<label>Fade Time</label>
+			<description>Fade time in ms for changing values</description>
+			<default>400</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:hue:plug">
+		<parameter name="lightId" type="text">
+			<label>Light ID</label>
+			<description>The identifier that is used within the hue bridge.</description>
+			<required>true</required>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:hue:plug_with_fade">
+		<parameter name="lightId" type="text">
+			<label>Light ID</label>
+			<description>The identifier that is used within the hue bridge.</description>
+			<required>true</required>
+		</parameter>
+		<parameter name="fadetime" type="integer" min="0" step="100">
+			<label>Fade Time</label>
+			<description>Fade time in ms for changing values</description>
+			<default>400</default>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

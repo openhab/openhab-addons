@@ -18,13 +18,6 @@
 		</channels>
 
 		<representation-property>uniqueId</representation-property>
-
-		<config-description>
-			<parameter name="lightId" type="text">
-				<label>Light ID</label>
-				<description>The light identifier identifies one certain hue light.</description>
-				<required>true</required>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:hue:light" />
 	</thing-type>
 </thing:thing-descriptions>

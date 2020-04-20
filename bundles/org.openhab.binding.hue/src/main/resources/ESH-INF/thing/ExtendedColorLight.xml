@@ -20,18 +20,6 @@
 		</channels>
 
 		<representation-property>uniqueId</representation-property>
-
-		<config-description>
-			<parameter name="lightId" type="text">
-				<label>Light ID</label>
-				<description>The light identifier identifies one certain hue light.</description>
-				<required>true</required>
-			</parameter>
-			<parameter name="fadetime" type="integer" min="0" step="100">
-				<label>Fade Time</label>
-				<description>Fade time in ms for changing values</description>
-				<default>400</default>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:hue:light_with_fade" />
 	</thing-type>
 </thing:thing-descriptions>
