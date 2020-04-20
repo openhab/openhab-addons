@@ -98,7 +98,7 @@ public class ActionConditions {
      * @param value
      * @return
      */
-    private static @Nullable JsonElement HSBOnly(@Nullable Command command, @Nullable JsonElement value) {
+    private static @Nullable JsonElement hsbOnly(@Nullable Command command, @Nullable JsonElement value) {
         if (command != null && command instanceof HSBType) {
             return value;
         }
@@ -115,7 +115,7 @@ public class ActionConditions {
             case "BRIGHTNESSONOFF":
                 return brightness(value);
             case "HSBONLY":
-                return HSBOnly(command, value);
+                return hsbOnly(command, value);
             default:
                 LOGGER.debug("Condition {} not found. Returning '{}'", condition,
                         value != null ? value.toString() : "");
