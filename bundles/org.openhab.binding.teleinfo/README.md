@@ -29,9 +29,9 @@ The Teleinfo binding provides support for single phase and three phase connectio
 | cbemm_evolution_icc_hc_electricitymeter    | single-phase | HCHP         | [x]           |
 | cbemm_evolution_icc_tempo_electricitymeter | single-phase | Tempo        | [x]           |
 | cbetm_base_electricitymeter                | three-phase  | Base         |               |
-| cbetm_ejp_electricitymeter                 | three-phase  | Base         |               |
-| cbetm_hc_electricitymeter                  | three-phase  | Base         |               |
-| cbetm_tempo_electricitymeter               | three-phase  | Base         |               |
+| cbetm_ejp_electricitymeter                 | three-phase  | EJP          |               |
+| cbetm_hc_electricitymeter                  | three-phase  | HCHP         |               |
+| cbetm_tempo_electricitymeter               | three-phase  | Tempo        |               |
 
 ## Thing Configuration
 
