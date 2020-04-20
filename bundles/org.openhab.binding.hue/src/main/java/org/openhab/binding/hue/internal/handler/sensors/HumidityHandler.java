@@ -23,7 +23,8 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.hue.internal.FullSensor;
@@ -59,7 +60,8 @@ public class HumidityHandler extends HueSensorHandler {
         Object humidity = sensor.getState().get(STATE_HUMIDITY);
         if (humidity != null) {
             BigDecimal value = new BigDecimal(String.valueOf(humidity));
-            updateState(CHANNEL_HUMIDITY, new DecimalType(value.divide(new BigDecimal(100))));
+            updateState(CHANNEL_HUMIDITY,
+                    new QuantityType<>(value.divide(new BigDecimal(100)), SmartHomeUnits.PERCENT));
         }
 
         if (sensor.getConfig().containsKey(CONFIG_LED_INDICATION)) {

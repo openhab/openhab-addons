@@ -170,7 +170,7 @@
 	
 	<!-- Humidity Channel -->
 	<channel-type id="humidity">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Relative Humidity</label>
 		<description>Current relative humidity.</description>
 		<category>Humidity</category>
@@ -180,8 +180,8 @@
 	<!-- Pressure Channel -->
 	<channel-type id="pressure">
 		<item-type>Number:Pressure</item-type>
-		<label>Relative Humidity</label>
-		<description>Current relative humidity.</description>
+		<label>Pressure</label>
+		<description>Current pressure.</description>
 		<category>Pressure</category>
 		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>

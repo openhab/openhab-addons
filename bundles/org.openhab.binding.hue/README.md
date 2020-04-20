@@ -144,26 +144,28 @@ The following device types also have an optional configuration value to specify 
 
 The devices support some of the following channels:
 
-| Channel Type ID   | Item Type          | Description                                                                                                                             | Thing types supporting this channel      |
-| ----------------- | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
-| switch            | Switch             | This channel supports switching the device on and off.                                                                                  | 0000, 0010                               |
-| color             | Color              | This channel supports full color control with hue, saturation and brightness values.                                                    | 0200, 0210                               |
-| brightness        | Dimmer             | This channel supports adjusting the brightness value. Note that this is not available, if the color channel is supported.               | 0100, 0110, 0220                         |
-| color_temperature | Dimmer             | This channel supports adjusting the color temperature from cold (0%) to warm (100%).                                                    | 0210, 0220                               |
-| alert             | String             | This channel supports displaying alerts by flashing the bulb either once or multiple times. Valid values are: NONE, SELECT and LSELECT. | 0000, 0100, 0200, 0210, 0220             |
-| effect            | Switch             | This channel supports color looping.                                                                                                    | 0200, 0210, 0220                         |
-| dimmer_switch     | Number             | This channel shows which button was last pressed on the dimmer switch.                                                                  | 0820                                     |
-| illuminance       | Number:Illuminance | This channel shows the current illuminance measured by the sensor.                                                                      | 0106                                     |
-| light_level       | Number             | This channel shows the current light level measured by the sensor. **Advanced**                                                         | 0106                                     |
-| dark              | Switch             | This channel indicates whether the light level is below the darkness threshold or not.                                                  | 0106                                     |
-| daylight          | Switch             | This channel indicates whether the light level is below the daylight threshold or not.                                                  | 0106                                     |
-| presence          | Switch             | This channel indicates whether a motion is detected by the sensor or not.                                                               | 0107                                     |
-| temperature       | Number:Temperature | This channel shows the current temperature measured by the sensor.                                                                      | 0302                                     |
-| flag              | Switch             | This channel save flag state for a CLIP sensor.                                                                                         | 0850                                     |
-| status            | Number             | This channel save status state for a CLIP sensor.                                                                                       | 0840                                     |
-| last_updated      | DateTime           | This channel the date and time when the sensor was last updated.                                                                        | 0820, 0830, 0840, 0850, 0106, 0107, 0302 |
-| battery_level     | Number             | This channel shows the battery level.                                                                                                   | 0820, 0106, 0107, 0302                   |
-| battery_low       | Switch             | This channel indicates whether the battery is low or not.                                                                               | 0820, 0106, 0107, 0302                   |
+| Channel Type ID   | Item Type            | Description                                                                                                                             | Thing types supporting this channel      |
+| ----------------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| switch            | Switch               | This channel supports switching the device on and off.                                                                                  | 0000, 0010                               |
+| color             | Color                | This channel supports full color control with hue, saturation and brightness values.                                                    | 0200, 0210                               |
+| brightness        | Dimmer               | This channel supports adjusting the brightness value. Note that this is not available, if the color channel is supported.               | 0100, 0110, 0220                         |
+| color_temperature | Dimmer               | This channel supports adjusting the color temperature from cold (0%) to warm (100%).                                                    | 0210, 0220                               |
+| alert             | String               | This channel supports displaying alerts by flashing the bulb either once or multiple times. Valid values are: NONE, SELECT and LSELECT. | 0000, 0100, 0200, 0210, 0220             |
+| effect            | Switch               | This channel supports color looping.                                                                                                    | 0200, 0210, 0220                         |
+| dimmer_switch     | Number               | This channel shows which button was last pressed on the dimmer switch.                                                                  | 0820                                     |
+| illuminance       | Number:Illuminance   | This channel shows the current illuminance measured by the sensor.                                                                      | 0106                                     |
+| light_level       | Number               | This channel shows the current light level measured by the sensor. **Advanced**                                                         | 0106                                     |
+| dark              | Switch               | This channel indicates whether the light level is below the darkness threshold or not.                                                  | 0106                                     |
+| daylight          | Switch               | This channel indicates whether the light level is below the daylight threshold or not.                                                  | 0106                                     |
+| presence          | Switch               | This channel indicates whether a motion is detected by the sensor or not.                                                               | 0107                                     |
+| temperature       | Number:Temperature   | This channel shows the current temperature measured by the sensor.                                                                      | 0302                                     |
+| pressure          | Number:Pressure      | This channel shows the current pressure measured by the sensor.                                                                         | 0403                                     |
+| humidtiy          | Number:Dimensionless | This channel shows the current relative humidity measured by the sensor.                                                                | 0405                                     |
+| flag              | Switch               | This channel save flag state for a CLIP sensor.                                                                                         | 0850                                     |
+| status            | Number               | This channel save status state for a CLIP sensor.                                                                                       | 0840                                     |
+| last_updated      | DateTime             | This channel the date and time when the sensor was last updated.                                                                        | 0820, 0830, 0840, 0850, 0106, 0107, 0302 |
+| battery_level     | Number               | This channel shows the battery level.                                                                                                   | 0820, 0106, 0107, 0302                   |
+| battery_low       | Switch               | This channel indicates whether the battery is low or not.                                                                               | 0820, 0106, 0107, 0302                   |
 
 ### Trigger Channels
 
