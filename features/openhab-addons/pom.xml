@@ -45,6 +45,7 @@
                   <fileset dir="${basedirRoot}/bundles">
                     <include name="*/src/main/feature/feature.xml"/>
                     <exclude name="**/org.openhab.binding.bluetooth*/**/feature.xml"/>
+                    <exclude name="**/org.openhab.binding.modbus*/**/feature.xml"/>
                     <exclude name="**/org.openhab.binding.mqtt*/**/feature.xml"/>
                     <!-- temporarily disabled due to malfunction -->
                     <exclude name="**/org.openhab.io.azureiothub/**/feature.xml"/>
