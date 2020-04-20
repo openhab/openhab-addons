@@ -11,7 +11,7 @@ These values can be used to
 
 ## Supported Things
 
-The Teleinfo binding provides support for single phase and three phase connection, ICC evolution and the following pricing mode:
+The Teleinfo binding provides support for single phase and three phase connection, ICC evolution and the following pricing modes:
 
 - HCHP mode
 - Base mode
