@@ -11,25 +11,40 @@ These values can be used to
 
 ## Supported Things
 
-The Teleinfo binding provides support for the following mode:
+The Teleinfo binding provides support for single phase and three phase connection, ICC evolution and the following pricing mode:
 
 - HCHP mode
 - Base mode
 - Tempo mode
 - EJP mode
 
+| Thing type                                 | Connection   | Pricing mode | ICC evolution |
+|--------------------------------------------|--------------|--------------|---------------|
+| cbemm_base_electricitymeter                | single-phase | Base         |               |
+| cbemm_ejp_electricitymeter                 | single-phase | EJP          |               |
+| cbemm_hc_electricitymeter                  | single-phase | HCHP         |               |
+| cbemm_tempo_electricitymeter               | single-phase | Tempo        |               |
+| cbemm_evolution_icc_base_electricitymeter  | single-phase | Base         | [x]           |
+| cbemm_evolution_icc_ejp_electricitymeter   | single-phase | EJP          | [x]           |
+| cbemm_evolution_icc_hc_electricitymeter    | single-phase | HCHP         | [x]           |
+| cbemm_evolution_icc_tempo_electricitymeter | single-phase | Tempo        | [x]           |
+| cbetm_base_electricitymeter                | three-phase  | Base         |               |
+| cbetm_ejp_electricitymeter                 | three-phase  | Base         |               |
+| cbetm_hc_electricitymeter                  | three-phase  | Base         |               |
+| cbetm_tempo_electricitymeter               | three-phase  | Base         |               |
+
 ## Thing Configuration
 
 Before the binding can be used, a serial controller must be added. This needs to be done manually. Select __Teleinfo Serial Controller__ and enter the serial port. Once the serial controller added, electricity meters will be automatically discovered and a new thing labelled __Teleinfo ADCO #id__ will be created (where __#id__ is  your delivery point identifier).
 
-| Thing type       | Parameter  | Meaning                               | Possible values |
-|------------------|------------|---------------------------------------|----------------|
-| SerialController | serialPort | Path to the serial controller         | /dev/ttyXXXX   |
-| cbemm_xxx        | adco       | Electricity delivery point identifier | 031728832562   |
+| Thing type                                | Parameter  | Meaning                               | Possible values |
+|-------------------------------------------|------------|---------------------------------------|----------------|
+| SerialController                          | serialPort | Path to the serial controller         | /dev/ttyXXXX   |
+| cbe`<phase>`m_`<icc>`_`<mode>`_electricitymeter | adco       | Electricity delivery point identifier | 031728832562   |
 
 ## Channels
 
-Channel availabity depends on the electricity connection (single or three phase) and on the meter mode (Base, HCHP, EJP or Tempo).
+Channel availabity depends on the electricity connection (single or three phase) and on the pricing mode (Base, HCHP, EJP or Tempo).
 
 | Channel  | Type                      | Description                                              | Phase  | Mode  |
 |----------|---------------------------|----------------------------------------------------------|--------|-------|
