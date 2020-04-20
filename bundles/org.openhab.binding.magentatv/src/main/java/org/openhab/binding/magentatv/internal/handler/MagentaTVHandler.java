@@ -122,6 +122,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
         scheduler.execute(() -> {
             String errorMessage = "";
             try {
+                thingConfig.fromProperties(getThing().getProperties());
                 thingConfig.initializeConfig(getConfig().getProperties());
                 if (thingConfig.getUDN().isEmpty()) {
                     // get UDN from device name
