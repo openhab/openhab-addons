@@ -122,7 +122,7 @@
 						"command": "set_rgb",
 						"parameterType": "COLOR",
 						"condition": {
-							"name": "isHSV"
+							"name": "HSBOnly"
 						},
 						"parameters": [
 							"$value$",

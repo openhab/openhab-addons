@@ -42,14 +42,14 @@ public class ActionConditions {
      * @return value in case firmware is matching, return null if not
      */
     private static @Nullable JsonElement firmwareCheck(MiIoDeviceActionCondition condition,
-            Map<String, Object> deviceVariables, @Nullable JsonElement value) {
+            @Nullable Map<String, Object> deviceVariables, @Nullable JsonElement value) {
         // TODO: placeholder for firmware version check to allow for firmware dependent actions
         return value;
     }
 
     /**
-     * Check if the value is a valid brightness between 1-99.
-     * If <1 returns Off, otherwise returns On to activate the power On/Off switch
+     * Check if the value is a valid brightness for operating power On/Off switch.
+     * If brightness <1 returns Off, if >=1 returns On
      *
      * @param value
      * @return
@@ -68,7 +68,7 @@ public class ActionConditions {
     }
 
     /**
-     * Check if the value is a valid brightness between 1-99 which can be send to brightness channel.
+     * Check if the value is a valid brightness between 1-100 which can be send to brightness channel.
      * If not returns a null
      *
      * @param value
@@ -79,6 +79,8 @@ public class ActionConditions {
             int intVal = value.getAsInt();
             if (intVal > 0 && intVal <= 100) {
                 return value;
+            } else if (intVal > 100) {
+                return new JsonPrimitive(100);
             }
             return null;
         } else {
@@ -96,15 +98,15 @@ public class ActionConditions {
      * @param value
      * @return
      */
-    private static @Nullable JsonElement isHSV(Command command, @Nullable JsonElement value) {
-        if (command instanceof HSBType) {
+    private static @Nullable JsonElement HSBOnly(@Nullable Command command, @Nullable JsonElement value) {
+        if (command != null && command instanceof HSBType) {
             return value;
         }
         return null;
     }
 
     public static @Nullable JsonElement executeAction(MiIoDeviceActionCondition condition,
-            Map<String, Object> deviceVariables, @Nullable JsonElement value, Command command) {
+            @Nullable Map<String, Object> deviceVariables, @Nullable JsonElement value, @Nullable Command command) {
         switch (condition.getName().toUpperCase()) {
             case "FIRMWARE":
                 return firmwareCheck(condition, deviceVariables, value);
@@ -112,8 +114,8 @@ public class ActionConditions {
                 return brightnessExists(value);
             case "BRIGHTNESSONOFF":
                 return brightness(value);
-            case "ISHSV":
-                return isHSV(command, value);
+            case "HSBONLY":
+                return HSBOnly(command, value);
             default:
                 LOGGER.debug("Condition {} not found. Returning '{}'", condition,
                         value != null ? value.toString() : "");
