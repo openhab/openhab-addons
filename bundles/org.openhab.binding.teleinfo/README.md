@@ -41,8 +41,8 @@ Channel availabity depends on the electricity connection (single or three phase)
 | imax3    | `Number:ElectricCurrent`  | Maximum consumed electric current on phase 3             | Three  | All   |
 | adps     | `Number:ElectricCurrent`  | Excess electric current warning                          | Single | All   |
 | adir1    | `Number:ElectricCurrent`  | Excess electric current on phase 1 warning               | Three  | All   |
-| adir2    | `Number:ElectricCurrent`  | Excess electric current on phase 1 warning               | Three  | All   |
-| adir3    | `Number:ElectricCurrent`  | Excess electric current on phase 1 warning               | Three  | All   |
+| adir2    | `Number:ElectricCurrent`  | Excess electric current on phase 2 warning               | Three  | All   |
+| adir3    | `Number:ElectricCurrent`  | Excess electric current on phase 3 warning               | Three  | All   |
 | iinst    | `Number:ElectricCurrent`  | Instantaneous electric current                           | Single | All   |
 | iinst1   | `Number:ElectricCurrent`  | Instantaneous electric current on phase 1                | Three  | All   |
 | iinst2   | `Number:ElectricCurrent`  | Instantaneous electric current on phase 2                | Three  | All   |
