@@ -80,13 +80,13 @@ Bridge teleinfo:bridge:serialcontroller [ serialport="/dev/ttyUSB0" ]{
 Number:ElectricCurrent iSousc "iSousc" {channel="teleinfo:teleinfo1:isousc"}
 ```
 
-## Supported hardwares
+## Tested hardwares
 
 The Teleinfo binding has been successfully validated with below hardware configuration:
 
-| Serial interface | Power Energy Meter model    | Mode                   |
+| Serial interface | Power Energy Meter model    | Mode(s)                   |
 |----------|--------|------------------------------|
-| GCE Electronics USB Teleinfo module [(more details)](http://gce-electronics.com/fr/usb/655-module-teleinfo-usb.html) | Actaris A14C5 | Single-phase HCHC  |
-| Cartelectronic USB Teleinfo modem [(more details)](https://www.cartelectronic.fr/teleinfo-compteur-enedis/17-teleinfo-1-compteur-usb-rail-din-3760313520028.html) | Actaris A14C5 | Single-Phase HCHP |
+| GCE Electronics USB Teleinfo module [(more details)](http://gce-electronics.com/fr/usb/655-module-teleinfo-usb.html) | Actaris A14C5 | - Single-phase HCHP & Base |
+| Cartelectronic USB Teleinfo modem [(more details)](https://www.cartelectronic.fr/teleinfo-compteur-enedis/17-teleinfo-1-compteur-usb-rail-din-3760313520028.html) | Actaris A14C5 | Single-phase HCHP |
 
 
