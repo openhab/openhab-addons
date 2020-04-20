@@ -31,45 +31,42 @@ The binding has no configuration options, all configuration is done at Thing lev
 
 The thing has a few configuration parameters:
 
-|    Parameter    | Description                                                                                              |
-|-----------------|----------------------------------------------------------------------------------------------------------|
-| hostName        | The host name or IP address of the thermostat. Mandatory.                                                |
-| refresh         | Overrides the refresh interval of the thermostat data. Optional, the default is 2 minutes.               |
+|    Parameter    | Description                                                                                               |
+|-----------------|-----------------------------------------------------------------------------------------------------------|
+| hostName        | The host name or IP address of the thermostat. Mandatory.                                                 |
+| refresh         | Overrides the refresh interval of the thermostat data. Optional, the default is 2 minutes.                |
 | logRefresh      | Overrides the refresh interval of the run-time logs & humidity data. Optional, the default is 10 minutes. |
 | disableLogs     | Disable retrieval of run-time logs from the thermostat. Optional, the default is 0.                       |
-| disableHumidity | Disable retrieval of humidity information from the thermostat. Optional, the default is 0.               |
+| disableHumidity | Disable retrieval of humidity information from the thermostat. Optional, the default is 0.                |
 
 ## Channels
 
 The thermostat information that is retrieved is available as these channels:
 
-| Channel ID            | Item Type            | Description                                                               |
-|-----------------------|----------------------|---------------------------------------------------------------------------|
-| name                  | String               | The name of the thermostat                                                |
-| model                 | String               | The model number and firmware version of the thermostat                   |
-| temperature           | Number:Temperature   | The current temperature reading of the thermostat                         |
-| humidity              | Number               | The current humidity reading of the thermostat (CT80 only)                |
-| mode                  | Number               | The current operating mode of the HVAC system                             |
-| fan_mode              | Number               | The current operating mode of the fan                                     |
-| program_mode          | Number               | The program schedule that the thermostat is running (CT80 Rev B only)     |
-| set_point             | Number:Temperature   | The current temperature set point of the thermostat                       |
-| status                | Number               | Indicates the current running status of the HVAC system                   |
-| fan_status            | Number               | Indicates the current fan status of the HVAC system                       |
-| override              | Number               | Indicates if the normal program set-point has been manually overridden    |
-| hold                  | Switch               | Indicates if the current set point temperature is to be held indefinitely |
-| day                   | Number               | The current day of the week reported by the thermostat (0 = Monday)       |
-| hour                  | Number               | The current hour of the day reported by the thermostat  (24 hr)           |
-| minute                | Number               | The current minute past the hour reported by the thermostat               |
-| dt_stamp              | String               | The current day of the week and time reported by the thermostat (E HH:mm) |
-| last_update           | DateTime             | Last successful contact with thermostat                                   |
-| today_heat_hour       | Number               | The number of hours of heating run-time today                             |
-| today_heat_minute     | Number               | The number of minutes of heating run-time today                           |
-| today_cool_hour       | Number               | The number of hours of cooling run-time today                             |
-| today_cool_minute     | Number               | The number of minutes of cooling run-time today                           |
-| yesterday_heat_hour   | Number               | The number of hours of heating run-time yesterday                         |
-| yesterday_heat_minute | Number               | The number of minutes of heating run-time yesterday                       |
-| yesterday_cool_hour   | Number               | The number of hours of cooling run-time yesterday                         |
-| yesterday_cool_minute | Number               | The number of minutes of cooling run-time yesterday                       |
+| Channel ID             | Item Type            | Description                                                               |
+|------------------------|----------------------|---------------------------------------------------------------------------|
+| name                   | String               | The name of the thermostat                                                |
+| model                  | String               | The model number and firmware version of the thermostat                   |
+| temperature            | Number:Temperature   | The current temperature reading of the thermostat                         |
+| humidity               | Number               | The current humidity reading of the thermostat (CT80 only)                |
+| mode                   | Number               | The current operating mode of the HVAC system                             |
+| fan_mode               | Number               | The current operating mode of the fan                                     |
+| program_mode           | Number               | The program schedule that the thermostat is running (CT80 Rev B only)     |
+| set_point              | Number:Temperature   | The current temperature set point of the thermostat                       |
+| status                 | Number               | Indicates the current running status of the HVAC system                   |
+| fan_status             | Number               | Indicates the current fan status of the HVAC system                       |
+| override               | Number               | Indicates if the normal program set-point has been manually overridden    |
+| hold                   | Switch               | Indicates if the current set point temperature is to be held indefinitely |
+| day                    | Number               | The current day of the week reported by the thermostat (0 = Monday)       |
+| hour                   | Number               | The current hour of the day reported by the thermostat  (24 hr)           |
+| minute                 | Number               | The current minute past the hour reported by the thermostat               |
+| dt_stamp               | String               | The current day of the week and time reported by the thermostat (E HH:mm) |
+| last_update            | DateTime             | Last successful contact with thermostat                                   |
+| today_heat_runtime     | Number               | The total number of minutes of heating run-time today                     |
+| today_cool_runtime     | Number               | The total number of minutes of cooling run-time today                     |
+| yesterday_heat_runtime | Number               | The total number of minutes of heating run-time yesterday                 |
+| yesterday_cool_runtime | Number               | The total number of minutes of cooling run-time yesterday                 |
+| json_cmd               | String               | Send JSON directly to the thermostat on the /tstat endpoint               |
 
 ## Full Example
 
@@ -149,14 +146,17 @@ Number Therm_Minute    "Thermostat Minute [%s]"                              { c
 String Therm_Dstmp     "Thermostat DateStamp [%s]" <time>                    { channel="radiothermostat:rtherm:mytherm1:dt_stamp" }
 DateTime Therm_Lastupd "Thermostat Last Updated  [%1$tl:%1$tM %1$tp]" <time> { channel="radiothermostat:rtherm:mytherm1:last_update" }
 
-Number Therm_thh "Today's Heating Hours [%s]"       { channel="radiothermostat:rtherm:mytherm1:today_heat_hour" }
-Number Therm_thm "Today's Heating Minutes [%s]"     { channel="radiothermostat:rtherm:mytherm1:today_heat_minute" }
-Number Therm_tch "Today's Cooling Hours [%s]"       { channel="radiothermostat:rtherm:mytherm1:today_cool_hour" }
-Number Therm_tcm "Today's Cooling Minutes [%s]"     { channel="radiothermostat:rtherm:mytherm1:today_cool_minute" }
-Number Therm_yhh "Yesterday's Heating Hours [%s]"   { channel="radiothermostat:rtherm:mytherm1:yesterday_heat_hour" }
-Number Therm_yhm "Yesterday's Heating Minutes [%s]" { channel="radiothermostat:rtherm:mytherm1:yesterday_heat_minute" }
-Number Therm_ych "Yesterday's Cooling Hours [%s]"   { channel="radiothermostat:rtherm:mytherm1:yesterday_cool_hour" }
-Number Therm_ycm "Yesterday's Cooling Minutes [%s]" { channel="radiothermostat:rtherm:mytherm1:yesterday_cool_minute" }
+Number Therm_todayheat "Today's Heating Runtime [%s]"       { channel="radiothermostat:rtherm:mytherm1:today_heat_runtime" }
+Number Therm_todaycool "Today's Cooling Runtime [%s]"       { channel="radiothermostat:rtherm:mytherm1:today_cool_runtime" }
+Number Therm_yesterdayheat "Yesterday's Heating Runtime [%s]"   { channel="radiothermostat:rtherm:mytherm1:yesterday_heat_runtime" }
+Number Therm_yesterdaycool "Yesterday's Cooling Runtime [%s]"   { channel="radiothermostat:rtherm:mytherm1:yesterday_cool_runtime" }
+
+// Channel to send JSON commands directly to the thermostat
+String Therm_jsoncmd     "Send JSON to direct to thermostat [%s]"            { channel="radiothermostat:rtherm:mytherm1:json_cmd" }
+
+// A virtual switch used to trigger a rule to send a json command to the thermostat
+Switch Therm_mysetting   "Send my preferred setting"
+
 ```
 
 radiotherm.sitemap:
@@ -180,20 +180,33 @@ sitemap radiotherm label="My Thermostat" {
         Text item=Therm_Override icon="smoke"
         Switch item=Therm_Hold icon="smoke"
 
+        // Virtual switch/button to trigger a rule to send a custom command
+        // The ON value displays in the button
+        Switch item=Therm_mysetting mappings=[ON="Heat, 58, hold"]
+
         Text item=Therm_Day
         Text item=Therm_Hour
         Text item=Therm_Minute
         Text item=Therm_Dstmp
         Text item=Therm_Lastupd
 
-        Text item=Therm_thh
-        Text item=Therm_thm
-        Text item=Therm_tch
-        Text item=Therm_tcm
-        Text item=Therm_yhh
-        Text item=Therm_yhm
-        Text item=Therm_ych
+        Text item=Therm_todayheat
+        Text item=Therm_todaycool
+        Text item=Therm_yesterdayheat
+        Text item=Therm_yesterdaycool
     }
 }
 ```
 
+radiotherm.rules:
+
+```java
+rule "Send my thermostat command"
+when
+  Item Therm_mysetting received command
+then
+  // JSON to send directly to the thermostat's '/tstat' endpoint
+  // See RadioThermostat_CT50_Honeywell_Wifi_API_V1.3.pdf for more detail
+  Therm_jsoncmd.sendCommand('{"hold":1, "t_heat":' + "58" + ', "tmode":1}')
+end
+```

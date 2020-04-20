@@ -46,6 +46,15 @@ public class RadioThermostatJsonTime {
     }
 
     /**
+     * Convenience method to return the total number of runtime minutes
+     * 
+     * @return {runtime hours + minutes as minutes Integer}
+     */
+    public Integer getRuntime() {
+        return (hour * 60) + minute;
+    }
+
+    /**
      * Get formatted thermostat date stamp
      *
      * @return {Day of week/Time string}

@@ -272,67 +272,70 @@ public class RadioThermostatHandler extends BaseThingHandler {
             }
             
             switch (channelUID.getId()) {
-            case MODE:
-                //only do if commanded mode is different than current mode
-                if (!cmdInt.equals(rthermData.getThermostatData().getMode())) {
-                    sendCommand("tmode", cmdStr);
-                    
-                    // set the new operating mode, reset everything else,
-                    // because refreshing the tstat data below is really slow.
-                    rthermData.getThermostatData().setMode(cmdInt);
-                    rthermData.getThermostatData().setHeatTarget(null);
-                    rthermData.getThermostatData().setCoolTarget(null);
-                    rthermData.getThermostatData().setHold(0);
-                    rthermData.getThermostatData().setProgramMode(-1);
-                    updateAllChannels();
-                    
-                    //now just go ahead and refresh tstat data to update with the new active setpoint
-                    // this takes a while for the JSON request to complete.
-                    Object result = getRadioThermostatData(DEFAULT_RESOURCE);
-                    if (result instanceof RadioThermostatJsonResponse) {
-                        rthermData.setThermostatData((RadioThermostatJsonResponse) result);
-                        updateAllChannels();
-                    }
-                }
-                break;
-            case FAN_MODE:
-                rthermData.getThermostatData().setFanMode(cmdInt);
-                updateChannel(channelUID.getId(), rthermData);
-                sendCommand("fmode", cmdStr);
-                break;
-            case PROGRAM_MODE:
-                rthermData.getThermostatData().setProgramMode(cmdInt);
-                updateChannel(channelUID.getId(), rthermData);
-                sendCommand("program_mode", cmdStr);
-                break;
-            case HOLD:
-                if (command instanceof OnOffType && command == OnOffType.ON) {
-                    rthermData.getThermostatData().setHold(1);
-                    updateChannel(channelUID.getId(), rthermData);
-                    sendCommand("hold", "1");
-                } else if (command instanceof OnOffType && command == OnOffType.OFF) {
-                    rthermData.getThermostatData().setHold(0);
-                    updateChannel(channelUID.getId(), rthermData);
-                    sendCommand("hold", "0");
-                }
-                break;
-            case SET_POINT:
-                String cmdKey = null;
-                if (rthermData.getThermostatData().getMode() == 1) {
-                    cmdKey = "t_heat";
-                    rthermData.getThermostatData().setHeatTarget(cmdInt);
-                } else if (rthermData.getThermostatData().getMode() == 2) {
-                    cmdKey = "t_cool";
-                    rthermData.getThermostatData().setCoolTarget(cmdInt);
-                } else {
-                    //don't do anything if we are not in heat or cool mode
+                case JSON_CMD:
+                    sendCommand(null, null, command.toString());
                     break;
-                }
-                updateChannel(channelUID.getId(), rthermData);
-                sendCommand(cmdKey, cmdStr);
-                break;
-            default:
-                logger.error("Unsupported command: {}", command.toString());
+                case MODE:
+                    //only do if commanded mode is different than current mode
+                    if (!cmdInt.equals(rthermData.getThermostatData().getMode())) {
+                        sendCommand("tmode", cmdStr);
+                        
+                        // set the new operating mode, reset everything else,
+                        // because refreshing the tstat data below is really slow.
+                        rthermData.getThermostatData().setMode(cmdInt);
+                        rthermData.getThermostatData().setHeatTarget(null);
+                        rthermData.getThermostatData().setCoolTarget(null);
+                        rthermData.getThermostatData().setHold(0);
+                        rthermData.getThermostatData().setProgramMode(-1);
+                        updateAllChannels();
+                        
+                        //now just go ahead and refresh tstat data to update with the new active setpoint
+                        // this takes a while for the JSON request to complete.
+                        Object result = getRadioThermostatData(DEFAULT_RESOURCE);
+                        if (result instanceof RadioThermostatJsonResponse) {
+                            rthermData.setThermostatData((RadioThermostatJsonResponse) result);
+                            updateAllChannels();
+                        }
+                    }
+                    break;
+                case FAN_MODE:
+                    rthermData.getThermostatData().setFanMode(cmdInt);
+                    updateChannel(channelUID.getId(), rthermData);
+                    sendCommand("fmode", cmdStr);
+                    break;
+                case PROGRAM_MODE:
+                    rthermData.getThermostatData().setProgramMode(cmdInt);
+                    updateChannel(channelUID.getId(), rthermData);
+                    sendCommand("program_mode", cmdStr);
+                    break;
+                case HOLD:
+                    if (command instanceof OnOffType && command == OnOffType.ON) {
+                        rthermData.getThermostatData().setHold(1);
+                        updateChannel(channelUID.getId(), rthermData);
+                        sendCommand("hold", "1");
+                    } else if (command instanceof OnOffType && command == OnOffType.OFF) {
+                        rthermData.getThermostatData().setHold(0);
+                        updateChannel(channelUID.getId(), rthermData);
+                        sendCommand("hold", "0");
+                    }
+                    break;
+                case SET_POINT:
+                    String cmdKey = null;
+                    if (rthermData.getThermostatData().getMode() == 1) {
+                        cmdKey = "t_heat";
+                        rthermData.getThermostatData().setHeatTarget(cmdInt);
+                    } else if (rthermData.getThermostatData().getMode() == 2) {
+                        cmdKey = "t_cool";
+                        rthermData.getThermostatData().setCoolTarget(cmdInt);
+                    } else {
+                        //don't do anything if we are not in heat or cool mode
+                        break;
+                    }
+                    updateChannel(channelUID.getId(), rthermData);
+                    sendCommand(cmdKey, cmdStr);
+                    break;
+                default:
+                    logger.error("Unsupported command: {}", command.toString());
             }
         }
     }
@@ -475,8 +478,22 @@ public class RadioThermostatHandler extends BaseThingHandler {
      * @return the JSON response string from the thermostat
      */
     private String sendCommand(String cmdKey, String cmdVal) {
+        return sendCommand(cmdKey, cmdVal, null);
+    }
+    
+    /**
+     * Sends a command to the thermostat
+     *
+     * @param the JSON attribute key for the value to be updated
+     * @param the value to be updated in the thermostat
+     * @param JSON string to send directly to the thermostat instead of a key/value pair
+     * @return the JSON response string from the thermostat
+     */
+    private String sendCommand(String cmdKey, String cmdVal, String cmdJson) {
+        // if we got a cmdJson string send that, otherwise build the json from the key and val params
+        String postJson = cmdJson != null ? cmdJson : "{\""+ cmdKey + "\":" + cmdVal + "}";
         String urlStr = buildRequestURL(DEFAULT_RESOURCE);
-        String postJson = "{\""+ cmdKey + "\":" + cmdVal + "}";
+
         byte[] out = postJson.getBytes(StandardCharsets.US_ASCII);
         String output = null;
         String errorMsg = null;
@@ -586,22 +603,14 @@ public class RadioThermostatHandler extends BaseThingHandler {
                     return data.getThermostatData().getTime().getThemostatDateTime();
                 case LAST_UPDATE:
                     return ZonedDateTime.now();
-                case TODAY_HEAT_HOUR:
-                    return data.getRuntime().getToday().getHeatTime().getHour();
-                case TODAY_HEAT_MINUTE:
-                    return data.getRuntime().getToday().getHeatTime().getMinute();
-                case TODAY_COOL_HOUR:
-                    return data.getRuntime().getToday().getCoolTime().getHour();
-                case TODAY_COOL_MINUTE:
-                    return data.getRuntime().getToday().getCoolTime().getMinute();
-                case YESTERDAY_HEAT_HOUR:
-                    return data.getRuntime().getYesterday().getHeatTime().getHour();
-                case YESTERDAY_HEAT_MINUTE:
-                    return data.getRuntime().getYesterday().getHeatTime().getMinute();
-                case YESTERDAY_COOL_HOUR:
-                    return data.getRuntime().getYesterday().getCoolTime().getHour();
-                case YESTERDAY_COOL_MINUTE:
-                    return data.getRuntime().getYesterday().getCoolTime().getMinute();
+                case TODAY_HEAT_RUNTIME:
+                    return new QuantityType<>(data.getRuntime().getToday().getHeatTime().getRuntime(), API_MINUTES_UNIT);
+                case TODAY_COOL_RUNTIME:
+                    return new QuantityType<>(data.getRuntime().getToday().getCoolTime().getRuntime(), API_MINUTES_UNIT);
+                case YESTERDAY_HEAT_RUNTIME:
+                    return new QuantityType<>(data.getRuntime().getYesterday().getHeatTime().getRuntime(), API_MINUTES_UNIT);
+                case YESTERDAY_COOL_RUNTIME:
+                    return new QuantityType<>(data.getRuntime().getYesterday().getCoolTime().getRuntime(), API_MINUTES_UNIT);
             }
         }
 

@@ -20,6 +20,7 @@ import java.util.stream.Stream;
 import javax.measure.Unit;
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Temperature;
+import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.unit.ImperialUnits;
@@ -60,24 +61,21 @@ public class RadioThermostatBindingConstants {
     public static final String MINUTE = "minute";
     public static final String DATE_STAMP = "dt_stamp";
     public static final String LAST_UPDATE ="last_update";
-    public static final String TODAY_HEAT_HOUR ="today_heat_hour";
-    public static final String TODAY_HEAT_MINUTE ="today_heat_minute";
-    public static final String TODAY_COOL_HOUR ="today_cool_hour";
-    public static final String TODAY_COOL_MINUTE ="today_cool_minute";
-    public static final String YESTERDAY_HEAT_HOUR ="yesterday_heat_hour";
-    public static final String YESTERDAY_HEAT_MINUTE ="yesterday_heat_minute";
-    public static final String YESTERDAY_COOL_HOUR ="yesterday_cool_hour";
-    public static final String YESTERDAY_COOL_MINUTE ="yesterday_cool_minute";
+    public static final String TODAY_HEAT_RUNTIME ="today_heat_runtime";
+    public static final String TODAY_COOL_RUNTIME ="today_cool_runtime";
+    public static final String YESTERDAY_HEAT_RUNTIME ="yesterday_heat_runtime";
+    public static final String YESTERDAY_COOL_RUNTIME ="yesterday_cool_runtime";
+    public static final String JSON_CMD ="json_cmd";
     
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_RTHERM);
     public static final Set<String> SUPPORTED_CHANNEL_IDS = Stream.of(NAME, MODEL, TEMPERATURE, HUMIDITY, MODE, FAN_MODE, PROGRAM_MODE,
-            SET_POINT, OVERRIDE, HOLD, STATUS, FAN_STATUS, DAY, HOUR, MINUTE, DATE_STAMP, LAST_UPDATE, TODAY_HEAT_HOUR, TODAY_HEAT_MINUTE,
-            TODAY_COOL_HOUR, TODAY_COOL_MINUTE, YESTERDAY_HEAT_HOUR, YESTERDAY_HEAT_MINUTE, YESTERDAY_COOL_HOUR, YESTERDAY_COOL_MINUTE)
+            SET_POINT, OVERRIDE, HOLD, STATUS, FAN_STATUS, DAY, HOUR, MINUTE, DATE_STAMP, LAST_UPDATE, TODAY_HEAT_RUNTIME, TODAY_COOL_RUNTIME,
+            YESTERDAY_HEAT_RUNTIME, YESTERDAY_COOL_RUNTIME, JSON_CMD)
             .collect(Collectors.toSet());
 
     // Units of measurement of the data delivered by the API
     public static final Unit<Temperature> API_TEMPERATURE_UNIT = ImperialUnits.FAHRENHEIT;
     public static final Unit<Dimensionless> API_HUMIDITY_UNIT = SmartHomeUnits.PERCENT;
-
+    public static final Unit<Time> API_MINUTES_UNIT = SmartHomeUnits.MINUTE;
 
 }

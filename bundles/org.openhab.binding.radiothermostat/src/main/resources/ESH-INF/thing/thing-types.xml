@@ -28,14 +28,11 @@
 			<channel id="minute" typeId="t_minute" />
 			<channel id="dt_stamp" typeId="dt_stamp" />
 			<channel id="last_update" typeId="last_update" />
-			<channel id="today_heat_hour" typeId="today_heat_hour" />
-			<channel id="today_heat_minute" typeId="today_heat_minute" />
-			<channel id="today_cool_hour" typeId="today_cool_hour" />
-			<channel id="today_cool_minute" typeId="today_cool_minute" />
-			<channel id="yesterday_heat_hour" typeId="yesterday_heat_hour" />
-			<channel id="yesterday_heat_minute" typeId="yesterday_heat_minute" />
-			<channel id="yesterday_cool_hour" typeId="yesterday_cool_hour" />
-			<channel id="yesterday_cool_minute" typeId="yesterday_cool_minute" />
+			<channel id="today_heat_runtime" typeId="today_heat_runtime" />
+			<channel id="today_cool_runtime" typeId="today_cool_runtime" />
+			<channel id="yesterday_heat_runtime" typeId="yesterday_heat_runtime" />
+			<channel id="yesterday_cool_runtime" typeId="yesterday_cool_runtime" />
+			<channel id="json_cmd" typeId="json_cmd" />
 		</channels>
 		
 		<config-description>
@@ -202,61 +199,38 @@
 		<state readOnly="true"/>
 	</channel-type>
 	
-	<channel-type id="today_heat_hour">
+	<channel-type id="today_heat_runtime">
 		<item-type>Number</item-type>
-		<label>Today's Heating Hours</label>
-		<description>The number of hours of heating run-time today</description>
-		<state readOnly="true" pattern="%d"/>
-	</channel-type>
-	
-	<channel-type id="today_heat_minute">
-		<item-type>Number</item-type>
-		<label>Today's Heating Minutes</label>
+		<label>Today's Heating Runtime</label>
 		<description>The number of minutes of heating run-time today</description>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 	
-	<channel-type id="today_cool_hour">
+	<channel-type id="today_cool_runtime">
 		<item-type>Number</item-type>
-		<label>Today's Cooling Hours</label>
-		<description>The number of hours of cooling run-time today</description>
-		<state readOnly="true" pattern="%d"/>
-	</channel-type>
-	
-	<channel-type id="today_cool_minute">
-		<item-type>Number</item-type>
-		<label>Today's Cooling Minutes</label>
+		<label>Today's Cooling Runtime</label>
 		<description>The number of minutes of cooling run-time today</description>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 	
-	<channel-type id="yesterday_heat_hour">
+	<channel-type id="yesterday_heat_runtime">
 		<item-type>Number</item-type>
-		<label>Yesterday's Heating Hours</label>
-		<description>The number of hours of heating run-time yesterday</description>
-		<state readOnly="true" pattern="%d"/>
-	</channel-type>
-	
-	<channel-type id="yesterday_heat_minute">
-		<item-type>Number</item-type>
-		<label>Yesterday's Heating Minutes</label>
+		<label>Yesterday's Heating Runtime</label>
 		<description>The number of minutes of heating run-time yesterday</description>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 	
-	<channel-type id="yesterday_cool_hour">
+	<channel-type id="yesterday_cool_runtime">
 		<item-type>Number</item-type>
-		<label>Yesterday's Cooling Hours</label>
-		<description>The number of hours of cooling run-time yesterday</description>
-		<state readOnly="true" pattern="%d"/>
-	</channel-type>
-	
-	<channel-type id="yesterday_cool_minute">
-		<item-type>Number</item-type>
-		<label>Yesterday's Cooling Minutes</label>
+		<label>Yesterday's Cooling Runtime</label>
 		<description>The number of minutes of cooling run-time yesterday</description>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 	
+	<channel-type id="json_cmd">
+		<item-type>String</item-type>
+		<label>JSON Command</label>
+		<description>Send a JSON string directly to the '/tstat' resource of the thermostat</description>
+	</channel-type>
+	
 </thing:thing-descriptions>
-
