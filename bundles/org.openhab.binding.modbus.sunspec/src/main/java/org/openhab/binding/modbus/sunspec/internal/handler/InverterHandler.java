@@ -113,7 +113,7 @@ public class InverterHandler extends AbstractSunSpecHandler {
                 getScaled(block.dcCurrent, block.dcCurrentSF, AMPERE));
         updateState(channelUID(GROUP_DC_GENERAL, CHANNEL_DC_VOLTAGE),
                 getScaled(block.dcVoltage, block.dcVoltageSF, VOLT));
-        updateState(channelUID(GROUP_DC_GENERAL, CHANNEL_DC_POWER), getScaled(block.dcPower, block.dcPowerSF, VOLT));
+        updateState(channelUID(GROUP_DC_GENERAL, CHANNEL_DC_POWER), getScaled(block.dcPower, block.dcPowerSF, WATT));
 
         // AC Phase specific groups
         // All types of inverters
