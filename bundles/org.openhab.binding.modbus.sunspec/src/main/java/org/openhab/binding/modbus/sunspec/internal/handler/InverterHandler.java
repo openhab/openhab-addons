@@ -20,7 +20,6 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.modbus.sunspec.internal.InverterStatus;
@@ -81,7 +80,7 @@ public class InverterHandler extends AbstractSunSpecHandler {
                 getScaled(block.temperatureOther, Optional.of(block.temperatureSF), CELSIUS));
 
         InverterStatus status = InverterStatus.getByCode(block.status);
-        updateState(new ChannelUID(getThing().getUID(), GROUP_DEVICE_INFO, CHANNEL_STATUS),
+        updateState(channelUID(GROUP_DEVICE_INFO, CHANNEL_STATUS),
                 status == null ? UnDefType.UNDEF : new StringType(status.name()));
 
         // AC General group
@@ -104,12 +103,11 @@ public class InverterHandler extends AbstractSunSpecHandler {
                                                                                   // https://github.com/openhab/openhab-core/pull/1347
 
         // DC General group
-        updateState(new ChannelUID(getThing().getUID(), GROUP_DC_GENERAL, CHANNEL_DC_CURRENT),
+        updateState(channelUID(GROUP_DC_GENERAL, CHANNEL_DC_CURRENT),
                 getScaled(block.dcCurrent, block.dcCurrentSF, AMPERE));
-        updateState(new ChannelUID(getThing().getUID(), GROUP_DC_GENERAL, CHANNEL_DC_VOLTAGE),
+        updateState(channelUID(GROUP_DC_GENERAL, CHANNEL_DC_VOLTAGE),
                 getScaled(block.dcVoltage, block.dcVoltageSF, VOLT));
-        updateState(new ChannelUID(getThing().getUID(), GROUP_DC_GENERAL, CHANNEL_DC_POWER),
-                getScaled(block.dcPower, block.dcPowerSF, VOLT));
+        updateState(channelUID(GROUP_DC_GENERAL, CHANNEL_DC_POWER), getScaled(block.dcPower, block.dcPowerSF, VOLT));
 
         updateState(channelUID(GROUP_AC_GENERAL, CHANNEL_AC_POWER_FACTOR),
                 getScaled(block.acPowerFactor, block.acPowerFactorSF, PERCENT));
@@ -119,33 +117,33 @@ public class InverterHandler extends AbstractSunSpecHandler {
 
         // AC Phase specific groups
         // All types of inverters
-        updateState(new ChannelUID(getThing().getUID(), GROUP_AC_PHASE_A, CHANNEL_AC_PHASE_CURRENT),
+        updateState(channelUID(GROUP_AC_PHASE_A, CHANNEL_AC_PHASE_CURRENT),
                 getScaled(block.acCurrentPhaseA, block.acCurrentSF, AMPERE));
-        updateState(new ChannelUID(getThing().getUID(), GROUP_AC_PHASE_A, CHANNEL_AC_VOLTAGE_TO_NEXT),
+        updateState(channelUID(GROUP_AC_PHASE_A, CHANNEL_AC_VOLTAGE_TO_NEXT),
                 getScaled(block.acVoltageAB, block.acVoltageSF, VOLT));
-        updateState(new ChannelUID(getThing().getUID(), GROUP_AC_PHASE_A, CHANNEL_AC_VOLTAGE_TO_N),
+        updateState(channelUID(GROUP_AC_PHASE_A, CHANNEL_AC_VOLTAGE_TO_N),
                 getScaled(block.acVoltageAtoN, block.acVoltageSF, VOLT));
 
         // Split phase and three phase
         if ((thing.getThingTypeUID().equals(THING_TYPE_INVERTER_SPLIT_PHASE)
                 || thing.getThingTypeUID().equals(THING_TYPE_INVERTER_THREE_PHASE))
                 && block.phaseConfiguration >= INVERTER_SPLIT_PHASE) {
-            updateState(new ChannelUID(getThing().getUID(), GROUP_AC_PHASE_B, CHANNEL_AC_PHASE_CURRENT),
+            updateState(channelUID(GROUP_AC_PHASE_B, CHANNEL_AC_PHASE_CURRENT),
                     getScaled(block.acCurrentPhaseB, block.acCurrentSF, AMPERE));
-            updateState(new ChannelUID(getThing().getUID(), GROUP_AC_PHASE_B, CHANNEL_AC_VOLTAGE_TO_NEXT),
+            updateState(channelUID(GROUP_AC_PHASE_B, CHANNEL_AC_VOLTAGE_TO_NEXT),
                     getScaled(block.acVoltageBC, block.acVoltageSF, VOLT));
-            updateState(new ChannelUID(getThing().getUID(), GROUP_AC_PHASE_B, CHANNEL_AC_VOLTAGE_TO_N),
+            updateState(channelUID(GROUP_AC_PHASE_B, CHANNEL_AC_VOLTAGE_TO_N),
                     getScaled(block.acVoltageBtoN, block.acVoltageSF, VOLT));
         }
 
         // Three phase only
         if (thing.getThingTypeUID().equals(THING_TYPE_INVERTER_THREE_PHASE)
                 && block.phaseConfiguration >= INVERTER_THREE_PHASE) {
-            updateState(new ChannelUID(getThing().getUID(), GROUP_AC_PHASE_C, CHANNEL_AC_PHASE_CURRENT),
+            updateState(channelUID(GROUP_AC_PHASE_C, CHANNEL_AC_PHASE_CURRENT),
                     getScaled(block.acCurrentPhaseC, block.acCurrentSF, AMPERE));
-            updateState(new ChannelUID(getThing().getUID(), GROUP_AC_PHASE_C, CHANNEL_AC_VOLTAGE_TO_NEXT),
+            updateState(channelUID(GROUP_AC_PHASE_C, CHANNEL_AC_VOLTAGE_TO_NEXT),
                     getScaled(block.acVoltageCA, block.acVoltageSF, VOLT));
-            updateState(new ChannelUID(getThing().getUID(), GROUP_AC_PHASE_C, CHANNEL_AC_VOLTAGE_TO_N),
+            updateState(channelUID(GROUP_AC_PHASE_C, CHANNEL_AC_VOLTAGE_TO_N),
                     getScaled(block.acVoltageCtoN, block.acVoltageSF, VOLT));
         }
 

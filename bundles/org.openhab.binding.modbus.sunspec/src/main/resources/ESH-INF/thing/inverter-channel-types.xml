@@ -83,8 +83,6 @@
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
-
-
 	<channel-type id="cabinet-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Cabinet Temperature</label>
