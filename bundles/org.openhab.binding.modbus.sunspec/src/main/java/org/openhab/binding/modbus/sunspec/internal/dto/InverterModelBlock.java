@@ -38,9 +38,59 @@ public class InverterModelBlock {
     public Integer acCurrentTotal;
 
     /**
+     * AC Phase A Current value
+     */
+    public Integer acCurrentPhaseA;
+
+    /**
+     * AC Phase B Current value
+     */
+    public Optional<Integer> acCurrentPhaseB;
+
+    /**
+     * AC Phase C Current value
+     */
+    public Optional<Integer> acCurrentPhaseC;
+
+    /**
      * AC Current scale factor
      */
     public Short acCurrentSF;
+
+    /**
+     * AC Voltage Phase AB value
+     */
+    public Optional<Integer> acVoltageAB;
+
+    /**
+     * AC Voltage Phase BC value
+     */
+    public Optional<Integer> acVoltageBC;
+
+    /**
+     * AC Voltage Phase CA value
+     */
+    public Optional<Integer> acVoltageCA;
+
+    /**
+     * AC Voltage Phase A to N value
+     */
+    public Integer acVoltageAtoN;
+
+    /**
+     * AC Voltage Phase B to N value
+     */
+    public Optional<Integer> acVoltageBtoN;
+
+    /**
+     * AC Voltage Phase C to N value
+     */
+    public Optional<Integer> acVoltageCtoN;
+
+    /**
+     * AC Voltage scale factor
+     */
+    public Short acVoltageSF;
 
     /**
      * AC Power value
@@ -101,6 +151,36 @@ public class InverterModelBlock {
      * AC Lifetime Energy scale factor
      */
     public Short acEnergyLifetimeSF;
+
+    /**
+     * DC Current value
+     */
+    public Optional<Integer> dcCurrent;
+
+    /**
+     * DC Current scale factor
+     */
+    public Optional<Short> dcCurrentSF;
+
+    /**
+     * DC Voltage value
+     */
+    public Optional<Integer> dcVoltage;
+
+    /**
+     * DC Voltage scale factor
+     */
+    public Optional<Short> dcVoltageSF;
+
+    /**
+     * DC Power value
+     */
+    public Optional<Short> dcPower;
+
+    /**
+     * DC Power scale factor
+     */
+    public Optional<Short> dcPowerSF;
 
     /**
      * Cabinet temperature
