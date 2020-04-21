@@ -416,7 +416,6 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
         } catch (EOFException e) {
             return;
         } catch (IOException e) {
-
         } catch (InterruptedException e) {
             logger.trace("InterruptedException caught.");
             Thread.currentThread().interrupt();
@@ -463,7 +462,6 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
         } catch (EOFException e) {
             return;
         } catch (IOException e) {
-
         } catch (InterruptedException e) {
             logger.trace("InterruptedException caught.");
             Thread.currentThread().interrupt();
