@@ -71,7 +71,7 @@ public class POP3IMAPHandler extends BaseThingHandler {
         protocol = baseProtocol;
 
         if (config.security == ServerSecurity.SSL) {
-            protocol.concat("s");
+            protocol = protocol.concat("s");
         }
 
         if (config.port == 0) {
