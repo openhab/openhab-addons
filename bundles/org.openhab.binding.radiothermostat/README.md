@@ -146,17 +146,16 @@ Number Therm_Minute    "Thermostat Minute [%s]"                              { c
 String Therm_Dstmp     "Thermostat DateStamp [%s]" <time>                    { channel="radiothermostat:rtherm:mytherm1:dt_stamp" }
 DateTime Therm_Lastupd "Thermostat Last Updated  [%1$tl:%1$tM %1$tp]" <time> { channel="radiothermostat:rtherm:mytherm1:last_update" }
 
-Number Therm_todayheat "Today's Heating Runtime [%s]"       { channel="radiothermostat:rtherm:mytherm1:today_heat_runtime" }
-Number Therm_todaycool "Today's Cooling Runtime [%s]"       { channel="radiothermostat:rtherm:mytherm1:today_cool_runtime" }
-Number Therm_yesterdayheat "Yesterday's Heating Runtime [%s]"   { channel="radiothermostat:rtherm:mytherm1:yesterday_heat_runtime" }
-Number Therm_yesterdaycool "Yesterday's Cooling Runtime [%s]"   { channel="radiothermostat:rtherm:mytherm1:yesterday_cool_runtime" }
+Number:Time Therm_todayheat "Today's Heating Runtime [%d %unit%]"       { channel="radiothermostat:rtherm:mytherm1:today_heat_runtime" }
+Number:Time Therm_todaycool "Today's Cooling Runtime [%d %unit%]"       { channel="radiothermostat:rtherm:mytherm1:today_cool_runtime" }
+Number:Time Therm_yesterdayheat "Yesterday's Heating Runtime [%d %unit%]"   { channel="radiothermostat:rtherm:mytherm1:yesterday_heat_runtime" }
+Number:Time Therm_yesterdaycool "Yesterday's Cooling Runtime [%d %unit%]"   { channel="radiothermostat:rtherm:mytherm1:yesterday_cool_runtime" }
 
 // Channel to send JSON commands directly to the thermostat
 String Therm_jsoncmd     "Send JSON to direct to thermostat [%s]"            { channel="radiothermostat:rtherm:mytherm1:json_cmd" }
 
 // A virtual switch used to trigger a rule to send a json command to the thermostat
 Switch Therm_mysetting   "Send my preferred setting"
-
 ```
 
 radiotherm.sitemap:

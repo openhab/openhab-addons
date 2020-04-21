@@ -200,31 +200,31 @@
 	</channel-type>
 	
 	<channel-type id="today_heat_runtime">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Today's Heating Runtime</label>
 		<description>The number of minutes of heating run-time today</description>
-		<state readOnly="true" pattern="%d"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	
 	<channel-type id="today_cool_runtime">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Today's Cooling Runtime</label>
 		<description>The number of minutes of cooling run-time today</description>
-		<state readOnly="true" pattern="%d"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	
 	<channel-type id="yesterday_heat_runtime">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Yesterday's Heating Runtime</label>
 		<description>The number of minutes of heating run-time yesterday</description>
-		<state readOnly="true" pattern="%d"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	
 	<channel-type id="yesterday_cool_runtime">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Yesterday's Cooling Runtime</label>
 		<description>The number of minutes of cooling run-time yesterday</description>
-		<state readOnly="true" pattern="%d"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	
 	<channel-type id="json_cmd">
