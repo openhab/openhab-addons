@@ -41,8 +41,10 @@ import org.openhab.binding.bluetooth.ConnectedBluetoothHandler;
 import org.openhab.binding.bluetooth.daikinmadoka.DaikinMadokaBindingConstants;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.BRC1HUartProcessor;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.DaikinMadokaConfiguration;
-import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaProperties.FAN_SPEED;
-import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaProperties.OPERATION_MODE;
+import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
+import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaParsingException;
+import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaProperties.FanSpeed;
+import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaProperties.OperationMode;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaSettings;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.BRC1HCommand;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.GetFanspeedCommand;
@@ -206,7 +208,7 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
             case DaikinMadokaBindingConstants.CHANNEL_ID_FAN_SPEED:
                 try {
                     DecimalType fanSpeed = (DecimalType) command;
-                    FAN_SPEED fs = FAN_SPEED.valueOf(fanSpeed.intValue());
+                    FanSpeed fs = FanSpeed.valueOf(fanSpeed.intValue());
                     submitCommand(new SetFanspeedCommand(fs, fs));
                 } catch (Exception e) {
                     logger.info("Data received is not a valid FanSpeed status", e);
@@ -215,7 +217,7 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
             case DaikinMadokaBindingConstants.CHANNEL_ID_OPERATION_MODE:
                 try {
                     StringType operationMode = (StringType) command;
-                    OPERATION_MODE m = OPERATION_MODE.valueOf(operationMode.toFullString());
+                    OperationMode m = OperationMode.valueOf(operationMode.toFullString());
 
                     submitCommand(new SetOperationmodeCommand(m));
                 } catch (Exception e) {
@@ -231,19 +233,19 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
                             submitCommand(new SetPowerstateCommand(OnOffType.OFF));
                             break;
                         case "CoolOn":
-                            submitCommand(new SetOperationmodeCommand(OPERATION_MODE.COOL));
+                            submitCommand(new SetOperationmodeCommand(OperationMode.COOL));
                             if (madokaSettings.getOnOffState() == OnOffType.OFF) {
                                 submitCommand(new SetPowerstateCommand(OnOffType.ON));
                             }
                             break;
                         case "HeatOn":
-                            submitCommand(new SetOperationmodeCommand(OPERATION_MODE.HEAT));
+                            submitCommand(new SetOperationmodeCommand(OperationMode.HEAT));
                             if (madokaSettings.getOnOffState() == OnOffType.OFF) {
                                 submitCommand(new SetPowerstateCommand(OnOffType.ON));
                             }
                             break;
                         case "Auto":
-                            submitCommand(new SetOperationmodeCommand(OPERATION_MODE.AUTO));
+                            submitCommand(new SetOperationmodeCommand(OperationMode.AUTO));
                             if (madokaSettings.getOnOffState() == OnOffType.OFF) {
                                 submitCommand(new SetPowerstateCommand(OnOffType.ON));
                             }
@@ -408,11 +410,16 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
             if (logger.isDebugEnabled()) {
                 logger.debug("No command present to handle response {}", HexUtils.bytesToHex(response));
             }
-        }
-
-        else if ((!command.handleResponse(scheduler, this, response)) && logger.isDebugEnabled()) {
-            logger.debug("Command {} could not handle response {}", command.getClass().getSimpleName(),
-                    HexUtils.bytesToHex(response));
+        } else {
+            try {
+                if ((!command.handleResponse(scheduler, this, MadokaMessage.parse(response)))) {
+                    logger.debug("Command {} could not handle response {}", command.getClass().getSimpleName(),
+                            HexUtils.bytesToHex(response));
+                }
+            } catch (MadokaParsingException e) {
+                logger.debug("Response message could not be parsed correctly ({}): {}",
+                        command.getClass().getSimpleName(), HexUtils.bytesToHex(response));
+            }
         }
     }
 
@@ -443,7 +450,7 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
             return;
         }
 
-        FAN_SPEED fs = null;
+        FanSpeed fs = null;
 
         switch (this.madokaSettings.getOperationMode()) {
             case AUTO:

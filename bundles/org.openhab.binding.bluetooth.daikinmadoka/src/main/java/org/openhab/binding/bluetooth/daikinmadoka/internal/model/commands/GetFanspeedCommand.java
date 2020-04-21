@@ -17,7 +17,7 @@ import java.util.concurrent.Executor;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
-import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaProperties.FAN_SPEED;
+import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaProperties.FanSpeed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,8 +31,8 @@ public class GetFanspeedCommand extends BRC1HCommand {
 
     private final Logger logger = LoggerFactory.getLogger(GetFanspeedCommand.class);
 
-    private @Nullable FAN_SPEED coolingFanSpeed;
-    private @Nullable FAN_SPEED heatingFanSpeed;
+    private @Nullable FanSpeed coolingFanSpeed;
+    private @Nullable FanSpeed heatingFanSpeed;
 
     @Override
     public byte[] getRequest() {
@@ -40,27 +40,20 @@ public class GetFanspeedCommand extends BRC1HCommand {
     }
 
     @Override
-    public boolean handleResponse(Executor executor, ResponseListener listener, byte @Nullable [] response) {
-
-        if (response == null) {
-            return false;
-        }
-
+    public boolean handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm) {
         try {
-
-            MadokaMessage mm = MadokaMessage.parse(response);
-
-            this.coolingFanSpeed = FAN_SPEED.valueOf(mm.getValues().get(0x20).getRawValue()[0]);
-            this.heatingFanSpeed = FAN_SPEED.valueOf(mm.getValues().get(0x21).getRawValue()[0]);
+            this.coolingFanSpeed = FanSpeed.valueOf(mm.getValues().get(0x20).getRawValue()[0]);
+            this.heatingFanSpeed = FanSpeed.valueOf(mm.getValues().get(0x21).getRawValue()[0]);
 
             logger.debug("coolingFanSpeed: {}", coolingFanSpeed);
             logger.debug("heatingFanSpeed: {}", heatingFanSpeed);
 
-            listener.receivedResponse(this);
             setState(State.SUCCEEDED);
+            executor.execute(() -> listener.receivedResponse(this));
+
             return true;
         } catch (Exception e) {
-            logger.error("Error while parsing response", e);
+            logger.debug("Error while parsing response", e);
             setState(State.FAILED);
         }
         return false;
@@ -71,11 +64,11 @@ public class GetFanspeedCommand extends BRC1HCommand {
         return 80;
     }
 
-    public @Nullable FAN_SPEED getCoolingFanSpeed() {
+    public @Nullable FanSpeed getCoolingFanSpeed() {
         return coolingFanSpeed;
     }
 
-    public @Nullable FAN_SPEED getHeatingFanSpeed() {
+    public @Nullable FanSpeed getHeatingFanSpeed() {
         return heatingFanSpeed;
     }
 

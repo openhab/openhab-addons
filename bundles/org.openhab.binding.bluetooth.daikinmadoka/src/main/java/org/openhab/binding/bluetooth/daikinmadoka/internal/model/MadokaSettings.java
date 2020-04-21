@@ -16,8 +16,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaProperties.FAN_SPEED;
-import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaProperties.OPERATION_MODE;
+import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaProperties.FanSpeed;
+import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaProperties.OperationMode;
 
 /**
  *
@@ -34,9 +34,9 @@ public class MadokaSettings {
     private @Nullable DecimalType indoorTemperature;
     private @Nullable DecimalType outdoorTemperature;
 
-    private @Nullable FAN_SPEED fanspeed;
+    private @Nullable FanSpeed fanspeed;
 
-    private @Nullable OPERATION_MODE operationMode;
+    private @Nullable OperationMode operationMode;
 
     private @Nullable String homekitCurrentMode;
     private @Nullable String homekitTargetMode;
@@ -76,19 +76,19 @@ public class MadokaSettings {
         this.outdoorTemperature = outdoorTemperature;
     }
 
-    public @Nullable FAN_SPEED getFanspeed() {
+    public @Nullable FanSpeed getFanspeed() {
         return fanspeed;
     }
 
-    public void setFanspeed(FAN_SPEED fanspeed) {
+    public void setFanspeed(FanSpeed fanspeed) {
         this.fanspeed = fanspeed;
     }
 
-    public @Nullable OPERATION_MODE getOperationMode() {
+    public @Nullable OperationMode getOperationMode() {
         return operationMode;
     }
 
-    public void setOperationMode(OPERATION_MODE operationMode) {
+    public void setOperationMode(OperationMode operationMode) {
         this.operationMode = operationMode;
     }
 

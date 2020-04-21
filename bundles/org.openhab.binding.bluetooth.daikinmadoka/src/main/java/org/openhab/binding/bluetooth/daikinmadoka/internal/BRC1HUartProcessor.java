@@ -58,33 +58,28 @@ public class BRC1HUartProcessor {
         }
 
         byte[] firstMessageInQueue = uartMessages.first();
-        if (firstMessageInQueue[0] != 0) {
-            return false;
-        }
 
         if (firstMessageInQueue.length < 2) {
             return false;
         }
 
-        int expectedChunks = (firstMessageInQueue[1] / 19) + (firstMessageInQueue[1] % 19 > 0 ? 1 : 0);
-        if (expectedChunks != this.uartMessages.size()) {
+        int expectedChunks = (int) Math.ceil(firstMessageInQueue[1] / 19.0);
+        if (expectedChunks != messagesInQueue) {
             return false;
         }
-        {
-            // Check that we have every single ID
-            int expected = 0;
-            for (byte[] m : this.uartMessages) {
-                if (m.length < 2) {
-                    return false;
-                }
 
-                if (m[0] != expected++) {
-                    return false;
-                }
+        // Check that we have every single ID
+        int expected = 0;
+        for (byte[] m : this.uartMessages) {
+            if (m.length < 2) {
+                return false;
             }
-            return true;
-        }
 
+            if (m[0] != expected++) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public void chunkReceived(byte[] byteValue) {
@@ -100,7 +95,7 @@ public class BRC1HUartProcessor {
                     bos.write(Arrays.copyOfRange(msg, 1, msg.length));
                 } catch (Exception e) {
                     // should never happen.
-                    logger.error("Unexpected error", e);
+                    logger.info("An unexpected error occured while re-assembling message chunks", e);
                 }
             }
 

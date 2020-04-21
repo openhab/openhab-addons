@@ -33,7 +33,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 
 /**
  *
- * @author blafois
+ * @author Benjamin Lafois
  *
  */
 @NonNullByDefault
@@ -41,133 +41,105 @@ public class DummyThing implements Thing {
 
     @Override
     public @Nullable String getLabel() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public void setLabel(@Nullable String label) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public List<@NonNull Channel> getChannels() {
-        // TODO Auto-generated method stub
         return new ArrayList<Channel>();
     }
 
     @Override
     public List<@NonNull Channel> getChannelsOfGroup(String channelGroupId) {
-        // TODO Auto-generated method stub
         return new ArrayList<Channel>();
     }
 
     @Override
     public @Nullable Channel getChannel(String channelId) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public @Nullable Channel getChannel(ChannelUID channelUID) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public ThingStatus getStatus() {
-        // TODO Auto-generated method stub
         return ThingStatus.ONLINE;
     }
 
     @Override
     public ThingStatusInfo getStatusInfo() {
-        // TODO Auto-generated method stub
         return new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Dummy");
     }
 
     @Override
     public void setStatusInfo(ThingStatusInfo status) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void setHandler(@Nullable ThingHandler thingHandler) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public @Nullable ThingHandler getHandler() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public @Nullable ThingUID getBridgeUID() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public void setBridgeUID(@Nullable ThingUID bridgeUID) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public Configuration getConfiguration() {
-        // TODO Auto-generated method stub
         return new Configuration();
     }
 
     @Override
     public ThingUID getUID() {
-        // TODO Auto-generated method stub
         return new ThingUID("dummy");
     }
 
     @Override
     public ThingTypeUID getThingTypeUID() {
-        // TODO Auto-generated method stub
         return new ThingTypeUID("dummy");
     }
 
     @Override
     public Map<@NonNull String, @NonNull String> getProperties() {
-        // TODO Auto-generated method stub
         return new HashMap<String, String>();
     }
 
     @Override
     public @Nullable String setProperty(String name, @Nullable String value) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public void setProperties(Map<@NonNull String, @NonNull String> properties) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public @Nullable String getLocation() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public void setLocation(@Nullable String location) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public boolean isEnabled() {
-        // TODO Auto-generated method stub
         return false;
     }
 

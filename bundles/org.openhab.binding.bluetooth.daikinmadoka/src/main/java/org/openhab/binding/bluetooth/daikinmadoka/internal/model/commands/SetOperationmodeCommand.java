@@ -14,10 +14,10 @@ package org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands;
 
 import java.util.concurrent.Executor;
 
-import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
-import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaProperties.OPERATION_MODE;
+import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaProperties.OperationMode;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,9 +31,9 @@ public class SetOperationmodeCommand extends BRC1HCommand {
 
     private final Logger logger = LoggerFactory.getLogger(SetOperationmodeCommand.class);
 
-    private OPERATION_MODE operationMode;
+    private OperationMode operationMode;
 
-    public SetOperationmodeCommand(OPERATION_MODE operationMode) {
+    public SetOperationmodeCommand(OperationMode operationMode) {
         this.operationMode = operationMode;
     }
 
@@ -44,18 +44,14 @@ public class SetOperationmodeCommand extends BRC1HCommand {
     }
 
     @Override
-    public boolean handleResponse(Executor executor, ResponseListener listener, byte @Nullable [] response) {
-
-        if (response == null) {
-            return false;
+    public boolean handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm) {
+        if (logger.isDebugEnabled() && mm.getRawMessage() != null) {
+            byte @NonNull [] msg = (byte @NonNull []) mm.getRawMessage();
+            logger.debug("Got response for {} : {}", this.getClass().getSimpleName(), HexUtils.bytesToHex(msg));
         }
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Got response for {} : {}", this.getClass().getSimpleName(), HexUtils.bytesToHex(response));
-        }
-
-        listener.receivedResponse(this);
         setState(State.SUCCEEDED);
+        executor.execute(() -> listener.receivedResponse(this));
 
         return true;
     }
@@ -65,7 +61,7 @@ public class SetOperationmodeCommand extends BRC1HCommand {
         return 16432;
     }
 
-    public OPERATION_MODE getOperationMode() {
+    public OperationMode getOperationMode() {
         return operationMode;
     }
 

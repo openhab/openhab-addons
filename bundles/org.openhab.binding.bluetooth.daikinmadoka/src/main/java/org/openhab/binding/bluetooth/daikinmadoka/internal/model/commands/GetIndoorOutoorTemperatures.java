@@ -14,7 +14,6 @@ package org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands;
 
 import java.util.concurrent.Executor;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
 import org.slf4j.Logger;
@@ -38,15 +37,8 @@ public class GetIndoorOutoorTemperatures extends BRC1HCommand {
     }
 
     @Override
-    public boolean handleResponse(Executor executor, ResponseListener listener, byte @Nullable [] response) {
-        if (response == null) {
-            return false;
-        }
-
+    public boolean handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm) {
         try {
-
-            MadokaMessage mm = MadokaMessage.parse(response);
-
             Integer iIndoorTemperature = Integer.valueOf(mm.getValues().get(0x40).getRawValue()[0]);
             Integer iOutdoorTemperature = Integer.valueOf(mm.getValues().get(0x41).getRawValue()[0]);
 
@@ -69,11 +61,12 @@ public class GetIndoorOutoorTemperatures extends BRC1HCommand {
             logger.debug("Indoor Temp: {}", indoorTemperature);
             logger.debug("Outdoor Temp: {}", outdoorTemperature);
 
-            listener.receivedResponse(this);
             setState(State.SUCCEEDED);
+            executor.execute(() -> listener.receivedResponse(this));
+
             return true;
         } catch (Exception e) {
-            logger.error("Error while parsing response", e);
+            logger.debug("Error while parsing response", e);
             setState(State.FAILED);
         }
         return false;

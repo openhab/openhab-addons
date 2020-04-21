@@ -14,11 +14,13 @@ package org.openhab.binding.bluetooth.daikinmadoka.internal.model;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.BRC1HCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +43,8 @@ public class MadokaMessage {
     private int messageId;
     private Map<Integer, MadokaValue> values;
 
+    private byte @Nullable [] rawMessage;
+
     private MadokaMessage() {
         values = new HashMap<>();
     }
@@ -62,13 +66,11 @@ public class MadokaMessage {
                 request.writeByte(0);
                 request.writeByte(0);
             } else {
-
                 for (MadokaValue mv : parameters) {
                     request.writeByte(mv.getId());
                     request.writeByte(mv.getSize());
                     request.write(mv.getRawValue());
                 }
-
             }
 
             // Finally, compute array size
@@ -76,9 +78,9 @@ public class MadokaMessage {
             ret[1] = (byte) (ret.length - 1);
 
             return ret;
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.info("Error while building request", e);
-            return new byte[] {};
+            throw new RuntimeException(e);
         }
     }
 
@@ -91,22 +93,16 @@ public class MadokaMessage {
         }
 
         MadokaMessage m = new MadokaMessage();
+        m.setRawMessage(msg);
         // m.messageId = ByteBuffer.wrap(msg, 2, 2).getShort();
         m.messageId = ((msg[0] & 0xff) << 8) | (msg[1] & 0xff);
 
         MadokaValue mv = null;
 
         for (int i = 4; i < msg.length;) {
-
             mv = new MadokaValue();
             mv.setId(msg[i]);
-            mv.setSize(msg[i + 1]);
-
-            if (mv.getSize() < 0) {
-                logger.info("*** TO BE TRACKED *** NEGATIVE VALUE ***");
-                mv.setSize(mv.getSize() + 128);
-            }
-
+            mv.setSize(Byte.toUnsignedInt(msg[i + 1]));
             mv.setRawValue(Arrays.copyOfRange(msg, i + 2, i + 2 + mv.getSize()));
 
             i += 2 + mv.getSize();
@@ -117,29 +113,20 @@ public class MadokaMessage {
         return m;
     }
 
+    private void setRawMessage(byte[] rawMessage) {
+        this.rawMessage = rawMessage;
+    }
+
+    public byte @Nullable [] getRawMessage() {
+        return this.rawMessage;
+    }
+
     public int getMessageId() {
         return messageId;
     }
 
     public Map<Integer, MadokaValue> getValues() {
         return values;
-    }
-
-    public static int expectedMessageChunks(byte[] firstMessage) {
-        if (firstMessage.length < 2) {
-            return -1;
-        }
-
-        if (firstMessage[0] != 0) {
-            // This is not the first message so cannot be used
-            return -1;
-        }
-
-        int expectedTotalBytes = firstMessage[1];
-
-        return ((expectedTotalBytes / (MAX_CHUNK_SIZE - 1))
-                + ((expectedTotalBytes % (MAX_CHUNK_SIZE - 1)) > 0 ? 1 : 0));
-
     }
 
     @Override

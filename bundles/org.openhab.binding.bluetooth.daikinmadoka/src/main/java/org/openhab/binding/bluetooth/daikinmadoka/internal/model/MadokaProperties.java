@@ -22,18 +22,18 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class MadokaProperties {
 
-    public enum FAN_SPEED {
+    public enum FanSpeed {
         MAX(5),
         MEDIUM(3),
         LOW(1);
 
         private int v;
 
-        FAN_SPEED(int v) {
+        FanSpeed(int v) {
             this.v = v;
         }
 
-        public static FAN_SPEED valueOf(int v) {
+        public static FanSpeed valueOf(int v) {
             if (v == 5) {
                 return MAX;
             } else if (v >= 2 && v <= 4) {
@@ -48,7 +48,7 @@ public class MadokaProperties {
         }
     }
 
-    public enum OPERATION_MODE {
+    public enum OperationMode {
         FAN(0),
         DRY(1),
         AUTO(2),
@@ -58,12 +58,12 @@ public class MadokaProperties {
 
         private int v;
 
-        OPERATION_MODE(int v) {
+        OperationMode(int v) {
             this.v = v;
         }
 
-        public static OPERATION_MODE valueOf(int v) {
-            for (OPERATION_MODE m : values()) {
+        public static OperationMode valueOf(int v) {
+            for (OperationMode m : values()) {
                 if (m.v == v) {
                     return m;
                 }

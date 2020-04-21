@@ -19,7 +19,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
 
 /**
  *
@@ -37,13 +37,13 @@ public abstract class BRC1HCommand {
         FAILED
     }
 
-    private volatile @Nullable State state;
+    private volatile State state = State.NEW;
 
     private final Lock stateLock = new ReentrantLock();
 
     private final Condition stateCondition = stateLock.newCondition();
 
-    public abstract boolean handleResponse(Executor executor, ResponseListener listener, byte @Nullable [] response);
+    public abstract boolean handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm);
 
     /**
      * THis command returns the message to be sent
@@ -64,7 +64,7 @@ public abstract class BRC1HCommand {
      *
      * @return current state
      */
-    public @Nullable State getState() {
+    public State getState() {
         return state;
     }
 

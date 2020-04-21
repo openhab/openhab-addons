@@ -14,9 +14,8 @@ package org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands;
 
 import java.util.concurrent.Executor;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
-import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaProperties.OPERATION_MODE;
+import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaProperties.OperationMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +28,7 @@ public class GetOperationmodeCommand extends BRC1HCommand {
 
     private final Logger logger = LoggerFactory.getLogger(GetOperationmodeCommand.class);
 
-    private OPERATION_MODE operationMode;
+    private OperationMode operationMode;
 
     @Override
     public byte[] getRequest() {
@@ -37,24 +36,18 @@ public class GetOperationmodeCommand extends BRC1HCommand {
     }
 
     @Override
-    public boolean handleResponse(Executor executor, ResponseListener listener, byte @Nullable [] response) {
-        if (response == null) {
-            return false;
-        }
-
+    public boolean handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm) {
         try {
-
-            MadokaMessage mm = MadokaMessage.parse(response);
-
-            operationMode = OPERATION_MODE.valueOf(mm.getValues().get(0x20).getRawValue()[0]);
+            operationMode = OperationMode.valueOf(mm.getValues().get(0x20).getRawValue()[0]);
 
             logger.debug("operationMode: {}", operationMode);
 
-            listener.receivedResponse(this);
             setState(State.SUCCEEDED);
+            executor.execute(() -> listener.receivedResponse(this));
+
             return true;
         } catch (Exception e) {
-            logger.error("Error while parsing response", e);
+            logger.debug("Error while parsing response", e);
             setState(State.FAILED);
         }
         return false;
@@ -65,7 +58,7 @@ public class GetOperationmodeCommand extends BRC1HCommand {
         return 48;
     }
 
-    public OPERATION_MODE getOperationMode() {
+    public OperationMode getOperationMode() {
         return operationMode;
     }
 

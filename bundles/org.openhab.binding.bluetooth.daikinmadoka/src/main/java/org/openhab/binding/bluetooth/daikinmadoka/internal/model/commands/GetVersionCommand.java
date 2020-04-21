@@ -14,7 +14,6 @@ package org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands;
 
 import java.util.concurrent.Executor;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,32 +35,30 @@ public class GetVersionCommand extends BRC1HCommand {
     }
 
     @Override
-    public boolean handleResponse(Executor executor, ResponseListener listener, byte @Nullable [] response) {
-        if (response == null) {
-            return false;
-        }
-
+    public boolean handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm) {
         try {
+            byte[] mv45 = mm.getValues().get(0x45).getRawValue();
 
-            MadokaMessage mm = MadokaMessage.parse(response);
-
-            int remoteControllerMajor = Integer.valueOf(mm.getValues().get(0x45).getRawValue()[0]);
-            int remoteControllerMinor = Integer.valueOf(mm.getValues().get(0x45).getRawValue()[1]);
-            int remoteControllerRevision = Integer.valueOf(mm.getValues().get(0x45).getRawValue()[2]);
+            int remoteControllerMajor = Integer.valueOf(mv45[0]);
+            int remoteControllerMinor = Integer.valueOf(mv45[1]);
+            int remoteControllerRevision = Integer.valueOf(mv45[2]);
 
             this.remoteControllerVersion = remoteControllerMajor + "." + remoteControllerMinor + "."
                     + remoteControllerRevision;
 
-            int commControllerMajor = Integer.valueOf(mm.getValues().get(0x46).getRawValue()[0]);
-            int commControllerMinor = Integer.valueOf(mm.getValues().get(0x46).getRawValue()[1]);
+            byte[] mv46 = mm.getValues().get(0x46).getRawValue();
+
+            int commControllerMajor = Integer.valueOf(mv46[0]);
+            int commControllerMinor = Integer.valueOf(mv46[1]);
 
             this.communicationControllerVersion = commControllerMajor + "." + commControllerMinor;
 
-            listener.receivedResponse(this);
             setState(State.SUCCEEDED);
+            executor.execute(() -> listener.receivedResponse(this));
+
             return true;
         } catch (Exception e) {
-            logger.error("Error while parsing response", e);
+            logger.debug("Error while parsing response to GetVersion command", e);
             setState(State.FAILED);
         }
         return false;

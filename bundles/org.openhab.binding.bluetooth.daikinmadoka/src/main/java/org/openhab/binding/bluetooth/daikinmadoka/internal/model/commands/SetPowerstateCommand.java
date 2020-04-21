@@ -14,7 +14,7 @@ package org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands;
 
 import java.util.concurrent.Executor;
 
-import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
@@ -46,17 +46,14 @@ public class SetPowerstateCommand extends BRC1HCommand {
     }
 
     @Override
-    public boolean handleResponse(Executor executor, ResponseListener listener, byte @Nullable [] response) {
-        if (response == null) {
-            return false;
+    public boolean handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm) {
+        if (logger.isDebugEnabled() && mm.getRawMessage() != null) {
+            byte @NonNull [] msg = (byte @NonNull []) mm.getRawMessage();
+            logger.debug("Got response for {} : {}", this.getClass().getSimpleName(), HexUtils.bytesToHex(msg));
         }
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Got response for {} : {}", this.getClass().getSimpleName(), HexUtils.bytesToHex(response));
-        }
-
-        listener.receivedResponse(this);
         setState(State.SUCCEEDED);
+        executor.execute(() -> listener.receivedResponse(this));
 
         return true;
     }

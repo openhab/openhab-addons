@@ -14,10 +14,10 @@ package org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands;
 
 import java.util.concurrent.Executor;
 
-import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
-import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaProperties.FAN_SPEED;
+import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaProperties.FanSpeed;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,10 +31,10 @@ public class SetFanspeedCommand extends BRC1HCommand {
 
     private final Logger logger = LoggerFactory.getLogger(SetFanspeedCommand.class);
 
-    private FAN_SPEED coolingFanSpeed;
-    private FAN_SPEED heatingFanSpeed;
+    private FanSpeed coolingFanSpeed;
+    private FanSpeed heatingFanSpeed;
 
-    public SetFanspeedCommand(FAN_SPEED coolingFanSpeed, FAN_SPEED heatingFanSpeed) {
+    public SetFanspeedCommand(FanSpeed coolingFanSpeed, FanSpeed heatingFanSpeed) {
         this.coolingFanSpeed = coolingFanSpeed;
         this.heatingFanSpeed = heatingFanSpeed;
     }
@@ -48,17 +48,14 @@ public class SetFanspeedCommand extends BRC1HCommand {
     }
 
     @Override
-    public boolean handleResponse(Executor executor, ResponseListener listener, byte @Nullable [] response) {
-        if (response == null) {
-            return false;
+    public boolean handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm) {
+        if (logger.isDebugEnabled() && mm.getRawMessage() != null) {
+            byte @NonNull [] msg = (byte @NonNull []) mm.getRawMessage();
+            logger.debug("Got response for {} : {}", this.getClass().getSimpleName(), HexUtils.bytesToHex(msg));
         }
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Got response for {} : {}", this.getClass().getSimpleName(), HexUtils.bytesToHex(response));
-        }
-
-        listener.receivedResponse(this);
         setState(State.SUCCEEDED);
+        executor.execute(() -> listener.receivedResponse(this));
 
         return true;
     }
@@ -68,11 +65,11 @@ public class SetFanspeedCommand extends BRC1HCommand {
         return 16464;
     }
 
-    public FAN_SPEED getCoolingFanSpeed() {
+    public FanSpeed getCoolingFanSpeed() {
         return coolingFanSpeed;
     }
 
-    public FAN_SPEED getHeatingFanSpeed() {
+    public FanSpeed getHeatingFanSpeed() {
         return heatingFanSpeed;
     }
 

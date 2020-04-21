@@ -14,7 +14,6 @@ package org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands;
 
 import java.util.concurrent.Executor;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
 import org.slf4j.Logger;
@@ -38,16 +37,8 @@ public class GetSetpointCommand extends BRC1HCommand {
     }
 
     @Override
-    public boolean handleResponse(Executor executor, ResponseListener listener, byte @Nullable [] response) {
-        if (response == null) {
-            logger.debug("Response is null. Ignoring.");
-            return false;
-        }
-
+    public boolean handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm) {
         try {
-
-            MadokaMessage mm = MadokaMessage.parse(response);
-
             Integer iHeatingSetpoint = (int) (mm.getValues().get(0x21).getComputedValue() / 128.);
             Integer iCoolingSetpoint = (int) (mm.getValues().get(0x20).getComputedValue() / 128.);
 
@@ -57,11 +48,12 @@ public class GetSetpointCommand extends BRC1HCommand {
             logger.debug("heatingSetpoint: {}", heatingSetpoint);
             logger.debug("coolingSetpoint: {}", coolingSetpoint);
 
-            listener.receivedResponse(this);
             setState(State.SUCCEEDED);
+            executor.execute(() -> listener.receivedResponse(this));
+
             return true;
         } catch (Exception e) {
-            logger.error("Error while parsing response", e);
+            logger.debug("Error while parsing response", e);
             setState(State.FAILED);
         }
         return false;
