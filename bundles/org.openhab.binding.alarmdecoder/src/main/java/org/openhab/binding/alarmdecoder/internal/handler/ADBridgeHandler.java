@@ -17,7 +17,6 @@ import static org.openhab.binding.alarmdecoder.internal.AlarmDecoderBindingConst
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -38,6 +37,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.alarmdecoder.internal.AlarmDecoderDiscoveryService;
 import org.openhab.binding.alarmdecoder.internal.actions.BridgeActions;
 import org.openhab.binding.alarmdecoder.internal.protocol.ADCommand;
+import org.openhab.binding.alarmdecoder.internal.protocol.ADMessage;
 import org.openhab.binding.alarmdecoder.internal.protocol.ADMsgType;
 import org.openhab.binding.alarmdecoder.internal.protocol.EXPMessage;
 import org.openhab.binding.alarmdecoder.internal.protocol.KeypadMessage;
@@ -221,11 +221,7 @@ public abstract class ADBridgeHandler extends BaseBridgeHandler {
             notifyChildHandlersPanelReady();
         }
 
-        // Notify appropriate KeypadHandlers
-        Collection<KeypadHandler> handlers = findKeypadHandlers(kpm.getIntAddressMask());
-        for (KeypadHandler handler : handlers) {
-            handler.handleUpdate(kpm);
-        }
+        notifyChildHandlers(kpm);
     }
 
     /**
@@ -245,10 +241,7 @@ public abstract class ADBridgeHandler extends BaseBridgeHandler {
             throw new MessageParseException(e.getMessage());
         }
 
-        ZoneHandler handler = findZoneHandler(expm.address, expm.channel);
-        if (handler != null) {
-            handler.handleUpdate(expm.data);
-        }
+        notifyChildHandlers(expm);
 
         if (discovery && discoveryService != null) {
             discoveryService.processZone(expm.address, expm.channel);
@@ -270,10 +263,7 @@ public abstract class ADBridgeHandler extends BaseBridgeHandler {
             throw new MessageParseException(e.getMessage());
         }
 
-        RFZoneHandler handler = findRFZoneHandler(rfxm.serial);
-        if (handler != null) {
-            handler.handleUpdate(rfxm.data);
-        }
+        notifyChildHandlers(rfxm);
 
         if (discovery && discoveryService != null) {
             discoveryService.processRFZone(rfxm.serial);
@@ -296,11 +286,7 @@ public abstract class ADBridgeHandler extends BaseBridgeHandler {
             throw new MessageParseException(e.getMessage());
         }
 
-        // Notify appropriate LRRHandlers
-        Collection<LRRHandler> handlers = findLRRHandlers(lrrm.partition);
-        for (LRRHandler handler : handlers) {
-            handler.handleUpdate(lrrm);
-        }
+        notifyChildHandlers(lrrm);
     }
 
     /**
@@ -327,11 +313,30 @@ public abstract class ADBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Notify all child thing handlers that the alarm panel is in the ready state. Since there is no way to poll, all
-     * channels are initialized into the UNDEF state. This method is called when there is reason to assume that there
-     * are no faulted zones, because the alarm panel is in state READY. Zone handlers that have not yet received updates
-     * can then set their contact states to CLOSED. Only executes the first time panel is ready after bridge
-     * connect/reconnect.
+     * Notify appropriate child thing handlers of an AD message by calling their handleUpdate() methods.
+     *
+     * @param msg message to forward to child handler(s)
+     */
+    private void notifyChildHandlers(ADMessage msg) {
+        for (Thing thing : getThing().getThings()) {
+            ADThingHandler handler = (ADThingHandler) thing.getHandler();
+            //@formatter:off
+            if (handler != null && ((handler instanceof ZoneHandler && msg instanceof EXPMessage) ||
+                                    (handler instanceof RFZoneHandler && msg instanceof RFXMessage) ||
+                                    (handler instanceof KeypadHandler && msg instanceof KeypadMessage) ||
+                                    (handler instanceof LRRHandler && msg instanceof LRRMessage))) {
+                handler.handleUpdate(msg);
+            }
+            //@formatter:on
+        }
+    }
+
+    /**
+     * Notify child thing handlers that the alarm panel is in the ready state. Since there is no way to poll, all
+     * contact channels are initialized into the UNDEF state. This method is called when there is reason to assume that
+     * there are no faulted zones, because the alarm panel is in state READY. Zone handlers that have not yet received
+     * updates can then set their contact states to CLOSED. Only executes the first time panel is ready after bridge
+     * connect/reconnect. Currently only notifies ZoneHandler and RFZoneHandler things.
      */
     private void notifyChildHandlersPanelReady() {
         if (!panelReadyReceived) {
@@ -340,80 +345,12 @@ public abstract class ADBridgeHandler extends BaseBridgeHandler {
 
             // Notify child zone handlers by calling notifyPanelReady() for each
             for (Thing thing : getThing().getThings()) {
-                if (thing.getHandler() instanceof ZoneHandler || thing.getHandler() instanceof RFZoneHandler) {
-                    ADThingHandler handler = (ADThingHandler) thing.getHandler();
-                    if (handler != null) {
-                        handler.notifyPanelReady();
-                    }
+                ADThingHandler handler = (ADThingHandler) thing.getHandler();
+                if (handler != null && (handler instanceof ZoneHandler || handler instanceof RFZoneHandler)) {
+                    handler.notifyPanelReady();
                 }
             }
         }
-    }
-
-    /**
-     * Return the ZoneHandler for the given address and channel, or null if no handler exists and is initialized.
-     */
-    private @Nullable ZoneHandler findZoneHandler(int address, int channel) {
-        for (Thing thing : getThing().getThings()) {
-            if (thing.getHandler() instanceof ZoneHandler) {
-                ZoneHandler handler = (ZoneHandler) thing.getHandler();
-                if (handler != null && handler.responsibleFor(address, channel)) {
-                    return handler;
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Return the RFZoneHandler for the given serial number, or null if no handler exists and is initialized.
-     */
-    private @Nullable RFZoneHandler findRFZoneHandler(int serial) {
-        for (Thing thing : getThing().getThings()) {
-            if (thing.getHandler() instanceof RFZoneHandler) {
-                RFZoneHandler handler = (RFZoneHandler) thing.getHandler();
-                if (handler != null && handler.responsibleFor(serial)) {
-                    return handler;
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Return a collection of the KeypadHandler(s) matching the given address mask. Empty if no matching handlers exists
-     * and are initialized.
-     */
-    private Collection<KeypadHandler> findKeypadHandlers(int mask) {
-        Collection<KeypadHandler> result = new ArrayList<>();
-
-        for (Thing thing : getThing().getThings()) {
-            if (thing.getHandler() instanceof KeypadHandler) {
-                KeypadHandler handler = (KeypadHandler) thing.getHandler();
-                if (handler != null && handler.responsibleFor(mask)) {
-                    result.add(handler);
-                }
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Return a collection of the LRRHandler(s) matching the given partition. Empty if no matching handlers exists
-     * and are initialized.
-     */
-    private Collection<LRRHandler> findLRRHandlers(int partition) {
-        Collection<LRRHandler> result = new ArrayList<>();
-
-        for (Thing thing : getThing().getThings()) {
-            if (thing.getHandler() instanceof LRRHandler) {
-                LRRHandler handler = (LRRHandler) thing.getHandler();
-                if (handler != null && handler.responsibleFor(partition)) {
-                    result.add(handler);
-                }
-            }
-        }
-        return result;
     }
 
     /**

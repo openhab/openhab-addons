@@ -25,6 +25,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.alarmdecoder.internal.config.RFZoneConfig;
+import org.openhab.binding.alarmdecoder.internal.protocol.ADMessage;
 import org.openhab.binding.alarmdecoder.internal.protocol.RFXMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,13 +45,6 @@ public class RFZoneHandler extends ADThingHandler {
 
     public RFZoneHandler(Thing thing) {
         super(thing);
-    }
-
-    /**
-     * Returns true if this handler is responsible for the zone with the supplied address and channel.
-     */
-    public boolean responsibleFor(final int serial) {
-        return (config.serial != null && config.serial.equals(serial));
     }
 
     @Override
@@ -114,16 +108,28 @@ public class RFZoneHandler extends ADThingHandler {
         // Does not accept any commands
     }
 
-    public void handleUpdate(int data) {
-        logger.trace("RF Zone handler for serial {} received update: {}", config.serial, data);
-        firstUpdateReceived.set(true);
+    @Override
+    public void handleUpdate(ADMessage msg) {
+        if (!(msg instanceof RFXMessage)) {
+            return;
+        }
+        RFXMessage rfxm = (RFXMessage) msg;
 
-        updateState(CHANNEL_RF_LOWBAT, (data & RFXMessage.BIT_LOWBAT) == 0 ? OnOffType.OFF : OnOffType.ON);
-        updateState(CHANNEL_RF_SUPERVISION, (data & RFXMessage.BIT_SUPER) == 0 ? OnOffType.OFF : OnOffType.ON);
+        if (config.serial != null && config.serial.equals(rfxm.serial)) {
+            logger.trace("RF Zone handler for serial {} received update: {}", config.serial, rfxm.data);
+            firstUpdateReceived.set(true);
 
-        updateState(CHANNEL_RF_LOOP1, (data & RFXMessage.BIT_LOOP1) == 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
-        updateState(CHANNEL_RF_LOOP2, (data & RFXMessage.BIT_LOOP2) == 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
-        updateState(CHANNEL_RF_LOOP3, (data & RFXMessage.BIT_LOOP3) == 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
-        updateState(CHANNEL_RF_LOOP4, (data & RFXMessage.BIT_LOOP4) == 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
+            updateState(CHANNEL_RF_LOWBAT, (rfxm.data & RFXMessage.BIT_LOWBAT) == 0 ? OnOffType.OFF : OnOffType.ON);
+            updateState(CHANNEL_RF_SUPERVISION, (rfxm.data & RFXMessage.BIT_SUPER) == 0 ? OnOffType.OFF : OnOffType.ON);
+
+            updateState(CHANNEL_RF_LOOP1,
+                    (rfxm.data & RFXMessage.BIT_LOOP1) == 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
+            updateState(CHANNEL_RF_LOOP2,
+                    (rfxm.data & RFXMessage.BIT_LOOP2) == 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
+            updateState(CHANNEL_RF_LOOP3,
+                    (rfxm.data & RFXMessage.BIT_LOOP3) == 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
+            updateState(CHANNEL_RF_LOOP4,
+                    (rfxm.data & RFXMessage.BIT_LOOP4) == 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
+        }
     }
 }

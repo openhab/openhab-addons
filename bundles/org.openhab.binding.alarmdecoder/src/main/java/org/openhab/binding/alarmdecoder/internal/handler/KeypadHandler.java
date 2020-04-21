@@ -30,6 +30,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.alarmdecoder.internal.config.KeypadConfig;
 import org.openhab.binding.alarmdecoder.internal.protocol.ADCommand;
+import org.openhab.binding.alarmdecoder.internal.protocol.ADMessage;
 import org.openhab.binding.alarmdecoder.internal.protocol.IntCommandMap;
 import org.openhab.binding.alarmdecoder.internal.protocol.KeypadMessage;
 import org.slf4j.Logger;
@@ -54,16 +55,6 @@ public class KeypadHandler extends ADThingHandler {
 
     public KeypadHandler(Thing thing) {
         super(thing);
-    }
-
-    /**
-     * Returns true if this handler is responsible for the supplied address mask.
-     * This is true if this handler's address mask is 0 (all), the supplied address mask is 0 (all), or if any bits in
-     * this handler's address mask match bits set in the supplied address mask.
-     */
-    public boolean responsibleFor(final int addressMask) {
-        return (config.addressMask != null
-                && (((config.addressMask & addressMask) != 0) || config.addressMask.equals(0) || addressMask == 0));
     }
 
     @Override
@@ -167,7 +158,20 @@ public class KeypadHandler extends ADThingHandler {
         }
     }
 
-    public void handleUpdate(KeypadMessage kpm) {
+    @Override
+    public void handleUpdate(ADMessage msg) {
+        // This will ignore a received message unless it is a KeypadMessage and either this handler's address mask is 0
+        // (all), the message's address mask is 0 (all), or any bits in this handler's address mask match bits set in
+        // the message's address mask.
+        if (!(msg instanceof KeypadMessage)) {
+            return;
+        }
+        KeypadMessage kpm = (KeypadMessage) msg;
+        int addressMask = kpm.getIntAddressMask();
+        if (config.addressMask != null
+                && !(((config.addressMask & addressMask) != 0) || config.addressMask.equals(0) || addressMask == 0)) {
+            return;
+        }
         logger.trace("Keypad handler for address mask {} received update: {}", config.addressMask, kpm);
 
         if (kpm.equals(previousMessage)) {

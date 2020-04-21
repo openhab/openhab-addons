@@ -24,6 +24,8 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.alarmdecoder.internal.config.ZoneConfig;
+import org.openhab.binding.alarmdecoder.internal.protocol.ADMessage;
+import org.openhab.binding.alarmdecoder.internal.protocol.EXPMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,14 +49,6 @@ public class ZoneHandler extends ADThingHandler {
 
     public ZoneHandler(Thing thing) {
         super(thing);
-    }
-
-    /**
-     * Returns true if this handler is responsible for the zone with the supplied address and channel.
-     */
-    public boolean responsibleFor(final int address, final int channel) {
-        return (config.address != null && config.channel != null && config.address.equals(address)
-                && config.channel.equals(channel));
     }
 
     @Override
@@ -112,10 +106,20 @@ public class ZoneHandler extends ADThingHandler {
         // All channels are read-only, so ignore all commands.
     }
 
-    public void handleUpdate(int data) {
-        logger.trace("Zone handler for {},{} received update: {}", config.address, config.channel, data);
-        firstUpdateReceived.set(true);
-        OpenClosedType state = (data == 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
-        updateState(CHANNEL_CONTACT, state);
+    @Override
+    public void handleUpdate(ADMessage msg) {
+        if (!(msg instanceof EXPMessage)) {
+            return;
+        }
+        EXPMessage expm = (EXPMessage) msg;
+
+        if (config.address != null && config.channel != null && config.address.equals(expm.address)
+                && config.channel.equals(expm.channel)) {
+            logger.trace("Zone handler for {},{} received update: {}", config.address, config.channel, expm.data);
+
+            firstUpdateReceived.set(true);
+            OpenClosedType state = (expm.data == 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
+            updateState(CHANNEL_CONTACT, state);
+        }
     }
 }

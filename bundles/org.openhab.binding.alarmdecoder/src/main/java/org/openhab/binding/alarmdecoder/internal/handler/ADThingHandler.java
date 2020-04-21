@@ -22,6 +22,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.openhab.binding.alarmdecoder.internal.protocol.ADCommand;
+import org.openhab.binding.alarmdecoder.internal.protocol.ADMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,6 +50,13 @@ public abstract class ADThingHandler extends BaseThingHandler {
      * (closed).
      */
     public abstract void notifyPanelReady();
+
+    /**
+     * Notify handler of a message from the AD via the bridge
+     * 
+     * @param msg The ADMessage to handle
+     */
+    public abstract void handleUpdate(ADMessage msg);
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {

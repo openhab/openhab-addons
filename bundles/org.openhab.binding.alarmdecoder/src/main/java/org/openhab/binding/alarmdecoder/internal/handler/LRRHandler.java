@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.alarmdecoder.internal.config.LRRConfig;
+import org.openhab.binding.alarmdecoder.internal.protocol.ADMessage;
 import org.openhab.binding.alarmdecoder.internal.protocol.LRRMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,15 +44,6 @@ public class LRRHandler extends ADThingHandler {
 
     public LRRHandler(Thing thing) {
         super(thing);
-    }
-
-    /**
-     * Returns true if this handler is responsible for the supplied partition.
-     * This is true is this handler's partition is 0 (all), the supplied partition is 0 (all), or if this handler's
-     * partition matches the supplied partition.
-     */
-    public boolean responsibleFor(final int partition) {
-        return (config.partition == partition || config.partition == 0 || partition == 0);
     }
 
     @Override
@@ -98,11 +90,19 @@ public class LRRHandler extends ADThingHandler {
         // All channels are read-only, so ignore all commands.
     }
 
-    public void handleUpdate(LRRMessage msg) {
-        logger.trace("LRR handler for partition {} received update: {}", config.partition, msg);
-        updateState(CHANNEL_LRR_PARTITION, new DecimalType(msg.partition));
-        updateState(CHANNEL_LRR_EVENTDATA, new DecimalType(msg.eventData));
-        updateState(CHANNEL_LRR_CIDMESSAGE, new StringType(msg.cidMessage));
-        updateState(CHANNEL_LRR_REPORTCODE, new StringType(msg.reportCode));
+    @Override
+    public void handleUpdate(ADMessage msg) {
+        if (!(msg instanceof LRRMessage)) {
+            return;
+        }
+        LRRMessage lrrm = (LRRMessage) msg;
+
+        if (config.partition == lrrm.partition || config.partition == 0 || lrrm.partition == 0) {
+            logger.trace("LRR handler for partition {} received update: {}", config.partition, msg);
+            updateState(CHANNEL_LRR_PARTITION, new DecimalType(lrrm.partition));
+            updateState(CHANNEL_LRR_EVENTDATA, new DecimalType(lrrm.eventData));
+            updateState(CHANNEL_LRR_CIDMESSAGE, new StringType(lrrm.cidMessage));
+            updateState(CHANNEL_LRR_REPORTCODE, new StringType(lrrm.reportCode));
+        }
     }
 }
