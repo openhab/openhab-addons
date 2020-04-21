@@ -8,6 +8,26 @@
 		<label>AC Total Current Value</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
+
+	<channel-type id="ac-phase-current-type">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>AC Phase Current Value</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ac-voltage-to-next-type">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>AC Voltage</label>
+		<description>This phase's AC voltage relative to the next phase</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="ac-voltage-to-n-type">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>AC Voltage Phase To N Value</label>
+		<description>This phase's AC voltage relative to N line</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
 	
 	<channel-type id="ac-power-type">
 		<item-type>Number:Power</item-type>
@@ -45,6 +65,24 @@
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	
+	<channel-type id="dc-current-type">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>DC Current Value</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="dc-voltage-type">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>DC Voltage Value</label>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="dc-power-type">
+		<item-type>Number:Power</item-type>
+		<label>DC Power Value</label>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
 	<channel-type id="cabinet-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Cabinet Temperature</label>
@@ -68,7 +106,6 @@
 		<label>Other Temperature</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-
 
 	<channel-type id="status-type">
 		<item-type>String</item-type>
