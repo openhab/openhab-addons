@@ -1,13 +1,13 @@
 /**
  * Copyright (c) 2010-2020 Contributors to the openHAB project
- *
+ * <p>
  * See the NOTICE file(s) distributed with this work for additional
  * information.
- *
+ * <p>
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0
- *
+ * <p>
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.innogysmarthome.internal.handler;
@@ -54,6 +54,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.innogysmarthome.internal.InnogyWebSocket;
 import org.openhab.binding.innogysmarthome.internal.client.InnogyClient;
+import org.openhab.binding.innogysmarthome.internal.client.entity.action.ShutterAction;
 import org.openhab.binding.innogysmarthome.internal.client.entity.capability.Capability;
 import org.openhab.binding.innogysmarthome.internal.client.entity.device.Device;
 import org.openhab.binding.innogysmarthome.internal.client.entity.device.DeviceConfig;
@@ -110,7 +111,8 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
     private @Nullable DeviceStructureManager deviceStructMan;
     private @Nullable String bridgeId;
     private @Nullable ScheduledFuture<?> reinitJob;
-    private @NonNullByDefault({}) InnogyBridgeConfiguration bridgeConfiguration;
+    private @NonNullByDefault({})
+    InnogyBridgeConfiguration bridgeConfiguration;
     private @Nullable OAuthClientService oAuthService;
 
     /**
@@ -330,7 +332,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
     }
 
     private void setPropertyIfPresent(final String key, final @Nullable Object data,
-            final Map<String, String> properties) {
+                                      final Map<String, String> properties) {
         if (data != null) {
             properties.put(key, data instanceof String ? (String) data : data.toString());
         }
@@ -857,6 +859,23 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
                 return;
             }
             client.setRollerShutterActuatorState(capabilityId, rollerSchutterLevel);
+        } catch (IOException | ApiException | AuthenticationException e) {
+            handleClientException(e);
+        }
+    }
+
+    public void commandSetRollerShutterStop(final String deviceId, ShutterAction.ShutterActions action) {
+        final DeviceStructureManager deviceStructMan = this.deviceStructMan;
+        if (deviceStructMan == null) {
+            return;
+        }
+        try {
+            final String capabilityId = deviceStructMan.getCapabilityId(deviceId,
+                    Capability.TYPE_ROLLERSHUTTERACTUATOR);
+            if (capabilityId == null) {
+                return;
+            }
+            client.setRollerShutterAction(capabilityId, action);
         } catch (IOException | ApiException | AuthenticationException e) {
             handleClientException(e);
         }

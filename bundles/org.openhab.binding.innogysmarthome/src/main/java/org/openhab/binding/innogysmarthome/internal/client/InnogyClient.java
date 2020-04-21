@@ -41,6 +41,7 @@ import org.eclipse.smarthome.core.auth.client.oauth2.OAuthException;
 import org.eclipse.smarthome.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.binding.innogysmarthome.internal.client.entity.StatusResponse;
 import org.openhab.binding.innogysmarthome.internal.client.entity.action.Action;
+import org.openhab.binding.innogysmarthome.internal.client.entity.action.ShutterAction;
 import org.openhab.binding.innogysmarthome.internal.client.entity.action.StateActionSetter;
 import org.openhab.binding.innogysmarthome.internal.client.entity.capability.Capability;
 import org.openhab.binding.innogysmarthome.internal.client.entity.capability.CapabilityState;
@@ -306,6 +307,13 @@ public class InnogyClient {
         executePost(API_URL_ACTION,
                 new StateActionSetter(capabilityId, Capability.TYPE_ROLLERSHUTTERACTUATOR, rollerShutterLevel));
     }
+
+    public void setRollerShutterAction(final String capabilityId, final ShutterAction.ShutterActions rollerShutterAction)
+            throws IOException, ApiException, AuthenticationException {
+        executePost(API_URL_ACTION,
+                new ShutterAction(capabilityId, rollerShutterAction));
+    }
+
 
     /**
      * Sets a new state of a VariableActuator.
