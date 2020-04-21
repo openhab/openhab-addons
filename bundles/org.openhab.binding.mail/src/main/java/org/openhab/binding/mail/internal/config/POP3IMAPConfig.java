@@ -26,7 +26,6 @@ public class POP3IMAPConfig extends BaseConfig {
     
     public String debugPrint() {
         StringBuffer buffer = new StringBuffer();
-        buffer.append("Configuration details:\r\n");
         buffer.append("  Hostname = " + hostname + "\r\n");
         buffer.append("      Port = " + port + "\r\n");
         buffer.append("  Username = " + username + "\r\n");

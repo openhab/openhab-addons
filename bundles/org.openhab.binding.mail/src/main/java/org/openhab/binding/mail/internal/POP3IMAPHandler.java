@@ -94,7 +94,7 @@ public class POP3IMAPHandler extends BaseThingHandler {
             }
         }
 
-        logger.debug(config.debugPrint());
+        logger.debug("Configuration details:\r\n{}", config.debugPrint());
         refreshTask = scheduler.scheduleWithFixedDelay(this::refresh, 0, config.refresh, TimeUnit.SECONDS);
         updateStatus(ThingStatus.ONLINE);
     }
