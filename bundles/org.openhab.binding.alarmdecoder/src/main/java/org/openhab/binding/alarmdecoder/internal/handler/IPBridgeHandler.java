@@ -43,7 +43,7 @@ public class IPBridgeHandler extends ADBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(IPBridgeHandler.class);
 
-    private @NonNullByDefault({}) IPBridgeConfig config;
+    private IPBridgeConfig config = new IPBridgeConfig();
 
     private @Nullable Socket socket = null;
 

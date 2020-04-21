@@ -24,7 +24,7 @@ import org.openhab.binding.alarmdecoder.internal.handler.KeypadHandler;
  */
 @NonNullByDefault
 public class KeypadConfig {
-    public @NonNullByDefault({}) Integer addressMask;
+    public int addressMask = 0;
     public boolean sendCommands = false;
     public boolean sendStar = false;
     public String commandMapping = DEFAULT_MAPPING;

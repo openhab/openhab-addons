@@ -22,5 +22,5 @@ import org.openhab.binding.alarmdecoder.internal.handler.RFZoneHandler;
  */
 @NonNullByDefault
 public class RFZoneConfig {
-    public @NonNullByDefault({}) Integer serial;
+    public int serial = -1;
 }

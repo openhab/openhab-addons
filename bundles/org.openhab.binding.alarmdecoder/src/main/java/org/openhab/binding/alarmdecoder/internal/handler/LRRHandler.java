@@ -40,7 +40,7 @@ public class LRRHandler extends ADThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(LRRHandler.class);
 
-    private @NonNullByDefault({}) LRRConfig config;
+    private LRRConfig config = new LRRConfig();
 
     public LRRHandler(Thing thing) {
         super(thing);

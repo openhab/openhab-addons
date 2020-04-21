@@ -20,6 +20,7 @@ import java.io.OutputStreamWriter;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
@@ -45,13 +46,10 @@ public class SerialBridgeHandler extends ADBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SerialBridgeHandler.class);
 
-    private @NonNullByDefault({}) SerialBridgeConfig config;
+    private SerialBridgeConfig config = new SerialBridgeConfig();
     private final SerialPortManager serialPortManager;
     private @NonNullByDefault({}) SerialPortIdentifier portIdentifier;
-
-    /** name of serial device */
-    private String serialDeviceName = "";
-    private @NonNullByDefault({}) SerialPort serialPort = null;
+    private @Nullable SerialPort serialPort;
     private int serialPortSpeed = 115200;
 
     public SerialBridgeHandler(Bridge bridge, SerialPortManager serialPortManager) {
@@ -65,11 +63,9 @@ public class SerialBridgeHandler extends ADBridgeHandler {
         config = getConfigAs(SerialBridgeConfig.class);
         discovery = config.discovery;
 
-        if (config.serialPort == null || config.serialPort.isEmpty()) {
+        if (config.serialPort.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "no serial port configured");
             return;
-        } else {
-            serialDeviceName = config.serialPort;
         }
 
         if (config.bitrate > 0) {
@@ -79,22 +75,17 @@ public class SerialBridgeHandler extends ADBridgeHandler {
         // Exit if no identifiers exist to work around possible library bug. May not be needed in 3.0.
         Stream<SerialPortIdentifier> serialPortIdentifiers = serialPortManager.getIdentifiers();
         if (!serialPortIdentifiers.findAny().isPresent()) {
-            logger.debug("No serial communication ports found. Cannot connect to [{}]", serialDeviceName);
+            logger.debug("No serial communication ports found. Cannot connect to [{}]", config.serialPort);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No serial ports found");
             return;
         }
 
-        if (!serialDeviceName.isEmpty()) {
-            SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(serialDeviceName);
-            if (portIdentifier == null) {
-                logger.debug("Serial Error: Port {} does not exist.", serialDeviceName);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Configured serial port does not exist");
-                return;
-            }
-        } else {
-            logger.debug("Serial device name not configured");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "port name not configured");
+        portIdentifier = serialPortManager.getIdentifier(config.serialPort);
+        if (portIdentifier == null) {
+            logger.debug("Serial Error: Port {} does not exist.", config.serialPort);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Configured serial port does not exist");
+            return;
         }
 
         connect();
@@ -114,12 +105,12 @@ public class SerialBridgeHandler extends ADBridgeHandler {
 
             reader = new BufferedReader(new InputStreamReader(serialPort.getInputStream(), AD_CHARSET_NAME));
             writer = new BufferedWriter(new OutputStreamWriter(serialPort.getOutputStream(), AD_CHARSET_NAME));
-            logger.debug("connected to serial port: {}", serialDeviceName);
+            logger.debug("connected to serial port: {}", config.serialPort);
             panelReadyReceived = false;
             startMsgReader();
             updateStatus(ThingStatus.ONLINE);
         } catch (PortInUseException e) {
-            logger.debug("Cannot open serial port: {}, it is already in use", serialDeviceName);
+            logger.debug("Cannot open serial port: {}, it is already in use", config.serialPort);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Serial port already in use");
         } catch (UnsupportedCommOperationException | IOException | IllegalStateException e) {
             logger.debug("Error connecting to serial port: {}", e.getMessage());

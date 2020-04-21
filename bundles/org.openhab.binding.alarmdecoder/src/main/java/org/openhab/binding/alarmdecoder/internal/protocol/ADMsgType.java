@@ -14,6 +14,7 @@ package org.openhab.binding.alarmdecoder.internal.protocol;
 
 import java.util.HashMap;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -22,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Bernd Pfrommer - Initial contribution (OH1)
  * @author Bob Adair - Re-factored and removed methods unused in OH2 binding
  */
+@NonNullByDefault
 public enum ADMsgType {
     EXP, // zone expander message
     KPM, // keypad message
@@ -62,5 +64,4 @@ public enum ADMsgType {
         }
         return mt;
     }
-
 }

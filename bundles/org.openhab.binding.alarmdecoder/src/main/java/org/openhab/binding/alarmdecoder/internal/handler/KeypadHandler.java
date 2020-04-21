@@ -47,7 +47,7 @@ public class KeypadHandler extends ADThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(KeypadHandler.class);
 
-    private @NonNullByDefault({}) KeypadConfig config;
+    private KeypadConfig config = new KeypadConfig();
     private boolean singleAddress;
     private static final Pattern VALID_COMMAND_PATTERN = Pattern.compile(ADCommand.KEYPAD_COMMAND_REGEX);
     private @Nullable IntCommandMap intCommandMap;
@@ -61,8 +61,8 @@ public class KeypadHandler extends ADThingHandler {
     public void initialize() {
         config = getConfigAs(KeypadConfig.class);
 
-        if (config.addressMask == null || config.addressMask < 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+        if (config.addressMask < 0) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid addressMask setting");
             return;
         }
         singleAddress = (Integer.bitCount(config.addressMask) == 1);
@@ -168,8 +168,7 @@ public class KeypadHandler extends ADThingHandler {
         }
         KeypadMessage kpm = (KeypadMessage) msg;
         int addressMask = kpm.getIntAddressMask();
-        if (config.addressMask != null
-                && !(((config.addressMask & addressMask) != 0) || config.addressMask.equals(0) || addressMask == 0)) {
+        if (!(((config.addressMask & addressMask) != 0) || config.addressMask == 0 || addressMask == 0)) {
             return;
         }
         logger.trace("Keypad handler for address mask {} received update: {}", config.addressMask, kpm);

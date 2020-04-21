@@ -23,7 +23,7 @@ import org.openhab.binding.alarmdecoder.internal.handler.SerialBridgeHandler;
  */
 @NonNullByDefault
 public class SerialBridgeConfig {
-    public @NonNullByDefault({}) String serialPort;
+    public String serialPort = "";
     public int bitrate = 115200;
     public boolean discovery = false;
 }

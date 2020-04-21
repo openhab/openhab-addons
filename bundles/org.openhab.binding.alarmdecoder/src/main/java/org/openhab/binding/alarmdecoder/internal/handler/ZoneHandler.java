@@ -40,23 +40,23 @@ public class ZoneHandler extends ADThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ZoneHandler.class);
 
-    private @NonNullByDefault({}) ZoneConfig config;
+    private ZoneConfig config = new ZoneConfig();
+
+    public ZoneHandler(Thing thing) {
+        super(thing);
+    }
 
     /** Construct zone id from address and channel */
     public static final String zoneID(int address, int channel) {
         return String.format("%d-%d", address, channel);
     }
 
-    public ZoneHandler(Thing thing) {
-        super(thing);
-    }
-
     @Override
     public void initialize() {
         config = getConfigAs(ZoneConfig.class);
 
-        if (config.address == null || config.channel == null || config.address < 0 || config.channel < 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+        if (config.address < 0 || config.channel < 0) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid address/channel setting");
             return;
         }
         logger.debug("Zone handler initializing for address {} channel {}", config.address, config.channel);
@@ -113,8 +113,7 @@ public class ZoneHandler extends ADThingHandler {
         }
         EXPMessage expm = (EXPMessage) msg;
 
-        if (config.address != null && config.channel != null && config.address.equals(expm.address)
-                && config.channel.equals(expm.channel)) {
+        if (config.address == expm.address && config.channel == expm.channel) {
             logger.trace("Zone handler for {},{} received update: {}", config.address, config.channel, expm.data);
 
             firstUpdateReceived.set(true);

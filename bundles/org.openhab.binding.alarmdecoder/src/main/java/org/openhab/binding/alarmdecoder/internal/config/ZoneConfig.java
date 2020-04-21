@@ -22,6 +22,6 @@ import org.openhab.binding.alarmdecoder.internal.handler.ZoneHandler;
  */
 @NonNullByDefault
 public class ZoneConfig {
-    public @NonNullByDefault({}) Integer address;
-    public @NonNullByDefault({}) Integer channel;
+    public int address = -1;
+    public int channel = -1;
 }

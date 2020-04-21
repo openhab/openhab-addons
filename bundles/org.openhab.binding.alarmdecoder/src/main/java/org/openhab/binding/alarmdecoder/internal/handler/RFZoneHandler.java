@@ -41,7 +41,7 @@ public class RFZoneHandler extends ADThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(RFZoneHandler.class);
 
-    private @NonNullByDefault({}) RFZoneConfig config;
+    private RFZoneConfig config = new RFZoneConfig();
 
     public RFZoneHandler(Thing thing) {
         super(thing);
@@ -51,8 +51,8 @@ public class RFZoneHandler extends ADThingHandler {
     public void initialize() {
         config = getConfigAs(RFZoneConfig.class);
 
-        if (config.serial == null || config.serial < 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+        if (config.serial < 0) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid serial setting");
             return;
         }
         logger.debug("RF Zone handler initializing for serial {}", config.serial);
@@ -115,7 +115,7 @@ public class RFZoneHandler extends ADThingHandler {
         }
         RFXMessage rfxm = (RFXMessage) msg;
 
-        if (config.serial != null && config.serial.equals(rfxm.serial)) {
+        if (config.serial == rfxm.serial) {
             logger.trace("RF Zone handler for serial {} received update: {}", config.serial, rfxm.data);
             firstUpdateReceived.set(true);
 
