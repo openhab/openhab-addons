@@ -37,7 +37,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="dc-general">
-		<label>DS summary</label>
+		<label>DC summary</label>
 		<channels>
 			<channel id="dc-current" typeId="dc-current-type" />
 			<channel id="dc-voltage" typeId="dc-voltage-type" />

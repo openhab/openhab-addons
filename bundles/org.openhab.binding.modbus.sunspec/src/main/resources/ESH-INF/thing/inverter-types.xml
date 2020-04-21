@@ -18,7 +18,7 @@
 			<channel-group id="deviceInformation" typeId="device-information" />
 			<channel-group id="acGeneral" typeId="ac-general" />
 			<channel-group id="acPhaseA" typeId="ac-phase">
-				<label>AC Phase A</label>
+				<label>AC Detail</label>
 			</channel-group>
 			<channel-group id="dcGeneral" typeId="dc-general" />
 		</channel-groups>
@@ -51,10 +51,10 @@
 			<channel-group id="deviceInformation" typeId="device-information" />
 			<channel-group id="acGeneral" typeId="ac-general" />
 			<channel-group id="acPhaseA" typeId="ac-phase">
-				<label>AC Phase A</label>
+				<label>AC Phase A (L1)</label>
 			</channel-group>
 			<channel-group id="acPhaseB" typeId="ac-phase">
-				<label>AC Phase B</label>
+				<label>AC Phase B (L2)</label>
 			</channel-group>
 			<channel-group id="dcGeneral" typeId="dc-general" />
 		</channel-groups>
@@ -87,13 +87,13 @@
 			<channel-group id="deviceInformation" typeId="device-information" />
 			<channel-group id="acGeneral" typeId="ac-general" />
 			<channel-group id="acPhaseA" typeId="ac-phase">
-				<label>AC Phase A</label>
+				<label>AC Phase A (L1)</label>
 			</channel-group>
 			<channel-group id="acPhaseB" typeId="ac-phase">
-				<label>AC Phase B</label>
+				<label>AC Phase B (L2)</label>
 			</channel-group>
 			<channel-group id="acPhaseC" typeId="ac-phase">
-				<label>AC Phase C</label>
+				<label>AC Phase C (L3)</label>
 			</channel-group>
 			<channel-group id="dcGeneral" typeId="dc-general" />
 		</channel-groups>

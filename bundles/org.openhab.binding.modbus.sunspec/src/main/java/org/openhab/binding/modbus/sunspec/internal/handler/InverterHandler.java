@@ -102,18 +102,18 @@ public class InverterHandler extends AbstractSunSpecHandler {
                                                                                   // see:
                                                                                   // https://github.com/openhab/openhab-core/pull/1347
 
+        updateState(channelUID(GROUP_AC_GENERAL, CHANNEL_AC_POWER_FACTOR),
+                getScaled(block.acPowerFactor, block.acPowerFactorSF, PERCENT));
+
+        updateState(channelUID(GROUP_AC_GENERAL, CHANNEL_AC_LIFETIME_ENERGY),
+                getScaled(block.acEnergyLifetime, block.acEnergyLifetimeSF, WATT_HOUR));
+
         // DC General group
         updateState(channelUID(GROUP_DC_GENERAL, CHANNEL_DC_CURRENT),
                 getScaled(block.dcCurrent, block.dcCurrentSF, AMPERE));
         updateState(channelUID(GROUP_DC_GENERAL, CHANNEL_DC_VOLTAGE),
                 getScaled(block.dcVoltage, block.dcVoltageSF, VOLT));
         updateState(channelUID(GROUP_DC_GENERAL, CHANNEL_DC_POWER), getScaled(block.dcPower, block.dcPowerSF, VOLT));
-
-        updateState(channelUID(GROUP_AC_GENERAL, CHANNEL_AC_POWER_FACTOR),
-                getScaled(block.acPowerFactor, block.acPowerFactorSF, PERCENT));
-
-        updateState(channelUID(GROUP_AC_GENERAL, CHANNEL_AC_LIFETIME_ENERGY),
-                getScaled(block.acEnergyLifetime, block.acEnergyLifetimeSF, WATT_HOUR));
 
         // AC Phase specific groups
         // All types of inverters
