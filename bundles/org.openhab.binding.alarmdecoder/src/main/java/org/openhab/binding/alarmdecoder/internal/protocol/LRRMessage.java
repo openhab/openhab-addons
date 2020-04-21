@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class LRRMessage extends ADMessage {
 
     // Example: !LRR:012,1,CID_1441,ff
+    // or: !LRR:000,1,ARM_AWAY
 
     /** Event data contains user number or zone number for the event */
     public final String eventData;
@@ -59,13 +60,7 @@ public class LRRMessage extends ADMessage {
         reportCode = parts.size() == 4 ? parts.get(3) : "";
 
         try {
-            int p = 0;
-            try {
-                p = Integer.parseInt(parts.get(1));
-            } catch (NumberFormatException e) {
-                p = Integer.parseInt(parts.get(1), 16);
-            }
-            partition = p;
+            partition = Integer.parseInt(parts.get(1));
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("LRR msg contains invalid number: " + e.getMessage(), e);
         }
