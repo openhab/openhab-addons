@@ -301,6 +301,7 @@ public class InnogyClient {
      * @param rollerShutterLevel
      * @throws IOException
      * @throws ApiException
+     * @throws AuthenticationException
      */
     public void setRollerShutterActuatorState(final String capabilityId, final int rollerShutterLevel)
             throws IOException, ApiException, AuthenticationException {
@@ -308,12 +309,20 @@ public class InnogyClient {
                 new StateActionSetter(capabilityId, Capability.TYPE_ROLLERSHUTTERACTUATOR, rollerShutterLevel));
     }
 
+    /**
+     * Starts or stops moving a RollerShutterActuator
+     *
+     * @param capabilityId
+     * @param rollerShutterAction
+     * @throws IOException
+     * @throws ApiException
+     * @throws AuthenticationException
+     */
     public void setRollerShutterAction(final String capabilityId, final ShutterAction.ShutterActions rollerShutterAction)
             throws IOException, ApiException, AuthenticationException {
         executePost(API_URL_ACTION,
                 new ShutterAction(capabilityId, rollerShutterAction));
     }
-
 
     /**
      * Sets a new state of a VariableActuator.

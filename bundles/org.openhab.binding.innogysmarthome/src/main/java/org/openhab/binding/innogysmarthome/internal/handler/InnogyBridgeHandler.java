@@ -864,6 +864,11 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
         }
     }
 
+    /**
+     * Sends the command to start or stop moving the rollershutter (ISR2) in a specified direction
+     * @param deviceId
+     * @param action
+     */
     public void commandSetRollerShutterStop(final String deviceId, ShutterAction.ShutterActions action) {
         final DeviceStructureManager deviceStructMan = this.deviceStructMan;
         if (deviceStructMan == null) {

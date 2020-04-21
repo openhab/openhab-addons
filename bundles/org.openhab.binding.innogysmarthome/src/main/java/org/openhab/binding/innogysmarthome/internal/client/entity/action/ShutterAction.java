@@ -1,5 +1,10 @@
 package org.openhab.binding.innogysmarthome.internal.client.entity.action;
 
+/**
+ * Special {@link Action} needed to control shutters.
+ *
+ * @author Marco Mans
+ */
 public class ShutterAction extends Action {
 
     public enum ShutterActions {
@@ -15,16 +20,13 @@ public class ShutterAction extends Action {
     private static final String CONSTANT = "Constant";
     private final String NAMESPACE_COSIP = "CosipDevices.RWE";
 
-    /*
-        RAMP DOWN
-        {"id":"276cec8746a24fca816795fc914d7d90",
-         "type":"StartRamp",
-         "target":"/capability/2bce36dbaeb541c58dc691f2bc9d2ca2",
-         "namespace":"CosipDevices.RWE",
-         "params":{"rampDirection":{"type":"Constant","value":"RampDown"}}}
+
+    /**
+     * Describes a Shutteraction
+     *
+     * @param capabilityId String of the 32 character capability id
+     * @param action Which action to perform (UP, DOWN, STOP)
      */
-
-
     public ShutterAction(String capabilityId, ShutterActions action) {
         setTargetCapabilityById(capabilityId);
         setNamespace(NAMESPACE_COSIP);
