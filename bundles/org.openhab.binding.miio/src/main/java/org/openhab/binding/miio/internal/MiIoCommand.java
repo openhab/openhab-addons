@@ -35,6 +35,7 @@ public enum MiIoCommand {
     SET_MODE_BASIC("set_mode"),
     SET_POWER("set_power"),
     SET_BRIGHT("set_bright"),
+    SET_RGB("set_rgb"),
     SET_WIFI_LET("set_wifi_led"),
     SET_FAVORITE("set_level_favorite"),
     ACTION("action"),

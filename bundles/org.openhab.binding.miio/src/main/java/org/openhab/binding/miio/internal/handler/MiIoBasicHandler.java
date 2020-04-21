@@ -130,7 +130,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         if (channelUID.getId().equals(CHANNEL_COMMAND)) {
             cmds.put(sendCommand(command.toString()), command.toString());
         }
-        logger.debug("Locating action for channel {}: {}", channelUID.getId(), command);
+        logger.debug("Locating action for channel '{}': '{}'", channelUID.getId(), command);
         if (!actions.isEmpty()) {
             if (actions.containsKey(channelUID)) {
                 int valuePos = 0;
@@ -156,8 +156,9 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                                     (color.getRed() << 16) + (color.getGreen() << 8) + color.getBlue());
                         } else if (command instanceof DecimalType) {
                             // actually brightness is being set instead of a color
-                            cmd = "set_bright";
                             value = new JsonPrimitive(((DecimalType) command).toBigDecimal());
+                        } else if (command instanceof OnOffType) {
+                            value = new JsonPrimitive(command == OnOffType.ON ? 100 : 0);
                         } else {
                             logger.debug("Unsupported command for COLOR: {}", command);
                         }
@@ -184,13 +185,14 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                     } else {
                         value = new JsonPrimitive(command.toString().toLowerCase());
                     }
+                    final MiIoDeviceActionCondition miIoDeviceActionCondition = action.getCondition();
+                    if (miIoDeviceActionCondition != null) {
+                        value = ActionConditions.executeAction(miIoDeviceActionCondition, deviceVariables, value,
+                                command);
+                    }
                     // Check for miot channel
                     if (miIoBasicChannel.isMiOt()) {
                         value = miotTransform(miIoBasicChannel, value);
-                    }
-                    final MiIoDeviceActionCondition miIoDeviceActionCondition = action.getCondition();
-                    if (miIoDeviceActionCondition != null) {
-                        value = ActionConditions.executeAction(miIoDeviceActionCondition, deviceVariables, value);
                     }
                     if (paramType != CommandParameterType.NONE && value != null) {
                         if (parameters.size() > 0) {
@@ -357,7 +359,13 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                         if (channelUID != null) {
                             actions.put(channelUID, miChannel);
                             channelsAdded++;
+                        } else {
+                            logger.debug("Channel for {} ({}) not loaded", miChannel.getChannel(),
+                                    miChannel.getFriendlyName());
                         }
+                    } else {
+                        logger.debug("Channel {} ({}), not loaded, missing type", miChannel.getChannel(),
+                                miChannel.getFriendlyName());
                     }
                 }
             }
