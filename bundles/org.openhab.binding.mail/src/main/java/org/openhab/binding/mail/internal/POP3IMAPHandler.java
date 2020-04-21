@@ -71,7 +71,7 @@ public class POP3IMAPHandler extends BaseThingHandler {
         protocol = baseProtocol;
 
         if (config.security == ServerSecurity.SSL) {
-            protocol.concat("s");
+            protocol = protocol.concat("s");
         }
 
         if (config.port == 0) {
@@ -94,6 +94,7 @@ public class POP3IMAPHandler extends BaseThingHandler {
             }
         }
 
+        logger.debug(config.debugPrint());
         refreshTask = scheduler.scheduleWithFixedDelay(this::refresh, 0, config.refresh, TimeUnit.SECONDS);
         updateStatus(ThingStatus.ONLINE);
     }
@@ -118,29 +119,35 @@ public class POP3IMAPHandler extends BaseThingHandler {
             store.connect(config.hostname, config.port, config.username, config.password);
 
             for (Channel channel : thing.getChannels()) {
+                ChannelUID channelId = channel.getUID();
                 if (CHANNEL_TYPE_UID_FOLDER_MAILCOUNT.equals(channel.getChannelTypeUID())) {
+                    logger.debug("Processing channel {}", channelId);
                     final POP3IMAPChannelConfig channelConfig = channel.getConfiguration()
                             .as(POP3IMAPChannelConfig.class);
                     final String folderName = channelConfig.folder;
                     if (folderName == null || folderName.isEmpty()) {
-                        logger.info("missing or empty folder name in channel {}", channel.getUID());
+                        logger.info("missing or empty folder name in channel {}", channelId);
                     } else {
+                        logger.trace("Opening folder {}", folderName);
                         try (Folder mailbox = store.getFolder(folderName)) {
                             mailbox.open(Folder.READ_ONLY);
+                            logger.trace("Successfully opened folder {}", folderName);
                             if (channelConfig.type == MailCountChannelType.TOTAL) {
-                                updateState(channel.getUID(), new DecimalType(mailbox.getMessageCount()));
+                                updateState(channelId, new DecimalType(mailbox.getMessageCount()));
                             } else {
-                                updateState(channel.getUID(), new DecimalType(
+                                updateState(channelId, new DecimalType(
                                         mailbox.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false)).length));
                             }
-                        } catch (MessagingException e) {
-                            throw e;
                         }
                     }
+                }
+                else {
+                    logger.debug("Skipped processing channel {}. Not a MAILCOUNT channel.", channelId);
                 }
             }
         } catch (MessagingException e) {
             logger.info("error when trying to refresh IMAP: {}", e.getMessage());
+            logger.debug("stacktrace for error when trying to refresh IMAP: ", e);
         }
     }
 }

@@ -23,4 +23,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class POP3IMAPConfig extends BaseConfig {
     public int refresh = 60;
+    
+    public String debugPrint() {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("Configuration details:\r\n");
+        buffer.append("  Hostname = " + hostname + "\r\n");
+        buffer.append("      Port = " + port + "\r\n");
+        buffer.append("  Username = " + username + "\r\n");
+        buffer.append("  Password = (redacted)\r\n");
+        buffer.append("  Security = " + security + "\r\n");
+        buffer.append("   Refresh = " + refresh + "\r\n");
+        return buffer.toString();
+    }
 }
