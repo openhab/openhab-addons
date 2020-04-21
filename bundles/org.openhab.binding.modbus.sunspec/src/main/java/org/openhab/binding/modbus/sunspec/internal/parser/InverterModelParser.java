@@ -33,7 +33,19 @@ public class InverterModelParser extends AbstractBaseParser implements SunspecPa
         block.phaseConfiguration = extractUInt16(raw, 0, SunSpecConstants.INVERTER_SINGLE_PHASE);
         block.length = extractUInt16(raw, 1, raw.size());
         block.acCurrentTotal = extractUInt16(raw, 2, 0);
+        block.acCurrentPhaseA = extractUInt16(raw, 3, 0);
+        block.acCurrentPhaseB = extractOptionalUInt16(raw, 4);
+        block.acCurrentPhaseC = extractOptionalUInt16(raw, 5);
         block.acCurrentSF = extractSunSSF(raw, 6);
+
+        block.acVoltageAB = extractOptionalUInt16(raw, 7);
+        block.acVoltageBC = extractOptionalUInt16(raw, 8);
+        block.acVoltageCA = extractOptionalUInt16(raw, 9);
+        block.acVoltageAtoN = extractUInt16(raw, 10, 0);
+        block.acVoltageBtoN = extractOptionalUInt16(raw, 11);
+        block.acVoltageCtoN = extractOptionalUInt16(raw, 12);
+        block.acVoltageSF = extractSunSSF(raw, 13);
+
         block.acPower = extractInt16(raw, 14, (short) 0);
         block.acPowerSF = extractSunSSF(raw, 15);
         block.acFrequency = extractUInt16(raw, 16, 0);
@@ -46,6 +58,14 @@ public class InverterModelParser extends AbstractBaseParser implements SunspecPa
         block.acPowerFactorSF = extractOptionalSunSSF(raw, 23);
         block.acEnergyLifetime = extractAcc32(raw, 24, 0);
         block.acEnergyLifetimeSF = extractSunSSF(raw, 26);
+
+        block.dcCurrent = extractOptionalUInt16(raw, 27);
+        block.dcCurrentSF = extractOptionalSunSSF(raw, 28);
+        block.dcVoltage = extractOptionalUInt16(raw, 29);
+        block.dcVoltageSF = extractOptionalSunSSF(raw, 30);
+        block.dcPower = extractOptionalInt16(raw, 31);
+        block.dcPowerSF = extractOptionalSunSSF(raw, 32);
+
         block.temperatureCabinet = extractInt16(raw, 33, (short) 0);
         block.temperatureHeatsink = extractOptionalInt16(raw, 34);
         block.temperatureTransformer = extractOptionalInt16(raw, 35);

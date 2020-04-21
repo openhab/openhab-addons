@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.modbus.sunspec.internal;
 
-import static org.openhab.binding.modbus.sunspec.internal.SunSpecConstants.THING_TYPE_INVERTER_SINGLE_PHASE;
-
-import java.util.Collections;
-import java.util.Set;
+import static org.openhab.binding.modbus.sunspec.internal.SunSpecConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -52,9 +49,6 @@ public class SunSpecHandlerFactory extends BaseThingHandlerFactory {
      */
     private ModbusManager manager;
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .singleton(THING_TYPE_INVERTER_SINGLE_PHASE);
-
     /**
      * This factory needs a reference to the ModbusManager wich is provided
      * by the org.openhab.io.transport.modbus bundle. Please make
@@ -69,14 +63,16 @@ public class SunSpecHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return SUPPORTED_THING_TYPES_UIDS.containsValue(thingTypeUID);
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_INVERTER_SINGLE_PHASE)) {
+        if (thingTypeUID.equals(THING_TYPE_INVERTER_SINGLE_PHASE)
+                || thingTypeUID.equals(THING_TYPE_INVERTER_SPLIT_PHASE)
+                || thingTypeUID.equals(THING_TYPE_INVERTER_THREE_PHASE)) {
             logger.debug("New InverterHandler created");
             return new InverterHandler(thing, manager);
         }
