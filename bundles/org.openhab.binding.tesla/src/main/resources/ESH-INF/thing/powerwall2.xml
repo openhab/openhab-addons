@@ -14,15 +14,15 @@
 		<description>A Tesla Powerwall 2 Battery</description>
 
 		<channels>
-			<channel id="batteryPercent" typeId="batteryPercent" />
-			<channel id="reservePercent" typeId="reservePercent" />
-			<channel id="solarPower" typeId="solarPower" />
-			<channel id="loadPower" typeId="loadPower" />
-			<channel id="gridPower" typeId="gridPower" />
-			<channel id="powerwallPower" typeId="powerwallPower" />
-			<channel id="currentOpState" typeId="currentOpState" />
-			<channel id="gridStatus" typeId="gridStatus" />
-			<channel id="stormWatch" typeId="stormWatch" />
+			<channel id="batterypercent" typeId="batterypercent" />
+			<channel id="reservepercent" typeId="reservepercent" />
+			<channel id="solarpower" typeId="solarpower" />
+			<channel id="loadpower" typeId="loadpower" />
+			<channel id="gridpower" typeId="gridpower" />
+			<channel id="powerwallpower" typeId="powerwallpower" />
+			<channel id="currentopstate" typeId="currentopstate" />
+			<channel id="gridstatus" typeId="gridstatus" />
+			<channel id="stormwatch" typeId="stormwatch" />
 		</channels>
 		<config-description>
 			<parameter name="battery_id" type="text" required="true">

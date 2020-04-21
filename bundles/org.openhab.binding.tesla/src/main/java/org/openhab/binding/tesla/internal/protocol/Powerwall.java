@@ -27,7 +27,7 @@ public class Powerwall {
     public String gateway_id;
     public String energy_left;
     public String total_pack_energy;
-    public String percentage_charged;
+    public float percentage_charged;
     public String battery_type;
     public boolean backup_capable;
     public String battery_power;

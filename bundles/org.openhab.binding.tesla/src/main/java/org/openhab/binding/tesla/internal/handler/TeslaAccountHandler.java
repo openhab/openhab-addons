@@ -98,6 +98,7 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
     final WebTarget wakeUpTarget = vehicleTarget.path(PATH_WAKE_UP);
     final WebTarget powerwallsTarget = teslaTarget.path(API_VERSION).path(POWERWALLS);
     final WebTarget powerwallTarget = powerwallsTarget.path(PATH_POWERWALL_ID);
+    final WebTarget powerwallStatsTarget = powerwallsTarget.path(PATH_POWERWALL_ID).path(STATUS);
     // Threading and Job related variables
     protected ScheduledFuture<?> connectJob;
 
@@ -166,12 +167,12 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
         this.vehicleListeners.remove(listener);
     }
 
-    public void addPowerwallListener(PowerwallListener listener2) {
-        this.powerwallListeners.add(listener2);
+    public void addPowerwallListener(PowerwallListener listener) {
+        this.powerwallListeners.add(listener);
     }
 
-    public void removePowerwallListener(PowerwallListener listener2) {
-        this.powerwallListeners.remove(listener2);
+    public void removePowerwallListener(PowerwallListener listener) {
+        this.powerwallListeners.remove(listener);
     }
 
     @Override
@@ -283,7 +284,7 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
                 for (PowerwallListener listener2 : powerwallListeners) {
                     listener2.powerwallFound(powerwall);
                 }
-                logger.debug("Powerwall is id {}/site_name {}", powerwall.id, powerwall.site_name);
+                logger.trace("Powerwall is id {}/site_name {}", powerwall.id, powerwall.site_name);
             }
             return powerwallArray;
         } else {
@@ -419,7 +420,6 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
     }
 
     protected String invokeAndParse(String vehicleId, String command, String payLoad, WebTarget target) {
-        logger.debug("Invoking: {}", command);
 
         if (vehicleId != null) {
             Response response;
@@ -588,6 +588,7 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
         private WebTarget target;
 
         public Request(TeslaVehicleHandler handler, String request, String payLoad, WebTarget target) {
+        logger.debug ("Request - request = {},payload = {} target = {}", request,payLoad,target);
             this.handler = handler;
             this.request = request;
             this.payLoad = payLoad;
@@ -598,9 +599,10 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
         public void run() {
             try {
                 String result = "";
-
+        logger.debug ("Request --> run()");
                 if (getThing().getStatus() == ThingStatus.ONLINE) {
                     result = invokeAndParse(handler.getVehicleId(), request, payLoad, target);
+
                     if (result != null && !"".equals(result)) {
                         handler.parseAndUpdate(request, payLoad, result);
                     }
@@ -614,6 +616,7 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
 
     public Request newRequest(TeslaVehicleHandler teslaVehicleHandler, String command, String payLoad,
             WebTarget target) {
+        logger.debug ("newRequest - command = {},payload = {} target = {}", command,payLoad,target);
         return new Request(teslaVehicleHandler, command, payLoad, target);
     }
 

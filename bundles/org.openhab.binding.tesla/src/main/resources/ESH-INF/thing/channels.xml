@@ -645,43 +645,43 @@
 		<description>Indicates if the wiperblade heater is switched on</description>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="batteryPercent">
-		<item-type>Number:Dimensionless</item-type>
+	<channel-type id="batterypercent">
+		<item-type>Number</item-type>
 		<label>Powerwall Charge</label>
 		<description>Current charge level of the powerwall</description>
-		<state pattern="%.1f" readOnly="true"></state>
+		<state pattern="%.1f %%" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="reservePercent">
-		<item-type>Number:Dimensionless</item-type>
+	<channel-type id="reservepercent">
+		<item-type>Number</item-type>
 		<label>Powerwall Reserve Level</label>
 		<description>Current reserve level of the powerwall</description>
-		<state pattern="%.1f" readOnly="true"></state>
+		<state pattern="%.1f %%" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="solarPower">
+	<channel-type id="solarpower">
 		<item-type>Number:Power</item-type>
 		<label>Instanteous Solar Power</label>
 		<description>Instantaneous Solar Power being generated</description>
 		<state pattern="%.1f W" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="loadPower">
+	<channel-type id="loadpower">
 		<item-type>Number:Power</item-type>
 		<label>Instanteous Home Power</label>
 		<description>Instantaneous Home Power being consumed</description>
 		<state pattern="%.1f W" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="gridPower">
+	<channel-type id="gridpower">
 		<item-type>Number:Power</item-type>
 		<label>Instanteous Grid Power</label>
 		<description>Instantaneous Grid Power being generated/consumed</description>
 		<state pattern="%.1f W" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="powerwallPower">
+	<channel-type id="powerwallpower">
 		<item-type>Number:Power</item-type>
 		<label>Instanteous Battery Power</label>
 		<description>Instantaneous Battery Power being charged/consumed</description>
 		<state pattern="%.1f W" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="currentOpState">
+	<channel-type id="currentopstate">
 		<item-type>String</item-type>
 		<label>Current Operating State</label>
 		<description>“Time-Based Control”, “Self-Powered”, “Backup-Only”</description>
@@ -693,13 +693,13 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="gridStatus">
+	<channel-type id="gridstatus">
 		<item-type>String</item-type>
 		<label>Grid Status</label>
 		<description>Current status of the Power Grid</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="stormWatch">
+	<channel-type id="stormwatch">
 		<item-type>Switch</item-type>
 		<label>Storm Watch</label>
 		<description>Set the Storm Watch setting</description>

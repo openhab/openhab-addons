@@ -30,11 +30,12 @@ public class TeslaBindingConstants {
     public static final String BATTERY_ID = "battery_id";
     public static final String PATH_COMMAND = "command/{cmd}";
     public static final String PATH_DATA_REQUEST = "data_request/{cmd}";
-    public static final String PATH_POWERWALL_ID = "/{id}/";
+    public static final String PATH_POWERWALL_ID = "/{vid}";
     public static final String PATH_VEHICLE_ID = "/{vid}/";
     public static final String PATH_WAKE_UP = "wake_up";
     public static final String POWERWALLS = "powerwalls";
     public static final String PRODUCTS = "products";
+    public static final String STATUS = "/status";
     public static final String URI_ACCESS_TOKEN = "oauth/token";
     public static final String URI_EVENT = "https://streaming.vn.teslamotors.com/stream/";
     public static final String URI_OWNERS = "https://owner-api.teslamotors.com/";
