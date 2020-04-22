@@ -37,7 +37,8 @@
 			</parameter>
 			<parameter name="timeout" type="integer" min="0" max="60" unit="min">
 				<label>Message Receive Timeout</label>
-				<description>The period in minutes after which the connection will be reset if no valid messages have been received. Set to 0 to disable.</description>
+				<description>The period in minutes after which the connection will be reset if no valid messages have been received.
+					Set to 0 to disable.</description>
 				<unitLabel>minutes</unitLabel>
 				<default>5</default>
 				<advanced>true</advanced>
@@ -74,8 +75,8 @@
 	<!-- Zone Thing Type -->
 	<thing-type id="zone">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="ipbridge"/>
-			<bridge-type-ref id="serialbridge"/>
+			<bridge-type-ref id="ipbridge" />
+			<bridge-type-ref id="serialbridge" />
 		</supported-bridge-type-refs>
 
 		<label>Alarm Zone</label>
@@ -102,8 +103,8 @@
 	<!-- RF Zone Thing Type -->
 	<thing-type id="rfzone">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="ipbridge"/>
-			<bridge-type-ref id="serialbridge"/>
+			<bridge-type-ref id="ipbridge" />
+			<bridge-type-ref id="serialbridge" />
 		</supported-bridge-type-refs>
 
 		<label>Alarm RF Zone</label>
@@ -143,8 +144,8 @@
 	<!-- Keypad Thing Type -->
 	<thing-type id="keypad">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="ipbridge"/>
-			<bridge-type-ref id="serialbridge"/>
+			<bridge-type-ref id="ipbridge" />
+			<bridge-type-ref id="serialbridge" />
 		</supported-bridge-type-refs>
 
 		<label>Alarm Keypad</label>
@@ -223,7 +224,8 @@
 			</parameter>
 			<parameter name="sendCommands" type="boolean">
 				<label>Send Commands</label>
-				<description>Allow keypad commands to be sent to the alarm system from openHAB. Enabling this means the alarm system will be only as secure as your openHAB system.</description>
+				<description>Allow keypad commands to be sent to the alarm system from openHAB. Enabling this means the alarm system
+					will be only as secure as your openHAB system.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="sendStar" type="boolean">
@@ -244,8 +246,8 @@
 	<!-- LRR Thing Type -->
 	<thing-type id="lrr">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="ipbridge"/>
-			<bridge-type-ref id="serialbridge"/>
+			<bridge-type-ref id="ipbridge" />
+			<bridge-type-ref id="serialbridge" />
 		</supported-bridge-type-refs>
 
 		<label>Long Range Radio</label>
@@ -280,14 +282,14 @@
 	</thing-type>
 
 	<!-- ===== Channel Type Definitions ===== -->
-	
+
 	<!-- Contact Channel Type -->
 	<channel-type id="contact-channel">
 		<item-type>Contact</item-type>
 		<label>Contact</label>
 		<description>Contact state</description>
 		<category>Switch</category>
-		<state readOnly="true"/>
+		<state readOnly="true" />
 	</channel-type>
 
 	<!-- Indicator Channel Type -->
@@ -296,7 +298,7 @@
 		<label>Indicator</label>
 		<description>Indicator state</description>
 		<category>Switch</category>
-		<state readOnly="true"/>
+		<state readOnly="true" />
 	</channel-type>
 
 	<!-- Number Channel Type -->
@@ -304,23 +306,23 @@
 		<item-type>Number</item-type>
 		<label>Number</label>
 		<category>Number</category>
-		<state readOnly="true"/>
+		<state readOnly="true" />
 	</channel-type>
 
-	<!--  Text channel type -->
+	<!-- Text channel type -->
 	<channel-type id="text-channel">
 		<item-type>String</item-type>
 		<label>Text Channel</label>
-		<state readOnly="true"/>
+		<state readOnly="true" />
 	</channel-type>
 
-	<!--  Command channel type -->
+	<!-- Command channel type -->
 	<channel-type id="command-channel" advanced="true">
 		<item-type>String</item-type>
 		<label>Command Channel</label>
 	</channel-type>
-	
-	<!--  Integer Command channel type -->
+
+	<!-- Integer Command channel type -->
 	<channel-type id="int-command-channel" advanced="true">
 		<item-type>Number</item-type>
 		<label>Integer Command Channel</label>
