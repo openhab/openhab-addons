@@ -106,9 +106,10 @@ public abstract class ADBridgeHandler extends BaseBridgeHandler {
     public void sendADCommand(ADCommand command) {
         logger.debug("Sending AD command: {}", command);
         try {
-            if (writer != null) {
-                writer.write(command.toString());
-                writer.flush();
+            BufferedWriter bw = writer;
+            if (bw != null) {
+                bw.write(command.toString());
+                bw.flush();
             }
         } catch (IOException e) {
             logger.info("Exception while sending command: {}", e.getMessage());
@@ -127,17 +128,19 @@ public abstract class ADBridgeHandler extends BaseBridgeHandler {
 
     protected void startMsgReader() {
         synchronized (msgReaderThreadLock) {
-            msgReaderThread = new Thread(this::readerThread, "AD Reader");
-            msgReaderThread.setDaemon(true);
-            msgReaderThread.start();
+            Thread mrt = new Thread(this::readerThread, "AD Reader");
+            mrt.setDaemon(true);
+            mrt.start();
+            msgReaderThread = mrt;
         }
     }
 
     protected void stopMsgReader() {
         synchronized (msgReaderThreadLock) {
-            if (msgReaderThread != null) {
+            Thread mrt = msgReaderThread;
+            if (mrt != null) {
                 logger.trace("Stopping reader thread.");
-                msgReaderThread.interrupt();
+                mrt.interrupt();
                 msgReaderThread = null;
             }
         }
@@ -152,6 +155,7 @@ public abstract class ADBridgeHandler extends BaseBridgeHandler {
         try {
             // Send version command to get device to respond with VER message.
             sendADCommand(ADCommand.getVersion());
+            BufferedReader reader = this.reader;
             while (!Thread.interrupted() && reader != null && (msg = reader.readLine()) != null) {
                 logger.trace("Received msg: {}", msg);
                 ADMsgType mt = ADMsgType.getMsgType(msg);
@@ -243,8 +247,9 @@ public abstract class ADBridgeHandler extends BaseBridgeHandler {
 
         notifyChildHandlers(expm);
 
-        if (discovery && discoveryService != null) {
-            discoveryService.processZone(expm.address, expm.channel);
+        AlarmDecoderDiscoveryService ds = discoveryService;
+        if (discovery && ds != null) {
+            ds.processZone(expm.address, expm.channel);
         }
     }
 
@@ -265,8 +270,9 @@ public abstract class ADBridgeHandler extends BaseBridgeHandler {
 
         notifyChildHandlers(rfxm);
 
-        if (discovery && discoveryService != null) {
-            discoveryService.processRFZone(rfxm.serial);
+        AlarmDecoderDiscoveryService ds = discoveryService;
+        if (discovery && ds != null) {
+            ds.processRFZone(rfxm.serial);
         }
     }
 

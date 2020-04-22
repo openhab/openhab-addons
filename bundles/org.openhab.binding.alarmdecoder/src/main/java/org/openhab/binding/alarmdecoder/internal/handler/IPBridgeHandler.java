@@ -20,6 +20,7 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Date;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -77,7 +78,8 @@ public class IPBridgeHandler extends ADBridgeHandler {
         disconnect(); // make sure we are disconnected
         writeException = false;
         try {
-            socket = new Socket(config.hostname, config.tcpPort);
+            Socket socket = new Socket(config.hostname, config.tcpPort);
+            this.socket = socket;
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), AD_CHARSET_NAME));
             writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), AD_CHARSET_NAME));
             logger.debug("connected to {}:{}", config.hostname, config.tcpPort);
@@ -105,7 +107,8 @@ public class IPBridgeHandler extends ADBridgeHandler {
     protected synchronized void connectionCheck() {
         logger.trace("Connection check job running");
 
-        if (msgReaderThread != null && !msgReaderThread.isAlive()) {
+        Thread mrThread = msgReaderThread;
+        if (mrThread != null && !mrThread.isAlive()) {
             logger.debug("Reader thread has exited abnormally. Restarting.");
             scheduler.submit(this::connect);
         } else if (writeException) {
@@ -113,9 +116,10 @@ public class IPBridgeHandler extends ADBridgeHandler {
             scheduler.submit(this::connect);
         } else {
             Date now = new Date();
-            if (lastReceivedTime != null && config.timeout > 0
-                    && ((lastReceivedTime.getTime() + (config.timeout * 60 * 1000)) < now.getTime())) {
-                logger.warn("Last valid message received at {}. Resetting connection.", lastReceivedTime);
+            Date last = lastReceivedTime;
+            if (last != null && config.timeout > 0
+                    && ((last.getTime() + (config.timeout * 60 * 1000)) < now.getTime())) {
+                logger.warn("Last valid message received at {}. Resetting connection.", last);
                 scheduler.submit(this::connect);
             }
         }
@@ -125,22 +129,25 @@ public class IPBridgeHandler extends ADBridgeHandler {
     protected synchronized void disconnect() {
         logger.trace("Disconnecting");
         // stop scheduled connection check and retry jobs
-        if (connectRetryJob != null) {
+        ScheduledFuture<?> crJob = connectRetryJob;
+        if (crJob != null) {
             // use cancel(false) so we don't kill ourselves when connect retry job calls disconnect()
-            connectRetryJob.cancel(false);
+            crJob.cancel(false);
             connectRetryJob = null;
         }
-        if (connectionCheckJob != null) {
+        ScheduledFuture<?> ccJob = connectionCheckJob;
+        if (ccJob != null) {
             // use cancel(false) so we don't kill ourselves when reconnect job calls disconnect()
-            connectionCheckJob.cancel(false);
+            ccJob.cancel(false);
             connectionCheckJob = null;
         }
 
         // Must close the socket first so the message reader thread will exit properly.
         // The BufferedReader.readLine() call used in readerThread() is not interruptable.
-        if (socket != null) {
+        Socket s = socket;
+        if (s != null) {
             try {
-                socket.close();
+                s.close();
             } catch (IOException e) {
                 logger.debug("error closing socket: {}", e.getMessage());
             }
@@ -150,11 +157,13 @@ public class IPBridgeHandler extends ADBridgeHandler {
         stopMsgReader();
 
         try {
-            if (writer != null) {
-                writer.close();
+            BufferedWriter bw = writer;
+            if (bw != null) {
+                bw.close();
             }
-            if (reader != null) {
-                reader.close();
+            BufferedReader br = reader;
+            if (br != null) {
+                br.close();
             }
         } catch (IOException e) {
             logger.debug("error closing reader/writer: {}", e.getMessage());

@@ -13,10 +13,9 @@
 package org.openhab.binding.alarmdecoder.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.alarmdecoder.internal.handler.ZoneHandler;
 
 /**
- * The {@link ZoneConfig} class contains fields mapping thing configuration parameters for {@link ZoneHandler}.
+ * The {@link ZoneConfig} class contains fields mapping thing configuration parameters for ZoneHandler.
  *
  * @author Bob Adair - Initial contribution
  */

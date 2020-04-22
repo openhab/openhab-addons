@@ -13,10 +13,9 @@
 package org.openhab.binding.alarmdecoder.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.alarmdecoder.internal.handler.LRRHandler;
 
 /**
- * The {@link LRRConfig} class contains fields mapping thing configuration parameters for {@link LRRHandler}.
+ * The {@link LRRConfig} class contains fields mapping thing configuration parameters for LRRHandler.
  *
  * @author Bob Adair - Initial contribution
  */

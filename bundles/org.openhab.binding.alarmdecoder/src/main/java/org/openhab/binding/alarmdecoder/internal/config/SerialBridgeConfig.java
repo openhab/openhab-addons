@@ -13,11 +13,9 @@
 package org.openhab.binding.alarmdecoder.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.alarmdecoder.internal.handler.SerialBridgeHandler;
 
 /**
- * The {@link SerialBridgeConfig} class contains fields mapping thing configuration parameters for
- * {@link SerialBridgeHandler}.
+ * The {@link SerialBridgeConfig} class contains fields mapping thing configuration parameters for SerialBridgeHandler.
  *
  * @author Bob Adair - Initial contribution
  */

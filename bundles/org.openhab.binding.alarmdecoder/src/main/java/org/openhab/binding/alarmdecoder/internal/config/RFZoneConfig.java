@@ -13,10 +13,9 @@
 package org.openhab.binding.alarmdecoder.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.alarmdecoder.internal.handler.RFZoneHandler;
 
 /**
- * The {@link RFZoneConfig} class contains fields mapping thing configuration parameters for {@link RFZoneHandler}.
+ * The {@link RFZoneConfig} class contains fields mapping thing configuration parameters for RFZoneHandler.
  *
  * @author Bob Adair - Initial contribution
  */

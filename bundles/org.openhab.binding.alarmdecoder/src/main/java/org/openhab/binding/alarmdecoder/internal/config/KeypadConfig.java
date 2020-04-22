@@ -15,10 +15,9 @@ package org.openhab.binding.alarmdecoder.internal.config;
 import static org.openhab.binding.alarmdecoder.internal.AlarmDecoderBindingConstants.DEFAULT_MAPPING;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.alarmdecoder.internal.handler.KeypadHandler;
 
 /**
- * The {@link KeypadConfig} class contains fields mapping thing configuration parameters for {@link KeypadHandler}.
+ * The {@link KeypadConfig} class contains fields mapping thing configuration parameters for KeypadHandler.
  *
  * @author Bob Adair - Initial contribution
  */

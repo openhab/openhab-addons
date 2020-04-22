@@ -14,10 +14,9 @@ package org.openhab.binding.alarmdecoder.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.alarmdecoder.internal.handler.IPBridgeHandler;
 
 /**
- * The {@link IPBridgeConfig} class contains fields mapping thing configuration parameters for {@link IPBridgeHandler}.
+ * The {@link IPBridgeConfig} class contains fields mapping thing configuration parameters for IPBridgeHandler.
  *
  * @author Bob Adair - Initial contribution
  */

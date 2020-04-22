@@ -44,11 +44,12 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class KeypadHandler extends ADThingHandler {
 
+    private static final Pattern VALID_COMMAND_PATTERN = Pattern.compile(ADCommand.KEYPAD_COMMAND_REGEX);
+
     private final Logger logger = LoggerFactory.getLogger(KeypadHandler.class);
 
     private KeypadConfig config = new KeypadConfig();
     private boolean singleAddress;
-    private static final Pattern VALID_COMMAND_PATTERN = Pattern.compile(ADCommand.KEYPAD_COMMAND_REGEX);
     private @Nullable IntCommandMap intCommandMap;
     private @Nullable KeypadMessage previousMessage;
 
@@ -92,6 +93,8 @@ public class KeypadHandler extends ADThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        IntCommandMap intCommandMap = this.intCommandMap;
+
         if (channelUID.getId().equals(CHANNEL_KP_COMMAND)) {
             if (command instanceof StringType) {
                 String cmd = ((StringType) command).toString();

@@ -97,14 +97,16 @@ public class SerialBridgeHandler extends ADBridgeHandler {
     protected synchronized void connect() {
         disconnect(); // make sure we are disconnected
         try {
-            serialPort = portIdentifier.open("org.openhab.binding.alarmdecoder", 100);
+            SerialPort serialPort = portIdentifier.open("org.openhab.binding.alarmdecoder", 100);
             serialPort.setSerialPortParams(serialPortSpeed, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
                     SerialPort.PARITY_NONE);
             serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN | SerialPort.FLOWCONTROL_RTSCTS_OUT);
             // Note: The V1 code called disableReceiveFraming() and disableReceiveThreshold() here
 
+            this.serialPort = serialPort;
             reader = new BufferedReader(new InputStreamReader(serialPort.getInputStream(), AD_CHARSET_NAME));
             writer = new BufferedWriter(new OutputStreamWriter(serialPort.getOutputStream(), AD_CHARSET_NAME));
+
             logger.debug("connected to serial port: {}", config.serialPort);
             panelReadyReceived = false;
             startMsgReader();
@@ -121,28 +123,32 @@ public class SerialBridgeHandler extends ADBridgeHandler {
     @Override
     protected synchronized void disconnect() {
         logger.trace("Disconnecting");
-        if (serialPort != null) {
+        SerialPort sp = serialPort;
+        if (sp != null) {
             logger.trace("Closing serial port");
-            serialPort.close();
+            sp.close();
             serialPort = null;
         }
 
         stopMsgReader();
 
-        if (reader != null) {
+        BufferedReader br = reader;
+        if (br != null) {
             logger.trace("Closing reader");
             try {
-                reader.close();
+                br.close();
             } catch (IOException e) {
                 logger.info("IO Exception closing reader: {}", e.getMessage());
             } finally {
                 reader = null;
             }
         }
-        if (writer != null) {
+
+        BufferedWriter bw = writer;
+        if (bw != null) {
             logger.trace("Closing writer");
             try {
-                writer.close();
+                bw.close();
             } catch (IOException e) {
                 logger.info("IO Exception closing writer: {}", e.getMessage());
             } finally {
