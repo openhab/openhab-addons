@@ -127,6 +127,7 @@ __Advanced Channels:__
 | trackNumber     | String    | Read-only  | Number of the track on the album/record.                    |
 | trackDiscNumber | String    | Read-only  | Disc Number of the track on the album/record.               |
 | trackPopularity | Number    | Read-only  | Currently playing track popularity.                         |
+| trackExplicit   | Switch    | Read-only  | Whether or not the track has explicit lyrics.               |
 | albumId         | String    | Read-only  | Album Id of the currently playing track.                    |
 | albumUri        | String    | Read-only  | Album URI of the currently playing track.                   |
 | albumHref       | String    | Read-only  | Album URL of the currently playing track.                   |

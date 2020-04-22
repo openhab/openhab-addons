@@ -25,9 +25,9 @@ import org.slf4j.LoggerFactory;
 import io.github.hapjava.HomekitCharacteristicChangeCallback;
 
 /**
- * Subscribes and unsubscribes from Item changes to enable notification to Homekit
+ * Subscribes and unsubscribes from Item changes to enable notification to HomeKit
  * clients. Each item/key pair (key is optional) should be unique, as the underlying
- * Homekit library takes care of insuring only a single subscription exists for
+ * HomeKit library takes care of insuring only a single subscription exists for
  * each accessory.
  *
  * @author Andy Lintner - Initial contribution

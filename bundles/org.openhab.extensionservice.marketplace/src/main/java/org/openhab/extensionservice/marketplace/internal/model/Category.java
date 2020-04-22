@@ -12,8 +12,6 @@
  */
 package org.openhab.extensionservice.marketplace.internal.model;
 
-import org.openhab.extensionservice.marketplace.internal.model.Node;
-
 /**
  * This is a category that holds the nodes as individual entries of the marketplace.
  *

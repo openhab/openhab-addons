@@ -23,8 +23,6 @@
 		<properties>
 			<property name="deviceId" />
 			<property name="lastConnected" />
-			<property name="modelName" />
-			<property name="manufacturer" />
 			<property name="deviceOS" />
 			<property name="deviceOSVersion" />
 			<property name="deviceOSReleaseVersion" />
