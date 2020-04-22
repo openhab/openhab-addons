@@ -59,19 +59,19 @@ public class MeterHandler extends AbstractSunSpecHandler {
         // AC General group
         updateTotalValues(block);
 
-        updatePhaseAValues(block);
+        updatePhaseValues(block, block.phaseA, GROUP_AC_PHASE_A);
 
         // Split phase, wye/delta phase
         if (block.sunspecDID >= METER_SPLIT_PHASE && (thing.getThingTypeUID().equals(THING_TYPE_METER_SPLIT_PHASE)
                 || thing.getThingTypeUID().equals(THING_TYPE_METER_WYE_PHASE)
                 || thing.getThingTypeUID().equals(THING_TYPE_METER_DELTA_PHASE))) {
-            updatePhaseBValues(block);
+            updatePhaseValues(block, block.phaseB, GROUP_AC_PHASE_B);
         }
 
         // Three phase (wye/delta) only
         if (block.sunspecDID >= INVERTER_THREE_PHASE && (thing.getThingTypeUID().equals(THING_TYPE_METER_WYE_PHASE)
                 || thing.getThingTypeUID().equals(THING_TYPE_METER_DELTA_PHASE))) {
-            updatePhaseCValues(block);
+            updatePhaseValues(block, block.phaseC, GROUP_AC_PHASE_C);
         }
 
         resetCommunicationError();
@@ -145,198 +145,69 @@ public class MeterHandler extends AbstractSunSpecHandler {
     }
 
     /**
-     * Update the phase A states from the received block
+     * Update phase related channels for the selected phase.
      *
-     * @param block
+     * @param block the main block for scale
+     * @param phaseBlock the block containing the raw values for the selected phase
+     * @param group channel group id for the output
      */
-    private void updatePhaseAValues(MeterModelBlock block) {
-        String group = GROUP_AC_PHASE_A;
+    private void updatePhaseValues(MeterModelBlock block, MeterModelBlock.PhaseBlock phaseBlock, String group) {
         updateState(channelUID(group, CHANNEL_AC_PHASE_CURRENT),
-                getScaled(block.acCurrentPhaseA, block.acCurrentSF, AMPERE));
+                getScaled(phaseBlock.acPhaseCurrent, block.acCurrentSF, AMPERE));
 
         updateState(channelUID(group, CHANNEL_AC_VOLTAGE_TO_N),
-                getScaled(block.acVoltageAtoN, block.acVoltageSF, VOLT));
+                getScaled(phaseBlock.acVoltageToN, block.acVoltageSF, VOLT));
 
         updateState(channelUID(group, CHANNEL_AC_VOLTAGE_TO_NEXT),
-                getScaled(block.acVoltageAB, block.acVoltageSF, VOLT));
+                getScaled(phaseBlock.acVoltageToNext, block.acVoltageSF, VOLT));
 
         updateState(channelUID(group, CHANNEL_AC_REAL_POWER),
-                getScaled(block.acRealPowerPhaseA, block.acRealPowerSF, WATT));
+                getScaled(phaseBlock.acRealPower, block.acRealPowerSF, WATT));
 
         updateState(channelUID(group, CHANNEL_AC_APPARENT_POWER),
-                getScaled(block.acApparentPowerPhaseA, block.acApparentPowerSF, WATT)); // TODO: this should be VA
+                getScaled(phaseBlock.acApparentPower, block.acApparentPowerSF, WATT)); // TODO: this should be VA
 
         updateState(channelUID(group, CHANNEL_AC_REACTIVE_POWER),
-                getScaled(block.acReactivePowerPhaseA, block.acReactivePowerSF, WATT)); // TODO: this should be VAR
+                getScaled(phaseBlock.acReactivePower, block.acReactivePowerSF, WATT)); // TODO: this should be VAR
 
         updateState(channelUID(group, CHANNEL_AC_POWER_FACTOR),
-                getScaled(block.acPowerFactorPhaseA, block.acPowerFactorSF, PERCENT));
+                getScaled(phaseBlock.acPowerFactor, block.acPowerFactorSF, PERCENT));
 
         updateState(channelUID(group, CHANNEL_AC_EXPORTED_REAL_ENERGY),
-                getScaled(block.acExportedRealEnergyPhaseA, block.acRealEnergySF, WATT_HOUR));
+                getScaled(phaseBlock.acExportedRealEnergy, block.acRealEnergySF, WATT_HOUR));
 
         updateState(channelUID(group, CHANNEL_AC_IMPORTED_REAL_ENERGY),
-                getScaled(block.acImportedRealEnergyPhaseA, block.acRealEnergySF, WATT_HOUR));
+                getScaled(phaseBlock.acImportedRealEnergy, block.acRealEnergySF, WATT_HOUR));
 
         updateState(channelUID(group, CHANNEL_AC_EXPORTED_APPARENT_ENERGY),
-                getScaled(block.acExportedApparentEnergyPhaseA, block.acApparentEnergySF, WATT_HOUR)); // TODO: this
-                                                                                                       // should be
-                                                                                                       // VA_HOUR
+                getScaled(phaseBlock.acExportedApparentEnergy, block.acApparentEnergySF, WATT_HOUR)); // TODO: this
+                                                                                                      // should be
+                                                                                                      // VA_HOUR
 
         updateState(channelUID(group, CHANNEL_AC_IMPORTED_APPARENT_ENERGY),
-                getScaled(block.acImportedApparentEnergyPhaseA, block.acApparentEnergySF, WATT_HOUR)); // TODO: this
-                                                                                                       // should be
-                                                                                                       // VA_HOUR
+                getScaled(phaseBlock.acImportedApparentEnergy, block.acApparentEnergySF, WATT_HOUR)); // TODO: this
+                                                                                                      // should be
+                                                                                                      // VA_HOUR
 
         updateState(channelUID(group, CHANNEL_AC_IMPORTED_REACTIVE_ENERGY_Q1),
-                getScaled(block.acImportedReactiveEnergyQ1PhaseA, block.acReactiveEnergySF, WATT_HOUR)); // TODO: this
-                                                                                                         // should be
-                                                                                                         // VAR_HOUR
+                getScaled(phaseBlock.acImportedReactiveEnergyQ1, block.acReactiveEnergySF, WATT_HOUR)); // TODO: this
+                                                                                                        // should be
+                                                                                                        // VAR_HOUR
 
         updateState(channelUID(group, CHANNEL_AC_IMPORTED_REACTIVE_ENERGY_Q2),
-                getScaled(block.acImportedReactiveEnergyQ2PhaseA, block.acReactiveEnergySF, WATT_HOUR)); // TODO: this
-                                                                                                         // should be
-                                                                                                         // VAR_HOUR
+                getScaled(phaseBlock.acImportedReactiveEnergyQ2, block.acReactiveEnergySF, WATT_HOUR)); // TODO: this
+                                                                                                        // should be
+                                                                                                        // VAR_HOUR
 
         updateState(channelUID(group, CHANNEL_AC_EXPORTED_REACTIVE_ENERGY_Q3),
-                getScaled(block.acExportedReactiveEnergyQ3PhaseA, block.acReactiveEnergySF, WATT_HOUR)); // TODO: this
-                                                                                                         // should be
-                                                                                                         // VAR_HOUR
+                getScaled(phaseBlock.acExportedReactiveEnergyQ3, block.acReactiveEnergySF, WATT_HOUR)); // TODO: this
+                                                                                                        // should be
+                                                                                                        // VAR_HOUR
 
         updateState(channelUID(group, CHANNEL_AC_EXPORTED_REACTIVE_ENERGY_Q4),
-                getScaled(block.acExportedReactiveEnergyQ4PhaseA, block.acReactiveEnergySF, WATT_HOUR)); // TODO: this
-                                                                                                         // should be
-                                                                                                         // VAR_HOUR
-    }
-
-    /**
-     * Update the phase A states from the received block
-     *
-     * @param block
-     */
-    private void updatePhaseBValues(MeterModelBlock block) {
-        String group = GROUP_AC_PHASE_B;
-        updateState(channelUID(group, CHANNEL_AC_PHASE_CURRENT),
-                getScaled(block.acCurrentPhaseB, block.acCurrentSF, AMPERE));
-
-        updateState(channelUID(group, CHANNEL_AC_VOLTAGE_TO_N),
-                getScaled(block.acVoltageBtoN, block.acVoltageSF, VOLT));
-
-        updateState(channelUID(group, CHANNEL_AC_VOLTAGE_TO_NEXT),
-                getScaled(block.acVoltageBC, block.acVoltageSF, VOLT));
-
-        updateState(channelUID(group, CHANNEL_AC_REAL_POWER),
-                getScaled(block.acRealPowerPhaseB, block.acRealPowerSF, WATT));
-
-        updateState(channelUID(group, CHANNEL_AC_APPARENT_POWER),
-                getScaled(block.acApparentPowerPhaseB, block.acApparentPowerSF, WATT)); // TODO: this should be VA
-
-        updateState(channelUID(group, CHANNEL_AC_REACTIVE_POWER),
-                getScaled(block.acReactivePowerPhaseB, block.acReactivePowerSF, WATT)); // TODO: this should be VAR
-
-        updateState(channelUID(group, CHANNEL_AC_POWER_FACTOR),
-                getScaled(block.acPowerFactorPhaseB, block.acPowerFactorSF, PERCENT));
-
-        updateState(channelUID(group, CHANNEL_AC_EXPORTED_REAL_ENERGY),
-                getScaled(block.acExportedRealEnergyPhaseB, block.acRealEnergySF, WATT_HOUR));
-
-        updateState(channelUID(group, CHANNEL_AC_IMPORTED_REAL_ENERGY),
-                getScaled(block.acImportedRealEnergyPhaseB, block.acRealEnergySF, WATT_HOUR));
-
-        updateState(channelUID(group, CHANNEL_AC_EXPORTED_APPARENT_ENERGY),
-                getScaled(block.acExportedApparentEnergyPhaseB, block.acApparentEnergySF, WATT_HOUR)); // TODO: this
-                                                                                                       // should be
-                                                                                                       // VA_HOUR
-
-        updateState(channelUID(group, CHANNEL_AC_IMPORTED_APPARENT_ENERGY),
-                getScaled(block.acImportedApparentEnergyPhaseB, block.acApparentEnergySF, WATT_HOUR)); // TODO: this
-                                                                                                       // should be
-                                                                                                       // VA_HOUR
-
-        updateState(channelUID(group, CHANNEL_AC_IMPORTED_REACTIVE_ENERGY_Q1),
-                getScaled(block.acImportedReactiveEnergyQ1PhaseB, block.acReactiveEnergySF, WATT_HOUR)); // TODO: this
-                                                                                                         // should be
-                                                                                                         // VAR_HOUR
-
-        updateState(channelUID(group, CHANNEL_AC_IMPORTED_REACTIVE_ENERGY_Q2),
-                getScaled(block.acImportedReactiveEnergyQ2PhaseB, block.acReactiveEnergySF, WATT_HOUR)); // TODO: this
-                                                                                                         // should be
-                                                                                                         // VAR_HOUR
-
-        updateState(channelUID(group, CHANNEL_AC_EXPORTED_REACTIVE_ENERGY_Q3),
-                getScaled(block.acExportedReactiveEnergyQ3PhaseB, block.acReactiveEnergySF, WATT_HOUR)); // TODO: this
-                                                                                                         // should be
-                                                                                                         // VAR_HOUR
-
-        updateState(channelUID(group, CHANNEL_AC_EXPORTED_REACTIVE_ENERGY_Q4),
-                getScaled(block.acExportedReactiveEnergyQ4PhaseB, block.acReactiveEnergySF, WATT_HOUR)); // TODO: this
-                                                                                                         // should be
-                                                                                                         // VAR_HOUR
-    }
-
-    /**
-     * Update the phase C states from the received block
-     *
-     * @param block
-     */
-    private void updatePhaseCValues(MeterModelBlock block) {
-        String group = GROUP_AC_PHASE_C;
-        updateState(channelUID(group, CHANNEL_AC_PHASE_CURRENT),
-                getScaled(block.acCurrentPhaseC, block.acCurrentSF, AMPERE));
-
-        updateState(channelUID(group, CHANNEL_AC_VOLTAGE_TO_N),
-                getScaled(block.acVoltageCtoN, block.acVoltageSF, VOLT));
-
-        updateState(channelUID(group, CHANNEL_AC_VOLTAGE_TO_NEXT),
-                getScaled(block.acVoltageCA, block.acVoltageSF, VOLT));
-
-        updateState(channelUID(group, CHANNEL_AC_REAL_POWER),
-                getScaled(block.acRealPowerPhaseC, block.acRealPowerSF, WATT));
-
-        updateState(channelUID(group, CHANNEL_AC_APPARENT_POWER),
-                getScaled(block.acApparentPowerPhaseC, block.acApparentPowerSF, WATT)); // TODO: this should be VA
-
-        updateState(channelUID(group, CHANNEL_AC_REACTIVE_POWER),
-                getScaled(block.acReactivePowerPhaseC, block.acReactivePowerSF, WATT)); // TODO: this should be VAR
-
-        updateState(channelUID(group, CHANNEL_AC_POWER_FACTOR),
-                getScaled(block.acPowerFactorPhaseC, block.acPowerFactorSF, PERCENT));
-
-        updateState(channelUID(group, CHANNEL_AC_EXPORTED_REAL_ENERGY),
-                getScaled(block.acExportedRealEnergyPhaseC, block.acRealEnergySF, WATT_HOUR));
-
-        updateState(channelUID(group, CHANNEL_AC_IMPORTED_REAL_ENERGY),
-                getScaled(block.acImportedRealEnergyPhaseC, block.acRealEnergySF, WATT_HOUR));
-
-        updateState(channelUID(group, CHANNEL_AC_EXPORTED_APPARENT_ENERGY),
-                getScaled(block.acExportedApparentEnergyPhaseC, block.acApparentEnergySF, WATT_HOUR)); // TODO: this
-                                                                                                       // should be
-                                                                                                       // VA_HOUR
-
-        updateState(channelUID(group, CHANNEL_AC_IMPORTED_APPARENT_ENERGY),
-                getScaled(block.acImportedApparentEnergyPhaseC, block.acApparentEnergySF, WATT_HOUR)); // TODO: this
-                                                                                                       // should be
-                                                                                                       // VA_HOUR
-
-        updateState(channelUID(group, CHANNEL_AC_IMPORTED_REACTIVE_ENERGY_Q1),
-                getScaled(block.acImportedReactiveEnergyQ1PhaseC, block.acReactiveEnergySF, WATT_HOUR)); // TODO: this
-                                                                                                         // should be
-                                                                                                         // VAR_HOUR
-
-        updateState(channelUID(group, CHANNEL_AC_IMPORTED_REACTIVE_ENERGY_Q2),
-                getScaled(block.acImportedReactiveEnergyQ2PhaseC, block.acReactiveEnergySF, WATT_HOUR)); // TODO: this
-                                                                                                         // should be
-                                                                                                         // VAR_HOUR
-
-        updateState(channelUID(group, CHANNEL_AC_EXPORTED_REACTIVE_ENERGY_Q3),
-                getScaled(block.acExportedReactiveEnergyQ3PhaseC, block.acReactiveEnergySF, WATT_HOUR)); // TODO: this
-                                                                                                         // should be
-                                                                                                         // VAR_HOUR
-
-        updateState(channelUID(group, CHANNEL_AC_EXPORTED_REACTIVE_ENERGY_Q4),
-                getScaled(block.acExportedReactiveEnergyQ4PhaseC, block.acReactiveEnergySF, WATT_HOUR)); // TODO: this
-                                                                                                         // should be
-                                                                                                         // VAR_HOUR
+                getScaled(phaseBlock.acExportedReactiveEnergyQ4, block.acReactiveEnergySF, WATT_HOUR)); // TODO: this
+                                                                                                        // should be
+                                                                                                        // VAR_HOUR
     }
 
 }

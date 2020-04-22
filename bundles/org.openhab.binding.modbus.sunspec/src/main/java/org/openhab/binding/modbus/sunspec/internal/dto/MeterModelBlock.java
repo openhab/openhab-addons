@@ -39,19 +39,19 @@ public class MeterModelBlock {
     public Short acCurrentTotal;
 
     /**
-     * AC Phase A Current value
+     * Descriptors for phase A
      */
-    public Short acCurrentPhaseA;
+    public PhaseBlock phaseA = new PhaseBlock();
 
     /**
-     * AC Phase B Current value
+     * Descriptors for phase B
      */
-    public Optional<Short> acCurrentPhaseB;
+    public PhaseBlock phaseB = new PhaseBlock();
 
     /**
-     * AC Phase C Current value
+     * Descriptors for phase C
      */
-    public Optional<Short> acCurrentPhaseC;
+    public PhaseBlock phaseC = new PhaseBlock();
 
     /**
      * AC Current scale factor
@@ -64,39 +64,9 @@ public class MeterModelBlock {
     public Optional<Short> acVoltageLineToNAverage;
 
     /**
-     * AC Voltage Phase A to N value
-     */
-    public Optional<Short> acVoltageAtoN;
-
-    /**
-     * AC Voltage Phase B to N value
-     */
-    public Optional<Short> acVoltageBtoN;
-
-    /**
-     * AC Voltage Phase C to N value
-     */
-    public Optional<Short> acVoltageCtoN;
-
-    /**
      * AC Voltage Line to N value
      */
     public Optional<Short> acVoltageLineToLineAverage;
-
-    /**
-     * AC Voltage Phase AB value
-     */
-    public Optional<Short> acVoltageAB;
-
-    /**
-     * AC Voltage Phase BC value
-     */
-    public Optional<Short> acVoltageBC;
-
-    /**
-     * AC Voltage Phase CA value
-     */
-    public Optional<Short> acVoltageCA;
 
     /**
      * AC Voltage scale factor
@@ -119,21 +89,6 @@ public class MeterModelBlock {
     public Short acRealPowerTotal;
 
     /**
-     * Phase A AC real power
-     */
-    public Optional<Short> acRealPowerPhaseA;
-
-    /**
-     * Phase B AC real power
-     */
-    public Optional<Short> acRealPowerPhaseB;
-
-    /**
-     * Phase C AC real power
-     */
-    public Optional<Short> acRealPowerPhaseC;
-
-    /**
      * AC Real Power Scale Factor
      */
     public Short acRealPowerSF;
@@ -142,21 +97,6 @@ public class MeterModelBlock {
      * Total apparent power
      */
     public Optional<Short> acApparentPowerTotal;
-
-    /**
-     * Phase A AC apparent power
-     */
-    public Optional<Short> acApparentPowerPhaseA;
-
-    /**
-     * Phase B AC apparent power
-     */
-    public Optional<Short> acApparentPowerPhaseB;
-
-    /**
-     * Phase C AC apparent power
-     */
-    public Optional<Short> acApparentPowerPhaseC;
 
     /**
      * AC Apparent Power Scale Factor
@@ -169,21 +109,6 @@ public class MeterModelBlock {
     public Optional<Short> acReactivePowerTotal;
 
     /**
-     * Phase A AC reactive power
-     */
-    public Optional<Short> acReactivePowerPhaseA;
-
-    /**
-     * Phase B AC reactive power
-     */
-    public Optional<Short> acReactivePowerPhaseB;
-
-    /**
-     * Phase C AC reactive power
-     */
-    public Optional<Short> acReactivePowerPhaseC;
-
-    /**
      * AC Reactive Power Scale Factor
      */
     public Optional<Short> acReactivePowerSF;
@@ -192,21 +117,6 @@ public class MeterModelBlock {
      * Power factor
      */
     public Optional<Short> acPowerFactor;
-
-    /**
-     * Phase A Power factor
-     */
-    public Optional<Short> acPowerFactorPhaseA;
-
-    /**
-     * Phase B Power factor
-     */
-    public Optional<Short> acPowerFactorPhaseB;
-
-    /**
-     * Phase C Power factor
-     */
-    public Optional<Short> acPowerFactorPhaseC;
 
     /**
      * Power factor scale factor
@@ -219,39 +129,9 @@ public class MeterModelBlock {
     public Optional<Long> acExportedRealEnergyTotal;
 
     /**
-     * Phase A exported real energy
-     */
-    public Optional<Long> acExportedRealEnergyPhaseA;
-
-    /**
-     * Phase B exported real energy
-     */
-    public Optional<Long> acExportedRealEnergyPhaseB;
-
-    /**
-     * Phase C exported real energy
-     */
-    public Optional<Long> acExportedRealEnergyPhaseC;
-
-    /**
      * Total imported real energy
      */
     public Long acImportedRealEnergyTotal;
-
-    /**
-     * Phase A imported real energy
-     */
-    public Optional<Long> acImportedRealEnergyPhaseA;
-
-    /**
-     * Phase B imported real energy
-     */
-    public Optional<Long> acImportedRealEnergyPhaseB;
-
-    /**
-     * Phase C imported real energy
-     */
-    public Optional<Long> acImportedRealEnergyPhaseC;
 
     /**
      * Real Energy Scale Factor
@@ -264,39 +144,9 @@ public class MeterModelBlock {
     public Optional<Long> acExportedApparentEnergyTotal;
 
     /**
-     * Phase A exported apparent energy
-     */
-    public Optional<Long> acExportedApparentEnergyPhaseA;
-
-    /**
-     * Phase B exported apparent energy
-     */
-    public Optional<Long> acExportedApparentEnergyPhaseB;
-
-    /**
-     * Phase C exported apparent energy
-     */
-    public Optional<Long> acExportedApparentEnergyPhaseC;
-
-    /**
      * Total imported apparent energy
      */
     public Optional<Long> acImportedApparentEnergyTotal;
-
-    /**
-     * Phase A imported apparent energy
-     */
-    public Optional<Long> acImportedApparentEnergyPhaseA;
-
-    /**
-     * Phase B imported apparent energy
-     */
-    public Optional<Long> acImportedApparentEnergyPhaseB;
-
-    /**
-     * Phase C imported apparent energy
-     */
-    public Optional<Long> acImportedApparentEnergyPhaseC;
 
     /**
      * Apparent Energy Scale Factor
@@ -309,39 +159,9 @@ public class MeterModelBlock {
     public Optional<Long> acImportedReactiveEnergyQ1Total;
 
     /**
-     * Quadrant 1: Phase A imported reactive energy
-     */
-    public Optional<Long> acImportedReactiveEnergyQ1PhaseA;
-
-    /**
-     * Quadrant 1: Phase B imported reactive energy
-     */
-    public Optional<Long> acImportedReactiveEnergyQ1PhaseB;
-
-    /**
-     * Quadrant 1: Phase C imported reactive energy
-     */
-    public Optional<Long> acImportedReactiveEnergyQ1PhaseC;
-
-    /**
      * Quadrant 2: Total imported reactive energy
      */
     public Optional<Long> acImportedReactiveEnergyQ2Total;
-
-    /**
-     * Quadrant 2: Phase A imported reactive energy
-     */
-    public Optional<Long> acImportedReactiveEnergyQ2PhaseA;
-
-    /**
-     * Quadrant 2: Phase B imported reactive energy
-     */
-    public Optional<Long> acImportedReactiveEnergyQ2PhaseB;
-
-    /**
-     * Quadrant 2: Phase C imported reactive energy
-     */
-    public Optional<Long> acImportedReactiveEnergyQ2PhaseC;
 
     /**
      * Quadrant 3: Total exported reactive energy
@@ -349,43 +169,94 @@ public class MeterModelBlock {
     public Optional<Long> acExportedReactiveEnergyQ3Total;
 
     /**
-     * Quadrant 3: Phase A exported reactive energy
-     */
-    public Optional<Long> acExportedReactiveEnergyQ3PhaseA;
-
-    /**
-     * Quadrant 3: Phase B exported reactive energy
-     */
-    public Optional<Long> acExportedReactiveEnergyQ3PhaseB;
-
-    /**
-     * Quadrant 3: Phase C exported reactive energy
-     */
-    public Optional<Long> acExportedReactiveEnergyQ3PhaseC;
-
-    /**
      * Quadrant 4: Total exported reactive energy
      */
     public Optional<Long> acExportedReactiveEnergyQ4Total;
 
     /**
-     * Quadrant 4: Phase A exported reactive energy
-     */
-    public Optional<Long> acExportedReactiveEnergyQ4PhaseA;
-
-    /**
-     * Quadrant 4: Phase B exported reactive energy
-     */
-    public Optional<Long> acExportedReactiveEnergyQ4PhaseB;
-
-    /**
-     * Quadrant 4: Phase C exported reactive energy
-     */
-    public Optional<Long> acExportedReactiveEnergyQ4PhaseC;
-
-    /**
      * Reactive Energy Scale Factor
      */
     public Optional<Short> acReactiveEnergySF;
+
+    /**
+     * This subclass is used to store raw data for a single phase in
+     * multi phase meters.
+     */
+    public static class PhaseBlock {
+        /**
+         * AC Phase A Current value
+         */
+        public Optional<Short> acPhaseCurrent;
+
+        /**
+         * AC Voltage Phase Phase to N value
+         */
+        public Optional<Short> acVoltageToN;
+
+        /**
+         * AC Voltage Phase Line to next Line value
+         */
+        public Optional<Short> acVoltageToNext;
+
+        /**
+         * Phase A AC real power
+         */
+        public Optional<Short> acRealPower;
+
+        /**
+         * Phase A AC apparent power
+         */
+        public Optional<Short> acApparentPower;
+
+        /**
+         * Phase A AC reactive power
+         */
+        public Optional<Short> acReactivePower;
+
+        /**
+         * Phase A Power factor
+         */
+        public Optional<Short> acPowerFactor;
+
+        /**
+         * Phase A exported real energy
+         */
+        public Optional<Long> acExportedRealEnergy;
+
+        /**
+         * Phase A imported real energy
+         */
+        public Optional<Long> acImportedRealEnergy;
+
+        /**
+         * Phase A exported apparent energy
+         */
+        public Optional<Long> acExportedApparentEnergy;
+
+        /**
+         * Phase A imported apparent energy
+         */
+        public Optional<Long> acImportedApparentEnergy;
+
+        /**
+         * Quadrant 1: Phase A imported reactive energy
+         */
+        public Optional<Long> acImportedReactiveEnergyQ1;
+
+        /**
+         * Quadrant 2: Phase A imported reactive energy
+         */
+        public Optional<Long> acImportedReactiveEnergyQ2;
+
+        /**
+         * Quadrant 3: Phase A exported reactive energy
+         */
+        public Optional<Long> acExportedReactiveEnergyQ3;
+
+        /**
+         * Quadrant 4: Phase A exported reactive energy
+         */
+        public Optional<Long> acExportedReactiveEnergyQ4;
+    }
 
 }
