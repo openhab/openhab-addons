@@ -55,7 +55,7 @@
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="ac-imported-real-energy-type">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Real Energy Imported</label>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -82,7 +82,7 @@
 	</channel-type>
 
 	<channel-type id="ac-total-imported-reactive-energy-q1-type">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Total Reactive Energy Imported Quadrant 1</label>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
