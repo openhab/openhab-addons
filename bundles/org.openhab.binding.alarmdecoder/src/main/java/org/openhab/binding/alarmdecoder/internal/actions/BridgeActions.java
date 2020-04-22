@@ -57,6 +57,7 @@ public class BridgeActions implements ThingActions {
      */
     @RuleAction(label = "reboot", description = "Reboot the Alarm Decoder device")
     public void reboot() {
+        ADBridgeHandler bridge = this.bridge;
         if (bridge != null) {
             bridge.sendADCommand(ADCommand.reboot());
             logger.debug("Sending reboot command.");
