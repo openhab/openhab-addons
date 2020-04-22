@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -52,20 +52,33 @@ public class WlanThermoConfiguration {
         return ipAddress;
     }
 
-    public URI getUri(String path) throws URISyntaxException {
+    public URI getUri(String path, boolean authenticated) throws URISyntaxException {
         String uri = ipAddress;
+        if (authenticated) {
+            if (!(username != null && !username.isEmpty() && password != null && !password.isEmpty())) {
+                throw new URISyntaxException("Cannot create authenticated URI", "No username/password provided!");
+            }
+            uri = username + ":" + password + "@" + uri;
+        }
+
         if (!uri.startsWith("http://")) {
             uri = "http://" + uri;
         }
+
         if (!path.startsWith("/") && !uri.endsWith("/")) {
             uri = uri + "/";
         }
         uri = uri + path;
+
         return new URI(uri);
     }
 
     public URI getUri() throws URISyntaxException {
-        return getUri("");
+        return getUri("", false);
+    }
+
+    public URI getUri(String path) throws URISyntaxException {
+        return getUri(path, false);
     }
     
     public void setIpAddress(String ipAddress) {
@@ -97,4 +110,6 @@ public class WlanThermoConfiguration {
     public void setPollingInterval(int pollingInterval) {
         this.pollingInterval = pollingInterval;
     }
+
+    
 }

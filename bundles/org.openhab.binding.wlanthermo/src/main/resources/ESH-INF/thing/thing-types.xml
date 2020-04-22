@@ -209,7 +209,6 @@
 		<item-type>String</item-type>
 		<label>Probe Name</label>
 		<category>Text</category>
-		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="typ" advanced="true">
