@@ -16,6 +16,7 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.Executor;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
@@ -25,9 +26,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author blafois
+ * @author Benjamin Lafois
  *
  */
+@NonNullByDefault
 public class SetSetpointCommand extends BRC1HCommand {
 
     private final Logger logger = LoggerFactory.getLogger(SetSetpointCommand.class);

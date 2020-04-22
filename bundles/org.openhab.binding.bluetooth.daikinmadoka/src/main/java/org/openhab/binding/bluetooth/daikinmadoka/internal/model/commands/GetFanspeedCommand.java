@@ -17,13 +17,14 @@ import java.util.concurrent.Executor;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
+import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaParsingException;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaProperties.FanSpeed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author blafois
+ * @author Benjamin Lafois
  *
  */
 @NonNullByDefault
@@ -40,7 +41,8 @@ public class GetFanspeedCommand extends BRC1HCommand {
     }
 
     @Override
-    public boolean handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm) {
+    public boolean handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm)
+            throws MadokaParsingException {
         try {
             this.coolingFanSpeed = FanSpeed.valueOf(mm.getValues().get(0x20).getRawValue()[0]);
             this.heatingFanSpeed = FanSpeed.valueOf(mm.getValues().get(0x21).getRawValue()[0]);
@@ -53,10 +55,9 @@ public class GetFanspeedCommand extends BRC1HCommand {
 
             return true;
         } catch (Exception e) {
-            logger.debug("Error while parsing response", e);
             setState(State.FAILED);
+            throw new MadokaParsingException(e);
         }
-        return false;
     }
 
     @Override

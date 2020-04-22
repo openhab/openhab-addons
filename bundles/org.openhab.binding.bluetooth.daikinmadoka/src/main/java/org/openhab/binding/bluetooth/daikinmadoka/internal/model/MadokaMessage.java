@@ -15,6 +15,7 @@ package org.openhab.binding.bluetooth.daikinmadoka.internal.model;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +28,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author blafois
+ * @author Benjamin Lafois
  *
  */
 @NonNullByDefault
@@ -35,13 +36,8 @@ public class MadokaMessage {
 
     private static final Logger logger = LoggerFactory.getLogger(MadokaMessage.class);
 
-    /**
-     * Maximum number of bytes per message chunk, including headers
-     */
-    public static final int MAX_CHUNK_SIZE = 20;
-
     private int messageId;
-    private Map<Integer, MadokaValue> values;
+    private final Map<Integer, MadokaValue> values;
 
     private byte @Nullable [] rawMessage;
 
@@ -85,7 +81,10 @@ public class MadokaMessage {
     }
 
     public static MadokaMessage parse(byte[] msg) throws MadokaParsingException {
-        if (msg.length < 1) {
+        // Msg format (bytes):
+        // <Msg Length> <msg id> <msg id> <msg id> ...
+        // So MINIMAL length is 4, to cover the message length + message ID
+        if (msg.length < 4) {
             throw new MadokaParsingException("Message received is too short to be parsed.");
         }
         if (msg[0] != msg.length) {
@@ -94,15 +93,24 @@ public class MadokaMessage {
 
         MadokaMessage m = new MadokaMessage();
         m.setRawMessage(msg);
-        // m.messageId = ByteBuffer.wrap(msg, 2, 2).getShort();
-        m.messageId = ((msg[0] & 0xff) << 8) | (msg[1] & 0xff);
+        m.messageId = ByteBuffer.wrap(msg, 2, 2).getShort();
 
         MadokaValue mv = null;
 
+        // Starting here, we are not on the safe side with previous msg.length check
         for (int i = 4; i < msg.length;) {
+            if ((i + 1) >= msg.length) {
+                throw new MadokaParsingException("Truncated message detected while parsing response value header");
+            }
+
             mv = new MadokaValue();
             mv.setId(msg[i]);
             mv.setSize(Byte.toUnsignedInt(msg[i + 1]));
+
+            if ((i + 2 + mv.getSize()) >= msg.length) {
+                throw new MadokaParsingException("Truncated message detected while parsing response value content");
+            }
+
             mv.setRawValue(Arrays.copyOfRange(msg, i + 2, i + 2 + mv.getSize()));
 
             i += 2 + mv.getSize();

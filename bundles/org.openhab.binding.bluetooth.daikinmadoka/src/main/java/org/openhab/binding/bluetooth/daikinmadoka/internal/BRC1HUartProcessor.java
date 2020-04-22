@@ -24,11 +24,16 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author blafois
+ * @author Benjamin Lafois
  *
  */
 @NonNullByDefault
 public class BRC1HUartProcessor {
+
+    /**
+     * Maximum number of bytes per message chunk, including headers
+     */
+    public static final int MAX_CHUNK_SIZE = 20;
 
     /**
      * In the unlikely event of messages arrive in wrong order, this comparator will sort the queue
@@ -50,7 +55,6 @@ public class BRC1HUartProcessor {
      * @return
      */
     private boolean isMessageComplete() {
-
         int messagesInQueue = this.uartMessages.size();
 
         if (messagesInQueue <= 0) {
@@ -58,12 +62,11 @@ public class BRC1HUartProcessor {
         }
 
         byte[] firstMessageInQueue = uartMessages.first();
-
         if (firstMessageInQueue.length < 2) {
             return false;
         }
 
-        int expectedChunks = (int) Math.ceil(firstMessageInQueue[1] / 19.0);
+        int expectedChunks = (int) Math.ceil(firstMessageInQueue[1] / (MAX_CHUNK_SIZE - 1.0));
         if (expectedChunks != messagesInQueue) {
             return false;
         }
@@ -83,7 +86,6 @@ public class BRC1HUartProcessor {
     }
 
     public void chunkReceived(byte[] byteValue) {
-
         this.uartMessages.add(byteValue);
         if (isMessageComplete()) {
 

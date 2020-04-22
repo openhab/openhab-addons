@@ -14,22 +14,26 @@ package org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands;
 
 import java.util.concurrent.Executor;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
+import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaParsingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author blafois
+ * @author Benjamin Lafois
  *
  */
+@NonNullByDefault
 public class GetSetpointCommand extends BRC1HCommand {
 
     private final Logger logger = LoggerFactory.getLogger(GetSetpointCommand.class);
 
-    private DecimalType heatingSetpoint;
-    private DecimalType coolingSetpoint;
+    private @Nullable DecimalType heatingSetpoint;
+    private @Nullable DecimalType coolingSetpoint;
 
     @Override
     public byte[] getRequest() {
@@ -37,7 +41,8 @@ public class GetSetpointCommand extends BRC1HCommand {
     }
 
     @Override
-    public boolean handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm) {
+    public boolean handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm)
+            throws MadokaParsingException {
         try {
             Integer iHeatingSetpoint = (int) (mm.getValues().get(0x21).getComputedValue() / 128.);
             Integer iCoolingSetpoint = (int) (mm.getValues().get(0x20).getComputedValue() / 128.);
@@ -53,10 +58,9 @@ public class GetSetpointCommand extends BRC1HCommand {
 
             return true;
         } catch (Exception e) {
-            logger.debug("Error while parsing response", e);
             setState(State.FAILED);
+            throw new MadokaParsingException(e);
         }
-        return false;
     }
 
     @Override
@@ -64,11 +68,11 @@ public class GetSetpointCommand extends BRC1HCommand {
         return 64;
     }
 
-    public DecimalType getHeatingSetpoint() {
+    public @Nullable DecimalType getHeatingSetpoint() {
         return heatingSetpoint;
     }
 
-    public DecimalType getCoolingSetpoint() {
+    public @Nullable DecimalType getCoolingSetpoint() {
         return coolingSetpoint;
     }
 

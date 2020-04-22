@@ -14,22 +14,26 @@ package org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands;
 
 import java.util.concurrent.Executor;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
+import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaParsingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author blafois
+ * @author Benjamin Lafois
  *
  */
+@NonNullByDefault
 public class GetIndoorOutoorTemperatures extends BRC1HCommand {
 
     private final Logger logger = LoggerFactory.getLogger(GetIndoorOutoorTemperatures.class);
 
-    private DecimalType indoorTemperature;
-    private DecimalType outdoorTemperature;
+    private @Nullable DecimalType indoorTemperature;
+    private @Nullable DecimalType outdoorTemperature;
 
     @Override
     public byte[] getRequest() {
@@ -37,7 +41,8 @@ public class GetIndoorOutoorTemperatures extends BRC1HCommand {
     }
 
     @Override
-    public boolean handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm) {
+    public boolean handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm)
+            throws MadokaParsingException {
         try {
             Integer iIndoorTemperature = Integer.valueOf(mm.getValues().get(0x40).getRawValue()[0]);
             Integer iOutdoorTemperature = Integer.valueOf(mm.getValues().get(0x41).getRawValue()[0]);
@@ -66,17 +71,16 @@ public class GetIndoorOutoorTemperatures extends BRC1HCommand {
 
             return true;
         } catch (Exception e) {
-            logger.debug("Error while parsing response", e);
             setState(State.FAILED);
+            throw new MadokaParsingException(e);
         }
-        return false;
     }
 
-    public DecimalType getIndoorTemperature() {
+    public @Nullable DecimalType getIndoorTemperature() {
         return indoorTemperature;
     }
 
-    public DecimalType getOutdoorTemperature() {
+    public @Nullable DecimalType getOutdoorTemperature() {
         return outdoorTemperature;
     }
 

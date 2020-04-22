@@ -15,6 +15,7 @@ package org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands;
 import java.util.concurrent.Executor;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaProperties.FanSpeed;
@@ -24,9 +25,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author blafois
+ * @author Benjamin Lafois
  *
  */
+@NonNullByDefault
 public class SetFanspeedCommand extends BRC1HCommand {
 
     private final Logger logger = LoggerFactory.getLogger(SetFanspeedCommand.class);

@@ -14,21 +14,25 @@ package org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands;
 
 import java.util.concurrent.Executor;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
+import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaParsingException;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaProperties.OperationMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author blafois
+ * @author Benjamin Lafois
  *
  */
+@NonNullByDefault
 public class GetOperationmodeCommand extends BRC1HCommand {
 
     private final Logger logger = LoggerFactory.getLogger(GetOperationmodeCommand.class);
 
-    private OperationMode operationMode;
+    private @Nullable OperationMode operationMode;
 
     @Override
     public byte[] getRequest() {
@@ -36,7 +40,8 @@ public class GetOperationmodeCommand extends BRC1HCommand {
     }
 
     @Override
-    public boolean handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm) {
+    public boolean handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm)
+            throws MadokaParsingException {
         try {
             operationMode = OperationMode.valueOf(mm.getValues().get(0x20).getRawValue()[0]);
 
@@ -47,10 +52,9 @@ public class GetOperationmodeCommand extends BRC1HCommand {
 
             return true;
         } catch (Exception e) {
-            logger.debug("Error while parsing response", e);
             setState(State.FAILED);
+            throw new MadokaParsingException(e);
         }
-        return false;
     }
 
     @Override
@@ -58,7 +62,7 @@ public class GetOperationmodeCommand extends BRC1HCommand {
         return 48;
     }
 
-    public OperationMode getOperationMode() {
+    public @Nullable OperationMode getOperationMode() {
         return operationMode;
     }
 

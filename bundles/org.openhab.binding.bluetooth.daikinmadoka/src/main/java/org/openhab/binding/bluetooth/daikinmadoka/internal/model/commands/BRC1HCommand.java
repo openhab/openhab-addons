@@ -20,10 +20,11 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
+import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaParsingException;
 
 /**
  *
- * @author blafois
+ * @author Benjamin Lafois
  *
  */
 @NonNullByDefault
@@ -43,7 +44,8 @@ public abstract class BRC1HCommand {
 
     private final Condition stateCondition = stateLock.newCondition();
 
-    public abstract boolean handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm);
+    public abstract boolean handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm)
+            throws MadokaParsingException;
 
     /**
      * THis command returns the message to be sent

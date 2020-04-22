@@ -16,20 +16,18 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  *
- * @author blafois
+ * @author Benjamin Lafois
  *
  */
 @NonNullByDefault
 public class MadokaParsingException extends Exception {
 
-    private String message;
-
     public MadokaParsingException(String message) {
-        this.message = message;
+        super(message);
     }
 
-    @Override
-    public String getMessage() {
-        return message;
+    public MadokaParsingException(Throwable t) {
+        super(t);
     }
+
 }
