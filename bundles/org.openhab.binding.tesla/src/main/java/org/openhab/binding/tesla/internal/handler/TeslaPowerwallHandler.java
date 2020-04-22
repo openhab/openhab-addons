@@ -90,6 +90,7 @@ public class TeslaPowerwallHandler extends TeslaVehicleHandler {
     private static final int EVENT_TIMESTAMP_AGE_LIMIT = 3000;
     private static final int EVENT_TIMESTAMP_MAX_DELTA = 10000;
     private static final int FAST_STATUS_REFRESH_INTERVAL = 15000;
+//    private static final int SLOW_STATUS_REFRESH_INTERVAL = 60000;
     private static final int EVENT_MAXIMUM_ERRORS_IN_INTERVAL = 10;
     private static final int EVENT_ERROR_INTERVAL_SECONDS = 15;
     private static final int API_SLEEP_INTERVAL_MINUTES = 20;
@@ -124,7 +125,6 @@ public class TeslaPowerwallHandler extends TeslaVehicleHandler {
     public void initialize() {
         logger.debug("Initializing the Tesla Powerwall handler for {}", getThing().getUID());
         updateStatus(ThingStatus.UNKNOWN);
-        logger.debug("We don't do anything yet but we got here!");
         account = (TeslaAccountHandler) getBridge().getHandler();
         scheduler.execute(() -> queryPowerwallAndUpdate());
 
@@ -143,6 +143,12 @@ public class TeslaPowerwallHandler extends TeslaVehicleHandler {
                 fastStateJob = scheduler.scheduleWithFixedDelay(fastStateRunnable, 0, FAST_STATUS_REFRESH_INTERVAL,
                         TimeUnit.MILLISECONDS);
             }
+
+/*            if (slowStateJob == null || slowStateJob.isCancelled()) {
+                slowStateJob = scheduler.scheduleWithFixedDelay(slowStateRunnable, 0, SLOW_STATUS_REFRESH_INTERVAL,
+                        TimeUnit.MILLISECONDS);
+            }
+*/
         } finally {
 //            lock.unlock();
         }
@@ -165,6 +171,11 @@ public class TeslaPowerwallHandler extends TeslaVehicleHandler {
                 fastStateJob = null;
             }
 
+/*            if (slowStateJob != null && !slowStateJob.isCancelled()) {
+                slowStateJob.cancel(true);
+                slowStateJob = null;
+            }
+*/
             if (eventThread != null && !eventThread.isInterrupted()) {
                 eventThread.interrupt();
                 eventThread = null;
@@ -187,23 +198,21 @@ public class TeslaPowerwallHandler extends TeslaVehicleHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("handleCommand {} {}", channelUID, command);
-        String channelID = channelUID.getId();
-        TeslaChannelSelector selector = TeslaChannelSelector.getValueSelectorFromChannelID(channelID);
 
         if (command instanceof RefreshType) {
             // Request the state of all known variables. This is sub-optimal, but the requests get scheduled and
             // throttled so we are safe not to break the Tesla SLA
-            requestAllData();
+            //requestAllData();
         } else {
-            if (selector != null) {
                 try {
-// do nothing                  
+                  // do nothing                  
+                  switch (channelUID.getId()) {
+                  }
                 } catch (IllegalArgumentException e) {
                     logger.warn(
                             "An error occurred while trying to set the read-only variable associated with channel '{}' to '{}'",
-                            channelID, command.toString());
+                            channelUID.getId(), command.toString());
                 }
-            }
         }
     }
 
@@ -342,7 +351,8 @@ public class TeslaPowerwallHandler extends TeslaVehicleHandler {
                         updateState("powerwallpower", new QuantityType<Power>(new Float(power_readingjsonObject.get("battery_power").toString()), SmartHomeUnits.WATT));
                         updateState("gridstatus", new StringType(powerwallState.grid_status));
                         updateState("currentopstate", new StringType(powerwallState.operation));
-                        if (powerwallState.user_settings.get("storm_mode_enabled").toString() == "true") 
+logger.debug("Storm watch = {}",powerwallState.user_settings.get("storm_mode_enabled").toString());
+                        if (powerwallState.user_settings.get("storm_mode_enabled").toString().equals("true"))
                             updateState("stormwatch", OnOffType.ON);
                         else
                             updateState("stormwatch", OnOffType.OFF);
@@ -458,7 +468,20 @@ public class TeslaPowerwallHandler extends TeslaVehicleHandler {
         }
     }
 
+/*
+    protected Runnable slowStateRunnable = () -> {
+        queryPowerwallAndUpdate();
+
+        boolean allowQuery = allowQuery();
+
+        if (allowQuery) {
+              requestAllData();
+        }
+    };
+*/
+
     protected Runnable fastStateRunnable = () -> {
+        queryPowerwallAndUpdate();
         if (getThing().getStatus() == ThingStatus.ONLINE) {
             boolean allowQuery = allowQuery();
 
