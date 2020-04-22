@@ -262,6 +262,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             api.setConfig(thingName, config);
         }
         if (config.eventsCoIoT) {
+            logger.debug("{}: Starting CoIoT (autoCoIoT={}/{})", thingName, bindingConfig.autoCoIoT, autoCoIoT);
             coap.start(thingName, config);
         }
 
