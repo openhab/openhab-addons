@@ -41,8 +41,26 @@ public abstract class ADThingHandler extends BaseThingHandler {
         super(thing);
     }
 
-    protected abstract void initDeviceState();
+    /**
+     * Initialize device state and set status for handler. Should be called at the end of initialize(). Calls
+     * initChannelState() to initialize channels if setting status to ONLINE.
+     */
+    protected void initDeviceState() {
+        logger.trace("Initializing device state");
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
+        } else if (bridge.getStatus() == ThingStatus.ONLINE) {
+            initChannelState();
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        }
+    }
 
+    /**
+     * Initialize channel states if necessary
+     */
     public abstract void initChannelState();
 
     /**
@@ -53,7 +71,7 @@ public abstract class ADThingHandler extends BaseThingHandler {
 
     /**
      * Notify handler of a message from the AD via the bridge
-     * 
+     *
      * @param msg The ADMessage to handle
      */
     public abstract void handleUpdate(ADMessage msg);

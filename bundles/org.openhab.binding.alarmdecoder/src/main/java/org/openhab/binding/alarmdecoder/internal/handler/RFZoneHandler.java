@@ -17,7 +17,6 @@ import static org.openhab.binding.alarmdecoder.internal.AlarmDecoderBindingConst
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
-import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -62,21 +61,6 @@ public class RFZoneHandler extends ADThingHandler {
         logger.trace("RF Zone handler finished initializing");
     }
 
-    @Override
-    protected void initDeviceState() {
-        logger.trace("Initializing device state for RF Zone {}", config.serial);
-        Bridge bridge = getBridge();
-        if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
-        } else if (bridge.getStatus() == ThingStatus.ONLINE) {
-            initChannelState();
-            firstUpdateReceived.set(false);
-            updateStatus(ThingStatus.ONLINE);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-        }
-    }
-
     /**
      * Set contact channel states to "UNDEF" at init time. The real states will be set either when the first message
      * arrives for the zone, or they will be set to "CLOSED" the first time the panel goes into the "READY" state.
@@ -90,6 +74,7 @@ public class RFZoneHandler extends ADThingHandler {
         updateState(CHANNEL_RF_LOOP2, state);
         updateState(CHANNEL_RF_LOOP3, state);
         updateState(CHANNEL_RF_LOOP4, state);
+        firstUpdateReceived.set(false);
     }
 
     @Override

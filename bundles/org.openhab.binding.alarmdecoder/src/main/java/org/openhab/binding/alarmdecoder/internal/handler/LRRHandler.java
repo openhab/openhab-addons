@@ -17,7 +17,6 @@ import static org.openhab.binding.alarmdecoder.internal.AlarmDecoderBindingConst
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -59,20 +58,6 @@ public class LRRHandler extends ADThingHandler {
         initDeviceState();
 
         logger.trace("LRR handler finished initializing");
-    }
-
-    @Override
-    protected void initDeviceState() {
-        logger.trace("Initializing device state for RLL partition {}", config.partition);
-        Bridge bridge = getBridge();
-        if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
-        } else if (bridge.getStatus() == ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.ONLINE);
-            initChannelState();
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-        }
     }
 
     @Override

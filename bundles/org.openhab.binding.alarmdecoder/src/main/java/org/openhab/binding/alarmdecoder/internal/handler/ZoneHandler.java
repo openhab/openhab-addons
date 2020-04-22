@@ -16,7 +16,6 @@ import static org.openhab.binding.alarmdecoder.internal.AlarmDecoderBindingConst
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
-import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -68,21 +67,6 @@ public class ZoneHandler extends ADThingHandler {
         logger.trace("Zone handler finished initializing");
     }
 
-    @Override
-    protected void initDeviceState() {
-        logger.trace("Initializing device state for Zone {},{}", config.address, config.channel);
-        Bridge bridge = getBridge();
-        if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
-        } else if (bridge.getStatus() == ThingStatus.ONLINE) {
-            initChannelState();
-            firstUpdateReceived.set(false);
-            updateStatus(ThingStatus.ONLINE);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-        }
-    }
-
     /**
      * Set contact channel state to "UNDEF" at init time. The real state will be set either when the first message
      * arrives for the zone, or it should be set to "CLOSED" the first time the panel goes into the "READY" state.
@@ -91,6 +75,7 @@ public class ZoneHandler extends ADThingHandler {
     public void initChannelState() {
         UnDefType state = UnDefType.UNDEF;
         updateState(CHANNEL_CONTACT, state);
+        firstUpdateReceived.set(false);
     }
 
     @Override
