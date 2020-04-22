@@ -82,8 +82,6 @@ import org.slf4j.LoggerFactory;
  */
 public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOParticipant {
 
-    private final Logger logger = LoggerFactory.getLogger(ZonePlayerHandler.class);
-
     private static final String ANALOG_LINE_IN_URI = "x-rincon-stream:";
     private static final String OPTICAL_LINE_IN_URI = "x-sonos-htastream:";
     private static final String QUEUE_URI = "x-rincon-queue:";
@@ -100,21 +98,43 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     private static final String STATE_PAUSED_PLAYBACK = "PAUSED_PLAYBACK";
     private static final String STATE_STOPPED = "STOPPED";
 
-    private final ThingRegistry localThingRegistry;
-    private UpnpIOService service;
-    private ScheduledFuture<?> pollingJob;
-    private SonosZonePlayerState savedState = null;
-
     private static final Collection<String> SERVICE_SUBSCRIPTIONS = Arrays.asList("DeviceProperties", "AVTransport",
             "ZoneGroupTopology", "GroupManagement", "RenderingControl", "AudioIn", "HTControl", "ContentDirectory");
-    private Map<String, Boolean> subscriptionState = new HashMap<>();
     protected static final int SUBSCRIPTION_DURATION = 1800;
+
     private static final int SOCKET_TIMEOUT = 5000;
+
+    /**
+     * The default refresh interval when not specified in channel configuration.
+     */
+    private static final int DEFAULT_REFRESH_INTERVAL = 60;
 
     /**
      * Default notification timeout (in seconds)
      */
     private static final Integer DEFAULT_NOTIFICATION_TIMEOUT = 20;
+
+    private final Logger logger = LoggerFactory.getLogger(ZonePlayerHandler.class);
+
+    private final ThingRegistry localThingRegistry;
+    private final UpnpIOService service;
+    private final String opmlUrl;
+    private final SonosStateDescriptionOptionProvider stateDescriptionProvider;
+
+    /**
+     * Intrinsic lock used to synchronize the execution of notification sounds
+     */
+    private final Object notificationLock = new Object();
+    private final Object upnpLock = new Object();
+    private final Object stateLock = new Object();
+    private final Object jobLock = new Object();
+
+    private final Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<>());
+
+    private ScheduledFuture<?> pollingJob;
+    private SonosZonePlayerState savedState = null;
+
+    private Map<String, Boolean> subscriptionState = new HashMap<>();
 
     /**
      * configurable notification timeout (in seconds)
@@ -122,68 +142,11 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     private Integer notificationTimeout = null;
 
     /**
-     * Intrinsic lock used to synchronize the execution of notification sounds
-     */
-    private final Object notificationLock = new Object();
-
-    /**
      * {@link ThingHandler} instance of the coordinator speaker used for control delegation
      */
     private ZonePlayerHandler coordinatorHandler;
 
-    /**
-     * The default refresh interval when not specified in channel configuration.
-     */
-    private static final int DEFAULT_REFRESH_INTERVAL = 60;
-
-    private final Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<>());
-
     private List<SonosMusicService> musicServices;
-
-    private final Object upnpLock = new Object();
-
-    private final Object stateLock = new Object();
-
-    private final Object jobLock = new Object();
-
-    private final SonosStateDescriptionOptionProvider stateDescriptionProvider;
-
-    private final Runnable pollingRunnable = () -> {
-        synchronized (jobLock) {
-            try {
-                logger.debug("Polling job");
-
-                // First check if the Sonos zone is set in the UPnP service registry
-                // If not, set the thing state to OFFLINE and wait for the next poll
-                if (!isUpnpDeviceRegistered()) {
-                    logger.debug("UPnP device {} not yet registered", getUDN());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/offline.upnp-device-not-registered [\"" + getUDN() + "\"]");
-                    synchronized (upnpLock) {
-                        subscriptionState = new HashMap<>();
-                    }
-                    return;
-                }
-
-                // Check if the Sonos zone can be joined
-                // If not, set the thing state to OFFLINE and do nothing else
-                updatePlayerState();
-                if (getThing().getStatus() != ThingStatus.ONLINE) {
-                    return;
-                }
-
-                addSubscription();
-
-                updateZoneInfo();
-                updateLed();
-                updateSleepTimerDuration();
-            } catch (Exception e) {
-                logger.debug("Exception during poll: {}", e.getMessage(), e);
-            }
-        }
-    };
-
-    private final String opmlUrl;
 
     public ZonePlayerHandler(ThingRegistry thingRegistry, Thing thing, UpnpIOService upnpIOService, String opmlUrl,
             SonosStateDescriptionOptionProvider stateDescriptionProvider) {
@@ -191,9 +154,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         this.localThingRegistry = thingRegistry;
         this.opmlUrl = opmlUrl;
         logger.debug("Creating a ZonePlayerHandler for thing '{}'", getThing().getUID());
-        if (upnpIOService != null) {
-            this.service = upnpIOService;
-        }
+        this.service = upnpIOService;
         this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
@@ -231,6 +192,41 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-missing-udn");
             logger.debug("Cannot initalize the zoneplayer. UDN not set.");
+        }
+    }
+
+    private void poll() {
+        synchronized (jobLock) {
+            try {
+                logger.debug("Polling job");
+
+                // First check if the Sonos zone is set in the UPnP service registry
+                // If not, set the thing state to OFFLINE and wait for the next poll
+                if (!isUpnpDeviceRegistered()) {
+                    logger.debug("UPnP device {} not yet registered", getUDN());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "@text/offline.upnp-device-not-registered [\"" + getUDN() + "\"]");
+                    synchronized (upnpLock) {
+                        subscriptionState = new HashMap<>();
+                    }
+                    return;
+                }
+
+                // Check if the Sonos zone can be joined
+                // If not, set the thing state to OFFLINE and do nothing else
+                updatePlayerState();
+                if (getThing().getStatus() != ThingStatus.ONLINE) {
+                    return;
+                }
+
+                addSubscription();
+
+                updateZoneInfo();
+                updateLed();
+                updateSleepTimerDuration();
+            } catch (Exception e) {
+                logger.debug("Exception during poll: {}", e.getMessage(), e);
+            }
         }
     }
 
@@ -868,7 +864,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
             if (config.refresh != null) {
                 refreshInterval = config.refresh.intValue();
             }
-            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, refreshInterval, TimeUnit.SECONDS);
+            pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, refreshInterval, TimeUnit.SECONDS);
         }
     }
 
@@ -2947,7 +2943,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
             logger.info("UPnP device {} is present (thing {})", getUDN(), getThing().getUID());
             if (getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
-                scheduler.execute(pollingRunnable);
+                scheduler.execute(this::poll);
             }
         } else {
             logger.info("UPnP device {} is absent (thing {})", getUDN(), getThing().getUID());
