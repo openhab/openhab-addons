@@ -92,7 +92,10 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
         this.portManager = portManager;
     }
 
-    private void init() {
+    @Override
+    public void initialize() {
+        logger.trace("Initializing the Bridge handler.");
+
         CaddxBridgeConfiguration configuration = getConfigAs(CaddxBridgeConfiguration.class);
 
         protocol = configuration.getProtocol();
@@ -124,6 +127,7 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
             comm.transmit(new CaddxMessage(DISCOVERY_PARTITION_STATUS_REQUEST_0, false));
             comm.transmit(new CaddxMessage(DISCOVERY_PARTITIONS_SNAPSHOT_REQUEST, false));
         }
+
         // list all channels
         if (logger.isTraceEnabled()) {
             logger.trace("list all {} channels:", getThing().getChannels().size());
@@ -131,13 +135,6 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
                 logger.trace("Channel Type {} UID {}", c.getChannelTypeUID(), c.getUID());
             }
         }
-    }
-
-    @Override
-    public void initialize() {
-        logger.trace("Initializing the Bridge handler.");
-
-        init();
     }
 
     @Override
@@ -162,49 +159,44 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
         Thing thing = null;
 
         for (Thing t : things) {
-            try {
-                Configuration config = t.getConfiguration();
-                CaddxBaseThingHandler handler = (CaddxBaseThingHandler) t.getHandler();
+            CaddxBaseThingHandler handler = (CaddxBaseThingHandler) t.getHandler();
+            if (handler == null) {
+                continue;
+            }
 
-                if (handler != null) {
-                    CaddxThingType handlerCaddxThingType = handler.getCaddxThingType();
+            CaddxThingType handlerCaddxThingType = handler.getCaddxThingType();
+            if (!handlerCaddxThingType.equals(caddxThingType)) {
+                continue;
+            }
 
-                    if (handlerCaddxThingType.equals(caddxThingType)) {
-                        switch (handlerCaddxThingType) {
-                            case PANEL:
-                                thing = t;
-                                return thing;
-                            case KEYPAD:
-                                BigDecimal keypadAddress = (BigDecimal) config
-                                        .get(CaddxKeypadConfiguration.KEYPAD_ADDRESS);
-                                if (keypad == keypadAddress.intValue()) {
-                                    thing = t;
-                                    return thing;
-                                }
-                                break;
-                            case PARTITION:
-                                BigDecimal partitionNumber = (BigDecimal) config
-                                        .get(CaddxPartitionConfiguration.PARTITION_NUMBER);
-                                if (partition == partitionNumber.intValue()) {
-                                    thing = t;
-                                    return thing;
-                                }
-                                break;
-                            case ZONE:
-                                BigDecimal zoneNumber = (BigDecimal) config.get(CaddxZoneConfiguration.ZONE_NUMBER);
-                                if (zone == zoneNumber.intValue()) {
-                                    thing = t;
-                                    return thing;
-                                }
-                                break;
-                            default:
-                                break;
-                        }
+            Configuration config = t.getConfiguration();
+            switch (handlerCaddxThingType) {
+                case PANEL:
+                    thing = t;
+                    return thing;
+                case KEYPAD:
+                    BigDecimal keypadAddress = (BigDecimal) config.get(CaddxKeypadConfiguration.KEYPAD_ADDRESS);
+                    if (keypad == keypadAddress.intValue()) {
+                        thing = t;
+                        return thing;
                     }
-
-                }
-            } catch (Exception e) {
-                logger.warn("findThing(): Error Searching Thing - {} ", e.getMessage(), e);
+                    break;
+                case PARTITION:
+                    BigDecimal partitionNumber = (BigDecimal) config.get(CaddxPartitionConfiguration.PARTITION_NUMBER);
+                    if (partition == partitionNumber.intValue()) {
+                        thing = t;
+                        return thing;
+                    }
+                    break;
+                case ZONE:
+                    BigDecimal zoneNumber = (BigDecimal) config.get(CaddxZoneConfiguration.ZONE_NUMBER);
+                    if (zone == zoneNumber.intValue()) {
+                        thing = t;
+                        return thing;
+                    }
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -225,7 +217,7 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
                         updateStatus(ThingStatus.OFFLINE);
                     }
                 } else if (command == OnOffType.OFF) {
-                    init();
+                    initialize();
                     updateStatus(ThingStatus.ONLINE);
                 }
                 break;
@@ -260,27 +252,36 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
 
         CaddxMessage msg = null;
 
-        if (CaddxBindingConstants.ZONE_BYPASSED.equals(command)) {
-            msg = new CaddxMessage(CaddxMessageType.Zone_Bypass_Toggle, data);
-        } else if (CaddxBindingConstants.ZONE_STATUS_REQUEST.equals(command)) {
-            msg = new CaddxMessage(CaddxMessageType.Zone_Status_Request, data);
-        } else if (CaddxBindingConstants.ZONE_NAME_REQUEST.equals(command)) {
-            msg = new CaddxMessage(CaddxMessageType.Zone_Name_Request, data);
-        } else if (CaddxBindingConstants.PARTITION_STATUS_REQUEST.equals(command)) {
-            msg = new CaddxMessage(CaddxMessageType.Partition_Status_Request, data);
-        } else if (CaddxBindingConstants.PARTITION_PRIMARY_COMMAND.equals(command)) {
-            msg = new CaddxMessage(CaddxMessageType.Primary_Keypad_Function_without_PIN, data);
-        } else if (CaddxBindingConstants.PARTITION_SECONDARY_COMMAND.equals(command)) {
-            msg = new CaddxMessage(CaddxMessageType.Secondary_Keypad_Function, data);
-        } else if (CaddxBindingConstants.PANEL_SYSTEM_STATUS_REQUEST.equals(command)) {
-            msg = new CaddxMessage(CaddxMessageType.System_Status_Request, data);
-        } else if (CaddxBindingConstants.PANEL_INTERFACE_CONFIGURATION_REQUEST.equals(command)) {
-            msg = new CaddxMessage(CaddxMessageType.Interface_Configuration_Request, data);
-        } else if (CaddxBindingConstants.PANEL_LOG_EVENT_REQUEST.equals(command)) {
-            msg = new CaddxMessage(CaddxMessageType.Log_Event_Request, data);
-        } else {
-            logger.trace("Unknown command {}", command);
-            return false;
+        switch (command) {
+            case CaddxBindingConstants.ZONE_BYPASSED:
+                msg = new CaddxMessage(CaddxMessageType.Zone_Bypass_Toggle, data);
+                break;
+            case CaddxBindingConstants.ZONE_STATUS_REQUEST:
+                msg = new CaddxMessage(CaddxMessageType.Zone_Status_Request, data);
+                break;
+            case CaddxBindingConstants.ZONE_NAME_REQUEST:
+                msg = new CaddxMessage(CaddxMessageType.Zone_Name_Request, data);
+                break;
+            case CaddxBindingConstants.PARTITION_STATUS_REQUEST:
+                msg = new CaddxMessage(CaddxMessageType.Partition_Status_Request, data);
+                break;
+            case CaddxBindingConstants.PARTITION_PRIMARY_COMMAND:
+                msg = new CaddxMessage(CaddxMessageType.Primary_Keypad_Function_without_PIN, data);
+                break;
+            case CaddxBindingConstants.PARTITION_SECONDARY_COMMAND:
+                msg = new CaddxMessage(CaddxMessageType.Secondary_Keypad_Function, data);
+                break;
+            case CaddxBindingConstants.PANEL_SYSTEM_STATUS_REQUEST:
+                msg = new CaddxMessage(CaddxMessageType.System_Status_Request, data);
+                break;
+            case CaddxBindingConstants.PANEL_INTERFACE_CONFIGURATION_REQUEST:
+                msg = new CaddxMessage(CaddxMessageType.Interface_Configuration_Request, data);
+                break;
+            case CaddxBindingConstants.PANEL_LOG_EVENT_REQUEST:
+                msg = new CaddxMessage(CaddxMessageType.Log_Event_Request, data);
+            default:
+                logger.trace("Unknown command {}", command);
+                return false;
         }
 
         CaddxCommunicator comm = communicator;
@@ -296,13 +297,8 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
      *
      * @param discoveryService
      */
-    public void registerDiscoveryService(@Nullable CaddxDiscoveryService discoveryService) {
-        if (discoveryService == null) {
-            throw new IllegalArgumentException("registerDiscoveryService(): Illegal Argument. Not allowed to be Null!");
-        }
-
+    public void registerDiscoveryService(CaddxDiscoveryService discoveryService) {
         this.discoveryService = discoveryService;
-
         logger.trace("registerDiscoveryService(): Discovery Service Registered!");
     }
 

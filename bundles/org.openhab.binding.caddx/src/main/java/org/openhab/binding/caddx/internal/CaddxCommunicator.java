@@ -16,7 +16,9 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.TooManyListenersException;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.SynchronousQueue;
@@ -46,9 +48,9 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
     private final Logger logger = LoggerFactory.getLogger(CaddxCommunicator.class);
 
     private final SerialPortManager portManager;
-    private final ArrayList<CaddxPanelListener> listenerQueue = new ArrayList<>();
-    private final LinkedBlockingDeque<CaddxMessage> messages = new LinkedBlockingDeque<>();
-    private final SynchronousQueue<CaddxMessage> exchanger = new SynchronousQueue<CaddxMessage>();
+    private final Set<CaddxPanelListener> listenerQueue = new HashSet<>();
+    private final Deque<CaddxMessage> messages = new LinkedBlockingDeque<>();
+    private final SynchronousQueue<CaddxMessage> exchanger = new SynchronousQueue<>();
 
     private Thread thread;
     private CaddxProtocol protocol;
@@ -101,6 +103,7 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
         serialPort.addEventListener(this);
 
         thread = new Thread(this, "Caddx Communicator");
+        thread.setDaemon(true);
         thread.start();
 
         message = new byte[0];
