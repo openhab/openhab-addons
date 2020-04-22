@@ -157,11 +157,12 @@ public class JablotronDiscoveryService extends AbstractDiscoveryService implemen
                 String serviceId = String.valueOf(service.getId());
                 logger.debug("Found Jablotron service: {} id: {}", service.getName(), serviceId);
 
-                if (service.getServiceType().toLowerCase().equals(THING_TYPE_OASIS.getId())) {
+                String serviceType = service.getServiceType().toLowerCase();
+                if (serviceType.equals(THING_TYPE_OASIS.getId())) {
                     oasisDiscovered("Jablotron OASIS Alarm : " + service.getName(), serviceId);
-                } else if (service.getServiceType().equals(THING_TYPE_JA100.getId())) {
+                } else if (serviceType.equals(THING_TYPE_JA100.getId())) {
                     ja100Discovered("Jablotron JA100 Alarm : " + service.getName(), serviceId);
-                } else if (service.getServiceType().equals(THING_TYPE_JA100F.getId().toUpperCase())) {
+                } else if (serviceType.equals(THING_TYPE_JA100F.getId())) {
                     ja100fDiscovered("Jablotron JA100+ Alarm : " + service.getName(), serviceId);
                 } else {
                     logger.info("Unsupported device type discovered: {} with serviceId: {} and type: {}", service.getName(), serviceId, service.getServiceType());

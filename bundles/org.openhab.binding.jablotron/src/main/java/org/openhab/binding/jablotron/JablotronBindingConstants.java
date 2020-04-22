@@ -38,8 +38,6 @@ public class JablotronBindingConstants {
 
     // Common alarm channels
     public static final String CHANNEL_ALARM = "alarm";
-    //public static final String CHANNEL_LAST_TROUBLE = "lastTrouble";
-    //public static final String CHANNEL_LAST_TROUBLE_DETAIL = "lastTroubleDetail";
     public static final String CHANNEL_LAST_CHECK_TIME = "lastCheckTime";
     public static final String CHANNEL_LAST_EVENT = "lastEvent";
     public static final String CHANNEL_LAST_EVENT_CLASS = "lastEventClass";
