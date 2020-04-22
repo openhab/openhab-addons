@@ -18,6 +18,12 @@
         <bundle start-level="82">mvn:org.openhab.addons.bundles/org.openhab.binding.mqtt.homeassistant/${project.version}</bundle>
         <bundle start-level="82">mvn:org.openhab.addons.bundles/org.openhab.binding.mqtt.homie/${project.version}</bundle>
     </feature>
+    <feature name="openhab-binding-modbus" description="Modbus Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-modbus</feature>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.modbus/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.modbus.sunspec/${project.version}</bundle>
+    </feature>
     <feature name="openhab-misc-ruleengine" description="Rule Engine (Experimental)" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-core-automation</feature>

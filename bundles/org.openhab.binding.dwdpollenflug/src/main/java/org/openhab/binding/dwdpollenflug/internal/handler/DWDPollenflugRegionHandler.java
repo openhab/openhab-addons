@@ -62,7 +62,7 @@ public class DWDPollenflugRegionHandler extends BaseThingHandler {
         }
     }
 
-    private synchronized @Nullable DWDPollenflugBridgeHandler getBridgeHandler() {
+    private @Nullable DWDPollenflugBridgeHandler getBridgeHandler() {
         Bridge bridge = getBridge();
         if (bridge != null) {
             ThingHandler handler = bridge.getHandler();

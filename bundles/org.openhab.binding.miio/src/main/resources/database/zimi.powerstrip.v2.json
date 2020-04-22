@@ -28,7 +28,7 @@
 				"ChannelGroup": "",
 				"actions": [
 					{
-						
+						"parameterType": "EMPTY"
 					}
 				]
 			},
@@ -56,7 +56,7 @@
 				"actions": [
 					{
 						"command": "set_power_price",
-						"parameterType": "Number"
+						"parameterType": "NUMBER"
 					}
 				]
 			},

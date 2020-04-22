@@ -18,6 +18,11 @@
 			<label>Default Password</label>
 			<description>Default password to access protected Shelly devices.</description>
 		</parameter>
+		<parameter name="autoCoIoT" type="boolean">
+			<default>true</default>
+			<label>Auto-enable CoIoT</label>
+			<description>True: Enable CoIoT events by default when firmware 1.6+ is detected</description>
+		</parameter>
 	</config-description>
 
 </binding:binding>
