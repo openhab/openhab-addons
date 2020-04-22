@@ -144,38 +144,42 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
     private final Object stateLock = new Object();
 
+    private final Object jobLock = new Object();
+
     private final SonosStateDescriptionOptionProvider stateDescriptionProvider;
 
     private final Runnable pollingRunnable = () -> {
-        try {
-            logger.debug("Polling job");
+        synchronized (jobLock) {
+            try {
+                logger.debug("Polling job");
 
-            // First check if the Sonos zone is set in the UPnP service registry
-            // If not, set the thing state to OFFLINE and wait for the next poll
-            if (!isUpnpDeviceRegistered()) {
-                logger.debug("UPnP device {} not yet registered", getUDN());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/offline.upnp-device-not-registered [\"" + getUDN() + "\"]");
-                synchronized (upnpLock) {
-                    subscriptionState = new HashMap<>();
+                // First check if the Sonos zone is set in the UPnP service registry
+                // If not, set the thing state to OFFLINE and wait for the next poll
+                if (!isUpnpDeviceRegistered()) {
+                    logger.debug("UPnP device {} not yet registered", getUDN());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "@text/offline.upnp-device-not-registered [\"" + getUDN() + "\"]");
+                    synchronized (upnpLock) {
+                        subscriptionState = new HashMap<>();
+                    }
+                    return;
                 }
-                return;
+
+                // Check if the Sonos zone can be joined
+                // If not, set the thing state to OFFLINE and do nothing else
+                updatePlayerState();
+                if (getThing().getStatus() != ThingStatus.ONLINE) {
+                    return;
+                }
+
+                addSubscription();
+
+                updateZoneInfo();
+                updateLed();
+                updateSleepTimerDuration();
+            } catch (Exception e) {
+                logger.debug("Exception during poll: {}", e.getMessage(), e);
             }
-
-            // Check if the Sonos zone can be joined
-            // If not, set the thing state to OFFLINE and do nothing else
-            updatePlayerState();
-            if (getThing().getStatus() != ThingStatus.ONLINE) {
-                return;
-            }
-
-            addSubscription();
-
-            updateZoneInfo();
-            updateLed();
-            updateSleepTimerDuration();
-        } catch (Exception e) {
-            logger.debug("Exception during poll: {}", e.getMessage(), e);
         }
     };
 
@@ -2940,11 +2944,13 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     @Override
     public void onStatusChanged(boolean status) {
         if (status) {
+            logger.info("UPnP device {} is present (thing {})", getUDN(), getThing().getUID());
             if (getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
                 scheduler.execute(pollingRunnable);
             }
         } else {
+            logger.info("UPnP device {} is absent (thing {})", getUDN(), getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
         }
     }
