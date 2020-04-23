@@ -55,5 +55,5 @@ Fragment-Host: org.openhab.binding.systeminfo
 	org.eclipse.jetty.server;version='[9.4.20,9.4.21)',\
 	org.eclipse.jetty.servlet;version='[9.4.20,9.4.21)',\
 	org.eclipse.jetty.util;version='[9.4.20,9.4.21)',\
-	org.openhab.binding.systeminfo;version='[2.5.4,2.5.5)',\
-	org.openhab.binding.systeminfo.tests;version='[2.5.4,2.5.5)'
+	org.openhab.binding.systeminfo;version='[2.5.5,2.5.6)',\
+	org.openhab.binding.systeminfo.tests;version='[2.5.5,2.5.6)'

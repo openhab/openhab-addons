@@ -62,5 +62,5 @@ Fragment-Host: org.openhab.binding.feed
 	org.ops4j.pax.web.pax-web-jetty;version='[7.2.11,7.2.12)',\
 	org.ops4j.pax.web.pax-web-runtime;version='[7.2.11,7.2.12)',\
 	org.ops4j.pax.web.pax-web-spi;version='[7.2.11,7.2.12)',\
-	org.openhab.binding.feed;version='[2.5.4,2.5.5)',\
-	org.openhab.binding.feed.tests;version='[2.5.4,2.5.5)'
+	org.openhab.binding.feed;version='[2.5.5,2.5.6)',\
+	org.openhab.binding.feed.tests;version='[2.5.5,2.5.6)'
