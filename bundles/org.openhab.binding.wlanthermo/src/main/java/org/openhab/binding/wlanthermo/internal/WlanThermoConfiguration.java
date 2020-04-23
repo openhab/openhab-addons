@@ -52,15 +52,8 @@ public class WlanThermoConfiguration {
         return ipAddress;
     }
 
-    public URI getUri(String path, boolean authenticated) throws URISyntaxException {
+    public URI getUri(String path) throws URISyntaxException {
         String uri = ipAddress;
-        if (authenticated) {
-            if (!(username != null && !username.isEmpty() && password != null && !password.isEmpty())) {
-                throw new URISyntaxException("Cannot create authenticated URI", "No username/password provided!");
-            }
-            uri = username + ":" + password + "@" + uri;
-        }
-
         if (!uri.startsWith("http://")) {
             uri = "http://" + uri;
         }
@@ -74,11 +67,7 @@ public class WlanThermoConfiguration {
     }
 
     public URI getUri() throws URISyntaxException {
-        return getUri("", false);
-    }
-
-    public URI getUri(String path) throws URISyntaxException {
-        return getUri(path, false);
+        return getUri("");
     }
     
     public void setIpAddress(String ipAddress) {

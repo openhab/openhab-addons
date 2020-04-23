@@ -37,7 +37,9 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.wlanthermo.internal.api.data.Data;
+import org.openhab.binding.wlanthermo.internal.api.settings.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +59,8 @@ public class WlanThermoHandler extends BaseThingHandler {
     @Nullable
     private ScheduledFuture<?> pollingScheduler;
     private Gson gson = new Gson();
-    Data data = new Data();
+    private Data data = new Data();
+    private Settings settings = new Settings();
 
     public WlanThermoHandler(Thing thing) {
         super(thing);
@@ -70,9 +73,11 @@ public class WlanThermoHandler extends BaseThingHandler {
 
         updateStatus(ThingStatus.UNKNOWN);
         try {
-            AuthenticationStore authStore = httpClient.getAuthenticationStore();
-            authStore.addAuthentication(new DigestAuthentication(config.getUri(), Authentication.ANY_REALM,
-                            config.getUsername(), config.getPassword()));
+            if (config.getUsername() != null && !config.getUsername().isEmpty() && config.getPassword() != null && !config.getPassword().isEmpty()) {
+                AuthenticationStore authStore = httpClient.getAuthenticationStore();
+                authStore.addAuthentication(new DigestAuthentication(config.getUri(), Authentication.ANY_REALM,
+                                config.getUsername(), config.getPassword()));
+            }
             httpClient.start();
         
             scheduler.schedule(() -> {
@@ -114,7 +119,7 @@ public class WlanThermoHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            State s = data.getState(channelUID);
+            State s = data.getState(channelUID, this);
             if (s != null)
                 updateState(channelUID, s);
         } else {
@@ -122,26 +127,46 @@ public class WlanThermoHandler extends BaseThingHandler {
                 logger.debug("Data updated, pushing changes");
                 push();
             } else {
-                logger.error("Could not handle command of type "+command.getClass().toGenericString()+" for channel "+channelUID.getId()+"!");
+                logger.error("Could not handle command of type " + command.getClass().toGenericString()
+                        + " for channel " + channelUID.getId() + "!");
             }
         }
     }
 
     private void update() {
         try {
+            //Update objects with data from device
             String json = httpClient.GET(config.getUri("/data")).getContentAsString();
             data = gson.fromJson(json, Data.class);
+            logger.debug("Received at /data: " + json);
+            json = httpClient.GET(config.getUri("/settings")).getContentAsString();
+            settings = gson.fromJson(json, Settings.class);
+            logger.debug("Received at /settings: " + json);
+            
+            
+            //Update channels
             for (Channel channel : thing.getChannels()) {
-                ChannelUID channelUID = channel.getUID();
-                State s = data.getState(channelUID);
-                if (s != null)
-                    updateState(channelUID, s);
+                State state = data.getState(channel.getUID(), this);
+                if (state != null) {
+                    updateState(channel.getUID(), state);
+                } else {
+                    String trigger = data.getTrigger(channel.getUID());
+                    if (trigger != null) {
+                        triggerChannel(channel.getUID(), trigger);
+                    }
+                }
+
             }
+            
+
         } catch (InterruptedException | ExecutionException | TimeoutException | URISyntaxException e) {
             logger.debug("Update failed, checking connection", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Update failed, reconnecting...");
             if (pollingScheduler != null) {
                 pollingScheduler.cancel(false);
+            }
+            for (Channel channel : thing.getChannels()) {
+                updateState(channel.getUID(), UnDefType.UNDEF);
             }
             checkConnection();
         }
@@ -151,36 +176,60 @@ public class WlanThermoHandler extends BaseThingHandler {
         for (org.openhab.binding.wlanthermo.internal.api.data.Channel c : data.getChannel()) {
             try {
                 String json = gson.toJson(c);
-                logger.error("Pushing: " + json);
-                URI uri = config.getUri("/setchannels", false);
+                logger.debug("Pushing: " + json);
+                URI uri = config.getUri("/setchannels");
                 int status = httpClient.POST(uri)
                                 .content(new StringContentProvider(json), "application/json")
                                 .timeout(5, TimeUnit.SECONDS)
                                 .send()
                                 .getStatus();
-                if (status != 200) {
+                if (status == 401) {
+                    logger.error(
+                            "No or wrong login credentials provided. Please configure username/password for write access to WlanThermo!");
+                } else if (status != 200) {
                     logger.error("Failed to update channel " + c.getName() + " on device, Statuscode " + status
                             + " on URI " + uri.toString());
                 }
-            } catch (URISyntaxException e) {
-                logger.error("Failed to update channel " + c.getName() + " on device", e);
-                break;
-            } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            } catch (InterruptedException | TimeoutException | ExecutionException | URISyntaxException e) {
                 logger.error("Failed to update channel " + c.getName() + " on device", e);
             }
         }
     }
 
     @Override
-    public void dispose() {
+    public void handleRemoval() {
         if (pollingScheduler != null) {
-            pollingScheduler.cancel(true);
+            boolean stopped = pollingScheduler.cancel(true);
+            logger.error("stopped polling: " + stopped);
         }
         try {
             httpClient.stop();
+            logger.error("HTTP client stopped");
+        } catch (Exception e) {
+            logger.error("Failed to stop HttpClient", e);
+        } 
+        updateStatus(ThingStatus.REMOVED);
+    }
+
+    @Override
+    public void dispose() {
+        if (pollingScheduler != null) {
+            boolean stopped = pollingScheduler.cancel(true);
+            logger.error("stopped polling: " + stopped);
+        }
+        try {
+            httpClient.stop();
+            logger.error("HTTP client stopped");
         } catch (Exception e) {
             logger.error("Failed to stop HttpClient", e);
         }
+        for (Channel channel : thing.getChannels()) {
+            updateState(channel.getUID(), UnDefType.UNDEF);
+        }
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE);
+    }
+
+    public Settings getSettings() {
+        return settings;
     }
 }

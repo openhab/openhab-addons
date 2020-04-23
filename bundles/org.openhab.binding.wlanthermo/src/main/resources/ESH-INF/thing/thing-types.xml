@@ -82,6 +82,8 @@
 			<channel id="alarm_device" typeId="alarm_device" />
 			<channel id="alarm_push" typeId="alarm_push" />
 			<channel id="alarm_openhab" typeId="alarm_openhab" />
+			<channel id="alarm_openhab_low" typeId="alarm_openhab_low" />
+			<channel id="alarm_openhab_high" typeId="alarm_openhab_high" />
 			<channel id="color" typeId="color" />
 		</channels>
 	</channel-group-type>
@@ -99,6 +101,8 @@
 			<channel id="alarm_device" typeId="alarm_device" />
 			<channel id="alarm_push" typeId="alarm_push" />
 			<channel id="alarm_openhab" typeId="alarm_openhab" />
+			<channel id="alarm_openhab_low" typeId="alarm_openhab_low" />
+			<channel id="alarm_openhab_high" typeId="alarm_openhab_high" />
 			<channel id="color" typeId="color" />
 		</channels>
 	</channel-group-type>
@@ -116,6 +120,8 @@
 			<channel id="alarm_device" typeId="alarm_device" />
 			<channel id="alarm_push" typeId="alarm_push" />
 			<channel id="alarm_openhab" typeId="alarm_openhab" />
+			<channel id="alarm_openhab_low" typeId="alarm_openhab_low" />
+			<channel id="alarm_openhab_high" typeId="alarm_openhab_high" />
 			<channel id="color" typeId="color" />
 		</channels>
 	</channel-group-type>
@@ -133,6 +139,8 @@
 			<channel id="alarm_device" typeId="alarm_device" />
 			<channel id="alarm_push" typeId="alarm_push" />
 			<channel id="alarm_openhab" typeId="alarm_openhab" />
+			<channel id="alarm_openhab_low" typeId="alarm_openhab_low" />
+			<channel id="alarm_openhab_high" typeId="alarm_openhab_high" />
 			<channel id="color" typeId="color" />
 		</channels>
 	</channel-group-type>
@@ -150,6 +158,8 @@
 			<channel id="alarm_device" typeId="alarm_device" />
 			<channel id="alarm_push" typeId="alarm_push" />
 			<channel id="alarm_openhab" typeId="alarm_openhab" />
+			<channel id="alarm_openhab_low" typeId="alarm_openhab_low" />
+			<channel id="alarm_openhab_high" typeId="alarm_openhab_high" />
 			<channel id="color" typeId="color" />
 		</channels>
 	</channel-group-type>
@@ -167,6 +177,8 @@
 			<channel id="alarm_device" typeId="alarm_device" />
 			<channel id="alarm_push" typeId="alarm_push" />
 			<channel id="alarm_openhab" typeId="alarm_openhab" />
+			<channel id="alarm_openhab_low" typeId="alarm_openhab_low" />
+			<channel id="alarm_openhab_high" typeId="alarm_openhab_high" />
 			<channel id="color" typeId="color" />
 		</channels>
 	</channel-group-type>
@@ -184,6 +196,8 @@
 			<channel id="alarm_device" typeId="alarm_device" />
 			<channel id="alarm_push" typeId="alarm_push" />
 			<channel id="alarm_openhab" typeId="alarm_openhab" />
+			<channel id="alarm_openhab_low" typeId="alarm_openhab_low" />
+			<channel id="alarm_openhab_high" typeId="alarm_openhab_high" />
 			<channel id="color" typeId="color" />
 		</channels>
 	</channel-group-type>
@@ -201,6 +215,8 @@
 			<channel id="alarm_device" typeId="alarm_device" />
 			<channel id="alarm_push" typeId="alarm_push" />
 			<channel id="alarm_openhab" typeId="alarm_openhab" />
+			<channel id="alarm_openhab_low" typeId="alarm_openhab_low" />
+			<channel id="alarm_openhab_high" typeId="alarm_openhab_high" />
 			<channel id="color" typeId="color" />
 		</channels>
 	</channel-group-type>
@@ -251,9 +267,9 @@
 		<category>Switch</category>
 	</channel-type>
 
-	<channel-type id="alarm_openhab" advanced="false">
+	<channel-type id="alarm_openhab" advanced="true">
 		<kind>trigger</kind>
-		<label>Alarm Trigger</label>
+		<label>Openhab Alarm Trigger</label>
 		<event>
 			<options>
 				<option value="MIN">Low Temperature Alarm</option>
@@ -262,10 +278,36 @@
 		</event>
 	</channel-type>
 
+	<channel-type id="alarm_openhab_low" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Low Temperature Alarm</label>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="alarm_openhab_high" advanced="false">
+		<item-type>Switch</item-type>
+		<label>High Temperature Alarm</label>
+		<state readOnly="true" />
+	</channel-type>
+
 	<channel-type id="color" advanced="true">
 		<item-type>Color</item-type>
 		<label>Probe Color</label>
 		<category>Colorpicker</category>
+		<!--<state>
+			<options>
+				<option value="201,47.5,63.5">Niagara</option>
+				<option value="340,31.8,100">Rosa</option>
+				<option value="209,91.2,53.3">Lapis Blue</option>
+				<option value="13,81.2,93.7">Orange</option>
+				<option value="209,55.5,64.3">Lila</option>
+				<option value="358,88.2,92.9">Red</option>
+				<option value="138,80.8,69.4">Green</option>
+				<option value="48,100,100">Gold</option>
+				<option value="91,36.3,44.3">Kale</option>
+				<option value="30,100,50.2">Brown</option>
+			</options>
+		</state>-->
 	</channel-type>
 
 </thing:thing-descriptions>

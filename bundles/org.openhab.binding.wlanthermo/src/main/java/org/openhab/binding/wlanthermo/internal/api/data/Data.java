@@ -13,6 +13,22 @@
 
 package org.openhab.binding.wlanthermo.internal.api.data;
 
+import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.CHANNEL_ALARM_DEVICE;
+import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.CHANNEL_ALARM_OPENHAB_HIGH;
+import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.CHANNEL_ALARM_OPENHAB_LOW;
+import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.CHANNEL_ALARM_PUSH;
+import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.CHANNEL_COLOR;
+import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.CHANNEL_MAX;
+import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.CHANNEL_MIN;
+import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.CHANNEL_NAME;
+import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.CHANNEL_TEMP;
+import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.CHANNEL_TYP;
+import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.SYSTEM_CHARGE;
+import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.SYSTEM_RSSI;
+import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.SYSTEM_SOC;
+import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.TRIGGER_ALARM_MAX;
+import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.TRIGGER_ALARM_MIN;
+
 import java.awt.Color;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -30,6 +46,8 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.wlanthermo.internal.WlanThermoHandler;
+import org.openhab.binding.wlanthermo.internal.api.settings.Settings;
 
 public class Data {
 
@@ -102,52 +120,68 @@ public class Data {
         return this;
     }
 
-    public State getState(ChannelUID channelUID) {
-        State state = UnDefType.UNDEF;
+    public State getState(ChannelUID channelUID, WlanThermoHandler wlanThermoHandler) {
+        State state = null;
         if (channelUID.getId().startsWith("system#") && system != null) {
-            switch (channelUID.getId()) {
-                case "system#soc":
+            switch (channelUID.getIdWithoutGroup()) {
+                case SYSTEM_SOC:
                     state = new DecimalType(system.getSoc());
                     break;
-                case "system#charge":
-                    state =  OnOffType.from(system.getCharge());
+                case SYSTEM_CHARGE:
+                    state = OnOffType.from(system.getCharge());
                     break;
-                case "system#rssi":
-                    state =  new DecimalType(Math.floor(system.getRssi() * -1 / 24));
+                case SYSTEM_RSSI:
+                    state = new DecimalType(Math.floor(system.getRssi() * -1 / 24));
                     break;
             }
         } else if (channelUID.getId().startsWith("channel")) {
             int channelId = Integer.parseInt(channelUID.getGroupId().substring("channel".length())) - 1;
             if (channel.size() > 0 && channelId <= channel.size()) {
                 switch (channelUID.getIdWithoutGroup()) {
-                    case "name":
-                        state =  new StringType(channel.get(channelId).getName());
+                    case CHANNEL_NAME:
+                        state = new StringType(channel.get(channelId).getName());
                         break;
-                    case "typ":
-                        state =  new StringType(channel.get(channelId).getTyp() + "");
+                    case CHANNEL_TYP:
+                        Settings settings = wlanThermoHandler.getSettings();
+                        state = new StringType(settings.sensors.get(channel.get(channelId).getTyp()));
                         break;
-                    case "temp":
+                    case CHANNEL_TEMP:
                         if (channel.get(channelId).getTemp() == 999.0) {
-                            state =  UnDefType.UNDEF;
+                            state = UnDefType.UNDEF;
                         } else {
-                            state =  new DecimalType(channel.get(channelId).getTemp());
+                            state = new DecimalType(channel.get(channelId).getTemp());
                         }
                         break;
-                    case "min":
-                        state =  new DecimalType(channel.get(channelId).getMin());
+                    case CHANNEL_MIN:
+                        state = new DecimalType(channel.get(channelId).getMin());
                         break;
-                    case "max":
-                        state =  new DecimalType(channel.get(channelId).getMax());
+                    case CHANNEL_MAX:
+                        state = new DecimalType(channel.get(channelId).getMax());
                         break;
-                    case "alarm_device":
-                        state =  OnOffType.from(BigInteger.valueOf(channel.get(channelId).getAlarm()).testBit(1));
+                    case CHANNEL_ALARM_DEVICE:
+                        state = OnOffType.from(BigInteger.valueOf(channel.get(channelId).getAlarm()).testBit(1));
                         break;
-                    case "alarm_push":
-                        state =  OnOffType.from(BigInteger.valueOf(channel.get(channelId).getAlarm()).testBit(0));
+                    case CHANNEL_ALARM_PUSH:
+                        state = OnOffType.from(BigInteger.valueOf(channel.get(channelId).getAlarm()).testBit(0));
                         break;
-                    case "color":
+                    case CHANNEL_ALARM_OPENHAB_HIGH:
+                        if (channel.get(channelId).getTemp() != 999
+                                && channel.get(channelId).getTemp() > channel.get(channelId).getMax()) {
+                            state = OnOffType.ON;
+                        } else {
+                            state = OnOffType.OFF;
+                        }
+                        break;
+                    case CHANNEL_ALARM_OPENHAB_LOW:
+                        if (channel.get(channelId).getTemp() != 999 && channel.get(channelId).getTemp() < channel.get(channelId).getMin()) {
+                            state = OnOffType.ON;
+                        } else {
+                            state = OnOffType.OFF;
+                        }
+                        break;
+                    case CHANNEL_COLOR:
                         Color c = Color.decode(channel.get(channelId).getColor());
-                        state =  HSBType.fromRGB(c.getRed(), c.getGreen(), c.getBlue());
+                        state = HSBType.fromRGB(c.getRed(), c.getGreen(), c.getBlue());
                         break;
                 }
             }
@@ -161,25 +195,25 @@ public class Data {
             int channelId = Integer.parseInt(channelUID.getGroupId().substring("channel".length())) - 1;
             if (channel.size() > 0 && channelId <= channel.size()) {
                 switch (channelUID.getIdWithoutGroup()) {
-                    case "name":
+                    case CHANNEL_NAME:
                         if (command instanceof StringType) {
                             channel.get(channelId).setName(((StringType) command).toFullString());
                             success = true;
                         }
                         break;
-                    case "min":
+                    case CHANNEL_MIN:
                         if (command instanceof QuantityType) {
                             channel.get(channelId).setMin(((QuantityType) command).doubleValue());
                             success = true;
                         }
                         break;
-                    case "max":
+                    case CHANNEL_MAX:
                         if (command instanceof QuantityType) {
                             channel.get(channelId).setMax(((QuantityType) command).doubleValue());
                             success = true;
                         }
                         break;
-                    case "alarm_device":
+                    case CHANNEL_ALARM_DEVICE:
                         if (command instanceof OnOffType) {
                             BigInteger value;
                             if ((OnOffType) command == OnOffType.ON) {
@@ -191,7 +225,7 @@ public class Data {
                             success = true;
                         }
                         break;
-                    case "alarm_push":
+                    case CHANNEL_ALARM_PUSH:
                         if (command instanceof OnOffType) {
                             BigInteger value;
                             if ((OnOffType) command == OnOffType.ON) {
@@ -203,9 +237,10 @@ public class Data {
                             success = true;
                         }
                         break;
-                    case "color":
+                    case CHANNEL_COLOR:
                         if (command instanceof HSBType) {
-                            channel.get(channelId).setColor("#" + Integer.toHexString(((HSBType) command).getRGB()));
+                            channel.get(channelId)
+                                    .setColor("#" + String.format("%02x", ((HSBType) command).getRGB()).substring(2));
                             success = true;
                         }
                         break;
@@ -213,6 +248,26 @@ public class Data {
             }
         }
         return success;
+    }
+
+    public String getTrigger(ChannelUID channelUID) {
+        String trigger = null;
+        if (channelUID.getId().startsWith("channel")) {
+            int channelId = Integer.parseInt(channelUID.getGroupId().substring("channel".length())) - 1;
+            if (channel.size() > 0 && channelId <= channel.size()) {
+                switch (channelUID.getIdWithoutGroup()) {
+                    case "alarm_openhab":
+                        if (channel.get(channelId).getTemp() != 999) {
+                            if (channel.get(channelId).getTemp() > channel.get(channelId).getMax()) {
+                                trigger = TRIGGER_ALARM_MAX;
+                            } else if (channel.get(channelId).getTemp() < channel.get(channelId).getMin()) {
+                                trigger = TRIGGER_ALARM_MIN;
+                            }
+                        }
+                }
+            }
+        }
+        return trigger;
     }
 
 }

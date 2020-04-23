@@ -31,29 +31,34 @@ public class WlanThermoBindingConstants {
 
     // List of all Channel ids
     //System Channels
-    public static final String SYSTEM                   = "system";
-    public static final String SYSTEM_SOC               = "soc";
-    public static final String SYSTEM_CHARGE            = "charge";
-    public static final String SYSTEM_RSSI              = "rssi";
+    public static final String SYSTEM                       = "system";
+    public static final String SYSTEM_SOC                   = "soc";
+    public static final String SYSTEM_CHARGE                = "charge";
+    public static final String SYSTEM_RSSI                  = "rssi";
 
     //Temp Channel 1
-    public static final String CHANNEL1                 = "channel1";
-    public static final String CHANNEL2                 = "channel2";
-    public static final String CHANNEL3                 = "channel3";
-    public static final String CHANNEL4                 = "channel4";
-    public static final String CHANNEL5                 = "channel5";
-    public static final String CHANNEL6                 = "channel6";
-    public static final String CHANNEL7                 = "channel7";
-    public static final String CHANNEL8                 = "channel8";
+    public static final String CHANNEL1                     = "channel1";
+    public static final String CHANNEL2                     = "channel2";
+    public static final String CHANNEL3                     = "channel3";
+    public static final String CHANNEL4                     = "channel4";
+    public static final String CHANNEL5                     = "channel5";
+    public static final String CHANNEL6                     = "channel6";
+    public static final String CHANNEL7                     = "channel7";
+    public static final String CHANNEL8                     = "channel8";
     
-    public static final String CHANNEL_NAME             = "name";
-    public static final String CHANNEL_TYP              = "typ";
-    public static final String CHANNEL_TEMP             = "temp";
-    public static final String CHANNEL_MIN              = "min";
-    public static final String CHANNEL_MAX              = "max";
-    public static final String CHANNEL_ALARM_DEVICE     = "alarm_device";
-    public static final String CHANNEL_ALARM_PUSH       = "alarm_push";
-    public static final String CHANNEL_ALARM_OPENHAB    = "alarm_openhab";
-    public static final String CHANNEL_COLOR            = "color";
+    public static final String CHANNEL_NAME                 = "name";
+    public static final String CHANNEL_TYP                  = "typ";
+    public static final String CHANNEL_TEMP                 = "temp";
+    public static final String CHANNEL_MIN                  = "min";
+    public static final String CHANNEL_MAX                  = "max";
+    public static final String CHANNEL_ALARM_DEVICE         = "alarm_device";
+    public static final String CHANNEL_ALARM_PUSH           = "alarm_push";
+    public static final String CHANNEL_ALARM_OPENHAB        = "alarm_openhab";
+    public static final String CHANNEL_ALARM_OPENHAB_LOW    = "alarm_openhab_low";
+    public static final String CHANNEL_ALARM_OPENHAB_HIGH   = "alarm_openhab_high";
+    public static final String CHANNEL_COLOR                = "color";
 
+    public static final String TRIGGER_ALARM_OFF            = "OFF";
+    public static final String TRIGGER_ALARM_MIN            = "MIN";
+    public static final String TRIGGER_ALARM_MAX            = "MAX";
 }
