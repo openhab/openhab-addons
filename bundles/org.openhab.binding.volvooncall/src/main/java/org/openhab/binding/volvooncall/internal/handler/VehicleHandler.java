@@ -51,12 +51,17 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.volvooncall.internal.action.VolvoOnCallActions;
 import org.openhab.binding.volvooncall.internal.config.VehicleConfiguration;
 import org.openhab.binding.volvooncall.internal.dto.Attributes;
+import org.openhab.binding.volvooncall.internal.dto.DoorsStatus;
+import org.openhab.binding.volvooncall.internal.dto.Heater;
+import org.openhab.binding.volvooncall.internal.dto.HvBattery;
 import org.openhab.binding.volvooncall.internal.dto.Position;
 import org.openhab.binding.volvooncall.internal.dto.Status;
 import org.openhab.binding.volvooncall.internal.dto.Trip;
 import org.openhab.binding.volvooncall.internal.dto.TripDetail;
 import org.openhab.binding.volvooncall.internal.dto.Trips;
+import org.openhab.binding.volvooncall.internal.dto.TyrePressure;
 import org.openhab.binding.volvooncall.internal.dto.Vehicles;
+import org.openhab.binding.volvooncall.internal.dto.WindowsStatus;
 import org.openhab.binding.volvooncall.internal.wrapper.VehiclePositionWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -159,7 +164,8 @@ public class VehicleHandler extends BaseThingHandler {
                 getThing().getChannels().stream().map(Channel::getUID)
                         .filter(channelUID -> isLinked(channelUID) && !LAST_TRIP_GROUP.equals(channelUID.getGroupId()))
                         .forEach(channelUID -> {
-                            State state = getValue(channelUID.getIdWithoutGroup(), vehicleStatus, vehiclePosition);
+                            State state = getValue(channelUID.getGroupId(), channelUID.getIdWithoutGroup(),
+                                    vehicleStatus, vehiclePosition);
 
                             updateState(channelUID, state);
                         });
@@ -256,40 +262,103 @@ public class VehicleHandler extends BaseThingHandler {
         return UnDefType.NULL;
     }
 
-    private State getValue(String channelId, Status status, VehiclePositionWrapper position) {
+    private State getDoorsValue(String channelId, DoorsStatus doors) {
         switch (channelId) {
             case TAILGATE:
-                return status.doors != null ? status.doors.tailgateOpen : UnDefType.NULL;
+                return doors.tailgateOpen;
             case REAR_RIGHT:
-                return status.doors != null ? status.doors.rearRightDoorOpen : UnDefType.NULL;
+                return doors.rearRightDoorOpen;
             case REAR_LEFT:
-                return status.doors != null ? status.doors.rearLeftDoorOpen : UnDefType.NULL;
+                return doors.rearLeftDoorOpen;
             case FRONT_RIGHT:
-                return status.doors != null ? status.doors.frontRightDoorOpen : UnDefType.NULL;
+                return doors.frontRightDoorOpen;
             case FRONT_LEFT:
-                return status.doors != null ? status.doors.frontLeftDoorOpen : UnDefType.NULL;
+                return doors.frontLeftDoorOpen;
             case HOOD:
-                return status.doors != null ? status.doors.hoodOpen : UnDefType.NULL;
+                return doors.hoodOpen;
+        }
+        return UnDefType.NULL;
+    }
+
+    private State getWindowsValue(String channelId, WindowsStatus windows) {
+        switch (channelId) {
             case REAR_RIGHT_WND:
-                return status.windows != null ? status.windows.rearRightWindowOpen : UnDefType.NULL;
+                return windows.rearRightWindowOpen;
             case REAR_LEFT_WND:
-                return status.windows != null ? status.windows.rearLeftWindowOpen : UnDefType.NULL;
+                return windows.rearLeftWindowOpen;
             case FRONT_RIGHT_WND:
-                return status.windows != null ? status.windows.frontRightWindowOpen : UnDefType.NULL;
+                return windows.frontRightWindowOpen;
             case FRONT_LEFT_WND:
-                return status.windows != null ? status.windows.frontLeftWindowOpen : UnDefType.NULL;
+                return windows.frontLeftWindowOpen;
+        }
+        return UnDefType.NULL;
+    }
+
+    private State getTyresValue(String channelId, TyrePressure tyrePressure) {
+        switch (channelId) {
             case REAR_RIGHT_TYRE:
-                return status.tyrePressure != null ? new StringType(status.tyrePressure.rearRightTyrePressure)
-                        : UnDefType.NULL;
+                return new StringType(tyrePressure.rearRightTyrePressure);
             case REAR_LEFT_TYRE:
-                return status.tyrePressure != null ? new StringType(status.tyrePressure.rearLeftTyrePressure)
-                        : UnDefType.NULL;
+                return new StringType(tyrePressure.rearLeftTyrePressure);
             case FRONT_RIGHT_TYRE:
-                return status.tyrePressure != null ? new StringType(status.tyrePressure.frontRightTyrePressure)
-                        : UnDefType.NULL;
+                return new StringType(tyrePressure.frontRightTyrePressure);
             case FRONT_LEFT_TYRE:
-                return status.tyrePressure != null ? new StringType(status.tyrePressure.frontLeftTyrePressure)
-                        : UnDefType.NULL;
+                return new StringType(tyrePressure.frontLeftTyrePressure);
+        }
+        return UnDefType.NULL;
+    }
+
+    private State getHeaterValue(String channelId, Heater heater) {
+        switch (channelId) {
+            case REMOTE_HEATER:
+                return heater.status != null ? heater.status : UnDefType.UNDEF;
+            case PRECLIMATIZATION:
+                return heater.status != null ? heater.status : UnDefType.UNDEF;
+        }
+        return UnDefType.NULL;
+    }
+
+    private State getBatteryValue(String channelId, HvBattery hvBattery) {
+        switch (channelId) {
+            case BATTERY_LEVEL:
+                return hvBattery.hvBatteryLevel != UNDEFINED
+                        ? new QuantityType<>(hvBattery.hvBatteryLevel, SmartHomeUnits.PERCENT)
+                        : UnDefType.UNDEF;
+            case BATTERY_DISTANCE_TO_EMPTY:
+                return hvBattery.distanceToHVBatteryEmpty != UNDEFINED
+                        ? new QuantityType<>(hvBattery.distanceToHVBatteryEmpty, KILO(SIUnits.METRE))
+                        : UnDefType.UNDEF;
+            case CHARGE_STATUS:
+                return hvBattery.hvBatteryChargeStatusDerived != null
+                        ? new StringType(hvBattery.hvBatteryChargeStatusDerived)
+                        : UnDefType.UNDEF;
+            case TIME_TO_BATTERY_FULLY_CHARGED:
+                return hvBattery.timeToHVBatteryFullyCharged != UNDEFINED
+                        ? new QuantityType<>(hvBattery.timeToHVBatteryFullyCharged, SmartHomeUnits.MINUTE)
+                        : UnDefType.UNDEF;
+            case CHARGING_END:
+                return hvBattery.timeToHVBatteryFullyCharged != UNDEFINED && hvBattery.timeToHVBatteryFullyCharged > 0
+                        ? new DateTimeType(ZonedDateTime.now().plusMinutes(hvBattery.timeToHVBatteryFullyCharged))
+                        : UnDefType.UNDEF;
+
+        }
+        return UnDefType.NULL;
+    }
+
+    private State getValue(@Nullable String groupId, String channelId, Status status, VehiclePositionWrapper position) {
+        if (groupId != null) {
+            switch (groupId) {
+                case GROUP_DOORS:
+                    return status.doors != null ? getDoorsValue(channelId, status.doors) : UnDefType.NULL;
+                case GROUP_WINDOWS:
+                    return status.windows != null ? getWindowsValue(channelId, status.windows) : UnDefType.NULL;
+                case GROUP_TYRES:
+                    return status.tyrePressure != null ? getTyresValue(channelId, status.tyrePressure) : UnDefType.NULL;
+                case GROUP_BATTERY:
+                    return status.hvBattery != null ? getBatteryValue(channelId, status.hvBattery) : UnDefType.UNDEF;
+            }
+        }
+        switch (channelId) {
             case ODOMETER:
                 return status.odometer != UNDEFINED
                         ? new QuantityType<>((double) status.odometer / 1000, KILO(SIUnits.METRE))
@@ -316,28 +385,6 @@ public class VehicleHandler extends BaseThingHandler {
             case FUEL_CONSUMPTION:
                 return status.averageFuelConsumption != UNDEFINED ? new DecimalType(status.averageFuelConsumption / 10)
                         : UnDefType.UNDEF;
-            case BATTERY_LEVEL:
-                return status.hvBattery.hvBatteryLevel != UNDEFINED
-                        ? new QuantityType<>(status.hvBattery.hvBatteryLevel, SmartHomeUnits.PERCENT)
-                        : UnDefType.UNDEF;
-            case BATTERY_DISTANCE_TO_EMPTY:
-                return status.hvBattery.distanceToHVBatteryEmpty != UNDEFINED
-                        ? new QuantityType<>(status.hvBattery.distanceToHVBatteryEmpty, KILO(SIUnits.METRE))
-                        : UnDefType.UNDEF;
-            case CHARGE_STATUS:
-                return status.hvBattery.hvBatteryChargeStatusDerived != null
-                        ? new StringType(status.hvBattery.hvBatteryChargeStatusDerived)
-                        : UnDefType.UNDEF;
-            case TIME_TO_BATTERY_FULLY_CHARGED:
-                return status.hvBattery.timeToHVBatteryFullyCharged != UNDEFINED
-                        ? new QuantityType<>(status.hvBattery.timeToHVBatteryFullyCharged, SmartHomeUnits.MINUTE)
-                        : UnDefType.UNDEF;
-            case CHARGING_END:
-                return status.hvBattery.timeToHVBatteryFullyCharged != UNDEFINED
-                        && status.hvBattery.timeToHVBatteryFullyCharged > 0
-                                ? new DateTimeType(
-                                        ZonedDateTime.now().plusMinutes(status.hvBattery.timeToHVBatteryFullyCharged))
-                                : UnDefType.UNDEF;
             case ACTUAL_LOCATION:
                 return position.getPosition();
             case CALCULATED_LOCATION:
@@ -363,11 +410,9 @@ public class VehicleHandler extends BaseThingHandler {
             case FUEL_ALERT:
                 return status.distanceToEmpty < 100 ? OnOffType.ON : OnOffType.OFF;
             case REMOTE_HEATER:
-                return status.heater != null && status.heater.status != null ? status.heater.status : UnDefType.UNDEF;
             case PRECLIMATIZATION:
-                return status.heater != null && status.heater.status != null ? status.heater.status : UnDefType.UNDEF;
+                return status.heater != null ? getHeaterValue(channelId, status.heater) : UnDefType.NULL;
         }
-
         return UnDefType.NULL;
     }
 
