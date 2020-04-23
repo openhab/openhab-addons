@@ -349,13 +349,29 @@ public class VehicleHandler extends BaseThingHandler {
         if (groupId != null) {
             switch (groupId) {
                 case GROUP_DOORS:
-                    return status.doors != null ? getDoorsValue(channelId, status.doors) : UnDefType.NULL;
+                    if (status.doors != null) {
+                        DoorsStatus doors = status.doors;
+                        return getDoorsValue(channelId, doors);
+                    }
+                    break;
                 case GROUP_WINDOWS:
-                    return status.windows != null ? getWindowsValue(channelId, status.windows) : UnDefType.NULL;
+                    if (status.windows != null) {
+                        WindowsStatus windows = status.windows;
+                        return getWindowsValue(channelId, windows);
+                    }
+                    break;
                 case GROUP_TYRES:
-                    return status.tyrePressure != null ? getTyresValue(channelId, status.tyrePressure) : UnDefType.NULL;
+                    if (status.tyrePressure != null) {
+                        TyrePressure tyrePressure = status.tyrePressure;
+                        return getTyresValue(channelId, tyrePressure);
+                    }
+                    break;
                 case GROUP_BATTERY:
-                    return status.hvBattery != null ? getBatteryValue(channelId, status.hvBattery) : UnDefType.UNDEF;
+                    if (status.hvBattery != null) {
+                        HvBattery hvBattery = status.hvBattery;
+                        return getBatteryValue(channelId, hvBattery);
+                    }
+                    break;
             }
         }
         switch (channelId) {
@@ -411,7 +427,11 @@ public class VehicleHandler extends BaseThingHandler {
                 return status.distanceToEmpty < 100 ? OnOffType.ON : OnOffType.OFF;
             case REMOTE_HEATER:
             case PRECLIMATIZATION:
-                return status.heater != null ? getHeaterValue(channelId, status.heater) : UnDefType.NULL;
+                if (status.heater != null) {
+                    Heater heater = status.heater;
+                    return getHeaterValue(channelId, heater);
+                }
+                break;
         }
         return UnDefType.NULL;
     }
