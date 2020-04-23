@@ -41,9 +41,9 @@ import org.openhab.io.transport.modbus.ModbusReadCallback;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
-import org.openhab.io.transport.modbus.ModbusSlaveErrorResponseException;
 import org.openhab.io.transport.modbus.PollTask;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
+import org.openhab.io.transport.modbus.exception.ModbusSlaveErrorResponseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

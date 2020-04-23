@@ -13,6 +13,8 @@
 package org.openhab.io.transport.modbus;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.io.transport.modbus.exception.ModbusTransportException;
+import org.openhab.io.transport.modbus.exception.ModbusUnexpectedTransactionIdException;
 
 /**
  * Interface for write callbacks
