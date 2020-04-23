@@ -1167,8 +1167,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Mode             | Number  | clean-mode                          |
 | TotalCleanTime   | String  | clean-total time                    |
 | TotalCleanTimes  | String  | clean-total times                   |
-| TotalCleanArea   | String  | clean-                              |
-| CleanLogStartTime | String  | clean-                              |
+| TotalCleanArea   | String  | clean-Total area                    |
+| CleanLogStartTime | String  | clean-Start Time                    |
 | ButtonLed        | String  | clean-led                           |
 | TaskDone         | Number  | clean-task done                     |
 | LifeSieve        | String  | consumable-life-sieve               |
@@ -2742,8 +2742,8 @@ String Timer "clean-timer" (G_vacuum) {channel="miio:basic:vacuum:Timer"}
 Number Mode "clean-mode" (G_vacuum) {channel="miio:basic:vacuum:Mode"}
 String TotalCleanTime "clean-total time" (G_vacuum) {channel="miio:basic:vacuum:TotalCleanTime"}
 String TotalCleanTimes "clean-total times" (G_vacuum) {channel="miio:basic:vacuum:TotalCleanTimes"}
-String TotalCleanArea "clean-" (G_vacuum) {channel="miio:basic:vacuum:TotalCleanArea"}
-String CleanLogStartTime "clean-" (G_vacuum) {channel="miio:basic:vacuum:CleanLogStartTime"}
+String TotalCleanArea "clean-Total area" (G_vacuum) {channel="miio:basic:vacuum:TotalCleanArea"}
+String CleanLogStartTime "clean-Start Time" (G_vacuum) {channel="miio:basic:vacuum:CleanLogStartTime"}
 String ButtonLed "clean-led" (G_vacuum) {channel="miio:basic:vacuum:ButtonLed"}
 Number TaskDone "clean-task done" (G_vacuum) {channel="miio:basic:vacuum:TaskDone"}
 String LifeSieve "consumable-life-sieve" (G_vacuum) {channel="miio:basic:vacuum:LifeSieve"}
