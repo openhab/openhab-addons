@@ -65,6 +65,7 @@ import org.openhab.binding.modbus.internal.handler.ModbusDataThingHandler;
 import org.openhab.binding.modbus.internal.handler.ModbusPollerThingHandler;
 import org.openhab.binding.modbus.internal.handler.ModbusPollerThingHandlerImpl;
 import org.openhab.binding.modbus.internal.handler.ModbusTcpThingHandler;
+import org.openhab.io.transport.modbus.AsyncModbusReadResult;
 import org.openhab.io.transport.modbus.BasicModbusRegister;
 import org.openhab.io.transport.modbus.BasicModbusRegisterArray;
 import org.openhab.io.transport.modbus.BitArray;
@@ -424,16 +425,19 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         if (bits != null) {
             assertNull(registers);
             assertNull(error);
-            dataHandler.onBits(request, bits);
+            AsyncModbusReadResult result = new AsyncModbusReadResult(request, bits);
+            dataHandler.handle(result);
         } else if (registers != null) {
             assertNull(bits);
             assertNull(error);
-            dataHandler.onRegisters(request, registers);
+            AsyncModbusReadResult result = new AsyncModbusReadResult(request, registers);
+            dataHandler.handle(result);
         } else {
             assertNull(bits);
             assertNull(registers);
             assertNotNull(error);
-            dataHandler.onError(request, error);
+            AsyncModbusReadResult result = new AsyncModbusReadResult(request, error);
+            dataHandler.handle(result);
         }
         return dataHandler;
     }
@@ -470,7 +474,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         dataHandler.handleCommand(new ChannelUID(dataHandler.getThing().getUID(), channel), command);
 
         if (error != null) {
-            dataHandler.onError(request, error);
+            dataHandler.handle(new AsyncModbusReadResult(request, error));
         } else {
             ModbusResponse resp = new ModbusResponse() {
 

@@ -13,39 +13,21 @@
 package org.openhab.io.transport.modbus;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.io.transport.modbus.exception.ModbusTransportException;
-import org.openhab.io.transport.modbus.exception.ModbusUnexpectedTransactionIdException;
 
 /**
  * Interface for read callbacks
  *
  * @author Sami Salonen - Initial contribution
  */
+@FunctionalInterface
 @NonNullByDefault
 public interface ModbusReadCallback extends ModbusCallback {
 
     /**
-     * Callback for "input register" and "holding register" data in the case of no errors
+     * Callback handling response data and errors
      *
-     * @param ModbusReadRequestBlueprint representing the request
-     * @param registers data received from slave device in the last pollInterval
+     * @param result result of the read operation
      */
-    void onRegisters(ModbusReadRequestBlueprint request, ModbusRegisterArray registers);
+    void handle(AsyncModbusReadResult result);
 
-    /**
-     * Callback for "coil" and "discrete input" bit data in the case of no errors
-     *
-     * @param ModbusReadRequestBlueprint representing the request
-     * @param bits data received from slave device
-     */
-    void onBits(ModbusReadRequestBlueprint request, BitArray bits);
-
-    /**
-     * Callback for errors with read
-     *
-     * @request ModbusRequestBlueprint representing the request
-     * @param Exception representing the issue with the request. Instance of
-     *            {@link ModbusUnexpectedTransactionIdException} or {@link ModbusTransportException}.
-     */
-    void onError(ModbusReadRequestBlueprint request, Exception error);
 }

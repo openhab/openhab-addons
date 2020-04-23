@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
@@ -29,23 +28,21 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
-import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
 import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
-import org.openhab.binding.modbus.internal.AtomicStampedKeyValue;
+import org.openhab.binding.modbus.internal.AtomicStampedValue;
 import org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal;
 import org.openhab.binding.modbus.internal.config.ModbusPollerConfiguration;
+import org.openhab.io.transport.modbus.AsyncModbusReadResult;
 import org.openhab.io.transport.modbus.BasicModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.BasicPollTaskImpl;
-import org.openhab.io.transport.modbus.BitArray;
 import org.openhab.io.transport.modbus.ModbusManager;
 import org.openhab.io.transport.modbus.ModbusReadCallback;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
-import org.openhab.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.io.transport.modbus.PollTask;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 import org.slf4j.Logger;
@@ -72,66 +69,33 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
      */
     private class ReadCallbackDelegator implements ModbusReadCallback {
 
-        private volatile @Nullable AtomicStampedKeyValue<ModbusReadRequestBlueprint, ModbusRegisterArray> lastRegisters;
-        private volatile @Nullable AtomicStampedKeyValue<ModbusReadRequestBlueprint, BitArray> lastCoils;
-        private volatile @Nullable AtomicStampedKeyValue<ModbusReadRequestBlueprint, Exception> lastError;
+        private volatile @Nullable AtomicStampedValue<AsyncModbusReadResult> lastResult;
 
         @Override
-        public void onRegisters(ModbusReadRequestBlueprint request, ModbusRegisterArray registers) {
+        public synchronized void handle(AsyncModbusReadResult result) {
             // Ignore all incoming data and errors if configuration is not correct
             if (hasConfigurationError() || disposed) {
                 return;
             }
             if (config.getCacheMillis() >= 0) {
-                AtomicStampedKeyValue<ModbusReadRequestBlueprint, ModbusRegisterArray> lastRegisters = this.lastRegisters;
-                if (lastRegisters == null) {
-                    this.lastRegisters = new AtomicStampedKeyValue<>(System.currentTimeMillis(), request, registers);
+                AtomicStampedValue<AsyncModbusReadResult> localLastResult = this.lastResult;
+                if (localLastResult == null) {
+                    this.lastResult = new AtomicStampedValue<>(System.currentTimeMillis(), result);
                 } else {
-                    lastRegisters.update(System.currentTimeMillis(), request, registers);
+                    localLastResult.update(System.currentTimeMillis(), result);
+                    this.lastResult = localLastResult;
                 }
             }
-            logger.debug("Thing {} received registers {} for request {}", thing.getUID(), registers, request);
-            resetCommunicationError();
-            childCallbacks.forEach(handler -> handler.onRegisters(request, registers));
-        }
-
-        @Override
-        public void onBits(ModbusReadRequestBlueprint request, BitArray coils) {
-            // Ignore all incoming data and errors if configuration is not correct
-            if (hasConfigurationError() || disposed) {
-                return;
+            logger.debug("Thing {} received response {}", thing.getUID(), result);
+            childCallbacks.forEach(handler -> handler.handle(result));
+            if (result.hasError()) {
+                Exception error = result.getCause();
+                assert error != null;
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        String.format("Error with read: %s: %s", error.getClass().getName(), error.getMessage()));
+            } else {
+                resetCommunicationError();
             }
-            if (config.getCacheMillis() >= 0) {
-                AtomicStampedKeyValue<ModbusReadRequestBlueprint, BitArray> lastCoils = this.lastCoils;
-                if (lastCoils == null) {
-                    this.lastCoils = new AtomicStampedKeyValue<>(System.currentTimeMillis(), request, coils);
-                } else {
-                    lastCoils.update(System.currentTimeMillis(), request, coils);
-                }
-            }
-            logger.debug("Thing {} received coils {} for request {}", thing.getUID(), coils, request);
-            resetCommunicationError();
-            childCallbacks.forEach(handler -> handler.onBits(request, coils));
-        }
-
-        @Override
-        public void onError(ModbusReadRequestBlueprint request, Exception error) {
-            // Ignore all incoming data and errors if configuration is not correct
-            if (hasConfigurationError() || disposed) {
-                return;
-            }
-            if (config.getCacheMillis() >= 0) {
-                AtomicStampedKeyValue<ModbusReadRequestBlueprint, Exception> lastError = this.lastError;
-                if (lastError == null) {
-                    this.lastError = new AtomicStampedKeyValue<>(System.currentTimeMillis(), request, error);
-                } else {
-                    lastError.update(System.currentTimeMillis(), request, error);
-                }
-            }
-            logger.debug("Thing {} received error {} for request {}", thing.getUID(), error, request);
-            childCallbacks.forEach(handler -> handler.onError(request, error));
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    String.format("Error with read: %s: %s", error.getClass().getName(), error.getMessage()));
         }
 
         private void resetCommunicationError() {
@@ -142,80 +106,28 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
             }
         }
 
-        private ThingUID getThingUID() {
-            return getThing().getUID();
-        }
-
-        @Override
-        public boolean equals(@Nullable Object obj) {
-            if (obj == null) {
-                return false;
-            }
-            if (obj == this) {
-                return true;
-            }
-            if (obj.getClass() != getClass()) {
-                return false;
-            }
-            ReadCallbackDelegator rhs = (ReadCallbackDelegator) obj;
-            return getThingUID().equals(rhs.getThingUID());
-        }
-
-        @Override
-        public int hashCode() {
-            return getThingUID().hashCode();
-        }
-
-        @SuppressWarnings("unchecked")
-        private @Nullable AtomicStampedKeyValue<ModbusReadRequestBlueprint, Object> getLastData() {
-            try {
-                return (AtomicStampedKeyValue<ModbusReadRequestBlueprint, Object>) Stream
-                        .of(lastRegisters, lastCoils, lastError).max(AtomicStampedKeyValue::compare).get();
-            } catch (NullPointerException e) {
-                // max (latest) element is null -> all data are null
-                return null;
-            }
-        }
-
         /**
          * Update children data if data is fresh enough
          *
          * @param oldestStamp oldest data that is still passed to children
          * @return whether data was updated. Data is not updated when it's too old or there's no data at all.
          */
+        @SuppressWarnings("null")
         public boolean updateChildrenWithOldData(long oldestStamp) {
-            AtomicStampedKeyValue<ModbusReadRequestBlueprint, Object> lastData = getLastData();
-            if (lastData == null) {
-                return false;
-            }
-            AtomicStampedKeyValue<ModbusReadRequestBlueprint, Object> atomicData = lastData
-                    .copyIfStampAfter(oldestStamp);
-            if (atomicData == null) {
-                return false;
-            }
-            ModbusReadRequestBlueprint request = atomicData.getKey();
-            logger.debug("Thing {} received data {} for request {}. Reusing cached data.", thing.getUID(),
-                    atomicData.getValue(), request);
-            if (atomicData.getValue() instanceof ModbusRegisterArray) {
-                ModbusRegisterArray registers = (ModbusRegisterArray) atomicData.getValue();
-                childCallbacks.forEach(handler -> handler.onRegisters(atomicData.getKey(), registers));
-            } else if (atomicData.getValue() instanceof BitArray) {
-                BitArray coils = (BitArray) atomicData.getValue();
-                childCallbacks.forEach(handler -> handler.onBits(request, coils));
-            } else {
-                Exception error = (Exception) atomicData.getValue();
-                childCallbacks.forEach(handler -> handler.onError(request, error));
-            }
-            return true;
+            return Optional.ofNullable(this.lastResult).map(result -> result.copyIfStampAfter(oldestStamp))
+                    .map(result -> {
+                        logger.debug("Thing {} reusing cached data: {}", thing.getUID(), result.getValue());
+                        childCallbacks.forEach(handler -> handler.handle(result.getValue()));
+                        return true;
+                    }).orElse(false);
+
         }
 
         /**
          * Rest data caches
          */
         public void resetCache() {
-            lastRegisters = null;
-            lastCoils = null;
-            lastError = null;
+            lastResult = null;
         }
     }
 

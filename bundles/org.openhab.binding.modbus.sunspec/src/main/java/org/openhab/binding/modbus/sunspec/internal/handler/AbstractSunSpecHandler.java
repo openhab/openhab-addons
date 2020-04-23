@@ -20,6 +20,7 @@ import java.util.Optional;
 
 import javax.measure.Unit;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -40,11 +41,8 @@ import org.openhab.binding.modbus.sunspec.internal.SunSpecConfiguration;
 import org.openhab.binding.modbus.sunspec.internal.dto.ModelBlock;
 import org.openhab.io.transport.modbus.BasicModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.BasicPollTaskImpl;
-import org.openhab.io.transport.modbus.BitArray;
 import org.openhab.io.transport.modbus.ModbusManager;
-import org.openhab.io.transport.modbus.ModbusReadCallback;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
-import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.io.transport.modbus.PollTask;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
@@ -342,31 +340,16 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
         BasicModbusReadRequestBlueprint request = new BasicModbusReadRequestBlueprint(getSlaveId(),
                 ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, mainBlock.address, mainBlock.length, myconfig.maxTries);
 
-        pollTask = new BasicPollTaskImpl(myendpoint, request, new ModbusReadCallback() {
-
-            @Override
-            public void onRegisters(@Nullable ModbusReadRequestBlueprint request,
-                    @Nullable ModbusRegisterArray registers) {
-                if (registers == null) {
-                    logger.debug("Received empty register array on poll");
-                    return;
-                }
-
+        pollTask = new BasicPollTaskImpl(myendpoint, request, result -> {
+            if (result.hasError()) {
+                Exception error = (@NonNull Exception) result.getCause();
+                handleError(error);
+            } else {
+                ModbusRegisterArray registers = (@NonNull ModbusRegisterArray) result.getRegisters();
                 handlePolledData(registers);
-
                 if (getThing().getStatus() != ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.ONLINE);
                 }
-            }
-
-            @Override
-            public void onError(@Nullable ModbusReadRequestBlueprint request, @Nullable Exception error) {
-                handleError(error);
-            }
-
-            @Override
-            public void onBits(@Nullable ModbusReadRequestBlueprint request, @Nullable BitArray bits) {
-                // don't care, we don't expect this result
             }
         });
 

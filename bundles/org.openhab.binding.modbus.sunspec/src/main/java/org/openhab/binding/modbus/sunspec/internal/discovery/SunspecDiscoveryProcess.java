@@ -20,6 +20,7 @@ import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
@@ -34,12 +35,9 @@ import org.openhab.binding.modbus.sunspec.internal.dto.ModelBlock;
 import org.openhab.binding.modbus.sunspec.internal.parser.CommonModelParser;
 import org.openhab.io.transport.modbus.BasicModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.BasicPollTaskImpl;
-import org.openhab.io.transport.modbus.BitArray;
 import org.openhab.io.transport.modbus.ModbusBitUtilities;
 import org.openhab.io.transport.modbus.ModbusConstants.ValueType;
-import org.openhab.io.transport.modbus.ModbusReadCallback;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
-import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.io.transport.modbus.PollTask;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
@@ -163,21 +161,13 @@ public class SunspecDiscoveryProcess {
                 SUNSPEC_ID_SIZE, // number or words to return
                 maxTries);
 
-        PollTask task = new BasicPollTaskImpl(endpoint, request, new ModbusReadCallback() {
-
-            @Override
-            public void onRegisters(ModbusReadRequestBlueprint request, ModbusRegisterArray registers) {
-                headerReceived(registers);
-            }
-
-            @Override
-            public void onError(ModbusReadRequestBlueprint request, Exception error) {
+        PollTask task = new BasicPollTaskImpl(endpoint, request, result -> {
+            if (result.hasError()) {
+                Exception error = (@NonNull Exception) result.getCause();
                 handleError(error);
-            }
-
-            @Override
-            public void onBits(@Nullable ModbusReadRequestBlueprint request, @Nullable BitArray bits) {
-                // don't care, we don't expect this result
+            } else {
+                ModbusRegisterArray registers = (@NonNull ModbusRegisterArray) result.getRegisters();
+                headerReceived(registers);
             }
         });
 
@@ -215,21 +205,13 @@ public class SunspecDiscoveryProcess {
                 MODEL_HEADER_SIZE, // number or words to return
                 maxTries);
 
-        PollTask task = new BasicPollTaskImpl(endpoint, request, new ModbusReadCallback() {
-
-            @Override
-            public void onRegisters(ModbusReadRequestBlueprint request, ModbusRegisterArray registers) {
-                modelBlockReceived(registers);
-            }
-
-            @Override
-            public void onError(ModbusReadRequestBlueprint request, Exception error) {
+        PollTask task = new BasicPollTaskImpl(endpoint, request, result -> {
+            if (result.hasError()) {
+                Exception error = (@NonNull Exception) result.getCause();
                 handleError(error);
-            }
-
-            @Override
-            public void onBits(@Nullable ModbusReadRequestBlueprint request, @Nullable BitArray bits) {
-                // don't care, we don't expect this result
+            } else {
+                ModbusRegisterArray registers = (@NonNull ModbusRegisterArray) result.getRegisters();
+                modelBlockReceived(registers);
             }
         });
 
@@ -285,21 +267,13 @@ public class SunspecDiscoveryProcess {
                 block.length, // number or words to return
                 maxTries);
 
-        PollTask task = new BasicPollTaskImpl(endpoint, request, new ModbusReadCallback() {
-
-            @Override
-            public void onRegisters(ModbusReadRequestBlueprint request, ModbusRegisterArray registers) {
-                parseCommonBlock(registers);
-            }
-
-            @Override
-            public void onError(ModbusReadRequestBlueprint request, Exception error) {
+        PollTask task = new BasicPollTaskImpl(endpoint, request, result -> {
+            if (result.hasError()) {
+                Exception error = (@NonNull Exception) result.getCause();
                 handleError(error);
-            }
-
-            @Override
-            public void onBits(@Nullable ModbusReadRequestBlueprint request, @Nullable BitArray bits) {
-                // don't care, we don't expect this result
+            } else {
+                ModbusRegisterArray registers = (@NonNull ModbusRegisterArray) result.getRegisters();
+                parseCommonBlock(registers);
             }
         });
 

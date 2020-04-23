@@ -35,6 +35,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
+import org.openhab.io.transport.modbus.AsyncModbusReadResult;
 import org.openhab.io.transport.modbus.ModbusCallback;
 import org.openhab.io.transport.modbus.ModbusManager;
 import org.openhab.io.transport.modbus.ModbusManagerListener;
@@ -487,7 +488,8 @@ public class ModbusManagerImpl implements ModbusManager {
             logger.trace("Calling write response callback {} for request {}. Error was {} {}", callback, request,
                     error.getClass().getName(), error.getMessage());
             if (request instanceof ModbusReadRequestBlueprint) {
-                ((ModbusReadCallback) callback).onError((ModbusReadRequestBlueprint) request, error);
+                ((ModbusReadCallback) callback)
+                        .handle(new AsyncModbusReadResult((ModbusReadRequestBlueprint) request, error));
             } else if (request instanceof ModbusWriteRequestBlueprint) {
                 ((ModbusWriteCallback) callback).onError((ModbusWriteRequestBlueprint) request, error);
             } else {

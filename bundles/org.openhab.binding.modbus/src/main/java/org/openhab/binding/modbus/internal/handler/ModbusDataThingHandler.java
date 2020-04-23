@@ -60,6 +60,7 @@ import org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal;
 import org.openhab.binding.modbus.internal.ModbusConfigurationException;
 import org.openhab.binding.modbus.internal.Transformation;
 import org.openhab.binding.modbus.internal.config.ModbusDataConfiguration;
+import org.openhab.io.transport.modbus.AsyncModbusReadResult;
 import org.openhab.io.transport.modbus.BasicModbusWriteCoilRequestBlueprint;
 import org.openhab.io.transport.modbus.BasicModbusWriteRegisterRequestBlueprint;
 import org.openhab.io.transport.modbus.BasicWriteTask;
@@ -652,7 +653,23 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
     }
 
     @Override
-    public synchronized void onRegisters(ModbusReadRequestBlueprint request, ModbusRegisterArray registers) {
+    public synchronized void handle(AsyncModbusReadResult result) {
+        if (result.hasError()) {
+            Exception error = result.getCause();
+            assert error != null;
+            onError(result.getRequest(), error);
+        } else if (result.getRegisters() != null) {
+            ModbusRegisterArray registers = result.getRegisters();
+            assert registers != null;
+            onRegisters(result.getRequest(), registers);
+        } else {
+            BitArray bits = result.getBits();
+            assert bits != null;
+            onBits(result.getRequest(), bits);
+        }
+    }
+
+    private synchronized void onRegisters(ModbusReadRequestBlueprint request, ModbusRegisterArray registers) {
         if (hasConfigurationError()) {
             return;
         } else if (!isReadEnabled) {
@@ -693,8 +710,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 boolValue, registers, request);
     }
 
-    @Override
-    public synchronized void onBits(ModbusReadRequestBlueprint request, BitArray bits) {
+    private synchronized void onBits(ModbusReadRequestBlueprint request, BitArray bits) {
         if (hasConfigurationError()) {
             return;
         } else if (!isReadEnabled) {
@@ -708,8 +724,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 thing.getUID(), values, readValueType, readIndex, numericState, boolValue, bits, request);
     }
 
-    @Override
-    public synchronized void onError(ModbusReadRequestBlueprint request, Exception error) {
+    private synchronized void onError(ModbusReadRequestBlueprint request, Exception error) {
         if (hasConfigurationError()) {
             return;
         } else if (!isReadEnabled) {
