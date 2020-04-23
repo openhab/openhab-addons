@@ -81,11 +81,15 @@ public class VirtualKeypadHandler extends BaseKeypadHandler {
 
     @Override
     protected void configureComponents(@Nullable String model) {
-        logger.debug("Configuring components for virtual keypad");
+        String mod = model == null ? "Other" : model;
+        logger.debug("Configuring components for virtual keypad for model {}", mod);
+        boolean caseta = mod.equalsIgnoreCase("Caseta");
 
         for (int x = 1; x <= 100; x++) {
             buttonList.add(new Component(x, String.format("button%d", x), "Virtual Button", ComponentType.BUTTON));
-            ledList.add(new Component(x + 100, String.format("led%d", x), "Virtual LED", ComponentType.LED));
+            if (!caseta) { // Caseta scene buttons have no virtual LEDs
+                ledList.add(new Component(x + 100, String.format("led%d", x), "Virtual LED", ComponentType.LED));
+            }
         }
     }
 
