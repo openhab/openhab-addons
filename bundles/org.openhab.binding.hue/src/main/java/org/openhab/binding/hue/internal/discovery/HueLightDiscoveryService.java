@@ -40,12 +40,12 @@ import org.openhab.binding.hue.internal.handler.HueBridgeHandler;
 import org.openhab.binding.hue.internal.handler.HueLightHandler;
 import org.openhab.binding.hue.internal.handler.LightStatusListener;
 import org.openhab.binding.hue.internal.handler.SensorStatusListener;
+import org.openhab.binding.hue.internal.handler.sensors.ClipHandler;
 import org.openhab.binding.hue.internal.handler.sensors.DimmerSwitchHandler;
 import org.openhab.binding.hue.internal.handler.sensors.LightLevelHandler;
 import org.openhab.binding.hue.internal.handler.sensors.PresenceHandler;
 import org.openhab.binding.hue.internal.handler.sensors.TapSwitchHandler;
 import org.openhab.binding.hue.internal.handler.sensors.TemperatureHandler;
-import org.openhab.binding.hue.internal.handler.sensors.ClipHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -137,7 +137,7 @@ public class HueLightDiscoveryService extends AbstractDiscoveryService
     @Override
     protected synchronized void stopScan() {
         super.stopScan();
-        removeOlderResults(getTimestampOfLastScan());
+        removeOlderResults(getTimestampOfLastScan(), hueBridgeHandler.getThing().getUID());
     }
 
     @Override
