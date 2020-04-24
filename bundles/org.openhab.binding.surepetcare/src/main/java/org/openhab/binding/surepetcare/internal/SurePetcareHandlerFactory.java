@@ -85,8 +85,7 @@ public class SurePetcareHandlerFactory extends BaseThingHandlerFactory {
         } else if (thingTypeUID.equals(THING_TYPE_PET)) {
             return new SurePetcarePetHandler(thing, petcareAPI);
         } else if (thingTypeUID.equals(THING_TYPE_BRIDGE)) {
-            SurePetcareBridgeHandler handler = new SurePetcareBridgeHandler((Bridge) thing, petcareAPI);
-            return handler;
+            return new SurePetcareBridgeHandler((Bridge) thing, petcareAPI);
         }
         return null;
     }
