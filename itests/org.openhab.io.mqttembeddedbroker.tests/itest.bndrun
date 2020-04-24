@@ -25,7 +25,6 @@ Fragment-Host: org.openhab.io.mqttembeddedbroker
 	io.netty.resolver;version='[4.1.42,4.1.43)',\
 	io.netty.transport;version='[4.1.42,4.1.43)',\
 	javax.measure.unit-api;version='[1.0.0,1.0.1)',\
-	org.apache.commons.codec;version='[1.10.0,1.10.1)',\
 	org.apache.commons.io;version='[2.2.0,2.2.1)',\
 	org.apache.commons.lang;version='[2.6.0,2.6.1)',\
 	org.apache.felix.configadmin;version='[1.9.8,1.9.9)',\
