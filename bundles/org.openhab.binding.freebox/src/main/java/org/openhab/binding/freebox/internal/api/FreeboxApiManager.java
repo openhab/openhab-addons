@@ -28,8 +28,8 @@ import java.util.concurrent.TimeUnit;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.freebox.internal.api.model.FreeboxAirMediaConfig;
 import org.openhab.binding.freebox.internal.api.model.FreeboxAirMediaConfigResponse;
@@ -493,11 +493,8 @@ public class FreeboxApiManager {
             // Compute the hmac on input data bytes
             byte[] rawHmac = mac.doFinal(value.getBytes());
 
-            // Convert raw bytes to Hex
-            byte[] hexBytes = new Hex().encode(rawHmac);
-
-            // Covert array of Hex bytes to a String
-            return new String(hexBytes, StandardCharsets.UTF_8);
+            // Convert raw bytes to a String
+            return HexUtils.bytesToHex(rawHmac);
         } catch (IllegalArgumentException | NoSuchAlgorithmException | InvalidKeyException | IllegalStateException e) {
             throw new FreeboxException("Computing the hmac-sha1 of the challenge and the app token failed", e);
         }
