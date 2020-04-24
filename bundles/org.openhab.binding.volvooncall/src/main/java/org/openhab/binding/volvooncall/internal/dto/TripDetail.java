@@ -15,6 +15,7 @@ package org.openhab.binding.volvooncall.internal.dto;
 import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -31,9 +32,9 @@ import org.eclipse.smarthome.core.types.UnDefType;
  */
 @NonNullByDefault
 public class TripDetail {
-    public @Nullable Integer fuelConsumption;
-    public @Nullable Integer electricalConsumption;
-    public @Nullable Integer electricalRegeneration;
+    private @NonNullByDefault({}) Integer fuelConsumption;
+    private @NonNullByDefault({}) Integer electricalConsumption;
+    private @NonNullByDefault({}) Integer electricalRegeneration;
     public int distance;
     public int startOdometer;
     public int endOdometer;
@@ -74,4 +75,17 @@ public class TripDetail {
     public long getDurationInMinutes() {
         return Duration.between(startTime, endTime).toMinutes();
     }
+
+    public Optional<Integer> getFuelConsumption() {
+        return Optional.ofNullable(fuelConsumption);
+    }
+
+    public Optional<Integer> getElectricalConsumption() {
+        return Optional.ofNullable(electricalConsumption);
+    }
+
+    public Optional<Integer> getElectricalRegeneration() {
+        return Optional.ofNullable(electricalRegeneration);
+    }
+
 }

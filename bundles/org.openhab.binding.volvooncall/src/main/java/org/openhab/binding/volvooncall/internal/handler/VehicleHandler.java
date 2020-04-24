@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -79,7 +80,7 @@ public class VehicleHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
 
     private @NonNullByDefault({}) Map<String, String> activeOptions;
-    private @Nullable ScheduledFuture<?> refreshJob;
+    private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
 
     private Vehicles vehicle = new Vehicles();
     private VehiclePositionWrapper vehiclePosition = new VehiclePositionWrapper(new Position());
@@ -148,9 +149,9 @@ public class VehicleHandler extends BaseThingHandler {
      * @param refresh : refresh frequency in minutes
      */
     private void startAutomaticRefresh(int refresh) {
-        if (refreshJob == null || refreshJob.isCancelled()) {
-            refreshJob = scheduler.scheduleWithFixedDelay(this::queryApiAndUpdateChannels, 10, refresh,
-                    TimeUnit.MINUTES);
+        if (!refreshJob.isPresent() || refreshJob.get().isCancelled()) {
+            refreshJob = Optional.of(
+                    scheduler.scheduleWithFixedDelay(this::queryApiAndUpdateChannels, 10, refresh, TimeUnit.MINUTES));
         }
     }
 
@@ -173,7 +174,8 @@ public class VehicleHandler extends BaseThingHandler {
             } catch (JsonSyntaxException | IOException e) {
                 logger.warn("Exception occurred during execution: {}", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                refreshJob = null;
+                refreshJob.get().cancel(true);
+                refreshJob = Optional.empty();
                 startAutomaticRefresh(configuration.refresh);
             }
         }
@@ -236,8 +238,9 @@ public class VehicleHandler extends BaseThingHandler {
     private State getTripValue(String channelId, TripDetail tripDetails) {
         switch (channelId) {
             case TRIP_CONSUMPTION:
-                if (tripDetails.fuelConsumption != null) {
-                    return new QuantityType<>(tripDetails.fuelConsumption.floatValue() / 100, SmartHomeUnits.LITRE);
+                if (tripDetails.getFuelConsumption().isPresent()) {
+                    return new QuantityType<>(tripDetails.getFuelConsumption().get().floatValue() / 100,
+                            SmartHomeUnits.LITRE);
                 } else {
                     return UnDefType.UNDEF;
                 }
@@ -349,27 +352,23 @@ public class VehicleHandler extends BaseThingHandler {
         if (groupId != null) {
             switch (groupId) {
                 case GROUP_DOORS:
-                    if (status.doors != null) {
-                        DoorsStatus doors = status.doors;
-                        return getDoorsValue(channelId, doors);
+                    if (status.getDoors().isPresent()) {
+                        return getDoorsValue(channelId, status.getDoors().get());
                     }
                     break;
                 case GROUP_WINDOWS:
-                    if (status.windows != null) {
-                        WindowsStatus windows = status.windows;
-                        return getWindowsValue(channelId, windows);
+                    if (status.getWindows().isPresent()) {
+                        return getWindowsValue(channelId, status.getWindows().get());
                     }
                     break;
                 case GROUP_TYRES:
-                    if (status.tyrePressure != null) {
-                        TyrePressure tyrePressure = status.tyrePressure;
-                        return getTyresValue(channelId, tyrePressure);
+                    if (status.getTyrePressure().isPresent()) {
+                        return getTyresValue(channelId, status.getTyrePressure().get());
                     }
                     break;
                 case GROUP_BATTERY:
-                    if (status.hvBattery != null) {
-                        HvBattery hvBattery = status.hvBattery;
-                        return getBatteryValue(channelId, hvBattery);
+                    if (status.getHvBattery().isPresent()) {
+                        return getBatteryValue(channelId, status.getHvBattery().get());
                     }
                     break;
             }
@@ -427,9 +426,8 @@ public class VehicleHandler extends BaseThingHandler {
                 return status.distanceToEmpty < 100 ? OnOffType.ON : OnOffType.OFF;
             case REMOTE_HEATER:
             case PRECLIMATIZATION:
-                if (status.heater != null) {
-                    Heater heater = status.heater;
-                    return getHeaterValue(channelId, heater);
+                if (status.getHeater().isPresent()) {
+                    return getHeaterValue(channelId, status.getHeater().get());
                 }
                 break;
         }

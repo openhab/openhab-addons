@@ -14,8 +14,9 @@ package org.openhab.binding.volvooncall.internal.dto;
 
 import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.UNDEFINED;
 
+import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 
 /**
@@ -26,7 +27,6 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
  */
 @NonNullByDefault
 public class Status {
-
     public double averageFuelConsumption = UNDEFINED;
     public int averageSpeed = UNDEFINED;
     public int fuelAmount = UNDEFINED;
@@ -40,13 +40,32 @@ public class Status {
     public @NonNullByDefault({}) OnOffType engineRunning;
     public @NonNullByDefault({}) String brakeFluid;
     public @NonNullByDefault({}) String washerFluidLevel;
-    public @Nullable WindowsStatus windows;
-    public @Nullable DoorsStatus doors;
-    public @Nullable TyrePressure tyrePressure;
-    public @Nullable HvBattery hvBattery;
-    public @Nullable Heater heater;
-
+    private @NonNullByDefault({}) WindowsStatus windows;
+    private @NonNullByDefault({}) DoorsStatus doors;
+    private @NonNullByDefault({}) TyrePressure tyrePressure;
+    private @NonNullByDefault({}) HvBattery hvBattery;
+    private @NonNullByDefault({}) Heater heater;
     public @NonNullByDefault({}) String serviceWarningStatus;
+
+    public Optional<WindowsStatus> getWindows() {
+        return Optional.ofNullable(windows);
+    }
+
+    public Optional<DoorsStatus> getDoors() {
+        return Optional.ofNullable(doors);
+    }
+
+    public Optional<TyrePressure> getTyrePressure() {
+        return Optional.ofNullable(tyrePressure);
+    }
+
+    public Optional<HvBattery> getHvBattery() {
+        return Optional.ofNullable(hvBattery);
+    }
+
+    public Optional<Heater> getHeater() {
+        return Optional.ofNullable(heater);
+    }
 
     /*
      * Currently not used in the binding, maybe interesting for the future
@@ -76,4 +95,5 @@ public class Status {
      * private ZonedDateTime tripMeter2Timestamp;
      * private ZonedDateTime washerFluidLevelTimestamp;
      */
+
 }
