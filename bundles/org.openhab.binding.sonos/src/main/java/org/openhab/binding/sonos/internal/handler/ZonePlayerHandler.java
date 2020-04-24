@@ -237,7 +237,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 if (isLinked(LED)) {
                     updateLed();
                 }
-                if (isLinked(SLEEPTIMER)) {
+                // Action GetRemainingSleepTimerDuration is failing for a group slave member (error code 500)
+                if (isLinked(SLEEPTIMER) && isCoordinator()) {
                     updateSleepTimerDuration();
                 }
             } catch (Exception e) {
