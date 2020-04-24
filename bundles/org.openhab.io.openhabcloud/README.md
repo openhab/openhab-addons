@@ -38,7 +38,7 @@ After installing this add-on, you will find configuration options in the Paper U
 Please note, that you should not expose all your items in this settings dialog.
 Also note that at present this feature is currently turned off.
 You just need to expose those items, which you want to be accessible by IFTTT.
-You should not expose items in this way for Alexa or Google Assistant.
+This setting has no affect on Alexa or Google Assistant functionality.
 
 Alternatively, you can configure the settings in the file `conf/services/openhabcloud.cfg`:
 
