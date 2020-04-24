@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.surepetcare.internal.data;
+package org.openhab.binding.surepetcare.internal.dto;
 
 import com.google.gson.annotations.SerializedName;
 

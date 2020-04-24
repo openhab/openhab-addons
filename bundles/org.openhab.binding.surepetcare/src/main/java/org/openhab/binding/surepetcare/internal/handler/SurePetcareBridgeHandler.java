@@ -36,11 +36,11 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.surepetcare.internal.AuthenticationException;
 import org.openhab.binding.surepetcare.internal.SurePetcareAPIHelper;
-import org.openhab.binding.surepetcare.internal.SurePetcareBridgeConfiguration;
-import org.openhab.binding.surepetcare.internal.data.SurePetcareDevice;
-import org.openhab.binding.surepetcare.internal.data.SurePetcareHousehold;
-import org.openhab.binding.surepetcare.internal.data.SurePetcarePet;
 import org.openhab.binding.surepetcare.internal.discovery.SurePetcareDiscoveryService;
+import org.openhab.binding.surepetcare.internal.dto.SurePetcareBridgeConfiguration;
+import org.openhab.binding.surepetcare.internal.dto.SurePetcareDevice;
+import org.openhab.binding.surepetcare.internal.dto.SurePetcareHousehold;
+import org.openhab.binding.surepetcare.internal.dto.SurePetcarePet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

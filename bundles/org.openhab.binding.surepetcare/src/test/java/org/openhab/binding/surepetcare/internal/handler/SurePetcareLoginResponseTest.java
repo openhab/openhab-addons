@@ -14,15 +14,17 @@ package org.openhab.binding.surepetcare.internal.handler;
 
 import static org.junit.Assert.assertEquals;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.surepetcare.internal.SurePetcareConstants;
-import org.openhab.binding.surepetcare.internal.data.SurePetcareLoginResponse;
+import org.openhab.binding.surepetcare.internal.dto.SurePetcareLoginResponse;
 
 /**
  * The {@link SurePetcareLoginResponseTest} class implements unit test case for {@link SurePetcareLoginResponse}
  *
  * @author Rene Scherer - Initial contribution
  */
+@NonNullByDefault
 public class SurePetcareLoginResponseTest {
 
     @Test

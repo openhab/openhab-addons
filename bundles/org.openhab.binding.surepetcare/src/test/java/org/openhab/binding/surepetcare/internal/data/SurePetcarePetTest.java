@@ -19,14 +19,17 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.surepetcare.internal.SurePetcareConstants;
+import org.openhab.binding.surepetcare.internal.dto.SurePetcarePet;
 
 /**
  * The {@link SurePetcarePetTest} class implements unit test case for {@link SurePetcarePet}
  *
  * @author Rene Scherer - Initial contribution
  */
+@NonNullByDefault
 public class SurePetcarePetTest {
 
     // {
@@ -93,7 +96,10 @@ public class SurePetcarePetTest {
         assertEquals("Cat", response.getName());
         assertEquals(new Integer(0), response.getGenderId());
 
-        Date dobDate = simpleDateFormat.parse("2017-08-01T00:00:00+0000");
+        Date dobDate;
+        synchronized (simpleDateFormat) {
+            dobDate = simpleDateFormat.parse("2017-08-01T00:00:00+0000");
+        }
         assertEquals(dobDate, response.getDateOfBirth());
 
         assertEquals(new BigDecimal("3.5"), response.getWeight());
@@ -105,7 +111,10 @@ public class SurePetcarePetTest {
         assertEquals(new Integer(382), response.getBreedId());
 
         assertEquals(new Integer(1), response.getPetStatus().getActivity().getWhere());
-        Date sinceDate = simpleDateFormat.parse("2019-10-03T10:23:37+0000");
+        Date sinceDate;
+        synchronized (simpleDateFormat) {
+            sinceDate = simpleDateFormat.parse("2019-10-03T10:23:37+0000");
+        }
         assertEquals(sinceDate, response.getPetStatus().getActivity().getSince());
     }
 

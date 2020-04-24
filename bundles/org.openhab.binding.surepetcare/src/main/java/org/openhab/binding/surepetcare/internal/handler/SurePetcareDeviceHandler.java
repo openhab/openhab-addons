@@ -28,10 +28,10 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.surepetcare.internal.SurePetcareAPIHelper;
 import org.openhab.binding.surepetcare.internal.SurePetcareApiException;
-import org.openhab.binding.surepetcare.internal.data.SurePetcareDevice;
-import org.openhab.binding.surepetcare.internal.data.SurePetcareDeviceControl;
-import org.openhab.binding.surepetcare.internal.data.SurePetcareDeviceControl.Bowls.BowlSettings;
-import org.openhab.binding.surepetcare.internal.data.SurePetcareDeviceCurfew;
+import org.openhab.binding.surepetcare.internal.dto.SurePetcareDevice;
+import org.openhab.binding.surepetcare.internal.dto.SurePetcareDeviceControl;
+import org.openhab.binding.surepetcare.internal.dto.SurePetcareDeviceCurfew;
+import org.openhab.binding.surepetcare.internal.dto.SurePetcareDeviceControl.Bowls.BowlSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

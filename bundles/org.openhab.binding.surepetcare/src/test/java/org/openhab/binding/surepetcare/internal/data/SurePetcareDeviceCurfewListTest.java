@@ -14,13 +14,17 @@ package org.openhab.binding.surepetcare.internal.data;
 
 import static org.junit.Assert.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
+import org.openhab.binding.surepetcare.internal.dto.SurePetcareDeviceCurfew;
+import org.openhab.binding.surepetcare.internal.dto.SurePetcareDeviceCurfewList;
 
 /**
  * The {@link SurePetcareDeviceCurfewListTest} class implements unit test case for {@link SurePetcareDeviceCurfewList}
  *
  * @author Rene Scherer - Initial contribution
  */
+@NonNullByDefault
 public class SurePetcareDeviceCurfewListTest {
 
     @Test

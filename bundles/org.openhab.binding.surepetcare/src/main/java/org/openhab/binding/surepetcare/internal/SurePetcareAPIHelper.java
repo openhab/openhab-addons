@@ -25,7 +25,6 @@ import java.util.Enumeration;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -34,17 +33,17 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
-import org.openhab.binding.surepetcare.internal.data.SurePetcareDevice;
-import org.openhab.binding.surepetcare.internal.data.SurePetcareDeviceControl;
-import org.openhab.binding.surepetcare.internal.data.SurePetcareDeviceCurfewList;
-import org.openhab.binding.surepetcare.internal.data.SurePetcareDeviceStatus;
-import org.openhab.binding.surepetcare.internal.data.SurePetcareHousehold;
-import org.openhab.binding.surepetcare.internal.data.SurePetcareLoginCredentials;
-import org.openhab.binding.surepetcare.internal.data.SurePetcareLoginResponse;
-import org.openhab.binding.surepetcare.internal.data.SurePetcarePet;
-import org.openhab.binding.surepetcare.internal.data.SurePetcarePetStatus;
-import org.openhab.binding.surepetcare.internal.data.SurePetcareTag;
-import org.openhab.binding.surepetcare.internal.data.SurePetcareTopology;
+import org.openhab.binding.surepetcare.internal.dto.SurePetcareDevice;
+import org.openhab.binding.surepetcare.internal.dto.SurePetcareDeviceControl;
+import org.openhab.binding.surepetcare.internal.dto.SurePetcareDeviceCurfewList;
+import org.openhab.binding.surepetcare.internal.dto.SurePetcareDeviceStatus;
+import org.openhab.binding.surepetcare.internal.dto.SurePetcareHousehold;
+import org.openhab.binding.surepetcare.internal.dto.SurePetcareLoginCredentials;
+import org.openhab.binding.surepetcare.internal.dto.SurePetcareLoginResponse;
+import org.openhab.binding.surepetcare.internal.dto.SurePetcarePet;
+import org.openhab.binding.surepetcare.internal.dto.SurePetcarePetStatus;
+import org.openhab.binding.surepetcare.internal.dto.SurePetcareTag;
+import org.openhab.binding.surepetcare.internal.dto.SurePetcareTopology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,7 +107,6 @@ public class SurePetcareAPIHelper {
                     .toJson(new SurePetcareLoginCredentials(username, password, getDeviceId().toString()))));
             ContentResponse response = request.send();
             if (response.getStatus() == HttpURLConnection.HTTP_OK) {
-                @NonNull
                 SurePetcareLoginResponse loginResponse = SurePetcareConstants.GSON
                         .fromJson(response.getContentAsString(), SurePetcareLoginResponse.class);
 
@@ -220,7 +218,7 @@ public class SurePetcareAPIHelper {
     /**
      * Updates the pet location through an API call to the Sure Petcare API.
      *
-     * @param pet           the pet
+     * @param pet the pet
      * @param newLocationId the id of the new location
      * @throws SurePetcareApiException
      */
@@ -235,7 +233,7 @@ public class SurePetcareAPIHelper {
     /**
      * Updates the device locking mode through an API call to the Sure Petcare API.
      *
-     * @param device           the device
+     * @param device the device
      * @param newLockingModeId the id of the new locking mode
      * @throws SurePetcareApiException
      */
@@ -257,7 +255,7 @@ public class SurePetcareAPIHelper {
     /**
      * Updates the device led mode through an API call to the Sure Petcare API.
      *
-     * @param device       the device
+     * @param device the device
      * @param newLedModeId the id of the new led mode
      * @throws SurePetcareApiException
      */
@@ -279,7 +277,7 @@ public class SurePetcareAPIHelper {
     /**
      * Updates all curfews through an API call to the Sure Petcare API.
      *
-     * @param device     the device
+     * @param device the device
      * @param curfewList the list of curfews
      * @throws SurePetcareApiException
      */
@@ -325,7 +323,7 @@ public class SurePetcareAPIHelper {
      * Returns a unique device id used during the authentication process with the Sure Petcare API. The id is derived
      * from the local MAC address or hostname provided as arguments
      *
-     * @param interfaces       a list of interface of this host
+     * @param interfaces a list of interface of this host
      * @param localHostAddress the ip address of the localhost
      * @return a unique device id
      */
@@ -397,9 +395,9 @@ public class SurePetcareAPIHelper {
     /**
      * Sends a given object as a JSON payload to the API.
      *
-     * @param url           the URL
+     * @param url the URL
      * @param requestMethod the request method (POST, PUT etc.)
-     * @param payload       an object used for the payload
+     * @param payload an object used for the payload
      * @throws SurePetcareApiException
      */
     private void setDataThroughApi(String url, HttpMethod method, Object payload) throws SurePetcareApiException {
@@ -449,8 +447,8 @@ public class SurePetcareAPIHelper {
     /**
      * Uses the given request method to send a JSON string to an API.
      *
-     * @param url         the URL
-     * @param method      the required request method (POST, PUT etc.)
+     * @param url the URL
+     * @param method the required request method (POST, PUT etc.)
      * @param jsonPayload the JSON string
      * @throws SurePetcareApiException
      */
@@ -459,7 +457,6 @@ public class SurePetcareAPIHelper {
         logger.debug("postDataThroughAPI URL: {}", url);
         logger.debug("postDataThroughAPI Payload: {}", jsonPayload);
         while (!success) {
-
             try {
                 Request request = httpClient.newRequest(url).method(method);
                 setConnectionHeaders(request);

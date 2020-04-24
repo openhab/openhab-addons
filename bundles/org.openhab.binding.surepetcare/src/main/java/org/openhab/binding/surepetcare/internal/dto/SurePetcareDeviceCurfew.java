@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.surepetcare.internal.data;
+package org.openhab.binding.surepetcare.internal.dto;
 
 /**
  * The {@link SurePetcareDeviceCurfew} class is used to serialize a curfew.

@@ -20,6 +20,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -34,8 +37,10 @@ import com.google.gson.JsonSerializer;
  *
  * @author Rene Scherer - Initial contribution
  */
+@NonNullByDefault
 public class GsonColonDateTypeAdapter implements JsonSerializer<Date>, JsonDeserializer<Date> {
 
+    @NonNullByDefault
     public class ColonDateFormat extends SimpleDateFormat {
 
         private static final long serialVersionUID = -6266537452934495628L;
@@ -45,13 +50,15 @@ public class GsonColonDateTypeAdapter implements JsonSerializer<Date>, JsonDeser
         }
 
         @Override
-        public StringBuffer format(Date date, StringBuffer toAppendTo, FieldPosition pos) {
+        public StringBuffer format(@Nullable Date date, @Nullable StringBuffer toAppendTo,
+                @Nullable FieldPosition pos) {
             StringBuffer rfcFormat = super.format(date, toAppendTo, pos);
             return rfcFormat.insert(rfcFormat.length() - 2, ":");
         }
 
+        @SuppressWarnings("null")
         @Override
-        public Date parse(String text, ParsePosition pos) {
+        public Date parse(@Nullable String text, @Nullable ParsePosition pos) {
             String fixedText = text;
             if (text.length() > 3) {
                 fixedText = text.substring(0, text.length() - 3) + text.substring(text.length() - 2);
@@ -69,13 +76,15 @@ public class GsonColonDateTypeAdapter implements JsonSerializer<Date>, JsonDeser
     }
 
     @Override
-    public synchronized JsonElement serialize(Date date, Type type, JsonSerializationContext jsonSerializationContext) {
+    public synchronized JsonElement serialize(Date date, @Nullable Type type,
+            @Nullable JsonSerializationContext jsonSerializationContext) {
         return new JsonPrimitive(dateFormat.format(date));
     }
 
+    @SuppressWarnings("null")
     @Override
-    public synchronized Date deserialize(JsonElement jsonElement, Type type,
-            JsonDeserializationContext jsonDeserializationContext) {
+    public synchronized Date deserialize(@Nullable JsonElement jsonElement, @Nullable Type type,
+            @Nullable JsonDeserializationContext jsonDeserializationContext) {
         try {
             return dateFormat.parse(jsonElement.getAsString());
         } catch (ParseException e) {

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.surepetcare.internal.handler;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 import java.net.InetAddress;
@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.BeforeClass;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.surepetcare.internal.SurePetcareAPIHelper;
 
@@ -31,6 +31,7 @@ import org.openhab.binding.surepetcare.internal.SurePetcareAPIHelper;
  *
  * @author Rene Scherer - Initial contribution
  */
+@NonNullByDefault
 public class SurePetcareAPIHelperTest extends SurePetcareAPIHelper {
 
     public static final byte[] TEST_MAC_ADDRESS_1 = new byte[] { (byte) 0x11, (byte) 0x22, (byte) 0x33, (byte) 0x44,
@@ -41,36 +42,32 @@ public class SurePetcareAPIHelperTest extends SurePetcareAPIHelper {
 
     public static final String TEST_HOST_NAME = "orion";
 
-    private static InetAddress localHostAddress;
-    private static NetworkInterface netif1, netif2;
+    private InetAddress localHostAddress;
+    private NetworkInterface netif1, netif2;
     private static SurePetcareAPIHelper api = new SurePetcareAPIHelper();
 
-    @BeforeClass
-    public static void classSetup() {
-        try {
-            // create a mock localhost address returning the test host name
-            localHostAddress = mock(InetAddress.class);
-            when(localHostAddress.getHostName()).thenReturn(TEST_HOST_NAME);
+    public SurePetcareAPIHelperTest() throws SocketException {
+        // create a mock localhost address returning the test host name
+        localHostAddress = mock(InetAddress.class);
+        when(localHostAddress.getHostName()).thenReturn(TEST_HOST_NAME);
 
-            // create a mock network interface 1 returning the MAC_ADDRESS_1
-            netif1 = mock(NetworkInterface.class);
-            when(netif1.getHardwareAddress()).thenReturn(TEST_MAC_ADDRESS_1);
+        // create a mock network interface 1 returning the MAC_ADDRESS_1
+        netif1 = mock(NetworkInterface.class);
+        when(netif1.getHardwareAddress()).thenReturn(TEST_MAC_ADDRESS_1);
 
-            // create a mock network interface 2 returning the MAC_ADDRESS_2
-            netif2 = mock(NetworkInterface.class);
-            when(netif2.getHardwareAddress()).thenReturn(TEST_MAC_ADDRESS_2);
-        } catch (SocketException e) {
-            fail(e.getMessage());
-        }
+        // create a mock network interface 2 returning the MAC_ADDRESS_2
+        netif2 = mock(NetworkInterface.class);
+        when(netif2.getHardwareAddress()).thenReturn(TEST_MAC_ADDRESS_2);
     }
 
     @Test
     public void testGetDeviceIdSingleNetworkInterface() {
+        int deviceId = 0;
         // create a single network interface list with the above MAC address
         List<NetworkInterface> interfaces = new ArrayList<>();
         interfaces.add(netif1);
 
-        int deviceId = api.getDeviceId(Collections.enumeration(interfaces), localHostAddress);
+        deviceId = api.getDeviceId(Collections.enumeration(interfaces), localHostAddress);
         assertEquals(2007686672, deviceId);
     }
 

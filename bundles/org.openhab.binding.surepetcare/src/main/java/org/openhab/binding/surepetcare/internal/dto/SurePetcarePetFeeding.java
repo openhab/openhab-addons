@@ -10,41 +10,33 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.surepetcare.internal.data;
+package org.openhab.binding.surepetcare.internal.dto;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link SurePetcarePetActivity} is the Java class used to represent the
+ * The {@link SurePetcarePetFeeding} is the Java class used to represent the
  * status of a pet. It's used to deserialize JSON API results.
  *
  * @author Rene Scherer - Initial contribution
  * @author Holger Eisold - Added pet feeder status
  */
-public class SurePetcarePetActivity {
+public class SurePetcarePetFeeding {
 
     @SerializedName("tag_id")
     private Integer tagId;
     @SerializedName("device_id")
     private Integer deviceId;
-    @SerializedName("user_id")
-    private Integer userId;
-    @SerializedName("where")
-    private Integer where;
-    @SerializedName("since")
-    private Date since;
-
-    public SurePetcarePetActivity() {
-    }
-
-    public SurePetcarePetActivity(Integer location, Date since) {
-        this.where = location;
-        this.since = since;
-    }
+    @SerializedName("change")
+    private List<Float> feedChange = new ArrayList<>();
+    @SerializedName("at")
+    private Date feedChangeAt;
 
     public Integer getTagId() {
         return tagId;
@@ -52,14 +44,6 @@ public class SurePetcarePetActivity {
 
     public void setTagId(Integer tagId) {
         this.tagId = tagId;
-    }
-
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
     }
 
     public Integer getDeviceId() {
@@ -70,24 +54,23 @@ public class SurePetcarePetActivity {
         this.deviceId = deviceId;
     }
 
-    public Integer getWhere() {
-        return where;
+    public List<Float> getFeedChange() {
+        return feedChange;
     }
 
-    public void setWhere(Integer where) {
-        this.where = where;
+    public void setFeedChange(List<Float> feedChange) {
+        this.feedChange = feedChange;
     }
 
-    public Date getSince() {
-        return since;
+    public Date getAt() {
+        return feedChangeAt;
     }
 
-    public void setSince(Date since) {
-        this.since = since;
+    public void setAt(Date feedChangeAt) {
+        this.feedChangeAt = feedChangeAt;
     }
 
-    public ZonedDateTime getLocationChanged() {
-        return since == null ? null : since.toInstant().atZone(ZoneId.systemDefault()).withNano(0);
+    public ZonedDateTime getZonedFeedChangeAt() {
+        return feedChangeAt == null ? null : feedChangeAt.toInstant().atZone(ZoneId.systemDefault());
     }
-
 }

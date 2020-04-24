@@ -18,14 +18,17 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.surepetcare.internal.SurePetcareConstants;
+import org.openhab.binding.surepetcare.internal.dto.SurePetcarePetActivity;
 
 /**
  * The {@link SurePetcarePetLocationTest} class implements unit test case for {@link SurePetcarePetLocation}
  *
  * @author Rene Scherer - Initial contribution
  */
+@NonNullByDefault
 public class SurePetcarePetLocationTest {
 
     private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
@@ -38,15 +41,19 @@ public class SurePetcarePetLocationTest {
         assertEquals(new Integer(60126), response.getTagId());
         assertEquals(new Integer(376236), response.getDeviceId());
         assertEquals(new Integer(2), response.getWhere());
-        Date sinceDate = simpleDateFormat.parse("2019-09-11T13:09:07+0000");
+        Date sinceDate;
+        synchronized (simpleDateFormat) {
+            sinceDate = simpleDateFormat.parse("2019-09-11T13:09:07+0000");
+        }
         assertEquals(sinceDate, response.getSince());
     }
 
     @Test
     public void testJsonFullSerialize() throws ParseException {
-
-        Date since = simpleDateFormat.parse("2019-09-11T13:09:07+0000");
-
+        Date since;
+        synchronized (simpleDateFormat) {
+            since = simpleDateFormat.parse("2019-09-11T13:09:07+0000");
+        }
         SurePetcarePetActivity location = new SurePetcarePetActivity(2, since);
 
         String json = SurePetcareConstants.GSON.toJson(location, SurePetcarePetActivity.class);

@@ -16,14 +16,17 @@ import static org.junit.Assert.assertEquals;
 
 import java.text.ParseException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.surepetcare.internal.SurePetcareConstants;
+import org.openhab.binding.surepetcare.internal.dto.SurePetcareDevice;
 
 /**
  * The {@link SurePetcareDeviceTest} class implements unit test case for {@link SurePetcareDevice}
  *
  * @author Rene Scherer - Initial contribution
  */
+@NonNullByDefault
 public class SurePetcareDeviceTest {
 
     @Test

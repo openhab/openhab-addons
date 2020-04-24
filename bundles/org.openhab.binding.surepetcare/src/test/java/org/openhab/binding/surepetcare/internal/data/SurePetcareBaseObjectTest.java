@@ -14,14 +14,17 @@ package org.openhab.binding.surepetcare.internal.data;
 
 import static org.junit.Assert.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.surepetcare.internal.SurePetcareConstants;
+import org.openhab.binding.surepetcare.internal.dto.SurePetcareBaseObject;
 
 /**
  * The {@link SurePetcareBaseObjectTest} class implements unit test case for {@link SurePetcareBaseObject}
  *
  * @author Rene Scherer - Initial contribution
  */
+@NonNullByDefault
 public class SurePetcareBaseObjectTest {
 
     @Test

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.surepetcare.internal.data;
+package org.openhab.binding.surepetcare.internal.dto;
 
 /**
  * The {@link SurePetcareLoginCredentials} is the Java class as a DTO to hold login credentials for the Sure Petcare

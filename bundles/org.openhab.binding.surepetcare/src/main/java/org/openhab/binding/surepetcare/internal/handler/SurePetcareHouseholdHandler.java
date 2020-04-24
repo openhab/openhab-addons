@@ -19,7 +19,7 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.surepetcare.internal.SurePetcareAPIHelper;
-import org.openhab.binding.surepetcare.internal.data.SurePetcareHousehold;
+import org.openhab.binding.surepetcare.internal.dto.SurePetcareHousehold;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

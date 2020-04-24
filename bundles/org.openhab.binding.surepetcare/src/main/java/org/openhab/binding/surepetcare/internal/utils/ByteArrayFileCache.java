@@ -61,8 +61,7 @@ public class ByteArrayFileCache {
      * @param servicePID PID of the service
      */
     public ByteArrayFileCache(String servicePID) {
-        // TODO track and limit folder size
-        // TODO support user specific folder
+        // Future enhancement: track and limit folder size, support user specific folder
         cacheFolder = new File(new File(ConfigConstants.getUserDataFolder(), CACHE_FOLDER_NAME), servicePID);
         if (!cacheFolder.exists()) {
             logger.debug("Creating cache folder '{}'", cacheFolder.getAbsolutePath());
@@ -76,8 +75,8 @@ public class ByteArrayFileCache {
      * <code>$userdata/cache/$servicePID/</code>.
      *
      * @param servicePID PID of the service
-     * @param int        the days for how long the files stay in the cache valid. Must be positive. 0 to
-     *                       disables this functionality.
+     * @param int the days for how long the files stay in the cache valid. Must be positive. 0 to
+     *            disables this functionality.
      */
     public ByteArrayFileCache(String servicePID, int expiry) {
         this(servicePID);
@@ -91,7 +90,7 @@ public class ByteArrayFileCache {
      * Adds a file to the cache. If the cache previously contained a file for the key, the old file is replaced by the
      * new content.
      *
-     * @param key     the key with which the file is to be associated
+     * @param key the key with which the file is to be associated
      * @param content the content for the file to be associated with the specified key
      */
     public void put(String key, byte[] content) {
@@ -101,7 +100,7 @@ public class ByteArrayFileCache {
     /**
      * Adds a file to the cache.
      *
-     * @param key     the key with which the file is to be associated
+     * @param key the key with which the file is to be associated
      * @param content the content for the file to be associated with the specified key
      */
     public void putIfAbsent(String key, byte[] content) {
@@ -118,7 +117,7 @@ public class ByteArrayFileCache {
     /**
      * Adds a file to the cache and returns the content of the file.
      *
-     * @param key     the key with which the file is to be associated
+     * @param key the key with which the file is to be associated
      * @param content the content for the file to be associated with the specified key
      * @return the content of the file associated with the given key
      */
@@ -132,7 +131,7 @@ public class ByteArrayFileCache {
      * Writes the given content to the given {@link File}.
      *
      * @param fileInCache the {@link File}
-     * @param content     the content to be written
+     * @param content the content to be written
      */
     private void writeFile(File fileInCache, byte[] content) {
         logger.debug("Caching file '{}'", fileInCache.getName());

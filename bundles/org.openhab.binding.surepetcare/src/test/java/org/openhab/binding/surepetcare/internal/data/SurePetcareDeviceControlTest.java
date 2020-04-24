@@ -16,14 +16,19 @@ import static org.junit.Assert.assertEquals;
 
 import java.text.ParseException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.surepetcare.internal.SurePetcareConstants;
+import org.openhab.binding.surepetcare.internal.dto.SurePetcareDeviceControl;
+import org.openhab.binding.surepetcare.internal.dto.SurePetcareDeviceCurfew;
+import org.openhab.binding.surepetcare.internal.dto.SurePetcareDeviceCurfewList;
 
 /**
  * The {@link SurePetcareDeviceControlTest} class implements unit test case for {@link SurePetcareDeviceControl}
  *
  * @author Rene Scherer - Initial contribution
  */
+@NonNullByDefault
 public class SurePetcareDeviceControlTest {
 
     @Test
@@ -38,7 +43,6 @@ public class SurePetcareDeviceControlTest {
 
     @Test
     public void testJsonSerializeLockingMode() throws ParseException {
-
         SurePetcareDeviceControl control = new SurePetcareDeviceControl();
         control.setLockingModeId(new Integer(4));
 
@@ -48,7 +52,6 @@ public class SurePetcareDeviceControlTest {
 
     @Test
     public void testJsonSerializeCurfew() throws ParseException {
-
         SurePetcareDeviceControl control = new SurePetcareDeviceControl();
         SurePetcareDeviceCurfewList curfews = new SurePetcareDeviceCurfewList();
         curfews.add(new SurePetcareDeviceCurfew(true, "19:30", "07:00"));

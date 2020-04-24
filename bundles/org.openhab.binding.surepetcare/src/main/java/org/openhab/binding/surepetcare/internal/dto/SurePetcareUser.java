@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.surepetcare.internal.data;
+package org.openhab.binding.surepetcare.internal.dto;
 
 /**
  * The {@link SurePetcareUser} is the Java class used to represent a Sure Petcare API user. It's used to deserialize
