@@ -14,29 +14,21 @@ package org.openhab.binding.caddx.internal.factory;
 
 import static org.openhab.binding.caddx.internal.CaddxBindingConstants.SUPPORTED_THING_TYPES_UIDS;
 
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.caddx.internal.CaddxBindingConstants;
-import org.openhab.binding.caddx.internal.discovery.CaddxDiscoveryService;
 import org.openhab.binding.caddx.internal.handler.CaddxBridgeHandler;
 import org.openhab.binding.caddx.internal.handler.ThingHandlerKeypad;
 import org.openhab.binding.caddx.internal.handler.ThingHandlerPanel;
 import org.openhab.binding.caddx.internal.handler.ThingHandlerPartition;
 import org.openhab.binding.caddx.internal.handler.ThingHandlerZone;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -52,7 +44,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class CaddxHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(CaddxHandlerFactory.class);
-    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<>();
     private @NonNullByDefault({}) SerialPortManager portManager;
 
     @Override
@@ -60,34 +51,14 @@ public class CaddxHandlerFactory extends BaseThingHandlerFactory {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
-    /**
-     * Register the Thing Discovery Service for a bridge.
-     *
-     * @param caddxBridgeHandler The Bridge handler
-     */
-    private void registerCaddxDiscoveryService(CaddxBridgeHandler caddxBridgeHandler) {
-        CaddxDiscoveryService discoveryService = new CaddxDiscoveryService(caddxBridgeHandler);
-        discoveryService.activate();
-
-        ServiceRegistration<?> discoveryServiceRegistration = bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>());
-        discoveryServiceRegistrations.put(caddxBridgeHandler.getThing().getUID(), discoveryServiceRegistration);
-
-        logger.trace("registerCaddxDiscoveryService(): Bridge Handler - {}, Class Name - {}, Discovery Service - {}",
-                caddxBridgeHandler, DiscoveryService.class.getName(), discoveryService);
-    }
-
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(CaddxBindingConstants.CADDXBRIDGE_THING_TYPE)) {
-            CaddxBridgeHandler handler = new CaddxBridgeHandler(portManager, (Bridge) thing);
-            registerCaddxDiscoveryService(handler);
-
             logger.trace("createHandler(): BRIDGE_THING: ThingHandler created for {}", thingTypeUID);
 
-            return handler;
+            return new CaddxBridgeHandler(portManager, (Bridge) thing);
         } else if (thingTypeUID.equals(CaddxBindingConstants.PANEL_THING_TYPE)) {
             logger.trace("createHandler(): PANEL_THING: ThingHandler created for {}", thingTypeUID);
 
@@ -109,21 +80,6 @@ public class CaddxHandlerFactory extends BaseThingHandlerFactory {
 
             return null;
         }
-    }
-
-    @Override
-    protected void removeHandler(ThingHandler thingHandler) {
-        ThingTypeUID thingTypeUID = thingHandler.getThing().getThingTypeUID();
-
-        if (thingTypeUID.equals(CaddxBindingConstants.CADDXBRIDGE_THING_TYPE)) {
-            ServiceRegistration<?> discoveryServiceRegistration = discoveryServiceRegistrations
-                    .get(thingHandler.getThing().getUID());
-
-            discoveryServiceRegistration.unregister();
-            discoveryServiceRegistration = null;
-            discoveryServiceRegistrations.remove(thingHandler.getThing().getUID());
-        }
-        super.removeHandler(thingHandler);
     }
 
     @Reference

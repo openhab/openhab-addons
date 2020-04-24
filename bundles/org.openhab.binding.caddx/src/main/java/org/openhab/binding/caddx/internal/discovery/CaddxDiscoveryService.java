@@ -20,8 +20,11 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.openhab.binding.caddx.internal.CaddxBindingConstants;
 import org.openhab.binding.caddx.internal.CaddxEvent;
 import org.openhab.binding.caddx.internal.config.CaddxKeypadConfiguration;
@@ -38,22 +41,21 @@ import org.slf4j.LoggerFactory;
  * @author Georgios Moutsos - Initial contribution
  */
 @NonNullByDefault
-public class CaddxDiscoveryService extends AbstractDiscoveryService {
+public class CaddxDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService, DiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(CaddxDiscoveryService.class);
 
-    private @Nullable CaddxBridgeHandler caddxBridgeHandler;
+    private @Nullable CaddxBridgeHandler caddxBridgeHandler = null;
 
     /**
      * Constructor.
      */
-    public CaddxDiscoveryService(CaddxBridgeHandler caddxBridgeHandler) {
+    public CaddxDiscoveryService() {
         super(CaddxBindingConstants.SUPPORTED_THING_TYPES_UIDS, 15, false);
-        this.caddxBridgeHandler = caddxBridgeHandler;
     }
 
     @Override
     protected void startScan() {
-        // Discovery is started only for the bridge
+        // Discovery is performed implicitly via the CadxBridgeHandler
     }
 
     /**
@@ -131,6 +133,7 @@ public class CaddxDiscoveryService extends AbstractDiscoveryService {
     /**
      * Activates the Discovery Service.
      */
+    @Override
     public void activate() {
         CaddxBridgeHandler handler = caddxBridgeHandler;
         if (handler != null) {
@@ -147,5 +150,17 @@ public class CaddxDiscoveryService extends AbstractDiscoveryService {
         if (handler != null) {
             handler.unregisterDiscoveryService();
         }
+    }
+
+    @Override
+    public void setThingHandler(@Nullable ThingHandler handler) {
+        if (handler instanceof CaddxBridgeHandler) {
+            caddxBridgeHandler = (CaddxBridgeHandler) handler;
+        }
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return caddxBridgeHandler;
     }
 }

@@ -16,6 +16,8 @@ import static org.openhab.binding.caddx.internal.CaddxBindingConstants.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.TooManyListenersException;
 
@@ -31,6 +33,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.io.transport.serial.PortInUseException;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
@@ -400,5 +403,10 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
         }
 
         updateStatus(ThingStatus.ONLINE);
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(CaddxDiscoveryService.class);
     }
 }
