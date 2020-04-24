@@ -55,7 +55,7 @@
 
 		<config-description>
 			<parameter name="serialPort" type="text" required="true">
-				<label>Serial or USB Port</label>
+				<label>Serial Or USB Port</label>
 				<context>serial-port</context>
 				<description>The name of the serial port used to connect to the Alarm Decoder device</description>
 			</parameter>
@@ -90,12 +90,10 @@
 
 		<config-description>
 			<parameter name="address" type="integer" required="true">
-				<label>Address</label>
-				<description>Zone address</description>
+				<label>Zone Address</label>
 			</parameter>
 			<parameter name="channel" type="integer" required="true">
-				<label>Channel</label>
-				<description>Zone channel</description>
+				<label>Zone Channel</label>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -286,8 +284,7 @@
 	<!-- Contact Channel Type -->
 	<channel-type id="contact-channel">
 		<item-type>Contact</item-type>
-		<label>Contact</label>
-		<description>Contact state</description>
+		<label>Contact State</label>
 		<category>Switch</category>
 		<state readOnly="true" />
 	</channel-type>
@@ -295,8 +292,7 @@
 	<!-- Indicator Channel Type -->
 	<channel-type id="indicator-channel">
 		<item-type>Switch</item-type>
-		<label>Indicator</label>
-		<description>Indicator state</description>
+		<label>Indicator State</label>
 		<category>Switch</category>
 		<state readOnly="true" />
 	</channel-type>

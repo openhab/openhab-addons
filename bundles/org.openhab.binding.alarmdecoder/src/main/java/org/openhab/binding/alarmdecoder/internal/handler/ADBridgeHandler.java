@@ -17,6 +17,8 @@ import static org.openhab.binding.alarmdecoder.internal.AlarmDecoderBindingConst
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -56,7 +58,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class ADBridgeHandler extends BaseBridgeHandler {
-    protected static final String AD_CHARSET_NAME = "UTF-8";
+    protected static final Charset AD_CHARSET = StandardCharsets.UTF_8;
 
     private final Logger logger = LoggerFactory.getLogger(ADBridgeHandler.class);
 

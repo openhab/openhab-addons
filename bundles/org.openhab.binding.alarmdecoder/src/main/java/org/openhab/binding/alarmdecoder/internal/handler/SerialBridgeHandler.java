@@ -104,8 +104,8 @@ public class SerialBridgeHandler extends ADBridgeHandler {
             // Note: The V1 code called disableReceiveFraming() and disableReceiveThreshold() here
 
             this.serialPort = serialPort;
-            reader = new BufferedReader(new InputStreamReader(serialPort.getInputStream(), AD_CHARSET_NAME));
-            writer = new BufferedWriter(new OutputStreamWriter(serialPort.getOutputStream(), AD_CHARSET_NAME));
+            reader = new BufferedReader(new InputStreamReader(serialPort.getInputStream(), AD_CHARSET));
+            writer = new BufferedWriter(new OutputStreamWriter(serialPort.getOutputStream(), AD_CHARSET));
 
             logger.debug("connected to serial port: {}", config.serialPort);
             panelReadyReceived = false;

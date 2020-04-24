@@ -18,12 +18,12 @@ For those upgrading from the OH1 version of the binding, the [original OH1 READM
 
 The binding supports the following thing types:
 
-* **ipbridge** - Supports TCP connection to the AD.
-* **serialbridge** - Supports serial/USB connection to the AD.
-* **keypad** - Reports keypad status and optionally sends keypad messages.
-* **zone** - Reports status from zone expanders and relay expanders, and also from built-in zones via emulation.
-* **rfzone** - Reports status from RF zones.
-* **lrr** - Reports messages sent from the panel to a Long Range Radio (LRR) or emulated LRR device.
+* `ipbridge` - Supports TCP connection to the AD.
+* `serialbridge` - Supports serial/USB connection to the AD.
+* `keypad` - Reports keypad status and optionally sends keypad messages.
+* `zone` - Reports status from zone expanders and relay expanders, and also from built-in zones via emulation.
+* `rfzone` - Reports status from RF zones.
+* `lrr` - Reports messages sent from the panel to a Long Range Radio (LRR) or emulated LRR device.
 
 ## Discovery
 
