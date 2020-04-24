@@ -67,7 +67,6 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
         this.petcareAPI = petcareAPI;
     }
 
-    @SuppressWarnings("null")
     @Override
     public void initialize() {
         logger.debug("Initializing Sure Petcare bridge handler.");
@@ -96,7 +95,11 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
         }
 
         if (config.getRefreshIntervalTopology() != null) {
-            if (topologyPollingJob == null || topologyPollingJob.isCancelled()) {
+            boolean noJob = true;
+            if (topologyPollingJob != null) {
+                noJob = topologyPollingJob.isCancelled();
+            }
+            if (noJob) {
                 topologyPollingJob = scheduler.scheduleWithFixedDelay(() -> {
                     petcareAPI.updateTopologyCache();
                     updateThings();
@@ -109,7 +112,11 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
                     "@text/offline.conf-error-invalid-refresh-intervals");
         }
         if (config.getRefreshIntervalStatus() != null) {
-            if (petStatusPollingJob == null || petStatusPollingJob.isCancelled()) {
+            boolean noJob = true;
+            if (petStatusPollingJob != null) {
+                noJob = petStatusPollingJob.isCancelled();
+            }
+            if (noJob) {
                 petStatusPollingJob = scheduler.scheduleWithFixedDelay(() -> {
                     pollAndUpdatePetStatus();
                 }, config.getRefreshIntervalStatus(), config.getRefreshIntervalStatus(), TimeUnit.SECONDS);
@@ -183,38 +190,34 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
     }
 
     protected synchronized void updateThings() {
-        logger.debug("Updating {} connected things", ((Bridge) thing).getThings().size());
+        logger.debug("Updating {} connected things", getThing().getThings().size());
         // update existing things
-        for (Thing th : ((Bridge) thing).getThings()) {
+        for (Thing th : getThing().getThings()) {
             String tid = th.getUID().getId();
             logger.debug("Thing: {}, id: {}", th.getThingTypeUID().getAsString(), tid);
             Map<String, String> properties = null;
             ThingHandler handler = th.getHandler();
-            if (handler != null) {
-                if (th.getThingTypeUID().equals(THING_TYPE_PET)) {
-                    ((SurePetcarePetHandler) handler).updateThing();
-                    SurePetcarePet pet = petcareAPI.getTopology().getPetById(tid);
-                    if (pet != null) {
-                        properties = pet.getThingProperties();
-                    }
-                } else if (th.getThingTypeUID().equals(THING_TYPE_HOUSEHOLD)) {
-                    ((SurePetcareHouseholdHandler) handler).updateThing();
-                    SurePetcareHousehold household = petcareAPI.getTopology().getHouseholdById(tid);
-                    if (household != null) {
-                        properties = household.getThingProperties();
-                    }
-                } else if ((th.getThingTypeUID().equals(THING_TYPE_HUB_DEVICE))
-                        || (th.getThingTypeUID().equals(THING_TYPE_FLAP_DEVICE))
-                        || (th.getThingTypeUID().equals(THING_TYPE_FEEDER_DEVICE))) {
-                    ((SurePetcareDeviceHandler) handler).updateThing();
-                    SurePetcareDevice device = petcareAPI.getTopology().getDeviceById(tid);
-                    if (device != null) {
-                        properties = device.getThingProperties();
-                    }
+            if (handler instanceof SurePetcarePetHandler) {
+                ((SurePetcarePetHandler) handler).updateThing();
+                SurePetcarePet pet = petcareAPI.getTopology().getPetById(tid);
+                if (pet != null) {
+                    properties = pet.getThingProperties();
                 }
-                if (properties != null) {
-                    ((SurePetcareBaseObjectHandler) handler).updateProperties(properties);
+            } else if (handler instanceof SurePetcareHouseholdHandler) {
+                ((SurePetcareHouseholdHandler) handler).updateThing();
+                SurePetcareHousehold household = petcareAPI.getTopology().getHouseholdById(tid);
+                if (household != null) {
+                    properties = household.getThingProperties();
                 }
+            } else if (handler instanceof SurePetcareDeviceHandler) {
+                ((SurePetcareDeviceHandler) handler).updateThing();
+                SurePetcareDevice device = petcareAPI.getTopology().getDeviceById(tid);
+                if (device != null) {
+                    properties = device.getThingProperties();
+                }
+            }
+            if ((properties != null) && (handler instanceof SurePetcareBaseObjectHandler)) {
+                ((SurePetcareBaseObjectHandler) handler).updateProperties(properties);
             }
         }
     }

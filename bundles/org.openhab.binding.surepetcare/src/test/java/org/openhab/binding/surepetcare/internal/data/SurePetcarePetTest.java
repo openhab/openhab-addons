@@ -102,15 +102,15 @@ public class SurePetcarePetTest {
         }
         assertEquals(dobDate, response.getDateOfBirth());
 
-        assertEquals(new BigDecimal("3.5"), response.getWeight());
+        assertEquals(BigDecimal.valueOf(3.5), response.getWeight());
 
         assertEquals("Test Comment", response.getComments());
-        assertEquals(new Integer(87435), response.getHouseholdId());
-        assertEquals(new Integer(23412), response.getPhotoId());
+        assertEquals(Integer.valueOf(87435), response.getHouseholdId());
+        assertEquals(Integer.valueOf(23412), response.getPhotoId());
         assertEquals(SurePetcarePet.PetSpecies.CAT.getId(), response.getSpeciesId());
-        assertEquals(new Integer(382), response.getBreedId());
+        assertEquals(Integer.valueOf(382), response.getBreedId());
 
-        assertEquals(new Integer(1), response.getPetStatus().getActivity().getWhere());
+        assertEquals(Integer.valueOf(1), response.getPetStatus().getActivity().getWhere());
         Date sinceDate;
         synchronized (simpleDateFormat) {
             sinceDate = simpleDateFormat.parse("2019-10-03T10:23:37+0000");

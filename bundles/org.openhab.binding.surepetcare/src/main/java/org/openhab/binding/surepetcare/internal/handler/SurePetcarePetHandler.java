@@ -116,13 +116,7 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
                                     logger.debug("Received new location: {}", currentLocation == 1 ? 2 : 1);
                                     // We set the location to the opposite state.
                                     // We also set location to INSIDE (1) if currentLocation is Unknown (0)
-                                    if (commandId == 10) {
-                                        petcareAPI.setPetLocation(pet, currentLocation == 1 ? 2 : 1, new Date(
-                                                System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(commandId)));
-                                    } else if (commandId == 30) {
-                                        petcareAPI.setPetLocation(pet, currentLocation == 1 ? 2 : 1, new Date(
-                                                System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(commandId)));
-                                    } else if (commandId == 60) {
+                                    if (commandId == 10 || commandId == 30 || commandId == 60) {
                                         petcareAPI.setPetLocation(pet, currentLocation == 1 ? 2 : 1, new Date(
                                                 System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(commandId)));
                                     }
@@ -189,16 +183,13 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
                         updateState(PET_CHANNEL_LOCATION_CHANGED_THROUGH, new StringType(device.getName()));
                     }
                 } else if (pet.getPetStatus().getActivity().getUserId() != null) {
-                    SurePetcareHousehold user = petcareAPI.getHousehold(pet.getHouseholdId().toString());
-                    if (user != null) {
-                        int numUsers = user.getHouseholdUsers().size();
-                        for (int i = 0; (i < numUsers); i++) {
-                            if (pet.getPetStatus().getActivity().getUserId()
-                                    .equals(user.getHouseholdUsers().get(i).getUser().getUserId())) {
-                                updateState(PET_CHANNEL_LOCATION_CHANGED_THROUGH, new StringType(
-                                        user.getHouseholdUsers().get(i).getUser().getUserName().toString()));
-                            }
-                        }
+                    SurePetcareHousehold household = petcareAPI.getHousehold(pet.getHouseholdId().toString());
+                    if (household != null) {
+                        Integer userId = pet.getPetStatus().getActivity().getUserId();
+                        household.getHouseholdUsers().stream().map(user -> user.getUser())
+                                .filter(user -> userId.equals(user.getUserId()))
+                                .forEach(user -> updateState(PET_CHANNEL_LOCATION_CHANGED_THROUGH,
+                                        new StringType(user.getUserName().toString())));
                     }
                 }
                 SurePetcarePetFeeding feeding = pet.getPetStatus().getFeeding();
@@ -206,12 +197,13 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
                     SurePetcareDevice device = petcareAPI.getDevice(feeding.getDeviceId().toString());
                     if (device != null) {
                         updateState(PET_CHANNEL_FEEDER_DEVICE, new StringType(device.getName()));
+                        int bowlId = device.getControl().getBowls().getBowlId();
                         int numBowls = feeding.getFeedChange().size();
                         for (int i = 0; (i < 2) && (i < numBowls); i++) {
-                            if (device.getControl().getBowls().getBowlId().equals(1)) {
+                            if (bowlId == 1) {
                                 updateState(PET_CHANNEL_FEEDER_LAST_CHANGE,
                                         new QuantityType<Mass>(feeding.getFeedChange().get(i), SIUnits.GRAM));
-                            } else if (device.getControl().getBowls().getBowlId().equals(4)) {
+                            } else if (bowlId == 4) {
                                 if ((i + 1) == 1) {
                                     updateState(PET_CHANNEL_FEEDER_LAST_CHANGE_LEFT,
                                             new QuantityType<Mass>(feeding.getFeedChange().get(i), SIUnits.GRAM));

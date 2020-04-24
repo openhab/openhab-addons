@@ -50,8 +50,6 @@ public class SurePetcareHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(SurePetcareHandlerFactory.class);
 
-    // private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
-
     private SurePetcareAPIHelper petcareAPI = new SurePetcareAPIHelper();
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream

@@ -281,7 +281,7 @@ public class SurePetcareAPIHelper {
      * @param curfewList the list of curfews
      * @throws SurePetcareApiException
      */
-    public void setCurfews(SurePetcareDevice device, SurePetcareDeviceCurfewList curfewList)
+    public synchronized void setCurfews(SurePetcareDevice device, SurePetcareDeviceCurfewList curfewList)
             throws SurePetcareApiException {
         // post new JSON control structure to API
         SurePetcareDeviceControl control = new SurePetcareDeviceControl();
@@ -413,34 +413,10 @@ public class SurePetcareAPIHelper {
      * @throws SurePetcareApiException
      */
     private String getResultFromApi(String url) throws SurePetcareApiException {
-        boolean success = false;
-        String responseData = "";
-        while (!success) {
-            try {
-                Request request = httpClient.newRequest(url).method(HttpMethod.GET);
-                setConnectionHeaders(request);
-                ContentResponse response = request.send();
-                if (response.getStatus() == HttpURLConnection.HTTP_OK) {
-                    responseData = response.getContentAsString();
-                    logger.debug("API execution successful, response: {}", responseData);
-                    success = true;
-                } else {
-                    logger.debug("HTTP Response Code: {}", response.getStatus());
-                    logger.debug("HTTP Response Msg: {}", response.getReason());
-                    if (response.getStatus() == HttpURLConnection.HTTP_UNAUTHORIZED) {
-                        // authentication token has expired, login again and retry
-                        login(username, password);
-                    } else {
-                        throw new SurePetcareApiException(
-                                "Http error: " + response.getStatus() + " - " + response.getReason());
-                    }
-                }
-            } catch (AuthenticationException | InterruptedException | ExecutionException | TimeoutException
-                    | ProtocolException e) {
-                logger.debug("Exception caught during API execution: {}", e.getMessage());
-                throw new SurePetcareApiException(e);
-            }
-        }
+        Request request = httpClient.newRequest(url).method(HttpMethod.GET);
+        ContentResponse response = executeAPICall(request);
+        String responseData = response.getContentAsString();
+        logger.debug("API execution successful, response: {}", responseData);
         return responseData;
     }
 
@@ -453,36 +429,49 @@ public class SurePetcareAPIHelper {
      * @throws SurePetcareApiException
      */
     private void postDataThroughAPI(String url, HttpMethod method, String jsonPayload) throws SurePetcareApiException {
-        boolean success = false;
         logger.debug("postDataThroughAPI URL: {}", url);
         logger.debug("postDataThroughAPI Payload: {}", jsonPayload);
-        while (!success) {
+        Request request = httpClient.newRequest(url).method(method);
+        request.content(new StringContentProvider(jsonPayload));
+        executeAPICall(request);
+    }
+
+    /**
+     * Uses the given request execute the API call. If it receives an HTTP_UNAUTHORIZED response, it will automatically
+     * login again and retry.
+     *
+     * @param request the Request
+     * @return the response from the API
+     * @throws SurePetcareApiException
+     */
+    private ContentResponse executeAPICall(Request request) throws SurePetcareApiException {
+        int retries = 3;
+        while (retries > 0) {
             try {
-                Request request = httpClient.newRequest(url).method(method);
                 setConnectionHeaders(request);
-                request.content(new StringContentProvider(jsonPayload));
                 ContentResponse response = request.send();
                 if ((response.getStatus() == HttpURLConnection.HTTP_OK)
                         || (response.getStatus() == HttpURLConnection.HTTP_CREATED)) {
-                    logger.debug("API execution successful");
-                    success = true;
+                    return response;
                 } else {
                     logger.debug("HTTP Response Code: {}", response.getStatus());
                     logger.debug("HTTP Response Msg: {}", response.getReason());
                     if (response.getStatus() == HttpURLConnection.HTTP_UNAUTHORIZED) {
                         // authentication token has expired, login again and retry
                         login(username, password);
+                        retries--;
                     } else {
                         throw new SurePetcareApiException(
                                 "Http error: " + response.getStatus() + " - " + response.getReason());
                     }
                 }
-            } catch (AuthenticationException | InterruptedException | TimeoutException | ExecutionException
+            } catch (AuthenticationException | InterruptedException | ExecutionException | TimeoutException
                     | ProtocolException e) {
                 logger.debug("Exception caught during API execution: {}", e.getMessage());
                 throw new SurePetcareApiException(e);
             }
         }
+        throw new SurePetcareApiException("Can't execute API after 3 retries");
     }
 
 }

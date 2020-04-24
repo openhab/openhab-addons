@@ -30,8 +30,8 @@ import org.openhab.binding.surepetcare.internal.SurePetcareAPIHelper;
 import org.openhab.binding.surepetcare.internal.SurePetcareApiException;
 import org.openhab.binding.surepetcare.internal.dto.SurePetcareDevice;
 import org.openhab.binding.surepetcare.internal.dto.SurePetcareDeviceControl;
-import org.openhab.binding.surepetcare.internal.dto.SurePetcareDeviceCurfew;
 import org.openhab.binding.surepetcare.internal.dto.SurePetcareDeviceControl.Bowls.BowlSettings;
+import org.openhab.binding.surepetcare.internal.dto.SurePetcareDeviceCurfew;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,9 +60,7 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            synchronized (petcareAPI) {
-                updateThingCache.getValue();
-            }
+            updateThingCache.getValue();
         } else if (channelUID.getId().startsWith(DEVICE_CHANNEL_CURFEW_BASE)) {
             handleCurfewCommand(channelUID, command);
         } else {
