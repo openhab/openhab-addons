@@ -162,8 +162,10 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     public void dispose() {
         logger.debug("Handler disposed for thing {}", getThing().getUID());
 
-        if (pollingJob != null && !pollingJob.isCancelled()) {
-            pollingJob.cancel(true);
+        if (pollingJob != null) {
+            if (!pollingJob.isCancelled()) {
+                pollingJob.cancel(true);
+            }
             pollingJob = null;
         }
 
@@ -180,14 +182,19 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
             return;
         }
 
-        if (getUDN() != null) {
+        ZonePlayerConfiguration config = getConfigAs(ZonePlayerConfiguration.class);
+        if (config.udn != null) {
             service.registerParticipant(this);
-            onUpdate();
 
-            this.notificationTimeout = getConfigAs(ZonePlayerConfiguration.class).notificationTimeout;
+            this.notificationTimeout = config.notificationTimeout;
             if (this.notificationTimeout == null) {
                 this.notificationTimeout = DEFAULT_NOTIFICATION_TIMEOUT;
             }
+            int refreshInterval = DEFAULT_REFRESH_INTERVAL;
+            if (config.refresh != null) {
+                refreshInterval = config.refresh.intValue();
+            }
+            pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, refreshInterval, TimeUnit.SECONDS);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-missing-udn");
@@ -197,6 +204,9 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
     private void poll() {
         synchronized (jobLock) {
+            if (pollingJob == null) {
+                return;
+            }
             try {
                 logger.debug("Polling job");
 
@@ -221,9 +231,15 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
                 addSubscription();
 
-                updateZoneInfo();
-                updateLed();
-                updateSleepTimerDuration();
+                if (isLinked(ZONENAME)) {
+                    updateCurrentZoneName();
+                }
+                if (isLinked(LED)) {
+                    updateLed();
+                }
+                if (isLinked(SLEEPTIMER)) {
+                    updateSleepTimerDuration();
+                }
             } catch (Exception e) {
                 logger.debug("Exception during poll: {}", e.getMessage(), e);
             }
@@ -856,21 +872,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         }
     }
 
-    private void onUpdate() {
-        if (pollingJob == null || pollingJob.isCancelled()) {
-            ZonePlayerConfiguration config = getConfigAs(ZonePlayerConfiguration.class);
-            // use default if not specified
-            int refreshInterval = DEFAULT_REFRESH_INTERVAL;
-            if (config.refresh != null) {
-                refreshInterval = config.refresh.intValue();
-            }
-            pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, refreshInterval, TimeUnit.SECONDS);
-        }
-    }
-
     private void updatePlayerState() {
-        Map<String, String> result = service.invokeAction(this, "DeviceProperties", "GetZoneInfo", null);
-        if (result.isEmpty()) {
+        if (!updateZoneInfo()) {
             if (!ThingStatus.OFFLINE.equals(getThing().getStatus())) {
                 logger.debug("Sonos player {} is not available in local network", getUDN());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -935,46 +938,31 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         }
     }
 
-    protected void updateZoneInfo() {
+    protected boolean updateZoneInfo() {
         Map<String, String> result = service.invokeAction(this, "DeviceProperties", "GetZoneInfo", null);
-        Map<String, String> result2 = service.invokeAction(this, "DeviceProperties", "GetZoneAttributes", null);
-
-        result.putAll(result2);
-
         for (String variable : result.keySet()) {
             this.onValueReceived(variable, result.get(variable), "DeviceProperties");
         }
 
         Map<String, String> properties = editProperties();
-        boolean update = false;
-        if (StringUtils.isNotEmpty(this.stateMap.get("HardwareVersion"))
-                && !this.stateMap.get("HardwareVersion").equals(properties.get(Thing.PROPERTY_HARDWARE_VERSION))) {
-            update = true;
+        if (StringUtils.isNotEmpty(this.stateMap.get("HardwareVersion"))) {
             properties.put(Thing.PROPERTY_HARDWARE_VERSION, this.stateMap.get("HardwareVersion"));
         }
-        if (StringUtils.isNotEmpty(this.stateMap.get("DisplaySoftwareVersion")) && !this.stateMap
-                .get("DisplaySoftwareVersion").equals(properties.get(Thing.PROPERTY_FIRMWARE_VERSION))) {
-            update = true;
+        if (StringUtils.isNotEmpty(this.stateMap.get("DisplaySoftwareVersion"))) {
             properties.put(Thing.PROPERTY_FIRMWARE_VERSION, this.stateMap.get("DisplaySoftwareVersion"));
         }
-        if (StringUtils.isNotEmpty(this.stateMap.get("SerialNumber"))
-                && !this.stateMap.get("SerialNumber").equals(properties.get(Thing.PROPERTY_SERIAL_NUMBER))) {
-            update = true;
+        if (StringUtils.isNotEmpty(this.stateMap.get("SerialNumber"))) {
             properties.put(Thing.PROPERTY_SERIAL_NUMBER, this.stateMap.get("SerialNumber"));
         }
-        if (StringUtils.isNotEmpty(this.stateMap.get("MACAddress"))
-                && !this.stateMap.get("MACAddress").equals(properties.get(MAC_ADDRESS))) {
-            update = true;
+        if (StringUtils.isNotEmpty(this.stateMap.get("MACAddress"))) {
             properties.put(MAC_ADDRESS, this.stateMap.get("MACAddress"));
         }
-        if (StringUtils.isNotEmpty(this.stateMap.get("IPAddress"))
-                && !this.stateMap.get("IPAddress").equals(properties.get(IP_ADDRESS))) {
-            update = true;
+        if (StringUtils.isNotEmpty(this.stateMap.get("IPAddress"))) {
             properties.put(IP_ADDRESS, this.stateMap.get("IPAddress"));
         }
-        if (update) {
-            updateProperties(properties);
-        }
+        updateProperties(properties);
+
+        return !result.isEmpty();
     }
 
     public String getCoordinator() {
