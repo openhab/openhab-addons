@@ -111,8 +111,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
     private @Nullable DeviceStructureManager deviceStructMan;
     private @Nullable String bridgeId;
     private @Nullable ScheduledFuture<?> reinitJob;
-    private @NonNullByDefault({})
-    InnogyBridgeConfiguration bridgeConfiguration;
+    private @NonNullByDefault({}) InnogyBridgeConfiguration bridgeConfiguration;
     private @Nullable OAuthClientService oAuthService;
 
     /**

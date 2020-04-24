@@ -25,12 +25,12 @@ public class ShutterAction extends Action {
         STOP
     }
 
-    private final String TYPE_STOP_RAMP = "StopRamp";
-    private final String TYPE_START_RAMP = "StartRamp";
-    private final String DIRECTION_RAMP_UP = "RampUp";
-    private final String DIRECTION_RAMP_DOWN = "RampDown";
+    private static final String TYPE_STOP_RAMP = "StopRamp";
+    private static final String TYPE_START_RAMP = "StartRamp";
+    private static final String DIRECTION_RAMP_UP = "RampUp";
+    private static final String DIRECTION_RAMP_DOWN = "RampDown";
     private static final String CONSTANT = "Constant";
-    private final String NAMESPACE_COSIP = "CosipDevices.RWE";
+    private static final String NAMESPACE_COSIP = "CosipDevices.RWE";
 
 
     /**
