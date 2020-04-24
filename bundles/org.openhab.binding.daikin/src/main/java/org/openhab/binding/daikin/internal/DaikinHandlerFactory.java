@@ -14,11 +14,13 @@ package org.openhab.binding.daikin.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.daikin.internal.handler.DaikinAcUnitHandler;
 import org.openhab.binding.daikin.internal.handler.DaikinAirbaseUnitHandler;
 import org.osgi.service.component.annotations.Component;
@@ -38,6 +40,7 @@ import org.osgi.service.component.annotations.Activate;
 public class DaikinHandlerFactory extends BaseThingHandlerFactory {
 
     private final DaikinDynamicStateDescriptionProvider stateDescriptionProvider;
+    private @NonNullByDefault({}) HttpClient httpClient;
 
     @Activate
     public DaikinHandlerFactory(@Reference DaikinDynamicStateDescriptionProvider stateDescriptionProvider) {
@@ -54,10 +57,27 @@ public class DaikinHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(DaikinBindingConstants.THING_TYPE_AC_UNIT)) {
-            return new DaikinAcUnitHandler(thing, stateDescriptionProvider);
+            return new DaikinAcUnitHandler(thing, httpClient, stateDescriptionProvider);
         } else if (thingTypeUID.equals(DaikinBindingConstants.THING_TYPE_AIRBASE_AC_UNIT)) {
-            return new DaikinAirbaseUnitHandler(thing, stateDescriptionProvider);
+            return new DaikinAirbaseUnitHandler(thing, httpClient, stateDescriptionProvider);
         }
         return null;
+    }
+
+    @Reference
+    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
+        this.httpClient = httpClientFactory.createHttpClient("daikin");
+        this.httpClient.getSslContextFactory().setTrustAll(true);
+        if (!this.httpClient.isStarted()) {
+            try {
+                this.httpClient.start();
+            } catch (Exception e) {
+                this.httpClient = null;
+            }
+        }
+    }
+
+    protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
+        this.httpClient = null;
     }
 }

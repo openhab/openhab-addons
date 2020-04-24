@@ -21,6 +21,7 @@ import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -37,14 +38,13 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.daikin.internal.DaikinBindingConstants;
 import org.openhab.binding.daikin.internal.DaikinCommunicationException;
+import org.openhab.binding.daikin.internal.DaikinCommunicationForbiddenException;
 import org.openhab.binding.daikin.internal.DaikinDynamicStateDescriptionProvider;
 import org.openhab.binding.daikin.internal.DaikinWebTargets;
 import org.openhab.binding.daikin.internal.api.Enums.HomekitMode;
 import org.openhab.binding.daikin.internal.config.DaikinConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 /**
  * Base class that handles common tasks with a Daikin air conditioning unit.
@@ -64,6 +64,8 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> pollFuture;
     protected final DaikinDynamicStateDescriptionProvider stateDescriptionProvider;
     protected final HttpClient httpClient;
+    protected @Nullable DaikinConfiguration config;
+    private boolean uuidRegistrationAttempted = false;
 
     // Abstract methods to be overridden by specific Daikin implementation class
     protected abstract void pollStatus() throws IOException;
@@ -80,15 +82,12 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
     protected abstract boolean handleCommandInternal(ChannelUID channelUID, Command command)
             throws DaikinCommunicationException;
 
-    public DaikinBaseHandler(Thing thing, DaikinDynamicStateDescriptionProvider stateDescriptionProvider) {
+    protected abstract void registerUuid(String key);
+
+    public DaikinBaseHandler(Thing thing, HttpClient httpClient, DaikinDynamicStateDescriptionProvider stateDescriptionProvider) {
         super(thing);
         this.stateDescriptionProvider = stateDescriptionProvider;
-        httpClient = new HttpClient(new SslContextFactory(true)); // allow mismatched CN
-        try {
-            httpClient.start();
-        } catch (Exception ex) {
-            logger.error("HttpClient won't start.", ex);
-        }
+        this.httpClient = httpClient;
     }
 
     @Override
@@ -139,10 +138,13 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing Daikin AC Unit");
-        DaikinConfiguration config = getConfigAs(DaikinConfiguration.class);
+        config = getConfigAs(DaikinConfiguration.class);
         if (config.host == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Host address must be set");
         } else {
+            if (config.uuid != null) {
+                config.uuid = config.uuid.replaceAll("\\s|-", "");
+            }
             webTargets = new DaikinWebTargets(httpClient, config.host, config.secure, config.uuid);
             refreshInterval = config.refresh;
 
@@ -181,6 +183,18 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
         try {
             logger.debug("Polling for state");
             pollStatus();
+        } catch (DaikinCommunicationForbiddenException e) {
+            if (uuidRegistrationAttempted) {
+                logger.debug("poll: uuidRegistrationAttempted = true");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "UUID registration unsuccessful. Check key.");                
+            } else if (config.key != null && config.uuid != null) {
+                logger.debug("poll: Attempting to register uuid {} with key {}", config.uuid, config.key);
+                registerUuid(config.key);
+                logger.debug("poll: uuid registration attempt done");
+                uuidRegistrationAttempted = true;
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            }
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (RuntimeException e) {

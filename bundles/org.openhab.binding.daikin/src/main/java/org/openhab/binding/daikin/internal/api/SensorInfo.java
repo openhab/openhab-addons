@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.daikin.internal.api;
 
+import java.util.Map;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Holds information from the get_sensor_info call.
@@ -21,6 +24,8 @@ import java.util.Optional;
  *
  */
 public class SensorInfo {
+    private static final Logger logger = LoggerFactory.getLogger(SensorInfo.class);
+
     public Optional<Double> indoortemp;
     public Optional<Double> indoorhumidity;
     public Optional<Double> outdoortemp;
@@ -29,39 +34,14 @@ public class SensorInfo {
     }
 
     public static SensorInfo parse(String response) {
+        logger.debug("Parsing string: \"{}\"", response);
+
+        Map<String, String> responseMap = InfoParser.parse(response);
+
         SensorInfo info = new SensorInfo();
-        info.indoortemp = Optional.empty();
-        info.indoorhumidity = Optional.empty();
-        info.outdoortemp = Optional.empty();
-
-        for (String keyValuePair : response.split(",")) {
-            if (keyValuePair.contains("=")) {
-                String[] keyValue = keyValuePair.split("=");
-                String key = keyValue[0];
-                String value = keyValue.length > 1 ? keyValue[1] : "";
-
-                switch (key) {
-                    case "htemp":
-                        // "-" indicates no value
-                        if (!"-".equals(value)) {
-                            info.indoortemp = Optional.of(Double.parseDouble(value));
-                        }
-                        break;
-                    case "hhum":
-                        // "-" indicates no value
-                        if (!"-".equals(value)) {
-                            info.indoorhumidity = Optional.of(Double.parseDouble(value));
-                        }
-                        break;
-                    case "otemp":
-                        // "-" indicates no value
-                        if (!"-".equals(value)) {
-                            info.outdoortemp = Optional.of(Double.parseDouble(value));
-                        }
-                        break;
-                }
-            }
-        }
+        info.indoortemp = Optional.ofNullable(responseMap.get("htemp")).flatMap(value -> InfoParser.parseDouble(value));
+        info.indoorhumidity = Optional.ofNullable(responseMap.get("hhum")).flatMap(value -> InfoParser.parseDouble(value));
+        info.outdoortemp = Optional.ofNullable(responseMap.get("otemp")).flatMap(value -> InfoParser.parseDouble(value));
 
         return info;
     }

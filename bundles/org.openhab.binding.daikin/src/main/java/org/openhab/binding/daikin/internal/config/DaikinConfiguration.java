@@ -21,9 +21,12 @@ package org.openhab.binding.daikin.internal.config;
  */
 public class DaikinConfiguration {
     public static final String HOST = "host";
+    public static final String SECURE = "secure";
+    public static final String UUID = "uuid";
 
     public String host;
     public Boolean secure;
     public String uuid;
+    public String key;
     public long refresh;
 }

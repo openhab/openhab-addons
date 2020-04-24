@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -43,8 +44,8 @@ import org.openhab.binding.daikin.internal.api.SensorInfo;
  */
 @NonNullByDefault
 public class DaikinAcUnitHandler extends DaikinBaseHandler {
-    public DaikinAcUnitHandler(Thing thing, DaikinDynamicStateDescriptionProvider stateDescriptionProvider) {
-        super(thing, stateDescriptionProvider);
+    public DaikinAcUnitHandler(Thing thing, HttpClient httpClient, DaikinDynamicStateDescriptionProvider stateDescriptionProvider) {
+        super(thing, httpClient, stateDescriptionProvider);
     }
 
     @Override
@@ -130,5 +131,14 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
         ControlInfo info = webTargets.getControlInfo();
         info.fanMovement = FanMovement.valueOf(fanDir);
         webTargets.setControlInfo(info);
+    }
+
+    @Override
+    protected void registerUuid(String key) {
+        try {
+            webTargets.registerUuid(key);
+        } catch (Exception e) {
+            // suppress exceptions
+        }
     }
 }

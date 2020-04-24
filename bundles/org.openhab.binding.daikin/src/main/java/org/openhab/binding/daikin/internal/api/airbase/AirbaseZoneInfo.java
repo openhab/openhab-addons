@@ -20,6 +20,8 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.openhab.binding.daikin.internal.api.InfoParser;
+
 /**
  * Holds information from the basic_info call.
  *
@@ -38,13 +40,7 @@ public class AirbaseZoneInfo {
     public static AirbaseZoneInfo parse(String response) {
         LOGGER.debug("Parsing string: \"{}\"", response);
 
-        Map<String, String> responseMap = Arrays.asList(response.split(",")).stream().filter(kv -> kv.contains("="))
-                .map(kv -> {
-                    String[] keyValue = kv.split("=");
-                    String key = keyValue[0];
-                    String value = keyValue.length > 1 ? keyValue[1] : "";
-                    return new String[] { key, value };
-                }).collect(Collectors.toMap(x -> x[0], x -> x[1]));
+        Map<String, String> responseMap = InfoParser.parse(response);
 
         AirbaseZoneInfo info = new AirbaseZoneInfo();
         info.zonenames = responseMap.get("zone_name");

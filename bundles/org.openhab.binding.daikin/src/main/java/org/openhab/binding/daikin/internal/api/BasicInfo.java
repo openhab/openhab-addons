@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.daikin.internal.api.airbase;
+package org.openhab.binding.daikin.internal.api;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -25,25 +25,25 @@ import org.slf4j.LoggerFactory;
 /**
  * Holds information from the basic_info call.
  *
- * @author Paul Smedley - Initial contribution
+ * @author Jimy Tanagra - Initial contribution
  *
  */
-public class AirbaseBasicInfo {
-    private static final Logger logger = LoggerFactory.getLogger(AirbaseBasicInfo.class);
+public class BasicInfo {
+    private static final Logger logger = LoggerFactory.getLogger(BasicInfo.class);
 
     public String mac;
     public String ret;
     public String ssid;
 
-    private AirbaseBasicInfo() {
+    private BasicInfo() {
     }
 
-    public static AirbaseBasicInfo parse(String response) {
+    public static BasicInfo parse(String response) {
         logger.debug("Parsing string: \"{}\"", response);
 
         Map<String, String> responseMap = InfoParser.parse(response);
 
-        AirbaseBasicInfo info = new AirbaseBasicInfo();
+        BasicInfo info = new BasicInfo();
         info.mac = responseMap.get("mac");
         info.ret = responseMap.get("ret");
         info.ssid = responseMap.get("ssid");

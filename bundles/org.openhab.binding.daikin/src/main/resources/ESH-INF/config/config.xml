@@ -17,6 +17,10 @@
 				<label>UUID</label>
 				<description>A unique UUID for authentication if required.</description>
 			</parameter>
+			<parameter name="key" type="text" required="false">
+				<label>Key</label>
+				<description>The key obtained from the Daikin adapter.</description>
+			</parameter>
 			<parameter name="refresh" type="integer" required="false">
 				<label>Refresh Interval</label>
 				<description>The number of seconds between fetches of the AC unit state.</description>

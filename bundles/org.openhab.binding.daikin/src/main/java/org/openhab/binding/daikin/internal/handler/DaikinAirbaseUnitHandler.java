@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -52,8 +54,8 @@ public class DaikinAirbaseUnitHandler extends DaikinBaseHandler {
     private final Logger logger = LoggerFactory.getLogger(DaikinAirbaseUnitHandler.class);
     private AirbaseModelInfo airbaseModelInfo;
 
-    public DaikinAirbaseUnitHandler(Thing thing, DaikinDynamicStateDescriptionProvider stateDescriptionProvider) {
-        super(thing, stateDescriptionProvider);
+    public DaikinAirbaseUnitHandler(Thing thing, HttpClient httpClient, DaikinDynamicStateDescriptionProvider stateDescriptionProvider) {
+        super(thing, httpClient, stateDescriptionProvider);
     }
 
     @Override
@@ -165,6 +167,11 @@ public class DaikinAirbaseUnitHandler extends DaikinBaseHandler {
         AirbaseZoneInfo info = webTargets.getAirbaseZoneInfo();
         info.zone[zone] = command;
         webTargets.setAirbaseZoneInfo(info, airbaseModelInfo);
+    }
+
+    @Override
+    protected void registerUuid(String key) {
+        // not implemented. There is currently no known Airbase adapter that requires uuid authentication
     }
 
     protected void updateChannelStateDescriptions() {

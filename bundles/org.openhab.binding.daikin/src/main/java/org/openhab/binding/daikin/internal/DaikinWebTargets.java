@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.eclipse.smarthome.io.net.http.HttpUtil;
+import org.openhab.binding.daikin.internal.api.BasicInfo;
 import org.openhab.binding.daikin.internal.api.ControlInfo;
 import org.openhab.binding.daikin.internal.api.SensorInfo;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseControlInfo;
@@ -42,15 +43,17 @@ import org.eclipse.jetty.http.HttpStatus;
  *
  * @author Tim Waterhouse - Initial Contribution
  * @author Paul Smedley <paul@smedley.id.au> - Modifications to support Airbase Controllers
- * @author Jimmy Tanagra - Add support for Daikin's secure authentication
+ * @author Jimmy Tanagra - Add support for https and Daikin's uuid authentication
  *
  */
 public class DaikinWebTargets {
     private static final int TIMEOUT_MS = 30000;
 
+    private String getBasicInfoUri;
     private String setControlInfoUri;
     private String getControlInfoUri;
     private String getSensorInfoUri;
+    private String registerUuidUri;
     private String setAirbaseControlInfoUri;
     private String getAirbaseControlInfoUri;
     private String getAirbaseSensorInfoUri;
@@ -58,6 +61,7 @@ public class DaikinWebTargets {
     private String getAirbaseModelInfoUri;
     private String getAirbaseZoneInfoUri;
     private String setAirbaseZoneInfoUri;
+    private String registerAirbaseUuidUri;
 
     private String uuid;
     private HttpClient httpClient;
@@ -66,11 +70,14 @@ public class DaikinWebTargets {
 
     public DaikinWebTargets(HttpClient httpClient, String host, Boolean secure, String uuid) {
         this.httpClient = httpClient;
-        String baseUri = (secure != null && secure.booleanValue() ? "https://" : "http://") + host + "/";
         this.uuid = uuid;
+
+        String baseUri = (secure != null && secure.booleanValue() ? "https://" : "http://") + host + "/";
+        getBasicInfoUri = baseUri + "common/basic_info";
         setControlInfoUri = baseUri + "aircon/set_control_info";
         getControlInfoUri = baseUri + "aircon/get_control_info";
         getSensorInfoUri = baseUri + "aircon/get_sensor_info";
+        registerUuidUri = baseUri + "common/register_terminal";
 
         //Daikin Airbase API
         getAirbaseBasicInfoUri = baseUri + "skyfi/common/basic_info";
@@ -83,6 +90,11 @@ public class DaikinWebTargets {
     }
 
     // Standard Daikin API
+    public BasicInfo getBasicInfo() throws DaikinCommunicationException {
+        String response = invoke(getBasicInfoUri);
+        return BasicInfo.parse(response);
+    }
+
     public ControlInfo getControlInfo() throws DaikinCommunicationException {
         String response = invoke(getControlInfoUri);
         return ControlInfo.parse(response);
@@ -96,6 +108,13 @@ public class DaikinWebTargets {
     public SensorInfo getSensorInfo() throws DaikinCommunicationException {
         String response = invoke(getSensorInfoUri);
         return SensorInfo.parse(response);
+    }
+
+    public void registerUuid(String key) throws DaikinCommunicationException {
+        Map<String, String> params = new HashMap<>();
+        params.put("key", key);
+        String response = invoke(registerUuidUri, params);
+        logger.debug("registerUuid result: {}", response);
     }
 
     //Daikin Airbase API
@@ -139,7 +158,6 @@ public class DaikinWebTargets {
         }
     }
 
-
     private String invoke(String uri) throws DaikinCommunicationException {
         return invoke(uri, new HashMap<>());
     }
@@ -155,8 +173,9 @@ public class DaikinWebTargets {
                 } else {
                     response = executeUrl(uriWithParams);
                 }
+            } catch (DaikinCommunicationException ex) {
+                throw ex;
             } catch (IOException ex) {
-                logger.debug("executeUrl threw an exception {}", ex.toString());
                 // Response will also be set to null if parsing in executeUrl fails so we use null here to make the
                 // error check below consistent.
                 response = null;
@@ -164,37 +183,36 @@ public class DaikinWebTargets {
         }
 
         if (response == null) {
-            throw new DaikinCommunicationException(
-                    String.format("Daikin controller returned error while invoking %s", uriWithParams));
+            throw new DaikinCommunicationException("Daikin controller returned error while invoking " + uriWithParams);
         }
 
         return response;
     }
 
-    private String executeUrl(String url) throws IOException, DaikinCommunicationException {
+    private String executeUrl(String url) throws DaikinCommunicationException {
         try {
-            Request request = httpClient.newRequest(url);
-            request.method(HttpMethod.GET);
-            request.timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            Request request = httpClient.newRequest(url)
+                                        .method(HttpMethod.GET)
+                                        .timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS);
             if (uuid != null) {
                 request.header("X-Daikin-uuid", uuid);
+                logger.debug("Header: X-Daikin-uuid: {}", uuid);
             }
             ContentResponse response = request.send();
 
             if (response.getStatus() == HttpStatus.FORBIDDEN_403) {
-                logger.error("Daikin controller access denied. Check uuid");
-                throw new DaikinCommunicationException("Daikin controller access denied. Check uuid");
+                throw new DaikinCommunicationForbiddenException("Daikin controller access denied. Check uuid/key.");
             }
 
             if (response.getStatus() != HttpStatus.OK_200) {
-                throw new DaikinCommunicationException(
-                    String.format("Daikin controller HTTP error status: %d - %s", response.getStatus(), response.getReason()));
+                logger.debug("Daikin controller HTTP status: {} - {}", response.getStatus(), response.getReason());
             }
 
             return response.getContentAsString();
+        } catch (DaikinCommunicationException e) {
+            throw e;
         } catch (Exception e) {
-            logger.error("Daikin HTTP error", e);
-            throw new DaikinCommunicationException("Daikin HTTP error", e);
+            throw new DaikinCommunicationException("Daikin HTTP error: " + e.getMessage());
         }
     }
 

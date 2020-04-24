@@ -20,6 +20,7 @@ import java.util.EnumSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.openhab.binding.daikin.internal.api.InfoParser;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseEnums.AirbaseFeature;
 
 /**
@@ -44,13 +45,7 @@ public class AirbaseModelInfo {
     public static AirbaseModelInfo parse(String response) {
         LOGGER.debug("Parsing string: \"{}\"", response);
 
-        Map<String, String> responseMap = Arrays.asList(response.split(",")).stream().filter(kv -> kv.contains("="))
-                .map(kv -> {
-                    String[] keyValue = kv.split("=");
-                    String key = keyValue[0];
-                    String value = keyValue.length > 1 ? keyValue[1] : "";
-                    return new String[] { key, value };
-                }).collect(Collectors.toMap(x -> x[0], x -> x[1]));
+        Map<String, String> responseMap = InfoParser.parse(response);
 
         AirbaseModelInfo info = new AirbaseModelInfo();
         info.ret = responseMap.get("ret");
