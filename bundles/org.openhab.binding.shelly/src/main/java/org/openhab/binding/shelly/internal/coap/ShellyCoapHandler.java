@@ -13,17 +13,17 @@
 package org.openhab.binding.shelly.internal.coap;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.ShellyUtils.*;
 import static org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.*;
+import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
-import java.io.IOException;
-import java.util.HashMap;
+import java.net.UnknownHostException;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.Validate;
 import org.eclipse.californium.core.CoapClient;
 import org.eclipse.californium.core.coap.CoAP.Code;
 import org.eclipse.californium.core.coap.CoAP.ResponseCode;
@@ -36,9 +36,14 @@ import org.eclipse.californium.core.coap.Response;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
+import org.eclipse.smarthome.core.library.unit.ImperialUnits;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
+import org.eclipse.smarthome.core.thing.CommonTriggerEvents;
 import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.shelly.internal.api.ShellyApiException;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsRelay;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDescrBlk;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDescrSen;
@@ -55,8 +60,10 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import tec.uom.se.unit.Units;
+
 /**
- * The {@link ShellyCoapHandler} handles the CoIoT/Coap registration and events.
+ * The {@link ShellyCoapHandler} handles the CoIoT/CoAP registration and events.
  *
  * @author Markus Michels - Initial contribution
  */
@@ -65,63 +72,73 @@ public class ShellyCoapHandler implements ShellyCoapListener {
     private final Logger logger = LoggerFactory.getLogger(ShellyCoapHandler.class);
 
     private final ShellyBaseHandler thingHandler;
-    private final ShellyThingConfiguration config;
-    private final GsonBuilder gsonBuilder;
+    private ShellyThingConfiguration config = new ShellyThingConfiguration();
+    private final GsonBuilder gsonBuilder = new GsonBuilder();
     private final Gson gson;
     private String thingName;
+    private boolean discovering = false;
 
-    private @Nullable ShellyCoapServer coapServer;
+    private final ShellyCoapServer coapServer;
     private @Nullable CoapClient statusClient;
-    private @Nullable Request reqDescription;
-    private @Nullable Request reqStatus;
+    private Request reqDescription = new Request(Code.GET, Type.CON);
+    private Request reqStatus = new Request(Code.GET, Type.CON);
 
     private int lastSerial = -1;
     private String lastPayload = "";
-    private Map<String, CoIotDescrBlk> blockMap = new HashMap<String, CoIotDescrBlk>();
-    private Map<String, CoIotDescrSen> sensorMap = new HashMap<String, CoIotDescrSen>();
+    private Map<String, CoIotDescrBlk> blockMap = new LinkedHashMap<>();
+    private LinkedHashMap<String, CoIotDescrSen> sensorMap = new LinkedHashMap<>();
 
-    public ShellyCoapHandler(ShellyThingConfiguration config, ShellyBaseHandler thingHandler,
-            @Nullable ShellyCoapServer coapServer) {
-        Validate.notNull(coapServer);
+    private static final byte[] EMPTY_BYTE = new byte[0];
+
+    public ShellyCoapHandler(ShellyBaseHandler thingHandler, ShellyCoapServer coapServer) {
         this.thingHandler = thingHandler;
         this.coapServer = coapServer;
-        this.config = config;
         this.thingName = thingHandler.thingName;
 
-        gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(CoIotGenericSensorList.class, new CoIotSensorTypeAdapter());
         gsonBuilder.setPrettyPrinting();
         gson = gsonBuilder.create();
     }
 
-    /*
-     * Initialize Coap access, send discovery packet and start Status server
+    /**
+     * Initialize CoAP access, send discovery packet and start Status server
+     *
+     * @parm thingName Thing name derived from Thing Type/hostname
+     * @parm config ShellyThingConfiguration
+     * @thows ShellyApiException
      */
-    @SuppressWarnings("null")
-    public void start() {
+    public synchronized void start(String thingName, ShellyThingConfiguration config) throws ShellyApiException {
+        if (isStarted()) {
+            logger.trace("{}: CoAP Listener was already started", thingName);
+            return;
+        }
         try {
+            this.thingName = thingName;
+            this.config = config;
+
             reqDescription = sendRequest(reqDescription, config.deviceIp, COLOIT_URI_DEVDESC, Type.CON);
 
-            if (statusClient == null) {
-                coapServer.init(config.localIp);
-                coapServer.addListener(this);
+            if (!isStarted()) {
+                logger.debug("{}: Starting CoAP Listener", thingName);
+                reqDescription = sendRequest(reqDescription, config.deviceIp, COLOIT_URI_DEVDESC, Type.CON);
 
+                coapServer.start(config.localIp, this);
                 statusClient = new CoapClient(completeUrl(config.deviceIp, COLOIT_URI_DEVSTATUS))
                         .setTimeout((long) SHELLY_API_TIMEOUT_MS).useNONs().setEndpoint(coapServer.getEndpoint());
-
-                coapServer.start();
             }
-        } catch (IOException e) {
-            logger.warn("{}: Unable to start CoIoT: {}", thingName, e.getMessage());
-        } catch (NullPointerException e) {
-            logger.debug("{}: Coap Exception: {} ({})\n{}", thingName, e.getMessage(), e.getClass(), e.getStackTrace());
+        } catch (UnknownHostException e) {
+            ShellyApiException ea = new ShellyApiException(e);
+            logger.debug("{}: CoAP Exception", thingName, e);
+            throw ea;
         }
     }
 
+    public boolean isStarted() {
+        return statusClient != null;
+    }
+
     /**
-     * Process an inbound Response (or mapped Request)
-     * - decode Coap options
-     * - handle discery result or status updates
+     * Process an inbound Response (or mapped Request): decode CoAP options. handle discovery result or status updates
      *
      * @param response The Response packet
      */
@@ -141,8 +158,10 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         // int validity = 0;
         int serial = 0;
         try {
-            logger.debug("{}: CoIoT Message from {}: {}", thingName, response.getSourceContext().getPeerAddress(),
-                    response.toString());
+            if (logger.isDebugEnabled()) {
+                logger.debug("{}: CoIoT Message from {} (MID={}): {}", thingName,
+                        response.getSourceContext().getPeerAddress(), response.getMID(), response.getPayloadString());
+            }
             if (response.isCanceled() || response.isDuplicate() || response.isRejected()) {
                 logger.debug("{} ({}): Packet was canceled, rejected or is a duplicate -> discard", thingName, devId);
                 return;
@@ -151,12 +170,9 @@ public class ShellyCoapHandler implements ShellyCoapListener {
             if (response.getCode() == ResponseCode.CONTENT) {
                 payload = response.getPayloadString();
                 List<Option> options = response.getOptions().asSortedList();
-                Validate.notNull(options);
                 int i = 0;
                 while (i < options.size()) {
-                    @Nullable
                     Option opt = options.get(i);
-                    Validate.notNull(opt);
                     switch (opt.getNumber()) {
                         case OptionNumberRegistry.URI_PATH:
                             uri = COLOIT_URI_BASE + opt.getStringValue();
@@ -170,16 +186,11 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                         case COIOT_OPTION_STATUS_SERIAL:
                             serial = opt.getIntegerValue();
                             if (serial == lastSerial) {
-                                // ShellyDeviceProfile profile = thingHandler.getProfile();
-                                // if ((profile != null) && profile.isSensor) { // work around for Shelly HT
-
                                 // As per specification the serial changes when any sensor data has changed. The App
-                                // should ignore any updates with
-                                // the same serial. However, as we have seen with the Shelly HT and Shelly 4 Pro this is
-                                // not always the case. The
-                                // device comes up with an status packet having the same serial, but new payload
-                                // information.
-                                // Work Around: Packet will only ignore when Serial AND Payload are the same as last
+                                // should ignore any updates with the same serial. However, as we have seen with the
+                                // Shelly HT and Shelly 4 Pro this is not always the case. The device comes up with an
+                                // status packet having the same serial, but new payload information.
+                                // Work Around: Packet will only be ignored when Serial AND Payload are the same as last
                                 // time
                                 if (!lastPayload.isEmpty() && !lastPayload.equals(payload)) {
                                     logger.debug(
@@ -187,8 +198,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                                             thingName, serial, payload, lastPayload);
                                     break;
                                 }
-                                logger.debug("{}: Serial {} was already processed, ignore update; payload={}",
-                                        thingName, serial, payload);
+                                logger.trace("{}: Serial {} was already processed, ignore update", thingName, serial);
                                 return;
                             }
                             break;
@@ -198,6 +208,9 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                     }
                     i++;
                 }
+
+                // If we received a CoAP message successful the thing must be online
+                thingHandler.setThingOnline();
 
                 if (uri.equalsIgnoreCase(COLOIT_URI_DEVDESC) || (uri.isEmpty() && payload.contains(COIOT_TAG_BLK))) {
                     handleDeviceDescription(devId, payload);
@@ -211,40 +224,32 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                         response.getPayloadString());
             }
 
-            if (reqStatus == null) {
-                /*
-                 * Observe Status Updates
-                 */
+            if (!discovering) {
+                // Observe Status Updates
                 reqStatus = sendRequest(reqStatus, config.deviceIp, COLOIT_URI_DEVSTATUS, Type.NON);
+                discovering = true;
             }
-        } catch (NullPointerException | IOException e) {
-            logger.debug("{}: Unable to process CoIoT Message: {} ({}); payload={}\n{}", thingName, e.getMessage(),
-                    e.getClass(), payload, e.getStackTrace());
+        } catch (IllegalArgumentException | NullPointerException e) {
+            logger.debug("{}: Unable to process CoIoT Message for payload={}", thingName, payload, e);
             resetSerial();
         }
     }
 
     /**
      * Process a CoIoT device description message. This includes definitions on device units (Relay0, Relay1, Sensors
-     * etc.) as well as a definition of
-     * sensors and actors. This information needs to be stored allowing to map ids from status updates to the device
-     * units and matching the correct
-     * thing channel.
-     *
-     * @param payload Device desciption in JSon format, example:
-     *            {"blk":[{"I":0,"D":"Relay0"}],"sen":[{"I":112,"T":"Switch","R":"0/1","L":0}],"act":[{"I":211,"D":"Switch","L":0,"P":[{"I":2011,"D":"ToState","R":"0/1"}]}]}
+     * etc.) as well as a definition of sensors and actors. This information needs to be stored allowing to map ids from
+     * status updates to the device units and matching the correct thing channel.
      *
      * @param devId The device id reported in the CoIoT message.
+     * @param payload Device desciption in JSon format, example:
+     *            {"blk":[{"I":0,"D":"Relay0"}],"sen":[{"I":112,"T":"Switch","R":"0/1","L":0}],"act":[{"I":211,"D":"Switch","L":0,"P":[{"I":2011,"D":"ToState","R":"0/1"}]}]}
      */
     private void handleDeviceDescription(String devId, String payload) {
-        // Device description
-        // payload = StringUtils.substringBefore(payload, "}]}]}") + "}]}]}";
+        // Device description: payload = StringUtils.substringBefore(payload, "}]}]}") + "}]}]}";
         logger.debug("{}: CoIoT Device Description for {}: {}", thingName, devId, payload);
 
         // Decode Json
-        @Nullable
         CoIotDevDescription descr = gson.fromJson(payload, CoIotDevDescription.class);
-        Validate.notNull(descr);
 
         int i;
         for (i = 0; i < descr.blk.size(); i++) {
@@ -278,7 +283,12 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         thingHandler.updateProperties(PROPERTY_COAP_DESCR, payload);
     }
 
-    private void addSensor(CoIotDescrSen sen) {
+    /**
+     * Add a new sensor to the sensor table
+     *
+     * @param sen CoIotDescrSen of the sensor
+     */
+    private synchronized void addSensor(CoIotDescrSen sen) {
         logger.debug("{}:    id {}: {}, Type={}, Range={}, Links={}", thingName, sen.id, sen.desc, sen.type, sen.range,
                 sen.links);
         try {
@@ -288,29 +298,24 @@ public class ShellyCoapHandler implements ShellyCoapListener {
             } else {
                 sensorMap.replace(sen.id, fixed);
             }
-        } catch (NullPointerException e) {
-            logger.debug("{}:    Unable to decode sensor definition -> skip ({})\n{}", thingName, e.getMessage(),
-                    e.getStackTrace());
+        } catch (NullPointerException e) { // depending on firmware release the CoAP device description is buggy
+            logger.debug("{}: Unable to decode sensor definition -> skip", thingName, e);
         }
     }
 
     /**
-     * Process CoIoT status update message. If a status update is received, but the
-     * device description has not been received yet a GET is send to query device
-     * description.
+     * Process CoIoT status update message. If a status update is received, but the device description has not been
+     * received yet a GET is send to query device description.
      *
      * @param devId device id included in the status packet
-     * @param payload Coap payload (Json format), example: {"G":[[0,112,0]]}
+     * @param payload CoAP payload (Json format), example: {"G":[[0,112,0]]}
      * @param serial Serial for this request. If this the the same as last serial
      *            the update was already sent and processed so this one gets
      *            ignored.
-     * @throws IOException Exception on sending GET for device description.
      */
-    @SuppressWarnings({ "null", "unused" })
-    private void handleStatusUpdate(String devId, String payload, int serial) throws IOException {
-        // payload = StringUtils.substringBefore(payload, "]]}") + "]]}";
+    private void handleStatusUpdate(String devId, String payload, int serial) {
         logger.debug("{}: CoIoT Sensor data {}", thingName, payload);
-        if (blockMap.size() == 0) {
+        if (blockMap.isEmpty()) {
             // send discovery packet
             resetSerial();
             reqDescription = sendRequest(reqDescription, config.deviceIp, COLOIT_URI_DEVDESC, Type.CON);
@@ -329,50 +334,84 @@ public class ShellyCoapHandler implements ShellyCoapListener {
 
         // Parse Json,
         CoIotGenericSensorList list = gson.fromJson(payload, CoIotGenericSensorList.class);
-        Validate.notNull(list, "sensor list must not be empty!");
-        Map<String, State> updates = new HashMap<String, State>();
-
         if (list.generic == null) {
-            logger.debug("{}: Sensor list is empty! Payload: {}", devId, payload);
+            logger.debug("{}: Sensor list has invalid format! Payload: {}", devId, payload);
             return;
         }
+        List<CoIotSensor> sensorUpdates = list.generic;
 
-        Validate.notNull(thingHandler, "thingHandler must not be null!");
         ShellyDeviceProfile profile = thingHandler.getProfile();
-        if (profile == null) {
-            logger.debug("{}: Thing not initialized yet, skip update (ID={})", thingName, devId);
-            thingHandler.requestUpdates(1, true);
-            return;
-        }
-
-        logger.debug("{}: {} status updates received", thingName, new Integer(list.generic.size()).toString());
-        for (int i = 0; i < list.generic.size(); i++) {
-            CoIotSensor s = list.generic.get(i);
-            CoIotDescrSen sen = sensorMap.get(s.index);
-            if (sen != null) {
-                // find matching sensor definition from device description, use the Link ID as
-                // index
-                Validate.notNull(sen.links != null, "Coap: sen.L must not be null!");
+        Map<String, State> updates = new TreeMap<String, State>();
+        logger.debug("{}: {} CoAP sensor updates received", thingName, sensorUpdates.size());
+        for (int i = 0; i < sensorUpdates.size(); i++) {
+            try {
+                CoIotSensor s = sensorUpdates.get(i);
+                if (!sensorMap.containsKey(s.id)) {
+                    logger.debug("{}: Invalid index in sensor description: {}", thingName, i);
+                    continue;
+                }
+                CoIotDescrSen sen = sensorMap.get(s.id);
+                // find matching sensor definition from device description, use the Link ID as index
                 sen = fixDescription(sen);
+                if (!blockMap.containsKey(sen.links)) {
+                    logger.debug("{}: Invalid CoAP description: sen.links({}", thingName, getString(sen.links));
+                    continue;
+                }
+
+                if (!blockMap.containsKey(sen.links)) {
+                    logger.debug("{}: Unable to find BLK for link {} from sen.id={}", thingName, sen.links, sen.id);
+                    continue;
+                }
                 CoIotDescrBlk element = blockMap.get(sen.links);
-                logger.debug("{}:  Sensor value[{}]: Index={}, Value={} ({}, Type={}, Range={}, Link={}: {})",
-                        thingName, i, s.index, s.value, sen.desc, sen.type, sen.range, sen.links,
-                        element != null ? element.desc : "n/a");
+                logger.trace("{}:  Sensor value[{}]: id={}, Value={} ({}, Type={}, Range={}, Link={}: {})", thingName,
+                        i, s.id, s.value, sen.desc, sen.type, sen.range, sen.links, element.desc);
 
                 // Process status information and convert into channel updates
-                String type = (element != null ? element.desc : "").toLowerCase();
                 Integer rIndex = Integer.parseInt(sen.links) + 1;
                 String rGroup = profile.numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL
                         : CHANNEL_GROUP_RELAY_CONTROL + rIndex;
 
-                switch (sen.type.toLowerCase()) /* CoIoT_STypes.valueOf(sen.T) */ {
+                switch (sen.type.toLowerCase()) {
                     case "b" /* BatteryLevel */:
                         updateChannel(updates, CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LEVEL,
                                 toQuantityType(s.value, DIGITS_PERCENT, SmartHomeUnits.PERCENT));
                         break;
                     case "t" /* Temperature */:
-                        updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP,
-                                toQuantityType(s.value, DIGITS_TEMP, SIUnits.CELSIUS));
+                        Double value = getDouble(s.value);
+                        switch (sen.desc.toLowerCase()) {
+                            case "temperature": // Sensor Temp
+                                if (getString(profile.settings.temperatureUnits)
+                                        .equalsIgnoreCase(SHELLY_TEMP_FAHRENHEIT)) {
+                                    value = ImperialUnits.FAHRENHEIT.getConverterTo(Units.CELSIUS)
+                                            .convert(getDouble(s.value)).doubleValue();
+                                }
+                                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP,
+                                        toQuantityType(value, DIGITS_TEMP, SIUnits.CELSIUS));
+                                break;
+                            case "temperature f": // Device Temp -> ignore (we use C only)
+                                break;
+                            case "temperature c": // Device Temü in C
+                                // Device temperature
+                                updateChannel(updates, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ITEMP,
+                                        toQuantityType(value, DIGITS_NONE, SIUnits.CELSIUS));
+                                break;
+                            case "external temperature f": // Shelly 1/1PM external temp sensors
+                                // ignore F, we use C only
+                                break;
+                            case "external temperature c": // Shelly 1/1PM external temp sensors
+                            case "external_temperature":
+                                int idx = getExtTempId(sen.id);
+                                if (idx > 0) {
+                                    updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP + idx,
+                                            toQuantityType(value, DIGITS_TEMP, SIUnits.CELSIUS));
+                                } else {
+                                    logger.debug("{}: Unable to get extSensorId {} from {}/{}, payload={}", thingName,
+                                            sen.id, sen.type, sen.desc, payload);
+                                }
+                                break;
+                            default:
+                                logger.debug("{}: Unknown temperatur type: {}", thingName, sen.desc);
+                        }
                         break;
                     case "h" /* Humidity */:
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_HUM,
@@ -386,34 +425,55 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_LUX,
                                 toQuantityType(s.value, DIGITS_LUX, SmartHomeUnits.LUX));
                         break;
-                    case "w" /* Watt */:
+                    case "p" /* Power/Watt */:
                         String mGroup = profile.numMeters == 1 ? CHANNEL_GROUP_METER : CHANNEL_GROUP_METER + rIndex;
                         updateChannel(updates, mGroup, CHANNEL_METER_CURRENTWATTS,
                                 toQuantityType(s.value, DIGITS_WATT, SmartHomeUnits.WATT));
-                        if (profile.isEMeter) {
-                            updateChannel(updates, mGroup, CHANNEL_LAST_UPDATE, getTimestamp());
-                        }
+                        updateChannel(updates, mGroup, CHANNEL_LAST_UPDATE, getTimestamp());
                         break;
-                    case "o": // Overtemp
-                        // will be handled by status update
-                        break;
-
-                    case "tc": /* Temp Celsius */
-                    case "tf": /* Temp Fahrenheit */
-                        /*
-                         * It seems that tC and tF are the device temperature - currently no channel
-                         */
-                        break;
-
                     case "s" /* CatchAll */:
-                        switch (sen.desc.toLowerCase()) {
-                            case "relay0": // Shelly1
+                        String senValue = sen.desc.toLowerCase();
+                        switch (senValue) {
                             case "state":
-                            case "switch":
                             case "output":
-                            case "vswitch": // ???
-                                updateChannel(updates, rGroup, CHANNEL_OUTPUT,
-                                        s.value == 1 ? OnOffType.ON : OnOffType.OFF);
+                                updatePower(profile, updates, rIndex, sen, s, sensorUpdates);
+                                break;
+                            case "brightness":
+                                // already handled by state/output
+                                break;
+                            case "overtemp":
+                                if (s.value == 1) {
+                                    thingHandler.postEvent(ALARM_TYPE_OVERTEMP, true);
+                                }
+                                break;
+                            case "energy counter 0 [w-min]":
+                                updateChannel(updates, rGroup, CHANNEL_METER_LASTMIN1,
+                                        toQuantityType(s.value, DIGITS_WATT, SmartHomeUnits.WATT));
+                                break;
+                            case "energy counter 1 [w-min]":
+                                updateChannel(updates, rGroup, CHANNEL_METER_LASTMIN2,
+                                        toQuantityType(s.value, DIGITS_WATT, SmartHomeUnits.WATT));
+                                break;
+                            case "energy counter 2 [w-min]":
+                                updateChannel(updates, rGroup, CHANNEL_METER_LASTMIN3,
+                                        toQuantityType(s.value, DIGITS_WATT, SmartHomeUnits.WATT));
+                                break;
+                            case "energy counter total [w-h]": // EM3 reports W/h
+                            case "energy counter total [w-min]":
+                                Double total = profile.isEMeter ? s.value / 1000 : s.value / 60 / 1000;
+                                updateChannel(updates, rGroup, CHANNEL_METER_TOTALKWH,
+                                        toQuantityType(total, DIGITS_KWH, SmartHomeUnits.KILOWATT_HOUR));
+                                break;
+                            case "voltage":
+                                updateChannel(updates, rGroup, CHANNEL_EMETER_VOLTAGE,
+                                        toQuantityType(getDouble(s.value), DIGITS_VOLT, SmartHomeUnits.VOLT));
+                                break;
+                            case "current":
+                                updateChannel(updates, rGroup, CHANNEL_EMETER_CURRENT,
+                                        toQuantityType(getDouble(s.value), DIGITS_VOLT, SmartHomeUnits.AMPERE));
+                                break;
+                            case "pf":
+                                updateChannel(updates, rGroup, CHANNEL_EMETER_PFACTOR, getDecimal(s.value));
                                 break;
                             case "position":
                                 // work around: Roller reports 101% instead max 100
@@ -424,35 +484,54 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                                         toQuantityType(pos, SmartHomeUnits.PERCENT));
                                 break;
                             case "input":
-                                Integer idx = getInputId(sen.id);
-                                String iGroup = rGroup;
-                                String iChannel = CHANNEL_INPUT;
-                                if (idx != null) {
-                                    if (profile.isDimmer || profile.isRoller) {
+                                int idx = getSensorNumber("Input", sen.id);
+                                if (idx > 0) {
+                                    int r = idx - 1;
+                                    String iGroup = rGroup;
+                                    String iChannel = CHANNEL_INPUT;
+                                    if (profile.isRGBW2) {
+                                        // RGBW2 has only one input, not one per channel
+                                        iGroup = CHANNEL_GROUP_LIGHT_CONTROL;
+                                    } else if (profile.isDimmer || profile.isRoller) {
                                         // Dimmer and Roller things have 2 inputs
-                                        iChannel = CHANNEL_INPUT + idx.toString();
+                                        iChannel = CHANNEL_INPUT + String.valueOf(idx);
                                     } else {
                                         // Device has 1 input per relay: 0=off, 1+2 depend on switch mode
                                         iGroup = profile.numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL
                                                 : CHANNEL_GROUP_RELAY_CONTROL + idx;
                                     }
-                                }
-                                updateChannel(updates, iGroup, iChannel, s.value == 0 ? OnOffType.OFF : OnOffType.ON);
-                                break;
 
+                                    if ((profile.settings.relays != null) && (r >= 0)
+                                            && (r < profile.settings.relays.size())) {
+                                        ShellySettingsRelay relay = profile.settings.relays.get(r);
+                                        if ((relay != null) && (s.value != 0)
+                                                && (relay.btnType.equalsIgnoreCase(SHELLY_BTNT_MOMENTARY)
+                                                        || relay.btnType.equalsIgnoreCase(SHELLY_BTNT_DETACHED))) {
+                                            updateChannel(updates, iGroup, CHANNEL_BUTTON_TRIGGER,
+                                                    getStringType(s.value == 1 ? CommonTriggerEvents.SHORT_PRESSED
+                                                            : CommonTriggerEvents.LONG_PRESSED));
+                                        }
+                                    }
+                                    updateChannel(updates, iGroup, iChannel,
+                                            s.value == 0 ? OnOffType.OFF : OnOffType.ON);
+                                }
+                                break;
                             case "flood":
                                 updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD,
                                         s.value == 1 ? OnOffType.ON : OnOffType.OFF);
                                 break;
-                            case "brightness": // Dimmer
-                                updateChannel(updates, rGroup, CHANNEL_BRIGHTNESS,
-                                        toQuantityType(s.value, SmartHomeUnits.PERCENT));
+                            case "tilt": // DW with FW1.6.5+
+                                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TILT,
+                                        toQuantityType(s.value, DIGITS_NONE, SmartHomeUnits.DEGREE_ANGLE));
                                 break;
-                            case "charger": // Sense
-                                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_CHARGER,
+                            case "vibration": // DW with FW1.6.5+
+                                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VIBRATION,
                                         s.value == 1 ? OnOffType.ON : OnOffType.OFF);
                                 break;
-
+                            case "charger": // Sense
+                                updateChannel(updates, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_CHARGER,
+                                        s.value == 1 ? OnOffType.ON : OnOffType.OFF);
+                                break;
                             // RGBW2/Bulb
                             case "red":
                                 updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED,
@@ -474,47 +553,51 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                                 updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN,
                                         ShellyColorUtils.toPercent((int) s.value, SHELLY_MIN_GAIN, SHELLY_MAX_GAIN));
                                 break;
-                            case "temp":
-                                updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_TEMP, ShellyColorUtils
-                                        .toPercent((int) s.value, MIN_COLOR_TEMPERATURE, MAX_COLOR_TEMPERATURE));
-
+                            case "temp": // Shelly Bulb
+                            case "colortemperature": // Shelly Duo
+                                updateChannel(updates,
+                                        profile.inColor ? CHANNEL_GROUP_COLOR_CONTROL : CHANNEL_GROUP_WHITE_CONTROL,
+                                        CHANNEL_COLOR_TEMP,
+                                        ShellyColorUtils.toPercent((int) s.value, profile.minTemp, profile.maxTemp));
                                 break;
-
                             default:
-                                logger.debug("{}: Update for unknown sensor type {}/{} received", thingName, sen.type,
-                                        sen.desc);
+                                logger.debug(
+                                        "{}: Update for unknown sensor with id {}, type {}/{} received, value={}, payload={}",
+                                        thingName, sen.id, sen.type, sen.desc, s.value, payload);
                         }
                         break;
-
                     default:
-                        logger.debug("{}: Sensor data for type {} not processed, value={}", thingName, sen.type,
-                                s.value);
-                        break;
+                        logger.debug("{}: Sensor data for id {}, type {}/{} not processed, value={}; payload={}",
+                                thingName, sen.id, sen.type, sen.desc, s.value, payload);
                 }
-            } else {
-                logger.debug("{}: Update for unknown sensor[{}]: Dev={}, Index={}, Value={}", thingName, i, devId,
-                        s.index, s.value);
+            } catch (IllegalArgumentException | NullPointerException | ArrayIndexOutOfBoundsException e) {
+                // even the processing of one value failed we continue with the next one (sometimes this is caused by
+                // buggy formats provided by the device
+                logger.debug("{}: Unable to process data from sensor[{}], devId={}, payload={}", thingName, i, devId,
+                        payload, e);
             }
         }
 
-        if (updates.size() > 0) {
-            logger.debug("{}: Process {} CoIoT channel updates", thingName, updates.size());
-            int i = 0;
+        if (!updates.isEmpty()) {
+            int updated = 0;
             for (Map.Entry<String, State> u : updates.entrySet()) {
-                logger.debug("{}:  Update[{}] channel {}, value={} (type {})", thingName, i, u.getKey(), u.getValue(),
-                        u.getValue().getClass());
-                thingHandler.updateChannel(u.getKey(), u.getValue(), true);
-                i++;
+                updated += thingHandler.updateChannel(u.getKey(), u.getValue(), false) ? 1 : 0;
+            }
+            if (updated > 0) {
+                logger.debug("{}: {} channels updated from CoIoT status", thingName, updated);
+            }
+            if (profile.hasBattery || thingHandler.autoCoIoT) {
+                // CoAP is currently lacking the lastUpdate info, so we use host timestamp
+                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_LAST_UPDATE, getTimestamp());
             }
 
-            if (!profile.isSensor) {
-                // For now the Coap interface is not providing all updates, e.g. currentWatts yes, but not the average
-                // values for the 3 mins
-                // To prevent confusing the user we schedule a regular REST update shortly
-                // This will be removed once Coap returns all values, which have changed since the last update
-                if (thingHandler.scheduledUpdates == 0) {
-                    thingHandler.requestUpdates(1, false);
-                }
+            // Old firmware release are lacking various status values, which are not updated using CoIoT.
+            // In this case we keep a refresh so it gets polled using REST. Beginning with Firmware 1.6 most
+            // of the values are available
+
+            if ((!thingHandler.autoCoIoT && (thingHandler.scheduledUpdates <= 1))
+                    || (thingHandler.autoCoIoT && !profile.isLight && !profile.isSensor)) {
+                thingHandler.requestUpdates(1, false);
             }
         }
 
@@ -523,28 +606,93 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         lastPayload = payload;
     }
 
-    private boolean updateChannel(Map<String, State> updates, String group, String channel, State value) {
-        State v = (State) thingHandler.getChannelValue(group, channel);
-        if ((v != null) && v.equals(value)) {
-            return false;
+    /**
+     *
+     * Handles the combined updated of the brightness channel:
+     * brightness$Switch is the OnOffType (power state)
+     * brightness&Value is the brightness value
+     *
+     * @param profile Device profile, required to select the channel group and name
+     * @param updates List of updates. updatePower will add brightness$Switch and brightness&Value if changed
+     * @param id Sensor id from the update
+     * @param sen Sensor description from the update
+     * @param s New sensor value
+     * @param allUpdatesList of updates. This is required, because we need to update both values at the same time
+     */
+    private void updatePower(ShellyDeviceProfile profile, Map<String, State> updates, Integer id, CoIotDescrSen sen,
+            CoIotSensor s, List<CoIotSensor> allUpdates) {
+        String group = "";
+        String channel = CHANNEL_BRIGHTNESS;
+        String checkL = ""; // RGBW-white uses 4 different Power, Brightness, VSwitch values
+        if (profile.isLight || profile.isDimmer) {
+            if (profile.isBulb || profile.inColor) {
+                group = CHANNEL_GROUP_LIGHT_CONTROL;
+                channel = CHANNEL_LIGHT_POWER;
+            } else if (profile.isDuo) {
+                group = CHANNEL_GROUP_WHITE_CONTROL;
+            } else if (profile.isDimmer) {
+                group = CHANNEL_GROUP_RELAY_CONTROL;
+            } else if (profile.isRGBW2) {
+                group = CHANNEL_GROUP_LIGHT_CHANNEL + id;
+                checkL = String.valueOf(id.intValue() - 1); // id is 1-based, L is 0-based
+                logger.trace("{}: updatePower() for L={}", thingName, checkL);
+            }
+
+            // We need to update brigthtess and on/off state at the same time to avoid "flipping brightness slider" in
+            // the UI
+            Double brightness = -1.0;
+            Double power = -1.0;
+            for (CoIotSensor update : allUpdates) {
+                CoIotDescrSen d = fixDescription(sensorMap.get(update.id));
+                if (!checkL.isEmpty() && !d.links.equals(checkL)) {
+                    // continue until we find the correct one
+                    continue;
+                }
+                if (d.desc.equalsIgnoreCase("brightness")) {
+                    brightness = new Double(update.value);
+                } else if (d.desc.equalsIgnoreCase("output") || d.desc.equalsIgnoreCase("state")) {
+                    power = new Double(update.value);
+                }
+            }
+            if (power != -1) {
+                updateChannel(updates, group, channel + "$Switch", power == 1 ? OnOffType.ON : OnOffType.OFF);
+            }
+            if (brightness != -1) {
+                updateChannel(updates, group, channel + "$Value",
+                        toQuantityType(power == 1 ? brightness : 0, DIGITS_NONE, SmartHomeUnits.PERCENT));
+            }
+        } else if (profile.hasRelays) {
+            group = profile.numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL : CHANNEL_GROUP_RELAY_CONTROL + id;
+            updateChannel(updates, group, CHANNEL_OUTPUT, s.value == 1 ? OnOffType.ON : OnOffType.OFF);
+        } else if (profile.isSensor) {
+            // Sensor state
+            if (profile.isDW) { // Door Window has item type Contact
+                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STATE,
+                        s.value != 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+            } else {
+                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STATE,
+                        s.value == 1 ? OnOffType.ON : OnOffType.OFF);
+            }
         }
-        logger.trace("{}: Updating channel {}.{} from CoIoT, new value={}", thingName, group, channel, value);
+    }
+
+    private boolean updateChannel(Map<String, State> updates, String group, String channel, State value) {
         updates.put(mkChannelId(group, channel), value);
         return true;
 
     }
 
     /**
-     * Work around to fix inconsistent sensor types and description
-     * Shelly not uses always the same coding for sen.T and sen.D - this helps to unify the format and simplifies
-     * processing
      *
-     * @param sen
-     * @return updated sen
+     * Depending on the device type and firmware release there are significant bugs or incosistencies in the CoIoT
+     * Device Description returned by the discovery request. Shelly is even not following it's own speicifcation. All of
+     * that has been reported to Shelly and acknowledged. Firmware 1.6 brought significant improvements. However, the
+     * old mapping stays in to support older firmware releases.
+     *
+     * @param sen Sensor description received from device
+     * @return fixed Sensor description (sen)
      */
     private CoIotDescrSen fixDescription(CoIotDescrSen sen) {
-        Validate.notNull(sen, "sen must not be null!");
-
         // Shelly1: reports null descr+type "Switch" -> map to S
         // Shelly1PM: reports null descr+type "Overtemp" -> map to O
         // Shelly1PM: reports null descr+type "W" -> add description
@@ -554,8 +702,52 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         // Shelly Sense: Battery is reported with Desc "battery", but type "H" instead of "B"
         // Shelly Sense: Motion is reported with Desc "battery", but type "H" instead of "B"
         // Shelly Bulb: Colors are coded with Type="Red" etc. rather than Type="S" and color as Descr
+        // Shelly RGBW2 is reporting Brightness, Power, VSwitch for each channel, but all with L=0
         if (sen.desc == null) {
             sen.desc = "";
+        }
+        String desc = sen.desc.toLowerCase();
+
+        // RGBW2 reports Power_0, Power_1, Power_2, Power_3; same for VSwitch and Brightness, all of them linkted to L:0
+        // we break it up to Power with L:0, Power with L:1...
+        if (desc.contains("_") && (desc.contains("power") || desc.contains("vswitch") || desc.contains("brightness"))) {
+            String newDesc = StringUtils.substringBefore(sen.desc, "_");
+            String newLink = StringUtils.substringAfter(sen.desc, "_");
+            sen.desc = newDesc;
+            sen.links = newLink;
+            if (!blockMap.containsKey(sen.links)) {
+                // auto-insert a matching blk entry
+                CoIotDescrBlk blk = new CoIotDescrBlk();
+                CoIotDescrBlk blk0 = blockMap.get("0"); // blk 0 is always there
+                blk.id = sen.links;
+                blk.desc = blk0.desc + "_" + blk.id;
+                blockMap.put(blk.id, blk);
+            }
+        }
+
+        switch (sen.type.toLowerCase()) {
+            case "w": // old devices/firmware releases use "W", new ones "P"
+                sen.type = "P";
+                sen.desc = "Power";
+                break;
+            case "tc":
+                sen.type = "T";
+                sen.desc = "Temperature C";
+                break;
+            case "tf":
+                sen.type = "T";
+                sen.desc = "Temperature F";
+                break;
+            case "overtemp":
+                sen.type = "S";
+                sen.desc = "Overtemp";
+                break;
+            case "relay0":
+            case "switch":
+            case "vswitch":
+                sen.type = "S";
+                sen.desc = "State";
+                break;
         }
 
         switch (sen.desc.toLowerCase()) {
@@ -567,21 +759,32 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                 sen.type = "B";
                 sen.desc = "Battery";
                 break;
+            case "overtemp":
+                sen.type = "S";
+                sen.desc = "Overtemp";
+                break;
+            case "relay0":
+            case "switch":
+            case "vswitch":
+                sen.type = "S";
+                sen.desc = "State";
+                break;
+            case "e cnt 0 [w-min]": // 4 Pro
+            case "e cnt 1 [w-min]":
+            case "e cnt 2 [w-min]":
+            case "e cnt total [w-min]": // 4 Pro
+                sen.desc = sen.desc.toLowerCase().replace("e cnt", "energy counter");
+                break;
+
         }
 
         if (sen.desc.isEmpty()) {
             switch (sen.type.toLowerCase()) {
-                case "w":
+                case "p":
                     sen.desc = "Power";
                     break;
-                case "switch":
-                case "relay0":
-                    sen.type = "S";
-                    sen.desc = "Switch";
-                    break;
-                case "overtemp":
-                    sen.type = "O";
-                    sen.desc = "Overtemp";
+                case "T":
+                    sen.desc = "Temperature";
                     break;
                 case "input":
                     sen.type = "S";
@@ -595,11 +798,6 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                     sen.type = "S";
                     sen.desc = "Brightness";
                     break;
-                case "tc":
-                case "tf":
-                    sen.desc = "Temperature";
-                    break;
-
                 case "red":
                 case "green":
                 case "blue":
@@ -609,7 +807,6 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                     sen.desc = sen.type;
                     sen.type = "S";
                     break;
-
                 case "vswitch":
                     // it seems that Shelly tends to break their own spec: T is the description and D is no longer
                     // included
@@ -617,7 +814,6 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                     sen.desc = sen.type;
                     sen.type = "S";
                     break;
-
                 // Default: set no description
                 // (there are no T values defined in the CoIoT spec)
                 case "tostate":
@@ -638,10 +834,8 @@ public class ShellyCoapHandler implements ShellyCoapListener {
      * @param uri The URI we are calling (CoIoT = /cit/d or /cit/s)
      * @param con true: send as CON, false: send as NON
      * @return new packet
-     *
-     * @throws IOException
      */
-    private Request sendRequest(@Nullable Request request, String ipAddress, String uri, Type con) throws IOException {
+    private Request sendRequest(@Nullable Request request, String ipAddress, String uri, Type con) {
         if ((request != null) && !request.isCanceled()) {
             request.cancel();
         }
@@ -659,9 +853,9 @@ public class ShellyCoapHandler implements ShellyCoapListener {
      * @param uri The URI we are calling (CoIoT = /cit/d or /cit/s)
      * @param con true: send as CON, false: send as NON
      * @return new packet
-     * @throws IOException
      */
-    private Request newRequest(String ipAddress, String uri, Type con) throws IOException {
+
+    private Request newRequest(String ipAddress, String uri, Type con) {
         // We need to build our own Request to set an empty Token
         Request request = new Request(Code.GET, con);
         request.setURI(completeUrl(ipAddress, uri));
@@ -674,12 +868,12 @@ public class ShellyCoapHandler implements ShellyCoapListener {
 
             @Override
             public void onCancel() {
-                logger.debug("{}: Coap Request was canceled", thingName);
+                logger.debug("{}: CoAP Request was canceled", thingName);
             }
 
             @Override
             public void onTimeout() {
-                logger.debug("{}: Coap Request timed out", thingName);
+                logger.debug("{}: CoAP Request timed out", thingName);
             }
 
         });
@@ -687,6 +881,12 @@ public class ShellyCoapHandler implements ShellyCoapListener {
 
     }
 
+    /**
+     * Reset serial and payload used to detect duplicate messages, which have to be ignored.
+     * We can't rely that the device manages serials correctly all the time. There are firmware releases sending updated
+     * sensor information with the serial from the last packet, which is wrong. We bypass this problem by comparing also
+     * the payload.
+     */
     private void resetSerial() {
         lastSerial = -1;
         lastPayload = "";
@@ -695,51 +895,70 @@ public class ShellyCoapHandler implements ShellyCoapListener {
     /**
      * Find index of Input id, which is required to map to channel name
      *
+     * @parm sensorDesc D field from sensor update
      * @param sensorId The id from the sensor update
      * @return Index of found entry (+1 will be the suffix for the channel name) or null if sensorId is not found
      */
-    @SuppressWarnings("null")
-    @Nullable
-    private Integer getInputId(String sensorId) {
-        Integer idx = 0;
+    private int getSensorNumber(String sensorDesc, String sensorId) {
+        int idx = 0;
         for (Map.Entry<String, CoIotDescrSen> se : sensorMap.entrySet()) {
-            @Nullable
             CoIotDescrSen sen = se.getValue();
-            if (sen.id.equalsIgnoreCase("Input")) {
+            if (sen.desc.equalsIgnoreCase(sensorDesc)) {
                 idx++; // iterate from input1..2..n
             }
-            if (sen.id.equalsIgnoreCase(sensorId)) {
+            if (sen.id.equalsIgnoreCase(sensorId) && blockMap.containsKey(sen.links)) {
                 CoIotDescrBlk blk = blockMap.get(sen.links);
-                if ((blk != null) && StringUtils.substring(blk.desc, 5).equalsIgnoreCase("Relay")) {
+                if (StringUtils.substring(blk.desc, 5).equalsIgnoreCase("Relay")) {
                     idx = Integer.parseInt(StringUtils.substringAfter(blk.desc, "Relay"));
                 }
-                logger.trace("{}:    map to input{} channel", thingName, idx);
                 return idx;
             }
         }
         logger.debug("{}: sensorId {} not found in sensorMap!", thingName, sensorId);
-        return null;
+        return -1;
+    }
+
+    /**
+     *
+     * Get matching sensorId for updates on "External Temperature" - there might be more than 1 sensor.
+     *
+     * @param sensorId sensorId to map into a channel index
+     * @return Index of the corresponding channel (e.g. 0 build temperature1, 1->temperagture2...)
+     */
+    private int getExtTempId(String sensorId) {
+        int idx = 0;
+        for (Map.Entry<String, CoIotDescrSen> se : sensorMap.entrySet()) {
+            CoIotDescrSen sen = se.getValue();
+            if (sen.desc.equalsIgnoreCase("external_temperature")
+                    || sen.desc.equalsIgnoreCase("external temperature c")) {
+                idx++; // iterate from temperature1..2..n
+            }
+            if (sen.id.equalsIgnoreCase(sensorId)) {
+                return idx;
+            }
+        }
+        logger.debug("{}: sensorId {} not found in sensorMap!", thingName, sensorId);
+        return -1;
     }
 
     /**
      * Cancel pending requests and shutdown the client
      */
-    @SuppressWarnings("null")
-    public void stop() {
-        logger.debug("{}: Stop CoapHandler instance", thingName);
-        if ((reqDescription != null) && !reqDescription.isCanceled()) {
-            reqDescription.cancel();
-            reqDescription = null;
+    public synchronized void stop() {
+        if (isStarted()) {
+            logger.debug("{}: Stopping CoAP Listener", thingName);
+            coapServer.stop(this);
+            if (statusClient != null) {
+                statusClient.shutdown();
+                statusClient = null;
+            }
+            if (!reqDescription.isCanceled()) {
+                reqDescription.cancel();
+            }
+            if (!reqStatus.isCanceled()) {
+                reqStatus.cancel();
+            }
         }
-        if ((reqStatus != null) && !reqStatus.isCanceled()) {
-            reqStatus.cancel();
-            reqStatus = null;
-        }
-        if (statusClient != null) {
-            statusClient.shutdown();
-            statusClient = null;
-        }
-        coapServer.removeListener(this);
     }
 
     public void dispose() {

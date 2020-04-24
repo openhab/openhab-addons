@@ -462,7 +462,7 @@ public class GlobalCacheHandler extends BaseThingHandler {
 
         public CommandProcessor() {
             super("GlobalCache Command Processor");
-            sendQueue = new LinkedBlockingQueue<RequestMessage>(SEND_QUEUE_MAX_DEPTH);
+            sendQueue = new LinkedBlockingQueue<>(SEND_QUEUE_MAX_DEPTH);
             logger.debug("Processor for thing {} created request queue, depth={}", thingID(), SEND_QUEUE_MAX_DEPTH);
         }
 

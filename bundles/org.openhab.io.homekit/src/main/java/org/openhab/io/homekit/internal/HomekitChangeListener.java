@@ -35,7 +35,7 @@ import io.github.hapjava.HomekitRoot;
 
 /**
  * Listens for changes to the item registry. When changes are detected, check
- * for Homekit tags and, if present, add the items to the HomekitAccessoryRegistry.
+ * for HomeKit tags and, if present, add the items to the HomekitAccessoryRegistry.
  *
  * @author Andy Lintner - Initial contribution
  */
@@ -46,7 +46,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
     private HomekitAccessoryUpdater updater = new HomekitAccessoryUpdater();
     private HomekitSettings settings;
 
-    private Set<String> pendingUpdates = new HashSet<String>();
+    private Set<String> pendingUpdates = new HashSet<>();
 
     private final ScheduledExecutorService scheduler = ThreadPoolManager
             .getScheduledPool(ThreadPoolManager.THREAD_POOL_NAME_COMMON);
@@ -166,10 +166,10 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
                         taggedItem.getItem().getUID());
                 return;
             }
-            logger.debug("Adding homekit device {}", taggedItem.getItem().getUID());
+            logger.debug("Adding HomeKit device {}", taggedItem.getItem().getUID());
             accessoryRegistry.addRootAccessory(taggedItem.getName(),
                     HomekitAccessoryFactory.create(taggedItem, itemRegistry, updater, settings));
-            logger.debug("Added homekit device {}", taggedItem.getItem().getUID());
+            logger.debug("Added HomeKit device {}", taggedItem.getItem().getUID());
         } catch (HomekitException | IncompleteAccessoryException e) {
             logger.warn("Could not add device {}: {}", taggedItem.getItem().getUID(), e.getMessage());
         }

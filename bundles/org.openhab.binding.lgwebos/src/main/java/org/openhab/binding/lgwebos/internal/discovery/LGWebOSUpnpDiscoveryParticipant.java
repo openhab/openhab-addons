@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.upnp.UpnpDiscoveryParticipant;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.jupnp.model.meta.RemoteDevice;
@@ -54,12 +55,16 @@ public class LGWebOSUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant
             return null;
         }
 
+        String modelName = device.getDetails().getModelDetails().getModelName();
+        if (device.getDetails().getModelDetails().getModelNumber() != null) {
+            modelName += " " + device.getDetails().getModelDetails().getModelNumber();
+        }
+
         return DiscoveryResultBuilder.create(thingUID).withLabel(device.getDetails().getFriendlyName())
                 .withProperty(PROPERTY_DEVICE_ID, device.getIdentity().getUdn().getIdentifierString())
                 .withProperty(CONFIG_HOST, device.getIdentity().getDescriptorURL().getHost())
-                .withLabel(device.getDetails().getFriendlyName())
-                .withProperty(PROPERTY_MODEL_NAME, device.getDetails().getModelDetails().getModelName())
-                .withProperty(PROPERTY_MANUFACTURER, device.getDetails().getManufacturerDetails().getManufacturer())
+                .withLabel(device.getDetails().getFriendlyName()).withProperty(Thing.PROPERTY_MODEL_ID, modelName)
+                .withProperty(Thing.PROPERTY_VENDOR, device.getDetails().getManufacturerDetails().getManufacturer())
                 .withRepresentationProperty(PROPERTY_DEVICE_ID).withThingType(THING_TYPE_WEBOSTV).build();
     }
 

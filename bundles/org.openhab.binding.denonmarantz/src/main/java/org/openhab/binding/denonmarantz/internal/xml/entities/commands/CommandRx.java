@@ -49,7 +49,7 @@ public class CommandRx {
     private String type;
 
     @XmlElement(name = "text")
-    private List<Text> texts = new ArrayList<Text>();
+    private List<Text> texts = new ArrayList<>();
 
     @XmlElementWrapper(name = "functionrename")
     @XmlElement(name = "list")

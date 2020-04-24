@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
@@ -40,6 +41,7 @@ import org.openhab.binding.mqtt.generic.mapping.AbstractMqttAttributeClass.Attri
 import org.openhab.binding.mqtt.generic.values.ColorValue;
 import org.openhab.binding.mqtt.generic.values.NumberValue;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
+import org.openhab.binding.mqtt.generic.values.PercentageValue;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.homie.generic.internal.MqttBindingConstants;
@@ -192,8 +194,11 @@ public class Property implements AttributeChanged {
                 if (step != null && !isDecimal && step.intValue() <= 0) {
                     step = new BigDecimal(1);
                 }
-
-                value = new NumberValue(min, max, step, attributes.unit);
+                if (attributes.unit != null && attributes.unit.contains("%")) {
+                    value = new PercentageValue(min, max, step, null, null);
+                } else {
+                    value = new NumberValue(min, max, step, attributes.unit);
+                }
                 break;
             case string_:
             case unknown:
@@ -307,8 +312,8 @@ public class Property implements AttributeChanged {
      *
      * @return Returns a list of relative topics
      */
-    public ArrayList<String> getRetainedTopics() {
-        ArrayList<String> topics = new ArrayList<String>();
+    public List<String> getRetainedTopics() {
+        List<String> topics = new ArrayList<>();
 
         topics.addAll(Stream.of(this.attributes.getClass().getDeclaredFields()).map(f -> {
             return String.format("%s/$%s", this.propertyID, f.getName());

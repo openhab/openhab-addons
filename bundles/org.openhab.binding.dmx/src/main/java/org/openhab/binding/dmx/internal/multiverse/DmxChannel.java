@@ -16,15 +16,16 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.openhab.binding.dmx.internal.DmxBindingConstants.ListenerType;
 import org.openhab.binding.dmx.internal.DmxThingHandler;
 import org.openhab.binding.dmx.internal.Util;
-import org.openhab.binding.dmx.internal.DmxBindingConstants.ListenerType;
 import org.openhab.binding.dmx.internal.action.ActionState;
 import org.openhab.binding.dmx.internal.action.BaseAction;
 import org.slf4j.Logger;
@@ -51,12 +52,12 @@ public class DmxChannel extends BaseDmxChannel {
     private int refreshTime = 0;
     private long lastStateTimestamp = 0;
 
-    private final List<BaseAction> actions = new ArrayList<BaseAction>();
-    private final List<BaseAction> suspendedActions = new ArrayList<BaseAction>();
-    private final List<Thing> registeredThings = new ArrayList<Thing>();
+    private final List<BaseAction> actions = new ArrayList<>();
+    private final List<BaseAction> suspendedActions = new ArrayList<>();
+    private final List<Thing> registeredThings = new ArrayList<>();
 
-    private final HashMap<ChannelUID, DmxThingHandler> onOffListeners = new HashMap<ChannelUID, DmxThingHandler>();
-    private final HashMap<ChannelUID, DmxThingHandler> valueListeners = new HashMap<ChannelUID, DmxThingHandler>();
+    private final Map<ChannelUID, DmxThingHandler> onOffListeners = new HashMap<>();
+    private final Map<ChannelUID, DmxThingHandler> valueListeners = new HashMap<>();
     private Entry<ChannelUID, DmxThingHandler> actionListener = null;
 
     public DmxChannel(int universeId, int dmxChannelId, int refreshTime) {
@@ -324,7 +325,7 @@ public class DmxChannel extends BaseDmxChannel {
                 } else {
                     logger.debug("adding ACTION listener {} in channel {}", listener, this);
                 }
-                actionListener = new AbstractMap.SimpleEntry<ChannelUID, DmxThingHandler>(thingChannel, listener);
+                actionListener = new AbstractMap.SimpleEntry<>(thingChannel, listener);
             default:
         }
     }

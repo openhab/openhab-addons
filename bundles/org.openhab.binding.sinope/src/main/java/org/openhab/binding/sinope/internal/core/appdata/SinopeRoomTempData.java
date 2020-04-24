@@ -17,7 +17,7 @@ import java.nio.ByteOrder;
 
 /**
  * The Class SinopeRoomTempData.
- * 
+ *
  * @author Pascal Larin - Initial contribution
  */
 public class SinopeRoomTempData extends SinopeAppData {
@@ -26,7 +26,6 @@ public class SinopeRoomTempData extends SinopeAppData {
      * Instantiates a new sinope room temp data.
      */
     public SinopeRoomTempData() {
-
         super(new byte[] { 0x00, 0x00, 0x02, 0x03 }, new byte[] { 0, 0 });
     }
 

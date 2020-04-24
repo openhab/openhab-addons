@@ -15,11 +15,10 @@ package org.openhab.binding.digitalstrom.internal.lib.event.types;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.openhab.binding.digitalstrom.internal.lib.event.constants.EventResponseEnum;
 import org.openhab.binding.digitalstrom.internal.lib.serverconnection.constants.JSONApiResponseKeysEnum;
-
-import java.util.Set;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -47,7 +46,7 @@ public class EventItemImpl implements EventItem {
         if (jsonEventItem.get(JSONApiResponseKeysEnum.PROPERTIES.getKey()).isJsonObject()) {
             Set<Entry<String, JsonElement>> propObjEntrySet = jsonEventItem
                     .get(JSONApiResponseKeysEnum.PROPERTIES.getKey()).getAsJsonObject().entrySet();
-            properties = new HashMap<EventResponseEnum, String>(propObjEntrySet.size());
+            properties = new HashMap<>(propObjEntrySet.size());
             for (Entry<String, JsonElement> entry : propObjEntrySet) {
                 if (EventResponseEnum.containsId(entry.getKey())) {
                     addProperty(EventResponseEnum.getProperty(entry.getKey()), entry.getValue().getAsString());
@@ -57,7 +56,7 @@ public class EventItemImpl implements EventItem {
         if (jsonEventItem.get(JSONApiResponseKeysEnum.SOURCE.getKey()).isJsonObject()) {
             Set<Entry<String, JsonElement>> sourceObjEntrySet = jsonEventItem
                     .get(JSONApiResponseKeysEnum.SOURCE.getKey()).getAsJsonObject().entrySet();
-            source = new HashMap<EventResponseEnum, String>(sourceObjEntrySet.size());
+            source = new HashMap<>(sourceObjEntrySet.size());
             for (Entry<String, JsonElement> entry : sourceObjEntrySet) {
                 if (EventResponseEnum.containsId(entry.getKey())) {
                     addSource(EventResponseEnum.getProperty(entry.getKey()), entry.getValue().getAsString());

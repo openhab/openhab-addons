@@ -315,7 +315,6 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                             setConnection(currentConnection);
                         }
                     } else {
-
                         // read session data from property
                         String sessionStore = this.stateStorage.get("sessionStorage");
 
@@ -582,7 +581,6 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     }
 
     public List<Device> updateDeviceList() {
-
         Connection currentConnection = connection;
         if (currentConnection == null) {
             return new ArrayList<>();

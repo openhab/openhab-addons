@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-group-type id="network" advanced="true">
+	<channel-group-type id="network">
 		<label>Network</label>
 		<channels>
 			<channel id="ssid" typeId="ssid" />
@@ -437,5 +437,25 @@
 		<item-type>Number</item-type>
 		<label>Filter Pro Days Remaining</label>
 		<state pattern="%.0f" readOnly="true" />
+	</channel-type>
+	<channel-type id="miot_uint8">
+		<item-type>Number</item-type>
+		<label>Generic Number</label>
+	</channel-type>
+	<channel-type id="miot_int32">
+		<item-type>Number</item-type>
+		<label>Generic Number</label>
+	</channel-type>
+	<channel-type id="miot_float">
+		<item-type>Number</item-type>
+		<label>Generic Number</label>
+	</channel-type>
+	<channel-type id="miot_string">
+		<item-type>String</item-type>
+		<label>Generic String</label>
+	</channel-type>
+	<channel-type id="miot_bool">
+		<item-type>Switch</item-type>
+		<label>Generic Bool</label>
 	</channel-type>
 </thing:thing-descriptions>

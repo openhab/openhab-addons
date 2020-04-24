@@ -1,9 +1,10 @@
 # Niko Home Control Binding
 
-Upgrade notice for Niko Home Control II:
-The current version of the binding uses Niko Home Control hobby API token based authentication.
+**Upgrade notice for Niko Home Control II and openHAB 2.5.3**:
+Starting with openHAB 2.5.3 the binding uses Niko Home Control hobby API token based authentication.
 The Niko Home Control hobby API is available with Niko Home Control system version 2.5.1 or newer.
-If currently using a profile and password based authentication with the binding, you will need to start using hobby API token based authentication.
+If currently using a profile and password based authentication with the binding (upgrading from an openHAB version before 2.5.3), you will need to start using hobby API token based authentication.
+Make sure your Niko Home Control system is at version 2.5.1 or newer.
 Request a hobby API token at [mynikohomecontrol](https://mynikohomecontrol.niko.eu).
 In the bridge configuration, put the received token in the API Token parameter.
 Delete the values for Bridge Port and Profile parameters.
@@ -109,11 +110,11 @@ Bridge nikohomecontrol:bridge2:<bridgeId> [ addr="<IP-address of IP-interface>",
 `password` is the API token retrieved from the Niko Home Control website, cannot be empty.
 `refresh` is the interval to restart the communication in minutes (300 by default), if 0 or omitted the connection will not restart at regular intervals.
 
-Advanced configuration note:
+Advanced configuration note for Niko Home Control II:
 It is possible to use authentication based on a touch panel profile, bypassing the hobby API token authentication.
 To make this work, you have to define a password protected touch profile in the Niko Home Control programming software.
 Extract the embedded SQLite database from the configuration file.
-Look for the profile you created in the profile table (using a SQLite database browser tool) and copy the CreationId into the profile parameter for the bridge.
+Look for the profile you created in the `Profile` table (using a SQLite database browser tool) and copy the `CreationId` into the profile parameter for the bridge.
 The port parameter on the bridge has to be set to 8883.
 The API token parameter should be set to the profile password.
 
@@ -156,10 +157,10 @@ For Niko Home Control II, the `actionId` parameter is a unique ID for the action
 It can only be auto-discovered.
 If you want to define the action through textual configuration, the easiest way is to first do discovery on the bridge to get the correct `actionId` to use in the textual configuration.
 Discover and add the thing you want to add.
-Note down the `actionId` parameter from the thing, remove it before adding it again through textual configuration, with the same `actionId`parameter.
-Alternatively the `actionId`can be retrieved from the configuration file.
+Note down the `actionId` parameter from the thing, remove it before adding it again through textual configuration, with the same `actionId` parameter.
+Alternatively the `actionId` can be retrieved from the configuration file.
 The file contains a SQLLite database.
-The database contains a table `Action` with column `FifthplayId` corresponding to the required `actionId`parameter.
+The database contains a table `Action` with column `FifthplayId` corresponding to the required `actionId` parameter.
 
 The `step` parameter is only available for dimmers.
 It sets a step value for dimmer increase/decrease actions.
@@ -169,7 +170,8 @@ The Thing configuration for **Niko Home Control thermostats** has the following 
 
 ```
 Thing nikohomecontrol:thermostat:<bridgeId>:<thingId> "Label" @ "Location"
-                        [ thermostatId="<Niko Home Control thermostat ID>" ]
+                        [ thermostatId="<Niko Home Control thermostat ID>",
+                          overruleTime=<default duration for overrule temperature in minutes> ]
 ```
 
 or nested in the bridge configuration:
@@ -193,7 +195,7 @@ For Niko Home Control II, the `thermostatId` parameter is a unique ID for the th
 It can only be auto-discovered.
 If you want to define the thermostat through textual configuration, you may first need to do discovery on the bridge to get the correct `thermostatId` to use in the textual configuration.
 
-The `overruleTime` parameter is used to set the standard overrule duration when you set a new setpoint without providing an overrule duration.
+The `overruleTime` parameter is used to set the standard overrule duration in minutes when you set a new setpoint without providing an overrule duration.
 The default value is 60 minutes.
 
 The Thing configuration for **Niko Home Control energy meters** has the following syntax:
@@ -249,8 +251,9 @@ When updating `setpoint`, it will overrule the temperature setpoint defined by t
 `demand` is a number indicating of the system is actively heating/cooling.
 The value will be 1 for heating, -1 for cooling and 0 if not heating or cooling.
 Note that cooling in NHC I is set by the binding, and will incorrectly show cooling demand when the system does not have cooling capabilities.
+In NHC II, `measured` and `setpoint` temperatures will always report in 0.5°C increments due to a Niko Home Control II API restriction.
 
-For thing type `energymeter`the only supported channel is `power`.
+For thing type `energymeter` the only supported channel is `power`.
 This channel is read only and give a current power consumption/production reading (positive for consumption) every 2 seconds.
 
 The bridge has two trigger channels `alarm` and `notice`.
@@ -289,7 +292,7 @@ Bridge nikohomecontrol:bridge2:nhc2 [ addr="192.168.0.70", port=8884, password="
     dimmer 3 "DiningRoom" [ actionId="abcdef01-abcd-1234-ab98-abcdef012345", step=5 ]
     blind 4 [ actionId="abcdef01-abcd-1234-ab98-abcdefabcdef" ]
     thermostat 5 [ thermostatId="abcdef01-abcd-1234-ab98-012345abcdef", overruleTime=10 ]
-    electricitymeter 5 [ electricityMeterId="abcdef01-abcd-1234-cd56-ffee34567890" ]
+    electricitymeter 6 [ energyMeterId="abcdef01-abcd-1234-cd56-ffee34567890" ]
 }
 
 Bridge nikohomecontrol:bridge:nhc3 [ addr="192.168.0.110" ] {
@@ -312,7 +315,7 @@ Number ThermostatMode   {channel="nikohomecontrol:thermostat:nhc1:5:mode"}      
 Number:Temperature SetTemperature   "[%.1f °C]"  {channel="nikohomecontrol:thermostat:nhc1:5:setpoint"}   # Get and set target temperature in °C
 Number OverruleDuration {channel="nikohomecontrol:thermostat:nhc1:5:overruletime} # Get and set the overrule time
 Number ThermostatDemand {channel="nikohomecontrol:thermostat:nhc1:5:demand}       # Get the current heating/cooling demand
-Number:Power CurPower   "[%.0f W]"  {channel="nikohomecontrol:electricitymeter:nhc2:6:power"}   # Get current power consumption
+Number:Power CurPower   "[%.0f W]"  {channel="nikohomecontrol:energyMeter:nhc2:6:power"}   # Get current power consumption
 ```
 
 .sitemap:

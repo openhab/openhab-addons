@@ -64,6 +64,8 @@ public class InsteonDeviceHandler extends BaseThingHandler {
             InsteonBindingConstants.FAN_MODE, InsteonBindingConstants.FAST_ON_OFF,
             InsteonBindingConstants.FAST_ON_OFF_BUTTON_A, InsteonBindingConstants.FAST_ON_OFF_BUTTON_B,
             InsteonBindingConstants.FAST_ON_OFF_BUTTON_C, InsteonBindingConstants.FAST_ON_OFF_BUTTON_D,
+            InsteonBindingConstants.FAST_ON_OFF_BUTTON_E, InsteonBindingConstants.FAST_ON_OFF_BUTTON_F,
+            InsteonBindingConstants.FAST_ON_OFF_BUTTON_G, InsteonBindingConstants.FAST_ON_OFF_BUTTON_H,
             InsteonBindingConstants.HEAT_SET_POINT, InsteonBindingConstants.HUMIDITY,
             InsteonBindingConstants.HUMIDITY_HIGH, InsteonBindingConstants.HUMIDITY_LOW,
             InsteonBindingConstants.IS_COOLING, InsteonBindingConstants.IS_HEATING,
@@ -79,7 +81,9 @@ public class InsteonDeviceHandler extends BaseThingHandler {
             InsteonBindingConstants.LOAD_SWITCH_MANUAL_CHANGE, InsteonBindingConstants.LOWBATTERY,
             InsteonBindingConstants.MANUAL_CHANGE, InsteonBindingConstants.MANUAL_CHANGE_BUTTON_A,
             InsteonBindingConstants.MANUAL_CHANGE_BUTTON_B, InsteonBindingConstants.MANUAL_CHANGE_BUTTON_C,
-            InsteonBindingConstants.MANUAL_CHANGE_BUTTON_D, InsteonBindingConstants.NOTIFICATION,
+            InsteonBindingConstants.MANUAL_CHANGE_BUTTON_D, InsteonBindingConstants.MANUAL_CHANGE_BUTTON_E,
+            InsteonBindingConstants.MANUAL_CHANGE_BUTTON_F, InsteonBindingConstants.MANUAL_CHANGE_BUTTON_G,
+            InsteonBindingConstants.MANUAL_CHANGE_BUTTON_H, InsteonBindingConstants.NOTIFICATION,
             InsteonBindingConstants.ON_LEVEL, InsteonBindingConstants.RAMP_DIMMER, InsteonBindingConstants.RAMP_RATE,
             InsteonBindingConstants.RESET, InsteonBindingConstants.STAGE1_DURATION, InsteonBindingConstants.SWITCH,
             InsteonBindingConstants.SYSTEM_MODE, InsteonBindingConstants.TEMPERATURE,
@@ -156,7 +160,7 @@ public class InsteonDeviceHandler extends BaseThingHandler {
             InsteonDevice device = insteonBinding.makeNewDevice(insteonAddress, productKey);
 
             StringBuilder channelList = new StringBuilder();
-            List<Channel> channels = new ArrayList<Channel>();
+            List<Channel> channels = new ArrayList<>();
             String thingId = getThing().getUID().getAsString();
             for (String channelId : ALL_CHANNEL_IDS) {
                 String feature = channelId.toLowerCase();
@@ -273,7 +277,7 @@ public class InsteonDeviceHandler extends BaseThingHandler {
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
-        HashMap<String, @Nullable String> params = new HashMap<String, @Nullable String>();
+        Map<String, @Nullable String> params = new HashMap<>();
         Channel channel = getThing().getChannel(channelUID.getId());
 
         Map<String, Object> channelProperties = channel.getConfiguration().getProperties();

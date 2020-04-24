@@ -32,7 +32,6 @@ public class FCommandTest {
 
         assertEquals("f:", prefix);
         assertEquals("f:" + '\r' + '\n', commandStr);
-
     }
 
     @Test

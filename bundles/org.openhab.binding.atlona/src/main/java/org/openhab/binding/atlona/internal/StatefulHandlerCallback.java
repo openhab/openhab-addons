@@ -77,7 +77,6 @@ public class StatefulHandlerCallback implements AtlonaHandlerCallback {
         }
         // If we got this far - call the underlying one
         wrappedCallback.statusChanged(status, detail, msg);
-
     }
 
     /**
@@ -108,7 +107,6 @@ public class StatefulHandlerCallback implements AtlonaHandlerCallback {
         // Something changed - save the new state and call the underlying wrapped
         this.state.put(channelId, state);
         wrappedCallback.stateChanged(channelId, state);
-
     }
 
     /**
@@ -133,7 +131,6 @@ public class StatefulHandlerCallback implements AtlonaHandlerCallback {
     @Override
     public void setProperty(String propertyName, String propertyValue) {
         wrappedCallback.setProperty(propertyName, propertyValue);
-
     }
 
     /**

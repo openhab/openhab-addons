@@ -4,8 +4,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="d101">
-		<label>Doorbird D101/D201/D205 Doorbell</label>
-		<description>Doorbird doorbell model D101/D201/D205</description>
+		<label>Doorbird Doorbell D101/D201/D205/D1101V</label>
+		<description>Doorbird doorbell model D101/D201/D205/D1101V</description>
 		<channels>
 			<channel id="doorbell" typeId="system.rawbutton">
 				<label>Doorbell</label>

@@ -53,7 +53,7 @@ public enum BluetoothAddressType {
     }
 
     private static void initMapping() {
-        codeMapping = new HashMap<Integer, BluetoothAddressType>();
+        codeMapping = new HashMap<>();
         for (BluetoothAddressType s : values()) {
             codeMapping.put(s.key, s);
         }

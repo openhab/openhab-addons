@@ -40,7 +40,7 @@ import io.github.hapjava.HomekitRoot;
 import io.github.hapjava.HomekitServer;
 
 /**
- * Provides access to openHAB items via the Homekit API
+ * Provides access to openHAB items via the HomeKit API
  *
  * @author Andy Lintner - Initial contribution
  */
@@ -88,7 +88,7 @@ public class HomekitImpl implements Homekit {
             settings = processConfig(config);
             changeListener.updateSettings(settings);
             if (!oldSettings.networkInterface.equals(settings.networkInterface) || oldSettings.port != settings.port) {
-                // the homekit server settings changed. we do a complete re-init
+                // the HomeKit server settings changed. we do a complete re-init
                 stopHomekitServer();
                 startHomekitServer();
             } else if (!oldSettings.name.equals(settings.name) || !oldSettings.pin.equals(settings.pin)) {
@@ -97,7 +97,7 @@ public class HomekitImpl implements Homekit {
                 startBridge();
             }
         } catch (IOException | InvalidAlgorithmParameterException e) {
-            logger.debug("Could not initialize homekit connector: {}", e.getMessage());
+            logger.debug("Could not initialize HomeKit connector: {}", e.getMessage());
             return;
         }
     }
@@ -121,7 +121,7 @@ public class HomekitImpl implements Homekit {
             this.bridge = bridge;
         } else {
             logger.warn(
-                    "trying to start bridge but homekit server is not initialized or bridge is already initialized");
+                    "trying to start bridge but HomeKit server is not initialized or bridge is already initialized");
         }
     }
 
@@ -131,7 +131,7 @@ public class HomekitImpl implements Homekit {
             homekitServer = new HomekitServer(networkInterface, settings.port);
             startBridge();
         } else {
-            logger.warn("trying to start homekit server but it is already initialized");
+            logger.warn("trying to start HomeKit server but it is already initialized");
         }
     }
 

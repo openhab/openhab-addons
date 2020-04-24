@@ -40,7 +40,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.phc")
 public class PHCHandlerFactory extends BaseThingHandlerFactory {
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
             Stream.of(THING_TYPE_BRIDGE, THING_TYPE_AM, THING_TYPE_EM, THING_TYPE_JRM).collect(Collectors.toSet()));
 
     @Override
@@ -51,19 +51,15 @@ public class PHCHandlerFactory extends BaseThingHandlerFactory {
     @Override
     public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID,
             ThingUID bridgeUID) {
-
         Thing thing;
 
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-
             if (thingTypeUID.equals(THING_TYPE_BRIDGE)) {
                 thing = super.createThing(thingTypeUID, configuration, thingUID, null);
-
             } else {
                 ThingUID phcThingUID = new ThingUID(thingTypeUID, configuration.get(ADDRESS).toString().toUpperCase());
                 thing = super.createThing(thingTypeUID, configuration, phcThingUID, bridgeUID);
             }
-
         } else {
             throw new IllegalArgumentException(
                     "The thing type " + thingTypeUID + " is not supported by the phc binding.");
@@ -74,7 +70,6 @@ public class PHCHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
-
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         ThingHandler handler = null;

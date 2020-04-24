@@ -119,8 +119,8 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
         if (bundleContext != null) {
             NetatmoModuleDiscoveryService discoveryService = new NetatmoModuleDiscoveryService(netatmoBridgeHandler);
             discoveryService.activate(null);
-            discoveryServiceRegs.put(netatmoBridgeHandler.getThing().getUID(), bundleContext.registerService(
-                    DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+            discoveryServiceRegs.put(netatmoBridgeHandler.getThing().getUID(), bundleContext
+                    .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
         }
     }
 
@@ -140,8 +140,8 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
         WelcomeWebHookServlet servlet = null;
         if (bundleContext != null) {
             servlet = new WelcomeWebHookServlet(httpService, thingUID.getId());
-            webHookServiceRegs.put(thingUID, bundleContext.registerService(HttpServlet.class.getName(), servlet,
-                    new Hashtable<String, Object>()));
+            webHookServiceRegs.put(thingUID,
+                    bundleContext.registerService(HttpServlet.class.getName(), servlet, new Hashtable<>()));
         }
         return servlet;
     }

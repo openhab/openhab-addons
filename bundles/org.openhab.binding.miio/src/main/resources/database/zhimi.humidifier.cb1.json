@@ -10,7 +10,6 @@
 				"channel": "power",
 				"type": "Switch",
 				"refresh": true,
-				"channelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_power",
@@ -20,7 +19,7 @@
 			},
 			{
 				"property": "mode",
-				"friendlyName": "Mode",
+				"friendlyName": "Humidifier Mode",
 				"channel": "humidifierMode",
 				"type": "String",
 				"refresh": true,

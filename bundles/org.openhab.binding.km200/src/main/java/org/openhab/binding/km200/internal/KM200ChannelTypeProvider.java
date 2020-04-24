@@ -18,8 +18,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupType;
+import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeProvider;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeUID;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeProvider;
@@ -31,18 +34,20 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Markus Eckhardt - Initial contribution
  */
-@Component(service = { ChannelTypeProvider.class, KM200ChannelTypeProvider.class }, immediate = true)
-public class KM200ChannelTypeProvider implements ChannelTypeProvider {
-    private List<ChannelType> channelTypes = new CopyOnWriteArrayList<ChannelType>();
-    private List<ChannelGroupType> channelGroupTypes = new CopyOnWriteArrayList<ChannelGroupType>();
+@Component(service = { ChannelTypeProvider.class, ChannelGroupTypeProvider.class,
+        KM200ChannelTypeProvider.class }, immediate = true)
+@NonNullByDefault
+public class KM200ChannelTypeProvider implements ChannelTypeProvider, ChannelGroupTypeProvider {
+    private final List<ChannelType> channelTypes = new CopyOnWriteArrayList<>();
+    private final List<ChannelGroupType> channelGroupTypes = new CopyOnWriteArrayList<>();
 
     @Override
-    public Collection<ChannelType> getChannelTypes(Locale locale) {
+    public Collection<ChannelType> getChannelTypes(@Nullable Locale locale) {
         return channelTypes;
     }
 
     @Override
-    public ChannelType getChannelType(ChannelTypeUID channelTypeUID, Locale locale) {
+    public @Nullable ChannelType getChannelType(ChannelTypeUID channelTypeUID, @Nullable Locale locale) {
         for (ChannelType channelType : channelTypes) {
             if (channelType.getUID().equals(channelTypeUID)) {
                 return channelType;
@@ -52,18 +57,19 @@ public class KM200ChannelTypeProvider implements ChannelTypeProvider {
     }
 
     @Override
-    public ChannelGroupType getChannelGroupType(ChannelGroupTypeUID channelGroupTypeUID, Locale locale) {
+    public Collection<ChannelGroupType> getChannelGroupTypes(@Nullable Locale locale) {
+        return channelGroupTypes;
+    }
+
+    @Override
+    public @Nullable ChannelGroupType getChannelGroupType(ChannelGroupTypeUID channelGroupTypeUID,
+            @Nullable Locale locale) {
         for (ChannelGroupType channelGroupType : channelGroupTypes) {
             if (channelGroupType.getUID().equals(channelGroupTypeUID)) {
                 return channelGroupType;
             }
         }
         return null;
-    }
-
-    @Override
-    public Collection<ChannelGroupType> getChannelGroupTypes(Locale locale) {
-        return channelGroupTypes;
     }
 
     public void addChannelType(ChannelType type) {
@@ -75,7 +81,7 @@ public class KM200ChannelTypeProvider implements ChannelTypeProvider {
     }
 
     public void removeChannelTypesForThing(ThingUID uid) {
-        List<ChannelType> removes = new ArrayList<ChannelType>();
+        List<ChannelType> removes = new ArrayList<>();
         for (ChannelType c : channelTypes) {
             if (c.getUID().getAsString().startsWith(uid.getAsString())) {
                 removes.add(c);

@@ -28,7 +28,7 @@ import org.openhab.binding.astro.internal.util.DateTimeUtils;
  * @author Gerhard Riegler - Initial contribution
  */
 public class SunZodiacCalc {
-    private Map<Integer, List<SunZodiac>> zodiacsByYear = new HashMap<Integer, List<SunZodiac>>();
+    private Map<Integer, List<SunZodiac>> zodiacsByYear = new HashMap<>();
 
     /**
      * Returns the zodiac for the specified calendar.
@@ -55,7 +55,7 @@ public class SunZodiacCalc {
      * Calculates the zodiacs for the current year.
      */
     private List<SunZodiac> calculateZodiacs(int year) {
-        List<SunZodiac> zodiacs = new ArrayList<SunZodiac>();
+        List<SunZodiac> zodiacs = new ArrayList<>();
 
         zodiacs.add(new SunZodiac(ZodiacSign.ARIES,
                 DateTimeUtils.getRange(year, Calendar.MARCH, 21, year, Calendar.APRIL, 19)));

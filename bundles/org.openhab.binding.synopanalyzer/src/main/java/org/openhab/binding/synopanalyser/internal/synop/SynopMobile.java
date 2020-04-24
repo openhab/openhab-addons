@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.synopanalyser.internal.synop;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The {@link SynopMobile} is responsible for analyzing Mobile station
@@ -30,7 +30,7 @@ public abstract class SynopMobile extends Synop {
     private int verticalQuadrantMultiplier;
     private int horizontalQuadrantMultiplier;
 
-    public SynopMobile(ArrayList<String> stringArray) {
+    public SynopMobile(List<String> stringArray) {
         super(stringArray);
 
         setLatitude();

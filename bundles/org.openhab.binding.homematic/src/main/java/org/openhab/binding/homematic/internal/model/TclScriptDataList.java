@@ -27,7 +27,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 public class TclScriptDataList {
 
     @XStreamImplicit(itemFieldName = "entry")
-    private List<TclScriptDataEntry> entries = new ArrayList<TclScriptDataEntry>();
+    private List<TclScriptDataEntry> entries = new ArrayList<>();
 
     /**
      * Returns all entries.
