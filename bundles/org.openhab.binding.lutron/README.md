@@ -299,7 +299,7 @@ There are 100 of these virtual buttons, and 100 corresponding virtual indicator 
 
 The **virtualkeypad** thing can also be used to interface to the Smart Bridge scene buttons on Caseta systems.
 This allows you to trigger your defined scenes via the virtual keypad buttons.
-For this to work, the optional `model` parameter must be set to `"Caseta"`.
+For this to work, the optional `model` parameter must be set to `Caseta`.
 When used with Caseta, no virtual indicator LED channels are created.
 
 The behavior of this binding is the same as the other keypad bindings, with the exception that the button and LED channels created have the Advanced flag set.
