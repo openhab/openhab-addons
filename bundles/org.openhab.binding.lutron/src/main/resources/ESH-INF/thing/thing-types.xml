@@ -542,6 +542,15 @@
 				<label>Integration ID</label>
 				<description>Address in the Lutron control system</description>
 			</parameter>
+			<parameter name="model" type="text">
+				<label>Virtual Keypad Type</label>
+				<description>System type for virtual keypad</description>
+				<options>
+					<option value="Caseta">Caseta Scene Buttons</option>
+					<option value="Other">HomeWorks/RA 2/Other</option>
+				</options>
+				<default>Other</default>
+			</parameter>
 			<parameter name="autorelease" type="boolean">
 				<label>Auto-release</label>
 				<description>Automatically release pressed buttons</description>
