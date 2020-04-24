@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.caddx.internal;
 
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -247,6 +248,29 @@ public class CaddxMessage {
         return sb.toString();
     }
 
+    private void putByteInBuffer(ByteBuffer frame, byte b) {
+        if (b == 0x7e) {
+            frame.put((byte) 0x7d);
+            frame.put((byte) 0x5e);
+        } else if (b == 0x7d) {
+            frame.put((byte) 0x7d);
+            frame.put((byte) 0x5d);
+        } else {
+            frame.put(b);
+        }
+    }
+
+    private byte[] getByteBufferArray(ByteBuffer frame) {
+        if (frame.hasArray()) {
+            return frame.array();
+        } else {
+            byte[] byteArray = new byte[frame.capacity()];
+            frame.position(0);
+            frame.get(byteArray);
+            return byteArray;
+        }
+    }
+
     private byte[] getMessageFrameBytesInBinary() {
         // Calculate bytes
         // 1 for the startbyte
@@ -266,45 +290,26 @@ public class CaddxMessage {
             additional++;
         }
 
-        byte[] frame = new byte[message.length + additional];
-        frame[0] = 0x7e;
-        frame[1] = (byte) message.length;
+        ByteBuffer frame = ByteBuffer.allocate(message.length + additional);
 
-        int fi = 2;
+        // start character
+        frame.put((byte) 0x7e);
+
+        // message length
+        frame.put((byte) message.length);
+
+        // message
         for (int i = 0; i < message.length; i++) {
-            byte b = message[i];
-            if (b == 0x7e) {
-                frame[fi++] = 0x7d;
-                b = 0x5e;
-            } else if (b == 0x7d) {
-                frame[fi++] = 0x7d;
-                b = 0x5d;
-            }
-            frame[fi++] = b;
+            putByteInBuffer(frame, message[i]);
         }
 
         // 1st checksum byte
-        if (checksum1Calc == 0x7e) {
-            frame[fi++] = 0x7d;
-            frame[fi++] = 0x5e;
-        } else if (checksum1Calc == 0x7d) {
-            frame[fi++] = 0x7d;
-            frame[fi++] = 0x5d;
-        } else {
-            frame[fi++] = checksum1Calc;
-        }
-        // 2nd checksum byte
-        if (checksum2Calc == 0x7e) {
-            frame[fi++] = 0x7d;
-            frame[fi++] = 0x5e;
-        } else if (checksum2Calc == 0x7d) {
-            frame[fi++] = 0x7d;
-            frame[fi++] = 0x5d;
-        } else {
-            frame[fi++] = checksum2Calc;
-        }
+        putByteInBuffer(frame, checksum1Calc);
 
-        return frame;
+        // 2nd checksum byte
+        putByteInBuffer(frame, checksum2Calc);
+
+        return getByteBufferArray(frame);
     }
 
     private byte[] getMessageFrameBytesInAscii() {
@@ -315,39 +320,29 @@ public class CaddxMessage {
         // 1 for the stop byte
         int additional = 8;
 
-        int fi = 0;
-        byte[] frame = new byte[2 * message.length + additional];
+        ByteBuffer frame = ByteBuffer.allocate(2 * message.length + additional);
 
         // start character
-        frame[fi++] = 0x0a;
+        frame.put((byte) 0x0a);
 
         // message length
-        byte[] tempArray = HexUtils.byteToHex((byte) message.length);
-        frame[fi++] = tempArray[0];
-        frame[fi++] = tempArray[1];
+        frame.put(HexUtils.byteToHex((byte) message.length));
 
         // message
         for (int i = 0; i < message.length; i++) {
-            byte b = message[i];
-            tempArray = HexUtils.byteToHex(b);
-            frame[fi++] = tempArray[0];
-            frame[fi++] = tempArray[1];
+            frame.put(HexUtils.byteToHex(message[i]));
         }
 
         // Checksum 1st byte
-        tempArray = HexUtils.byteToHex(checksum1Calc);
-        frame[fi++] = tempArray[0];
-        frame[fi++] = tempArray[1];
+        frame.put(HexUtils.byteToHex(checksum1Calc));
 
         // Checksum 2nd byte
-        tempArray = HexUtils.byteToHex(checksum2Calc);
-        frame[fi++] = tempArray[0];
-        frame[fi++] = tempArray[1];
+        frame.put(HexUtils.byteToHex(checksum2Calc));
 
         // Stop character
-        frame[fi++] = (byte) 0x0d;
+        frame.put((byte) 0x0d);
 
-        return frame;
+        return getByteBufferArray(frame);
     }
 
     /**
