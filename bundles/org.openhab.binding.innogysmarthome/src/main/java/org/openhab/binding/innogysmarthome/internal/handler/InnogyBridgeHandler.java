@@ -54,6 +54,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.innogysmarthome.internal.InnogyWebSocket;
 import org.openhab.binding.innogysmarthome.internal.client.InnogyClient;
+import org.openhab.binding.innogysmarthome.internal.client.entity.action.ShutterAction;
 import org.openhab.binding.innogysmarthome.internal.client.entity.capability.Capability;
 import org.openhab.binding.innogysmarthome.internal.client.entity.device.Device;
 import org.openhab.binding.innogysmarthome.internal.client.entity.device.DeviceConfig;
@@ -330,7 +331,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
     }
 
     private void setPropertyIfPresent(final String key, final @Nullable Object data,
-            final Map<String, String> properties) {
+                                      final Map<String, String> properties) {
         if (data != null) {
             properties.put(key, data instanceof String ? (String) data : data.toString());
         }
@@ -857,6 +858,28 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
                 return;
             }
             client.setRollerShutterActuatorState(capabilityId, rollerSchutterLevel);
+        } catch (IOException | ApiException | AuthenticationException e) {
+            handleClientException(e);
+        }
+    }
+
+    /**
+     * Sends the command to start or stop moving the rollershutter (ISR2) in a specified direction
+     * @param deviceId
+     * @param action
+     */
+    public void commandSetRollerShutterStop(final String deviceId, ShutterAction.ShutterActions action) {
+        final DeviceStructureManager deviceStructMan = this.deviceStructMan;
+        if (deviceStructMan == null) {
+            return;
+        }
+        try {
+            final String capabilityId = deviceStructMan.getCapabilityId(deviceId,
+                    Capability.TYPE_ROLLERSHUTTERACTUATOR);
+            if (capabilityId == null) {
+                return;
+            }
+            client.setRollerShutterAction(capabilityId, action);
         } catch (IOException | ApiException | AuthenticationException e) {
             handleClientException(e);
         }
