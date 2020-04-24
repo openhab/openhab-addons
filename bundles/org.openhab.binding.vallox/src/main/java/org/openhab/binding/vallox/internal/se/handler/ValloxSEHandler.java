@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -138,8 +139,10 @@ public class ValloxSEHandler extends BaseThingHandler implements ValloxEventList
             }
             if (command instanceof RefreshType) {
                 handleRefreshTypeCommand(command, descriptor);
+            } else if (command instanceof DecimalType) {
+                handleDecimalCommand(((DecimalType) command).intValue(), descriptor);
             } else if (command instanceof QuantityType) {
-                handleDecimalCommand((QuantityType<?>) command, descriptor);
+                handleDecimalCommand(((QuantityType<?>) command).intValue(), descriptor);
             } else if (command instanceof OnOffType) {
                 handleOnOffCommand(command, descriptor);
             } else {
@@ -338,9 +341,9 @@ public class ValloxSEHandler extends BaseThingHandler implements ValloxEventList
      * @param channelID the channel where the command is sent
      * @param descriptor the descriptor of the channel
      */
-    private void handleDecimalCommand(QuantityType<?> command, ChannelDescriptor descriptor) {
+    private void handleDecimalCommand(int command, ChannelDescriptor descriptor) {
         if (descriptor.equals(ChannelDescriptor.CO2_SETPOINT)) {
-            int commandValue = command.intValue();
+            int commandValue = command;
             byte lowByte = (byte) (commandValue & 0xFF);
             byte highByte = (byte) ((commandValue >>> 8) & 0xFF);
             sendCommand(ChannelDescriptor.CO2_SETPOINT_HIGH, highByte);
@@ -348,10 +351,10 @@ public class ValloxSEHandler extends BaseThingHandler implements ValloxEventList
             return;
         }
         if (descriptor.equals(ChannelDescriptor.ADJUSTMENT_INTERVAL)) {
-            handleOnOffCommand(command, descriptor);
+            handleOnOffCommand(new DecimalType(command), descriptor);
             return;
         }
-        sendCommand(descriptor, descriptor.convertFromState(command.byteValue()));
+        sendCommand(descriptor, descriptor.convertFromState((byte) command));
     }
 
     /**
