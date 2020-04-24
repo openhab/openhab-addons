@@ -23,7 +23,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -156,15 +155,16 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
                                 rsp.errorDescription));
             } else {
                 // No error provided on login, proceed to find token and userid
-                token = StringUtils.trimToNull(rsp.token);
+                String localToken = rsp.token.trim();
                 userId = rsp.userId == null ? null : rsp.userId.toString();
-                if (token == null) {
+                if (localToken == null || localToken.isEmpty()) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "error login in, no token provided");
                 } else if (userId == null) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "error login in, no userId provided");
                 } else {
+                    token = localToken;
                     return true;
                 }
             }
