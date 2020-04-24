@@ -22,6 +22,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.modbus.sunspec.internal.handler.InverterHandler;
+import org.openhab.binding.modbus.sunspec.internal.handler.MeterHandler;
 import org.openhab.io.transport.modbus.ModbusManager;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -75,6 +76,11 @@ public class SunSpecHandlerFactory extends BaseThingHandlerFactory {
                 || thingTypeUID.equals(THING_TYPE_INVERTER_THREE_PHASE)) {
             logger.debug("New InverterHandler created");
             return new InverterHandler(thing, manager);
+        } else if (thingTypeUID.equals(THING_TYPE_METER_SINGLE_PHASE)
+                || thingTypeUID.equals(THING_TYPE_METER_SPLIT_PHASE) || thingTypeUID.equals(THING_TYPE_METER_WYE_PHASE)
+                || thingTypeUID.equals(THING_TYPE_METER_DELTA_PHASE)) {
+            logger.debug("New MeterHandler created");
+            return new MeterHandler(thing, manager);
         }
 
         return null;
