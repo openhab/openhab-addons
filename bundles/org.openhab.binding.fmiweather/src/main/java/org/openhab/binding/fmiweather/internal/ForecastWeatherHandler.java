@@ -57,7 +57,7 @@ public class ForecastWeatherHandler extends AbstractWeatherHandler {
     private static final String GROUP_FORECAST_NOW = "forecastNow";
     private static final int QUERY_RESOLUTION_MINUTES = 20; // The channel group hours should be divisible by this
     // Hirlam horizon is 54h https://ilmatieteenlaitos.fi/avoin-data-avattavat-aineistot (in Finnish)
-    private static final int FORECAST_HORIZON_HOURS = 54; // should be divisible by QUERY_RESOLUTION_MINUTES
+    private static final int FORECAST_HORIZON_HOURS = 50; // should be divisible by QUERY_RESOLUTION_MINUTES
     private static final Map<String, Map.Entry<String, @Nullable Unit<?>>> CHANNEL_TO_FORECAST_FIELD_NAME_AND_UNIT = new HashMap<>(
             9);
 
