@@ -63,41 +63,18 @@ Bridge coronastats:world:stats "Corona Stats World" @ "Corona" [refresh=15] {
 ### Items
 
 ```
-Number:Dimensionless coronaCasesWorld "Total Cases World [%,d]"
-    {channel="coronastats:world:stats:cases"}
-
-Number:Dimensionless coronaDeathsWorld "Deaths World [%,d]"
-    {channel="coronastats:world:stats:deaths"}
-
-Number:Dimensionless coronaRecoveredWorld "Recovered Cases World [%,d]"
-    {channel="coronastats:world:stats:recovered"}
-
-Number:Dimensionless coronaActiveWorld "Active Cases World [%,d]"
-    {channel="coronastats:world:stats:active"}
-
-Number:Dimensionless coronaCriticalWorld "Critical Cases World [%,d]"
-    {channel="coronastats:world:stats:critical"}
-
-Number:Dimensionless coronaCasesUSA "Total Cases USA [%,d]"
-    {channel="coronastats:country:stats:usa:cases"}
-
-Number:Dimensionless coronaDeathsUSA "Deaths USA [%,d]"
-    {channel="coronastats:country:stats:usa:deaths"}
-
-Number:Dimensionless coronaRecoveredUSA "Recovered Cases USA [%,d]"
-    {channel="coronastats:country:stats:usa:recovered"}
-
-Number:Dimensionless coronaActiveUSA "Active Cases USA [%,d]"
-    {channel="coronastats:country:stats:usa:active"}
-
-Number:Dimensionless coronaCriticalUSA "Critical Cases USA [%,d]"
-    {channel="coronastats:country:stats:usa:critical"}
-
-Number:Dimensionless coronaTestsUSA "Tests USA [%d]"
-    {channel="coronastats:country:stats:usa:cases"}
-
-DateTime coronaUpdatedUSA "Updated USA [%1$tA, %1$td.%1$tm.%1$tY %1$tH:%1$tM]"
-    {channel="coronastats:country:stats:usa:updated"}
+Number coronaCasesWorld "Total Cases World [%,d]" {channel="coronastats:world:stats:cases"}
+Number coronaDeathsWorld "Deaths World [%,d]" {channel="coronastats:world:stats:deaths"}
+Number coronaRecoveredWorld "Recovered Cases World [%,d]" {channel="coronastats:world:stats:recovered"}
+Number coronaActiveWorld "Active Cases World [%,d]" {channel="coronastats:world:stats:active"}
+Number coronaCriticalWorld "Critical Cases World [%,d]" {channel="coronastats:world:stats:critical"}
+Number coronaCasesUSA "Total Cases USA [%,d]" {channel="coronastats:country:stats:usa:cases"}
+Number coronaDeathsUSA "Deaths USA [%,d]" {channel="coronastats:country:stats:usa:deaths"}
+Number coronaRecoveredUSA "Recovered Cases USA [%,d]" {channel="coronastats:country:stats:usa:recovered"}
+Number coronaActiveUSA "Active Cases USA [%,d]" {channel="coronastats:country:stats:usa:active"}
+Number coronaCriticalUSA "Critical Cases USA [%,d]" {channel="coronastats:country:stats:usa:critical"}
+Number coronaTestsUSA "Tests USA [%d]" {channel="coronastats:country:stats:usa:cases"}
+DateTime coronaUpdatedUSA "Updated USA [%1$tA, %1$td.%1$tm.%1$tY %1$tH:%1$tM]" {channel="coronastats:country:stats:usa:updated"}
 ```
 
 ### Sitemap
