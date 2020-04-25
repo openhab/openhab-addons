@@ -53,7 +53,7 @@
 		</parameter>
 		<parameter name="discoveryIp" type="text" required="false">
 			<label>Optional Discovery Address</label>
-			<description>If your host has multiple IP addresses you may specify the IP you would like to advertise in the UPNP discovery process. You may safely leave this empty on most systems.</description>
+			<description>If your host has multiple IP addresses you may specify the IP(s) you would like to advertise in the UPNP discovery process. You may safely leave this empty on most systems. Use commas to separate multiple entries.</description>
 		</parameter>
 		<parameter name="discoveryHttpPort" type="integer" required="false">
 			<label>Optional Discovery Web Port</label>

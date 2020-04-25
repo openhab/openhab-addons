@@ -193,8 +193,8 @@ public class ConfigStore {
         InetAddress configuredAddress = null;
         int networkPrefixLength = 24; // Default for most networks: 255.255.255.0
 
-        if (config.discoveryIps != null) {
-            discoveryIps = Collections.unmodifiableSet(Stream.of(config.discoveryIps.split(",")).map(String::trim)
+        if (config.discoveryIp != null) {
+            discoveryIps = Collections.unmodifiableSet(Stream.of(config.discoveryIp.split(",")).map(String::trim)
                     .map(this::byName).filter(e -> e != null).collect(Collectors.toSet()));
         } else {
             discoveryIps = new LinkedHashSet<>();
