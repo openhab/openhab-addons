@@ -29,6 +29,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.openuv.internal.discovery.OpenUVDiscoveryService;
 import org.openhab.binding.openuv.internal.handler.OpenUVBridgeHandler;
 import org.openhab.binding.openuv.internal.handler.OpenUVReportHandler;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -42,7 +43,12 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.openuv")
 public class OpenUVHandlerFactory extends BaseThingHandlerFactory {
 
-    private @NonNullByDefault({}) LocationProvider locationProvider;
+    private final LocationProvider locationProvider;
+
+    @Activate
+    public OpenUVHandlerFactory(@Reference LocationProvider locationProvider) {
+        this.locationProvider = locationProvider;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -65,25 +71,9 @@ public class OpenUVHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private void registerOpenUVDiscoveryService(OpenUVBridgeHandler bridgeHandler) {
-        if (locationProvider != null) {
-            OpenUVDiscoveryService discoveryService = new OpenUVDiscoveryService(bridgeHandler, locationProvider);
-            bridgeHandler.getDiscoveryServiceRegs().put(bridgeHandler.getThing().getUID(),
-                    bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
-                            new Hashtable<String, Object>()));
-        }
-    }
-
-    @Reference
-    protected void setLocationProvider(LocationProvider locationProvider) {
-        this.locationProvider = locationProvider;
-    }
-
-    protected void unsetLocationProvider(LocationProvider locationProvider) {
-        this.locationProvider = null;
-    }
-
-    public LocationProvider getLocationProvider() {
-        return locationProvider;
+        OpenUVDiscoveryService discoveryService = new OpenUVDiscoveryService(bridgeHandler, locationProvider);
+        bridgeHandler.getDiscoveryServiceRegs().put(bridgeHandler.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 
 }

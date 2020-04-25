@@ -52,7 +52,7 @@ import io.reactivex.schedulers.Schedulers;
 @NonNullByDefault
 public abstract class MeterDevice<T> {
 
-    private final static int RETRY_DELAY = 2;
+    private static final int RETRY_DELAY = 2;
     private final Logger logger = LoggerFactory.getLogger(MeterDevice.class);
     /**
      * Controls wether the device info is logged to the OSGi console.
@@ -77,7 +77,7 @@ public abstract class MeterDevice<T> {
             byte @Nullable [] initMessage, int baudrate, int baudrateChangeDelay, ProtocolMode protocolMode) {
         super();
         this.deviceId = deviceId;
-        this.valueCache = new HashMap<String, MeterValue<?>>();
+        this.valueCache = new HashMap<>();
         this.valueChangeListeners = new CopyOnWriteArrayList<>();
         this.printMeterInfo = true;
         this.connector = createConnector(serialPortManagerSupplier, serialPort, baudrate, baudrateChangeDelay,

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.synopanalyser.internal.synop;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The {@link SynopLand} is responsible for analyzing Land station
@@ -27,7 +27,7 @@ public class SynopLand extends Synop {
     private int rainfall;
     private String rainfallString;
 
-    public SynopLand(ArrayList<String> stringArray) {
+    public SynopLand(List<String> stringArray) {
         super(stringArray);
 
         setRainfall();

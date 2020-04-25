@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.measure.Unit;
-import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Power;
 
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -90,7 +89,6 @@ public class LiveDataResponse implements DataResponse {
         Map<Channel, State> valueMap = new HashMap<>();
 
         if (siteCurrentPowerFlow != null) {
-
             if (siteCurrentPowerFlow.pv != null) {
                 assignValue(valueMap, LiveDataChannels.PRODUCTION, siteCurrentPowerFlow.pv.currentPower,
                         siteCurrentPowerFlow.unit);
@@ -129,7 +127,6 @@ public class LiveDataResponse implements DataResponse {
                     } else if (con.to.equalsIgnoreCase(GRID)) {
                         assignValue(valueMap, LiveDataChannels.EXPORT, siteCurrentPowerFlow.grid.currentPower,
                                 siteCurrentPowerFlow.unit);
-
                     }
                     if (con.from.equalsIgnoreCase(STORAGE)) {
                         assignValue(valueMap, LiveDataChannels.BATTERY_DISCHARGE,
@@ -160,8 +157,8 @@ public class LiveDataResponse implements DataResponse {
      * converts the value to QuantityType. If no unit can be determined UnDefType.UNDEF will be used
      *
      * @param targetMap result will be put into this map
-     * @param channel   channel to assign the value
-     * @param value     the value to convert
+     * @param channel channel to assign the value
+     * @param value the value to convert
      */
     protected final void assignValue(Map<Channel, State> targetMap, Channel channel, Double value,
             String unitAsString) {
@@ -170,7 +167,7 @@ public class LiveDataResponse implements DataResponse {
         if (value != null && unitAsString != null) {
             Unit<Power> unit = determinePowerUnit(unitAsString);
             if (unit != null) {
-                result = new QuantityType<Power>(value, unit);
+                result = new QuantityType<>(value, unit);
             } else {
                 logger.debug("Channel {}: Could not determine unit: '{}'", channel, unit);
             }
@@ -184,8 +181,8 @@ public class LiveDataResponse implements DataResponse {
      * assign simple String values
      *
      * @param targetMap result will be put into this map
-     * @param channel   channel to assign the value
-     * @param value     the value
+     * @param channel channel to assign the value
+     * @param value the value
      */
     protected final void assignValue(Map<Channel, State> targetMap, Channel channel, String value) {
         State result = UnDefType.UNDEF;
@@ -202,14 +199,14 @@ public class LiveDataResponse implements DataResponse {
      * converts the value to QuantityType
      *
      * @param targetMap result will be put into this map
-     * @param channel   channel to assign the value
-     * @param value     the value to convert
+     * @param channel channel to assign the value
+     * @param value the value to convert
      */
     protected final void assignPercentage(Map<Channel, State> targetMap, Channel channel, Double value) {
         State result = UnDefType.UNDEF;
 
         if (value != null) {
-            result = new QuantityType<Dimensionless>(value, SmartHomeUnits.PERCENT);
+            result = new QuantityType<>(value, SmartHomeUnits.PERCENT);
         } else {
             logger.debug("Channel {}: no value provided.", channel.getFQName());
         }

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.miio.internal.basic;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -20,11 +22,12 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public class MiIoBasicDevice {
 
     @SerializedName("deviceMapping")
     @Expose
-    private DeviceMapping deviceMapping;
+    private DeviceMapping deviceMapping = new DeviceMapping();
 
     public DeviceMapping getDevice() {
         return deviceMapping;

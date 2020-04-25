@@ -251,7 +251,7 @@ public class BridgeHandler extends BaseBridgeHandler
             return null;
         }
         logger.debug("Loading configuration");
-        ArrayList<String> numberExc = new ArrayList<String>();
+        List<String> numberExc = new ArrayList<>();
         // Parameters can't be null, because of an existing default value.
         if (thingConfig.get(DigitalSTROMBindingConstants.SENSOR_DATA_UPDATE_INTERVAL) instanceof BigDecimal) {
             config.setSensordataRefreshInterval(
@@ -683,7 +683,7 @@ public class BridgeHandler extends BaseBridgeHandler
      */
     public List<Device> getDevices() {
         return this.structMan != null && this.structMan.getDeviceMap() != null
-                ? new LinkedList<Device>(this.structMan.getDeviceMap().values())
+                ? new LinkedList<>(this.structMan.getDeviceMap().values())
                 : null;
     }
 
@@ -728,7 +728,7 @@ public class BridgeHandler extends BaseBridgeHandler
      * @return Scene list (cannot be null)
      */
     public List<InternalScene> getScenes() {
-        return sceneMan != null ? sceneMan.getScenes() : new LinkedList<InternalScene>();
+        return sceneMan != null ? sceneMan.getScenes() : new LinkedList<>();
     }
 
     /**
@@ -792,7 +792,7 @@ public class BridgeHandler extends BaseBridgeHandler
     public List<Circuit> getCircuits() {
         logger.debug("circuits: {}", structMan.getCircuitMap().values().toString());
         return structMan != null && structMan.getCircuitMap() != null
-                ? new LinkedList<Circuit>(structMan.getCircuitMap().values())
+                ? new LinkedList<>(structMan.getCircuitMap().values())
                 : null;
     }
 
@@ -838,7 +838,6 @@ public class BridgeHandler extends BaseBridgeHandler
      * @return all temperature control status objects
      */
     public Collection<TemperatureControlStatus> getTemperatureControlStatusFromAllZones() {
-        return tempContMan != null ? tempContMan.getTemperatureControlStatusFromAllZones()
-                : new LinkedList<TemperatureControlStatus>();
+        return tempContMan != null ? tempContMan.getTemperatureControlStatusFromAllZones() : new LinkedList<>();
     }
 }

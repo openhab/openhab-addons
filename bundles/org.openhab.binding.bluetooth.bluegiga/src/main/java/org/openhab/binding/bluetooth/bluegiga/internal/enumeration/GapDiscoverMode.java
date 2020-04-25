@@ -81,7 +81,7 @@ public enum GapDiscoverMode {
     }
 
     private static void initMapping() {
-        codeMapping = new HashMap<Integer, GapDiscoverMode>();
+        codeMapping = new HashMap<>();
         for (GapDiscoverMode s : values()) {
             codeMapping.put(s.key, s);
         }

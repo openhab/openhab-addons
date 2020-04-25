@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.velux.internal.handler;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -120,7 +121,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
     /**
      * Mapping from ChannelUID to class Thing2VeluxActuator, which return Velux device information, probably cached.
      */
-    ConcurrentHashMap<ChannelUID, Thing2VeluxActuator> channel2VeluxActuator = new ConcurrentHashMap<ChannelUID, Thing2VeluxActuator>();
+    Map<ChannelUID, Thing2VeluxActuator> channel2VeluxActuator = new ConcurrentHashMap<>();
 
     /**
      * Information retrieved by {@link VeluxBinding#VeluxBinding}.
@@ -447,6 +448,10 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                     logger.trace("syncChannelsWithProducts(): channel {} not found.", channelUID);
                     continue;
                 }
+                if (!channel2VeluxActuator.get(channelUID).isKnown()) {
+                    logger.trace("syncChannelsWithProducts(): channel {} not registered on bridge.", channelUID);
+                    continue;
+                }
                 ProductBridgeIndex channelPbi = channel2VeluxActuator.get(channelUID).getProductBridgeIndex();
                 if (!channelPbi.equals(productPbi)) {
                     continue;
@@ -470,6 +475,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         logger.trace("syncChannelsWithProducts(): resetting dirty flag.");
         bridgeParameters.actuators.getChannel().existingProducts.resetDirtyFlag();
         logger.trace("syncChannelsWithProducts() done.");
+
     }
 
     // Processing of openHAB events

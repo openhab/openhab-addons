@@ -64,9 +64,7 @@ public class LiveDataUpdateMeterless extends AbstractCommandCallback implements 
             if (retries++ < MAX_RETRIES) {
                 handler.getWebInterface().enqueueCommand(this);
             }
-
         } else {
-
             String json = getContentAsString(StandardCharsets.UTF_8);
             if (json != null) {
                 logger.debug("JSON String: {}", json);

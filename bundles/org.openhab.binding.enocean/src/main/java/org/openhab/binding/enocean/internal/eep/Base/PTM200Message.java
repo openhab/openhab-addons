@@ -50,7 +50,6 @@ public class PTM200Message extends _RPSMessage {
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
             Function<String, State> getCurrentStateFunc, Configuration config) {
-
     }
 
     @Override

@@ -55,7 +55,7 @@ public class RioSourceHandler extends AbstractThingHandler<RioSourceProtocol> im
     /**
      * The source name
      */
-    private final AtomicReference<String> sourceName = new AtomicReference<String>(null);
+    private final AtomicReference<String> sourceName = new AtomicReference<>(null);
 
     /**
      * Constructs the handler from the {@link Thing}

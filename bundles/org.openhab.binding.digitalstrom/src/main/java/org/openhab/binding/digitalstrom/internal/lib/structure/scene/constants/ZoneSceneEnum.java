@@ -13,6 +13,7 @@
 package org.openhab.binding.digitalstrom.internal.lib.structure.scene.constants;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The {@link ZoneSceneEnum} lists all zone scenes which are available on the dSS-web-interface.
@@ -28,7 +29,7 @@ public enum ZoneSceneEnum implements Scene {
     WAKEUP((short) 70);
 
     private final short sceneNumber;
-    static final HashMap<Short, ZoneSceneEnum> ZONE_SCENES = new HashMap<Short, ZoneSceneEnum>();
+    static final Map<Short, ZoneSceneEnum> ZONE_SCENES = new HashMap<>();
 
     static {
         for (ZoneSceneEnum zs : ZoneSceneEnum.values()) {

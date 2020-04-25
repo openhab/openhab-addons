@@ -198,7 +198,7 @@ public class Schedules implements RegistryChangeListener<Rule> {
             throw new IllegalStateException("localtime not set!");
         }
 
-        List<Action> actions = new ArrayList<Action>(oldActions);
+        List<Action> actions = new ArrayList<>(oldActions);
 
         if (command != null) {
             RuleUtils.validateHueHttpAddress(ds, command.address);

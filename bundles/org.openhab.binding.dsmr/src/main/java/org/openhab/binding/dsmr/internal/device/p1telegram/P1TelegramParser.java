@@ -383,7 +383,7 @@ public class P1TelegramParser implements TelegramParser {
 
             if (cosemObject == null) {
                 if (lenientMode) {
-                    unknownCosemObjects.add(new SimpleEntry<String, String>(obisIdString, obisValueString));
+                    unknownCosemObjects.add(new SimpleEntry<>(obisIdString, obisValueString));
                 }
             } else {
                 logger.trace("Adding {} to list of Cosem Objects", cosemObject);

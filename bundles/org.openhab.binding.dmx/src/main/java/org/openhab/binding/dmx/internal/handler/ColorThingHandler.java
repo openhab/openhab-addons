@@ -33,11 +33,11 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.dmx.internal.DmxBindingConstants.ListenerType;
 import org.openhab.binding.dmx.internal.DmxBridgeHandler;
 import org.openhab.binding.dmx.internal.DmxThingHandler;
 import org.openhab.binding.dmx.internal.Util;
 import org.openhab.binding.dmx.internal.ValueSet;
-import org.openhab.binding.dmx.internal.DmxBindingConstants.ListenerType;
 import org.openhab.binding.dmx.internal.action.FadeAction;
 import org.openhab.binding.dmx.internal.config.ColorThingHandlerConfiguration;
 import org.openhab.binding.dmx.internal.multiverse.BaseDmxChannel;
@@ -57,9 +57,9 @@ public class ColorThingHandler extends DmxThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ColorThingHandler.class);
 
-    private final List<DmxChannel> channels = new ArrayList<DmxChannel>();
+    private final List<DmxChannel> channels = new ArrayList<>();
 
-    private final List<Integer> currentValues = new ArrayList<Integer>();
+    private final List<Integer> currentValues = new ArrayList<>();
     private HSBType currentColor = new HSBType();
 
     private ValueSet turnOnValue = new ValueSet(0, -1, DmxChannel.MAX_VALUE);
@@ -284,7 +284,7 @@ public class ColorThingHandler extends DmxThingHandler {
 
     @Override
     public void dispose() {
-        if (channels.size() != 0) {
+        if (!channels.isEmpty()) {
             channels.get(0).removeListener(new ChannelUID(this.thing.getUID(), CHANNEL_BRIGHTNESS_R));
             channels.get(1).removeListener(new ChannelUID(this.thing.getUID(), CHANNEL_BRIGHTNESS_G));
             channels.get(2).removeListener(new ChannelUID(this.thing.getUID(), CHANNEL_BRIGHTNESS_B));

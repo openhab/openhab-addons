@@ -48,12 +48,11 @@ public class PHCHandler extends BaseThingHandler {
 
     private String moduleAddress; // like DIP switches
     private final short[] upDownTimes = new short[4];
-    private final Map<String, State> channelState = new HashMap<String, State>();
+    private final Map<String, State> channelState = new HashMap<>();
     private PHCBridgeHandler bridgeHandler;
 
     public PHCHandler(Thing thing) {
         super(thing);
-
     }
 
     @Override
@@ -87,7 +86,6 @@ public class PHCHandler extends BaseThingHandler {
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
-
     }
 
     public void handleIncoming(String channelId, OnOffType state) {
@@ -103,7 +101,6 @@ public class PHCHandler extends BaseThingHandler {
         if ((PHCBindingConstants.CHANNELS_AM.equals(channelUID.getGroupId())) || PHCBindingConstants.CHANNELS_JRM
                 .equals(channelUID.getGroupId())
                 && (command instanceof OnOffType || command instanceof UpDownType || command instanceof StopMoveType)) {
-
             if (getThing().getStatus().equals(ThingStatus.ONLINE)) {
                 getPHCBridgeHandler().send(channelUID.getGroupId(),
                         new StringBuilder(moduleAddress).reverse().toString(), channelUID.getIdWithoutGroup(), command,
@@ -111,7 +108,6 @@ public class PHCHandler extends BaseThingHandler {
                                 ? upDownTimes[Integer.parseInt(channelUID.getIdWithoutGroup())]
                                 : 0);
                 logger.debug("send command: {}, {}", channelUID, command);
-
             } else {
                 logger.info("The Thing {} is offline it requires to select a Bridge", getThing().getUID());
             }
@@ -129,7 +125,6 @@ public class PHCHandler extends BaseThingHandler {
     @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
         if (isInitialized()) { // prevents change of address
-
             validateConfigurationParameters(configurationParameters);
 
             Configuration configuration = editConfiguration();
@@ -145,7 +140,6 @@ public class PHCHandler extends BaseThingHandler {
             dispose();
             updateConfiguration(configuration);
             initialize();
-
         } else {
             super.handleConfigurationUpdate(configurationParameters);
         }

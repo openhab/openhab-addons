@@ -66,8 +66,8 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
     public SolarEdgeBaseHandler(Thing thing, HttpClient httpClient) {
         super(thing);
         this.webInterface = new WebInterface(scheduler, this, httpClient);
-        this.liveDataPollingJobReference = new AtomicReference<@Nullable Future<?>>(null);
-        this.aggregateDataPollingJobReference = new AtomicReference<@Nullable Future<?>>(null);
+        this.liveDataPollingJobReference = new AtomicReference<>(null);
+        this.aggregateDataPollingJobReference = new AtomicReference<>(null);
     }
 
     @Override

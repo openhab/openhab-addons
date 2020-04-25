@@ -80,7 +80,6 @@ class DSMRMeterDetector {
             }
         }
         logger.trace("Telegram as received from the device:\n{}\n", telegram.getRawTelegram());
-        return new SimpleEntry<Collection<DSMRMeterDescriptor>, Map<CosemObjectType, CosemObject>>(
-                detectedMeters.values(), undetectedCosemObjects);
+        return new SimpleEntry<>(detectedMeters.values(), undetectedCosemObjects);
     }
 }

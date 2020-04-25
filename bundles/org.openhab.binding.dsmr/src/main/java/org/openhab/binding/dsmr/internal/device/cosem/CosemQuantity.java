@@ -100,7 +100,7 @@ class CosemQuantity<Q extends @Nullable Quantity<Q>> extends CosemValueDescripto
     @Override
     protected QuantityType<Q> getStateValue(String cosemValue) throws ParseException {
         try {
-            QuantityType<Q> qt = new QuantityType<Q>(prepare(cosemValue));
+            QuantityType<Q> qt = new QuantityType<>(prepare(cosemValue));
 
             if (!unit.equals(qt.getUnit())) {
                 throw new ParseException("Failed to parse value '" + cosemValue + "' as unit " + unit, 0);

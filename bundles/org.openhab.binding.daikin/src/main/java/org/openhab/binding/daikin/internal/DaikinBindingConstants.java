@@ -42,6 +42,7 @@ public class DaikinBindingConstants {
     public static final String CHANNEL_OUTDOOR_TEMP = "outdoortemp";
     public static final String CHANNEL_AC_POWER = "power";
     public static final String CHANNEL_AC_MODE = "mode";
+    public static final String CHANNEL_AC_HOMEKITMODE = "homekitmode";
     public static final String CHANNEL_AC_FAN_SPEED = "fanspeed";
     public static final String CHANNEL_AC_FAN_DIR = "fandir";
     public static final String CHANNEL_HUMIDITY = "humidity";

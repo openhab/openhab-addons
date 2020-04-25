@@ -47,7 +47,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.enocean")
 public class EnOceanHandlerFactory extends BaseThingHandlerFactory {
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
             .concat(EnOceanBridgeHandler.SUPPORTED_THING_TYPES.stream(),
                     EnOceanBindingConstants.SUPPORTED_DEVICE_THING_TYPES_UIDS.stream())
             .collect(Collectors.toSet());
@@ -67,7 +67,6 @@ public class EnOceanHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
-
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (EnOceanBridgeHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
@@ -99,7 +98,7 @@ public class EnOceanHandlerFactory extends BaseThingHandlerFactory {
     private void registerDeviceDiscoveryService(EnOceanBridgeHandler handler) {
         EnOceanDeviceDiscoveryService discoveryService = new EnOceanDeviceDiscoveryService(handler);
         discoveryService.activate();
-        this.discoveryServiceRegs.put(handler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+        this.discoveryServiceRegs.put(handler.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 }

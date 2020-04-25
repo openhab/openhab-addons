@@ -546,7 +546,6 @@ public class TeslaVehicleHandler extends BaseThingHandler {
     }
 
     protected boolean checkResponse(Response response, boolean immediatelyFail) {
-
         if (response != null && response.getStatus() == 200) {
             return true;
         } else {
@@ -926,7 +925,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
         if (command instanceof QuantityType) {
             return ((QuantityType<Temperature>) command).toUnit(SIUnits.CELSIUS);
         }
-        return new QuantityType<Temperature>(new BigDecimal(command.toString()), SIUnits.CELSIUS);
+        return new QuantityType<>(new BigDecimal(command.toString()), SIUnits.CELSIUS);
     }
 
     protected float quanityToRoundedFloat(QuantityType<Temperature> quantity) {

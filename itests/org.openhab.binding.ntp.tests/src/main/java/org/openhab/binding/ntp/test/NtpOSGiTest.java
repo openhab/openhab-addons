@@ -34,6 +34,7 @@ import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.items.ItemNotFoundException;
 import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.eclipse.smarthome.core.items.events.ItemStateEvent;
+import org.eclipse.smarthome.core.library.CoreItemFactory;
 import org.eclipse.smarthome.core.library.items.DateTimeItem;
 import org.eclipse.smarthome.core.library.items.StringItem;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
@@ -52,7 +53,7 @@ import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.link.ItemChannelLink;
 import org.eclipse.smarthome.core.thing.link.ManagedItemChannelLinkProvider;
 import org.eclipse.smarthome.core.thing.type.ChannelKind;
-import org.eclipse.smarthome.core.thing.type.ChannelType;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeProvider;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.State;
@@ -160,8 +161,7 @@ public class NtpOSGiTest extends JavaOSGiTest {
         channelTypeUID = new ChannelTypeUID(NtpBindingConstants.BINDING_ID + ":channelType");
         channelTypeProvider = mock(ChannelTypeProvider.class);
         when(channelTypeProvider.getChannelType(any(ChannelTypeUID.class), any(Locale.class)))
-                .thenReturn(new ChannelType(channelTypeUID, false, "Switch", ChannelKind.STATE, "label", null, null,
-                        null, null, null, null));
+                .thenReturn(ChannelTypeBuilder.state(channelTypeUID, "label", CoreItemFactory.SWITCH).build());
         registerService(channelTypeProvider);
     }
 
@@ -209,7 +209,6 @@ public class NtpOSGiTest extends JavaOSGiTest {
 
     @Test
     public void testDateTimeChannelTimeZoneUpdate() {
-
         Configuration configuration = new Configuration();
         configuration.put(NtpBindingConstants.PROPERTY_TIMEZONE, TEST_TIME_ZONE_ID);
         initialize(configuration, NtpBindingConstants.CHANNEL_DATE_TIME, ACCEPTED_ITEM_TYPE_DATE_TIME, null, null);
@@ -388,7 +387,6 @@ public class NtpOSGiTest extends JavaOSGiTest {
 
     private void initialize(Configuration configuration, String channelID, String acceptedItemType,
             Configuration channelConfiguration) {
-
         configuration.put(NtpBindingConstants.PROPERTY_NTP_SERVER_PORT, TEST_PORT);
         ThingUID ntpUid = new ThingUID(NtpBindingConstants.THING_TYPE_NTP, TEST_THING_ID);
 

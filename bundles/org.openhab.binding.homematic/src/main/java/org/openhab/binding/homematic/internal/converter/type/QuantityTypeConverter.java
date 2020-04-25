@@ -15,18 +15,6 @@ package org.openhab.binding.homematic.internal.converter.type;
 import java.math.BigDecimal;
 
 import javax.measure.Quantity;
-import javax.measure.quantity.Angle;
-import javax.measure.quantity.Dimensionless;
-import javax.measure.quantity.ElectricPotential;
-import javax.measure.quantity.Energy;
-import javax.measure.quantity.Frequency;
-import javax.measure.quantity.Illuminance;
-import javax.measure.quantity.Length;
-import javax.measure.quantity.Power;
-import javax.measure.quantity.Pressure;
-import javax.measure.quantity.Speed;
-import javax.measure.quantity.Temperature;
-import javax.measure.quantity.Volume;
 
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.MetricPrefix;
@@ -57,12 +45,10 @@ public class QuantityTypeConverter extends AbstractTypeConverter<QuantityType<? 
 
     @Override
     protected Object toBinding(QuantityType<? extends Quantity<?>> type, HmDatapoint dp) throws ConverterException {
-
         if (dp.isIntegerType()) {
             return toUnitFromDatapoint(type, dp).intValue();
         }
         return round(toUnitFromDatapoint(type, dp).doubleValue()).doubleValue();
-
     }
 
     private QuantityType<? extends Quantity<?>> toUnitFromDatapoint(QuantityType<? extends Quantity<?>> type,
@@ -115,33 +101,33 @@ public class QuantityTypeConverter extends AbstractTypeConverter<QuantityType<? 
         switch (unit) {
             case UNCORRECT_ENCODED_CELSIUS:
             case "°C":
-                return new QuantityType<Temperature>(number, SIUnits.CELSIUS);
+                return new QuantityType<>(number, SIUnits.CELSIUS);
             case "V":
-                return new QuantityType<ElectricPotential>(number, SmartHomeUnits.VOLT);
+                return new QuantityType<>(number, SmartHomeUnits.VOLT);
             case "%":
-                return new QuantityType<Dimensionless>(number, SmartHomeUnits.PERCENT);
+                return new QuantityType<>(number, SmartHomeUnits.PERCENT);
             case "mHz":
-                return new QuantityType<Frequency>(number, MetricPrefix.MILLI(SmartHomeUnits.HERTZ));
+                return new QuantityType<>(number, MetricPrefix.MILLI(SmartHomeUnits.HERTZ));
             case "Hz":
-                return new QuantityType<Frequency>(number, SmartHomeUnits.HERTZ);
+                return new QuantityType<>(number, SmartHomeUnits.HERTZ);
             case "hPa":
-                return new QuantityType<Pressure>(number, SIUnits.PASCAL.multiply(2));
+                return new QuantityType<>(number, SIUnits.PASCAL.multiply(2));
             case "Lux":
-                return new QuantityType<Illuminance>(number, SmartHomeUnits.LUX);
+                return new QuantityType<>(number, SmartHomeUnits.LUX);
             case "degree":
-                return new QuantityType<Angle>(number, SmartHomeUnits.DEGREE_ANGLE);
+                return new QuantityType<>(number, SmartHomeUnits.DEGREE_ANGLE);
             case "km/h":
-                return new QuantityType<Speed>(number, SIUnits.KILOMETRE_PER_HOUR);
+                return new QuantityType<>(number, SIUnits.KILOMETRE_PER_HOUR);
             case "mm":
-                return new QuantityType<Length>(number, MetricPrefix.MILLI(SIUnits.METRE));
+                return new QuantityType<>(number, MetricPrefix.MILLI(SIUnits.METRE));
             case "W":
-                return new QuantityType<Power>(number, SmartHomeUnits.WATT);
+                return new QuantityType<>(number, SmartHomeUnits.WATT);
             case "Wh":
-                return new QuantityType<Energy>(number, SmartHomeUnits.WATT_HOUR);
+                return new QuantityType<>(number, SmartHomeUnits.WATT_HOUR);
             case "m3":
-                return new QuantityType<Volume>(number, SIUnits.CUBIC_METRE);
+                return new QuantityType<>(number, SIUnits.CUBIC_METRE);
             case HUNDRED_PERCENT:
-                return new QuantityType<Dimensionless>(number.doubleValue() * 100.0, SmartHomeUnits.PERCENT);
+                return new QuantityType<>(number.doubleValue() * 100.0, SmartHomeUnits.PERCENT);
             case "dBm":
             case "s":
             case "min":
@@ -151,7 +137,7 @@ public class QuantityTypeConverter extends AbstractTypeConverter<QuantityType<? 
             case "year":
             case "":
             default:
-                return new QuantityType<Dimensionless>(number, SmartHomeUnits.ONE);
+                return new QuantityType<>(number, SmartHomeUnits.ONE);
         }
     }
 

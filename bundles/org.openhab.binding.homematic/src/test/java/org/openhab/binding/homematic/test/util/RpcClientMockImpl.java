@@ -29,7 +29,7 @@ public class RpcClientMockImpl extends RpcClient<String> {
     public static final String GET_PARAMSET_DESCRIPTION_NAME = "getParamsetDescription";
     public static final String GET_PARAMSET_NAME = "getParamset";
 
-    public Map<String, Integer> numberOfCalls = new HashMap<String, Integer>();
+    public Map<String, Integer> numberOfCalls = new HashMap<>();
 
     public RpcClientMockImpl() throws IOException {
         this(new HomematicConfig());
@@ -61,7 +61,7 @@ public class RpcClientMockImpl extends RpcClient<String> {
 
     private Object[] mockResponse() {
         Object[] response = new Object[1];
-        response[0] = new HashMap<String, Object>();
+        response[0] = new HashMap<>();
         return response;
     }
 

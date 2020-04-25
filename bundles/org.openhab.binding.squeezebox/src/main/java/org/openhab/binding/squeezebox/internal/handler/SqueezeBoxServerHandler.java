@@ -87,10 +87,9 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     private static final String CHANNEL_CONFIG_QUOTE_LIST = "quoteList";
 
     private List<SqueezeBoxPlayerEventListener> squeezeBoxPlayerListeners = Collections
-            .synchronizedList(new ArrayList<SqueezeBoxPlayerEventListener>());
+            .synchronizedList(new ArrayList<>());
 
-    private Map<String, SqueezeBoxPlayer> players = Collections
-            .synchronizedMap(new HashMap<String, SqueezeBoxPlayer>());
+    private Map<String, SqueezeBoxPlayer> players = Collections.synchronizedMap(new HashMap<>());
 
     // client socket and listener thread
     private Socket clientSocket;
@@ -145,11 +144,11 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     }
 
     public void mute(String mac) {
-        setVolume(mac, 0);
+        sendCommand(mac + " mixer muting 1");
     }
 
-    public void unMute(String mac, int unmuteVolume) {
-        setVolume(mac, unmuteVolume);
+    public void unMute(String mac) {
+        sendCommand(mac + " mixer muting 0");
     }
 
     public void powerOn(String mac) {
@@ -381,7 +380,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
 
         // Mark the server ONLINE. bridgeStatusChanged will cause the players to come ONLINE
         updateStatus(ThingStatus.ONLINE);
-
     }
 
     /**
@@ -588,7 +586,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     break;
                 default:
                     logger.trace("Unhandled player update message type '{}'.", messageType);
-
             }
         }
 

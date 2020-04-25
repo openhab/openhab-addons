@@ -370,20 +370,18 @@ public class HeliosHandler27 extends BaseThingHandler implements NotificationCon
             topicExp.getContent().add("");
             topicExp.setDialect(DIALECT_URI);
             subscribeRequest.getFilter().getAny()
-                    .add(new JAXBElement<TopicExpressionType>(TOPIC_EXPRESSION, TopicExpressionType.class, topicExp));
+                    .add(new JAXBElement<>(TOPIC_EXPRESSION, TopicExpressionType.class, topicExp));
 
             subscribeRequest.setInitialTerminationTime(
-                    new JAXBElement<String>(INITIAL_TERMINATION_TIME, String.class, SUBSCRIPTION_PERIOD));
+                    new JAXBElement<>(INITIAL_TERMINATION_TIME, String.class, SUBSCRIPTION_PERIOD));
 
             subscribeRequest.setSubscriptionPolicy(new Subscribe.SubscriptionPolicy());
-            subscribeRequest.getSubscriptionPolicy().getAny()
-                    .add(new JAXBElement<Integer>(MAXIMUM_NUMBER, Integer.class, 1));
-            subscribeRequest.getSubscriptionPolicy().getAny()
-                    .add(new JAXBElement<Integer>(SIMPLE_MESSAGES, Integer.class, 1));
+            subscribeRequest.getSubscriptionPolicy().getAny().add(new JAXBElement<>(MAXIMUM_NUMBER, Integer.class, 1));
+            subscribeRequest.getSubscriptionPolicy().getAny().add(new JAXBElement<>(SIMPLE_MESSAGES, Integer.class, 1));
             GregorianCalendar now = new GregorianCalendar();
             SimpleDateFormat pFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             subscribeRequest.getSubscriptionPolicy().getAny()
-                    .add(new JAXBElement<String>(START_TIME_STAMP, String.class, pFormatter.format(now.getTime())));
+                    .add(new JAXBElement<>(START_TIME_STAMP, String.class, pFormatter.format(now.getTime())));
 
             SubscribeResponse response = notificationProducer.subscribe(subscribeRequest);
 

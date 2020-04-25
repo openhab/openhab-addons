@@ -73,7 +73,6 @@ public abstract class BasePacket {
     }
 
     public BasePacket(int dataLength, int optionalDataLength, byte packetType, byte[] payload) {
-
         if (!ESPPacketType.hasValue(packetType)) {
             throw new InvalidParameterException("Packet type is unknown");
         }

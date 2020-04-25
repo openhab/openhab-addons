@@ -18,6 +18,7 @@ package org.openhab.binding.miio.internal;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@SuppressWarnings("null")
 public final class MiIoBindingConfiguration {
     public String host;
     public String token;
@@ -25,4 +26,5 @@ public final class MiIoBindingConfiguration {
     public String model;
     public int refreshInterval;
     public int timeout;
+    public String cloudServer;
 }

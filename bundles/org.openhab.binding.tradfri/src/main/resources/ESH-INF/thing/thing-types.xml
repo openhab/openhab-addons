@@ -8,6 +8,8 @@
 		<label>TRÅDFRI Gateway</label>
 		<description>IKEA TRÅDFRI IP Gateway</description>
 
+		<representation-property>host</representation-property>
+
 		<config-description-ref uri="bridge-type:tradfri:gateway" />
 	</bridge-type>
 

@@ -74,13 +74,13 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
     byte[] messageFragment;
     RXTXPort serialPort;
 
-    private final Map<String, Boolean> toggleMap = new HashMap<String, Boolean>();
-    private final ConcurrentNavigableMap<Long, QueueObject> queue = new ConcurrentSkipListMap<Long, QueueObject>();
+    private final Map<String, Boolean> toggleMap = new HashMap<>();
+    private final ConcurrentNavigableMap<Long, QueueObject> queue = new ConcurrentSkipListMap<>();
 
     private final byte emLedOutputState[] = new byte[32];
     private final byte amOutputState[] = new byte[32];
 
-    private final List<Byte> modules = new ArrayList<Byte>();
+    private final List<Byte> modules = new ArrayList<>();
 
     public PHCBridgeHandler(Bridge phcBridge) {
         super(phcBridge);
@@ -126,11 +126,9 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
                 }
 
             }.start();
-
         } catch (PortInUseException | TooManyListenersException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Could not open serial port " + serialPort + ": " + e.getMessage());
-
         } catch (UnsupportedCommOperationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Could not configure serial port " + serialPort + ": " + e.getMessage());
@@ -175,7 +173,6 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
             } else {
                 processInputStream(buffer);
             }
-
         } catch (IOException e) {
             // ignore
         } catch (InterruptedException e) {
@@ -189,8 +186,8 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
      * @param buffer
      */
     private void processInputStream(byte[] buffer) {
-        List<Byte> result = new ArrayList<Byte>();
-        List<String> repeat = new ArrayList<String>();
+        List<Byte> result = new ArrayList<>();
+        List<String> repeat = new ArrayList<>();
         int pos = 0;
         messageFragment = null;
         Byte moduleAddress = null;
@@ -269,14 +266,12 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
                     }
 
                     queue.put(System.currentTimeMillis() + SEND_RETRY_TIME_MILLIS, qo);
-
                 } else if (qo.getCounter() >= SEND_RETRY_COUNT
                         && !qo.getModuleType().equals(PHCBindingConstants.CHANNELS_JRM)) {
                     // Can´t process the acknowledgement of JRM yet.
                     logger.info("No acknowlgdge from the module {} received.", qo.getModuleAddress());
                 }
             }
-
         }
     }
 

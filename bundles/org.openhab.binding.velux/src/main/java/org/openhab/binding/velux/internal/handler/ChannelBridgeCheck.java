@@ -13,6 +13,7 @@
 package org.openhab.binding.velux.internal.handler;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -68,7 +69,7 @@ final class ChannelBridgeCheck extends ChannelHandlerTemplate {
         State newState = null;
         do { // just for common exit
             LOGGER.trace("handleCommand(): loop through all existing scenes.");
-            ArrayList<String> unusedScenes = new ArrayList<String>();
+            List<String> unusedScenes = new ArrayList<>();
             for (VeluxScene scene : thisBridgeHandler.bridgeParameters.scenes.getChannel().existingScenes.values()) {
                 boolean found = false;
                 LOGGER.trace("handleCommand(): .loop through all handled channels.");
@@ -100,7 +101,7 @@ final class ChannelBridgeCheck extends ChannelHandlerTemplate {
                 }
             }
             String result;
-            if (unusedScenes.size() > 0) {
+            if (!unusedScenes.isEmpty()) {
                 result = thisBridgeHandler.localization.getText("channelValue.check-integrity-failed")
                         .concat(unusedScenes.toString());
             } else {
