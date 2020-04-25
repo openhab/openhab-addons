@@ -241,7 +241,7 @@ public class WlanThermoHandler extends BaseThingHandler {
                 updateState(channel.getUID(), UnDefType.UNDEF);
             }
         }
-        
+        scheduler.shutdown();
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE);
     }
 
