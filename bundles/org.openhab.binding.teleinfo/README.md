@@ -84,8 +84,8 @@ Channel availabity depends on the electricity connection (single or three phase)
 `teleinfo.things` for a serial USB controller on `/dev/ttyUSB0` for a Single-phase Electricity meter with HC/HP option - CBEMM Evolution ICC:
 
 ```
-Bridge teleinfo:bridge:serialcontroller [ serialport="/dev/ttyUSB0" ]{
-  Thing cbemm_evolution_icc_hc_electricitymeter teleinfo1 [ adco="031728832562"]
+Bridge teleinfo:serialcontroller:teleinfoUSB [ serialport="/dev/ttyUSB21" ]{
+    Thing cbemm_evolution_icc_hc_electricitymeter myElectricityMeter [ adco="031528042289"]
 }
 ```
 
@@ -93,7 +93,15 @@ Bridge teleinfo:bridge:serialcontroller [ serialport="/dev/ttyUSB0" ]{
 
 
 ```
-Number:ElectricCurrent iSousc "iSousc" {channel="teleinfo:teleinfo1:isousc"}
+Number TLInfoEDF_PAPP "PAPP" <energy> (rdd4j) {channel="teleinfo:cbemm_evolution_icc_hc_electricitymeter:teleinfoUSB:myElectricityMeter:papp"}
+Number:ElectricCurrent TLInfoEDF_ISOUSC "ISOUSC" <energy> {channel="teleinfo:cbemm_evolution_icc_hc_electricitymeter:teleinfoUSB:myElectricityMeter:isousc"}
+String TLInfoEDF_PTEC "PTEC" <energy> {channel="teleinfo:cbemm_evolution_icc_hc_electricitymeter:teleinfoUSB:myElectricityMeter:ptec"}
+Number:ElectricCurrent TLInfoEDF_IMAX "IMAX" <energy> {channel="teleinfo:cbemm_evolution_icc_hc_electricitymeter:teleinfoUSB:myElectricityMeter:imax"}
+Number:ElectricCurrent TLInfoEDF_ADPS "ADPS" <energy> {channel="teleinfo:cbemm_evolution_icc_hc_electricitymeter:teleinfoUSB:myElectricityMeter:adps"}
+Number:ElectricCurrent TLInfoEDF_IINST "IINST" <energy> {channel="teleinfo:cbemm_evolution_icc_hc_electricitymeter:teleinfoUSB:myElectricityMeter:iinst"}
+Number:Energy TLInfoEDF_HCHC "HCHC" <energy> (rdd4j) {channel="teleinfo:cbemm_evolution_icc_hc_electricitymeter:teleinfoUSB:myElectricityMeter:hchc"}
+Number:Energy TLInfoEDF_HCHP "HCHP" <energy> (rdd4j) {channel="teleinfo:cbemm_evolution_icc_hc_electricitymeter:teleinfoUSB:myElectricityMeter:hchp"}
+String TLInfoEDF_HHPHC "HHPHC" <energy> {channel="teleinfo:cbemm_evolution_icc_hc_electricitymeter:teleinfoUSB:myElectricityMeter:hhphc"}
 ```
 
 ## Tested hardwares
