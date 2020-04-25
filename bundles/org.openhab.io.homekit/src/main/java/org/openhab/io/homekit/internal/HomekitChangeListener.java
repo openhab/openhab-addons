@@ -12,11 +12,15 @@
  */
 package org.openhab.io.homekit.internal;
 
+import static org.openhab.io.homekit.internal.HomekitCharacteristicType.EMPTY;
 import java.time.Clock;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
@@ -26,12 +30,12 @@ import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.items.ItemNotFoundException;
 import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.eclipse.smarthome.core.items.ItemRegistryChangeListener;
+import org.eclipse.smarthome.core.items.MetadataRegistry;
 import org.openhab.io.homekit.internal.accessories.HomekitAccessoryFactory;
-import org.openhab.io.homekit.internal.accessories.IncompleteAccessoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import io.github.hapjava.HomekitRoot;
+import io.github.hapjava.accessories.HomekitAccessory;
+import io.github.hapjava.server.impl.HomekitRoot;
 
 /**
  * Listens for changes to the item registry. When changes are detected, check
@@ -43,6 +47,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
     private final Logger logger = LoggerFactory.getLogger(HomekitChangeListener.class);
     private final ItemRegistry itemRegistry;
     private final HomekitAccessoryRegistry accessoryRegistry = new HomekitAccessoryRegistry();
+    private final MetadataRegistry metadataRegistry;
     private HomekitAccessoryUpdater updater = new HomekitAccessoryUpdater();
     private HomekitSettings settings;
 
@@ -61,17 +66,16 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
      */
     private final Debouncer applyUpdatesDebouncer;
 
-    HomekitChangeListener(ItemRegistry itemRegistry, HomekitSettings settings) {
+    HomekitChangeListener(ItemRegistry itemRegistry, HomekitSettings settings, MetadataRegistry metadataRegistry) {
         this.itemRegistry = itemRegistry;
         this.settings = settings;
+        this.metadataRegistry =metadataRegistry;
         this.applyUpdatesDebouncer = new Debouncer("update-homekit-devices", scheduler, Duration.ofMillis(1000),
                 Clock.systemUTC(), this::applyUpdates);
 
         itemRegistry.addRegistryChangeListener(this);
-        itemRegistry.getAll().stream().map(item -> new HomekitTaggedItem(item, itemRegistry))
-                .filter(taggedItem -> taggedItem.isAccessory())
-                .filter(taggedItem -> !taggedItem.isMemberOfAccessoryGroup())
-                .forEach(rootTaggedItem -> createRootAccessory(rootTaggedItem));
+        itemRegistry.getItems().stream().forEach(this::createRootAccessories);
+        logger.info("Created {} HomeKit items.", accessoryRegistry.getAllAccessories().size());
     }
 
     @Override
@@ -96,7 +100,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
          * If findMyAccessoryGroups fails because the accessory group has already been deleted, then we can count on a
          * later update telling us that the accessory group was removed.
          */
-        for (Item accessoryGroup : HomekitTaggedItem.findMyAccessoryGroups(item, itemRegistry)) {
+        for (Item accessoryGroup : HomekitAccessoryFactory.getAccessoryGroups(item, itemRegistry, metadataRegistry)) {
             pendingUpdates.add(accessoryGroup.getName());
         }
 
@@ -122,10 +126,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         while (iter.hasNext()) {
             String name = iter.next();
             accessoryRegistry.remove(name);
-
-            getItemOptional(name).map(i -> new HomekitTaggedItem(i, itemRegistry))
-                    .filter(i -> i.isAccessory() && !i.isMemberOfAccessoryGroup())
-                    .ifPresent(rootItem -> createRootAccessory(rootItem));
+            getItemOptional(name).ifPresent(i -> createRootAccessories(i));
         }
     }
 
@@ -159,19 +160,36 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         this.itemRegistry.removeRegistryChangeListener(this);
     }
 
+    public Map<String, HomekitAccessory> getAccessories() {
+        return this.accessoryRegistry.getAllAccessories();
+    }
+
+    /**
+     * creates one or more HomeKit items for given openhab item.
+     * one openhab item can linked to several HomeKit accessories or characteristics.
+     * @param item
+     */
+    private void createRootAccessories(Item item) {
+        final List<Entry<HomekitAccessoryType, HomekitCharacteristicType>> accessoryTypes = HomekitAccessoryFactory.getAccessoryTypes(item, metadataRegistry);
+        if (!accessoryTypes.isEmpty()) {
+            logger.debug("Item {} is a HomeKit accessory of types {}", item.getName(), accessoryTypes);
+            accessoryTypes.stream().filter(accessory -> accessory.getValue()==EMPTY) // no characteristic => root accessory or group
+                .forEach(rootAccessory ->
+                             createRootAccessory(
+                                 new HomekitTaggedItem(item, rootAccessory.getKey())));
+        } else {
+            logger.debug("Item {} is not a supported HomeKit item. ignore it", item.getName());
+        }
+    }
+
     private void createRootAccessory(HomekitTaggedItem taggedItem) {
         try {
-            if (taggedItem.isMemberOfAccessoryGroup()) {
-                logger.warn("Bug! Cannot add {} as a root accessory if it is a member of a group! ",
-                        taggedItem.getItem().getUID());
-                return;
-            }
             logger.debug("Adding HomeKit device {}", taggedItem.getItem().getUID());
             accessoryRegistry.addRootAccessory(taggedItem.getName(),
-                    HomekitAccessoryFactory.create(taggedItem, itemRegistry, updater, settings));
-            logger.debug("Added HomeKit device {}", taggedItem.getItem().getUID());
-        } catch (HomekitException | IncompleteAccessoryException e) {
+                                               HomekitAccessoryFactory.create(taggedItem, itemRegistry, metadataRegistry, updater, settings));
+        } catch (HomekitException e) {
             logger.warn("Could not add device {}: {}", taggedItem.getItem().getUID(), e.getMessage());
         }
     }
+
 }

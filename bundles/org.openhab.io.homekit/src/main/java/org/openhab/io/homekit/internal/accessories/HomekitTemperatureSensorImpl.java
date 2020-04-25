@@ -12,6 +12,7 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.smarthome.core.items.ItemRegistry;
@@ -21,20 +22,22 @@ import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
-import io.github.hapjava.HomekitCharacteristicChangeCallback;
-import io.github.hapjava.accessories.TemperatureSensor;
+import io.github.hapjava.accessories.TemperatureSensorAccessory;
+import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
+import io.github.hapjava.services.impl.TemperatureSensorService;
 
 /**
  * Implements a HomeKit TemperatureSensor using a NumberItem
  *
  * @author Andy Lintner - Initial contribution
  */
-class HomekitTemperatureSensorImpl extends AbstractTemperatureHomekitAccessoryImpl<NumberItem>
-        implements TemperatureSensor {
+class HomekitTemperatureSensorImpl extends AbstractHomekitAccessoryImpl<NumberItem>
+    implements TemperatureSensorAccessory {
 
-    public HomekitTemperatureSensorImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) {
-        super(taggedItem, itemRegistry, updater, settings, NumberItem.class);
+    public HomekitTemperatureSensorImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics, ItemRegistry itemRegistry,
+            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
+        super(taggedItem,mandatoryCharacteristics,itemRegistry, updater, settings);
+        getServices().add(new TemperatureSensorService(this));
     }
 
     @Override
@@ -54,5 +57,21 @@ class HomekitTemperatureSensorImpl extends AbstractTemperatureHomekitAccessoryIm
     @Override
     public void unsubscribeCurrentTemperature() {
         getUpdater().unsubscribe(getItem());
+    }
+
+    protected double convertToCelsius(double degrees) {
+        if (getSettings().useFahrenheitTemperature) {
+            return Math.round((5d / 9d) * (degrees - 32d) * 1000d) / 1000d;
+        } else {
+            return degrees;
+        }
+    }
+
+    protected double convertFromCelsius(double degrees) {
+        if (getSettings().useFahrenheitTemperature) {
+            return Math.round((((9d / 5d) * degrees) + 32d) * 10d) / 10d;
+        } else {
+            return degrees;
+        }
     }
 }

@@ -12,6 +12,7 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.smarthome.core.items.GenericItem;
@@ -20,20 +21,23 @@ import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.eclipse.smarthome.core.library.items.SwitchItem;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
+import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
-import io.github.hapjava.HomekitCharacteristicChangeCallback;
-import io.github.hapjava.accessories.Switch;
+import io.github.hapjava.accessories.SwitchAccessory;
+import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
+import io.github.hapjava.services.impl.SwitchService;
 
 /**
  * Implements Switch using an Item that provides an On/Off state.
  *
  * @author Andy Lintner - Initial contribution
  */
-public class HomekitSwitchImpl extends AbstractHomekitAccessoryImpl<SwitchItem> implements Switch {
+public class HomekitSwitchImpl extends AbstractHomekitAccessoryImpl<SwitchItem> implements SwitchAccessory {
 
-    public HomekitSwitchImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry, HomekitAccessoryUpdater updater) {
-        super(taggedItem, itemRegistry, updater, SwitchItem.class);
+    public HomekitSwitchImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics, ItemRegistry itemRegistry, HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
+        super(taggedItem, mandatoryCharacteristics, itemRegistry, updater, settings);
+        getServices().add(new SwitchService(this));
     }
 
     @Override
@@ -43,7 +47,7 @@ public class HomekitSwitchImpl extends AbstractHomekitAccessoryImpl<SwitchItem> 
     }
 
     @Override
-    public CompletableFuture<Void> setSwitchState(boolean state) throws Exception {
+    public CompletableFuture<Void> setSwitchState(boolean state) {
         GenericItem item = getItem();
         if (item instanceof SwitchItem) {
             ((SwitchItem) item).send(state ? OnOffType.ON : OnOffType.OFF);

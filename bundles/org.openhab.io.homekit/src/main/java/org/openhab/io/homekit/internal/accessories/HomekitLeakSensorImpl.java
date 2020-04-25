@@ -12,44 +12,42 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.items.GenericItem;
 import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
+import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
-import org.openhab.io.homekit.internal.battery.BatteryStatus;
-
-import io.github.hapjava.HomekitCharacteristicChangeCallback;
-import io.github.hapjava.accessories.BatteryStatusAccessory;
-import io.github.hapjava.accessories.LeakSensor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import io.github.hapjava.accessories.LeakSensorAccessory;
+import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
+import io.github.hapjava.characteristics.impl.leaksensor.LeakDetectedStateEnum;
+import io.github.hapjava.services.impl.LeakSensorService;
 
 /**
  *
  * @author Tim Harper - Initial contribution
  */
 public class HomekitLeakSensorImpl extends AbstractHomekitAccessoryImpl<GenericItem>
-        implements LeakSensor, BatteryStatusAccessory {
+    implements LeakSensorAccessory {
+    protected Logger logger = LoggerFactory.getLogger(HomekitLeakSensorImpl.class);
 
-    @NonNull
-    private BatteryStatus batteryStatus;
+    private final BooleanItemReader leakDetectedReader;
 
-    private BooleanItemReader leakDetectedReader;
-
-    public HomekitLeakSensorImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
-            HomekitAccessoryUpdater updater, BatteryStatus batteryStatus) {
-        super(taggedItem, itemRegistry, updater, GenericItem.class);
-
+    public HomekitLeakSensorImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics, ItemRegistry itemRegistry, HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
+        super(taggedItem, mandatoryCharacteristics, itemRegistry, updater, settings);
         this.leakDetectedReader = new BooleanItemReader(taggedItem.getItem(), OnOffType.ON, OpenClosedType.OPEN);
-        this.batteryStatus = batteryStatus;
+        getServices().add(new LeakSensorService(this));
     }
 
     @Override
-    public CompletableFuture<Boolean> getLeakDetected() {
-        return CompletableFuture.completedFuture(this.leakDetectedReader.getValue());
+    public CompletableFuture<LeakDetectedStateEnum> getLeakDetected() {
+        return (this.leakDetectedReader.getValue() !=null && this.leakDetectedReader.getValue()) ? CompletableFuture.completedFuture(LeakDetectedStateEnum.LEAK_DETECTED) : CompletableFuture.completedFuture(LeakDetectedStateEnum.LEAK_NOT_DETECTED);
     }
 
     @Override
@@ -62,18 +60,5 @@ public class HomekitLeakSensorImpl extends AbstractHomekitAccessoryImpl<GenericI
         getUpdater().unsubscribe(getItem());
     }
 
-    @Override
-    public CompletableFuture<Boolean> getLowBatteryState() {
-        return CompletableFuture.completedFuture(batteryStatus.isLow());
-    }
 
-    @Override
-    public void subscribeLowBatteryState(HomekitCharacteristicChangeCallback callback) {
-        batteryStatus.subscribe(getUpdater(), callback);
-    }
-
-    @Override
-    public void unsubscribeLowBatteryState() {
-        batteryStatus.unsubscribe(getUpdater());
-    }
 }

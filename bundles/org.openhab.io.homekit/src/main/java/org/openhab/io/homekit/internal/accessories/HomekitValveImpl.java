@@ -12,6 +12,7 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.smarthome.core.items.GenericItem;
@@ -19,35 +20,39 @@ import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.eclipse.smarthome.core.library.items.SwitchItem;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
+import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
-
-import io.github.hapjava.HomekitCharacteristicChangeCallback;
-import io.github.hapjava.accessories.Valve;
-import io.github.hapjava.accessories.properties.ValveType;
+import io.github.hapjava.accessories.ValveAccessory;
+import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
+import io.github.hapjava.characteristics.impl.common.ActiveEnum;
+import io.github.hapjava.characteristics.impl.common.InUseEnum;
+import io.github.hapjava.characteristics.impl.valve.ValveTypeEnum;
+import io.github.hapjava.services.impl.ValveService;
 
 /**
  *
  * @author Tim Harper - Initial contribution
  */
-public class HomekitValveImpl extends AbstractHomekitAccessoryImpl<SwitchItem> implements Valve {
-    public HomekitValveImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry, HomekitAccessoryUpdater updater) {
-        super(taggedItem, itemRegistry, updater, SwitchItem.class);
+public class HomekitValveImpl extends AbstractHomekitAccessoryImpl<SwitchItem> implements ValveAccessory {
+    public HomekitValveImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics, ItemRegistry itemRegistry, HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
+        super(taggedItem, mandatoryCharacteristics, itemRegistry, updater, settings);
+        getServices().add(new ValveService(this));
     }
 
     @Override
-    public CompletableFuture<Boolean> getValveActive() {
+    public CompletableFuture<ActiveEnum> getValveActive() {
         OnOffType state = getItem().getStateAs(OnOffType.class);
         if (state == null) {
             return CompletableFuture.completedFuture(null);
         }
-        return CompletableFuture.completedFuture(state == OnOffType.ON);
+        return CompletableFuture.completedFuture(state == OnOffType.ON?ActiveEnum.ACTIVE:ActiveEnum.INACTIVE);
     }
 
     @Override
-    public CompletableFuture<Void> setValveActive(boolean state) throws Exception {
+    public CompletableFuture<Void> setValveActive(ActiveEnum state) throws Exception {
         GenericItem item = getItem();
         if (item instanceof SwitchItem) {
-            ((SwitchItem) item).send(state ? OnOffType.ON : OnOffType.OFF);
+            ((SwitchItem) item).send(state == ActiveEnum.ACTIVE ? OnOffType.ON : OnOffType.OFF);
         }
         return CompletableFuture.completedFuture(null);
     }
@@ -63,8 +68,12 @@ public class HomekitValveImpl extends AbstractHomekitAccessoryImpl<SwitchItem> i
     }
 
     @Override
-    public CompletableFuture<Boolean> getValveInUse() {
-        return getValveActive();
+    public CompletableFuture<InUseEnum> getValveInUse() {
+        OnOffType state = getItem().getStateAs(OnOffType.class);
+        if (state == null) {
+            return CompletableFuture.completedFuture(null);
+        }
+        return CompletableFuture.completedFuture(state == OnOffType.ON?InUseEnum.IN_USE:InUseEnum.NOT_IN_USE);
     }
 
     @Override
@@ -78,9 +87,9 @@ public class HomekitValveImpl extends AbstractHomekitAccessoryImpl<SwitchItem> i
     }
 
     @Override
-    public CompletableFuture<ValveType> getValveType() {
+    public CompletableFuture<ValveTypeEnum> getValveType() {
         // TODO - make this configurable; possibly via additional tags? ValveType:Generic etc
-        return CompletableFuture.completedFuture(ValveType.GENERIC);
+        return CompletableFuture.completedFuture(ValveTypeEnum.GENERIC);
     }
 
     @Override

@@ -12,14 +12,11 @@
  */
 package org.openhab.io.homekit.internal;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
-
 import org.eclipse.smarthome.core.items.Item;
-import org.eclipse.smarthome.core.library.items.ColorItem;
-import org.eclipse.smarthome.core.library.items.DimmerItem;
 
 /**
  * Enum of the possible device types. The defined tag string can be used
@@ -28,13 +25,11 @@ import org.eclipse.smarthome.core.library.items.DimmerItem;
  * @author Andy Lintner - Initial contribution
  */
 public enum HomekitAccessoryType {
-    DIMMABLE_LIGHTBULB("DimmableLighting"),
-    HUMIDITY_SENSOR("CurrentHumidity"),
+    HUMIDITY_SENSOR("HumiditySensor"),
     LIGHTBULB("Lighting"),
     SWITCH("Switchable"),
-    TEMPERATURE_SENSOR("CurrentTemperature"),
+    TEMPERATURE_SENSOR("TemperatureSensor"),
     THERMOSTAT("Thermostat"),
-    COLORFUL_LIGHTBULB("ColorfulLighting"),
     CONTACT_SENSOR("ContactSensor"),
     VALVE("Valve"),
     LEAK_SENSOR("LeakSensor"),
@@ -43,6 +38,9 @@ public enum HomekitAccessoryType {
     WINDOW_COVERING("WindowCovering"),
     SMOKE_SENSOR("SmokeSensor"),
     CARBON_MONOXIDE_SENSOR("CarbonMonoxideSensor"),
+    CARBON_DIOXIDE_SENSOR("CarbonDioxideSensor"),
+    FAN("Fan"),
+
     @Deprecated()
     BLINDS("Blinds"),
     LOCK("Lock");
@@ -78,19 +76,26 @@ public enum HomekitAccessoryType {
     /**
      * get accessoryType for a given Item
      *
+     * @param tags the item
+     * @return accessoryType or null if not found
+     */
+    public static HomekitAccessoryType fromTags(ArrayList<String> tags) {
+
+        HomekitAccessoryType accessoryType = tags.stream().map(tag -> TAG_MAP.get(tag)).filter(Objects::nonNull)
+            .findFirst().orElse(null);
+        return accessoryType;
+    }
+
+    /**
+     * get accessoryType for a given Item
+     *
      * @param item the item
      * @return accessoryType or null if not found
      */
     public static HomekitAccessoryType fromItem(Item item) {
-        Set<String> tags = item.getTags();
-        HomekitAccessoryType accessoryType = tags.stream().map(tag -> TAG_MAP.get(tag)).filter(Objects::nonNull)
-                .findFirst().orElse(null);
-        if (item instanceof ColorItem && accessoryType == LIGHTBULB) {
-            return COLORFUL_LIGHTBULB;
-        } else if (item instanceof DimmerItem && accessoryType == LIGHTBULB) {
-            return DIMMABLE_LIGHTBULB;
-        } else {
-            return accessoryType;
-        }
+
+        HomekitAccessoryType accessoryType = item.getTags().stream().map(tag -> TAG_MAP.get(tag)).filter(Objects::nonNull)
+            .findFirst().orElse(null);
+        return accessoryType;
     }
 }

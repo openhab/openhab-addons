@@ -20,6 +20,8 @@ package org.openhab.io.homekit.internal;
 public class HomekitSettings {
     public static final String MANUFACTURER = "openHAB";
     public static final String SERIAL_NUMBER = "none";
+    public static final String FIRMWARE_REVISION = "2.5.3";
+    public static final String HARDWARE_REVISION = "2.5";
 
     public String name = "openHAB";
     public int port = 9123;

@@ -12,81 +12,92 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import org.eclipse.smarthome.core.items.GenericItem;
-import org.eclipse.smarthome.core.items.GroupItem;
-import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
+import org.openhab.io.homekit.internal.HomekitCharacteristicType;
+import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.github.hapjava.HomekitAccessory;
+import io.github.hapjava.accessories.HomekitAccessory;
+import io.github.hapjava.services.Service;
 
 /**
- * Abstract class for HomekitAccessory implementations, this provides the
+ * Abstract class for Homekit Accessory implementations, this provides the
  * accessory metadata using information from the underlying Item.
  *
  * @author Andy Lintner - Initial contribution
  */
 abstract class AbstractHomekitAccessoryImpl<T extends GenericItem> implements HomekitAccessory {
-
+    protected final List<HomekitTaggedItem> mandatoryCharacteristics;
     private final int accessoryId;
     private final String itemName;
     private final String itemLabel;
     private final ItemRegistry itemRegistry;
     private final HomekitAccessoryUpdater updater;
+    private final HomekitSettings settings;
+    private final List<Service> services;
 
-    protected Logger logger = LoggerFactory.getLogger(AbstractHomekitAccessoryImpl.class);
-
-    @SuppressWarnings("null")
-    public AbstractHomekitAccessoryImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
-            HomekitAccessoryUpdater updater, Class<T> expectedItemClass) {
-        this.accessoryId = taggedItem.getId();
-        this.itemName = taggedItem.getItem().getName();
-        this.itemLabel = taggedItem.getItem().getLabel();
+    public AbstractHomekitAccessoryImpl(HomekitTaggedItem accessory, List<HomekitTaggedItem> mandatoryCharacteristics, ItemRegistry itemRegistry,
+            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
+        this.mandatoryCharacteristics = mandatoryCharacteristics;
+        this.accessoryId = accessory.getId();
+        this.itemName = accessory.getItem().getName();
+        this.itemLabel = accessory.getItem().getLabel();
         this.itemRegistry = itemRegistry;
         this.updater = updater;
-        Item baseItem = taggedItem.getItem();
-        if (baseItem instanceof GroupItem && ((GroupItem) baseItem).getBaseItem() != null) {
-            baseItem = ((GroupItem) baseItem).getBaseItem();
-        }
-        if (expectedItemClass != taggedItem.getItem().getClass()
-                && !expectedItemClass.isAssignableFrom(baseItem.getClass())) {
-            logger.warn("Item {} is of type {} instead of the expected {}", taggedItem.getItem().getName(),
-                    baseItem.getClass().getName(), expectedItemClass.getName());
-        }
+        this.services = new ArrayList<>();
+        this.settings = settings;
     }
 
+    protected Optional<HomekitTaggedItem> getMandatoryCharacteristic(HomekitCharacteristicType type) {
+        return  mandatoryCharacteristics.stream().filter(c -> c.getCharacteristicType().equals(type)).findAny();
+    }
     @Override
     public int getId() {
         return accessoryId;
     }
 
     @Override
-    public String getLabel() {
-        return itemLabel;
+    public CompletableFuture<String> getName() {
+        return CompletableFuture.completedFuture(itemLabel);
     }
 
     @Override
-    public String getManufacturer() {
-        return "none";
+    public CompletableFuture<String> getManufacturer() {
+        return CompletableFuture.completedFuture("none");
     }
 
     @Override
-    public String getModel() {
-        return "none";
+    public CompletableFuture<String> getModel() {
+        return CompletableFuture.completedFuture("none");
     }
 
     @Override
-    public String getSerialNumber() {
-        return "none";
+    public CompletableFuture<String> getSerialNumber() {
+        return CompletableFuture.completedFuture("none");
+    }
+
+    @Override
+    public CompletableFuture<String> getFirmwareRevision() {
+        return CompletableFuture.completedFuture("none");
     }
 
     @Override
     public void identify() {
         // We're not going to support this for now
     }
+
+    public Collection<Service> getServices() {
+        return this.services;
+    };
 
     protected ItemRegistry getItemRegistry() {
         return itemRegistry;
@@ -102,5 +113,9 @@ abstract class AbstractHomekitAccessoryImpl<T extends GenericItem> implements Ho
 
     protected GenericItem getItem() {
         return (GenericItem) getItemRegistry().get(getItemName());
+    }
+
+    protected HomekitSettings getSettings() {
+        return settings;
     }
 }

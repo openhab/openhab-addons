@@ -12,16 +12,12 @@
  */
 package org.openhab.io.homekit.internal;
 
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.eclipse.smarthome.core.items.GroupItem;
 import org.eclipse.smarthome.core.items.Item;
-import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,70 +27,38 @@ import org.slf4j.LoggerFactory;
  * @author Andy Lintner - Initial contribution
  */
 public class HomekitTaggedItem {
-    class BadItemConfigurationException extends Exception {
-        private static final long serialVersionUID = 2199765638404197193L;
-
-        public BadItemConfigurationException(String reason) {
-            super(reason);
-        }
-    }
+    private static Logger logger = LoggerFactory.getLogger(HomekitTaggedItem.class);
 
     private static final Map<Integer, String> CREATED_ACCESSORY_IDS = new ConcurrentHashMap<>();
-
     /**
      * The type of HomekitDevice we've decided this was. If the item is question is the member of a group which is a
      * HomekitDevice, then this is null.
      */
+    private final Item item;
     private HomekitAccessoryType homekitAccessoryType;
     private HomekitCharacteristicType homekitCharacteristicType;
-    private final Item item;
-    private Logger logger = LoggerFactory.getLogger(HomekitTaggedItem.class);
-    private final int id;
     private GroupItem parentGroupItem;
+    private final int id;
 
-    public HomekitTaggedItem(Item item, ItemRegistry itemRegistry) {
+    public HomekitTaggedItem(Item item, HomekitAccessoryType homekitAccessoryType) {
         this.item = item;
 
-        try {
-            homekitAccessoryType = HomekitAccessoryType.fromItem(item);
-            homekitCharacteristicType = HomekitCharacteristicType.fromItem(item);
-            if (homekitAccessoryType != null && homekitCharacteristicType != null) {
-                throw new BadItemConfigurationException(
-                        "Items cannot be tagged as both a characteristic and an accessory type");
-            }
-            List<GroupItem> matchingGroupItems = findMyAccessoryGroups(item, itemRegistry);
-
-            switch (matchingGroupItems.size()) {
-                case 0: // Does not belong to a accessory group
-                    if (homekitCharacteristicType != null) {
-                        throw new BadItemConfigurationException(
-                                "Item is tagged as a characteristic, but does not belong to a root accessory group");
-                    }
-
-                    parentGroupItem = null;
-                    break;
-                case 1: // Belongs to exactly one accessory group
-                    if (item instanceof GroupItem) {
-                        throw new BadItemConfigurationException("Nested Accessory Groups are not supported");
-                    }
-
-                    parentGroupItem = matchingGroupItems.get(0);
-                    break;
-                default: // Belongs to more than one accessory group
-                    throw new BadItemConfigurationException(
-                            "Item belongs to multiple Groups which are tagged as Homekit devices.");
-            }
-        } catch (BadItemConfigurationException e) {
-            logger.warn("Item {} was misconfigured: {}. Excluding item from HomeKit.", item.getName(), e.getMessage());
-            homekitAccessoryType = null;
-            homekitCharacteristicType = null;
-            parentGroupItem = null;
-        }
+        this.parentGroupItem = null;
+        this.homekitAccessoryType = homekitAccessoryType;
+        this.homekitCharacteristicType = HomekitCharacteristicType.EMPTY;
         if (homekitAccessoryType != null) {
             this.id = calculateId(item);
         } else {
             this.id = 0;
         }
+    }
+    public HomekitTaggedItem(Item item, HomekitAccessoryType homekitAccessoryType, HomekitCharacteristicType homekitCharacteristicType) {
+        this(item, homekitAccessoryType);
+        this.homekitCharacteristicType = homekitCharacteristicType;
+    }
+    public HomekitTaggedItem(Item item, HomekitAccessoryType homekitAccessoryType, HomekitCharacteristicType homekitCharacteristicType, GroupItem parentGroup) {
+        this(item, homekitAccessoryType, homekitCharacteristicType);
+        this.parentGroupItem = parentGroup;
     }
 
     public boolean isTagged() {
@@ -128,7 +92,7 @@ public class HomekitTaggedItem {
      * root deviceGroup.
      */
     public boolean isCharacteristic() {
-        return homekitCharacteristicType != null;
+        return homekitCharacteristicType != null && homekitCharacteristicType != HomekitCharacteristicType.EMPTY;
     }
 
     public Item getItem() {
@@ -179,18 +143,5 @@ public class HomekitTaggedItem {
             CREATED_ACCESSORY_IDS.put(id, item.getName());
         }
         return id;
-    }
-
-    public static List<GroupItem> findMyAccessoryGroups(Item item, ItemRegistry itemRegistry) {
-        return item.getGroupNames().stream().flatMap(name -> {
-            Item groupItem = itemRegistry.get(name);
-            if ((groupItem != null) && (groupItem instanceof GroupItem)) {
-                return Stream.of((GroupItem) groupItem);
-            } else {
-                return Stream.empty();
-            }
-        }).filter(groupItem -> {
-            return groupItem.getTags().stream().filter(gt -> HomekitAccessoryType.valueOfTag(gt) != null).count() > 0;
-        }).collect(Collectors.toList());
     }
 }

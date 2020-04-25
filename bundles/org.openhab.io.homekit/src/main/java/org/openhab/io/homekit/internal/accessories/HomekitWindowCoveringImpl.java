@@ -12,42 +12,46 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.eclipse.smarthome.core.library.items.RollershutterItem;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
+import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
-import io.github.hapjava.HomekitCharacteristicChangeCallback;
-import io.github.hapjava.accessories.BasicWindowCovering;
-import io.github.hapjava.accessories.properties.WindowCoveringPositionState;
+import io.github.hapjava.accessories.WindowCoveringAccessory;
+import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
+import io.github.hapjava.characteristics.impl.windowcovering.PositionStateEnum;
+import io.github.hapjava.services.impl.WindowCoveringService;
 
 /**
  *
  * @author epike - Initial contribution
  */
 public class HomekitWindowCoveringImpl extends AbstractHomekitAccessoryImpl<RollershutterItem>
-        implements BasicWindowCovering {
+    implements WindowCoveringAccessory {
 
-    public HomekitWindowCoveringImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
-            HomekitAccessoryUpdater updater) {
-        super(taggedItem, itemRegistry, updater, RollershutterItem.class);
+    public HomekitWindowCoveringImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics, ItemRegistry itemRegistry,
+            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
+        super(taggedItem, mandatoryCharacteristics, itemRegistry, updater, settings);
+        this.getServices().add(new WindowCoveringService(this));
     }
 
     @Override
     public CompletableFuture<Integer> getCurrentPosition() {
         PercentType value = getItem().getStateAs(PercentType.class);
         if (value == null) {
-            return CompletableFuture.completedFuture(null);
+            return CompletableFuture.completedFuture(100);
         }
         return CompletableFuture.completedFuture(100 - value.intValue());
     }
 
     @Override
-    public CompletableFuture<WindowCoveringPositionState> getPositionState() {
-        return CompletableFuture.completedFuture(WindowCoveringPositionState.STOPPED);
+    public CompletableFuture<PositionStateEnum> getPositionState() {
+        return CompletableFuture.completedFuture(PositionStateEnum.STOPPED);
     }
 
     @Override
