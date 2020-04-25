@@ -84,7 +84,7 @@ Channel availabity depends on the electricity connection (single or three phase)
 `teleinfo.things` for a serial USB controller on `/dev/ttyUSB0` for a Single-phase Electricity meter with HC/HP option - CBEMM Evolution ICC:
 
 ```
-Bridge teleinfo:serialcontroller:teleinfoUSB [ serialport="/dev/ttyUSB21" ]{
+Bridge teleinfo:serialcontroller:teleinfoUSB [ serialport="/dev/ttyUSB0" ]{
     Thing cbemm_evolution_icc_hc_electricitymeter myElectricityMeter [ adco="031528042289"]
 }
 ```
