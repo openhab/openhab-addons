@@ -216,6 +216,8 @@ public class JdbcMapper {
         createItemsTableIfNot(new ItemsVO());
         if (conf.getRebuildTableNames()) {
             formatTableNames();
+            logger.info(
+                    "JDBC::checkDBSchema: Rebuild complete, configure the 'rebuildTableNames' setting to 'false' to stop rebuilds on startup");
         } else {
             List<ItemsVO> al;
             // Reset the error counter
@@ -339,8 +341,9 @@ public class JdbcMapper {
             }
         }
 
-        //
         updateItemTableNames(oldNewTablenames);
+        logger.info("JDBC::formatTableNames: Finished updating {} item table names", oldNewTablenames.size());
+
         initialized = tmpinit;
     }
 
