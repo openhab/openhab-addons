@@ -18,12 +18,12 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.Map;
 import java.util.TooManyListenersException;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -33,6 +33,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.io.transport.serial.PortInUseException;
@@ -75,6 +76,12 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
     private String serialPortName = "";
     private int baudRate;
     private @Nullable CaddxCommunicator communicator = null;
+
+    // Things served by the bridge
+    private Map<BigDecimal, Thing> thingZonesMap = new ConcurrentHashMap<>();
+    private Map<BigDecimal, Thing> thingPartitionsMap = new ConcurrentHashMap<>();
+    private Map<BigDecimal, Thing> thingKeypadsMap = new ConcurrentHashMap<>();
+    private @Nullable Thing thingPanel = null;
 
     public @Nullable CaddxDiscoveryService getDiscoveryService() {
         return discoveryService;
@@ -157,53 +164,23 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
 
     public @Nullable Thing findThing(CaddxThingType caddxThingType, @Nullable Integer partition, @Nullable Integer zone,
             @Nullable Integer keypad) {
-        List<Thing> things = getThing().getThings();
-
-        Thing thing = null;
-
-        for (Thing t : things) {
-            CaddxBaseThingHandler handler = (CaddxBaseThingHandler) t.getHandler();
-            if (handler == null) {
-                continue;
-            }
-
-            CaddxThingType handlerCaddxThingType = handler.getCaddxThingType();
-            if (!handlerCaddxThingType.equals(caddxThingType)) {
-                continue;
-            }
-
-            Configuration config = t.getConfiguration();
-            switch (handlerCaddxThingType) {
-                case PANEL:
-                    thing = t;
-                    return thing;
-                case KEYPAD:
-                    BigDecimal keypadAddress = (BigDecimal) config.get(CaddxKeypadConfiguration.KEYPAD_ADDRESS);
-                    if (keypad == keypadAddress.intValue()) {
-                        thing = t;
-                        return thing;
-                    }
-                    break;
-                case PARTITION:
-                    BigDecimal partitionNumber = (BigDecimal) config.get(CaddxPartitionConfiguration.PARTITION_NUMBER);
-                    if (partition == partitionNumber.intValue()) {
-                        thing = t;
-                        return thing;
-                    }
-                    break;
-                case ZONE:
-                    BigDecimal zoneNumber = (BigDecimal) config.get(CaddxZoneConfiguration.ZONE_NUMBER);
-                    if (zone == zoneNumber.intValue()) {
-                        thing = t;
-                        return thing;
-                    }
-                    break;
-                default:
-                    break;
-            }
+        switch (caddxThingType) {
+            case PARTITION:
+                if (partition != null) {
+                    return thingPartitionsMap.get(BigDecimal.valueOf(partition));
+                }
+            case ZONE:
+                if (zone != null) {
+                    return thingZonesMap.get(BigDecimal.valueOf(zone));
+                }
+            case KEYPAD:
+                if (keypad != null) {
+                    return thingKeypadsMap.get(BigDecimal.valueOf(keypad));
+                }
+            case PANEL:
+                return thingPanel;
         }
-
-        return thing;
+        return null;
     }
 
     @Override
@@ -351,20 +328,20 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
 
             // Find the thing
             Thing thing = findThing(caddxThingType, partition, zone, keypad);
-            CaddxDiscoveryService discoverService = getDiscoveryService();
+            CaddxDiscoveryService discoveryService = getDiscoveryService();
             if (thing != null) {
                 CaddxBaseThingHandler thingHandler = (CaddxBaseThingHandler) thing.getHandler();
                 if (thingHandler != null) {
                     thingHandler.caddxEventReceived(event, thing);
                 }
             } else {
-                if (discoverService != null) {
-                    discoverService.addThing(getThing(), caddxThingType, event);
+                if (discoveryService != null) {
+                    discoveryService.addThing(getThing(), caddxThingType, event);
                 }
             }
 
             // Handle specific messages that add multiple discovered things
-            if (discoverService != null) {
+            if (discoveryService != null) {
                 switch (caddxMessage.getCaddxMessageType()) {
                     case Partitions_Snapshot_Message:
                         for (int i = 1; i <= 8; i++) {
@@ -375,7 +352,7 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
                                 }
 
                                 event = new CaddxEvent(caddxMessage, i, null, null);
-                                discoverService.addThing(getThing(), CaddxThingType.PARTITION, event);
+                                discoveryService.addThing(getThing(), CaddxThingType.PARTITION, event);
                             }
                         }
                         break;
@@ -390,7 +367,7 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
                                 }
 
                                 event = new CaddxEvent(caddxMessage, null, zoneOffset + i, null);
-                                discoverService.addThing(getThing(), CaddxThingType.ZONE, event);
+                                discoveryService.addThing(getThing(), CaddxThingType.ZONE, event);
                             } else {
                                 logger.debug("troubled zone: {}", zoneOffset + i);
                             }
@@ -408,5 +385,43 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Collections.singleton(CaddxDiscoveryService.class);
+    }
+
+    @Override
+    public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
+        if (childHandler instanceof ThingHandlerPartition) {
+            BigDecimal id = (BigDecimal) childThing.getConfiguration()
+                    .get(CaddxPartitionConfiguration.PARTITION_NUMBER);
+            thingPartitionsMap.put(id, childThing);
+        } else if (childHandler instanceof ThingHandlerZone) {
+            BigDecimal id = (BigDecimal) childThing.getConfiguration().get(CaddxZoneConfiguration.ZONE_NUMBER);
+            thingZonesMap.put(id, childThing);
+        } else if (childHandler instanceof ThingHandlerKeypad) {
+            BigDecimal id = (BigDecimal) childThing.getConfiguration().get(CaddxKeypadConfiguration.KEYPAD_ADDRESS);
+            thingKeypadsMap.put(id, childThing);
+        } else if (childHandler instanceof ThingHandlerPanel) {
+            thingPanel = childThing;
+        }
+
+        super.childHandlerInitialized(childHandler, childThing);
+    }
+
+    @Override
+    public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
+        if (childHandler instanceof ThingHandlerPartition) {
+            BigDecimal id = (BigDecimal) childThing.getConfiguration()
+                    .get(CaddxPartitionConfiguration.PARTITION_NUMBER);
+            thingPartitionsMap.remove(id);
+        } else if (childHandler instanceof ThingHandlerZone) {
+            BigDecimal id = (BigDecimal) childThing.getConfiguration().get(CaddxZoneConfiguration.ZONE_NUMBER);
+            thingZonesMap.remove(id);
+        } else if (childHandler instanceof ThingHandlerKeypad) {
+            BigDecimal id = (BigDecimal) childThing.getConfiguration().get(CaddxKeypadConfiguration.KEYPAD_ADDRESS);
+            thingKeypadsMap.remove(id);
+        } else if (childHandler instanceof ThingHandlerPanel) {
+            thingPanel = null;
+        }
+
+        super.childHandlerDisposed(childHandler, childThing);
     }
 }
