@@ -49,7 +49,7 @@ public class EnergyInfo {
 
         // /aircon/get_week_power_ex
         // ret=OK,s_dayw=0,week_heat=1/1/1/1/1/5/2/1/1/1/1/2/1/1,week_cool=0/0/0/0/0/0/0/0/0/0/0/0/0/0
-        // <today>/<today-1>/<today-2>/<today-3>/...
+        // week_heat=<today>/<today-1>/<today-2>/<today-3>/...
         Map<String, String> responseMap = Arrays.asList(response.split(",")).stream().filter(kv -> kv.contains("="))
                 .map(kv -> {
                     String[] keyValue = kv.split("=");
@@ -77,6 +77,7 @@ public class EnergyInfo {
             info.energyHeatingThisWeek = Optional.of(thisWeekEnergy/10);
             info.energyHeatingLastWeek = Optional.of(previousWeekEnergy/10);
             
+            logger.debug("energyHeatingToday {}", info.energyHeatingToday);
             logger.debug("energyHeatingThisWeek {}", info.energyHeatingThisWeek);
             logger.debug("energyHeatingLastWeek {}", info.energyHeatingLastWeek );  
             

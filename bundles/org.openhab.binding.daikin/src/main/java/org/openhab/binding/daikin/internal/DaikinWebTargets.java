@@ -59,7 +59,6 @@ public class DaikinWebTargets {
         setControlInfoUri = baseUri + "aircon/set_control_info";
         getControlInfoUri = baseUri + "aircon/get_control_info";
         getSensorInfoUri = baseUri + "aircon/get_sensor_info";
-        //getEnergyInfoUri = baseUri + "aircon/get_day_power_ex";
         getEnergyInfoUri = baseUri + "aircon/get_week_power_ex";
 
         //Daikin Airbase API
