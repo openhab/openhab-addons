@@ -24,8 +24,8 @@
 
 		<config-description>
 			<parameter name="adco" type="text" required="true">
-				<label>adco</label>
-				<description>Delivery point identifier</description>
+				<label>ADCO</label>
+				<description>Electricity meter identifier</description>
 				<limitToOptions>false</limitToOptions>
 			</parameter>
 		</config-description>

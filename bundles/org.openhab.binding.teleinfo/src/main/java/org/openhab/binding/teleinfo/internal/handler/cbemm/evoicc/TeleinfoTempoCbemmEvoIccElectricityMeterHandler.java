@@ -37,7 +37,7 @@ public class TeleinfoTempoCbemmEvoIccElectricityMeterHandler
     public void onFrameReceived(@NonNull TeleinfoAbstractControllerHandler controllerHandler, @NonNull Frame frame) {
         final FrameCbemmEvolutionIccTempoOption frameCbemmEvoIccTempoOption = (FrameCbemmEvolutionIccTempoOption) frame;
 
-        String adco = getThing().getProperties().get(THING_TEMPO_CBEMM_EVO_ICC_ELECTRICITY_METER_PROPERTY_ADCO);
+        String adco = (String) getThing().getConfiguration().get(THING_TEMPO_CBEMM_EVO_ICC_ELECTRICITY_METER_PROPERTY_ADCO);
         if (adco.equalsIgnoreCase(frameCbemmEvoIccTempoOption.getAdco())) {
             updateStatesForCommonCbemmEvolutionIccChannels(frameCbemmEvoIccTempoOption);
             updateStatesForTempoFrameOption(frameCbemmEvoIccTempoOption);
