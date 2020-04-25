@@ -23,17 +23,29 @@ You can also manually add a new item if you know the IP address.
 The temperature channels have a precision of one half degree Celsius.
 For the BRP072A42:
 
-| Channel Name | Description |
-|--------------|---------------------------------------------------------------------------------------------|
-| power        | Turns the power on/off for the air conditioning unit.                                       |
-| settemp      | The temperature set for the air conditioning unit.                                          |
-| indoortemp   | The indoor temperature as measured by the unit.                                             |
-| outdoortemp  | The outdoor temperature as measured by the external part of the air conditioning system. May not be available when unit is off. |
-| humidity     | The indoor humidity as measured by the unit. This is not available on all units.            |
-| mode         | The mode set for the unit (AUTO, DEHUMIDIFIER, COLD, HEAT, FAN)                             |
-| homekit mode | A mode that is compatible with homekit/alexa/google home (off, auto, heat, cool)            |
-| fanspeed     | The fan speed set for the unit (AUTO, SILENCE, LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5) |
-| fandir       | The fan blade direction (STOPPED, VERTICAL, HORIZONTAL, VERTICAL_AND_HORIZONTAL)            |
+| Channel Name          | Description |
+|-----------------------|---------------------------------------------------------------------------------------------|
+| power                 | Turns the power on/off for the air conditioning unit.                                       |
+| settemp               | The temperature set for the air conditioning unit.                                          |
+| indoortemp            | The indoor temperature as measured by the unit.                                             |
+| outdoortemp           | The outdoor temperature as measured by the external part of the air conditioning system. May not be available when unit is off. |
+| humidity              | The indoor humidity as measured by the unit. This is not available on all units.            |
+| mode                  | The mode set for the unit (AUTO, DEHUMIDIFIER, COLD, HEAT, FAN)                             |
+| homekit mode          | A mode that is compatible with homekit/alexa/google home (off, auto, heat, cool)            |
+| fanspeed              | The fan speed set for the unit (AUTO, SILENCE, LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5) |
+| fandir                | The fan blade direction (STOPPED, VERTICAL, HORIZONTAL, VERTICAL_AND_HORIZONTAL)            |
+| energyheatingtoday    | The energy usage of the unit today
+|
+| energyheatingthisweek | The energy usage of the unit this week (week starts Sunday)
+|
+| energyheatinglastweek | The energy usage of the unit last week (Sunday till Saturday)
+|
+| energycoolingtoday    | The energy usage of the unit today
+|
+| energycoolingthisweek | The energy usage of the unit this week (week starts Sunday)
+|
+| energycoolinglastweek | The energy usage of the unit last week (Sunday till Saturday)
+|
 
 For the BRP15B61:
 
