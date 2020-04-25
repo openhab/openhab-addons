@@ -5,11 +5,11 @@ This binding add support for the WlanThermo BBQ Thermometer.
 
 ## Supported Things
 
-This binding supports all version of WlanThermo, namely:
- - Mini V1
- - Mini V2
- - Nano V1
+This binding supports the following version of WlanThermo:
+ - Nano V1 (untested, but should be working)
  - Nano V1+
+ 
+ Version Mini V1 and Mini V2 are untested and may be incompatible. Please contact the author of this binding.
 
 For all devices, the binding provides general data about the connected probes of each channel:
 - name (r/w)
