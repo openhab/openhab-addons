@@ -302,8 +302,10 @@ public class JdbcBaseDAO {
      * ITEM DAOs *
      *************/
     public void doUpdateItemTableNames(List<ItemVO> vol) {
-        String sql = updateItemTableNamesProvider(vol);
-        Yank.execute(sql, null);
+        if (!vol.isEmpty()) {
+            String sql = updateItemTableNamesProvider(vol);
+            Yank.execute(sql, null);
+        }
     }
 
     public void doCreateItemTable(ItemVO vo) {
