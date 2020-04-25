@@ -13,10 +13,10 @@
 package org.openhab.binding.mihome.internal.socket;
 
 import java.io.IOException;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,35 +26,37 @@ import org.slf4j.LoggerFactory;
  * @author Dieter Schmidt - Initial contribution
  *
  */
+@NonNullByDefault
 public class XiaomiBridgeSocket extends XiaomiSocket {
 
     private final Logger logger = LoggerFactory.getLogger(XiaomiBridgeSocket.class);
 
-    public XiaomiBridgeSocket(int port) {
-        super(port);
+    public XiaomiBridgeSocket(int port, String owner) {
+        super(port, owner);
     }
 
     /**
      * Sets up the {@link XiaomiBridgeSocket}.
      *
      * Connects the socket to the specific multicast address and port.
-     * Starts the {@link ReceiverThread} for the socket.
      */
     @Override
-    synchronized DatagramSocket setupSocket() {
-        DatagramSocket openSocket = getOpenSockets().get(getPort());
-        if (openSocket != null) {
-            return openSocket;
+    protected synchronized void setupSocket() {
+        MulticastSocket socket = (MulticastSocket) getSocket();
+        if (socket != null) {
+            logger.debug("Socket already setup");
+            return;
         }
+
         try {
             logger.debug("Setup socket");
-            setSocket(new MulticastSocket(getPort())); // must bind receive side
-            ((MulticastSocket) getSocket()).joinGroup(InetAddress.getByName(MCAST_ADDR));
-            logger.debug("Initialized socket to {}:{} on {}:{}", getSocket().getRemoteSocketAddress(),
-                    getSocket().getPort(), getSocket().getLocalAddress(), getSocket().getLocalPort());
+            socket = new MulticastSocket(getPort());
+            setSocket(socket); // must bind receive side
+            socket.joinGroup(InetAddress.getByName(MCAST_ADDR));
+            logger.debug("Initialized socket to {}:{} on {}:{}", socket.getRemoteSocketAddress(), socket.getPort(),
+                    socket.getLocalAddress(), socket.getLocalPort());
         } catch (IOException e) {
             logger.error("Setup socket error", e);
         }
-        return getSocket();
     }
 }
