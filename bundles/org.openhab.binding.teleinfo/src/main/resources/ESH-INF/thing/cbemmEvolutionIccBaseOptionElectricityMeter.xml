@@ -20,9 +20,13 @@
 			<channel id="base" typeId="baseType" />
 		</channels>
 
-		<properties>
-			<property name="adco">adco</property>
-		</properties>
+		<config-description>
+			<parameter name="adco" type="text" required="true">
+				<label>ADCO</label>
+				<description>Electricity meter identifier</description>
+				<limitToOptions>false</limitToOptions>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 </thing:thing-descriptions>

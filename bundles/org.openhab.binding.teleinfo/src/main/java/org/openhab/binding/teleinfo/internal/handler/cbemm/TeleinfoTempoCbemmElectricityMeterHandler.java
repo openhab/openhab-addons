@@ -36,7 +36,7 @@ public class TeleinfoTempoCbemmElectricityMeterHandler extends TeleinfoAbstractC
     public void onFrameReceived(@NonNull TeleinfoAbstractControllerHandler controllerHandler, @NonNull Frame frame) {
         final FrameCbemmTempoOption frameCbemmTempoOption = (FrameCbemmTempoOption) frame;
 
-        String adco = getThing().getProperties().get(THING_TEMPO_CBEMM_ELECTRICITY_METER_PROPERTY_ADCO);
+        String adco = (String) getThing().getConfiguration().get(THING_TEMPO_CBEMM_ELECTRICITY_METER_PROPERTY_ADCO);
         if (adco.equalsIgnoreCase(frameCbemmTempoOption.getAdco())) {
             updateStatesForCommonCbemmChannels(frameCbemmTempoOption);
             updateStatesForTempoFrameOption(frameCbemmTempoOption);
