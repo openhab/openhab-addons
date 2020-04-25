@@ -41,7 +41,7 @@ Before the binding can be used, a serial controller must be added. This needs to
 | Thing type                                | Parameter  | Meaning                               | Possible values |
 |-------------------------------------------|------------|---------------------------------------|----------------|
 | SerialController                          | serialPort | Path to the serial controller         | /dev/ttyXXXX   |
-| cbe`<phase>`m_`<icc>`_`<mode>`_electricitymeter | adco       | Electricity meter identifier | 031728832562   |
+| cbe`<phase>`m_`<icc>`_`<mode>`_electricitymeter | adco       | Electricity meter identifier | 12 digits number |
 
 ## Channels
 
