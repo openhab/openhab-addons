@@ -36,12 +36,12 @@ The Teleinfo binding provides support for single phase and three phase connectio
 
 ## Thing Configuration
 
-Before the binding can be used, a serial controller must be added. This needs to be done manually. Select __Teleinfo Serial Controller__ and enter the serial port. Once the serial controller added, electricity meters will be automatically discovered and a new thing labelled __Teleinfo ADCO #id__ will be created (where __#id__ is  your delivery point identifier).
+Before the binding can be used, a serial controller must be added. This needs to be done manually. Select __Teleinfo Serial Controller__ and enter the serial port. Once the serial controller added, electricity meters will be automatically discovered and a new thing labelled __Teleinfo ADCO #id__ will be created where __#id__ is  your electricity meter identifier.
 
 | Thing type                                | Parameter  | Meaning                               | Possible values |
 |-------------------------------------------|------------|---------------------------------------|----------------|
 | SerialController                          | serialPort | Path to the serial controller         | /dev/ttyXXXX   |
-| cbe`<phase>`m_`<icc>`_`<mode>`_electricitymeter | adco       | Electricity delivery point identifier | 031728832562   |
+| cbe`<phase>`m_`<icc>`_`<mode>`_electricitymeter | adco       | Electricity meter identifier | 031728832562   |
 
 ## Channels
 
