@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="daikin" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="daikin"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="ac_unit">
 		<label>Daikin AC Unit</label>
-		<description>Daikin AC Unit</description>
+		<description>Daikin AC Unit XYZ</description>
 
 		<channels>
 			<channel id="power" typeId="acunit-power" />
@@ -16,9 +17,22 @@
 			<channel id="mode" typeId="acunit-mode" />
 			<channel id="fanspeed" typeId="acunit-fan" />
 			<channel id="fandir" typeId="acunit-fandir" />
+			<channel id="energyheatingtoday"
+				typeId="acunit-energyheatingtoday" />
+			<channel id="energyheatingthisweek"
+				typeId="acunit-energyheatingthisweek" />
+			<channel id="energyheatinglastweek"
+				typeId="acunit-energyheatinglastweek" />
+			<channel id="energycoolingtoday"
+				typeId="acunit-energycoolingtoday" />
+			<channel id="energycoolingthisweek"
+				typeId="acunit-energycoolingthisweek" />
+			<channel id="energycoolinglastweek"
+				typeId="acunit-energycoolinglastweek" />
 		</channels>
 
-		<config-description-ref uri="thing-type:daikin:config" />
+		<config-description-ref
+			uri="thing-type:daikin:config" />
 	</thing-type>
 
 	<thing-type id="airbase_ac_unit">
@@ -43,7 +57,8 @@
 
 		</channels>
 
-		<config-description-ref uri="thing-type:daikin:config" />
+		<config-description-ref
+			uri="thing-type:daikin:config" />
 	</thing-type>
 
 	<channel-type id="acunit-power">
@@ -114,7 +129,7 @@
 			</options>
 		</state>
 	</channel-type>
-	
+
 	<channel-type id="acunit-fandir">
 		<item-type>String</item-type>
 		<label>Fan Swing</label>
@@ -127,6 +142,60 @@
 				<option value="VERTICAL_AND_HORIZONTAL">vertical and horizontal</option>
 			</options>
 		</state>
+	</channel-type>
+
+	<channel-type id="acunit-energyheatingtoday"
+		advanced="false">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Heating Today</label>
+		<description>The energy usage for heating today</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="acunit-energyheatingthisweek"
+		advanced="false">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Heating This Week</label>
+		<description>The energy usage for heating this week</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="acunit-energyheatinglastweek"
+		advanced="false">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Heating Last Week</label>
+		<description>The energy usage for heating last week</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="acunit-energycoolingtoday"
+		advanced="false">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling Today</label>
+		<description>The energy usage for cooling today</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="acunit-energycoolingthisweek"
+		advanced="false">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling This Week</label>
+		<description>The energy usage for cooling this week</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="acunit-energycoolinglastweek"
+		advanced="false">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling Last Week</label>
+		<description>The energy usage for cooling last week</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="airbase-acunit-fan">

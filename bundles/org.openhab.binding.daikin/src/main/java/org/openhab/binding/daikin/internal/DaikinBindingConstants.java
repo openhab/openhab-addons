@@ -45,6 +45,12 @@ public class DaikinBindingConstants {
     public static final String CHANNEL_AC_FAN_SPEED = "fanspeed";
     public static final String CHANNEL_AC_FAN_DIR = "fandir";
     public static final String CHANNEL_HUMIDITY = "humidity";
+    public static final String CHANNEL_ENERGY_HEATING_TODAY = "energyheatingtoday";
+    public static final String CHANNEL_ENERGY_HEATING_THISWEEK = "energyheatingthisweek";
+    public static final String CHANNEL_ENERGY_HEATING_LASTWEEK = "energyheatinglastweek";
+    public static final String CHANNEL_ENERGY_COOLING_TODAY = "energycoolingtoday";   
+    public static final String CHANNEL_ENERGY_COOLING_THISWEEK = "energycoolingthisweek";
+    public static final String CHANNEL_ENERGY_COOLING_LASTWEEK = "energycoolinglastweek";    
 
     // additional channels for Airbase Controller
     public static final String CHANNEL_AIRBASE_AC_FAN_SPEED = "airbasefanspeed";

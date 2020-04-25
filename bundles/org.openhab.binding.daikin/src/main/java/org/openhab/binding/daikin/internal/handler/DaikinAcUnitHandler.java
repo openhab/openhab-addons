@@ -25,6 +25,7 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -41,6 +42,7 @@ import org.openhab.binding.daikin.internal.api.ControlInfo;
 import org.openhab.binding.daikin.internal.api.Enums.FanMovement;
 import org.openhab.binding.daikin.internal.api.Enums.FanSpeed;
 import org.openhab.binding.daikin.internal.api.Enums.Mode;
+import org.openhab.binding.daikin.internal.api.EnergyInfo;
 import org.openhab.binding.daikin.internal.api.SensorInfo;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseEnums.AirbaseFanSpeed;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseEnums.AirbaseMode;
@@ -56,7 +58,8 @@ import org.slf4j.LoggerFactory;
  * Handles communicating with a Daikin air conditioning unit.
  *
  * @author Tim Waterhouse - Initial Contribution
- * @author Paul Smedley <paul@smedley.id.au> - Modifications to support Airbase Controllers
+ * @author Paul Smedley <paul@smedley.id.au> - Modifications to support Airbase
+ *         Controllers
  *
  */
 public class DaikinAcUnitHandler extends BaseThingHandler {
@@ -88,56 +91,56 @@ public class DaikinAcUnitHandler extends BaseThingHandler {
         String channelId = channelUID.getId();
 
         switch (channelUID.getId()) {
-            case DaikinBindingConstants.CHANNEL_AC_POWER:
-                if (command instanceof OnOffType) {
-                    changePower(((OnOffType) command).equals(OnOffType.ON));
-                    return;
-                }
-                break;
-            case DaikinBindingConstants.CHANNEL_AC_TEMP:
-                if (changeSetPoint(command)) {
-                    return;
-                }
-                break;
-            case DaikinBindingConstants.CHANNEL_AIRBASE_AC_FAN_SPEED:
-                if (command instanceof StringType) {
-                    changeAirbaseFanSpeed(AirbaseFanSpeed.valueOf(((StringType) command).toString()));
-                    return;
-                }
-                break;
-            case DaikinBindingConstants.CHANNEL_AC_FAN_SPEED:
-                if (command instanceof StringType) {
-                    changeFanSpeed(FanSpeed.valueOf(((StringType) command).toString()));
-                    return;
-                }
-                break;
-            case DaikinBindingConstants.CHANNEL_AC_FAN_DIR:
-                if (command instanceof StringType) {
-                    changeFanDir(FanMovement.valueOf(((StringType) command).toString()));
-                    return;
-                }
-                break;
-            case DaikinBindingConstants.CHANNEL_AC_MODE:
-                if (command instanceof StringType) {
+        case DaikinBindingConstants.CHANNEL_AC_POWER:
+            if (command instanceof OnOffType) {
+                changePower(((OnOffType) command).equals(OnOffType.ON));
+                return;
+            }
+            break;
+        case DaikinBindingConstants.CHANNEL_AC_TEMP:
+            if (changeSetPoint(command)) {
+                return;
+            }
+            break;
+        case DaikinBindingConstants.CHANNEL_AIRBASE_AC_FAN_SPEED:
+            if (command instanceof StringType) {
+                changeAirbaseFanSpeed(AirbaseFanSpeed.valueOf(((StringType) command).toString()));
+                return;
+            }
+            break;
+        case DaikinBindingConstants.CHANNEL_AC_FAN_SPEED:
+            if (command instanceof StringType) {
+                changeFanSpeed(FanSpeed.valueOf(((StringType) command).toString()));
+                return;
+            }
+            break;
+        case DaikinBindingConstants.CHANNEL_AC_FAN_DIR:
+            if (command instanceof StringType) {
+                changeFanDir(FanMovement.valueOf(((StringType) command).toString()));
+                return;
+            }
+            break;
+        case DaikinBindingConstants.CHANNEL_AC_MODE:
+            if (command instanceof StringType) {
 
-                    if (thingTypeUID.equals(DaikinBindingConstants.THING_TYPE_AC_UNIT))
-                        changeMode(Mode.valueOf(((StringType) command).toString()));
-                    else
-                        changeAirbaseMode(AirbaseMode.valueOf(((StringType) command).toString()));
-                    return;
-                }
-                break;
+                if (thingTypeUID.equals(DaikinBindingConstants.THING_TYPE_AC_UNIT))
+                    changeMode(Mode.valueOf(((StringType) command).toString()));
+                else
+                    changeAirbaseMode(AirbaseMode.valueOf(((StringType) command).toString()));
+                return;
+            }
+            break;
         }
         /* additional controls for Daikin Airbase */
         if (channelId.startsWith(DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE)) {
             int zoneNumber = Integer.parseInt(channelUID.getId().substring(4));
             if (command instanceof OnOffType) {
-                 changeZone(zoneNumber, command == OnOffType.ON);
-                 return;
+                changeZone(zoneNumber, command == OnOffType.ON);
+                return;
             }
         }
-        logger.debug("Received command ({}) of wrong type for thing '{}' on channel {}", command, thing.getUID().getAsString(),
-                channelUID.getId());
+        logger.debug("Received command ({}) of wrong type for thing '{}' on channel {}", command,
+                thing.getUID().getAsString(), channelUID.getId());
     }
 
     @Override
@@ -225,6 +228,16 @@ public class DaikinAcUnitHandler extends BaseThingHandler {
                 updateState(DaikinBindingConstants.CHANNEL_HUMIDITY, UnDefType.UNDEF);
             }
         }
+
+        EnergyInfo energyUsageInfo = webTargets.getEnergyInfo();
+        if (energyUsageInfo != null) {
+            updateEnergyChannel(DaikinBindingConstants.CHANNEL_ENERGY_HEATING_TODAY, energyUsageInfo.energyHeatingToday);
+            updateEnergyChannel(DaikinBindingConstants.CHANNEL_ENERGY_HEATING_THISWEEK, energyUsageInfo.energyHeatingThisWeek);
+            updateEnergyChannel(DaikinBindingConstants.CHANNEL_ENERGY_HEATING_LASTWEEK, energyUsageInfo.energyHeatingLastWeek);
+            updateEnergyChannel(DaikinBindingConstants.CHANNEL_ENERGY_COOLING_TODAY, energyUsageInfo.energyCoolingToday);
+            updateEnergyChannel(DaikinBindingConstants.CHANNEL_ENERGY_COOLING_THISWEEK, energyUsageInfo.energyCoolingThisWeek);
+            updateEnergyChannel(DaikinBindingConstants.CHANNEL_ENERGY_COOLING_LASTWEEK, energyUsageInfo.energyCoolingLastWeek);
+        }
     }
 
     private void pollAirbaseStatus() throws IOException {
@@ -234,7 +247,8 @@ public class DaikinAcUnitHandler extends BaseThingHandler {
             updateState(DaikinBindingConstants.CHANNEL_AC_POWER, controlInfo.power ? OnOffType.ON : OnOffType.OFF);
             updateTemperatureChannel(DaikinBindingConstants.CHANNEL_AC_TEMP, controlInfo.temp);
             updateState(DaikinBindingConstants.CHANNEL_AC_MODE, new StringType(controlInfo.mode.name()));
-            updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_FAN_SPEED, new StringType(controlInfo.fanSpeed.name()));
+            updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_FAN_SPEED,
+                    new StringType(controlInfo.fanSpeed.name()));
         }
 
         SensorInfo sensorInfo = webTargets.getAirbaseSensorInfo();
@@ -245,30 +259,40 @@ public class DaikinAcUnitHandler extends BaseThingHandler {
         }
         AirbaseZoneInfo zoneInfo = webTargets.getAirbaseZoneInfo();
         if (zoneInfo != null) {
-            IntStream.range(0, zoneInfo.zone.length).forEach(
-            idx -> updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE + idx, OnOffType.from(zoneInfo.zone[idx])));
+            IntStream.range(0, zoneInfo.zone.length)
+                    .forEach(idx -> updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE + idx,
+                            OnOffType.from(zoneInfo.zone[idx])));
         }
     }
 
     private void updateTemperatureChannel(String channel, Optional<Double> maybeTemperature) {
         updateState(channel,
-                maybeTemperature.<State> map(t -> new QuantityType<Temperature>(new DecimalType(t), SIUnits.CELSIUS))
+                maybeTemperature.<State>map(t -> new QuantityType<Temperature>(new DecimalType(t), SIUnits.CELSIUS))
                         .orElse(UnDefType.UNDEF));
+    }
+
+    //new QuantityType<>(realtime.getTotal(), SmartHomeUnits.KILOWATT_HOUR);
+    
+    private void updateEnergyChannel(String channel, Optional<Double> maybeEnergy) {
+        logger.debug("unit {}", SmartHomeUnits.KILOWATT_HOUR);
+        updateState(channel,
+                maybeEnergy.<State>map(t -> new QuantityType<>(new DecimalType(t), SmartHomeUnits.KILOWATT_HOUR))
+                        .orElse(UnDefType.UNDEF));    
     }
 
     private void changePower(boolean power) throws DaikinCommunicationException {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(DaikinBindingConstants.THING_TYPE_AC_UNIT)) {
-           // handle Daikin
-           ControlInfo info = webTargets.getControlInfo();
-           info.power = power;
-           webTargets.setControlInfo(info);
+            // handle Daikin
+            ControlInfo info = webTargets.getControlInfo();
+            info.power = power;
+            webTargets.setControlInfo(info);
         } else {
             // handle Airbase
-           AirbaseControlInfo info = webTargets.getAirbaseControlInfo();
-           info.power = power;
-           webTargets.setAirbaseControlInfo(info);
+            AirbaseControlInfo info = webTargets.getAirbaseControlInfo();
+            info.power = power;
+            webTargets.setAirbaseControlInfo(info);
 
         }
     }
@@ -286,7 +310,8 @@ public class DaikinAcUnitHandler extends BaseThingHandler {
             return false;
         }
 
-        // Only half degree increments are allowed, all others are silently rejected by the A/C units
+        // Only half degree increments are allowed, all others are silently rejected by
+        // the A/C units
         newTemperature = Math.round(newTemperature * 2) / 2.0;
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
@@ -330,19 +355,21 @@ public class DaikinAcUnitHandler extends BaseThingHandler {
         webTargets.setAirbaseControlInfo(info);
     }
 
-    // FanDir only supported on standard Daikin controllers, so don't need to detect what kind of thing we have
+    // FanDir only supported on standard Daikin controllers, so don't need to detect
+    // what kind of thing we have
     private void changeFanDir(FanMovement fanDir) throws DaikinCommunicationException {
         ControlInfo info = webTargets.getControlInfo();
         info.fanMovement = fanDir;
         webTargets.setControlInfo(info);
     }
 
-    // Zones only supported on Airbase, so don't need to detect what kind of thing we have
+    // Zones only supported on Airbase, so don't need to detect what kind of thing
+    // we have
     private void changeZone(int zone, boolean command) throws DaikinCommunicationException {
         AirbaseZoneInfo info = webTargets.getAirbaseZoneInfo();
         AirbaseModelInfo modelInfo = webTargets.getAirbaseModelInfo();
         info.zone[zone] = command;
-        if (modelInfo.zonespresent >=zone) {
+        if (modelInfo.zonespresent >= zone) {
             webTargets.setAirbaseZoneInfo(info, modelInfo);
         }
     }
