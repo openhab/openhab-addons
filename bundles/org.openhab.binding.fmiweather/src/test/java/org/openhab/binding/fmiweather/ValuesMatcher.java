@@ -33,7 +33,11 @@ public class ValuesMatcher extends TypeSafeMatcher<@Nullable BigDecimal[]> {
     private Object[] values;
 
     public ValuesMatcher(@Nullable String... values) {
-        this.values = Stream.of(values).map(s -> s == null ? null : new BigDecimal(s)).toArray();
+        this.values = Stream.of(values).map(s -> stringToBigDecimal(s)).toArray();
+    }
+
+    private static @Nullable BigDecimal stringToBigDecimal(@Nullable String s) {
+        return s == null ? null : new BigDecimal(s);
     }
 
     @SuppressWarnings("null")
