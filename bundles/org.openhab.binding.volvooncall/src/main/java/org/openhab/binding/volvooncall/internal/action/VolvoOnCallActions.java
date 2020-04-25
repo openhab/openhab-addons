@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.volvooncall.internal.action;
 
-import java.util.Optional;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.binding.ThingActions;
@@ -37,7 +35,7 @@ public class VolvoOnCallActions implements ThingActions {
 
     private final Logger logger = LoggerFactory.getLogger(VolvoOnCallActions.class);
 
-    private Optional<VehicleHandler> handler = Optional.empty();
+    private @Nullable VehicleHandler handler;
 
     public VolvoOnCallActions() {
         logger.info("Volvo On Call actions service instanciated");
@@ -46,20 +44,20 @@ public class VolvoOnCallActions implements ThingActions {
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
         if (handler instanceof VehicleHandler) {
-            this.handler = Optional.of((VehicleHandler) handler);
+            this.handler = (VehicleHandler) handler;
         }
     }
 
     @Override
     public @Nullable ThingHandler getThingHandler() {
-        return handler.get();
+        return this.handler;
     }
 
     @RuleAction(label = "Volvo On Call : Close", description = "Closes the car")
     public void closeCarCommand() {
         logger.debug("closeCarCommand called");
-        if (handler.isPresent()) {
-            handler.get().actionClose();
+        if (handler != null) {
+            handler.actionClose();
         } else {
             logger.warn("VolvoOnCall Action service ThingHandler is null!");
         }
@@ -76,8 +74,8 @@ public class VolvoOnCallActions implements ThingActions {
     @RuleAction(label = "Volvo On Call : Open", description = "Opens the car")
     public void openCarCommand() {
         logger.debug("openCarCommand called");
-        if (handler.isPresent()) {
-            handler.get().actionOpen();
+        if (handler != null) {
+            handler.actionOpen();
         } else {
             logger.warn("VolvoOnCall Action service ThingHandler is null!");
         }
@@ -94,8 +92,8 @@ public class VolvoOnCallActions implements ThingActions {
     @RuleAction(label = "Volvo On Call : Start Engine", description = "Starts the engine")
     public void engineStartCommand(@ActionInput(name = "runtime", label = "Runtime") @Nullable Integer runtime) {
         logger.debug("engineStartCommand called");
-        if (handler.isPresent()) {
-            handler.get().actionStart(runtime != null ? runtime : 5);
+        if (handler != null) {
+            handler.actionStart(runtime != null ? runtime : 5);
         } else {
             logger.warn("VolvoOnCall Action service ThingHandler is null!");
         }
@@ -112,8 +110,8 @@ public class VolvoOnCallActions implements ThingActions {
     @RuleAction(label = "Volvo On Call : Heater Start", description = "Starts car heater")
     public void heaterStartCommand() {
         logger.debug("heaterStartCommand called");
-        if (handler.isPresent()) {
-            handler.get().actionHeater(true);
+        if (handler != null) {
+            handler.actionHeater(true);
         } else {
             logger.warn("VolvoOnCall Action service ThingHandler is null!");
         }
@@ -130,8 +128,8 @@ public class VolvoOnCallActions implements ThingActions {
     @RuleAction(label = "Volvo On Call : Preclimatization Start", description = "Starts car heater")
     public void preclimatizationStartCommand() {
         logger.debug("preclimatizationStartCommand called");
-        if (handler.isPresent()) {
-            handler.get().actionPreclimatization(true);
+        if (handler != null) {
+            handler.actionPreclimatization(true);
         } else {
             logger.warn("VolvoOnCall Action service ThingHandler is null!");
         }
@@ -148,8 +146,8 @@ public class VolvoOnCallActions implements ThingActions {
     @RuleAction(label = "Volvo On Call : Heater Stop", description = "Stops car heater")
     public void heaterStopCommand() {
         logger.debug("heaterStopCommand called");
-        if (handler.isPresent()) {
-            handler.get().actionHeater(false);
+        if (handler != null) {
+            handler.actionHeater(false);
         } else {
             logger.warn("VolvoOnCall Action service ThingHandler is null!");
         }
@@ -166,8 +164,8 @@ public class VolvoOnCallActions implements ThingActions {
     @RuleAction(label = "Volvo On Call : Preclimatization Stop", description = "Stops car heater")
     public void preclimatizationStopCommand() {
         logger.debug("preclimatizationStopCommand called");
-        if (handler.isPresent()) {
-            handler.get().actionPreclimatization(false);
+        if (handler != null) {
+            handler.actionPreclimatization(false);
         } else {
             logger.warn("VolvoOnCall Action service ThingHandler is null!");
         }
@@ -185,8 +183,8 @@ public class VolvoOnCallActions implements ThingActions {
     public void honkBlinkCommand(@ActionInput(name = "honk", label = "Honk") Boolean honk,
             @ActionInput(name = "blink", label = "Blink") Boolean blink) {
         logger.debug("honkBlinkCommand called");
-        if (handler.isPresent()) {
-            handler.get().actionHonkBlink(honk, blink);
+        if (handler != null) {
+            handler.actionHonkBlink(honk, blink);
         } else {
             logger.warn("VolvoOnCall Action service ThingHandler is null!");
         }

@@ -17,6 +17,7 @@ import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstan
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 
 /**
@@ -40,11 +41,11 @@ public class Status {
     public @NonNullByDefault({}) OnOffType engineRunning;
     public @NonNullByDefault({}) String brakeFluid;
     public @NonNullByDefault({}) String washerFluidLevel;
-    private @NonNullByDefault({}) WindowsStatus windows;
-    private @NonNullByDefault({}) DoorsStatus doors;
-    private @NonNullByDefault({}) TyrePressure tyrePressure;
-    private @NonNullByDefault({}) HvBattery hvBattery;
-    private @NonNullByDefault({}) Heater heater;
+    private @Nullable WindowsStatus windows;
+    private @Nullable DoorsStatus doors;
+    private @Nullable TyrePressure tyrePressure;
+    private @Nullable HvBattery hvBattery;
+    private @Nullable Heater heater;
     public @NonNullByDefault({}) String serviceWarningStatus;
 
     public Optional<WindowsStatus> getWindows() {
