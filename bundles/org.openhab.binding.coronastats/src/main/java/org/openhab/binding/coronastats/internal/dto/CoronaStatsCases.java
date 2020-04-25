@@ -17,10 +17,14 @@ import static org.openhab.binding.coronastats.internal.CoronaStatsBindingConstan
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.measure.quantity.Dimensionless;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+
+import tec.uom.se.AbstractUnit;
 
 /**
  * The {@link CoronaStatsCountry} class holds the internal data representation of each Country
@@ -55,7 +59,7 @@ public class CoronaStatsCases {
         if (count == -1) {
             return UnDefType.NULL;
         } else {
-            return new DecimalType(count);
+            return new QuantityType<Dimensionless>(count, AbstractUnit.ONE);
         }
     }
 }
