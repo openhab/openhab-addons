@@ -70,8 +70,8 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
     @Override
     public void initialize() {
         ChannelUID currentDraw = new ChannelUID(thing.getUID(), "currentDraw");
-        ThingBuilder thingBuilder = editThing();
         if (thing.getChannel(currentDraw) == null) {
+            ThingBuilder thingBuilder = editThing();
             try {
                 getApi().currentDraw();
 
