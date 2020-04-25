@@ -206,5 +206,4 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
     /******************************
      * public Getters and Setters *
      ******************************/
-
 }

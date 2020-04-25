@@ -226,5 +226,4 @@ public class JdbcPersistenceService extends JdbcMapper implements QueryablePersi
     public List<PersistenceStrategy> getDefaultStrategies() {
         return Collections.emptyList();
     }
-
 }

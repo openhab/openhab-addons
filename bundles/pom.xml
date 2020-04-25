@@ -73,7 +73,7 @@
   </dependencies>
 
   <properties>
-    <dep.noembedding />
+    <dep.noembedding/>
   </properties>
 
   <build>

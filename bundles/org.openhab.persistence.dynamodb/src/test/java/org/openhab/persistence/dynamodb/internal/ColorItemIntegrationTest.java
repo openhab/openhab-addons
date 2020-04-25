@@ -85,5 +85,4 @@ public class ColorItemIntegrationTest extends AbstractTwoItemIntegrationTest {
     protected @Nullable State getQueryItemStateBetween() {
         return STATE_BETWEEN;
     }
-
 }

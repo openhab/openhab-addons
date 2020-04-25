@@ -556,5 +556,4 @@ public class DynamoDBPersistenceService extends AbstractBufferedPersistenceServi
     public List<PersistenceStrategy> getDefaultStrategies() {
         return List.of(PersistenceStrategy.Globals.RESTORE, PersistenceStrategy.Globals.CHANGE);
     }
-
 }

@@ -55,5 +55,4 @@ public interface DynamoDBItem<T> {
     void setTime(Date time);
 
     void accept(DynamoDBItemVisitor visitor);
-
 }

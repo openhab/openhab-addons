@@ -62,5 +62,4 @@ public class DynamoDBTableNameResolver {
         }
         return this.fromItem(dummy);
     }
-
 }

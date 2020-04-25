@@ -17,10 +17,10 @@ import java.util.Date;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.persistence.PersistenceItemInfo;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  * This is a Java bean used to persist item states with timestamps in the database.

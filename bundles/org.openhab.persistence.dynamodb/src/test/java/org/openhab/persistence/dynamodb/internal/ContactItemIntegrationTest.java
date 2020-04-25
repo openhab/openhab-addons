@@ -72,5 +72,4 @@ public class ContactItemIntegrationTest extends AbstractTwoItemIntegrationTest {
     protected @Nullable State getQueryItemStateBetween() {
         return STATE_BETWEEN;
     }
-
 }

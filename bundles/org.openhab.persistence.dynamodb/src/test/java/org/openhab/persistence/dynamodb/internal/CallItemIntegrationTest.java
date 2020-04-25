@@ -80,5 +80,4 @@ public class CallItemIntegrationTest extends AbstractTwoItemIntegrationTest {
         // Since CallType.equals is broken, toString is used as workaround
         assertEquals(expected.toString(), actual.toString());
     }
-
 }

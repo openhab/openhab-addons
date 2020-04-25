@@ -71,5 +71,4 @@ public class StringItemIntegrationTest extends AbstractTwoItemIntegrationTest {
     protected @Nullable State getQueryItemStateBetween() {
         return STATE_BETWEEN;
     }
-
 }

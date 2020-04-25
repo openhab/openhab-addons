@@ -108,5 +108,4 @@ public class JdbcMysqlDAO extends JdbcBaseDAO {
     /******************************
      * public Getters and Setters *
      ******************************/
-
 }

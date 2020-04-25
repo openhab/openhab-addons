@@ -206,7 +206,5 @@ public class BaseIntegrationTest {
             } catch (ResourceNotFoundException e) {
             }
         }
-
     }
-
 }

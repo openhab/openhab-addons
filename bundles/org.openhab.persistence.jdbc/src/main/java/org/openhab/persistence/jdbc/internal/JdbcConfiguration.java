@@ -380,5 +380,4 @@ public class JdbcConfiguration {
     public boolean isDriverAvailable() {
         return driverAvailable;
     }
-
 }

@@ -211,5 +211,4 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
     public String toString() {
         return DateFormat.getDateTimeInstance().format(time) + ": " + name + " -> " + state.toString();
     }
-
 }

@@ -240,5 +240,4 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
     /******************************
      * public Getters and Setters *
      ******************************/
-
 }

@@ -123,5 +123,4 @@ public class DbMetaData {
     public String getDbProductVersion() {
         return dbProductVersion;
     }
-
 }

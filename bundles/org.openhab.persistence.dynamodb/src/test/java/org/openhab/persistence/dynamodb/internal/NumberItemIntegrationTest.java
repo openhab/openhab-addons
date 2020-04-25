@@ -88,5 +88,4 @@ public class NumberItemIntegrationTest extends AbstractTwoItemIntegrationTest {
         BigDecimal actualDecimal = ((DecimalType) actual).toBigDecimal();
         assertTrue(DynamoDBBigDecimalItem.loseDigits(expectedDecimal).compareTo(actualDecimal) == 0);
     }
-
 }
