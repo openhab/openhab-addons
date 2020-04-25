@@ -52,6 +52,7 @@ import org.slf4j.LoggerFactory;
 public abstract class RpcClient<T> {
     private final Logger logger = LoggerFactory.getLogger(RpcClient.class);
     protected static final int MAX_RPC_RETRY = 1;
+    protected static final int RESP_BUFFER_SIZE = 8192;
 
     protected HomematicConfig config;
 

@@ -13,13 +13,17 @@
 package org.openhab.binding.homematic.internal.communicator.client;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.util.BytesContentProvider;
+import org.eclipse.jetty.client.util.InputStreamResponseListener;
 import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.message.RpcRequest;
 import org.openhab.binding.homematic.internal.communicator.message.XmlRpcRequest;
@@ -79,17 +83,31 @@ public class XmlRpcClient extends RpcClient<String> {
             if (port == config.getGroupPort()) {
                 url += "/groups";
             }
-            ContentResponse response = httpClient.POST(url).content(content)
-                    .timeout(config.getTimeout(), TimeUnit.SECONDS)
-                    .header(HttpHeader.CONTENT_TYPE, "text/xml;charset=" + config.getEncoding()).send();
-
-            if (logger.isTraceEnabled()) {
-                String result = new String(response.getContent(), config.getEncoding());
-                logger.trace("Client XmlRpcResponse (port {}):\n{}", port, result);
+            InputStreamResponseListener respListener = new InputStreamResponseListener();
+            httpClient.POST(url).content(content)
+                    .header(HttpHeader.CONTENT_TYPE, "text/xml;charset=" + config.getEncoding()).send(respListener);
+            Response resp = respListener.get(config.getTimeout(), TimeUnit.SECONDS);
+            ByteArrayOutputStream respData = new ByteArrayOutputStream(RESP_BUFFER_SIZE);
+            int httpStatus = resp.getStatus();
+            if (httpStatus == HttpStatus.OK_200) {
+                byte[] recvBuffer = new byte[RESP_BUFFER_SIZE];
+                InputStream input = respListener.getInputStream();
+                while (true) {
+                    int read = input.read(recvBuffer);
+                    if (read == -1) {
+                        break;
+                    }
+                    respData.write(recvBuffer, 0, read);
+                }
+            } else {
+                logger.warn("XmlRpcRequest failure, status code: {} / request was: {}", httpStatus, request);
+                resp.abort(new Exception());
             }
-
-            Object[] data = new XmlRpcResponse(new ByteArrayInputStream(response.getContent()),
-                    config.getEncoding()).getResponseData();
+            if (logger.isTraceEnabled()) {
+                logger.trace("Client XmlRpcResponse: (port {}):\n{}", port, respData.toString(config.getEncoding()));
+            }
+            Object[] data = new XmlRpcResponse(new ByteArrayInputStream(respData.toByteArray()), config.getEncoding())
+                    .getResponseData();
             return new RpcResponseParser(request).parse(data);
         } catch (UnknownRpcFailureException | UnknownParameterSetException ex) {
             throw ex;
