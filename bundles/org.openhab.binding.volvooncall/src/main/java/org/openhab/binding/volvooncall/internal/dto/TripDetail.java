@@ -32,9 +32,9 @@ import org.eclipse.smarthome.core.types.UnDefType;
  */
 @NonNullByDefault
 public class TripDetail {
-    private @NonNullByDefault({}) Integer fuelConsumption;
-    private @NonNullByDefault({}) Integer electricalConsumption;
-    private @NonNullByDefault({}) Integer electricalRegeneration;
+    private @Nullable Integer fuelConsumption;
+    private @Nullable Integer electricalConsumption;
+    private @Nullable Integer electricalRegeneration;
     public int distance;
     public int startOdometer;
     public int endOdometer;

@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -80,7 +79,7 @@ public class VehicleHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
 
     private @NonNullByDefault({}) Map<String, String> activeOptions;
-    private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
+    private @Nullable ScheduledFuture<?> refreshJob;
 
     private Vehicles vehicle = new Vehicles();
     private VehiclePositionWrapper vehiclePosition = new VehiclePositionWrapper(new Position());
@@ -149,9 +148,9 @@ public class VehicleHandler extends BaseThingHandler {
      * @param refresh : refresh frequency in minutes
      */
     private void startAutomaticRefresh(int refresh) {
-        if (!refreshJob.isPresent() || refreshJob.get().isCancelled()) {
-            refreshJob = Optional.of(
-                    scheduler.scheduleWithFixedDelay(this::queryApiAndUpdateChannels, 10, refresh, TimeUnit.MINUTES));
+        if (refreshJob == null || refreshJob.isCancelled()) {
+            refreshJob = scheduler.scheduleWithFixedDelay(this::queryApiAndUpdateChannels, 10, refresh,
+                    TimeUnit.MINUTES);
         }
     }
 
@@ -174,8 +173,10 @@ public class VehicleHandler extends BaseThingHandler {
             } catch (JsonSyntaxException | IOException e) {
                 logger.warn("Exception occurred during execution: {}", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                refreshJob.get().cancel(true);
-                refreshJob = Optional.empty();
+                if (refreshJob != null) {
+                    refreshJob.cancel(true);
+                    refreshJob = null;
+                }
                 startAutomaticRefresh(configuration.refresh);
             }
         }
