@@ -113,17 +113,24 @@ public class ForecastWeatherHandler extends AbstractWeatherHandler {
         if (location == null) {
             return;
         }
-        try {
-            long now = Instant.now().getEpochSecond();
-            response = client.query(new ForecastRequest(location, floorToEvenMinutes(now, QUERY_RESOLUTION_MINUTES),
-                    ceilToEvenMinutes(now + TimeUnit.HOURS.toSeconds(FORECAST_HORIZON_HOURS), QUERY_RESOLUTION_MINUTES),
-                    QUERY_RESOLUTION_MINUTES), TIMEOUT_MILLIS);
-        } catch (FMIResponseException e) {
-            // IllegalStateException: Unexpected (possibly bug) issue with response
-            response = null;
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    String.format("%s: %", e.getClass().getName(), e.getMessage()));
-            return;
+        for (int retry = 0; retry < RETRIES; retry++) {
+            try {
+                long now = Instant.now().getEpochSecond();
+                response = client.query(new ForecastRequest(location, floorToEvenMinutes(now, QUERY_RESOLUTION_MINUTES),
+                        ceilToEvenMinutes(now + TimeUnit.HOURS.toSeconds(FORECAST_HORIZON_HOURS),
+                                QUERY_RESOLUTION_MINUTES),
+                        QUERY_RESOLUTION_MINUTES), TIMEOUT_MILLIS);
+            } catch (FMIResponseException e) {
+                response = null;
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        String.format("%s: %s", e.getClass().getSimpleName(), e.getMessage()));
+                try {
+                    Thread.sleep(RETRY_DELAY_MILLIS);
+                } catch (InterruptedException e1) {
+                    break;
+                }
+                continue;
+            }
         }
         updateChannels();
     }

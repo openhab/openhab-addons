@@ -99,17 +99,23 @@ public class ObservationWeatherHandler extends AbstractWeatherHandler {
 
     @Override
     protected void update() {
-        try {
-            long now = Instant.now().getEpochSecond();
-            response = client.query(new ObservationRequest(new FMISID(fmisid),
-                    floorToEvenMinutes(now - OBSERVATION_LOOK_BACK_SECONDS, STEP_MINUTES),
-                    ceilToEvenMinutes(now, STEP_MINUTES), STEP_MINUTES), TIMEOUT_MILLIS);
-        } catch (FMIResponseException e) {
-            // IllegalStateException: Unexpected (possibly bug) issue with response
-            response = null;
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    String.format("%s: %s", e.getClass().getName(), e.getMessage()));
-            return;
+        for (int retry = 0; retry < RETRIES; retry++) {
+            try {
+                long now = Instant.now().getEpochSecond();
+                response = client.query(new ObservationRequest(new FMISID(fmisid),
+                        floorToEvenMinutes(now - OBSERVATION_LOOK_BACK_SECONDS, STEP_MINUTES),
+                        ceilToEvenMinutes(now, STEP_MINUTES), STEP_MINUTES), TIMEOUT_MILLIS);
+            } catch (FMIResponseException e) {
+                response = null;
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        String.format("%s: %s", e.getClass().getName(), e.getMessage()));
+                try {
+                    Thread.sleep(RETRY_DELAY_MILLIS);
+                } catch (InterruptedException e1) {
+                    break;
+                }
+                continue;
+            }
         }
         updateChannels();
     }

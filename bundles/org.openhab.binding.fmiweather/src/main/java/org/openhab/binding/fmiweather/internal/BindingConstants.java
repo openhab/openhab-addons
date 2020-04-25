@@ -27,6 +27,9 @@ public class BindingConstants {
 
     private static final String BINDING_ID = "fmiweather";
 
+    public static final int RETRIES = 3;
+    public static final int RETRY_DELAY_MILLIS = 1500;
+
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_OBSERVATION = new ThingTypeUID(BINDING_ID, "observation");
     public static final ThingTypeUID THING_TYPE_FORECAST = new ThingTypeUID(BINDING_ID, "forecast");
