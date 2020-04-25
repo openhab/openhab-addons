@@ -187,7 +187,7 @@ public abstract class ADBridgeHandler extends BaseBridgeHandler {
                             break;
                     }
                 } catch (MessageParseException e) {
-                    logger.info("Error {} while parsing message {}", e.getMessage(), msg);
+                    logger.warn("Error {} while parsing message {}. Please report bug.", e.getMessage(), msg);
                 }
             }
             if (msg == null) {
