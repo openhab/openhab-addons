@@ -35,6 +35,7 @@ public class WlanThermoBindingConstants {
     public static final String SYSTEM_SOC                   = "soc";
     public static final String SYSTEM_CHARGE                = "charge";
     public static final String SYSTEM_RSSI                  = "rssi";
+    public static final String SYSTEM_ONLINE                = "online";
 
     //Temp Channel 1
     public static final String CHANNEL1                     = "channel1";

@@ -6,7 +6,7 @@
 
 	<thing-type id="thermometer">
 		<label>WlanThermo</label>
-		<description>WlanThermo Mini V1/V2 or Nano V1/V1+</description>
+		<description>WlanThermo Nano V1/V1+ (or Mini V1/V2, untested!)</description>
 
 		<channel-groups>
 			<channel-group id="system" typeId="cg_system" />
@@ -58,6 +58,7 @@
 			<channel id="soc" typeId="system.battery-level" />
 			<channel id="charge" typeId="charging" />
 			<channel id="rssi" typeId="system.signal-strength" />
+			<channel id="online" typeId="online" />
 		</channels>
 	</channel-group-type>
 
@@ -65,6 +66,13 @@
 		<item-type>Switch</item-type>
 		<label>Charging</label>
 		<category>Energy</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="online" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Online</label>
+		<category>Switch</category>
 		<state readOnly="true" />
 	</channel-type>
 
