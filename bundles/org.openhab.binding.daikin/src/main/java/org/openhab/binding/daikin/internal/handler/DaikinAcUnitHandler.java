@@ -28,6 +28,7 @@ import org.openhab.binding.daikin.internal.DaikinBindingConstants;
 import org.openhab.binding.daikin.internal.DaikinCommunicationException;
 import org.openhab.binding.daikin.internal.DaikinDynamicStateDescriptionProvider;
 import org.openhab.binding.daikin.internal.api.ControlInfo;
+import org.openhab.binding.daikin.internal.api.EnergyInfo;
 import org.openhab.binding.daikin.internal.api.Enums.FanMovement;
 import org.openhab.binding.daikin.internal.api.Enums.FanSpeed;
 import org.openhab.binding.daikin.internal.api.Enums.HomekitMode;
@@ -39,7 +40,8 @@ import org.openhab.binding.daikin.internal.api.SensorInfo;
  *
  * @author Tim Waterhouse - Initial Contribution
  * @author Paul Smedley <paul@smedley.id.au> - Modifications to support Airbase Controllers
- *
+ * @author Wouter Denayer <wouter@denayer.com> - Modifications to support energy reading 
+ * 
  */
 @NonNullByDefault
 public class DaikinAcUnitHandler extends DaikinBaseHandler {
@@ -82,6 +84,16 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
                 updateState(DaikinBindingConstants.CHANNEL_HUMIDITY, UnDefType.UNDEF);
             }
         }
+        
+        EnergyInfo energyUsageInfo = webTargets.getEnergyInfo();
+        if (energyUsageInfo != null) {
+            updateEnergyChannel(DaikinBindingConstants.CHANNEL_ENERGY_HEATING_TODAY, energyUsageInfo.energyHeatingToday);
+            updateEnergyChannel(DaikinBindingConstants.CHANNEL_ENERGY_HEATING_THISWEEK, energyUsageInfo.energyHeatingThisWeek);
+            updateEnergyChannel(DaikinBindingConstants.CHANNEL_ENERGY_HEATING_LASTWEEK, energyUsageInfo.energyHeatingLastWeek);
+            updateEnergyChannel(DaikinBindingConstants.CHANNEL_ENERGY_COOLING_TODAY, energyUsageInfo.energyCoolingToday);
+            updateEnergyChannel(DaikinBindingConstants.CHANNEL_ENERGY_COOLING_THISWEEK, energyUsageInfo.energyCoolingThisWeek);
+            updateEnergyChannel(DaikinBindingConstants.CHANNEL_ENERGY_COOLING_LASTWEEK, energyUsageInfo.energyCoolingLastWeek);
+        }        
     }
 
     @Override

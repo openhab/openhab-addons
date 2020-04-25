@@ -20,6 +20,7 @@ import java.util.stream.IntStream;
 
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.daikin.internal.api.ControlInfo;
+import org.openhab.binding.daikin.internal.api.EnergyInfo;
 import org.openhab.binding.daikin.internal.api.SensorInfo;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseControlInfo;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseBasicInfo;
@@ -34,6 +35,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Tim Waterhouse - Initial Contribution
  * @author Paul Smedley <paul@smedley.id.au> - Modifications to support Airbase Controllers
+ * @author Wouter Denayer <wouter@denayer.com> - Modifications to support energy reading 
  *
  */
 public class DaikinWebTargets {
@@ -42,6 +44,7 @@ public class DaikinWebTargets {
     private String setControlInfoUri;
     private String getControlInfoUri;
     private String getSensorInfoUri;
+    private String getEnergyInfoUri;    
     private String setAirbaseControlInfoUri;
     private String getAirbaseControlInfoUri;
     private String getAirbaseSensorInfoUri;
@@ -57,6 +60,7 @@ public class DaikinWebTargets {
         setControlInfoUri = baseUri + "aircon/set_control_info";
         getControlInfoUri = baseUri + "aircon/get_control_info";
         getSensorInfoUri = baseUri + "aircon/get_sensor_info";
+        getEnergyInfoUri = baseUri + "aircon/get_week_power_ex";        
 
         //Daikin Airbase API
         getAirbaseBasicInfoUri = baseUri + "skyfi/common/basic_info";
@@ -83,7 +87,13 @@ public class DaikinWebTargets {
         String response = invoke(getSensorInfoUri);
         return SensorInfo.parse(response);
     }
-
+    
+    //Energy Usage API
+    public EnergyInfo getEnergyInfo() throws DaikinCommunicationException {
+        String response = invoke(getEnergyInfoUri);
+        return EnergyInfo.parse(response);
+    }
+    
     //Daikin Airbase API
     public AirbaseControlInfo getAirbaseControlInfo() throws DaikinCommunicationException {
         String response = invoke(getAirbaseControlInfoUri);

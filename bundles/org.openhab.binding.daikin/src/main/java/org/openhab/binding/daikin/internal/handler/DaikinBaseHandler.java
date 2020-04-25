@@ -26,6 +26,7 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -50,7 +51,8 @@ import org.slf4j.LoggerFactory;
  * @author Tim Waterhouse - Initial Contribution
  * @author Paul Smedley <paul@smedley.id.au> - Modifications to support Airbase Controllers
  * @author Jimmy Tanagra - Split handler classes, support Airside and DynamicStateDescription
- *
+ * @author Wouter Denayer <wouter@denayer.com> - Modifications to support energy reading 
+ * 
  */
 @NonNullByDefault
 public abstract class DaikinBaseHandler extends BaseThingHandler {
@@ -184,6 +186,12 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
                 .orElse(UnDefType.UNDEF));
     }
 
+    protected void updateEnergyChannel(String channel, Optional<Double> maybeEnergy) {
+        updateState(channel,
+                maybeEnergy.<State>map(t -> new QuantityType<>(new DecimalType(t), SmartHomeUnits.KILOWATT_HOUR))
+                        .orElse(UnDefType.UNDEF));    
+    }
+    
     /**
      * @return true if the command was of an expected type, false otherwise
      */
