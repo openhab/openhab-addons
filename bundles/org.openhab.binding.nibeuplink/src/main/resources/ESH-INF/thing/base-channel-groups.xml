@@ -32,11 +32,11 @@
 			</channel>
 			<channel id="40033" typeId="type-temperature">
 				<label>BT50 Room Temp S1</label>
-				<description></description>
+				<description>Room Temperature S1 (BT50)</description>
 			</channel>
 			<channel id="43161" typeId="type-switch">
 				<label>External Adjustment Activated Via Input S1</label>
-				<description></description>
+				<description>External Adjustment Activated Via Input S1</description>
 				<properties>
 					<property name="offMapping">0</property>
 					<property name="onMapping">1</property>
@@ -56,15 +56,15 @@
 			</channel>
 			<channel id="40079" typeId="type-electric-current">
 				<label>EB100-BE3 Current</label>
-				<description></description>
+				<description>BE3 Current</description>
 			</channel>
 			<channel id="40081" typeId="type-electric-current">
 				<label>EB100-BE2 Current</label>
-				<description></description>
+				<description>BE2 Current</description>
 			</channel>
 			<channel id="40083" typeId="type-electric-current">
 				<label>EB100-BE1 Current</label>
-				<description></description>
+				<description>BE1 Current</description>
 			</channel>
 			<channel id="10033" typeId="type-switch">
 				<label>Int. El.add. Blocked</label>
@@ -84,11 +84,11 @@
 			</channel>
 			<channel id="47212" typeId="type-power">
 				<label>Max Int Add. Power</label>
-				<description></description>
+				<description>Maximum power from the internal electrical addition</description>
 			</channel>
 			<channel id="48914" typeId="type-power">
 				<label>Max Int Add. Power, SG Ready</label>
-				<description></description>
+				<description>Maximum power from the internal electrical addition in SG-Ready Mode</description>
 			</channel>
 			<channel id="44308" typeId="type-energy">
 				<label>Heat Meter - Heat Cpr EP14</label>
@@ -104,7 +104,7 @@
 			</channel>
 			<channel id="48043" typeId="rwtype-switch">
 				<label>Holiday</label>
-				<description></description>
+				<description>states if Holiday mode is activated</description>
 				<properties>
 					<property name="writeApiUrl">/Manage/4.7</property>
 					<property name="validationExpression">.*</property>

@@ -70,11 +70,11 @@
 		<channels>
 			<channel id="40025" typeId="type-temperature">
 				<label>BT20 Exhaust Air Temp. 1</label>
-				<description></description>
+				<description>Exhaust Air Temperature (BT20)</description>
 			</channel>
 			<channel id="40026" typeId="type-temperature">
 				<label>BT21 Vented Air Temp. 1</label>
-				<description></description>
+				<description>Vented Air Temperature (BT21)</description>
 			</channel>
 		</channels>
 	</channel-group-type>

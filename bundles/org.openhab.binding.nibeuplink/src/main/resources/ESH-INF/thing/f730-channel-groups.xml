@@ -8,7 +8,7 @@
 		<channels>
 			<channel id="43181" typeId="type-speed-percent">
 				<label>Chargepump Speed</label>
-				<description></description>
+				<description>Chargepump Speed</description>
 			</channel>
 			<channel id="43424" typeId="type-time-unscaled">
 				<label>Tot. HW Op.time Compr. EB100-EP14</label>
@@ -40,7 +40,7 @@
 			</channel>
 			<channel id="40020" typeId="type-temperature">
 				<label>EB100-BT16 Evaporator Temp</label>
-				<description></description>
+				<description>Evaporator Temp (BT16)</description>
 			</channel>
 			<channel id="43136" typeId="type-frequency-scale10">
 				<label>Compressor Frequency, Actual</label>
@@ -69,11 +69,11 @@
 			</channel>
 			<channel id="40025" typeId="type-temperature">
 				<label>BT20 Exhaust Air Temp. 1</label>
-				<description></description>
+				<description>Exhaust Air Temperature (BT20)</description>
 			</channel>
 			<channel id="40026" typeId="type-temperature">
 				<label>BT21 Vented Air Temp. 1</label>
-				<description></description>
+				<description>Vented Air Temperature (BT21)</description>
 			</channel>
 			<channel id="43124" typeId="type-number-scale10">
 				<label>Airflow Ref.</label>
@@ -81,15 +81,15 @@
 			</channel>
 			<channel id="41026" typeId="type-number-unscaled">
 				<label>EB100-Adjusted BS1 Air Flow</label>
-				<description></description>
+				<description>Adjusted BS1 Air Flow (BT100)</description>
 			</channel>
 			<channel id="43125" typeId="type-number-unscaled">
 				<label>Airflow Reduction</label>
-				<description></description>
+				<description>Airflow Reduction</description>
 			</channel>
 			<channel id="40919" typeId="type-number-unscaled">
 				<label>Air Mix</label>
-				<description></description>
+				<description>Air Mix</description>
 			</channel>
 			<channel id="40101" typeId="type-temperature">
 				<label>BT28 Airmix Temp</label>
