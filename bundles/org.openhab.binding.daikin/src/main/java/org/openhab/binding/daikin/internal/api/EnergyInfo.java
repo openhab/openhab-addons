@@ -61,27 +61,30 @@ public class EnergyInfo {
         if(responseMap.get("ret") != null && responseMap.get("ret").contentEquals("OK")) {
             int dayOfWeek = Integer.parseInt(responseMap.get("s_dayw"));
             
+            // get the heating info
             String[] heatingValues = responseMap.get("week_heat").split("/");
             info.energyHeatingToday = Optional.of(Double.parseDouble(heatingValues[0])/10);
-            double thisWeekEnergy = 0;
-            for (int i=0; i < dayOfWeek; i+=1) {
+            double thisWeekEnergy = 0;         
+            int thisWeekLastDay = ((dayOfWeek+7) % 8);           
+            for (int i=0; i < thisWeekLastDay; i+=1) {
                 thisWeekEnergy += Integer.parseInt(heatingValues[i]);
             }
             double previousWeekEnergy = 0;
-            for (int i=dayOfWeek; i < dayOfWeek+7; i+=1) {
+            for (int i=thisWeekLastDay; i < thisWeekLastDay+7; i+=1) {               
                 previousWeekEnergy += Integer.parseInt(heatingValues[i]);          
             }            
             info.energyHeatingThisWeek = Optional.of(thisWeekEnergy/10);
-            info.energyHeatingLastWeek = Optional.of(previousWeekEnergy/10);
+            info.energyHeatingLastWeek = Optional.of(previousWeekEnergy/10);            
             
+            // get the cooling info
             String[] coolingValues = responseMap.get("week_cool").split("/");
             info.energyCoolingToday = Optional.of(Double.parseDouble(coolingValues[0])/10);
             thisWeekEnergy = 0;
-            for (int i=0; i < dayOfWeek; i+=1) {
+            for (int i=0; i < thisWeekLastDay; i+=1) {
                 thisWeekEnergy += Integer.parseInt(coolingValues[i]);
             }
             previousWeekEnergy = 0;
-            for (int i=dayOfWeek; i < dayOfWeek+7; i+=1) {
+            for (int i=thisWeekLastDay; i < thisWeekLastDay+7; i+=1) {
                 previousWeekEnergy += Integer.parseInt(coolingValues[i]);          
             }            
             info.energyCoolingThisWeek = Optional.of(thisWeekEnergy/10);
