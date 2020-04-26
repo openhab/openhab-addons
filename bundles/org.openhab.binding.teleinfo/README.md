@@ -36,7 +36,7 @@ The Teleinfo binding provides support for single phase and three phase connectio
 
 ## Discovery
 
-Before the binding can be used, a serial controller must be added. This needs to be done manually. Select __Teleinfo Serial Controller__ and enter the serial port. Once the serial controller added, electricity meters will automatically appear when trying to add a new thing, with default label __Teleinfo ADCO #adco__ will be created where __#adco__ is  your electricity meter identifier.
+Before the binding can be used, a serial controller must be added. This needs to be done manually. Select __Teleinfo Serial Controller__ and enter the serial port. Once the serial controller added, electricity meters will automatically appear when trying to add a new thing, with default label __Teleinfo ADCO #adco__ where __#adco__ is  your electricity meter identifier.
 
 ## Thing Configuration
 
