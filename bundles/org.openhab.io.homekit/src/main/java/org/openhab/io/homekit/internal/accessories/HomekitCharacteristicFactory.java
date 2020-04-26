@@ -105,11 +105,11 @@ public class HomekitCharacteristicFactory {
         }};
 
   /**
-   * create optional homekit characteristic
-   * @param type type of charateristic
+   * create optional HomeKit characteristic
+   * @param type type of characteristic
    * @param item corresponding OH item
-   * @param updater update to keep OH item and homekit characteristic in sync
-   * @return homekit characteristic
+   * @param updater update to keep OH item and HomeKit characteristic in sync
+   * @return HomeKit characteristic
    */
     public static Characteristic createCharacteristic(HomekitCharacteristicType type, GenericItem item, HomekitAccessoryUpdater updater)
         throws HomekitException {

@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.github.hapjava.accessories.HomekitAccessory;
+import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.services.Service;
 
 /**
@@ -36,6 +37,8 @@ import io.github.hapjava.services.Service;
  * @author Andy Lintner - Initial contribution
  */
 abstract class AbstractHomekitAccessoryImpl<T extends GenericItem> implements HomekitAccessory {
+    private Logger LOGGER = LoggerFactory.getLogger(AbstractHomekitAccessoryImpl.class);
+
     protected final List<HomekitTaggedItem> mandatoryCharacteristics;
     private final int accessoryId;
     private final String itemName;
@@ -117,5 +120,23 @@ abstract class AbstractHomekitAccessoryImpl<T extends GenericItem> implements Ho
 
     protected HomekitSettings getSettings() {
         return settings;
+    }
+
+    protected void subscribeToCharacteristic(HomekitCharacteristicType characteristicType, HomekitCharacteristicChangeCallback callback) {
+        final Optional<HomekitTaggedItem> characteristic = getMandatoryCharacteristic(characteristicType);
+        if (characteristic.isPresent()) {
+            getUpdater().subscribe((GenericItem ) characteristic.get().getItem(), callback);
+        }  else {
+            LOGGER.error("Missing mandatory characteristic {}", characteristicType);
+        }
+    }
+
+    protected void unsubscribeFromCharacteristic(HomekitCharacteristicType characteristicType) {
+        final Optional<HomekitTaggedItem> characteristic = getMandatoryCharacteristic(characteristicType);
+        if (characteristic.isPresent()) {
+            getUpdater().unsubscribe((GenericItem ) characteristic.get().getItem());
+        }  else {
+            LOGGER.error("Missing mandatory characteristic {}", characteristicType);
+        }
     }
 }

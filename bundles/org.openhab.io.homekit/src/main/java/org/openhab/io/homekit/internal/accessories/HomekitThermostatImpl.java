@@ -226,12 +226,12 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl<GroupItem> impl
 
     @Override
     public void unsubscribeCurrentState() {
-        unsubscribeToCharacteristic(HomekitCharacteristicType.CURRENT_HEATING_COOLING_STATE);
+        unsubscribeFromCharacteristic(HomekitCharacteristicType.CURRENT_HEATING_COOLING_STATE);
     }
 
     @Override
     public void unsubscribeCurrentTemperature() {
-        unsubscribeToCharacteristic(HomekitCharacteristicType.CURRENT_TEMPERATURE);
+        unsubscribeFromCharacteristic(HomekitCharacteristicType.CURRENT_TEMPERATURE);
     }
 
     @Override
@@ -242,12 +242,12 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl<GroupItem> impl
 
     @Override
     public void unsubscribeTargetState() {
-        unsubscribeToCharacteristic(HomekitCharacteristicType.TARGET_HEATING_COOLING_STATE);
+        unsubscribeFromCharacteristic(HomekitCharacteristicType.TARGET_HEATING_COOLING_STATE);
     }
 
     @Override
     public void unsubscribeTargetTemperature() {
-        unsubscribeToCharacteristic(HomekitCharacteristicType.TARGET_TEMPERATURE);
+        unsubscribeFromCharacteristic(HomekitCharacteristicType.TARGET_TEMPERATURE);
     }
 
     protected double convertToCelsius(double degrees) {
@@ -266,21 +266,5 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl<GroupItem> impl
         }
     }
 
-    private void subscribeToCharacteristic(HomekitCharacteristicType characteristicType, HomekitCharacteristicChangeCallback callback) {
-        final Optional<HomekitTaggedItem> characteristic = getMandatoryCharacteristic(characteristicType);
-        if (characteristic.isPresent()) {
-            getUpdater().subscribe((GenericItem ) characteristic.get().getItem(), callback);
-        }  else {
-            LOGGER.error("Missing mandatory characteristic {}", characteristicType);
-        }
-    }
 
-    private void unsubscribeToCharacteristic(HomekitCharacteristicType characteristicType) {
-        final Optional<HomekitTaggedItem> characteristic = getMandatoryCharacteristic(characteristicType);
-        if (characteristic.isPresent()) {
-            getUpdater().unsubscribe((GenericItem ) characteristic.get().getItem());
-        }  else {
-            LOGGER.error("Missing mandatory characteristic {}", characteristicType);
-        }
-    }
 }

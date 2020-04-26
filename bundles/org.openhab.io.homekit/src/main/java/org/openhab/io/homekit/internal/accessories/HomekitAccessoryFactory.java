@@ -57,7 +57,7 @@ import io.github.hapjava.services.Service;
 @NonNullByDefault
 public class HomekitAccessoryFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(HomekitAccessoryFactory.class);
-    public final static String METADATA_KEY = "homekit"; // prefix for homekit meta information in items.xml
+    public final static String METADATA_KEY = "homekit"; // prefix for HomeKit meta information in items.xml
 
     /** List of mandatory attributes for each accessory type. **/
     private final static Map<HomekitAccessoryType, HomekitCharacteristicType[]> mandatoryCharacteristics =
@@ -76,7 +76,8 @@ public class HomekitAccessoryFactory {
         put(FAN,new HomekitCharacteristicType[]{ACTIVE_STATUS});
         put(TEMPERATURE_SENSOR,new HomekitCharacteristicType[]{CURRENT_TEMPERATURE});
         put(THERMOSTAT,new HomekitCharacteristicType[]{CURRENT_HEATING_COOLING_STATE,TARGET_HEATING_COOLING_STATE, CURRENT_TEMPERATURE, TARGET_TEMPERATURE});
-        }};
+        put(LOCK,new HomekitCharacteristicType[]{LOCK_CURRENT_STATE,LOCK_TARGET_STATE});
+    }};
 
     /** List of service implementation for each accessory type. **/
     private final static Map<HomekitAccessoryType, Class<? extends AbstractHomekitAccessoryImpl>> serviceImplMap =
@@ -96,17 +97,19 @@ public class HomekitAccessoryFactory {
             put(FAN, HomekitFanImpl.class);
             put(TEMPERATURE_SENSOR, HomekitTemperatureSensorImpl.class);
             put(THERMOSTAT, HomekitThermostatImpl.class);
+            put(LOCK, HomekitLockImpl.class);
+
         }};
 
     /**
-     * creates homekit accessory for a openhab item.
-     * @param taggedItem openhab item tagged as homekit item
+     * creates HomeKit accessory for a openhab item.
+     * @param taggedItem openhab item tagged as HomeKit item
      * @param itemRegistry openhab item registry, required to find related items
      * @param metadataRegistry openhab metadata registry required to get item meta information
-     * @param updater OH homekit update class that ensure the status sync between OH item and corresponding homekit characteristic.
+     * @param updater OH HomeKit update class that ensure the status sync between OH item and corresponding HomeKit characteristic.
      * @param settings OH settings
-     * @return homekit accessory
-     * @throws HomekitException exception in case homekit accessory could not be created, e.g. due missing mandatory characteristic
+     * @return HomeKit accessory
+     * @throws HomekitException exception in case HomeKit accessory could not be created, e.g. due missing mandatory characteristic
      */
     public static HomekitAccessory create(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry, MetadataRegistry metadataRegistry,
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws HomekitException {
@@ -131,8 +134,8 @@ public class HomekitAccessoryFactory {
                                            updater);
                 return accessoryImpl;
             } else {
-                LOGGER.error("Unsupported homekit type: {}",taggedItem.getAccessoryType());
-                throw new HomekitException("Unsupported homekit type: " + taggedItem.getAccessoryType());
+                LOGGER.error("Unsupported HomeKit type: {}",taggedItem.getAccessoryType());
+                throw new HomekitException("Unsupported HomeKit type: " + taggedItem.getAccessoryType());
             }
         }
         catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
@@ -141,10 +144,10 @@ public class HomekitAccessoryFactory {
         }
     }
     /**
-     * return homekit accessory types for a OH item based on meta data
+     * return HomeKit accessory types for a OH item based on meta data
      * @param item OH item
      * @param metadataRegistry meta data registry
-     * @return list of homekit accessory types and characteristics.
+     * @return list of HomeKit accessory types and characteristics.
      */
     public static List<Entry<HomekitAccessoryType, HomekitCharacteristicType>> getAccessoryTypes(Item item, MetadataRegistry metadataRegistry) {
         final List<Entry<HomekitAccessoryType, HomekitCharacteristicType>> accessories = new ArrayList<>();
@@ -177,7 +180,7 @@ public class HomekitAccessoryFactory {
     }
 
     /**
-     * return list of homekit relevant groups linked to an accessory
+     * return list of HomeKit relevant groups linked to an accessory
      * @param item OH item
      * @param itemRegistry item registry
      * @param metadataRegistry metadata registry
@@ -196,8 +199,8 @@ public class HomekitAccessoryFactory {
     }
 
     /**
-     * collect all mandatory characteristics for a given tagged item, e.g. collect all mandatory homekit items from a GroupItem
-     * @param taggedItem homekit tagged item
+     * collect all mandatory characteristics for a given tagged item, e.g. collect all mandatory HomeKit items from a GroupItem
+     * @param taggedItem HomeKit tagged item
      * @param metadataRegistry meta data registry
      * @return list of mandatory
      */
@@ -215,7 +218,7 @@ public class HomekitAccessoryFactory {
     }
 
     /**
-     * add mandatory homekit items for a given main item to a list of characteristics
+     * add mandatory HomeKit items for a given main item to a list of characteristics
      * @param mainItem main item
      * @param characteristics list of characteristics
      * @param item current item
@@ -237,10 +240,10 @@ public class HomekitAccessoryFactory {
     }
 
     /**
-     * create optional homekit characteristics and add the given homekit service.
-     * @param characteristics OH items tagged as homekit characteristic
+     * create optional HomeKit characteristics and add the given HomeKit service.
+     * @param characteristics OH items tagged as HomeKit characteristic
      * @param service service the characteristics should be added to
-     * @param updater OH homekit updater that keeps OH items and homekit characteristics in sync
+     * @param updater OH HomeKit updater that keeps OH items and HomeKit characteristics in sync
      */
     private static void addOptionalCharacteristics(Map<HomekitCharacteristicType, GenericItem> characteristics, Service service, HomekitAccessoryUpdater updater) {
         characteristics.forEach((type,item) -> {
@@ -252,13 +255,13 @@ public class HomekitAccessoryFactory {
                     invoke(service,characteristic);
             }
             catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException |HomekitException e) {
-                LOGGER.error("Not supported optional homekit characteristic. Service type {}, characteristic type {}", service.getType(), type, e);
+                LOGGER.error("Not supported optional HomeKit characteristic. Service type {}, characteristic type {}", service.getType(), type, e);
             }
         });
     }
 
     /**
-     * collect optional homekit characteristics for a OH item.
+     * collect optional HomeKit characteristics for a OH item.
      * @param taggedItem main OH item
      * @param metadataRegistry OH metadata registry
      * @return a map with characteristics and corresponding OH items

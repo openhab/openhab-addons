@@ -77,7 +77,10 @@ public enum HomekitCharacteristicType {
     TARGET_HEATING_COOLING_STATE("TargetHeatingCoolingMode"),
     CURRENT_HEATING_COOLING_STATE("CurrentHeatingCoolingMode"),
     TARGET_TEMPERATURE("TargetTemperature"),
-    TEMPERATURE_UNIT("TemperatureUnit");
+    TEMPERATURE_UNIT("TemperatureUnit"),
+
+    LOCK_CURRENT_STATE("LockCurrentState"),
+    LOCK_TARGET_STATE("LockTargetState");
 
     private static final Map<String, HomekitCharacteristicType> TAG_MAP = new HashMap<>();
 
