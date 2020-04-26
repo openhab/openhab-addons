@@ -25,7 +25,6 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import io.github.hapjava.services.Service;
 
 /**
  * Console commands for interacting with the HomeKit integration

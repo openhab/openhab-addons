@@ -40,10 +40,10 @@ public enum HomekitAccessoryType {
     CARBON_MONOXIDE_SENSOR("CarbonMonoxideSensor"),
     CARBON_DIOXIDE_SENSOR("CarbonDioxideSensor"),
     FAN("Fan"),
-
+    LOCK("Lock"),
     @Deprecated()
-    BLINDS("Blinds"),
-    LOCK("Lock");
+    BLINDS("Blinds");
+
 
     private static final Map<String, HomekitAccessoryType> TAG_MAP = new HashMap<>();
 
