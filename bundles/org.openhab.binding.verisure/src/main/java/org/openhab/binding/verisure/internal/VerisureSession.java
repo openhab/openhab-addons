@@ -21,8 +21,10 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -62,17 +64,17 @@ import com.google.gson.Gson;
  *
  * @author Jarle Hjortland - Initial contribution
  * @author Jan Gustafsson - Re-design and support for several sites and update to new Verisure API
- * @param <T>
  *
  */
 @NonNullByDefault
 public class VerisureSession {
 
-    private final HashMap<String, VerisureThing> verisureThings = new HashMap<String, VerisureThing>();
+    @NonNullByDefault({})
+    private final Map<String, VerisureThing> verisureThings = new ConcurrentHashMap<>();
     private final Logger logger = LoggerFactory.getLogger(VerisureSession.class);
     private final Gson gson = new Gson();
     private final List<DeviceStatusListener<VerisureThing>> deviceStatusListeners = new CopyOnWriteArrayList<>();
-    private final HashMap<BigDecimal, VerisureInstallation> verisureInstallations = new HashMap<>();
+    private final Map<BigDecimal, VerisureInstallation> verisureInstallations = new ConcurrentHashMap<>();
     private static final List<String> APISERVERLIST = Arrays.asList("https://m-api01.verisure.com",
             "https://m-api02.verisure.com");
     private int apiServerInUseIndex = 0;
@@ -152,8 +154,8 @@ public class VerisureSession {
         return null;
     }
 
-    public HashMap<String, VerisureThing> getVerisureThings() {
-        return verisureThings;
+    public Collection<VerisureThing> getVerisureThings() {
+        return verisureThings.values();
     }
 
     public @Nullable String getCsrf() {
@@ -585,7 +587,7 @@ public class VerisureSession {
             doorLockList.forEach(doorLock -> {
                 VerisureSmartLocks slThing = new VerisureSmartLocks();
                 VerisureSmartLocks.Installation inst = new VerisureSmartLocks.Installation();
-                List<VerisureSmartLocks.Doorlock> list = new ArrayList<VerisureSmartLocks.Doorlock>();
+                List<VerisureSmartLocks.Doorlock> list = new ArrayList<>();
                 list.add(doorLock);
                 inst.setDoorlocks(list);
                 VerisureSmartLocks.Data data = new VerisureSmartLocks.Data();
@@ -628,7 +630,7 @@ public class VerisureSession {
             smartPlugList.forEach(smartPlug -> {
                 VerisureSmartPlugs spThing = new VerisureSmartPlugs();
                 VerisureSmartPlugs.Installation inst = new VerisureSmartPlugs.Installation();
-                List<VerisureSmartPlugs.Smartplug> list = new ArrayList<VerisureSmartPlugs.Smartplug>();
+                List<VerisureSmartPlugs.Smartplug> list = new ArrayList<>();
                 list.add(smartPlug);
                 inst.setSmartplugs(list);
                 VerisureSmartPlugs.Data data = new VerisureSmartPlugs.Data();
@@ -684,7 +686,7 @@ public class VerisureSession {
                 }
                 VerisureClimates cThing = new VerisureClimates();
                 VerisureClimates.Installation inst = new VerisureClimates.Installation();
-                List<VerisureClimates.Climate> list = new ArrayList<VerisureClimates.Climate>();
+                List<VerisureClimates.Climate> list = new ArrayList<>();
                 list.add(climate);
                 inst.setClimates(list);
                 VerisureClimates.Data data = new VerisureClimates.Data();
@@ -722,7 +724,7 @@ public class VerisureSession {
             doorWindowList.forEach(doorWindow -> {
                 VerisureDoorWindows dThing = new VerisureDoorWindows();
                 VerisureDoorWindows.Installation inst = new VerisureDoorWindows.Installation();
-                List<VerisureDoorWindows.DoorWindow> list = new ArrayList<VerisureDoorWindows.DoorWindow>();
+                List<VerisureDoorWindows.DoorWindow> list = new ArrayList<>();
                 list.add(doorWindow);
                 inst.setDoorWindows(list);
                 VerisureDoorWindows.Data data = new VerisureDoorWindows.Data();
@@ -786,7 +788,7 @@ public class VerisureSession {
                 if (localUserTrackingStatus != null && localUserTrackingStatus.equals("ACTIVE")) {
                     VerisureUserPresences upThing = new VerisureUserPresences();
                     VerisureUserPresences.Installation inst = new VerisureUserPresences.Installation();
-                    List<VerisureUserPresences.UserTracking> list = new ArrayList<VerisureUserPresences.UserTracking>();
+                    List<VerisureUserPresences.UserTracking> list = new ArrayList<>();
                     list.add(userTracking);
                     inst.setUserTrackings(list);
                     VerisureUserPresences.Data data = new VerisureUserPresences.Data();
@@ -821,7 +823,7 @@ public class VerisureSession {
             miceList.forEach(mouse -> {
                 VerisureMiceDetection miceThing = new VerisureMiceDetection();
                 VerisureMiceDetection.Installation inst = new VerisureMiceDetection.Installation();
-                List<VerisureMiceDetection.Mouse> list = new ArrayList<VerisureMiceDetection.Mouse>();
+                List<VerisureMiceDetection.Mouse> list = new ArrayList<>();
                 list.add(mouse);
                 inst.setMice(list);
                 VerisureMiceDetection.Data data = new VerisureMiceDetection.Data();

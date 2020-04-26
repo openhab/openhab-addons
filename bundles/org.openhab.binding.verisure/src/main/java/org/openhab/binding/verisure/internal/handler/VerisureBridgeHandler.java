@@ -63,6 +63,7 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
     private static final int REFRESH_DELAY_SECONDS = 30;
     private final Logger logger = LoggerFactory.getLogger(VerisureBridgeHandler.class);
     private final ReentrantLock immediateRefreshJobLock = new ReentrantLock();
+    private final HttpClient httpClient;
 
     private String authstring = "";
     private @Nullable String pinCode;
@@ -70,7 +71,6 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable ScheduledFuture<?> immediateRefreshJob;
     private @Nullable VerisureSession session;
-    private final HttpClient httpClient;
 
     public VerisureBridgeHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);

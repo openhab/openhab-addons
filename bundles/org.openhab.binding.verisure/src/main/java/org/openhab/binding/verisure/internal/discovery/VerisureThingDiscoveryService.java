@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.verisure.internal.discovery;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,8 +61,8 @@ public class VerisureThingDiscoveryService extends AbstractDiscoveryService
         if (verisureBridgeHandler != null) {
             VerisureSession session = verisureBridgeHandler.getSession();
             if (session != null) {
-                HashMap<String, VerisureThing> verisureThings = session.getVerisureThings();
-                verisureThings.forEach((deviceId, thing) -> {
+                Collection<VerisureThing> verisureThings = session.getVerisureThings();
+                verisureThings.stream().forEach(thing -> {
                     logger.debug("Discovered thing: {}", thing);
                     onThingAddedInternal(thing);
                 });

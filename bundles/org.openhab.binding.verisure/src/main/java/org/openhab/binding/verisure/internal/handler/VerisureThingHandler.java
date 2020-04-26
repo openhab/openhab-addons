@@ -53,8 +53,8 @@ public abstract class VerisureThingHandler<T extends VerisureThing> extends Base
         implements DeviceStatusListener<T> {
 
     protected final Logger logger = LoggerFactory.getLogger(VerisureThingHandler.class);
-    protected VerisureThingConfiguration config = new VerisureThingConfiguration();
     protected final Gson gson = new Gson();
+    protected VerisureThingConfiguration config = new VerisureThingConfiguration();
 
     public VerisureThingHandler(Thing thing) {
         super(thing);
