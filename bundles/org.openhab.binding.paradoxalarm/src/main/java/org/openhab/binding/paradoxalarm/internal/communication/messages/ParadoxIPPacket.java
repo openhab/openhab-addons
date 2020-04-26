@@ -94,7 +94,7 @@ public class ParadoxIPPacket implements IPPacketPayload {
 
             outputStream.write(startOfHeader);
             outputStream.write(ByteBuffer.allocate(Short.SIZE / Byte.SIZE).order(ByteOrder.LITTLE_ENDIAN)
-                .putShort(payloadLength).array());
+                    .putShort(payloadLength).array());
             outputStream.write(messageType);
             outputStream.write(encryption);
             outputStream.write(command);

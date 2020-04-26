@@ -118,7 +118,6 @@ public class LgTvSerialHandler extends BaseThingHandler {
             public void onFailure(ChannelUID channel, LGSerialResponse response) {
                 logger.debug("Received error response for channel {}: {}", channel, response.getState());
             }
-
         };
 
         if (portName != null) {

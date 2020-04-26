@@ -33,5 +33,4 @@ public class ScheduleCapabilities {
 
     @SerializedName("timingResolution")
     private String timingResolution;
-
 }

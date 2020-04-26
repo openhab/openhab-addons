@@ -9,7 +9,7 @@
 		<description>Paradox IP150 module connector</description>
 
 		<channels>
-			<channel id="communicationCommand" typeId="command" />
+			<channel id="communicationCommand" typeId="command"/>
 		</channels>
 
 		<config-description>

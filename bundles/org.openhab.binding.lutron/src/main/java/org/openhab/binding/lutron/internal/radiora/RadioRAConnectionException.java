@@ -25,5 +25,4 @@ public class RadioRAConnectionException extends Exception {
     public RadioRAConnectionException(String message) {
         super(message);
     }
-
 }

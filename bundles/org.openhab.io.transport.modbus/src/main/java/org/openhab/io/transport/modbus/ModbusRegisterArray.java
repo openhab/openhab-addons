@@ -79,5 +79,4 @@ public interface ModbusRegisterArray extends Iterable<ModbusRegister> {
         });
         return buffer;
     }
-
 }

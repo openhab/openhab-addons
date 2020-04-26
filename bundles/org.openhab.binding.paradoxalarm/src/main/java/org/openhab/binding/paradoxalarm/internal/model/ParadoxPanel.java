@@ -145,5 +145,4 @@ public class ParadoxPanel implements IDataUpdateListener {
     public void setCommunicator(IParadoxCommunicator communicator) {
         this.communicator = communicator;
     }
-
 }

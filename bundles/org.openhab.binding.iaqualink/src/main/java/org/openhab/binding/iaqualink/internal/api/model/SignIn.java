@@ -56,5 +56,4 @@ public class SignIn {
     public void setPassword(String password) {
         this.password = password;
     }
-
 }

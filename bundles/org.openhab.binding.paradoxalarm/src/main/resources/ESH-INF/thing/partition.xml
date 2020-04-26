@@ -6,31 +6,31 @@
 
 	<thing-type id="partition">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="ip150" />
+			<bridge-type-ref id="ip150"/>
 		</supported-bridge-type-refs>
 
 		<label>Paradox Partition</label>
 		<description>Paradox Partition</description>
 
 		<channels>
-			<channel id="label" typeId="partitionLabel" />
-			<channel id="state" typeId="state" />
-			<channel id="additionalStates" typeId="additionalState" />
-			<channel id="readyToArm" typeId="readyToArm" />
-			<channel id="inExitDelay" typeId="inExitDelay" />
-			<channel id="inEntryDelay" typeId="inEntryDelay" />
-			<channel id="inTrouble" typeId="inTrouble" />
-			<channel id="alarmInMemory" typeId="alarmInMemory" />
-			<channel id="zoneBypass" typeId="zoneBypass" />
-			<channel id="zoneInTamperTrouble" typeId="zoneInTamperTrouble" />
-			<channel id="zoneInLowBatteryTrouble" typeId="zoneInLowBatteryTrouble" />
-			<channel id="zoneInFireLoopTrouble" typeId="zoneInFireLoopTrouble" />
-			<channel id="zoneInSupervisionTrouble" typeId="zoneInSupervisionTrouble" />
-			<channel id="stayInstantReady" typeId="stayInstantReady" />
-			<channel id="forceReady" typeId="forceReady" />
-			<channel id="bypassReady" typeId="bypassReady" />
-			<channel id="inhibitReady" typeId="inhibitReady" />
-			<channel id="allZonesClosed" typeId="allZonesClosed" />
+			<channel id="label" typeId="partitionLabel"/>
+			<channel id="state" typeId="state"/>
+			<channel id="additionalStates" typeId="additionalState"/>
+			<channel id="readyToArm" typeId="readyToArm"/>
+			<channel id="inExitDelay" typeId="inExitDelay"/>
+			<channel id="inEntryDelay" typeId="inEntryDelay"/>
+			<channel id="inTrouble" typeId="inTrouble"/>
+			<channel id="alarmInMemory" typeId="alarmInMemory"/>
+			<channel id="zoneBypass" typeId="zoneBypass"/>
+			<channel id="zoneInTamperTrouble" typeId="zoneInTamperTrouble"/>
+			<channel id="zoneInLowBatteryTrouble" typeId="zoneInLowBatteryTrouble"/>
+			<channel id="zoneInFireLoopTrouble" typeId="zoneInFireLoopTrouble"/>
+			<channel id="zoneInSupervisionTrouble" typeId="zoneInSupervisionTrouble"/>
+			<channel id="stayInstantReady" typeId="stayInstantReady"/>
+			<channel id="forceReady" typeId="forceReady"/>
+			<channel id="bypassReady" typeId="bypassReady"/>
+			<channel id="inhibitReady" typeId="inhibitReady"/>
+			<channel id="allZonesClosed" typeId="allZonesClosed"/>
 		</channels>
 
 		<config-description>

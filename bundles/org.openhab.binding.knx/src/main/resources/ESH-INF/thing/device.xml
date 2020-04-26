@@ -6,8 +6,8 @@
 	<thing-type id="device"
 		extensible="switch, switch-control, dimmer, dimmer-control, rollershutter, rollershutter-control, color, color-control, contact, contact-control, number, number-control, string, string-control, datetime, datetime-control">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="ip" />
-			<bridge-type-ref id="serial" />
+			<bridge-type-ref id="ip"/>
+			<bridge-type-ref id="serial"/>
 		</supported-bridge-type-refs>
 
 		<label>KNX Device</label>
@@ -41,13 +41,13 @@
 		<item-type>Switch</item-type>
 		<label>Switch</label>
 		<description>A channel to manage a generic Group Addresses with a DPT compatible with Switch Items</description>
-		<config-description-ref uri="channel-type:knx:single" />
+		<config-description-ref uri="channel-type:knx:single"/>
 	</channel-type>
 	<channel-type id="switch-control">
 		<item-type>Switch</item-type>
 		<label>Switch Control</label>
 		<description>Control a switch item via KNX (i.e. the status is not owned by KNX)</description>
-		<config-description-ref uri="channel-type:knx:single" />
+		<config-description-ref uri="channel-type:knx:single"/>
 	</channel-type>
 
 	<!-- Dimmer -->
@@ -55,13 +55,13 @@
 		<item-type>Dimmer</item-type>
 		<label>Dimmer</label>
 		<description>A channel to control a dimmer</description>
-		<config-description-ref uri="channel-type:knx:dimmer" />
+		<config-description-ref uri="channel-type:knx:dimmer"/>
 	</channel-type>
 	<channel-type id="dimmer-control">
 		<item-type>Dimmer</item-type>
 		<label>Dimmer Control</label>
 		<description>Control a dimmer item via KNX (i.e. the status is not owned by KNX)</description>
-		<config-description-ref uri="channel-type:knx:dimmer-control" />
+		<config-description-ref uri="channel-type:knx:dimmer-control"/>
 	</channel-type>
 
 	<!-- Rollershutter -->
@@ -69,13 +69,13 @@
 		<item-type>Rollershutter</item-type>
 		<label>Rollershutter</label>
 		<description>A channel to control a rollershutter</description>
-		<config-description-ref uri="channel-type:knx:rollershutter" />
+		<config-description-ref uri="channel-type:knx:rollershutter"/>
 	</channel-type>
 	<channel-type id="rollershutter-control">
 		<item-type>Rollershutter</item-type>
 		<label>Rollershutter Control</label>
 		<description>Control a rollershutter item (i.e. the status is not owned by KNX)</description>
-		<config-description-ref uri="channel-type:knx:rollershutter" />
+		<config-description-ref uri="channel-type:knx:rollershutter"/>
 	</channel-type>
 
 	<!-- Color -->
@@ -83,13 +83,13 @@
 		<item-type>Color</item-type>
 		<label>Color</label>
 		<description>A channel to control color information (RGB)</description>
-		<config-description-ref uri="channel-type:knx:color" />
+		<config-description-ref uri="channel-type:knx:color"/>
 	</channel-type>
 	<channel-type id="color-control">
 		<item-type>Color</item-type>
 		<label>Color Control</label>
 		<description>Control a color item (i.e. the status is not owned by KNX)</description>
-		<config-description-ref uri="channel-type:knx:color-control" />
+		<config-description-ref uri="channel-type:knx:color-control"/>
 	</channel-type>
 
 	<!-- Contact -->
@@ -97,13 +97,13 @@
 		<item-type>Contact</item-type>
 		<label>Contact</label>
 		<description>A channel to manage a generic Group Addresses with a DPT compatible with Contact Items</description>
-		<config-description-ref uri="channel-type:knx:single" />
+		<config-description-ref uri="channel-type:knx:single"/>
 	</channel-type>
 	<channel-type id="contact-control">
 		<item-type>Contact</item-type>
 		<label>Contact Control</label>
 		<description>Control a contact item (i.e. the status is not owned by KNX)</description>
-		<config-description-ref uri="channel-type:knx:single" />
+		<config-description-ref uri="channel-type:knx:single"/>
 	</channel-type>
 
 	<!-- Generic Number -->
@@ -111,13 +111,13 @@
 		<item-type>Number</item-type>
 		<label>Number</label>
 		<description>A channel to manage a generic Group Addresses with a DPT compatible with Number Items</description>
-		<config-description-ref uri="channel-type:knx:single" />
+		<config-description-ref uri="channel-type:knx:single"/>
 	</channel-type>
 	<channel-type id="number-control">
 		<item-type>Number</item-type>
 		<label>Number Control</label>
 		<description>Control a number item (i.e. the status is not owned by KNX)</description>
-		<config-description-ref uri="channel-type:knx:single" />
+		<config-description-ref uri="channel-type:knx:single"/>
 	</channel-type>
 
 	<!-- Generic String -->
@@ -125,13 +125,13 @@
 		<item-type>String</item-type>
 		<label>String</label>
 		<description>A channel to manage a generic Group Addresses with a DPT compatible with String Items</description>
-		<config-description-ref uri="channel-type:knx:single" />
+		<config-description-ref uri="channel-type:knx:single"/>
 	</channel-type>
 	<channel-type id="string-control">
 		<item-type>String</item-type>
 		<label>String Control</label>
 		<description>Control a string item (i.e. the status is not owned by KNX)</description>
-		<config-description-ref uri="channel-type:knx:single" />
+		<config-description-ref uri="channel-type:knx:single"/>
 	</channel-type>
 
 	<!-- Generic Date/Time -->
@@ -139,13 +139,13 @@
 		<item-type>DateTime</item-type>
 		<label>DateTime</label>
 		<description>A channel to manage a generic Group Addresses with a DPT compatible with DateTime Items</description>
-		<config-description-ref uri="channel-type:knx:single" />
+		<config-description-ref uri="channel-type:knx:single"/>
 	</channel-type>
 	<channel-type id="datetime-control">
 		<item-type>DateTime Control</item-type>
 		<label>DateTime</label>
 		<description>Control a date/time item (i.e. the status is not owned by KNX)</description>
-		<config-description-ref uri="channel-type:knx:single" />
+		<config-description-ref uri="channel-type:knx:single"/>
 	</channel-type>
 
 

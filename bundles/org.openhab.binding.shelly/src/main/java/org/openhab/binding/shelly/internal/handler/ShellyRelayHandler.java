@@ -279,7 +279,6 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 updateChannel(groupName, CHANNEL_ROL_CONTROL_POS, new PercentType(position));
             }
         }
-
     }
 
     /**

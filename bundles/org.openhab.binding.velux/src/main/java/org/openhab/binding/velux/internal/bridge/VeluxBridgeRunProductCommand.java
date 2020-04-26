@@ -60,5 +60,4 @@ public class VeluxBridgeRunProductCommand {
         logger.debug("sendCommand() finished {}.", (success ? "successfully" : "with failure"));
         return success;
     }
-
 }

@@ -233,5 +233,4 @@ public class ContentItemMaker {
             throw new OperationModeNotAvailableException();
         }
     }
-
 }

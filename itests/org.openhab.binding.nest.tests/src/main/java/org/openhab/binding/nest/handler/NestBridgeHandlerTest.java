@@ -84,5 +84,4 @@ public class NestBridgeHandlerTest {
         ThingStatusInfo thingStatusInfo = statusInfoCaptor.getValue();
         assertThat(thingStatusInfo.getStatus(), is(equalTo(ThingStatus.UNKNOWN)));
     }
-
 }

@@ -48,5 +48,4 @@ public class SonosMusicService {
     public void setType(Integer type) {
         this.type = type;
     }
-
 }

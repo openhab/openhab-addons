@@ -409,7 +409,6 @@ public class WebSocketConnection {
                     logger.debug("Handling of push notification failed", e);
                 }
             }
-
         }
 
         @Override
@@ -426,7 +425,6 @@ public class WebSocketConnection {
         public void onWebSocketError(@Nullable Throwable error) {
             logger.info("Web Socket error", error);
             WebSocketConnection.this.close();
-
         }
 
         public void sendPing() {

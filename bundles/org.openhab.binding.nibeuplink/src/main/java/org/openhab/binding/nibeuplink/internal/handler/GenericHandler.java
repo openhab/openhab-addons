@@ -35,8 +35,8 @@ public class GenericHandler extends UplinkBaseHandler {
     /**
      * constructor, called by the factory
      *
-     * @param thing       instance of the thing, passed in by the factory
-     * @param httpClient  the httpclient that communicates with the API
+     * @param thing instance of the thing, passed in by the factory
+     * @param httpClient the httpclient that communicates with the API
      * @param channelList the specific channellist
      */
     public GenericHandler(Thing thing, HttpClient httpClient, ChannelList channelList) {
@@ -62,5 +62,4 @@ public class GenericHandler extends UplinkBaseHandler {
         specificAndCustomChannels.addAll(CustomChannels.getInstance().getChannels());
         return specificAndCustomChannels;
     }
-
 }

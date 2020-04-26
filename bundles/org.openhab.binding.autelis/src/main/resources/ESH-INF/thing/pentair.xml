@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="autelis" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="autelis"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<thing-type id="pentair">
 		<label>Pentair Pool Controller</label>
 		<description>A Pentair pool control thing represents an Autelis pool controller for Pentair systems</description>
 		<channels>
-			<channel id="system-runstate" typeId="system-runstate" />
-			<channel id="system-model" typeId="system-model" />
-			<channel id="system-haddr" typeId="system-haddr" />
-			<channel id="system-opmode" typeId="system-opmode" />
-			<channel id="system-freeze" typeId="system-freeze" />
+			<channel id="system-runstate" typeId="system-runstate"/>
+			<channel id="system-model" typeId="system-model"/>
+			<channel id="system-haddr" typeId="system-haddr"/>
+			<channel id="system-opmode" typeId="system-opmode"/>
+			<channel id="system-freeze" typeId="system-freeze"/>
 			<channel id="system-sensor1" typeId="system-sensor">
 				<label>Sensor 1</label>
 				<description>The state of sensor 1 (water sensor)</description>
@@ -31,8 +32,8 @@
 				<label>Sensor 5</label>
 				<description>The state of sensor 5 (water sensor)</description>
 			</channel>
-			<channel id="system-version" typeId="system-version" />
-			<channel id="system-time" typeId="system-time" />
+			<channel id="system-version" typeId="system-version"/>
+			<channel id="system-time" typeId="system-time"/>
 			<channel id="equipment-circuit1" typeId="equipment-circuit">
 				<label>Circuit 1</label>
 				<description>The current state of circuit 1 (Spa or Lo-Temp)</description>
@@ -121,21 +122,21 @@
 				<label>Spa Heater Status</label>
 				<description>The current spa/hi-temp heater settings</description>
 			</channel>
-			<channel id="temp-htstatus" typeId="temp-htstatus" />
-			<channel id="temp-poolsp" typeId="temp-poolsp" />
-			<channel id="temp-spasp" typeId="temp-spasp" />
-			<channel id="temp-pooltemp" typeId="temp-pooltemp" />
-			<channel id="temp-spatemp" typeId="temp-spatemp" />
-			<channel id="temp-airtemp" typeId="temp-airtemp" />
-			<channel id="temp-soltemp" typeId="temp-soltemp" />
-			<channel id="temp-tempunits" typeId="temp-tempunits" />
-			<channel id="temp-htpump" typeId="temp-htpump" />
-			<channel id="pumps-pump1" typeId="pumps-pump1" />
-			<channel id="pumps-pump1-watts" typeId="pumps-pump1-watts" />
-			<channel id="pumps-pump1-rpm" typeId="pumps-pump1-rpm" />
-			<channel id="pumps-pump1-gpm" typeId="pumps-pump1-gpm" />
-			<channel id="pumps-pump1-filter" typeId="pumps-pump1-filter" />
-			<channel id="pumps-pump1-error" typeId="pumps-pump1-error" />
+			<channel id="temp-htstatus" typeId="temp-htstatus"/>
+			<channel id="temp-poolsp" typeId="temp-poolsp"/>
+			<channel id="temp-spasp" typeId="temp-spasp"/>
+			<channel id="temp-pooltemp" typeId="temp-pooltemp"/>
+			<channel id="temp-spatemp" typeId="temp-spatemp"/>
+			<channel id="temp-airtemp" typeId="temp-airtemp"/>
+			<channel id="temp-soltemp" typeId="temp-soltemp"/>
+			<channel id="temp-tempunits" typeId="temp-tempunits"/>
+			<channel id="temp-htpump" typeId="temp-htpump"/>
+			<channel id="pumps-pump1" typeId="pumps-pump1"/>
+			<channel id="pumps-pump1-watts" typeId="pumps-pump1-watts"/>
+			<channel id="pumps-pump1-rpm" typeId="pumps-pump1-rpm"/>
+			<channel id="pumps-pump1-gpm" typeId="pumps-pump1-gpm"/>
+			<channel id="pumps-pump1-filter" typeId="pumps-pump1-filter"/>
+			<channel id="pumps-pump1-error" typeId="pumps-pump1-error"/>
 			<channel id="pumps-pump2" typeId="pumps-pump">
 				<label>Pump 2</label>
 				<description>Pump 2</description>
@@ -164,15 +165,15 @@
 				<label>Pump 8</label>
 				<description>Pump 8</description>
 			</channel>
-			<channel id="chlor-chloren" typeId="chlor-chloren" />
-			<channel id="chlor-poolsp" typeId="chlor-poolsp" />
-			<channel id="chlor-spasp" typeId="chlor-spasp" />
-			<channel id="chlor-salt" typeId="chlor-salt" />
-			<channel id="chlor-super" typeId="chlor-super" />
-			<channel id="chlor-chlorerr" typeId="chlor-chlorerr" />
-			<channel id="chlor-chlorname" typeId="chlor-chlorname" />
-			<channel id="lightscmd" typeId="lightscmd" />
-			<channel id="reboot" typeId="reboot" />
+			<channel id="chlor-chloren" typeId="chlor-chloren"/>
+			<channel id="chlor-poolsp" typeId="chlor-poolsp"/>
+			<channel id="chlor-spasp" typeId="chlor-spasp"/>
+			<channel id="chlor-salt" typeId="chlor-salt"/>
+			<channel id="chlor-super" typeId="chlor-super"/>
+			<channel id="chlor-chlorerr" typeId="chlor-chlorerr"/>
+			<channel id="chlor-chlorname" typeId="chlor-chlorname"/>
+			<channel id="lightscmd" typeId="lightscmd"/>
+			<channel id="reboot" typeId="reboot"/>
 		</channels>
 		<config-description>
 			<parameter name="host" type="text" required="true">

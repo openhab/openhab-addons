@@ -307,7 +307,6 @@ public class LGWebOSTVSocket {
                 logger.debug("Registration failed with message: {}", message);
                 disconnect();
             }
-
         };
 
         this.requests.put(id, new ServiceSubscription<>("dummy", payload, x -> x, dummyListener));
@@ -346,7 +345,6 @@ public class LGWebOSTVSocket {
                         command.getTarget(), state);
                 break;
         }
-
     }
 
     public void unsubscribe(ServiceSubscription<?> subscription) {
@@ -473,7 +471,6 @@ public class LGWebOSTVSocket {
                 setState(State.REGISTERED);
                 break;
         }
-
     }
 
     public interface WebOSTVSocketListener {
@@ -481,7 +478,6 @@ public class LGWebOSTVSocket {
         public void onStateChanged(State state);
 
         public void onError(String errorMessage);
-
     }
 
     public ServiceSubscription<Boolean> subscribeMute(ResponseListener<Boolean> listener) {
@@ -835,7 +831,6 @@ public class LGWebOSTVSocket {
                 jsonObj -> GSON.fromJson(jsonObj, AppInfo.class), interceptor);
         sendCommand(request);
         return request;
-
     }
 
     public ServiceCommand<AppInfo> getRunningApp(ResponseListener<AppInfo> listener) {
@@ -843,7 +838,6 @@ public class LGWebOSTVSocket {
                 jsonObj -> GSON.fromJson(jsonObj, AppInfo.class), listener);
         sendCommand(request);
         return request;
-
     }
 
     // KEYBOARD
@@ -881,7 +875,6 @@ public class LGWebOSTVSocket {
                     default:
                         break;
                 }
-
             }
 
             @Override
@@ -915,7 +908,6 @@ public class LGWebOSTVSocket {
 
         ServiceCommand<JsonObject> request = new ServiceCommand<>(uri, null, x -> x, listener);
         sendCommand(request);
-
     }
 
     // Simulate Remote Control Button press
@@ -931,5 +923,4 @@ public class LGWebOSTVSocket {
 
         String getKey();
     }
-
 }

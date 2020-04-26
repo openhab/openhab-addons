@@ -25,5 +25,4 @@ public class EnergySavingCommand extends BaseStringCommand implements LGSerialCo
     protected EnergySavingCommand(int setId) {
         super('j', 'q', setId);
     }
-
 }

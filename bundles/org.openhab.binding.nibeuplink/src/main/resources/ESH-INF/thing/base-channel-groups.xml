@@ -6,48 +6,48 @@
 	<channel-group-type id="base-base">
 		<label>Base Channels</label>
 		<channels>
-			<channel id="40004" typeId="base-type-40004" />
-			<channel id="40067" typeId="base-type-40067" />
-			<channel id="43005" typeId="base-type-43005" />
-			<channel id="43009" typeId="base-type-43009" />
-			<channel id="40071" typeId="base-type-40071" />
-			<channel id="40033" typeId="base-type-40033" />
-			<channel id="43161" typeId="base-type-43161" />
-			<channel id="40008" typeId="base-type-40008" />
-			<channel id="40012" typeId="base-type-40012" />
-			<channel id="40072" typeId="base-type-40072" />
-			<channel id="40079" typeId="base-type-40079" />
-			<channel id="40081" typeId="base-type-40081" />
-			<channel id="40083" typeId="base-type-40083" />
-			<channel id="10033" typeId="base-type-10033" />
-			<channel id="43081" typeId="base-type-43081" />
-			<channel id="43084" typeId="base-type-43084" />
-			<channel id="47212" typeId="base-type-47212" />
-			<channel id="48914" typeId="base-type-48914" />
-			<channel id="44308" typeId="base-type-44308" />
-			<channel id="44304" typeId="base-type-44304" />
-			<channel id="44300" typeId="base-type-44300" />
-			<channel id="48043" typeId="base-type-48043" />
-			<channel id="10012" typeId="base-type-10012" />
-			<channel id="43437" typeId="base-type-43437" />		
+			<channel id="40004" typeId="base-type-40004"/>
+			<channel id="40067" typeId="base-type-40067"/>
+			<channel id="43005" typeId="base-type-43005"/>
+			<channel id="43009" typeId="base-type-43009"/>
+			<channel id="40071" typeId="base-type-40071"/>
+			<channel id="40033" typeId="base-type-40033"/>
+			<channel id="43161" typeId="base-type-43161"/>
+			<channel id="40008" typeId="base-type-40008"/>
+			<channel id="40012" typeId="base-type-40012"/>
+			<channel id="40072" typeId="base-type-40072"/>
+			<channel id="40079" typeId="base-type-40079"/>
+			<channel id="40081" typeId="base-type-40081"/>
+			<channel id="40083" typeId="base-type-40083"/>
+			<channel id="10033" typeId="base-type-10033"/>
+			<channel id="43081" typeId="base-type-43081"/>
+			<channel id="43084" typeId="base-type-43084"/>
+			<channel id="47212" typeId="base-type-47212"/>
+			<channel id="48914" typeId="base-type-48914"/>
+			<channel id="44308" typeId="base-type-44308"/>
+			<channel id="44304" typeId="base-type-44304"/>
+			<channel id="44300" typeId="base-type-44300"/>
+			<channel id="48043" typeId="base-type-48043"/>
+			<channel id="10012" typeId="base-type-10012"/>
+			<channel id="43437" typeId="base-type-43437"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="base-hotwater">
 		<label>Hot Water Channels</label>
 		<channels>
-			<channel id="40013" typeId="base-type-40013" />
-			<channel id="40014" typeId="base-type-40014" />
-			<channel id="44306" typeId="base-type-44306" />
-			<channel id="44298" typeId="base-type-44298" />
-			<channel id="48132" typeId="base-type-48132" />
-			<channel id="47041" typeId="base-type-47041" />
-			<channel id="47045" typeId="base-type-47045" />
-			<channel id="47049" typeId="base-type-47049" />
-			<channel id="47044" typeId="base-type-47044" />
-			<channel id="47048" typeId="base-type-47048" />
-			<channel id="47043" typeId="base-type-47043" />
-			<channel id="47047" typeId="base-type-47047" />
-			<channel id="47046" typeId="base-type-47046" />
+			<channel id="40013" typeId="base-type-40013"/>
+			<channel id="40014" typeId="base-type-40014"/>
+			<channel id="44306" typeId="base-type-44306"/>
+			<channel id="44298" typeId="base-type-44298"/>
+			<channel id="48132" typeId="base-type-48132"/>
+			<channel id="47041" typeId="base-type-47041"/>
+			<channel id="47045" typeId="base-type-47045"/>
+			<channel id="47049" typeId="base-type-47049"/>
+			<channel id="47044" typeId="base-type-47044"/>
+			<channel id="47048" typeId="base-type-47048"/>
+			<channel id="47043" typeId="base-type-47043"/>
+			<channel id="47047" typeId="base-type-47047"/>
+			<channel id="47046" typeId="base-type-47046"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

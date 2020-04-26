@@ -825,5 +825,4 @@ public class PowermaxState {
 
         return str;
     }
-
 }

@@ -8,15 +8,15 @@
 		<label>Xiaomi Mi Device</label>
 
 		<channel-groups>
-			<channel-group id="network" typeId="network" />
-			<channel-group id="actions" typeId="miioactions" />
+			<channel-group id="network" typeId="network"/>
+			<channel-group id="actions" typeId="miioactions"/>
 		</channel-groups>
 
 		<properties>
 			<property name="vendor">Xiaomi</property>
 		</properties>
 
-		<config-description-ref uri="thing-type:miio:config" />
+		<config-description-ref uri="thing-type:miio:config"/>
 	</thing-type>
 
 </thing:thing-descriptions>

@@ -44,5 +44,4 @@ public class Iec62056_21UnitConversion {
         }
         return null;
     }
-
 }

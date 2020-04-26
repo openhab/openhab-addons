@@ -31,11 +31,11 @@ public class BoseSoundTouchNotificationChannelConfiguration {
     public String notificationService;
     public String notificationReason;
     public String notificationMessage;
-    
+
     public static boolean isSupportedFirmware(String firmware) {
         return firmware != null && firmware.compareTo(MIN_FIRMWARE) > 0;
     }
-    
+
     public static boolean isSupportedHardware(String hardware) {
         return MODEL_TYPE.equals(hardware);
     }

@@ -23,5 +23,4 @@ public class OSDSelectCommand extends BaseOnOffCommand {
     protected OSDSelectCommand(int setId) {
         super('k', 'l', setId);
     }
-
 }

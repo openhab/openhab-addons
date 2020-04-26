@@ -322,5 +322,4 @@ public class PLCMemoryHandler extends PLCCommonHandler {
 
         return bit;
     }
-
 }

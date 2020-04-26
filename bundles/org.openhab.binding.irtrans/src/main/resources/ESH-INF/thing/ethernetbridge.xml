@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="irtrans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="irtrans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -44,7 +45,8 @@
 	<channel-type id="blaster">
 		<item-type>String</item-type>
 		<label>Blaster Channel</label>
-		<description>The Blaster Channel allows to send (filtered) infrared commands over the specified blaster led of the transceiver</description>
+		<description>The Blaster Channel allows to send (filtered) infrared commands over the specified blaster led of the
+			transceiver</description>
 		<config-description>
 			<parameter name="led" type="text" required="true">
 				<label>Led</label>
@@ -52,11 +54,13 @@
 			</parameter>
 			<parameter name="remote" type="text" required="true">
 				<label>Remote</label>
-				<description>The remote or manufacturer name which's commands will be allowed, as defined in the IRtrans server database and flashed into the transceiver. Can be '*' for any remote</description>
+				<description>The remote or manufacturer name which's commands will be allowed, as defined in the IRtrans server
+					database and flashed into the transceiver. Can be '*' for any remote</description>
 			</parameter>
 			<parameter name="command" type="text" required="true">
 				<label>Command</label>
-				<description>The name of the command will be allowed, as defined in the IRtrans server database and flashed into the transceiver. Can be '*' for any command</description>
+				<description>The name of the command will be allowed, as defined in the IRtrans server database and flashed into the
+					transceiver. Can be '*' for any command</description>
 			</parameter>
 		</config-description>
 	</channel-type>
@@ -64,15 +68,18 @@
 	<channel-type id="receiver">
 		<item-type>String</item-type>
 		<label>Receiver Channel</label>
-		<description>The Receiver Channel allows to receive (filtered) infrared commands on the receiver led of the transceiver</description>
+		<description>The Receiver Channel allows to receive (filtered) infrared commands on the receiver led of the
+			transceiver</description>
 		<config-description>
 			<parameter name="remote" type="text" required="true">
 				<label>Remote</label>
-				<description>The remote or manufacturer name which's commands will be allowed, as defined in the IRtrans server database and flashed into the transceiver. Can be '*' for any remote</description>
+				<description>The remote or manufacturer name which's commands will be allowed, as defined in the IRtrans server
+					database and flashed into the transceiver. Can be '*' for any remote</description>
 			</parameter>
 			<parameter name="command" type="text" required="true">
 				<label>Command</label>
-				<description>The name of the command will be allowed, as defined in the IRtrans server database and flashed into the transceiver. Can be '*' for any command</description>
+				<description>The name of the command will be allowed, as defined in the IRtrans server database and flashed into the
+					transceiver. Can be '*' for any command</description>
 			</parameter>
 		</config-description>
 	</channel-type>

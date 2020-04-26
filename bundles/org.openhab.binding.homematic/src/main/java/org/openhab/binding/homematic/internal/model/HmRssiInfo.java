@@ -68,5 +68,4 @@ public class HmRssiInfo {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("address", address)
                 .append("device", device).append("peer", peer).toString();
     }
-
 }

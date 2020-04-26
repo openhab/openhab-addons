@@ -223,7 +223,6 @@ public class UdpCubeCommand {
                 // Ignore
             }
         }
-
     }
 
     /**
@@ -244,5 +243,4 @@ public class UdpCubeCommand {
     public Map<String, String> getCommandResponse() {
         return commandResponse;
     }
-
 }

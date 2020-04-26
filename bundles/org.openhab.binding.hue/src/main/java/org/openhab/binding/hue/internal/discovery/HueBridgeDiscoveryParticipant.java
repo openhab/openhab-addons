@@ -84,5 +84,4 @@ public class HueBridgeDiscoveryParticipant implements UpnpDiscoveryParticipant {
         }
         return null;
     }
-
 }

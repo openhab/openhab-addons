@@ -768,7 +768,6 @@ public class DeviceHandler extends BaseThingHandler implements DeviceStatusListe
             updateThing(thingBuilder.build());
             logger.debug("load channel: {} with item: {}", channelTypeUID.getAsString(), acceptedItemType);
         }
-
     }
 
     private ChannelUID getSensorChannelUID(SensorEnum sensorType) {
@@ -935,7 +934,6 @@ public class DeviceHandler extends BaseThingHandler implements DeviceStatusListe
                 // super.updateThing(editThing().build());
             }
         }
-
     }
 
     @Override

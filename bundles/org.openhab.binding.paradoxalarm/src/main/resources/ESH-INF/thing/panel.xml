@@ -6,21 +6,21 @@
 
 	<thing-type id="panel">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="ip150" />
+			<bridge-type-ref id="ip150"/>
 		</supported-bridge-type-refs>
 
 		<label>Paradox Panel</label>
 		<description>Paradox panel various information</description>
 
 		<channels>
-			<channel id="state" typeId="panelState" />
+			<channel id="state" typeId="panelState"/>
 		</channels>
 		<properties>
-			<property name="serialNumber" />
-			<property name="panelType" />
-			<property name="hardwareVersion" />
-			<property name="applicationVersion" />
-			<property name="bootloaderVersion" />
+			<property name="serialNumber"/>
+			<property name="panelType"/>
+			<property name="hardwareVersion"/>
+			<property name="applicationVersion"/>
+			<property name="bootloaderVersion"/>
 		</properties>
 	</thing-type>
 
@@ -28,37 +28,37 @@
 		<item-type>String</item-type>
 		<label>Panel State</label>
 		<description>Shows the state of the communication to panel (online/offline)</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="serialNumber">
 		<item-type>String</item-type>
 		<label>Serial Number</label>
 		<description>Panel serial number</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="panelType">
 		<item-type>String</item-type>
 		<label>Panel Type</label>
 		<description>Panel type (Evo, SP, etc)</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="hardwareVersion">
 		<item-type>String</item-type>
 		<label>Hardware Version</label>
 		<description>Panel hardware version</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="applicationVersion">
 		<item-type>String</item-type>
 		<label>Application Version</label>
 		<description>Panel application version</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="bootloaderVersion">
 		<item-type>String</item-type>
 		<label>Boot Loader Version</label>
 		<description>Boot loader version</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 </thing:thing-descriptions>

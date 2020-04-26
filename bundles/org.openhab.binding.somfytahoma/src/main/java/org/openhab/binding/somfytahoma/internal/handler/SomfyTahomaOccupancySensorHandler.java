@@ -31,5 +31,4 @@ public class SomfyTahomaOccupancySensorHandler extends SomfyTahomaBaseThingHandl
         stateNames.put(CONTACT, "core:OccupancyState");
         stateNames.put(SENSOR_DEFECT, SENSOR_DEFECT_STATE);
     }
-
 }

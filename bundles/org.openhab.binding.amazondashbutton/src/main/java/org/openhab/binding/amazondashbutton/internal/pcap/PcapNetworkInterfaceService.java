@@ -188,5 +188,4 @@ public class PcapNetworkInterfaceService {
             future = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, 2, TimeUnit.SECONDS);
         }
     }
-
 }

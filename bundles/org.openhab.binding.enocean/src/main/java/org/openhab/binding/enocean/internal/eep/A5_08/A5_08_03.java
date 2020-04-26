@@ -43,5 +43,4 @@ public class A5_08_03 extends A5_08 {
     protected double getScaledIlluminationMax() {
         return 1530;
     }
-
 }

@@ -63,5 +63,4 @@ public class PositionDatum {
     public void setOrientation(int o) {
         this.orientation = o;
     }
-
 }

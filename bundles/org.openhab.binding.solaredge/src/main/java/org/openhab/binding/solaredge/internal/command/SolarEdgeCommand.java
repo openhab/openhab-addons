@@ -48,5 +48,4 @@ public interface SolarEdgeCommand extends SuccessListener, FailureListener, Cont
      * @param listener
      */
     void setListener(StatusUpdateListener listener);
-
 }

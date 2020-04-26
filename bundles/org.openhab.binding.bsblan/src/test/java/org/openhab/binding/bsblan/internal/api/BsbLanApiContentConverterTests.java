@@ -18,13 +18,13 @@ import static org.junit.Assert.assertTrue;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
+import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterDTO;
 import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterQueryResponseDTO;
 import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterSetRequestDTO;
 import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterSetRequestDTO.Type;
-import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterDTO;
 
-import com.google.gson.JsonParser;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 /**
  * The {@link BsbLanApiContentConverterTests} class implements tests
@@ -37,18 +37,11 @@ public class BsbLanApiContentConverterTests {
 
     @Test
     public void parseBsbLanApiParameterQueryResponse() {
-        String content =
-            "{\r\n" +
-                "\"700\": {\r\n" +
-                    "\"name\": \"Betriebsart\",\r\n" +
-                    "\"value\": \"0\",\r\n" +
-                    "\"unit\": \"\",\r\n" +
-                    "\"desc\": \"Schutzbetrieb\",\r\n" +
-                    "\"dataType\": 1\r\n" +
-                "}\r\n" +
-            "}";
+        String content = "{\r\n" + "\"700\": {\r\n" + "\"name\": \"Betriebsart\",\r\n" + "\"value\": \"0\",\r\n"
+                + "\"unit\": \"\",\r\n" + "\"desc\": \"Schutzbetrieb\",\r\n" + "\"dataType\": 1\r\n" + "}\r\n" + "}";
 
-        BsbLanApiParameterQueryResponseDTO r = BsbLanApiContentConverter.fromJson(content, BsbLanApiParameterQueryResponseDTO.class);
+        BsbLanApiParameterQueryResponseDTO r = BsbLanApiContentConverter.fromJson(content,
+                BsbLanApiParameterQueryResponseDTO.class);
         assertNotNull(r);
         assertTrue(r.containsKey(700));
 
@@ -57,7 +50,7 @@ public class BsbLanApiContentConverterTests {
         assertEquals("0", p.value);
         assertEquals("", p.unit);
         assertEquals("Schutzbetrieb", p.description);
-        assertEquals(BsbLanApiParameterDTO .DataType.DT_ENUM, p.dataType);
+        assertEquals(BsbLanApiParameterDTO.DataType.DT_ENUM, p.dataType);
     }
 
     @Test

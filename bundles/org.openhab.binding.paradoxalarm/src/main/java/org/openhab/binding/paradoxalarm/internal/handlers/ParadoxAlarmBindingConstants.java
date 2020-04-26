@@ -90,5 +90,4 @@ public class ParadoxAlarmBindingConstants {
     // Misc constants
     public static final StringType STATE_OFFLINE = new StringType("Offline");
     public static final StringType STATE_ONLINE = new StringType("Online");
-
 }

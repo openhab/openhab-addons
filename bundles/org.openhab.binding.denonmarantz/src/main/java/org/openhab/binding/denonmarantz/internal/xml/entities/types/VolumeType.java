@@ -38,5 +38,4 @@ public class VolumeType {
     public void setValue(BigDecimal value) {
         this.value = value;
     }
-
 }

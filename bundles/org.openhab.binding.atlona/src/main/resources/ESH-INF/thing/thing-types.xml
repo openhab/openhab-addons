@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="atlona"
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-		xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- AT-UHD-PRO3-44M -->
 	<thing-type id="pro3-44m">
@@ -529,8 +529,8 @@
 		<label>Port</label>
 		<description>Output Port Channels</description>
 		<channels>
-			<channel id="portpower" typeId="portpower" />
-			<channel id="portoutput" typeId="portoutput" />
+			<channel id="portpower" typeId="portpower"/>
+			<channel id="portoutput" typeId="portoutput"/>
 		</channels>
 	</channel-group-type>
 
@@ -539,8 +539,8 @@
 		<label>HDMI Port</label>
 		<description>HDMI Port Mirroring Channels</description>
 		<channels>
-			<channel id="portmirror" typeId="portmirror" />
-			<channel id="portmirrorenabled" typeId="portmirrorenabled" />
+			<channel id="portmirror" typeId="portmirror"/>
+			<channel id="portmirrorenabled" typeId="portmirrorenabled"/>
 		</channels>
 	</channel-group-type>
 
@@ -548,8 +548,8 @@
 		<label>Volume</label>
 		<description>Volume channels</description>
 		<channels>
-			<channel id="volume" typeId="volume" />
-			<channel id="volumemute" typeId="volumemute" />
+			<channel id="volume" typeId="volume"/>
+			<channel id="volumemute" typeId="volumemute"/>
 		</channels>
 	</channel-group-type>
 

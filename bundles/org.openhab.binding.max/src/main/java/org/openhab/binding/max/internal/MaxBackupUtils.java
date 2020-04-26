@@ -65,7 +65,6 @@ public class MaxBackupUtils {
             inProgress = false;
             saveMsg(msg.toString(), cube);
         }
-
     }
 
     private void saveMsg(String data, String cube) {

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="lghombot" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="lghombot"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -9,29 +10,29 @@
 		<category>CleaningRobot</category>
 
 		<channels>
-			<channel id="state" typeId="stateType" />
-			<channel id="battery" typeId="batteryType" />
-			<channel id="cpuLoad" typeId="cpuLoadType" />
-			<channel id="srvMem" typeId="srvMemType" />
-			<channel id="clean" typeId="cleanType" />
-			<channel id="start" typeId="startType" />
-			<channel id="home" typeId="homeType" />
-			<channel id="pause" typeId="pauseType" />
-			<channel id="turbo" typeId="turboType" />
-			<channel id="repeat" typeId="repeatType" />
-			<channel id="mode" typeId="modeType" />
-			<channel id="nickname" typeId="nicknameType" />
-			<channel id="move" typeId="moveType" />
-			<channel id="camera" typeId="cameraType" />
-			<channel id="lastClean" typeId="lastCleanType" />
-			<channel id="map" typeId="mapType" />
-			<channel id="monday" typeId="mondayType" />
-			<channel id="tuesday" typeId="tuesdayType" />
-			<channel id="wednesday" typeId="wednesdayType" />
-			<channel id="thursday" typeId="thursdayType" />
-			<channel id="friday" typeId="fridayType" />
-			<channel id="saturday" typeId="saturdayType" />
-			<channel id="sunday" typeId="sundayType" />
+			<channel id="state" typeId="stateType"/>
+			<channel id="battery" typeId="batteryType"/>
+			<channel id="cpuLoad" typeId="cpuLoadType"/>
+			<channel id="srvMem" typeId="srvMemType"/>
+			<channel id="clean" typeId="cleanType"/>
+			<channel id="start" typeId="startType"/>
+			<channel id="home" typeId="homeType"/>
+			<channel id="pause" typeId="pauseType"/>
+			<channel id="turbo" typeId="turboType"/>
+			<channel id="repeat" typeId="repeatType"/>
+			<channel id="mode" typeId="modeType"/>
+			<channel id="nickname" typeId="nicknameType"/>
+			<channel id="move" typeId="moveType"/>
+			<channel id="camera" typeId="cameraType"/>
+			<channel id="lastClean" typeId="lastCleanType"/>
+			<channel id="map" typeId="mapType"/>
+			<channel id="monday" typeId="mondayType"/>
+			<channel id="tuesday" typeId="tuesdayType"/>
+			<channel id="wednesday" typeId="wednesdayType"/>
+			<channel id="thursday" typeId="thursdayType"/>
+			<channel id="friday" typeId="fridayType"/>
+			<channel id="saturday" typeId="saturdayType"/>
+			<channel id="sunday" typeId="sundayType"/>
 		</channels>
 
 		<properties>
@@ -89,19 +90,19 @@
 		<label>Battery</label>
 		<description>Current battery charge.</description>
 		<category>BatteryLevel</category>
-		<state pattern="%d%%" readOnly="true" />
+		<state pattern="%d%%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="cpuLoadType" advanced="true">
 		<item-type>Number</item-type>
 		<label>CPU Load</label>
 		<description>Current CPU load.</description>
-		<state pattern="%d%%" readOnly="true" />
+		<state pattern="%d%%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="srvMemType" advanced="true">
 		<item-type>String</item-type>
 		<label>Used Memory</label>
 		<description>Memory used by webserver on HomBot.</description>
-		<state pattern="%s" readOnly="true" />
+		<state pattern="%s" readOnly="true"/>
 	</channel-type>
 	<channel-type id="cleanType">
 		<item-type>Switch</item-type>
@@ -153,7 +154,7 @@
 		<item-type>String</item-type>
 		<label>Nickname</label>
 		<description>Nickname of the HomBot.</description>
-		<state pattern="%s" readOnly="true" />
+		<state pattern="%s" readOnly="true"/>
 	</channel-type>
 	<channel-type id="moveType" advanced="true">
 		<item-type>String</item-type>
@@ -178,61 +179,61 @@
 		<item-type>Image</item-type>
 		<label>Camera</label>
 		<description>Image feed from the top camera.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="lastCleanType">
 		<item-type>DateTime</item-type>
 		<label>Last Clean</label>
 		<description>Last time the HomBot cleaned.</description>
-		<state pattern="%1$tF %1$tR" readOnly="true" />
+		<state pattern="%1$tF %1$tR" readOnly="true"/>
 	</channel-type>
 	<channel-type id="mapType" advanced="true">
 		<item-type>Image</item-type>
 		<label>Cleaning map</label>
 		<description>Map of last cleaned area.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="mondayType" advanced="true">
 		<item-type>String</item-type>
 		<label>Monday</label>
 		<description>Scheduled start time on Monday.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="tuesdayType" advanced="true">
 		<item-type>String</item-type>
 		<label>Tuesday</label>
 		<description>Scheduled start time on Tuesday.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="wednesdayType" advanced="true">
 		<item-type>String</item-type>
 		<label>Wednesday</label>
 		<description>Scheduled start time on Wednesday.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="thursdayType" advanced="true">
 		<item-type>String</item-type>
 		<label>Thursday</label>
 		<description>Scheduled start time on Thursday.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="fridayType" advanced="true">
 		<item-type>String</item-type>
 		<label>Friday</label>
 		<description>Scheduled start time on Friday.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="saturdayType" advanced="true">
 		<item-type>String</item-type>
 		<label>Saturday</label>
 		<description>Scheduled start time on Saturday.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="sundayType" advanced="true">
 		<item-type>String</item-type>
 		<label>Sunday</label>
 		<description>Scheduled start time on Sunday.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

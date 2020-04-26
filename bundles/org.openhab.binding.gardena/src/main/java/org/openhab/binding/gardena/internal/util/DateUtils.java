@@ -58,7 +58,6 @@ public class DateUtils {
         } else {
             return null;
         }
-
     }
 
     /**
@@ -72,6 +71,5 @@ public class DateUtils {
             return cal;
         }
         return null;
-
     }
 }

@@ -43,5 +43,4 @@ public class LGHomBotConfiguration {
      * Polling time (in seconds) to refresh state from the HomBot itself.
      */
     public int pollingPeriod = 3;
-
 }

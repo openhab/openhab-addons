@@ -28,7 +28,6 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.types.State;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,8 +77,8 @@ public class RdsDiscoveryService extends AbstractDiscoveryService {
         logger.debug("start background discovery..");
 
         if (discoveryScheduler == null || discoveryScheduler.isCancelled()) {
-            discoveryScheduler = scheduler.scheduleWithFixedDelay(this::startScan, 10, 
-                    DISCOVERY_REFRESH_PERIOD, TimeUnit.SECONDS);
+            discoveryScheduler = scheduler.scheduleWithFixedDelay(this::startScan, 10, DISCOVERY_REFRESH_PERIOD,
+                    TimeUnit.SECONDS);
         }
     }
 
@@ -124,8 +123,8 @@ public class RdsDiscoveryService extends AbstractDiscoveryService {
                                 .withLabel(label).withProperty(PROP_PLANT_ID, plantId)
                                 .withRepresentationProperty(PROP_PLANT_ID).build();
 
-                        logger.debug("discovered typeUID={}, plantUID={}, brigeUID={}, label={}, plantId={}, ", 
-                                typeUID, plantUID, bridgeUID, label, plantId);
+                        logger.debug("discovered typeUID={}, plantUID={}, brigeUID={}, label={}, plantId={}, ", typeUID,
+                                plantUID, bridgeUID, label, plantId);
 
                         thingDiscovered(disco);
 
@@ -136,5 +135,4 @@ public class RdsDiscoveryService extends AbstractDiscoveryService {
         }
         logger.debug("discovery error!");
     }
-
 }

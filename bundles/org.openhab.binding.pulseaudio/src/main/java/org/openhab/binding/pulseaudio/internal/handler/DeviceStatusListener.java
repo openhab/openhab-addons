@@ -48,5 +48,4 @@ public interface DeviceStatusListener {
      * @param device The device which is added.
      */
     public void onDeviceAdded(Bridge bridge, AbstractAudioDeviceConfig device);
-
 }

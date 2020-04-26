@@ -28,5 +28,4 @@ public interface ConnectionBase {
     boolean connect();
 
     boolean disconnect();
-
 }

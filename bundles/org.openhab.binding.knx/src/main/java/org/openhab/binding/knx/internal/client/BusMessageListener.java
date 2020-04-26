@@ -52,5 +52,4 @@ public interface BusMessageListener {
      */
     public void onGroupReadResponse(AbstractKNXClient client, IndividualAddress source, GroupAddress destination,
             byte[] asdu);
-
 }

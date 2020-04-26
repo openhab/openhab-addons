@@ -7,113 +7,113 @@
 	<thing-type id="model3">
 
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="account" />
+			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 
 		<label>Tesla Model 3</label>
 		<description>A Tesla Model 3 Vehicle</description>
 
 		<channels>
-			<channel id="autoconditioning" typeId="autoconditioning" />
-			<channel id="autoparkstate" typeId="autoparkstate" />
-			<channel id="autoparkstate2" typeId="autoparkstate" />
-			<channel id="autoparkstyle" typeId="autoparkstyle" />
-			<channel id="batterycurrent" typeId="batterycurrent" />
-			<channel id="batterylevel" typeId="batterylevel" />
-			<channel id="batteryrange" typeId="batteryrange" />
-			<channel id="calendarenabled" typeId="calendarenabled" />
-			<channel id="centerdisplay" typeId="centerdisplay" />
-			<channel id="centerrearseatheater" typeId="centerrearseatheater" />
-			<channel id="charge" typeId="charge" />
-			<channel id="chargecable" typeId="chargecable" />
-			<channel id="chargecurrent" typeId="chargecurrent" />
-			<channel id="chargeenablerequest" typeId="chargeenablerequest" />
-			<channel id="chargeenergyadded" typeId="chargeenergyadded" />
-			<channel id="chargeidealdistanceadded" typeId="chargeidealdistanceadded" />
-			<channel id="chargelimit" typeId="chargelimit" />
-			<channel id="chargelimitmaximum" typeId="chargelimitmaximum" />
-			<channel id="chargelimitminimum" typeId="chargelimitminimum" />
-			<channel id="chargelimitsocstandard" typeId="chargelimitsocstandard" />
-			<channel id="chargemaxcurrent" typeId="chargemaxcurrent" />
-			<channel id="chargeport" typeId="chargeport" />
-			<channel id="chargerate" typeId="chargerate" />
-			<channel id="chargerateddistanceadded" typeId="chargerateddistanceadded" />
-			<channel id="chargercurrent" typeId="chargercurrent" />
-			<channel id="chargermaxcurrent" typeId="chargermaxcurrent" />
-			<channel id="chargerphases" typeId="chargerphases" />
-			<channel id="chargerpower" typeId="chargerpower" />
-			<channel id="chargervoltage" typeId="chargervoltage" />
-			<channel id="chargestartingrange" typeId="chargestartingrange" />
-			<channel id="chargestartingsoc" typeId="chargestartingsoc" />
-			<channel id="chargetomax" typeId="chargetomax" />
-			<channel id="chargingstate" typeId="chargingstate" />
-			<channel id="climate" typeId="climate" />
-			<channel id="doorlock" typeId="doorlock" />
-			<channel id="driverfrontdoor" typeId="driverfrontdoor" />
-			<channel id="driverreardoor" typeId="driverreardoor" />
-			<channel id="drivertemp" typeId="drivertemp" />
-			<channel id="estimatedbatteryrange" typeId="estimatedbatteryrange" />
-			<channel id="estimatedrange" typeId="estimatedrange" />
-			<channel id="eventstamp" typeId="eventstamp" />
-			<channel id="fan" typeId="fan" />
-			<channel id="flashlights" typeId="flashlights" />
-			<channel id="frontdefroster" typeId="frontdefroster" />
-			<channel id="fronttrunk" typeId="fronttrunk" />
-			<channel id="gpstimestamp" typeId="gpstimestamp" />
-			<channel id="heading" typeId="heading" />
-			<channel id="headingestimation" typeId="headingestimation" />
-			<channel id="homelink" typeId="homelink" />
-			<channel id="honkhorn" typeId="honkhorn" />
-			<channel id="idealbatteryrange" typeId="idealbatteryrange" />
-			<channel id="insidetemp" typeId="insidetemp" />
-			<channel id="leftrearbackseatheater" typeId="leftrearbackseatheater" />
-			<channel id="leftrearseatheater" typeId="leftrearseatheater" />
-			<channel id="leftseatheater" typeId="leftseatheater" />
-			<channel id="lefttempdirection" typeId="lefttempdirection" />
-			<channel id="location" typeId="location" />
-			<channel id="managedcharging" typeId="managedcharging" />
-			<channel id="managedchargingcancelled" typeId="managedchargingcancelled" />
-			<channel id="managedchargingstart" typeId="managedchargingstart" />
-			<channel id="maxavailabletemp" typeId="maxavailabletemp" />
-			<channel id="maxcharges" typeId="maxcharges" />
-			<channel id="mobileenabled" typeId="mobileenabled" />
-			<channel id="minavailabletemp" typeId="minavailabletemp" />
-			<channel id="notenoughpower" typeId="notenoughpower" />
-			<channel id="notificationsenabled" typeId="notificationsenabled" />
-			<channel id="notificationssupported" typeId="notificationssupported" />
-			<channel id="odometer" typeId="odometer" />
-			<channel id="outsidetemp" typeId="outsidetemp" />
-			<channel id="parsedcalendar" typeId="parsedcalendar" />
-			<channel id="passengerfrontdoor" typeId="passengerfrontdoor" />
-			<channel id="passengerreardoor" typeId="passengerreardoor" />
-			<channel id="passengertemp" typeId="passengertemp" />
-			<channel id="power" typeId="power" />
-			<channel id="preconditioning" typeId="preconditioning" />
-			<channel id="range" typeId="range" />
-			<channel id="reardefroster" typeId="reardefroster" />
-			<channel id="reartrunk" typeId="reartrunk" />
-			<channel id="remotestart" typeId="remotestart" />
-			<channel id="remotestartenabled" typeId="remotestartenabled" />
-			<channel id="remotestartsupported" typeId="remotestartsupported" />
-			<channel id="rightrearbackseatheater" typeId="rightrearbackseatheater" />
-			<channel id="rightrearseatheater" typeId="rightrearseatheater" />
-			<channel id="rightseatheater" typeId="rightseatheater" />
-			<channel id="scheduledchargingpending" typeId="scheduledchargingpending" />
-			<channel id="scheduledchargingstart" typeId="scheduledchargingstart" />
-			<channel id="shiftstate" typeId="shiftstate" />
-			<channel id="sidemirrorheaters" typeId="sidemirrorheaters" />
-			<channel id="smartpreconditioning" typeId="smartpreconditioning" />
-			<channel id="soc" typeId="soc" />
-			<channel id="speed" typeId="speed" />
-			<channel id="state" typeId="state" />
-			<channel id="combinedtemp" typeId="combinedtemp" />
-			<channel id="timetofullcharge" typeId="timetofullcharge" />
-			<channel id="tripcharging" typeId="tripcharging" />
-			<channel id="usablebatterylevel" typeId="usablebatterylevel" />
-			<channel id="userchargeenablerequest" typeId="userchargeenablerequest" />
-			<channel id="valetmode" typeId="valetmode" />
-			<channel id="valetpin" typeId="valetpin" />
-			<channel id="wakeup" typeId="wakeup" />
+			<channel id="autoconditioning" typeId="autoconditioning"/>
+			<channel id="autoparkstate" typeId="autoparkstate"/>
+			<channel id="autoparkstate2" typeId="autoparkstate"/>
+			<channel id="autoparkstyle" typeId="autoparkstyle"/>
+			<channel id="batterycurrent" typeId="batterycurrent"/>
+			<channel id="batterylevel" typeId="batterylevel"/>
+			<channel id="batteryrange" typeId="batteryrange"/>
+			<channel id="calendarenabled" typeId="calendarenabled"/>
+			<channel id="centerdisplay" typeId="centerdisplay"/>
+			<channel id="centerrearseatheater" typeId="centerrearseatheater"/>
+			<channel id="charge" typeId="charge"/>
+			<channel id="chargecable" typeId="chargecable"/>
+			<channel id="chargecurrent" typeId="chargecurrent"/>
+			<channel id="chargeenablerequest" typeId="chargeenablerequest"/>
+			<channel id="chargeenergyadded" typeId="chargeenergyadded"/>
+			<channel id="chargeidealdistanceadded" typeId="chargeidealdistanceadded"/>
+			<channel id="chargelimit" typeId="chargelimit"/>
+			<channel id="chargelimitmaximum" typeId="chargelimitmaximum"/>
+			<channel id="chargelimitminimum" typeId="chargelimitminimum"/>
+			<channel id="chargelimitsocstandard" typeId="chargelimitsocstandard"/>
+			<channel id="chargemaxcurrent" typeId="chargemaxcurrent"/>
+			<channel id="chargeport" typeId="chargeport"/>
+			<channel id="chargerate" typeId="chargerate"/>
+			<channel id="chargerateddistanceadded" typeId="chargerateddistanceadded"/>
+			<channel id="chargercurrent" typeId="chargercurrent"/>
+			<channel id="chargermaxcurrent" typeId="chargermaxcurrent"/>
+			<channel id="chargerphases" typeId="chargerphases"/>
+			<channel id="chargerpower" typeId="chargerpower"/>
+			<channel id="chargervoltage" typeId="chargervoltage"/>
+			<channel id="chargestartingrange" typeId="chargestartingrange"/>
+			<channel id="chargestartingsoc" typeId="chargestartingsoc"/>
+			<channel id="chargetomax" typeId="chargetomax"/>
+			<channel id="chargingstate" typeId="chargingstate"/>
+			<channel id="climate" typeId="climate"/>
+			<channel id="doorlock" typeId="doorlock"/>
+			<channel id="driverfrontdoor" typeId="driverfrontdoor"/>
+			<channel id="driverreardoor" typeId="driverreardoor"/>
+			<channel id="drivertemp" typeId="drivertemp"/>
+			<channel id="estimatedbatteryrange" typeId="estimatedbatteryrange"/>
+			<channel id="estimatedrange" typeId="estimatedrange"/>
+			<channel id="eventstamp" typeId="eventstamp"/>
+			<channel id="fan" typeId="fan"/>
+			<channel id="flashlights" typeId="flashlights"/>
+			<channel id="frontdefroster" typeId="frontdefroster"/>
+			<channel id="fronttrunk" typeId="fronttrunk"/>
+			<channel id="gpstimestamp" typeId="gpstimestamp"/>
+			<channel id="heading" typeId="heading"/>
+			<channel id="headingestimation" typeId="headingestimation"/>
+			<channel id="homelink" typeId="homelink"/>
+			<channel id="honkhorn" typeId="honkhorn"/>
+			<channel id="idealbatteryrange" typeId="idealbatteryrange"/>
+			<channel id="insidetemp" typeId="insidetemp"/>
+			<channel id="leftrearbackseatheater" typeId="leftrearbackseatheater"/>
+			<channel id="leftrearseatheater" typeId="leftrearseatheater"/>
+			<channel id="leftseatheater" typeId="leftseatheater"/>
+			<channel id="lefttempdirection" typeId="lefttempdirection"/>
+			<channel id="location" typeId="location"/>
+			<channel id="managedcharging" typeId="managedcharging"/>
+			<channel id="managedchargingcancelled" typeId="managedchargingcancelled"/>
+			<channel id="managedchargingstart" typeId="managedchargingstart"/>
+			<channel id="maxavailabletemp" typeId="maxavailabletemp"/>
+			<channel id="maxcharges" typeId="maxcharges"/>
+			<channel id="mobileenabled" typeId="mobileenabled"/>
+			<channel id="minavailabletemp" typeId="minavailabletemp"/>
+			<channel id="notenoughpower" typeId="notenoughpower"/>
+			<channel id="notificationsenabled" typeId="notificationsenabled"/>
+			<channel id="notificationssupported" typeId="notificationssupported"/>
+			<channel id="odometer" typeId="odometer"/>
+			<channel id="outsidetemp" typeId="outsidetemp"/>
+			<channel id="parsedcalendar" typeId="parsedcalendar"/>
+			<channel id="passengerfrontdoor" typeId="passengerfrontdoor"/>
+			<channel id="passengerreardoor" typeId="passengerreardoor"/>
+			<channel id="passengertemp" typeId="passengertemp"/>
+			<channel id="power" typeId="power"/>
+			<channel id="preconditioning" typeId="preconditioning"/>
+			<channel id="range" typeId="range"/>
+			<channel id="reardefroster" typeId="reardefroster"/>
+			<channel id="reartrunk" typeId="reartrunk"/>
+			<channel id="remotestart" typeId="remotestart"/>
+			<channel id="remotestartenabled" typeId="remotestartenabled"/>
+			<channel id="remotestartsupported" typeId="remotestartsupported"/>
+			<channel id="rightrearbackseatheater" typeId="rightrearbackseatheater"/>
+			<channel id="rightrearseatheater" typeId="rightrearseatheater"/>
+			<channel id="rightseatheater" typeId="rightseatheater"/>
+			<channel id="scheduledchargingpending" typeId="scheduledchargingpending"/>
+			<channel id="scheduledchargingstart" typeId="scheduledchargingstart"/>
+			<channel id="shiftstate" typeId="shiftstate"/>
+			<channel id="sidemirrorheaters" typeId="sidemirrorheaters"/>
+			<channel id="smartpreconditioning" typeId="smartpreconditioning"/>
+			<channel id="soc" typeId="soc"/>
+			<channel id="speed" typeId="speed"/>
+			<channel id="state" typeId="state"/>
+			<channel id="combinedtemp" typeId="combinedtemp"/>
+			<channel id="timetofullcharge" typeId="timetofullcharge"/>
+			<channel id="tripcharging" typeId="tripcharging"/>
+			<channel id="usablebatterylevel" typeId="usablebatterylevel"/>
+			<channel id="userchargeenablerequest" typeId="userchargeenablerequest"/>
+			<channel id="valetmode" typeId="valetmode"/>
+			<channel id="valetpin" typeId="valetpin"/>
+			<channel id="wakeup" typeId="wakeup"/>
 		</channels>
 
 		<config-description>

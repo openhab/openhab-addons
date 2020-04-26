@@ -42,5 +42,4 @@ public class PowerSavingTimeSlot {
     public void setHourOn(int hourOn) {
         this.hourOn = hourOn;
     }
-
 }

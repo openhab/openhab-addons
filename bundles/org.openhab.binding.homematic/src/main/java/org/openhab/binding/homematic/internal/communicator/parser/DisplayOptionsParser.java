@@ -187,5 +187,4 @@ public class DisplayOptionsParser extends CommonRpcParser<Object, Void> {
     public List<String> getSymbols() {
         return symbols;
     }
-
 }

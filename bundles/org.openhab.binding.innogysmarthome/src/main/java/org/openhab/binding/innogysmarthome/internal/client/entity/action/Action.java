@@ -125,5 +125,4 @@ public class Action {
     public void setParams(ActionParams params) {
         this.params = params;
     }
-
 }

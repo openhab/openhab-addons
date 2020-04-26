@@ -145,5 +145,4 @@ public class VeluxBindingConstants {
 
     // Critical issues to be reported will use the following message
     public static final String LOGGING_CONTACT = "Please report to maintainer: ";
-
 }

@@ -47,5 +47,4 @@ public class AuthenticationRequest<ResponseType extends Response<?>> implements 
             throw new AuthenticationException(e);
         }
     }
-
 }

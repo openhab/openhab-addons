@@ -69,5 +69,4 @@ public class PlugwiseBindingConstants {
             .of(THING_TYPE_CIRCLE, THING_TYPE_CIRCLE_PLUS, THING_TYPE_SCAN, THING_TYPE_SENSE, THING_TYPE_STEALTH,
                     THING_TYPE_STICK, THING_TYPE_SWITCH)
             .collect(collectingAndThen(toSet(), Collections::unmodifiableSet));
-
 }
