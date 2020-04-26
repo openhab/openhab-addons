@@ -21,6 +21,8 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
+import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
@@ -59,20 +61,15 @@ public class OpenGarageHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
-            logger.warn("Received command {} for thing '{}' on channel {}", command, thing.getUID().getAsString(),
-                         channelUID.getId());
-            switch (channelUID.getId()) {
-                case OpenGarageBindingConstants.CHANNEL_OG_STATUS:
-                    if (command instanceof OnOffType) {
-                        changeStatus(((OnOffType) command).equals(OnOffType.ON));
-                        return;
-                    }
-                    break;
-                default:
+            if (channelUID.getId().equals(OpenGarageBindingConstants.CHANNEL_OG_STATUS) || channelUID.getId().equals(OpenGarageBindingConstants.CHANNEL_OG_STATUS_ROLLERSHUTTER)) {
+                if (command.equals(OnOffType.ON) || command.equals(UpDownType.UP)) {
+                    changeStatus("open");
+                } else if (command.equals(OnOffType.OFF) || command.equals(UpDownType.DOWN)) {
+                    changeStatus("close");
+                } else if (command.equals("STOP")) {
+                    changeStatus("click");
+                } 
             }
-
-            logger.debug("Received command {} of wrong type for thing '{}' on channel {}", command, thing.getUID().getAsString(),
-                        channelUID.getId());
         } catch (OpenGarageCommunicationException ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
         }
@@ -134,8 +131,12 @@ public class OpenGarageHandler extends BaseThingHandler {
             updateState(OpenGarageBindingConstants.CHANNEL_OG_DISTANCE, new QuantityType<>(controllerVariables.dist, MetricPrefix.CENTI(SIUnits.METRE)));
             if (controllerVariables.door == 0) {
                 updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS, OnOffType.OFF);
+                updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_ROLLERSHUTTER, UpDownType.DOWN);
+                updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_CONTACT, OpenClosedType.CLOSED);
             } else if (controllerVariables.door == 1) {
                 updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS, OnOffType.ON);
+                updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_ROLLERSHUTTER, UpDownType.UP);
+                updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_CONTACT, OpenClosedType.OPEN);
             }
             if (controllerVariables.vehicle == 0) {
                 updateState(OpenGarageBindingConstants.CHANNEL_OG_VEHICLE, new StringType("No vehicle detected"));
@@ -147,7 +148,7 @@ public class OpenGarageHandler extends BaseThingHandler {
         }
     }
 
-    private void changeStatus(boolean status) throws OpenGarageCommunicationException {
+    private void changeStatus(String status) throws OpenGarageCommunicationException {
         webTargets.setControllerVariables(status);
     }
 

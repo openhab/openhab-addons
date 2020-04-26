@@ -43,15 +43,19 @@ public class OpenGarageWebTargets {
         return ControllerVariables.parse(response);
     }
 
-    public void setControllerVariables(boolean request) throws OpenGarageCommunicationException {
+    public void setControllerVariables(String request) throws OpenGarageCommunicationException {
         logger.debug("Received request: {}", request);
-          if (request) {
+          if (request.equals("open")) {
               logger.debug("Received request to open door");
               String queryParams = "&open=1";
               invoke(changeControllerVariablesUri, queryParams);
-          } else {
+          } else if (request.equals("close")) {
               logger.debug("Received request to close door");
               String queryParams = "&close=1";
+              invoke(changeControllerVariablesUri, queryParams);
+          } else if (request.equals("click")) {
+              logger.debug("Received request to click remote button");
+              String queryParams = "&click=1";
               invoke(changeControllerVariablesUri, queryParams);
           }
     }

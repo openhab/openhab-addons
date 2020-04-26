@@ -35,6 +35,8 @@ public class OpenGarageBindingConstants {
     // List of all Channel ids
     public static final String CHANNEL_OG_DISTANCE = "distance";
     public static final String CHANNEL_OG_STATUS = "status";
+    public static final String CHANNEL_OG_STATUS_CONTACT = "status-contact";
+    public static final String CHANNEL_OG_STATUS_ROLLERSHUTTER = "status-rollershutter";
     public static final String CHANNEL_OG_VEHICLE = "vehicle";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(OPENGARAGE_THING);
