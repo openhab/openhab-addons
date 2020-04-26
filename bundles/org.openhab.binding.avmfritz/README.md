@@ -114,7 +114,7 @@ If the FRITZ!Powerline 546E is added via auto-discovery it determines its own `a
 
 - `ain` (mandatory), no default (AIN number of the device)
 
-### Finding to AIN ###
+### Finding The AIN ###
 
 The AIN (actor identification number) can be found in the FRITZ!Box interface -> Home Network -> SmartHome. When opening the details view for a device with the edit button, the AIN is shown. Use the AIN without the blank.
 
