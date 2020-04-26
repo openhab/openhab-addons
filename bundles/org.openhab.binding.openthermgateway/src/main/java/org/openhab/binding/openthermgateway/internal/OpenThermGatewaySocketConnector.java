@@ -42,16 +42,16 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
     private static final int COMMAND_RESPONSE_TIME_MILLISECONDS = 100;
     private static final int COMMAND_TIMEOUT_MILLISECONDS = 5000;
 
-    private OpenThermGatewayCallback callback;
-    private String ipaddress;
-    private int port;
+    private final Logger logger = LoggerFactory.getLogger(OpenThermGatewaySocketConnector.class);
+
+    private final OpenThermGatewayCallback callback;
+    private final String ipaddress;
+    private final int port;
 
     private @Nullable PrintWriter writer;
 
     private volatile boolean stopping;
     private boolean connected;
-
-    private final Logger logger = LoggerFactory.getLogger(OpenThermGatewaySocketConnector.class);
 
     private Map<String, Entry<Long, GatewayCommand>> pendingCommands = new HashMap<>();
 
