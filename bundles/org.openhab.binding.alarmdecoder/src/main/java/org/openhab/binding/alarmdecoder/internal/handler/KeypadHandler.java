@@ -154,20 +154,20 @@ public class KeypadHandler extends ADThingHandler {
         if (!(msg instanceof KeypadMessage)) {
             return;
         }
-        KeypadMessage kpm = (KeypadMessage) msg;
-        int addressMask = kpm.getIntAddressMask();
+        KeypadMessage kpMsg = (KeypadMessage) msg;
+        int addressMask = kpMsg.getIntAddressMask();
         if (!(((config.addressMask & addressMask) != 0) || config.addressMask == 0 || addressMask == 0)) {
             return;
         }
-        logger.trace("Keypad handler for address mask {} received update: {}", config.addressMask, kpm);
+        logger.trace("Keypad handler for address mask {} received update: {}", config.addressMask, kpMsg);
 
-        if (kpm.equals(previousMessage)) {
+        if (kpMsg.equals(previousMessage)) {
             return; // ignore repeated messages
         }
 
         if (config.sendStar) {
-            if (kpm.alphaMessage.contains("Hit * for faults") || kpm.alphaMessage.contains("Press * to show faults")
-                    || kpm.alphaMessage.contains("Press * Key")) {
+            if (kpMsg.alphaMessage.contains("Hit * for faults") || kpMsg.alphaMessage.contains("Press * to show faults")
+                    || kpMsg.alphaMessage.contains("Press * Key")) {
                 logger.debug("Sending * command to show faults.");
                 if (singleAddress) {
                     sendCommand(ADCommand.addressedMessage(config.addressMask, "*")); // send from keypad address
@@ -177,28 +177,28 @@ public class KeypadHandler extends ADThingHandler {
             }
         }
 
-        updateState(CHANNEL_KP_ZONE, new DecimalType(kpm.getZone()));
-        updateState(CHANNEL_KP_TEXT, new StringType(kpm.alphaMessage));
+        updateState(CHANNEL_KP_ZONE, new DecimalType(kpMsg.getZone()));
+        updateState(CHANNEL_KP_TEXT, new StringType(kpMsg.alphaMessage));
 
-        updateState(CHANNEL_KP_READY, OnOffType.from(kpm.getStatus(KeypadMessage.BIT_READY)));
-        updateState(CHANNEL_KP_ARMEDAWAY, OnOffType.from(kpm.getStatus(KeypadMessage.BIT_ARMEDAWAY)));
-        updateState(CHANNEL_KP_ARMEDHOME, OnOffType.from(kpm.getStatus(KeypadMessage.BIT_ARMEDHOME)));
-        updateState(CHANNEL_KP_BACKLIGHT, OnOffType.from(kpm.getStatus(KeypadMessage.BIT_BACKLIGHT)));
-        updateState(CHANNEL_KP_PRORGAM, OnOffType.from(kpm.getStatus(KeypadMessage.BIT_PRORGAM)));
+        updateState(CHANNEL_KP_READY, OnOffType.from(kpMsg.getStatus(KeypadMessage.BIT_READY)));
+        updateState(CHANNEL_KP_ARMEDAWAY, OnOffType.from(kpMsg.getStatus(KeypadMessage.BIT_ARMEDAWAY)));
+        updateState(CHANNEL_KP_ARMEDHOME, OnOffType.from(kpMsg.getStatus(KeypadMessage.BIT_ARMEDHOME)));
+        updateState(CHANNEL_KP_BACKLIGHT, OnOffType.from(kpMsg.getStatus(KeypadMessage.BIT_BACKLIGHT)));
+        updateState(CHANNEL_KP_PRORGAM, OnOffType.from(kpMsg.getStatus(KeypadMessage.BIT_PRORGAM)));
 
-        updateState(CHANNEL_KP_BEEPS, new DecimalType(kpm.nbeeps));
+        updateState(CHANNEL_KP_BEEPS, new DecimalType(kpMsg.nbeeps));
 
-        updateState(CHANNEL_KP_BYPASSED, OnOffType.from(kpm.getStatus(KeypadMessage.BIT_BYPASSED)));
-        updateState(CHANNEL_KP_ACPOWER, OnOffType.from(kpm.getStatus(KeypadMessage.BIT_ACPOWER)));
-        updateState(CHANNEL_KP_CHIME, OnOffType.from(kpm.getStatus(KeypadMessage.BIT_CHIME)));
-        updateState(CHANNEL_KP_ALARMOCCURRED, OnOffType.from(kpm.getStatus(KeypadMessage.BIT_ALARMOCCURRED)));
-        updateState(CHANNEL_KP_ALARM, OnOffType.from(kpm.getStatus(KeypadMessage.BIT_ALARM)));
-        updateState(CHANNEL_KP_LOWBAT, OnOffType.from(kpm.getStatus(KeypadMessage.BIT_LOWBAT)));
-        updateState(CHANNEL_KP_DELAYOFF, OnOffType.from(kpm.getStatus(KeypadMessage.BIT_DELAYOFF)));
-        updateState(CHANNEL_KP_FIRE, OnOffType.from(kpm.getStatus(KeypadMessage.BIT_FIRE)));
-        updateState(CHANNEL_KP_SYSFAULT, OnOffType.from(kpm.getStatus(KeypadMessage.BIT_SYSFAULT)));
-        updateState(CHANNEL_KP_PERIMETER, OnOffType.from(kpm.getStatus(KeypadMessage.BIT_PERIMETER)));
+        updateState(CHANNEL_KP_BYPASSED, OnOffType.from(kpMsg.getStatus(KeypadMessage.BIT_BYPASSED)));
+        updateState(CHANNEL_KP_ACPOWER, OnOffType.from(kpMsg.getStatus(KeypadMessage.BIT_ACPOWER)));
+        updateState(CHANNEL_KP_CHIME, OnOffType.from(kpMsg.getStatus(KeypadMessage.BIT_CHIME)));
+        updateState(CHANNEL_KP_ALARMOCCURRED, OnOffType.from(kpMsg.getStatus(KeypadMessage.BIT_ALARMOCCURRED)));
+        updateState(CHANNEL_KP_ALARM, OnOffType.from(kpMsg.getStatus(KeypadMessage.BIT_ALARM)));
+        updateState(CHANNEL_KP_LOWBAT, OnOffType.from(kpMsg.getStatus(KeypadMessage.BIT_LOWBAT)));
+        updateState(CHANNEL_KP_DELAYOFF, OnOffType.from(kpMsg.getStatus(KeypadMessage.BIT_DELAYOFF)));
+        updateState(CHANNEL_KP_FIRE, OnOffType.from(kpMsg.getStatus(KeypadMessage.BIT_FIRE)));
+        updateState(CHANNEL_KP_SYSFAULT, OnOffType.from(kpMsg.getStatus(KeypadMessage.BIT_SYSFAULT)));
+        updateState(CHANNEL_KP_PERIMETER, OnOffType.from(kpMsg.getStatus(KeypadMessage.BIT_PERIMETER)));
 
-        previousMessage = kpm;
+        previousMessage = kpMsg;
     }
 }

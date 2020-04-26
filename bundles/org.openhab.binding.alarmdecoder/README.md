@@ -27,9 +27,9 @@ The binding supports the following thing types:
 
 ## Discovery
 
-Background discovery is currently supported for **zone** and **rfzone** things.
-If the bridge *discovery* parameter is set to *true*, the first time a status message is seen from each zone or RF zone a corresponding thing will appear in the inbox.
-Leaving the *discovery* parameter set to *false* during normal operation is recommended, as it will slightly reduce resource consumption by the binding.
+Background discovery is currently supported for `zone` and `rfzone` things.
+If the bridge `discovery` parameter is set to *true*, the first time a status message is seen from each zone or RF zone a corresponding thing will appear in the inbox.
+Leaving the `discovery` parameter set to *false* during normal operation is recommended, as it will slightly reduce resource consumption by the binding.
 
 ## Prerequisites
 
@@ -50,13 +50,13 @@ If you enable the *discovery* option on the bridge, as you fault zones (e.g. ope
 
 ### ipbridge
 
-The **ipbridge** thing supports a TCP/IP connection to an Alarm Decoder device such as *AD2PI* or *AD2PHAT*.
+The `ipbridge` thing supports a TCP/IP connection to an Alarm Decoder device such as *AD2PI* or *AD2PHAT*.
 
-* **hostname** (required) The hostname or IP address of the Alarm Decoder device
-* **tcpPort** (default = 10000) TCP port number for the Alarm Decoder connection
-* **discovery** (default = false) Enable automatic discovery of zones and RF zones
-* **reconnect** (1-60, default = 2) The period in minutes that the handler will wait between connection checks and connection attempts
-* **timeout** (0-60, default = 5) The period in minutes after which the connection will be reset if no valid messages have been received. Set to 0 to disable.
+* `hostname` (required) The hostname or IP address of the Alarm Decoder device
+* `tcpPort` (default = 10000) TCP port number for the Alarm Decoder connection
+* `discovery` (default = false) Enable automatic discovery of zones and RF zones
+* `reconnect` (1-60, default = 2) The period in minutes that the handler will wait between connection checks and connection attempts
+* `timeout` (0-60, default = 5) The period in minutes after which the connection will be reset if no valid messages have been received. Set to 0 to disable.
 
 Thing config file example:
 
@@ -69,13 +69,13 @@ Bridge alarmdecoder:ipbridge:ad1 [ hostname="cerberus.home", tcpPort=10000, disc
 
 ### serialbridge
 
-The **serialbridge** thing supports a serial or USB connection to an Alarm Decoder device such as *AD2SERIAL* or *AD2USB*.
+The `serialbridge` thing supports a serial or USB connection to an Alarm Decoder device such as *AD2SERIAL* or *AD2USB*.
 
 Parameters:
 
-* **serialPort** (required) The name of the serial port used to connect to the Alarm Decoder device
-* **bitrate** Speed of the serial connection
-* **discovery** (default=false) Enable automatic discovery of zones and RF zones
+* `serialPort` (required) The name of the serial port used to connect to the Alarm Decoder device
+* `bitrate` Speed of the serial connection
+* `discovery` (default=false) Enable automatic discovery of zones and RF zones
 
 Thing config file example:
 
@@ -88,12 +88,12 @@ Bridge alarmdecoder:serialbridge:ad1 [ serialPort="/dev/ttyS1", bitrate=115200, 
 
 ### zone
 
-The **zone** thing reports status from zone expanders and relay expanders, and also from built-in zones via emulation.
+The `zone` thing reports status from zone expanders and relay expanders, and also from built-in zones via emulation.
 
 Parameters:
 
-* **address** (required) Zone address
-* **channel** (required) Zone channel
+* `address` (required) Zone address
+* `channel` (required) Zone channel
 
 Thing config file example:
 
@@ -103,11 +103,11 @@ Thing config file example:
 
 ### rfzone
 
-The **rfzone** thing reports status from wireless zones, such as 5800 series RF devices, if your alarm panel has an RF receiver.
+The `rfzone` thing reports status from wireless zones, such as 5800 series RF devices, if your alarm panel has an RF receiver.
 
 Parameters:
 
-* **serial** (required) Serial number of the RF zone
+* `serial` (required) Serial number of the RF zone
 
 Thing config file example:
 
@@ -117,7 +117,7 @@ Thing config file example:
 
 ### keypad
 
-The **keypad** thing reports keypad status and optionally sends keypad messages.
+The `keypad` thing reports keypad status and optionally sends keypad messages.
 For panels that support multiple keypad addresses, it can be configured with an address mask of one or more keypad(s) for which it will receive messages.
 When sending messages, it will send from the configured keypad address if only one is configured.
 If a mask containing multiple addresses or 0 (all) is configured, it will send messages from the Alarm Decoder's configured address.
@@ -128,10 +128,10 @@ Command strings containing invalid characters will be ignored.
 
 Parameters:
 
-* **addressMask** (required) Keypad address mask (0 = All addresses)
-* **sendCommands** (default = false) Allow keypad commands to be sent to the alarm system from openHAB. Enabling this means the alarm system will be only as secure as your openHAB system.
-* **sendStar** (default = false) When disarmed/faulted, automatically send * character to obtain zone fault information.
-* **commandMapping** (optional) Comma separated list of key/value pairs mapping integers to command strings for intcommand channel.
+* `addressMask` (required) Keypad address mask (0 = All addresses)
+* `sendCommands` (default = false) Allow keypad commands to be sent to the alarm system from openHAB. Enabling this means the alarm system will be only as secure as your openHAB system.
+* `sendStar` (default = false) When disarmed/faulted, automatically send the * character to obtain zone fault information.
+* `commandMapping` (optional) Comma separated list of key/value pairs mapping integers to command strings for `intcommand` channel.
 
 Thing config file example:
 
@@ -141,11 +141,11 @@ Thing config file example:
 
 ### lrr
 
-The **lrr** thing reports messages sent to a Long Range Radio (LRR) or emulated LRR device.
+The `lrr` thing reports messages sent to a Long Range Radio (LRR) or emulated LRR device.
 These are specifically formatted messages as described in the [SIA DC-05-1999.09](http://www.alarmdecoder.com/wiki/index.php/File:SIA-ContactIDCodes_Protocol.pdf) standard for Contact ID reporting.
 For panels that support multiple partitions, the partition for which a given lrr thing will receive messages can be defined.
 
-* **partition** (default = 0) Partition for which to receive LRR events (0 = All)
+* `partition` (default = 0) Partition for which to receive LRR events (0 = All)
 
 Thing config file example:
 
@@ -198,8 +198,8 @@ The alarmdecoder things expose the following channels:
 | command      | String  | RW  |Keypad command                |
 | intcommand   | Number  | RW  |Integer keypad command        |
 
-*Note* - The *intcommand* channel is provided for backward compatibility with the OH1 version of the binding.
-The integer to command string mappings are provided by the optional keypad *commandMapping* parameter.
+*Note* - The `intcommand` channel is provided for backward compatibility with the OH1 version of the binding.
+The integer to command string mappings are provided by the optional keypad `commandMapping` parameter.
 The default mapping is "0=0,1=1,2=2,3=3,4=4,5=5,6=6,7=7,8=8,9=9,10=*,11=#".
 
 **lrr**
@@ -255,7 +255,7 @@ String LrrReportCode "CID Report Code" {channel="alarmdecoder:lrr:ad1:lrr:report
 
 ## Thing Actions
 
-The **ipbridge** and **serialbridge** things expose the following action to the automation engine:
+The `ipbridge` and `serialbridge` things expose the following action to the automation engine:
 
 *reboot* - Send command to reboot the Alarm Decoder device. Accepts no parameters.
 

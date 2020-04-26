@@ -153,44 +153,44 @@ public abstract class ADBridgeHandler extends BaseBridgeHandler {
      */
     private void readerThread() {
         logger.debug("Message reader thread started");
-        String msg = null;
+        String message = null;
         try {
             // Send version command to get device to respond with VER message.
             sendADCommand(ADCommand.getVersion());
             BufferedReader reader = this.reader;
-            while (!Thread.interrupted() && reader != null && (msg = reader.readLine()) != null) {
-                logger.trace("Received msg: {}", msg);
-                ADMsgType mt = ADMsgType.getMsgType(msg);
-                if (mt != ADMsgType.INVALID) {
+            while (!Thread.interrupted() && reader != null && (message = reader.readLine()) != null) {
+                logger.trace("Received msg: {}", message);
+                ADMsgType msgType = ADMsgType.getMsgType(message);
+                if (msgType != ADMsgType.INVALID) {
                     lastReceivedTime = new Date();
                 }
                 try {
-                    switch (mt) {
+                    switch (msgType) {
                         case KPM:
-                            parseKeypadMessage(msg);
+                            parseKeypadMessage(message);
                             break;
                         case REL:
                         case EXP:
-                            parseRelayOrExpanderMessage(mt, msg);
+                            parseRelayOrExpanderMessage(msgType, message);
                             break;
                         case RFX:
-                            parseRFMessage(msg);
+                            parseRFMessage(message);
                             break;
                         case LRR:
-                            parseLRRMessage(msg);
+                            parseLRRMessage(message);
                             break;
                         case VER:
-                            parseVersionMessage(msg);
+                            parseVersionMessage(message);
                             break;
                         case INVALID:
                         default:
                             break;
                     }
                 } catch (MessageParseException e) {
-                    logger.warn("Error {} while parsing message {}. Please report bug.", e.getMessage(), msg);
+                    logger.warn("Error {} while parsing message {}. Please report bug.", e.getMessage(), message);
                 }
             }
-            if (msg == null) {
+            if (message == null) {
                 logger.info("End of input stream detected");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection lost");
             }
@@ -212,22 +212,22 @@ public abstract class ADBridgeHandler extends BaseBridgeHandler {
      * @throws MessageParseException
      */
     private void parseKeypadMessage(String msg) throws MessageParseException {
-        KeypadMessage kpm;
+        KeypadMessage kpMsg;
 
         // Parse the message
         try {
-            kpm = new KeypadMessage(msg);
+            kpMsg = new KeypadMessage(msg);
         } catch (IllegalArgumentException e) {
             throw new MessageParseException(e.getMessage());
         }
 
-        if (kpm.panelClear()) {
+        if (kpMsg.panelClear()) {
             // the panel is clear, so we can assume that all contacts that we
             // have not heard from are open
             notifyChildHandlersPanelReady();
         }
 
-        notifyChildHandlers(kpm);
+        notifyChildHandlers(kpMsg);
     }
 
     /**
@@ -239,19 +239,19 @@ public abstract class ADBridgeHandler extends BaseBridgeHandler {
      */
     private void parseRelayOrExpanderMessage(ADMsgType mt, String msg) throws MessageParseException {
         // mt is unused at the moment
-        EXPMessage expm;
+        EXPMessage expMsg;
 
         try {
-            expm = new EXPMessage(msg);
+            expMsg = new EXPMessage(msg);
         } catch (IllegalArgumentException e) {
             throw new MessageParseException(e.getMessage());
         }
 
-        notifyChildHandlers(expm);
+        notifyChildHandlers(expMsg);
 
         AlarmDecoderDiscoveryService ds = discoveryService;
         if (discovery && ds != null) {
-            ds.processZone(expm.address, expm.channel);
+            ds.processZone(expMsg.address, expMsg.channel);
         }
     }
 
@@ -262,19 +262,19 @@ public abstract class ADBridgeHandler extends BaseBridgeHandler {
      * @throws MessageParseException
      */
     private void parseRFMessage(String msg) throws MessageParseException {
-        RFXMessage rfxm;
+        RFXMessage rfxMsg;
 
         try {
-            rfxm = new RFXMessage(msg);
+            rfxMsg = new RFXMessage(msg);
         } catch (IllegalArgumentException e) {
             throw new MessageParseException(e.getMessage());
         }
 
-        notifyChildHandlers(rfxm);
+        notifyChildHandlers(rfxMsg);
 
         AlarmDecoderDiscoveryService ds = discoveryService;
         if (discovery && ds != null) {
-            ds.processRFZone(rfxm.serial);
+            ds.processRFZone(rfxMsg.serial);
         }
     }
 
@@ -285,16 +285,16 @@ public abstract class ADBridgeHandler extends BaseBridgeHandler {
      * @throws MessageParseException
      */
     private void parseLRRMessage(String msg) throws MessageParseException {
-        LRRMessage lrrm;
+        LRRMessage lrrMsg;
 
         // Parse the message
         try {
-            lrrm = new LRRMessage(msg);
+            lrrMsg = new LRRMessage(msg);
         } catch (IllegalArgumentException e) {
             throw new MessageParseException(e.getMessage());
         }
 
-        notifyChildHandlers(lrrm);
+        notifyChildHandlers(lrrMsg);
     }
 
     /**
@@ -304,19 +304,19 @@ public abstract class ADBridgeHandler extends BaseBridgeHandler {
      * @throws MessageParseException
      */
     private void parseVersionMessage(String msg) throws MessageParseException {
-        VersionMessage verm;
+        VersionMessage verMsg;
 
         try {
-            verm = new VersionMessage(msg);
+            verMsg = new VersionMessage(msg);
         } catch (IllegalArgumentException e) {
             throw new MessageParseException(e.getMessage());
         }
 
-        logger.trace("Processing version message sn:{} ver:{} cap:{}", verm.serial, verm.version, verm.capabilities);
+        logger.trace("Processing version message sn:{} ver:{} cap:{}", verMsg.serial, verMsg.version, verMsg.capabilities);
         Map<String, String> properties = editProperties();
-        properties.put(PROPERTY_SERIALNUM, verm.serial);
-        properties.put(PROPERTY_VERSION, verm.version);
-        properties.put(PROPERTY_CAPABILITIES, verm.capabilities);
+        properties.put(PROPERTY_SERIALNUM, verMsg.serial);
+        properties.put(PROPERTY_VERSION, verMsg.version);
+        properties.put(PROPERTY_CAPABILITIES, verMsg.capabilities);
         updateProperties(properties);
     }
 

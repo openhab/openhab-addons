@@ -98,23 +98,23 @@ public class RFZoneHandler extends ADThingHandler {
         if (!(msg instanceof RFXMessage)) {
             return;
         }
-        RFXMessage rfxm = (RFXMessage) msg;
+        RFXMessage rfxMsg = (RFXMessage) msg;
 
-        if (config.serial == rfxm.serial) {
-            logger.trace("RF Zone handler for serial {} received update: {}", config.serial, rfxm.data);
+        if (config.serial == rfxMsg.serial) {
+            logger.trace("RF Zone handler for serial {} received update: {}", config.serial, rfxMsg.data);
             firstUpdateReceived.set(true);
 
-            updateState(CHANNEL_RF_LOWBAT, (rfxm.data & RFXMessage.BIT_LOWBAT) == 0 ? OnOffType.OFF : OnOffType.ON);
-            updateState(CHANNEL_RF_SUPERVISION, (rfxm.data & RFXMessage.BIT_SUPER) == 0 ? OnOffType.OFF : OnOffType.ON);
+            updateState(CHANNEL_RF_LOWBAT, (rfxMsg.data & RFXMessage.BIT_LOWBAT) == 0 ? OnOffType.OFF : OnOffType.ON);
+            updateState(CHANNEL_RF_SUPERVISION, (rfxMsg.data & RFXMessage.BIT_SUPER) == 0 ? OnOffType.OFF : OnOffType.ON);
 
             updateState(CHANNEL_RF_LOOP1,
-                    (rfxm.data & RFXMessage.BIT_LOOP1) == 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
+                    (rfxMsg.data & RFXMessage.BIT_LOOP1) == 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
             updateState(CHANNEL_RF_LOOP2,
-                    (rfxm.data & RFXMessage.BIT_LOOP2) == 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
+                    (rfxMsg.data & RFXMessage.BIT_LOOP2) == 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
             updateState(CHANNEL_RF_LOOP3,
-                    (rfxm.data & RFXMessage.BIT_LOOP3) == 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
+                    (rfxMsg.data & RFXMessage.BIT_LOOP3) == 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
             updateState(CHANNEL_RF_LOOP4,
-                    (rfxm.data & RFXMessage.BIT_LOOP4) == 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
+                    (rfxMsg.data & RFXMessage.BIT_LOOP4) == 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
         }
     }
 }

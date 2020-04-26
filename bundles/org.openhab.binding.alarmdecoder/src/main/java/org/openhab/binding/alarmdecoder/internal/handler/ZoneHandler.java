@@ -96,13 +96,13 @@ public class ZoneHandler extends ADThingHandler {
         if (!(msg instanceof EXPMessage)) {
             return;
         }
-        EXPMessage expm = (EXPMessage) msg;
+        EXPMessage expMsg = (EXPMessage) msg;
 
-        if (config.address == expm.address && config.channel == expm.channel) {
-            logger.trace("Zone handler for {},{} received update: {}", config.address, config.channel, expm.data);
+        if (config.address == expMsg.address && config.channel == expMsg.channel) {
+            logger.trace("Zone handler for {},{} received update: {}", config.address, config.channel, expMsg.data);
 
             firstUpdateReceived.set(true);
-            OpenClosedType state = (expm.data == 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
+            OpenClosedType state = (expMsg.data == 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
             updateState(CHANNEL_CONTACT, state);
         }
     }

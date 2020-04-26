@@ -80,14 +80,14 @@ public class LRRHandler extends ADThingHandler {
         if (!(msg instanceof LRRMessage)) {
             return;
         }
-        LRRMessage lrrm = (LRRMessage) msg;
+        LRRMessage lrrMsg = (LRRMessage) msg;
 
-        if (config.partition == lrrm.partition || config.partition == 0 || lrrm.partition == 0) {
+        if (config.partition == lrrMsg.partition || config.partition == 0 || lrrMsg.partition == 0) {
             logger.trace("LRR handler for partition {} received update: {}", config.partition, msg);
-            updateState(CHANNEL_LRR_PARTITION, new DecimalType(lrrm.partition));
-            updateState(CHANNEL_LRR_EVENTDATA, new DecimalType(lrrm.eventData));
-            updateState(CHANNEL_LRR_CIDMESSAGE, new StringType(lrrm.cidMessage));
-            updateState(CHANNEL_LRR_REPORTCODE, new StringType(lrrm.reportCode));
+            updateState(CHANNEL_LRR_PARTITION, new DecimalType(lrrMsg.partition));
+            updateState(CHANNEL_LRR_EVENTDATA, new DecimalType(lrrMsg.eventData));
+            updateState(CHANNEL_LRR_CIDMESSAGE, new StringType(lrrMsg.cidMessage));
+            updateState(CHANNEL_LRR_REPORTCODE, new StringType(lrrMsg.reportCode));
         }
     }
 }
