@@ -54,7 +54,7 @@ Please note that the things cannot be used to send messages. In order to send a 
 
 | Property                | Default | Required | Description                                                                                  |
 |-------------------------|---------|:--------:|----------------------------------------------------------------------------------------------|
-| `chatIds`               |         | Yes      | Comma-separated list of chat ids                                                             |
+| `chatIds`               |         | Yes      | Comma-separated list of chat ids (chatIds="123","456" ...)                                   |
 | `botToken`              |         | Yes      | authentication token                                                                         |
 | `parseMode`             |  None   | No       | Support for formatted messages, values: Markdown or HTML.                                    |
 | `proxyHost`             |  None   | No       | Proxy host for telegram binding.                                                             |
