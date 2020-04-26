@@ -42,8 +42,8 @@ public class ValloxSerialConnector extends ValloxBaseConnector implements Serial
 
     private final Logger logger = LoggerFactory.getLogger(ValloxSerialConnector.class);
 
-    private @Nullable SerialPort serialPort;
     private final SerialPortManager serialPortManager;
+    private @Nullable SerialPort serialPort;
 
     public ValloxSerialConnector(SerialPortManager serialPortManager) {
         this.serialPortManager = serialPortManager;
@@ -83,7 +83,7 @@ public class ValloxSerialConnector extends ValloxBaseConnector implements Serial
             serialPort.enableReceiveTimeout(SERIAL_RECEIVE_TIMEOUT_MILLISECONDS);
 
             logger.debug("Connected to {}", config.serialPort);
-            startProcessorThreads();
+            startProcessorJobs();
         } catch (TooManyListenersException e) {
             throw new IOException("Too many listeners", e);
         } catch (PortInUseException e) {

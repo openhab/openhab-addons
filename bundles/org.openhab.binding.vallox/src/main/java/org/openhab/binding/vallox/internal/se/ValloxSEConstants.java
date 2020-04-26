@@ -32,14 +32,12 @@ public class ValloxSEConstants {
      */
     public static final ThingTypeUID THING_TYPE_VALLOX_SE_IP = new ThingTypeUID(BINDING_ID, "se-tcp");
     public static final ThingTypeUID THING_TYPE_VALLOX_SE_SERIAL = new ThingTypeUID(BINDING_ID, "se-serial");
-    public static final ThingTypeUID THING_TYPE_VALLOX_MV_WEB = new ThingTypeUID(BINDING_ID, "mv-websocket");
 
     /**
      * Channel groups
      */
     public static final String CHANNEL_GROUP_FAN = "fanControl#";
     public static final String CHANNEL_GROUP_TEMPERATURE = "temperature#";
-    public static final String CHANNEL_GROUP_EFFICIENCY = "efficiency#";
     public static final String CHANNEL_GROUP_SETTINGS = "setting#";
     public static final String CHANNEL_GROUP_STATUS = "status#";
     public static final String CHANNEL_GROUP_MAINTENANCE = "maintenance#";

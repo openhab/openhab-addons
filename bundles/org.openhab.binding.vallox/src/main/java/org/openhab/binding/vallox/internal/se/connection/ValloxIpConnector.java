@@ -16,8 +16,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.concurrent.Future;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.vallox.internal.se.ValloxSEConstants;
 import org.openhab.binding.vallox.internal.se.configuration.ValloxSEConfiguration;
 import org.slf4j.Logger;
@@ -32,7 +34,8 @@ import org.slf4j.LoggerFactory;
 public class ValloxIpConnector extends ValloxBaseConnector {
 
     private final Logger logger = LoggerFactory.getLogger(ValloxIpConnector.class);
-    private final Thread readerThread = new TelegramReader("Vallox Telegram Reader");
+
+    private @Nullable Future<?> telegramReaderJob;
     private Socket socket = new Socket();
 
     public ValloxIpConnector() {
@@ -57,29 +60,24 @@ public class ValloxIpConnector extends ValloxBaseConnector {
         logger.debug("Connected to {}:{}", config.tcpHost, config.tcpPort);
 
         startTelegramReaderThread();
-        startProcessorThreads();
+        startProcessorJobs();
         connected.set(true);
     }
 
     /**
-     * Start threads for receiving and processing telegrams
+     * Start thread for receiving telegrams
      */
     private void startTelegramReaderThread() {
-        if (!readerThread.isAlive()) {
-            readerThread.setDaemon(true);
-            readerThread.start();
-        }
+        telegramReaderJob = executor.submit(this::telegramReader);
     }
 
     /**
-     * Start threads for receiving and processing telegrams
+     * Stop thread for receiving telegrams
      */
     private void stopTelegramReaderThread() {
-        readerThread.interrupt();
-        try {
-            readerThread.join(2000);
-        } catch (InterruptedException e) {
-            // Do nothing
+        if (telegramReaderJob != null) {
+            telegramReaderJob.cancel(true);
+            telegramReaderJob = null;
         }
     }
 
@@ -92,7 +90,6 @@ public class ValloxIpConnector extends ValloxBaseConnector {
         connected.set(false);
         logger.debug("Stopping threads and closing socket");
         stopTelegramReaderThread();
-        stopProcessorThreads();
         try {
             socket.close();
         } catch (IOException e) {
@@ -102,43 +99,22 @@ public class ValloxIpConnector extends ValloxBaseConnector {
         logger.debug("Ip connection closed");
     }
 
-    /**
-     * {@link Thread} implementation for reading telegrams
-     *
-     * @author Miika Jukka - Initial contribution
-     */
-    private class TelegramReader extends Thread {
-        boolean interrupted = false;
-
-        public TelegramReader(String name) {
-            super(name);
-        }
-
-        @Override
-        public void interrupt() {
-            interrupted = true;
-            super.interrupt();
-        }
-
-        @Override
-        public void run() {
-            logger.trace("Telegram reader thread started");
-            InputStream inputStream = getInputStream();
-            while (!interrupted && inputStream != null) {
-                try {
-                    int data = inputStream.read();
-                    while (data != -1) {
-                        buffer.add((byte) inputStream.read());
-                    }
-                } catch (IOException e) {
-                    sendErrorToListeners(e.getMessage(), e);
-                    interrupt();
-                } catch (IllegalStateException e) {
-                    logger.warn("Read buffer full. Cleaning.");
-                    buffer.clear();
+    private void telegramReader() {
+        InputStream inputStream = getInputStream();
+        while (connected.get() && inputStream != null) {
+            try {
+                int data = inputStream.read();
+                while (data != -1) {
+                    buffer.add((byte) inputStream.read());
                 }
+            } catch (IOException e) {
+                sendErrorToListeners(e.getMessage(), e);
+                break;
+            } catch (IllegalStateException e) {
+                logger.debug("Read buffer full. Cleaning.");
+                buffer.clear();
             }
-            logger.trace("Telegram reader thread stopped");
         }
+        logger.trace("Telegram reader stopped");
     }
 }

@@ -58,8 +58,10 @@ public class ValloxSEHandler extends BaseThingHandler implements ValloxEventList
 
     private final ValloxExpiringCacheMap cache = new ValloxExpiringCacheMap(Duration.ofMinutes(15));
     private final ValloxConnector connector;
-    private @NonNullByDefault({}) ScheduledFuture<?> refreshJob;
-    private @NonNullByDefault({}) ScheduledFuture<?> watchDog;
+
+    private @Nullable ScheduledFuture<?> refreshJob;
+    private @Nullable ScheduledFuture<?> watchDog;
+
     private boolean reconnect = false;
     private byte panelNumber;
 
@@ -83,7 +85,7 @@ public class ValloxSEHandler extends BaseThingHandler implements ValloxEventList
         logger.debug("Initializing Vallox SE handler");
         updateStatus(ThingStatus.UNKNOWN);
         cache.clear();
-        if (watchDog == null || watchDog.isDone()) {
+        if (watchDog == null) {
             watchDog = scheduler.scheduleWithFixedDelay(this::checkConnection, 0, 30, TimeUnit.SECONDS);
         }
     }
@@ -98,7 +100,7 @@ public class ValloxSEHandler extends BaseThingHandler implements ValloxEventList
                 this.panelNumber = config.getPanelAsByte();
                 connector.addListener(this);
                 connector.connect(config);
-                if (refreshJob == null || refreshJob.isDone()) {
+                if (refreshJob == null) {
                     refreshJob = scheduler.scheduleWithFixedDelay(this::refreshChannels, 1, 5, TimeUnit.MINUTES);
                 }
                 updateStatus(ThingStatus.ONLINE);
