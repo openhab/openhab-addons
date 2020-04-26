@@ -61,5 +61,4 @@ public class JdbcItem implements HistoricItem {
         builder.append("]");
         return builder.toString();
     }
-
 }

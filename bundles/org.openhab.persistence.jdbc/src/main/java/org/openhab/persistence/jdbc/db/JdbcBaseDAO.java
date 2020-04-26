@@ -562,5 +562,4 @@ public class JdbcBaseDAO {
     public String getDataType(Item item) {
         return sqlTypes.get(getItemType(item));
     }
-
 }

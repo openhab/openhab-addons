@@ -56,5 +56,4 @@ public class MongoDBItem implements HistoricItem {
     public String toString() {
         return DateFormat.getDateTimeInstance().format(timestamp) + ": " + name + " -> " + state.toString();
     }
-
 }

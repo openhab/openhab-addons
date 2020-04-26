@@ -43,7 +43,7 @@ public class JdbcSqliteDAO extends JdbcBaseDAO {
     private void initSqlQueries() {
         logger.debug("JDBC::initSqlQueries: '{}'", this.getClass().getSimpleName());
         sqlGetDB = "PRAGMA DATABASE_LIST"; // "SELECT SQLITE_VERSION()"; // "PRAGMA DATABASE_LIST"->db Path/Name
-                                             // "PRAGMA SCHEMA_VERSION";
+                                           // "PRAGMA SCHEMA_VERSION";
         sqlIfTableExists = "SELECT name FROM sqlite_master WHERE type='table' AND name='#searchTable#'";
         sqlCreateItemsTableIfNot = "CREATE TABLE IF NOT EXISTS #itemsManageTable# (ItemId INTEGER PRIMARY KEY AUTOINCREMENT, #colname# #coltype# NOT NULL)";
         sqlInsertItemValue = "INSERT OR IGNORE INTO #tableName# (TIME, VALUE) VALUES( #tablePrimaryValue#, CAST( ? as #dbType#) )";

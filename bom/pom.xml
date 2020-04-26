@@ -40,13 +40,13 @@
               <configuration>
                 <target>
                   <copy file="${basedirRoot}/../../bundles/pom.xml" overwrite="true"
-                    tofile="${basedirRoot}/../../bom/openhab-addons/pom.xml" />
+                    tofile="${basedirRoot}/../../bom/openhab-addons/pom.xml"/>
                   <!-- rewrite footer -->
                   <replaceregexp file="${basedirRoot}/../../bom/openhab-addons/pom.xml"
-                    match="/modules[\s\S]*dependencies&gt;" replace="/dependencies&gt;" />
+                    match="/modules[\s\S]*dependencies&gt;" replace="/dependencies&gt;"/>
                   <!-- rewrite header -->
                   <replaceregexp file="${basedirRoot}/../../bom/openhab-addons/pom.xml"
-                    match="\S*parent[\s\S]*modules&gt;\S*" replace="header" />
+                    match="\S*parent[\s\S]*modules&gt;\S*" replace="header"/>
                   <replace file="{basedirRoot}/../../bom/openhab-addons/pom.xml">
                     <replacetoken>header</replacetoken>
                     <replacevalue><![CDATA[<parent>

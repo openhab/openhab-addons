@@ -73,5 +73,4 @@ public class DimmerItemIntegrationTest extends AbstractTwoItemIntegrationTest {
     protected @Nullable State getQueryItemStateBetween() {
         return STATE_BETWEEN;
     }
-
 }

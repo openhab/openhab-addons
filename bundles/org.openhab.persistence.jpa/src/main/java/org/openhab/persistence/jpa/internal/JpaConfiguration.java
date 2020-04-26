@@ -83,5 +83,4 @@ public class JpaConfiguration {
         isInitialized = true;
         logger.debug("Update config... done");
     }
-
 }

@@ -404,5 +404,4 @@ public class JdbcMapper {
                     afterAccessMin, afterAccessMax, conf.time1000Statements, conf.timerCount);
         }
     }
-
 }

@@ -122,5 +122,4 @@ public class JdbcHsqldbDAO extends JdbcBaseDAO {
     /******************************
      * public Getters and Setters *
      ******************************/
-
 }

@@ -455,5 +455,4 @@ class GoogleCloudAPI {
     boolean isInitialized() {
         return initialized;
     }
-
 }

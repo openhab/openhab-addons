@@ -103,5 +103,4 @@ public class JdbcMariadbDAO extends JdbcBaseDAO {
     /******************************
      * public Getters and Setters *
      ******************************/
-
 }

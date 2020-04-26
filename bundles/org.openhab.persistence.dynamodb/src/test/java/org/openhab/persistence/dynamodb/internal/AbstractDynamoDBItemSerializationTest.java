@@ -125,7 +125,6 @@ public class AbstractDynamoDBItemSerializationTest {
     public void testCallTypeWithCallItem() throws IOException {
         final DynamoDBItem<?> dbitem = testStateGeneric(new StringListType("origNum", "destNum"), "origNum,destNum");
         testAsHistoricGeneric(dbitem, new CallItem("foo"), new StringListType("origNum", "destNum"));
-
     }
 
     @Test

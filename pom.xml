@@ -71,16 +71,15 @@
     <ohc.version>${project.version}</ohc.version>
     <bnd.version>4.3.0</bnd.version>
     <karaf.version>4.2.7</karaf.version>
-    <sat.version>0.9.0</sat.version>
+    <sat.version>0.10.0</sat.version>
     <slf4j.version>1.7.21</slf4j.version>
 
-    <bnd.importpackage />
-    <bnd.exportpackage />
+    <bnd.importpackage/>
+    <bnd.exportpackage/>
     <bnd.includeresource>-${.}/NOTICE, -${.}/*.xsd</bnd.includeresource>
 
     <feature.directory>src/main/feature/feature.xml</feature.directory>
-    <spotless.version>1.24.3</spotless.version>
-    <spotless.check.skip>true</spotless.check.skip> <!-- Spotless disabled for now -->
+    <spotless.version>1.30.0</spotless.version>
   </properties>
 
   <dependencyManagement>
@@ -210,7 +209,7 @@ Import-Package: \\
           <version>${bnd.version}</version>
           <configuration>
             <failOnChanges>false</failOnChanges>
-            <bndruns />
+            <bndruns/>
           </configuration>
           <executions>
             <execution>
@@ -439,7 +438,7 @@ Import-Package: \\
                     </goals>
                   </pluginExecutionFilter>
                   <action>
-                    <ignore />
+                    <ignore/>
                   </action>
                 </pluginExecution>
                 <pluginExecution>
@@ -452,7 +451,7 @@ Import-Package: \\
                     </goals>
                   </pluginExecutionFilter>
                   <action>
-                    <ignore />
+                    <ignore/>
                   </action>
                 </pluginExecution>
                 <pluginExecution>
@@ -466,7 +465,7 @@ Import-Package: \\
                     </goals>
                   </pluginExecutionFilter>
                   <action>
-                    <ignore />
+                    <ignore/>
                   </action>
                 </pluginExecution>
                 <pluginExecution>
@@ -479,7 +478,7 @@ Import-Package: \\
                     </goals>
                   </pluginExecutionFilter>
                   <action>
-                    <ignore />
+                    <ignore/>
                   </action>
                 </pluginExecution>
                 <pluginExecution>
@@ -493,7 +492,7 @@ Import-Package: \\
                     </goals>
                   </pluginExecutionFilter>
                   <action>
-                    <execute />
+                    <execute/>
                   </action>
                 </pluginExecution>
               </pluginExecutions>
@@ -530,13 +529,13 @@ Import-Package: \\
             <java>
               <eclipse>
                 <file>openhab_codestyle.xml</file>
-                <version>4.11.0</version>
+                <version>4.13.0</version>
               </eclipse>
-              <removeUnusedImports />
+              <removeUnusedImports/>
               <importOrder>
                 <file>openhab.importorder</file>
               </importOrder>
-              <endWithNewline />
+              <endWithNewline/>
             </java>
             <formats>
               <format>
@@ -546,21 +545,22 @@ Import-Package: \\
                 </includes>
                 <excludes>
                   <exclude>**/pom.xml</exclude>
-                </excludes>
-                <excludes>
                   <exclude>**/feature.xml</exclude>
+                  <exclude>src/main/history/**/*.xml</exclude>
                   <exclude>features/openhab-addons/src/main/resources/header.xml</exclude>
                   <exclude>features/openhab-addons/src/main/resources/footer.xml</exclude>
+                  <exclude>src/main/resources/input/rss*.xml</exclude>
+                  <exclude>src/test/resources/**/*.xml</exclude>
                 </excludes>
                 <eclipseWtp>
                   <type>XML</type>
                   <files>
                     <file>openhab_wst_xml_files.prefs</file>
                   </files>
-                  <version>4.12.0</version>
+                  <version>4.13.0</version>
                 </eclipseWtp>
-                <trimTrailingWhitespace />
-                <endWithNewline />
+                <trimTrailingWhitespace/>
+                <endWithNewline/>
               </format>
               <format>
                 <!-- feature.xml -->
@@ -572,10 +572,10 @@ Import-Package: \\
                   <files>
                     <file>openhab_wst_feature_file.prefs</file>
                   </files>
-                  <version>4.12.0</version>
+                  <version>4.13.0</version>
                 </eclipseWtp>
-                <trimTrailingWhitespace />
-                <endWithNewline />
+                <trimTrailingWhitespace/>
+                <endWithNewline/>
               </format>
               <format>
                 <!-- pom.xml -->
@@ -587,10 +587,10 @@ Import-Package: \\
                   <files>
                     <file>openhab_wst_pom_file.prefs</file>
                   </files>
-                  <version>4.12.0</version>
+                  <version>4.13.0</version>
                 </eclipseWtp>
-                <trimTrailingWhitespace />
-                <endWithNewline />
+                <trimTrailingWhitespace/>
+                <endWithNewline/>
               </format>
             </formats>
           </configuration>

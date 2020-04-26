@@ -476,7 +476,6 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
             sb.append(" rows = ").append(rows);
             return sb.toString();
         }
-
     }
 
     private class RrdDefConfig {
@@ -610,5 +609,4 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         return List.of(PersistenceStrategy.Globals.RESTORE, PersistenceStrategy.Globals.CHANGE,
                 new PersistenceCronStrategy("everyMinute", "0 * * * * ?"));
     }
-
 }

@@ -321,5 +321,4 @@ public class JpaPersistenceService implements QueryablePersistenceService {
     public List<PersistenceStrategy> getDefaultStrategies() {
         return Collections.emptyList();
     }
-
 }
