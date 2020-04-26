@@ -153,7 +153,7 @@
 	</channel-type>
 
 
-	<channel-type id="acunit-energyheatingtoday" advanced="false">
+	<channel-type id="acunit-energyheatingtoday" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Heating Today</label>
 		<description>The energy usage for heating today</description>
@@ -161,7 +161,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 
-	<channel-type id="acunit-energyheatingthisweek" advanced="false">
+	<channel-type id="acunit-energyheatingthisweek" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Heating This Week</label>
 		<description>The energy usage for heating this week</description>
@@ -169,7 +169,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 
-	<channel-type id="acunit-energyheatinglastweek" advanced="false">
+	<channel-type id="acunit-energyheatinglastweek" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Heating Last Week</label>
 		<description>The energy usage for heating last week</description>
@@ -177,7 +177,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 
-	<channel-type id="acunit-energycoolingtoday" advanced="false">
+	<channel-type id="acunit-energycoolingtoday" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Cooling Today</label>
 		<description>The energy usage for cooling today</description>
@@ -185,7 +185,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 
-	<channel-type id="acunit-energycoolingthisweek" advanced="false">
+	<channel-type id="acunit-energycoolingthisweek" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Cooling This Week</label>
 		<description>The energy usage for cooling this week</description>
@@ -193,7 +193,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 
-	<channel-type id="acunit-energycoolinglastweek" advanced="false">
+	<channel-type id="acunit-energycoolinglastweek" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Cooling Last Week</label>
 		<description>The energy usage for cooling last week</description>
