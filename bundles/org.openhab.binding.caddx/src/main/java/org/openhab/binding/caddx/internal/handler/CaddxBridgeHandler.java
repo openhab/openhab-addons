@@ -112,6 +112,7 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
         serialPortName = configuration.getSerialPort();
         baudRate = configuration.getBaudrate().intValue();
         updateStatus(ThingStatus.OFFLINE);
+        updateState(new ChannelUID(getThing().getUID(), CaddxBindingConstants.BRIDGE_RESET), OnOffType.ON);
 
         // create & start panel interface
         logger.info("starting interface at port {} with baudrate {}", serialPortName, baudRate);
@@ -119,11 +120,13 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
         try {
             communicator = new CaddxCommunicator(portManager, protocol, serialPortName, baudRate);
         } catch (IOException | TooManyListenersException | UnsupportedCommOperationException | PortInUseException e) {
-            logger.warn("Cannot initialize Communication.", e);
+            logger.warn("Cannot initialize Communication.");
+
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Communication cannot be initialized");
+            updateState(new ChannelUID(getThing().getUID(), CaddxBindingConstants.BRIDGE_RESET), OnOffType.ON);
 
-            throw new IllegalArgumentException();
+            return;
         }
 
         CaddxCommunicator comm = communicator;
@@ -195,10 +198,14 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
                         n.stop();
                         n = null;
                         updateStatus(ThingStatus.OFFLINE);
+                        updateState(new ChannelUID(getThing().getUID(), CaddxBindingConstants.BRIDGE_RESET),
+                                OnOffType.ON);
                     }
                 } else if (command == OnOffType.OFF) {
                     initialize();
+
                     updateStatus(ThingStatus.ONLINE);
+                    updateState(new ChannelUID(getThing().getUID(), CaddxBindingConstants.BRIDGE_RESET), OnOffType.OFF);
                 }
                 break;
             case SEND_COMMAND:
@@ -380,6 +387,7 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
         }
 
         updateStatus(ThingStatus.ONLINE);
+        updateState(new ChannelUID(getThing().getUID(), CaddxBindingConstants.BRIDGE_RESET), OnOffType.OFF);
     }
 
     @Override
