@@ -12,7 +12,7 @@ These values can be used to
 
 ## Supported Things
 
-The Teleinfo binding provides support for single phase and three phase connection, ICC evolution and the following pricing modes:
+The Teleinfo binding provides support for both single phase and three phase connection, ICC evolution and the following pricing modes:
 
 - HCHP mode
 - Base mode
@@ -83,7 +83,7 @@ Channel availabity depends on the electricity connection (single or three phase)
 
 ## Full Example
 
-`teleinfo.things` for a serial USB controller on `/dev/ttyUSB0` for a Single-phase Electricity meter with HC/HP option - CBEMM Evolution ICC and adco `31528042289` :
+The following `things` file declare a serial USB controller on `/dev/ttyUSB0` for a Single-phase Electricity meter with HC/HP option - CBEMM Evolution ICC and adco `31528042289` :
 
 ```
 Bridge teleinfo:serialcontroller:teleinfoUSB [ serialport="/dev/ttyUSB0" ]{
@@ -93,8 +93,7 @@ Bridge teleinfo:serialcontroller:teleinfoUSB [ serialport="/dev/ttyUSB0" ]{
 
 `adco` is a 12 digit number writen on the electricity meter (There might be two additional digits on the electricity meter, in this case the two last digits must be omitted to obtain 12 digits). The first 6 digits of `adco` can also be retrieved by pushing 6 times the `selection` button of your electricity meter, and the last 6 digits by pushing the `defilement` button.
 
-`teleinfo.items`: 
-
+This `items` file links some supported channels to items: 
 
 ```
 Number TLInfoEDF_PAPP "PAPP" <energy> {channel="teleinfo:cbemm_evolution_icc_hc_electricitymeter:teleinfoUSB:myElectricityMeter:papp"}
