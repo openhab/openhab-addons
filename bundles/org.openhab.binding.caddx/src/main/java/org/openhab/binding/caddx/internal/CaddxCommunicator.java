@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  * @author Georgios Moutsos - Initial contribution
  */
 @NonNullByDefault
-public class CaddxCommunicator implements Runnable, SerialPortEventListener {
+public class CaddxCommunicator implements SerialPortEventListener {
     private final Logger logger = LoggerFactory.getLogger(CaddxCommunicator.class);
 
     private final SerialPortManager portManager;
@@ -102,7 +102,7 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
         serialPort.notifyOnDataAvailable(true);
         serialPort.addEventListener(this);
 
-        thread = new Thread(this, "Caddx Communicator");
+        thread = new Thread(this::messageDispatchLoop, "Caddx Communicator");
         thread.setDaemon(true);
         thread.start();
 
@@ -124,9 +124,7 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
     }
 
     public void addListener(CaddxPanelListener listener) {
-        if (!listenerQueue.contains(listener)) {
-            listenerQueue.add(listener);
-        }
+        listenerQueue.add(listener);
     }
 
     /**
@@ -180,8 +178,7 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
     }
 
     @SuppressWarnings("null")
-    @Override
-    public void run() {
+    private void messageDispatchLoop() {
         int @Nullable [] expectedMessageNumbers = null;
 
         @Nullable

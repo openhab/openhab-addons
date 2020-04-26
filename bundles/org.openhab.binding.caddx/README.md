@@ -19,9 +19,8 @@ This binding supports the following Thing types
 
 ## Discovery
 
-The Caddx binding first searches for the serial ports which can communicate via the binary protocol and adds them to the discovery inbox.
-The bridge discovery is started manually through PaperUI.  
-After a bridge is discovered and available to openHAB, the binding will attempt to discover things and add them to the discovery inbox.
+First the Caddx bridge must be manually defined. The serial port, baud rate and protocol have to be set correctly to match the respective configuration of the panel.
+After the bridge is manually added and available to openHAB, the binding will automatically start to discover partitions and zones and add them to the discovery inbox.
 
 Note:
 There is currently no support to discover the available keypads.

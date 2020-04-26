@@ -29,6 +29,7 @@ import org.openhab.binding.caddx.internal.handler.ThingHandlerKeypad;
 import org.openhab.binding.caddx.internal.handler.ThingHandlerPanel;
 import org.openhab.binding.caddx.internal.handler.ThingHandlerPartition;
 import org.openhab.binding.caddx.internal.handler.ThingHandlerZone;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -44,7 +45,12 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class CaddxHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(CaddxHandlerFactory.class);
-    private @NonNullByDefault({}) SerialPortManager portManager;
+    private final SerialPortManager portManager;
+
+    @Activate
+    public CaddxHandlerFactory(@Reference SerialPortManager portManager) {
+        this.portManager = portManager;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -80,14 +86,5 @@ public class CaddxHandlerFactory extends BaseThingHandlerFactory {
 
             return null;
         }
-    }
-
-    @Reference
-    protected void setSerialPortManager(final SerialPortManager serialPortManager) {
-        this.portManager = serialPortManager;
-    }
-
-    protected void unsetSerialPortManager(final SerialPortManager serialPortManager) {
-        this.portManager = null;
     }
 }

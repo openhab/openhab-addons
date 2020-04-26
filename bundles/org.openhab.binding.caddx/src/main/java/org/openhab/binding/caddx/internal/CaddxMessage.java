@@ -34,12 +34,12 @@ public class CaddxMessage {
     private final CaddxMessageType caddxMessageType;
     private final Map<String, String> propertyMap = new HashMap<>();
     private final Map<String, String> idMap = new HashMap<>();
-    private byte[] message;
-    private boolean hasAcknowledgementFlag = false;
-    private byte checksum1In;
-    private byte checksum2In;
-    private byte checksum1Calc;
-    private byte checksum2Calc;
+    private final byte[] message;
+    private final boolean hasAcknowledgementFlag;
+    private final byte checksum1In;
+    private final byte checksum2In;
+    private final byte checksum1Calc;
+    private final byte checksum2Calc;
 
     /**
      * Constructor.
@@ -59,26 +59,38 @@ public class CaddxMessage {
 
         // Received data
         byte[] msg = message;
+
+        // Fill in the checksum
         if (withChecksum) {
             checksum1In = message[message.length - 2];
             checksum2In = message[message.length - 1];
             msg = Arrays.copyOf(message, message.length - 2);
-        }
 
-        // Calculate the checksum
-        byte[] fletcherSum = fletcher(msg);
-        checksum1Calc = fletcherSum[0];
-        checksum2Calc = fletcherSum[1];
-        // Make the In checksum same as the Calculated in case it is not supplied
-        if (!withChecksum) {
+            byte[] fletcherSum = fletcher(msg);
+            checksum1Calc = fletcherSum[0];
+            checksum2Calc = fletcherSum[1];
+        } else {
+            byte[] fletcherSum = fletcher(msg);
+            checksum1Calc = fletcherSum[0];
+            checksum2Calc = fletcherSum[1];
+
             checksum1In = checksum1Calc;
             checksum2In = checksum2Calc;
         }
 
+        // Fill in the message
         this.message = msg;
 
-        // fill the message type
-        CaddxMessageType mt = CaddxMessageType.valueOfMessageType((message[0] & 0x7f));
+        // Fill-in the acknowledgement flag
+        if ((message[0] & 0x80) != 0) {
+            hasAcknowledgementFlag = true;
+            message[0] = (byte) (message[0] & 0x7f);
+        } else {
+            hasAcknowledgementFlag = false;
+        }
+
+        // Fill-in the message type
+        CaddxMessageType mt = CaddxMessageType.valueOfMessageType(message[0]);
         if (mt == null) {
             throw new IllegalArgumentException("Unknown message");
         }
@@ -90,30 +102,37 @@ public class CaddxMessage {
 
     public CaddxMessage(CaddxMessageType type, String data) {
         int length = type.length;
-        if (length > 4) {
-            logger.debug("CaddxMessage: message type not supported.");
-            throw new IllegalArgumentException("CaddxMessage: message type not supported.");
-        }
-
         String[] tokens = data.split("\\,");
         if (length != 1 && tokens.length != length - 1) {
-            logger.debug("Data has not the correct format. msg.length={}, tokens.length={}", length, tokens.length);
+            logger.debug("token.length should be length-1. token.length={}, length={}", tokens.length, length);
             throw new IllegalArgumentException("CaddxMessage: data has not the correct format.");
         }
 
         byte[] msg = new byte[length];
         msg[0] = (byte) type.number;
         for (int i = 0; i < length - 1; i++) {
-            msg[i + 1] = (byte) Integer.parseInt(tokens[i]);
+            msg[i + 1] = (byte) Integer.decode(tokens[i]).intValue();
         }
 
+        // Fill-in the checksum
         byte[] fletcherSum = fletcher(msg);
         checksum1Calc = fletcherSum[0];
         checksum2Calc = fletcherSum[1];
         checksum1In = checksum1Calc;
         checksum2In = checksum2Calc;
 
+        // Fill-in the message
         this.message = msg;
+
+        // Fill-in the acknowledgement flag
+        if ((message[0] & 0x80) != 0) {
+            hasAcknowledgementFlag = true;
+            message[0] = (byte) (message[0] & 0x7f);
+        } else {
+            hasAcknowledgementFlag = false;
+        }
+
+        // Fill-in the message type
         this.caddxMessageType = type;
 
         // Fill-in the properties
@@ -349,11 +368,6 @@ public class CaddxMessage {
      * Processes the incoming Caddx message and extracts the information.
      */
     private void processCaddxMessage() {
-        if ((message[0] & 0x80) != 0) {
-            hasAcknowledgementFlag = true;
-            message[0] = (byte) (message[0] & 0x7f);
-        }
-
         // fill the property lookup hashmaps
         for (CaddxProperty p : caddxMessageType.properties) {
             propertyMap.put(p.getName(), p.getValue(message));
