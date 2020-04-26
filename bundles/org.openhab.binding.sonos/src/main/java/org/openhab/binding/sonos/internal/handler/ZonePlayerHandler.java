@@ -163,9 +163,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         logger.debug("Handler disposed for thing {}", getThing().getUID());
 
         if (pollingJob != null) {
-            if (!pollingJob.isCancelled()) {
-                pollingJob.cancel(true);
-            }
+            pollingJob.cancel(true);
             pollingJob = null;
         }
 
