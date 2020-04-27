@@ -13,11 +13,18 @@
 package org.openhab.binding.daikin.internal;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.daikin.internal.api.BasicInfo;
 import org.openhab.binding.daikin.internal.api.ControlInfo;
@@ -30,12 +37,6 @@ import org.openhab.binding.daikin.internal.api.airbase.AirbaseZoneInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.TimeUnit;
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.jetty.http.HttpStatus;
 
 /**
  * Handles performing the actual HTTP requests for communicating with Daikin air conditioning units.
@@ -62,12 +63,20 @@ public class DaikinWebTargets {
     private String setAirbaseZoneInfoUri;
 
     private String uuid;
-    private HttpClient httpClient;
+    private static HttpClient httpClient;
 
     private Logger logger = LoggerFactory.getLogger(DaikinWebTargets.class);
 
-    public DaikinWebTargets(HttpClient httpClient, String host, Boolean secure, String uuid) {
-        this.httpClient = httpClient;
+    public DaikinWebTargets(String host, Boolean secure, String uuid) {
+        if (httpClient == null) {
+            httpClient = new HttpClient(new SslContextFactory(true));
+            try {
+                httpClient.start();
+            } catch (Exception e) {
+                httpClient = null;
+                logger.warn("httpClient.start() failed. {}", e.getMessage());
+            }
+        }
         this.uuid = uuid;
 
         String baseUri = (secure != null && secure.booleanValue() ? "https://" : "http://") + host + "/";

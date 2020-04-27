@@ -21,8 +21,6 @@ import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -64,7 +62,6 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
     protected @Nullable DaikinWebTargets webTargets;
     private @Nullable ScheduledFuture<?> pollFuture;
     protected final DaikinDynamicStateDescriptionProvider stateDescriptionProvider;
-    protected @Nullable HttpClient httpClient;
     protected @Nullable DaikinConfiguration config;
     private boolean uuidRegistrationAttempted = false;
 
@@ -88,15 +85,6 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
     public DaikinBaseHandler(Thing thing, DaikinDynamicStateDescriptionProvider stateDescriptionProvider) {
         super(thing);
         this.stateDescriptionProvider = stateDescriptionProvider;
-        this.httpClient = new HttpClient(new SslContextFactory(true));
-        if (!this.httpClient.isStarted()) {
-            try {
-                this.httpClient.start();
-            } catch (Exception e) {
-                this.httpClient = null;
-                logger.warn("httpClient.start() failed. {}", e.getMessage());
-            }
-        }
     }
 
     @Override
@@ -154,7 +142,7 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
             if (config.uuid != null) {
                 config.uuid = config.uuid.replaceAll("\\s|-", "");
             }
-            webTargets = new DaikinWebTargets(httpClient, config.host, config.secure, config.uuid);
+            webTargets = new DaikinWebTargets(config.host, config.secure, config.uuid);
             refreshInterval = config.refresh;
 
             schedulePoll();

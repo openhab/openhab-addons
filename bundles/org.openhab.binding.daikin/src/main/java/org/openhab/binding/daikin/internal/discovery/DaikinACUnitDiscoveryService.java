@@ -27,8 +27,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -64,19 +62,9 @@ public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
 
     private final Runnable scanner;
     private ScheduledFuture<?> backgroundFuture;
-    private @NonNullByDefault({}) HttpClient httpClient;
 
     public DaikinACUnitDiscoveryService() {
         super(Collections.singleton(DaikinBindingConstants.THING_TYPE_AC_UNIT), 600, true);
-        this.httpClient = new HttpClient(new SslContextFactory(true)); 
-        if (!this.httpClient.isStarted()) {
-            try {
-                this.httpClient.start();
-            } catch (Exception e) {
-                this.httpClient = null;
-                logger.warn("httpClient.start() failed. {}", e.getMessage());
-            }
-        }
         scanner = createScanner();
     }
 
@@ -151,7 +139,7 @@ public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
             String mac = Optional.ofNullable(parsedData.get("mac")).orElse("");
             String uuid = mac.isEmpty() ? UUID.randomUUID().toString() : UUID.nameUUIDFromBytes(mac.getBytes()).toString();
 
-            DaikinWebTargets webTargets = new DaikinWebTargets(httpClient, host, secure, null);
+            DaikinWebTargets webTargets = new DaikinWebTargets(host, secure, null);
             boolean found = false;
 
             // look for Daikin controller
