@@ -36,20 +36,12 @@ public class SurePetcarePet extends SurePetcareBaseObject {
         FEMALE(0, "Female"),
         MALE(1, "Male");
 
-        private final Integer id;
-        private final String name;
+        public final Integer id;
+        public final String name;
 
         private PetGender(int id, String name) {
             this.id = id;
             this.name = name;
-        }
-
-        public Integer getId() {
-            return id;
-        }
-
-        public String getName() {
-            return name;
         }
 
         public static PetGender findByTypeId(final int id) {
@@ -63,20 +55,12 @@ public class SurePetcarePet extends SurePetcareBaseObject {
         CAT(1, "Cat"),
         DOG(2, "Dog");
 
-        private final Integer id;
-        private final String name;
+        public final Integer id;
+        public final String name;
 
         private PetSpecies(int id, String name) {
             this.id = id;
             this.name = name;
-        }
-
-        public Integer getId() {
-            return id;
-        }
-
-        public String getName() {
-            return name;
         }
 
         public static PetSpecies findByTypeId(final int id) {
@@ -84,118 +68,22 @@ public class SurePetcarePet extends SurePetcareBaseObject {
         }
     }
 
-    private String name = "";
+    public String name = "";
 
     @SerializedName("gender")
-    private Integer genderId;
-    private Date dateOfBirth;
-    private BigDecimal weight;
-    private String comments;
-    private Integer householdId;
-    private Integer breedId;
-    private Integer photoId;
-    private Integer speciesId;
-    private Integer tagId;
-    private SurePetcarePhoto photo;
+    public Integer genderId;
+    public Date dateOfBirth;
+    public BigDecimal weight;
+    public String comments;
+    public Integer householdId;
+    public Integer breedId;
+    public Integer photoId;
+    public Integer speciesId;
+    public Integer tagId;
+    public SurePetcarePhoto photo;
 
     @SerializedName("status")
-    private SurePetcarePetStatus status = new SurePetcarePetStatus();
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Integer getGenderId() {
-        return genderId;
-    }
-
-    public void setGenderId(Integer genderId) {
-        this.genderId = genderId;
-    }
-
-    public Date getDateOfBirth() {
-        return dateOfBirth;
-    }
-
-    public void setDateOfBirth(Date dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
-    }
-
-    public BigDecimal getWeight() {
-        return weight;
-    }
-
-    public void setWeight(BigDecimal weight) {
-        this.weight = weight;
-    }
-
-    public String getComments() {
-        return comments;
-    }
-
-    public void setComments(String comments) {
-        this.comments = comments;
-    }
-
-    public Integer getHouseholdId() {
-        return householdId;
-    }
-
-    public void setHouseholdId(Integer householdId) {
-        this.householdId = householdId;
-    }
-
-    public Integer getBreedId() {
-        return breedId;
-    }
-
-    public void setBreedId(Integer breedId) {
-        this.breedId = breedId;
-    }
-
-    public Integer getPhotoId() {
-        return photoId;
-    }
-
-    public void setPhotoId(Integer photoId) {
-        this.photoId = photoId;
-    }
-
-    public Integer getSpeciesId() {
-        return speciesId;
-    }
-
-    public void setSpeciesId(Integer speciesId) {
-        this.speciesId = speciesId;
-    }
-
-    public Integer getTagId() {
-        return tagId;
-    }
-
-    public void setTagId(Integer tagId) {
-        this.tagId = tagId;
-    }
-
-    public SurePetcarePhoto getPhoto() {
-        return photo;
-    }
-
-    public void setPhoto(SurePetcarePhoto photo) {
-        this.photo = photo;
-    }
-
-    public SurePetcarePetStatus getPetStatus() {
-        return status;
-    }
-
-    public void setPetStatus(SurePetcarePetStatus status) {
-        this.status = status;
-    }
+    public SurePetcarePetStatus status = new SurePetcarePetStatus();
 
     public ZonedDateTime getDateOfBirthAsZonedDateTime() {
         return dateOfBirth == null ? null : dateOfBirth.toInstant().atZone(ZoneId.systemDefault());

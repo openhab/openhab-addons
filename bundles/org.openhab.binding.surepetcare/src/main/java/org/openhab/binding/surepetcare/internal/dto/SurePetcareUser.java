@@ -47,52 +47,12 @@ public class SurePetcareUser extends SurePetcareBaseObject {
     // }
     // }
 
-    private String emailAddress;
-    private String firstName;
-    private String lastName;
-    private Integer countryId;
-    private Integer languageId;
+    public String emailAddress;
+    public String firstName;
+    public String lastName;
+    public Integer countryId;
+    public Integer languageId;
     // and various others not yet mapped
-
-    public String getEmailAddress() {
-        return emailAddress;
-    }
-
-    public void setEmailAddress(String emailAddress) {
-        this.emailAddress = emailAddress;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public Integer getCountryId() {
-        return countryId;
-    }
-
-    public void setCountryId(Integer countryId) {
-        this.countryId = countryId;
-    }
-
-    public Integer getLanguageId() {
-        return languageId;
-    }
-
-    public void setLanguageId(Integer languageId) {
-        this.languageId = languageId;
-    }
 
     @Override
     public String toString() {

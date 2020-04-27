@@ -31,9 +31,9 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.openhab.binding.surepetcare.internal.dto.SurePetcareDevice;
+import org.openhab.binding.surepetcare.internal.dto.SurePetcareDevice.ProductType;
 import org.openhab.binding.surepetcare.internal.dto.SurePetcareHousehold;
 import org.openhab.binding.surepetcare.internal.dto.SurePetcarePet;
-import org.openhab.binding.surepetcare.internal.dto.SurePetcareDevice.ProductType;
 import org.openhab.binding.surepetcare.internal.handler.SurePetcareBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -131,27 +131,27 @@ public class SurePetcareDiscoveryService extends AbstractDiscoveryService
     }
 
     private void householdDiscovered(SurePetcareHousehold household) {
-        logger.debug("Discovered household: {}", household.getName());
-        ThingUID thingsUID = new ThingUID(THING_TYPE_HOUSEHOLD, bridgeUID, household.getId().toString());
+        logger.debug("Discovered household: {}", household.name);
+        ThingUID thingsUID = new ThingUID(THING_TYPE_HOUSEHOLD, bridgeUID, household.id.toString());
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.putAll(household.getThingProperties());
-        thingDiscovered(DiscoveryResultBuilder.create(thingsUID).withLabel(household.getName())
-                .withProperties(properties).withBridge(bridgeUID).build());
+        thingDiscovered(DiscoveryResultBuilder.create(thingsUID).withLabel(household.name).withProperties(properties)
+                .withBridge(bridgeUID).build());
     }
 
     private void petDiscovered(SurePetcarePet pet) {
-        logger.debug("Discovered pet: {}", pet.getName());
-        ThingUID thingsUID = new ThingUID(THING_TYPE_PET, bridgeUID, pet.getId().toString());
+        logger.debug("Discovered pet: {}", pet.name);
+        ThingUID thingsUID = new ThingUID(THING_TYPE_PET, bridgeUID, pet.id.toString());
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.putAll(pet.getThingProperties());
-        thingDiscovered(DiscoveryResultBuilder.create(thingsUID).withLabel(pet.getName()).withProperties(properties)
+        thingDiscovered(DiscoveryResultBuilder.create(thingsUID).withLabel(pet.name).withProperties(properties)
                 .withBridge(bridgeUID).build());
     }
 
     private void deviceDiscovered(SurePetcareDevice device) {
-        logger.debug("Discovered device: {}", device.getName());
+        logger.debug("Discovered device: {}", device.name);
         ThingTypeUID typeUID = null;
-        switch (ProductType.findByTypeId(device.getProductId())) {
+        switch (ProductType.findByTypeId(device.productId)) {
             case HUB:
                 typeUID = THING_TYPE_HUB_DEVICE;
                 break;
@@ -169,11 +169,11 @@ public class SurePetcareDiscoveryService extends AbstractDiscoveryService
                 break;
         }
         if (typeUID != null) {
-            ThingUID thingsUID = new ThingUID(typeUID, bridgeUID, device.getId().toString());
+            ThingUID thingsUID = new ThingUID(typeUID, bridgeUID, device.id.toString());
             Map<String, Object> properties = new HashMap<String, Object>();
             properties.putAll(device.getThingProperties());
-            thingDiscovered(DiscoveryResultBuilder.create(thingsUID).withLabel(device.getName())
-                    .withProperties(properties).withBridge(bridgeUID).build());
+            thingDiscovered(DiscoveryResultBuilder.create(thingsUID).withLabel(device.name).withProperties(properties)
+                    .withBridge(bridgeUID).build());
         }
     }
 

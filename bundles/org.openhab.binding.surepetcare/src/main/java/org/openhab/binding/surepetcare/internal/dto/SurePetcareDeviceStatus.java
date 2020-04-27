@@ -42,71 +42,15 @@ public class SurePetcareDeviceStatus {
     }
 
     @SerializedName("led_mode")
-    private Integer ledModeId;
+    public Integer ledModeId;
     @SerializedName("pairing_mode")
-    private Integer pairingModeId;
-    private Locking locking;
-    private Version version;
-    private Float battery;
+    public Integer pairingModeId;
+    public Locking locking;
+    public Version version;
+    public Float battery;
     // learn_mode - unknown type
-    private Boolean online;
-    private Signal signal = new Signal();
-
-    public Integer getLedModeId() {
-        return ledModeId;
-    }
-
-    public void setLedModeId(Integer ledModeId) {
-        this.ledModeId = ledModeId;
-    }
-
-    public Integer getPairingModeId() {
-        return pairingModeId;
-    }
-
-    public void setPairingModeId(Integer pairingModeId) {
-        this.pairingModeId = pairingModeId;
-    }
-
-    public Locking getLocking() {
-        return locking;
-    }
-
-    public void setLocking(Locking locking) {
-        this.locking = locking;
-    }
-
-    public Version getVersion() {
-        return version;
-    }
-
-    public void setVersion(Version version) {
-        this.version = version;
-    }
-
-    public Float getBattery() {
-        return battery;
-    }
-
-    public void setBattery(Float battery) {
-        this.battery = battery;
-    }
-
-    public Boolean getOnline() {
-        return online;
-    }
-
-    public void setOnline(Boolean online) {
-        this.online = online;
-    }
-
-    public Signal getSignal() {
-        return signal;
-    }
-
-    public void setSignal(Signal signal) {
-        this.signal = signal;
-    }
+    public Boolean online;
+    public Signal signal = new Signal();
 
     public SurePetcareDeviceStatus assign(SurePetcareDeviceStatus source) {
         this.ledModeId = source.ledModeId;

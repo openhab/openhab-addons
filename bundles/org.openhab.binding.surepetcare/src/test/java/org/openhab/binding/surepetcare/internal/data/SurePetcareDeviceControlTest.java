@@ -37,14 +37,14 @@ public class SurePetcareDeviceControlTest {
         SurePetcareDeviceControl response = SurePetcareConstants.GSON.fromJson(testResponse,
                 SurePetcareDeviceControl.class);
 
-        assertEquals(1, response.getCurfewList().size());
-        assertEquals(new Integer(0), response.getLockingModeId());
+        assertEquals(1, response.curfewList.size());
+        assertEquals(new Integer(0), response.lockingModeId);
     }
 
     @Test
     public void testJsonSerializeLockingMode() throws ParseException {
         SurePetcareDeviceControl control = new SurePetcareDeviceControl();
-        control.setLockingModeId(new Integer(4));
+        control.lockingModeId = new Integer(4);
 
         String json = SurePetcareConstants.GSON.toJson(control);
         assertEquals("{\"locking\":4}", json);
@@ -55,7 +55,7 @@ public class SurePetcareDeviceControlTest {
         SurePetcareDeviceControl control = new SurePetcareDeviceControl();
         SurePetcareDeviceCurfewList curfews = new SurePetcareDeviceCurfewList();
         curfews.add(new SurePetcareDeviceCurfew(true, "19:30", "07:00"));
-        control.setCurfewList(curfews);
+        control.curfewList = curfews;
 
         String json = SurePetcareConstants.GSON.toJson(control);
         assertEquals("{\"curfew\":[{\"enabled\":true,\"lock_time\":\"19:30\",\"unlock_time\":\"07:00\"}]}", json);

@@ -26,45 +26,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class SurePetcareBaseObject {
 
-    protected Integer id = 0;
-    protected String version = "";
-    protected Date createdAt = new Date();
-    protected Date updatedAt = new Date();
+    public Integer id = 0;
+    public String version = "";
+    public Date createdAt = new Date();
+    public Date updatedAt = new Date();
 
     public SurePetcareBaseObject() {
         super();
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     public Map<String, String> getThingProperties() {

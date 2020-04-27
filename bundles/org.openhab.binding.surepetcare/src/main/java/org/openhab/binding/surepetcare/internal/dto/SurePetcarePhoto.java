@@ -29,23 +29,6 @@ public class SurePetcarePhoto extends SurePetcareBaseObject {
     // "updated_at":"2019-09-02T09:31:07+00:00"
     // }
 
-    private String location;
-    private Integer uploadingUserId;
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public Integer getUploadingUserId() {
-        return uploadingUserId;
-    }
-
-    public void setUploadingUserId(Integer uploadingUserId) {
-        this.uploadingUserId = uploadingUserId;
-    }
-
+    public String location;
+    public Integer uploadingUserId;
 }

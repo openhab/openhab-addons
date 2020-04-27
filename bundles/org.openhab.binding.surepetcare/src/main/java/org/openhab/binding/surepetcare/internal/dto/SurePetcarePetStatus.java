@@ -24,23 +24,8 @@ import com.google.gson.annotations.SerializedName;
 public class SurePetcarePetStatus {
 
     @SerializedName("activity")
-    private SurePetcarePetActivity activity;
+    public SurePetcarePetActivity activity;
     @SerializedName("feeding")
-    private SurePetcarePetFeeding feeding;
+    public SurePetcarePetFeeding feeding;
 
-    public SurePetcarePetActivity getActivity() {
-        return activity;
-    }
-
-    public void setActivity(SurePetcarePetActivity activity) {
-        this.activity = activity;
-    }
-
-    public SurePetcarePetFeeding getFeeding() {
-        return feeding;
-    }
-
-    public void setFeeding(SurePetcarePetFeeding feeding) {
-        this.feeding = feeding;
-    }
 }

@@ -75,7 +75,7 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
                                     Integer newLockingModeId = Integer.valueOf(newLockingModeIdStr);
                                     petcareAPI.setDeviceLockingMode(device, newLockingModeId);
                                     updateState(DEVICE_CHANNEL_LOCKING_MODE,
-                                            new StringType(device.getStatus().getLocking().modeId.toString()));
+                                            new StringType(device.status.locking.modeId.toString()));
                                 } catch (NumberFormatException e) {
                                     logger.warn("Invalid locking mode: {}, ignoring command", newLockingModeIdStr);
                                 } catch (SurePetcareApiException e) {
@@ -97,7 +97,7 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
                                     Integer newLedModeId = Integer.valueOf(newLedModeIdStr);
                                     petcareAPI.setDeviceLedMode(device, newLedModeId);
                                     updateState(DEVICE_CHANNEL_LOCKING_MODE,
-                                            new StringType(device.getStatus().getLedModeId().toString()));
+                                            new StringType(device.status.ledModeId.toString()));
                                 } catch (NumberFormatException e) {
                                     logger.warn("Invalid locking mode: {}, ignoring command", newLedModeIdStr);
                                 } catch (SurePetcareApiException e) {
@@ -119,58 +119,55 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
         SurePetcareDevice device = petcareAPI.getDevice(thing.getUID().getId());
         if (device != null) {
             logger.debug("Updating all thing channels for device : {}", device);
-            updateState(DEVICE_CHANNEL_ID, new DecimalType(device.getId()));
-            updateState(DEVICE_CHANNEL_NAME, new StringType(device.getName()));
-            updateState(DEVICE_CHANNEL_PRODUCT, new StringType(device.getProductId().toString()));
-            updateState(DEVICE_CHANNEL_ONLINE, OnOffType.from(device.getStatus().getOnline()));
+            updateState(DEVICE_CHANNEL_ID, new DecimalType(device.id));
+            updateState(DEVICE_CHANNEL_NAME, new StringType(device.name));
+            updateState(DEVICE_CHANNEL_PRODUCT, new StringType(device.productId.toString()));
+            updateState(DEVICE_CHANNEL_ONLINE, OnOffType.from(device.status.online));
 
             if (thing.getThingTypeUID().equals(THING_TYPE_HUB_DEVICE)) {
-                updateState(DEVICE_CHANNEL_LED_MODE, new StringType(device.getStatus().getLedModeId().toString()));
-                updateState(DEVICE_CHANNEL_PAIRING_MODE,
-                        new StringType(device.getStatus().getPairingModeId().toString()));
+                updateState(DEVICE_CHANNEL_LED_MODE, new StringType(device.status.ledModeId.toString()));
+                updateState(DEVICE_CHANNEL_PAIRING_MODE, new StringType(device.status.pairingModeId.toString()));
             } else {
-                float batVol = device.getStatus().getBattery();
+                float batVol = device.status.battery;
                 updateState(DEVICE_CHANNEL_BATTERY_VOLTAGE, new DecimalType(batVol));
                 updateState(DEVICE_CHANNEL_BATTERY_LEVEL, new DecimalType(Math.min(
                         (batVol - BATTERY_EMPTY_VOLTAGE) / (BATTERY_FULL_VOLTAGE - BATTERY_EMPTY_VOLTAGE) * 100.0f,
                         100.0f)));
                 updateState(DEVICE_CHANNEL_LOW_BATTERY, OnOffType.from(batVol < LOW_BATTERY_THRESHOLD));
-                updateState(DEVICE_CHANNEL_DEVICE_RSSI, new DecimalType(device.getStatus().getSignal().deviceRssi));
-                updateState(DEVICE_CHANNEL_HUB_RSSI, new DecimalType(device.getStatus().getSignal().hubRssi));
+                updateState(DEVICE_CHANNEL_DEVICE_RSSI, new DecimalType(device.status.signal.deviceRssi));
+                updateState(DEVICE_CHANNEL_HUB_RSSI, new DecimalType(device.status.signal.hubRssi));
 
                 if (thing.getThingTypeUID().equals(THING_TYPE_FLAP_DEVICE)) {
                     updateThingCurfews(device);
-                    updateState(DEVICE_CHANNEL_LOCKING_MODE,
-                            new StringType(device.getStatus().getLocking().modeId.toString()));
+                    updateState(DEVICE_CHANNEL_LOCKING_MODE, new StringType(device.status.locking.modeId.toString()));
                 } else if (thing.getThingTypeUID().equals(THING_TYPE_FEEDER_DEVICE)) {
-                    int numBowls = device.getControl().getBowls().getBowlSettings().size();
+                    int numBowls = device.control.bowls.bowlSettings.size();
                     for (int i = 0; (i < 2) && (i < numBowls); i++) {
-                        BowlSettings bowlSettings = device.getControl().getBowls().getBowlSettings().get(i);
-                        if (device.getControl().getBowls().getBowlId().equals(1)) {
-                            updateState(DEVICE_CHANNEL_BOWLS_FOOD, new StringType(bowlSettings.getFoodId().toString()));
+                        BowlSettings bowlSettings = device.control.bowls.bowlSettings.get(i);
+                        if (device.control.bowls.bowlId.equals(1)) {
+                            updateState(DEVICE_CHANNEL_BOWLS_FOOD, new StringType(bowlSettings.foodId.toString()));
                             updateState(DEVICE_CHANNEL_BOWLS_TARGET,
-                                    new QuantityType<Mass>(bowlSettings.getTargetId(), SIUnits.GRAM));
-                        } else if (device.getControl().getBowls().getBowlId().equals(4)) {
+                                    new QuantityType<Mass>(bowlSettings.targetId, SIUnits.GRAM));
+                        } else if (device.control.bowls.bowlId.equals(4)) {
                             if ((i + 1) == 1) {
                                 updateState(DEVICE_CHANNEL_BOWLS_FOOD_LEFT,
-                                        new StringType(bowlSettings.getFoodId().toString()));
+                                        new StringType(bowlSettings.foodId.toString()));
                                 updateState(DEVICE_CHANNEL_BOWLS_TARGET_LEFT,
-                                        new QuantityType<Mass>(bowlSettings.getTargetId(), SIUnits.GRAM));
+                                        new QuantityType<Mass>(bowlSettings.targetId, SIUnits.GRAM));
                             }
                             if ((i + 1) == 2) {
                                 updateState(DEVICE_CHANNEL_BOWLS_FOOD_RIGHT,
-                                        new StringType(bowlSettings.getFoodId().toString()));
+                                        new StringType(bowlSettings.foodId.toString()));
                                 updateState(DEVICE_CHANNEL_BOWLS_TARGET_RIGHT,
-                                        new QuantityType<Mass>(bowlSettings.getTargetId(), SIUnits.GRAM));
+                                        new QuantityType<Mass>(bowlSettings.targetId, SIUnits.GRAM));
                             }
                         }
                     }
-                    updateState(DEVICE_CHANNEL_BOWLS,
-                            new StringType(device.getControl().getBowls().getBowlId().toString()));
+                    updateState(DEVICE_CHANNEL_BOWLS, new StringType(device.control.bowls.bowlId.toString()));
                     updateState(DEVICE_CHANNEL_BOWLS_CLOSE_DELAY,
-                            new StringType(device.getControl().getLid().getCloseDelayId().toString()));
+                            new StringType(device.control.lid.closeDelayId.toString()));
                     updateState(DEVICE_CHANNEL_BOWLS_TRAINING_MODE,
-                            new StringType(device.getControl().getTrainingModeId().toString()));
+                            new StringType(device.control.trainingModeId.toString()));
                 } else {
                     logger.warn("Unknown product type for device {}", thing.getUID().getAsString());
                 }
@@ -180,7 +177,7 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
 
     private void updateThingCurfews(SurePetcareDevice device) {
         for (int i = 0; i < FLAP_MAX_NUMBER_OF_CURFEWS; i++) {
-            SurePetcareDeviceCurfew curfew = device.getControl().getCurfewList().get(i);
+            SurePetcareDeviceCurfew curfew = device.control.curfewList.get(i);
 
             updateState(DEVICE_CHANNEL_CURFEW_ENABLED + (i + 1), OnOffType.from(curfew.enabled));
             updateState(DEVICE_CHANNEL_CURFEW_LOCK_TIME + (i + 1), new StringType(curfew.lockTime));
@@ -198,10 +195,10 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
             boolean requiresUpdate = false;
             SurePetcareDevice device = petcareAPI.getDevice(thing.getUID().getId());
             if (device != null) {
-                SurePetcareDeviceControl existingControl = device.getControl();
+                SurePetcareDeviceControl existingControl = device.control;
                 logger.debug("Old Curfew Control: {}", existingControl);
 
-                SurePetcareDeviceCurfew curfew = existingControl.getCurfewList().get(slot - 1);
+                SurePetcareDeviceCurfew curfew = existingControl.curfewList.get(slot - 1);
                 logger.debug("channelUIDBase: {}", channelUIDBase);
 
                 switch (channelUIDBase) {
@@ -243,7 +240,7 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
 
                 if (requiresUpdate) {
                     try {
-                        petcareAPI.setCurfews(device, existingControl.getCurfewList());
+                        petcareAPI.setCurfews(device, existingControl.curfewList);
                         updateThingCurfews(device);
                     } catch (SurePetcareApiException e) {
                         logger.warn("Error from SurePetcare API. Can't update curfews for device {}", device);

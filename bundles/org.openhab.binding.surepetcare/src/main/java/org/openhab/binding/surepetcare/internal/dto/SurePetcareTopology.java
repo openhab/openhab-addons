@@ -86,7 +86,7 @@ public class SurePetcareTopology {
 
     public @Nullable SurePetcareHousehold getHouseholdById(String id) {
         for (SurePetcareHousehold household : households) {
-            if (id.equals(household.getId().toString())) {
+            if (id.equals(household.id.toString())) {
                 return household;
             }
         }
@@ -95,7 +95,7 @@ public class SurePetcareTopology {
 
     public @Nullable SurePetcareDevice getDeviceById(String id) {
         for (SurePetcareDevice device : devices) {
-            if (id.equals(device.getId().toString())) {
+            if (id.equals(device.id.toString())) {
                 return device;
             }
         }
@@ -104,7 +104,7 @@ public class SurePetcareTopology {
 
     public @Nullable SurePetcarePet getPetById(String id) {
         for (SurePetcarePet pet : pets) {
-            if (id.equals(pet.getId().toString())) {
+            if (id.equals(pet.id.toString())) {
                 return pet;
             }
         }
@@ -113,7 +113,7 @@ public class SurePetcareTopology {
 
     public @Nullable SurePetcarePhoto getPhotoById(String id) {
         for (SurePetcarePhoto photo : photos) {
-            if (id.equals(photo.getId().toString())) {
+            if (id.equals(photo.id.toString())) {
                 return photo;
             }
         }
@@ -122,7 +122,7 @@ public class SurePetcareTopology {
 
     public @Nullable SurePetcareTag getTagById(String id) {
         for (SurePetcareTag tag : tags) {
-            if (id.equals(tag.getId().toString())) {
+            if (id.equals(tag.id.toString())) {
                 return tag;
             }
         }

@@ -40,7 +40,6 @@ import com.google.gson.JsonSerializer;
 @NonNullByDefault
 public class GsonColonDateTypeAdapter implements JsonSerializer<Date>, JsonDeserializer<Date> {
 
-    @NonNullByDefault
     public class ColonDateFormat extends SimpleDateFormat {
 
         private static final long serialVersionUID = -6266537452934495628L;

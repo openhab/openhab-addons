@@ -33,7 +33,7 @@ public class SurePetcareLoginResponseTest {
         SurePetcareLoginResponse response = SurePetcareConstants.GSON.fromJson(testReponse,
                 SurePetcareLoginResponse.class);
 
-        assertEquals("Rene", response.data.user.getFirstName());
+        assertEquals("Rene", response.data.user.firstName);
         assertEquals(363, response.data.token.length());
     }
 }

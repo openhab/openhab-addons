@@ -28,155 +28,50 @@ public class SurePetcareDeviceControl {
     public class Bowls {
         public class BowlSettings {
             @SerializedName("food_type")
-            private Integer foodId;
+            public Integer foodId;
             @SerializedName("target")
-            private Integer targetId;
+            public Integer targetId;
 
             public BowlSettings(Integer foodId, Integer targetId) {
                 this.foodId = foodId;
                 this.targetId = targetId;
             }
-
-            public Integer getFoodId() {
-                return foodId;
-            }
-
-            public void setFoodId(Integer foodId) {
-                this.foodId = foodId;
-            }
-
-            public Integer getTargetId() {
-                return targetId;
-            }
-
-            public void setTargetId(Integer targetId) {
-                this.targetId = targetId;
-            }
         }
 
         @SerializedName("settings")
-        private List<BowlSettings> bowlSettings;
+        public List<BowlSettings> bowlSettings;
         @SerializedName("type")
-        private Integer bowlId;
+        public Integer bowlId;
 
         public Bowls(List<BowlSettings> bowlSettings, Integer bowlId) {
             this.bowlSettings = bowlSettings;
-            this.bowlId = bowlId;
-        }
-
-        public List<BowlSettings> getBowlSettings() {
-            return bowlSettings;
-        }
-
-        public void setBowlSettings(List<BowlSettings> bowlSettings) {
-            this.bowlSettings = bowlSettings;
-        }
-
-        public Integer getBowlId() {
-            return bowlId;
-        }
-
-        public void setBowlId(Integer bowlId) {
             this.bowlId = bowlId;
         }
     }
 
     public class Lid {
         @SerializedName("close_delay")
-        private Integer closeDelayId;
+        public Integer closeDelayId;
 
         public Lid(Integer closeDelayId) {
             this.closeDelayId = closeDelayId;
         }
-
-        public Integer getCloseDelayId() {
-            return closeDelayId;
-        }
-
-        public void setCloseDelayId(Integer closeDelayId) {
-            this.closeDelayId = closeDelayId;
-        }
-
     }
 
     @SerializedName("locking")
-    private Integer lockingModeId;
-    private Boolean fastPolling;
+    public Integer lockingModeId;
+    public Boolean fastPolling;
     @SerializedName("led_mode")
-    private Integer ledModeId;
+    public Integer ledModeId;
     @SerializedName("pairing_mode")
-    private Integer pairingModeId;
-    private Bowls bowls;
+    public Integer pairingModeId;
+    public Bowls bowls;
     @SerializedName("lid")
-    private Lid lid;
+    public Lid lid;
     @SerializedName("training_mode")
-    private Integer trainingModeId;
+    public Integer trainingModeId;
     @SerializedName("curfew")
-    private SurePetcareDeviceCurfewList curfewList;
-
-    public Integer getLockingModeId() {
-        return lockingModeId;
-    }
-
-    public void setLockingModeId(Integer lockingModeId) {
-        this.lockingModeId = lockingModeId;
-    }
-
-    public Boolean isFastPolling() {
-        return fastPolling;
-    }
-
-    public void setFastPolling(Boolean fastPolling) {
-        this.fastPolling = fastPolling;
-    }
-
-    public Integer getLedModeId() {
-        return ledModeId;
-    }
-
-    public void setLedModeId(Integer ledModeId) {
-        this.ledModeId = ledModeId;
-    }
-
-    public Integer getPairingModeId() {
-        return pairingModeId;
-    }
-
-    public void setPairingModeId(Integer pairingModeId) {
-        this.pairingModeId = pairingModeId;
-    }
-
-    public SurePetcareDeviceCurfewList getCurfewList() {
-        return curfewList;
-    }
-
-    public void setCurfewList(SurePetcareDeviceCurfewList curfewList) {
-        this.curfewList = curfewList;
-    }
-
-    public Bowls getBowls() {
-        return bowls;
-    }
-
-    public void setBowls(Bowls bowls) {
-        this.bowls = bowls;
-    }
-
-    public Lid getLid() {
-        return lid;
-    }
-
-    public void setLid(Lid lid) {
-        this.lid = lid;
-    }
-
-    public Integer getTrainingModeId() {
-        return trainingModeId;
-    }
-
-    public void setTrainingModeId(Integer trainingModeId) {
-        this.trainingModeId = trainingModeId;
-    }
+    public SurePetcareDeviceCurfewList curfewList;
 
     @Override
     public String toString() {

@@ -36,23 +36,6 @@ public class SurePetcareTag extends SurePetcareBaseObject {
     // ]
     // }
 
-    private String tag;
-    private List<Integer> supportedProductIds = new ArrayList<>();
-
-    public String getTag() {
-        return tag;
-    }
-
-    public void setTag(String tag) {
-        this.tag = tag;
-    }
-
-    public List<Integer> getSupportedProductIds() {
-        return supportedProductIds;
-    }
-
-    public void setSupportedProductIds(List<Integer> supportedProductIds) {
-        this.supportedProductIds = supportedProductIds;
-    }
-
+    public String tag;
+    public List<Integer> supportedProductIds = new ArrayList<>();
 }

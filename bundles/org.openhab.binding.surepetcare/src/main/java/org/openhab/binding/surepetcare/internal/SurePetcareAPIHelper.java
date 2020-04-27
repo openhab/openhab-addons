@@ -212,7 +212,7 @@ public class SurePetcareAPIHelper {
      */
     public final @Nullable SurePetcarePetStatus getPetStatus(String id) {
         SurePetcarePet pet = topologyCache.getPetById(id);
-        return pet == null ? null : pet.getPetStatus();
+        return pet == null ? null : pet.status;
     }
 
     /**
@@ -224,10 +224,10 @@ public class SurePetcareAPIHelper {
      */
     public synchronized void setPetLocation(SurePetcarePet pet, Integer newLocationId, Date newSince)
             throws SurePetcareApiException {
-        pet.getPetStatus().getActivity().setWhere(newLocationId);
-        pet.getPetStatus().getActivity().setSince(newSince);
-        String url = PET_BASE_URL + "/" + pet.getId().toString() + "/position";
-        setDataThroughApi(url, HttpMethod.POST, pet.getPetStatus().getActivity());
+        pet.status.activity.where = newLocationId;
+        pet.status.activity.since = newSince;
+        String url = PET_BASE_URL + "/" + pet.id.toString() + "/position";
+        setDataThroughApi(url, HttpMethod.POST, pet.status.activity);
     }
 
     /**
@@ -241,15 +241,15 @@ public class SurePetcareAPIHelper {
             throws SurePetcareApiException {
         // post new JSON control structure to API
         SurePetcareDeviceControl control = new SurePetcareDeviceControl();
-        control.setLockingModeId(newLockingModeId);
-        String ctrlurl = DEVICE_BASE_URL + "/" + device.getId().toString() + "/control";
+        control.lockingModeId = newLockingModeId;
+        String ctrlurl = DEVICE_BASE_URL + "/" + device.id.toString() + "/control";
         setDataThroughApi(ctrlurl, HttpMethod.PUT, control);
 
         // now we're fetching the new state back for the cache
-        String devurl = DEVICE_BASE_URL + "/" + device.getId().toString() + "/status";
+        String devurl = DEVICE_BASE_URL + "/" + device.id.toString() + "/status";
         SurePetcareDeviceStatus newStatus = SurePetcareConstants.GSON.fromJson(getDataFromApi(devurl),
                 SurePetcareDeviceStatus.class);
-        device.getStatus().assign(newStatus);
+        device.status.assign(newStatus);
     }
 
     /**
@@ -263,15 +263,15 @@ public class SurePetcareAPIHelper {
             throws SurePetcareApiException {
         // post new JSON control structure to API
         SurePetcareDeviceControl control = new SurePetcareDeviceControl();
-        control.setLedModeId(newLedModeId);
-        String ctrlurl = DEVICE_BASE_URL + "/" + device.getId().toString() + "/control";
+        control.ledModeId = newLedModeId;
+        String ctrlurl = DEVICE_BASE_URL + "/" + device.id.toString() + "/control";
         setDataThroughApi(ctrlurl, HttpMethod.PUT, control);
 
         // now we're fetching the new state back for the cache
-        String devurl = DEVICE_BASE_URL + "/" + device.getId().toString() + "/status";
+        String devurl = DEVICE_BASE_URL + "/" + device.id.toString() + "/status";
         SurePetcareDeviceStatus newStatus = SurePetcareConstants.GSON.fromJson(getDataFromApi(devurl),
                 SurePetcareDeviceStatus.class);
-        device.getStatus().assign(newStatus);
+        device.status.assign(newStatus);
     }
 
     /**
@@ -285,16 +285,16 @@ public class SurePetcareAPIHelper {
             throws SurePetcareApiException {
         // post new JSON control structure to API
         SurePetcareDeviceControl control = new SurePetcareDeviceControl();
-        control.setCurfewList(curfewList.compact());
-        String ctrlurl = DEVICE_BASE_URL + "/" + device.getId().toString() + "/control";
+        control.curfewList = curfewList.compact();
+        String ctrlurl = DEVICE_BASE_URL + "/" + device.id.toString() + "/control";
         setDataThroughApi(ctrlurl, HttpMethod.PUT, control);
 
         // now we're fetching the new state back for the cache
-        String devurl = DEVICE_BASE_URL + "/" + device.getId().toString() + "/control";
+        String devurl = DEVICE_BASE_URL + "/" + device.id.toString() + "/control";
         SurePetcareDeviceControl newControl = SurePetcareConstants.GSON.fromJson(getDataFromApi(devurl),
                 SurePetcareDeviceControl.class);
-        newControl.setCurfewList(newControl.getCurfewList().order());
-        device.setControl(newControl);
+        newControl.curfewList = newControl.curfewList.order();
+        device.control = newControl;
     }
 
     /**

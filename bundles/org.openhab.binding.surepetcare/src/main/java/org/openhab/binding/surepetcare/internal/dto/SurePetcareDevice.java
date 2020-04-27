@@ -35,20 +35,12 @@ public class SurePetcareDevice extends SurePetcareBaseObject {
         PET_FEEDER(4, "Pet Feeder"),
         CAT_FLAP(6, "Cat Flap");
 
-        private final Integer id;
-        private final String name;
+        public final Integer id;
+        public final String name;
 
         private ProductType(int id, String name) {
             this.id = id;
             this.name = name;
-        }
-
-        public Integer getId() {
-            return id;
-        }
-
-        public String getName() {
-            return name;
         }
 
         public static @NonNull ProductType findByTypeId(final int id) {
@@ -56,116 +48,28 @@ public class SurePetcareDevice extends SurePetcareBaseObject {
         }
     }
 
-    private Integer parentDeviceId;
-    private Integer productId;
-    private Integer householdId;
-    private String name;
-    private String serialNumber;
-    private String macAddress;
-    private Integer index;
-    private Date pairingAt;
-    private SurePetcareDeviceControl control = new SurePetcareDeviceControl();
-    private SurePetcareDevice parent;
-    private SurePetcareDeviceStatus status = new SurePetcareDeviceStatus();
-
-    public Integer getProductId() {
-        return productId;
-    }
-
-    public Integer getParentDeviceId() {
-        return parentDeviceId;
-    }
-
-    public void setParentDeviceId(Integer parentDeviceId) {
-        this.parentDeviceId = parentDeviceId;
-    }
-
-    public void setProductId(Integer productId) {
-        this.productId = productId;
-    }
-
-    public Integer getHouseholdId() {
-        return householdId;
-    }
-
-    public void setHouseholdId(Integer householdId) {
-        this.householdId = householdId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getSerialNumber() {
-        return serialNumber;
-    }
-
-    public void setSerialNumber(String serialNumber) {
-        this.serialNumber = serialNumber;
-    }
-
-    public String getMacAddress() {
-        return macAddress;
-    }
-
-    public void setMacAddress(String macAddress) {
-        this.macAddress = macAddress;
-    }
-
-    public Integer getIndex() {
-        return index;
-    }
-
-    public void setIndex(Integer index) {
-        this.index = index;
-    }
-
-    public Date getPairingAt() {
-        return pairingAt;
-    }
-
-    public void setPairingAt(Date pairingAt) {
-        this.pairingAt = pairingAt;
-    }
-
-    public SurePetcareDeviceControl getControl() {
-        return control;
-    }
-
-    public void setControl(SurePetcareDeviceControl control) {
-        this.control = control;
-    }
-
-    public SurePetcareDevice getParent() {
-        return parent;
-    }
-
-    public void setParent(SurePetcareDevice parent) {
-        this.parent = parent;
-    }
-
-    public SurePetcareDeviceStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(SurePetcareDeviceStatus status) {
-        this.status = status;
-    }
+    public Integer parentDeviceId;
+    public Integer productId;
+    public Integer householdId;
+    public String name;
+    public String serialNumber;
+    public String macAddress;
+    public Integer index;
+    public Date pairingAt;
+    public SurePetcareDeviceControl control = new SurePetcareDeviceControl();
+    public SurePetcareDevice parent;
+    public SurePetcareDeviceStatus status = new SurePetcareDeviceStatus();
 
     @Override
     public Map<@NonNull String, String> getThingProperties() {
         Map<@NonNull String, String> properties = super.getThingProperties();
         properties.put("householdId", householdId.toString());
         properties.put("productType", productId.toString());
-        properties.put("productName", ProductType.findByTypeId(productId).getName());
+        properties.put("productName", ProductType.findByTypeId(productId).name);
         properties.put(Thing.PROPERTY_MAC_ADDRESS, macAddress);
         properties.put(Thing.PROPERTY_SERIAL_NUMBER, serialNumber);
-        properties.put(Thing.PROPERTY_HARDWARE_VERSION, status.getVersion().device.hardware);
-        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, status.getVersion().device.firmware);
+        properties.put(Thing.PROPERTY_HARDWARE_VERSION, status.version.device.hardware);
+        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, status.version.device.firmware);
         if (pairingAt != null) {
             properties.put("pairingAt", pairingAt.toString());
         }
@@ -174,8 +78,7 @@ public class SurePetcareDevice extends SurePetcareBaseObject {
 
     @Override
     public String toString() {
-        return "Device [id=" + id + ", name=" + name + ", product=" + ProductType.findByTypeId(productId).getName()
-                + "]";
+        return "Device [id=" + id + ", name=" + name + ", product=" + ProductType.findByTypeId(productId).name + "]";
     }
 
     public SurePetcareDevice assign(SurePetcareDevice newdev) {

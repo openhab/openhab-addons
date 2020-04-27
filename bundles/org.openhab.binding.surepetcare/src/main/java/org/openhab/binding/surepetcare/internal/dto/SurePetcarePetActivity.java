@@ -28,61 +28,21 @@ import com.google.gson.annotations.SerializedName;
 public class SurePetcarePetActivity {
 
     @SerializedName("tag_id")
-    private Integer tagId;
+    public Integer tagId;
     @SerializedName("device_id")
-    private Integer deviceId;
+    public Integer deviceId;
     @SerializedName("user_id")
-    private Integer userId;
+    public Integer userId;
     @SerializedName("where")
-    private Integer where;
+    public Integer where;
     @SerializedName("since")
-    private Date since;
+    public Date since;
 
     public SurePetcarePetActivity() {
     }
 
     public SurePetcarePetActivity(Integer location, Date since) {
         this.where = location;
-        this.since = since;
-    }
-
-    public Integer getTagId() {
-        return tagId;
-    }
-
-    public void setTagId(Integer tagId) {
-        this.tagId = tagId;
-    }
-
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
-    }
-
-    public Integer getDeviceId() {
-        return deviceId;
-    }
-
-    public void setDeviceId(Integer deviceId) {
-        this.deviceId = deviceId;
-    }
-
-    public Integer getWhere() {
-        return where;
-    }
-
-    public void setWhere(Integer where) {
-        this.where = where;
-    }
-
-    public Date getSince() {
-        return since;
-    }
-
-    public void setSince(Date since) {
         this.since = since;
     }
 

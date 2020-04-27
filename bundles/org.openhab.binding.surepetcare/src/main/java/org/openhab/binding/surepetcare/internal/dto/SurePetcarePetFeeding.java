@@ -30,45 +30,13 @@ import com.google.gson.annotations.SerializedName;
 public class SurePetcarePetFeeding {
 
     @SerializedName("tag_id")
-    private Integer tagId;
+    public Integer tagId;
     @SerializedName("device_id")
-    private Integer deviceId;
+    public Integer deviceId;
     @SerializedName("change")
-    private List<Float> feedChange = new ArrayList<>();
+    public List<Float> feedChange = new ArrayList<>();
     @SerializedName("at")
-    private Date feedChangeAt;
-
-    public Integer getTagId() {
-        return tagId;
-    }
-
-    public void setTagId(Integer tagId) {
-        this.tagId = tagId;
-    }
-
-    public Integer getDeviceId() {
-        return deviceId;
-    }
-
-    public void setDeviceId(Integer deviceId) {
-        this.deviceId = deviceId;
-    }
-
-    public List<Float> getFeedChange() {
-        return feedChange;
-    }
-
-    public void setFeedChange(List<Float> feedChange) {
-        this.feedChange = feedChange;
-    }
-
-    public Date getAt() {
-        return feedChangeAt;
-    }
-
-    public void setAt(Date feedChangeAt) {
-        this.feedChangeAt = feedChangeAt;
-    }
+    public Date feedChangeAt;
 
     public ZonedDateTime getZonedFeedChangeAt() {
         return feedChangeAt == null ? null : feedChangeAt.toInstant().atZone(ZoneId.systemDefault());
