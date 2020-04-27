@@ -93,11 +93,9 @@ public class IPBridgeHandler extends ADBridgeHandler {
             connectionCheckJob = scheduler.scheduleWithFixedDelay(this::connectionCheck, config.reconnect,
                     config.reconnect, TimeUnit.MINUTES);
         } catch (UnknownHostException e) {
-            logger.debug("unknown hostname: {}", config.hostname);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "unknown host");
             disconnect();
         } catch (IOException e) {
-            logger.debug("cannot open connection to {}:{} error: {}", config.hostname, config.tcpPort, e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             disconnect();
             scheduleConnectRetry(config.reconnect); // Possibly a retryable error. Try again later.
