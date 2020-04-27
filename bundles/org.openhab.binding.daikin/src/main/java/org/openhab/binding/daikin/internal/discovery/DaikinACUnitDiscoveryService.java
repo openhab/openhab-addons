@@ -45,7 +45,6 @@ import org.openhab.binding.daikin.internal.api.InfoParser;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseBasicInfo;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseControlInfo;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +68,7 @@ public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
 
     public DaikinACUnitDiscoveryService() {
         super(Collections.singleton(DaikinBindingConstants.THING_TYPE_AC_UNIT), 600, true);
-        this.httpClient = new HttpClient(new SslContextFactory(true)); // 
+        this.httpClient = new HttpClient(new SslContextFactory(true)); 
         if (!this.httpClient.isStarted()) {
             try {
                 this.httpClient.start();
