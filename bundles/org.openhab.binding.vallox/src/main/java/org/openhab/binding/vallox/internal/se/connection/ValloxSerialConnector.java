@@ -69,7 +69,7 @@ public class ValloxSerialConnector extends ValloxBaseConnector implements Serial
             inputStream = serialPort.getInputStream();
             outputStream = serialPort.getOutputStream();
             panelNumber = config.getPanelAsByte();
-            connected.set(true);
+            connected = true;
 
             serialPort.addEventListener(this);
 
@@ -107,7 +107,7 @@ public class ValloxSerialConnector extends ValloxBaseConnector implements Serial
             serialPort.close();
             serialPort = null;
         }
-        connected.set(false);
+        connected = false;
         logger.debug("Serial connection closed");
     }
 

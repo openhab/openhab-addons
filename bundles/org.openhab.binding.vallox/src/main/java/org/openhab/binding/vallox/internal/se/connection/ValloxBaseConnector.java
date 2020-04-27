@@ -179,7 +179,6 @@ public abstract class ValloxBaseConnector implements ValloxConnector {
                     if (waitForAckByte) {
                         ackByte = localBuffer[0];
                         waitForAckByte = false;
-                        continue;
                     }
                     continue;
                 }
