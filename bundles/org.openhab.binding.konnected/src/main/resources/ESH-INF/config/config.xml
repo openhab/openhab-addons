@@ -7,7 +7,7 @@
 	<config-description uri="thing-type:konnected:module">
 		<parameter-group name="actions">
 			<label>Actions</label>
-			<description />
+			<description/>
 		</parameter-group>
 		<parameter name="blink" type="boolean">
 			<label>Blink</label>
@@ -17,19 +17,26 @@
 		</parameter>
 		<parameter name="discovery" type="boolean">
 			<label>Discovery</label>
-			<description>If set to false the device will not respond to discovery requests via UPnP.  Make sure you have statically assigned an IP address to the module before turning this setting off. See https://help.konnected.io/support/solutions/articles/32000023968-disabling-device-discovery</description>
+			<description>If set to false the device will not respond to discovery requests via UPnP. Make sure you have
+				statically assigned an IP address to the module before turning this setting off. See
+				https://help.konnected.io/support/solutions/articles/32000023968-disabling-device-discovery</description>
 			<default>true</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="retry_count" type="integer">
 			<label>Retry Count</label>
-			<description>The number of times the binding attempts to send http requests to the Konnected Alarm Panel.  Increase this setting if you are experiencing situations where the module is reporting as offline but you can access the website of the Alarm Panel to confirm that the Alarm Panel is Konnected to the Network.  This will allow the binding to attempt more retries before it considers the connection a failure and marks the thing as offline.</description>
+			<description>The number of times the binding attempts to send http requests to the Konnected Alarm Panel. Increase
+				this setting if you are experiencing situations where the module is reporting as offline but you can access the
+				website of the Alarm Panel to confirm that the Alarm Panel is Konnected to the Network. This will allow the binding
+				to attempt more retries before it considers the connection a failure and marks the thing as offline.</description>
 			<default>2</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="request_timeout" type="integer">
 			<label>Request Timeout</label>
-			<description>The timeout period in seconds for HTTP requests to the Konnected Alarm Panel.  The default is 30.  Adjusting this setting can help in networks situations with high latency where the binding is erroneously reporting the thing as offline.</description>
+			<description>The timeout period in seconds for HTTP requests to the Konnected Alarm Panel. The default is 30.
+				Adjusting this setting can help in networks situations with high latency where the binding is erroneously reporting
+				the thing as offline.</description>
 			<default>30</default>
 			<advanced>true</advanced>
 		</parameter>
@@ -47,7 +54,8 @@
 		</parameter>
 		<parameter name="controller_sendConfig" type="boolean" groupName="actions">
 			<label>Update Settings</label>
-			<description>Manually sends the settings to the module.  The binding will send settings on every restart and if there are any configuration changes but this can be used to manually update the settings as needed.</description>
+			<description>Manually sends the settings to the module. The binding will send settings on every restart and if there
+				are any configuration changes but this can be used to manually update the settings as needed.</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>

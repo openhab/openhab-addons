@@ -124,7 +124,6 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
                 public void run() {
                     processQueueLoop();
                 }
-
             }.start();
         } catch (PortInUseException | TooManyListenersException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,

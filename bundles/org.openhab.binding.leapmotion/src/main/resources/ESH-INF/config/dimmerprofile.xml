@@ -8,7 +8,8 @@
 	<config-description uri="profile:leapmotion:dimmer">
 		<parameter name="mode" type="text" required="false">
 			<label>Mode</label>
-			<description>The mode for interpreting gestures. Either it dims depending on the number of shown fingers or it uses the height of the hand over the controller.</description>
+			<description>The mode for interpreting gestures. Either it dims depending on the number of shown fingers or it uses
+				the height of the hand over the controller.</description>
 			<options>
 				<option value="fingers">Number of Fingers</option>
 				<option value="height">Height of Hand</option>

@@ -99,5 +99,4 @@ public class BinRpcClient extends RpcClient<byte[]> {
             }
         }
     }
-
 }

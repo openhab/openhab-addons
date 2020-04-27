@@ -39,5 +39,4 @@ public class BridgeApiInfoVersionDto {
     public void setWifiFirmwareVersion(String wifiFirmwareVersion) {
         this.wifiFirmwareVersion = wifiFirmwareVersion;
     }
-
 }

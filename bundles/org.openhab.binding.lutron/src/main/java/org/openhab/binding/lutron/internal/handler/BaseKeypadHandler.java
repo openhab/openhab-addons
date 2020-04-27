@@ -402,5 +402,4 @@ public abstract class BaseKeypadHandler extends LutronHandler {
             }
         }
     }
-
 }

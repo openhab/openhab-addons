@@ -55,5 +55,4 @@ public interface ModbusReadRequestBlueprint extends ModbusRequestBlueprint {
      * @see net.wimpi.modbus.Modbus
      */
     public ModbusReadFunctionCode getFunctionCode();
-
 }

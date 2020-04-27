@@ -50,5 +50,4 @@ public class GlobalOrientation {
     public void setMin(Integer min) {
         this.min = min;
     }
-
 }

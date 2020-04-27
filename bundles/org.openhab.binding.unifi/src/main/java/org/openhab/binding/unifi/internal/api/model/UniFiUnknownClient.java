@@ -35,5 +35,4 @@ public class UniFiUnknownClient extends UniFiClient {
     public String getDeviceMac() {
         return null; // mgb: no device mac in the json
     }
-
 }

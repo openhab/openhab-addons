@@ -82,5 +82,4 @@ public class GetColorZonesRequest extends Packet {
     public int[] expectedResponses() {
         return new int[] { StateMultiZoneResponse.TYPE, StateZoneResponse.TYPE };
     }
-
 }

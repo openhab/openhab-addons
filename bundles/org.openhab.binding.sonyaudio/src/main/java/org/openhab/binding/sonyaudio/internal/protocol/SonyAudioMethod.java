@@ -239,7 +239,6 @@ class SetAudioVolume extends SonyAudioMethod {
                 output = "extOutput:zone?zone=" + Integer.toString(zone);
             }
         }
-
     }
 
     SetAudioVolume(int volume, int min, int max) {

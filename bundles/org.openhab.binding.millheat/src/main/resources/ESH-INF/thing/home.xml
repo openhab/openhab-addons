@@ -6,20 +6,20 @@
 
 	<thing-type id="home">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="account" />
+			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 
 		<label>Home</label>
 
 		<channels>
-			<channel id="vacationModeTargetTemperature" typeId="vacationModeTargetTemperature" />
-			<channel id="vacationMode" typeId="vacationMode" />
-			<channel id="vacationModeAdvanced" typeId="vacationModeAdvanced" />
-			<channel id="vacationModeStart" typeId="vacationModeStart" />
-			<channel id="vacationModeEnd" typeId="vacationModeEnd" />
+			<channel id="vacationModeTargetTemperature" typeId="vacationModeTargetTemperature"/>
+			<channel id="vacationMode" typeId="vacationMode"/>
+			<channel id="vacationModeAdvanced" typeId="vacationModeAdvanced"/>
+			<channel id="vacationModeStart" typeId="vacationModeStart"/>
+			<channel id="vacationModeEnd" typeId="vacationModeEnd"/>
 		</channels>
 
 		<representation-property>homeId</representation-property>
-		<config-description-ref uri="thing-type:millheat:home" />
+		<config-description-ref uri="thing-type:millheat:home"/>
 	</thing-type>
 </thing:thing-descriptions>

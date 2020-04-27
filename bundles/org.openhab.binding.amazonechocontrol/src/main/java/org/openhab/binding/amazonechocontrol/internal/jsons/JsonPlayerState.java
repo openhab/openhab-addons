@@ -42,7 +42,6 @@ public class JsonPlayerState {
             public @Nullable String subText1;
             public @Nullable String subText2;
             public @Nullable String title;
-
         }
 
         public static class Provider {

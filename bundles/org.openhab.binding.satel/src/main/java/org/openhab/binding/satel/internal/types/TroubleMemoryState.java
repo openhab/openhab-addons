@@ -100,5 +100,4 @@ public enum TroubleMemoryState implements StateType {
     public int getBytesCount(boolean isExtended) {
         return bytesCount;
     }
-
 }

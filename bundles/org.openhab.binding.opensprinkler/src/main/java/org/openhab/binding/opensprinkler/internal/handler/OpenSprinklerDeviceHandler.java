@@ -97,5 +97,4 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         // nothing to do here
     }
-
 }

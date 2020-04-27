@@ -36,15 +36,16 @@ import org.openhab.binding.hue.internal.handler.HueSensorHandler;
  */
 @NonNullByDefault
 public class ClipHandler extends HueSensorHandler {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream.of(THING_TYPE_CLIP_GENERIC_STATUS, THING_TYPE_CLIP_GENERIC_FLAG).collect(Collectors.toSet());
-    
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream
+            .of(THING_TYPE_CLIP_GENERIC_STATUS, THING_TYPE_CLIP_GENERIC_FLAG).collect(Collectors.toSet());
+
     public ClipHandler(Thing thing) {
         super(thing);
     }
 
     @Override
     protected SensorConfigUpdate doConfigurationUpdate(Map<String, Object> configurationParameters) {
-         return new SensorConfigUpdate();
+        return new SensorConfigUpdate();
     }
 
     protected void doSensorStateChanged(@Nullable HueBridge bridge, FullSensor sensor, Configuration config) {

@@ -185,5 +185,4 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
     public void onConnectionResumed() {
         updateStatus(ThingStatus.ONLINE);
     }
-
 }

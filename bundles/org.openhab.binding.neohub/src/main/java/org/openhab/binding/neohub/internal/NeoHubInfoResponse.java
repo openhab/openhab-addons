@@ -154,7 +154,6 @@ public class NeoHubInfoResponse {
         public Boolean hasStatMode() {
             return statMode != null;
         }
-
     }
 
     /**

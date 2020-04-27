@@ -156,7 +156,6 @@ public class AtlonaDiscovery extends AbstractDiscoveryService {
         } catch (IOException e) {
             logger.debug("Error getting ip addresses: {}", e.getMessage(), e);
         }
-
     }
 
     /**

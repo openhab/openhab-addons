@@ -116,7 +116,6 @@ public class TemperatureControlConfig extends BaseTemperatureControl {
                 }
             }
         }
-
     }
 
     /**

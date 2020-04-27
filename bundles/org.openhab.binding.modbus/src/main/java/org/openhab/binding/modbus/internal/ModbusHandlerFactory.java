@@ -94,5 +94,4 @@ public class ModbusHandlerFactory extends BaseThingHandlerFactory {
     public void unsetModbusManager(ModbusManager manager) {
         this.manager = null;
     }
-
 }

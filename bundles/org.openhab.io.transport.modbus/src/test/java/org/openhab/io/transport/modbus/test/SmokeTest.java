@@ -904,7 +904,6 @@ public class SmokeTest extends IntegrationTestSupport {
         assertThat(unexpectedCount.get(), is(equalTo(0)));
         assertThat(expectedCount.get(), is(equalTo(2)));
         assertThat(callbackCalled.getCount(), is(equalTo(0L)));
-
     }
 
     @Test
@@ -922,6 +921,5 @@ public class SmokeTest extends IntegrationTestSupport {
         modbusManager.unregisterRegularPoll(task);
         assertThat(modbusManager.getRegisteredRegularPolls(),
                 is(equalTo(Stream.of(task2).collect(Collectors.toSet()))));
-
     }
 }

@@ -203,5 +203,4 @@ public class SerialConnection {
             }
         }
     }
-
 }

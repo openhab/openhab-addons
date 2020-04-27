@@ -36,5 +36,4 @@ public class AvrDisconnectionEvent {
     public Throwable getCause() {
         return cause;
     }
-
 }

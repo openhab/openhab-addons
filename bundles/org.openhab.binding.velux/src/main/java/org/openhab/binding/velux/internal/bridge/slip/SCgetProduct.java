@@ -264,5 +264,4 @@ class SCgetProduct extends GetProduct implements SlipBridgeCommunicationProtocol
         logger.trace("getProduct(): returning product {}.", product);
         return product;
     }
-
 }

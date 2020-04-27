@@ -222,7 +222,7 @@ public class GrafikEyeHandler extends BaseThingHandler {
     /**
      * Gets the trailing number from the channel id (which usually represents the zone number).
      *
-     * @param id              a non-null, possibly empty channel id
+     * @param id a non-null, possibly empty channel id
      * @param channelConstant a non-null, non-empty channel id constant to use in the parse.
      * @return the trailing number or null if a parse exception occurs
      */
@@ -311,7 +311,6 @@ public class GrafikEyeHandler extends BaseThingHandler {
                 if (status == ThingStatus.ONLINE && _config != null) {
                     getProtocolHandler().refreshState(_config.getControlUnit());
                 }
-
             }
         }, 1, _config.getPolling(), TimeUnit.SECONDS);
     }
@@ -368,7 +367,7 @@ public class GrafikEyeHandler extends BaseThingHandler {
      * Helper method to expose the ability to change state outside of the class
      *
      * @param channelId the channel id
-     * @param state     the new state
+     * @param state the new state
      */
     void stateChanged(String channelId, State state) {
         updateState(channelId, state);

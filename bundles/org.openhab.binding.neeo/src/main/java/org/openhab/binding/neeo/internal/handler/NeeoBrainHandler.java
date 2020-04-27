@@ -199,7 +199,6 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
                                     }
                                 }
                             }
-
                         }, config.getForwardChain());
 
                 NeeoUtil.checkInterrupt();

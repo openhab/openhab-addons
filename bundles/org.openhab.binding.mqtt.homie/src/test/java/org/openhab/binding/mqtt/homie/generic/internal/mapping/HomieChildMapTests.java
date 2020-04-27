@@ -25,8 +25,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.openhab.binding.mqtt.homie.internal.handler.ThingChannelConstants;
 import org.openhab.binding.mqtt.generic.tools.ChildMap;
+import org.openhab.binding.mqtt.homie.internal.handler.ThingChannelConstants;
 import org.openhab.binding.mqtt.homie.internal.homie300.DeviceCallback;
 import org.openhab.binding.mqtt.homie.internal.homie300.Node;
 import org.openhab.binding.mqtt.homie.internal.homie300.NodeAttributes;
@@ -88,5 +88,4 @@ public class HomieChildMapTests {
         subject.apply(new String[] { "abc" }, addedAction, this::createNode, this::removedNode);
         verify(callback).nodeRemoved(eq(soonToBeRemoved));
     }
-
 }

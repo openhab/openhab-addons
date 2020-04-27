@@ -74,7 +74,6 @@ public class ParadoxUtil {
         if (!result.isEmpty()) {
             logger.trace(result);
         }
-
     }
 
     public static byte setBit(byte byteValue, int i, int j) {

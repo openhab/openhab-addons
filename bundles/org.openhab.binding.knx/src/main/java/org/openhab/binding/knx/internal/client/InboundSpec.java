@@ -40,5 +40,4 @@ public interface InboundSpec {
      * @return a list of group addresses.
      */
     List<GroupAddress> getGroupAddresses();
-
 }

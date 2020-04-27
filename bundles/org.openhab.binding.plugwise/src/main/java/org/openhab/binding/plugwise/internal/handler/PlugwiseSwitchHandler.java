@@ -151,5 +151,4 @@ public class PlugwiseSwitchHandler extends AbstractSleepingEndDeviceHandler {
 
         super.updateConfiguration(configuration);
     }
-
 }

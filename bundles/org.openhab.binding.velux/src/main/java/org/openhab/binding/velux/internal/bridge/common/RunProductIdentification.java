@@ -41,5 +41,4 @@ public abstract class RunProductIdentification implements BridgeCommunicationPro
     public RunProductIdentification setProductId(int id) {
         return this;
     }
-
 }

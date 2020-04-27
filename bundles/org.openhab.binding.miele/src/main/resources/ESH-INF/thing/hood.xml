@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="miele" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="miele"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Hood -->
 	<thing-type id="hood">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="xgw3000" />
+			<bridge-type-ref id="xgw3000"/>
 		</supported-bridge-type-refs>
 
 		<label>Hood</label>
 		<description>This is a Miele@home compatible hood</description>
 
 		<channels>
-			<channel id="state" typeId="state" />
-			<channel id="light" typeId="switch" />
-			<channel id="ventilation" typeId="ventilation" />
-			<channel id="stop" typeId="stop" />
+			<channel id="state" typeId="state"/>
+			<channel id="light" typeId="switch"/>
+			<channel id="ventilation" typeId="ventilation"/>
+			<channel id="stop" typeId="stop"/>
 		</channels>
 
 		<config-description>

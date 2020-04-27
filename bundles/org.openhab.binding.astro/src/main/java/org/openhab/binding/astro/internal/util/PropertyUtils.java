@@ -112,5 +112,4 @@ public class PropertyUtils {
         sb.append(str.substring(1));
         return sb.toString();
     }
-
 }

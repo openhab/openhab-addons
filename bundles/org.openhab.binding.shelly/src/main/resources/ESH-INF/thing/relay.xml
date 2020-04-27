@@ -8,25 +8,25 @@
 		<label>Shelly1 (SHSW-1)</label>
 		<description>Shelly1 device with single relay</description>
 		<channel-groups>
-			<channel-group id="relay" typeId="relayChannel" />
-			<channel-group id="sensors" typeId="externalSensors" />
-			<channel-group id="device" typeId="deviceStatus" />
+			<channel-group id="relay" typeId="relayChannel"/>
+			<channel-group id="sensors" typeId="externalSensors"/>
+			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:shelly:relay" />
+		<config-description-ref uri="thing-type:shelly:relay"/>
 	</thing-type>
 
 	<thing-type id="shelly1pm">
 		<label>Shelly1PM (SHSW-PM)</label>
 		<description>Shelly1PM device with single relay and power meter</description>
 		<channel-groups>
-			<channel-group id="relay" typeId="relayChannel" />
-			<channel-group id="meter" typeId="meter" />
-			<channel-group id="sensors" typeId="externalSensors" />
-			<channel-group id="device" typeId="deviceStatus" />
+			<channel-group id="relay" typeId="relayChannel"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="sensors" typeId="externalSensors"/>
+			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:shelly:relay" />
+		<config-description-ref uri="thing-type:shelly:relay"/>
 	</thing-type>
 
 	<thing-type id="shellyem">
@@ -39,11 +39,11 @@
 			<channel-group id="meter2" typeId="meter">
 				<label>Power Meter 2</label>
 			</channel-group>
-			<channel-group id="relay" typeId="relayChannel" />
-			<channel-group id="device" typeId="deviceStatus" />
+			<channel-group id="relay" typeId="relayChannel"/>
+			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:shelly:relay" />
+		<config-description-ref uri="thing-type:shelly:relay"/>
 	</thing-type>
 	<thing-type id="shellyem3">
 		<label>ShellyEM3 (SHEM-3)</label>
@@ -58,11 +58,11 @@
 			<channel-group id="meter3" typeId="meter">
 				<label>Power Meter 3</label>
 			</channel-group>
-			<channel-group id="relay" typeId="relayChannel" />
-			<channel-group id="device" typeId="deviceStatus" />
+			<channel-group id="relay" typeId="relayChannel"/>
+			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:shelly:relay" />
+		<config-description-ref uri="thing-type:shelly:relay"/>
 	</thing-type>
 
 	<thing-type id="shelly2-relay">
@@ -76,23 +76,23 @@
 			<channel-group id="relay2" typeId="relayChannel">
 				<label>Relay 2</label>
 			</channel-group>
-			<channel-group id="meter" typeId="meter" />
-			<channel-group id="device" typeId="deviceStatus" />
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:shelly:relay" />
+		<config-description-ref uri="thing-type:shelly:relay"/>
 	</thing-type>
 	<thing-type id="shelly2-roller">
 		<label>Shelly2 Roller (SHSW-21)</label>
 		<description>Shelly2 in Roller Mode</description>
 
 		<channel-groups>
-			<channel-group id="roller" typeId="rollerControl" />
-			<channel-group id="meter" typeId="meter" />
-			<channel-group id="device" typeId="deviceStatus" />
+			<channel-group id="roller" typeId="rollerControl"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:shelly:roller" />
+		<config-description-ref uri="thing-type:shelly:roller"/>
 	</thing-type>
 
 	<thing-type id="shelly25-relay">
@@ -111,22 +111,22 @@
 			<channel-group id="meter2" typeId="meter">
 				<label>Power Meter 2</label>
 			</channel-group>
-			<channel-group id="device" typeId="deviceStatus" />
+			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:shelly:relay" />
+		<config-description-ref uri="thing-type:shelly:relay"/>
 	</thing-type>
 	<thing-type id="shelly25-roller">
 		<label>Shelly2.5 Roller (SHSW-25)</label>
 		<description>Shelly2 in Roller Mode</description>
 
 		<channel-groups>
-			<channel-group id="roller" typeId="rollerControl" />
-			<channel-group id="meter" typeId="meter" />
-			<channel-group id="device" typeId="deviceStatus" />
+			<channel-group id="roller" typeId="rollerControl"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:shelly:roller" />
+		<config-description-ref uri="thing-type:shelly:roller"/>
 	</thing-type>
 
 	<thing-type id="shelly4pro">
@@ -158,22 +158,22 @@
 			<channel-group id="meter4" typeId="meter">
 				<label>Power Meter 4</label>
 			</channel-group>
-			<channel-group id="device" typeId="deviceStatus" />
+			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:shelly:relay" />
+		<config-description-ref uri="thing-type:shelly:relay"/>
 	</thing-type>
 
 	<thing-type id="shellyplug">
 		<label>Shelly Plug</label>
 		<description>Shelly Plug device with relay and power meter</description>
 		<channel-groups>
-			<channel-group id="relay" typeId="relayChannelPlug" />
-			<channel-group id="meter" typeId="meter" />
-			<channel-group id="device" typeId="deviceStatus" />
+			<channel-group id="relay" typeId="relayChannelPlug"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:shelly:relay" />
+		<config-description-ref uri="thing-type:shelly:relay"/>
 	</thing-type>
 
 	<thing-type id="shellyplugs">
@@ -181,13 +181,13 @@
 		<description>Shelly Plug-S with relay, meter and LED control</description>
 
 		<channel-groups>
-			<channel-group id="relay" typeId="relayChannelPlug" />
-			<channel-group id="meter" typeId="meter" />
-			<channel-group id="led" typeId="ledControl" />
-			<channel-group id="device" typeId="deviceStatus" />
+			<channel-group id="relay" typeId="relayChannelPlug"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="led" typeId="ledControl"/>
+			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:shelly:relay" />
+		<config-description-ref uri="thing-type:shelly:relay"/>
 	</thing-type>
 
 	<thing-type id="shellydimmer">
@@ -195,59 +195,59 @@
 		<description>Shelly Dimmer</description>
 		<category>DimmableLight</category>
 		<channel-groups>
-			<channel-group id="relay" typeId="dimmerChannel" />
-			<channel-group id="meter" typeId="meter" />
-			<channel-group id="device" typeId="deviceStatus" />
+			<channel-group id="relay" typeId="dimmerChannel"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:shelly:dimmer" />
+		<config-description-ref uri="thing-type:shelly:dimmer"/>
 	</thing-type>
 
 	<channel-group-type id="relayChannel">
 		<label>Relay</label>
 		<description>A Shelly relay channel</description>
 		<channels>
-			<channel id="output" typeId="system.power" />
-			<channel id="input" typeId="inputState" />
-			<channel id="button" typeId="system.button" />
-			<channel id="autoOn" typeId="timerAutoOn" />
-			<channel id="autoOff" typeId="timerAutoOff" />
-			<channel id="timerActive" typeId="timerActive" />
+			<channel id="output" typeId="system.power"/>
+			<channel id="input" typeId="inputState"/>
+			<channel id="button" typeId="system.button"/>
+			<channel id="autoOn" typeId="timerAutoOn"/>
+			<channel id="autoOff" typeId="timerAutoOff"/>
+			<channel id="timerActive" typeId="timerActive"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="relayChannelPlug">
 		<label>Relay</label>
 		<description>A Shelly relay channel</description>
 		<channels>
-			<channel id="output" typeId="system.power" />
-			<channel id="autoOn" typeId="timerAutoOn" />
-			<channel id="autoOff" typeId="timerAutoOff" />
-			<channel id="timerActive" typeId="timerActive" />
+			<channel id="output" typeId="system.power"/>
+			<channel id="autoOn" typeId="timerAutoOn"/>
+			<channel id="autoOff" typeId="timerAutoOff"/>
+			<channel id="timerActive" typeId="timerActive"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="dimmerChannel">
 		<label>Dimmer</label>
 		<description>A Shelly Dimmer channel</description>
 		<channels>
-			<channel id="brightness" typeId="dimmerBrightness" />
-			<channel id="input1" typeId="inputState1" />
-			<channel id="input2" typeId="inputState2" />
-			<channel id="button" typeId="system.button" />
-			<channel id="autoOn" typeId="timerAutoOn" />
-			<channel id="autoOff" typeId="timerAutoOff" />
+			<channel id="brightness" typeId="dimmerBrightness"/>
+			<channel id="input1" typeId="inputState1"/>
+			<channel id="input2" typeId="inputState2"/>
+			<channel id="button" typeId="system.button"/>
+			<channel id="autoOn" typeId="timerAutoOn"/>
+			<channel id="autoOff" typeId="timerAutoOff"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="rollerControl">
 		<label>Roller Control</label>
 		<description>Controlling the roller mode</description>
 		<channels>
-			<channel id="control" typeId="rollerShutter" />
-			<channel id="rollerpos" typeId="rollerPosition" />
-			<channel id="lastDirection" typeId="rollerDirection" />
-			<channel id="stopReason" typeId="rollerStop" />
-			<channel id="input1" typeId="inputState1" />
-			<channel id="input2" typeId="inputState2" />
-			<channel id="event" typeId="eventTrigger" />
+			<channel id="control" typeId="rollerShutter"/>
+			<channel id="rollerpos" typeId="rollerPosition"/>
+			<channel id="lastDirection" typeId="rollerDirection"/>
+			<channel id="stopReason" typeId="rollerStop"/>
+			<channel id="input1" typeId="inputState1"/>
+			<channel id="input2" typeId="inputState2"/>
+			<channel id="event" typeId="eventTrigger"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="meter">
@@ -258,8 +258,8 @@
 		<label>LED Control</label>
 		<description>Control the LEDs</description>
 		<channels>
-			<channel id="statusLed" typeId="ledStatusDisable" />
-			<channel id="powerLed" typeId="ledPowerDisable" />
+			<channel id="statusLed" typeId="ledStatusDisable"/>
+			<channel id="powerLed" typeId="ledPowerDisable"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="externalSensors">
@@ -295,7 +295,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Roller Position (100=open, 0=closed)</label>
 		<description>Position the roller (100..0 in %, where 100%=open, 0%=closed)</description>
-		<state readOnly="false" min="0" max="100" />
+		<state readOnly="false" min="0" max="100"/>
 	</channel-type>
 	<channel-type id="rollerStop">
 		<item-type>String</item-type>

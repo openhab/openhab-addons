@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="logreader" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="logreader"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -9,17 +10,17 @@
 		<description>Log reader to analyze log events</description>
 
 		<channels>
-			<channel typeId="lastWarningEvent" id="lastWarningEvent" />
-			<channel typeId="lastErrorEvent" id="lastErrorEvent" />
-			<channel typeId="lastCustomEvent" id="lastCustomEvent" />
-			<channel typeId="warningEvents" id="warningEvents" />
-			<channel typeId="errorEvents" id="errorEvents" />
-			<channel typeId="customEvents" id="customEvents" />
-			<channel typeId="logRotated" id="logRotated" />
+			<channel typeId="lastWarningEvent" id="lastWarningEvent"/>
+			<channel typeId="lastErrorEvent" id="lastErrorEvent"/>
+			<channel typeId="lastCustomEvent" id="lastCustomEvent"/>
+			<channel typeId="warningEvents" id="warningEvents"/>
+			<channel typeId="errorEvents" id="errorEvents"/>
+			<channel typeId="customEvents" id="customEvents"/>
+			<channel typeId="logRotated" id="logRotated"/>
 
-			<channel typeId="newWarningEvent" id="newWarningEvent" />
-			<channel typeId="newErrorEvent" id="newErrorEvent" />
-			<channel typeId="newCustomEvent" id="newCustomEvent" />
+			<channel typeId="newWarningEvent" id="newWarningEvent"/>
+			<channel typeId="newErrorEvent" id="newErrorEvent"/>
+			<channel typeId="newCustomEvent" id="newCustomEvent"/>
 		</channels>
 
 		<config-description>

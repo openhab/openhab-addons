@@ -22,8 +22,8 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.irtrans.internal.IrCommand;
 import org.openhab.binding.irtrans.internal.IRtransBindingConstants.Led;
+import org.openhab.binding.irtrans.internal.IrCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

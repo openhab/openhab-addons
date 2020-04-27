@@ -55,5 +55,4 @@ public class DigiplexHandlerFactory extends BaseThingHandlerFactory {
         }
         return null;
     }
-
 }

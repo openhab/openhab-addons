@@ -11,15 +11,15 @@
 		<!-- Channels -->
 
 		<channels>
-			<channel id="co2" typeId="Co2" />
-			<channel id="humidity" typeId="Humidity" />
-			<channel id="aqi" typeId="Aqi" />
-			<channel id="pm_25" typeId="Pm_25" />
-			<channel id="temperature" typeId="Temperature" />
-			<channel id="timestamp" typeId="Timestamp" />
-			<channel id="used_memory" typeId="Used_memory" />
-			<channel id="signal-strength" typeId="system.signal-strength" />
-			<channel id="battery-level" typeId="system.battery-level" />
+			<channel id="co2" typeId="Co2"/>
+			<channel id="humidity" typeId="Humidity"/>
+			<channel id="aqi" typeId="Aqi"/>
+			<channel id="pm_25" typeId="Pm_25"/>
+			<channel id="temperature" typeId="Temperature"/>
+			<channel id="timestamp" typeId="Timestamp"/>
+			<channel id="used_memory" typeId="Used_memory"/>
+			<channel id="signal-strength" typeId="system.signal-strength"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
 		</channels>
 
 		<!-- Configuration parameters -->
@@ -65,7 +65,7 @@
 		<label>CO₂ Level</label>
 		<description>CO&#8322; level, ppm</description>
 		<category>CarbonDioxide</category>
-		<state readOnly="true" pattern="%d %unit%" />
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="Humidity">
@@ -73,21 +73,21 @@
 		<label>Humidity</label>
 		<description>Humidity, %</description>
 		<category>Humidity</category>
-		<state readOnly="true" pattern="%d %unit%" />
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="Aqi">
 		<item-type>Number:Dimensionless</item-type>
 		<label>AQI</label>
 		<description>Air Quality Index (US)</description>
-		<state readOnly="true" pattern="%d" />
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="Pm_25">
 		<item-type>Number:Density</item-type>
 		<label>PM2.5</label>
 		<description>PM2.5 level, µg/m&#179;</description>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="Temperature">
@@ -95,21 +95,21 @@
 		<label>Temperature</label>
 		<description>Current temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="Timestamp">
 		<item-type>DateTime</item-type>
 		<label>Timestamp</label>
 		<description>Status timestamp</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="Used_memory" advanced="true">
 		<item-type>Number</item-type>
 		<label>Used Memory</label>
 		<description>Used memory</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

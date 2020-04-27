@@ -233,5 +233,4 @@ public enum JSONApiResponseKeysEnum {
     public String getKey() {
         return key;
     }
-
 }

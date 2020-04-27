@@ -154,5 +154,4 @@ public class Settings {
     public void setTimezone(String timezone) {
         this.timezone = timezone;
     }
-
 }

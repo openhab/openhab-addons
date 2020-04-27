@@ -82,5 +82,4 @@ public class IntegraVersionCommand extends SatelCommandBase {
         eventDispatcher
                 .dispatchEvent(new IntegraVersionEvent(getType(), getVersion(), getLanguage(), areSettingsInFlash()));
     }
-
 }

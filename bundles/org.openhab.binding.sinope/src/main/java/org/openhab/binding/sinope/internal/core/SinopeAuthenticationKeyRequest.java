@@ -69,5 +69,4 @@ public class SinopeAuthenticationKeyRequest extends SinopeRequest {
     public byte[] getId() {
         return id;
     }
-
 }

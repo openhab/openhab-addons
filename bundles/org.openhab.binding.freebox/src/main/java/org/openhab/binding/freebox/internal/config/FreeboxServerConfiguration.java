@@ -38,5 +38,4 @@ public class FreeboxServerConfiguration {
     public Boolean discoverNetDevice;
     public Boolean discoverNetInterface;
     public Boolean discoverAirPlayReceiver;
-
 }

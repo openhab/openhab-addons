@@ -45,5 +45,4 @@ public class ListenSpecImpl extends AbstractSpec implements InboundSpec {
     public List<GroupAddress> getGroupAddresses() {
         return listenAddresses;
     }
-
 }

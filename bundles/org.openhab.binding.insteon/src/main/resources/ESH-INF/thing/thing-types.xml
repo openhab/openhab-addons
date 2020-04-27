@@ -39,7 +39,7 @@
 
 	<thing-type id="device">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="network" />
+			<bridge-type-ref id="network"/>
 		</supported-bridge-type-refs>
 
 		<label>Insteon Device</label>
@@ -349,7 +349,7 @@
 		<item-type>Number</item-type>
 		<label>Light Level</label>
 	</channel-type>
-	
+
 	<channel-type id="lightLevelAboveThreshold">
 		<item-type>Contact</item-type>
 		<label>Light Level Above/Below Threshold</label>
