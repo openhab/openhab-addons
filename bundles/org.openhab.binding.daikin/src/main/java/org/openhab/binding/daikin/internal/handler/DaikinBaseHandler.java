@@ -85,10 +85,9 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
 
     protected abstract void registerUuid(String key);
 
-    public DaikinBaseHandler(Thing thing, HttpClient httpClient, DaikinDynamicStateDescriptionProvider stateDescriptionProvider) {
+    public DaikinBaseHandler(Thing thing, DaikinDynamicStateDescriptionProvider stateDescriptionProvider) {
         super(thing);
         this.stateDescriptionProvider = stateDescriptionProvider;
-        // this.httpClient = httpClient
         this.httpClient = new HttpClient(new SslContextFactory(true));
         if (!this.httpClient.isStarted()) {
             try {
