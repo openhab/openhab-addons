@@ -83,8 +83,8 @@
 			<channel id="ircode" typeId="ircode"/>
 			<channel id="numberPlaylistTracks" typeId="numberPlaylistTracks"/>
 			<channel id="playFavorite" typeId="playFavorite"/>
-			<channel id="like" typeId="like" />
-			<channel id="unlike" typeId="unlike" />
+			<channel id="like" typeId="like"/>
+			<channel id="unlike" typeId="unlike"/>
 		</channels>
 
 		<properties>
