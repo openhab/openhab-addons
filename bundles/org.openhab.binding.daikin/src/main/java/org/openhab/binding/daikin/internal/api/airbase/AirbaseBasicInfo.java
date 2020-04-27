@@ -53,5 +53,4 @@ public class AirbaseBasicInfo {
         params.put("ssid", ssid);
         return params;
     }
-
 }

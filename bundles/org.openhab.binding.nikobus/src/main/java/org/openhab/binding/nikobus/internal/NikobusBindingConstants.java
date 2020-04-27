@@ -44,5 +44,4 @@ public class NikobusBindingConstants {
     public static final String CONFIG_IMPACTED_MODULES = "impactedModules";
     public static final String CONFIG_ADDRESS = "address";
     public static final String CONFIG_PORT_NAME = "port";
-
 }

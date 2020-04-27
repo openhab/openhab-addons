@@ -10,6 +10,7 @@
 			"yeelink.light.bslamp1",
 			"yeelink.light.bslamp2"
 		],
+		"maxProperties": 7,
 		"channels": [
 			{
 				"property": "power",
@@ -29,13 +30,23 @@
 				"property": "bright",
 				"friendlyName": "Brightness",
 				"channel": "brightness",
-				"type": "Number",
+				"type": "Dimmer",
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_bright",
-						"parameterType": "NUMBER"
+						"parameterType": "NUMBER",
+						"condition": {
+							"name": "BrightnessExisting"
+						}
+					},
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF",
+						"condition": {
+							"name": "BrightnessOnOff"
+						}
 					}
 				]
 			},
@@ -43,7 +54,7 @@
 				"property": "delayoff",
 				"friendlyName": "Shutdown Timer",
 				"channel": "delayoff",
-				"type": "String",
+				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [
@@ -110,13 +121,28 @@
 					{
 						"command": "set_rgb",
 						"parameterType": "COLOR",
-						"parameter1": "\"smooth\"",
-						"parameter2": "500",
+						"condition": {
+							"name": "HSBOnly"
+						},
 						"parameters": [
 							"$value$",
 							"smooth",
 							500
 						]
+					},
+					{
+						"command": "set_bright",
+						"parameterType": "NUMBER",
+						"condition": {
+							"name": "BrightnessExisting"
+						}
+					},
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF",
+						"condition": {
+							"name": "BrightnessOnOff"
+						}
 					}
 				]
 			},

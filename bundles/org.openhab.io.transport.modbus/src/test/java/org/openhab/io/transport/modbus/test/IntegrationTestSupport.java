@@ -164,7 +164,6 @@ public class IntegrationTestSupport extends JavaTest {
     public void tearDown() {
         stopServer();
         modbusManager.close();
-
     }
 
     protected void waitForRequests(int expectedRequestCount) {
@@ -315,7 +314,6 @@ public class IntegrationTestSupport extends JavaTest {
         public TCPSlaveConnection create(Socket socket) {
             return new TCPSlaveConnection(socket, new SpyingModbusTCPTransportFactory());
         }
-
     }
 
     public class UDPSlaveTerminalFactoryImpl implements UDPSlaveTerminalFactory {
@@ -326,7 +324,6 @@ public class IntegrationTestSupport extends JavaTest {
             terminal.setLocalPort(port);
             return terminal;
         }
-
     }
 
     public class SerialConnectionFactoryImpl implements SerialConnectionFactory {
@@ -358,5 +355,4 @@ public class IntegrationTestSupport extends JavaTest {
             deactivate();
         }
     }
-
 }

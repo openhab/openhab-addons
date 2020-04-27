@@ -15,6 +15,7 @@ package org.openhab.binding.daikin.internal.api.airbase;
 import java.util.Map;
 import java.util.EnumSet;
 
+import org.openhab.binding.daikin.internal.api.airbase.AirbaseEnums.AirbaseFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,14 +49,13 @@ public class AirbaseModelInfo {
         AirbaseModelInfo info = new AirbaseModelInfo();
         info.ret = responseMap.get("ret");
         info.zonespresent = Integer.parseInt(responseMap.get("en_zone"));
-        info.commonzone = Integer.parseInt(responseMap.get("en_common_zone"));  
-        info.frate_steps = Integer.parseInt(responseMap.get("frate_steps"));      
-        for (AirbaseFeature f: AirbaseFeature.values()) {
+        info.commonzone = Integer.parseInt(responseMap.get("en_common_zone"));
+        info.frate_steps = Integer.parseInt(responseMap.get("frate_steps"));
+        for (AirbaseFeature f : AirbaseFeature.values()) {
             if ("1".equals(responseMap.get(f.getValue()))) {
                 info.features.add(f);
             }
         }
         return info;
     }
-
 }

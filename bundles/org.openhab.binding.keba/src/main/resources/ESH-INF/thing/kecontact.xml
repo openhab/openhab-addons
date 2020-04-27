@@ -9,24 +9,24 @@
 		<description>A KeContact EV Charging Station</description>
 
 		<channels>
-			<channel id="enabled" typeId="enabled" />
-			<channel id="state" typeId="state" />
-			<channel id="maxpresetcurrent" typeId="current_settable" />
-			<channel id="maxpresetcurrentrange" typeId="range" />
-			<channel id="power" typeId="power" />
-			<channel id="powerfactor" typeId="powerfactor" />
-			<channel id="error1" typeId="error1" />
-			<channel id="error2" typeId="error2" />
-			<channel id="wallbox" typeId="plugwallbox" />
-			<channel id="vehicle" typeId="plugvehicle" />
-			<channel id="locked" typeId="locked" />
-			<channel id="maxpilotcurrent" typeId="pilotcurrent" />
-			<channel id="pwmpilotcurrent" typeId="pilotrange" />
-			<channel id="maxsystemcurrent" typeId="maxcurrent" />
-			<channel id="failsafecurrent" typeId="failsafecurrent" />
-			<channel id="output" typeId="x2" />
-			<channel id="input" typeId="x1" />
-			<channel id="uptime" typeId="uptime" />
+			<channel id="enabled" typeId="enabled"/>
+			<channel id="state" typeId="state"/>
+			<channel id="maxpresetcurrent" typeId="current_settable"/>
+			<channel id="maxpresetcurrentrange" typeId="range"/>
+			<channel id="power" typeId="power"/>
+			<channel id="powerfactor" typeId="powerfactor"/>
+			<channel id="error1" typeId="error1"/>
+			<channel id="error2" typeId="error2"/>
+			<channel id="wallbox" typeId="plugwallbox"/>
+			<channel id="vehicle" typeId="plugvehicle"/>
+			<channel id="locked" typeId="locked"/>
+			<channel id="maxpilotcurrent" typeId="pilotcurrent"/>
+			<channel id="pwmpilotcurrent" typeId="pilotrange"/>
+			<channel id="maxsystemcurrent" typeId="maxcurrent"/>
+			<channel id="failsafecurrent" typeId="failsafecurrent"/>
+			<channel id="output" typeId="x2"/>
+			<channel id="input" typeId="x1"/>
+			<channel id="uptime" typeId="uptime"/>
 			<channel id="I1" typeId="current">
 				<label>Current Phase 1</label>
 			</channel>
@@ -45,16 +45,16 @@
 			<channel id="U3" typeId="voltage">
 				<label>Voltage Phase 3</label>
 			</channel>
-			<channel id="sessionconsumption" typeId="energy" />
-			<channel id="totalconsumption" typeId="totalenergy" />
-			<channel id="display" typeId="display" />
-			<channel id="authreq" typeId="authreq" />
-			<channel id="authon" typeId="authon" />
-			<channel id="sessionrfidtag" typeId="sessionrfidtag" />
-			<channel id="sessionrfidclass" typeId="sessionrfidclass" />
-			<channel id="sessionid" typeId="sessionid" />
-			<channel id="setenergylimit" typeId="setenergylimit" />
-			<channel id="authenticate" typeId="authenticate" />
+			<channel id="sessionconsumption" typeId="energy"/>
+			<channel id="totalconsumption" typeId="totalenergy"/>
+			<channel id="display" typeId="display"/>
+			<channel id="authreq" typeId="authreq"/>
+			<channel id="authon" typeId="authon"/>
+			<channel id="sessionrfidtag" typeId="sessionrfidtag"/>
+			<channel id="sessionrfidclass" typeId="sessionrfidclass"/>
+			<channel id="sessionid" typeId="sessionid"/>
+			<channel id="setenergylimit" typeId="setenergylimit"/>
+			<channel id="authenticate" typeId="authenticate"/>
 		</channels>
 
 		<config-description>
@@ -258,5 +258,5 @@
 		<label>Authenticate</label>
 		<description>Authenticate and start a charging session</description>
 		<state readOnly="false"></state>
-	</channel-type>	
+	</channel-type>
 </thing:thing-descriptions>

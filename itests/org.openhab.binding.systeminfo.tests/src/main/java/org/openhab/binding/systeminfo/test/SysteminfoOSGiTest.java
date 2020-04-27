@@ -1053,5 +1053,4 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
             assertThat(systemInfoHandler.getLowPriorityChannels().contains(channel.getUID()), is(true));
         });
     }
-
 }

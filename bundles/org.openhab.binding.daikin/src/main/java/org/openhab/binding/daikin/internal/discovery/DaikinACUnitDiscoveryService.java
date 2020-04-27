@@ -42,6 +42,7 @@ import org.openhab.binding.daikin.internal.api.ControlInfo;
 import org.openhab.binding.daikin.internal.api.InfoParser;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseBasicInfo;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseControlInfo;
+import org.openhab.binding.daikin.internal.config.DaikinConfiguration;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

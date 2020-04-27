@@ -77,5 +77,4 @@ public class SonyAudioHandlerFactory extends BaseThingHandlerFactory {
     protected void unsetWebSocketFactory(WebSocketFactory webSocketFactory) {
         this.webSocketClient = null;
     }
-
 }

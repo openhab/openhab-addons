@@ -38,7 +38,7 @@
 		<label>@text/channel-type.velux.downtime.label</label>
 		<description>@text/channel-type.velux.downtime.description</description>
 		<category>NetworkAppliance</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="doDetection" advanced="true">
@@ -49,85 +49,85 @@
 	</channel-type>
 
 	<!-- now organized as properties
-	<channel-type id="firmware" advanced="true">
+		<channel-type id="firmware" advanced="true">
 		<item-type>String</item-type>
 		<label>@text/channel-type.velux.firmware.label</label>
 		<description>@text/channel-type.velux.firmware.description</description>
 		<category>NetworkAppliance</category>
 		<state readOnly="true"></state>
-	</channel-type>
+		</channel-type>
 
-	<channel-type id="ipAddress" advanced="true">
+		<channel-type id="ipAddress" advanced="true">
 		<item-type>String</item-type>
 		<label>@text/channel-type.velux.ipAddress.label</label>
 		<description>@text/channel-type.velux.ipAddress.description</description>
 		<category>NetworkAppliance</category>
 		<state readOnly="true"></state>
-	</channel-type>
+		</channel-type>
 
-	<channel-type id="subnetMask" advanced="true">
+		<channel-type id="subnetMask" advanced="true">
 		<item-type>String</item-type>
 		<label>@text/channel-type.velux.subnetMask.label</label>
 		<description>@text/channel-type.velux.subnetMask.description</description>
 		<category>NetworkAppliance</category>
 		<state readOnly="true"></state>
-	</channel-type>
+		</channel-type>
 
-	<channel-type id="defaultGW" advanced="true">
+		<channel-type id="defaultGW" advanced="true">
 		<item-type>String</item-type>
 		<label>@text/channel-type.velux.defaultGW.label</label>
 		<description>@text/channel-type.velux.defaultGW.description</description>
 		<category>NetworkAppliance</category>
 		<state readOnly="true"></state>
-	</channel-type>
+		</channel-type>
 
-	<channel-type id="DHCP" advanced="true">
+		<channel-type id="DHCP" advanced="true">
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.velux.DHCP.label</label>
 		<description>@text/channel-type.velux.DHCP.description</description>
 		<category>NetworkAppliance</category>
 		<state readOnly="true"></state>
-	</channel-type>
+		</channel-type>
 
-	<channel-type id="WLANSSID" advanced="true">
+		<channel-type id="WLANSSID" advanced="true">
 		<item-type>String</item-type>
 		<label>@text/channel-type.velux.WLANSSID.label</label>
 		<description>@text/channel-type.velux.WLANSSID.description</description>
 		<category>NetworkAppliance</category>
 		<state readOnly="true"></state>
-	</channel-type>
+		</channel-type>
 
-	<channel-type id="WLANPassword" advanced="true">
+		<channel-type id="WLANPassword" advanced="true">
 		<item-type>String</item-type>
 		<label>@text/channel-type.velux.WLANPassword.label</label>
 		<description>@text/channel-type.velux.WLANPassword.description</description>
 		<category>NetworkAppliance</category>
 		<state readOnly="true"></state>
-	</channel-type>
+		</channel-type>
 
-	<channel-type id="products" advanced="true">
+		<channel-type id="products" advanced="true">
 		<item-type>String</item-type>
 		<label>@text/channel-type.velux.products.label</label>
 		<description>@text/channel-type.velux.products.description</description>
 		<category>NetworkAppliance</category>
 		<state readOnly="true"></state>
-	</channel-type>
+		</channel-type>
 
-	<channel-type id="scenes" advanced="true">
+		<channel-type id="scenes" advanced="true">
 		<item-type>String</item-type>
 		<label>@text/channel-type.velux.scenes.label</label>
 		<description>@text/channel-type.velux.scenes.description</description>
 		<category>NetworkAppliance</category>
 		<state readOnly="true"></state>
-	</channel-type>
+		</channel-type>
 
-	<channel-type id="check" advanced="true">
+		<channel-type id="check" advanced="true">
 		<item-type>String</item-type>
 		<label>@text/channel-type.velux.check.label</label>
 		<description>@text/channel-type.velux.check.description</description>
 		<category>NetworkAppliance</category>
 		<state readOnly="true"></state>
-	</channel-type>
+		</channel-type>
 	-->
 
 	<!-- Channel Type - Generic Things -->

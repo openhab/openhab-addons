@@ -21,6 +21,5 @@ package org.openhab.binding.siemensrds.internal;
 
 public class RdsConfiguration {
 
-        public String plantId;
-
+    public String plantId;
 }

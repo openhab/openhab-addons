@@ -97,5 +97,4 @@ public final class DailyJobSun extends AbstractJob {
     public String toString() {
         return "Daily job sun " + getThingUID();
     }
-
 }

@@ -367,5 +367,4 @@ public class WebserviceHandler extends BaseBridgeHandler {
     public String getUserAgent() {
         return userAgent;
     }
-
 }

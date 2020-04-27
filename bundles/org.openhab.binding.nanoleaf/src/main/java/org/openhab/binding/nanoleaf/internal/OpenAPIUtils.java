@@ -87,8 +87,7 @@ public class OpenAPIUtils {
         return requestURI;
     }
 
-    public static ContentResponse sendOpenAPIRequest(Request request)
-            throws NanoleafException {
+    public static ContentResponse sendOpenAPIRequest(Request request) throws NanoleafException {
         try {
             traceSendRequest(request);
             ContentResponse openAPIResponse;
@@ -122,7 +121,7 @@ public class OpenAPIUtils {
                 throw new NanoleafUnauthorizedException("Invalid authorization token");
             }
             throw new NanoleafException("Failed to send OpenAPI request", clientException);
-        } catch ( InterruptedException interruptedException) {
+        } catch (InterruptedException interruptedException) {
             throw new NanoleafInterruptedException("OpenAPI request has been interrupted", interruptedException);
         }
     }

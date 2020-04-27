@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.openhab.addons</groupId>
     <artifactId>org.openhab.addons.reactor</artifactId>
-    <version>2.5.4-SNAPSHOT</version>
+    <version>2.5.5-SNAPSHOT</version>
   </parent>
 
   <groupId>org.openhab.addons.bundles</groupId>
@@ -61,6 +62,7 @@
     <module>org.openhab.binding.bosesoundtouch</module>
     <module>org.openhab.binding.bsblan</module>
     <module>org.openhab.binding.buienradar</module>
+    <module>org.openhab.binding.cbus</module>
     <module>org.openhab.binding.chromecast</module>
     <module>org.openhab.binding.cm11a</module>
     <module>org.openhab.binding.coolmasternet</module>
@@ -147,6 +149,7 @@
     <module>org.openhab.binding.milight</module>
     <module>org.openhab.binding.minecraft</module>
     <module>org.openhab.binding.modbus</module>
+    <module>org.openhab.binding.modbus.sunspec</module>
     <module>org.openhab.binding.mqtt</module>
     <module>org.openhab.binding.mqtt.generic</module>
     <module>org.openhab.binding.mqtt.homeassistant</module>
@@ -221,9 +224,10 @@
     <module>org.openhab.binding.systeminfo</module>
     <module>org.openhab.binding.tado</module>
     <module>org.openhab.binding.tankerkoenig</module>
-    <module>org.openhab.binding.telegram</module>    
+    <module>org.openhab.binding.telegram</module>
     <module>org.openhab.binding.tellstick</module>
     <module>org.openhab.binding.tesla</module>
+    <module>org.openhab.binding.tibber</module>
     <module>org.openhab.binding.tplinksmarthome</module>
     <module>org.openhab.binding.tradfri</module>
     <module>org.openhab.binding.unifi</module>

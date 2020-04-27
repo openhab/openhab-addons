@@ -98,12 +98,14 @@ However, for devices that are unsupported, you may override the value and try to
 | Mi Air Purifier MS1          | miio:basic       | [zhimi.airpurifier.ma1](#zhimi-airpurifier-ma1) | Yes       |            |
 | Mi Air Purifier MS2          | miio:basic       | [zhimi.airpurifier.ma2](#zhimi-airpurifier-ma2) | Yes       |            |
 | Mi Air Purifier 3            | miio:basic       | [zhimi.airpurifier.ma4](#zhimi-airpurifier-ma4) | Yes       |            |
+| Mi Air Purifier 3            | miio:basic       | [zhimi.airpurifier.mb3](#zhimi-airpurifier-mb3) | Yes       |            |
 | Mi Air Purifier Super        | miio:basic       | [zhimi.airpurifier.sa1](#zhimi-airpurifier-sa1) | Yes       |            |
 | Mi Air Purifier Super 2      | miio:basic       | [zhimi.airpurifier.sa2](#zhimi-airpurifier-sa2) | Yes       |            |
 | Mi Fresh Air Ventilator      | miio:basic       | [dmaker.airfresh.t2017](#dmaker-airfresh-t2017) | Yes       |            |
 | Mi Fresh Air Ventilator A1   | miio:basic       | [dmaker.airfresh.a1](#dmaker-airfresh-a1) | Yes       |            |
 | Xiao AI Smart Alarm Clock    | miio:unsupported | zimi.clock.myk01       | No        |            |
 | Yeelight Smart Bath Heater   | miio:unsupported | yeelight.bhf_light.v2  | No        |            |
+| Gosund Plug                  | miio:basic       | [cuco.plug.cp1](#cuco-plug-cp1) | Yes       |            |
 | XIAOMI MIJIA WIDETECH WDH318EFW1 Dehumidifier | miio:unsupported | nwt.derh.wdh318efw1    | No        |            |
 | Mi Air Purifier mb1          | miio:basic       | [zhimi.airpurifier.mb1](#zhimi-airpurifier-mb1) | Yes       |            |
 | Mi Air Purifier 2S           | miio:basic       | [zhimi.airpurifier.mc1](#zhimi-airpurifier-mc1) | Yes       |            |
@@ -174,6 +176,7 @@ However, for devices that are unsupported, you may override the value and try to
 | Rockrobo Xiaowa Vacuum v2    | miio:unsupported | roborock.vacuum.e2     | No        |            |
 | Xiaomi Mijia vacuum V-RVCLM21B | miio:unsupported | viomi.vacuum.v6        | No        |            |
 | Xiaomi Mijia vacuum STYJ02YM | miio:unsupported | viomi.vacuum.v7        | No        |            |
+| Vacuum 1C STYTJ01ZHM         | miio:basic       | [dreame.vacuum.mc1808](#dreame-vacuum-mc1808) | Yes       |            |
 | roborock.vacuum.c1           | miio:unsupported | roborock.vacuum.c1     | No        |            |
 | Rockrobo Xiaowa Sweeper v2   | miio:unsupported | roborock.sweeper.e2v2  | No        |            |
 | Rockrobo Xiaowa Sweeper v3   | miio:unsupported | roborock.sweeper.e2v3  | No        |            |
@@ -561,22 +564,120 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| mode             | String  | Mode                                |
-| humidity         | Number  | Humidity                            |
-| aqi              | Number  | Air Quality Index                   |
-| averageaqi       | Number  | Average Air Quality Index           |
-| led              | Switch  | LED Status                          |
-| buzzer           | Switch  | Buzzer Status                       |
-| filtermaxlife    | Number  | Filter Max Life                     |
-| filterhours      | Number  | Filter Hours used                   |
-| usedhours        | Number  | Run Time                            |
-| motorspeed       | Number  | Motor Speed                         |
-| filterlife       | Number  | Filter  Life                        |
-| favoritelevel    | Number  | Favorite Level                      |
-| temperature      | Number  | Temperature                         |
-| purifyvolume     | Number  | Purivied Volume                     |
-| childlock        | Switch  | Child Lock                          |
+| Fault            | Number  | Air Purifier-Device Fault           |
+| On               | Switch  | Air Purifier-Switch Status          |
+| FanLevel         | Number  | Air Purifier-Fan Level              |
+| Mode             | Number  | Air Purifier-Mode                   |
+| FirmwareRevision | String  | Device Information-Current Firmware Version |
+| Manufacturer     | String  | Device Information-Device Manufacturer |
+| Model            | String  | Device Information-Device Model     |
+| SerialNumber     | String  | Device Information-Device Serial Number |
+| Pm25Density      | Number  | Environment-PM2.5 Density           |
+| RelativeHumidity | Number  | Environment-Relative Humidity       |
+| Temperature      | Number  | Environment-Temperature             |
+| FilterLifeLevel  | Number  | Filter-Filter Life Level            |
+| FilterUsedTime   | String  | Filter-Filter Used Time             |
+| Alarm            | Switch  | Alarm-Alarm                         |
+| Brightness       | Number  | Indicator Light-Brightness          |
+| On1              | Switch  | Indicator Light-Switch Status       |
+| PhysicalControlsLocked | Switch  | Physical Control Locked-Physical Control Locked |
+| ButtonPressed    | String  | button-button_pressed               |
+| FilterMaxTime    | Number  | filter-time-filter-max-time         |
+| FilterHourUsedDebug | Number  | filter-time-filter-hour-used-debug  |
+| M1Strong         | Number  | motor-speed-m1-strong               |
+| M1High           | Number  | motor-speed-m1-high                 |
+| M1Med            | Number  | motor-speed-m1-med                  |
+| M1MedL           | Number  | motor-speed-m1-med-l                |
+| M1Low            | Number  | motor-speed-m1-low                  |
+| M1Silent         | Number  | motor-speed-m1-silent               |
+| M1Favorite       | Number  | motor-speed-m1-favorite             |
+| Motor1Speed      | Number  | motor-speed-motor1-speed            |
+| Motor1SetSpeed   | Number  | motor-speed-motor1-set-speed        |
+| FavoriteFanLevel | Number  | motor-speed-favorite fan level      |
+| UseTime          | Number  | use-time-use-time                   |
+| PurifyVolume     | Number  | aqi-purify-volume                   |
+| AverageAqi       | Number  | aqi-average-aqi                     |
+| AverageAqiCnt    | Number  | aqi-average-aqi-cnt                 |
+| AqiZone          | String  | aqi-aqi-zone                        |
+| SensorState      | String  | aqi-sensor-state                    |
+| AqiGoodh         | Number  | aqi-aqi-goodh                       |
+| AqiRunstate      | Number  | aqi-aqi-runstate                    |
+| AqiState         | Number  | aqi-aqi-state                       |
+| AqiUpdataHeartbeat | Number  | aqi-aqi-updata-heartbeat            |
+| RfidTag          | String  | rfid-rfid-tag                       |
+| RfidFactoryId    | String  | rfid-rfid-factory-id                |
+| RfidProductId    | String  | rfid-rfid-product-id                |
+| RfidTime         | String  | rfid-rfid-time                      |
+| RfidSerialNum    | String  | rfid-rfid-serial-num                |
+| AppExtra         | Number  | others-app-extra                    |
+| MainChannel      | Number  | others-main-channel                 |
+| SlaveChannel     | Number  | others-slave-channel                |
+| Cola             | String  | others-cola                         |
+| ButtomDoor       | Switch  | others-buttom-door                  |
+| RebootCause      | Number  | others-reboot_cause                 |
+| HwVersion        | Number  | others-hw-version                   |
+| I2cErrorCount    | Number  | others-i2c-error-count              |
+| ManualLevel      | Number  | others-manual-level                 |
+
+### Mi Air Purifier 3 (<a name="zhimi-airpurifier-mb3">zhimi.airpurifier.mb3</a>) Channels
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| Fault            | Number  | Air Purifier-fault                  |
+| On               | Switch  | Air Purifier-Switch Status          |
+| FanLevel         | Number  | Air Purifier-Fan Level              |
+| Mode             | Number  | Air Purifier-Mode                   |
+| FirmwareRevision | String  | Device Information-Current Firmware Version |
+| Manufacturer     | String  | Device Information-Device Manufacturer |
+| Model            | String  | Device Information-Device Model     |
+| SerialNumber     | String  | Device Information-Device Serial Number |
+| Pm25Density      | Number  | Environment-PM2.5                   |
+| RelativeHumidity | Number  | Environment-Relative Humidity       |
+| Temperature      | Number  | Environment-Temperature             |
+| FilterLifeLevel  | Number  | Filter-Filter Life Level            |
+| FilterUsedTime   | String  | Filter-Filter Used Time             |
+| Alarm            | Switch  | Alarm-Alarm                         |
+| Brightness       | Number  | Indicator Light-brightness          |
+| On1              | Switch  | Indicator Light-Switch Status       |
+| PhysicalControlsLocked | Switch  | Physical Control Locked-Physical Control Locked |
+| ButtonPressed    | String  | Button-button-pressed               |
+| FilterMaxTime    | Number  | filter-time-filter-max-time         |
+| FilterHourDebug  | Number  | filter-time-filter-hour-debug       |
+| MotorStrong      | Number  | motor-speed-motor-strong            |
+| MotorHigh        | Number  | motor-speed-motor-high              |
+| MotorMed         | Number  | motor-speed-motor-med               |
+| MotorMedL        | Number  | motor-speed-motor-med-l             |
+| MotorLow         | Number  | motor-speed-motor-low               |
+| MotorSilent      | Number  | motor-speed-motor-silent            |
+| MotorFavorite    | Number  | motor-speed-motor-favorite          |
+| MotorSpeed       | Number  | motor-speed-motor-speed             |
+| MotorSetSpeed    | Number  | motor-speed-motor-set-speed         |
+| FavoriteFanLevel | Number  | motor-speed-favorite-fan-level      |
+| UseTime          | Number  | use-time-use-time                   |
+| PurifyVolume     | Number  | aqi-purify-volume                   |
+| AverageAqi       | Number  | aqi-average-aqi                     |
+| AverageAqiCnt    | Number  | aqi-average-aqi-cnt                 |
+| AqiZone          | String  | aqi-aqi-zone                        |
+| SensorState      | String  | aqi-sensor-state                    |
+| AqiGoodh         | Number  | aqi-aqi-goodh                       |
+| AqiRunstate      | Number  | aqi-aqi-runstate                    |
+| AqiState         | Number  | aqi-aqi-state                       |
+| AqiUpdataHeartbeat | Number  | aqi-aqi-updata-heartbeat            |
+| RfidTag          | String  | rfid-rfid-tag                       |
+| RfidFactoryId    | String  | rfid-rfid-factory-id                |
+| RfidProductId    | String  | rfid-rfid-product-id                |
+| RfidTime         | String  | rfid-rfid-time                      |
+| RfidSerialNum    | String  | rfid-rfid-serial-num                |
+| AppExtra         | Number  | others-app-extra                    |
+| MainChannel      | Number  | others-main-channel                 |
+| SlaveChannel     | Number  | others-slave-channel                |
+| Cola             | String  | others-cola                         |
+| ButtomDoor       | Switch  | others-buttom-door                  |
+| RebootCause      | Number  | others-reboot-cause                 |
+| HwVersion        | Number  | others-hw-version                   |
+| IicErrorCount    | Number  | others-iic-error-count              |
+| ManualLevel      | Number  | others-manual-level                 |
+| CountryCode      | Number  | others-National code                |
 
 ### Mi Air Purifier Super (<a name="zhimi-airpurifier-sa1">zhimi.airpurifier.sa1</a>) Channels
 
@@ -663,6 +764,16 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | airFreshFilterPercents | Number  | Filter Percents Remaining           |
 | airFreshFilterDays | Number  | Filter Days Remaining               |
 | airFreshResetFilterA1 | String  | Reset Filter                        |
+
+### Gosund Plug (<a name="cuco-plug-cp1">cuco.plug.cp1</a>) Channels
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| FirmwareRevision | String  | Device Information-CurrentFirmware Version |
+| Manufacturer     | String  | Device Information-Device Manufacturer |
+| Model            | String  | Device Information-Device Model     |
+| SerialNumber     | String  | Device Information-Device Serial Number |
+| On               | Switch  | Switch-Switch Status                |
 
 ### Mi Air Purifier mb1 (<a name="zhimi-airpurifier-mb1">zhimi.airpurifier.mb1</a>) Channels
 
@@ -1032,6 +1143,45 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | current          | Number  | Current                             |
 | temperature      | Number  | Temperature                         |
 
+### Vacuum 1C STYTJ01ZHM (<a name="dreame-vacuum-mc1808">dreame.vacuum.mc1808</a>) Channels
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| BatteryLevel     | Number  | Battery-Battery Level               |
+| ChargingState    | Number  | Battery-Charging State              |
+| FirmwareRevision | String  | Device Information-Current Firmware Version |
+| Manufacturer     | String  | Device Information-Device Manufacturer |
+| Model            | String  | Device Information-Device Model     |
+| SerialNumber     | String  | Device Information-Device Serial Number |
+| Fault            | Number  | Robot Cleaner-Device Fault          |
+| Status           | Number  | Robot Cleaner-Status                |
+| BrushLeftTime    | String  | Main Cleaning Brush-Brush Left Time |
+| BrushLifeLevel   | Number  | Main Cleaning Brush-Brush Life Level |
+| FilterLifeLevel  | Number  | Filter-Filter Life Level            |
+| FilterLeftTime   | String  | Filter-Filter Left Time             |
+| BrushLeftTime1   | String  | Side Cleaning Brush-Brush Left Time |
+| BrushLifeLevel1  | Number  | Side Cleaning Brush-Brush Life Level |
+| WorkMode         | Number  | clean-workmode                      |
+| Area             | String  | clean-area                          |
+| Timer            | String  | clean-timer                         |
+| Mode             | Number  | clean-mode                          |
+| TotalCleanTime   | String  | clean-total time                    |
+| TotalCleanTimes  | String  | clean-total times                   |
+| TotalCleanArea   | String  | clean-Total area                    |
+| CleanLogStartTime | String  | clean-Start Time                    |
+| ButtonLed        | String  | clean-led                           |
+| TaskDone         | Number  | clean-task done                     |
+| LifeSieve        | String  | consumable-life-sieve               |
+| LifeBrushSide    | String  | consumable-life-brush-side          |
+| LifeBrushMain    | String  | consumable-life-brush-main          |
+| Enable           | Switch  | annoy-enable                        |
+| StartTime        | String  | annoy-start-time                    |
+| StopTime         | String  | annoy-stop-time                     |
+| MapView          | String  | map-map-view                        |
+| Volume           | Number  | audio-volume                        |
+| VoicePackets     | String  | audio-voiceId                       |
+| TimeZone         | String  | timezone                            |
+
 ###  Mijia 1 Gang Wall Smart Switch (WIFI) - PTX switch (<a name="090615-switch-xswitch01">090615.switch.xswitch01</a>) Channels
 
 | Channel          | Type    | Description                         |
@@ -1106,8 +1256,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
-| delayoff         | String  | Shutdown Timer                      |
+| brightness       | Dimmer  | Brightness                          |
+| delayoff         | Number  | Shutdown Timer                      |
 | colorTemperature | Number  | Color Temperature                   |
 | colorMode        | String  | Color Mode                          |
 | toggle           | Switch  | toggle                              |
@@ -1119,8 +1269,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
-| delayoff         | String  | Shutdown Timer                      |
+| brightness       | Dimmer  | Brightness                          |
+| delayoff         | Number  | Shutdown Timer                      |
 | colorTemperature | Number  | Color Temperature                   |
 | colorMode        | String  | Color Mode                          |
 | toggle           | Switch  | toggle                              |
@@ -1132,7 +1282,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
+| brightness       | Dimmer  | Brightness                          |
 | delayoff         | Number  | Shutdown Timer                      |
 | colorTemperature | Number  | Color Temperature                   |
 | colorMode        | Number  | Color Mode                          |
@@ -1145,7 +1295,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
+| brightness       | Dimmer  | Brightness                          |
 | delayoff         | Number  | Shutdown Timer                      |
 | colorTemperature | Number  | Color Temperature                   |
 | colorMode        | Number  | Color Mode                          |
@@ -1158,7 +1308,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
+| brightness       | Dimmer  | Brightness                          |
 | delayoff         | Number  | Shutdown Timer                      |
 | colorTemperature | Number  | Color Temperature                   |
 | colorMode        | Number  | Color Mode                          |
@@ -1171,7 +1321,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
+| brightness       | Dimmer  | Brightness                          |
 | ambientBrightness | Number  | Ambient Brightness                  |
 | delayoff         | Number  | Shutdown Timer                      |
 | colorTemperature | Number  | Color Temperature                   |
@@ -1189,7 +1339,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
+| brightness       | Dimmer  | Brightness                          |
 | ambientBrightness | Number  | Ambient Brightness                  |
 | delayoff         | Number  | Shutdown Timer                      |
 | colorTemperature | Number  | Color Temperature                   |
@@ -1207,7 +1357,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
+| brightness       | Dimmer  | Brightness                          |
 | delayoff         | Number  | Shutdown Timer                      |
 | colorTemperature | Number  | Color Temperature                   |
 | colorMode        | Number  | Color Mode                          |
@@ -1220,7 +1370,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
+| brightness       | Dimmer  | Brightness                          |
 | delayoff         | Number  | Shutdown Timer                      |
 | colorTemperature | Number  | Color Temperature                   |
 | colorMode        | Number  | Color Mode                          |
@@ -1233,7 +1383,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
+| brightness       | Dimmer  | Brightness                          |
 | delayoff         | Number  | Shutdown Timer                      |
 | colorTemperature | Number  | Color Temperature                   |
 | colorMode        | Number  | Color Mode                          |
@@ -1246,7 +1396,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
+| brightness       | Dimmer  | Brightness                          |
 | delayoff         | Number  | Shutdown Timer                      |
 | colorTemperature | Number  | Color Temperature                   |
 | colorMode        | Number  | Color Mode                          |
@@ -1259,7 +1409,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
+| brightness       | Dimmer  | Brightness                          |
 | delayoff         | Number  | Shutdown Timer                      |
 | colorTemperature | Number  | Color Temperature                   |
 | colorMode        | Number  | Color Mode                          |
@@ -1272,7 +1422,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
+| brightness       | Dimmer  | Brightness                          |
 | ambientBrightness | Number  | Ambient Brightness                  |
 | delayoff         | Number  | Shutdown Timer                      |
 | colorTemperature | Number  | Color Temperature                   |
@@ -1290,7 +1440,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
+| brightness       | Dimmer  | Brightness                          |
 | delayoff         | Number  | Shutdown Timer                      |
 | colorTemperature | Number  | Color Temperature                   |
 | colorMode        | Number  | Color Mode                          |
@@ -1303,7 +1453,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
+| brightness       | Dimmer  | Brightness                          |
 | delayoff         | Number  | Shutdown Timer                      |
 | colorTemperature | Number  | Color Temperature                   |
 | colorMode        | Number  | Color Mode                          |
@@ -1316,7 +1466,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
+| brightness       | Dimmer  | Brightness                          |
 | delayoff         | Number  | Shutdown Timer                      |
 | colorTemperature | Number  | Color Temperature                   |
 | colorMode        | Number  | Color Mode                          |
@@ -1329,7 +1479,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
+| brightness       | Dimmer  | Brightness                          |
 | delayoff         | Number  | Shutdown Timer                      |
 | colorTemperature | Number  | Color Temperature                   |
 | colorMode        | Number  | Color Mode                          |
@@ -1340,7 +1490,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
+| brightness       | Dimmer  | Brightness                          |
 | delayoff         | Number  | Shutdown Timer                      |
 | colorTemperature | Number  | Color Temperature                   |
 | colorMode        | Number  | Color Mode                          |
@@ -1351,7 +1501,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
+| brightness       | Dimmer  | Brightness                          |
 | delayoff         | Number  | Shutdown Timer                      |
 | colorTemperature | Number  | Color Temperature                   |
 | colorMode        | Number  | Color Mode                          |
@@ -1362,7 +1512,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
+| brightness       | Dimmer  | Brightness                          |
 | delayoff         | Number  | Shutdown Timer                      |
 | colorTemperature | Number  | Color Temperature                   |
 | colorMode        | Number  | Color Mode                          |
@@ -1373,7 +1523,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
+| brightness       | Dimmer  | Brightness                          |
 | delayoff         | Number  | Shutdown Timer                      |
 | colorTemperature | Number  | Color Temperature                   |
 | colorMode        | Number  | Color Mode                          |
@@ -1384,7 +1534,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
+| brightness       | Dimmer  | Brightness                          |
 | delayoff         | Number  | Shutdown Timer                      |
 | colorTemperature | Number  | Color Temperature                   |
 | colorMode        | Number  | Color Mode                          |
@@ -1395,8 +1545,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
-| delayoff         | String  | Shutdown Timer                      |
+| brightness       | Dimmer  | Brightness                          |
+| delayoff         | Number  | Shutdown Timer                      |
 | colorTemperature | Number  | Color Temperature                   |
 | colorMode        | String  | Color Mode                          |
 | toggle           | Switch  | toggle                              |
@@ -1408,8 +1558,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
-| delayoff         | String  | Shutdown Timer                      |
+| brightness       | Dimmer  | Brightness                          |
+| delayoff         | Number  | Shutdown Timer                      |
 | colorTemperature | Number  | Color Temperature                   |
 | colorMode        | String  | Color Mode                          |
 | toggle           | Switch  | toggle                              |
@@ -1421,7 +1571,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
+| brightness       | Dimmer  | Brightness                          |
 | delayoff         | Number  | Shutdown Timer                      |
 | colorTemperature | Number  | Color Temperature                   |
 | colorMode        | Number  | Color Mode                          |
@@ -1432,8 +1582,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
-| delayoff         | String  | Shutdown Timer                      |
+| brightness       | Dimmer  | Brightness                          |
+| delayoff         | Number  | Shutdown Timer                      |
 | colorTemperature | Number  | Color Temperature                   |
 | colorMode        | String  | Color Mode                          |
 | toggle           | Switch  | toggle                              |
@@ -1445,8 +1595,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
-| delayoff         | String  | Shutdown Timer                      |
+| brightness       | Dimmer  | Brightness                          |
+| delayoff         | Number  | Shutdown Timer                      |
 | colorTemperature | Number  | Color Temperature                   |
 | colorMode        | String  | Color Mode                          |
 | toggle           | Switch  | toggle                              |
@@ -1458,8 +1608,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
-| delayoff         | String  | Shutdown Timer                      |
+| brightness       | Dimmer  | Brightness                          |
+| delayoff         | Number  | Shutdown Timer                      |
 | colorTemperature | Number  | Color Temperature                   |
 | colorMode        | String  | Color Mode                          |
 | toggle           | Switch  | toggle                              |
@@ -1471,8 +1621,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
-| delayoff         | String  | Shutdown Timer                      |
+| brightness       | Dimmer  | Brightness                          |
+| delayoff         | Number  | Shutdown Timer                      |
 | colorTemperature | Number  | Color Temperature                   |
 | colorMode        | String  | Color Mode                          |
 | toggle           | Switch  | toggle                              |
@@ -1884,22 +2034,123 @@ note: Autogenerated example. Replace the id (airpurifier) in the channel with yo
 
 ```java
 Group G_airpurifier "Mi Air Purifier 3" <status>
-Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
-String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
-Number humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
-Number aqi "Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:aqi"}
-Number averageaqi "Average Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:averageaqi"}
-Switch led "LED Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
-Switch buzzer "Buzzer Status" (G_airpurifier) {channel="miio:basic:airpurifier:buzzer"}
-Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airpurifier:filtermaxlife"}
-Number filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
-Number usedhours "Run Time" (G_airpurifier) {channel="miio:basic:airpurifier:usedhours"}
-Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed"}
-Number filterlife "Filter  Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
-Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
-Number temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
-Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
-Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:childlock"}
+Number Fault "Air Purifier-Device Fault" (G_airpurifier) {channel="miio:basic:airpurifier:Fault"}
+Switch On "Air Purifier-Switch Status" (G_airpurifier) {channel="miio:basic:airpurifier:On"}
+Number FanLevel "Air Purifier-Fan Level" (G_airpurifier) {channel="miio:basic:airpurifier:FanLevel"}
+Number Mode "Air Purifier-Mode" (G_airpurifier) {channel="miio:basic:airpurifier:Mode"}
+String FirmwareRevision "Device Information-Current Firmware Version" (G_airpurifier) {channel="miio:basic:airpurifier:FirmwareRevision"}
+String Manufacturer "Device Information-Device Manufacturer" (G_airpurifier) {channel="miio:basic:airpurifier:Manufacturer"}
+String Model "Device Information-Device Model" (G_airpurifier) {channel="miio:basic:airpurifier:Model"}
+String SerialNumber "Device Information-Device Serial Number" (G_airpurifier) {channel="miio:basic:airpurifier:SerialNumber"}
+Number Pm25Density "Environment-PM2.5 Density" (G_airpurifier) {channel="miio:basic:airpurifier:Pm25Density"}
+Number RelativeHumidity "Environment-Relative Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:RelativeHumidity"}
+Number Temperature "Environment-Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:Temperature"}
+Number FilterLifeLevel "Filter-Filter Life Level" (G_airpurifier) {channel="miio:basic:airpurifier:FilterLifeLevel"}
+String FilterUsedTime "Filter-Filter Used Time" (G_airpurifier) {channel="miio:basic:airpurifier:FilterUsedTime"}
+Switch Alarm "Alarm-Alarm" (G_airpurifier) {channel="miio:basic:airpurifier:Alarm"}
+Number Brightness "Indicator Light-Brightness" (G_airpurifier) {channel="miio:basic:airpurifier:Brightness"}
+Switch On1 "Indicator Light-Switch Status" (G_airpurifier) {channel="miio:basic:airpurifier:On1"}
+Switch PhysicalControlsLocked "Physical Control Locked-Physical Control Locked" (G_airpurifier) {channel="miio:basic:airpurifier:PhysicalControlsLocked"}
+String ButtonPressed "button-button_pressed" (G_airpurifier) {channel="miio:basic:airpurifier:ButtonPressed"}
+Number FilterMaxTime "filter-time-filter-max-time" (G_airpurifier) {channel="miio:basic:airpurifier:FilterMaxTime"}
+Number FilterHourUsedDebug "filter-time-filter-hour-used-debug" (G_airpurifier) {channel="miio:basic:airpurifier:FilterHourUsedDebug"}
+Number M1Strong "motor-speed-m1-strong" (G_airpurifier) {channel="miio:basic:airpurifier:M1Strong"}
+Number M1High "motor-speed-m1-high" (G_airpurifier) {channel="miio:basic:airpurifier:M1High"}
+Number M1Med "motor-speed-m1-med" (G_airpurifier) {channel="miio:basic:airpurifier:M1Med"}
+Number M1MedL "motor-speed-m1-med-l" (G_airpurifier) {channel="miio:basic:airpurifier:M1MedL"}
+Number M1Low "motor-speed-m1-low" (G_airpurifier) {channel="miio:basic:airpurifier:M1Low"}
+Number M1Silent "motor-speed-m1-silent" (G_airpurifier) {channel="miio:basic:airpurifier:M1Silent"}
+Number M1Favorite "motor-speed-m1-favorite" (G_airpurifier) {channel="miio:basic:airpurifier:M1Favorite"}
+Number Motor1Speed "motor-speed-motor1-speed" (G_airpurifier) {channel="miio:basic:airpurifier:Motor1Speed"}
+Number Motor1SetSpeed "motor-speed-motor1-set-speed" (G_airpurifier) {channel="miio:basic:airpurifier:Motor1SetSpeed"}
+Number FavoriteFanLevel "motor-speed-favorite fan level" (G_airpurifier) {channel="miio:basic:airpurifier:FavoriteFanLevel"}
+Number UseTime "use-time-use-time" (G_airpurifier) {channel="miio:basic:airpurifier:UseTime"}
+Number PurifyVolume "aqi-purify-volume" (G_airpurifier) {channel="miio:basic:airpurifier:PurifyVolume"}
+Number AverageAqi "aqi-average-aqi" (G_airpurifier) {channel="miio:basic:airpurifier:AverageAqi"}
+Number AverageAqiCnt "aqi-average-aqi-cnt" (G_airpurifier) {channel="miio:basic:airpurifier:AverageAqiCnt"}
+String AqiZone "aqi-aqi-zone" (G_airpurifier) {channel="miio:basic:airpurifier:AqiZone"}
+String SensorState "aqi-sensor-state" (G_airpurifier) {channel="miio:basic:airpurifier:SensorState"}
+Number AqiGoodh "aqi-aqi-goodh" (G_airpurifier) {channel="miio:basic:airpurifier:AqiGoodh"}
+Number AqiRunstate "aqi-aqi-runstate" (G_airpurifier) {channel="miio:basic:airpurifier:AqiRunstate"}
+Number AqiState "aqi-aqi-state" (G_airpurifier) {channel="miio:basic:airpurifier:AqiState"}
+Number AqiUpdataHeartbeat "aqi-aqi-updata-heartbeat" (G_airpurifier) {channel="miio:basic:airpurifier:AqiUpdataHeartbeat"}
+String RfidTag "rfid-rfid-tag" (G_airpurifier) {channel="miio:basic:airpurifier:RfidTag"}
+String RfidFactoryId "rfid-rfid-factory-id" (G_airpurifier) {channel="miio:basic:airpurifier:RfidFactoryId"}
+String RfidProductId "rfid-rfid-product-id" (G_airpurifier) {channel="miio:basic:airpurifier:RfidProductId"}
+String RfidTime "rfid-rfid-time" (G_airpurifier) {channel="miio:basic:airpurifier:RfidTime"}
+String RfidSerialNum "rfid-rfid-serial-num" (G_airpurifier) {channel="miio:basic:airpurifier:RfidSerialNum"}
+Number AppExtra "others-app-extra" (G_airpurifier) {channel="miio:basic:airpurifier:AppExtra"}
+Number MainChannel "others-main-channel" (G_airpurifier) {channel="miio:basic:airpurifier:MainChannel"}
+Number SlaveChannel "others-slave-channel" (G_airpurifier) {channel="miio:basic:airpurifier:SlaveChannel"}
+String Cola "others-cola" (G_airpurifier) {channel="miio:basic:airpurifier:Cola"}
+Switch ButtomDoor "others-buttom-door" (G_airpurifier) {channel="miio:basic:airpurifier:ButtomDoor"}
+Number RebootCause "others-reboot_cause" (G_airpurifier) {channel="miio:basic:airpurifier:RebootCause"}
+Number HwVersion "others-hw-version" (G_airpurifier) {channel="miio:basic:airpurifier:HwVersion"}
+Number I2cErrorCount "others-i2c-error-count" (G_airpurifier) {channel="miio:basic:airpurifier:I2cErrorCount"}
+Number ManualLevel "others-manual-level" (G_airpurifier) {channel="miio:basic:airpurifier:ManualLevel"}
+```
+
+### Mi Air Purifier 3 (zhimi.airpurifier.mb3) item file lines
+
+note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_airpurifier "Mi Air Purifier 3" <status>
+Number Fault "Air Purifier-fault" (G_airpurifier) {channel="miio:basic:airpurifier:Fault"}
+Switch On "Air Purifier-Switch Status" (G_airpurifier) {channel="miio:basic:airpurifier:On"}
+Number FanLevel "Air Purifier-Fan Level" (G_airpurifier) {channel="miio:basic:airpurifier:FanLevel"}
+Number Mode "Air Purifier-Mode" (G_airpurifier) {channel="miio:basic:airpurifier:Mode"}
+String FirmwareRevision "Device Information-Current Firmware Version" (G_airpurifier) {channel="miio:basic:airpurifier:FirmwareRevision"}
+String Manufacturer "Device Information-Device Manufacturer" (G_airpurifier) {channel="miio:basic:airpurifier:Manufacturer"}
+String Model "Device Information-Device Model" (G_airpurifier) {channel="miio:basic:airpurifier:Model"}
+String SerialNumber "Device Information-Device Serial Number" (G_airpurifier) {channel="miio:basic:airpurifier:SerialNumber"}
+Number Pm25Density "Environment-PM2.5" (G_airpurifier) {channel="miio:basic:airpurifier:Pm25Density"}
+Number RelativeHumidity "Environment-Relative Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:RelativeHumidity"}
+Number Temperature "Environment-Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:Temperature"}
+Number FilterLifeLevel "Filter-Filter Life Level" (G_airpurifier) {channel="miio:basic:airpurifier:FilterLifeLevel"}
+String FilterUsedTime "Filter-Filter Used Time" (G_airpurifier) {channel="miio:basic:airpurifier:FilterUsedTime"}
+Switch Alarm "Alarm-Alarm" (G_airpurifier) {channel="miio:basic:airpurifier:Alarm"}
+Number Brightness "Indicator Light-brightness" (G_airpurifier) {channel="miio:basic:airpurifier:Brightness"}
+Switch On1 "Indicator Light-Switch Status" (G_airpurifier) {channel="miio:basic:airpurifier:On1"}
+Switch PhysicalControlsLocked "Physical Control Locked-Physical Control Locked" (G_airpurifier) {channel="miio:basic:airpurifier:PhysicalControlsLocked"}
+String ButtonPressed "Button-button-pressed" (G_airpurifier) {channel="miio:basic:airpurifier:ButtonPressed"}
+Number FilterMaxTime "filter-time-filter-max-time" (G_airpurifier) {channel="miio:basic:airpurifier:FilterMaxTime"}
+Number FilterHourDebug "filter-time-filter-hour-debug" (G_airpurifier) {channel="miio:basic:airpurifier:FilterHourDebug"}
+Number MotorStrong "motor-speed-motor-strong" (G_airpurifier) {channel="miio:basic:airpurifier:MotorStrong"}
+Number MotorHigh "motor-speed-motor-high" (G_airpurifier) {channel="miio:basic:airpurifier:MotorHigh"}
+Number MotorMed "motor-speed-motor-med" (G_airpurifier) {channel="miio:basic:airpurifier:MotorMed"}
+Number MotorMedL "motor-speed-motor-med-l" (G_airpurifier) {channel="miio:basic:airpurifier:MotorMedL"}
+Number MotorLow "motor-speed-motor-low" (G_airpurifier) {channel="miio:basic:airpurifier:MotorLow"}
+Number MotorSilent "motor-speed-motor-silent" (G_airpurifier) {channel="miio:basic:airpurifier:MotorSilent"}
+Number MotorFavorite "motor-speed-motor-favorite" (G_airpurifier) {channel="miio:basic:airpurifier:MotorFavorite"}
+Number MotorSpeed "motor-speed-motor-speed" (G_airpurifier) {channel="miio:basic:airpurifier:MotorSpeed"}
+Number MotorSetSpeed "motor-speed-motor-set-speed" (G_airpurifier) {channel="miio:basic:airpurifier:MotorSetSpeed"}
+Number FavoriteFanLevel "motor-speed-favorite-fan-level" (G_airpurifier) {channel="miio:basic:airpurifier:FavoriteFanLevel"}
+Number UseTime "use-time-use-time" (G_airpurifier) {channel="miio:basic:airpurifier:UseTime"}
+Number PurifyVolume "aqi-purify-volume" (G_airpurifier) {channel="miio:basic:airpurifier:PurifyVolume"}
+Number AverageAqi "aqi-average-aqi" (G_airpurifier) {channel="miio:basic:airpurifier:AverageAqi"}
+Number AverageAqiCnt "aqi-average-aqi-cnt" (G_airpurifier) {channel="miio:basic:airpurifier:AverageAqiCnt"}
+String AqiZone "aqi-aqi-zone" (G_airpurifier) {channel="miio:basic:airpurifier:AqiZone"}
+String SensorState "aqi-sensor-state" (G_airpurifier) {channel="miio:basic:airpurifier:SensorState"}
+Number AqiGoodh "aqi-aqi-goodh" (G_airpurifier) {channel="miio:basic:airpurifier:AqiGoodh"}
+Number AqiRunstate "aqi-aqi-runstate" (G_airpurifier) {channel="miio:basic:airpurifier:AqiRunstate"}
+Number AqiState "aqi-aqi-state" (G_airpurifier) {channel="miio:basic:airpurifier:AqiState"}
+Number AqiUpdataHeartbeat "aqi-aqi-updata-heartbeat" (G_airpurifier) {channel="miio:basic:airpurifier:AqiUpdataHeartbeat"}
+String RfidTag "rfid-rfid-tag" (G_airpurifier) {channel="miio:basic:airpurifier:RfidTag"}
+String RfidFactoryId "rfid-rfid-factory-id" (G_airpurifier) {channel="miio:basic:airpurifier:RfidFactoryId"}
+String RfidProductId "rfid-rfid-product-id" (G_airpurifier) {channel="miio:basic:airpurifier:RfidProductId"}
+String RfidTime "rfid-rfid-time" (G_airpurifier) {channel="miio:basic:airpurifier:RfidTime"}
+String RfidSerialNum "rfid-rfid-serial-num" (G_airpurifier) {channel="miio:basic:airpurifier:RfidSerialNum"}
+Number AppExtra "others-app-extra" (G_airpurifier) {channel="miio:basic:airpurifier:AppExtra"}
+Number MainChannel "others-main-channel" (G_airpurifier) {channel="miio:basic:airpurifier:MainChannel"}
+Number SlaveChannel "others-slave-channel" (G_airpurifier) {channel="miio:basic:airpurifier:SlaveChannel"}
+String Cola "others-cola" (G_airpurifier) {channel="miio:basic:airpurifier:Cola"}
+Switch ButtomDoor "others-buttom-door" (G_airpurifier) {channel="miio:basic:airpurifier:ButtomDoor"}
+Number RebootCause "others-reboot-cause" (G_airpurifier) {channel="miio:basic:airpurifier:RebootCause"}
+Number HwVersion "others-hw-version" (G_airpurifier) {channel="miio:basic:airpurifier:HwVersion"}
+Number IicErrorCount "others-iic-error-count" (G_airpurifier) {channel="miio:basic:airpurifier:IicErrorCount"}
+Number ManualLevel "others-manual-level" (G_airpurifier) {channel="miio:basic:airpurifier:ManualLevel"}
+Number CountryCode "others-National code" (G_airpurifier) {channel="miio:basic:airpurifier:CountryCode"}
 ```
 
 ### Mi Air Purifier Super (zhimi.airpurifier.sa1) item file lines
@@ -1998,6 +2249,19 @@ Number airFreshTemperature "Temperature Outside" (G_airfresh) {channel="miio:bas
 Number airFreshFilterPercents "Filter Percents Remaining" (G_airfresh) {channel="miio:basic:airfresh:airFreshFilterPercents"}
 Number airFreshFilterDays "Filter Days Remaining" (G_airfresh) {channel="miio:basic:airfresh:airFreshFilterDays"}
 String airFreshResetFilterA1 "Reset Filter" (G_airfresh) {channel="miio:basic:airfresh:airFreshResetFilterA1"}
+```
+
+### Gosund Plug (cuco.plug.cp1) item file lines
+
+note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_plug "Gosund Plug" <status>
+String FirmwareRevision "Device Information-CurrentFirmware Version" (G_plug) {channel="miio:basic:plug:FirmwareRevision"}
+String Manufacturer "Device Information-Device Manufacturer" (G_plug) {channel="miio:basic:plug:Manufacturer"}
+String Model "Device Information-Device Model" (G_plug) {channel="miio:basic:plug:Model"}
+String SerialNumber "Device Information-Device Serial Number" (G_plug) {channel="miio:basic:plug:SerialNumber"}
+Switch On "Switch-Switch Status" (G_plug) {channel="miio:basic:plug:On"}
 ```
 
 ### Mi Air Purifier mb1 (zhimi.airpurifier.mb1) item file lines
@@ -2452,6 +2716,48 @@ Number current "Current" (G_powerstrip) {channel="miio:basic:powerstrip:current"
 Number temperature "Temperature" (G_powerstrip) {channel="miio:basic:powerstrip:temperature"}
 ```
 
+### Vacuum 1C STYTJ01ZHM (dreame.vacuum.mc1808) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_vacuum "Vacuum 1C STYTJ01ZHM" <status>
+Number BatteryLevel "Battery-Battery Level" (G_vacuum) {channel="miio:basic:vacuum:BatteryLevel"}
+Number ChargingState "Battery-Charging State" (G_vacuum) {channel="miio:basic:vacuum:ChargingState"}
+String FirmwareRevision "Device Information-Current Firmware Version" (G_vacuum) {channel="miio:basic:vacuum:FirmwareRevision"}
+String Manufacturer "Device Information-Device Manufacturer" (G_vacuum) {channel="miio:basic:vacuum:Manufacturer"}
+String Model "Device Information-Device Model" (G_vacuum) {channel="miio:basic:vacuum:Model"}
+String SerialNumber "Device Information-Device Serial Number" (G_vacuum) {channel="miio:basic:vacuum:SerialNumber"}
+Number Fault "Robot Cleaner-Device Fault" (G_vacuum) {channel="miio:basic:vacuum:Fault"}
+Number Status "Robot Cleaner-Status" (G_vacuum) {channel="miio:basic:vacuum:Status"}
+String BrushLeftTime "Main Cleaning Brush-Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:BrushLeftTime"}
+Number BrushLifeLevel "Main Cleaning Brush-Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:BrushLifeLevel"}
+Number FilterLifeLevel "Filter-Filter Life Level" (G_vacuum) {channel="miio:basic:vacuum:FilterLifeLevel"}
+String FilterLeftTime "Filter-Filter Left Time" (G_vacuum) {channel="miio:basic:vacuum:FilterLeftTime"}
+String BrushLeftTime1 "Side Cleaning Brush-Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:BrushLeftTime1"}
+Number BrushLifeLevel1 "Side Cleaning Brush-Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:BrushLifeLevel1"}
+Number WorkMode "clean-workmode" (G_vacuum) {channel="miio:basic:vacuum:WorkMode"}
+String Area "clean-area" (G_vacuum) {channel="miio:basic:vacuum:Area"}
+String Timer "clean-timer" (G_vacuum) {channel="miio:basic:vacuum:Timer"}
+Number Mode "clean-mode" (G_vacuum) {channel="miio:basic:vacuum:Mode"}
+String TotalCleanTime "clean-total time" (G_vacuum) {channel="miio:basic:vacuum:TotalCleanTime"}
+String TotalCleanTimes "clean-total times" (G_vacuum) {channel="miio:basic:vacuum:TotalCleanTimes"}
+String TotalCleanArea "clean-Total area" (G_vacuum) {channel="miio:basic:vacuum:TotalCleanArea"}
+String CleanLogStartTime "clean-Start Time" (G_vacuum) {channel="miio:basic:vacuum:CleanLogStartTime"}
+String ButtonLed "clean-led" (G_vacuum) {channel="miio:basic:vacuum:ButtonLed"}
+Number TaskDone "clean-task done" (G_vacuum) {channel="miio:basic:vacuum:TaskDone"}
+String LifeSieve "consumable-life-sieve" (G_vacuum) {channel="miio:basic:vacuum:LifeSieve"}
+String LifeBrushSide "consumable-life-brush-side" (G_vacuum) {channel="miio:basic:vacuum:LifeBrushSide"}
+String LifeBrushMain "consumable-life-brush-main" (G_vacuum) {channel="miio:basic:vacuum:LifeBrushMain"}
+Switch Enable "annoy-enable" (G_vacuum) {channel="miio:basic:vacuum:Enable"}
+String StartTime "annoy-start-time" (G_vacuum) {channel="miio:basic:vacuum:StartTime"}
+String StopTime "annoy-stop-time" (G_vacuum) {channel="miio:basic:vacuum:StopTime"}
+String MapView "map-map-view" (G_vacuum) {channel="miio:basic:vacuum:MapView"}
+Number Volume "audio-volume" (G_vacuum) {channel="miio:basic:vacuum:Volume"}
+String VoicePackets "audio-voiceId" (G_vacuum) {channel="miio:basic:vacuum:VoicePackets"}
+String TimeZone "timezone" (G_vacuum) {channel="miio:basic:vacuum:TimeZone"}
+```
+
 ###  Mijia 1 Gang Wall Smart Switch (WIFI) - PTX switch (090615.switch.xswitch01) item file lines
 
 note: Autogenerated example. Replace the id (switch) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
@@ -2558,8 +2864,8 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Yeelight Lamp" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-String delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 String colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Switch toggle "toggle" (G_light) {channel="miio:basic:light:toggle"}
@@ -2574,8 +2880,8 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Yeelight Lamp" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-String delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 String colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Switch toggle "toggle" (G_light) {channel="miio:basic:light:toggle"}
@@ -2590,7 +2896,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Yeelight LED Ceiling Lamp" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
@@ -2606,7 +2912,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Yeelight LED Ceiling Lamp v2" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
@@ -2622,7 +2928,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Yeelight LED Ceiling Lamp v3" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
@@ -2638,7 +2944,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Yeelight LED Ceiling Lamp v4 (JIAOYUE 650 RGB)" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
@@ -2659,7 +2965,7 @@ note: Autogenerated example. Replace the id (ceiling4) in the channel with your 
 ```java
 Group G_ceiling4 "Yeelight LED Ceiling Lamp v4" <status>
 Switch power "Power" (G_ceiling4) {channel="miio:basic:ceiling4:power"}
-Number brightness "Brightness" (G_ceiling4) {channel="miio:basic:ceiling4:brightness"}
+Dimmer brightness "Brightness" (G_ceiling4) {channel="miio:basic:ceiling4:brightness"}
 Number ambientBrightness "Ambient Brightness" (G_ceiling4) {channel="miio:basic:ceiling4:ambientBrightness"}
 Number delayoff "Shutdown Timer" (G_ceiling4) {channel="miio:basic:ceiling4:delayoff"}
 Number colorTemperature "Color Temperature" (G_ceiling4) {channel="miio:basic:ceiling4:colorTemperature"}
@@ -2680,7 +2986,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Yeelight LED Ceiling Lamp v5" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
@@ -2696,7 +3002,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Yeelight LED Ceiling Lamp v6" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
@@ -2712,7 +3018,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Yeelight LED Ceiling Lamp v7" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
@@ -2728,7 +3034,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Yeelight LED Ceiling Lamp v8" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
@@ -2744,7 +3050,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Yeelight LED Ceiling Lamp v9" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
@@ -2760,7 +3066,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Yeelight LED Meteorite lamp" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
@@ -2781,7 +3087,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Yeelight LED Ceiling Lamp v11" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
@@ -2797,7 +3103,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Yeelight LED Ceiling Lamp v12" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
@@ -2813,7 +3119,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Yeelight LED Ceiling Lamp v13" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
@@ -2829,7 +3135,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Yeelight ct2" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
@@ -2843,7 +3149,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Yeelight White Bulb" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
@@ -2857,7 +3163,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Yeelight White Bulb v2" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
@@ -2871,7 +3177,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Yeelight" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
@@ -2885,7 +3191,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Yeelight" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
@@ -2899,7 +3205,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Yeelight" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
@@ -2913,8 +3219,8 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Yeelight Strip" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-String delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 String colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Switch toggle "toggle" (G_light) {channel="miio:basic:light:toggle"}
@@ -2929,8 +3235,8 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Yeelight Strip" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-String delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 String colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Switch toggle "toggle" (G_light) {channel="miio:basic:light:toggle"}
@@ -2945,7 +3251,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Yeelight" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
@@ -2959,8 +3265,8 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Yeelight Color Bulb" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-String delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 String colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Switch toggle "toggle" (G_light) {channel="miio:basic:light:toggle"}
@@ -2975,8 +3281,8 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Yeelight Color Bulb YLDP06YL 10W" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-String delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 String colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Switch toggle "toggle" (G_light) {channel="miio:basic:light:toggle"}
@@ -2991,8 +3297,8 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Yeelight Color Bulb YLDP02YL 9W" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-String delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 String colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Switch toggle "toggle" (G_light) {channel="miio:basic:light:toggle"}
@@ -3007,8 +3313,8 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Yeelight Bulb YLDP13YL (8,5W)" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-String delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 String colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Switch toggle "toggle" (G_light) {channel="miio:basic:light:toggle"}

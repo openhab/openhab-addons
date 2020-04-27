@@ -24,13 +24,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.gson.annotations.SerializedName;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link DWDPollenflug} class is internal DWD data structure.

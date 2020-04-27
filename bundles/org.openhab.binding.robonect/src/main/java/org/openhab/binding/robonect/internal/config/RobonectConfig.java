@@ -19,15 +19,15 @@ package org.openhab.binding.robonect.internal.config;
  * @author Marco Meyer - Initial contribution
  */
 public class RobonectConfig {
-    
+
     private String host;
-    
+
     private String user;
-    
+
     private String password;
-    
+
     private int pollInterval;
-    
+
     private int offlineTimeout;
 
     public String getHost() {

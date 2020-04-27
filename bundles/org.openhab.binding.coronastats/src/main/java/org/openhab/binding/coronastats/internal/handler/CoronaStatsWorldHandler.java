@@ -12,17 +12,14 @@
  */
 package org.openhab.binding.coronastats.internal.handler;
 
+import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.util.Set;
-import java.net.SocketTimeoutException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -47,6 +44,9 @@ import org.openhab.binding.coronastats.internal.dto.CoronaStats;
 import org.openhab.binding.coronastats.internal.dto.CoronaStatsWorld;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link CoronaStatsWorldHandler} is the handler for bridge thing

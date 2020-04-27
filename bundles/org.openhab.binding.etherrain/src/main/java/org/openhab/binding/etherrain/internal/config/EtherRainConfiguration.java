@@ -71,5 +71,4 @@ public class EtherRainConfiguration {
     public int zoneOnTime6 = 0;
     public int zoneOnTime7 = 0;
     public int zoneOnTime8 = 0;
-
 }

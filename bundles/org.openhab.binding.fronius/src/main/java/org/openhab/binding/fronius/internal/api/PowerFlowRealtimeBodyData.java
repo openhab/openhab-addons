@@ -52,5 +52,4 @@ public class PowerFlowRealtimeBodyData {
     public void setSite(PowerFlowRealtimeSite site) {
         this.site = site;
     }
-
 }

@@ -285,5 +285,4 @@ public class NetatmoBindingConstants {
             .collect(Collectors.toSet());
     public static final Set<EventTypeEnum> PRESENCE_EVENTS = Stream
             .of(EventTypeEnum.OUTDOOR, EventTypeEnum.ALIM, EventTypeEnum.DAILY_SUMMARY).collect(Collectors.toSet());
-
 }

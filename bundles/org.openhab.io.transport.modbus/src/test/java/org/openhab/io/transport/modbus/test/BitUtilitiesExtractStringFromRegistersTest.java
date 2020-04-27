@@ -112,5 +112,4 @@ public class BitUtilitiesExtractStringFromRegistersTest {
         assertThat(String.format("registers=%s, index=%d, length=%d", registers, index, length), actualState,
                 is(equalTo(expectedResult)));
     }
-
 }

@@ -183,6 +183,7 @@
 /bundles/org.openhab.binding.sonyprojector/ @lolodomo
 /bundles/org.openhab.binding.spotify/ @Hilbrand
 /bundles/org.openhab.binding.squeezebox/ @digitaldan @mhilbush
+/bundles/org.openhab.binding.modbus.sunspec/ @mrbig
 /bundles/org.openhab.binding.synopanalyzer/ @clinique
 /bundles/org.openhab.binding.systeminfo/ @svilenvul
 /bundles/org.openhab.binding.tado/ @dfrommi
@@ -190,6 +191,7 @@
 /bundles/org.openhab.binding.telegram/ @ZzetT
 /bundles/org.openhab.binding.tellstick/ @jarlebh
 /bundles/org.openhab.binding.tesla/ @kgoderis
+/bundles/org.openhab.binding.tibber/ @kjoglum
 /bundles/org.openhab.binding.tplinksmarthome/ @Hilbrand
 /bundles/org.openhab.binding.tradfri/ @cweitkamp @kaikreuzer
 /bundles/org.openhab.binding.unifi/ @mgbowman

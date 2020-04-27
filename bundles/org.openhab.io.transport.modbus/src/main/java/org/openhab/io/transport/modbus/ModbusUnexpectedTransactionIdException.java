@@ -30,7 +30,6 @@ public class ModbusUnexpectedTransactionIdException extends ModbusTransportExcep
     public ModbusUnexpectedTransactionIdException(int requestId, int responseId) {
         this.requestId = requestId;
         this.responseId = responseId;
-
     }
 
     @Override
@@ -53,5 +52,4 @@ public class ModbusUnexpectedTransactionIdException extends ModbusTransportExcep
     public int getResponseId() {
         return responseId;
     }
-
 }

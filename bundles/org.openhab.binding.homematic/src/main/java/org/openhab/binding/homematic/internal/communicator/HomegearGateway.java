@@ -57,5 +57,4 @@ public class HomegearGateway extends AbstractHomematicGateway {
     protected void loadDeviceNames(Collection<HmDevice> devices) throws IOException {
         getRpcClient(getDefaultInterface()).loadDeviceNames(getDefaultInterface(), devices);
     }
-
 }

@@ -23,5 +23,4 @@ public class ConverterTypeException extends ConverterException {
     public ConverterTypeException(String message) {
         super(message);
     }
-
 }

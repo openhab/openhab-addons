@@ -24,5 +24,4 @@ public class BaseResponse extends Response {
         super(response.getPayload().length + response.getOptionalPayload().length, 0,
                 Helper.concatAll(response.getPayload(), response.getOptionalPayload()));
     }
-
 }

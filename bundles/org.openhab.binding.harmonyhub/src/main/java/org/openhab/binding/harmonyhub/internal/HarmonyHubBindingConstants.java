@@ -45,5 +45,4 @@ public class HarmonyHubBindingConstants {
     public static final String HUB_PROPERTY_ID = "id";
     public static final String HUB_PROPERTY_HOST = "host";
     public static final String HUB_PROPERTY_NAME = "name";
-
 }

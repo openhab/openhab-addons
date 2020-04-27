@@ -90,7 +90,7 @@ public abstract class AbstractJeeLinkConnection implements JeeLinkConnection {
                 OutputStreamWriter w = new OutputStreamWriter(initStream);
                 for (String cmd : commands.split(";")) {
                     logger.debug("Writing to device on port {}: {} ", port, cmd);
-                    
+
                     w.write(cmd + "\n");
                 }
                 w.flush();

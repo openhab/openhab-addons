@@ -182,7 +182,6 @@ public class EEPFactory {
         }
 
         return null;
-
     }
 
     public static EEP buildResponseEEPFromTeachInERP1(ERP1Message msg, byte[] senderId) {

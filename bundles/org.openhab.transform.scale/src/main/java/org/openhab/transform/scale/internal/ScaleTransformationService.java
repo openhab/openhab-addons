@@ -94,7 +94,7 @@ public class ScaleTransformationService extends AbstractFileTransformationServic
      * the range where it fits i.e. [min..max]=value or ]min..max]=value
      *
      * @param properties the list of properties defining all the available ranges
-     * @param source     the input to transform
+     * @param source the input to transform
      *
      */
     @Override
@@ -179,5 +179,4 @@ public class ScaleTransformationService extends AbstractFileTransformationServic
             throw new TransformationException("An error occurred while opening file.", ex);
         }
     }
-
 }

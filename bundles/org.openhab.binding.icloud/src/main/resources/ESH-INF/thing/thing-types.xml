@@ -28,20 +28,20 @@
 
 	<thing-type id="device">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="account" />
+			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 
 		<label>@text/icloud.device-thing.label</label>
 		<description>@text/icloud.device-thing.description</description>
 
 		<channels>
-			<channel typeId="BatteryStatus" id="batteryStatus" />
-			<channel typeId="system.battery-level" id="batteryLevel" />
-			<channel typeId="system.low-battery" id="lowBattery" />
-			<channel typeId="FindMyPhone" id="findMyPhone" />
-			<channel typeId="Location" id="location" />
-			<channel typeId="LocationAccuracy" id="locationAccuracy" />
-			<channel typeId="LocationLastUpdate" id="locationLastUpdate" />
+			<channel typeId="BatteryStatus" id="batteryStatus"/>
+			<channel typeId="system.battery-level" id="batteryLevel"/>
+			<channel typeId="system.low-battery" id="lowBattery"/>
+			<channel typeId="FindMyPhone" id="findMyPhone"/>
+			<channel typeId="Location" id="location"/>
+			<channel typeId="LocationAccuracy" id="locationAccuracy"/>
+			<channel typeId="LocationLastUpdate" id="locationLastUpdate"/>
 		</channels>
 
 		<representation-property>deviceId</representation-property>
@@ -73,16 +73,16 @@
 	<channel-type id="Location">
 		<item-type>Location</item-type>
 		<label>@text/icloud.device-thing.channel.location.label</label>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="LocationAccuracy" advanced="true">
 		<item-type>Number</item-type>
 		<label>@text/icloud.device-thing.channel.location-accuracy</label>
-		<state readOnly="true" pattern="%d m" />
+		<state readOnly="true" pattern="%d m"/>
 	</channel-type>
 	<channel-type id="LocationLastUpdate" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>@text/icloud.device-thing.channel.location-last-update</label>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>
