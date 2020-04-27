@@ -52,7 +52,7 @@ public class CaddxCommunicator implements SerialPortEventListener {
     private final Deque<CaddxMessage> messages = new LinkedBlockingDeque<>();
     private final SynchronousQueue<CaddxMessage> exchanger = new SynchronousQueue<>();
 
-    private Thread thread;
+    private Thread communicator;
     private CaddxProtocol protocol;
     private String serialPortName;
     private int baudRate;
@@ -102,9 +102,9 @@ public class CaddxCommunicator implements SerialPortEventListener {
         serialPort.notifyOnDataAvailable(true);
         serialPort.addEventListener(this);
 
-        thread = new Thread(this::messageDispatchLoop, "Caddx Communicator");
-        thread.setDaemon(true);
-        thread.start();
+        communicator = new Thread(this::messageDispatchLoop, "Caddx Communicator");
+        communicator.setDaemon(true);
+        communicator.start();
 
         message = new byte[0];
 
@@ -136,7 +136,7 @@ public class CaddxCommunicator implements SerialPortEventListener {
      * @param msg Data to be sent to panel. First byte is message type.
      *            Fletcher sum is computed and appended by transmit.
      */
-    public void transmit(CaddxMessage msg) { // byte... msg) {
+    public void transmit(CaddxMessage msg) {
         messages.add(msg);
     }
 
@@ -154,7 +154,7 @@ public class CaddxCommunicator implements SerialPortEventListener {
         logger.trace("CaddxCommunicator stopping");
 
         // kick thread out of waiting for FIFO
-        thread.interrupt();
+        communicator.interrupt();
 
         // Close the streams first to unblock blocked reads and writes
         try {
@@ -168,7 +168,7 @@ public class CaddxCommunicator implements SerialPortEventListener {
 
         // Wait until communication thread exits
         try {
-            thread.join();
+            communicator.join();
         } catch (InterruptedException e) {
         }
 
