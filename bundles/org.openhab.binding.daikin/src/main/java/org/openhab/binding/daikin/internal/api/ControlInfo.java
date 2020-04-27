@@ -12,11 +12,9 @@
  */
 package org.openhab.binding.daikin.internal.api;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.openhab.binding.daikin.internal.api.Enums.FanMovement;
 import org.openhab.binding.daikin.internal.api.Enums.FanSpeed;

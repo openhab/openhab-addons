@@ -12,11 +12,9 @@
  */
 package org.openhab.binding.daikin.internal.api.airbase;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.openhab.binding.daikin.internal.api.InfoParser;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseEnums.AirbaseFanMovement;

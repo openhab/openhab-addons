@@ -20,10 +20,6 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import org.openhab.binding.daikin.internal.api.Enums.FanMovement;
-import org.openhab.binding.daikin.internal.api.Enums.FanSpeed;
-import org.openhab.binding.daikin.internal.api.Enums.Mode;
-
 /**
  * Class for parsing the comma separated values returned by the Daikin Controller.
  *

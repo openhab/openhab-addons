@@ -34,7 +34,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 
@@ -61,7 +60,6 @@ public class DaikinWebTargets {
     private String getAirbaseModelInfoUri;
     private String getAirbaseZoneInfoUri;
     private String setAirbaseZoneInfoUri;
-    private String registerAirbaseUuidUri;
 
     private String uuid;
     private HttpClient httpClient;

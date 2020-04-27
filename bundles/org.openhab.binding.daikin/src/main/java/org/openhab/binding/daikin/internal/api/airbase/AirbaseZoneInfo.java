@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.daikin.internal.api.airbase;
 
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.stream.IntStream;
 import java.util.Map;

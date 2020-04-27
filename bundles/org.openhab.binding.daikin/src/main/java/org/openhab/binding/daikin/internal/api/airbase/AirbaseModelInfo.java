@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.daikin.internal.api.airbase;
 
-import java.util.Arrays;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.EnumSet;
 
 import org.slf4j.Logger;

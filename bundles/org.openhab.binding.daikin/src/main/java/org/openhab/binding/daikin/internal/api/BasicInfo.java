@@ -12,10 +12,8 @@
  */
 package org.openhab.binding.daikin.internal.api;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.openhab.binding.daikin.internal.api.InfoParser;
 
