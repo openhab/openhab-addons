@@ -35,6 +35,8 @@ import io.github.hapjava.accessories.DimmableLightbulb;
 class HomekitColorfulLightbulbImpl extends AbstractHomekitLightbulbImpl<ColorItem>
         implements ColorfulLightbulb, DimmableLightbulb {
 
+    private PercentType saturationValue;
+
     public HomekitColorfulLightbulbImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
             HomekitAccessoryUpdater updater) {
         super(taggedItem, itemRegistry, updater, ColorItem.class);
@@ -79,7 +81,7 @@ class HomekitColorfulLightbulbImpl extends AbstractHomekitLightbulbImpl<ColorIte
         State state = getItem().getStateAs(HSBType.class);
         if (state instanceof HSBType) {
             HSBType hsb = (HSBType) state;
-            HSBType newState = new HSBType(new DecimalType(hue), hsb.getSaturation(), hsb.getBrightness());
+            HSBType newState = new HSBType(new DecimalType(hue), saturationValue, hsb.getBrightness());
             ((ColorItem) getItem()).send(newState);
             return CompletableFuture.completedFuture(null);
         } else {
@@ -91,16 +93,9 @@ class HomekitColorfulLightbulbImpl extends AbstractHomekitLightbulbImpl<ColorIte
     @Override
     public CompletableFuture<Void> setSaturation(Double value) throws Exception {
         final int saturation = value == null ? 0 : value.intValue();
-        State state = getItem().getStateAs(HSBType.class);
-        if (state instanceof HSBType) {
-            HSBType hsb = (HSBType) state;
-            HSBType newState = new HSBType(hsb.getHue(), new PercentType(saturation), hsb.getBrightness());
-            ((ColorItem) getItem()).send(newState);
-            return CompletableFuture.completedFuture(null);
-        } else {
-            // state is undefined (light is not connected)
-            return CompletableFuture.completedFuture(null);
-        }
+        saturationValue = new PercentType(saturation);
+
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override
