@@ -102,17 +102,17 @@ public class ValloxSEConstants {
     /**
      * Byte addresses for control panels 1-8
      */
-    public static final byte ADDRESS_PANEL_MAPPING[] = { 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28 };
+    public static final byte[] ADDRESS_PANEL_MAPPING = { 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28 };
 
     /**
      * List for converting fan speeds from hex to integer
      */
-    public static final byte FAN_SPEED_MAPPING[] = { 0x01, 0x03, 0x07, 0x0F, 0x1F, 0x3F, 0x7F, (byte) 0xFF };
+    public static final byte[] FAN_SPEED_MAPPING = { 0x01, 0x03, 0x07, 0x0F, 0x1F, 0x3F, 0x7F, (byte) 0xFF };
 
     /**
      * List for converting temperatures from hex to integer
      */
-    public static final byte TEMPERATURE_MAPPING[] = { -74, -70, -66, -62, -59, -56, -54, -52, -50, -48, -47, -46, -44,
+    public static final byte[] TEMPERATURE_MAPPING = { -74, -70, -66, -62, -59, -56, -54, -52, -50, -48, -47, -46, -44,
             -43, -42, -41, -40, -39, -38, -37, -36, -35, -34, -33, -33, -32, -31, -30, -30, -29, -28, -28, -27, -27,
             -26, -25, -25, -24, -24, -23, -23, -22, -22, -21, -21, -20, -20, -19, -19, -19, -18, -18, -17, -17, -16,
             -16, -16, -15, -15, -14, -14, -14, -13, -13, -12, -12, -12, -11, -11, -11, -10, -10, -9, -9, -9, -8, -8, -8,

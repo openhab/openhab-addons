@@ -23,7 +23,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -52,9 +51,9 @@ public abstract class ValloxBaseConnector implements ValloxConnector {
     private final LinkedList<SendQueueItem> sendQueue = new LinkedList<>();
     protected final ArrayBlockingQueue<Byte> buffer = new ArrayBlockingQueue<>(1024);
 
-    protected final AtomicBoolean connected = new AtomicBoolean(false);
-    protected final AtomicBoolean waitForAckByte = new AtomicBoolean(false);
-    protected final AtomicBoolean suspendTraffic = new AtomicBoolean(false);
+    protected volatile boolean connected = false;
+    protected volatile boolean waitForAckByte = false;
+    protected volatile boolean suspendTraffic = false;
 
     private @Nullable Future<?> telegramProcessJob;
     private @Nullable ScheduledFuture<?> sendQueueHandlerJob;
@@ -116,7 +115,7 @@ public abstract class ValloxBaseConnector implements ValloxConnector {
      */
     @Override
     public boolean isConnected() {
-        return connected.get();
+        return connected;
     }
 
     /**
@@ -171,15 +170,15 @@ public abstract class ValloxBaseConnector implements ValloxConnector {
      * @throws InterruptedException
      */
     private void handleBuffer() {
-        while (connected.get()) {
+        while (connected) {
             try {
                 byte[] localBuffer = new byte[6];
                 localBuffer[0] = buffer.take();
 
                 if (localBuffer[0] != ValloxSEConstants.DOMAIN) {
-                    if (waitForAckByte.get()) {
+                    if (waitForAckByte) {
                         ackByte = localBuffer[0];
-                        waitForAckByte.set(false);
+                        waitForAckByte = false;
                         continue;
                     }
                     continue;
@@ -207,12 +206,12 @@ public abstract class ValloxBaseConnector implements ValloxConnector {
         }
         if (localBuffer[3] == ValloxSEConstants.SUSPEND_BYTE) {
             sendTelegramToListeners(new Telegram(TelegramState.SUSPEND));
-            suspendTraffic.set(true);
+            suspendTraffic = true;
             return;
         }
         if (localBuffer[3] == ValloxSEConstants.RESUME_BYTE) {
             sendTelegramToListeners(new Telegram(TelegramState.RESUME));
-            suspendTraffic.set(false);
+            suspendTraffic = false;
             return;
         }
         if (localBuffer[2] == panelNumber || localBuffer[2] == ValloxSEConstants.ADDRESS_ALL_PANELS
@@ -230,7 +229,7 @@ public abstract class ValloxBaseConnector implements ValloxConnector {
      */
     @Override
     public void sendTelegram(Telegram telegram) {
-        if (connected.get()) {
+        if (connected) {
             sendQueue.add(new SendQueueItem(telegram));
         }
     }
@@ -239,7 +238,7 @@ public abstract class ValloxBaseConnector implements ValloxConnector {
      * Send one command or poll telegram from send queue
      */
     private void handleSendQueue() {
-        if (suspendTraffic.get() || sendQueue.isEmpty()) {
+        if (suspendTraffic || sendQueue.isEmpty()) {
             return;
         }
         SendQueueItem queueItem = sendQueue.removeFirst();
@@ -251,10 +250,10 @@ public abstract class ValloxBaseConnector implements ValloxConnector {
             case COMMAND:
                 if (queueItem.retry()) {
                     if (telegram.getCheksum() == ackByte) {
-                        waitForAckByte.set(false);
+                        waitForAckByte = false;
                         sendTelegramToListeners(new Telegram(TelegramState.ACK, telegram.bytes));
                     } else {
-                        waitForAckByte.set(true);
+                        waitForAckByte = false;
                         writeToOutputStream(telegram);
                         sendQueue.addFirst(queueItem);
                     }

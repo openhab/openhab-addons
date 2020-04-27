@@ -128,7 +128,7 @@ public class ValloxSEHandler extends BaseThingHandler implements ValloxEventList
      * Check if connection is open
      */
     private boolean isConnected() {
-        return (connector.isConnected());
+        return connector.isConnected();
     }
 
     @Override
@@ -435,13 +435,11 @@ public class ValloxSEHandler extends BaseThingHandler implements ValloxEventList
     public void telegramReceived(Telegram telegram) {
         switch (telegram.state) {
             case ACK:
-                logger.debug("Received ack byte '{}'", String.format("%02X", telegram.getCheksum()));
+                logger.debug("Received ack byte for telegram '{}'", telegram);
                 cache.put(telegram);
                 break;
             case OK:
-                if (logger.isTraceEnabled()) {
-                    logger.trace("{} {}", telegram.stateDetails(), telegram.toString());
-                }
+                logger.trace("{} {}", telegram.stateDetails(), telegram);
                 ChannelDescriptor descriptor = ChannelDescriptor.get(telegram.getVariable());
                 if (descriptor != ChannelDescriptor.NULL) {
                     telegram.parse(descriptor, cache).forEach(this::updateState);
@@ -453,9 +451,7 @@ public class ValloxSEHandler extends BaseThingHandler implements ValloxEventList
             case CRC_ERROR:
             case EMPTY:
             case NOT_FOR_US:
-                if (logger.isTraceEnabled()) {
-                    logger.trace("{} {}", telegram.stateDetails(), telegram.toString());
-                }
+                logger.trace("{} {}", telegram.stateDetails(), telegram);
                 break;
             case RESUME:
                 logger.debug("Resuming normal traffic");
@@ -471,7 +467,7 @@ public class ValloxSEHandler extends BaseThingHandler implements ValloxEventList
 
     @Override
     public void errorOccurred(String error, @Nullable Exception exception) {
-        if (exception != null && logger.isTraceEnabled()) {
+        if (exception != null) {
             logger.trace("{}", error, exception);
         }
         logger.debug("Reconnecting after error: {}", error);

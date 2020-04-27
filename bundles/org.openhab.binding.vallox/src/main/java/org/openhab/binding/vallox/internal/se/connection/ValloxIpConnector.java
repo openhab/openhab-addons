@@ -61,7 +61,7 @@ public class ValloxIpConnector extends ValloxBaseConnector {
 
         startTelegramReaderThread();
         startProcessorJobs();
-        connected.set(true);
+        connected = true;
     }
 
     /**
@@ -87,7 +87,7 @@ public class ValloxIpConnector extends ValloxBaseConnector {
     @Override
     public void close() {
         super.close();
-        connected.set(false);
+        connected = false;
         logger.debug("Stopping threads and closing socket");
         stopTelegramReaderThread();
         try {
@@ -99,13 +99,17 @@ public class ValloxIpConnector extends ValloxBaseConnector {
         logger.debug("Ip connection closed");
     }
 
+    /**
+     * Read bytes from input stream to buffer
+     */
     private void telegramReader() {
         InputStream inputStream = getInputStream();
-        while (connected.get() && inputStream != null) {
+        while (connected && inputStream != null) {
             try {
                 int data = inputStream.read();
                 while (data != -1) {
-                    buffer.add((byte) inputStream.read());
+                    buffer.add((byte) data);
+                    data = inputStream.read();
                 }
             } catch (IOException e) {
                 sendErrorToListeners(e.getMessage(), e);
@@ -115,6 +119,5 @@ public class ValloxIpConnector extends ValloxBaseConnector {
                 buffer.clear();
             }
         }
-        logger.trace("Telegram reader stopped");
     }
 }
