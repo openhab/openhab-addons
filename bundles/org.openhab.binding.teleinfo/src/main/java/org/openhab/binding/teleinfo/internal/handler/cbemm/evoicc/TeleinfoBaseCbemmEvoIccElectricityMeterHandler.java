@@ -25,6 +25,7 @@ import org.openhab.binding.teleinfo.internal.reader.cbemm.evoicc.FrameCbemmEvolu
  * Electricity Meters thing.
  *
  * @author Nicolas SIBERIL - Initial contribution
+ * @author olivierkeke - Change ADCO property to parameter
  */
 public class TeleinfoBaseCbemmEvoIccElectricityMeterHandler extends TeleinfoAbstractCbemmEvoIccElectricityMeterHandler {
 
