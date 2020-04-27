@@ -42,12 +42,15 @@ public class ZmHandlerFactory extends BaseThingHandlerFactory {
 
     private final TimeZoneProvider timeZoneProvider;
     private final HttpClient httpClient;
+    private final ZmStateDescriptionOptionsProvider stateDescriptionProvider;
 
     @Activate
     public ZmHandlerFactory(@Reference TimeZoneProvider timeZoneProvider,
-            @Reference HttpClientFactory httpClientFactory) {
+            @Reference HttpClientFactory httpClientFactory,
+            @Reference ZmStateDescriptionOptionsProvider stateDescriptionProvider) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.timeZoneProvider = timeZoneProvider;
+        this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
     @Override
@@ -59,7 +62,7 @@ public class ZmHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (SUPPORTED_SERVER_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            return new ZmBridgeHandler((Bridge) thing, httpClient);
+            return new ZmBridgeHandler((Bridge) thing, httpClient, stateDescriptionProvider);
         } else if (SUPPORTED_MONITOR_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new ZmMonitorHandler(thing, timeZoneProvider);
         }

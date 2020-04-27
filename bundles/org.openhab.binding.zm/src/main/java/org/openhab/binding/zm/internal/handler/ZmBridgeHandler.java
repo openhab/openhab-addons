@@ -39,6 +39,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.RawType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -48,7 +49,11 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.StateOption;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
+import org.openhab.binding.zm.internal.ZmStateDescriptionOptionsProvider;
 import org.openhab.binding.zm.internal.config.ZmBridgeConfig;
 import org.openhab.binding.zm.internal.discovery.MonitorDiscoveryService;
 import org.openhab.binding.zm.internal.dto.EventDTO;
@@ -115,23 +120,21 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
     private int defaultAlarmDuration;
     private @Nullable Integer defaultImageRefreshInterval;
 
-    private HttpClient httpClient;
+    private final HttpClient httpClient;
+    private final ZmStateDescriptionOptionsProvider stateDescriptionProvider;
 
     private ZmAuth zmAuth;
 
     // Maintain mapping of handler and monitor id
     private final Map<String, ZmMonitorHandler> monitorHandlers = new ConcurrentHashMap<>();
 
-    public ZmBridgeHandler(Bridge thing, HttpClient httpClient) {
+    public ZmBridgeHandler(Bridge thing, HttpClient httpClient,
+            ZmStateDescriptionOptionsProvider stateDescriptionProvider) {
         super(thing);
         this.httpClient = httpClient;
+        this.stateDescriptionProvider = stateDescriptionProvider;
         // Default to use no authentication
         zmAuth = new ZmAuth(this);
-    }
-
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        // Bridge does not handle any commands
     }
 
     @Override
@@ -188,6 +191,33 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
         String monitorId = (String) childThing.getConfiguration().get(CONFIG_MONITOR_ID);
         monitorHandlers.remove(monitorId);
         logger.debug("Bridge: Monitor handler was disposed for {} with id {}", childThing.getUID(), monitorId);
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        switch (channelUID.getId()) {
+            case CHANNEL_IMAGE_MONITOR_ID:
+                handleMonitorIdCommand(command, CHANNEL_IMAGE_MONITOR_ID, CHANNEL_IMAGE_URL, STREAM_IMAGE);
+                break;
+            case CHANNEL_VIDEO_MONITOR_ID:
+                handleMonitorIdCommand(command, CHANNEL_VIDEO_MONITOR_ID, CHANNEL_VIDEO_URL, STREAM_VIDEO);
+                break;
+        }
+    }
+
+    private void handleMonitorIdCommand(Command command, String monitorIdChannelId, String urlChannelId, String type) {
+        if (command instanceof RefreshType || command == OnOffType.OFF) {
+            updateState(monitorIdChannelId, UnDefType.UNDEF);
+            updateState(urlChannelId, UnDefType.UNDEF);
+        } else if (command instanceof StringType) {
+            String id = command.toString();
+            if (isMonitorIdValid(id)) {
+                updateState(urlChannelId, new StringType(buildStreamUrl(id, type)));
+            } else {
+                updateState(monitorIdChannelId, UnDefType.UNDEF);
+                updateState(urlChannelId, UnDefType.UNDEF);
+            }
+        }
     }
 
     @Override
@@ -295,6 +325,7 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
             String response = executeGet(buildUrl("/api/monitors.json"));
             MonitorsDTO monitors = GSON.fromJson(response, MonitorsDTO.class);
             if (monitors != null && monitors.monitorItems != null) {
+                List<StateOption> options = new ArrayList<>();
                 for (MonitorItemDTO monitorItem : monitors.monitorItems) {
                     MonitorDTO m = monitorItem.monitor;
                     MonitorStatusDTO mStatus = monitorItem.monitorStatus;
@@ -308,7 +339,12 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
                         monitor.setImageUrl(buildStreamUrl(m.id, STREAM_IMAGE));
                         monitor.setVideoUrl(buildStreamUrl(m.id, STREAM_VIDEO));
                         monitorList.add(monitor);
+                        options.add(new StateOption(m.id, "Monitor " + m.id));
                     }
+                    stateDescriptionProvider
+                            .setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_IMAGE_MONITOR_ID), options);
+                    stateDescriptionProvider
+                            .setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_VIDEO_MONITOR_ID), options);
                 }
                 // Only update alarm and event info for monitors whose handlers are initialized
                 Set<String> ids = monitorHandlers.keySet();
@@ -466,6 +502,10 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
         }
         sb.append(path);
         return sb;
+    }
+
+    private boolean isMonitorIdValid(String id) {
+        return savedMonitors.stream().filter(monitor -> id.equals(monitor.getId())).findAny().isPresent();
     }
 
     private boolean isHostValid() {

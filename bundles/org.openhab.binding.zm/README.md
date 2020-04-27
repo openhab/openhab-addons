@@ -70,7 +70,12 @@ The following configuration parameters are available on the Monitor thing:
 
 ### Server Thing
 
-None
+| Channel  | Type   | Description  |
+|----------|--------|--------------|
+| imageMonitorId | String      | Monitor ID to use for selecting an image URL. Also, sending an OFF command to this channel will reset the monitor id and url to UNDEF.  |
+| imageUrl       | String      | Image URL for monitor id specified by imageMonitorId. Channel is UNDEF if the monitor id is not set, or if an OFF command is sent to the imageMonitorId channel. |
+| videoMonitorId | String      | Monitor ID to use for selecting a video URL. Also, sending an OFF command to this channel will reset the monitor id and url to UNDEF.  |
+| videoUrl       | String      | Video URL for monitor id specified by videoMonitorId. Channel is UNDEF if the monitor id is not set, or if an OFF command is sent to the videoMonitorId channel. |
 
 ### Monitor Thing
 
@@ -164,6 +169,13 @@ Thing zm:monitor:2 "Monitor 2" (zm:server:server) [ monitorId="2", imageRefreshI
 ### Items
 
 ```
+// Server
+String ZmServer_ImageMonitorId "Image Monitor Id [%s]" { channel="zm:server:server:imageMonitorId" }
+String ZmServer_ImageUrl "Image Url [%s]" { channel="zm:server:server:imageUrl" }
+String ZmServer_VideoMonitorId "Video Monitor Id [%s]" { channel="zm:server:server:videoMonitorId" }
+String ZmServer_VideoUrl "Video Url [%s]" { channel="zm:server:server:videoUrl" }
+
+// Monitor
 String      ZM_Monitor1_Id           "Monitor Id [%s]"              { channel="zm:monitor:1:id" }
 String      ZM_Monitor1_Name         "Monitor Name [%s]"            { channel="zm:monitor:1:name" }
 Image       ZM_Monitor1_Image        "Image [%s]"                   { channel="zm:monitor:1:image" }
@@ -193,8 +205,14 @@ Number:Time ZM_Monitor1_Length       "Event Length [%.2f]"          { channel="z
 
 
 ```
-Selection item=ZM_Monitor_Function
+Selection item=ZmServer_ImageMonitorId
+Image item=ZmServer_ImageUrl
+Selection item=ZmServer_VideoMonitorId
+Video item=ZmServer_VideoUrl url="" encoding="mjpeg"
+                
+Selection item=ZM_Monitor1_Function
 Selection item-ZM_Monitor1_Enable
+Image item=ZM_Monitor1_Image
 ```
 
 ### Rules
@@ -237,5 +255,22 @@ when
 then
     val zmActions = getActions("zm", "zm:monitor:1")
     zmActions.triggerAlarmOff()
+end
+```
+
+```
+val int NUM_MONITORS = 6
+var int monitorId = 1
+
+rule "Rotate Through All Monitor Images Every 10 Seconds"
+when
+    Time cron "0/10 * * ? * * *"
+then
+    var String id = String::format("%d", monitorId)
+    ZmServer_ImageMonitorId.sendCommand(id)
+    monitorId = monitorId + 1
+    if (monitorId > NUM_MONITORS) {
+        monitorId = 1
+    }
 end
 ```

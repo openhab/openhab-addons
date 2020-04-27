@@ -6,6 +6,22 @@
 	<bridge-type id="server">
 		<label>Zoneminder Server</label>
 		<description>Represents a Zoneminder server</description>
+		<channels>
+			<channel id="imageMonitorId" typeId="id">
+				<label>Image Monitor Id</label>
+				<description>Monitor ID for Image URL Channel</description>
+			</channel>
+			<channel id="imageUrl" typeId="url">
+				<label>Image URL</label>
+			</channel>
+			<channel id="videoMonitorId" typeId="id">
+				<label>Video Monitor Id</label>
+				<description>Monitor ID for Video URL Channel</description>
+			</channel>
+			<channel id="videoUrl" typeId="url">
+				<label>Video URL</label>
+			</channel>
+		</channels>
 		<config-description-ref uri="thing-type:zm:server" />
 	</bridge-type>
 

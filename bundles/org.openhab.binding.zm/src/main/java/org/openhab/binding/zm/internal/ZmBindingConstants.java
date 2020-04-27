@@ -66,7 +66,9 @@ public class ZmBindingConstants {
 
     public static final int DEFAULT_ALARM_DURATION_SECONDS = 60;
 
-    // List of all Channel ids
+    // List of all channel ids
+    public static final String CHANNEL_IMAGE_MONITOR_ID = "imageMonitorId";
+    public static final String CHANNEL_VIDEO_MONITOR_ID = "videoMonitorId";
     public static final String CHANNEL_ID = "id";
     public static final String CHANNEL_NAME = "name";
     public static final String CHANNEL_IMAGE = "image";
