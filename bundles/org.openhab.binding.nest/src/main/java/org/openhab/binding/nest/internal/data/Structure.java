@@ -308,5 +308,4 @@ public class Structure implements NestIdentifiable {
                 .append(wwnSecurityState).append("]");
         return builder.toString();
     }
-
 }

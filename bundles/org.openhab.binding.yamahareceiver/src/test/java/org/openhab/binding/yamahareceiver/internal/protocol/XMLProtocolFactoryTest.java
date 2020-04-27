@@ -88,5 +88,4 @@ public class XMLProtocolFactoryTest extends AbstractXMLProtocolTest {
         // assert
         assertTrue("Created Zone control", zoneControl instanceof ZoneControlXML);
     }
-
 }

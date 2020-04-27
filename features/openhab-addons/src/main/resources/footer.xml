@@ -1,37 +1,37 @@
     <!-- aggregated features -->
-    <feature name="openhab-binding-bluetooth" description="Bluetooth Binding" version="${project.version}">
-        <feature>openhab-runtime-base</feature>
-        <feature>openhab-transport-serial</feature>
-        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth/${project.version}</bundle>
-        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.airthings/${project.version}</bundle>
-        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.am43/${project.version}</bundle>
-        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.blukii/${project.version}</bundle>
-        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.ruuvitag/${project.version}</bundle>
-        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.bluez/${project.version}</bundle>
-        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.bluegiga/${project.version}</bundle>
-    </feature>
-    <feature name="openhab-binding-mqtt" description="MQTT Binding" version="${project.version}">
-        <feature>openhab-runtime-base</feature>
-        <feature>openhab-transport-mqtt</feature>
-        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.mqtt/${project.version}</bundle>
-        <bundle start-level="81">mvn:org.openhab.addons.bundles/org.openhab.binding.mqtt.generic/${project.version}</bundle>
-        <bundle start-level="82">mvn:org.openhab.addons.bundles/org.openhab.binding.mqtt.homeassistant/${project.version}</bundle>
-        <bundle start-level="82">mvn:org.openhab.addons.bundles/org.openhab.binding.mqtt.homie/${project.version}</bundle>
-    </feature>
-    <feature name="openhab-binding-modbus" description="Modbus Binding" version="${project.version}">
-        <feature>openhab-runtime-base</feature>
-        <feature>openhab-transport-modbus</feature>
-        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.modbus/${project.version}</bundle>
-        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.modbus.sunspec/${project.version}</bundle>
-    </feature>
-    <feature name="openhab-misc-ruleengine" description="Rule Engine (Experimental)" version="${project.version}">
-        <feature>openhab-runtime-base</feature>
-        <feature>openhab-core-automation</feature>
-        <feature>openhab-core-automation-module-media</feature>
-        <feature>openhab-core-automation-module-script</feature>
-        <feature>openhab-core-automation-module-script-rulesupport</feature>
-        <feature>openhab-core-automation-rest</feature>
-        <feature>openhab-io-javasound</feature>
-    </feature>
+<feature name="openhab-binding-bluetooth" description="Bluetooth Binding" version="${project.version}">
+	<feature>openhab-runtime-base</feature>
+	<feature>openhab-transport-serial</feature>
+	<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth/${project.version}</bundle>
+	<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.airthings/${project.version}</bundle>
+	<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.am43/${project.version}</bundle>
+	<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.blukii/${project.version}</bundle>
+	<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.ruuvitag/${project.version}</bundle>
+	<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.bluez/${project.version}</bundle>
+	<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.bluegiga/${project.version}</bundle>
+</feature>
+<feature name="openhab-binding-mqtt" description="MQTT Binding" version="${project.version}">
+	<feature>openhab-runtime-base</feature>
+	<feature>openhab-transport-mqtt</feature>
+	<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.mqtt/${project.version}</bundle>
+	<bundle start-level="81">mvn:org.openhab.addons.bundles/org.openhab.binding.mqtt.generic/${project.version}</bundle>
+	<bundle start-level="82">mvn:org.openhab.addons.bundles/org.openhab.binding.mqtt.homeassistant/${project.version}</bundle>
+	<bundle start-level="82">mvn:org.openhab.addons.bundles/org.openhab.binding.mqtt.homie/${project.version}</bundle>
+</feature>
+<feature name="openhab-binding-modbus" description="Modbus Binding" version="${project.version}">
+	<feature>openhab-runtime-base</feature>
+	<feature>openhab-transport-modbus</feature>
+	<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.modbus/${project.version}</bundle>
+	<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.modbus.sunspec/${project.version}</bundle>
+</feature>
+<feature name="openhab-misc-ruleengine" description="Rule Engine (Experimental)" version="${project.version}">
+	<feature>openhab-runtime-base</feature>
+	<feature>openhab-core-automation</feature>
+	<feature>openhab-core-automation-module-media</feature>
+	<feature>openhab-core-automation-module-script</feature>
+	<feature>openhab-core-automation-module-script-rulesupport</feature>
+	<feature>openhab-core-automation-rest</feature>
+	<feature>openhab-io-javasound</feature>
+</feature>
 
 </features>

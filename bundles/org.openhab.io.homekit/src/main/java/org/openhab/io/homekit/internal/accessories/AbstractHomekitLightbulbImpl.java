@@ -64,5 +64,4 @@ abstract class AbstractHomekitLightbulbImpl<T extends SwitchItem> extends Abstra
     public void unsubscribeLightbulbPowerState() {
         getUpdater().unsubscribe(getItem());
     }
-
 }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="sinope" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="sinope"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<bridge-type id="gateway">
@@ -38,16 +39,16 @@
 
 	<thing-type id="thermostat">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="gateway" />
+			<bridge-type-ref id="gateway"/>
 		</supported-bridge-type-refs>
 		<label>Sinopé Thermostat</label>
 		<description>Sinopé Thermostat control</description>
 		<channels>
-			<channel id="insideTemperature" typeId="insideTemperature" />
-			<channel id="outsideTemperature" typeId="outsideTemperature" />
-			<channel id="setpointTemperature" typeId="setpointTemperature" />
-			<channel id="setpointMode" typeId="setpointMode" />
-			<channel id="heatingLevel" typeId="heatingLevel" />
+			<channel id="insideTemperature" typeId="insideTemperature"/>
+			<channel id="outsideTemperature" typeId="outsideTemperature"/>
+			<channel id="setpointTemperature" typeId="setpointTemperature"/>
+			<channel id="setpointMode" typeId="setpointMode"/>
+			<channel id="heatingLevel" typeId="heatingLevel"/>
 		</channels>
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
@@ -62,7 +63,7 @@
 		<description>Current inside temperature</description>
 		<category>Temperature</category>
 		<!-- As specified by manufacturer -->
-		<state min="-10" max="70" step="0.01" pattern="%.2f %unit%" readOnly="true" />
+		<state min="-10" max="70" step="0.01" pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="outsideTemperature">
@@ -70,7 +71,7 @@
 		<label>Temperature</label>
 		<description>Current outside temperature</description>
 		<category>Temperature</category>
-		<state step="0.01" pattern="%.2f %unit%" readOnly="true" />
+		<state step="0.01" pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="setpointTemperature">
@@ -78,7 +79,7 @@
 		<label>Temperature</label>
 		<description>Setpoint temperature</description>
 		<category>Temperature</category>
-		<state min="5" max="30" step="0.01" pattern="%.2f %unit%" readOnly="false" />
+		<state min="5" max="30" step="0.01" pattern="%.2f %unit%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="setpointMode">
@@ -105,6 +106,6 @@
 		<label>Heat Level</label>
 		<description>Heating Level</description>
 		<category>Heating</category>
-		<state min="0" max="100" step="1" pattern="%d %%" readOnly="true" />
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

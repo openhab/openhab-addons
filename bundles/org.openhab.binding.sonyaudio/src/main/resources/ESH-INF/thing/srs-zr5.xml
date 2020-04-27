@@ -45,12 +45,12 @@
 		<label>SONY Wireless Speaker SRS-ZR5</label>
 		<description>SONY wireless Speaker SRS-ZR5</description>
 		<channels>
-			<channel id="power" typeId="power" />
-			<channel id="input" typeId="input-zr5" />
-			<channel id="volume" typeId="volume" />
-			<channel id="mute" typeId="mute" />
-			<channel id="soundField" typeId="sound-field-zr5" />
+			<channel id="power" typeId="power"/>
+			<channel id="input" typeId="input-zr5"/>
+			<channel id="volume" typeId="volume"/>
+			<channel id="mute" typeId="mute"/>
+			<channel id="soundField" typeId="sound-field-zr5"/>
 		</channels>
-		<config-description-ref uri="thing-type:sonyaudio:config" />
+		<config-description-ref uri="thing-type:sonyaudio:config"/>
 	</thing-type>
 </thing:thing-descriptions>

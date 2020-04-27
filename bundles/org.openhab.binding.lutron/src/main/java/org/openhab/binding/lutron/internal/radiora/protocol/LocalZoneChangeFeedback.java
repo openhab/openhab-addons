@@ -65,5 +65,4 @@ public class LocalZoneChangeFeedback extends RadioRAFeedback {
     public int getZoneNumber() {
         return zoneNumber;
     }
-
 }

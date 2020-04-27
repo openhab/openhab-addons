@@ -142,5 +142,4 @@ public class AbstractDmxThingTestParent extends JavaTest {
         State value = captor.getValue();
         stateAssertion.accept(value);
     }
-
 }

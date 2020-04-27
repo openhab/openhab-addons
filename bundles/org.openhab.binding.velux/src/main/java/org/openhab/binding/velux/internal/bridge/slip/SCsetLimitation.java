@@ -316,5 +316,4 @@ class SCsetLimitation extends SetProductLimitation implements SlipBridgeCommunic
         reqLimitationValueMax = VeluxProductPosition.VPP_VELUX_IGNORE;
         return;
     }
-
 }

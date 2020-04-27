@@ -71,5 +71,4 @@ public class IdentificationCommand extends AbstractCommand<IdentificationRequest
     protected IdentificationResponse parseResponse(String response) throws ResponseException {
         return new IdentificationResponse(this, response);
     }
-
 }

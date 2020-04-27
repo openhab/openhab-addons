@@ -243,7 +243,6 @@ public class Port {
         } catch (IllegalStateException e) {
             logger.warn("cannot write message {}, write queue is full!", m);
         }
-
     }
 
     /**

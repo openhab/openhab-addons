@@ -70,5 +70,4 @@ public abstract class OpenSprinklerBaseHandler extends BaseThingHandler {
     }
 
     protected abstract void updateChannel(ChannelUID uid);
-
 }

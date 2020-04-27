@@ -34,5 +34,4 @@ public class SeverityComparator implements Comparator<DwdWarningData> {
         }
         return result;
     }
-
 }

@@ -213,5 +213,4 @@ public class InternalLedState {
     public String toString() {
         return "InternalLedState{" + "r=" + r + ", g=" + g + ", b=" + b + ", w=" + w + '}';
     }
-
 }

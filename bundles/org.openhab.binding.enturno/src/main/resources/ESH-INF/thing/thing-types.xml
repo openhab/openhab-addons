@@ -7,10 +7,11 @@
 	<!-- LineStop Type -->
 	<thing-type id="linestop">
 		<label>Entur Timetable</label>
-		<description>Provides real-time (estimated) departure timetable for chosen public transport line and stop in Norway. Data provided by Entur.no API.</description>
+		<description>Provides real-time (estimated) departure timetable for chosen public transport line and stop in Norway.
+			Data provided by Entur.no API.</description>
 
 		<channel-groups>
-			<channel-group id="stopPlace" typeId="stopPlace" />
+			<channel-group id="stopPlace" typeId="stopPlace"/>
 			<channel-group id="Direction01" typeId="direction">
 				<label>Direction 1</label>
 				<description>This is the real-time table for direction nr 1.</description>
@@ -21,7 +22,7 @@
 			</channel-group>
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:enturno:linestop" />
+		<config-description-ref uri="thing-type:enturno:linestop"/>
 
 	</thing-type>
 

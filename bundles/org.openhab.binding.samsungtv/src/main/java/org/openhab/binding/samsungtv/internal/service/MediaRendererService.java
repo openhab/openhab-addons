@@ -269,7 +269,6 @@ public class MediaRendererService implements UpnpIOParticipant, SamsungTvService
 
         updateResourceState("RenderingControl", "GetMute",
                 SamsungTvUtils.buildHashMap("InstanceID", "0", "Channel", "Master"));
-
     }
 
     private void setBrightness(Command command) {

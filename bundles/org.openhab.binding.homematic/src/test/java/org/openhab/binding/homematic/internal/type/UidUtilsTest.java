@@ -29,7 +29,6 @@ import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDatapointInfo;
 import org.openhab.binding.homematic.internal.model.HmDevice;
-import org.openhab.binding.homematic.internal.type.UidUtils;
 
 /**
  * Tests for {@link UidUtilsTest}.
@@ -114,5 +113,4 @@ public class UidUtilsTest {
 
         assertThat(generatedAddress, is("ABC12345678"));
     }
-
 }

@@ -80,5 +80,4 @@ public class WashingMachineHandler extends MieleApplianceHandler<WashingMachineC
                     channelID, command.toString());
         }
     }
-
 }

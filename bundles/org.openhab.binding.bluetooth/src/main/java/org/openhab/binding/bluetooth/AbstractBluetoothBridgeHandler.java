@@ -219,5 +219,4 @@ public abstract class AbstractBluetoothBridgeHandler<BD extends BluetoothDevice>
         Integer rssi = device.getRssi();
         return rssi != null && rssi != 0;
     }
-
 }

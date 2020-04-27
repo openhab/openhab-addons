@@ -52,5 +52,4 @@ public class GetWifiInfoRequest extends Packet {
     public int[] expectedResponses() {
         return new int[] { StateWifiInfoResponse.TYPE };
     }
-
 }

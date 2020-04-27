@@ -54,5 +54,4 @@ public enum PowerState {
     public OnOffType toOnOffType() {
         return this == ON ? OnOffType.ON : OnOffType.OFF;
     }
-
 }

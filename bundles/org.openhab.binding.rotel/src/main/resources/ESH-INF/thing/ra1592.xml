@@ -10,17 +10,17 @@
 		<description>Connection to the Rotel RA-1592 integrated amplifier</description>
 
 		<channels>
-			<channel id="power" typeId="system.power" />
-			<channel id="source" typeId="source" />
-			<channel id="volume" typeId="system.volume" />
-			<channel id="mute" typeId="system.mute" />
-			<channel id="bass" typeId="bass" />
-			<channel id="treble" typeId="treble" />
-			<channel id="frequency" typeId="frequency" />
-			<channel id="brightness" typeId="brightness" />
+			<channel id="power" typeId="system.power"/>
+			<channel id="source" typeId="source"/>
+			<channel id="volume" typeId="system.volume"/>
+			<channel id="mute" typeId="system.mute"/>
+			<channel id="bass" typeId="bass"/>
+			<channel id="treble" typeId="treble"/>
+			<channel id="frequency" typeId="frequency"/>
+			<channel id="brightness" typeId="brightness"/>
 		</channels>
 
-		<config-description-ref uri="thing-type:rotel:serialandipandprotocol" />
+		<config-description-ref uri="thing-type:rotel:serialandipandprotocol"/>
 	</thing-type>
 
 </thing:thing-descriptions>

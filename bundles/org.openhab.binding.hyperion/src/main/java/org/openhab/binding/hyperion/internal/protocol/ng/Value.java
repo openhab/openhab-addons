@@ -55,5 +55,4 @@ public class Value {
     public void setRGB(List<Integer> rgb) {
         this.rgb = rgb;
     }
-
 }

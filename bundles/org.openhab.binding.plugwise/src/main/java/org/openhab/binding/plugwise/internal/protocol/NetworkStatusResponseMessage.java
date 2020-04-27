@@ -93,5 +93,4 @@ public class NetworkStatusResponseMessage extends Message {
     protected String payloadToHexString() {
         return unknown1 + String.format("%02X", online ? 1 : 0) + networkID + shortNetworkID + unknown2;
     }
-
 }

@@ -75,7 +75,6 @@ public class ModbusSlaveConnectionFactoryImpl
         public void setLastConnected(long lastConnected) {
             this.lastConnected = lastConnected;
         }
-
     }
 
     private final Logger logger = LoggerFactory.getLogger(ModbusSlaveConnectionFactoryImpl.class);
@@ -344,5 +343,4 @@ public class ModbusSlaveConnectionFactoryImpl
     public void disconnectOnReturn(ModbusSlaveEndpoint endpoint, long disconnectBeforeConnectedMillis) {
         disconnectIfConnectedBefore.put(endpoint, disconnectBeforeConnectedMillis);
     }
-
 }

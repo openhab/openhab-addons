@@ -43,5 +43,4 @@ class TypeString extends KNXChannelType {
     protected String getDefaultDPT(String gaConfigKey) {
         return DPTXlatorString.DPT_STRING_8859_1.getID();
     }
-
 }

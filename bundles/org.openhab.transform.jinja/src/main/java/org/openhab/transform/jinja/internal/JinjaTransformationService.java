@@ -51,7 +51,7 @@ public class JinjaTransformationService implements TransformationService {
      * Transforms the input <code>value</code> by Jinja template.
      *
      * @param template Jinja template
-     * @param value    String may contain JSON
+     * @param value String may contain JSON
      * @throws TransformationException
      */
     @Override

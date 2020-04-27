@@ -69,5 +69,4 @@ public abstract class MillheatBaseThingHandler extends BaseThingHandler {
     }
 
     protected abstract void handleCommand(ChannelUID uid, Command command, MillheatModel model);
-
 }

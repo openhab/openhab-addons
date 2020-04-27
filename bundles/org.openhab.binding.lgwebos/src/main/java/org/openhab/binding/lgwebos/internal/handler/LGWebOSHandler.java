@@ -315,7 +315,6 @@ public class LGWebOSHandler extends BaseThingHandler
                 break;
 
         }
-
     }
 
     @Override

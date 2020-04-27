@@ -32,5 +32,4 @@ public class UniFiNotAuthorizedException extends UniFiException {
     public UniFiNotAuthorizedException(Throwable cause) {
         super(cause);
     }
-
 }

@@ -681,7 +681,6 @@ public abstract class MessageHandler {
         public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
             logger.debug("{}: dev {} manual state change: {}", nm(), f.getDevice().getAddress(), 0);
             feature.publish(new DecimalType(1), StateChangeType.ALWAYS);
-
         }
     }
 
