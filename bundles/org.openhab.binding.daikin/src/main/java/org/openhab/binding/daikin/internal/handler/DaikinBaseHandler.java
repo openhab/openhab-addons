@@ -22,6 +22,7 @@ import javax.measure.quantity.Temperature;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -63,7 +64,7 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
     protected @Nullable DaikinWebTargets webTargets;
     private @Nullable ScheduledFuture<?> pollFuture;
     protected final DaikinDynamicStateDescriptionProvider stateDescriptionProvider;
-    protected final HttpClient httpClient;
+    protected @Nullable HttpClient httpClient;
     protected @Nullable DaikinConfiguration config;
     private boolean uuidRegistrationAttempted = false;
 
@@ -87,7 +88,16 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
     public DaikinBaseHandler(Thing thing, HttpClient httpClient, DaikinDynamicStateDescriptionProvider stateDescriptionProvider) {
         super(thing);
         this.stateDescriptionProvider = stateDescriptionProvider;
-        this.httpClient = httpClient;
+        // this.httpClient = httpClient
+        this.httpClient = new HttpClient(new SslContextFactory(true));
+        if (!this.httpClient.isStarted()) {
+            try {
+                this.httpClient.start();
+            } catch (Exception e) {
+                this.httpClient = null;
+                logger.warn("httpClient.start() failed. {}", e.getMessage());
+            }
+        }
     }
 
     @Override
@@ -184,16 +194,13 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
             logger.debug("Polling for state");
             pollStatus();
         } catch (DaikinCommunicationForbiddenException e) {
-            if (uuidRegistrationAttempted) {
-                logger.debug("poll: uuidRegistrationAttempted = true");
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "UUID registration unsuccessful. Check key.");                
-            } else if (config.key != null && config.uuid != null) {
+            if (!uuidRegistrationAttempted && config.key != null && config.uuid != null) {
                 logger.debug("poll: Attempting to register uuid {} with key {}", config.uuid, config.key);
                 registerUuid(config.key);
-                logger.debug("poll: uuid registration attempt done");
                 uuidRegistrationAttempted = true;
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR , "Access denied. Check uuid/key.");
+                logger.warn("{} access denied by adapter. Check uuid/key.", thing.getUID());
             }
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());

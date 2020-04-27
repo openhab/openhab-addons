@@ -23,6 +23,7 @@ public class DaikinConfiguration {
     public static final String HOST = "host";
     public static final String SECURE = "secure";
     public static final String UUID = "uuid";
+    public static final String KEY = "key";
 
     public String host;
     public Boolean secure;

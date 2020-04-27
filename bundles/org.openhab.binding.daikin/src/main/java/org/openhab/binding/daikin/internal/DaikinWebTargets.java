@@ -168,10 +168,11 @@ public class DaikinWebTargets {
         String response;
         synchronized (this) {
             try {
-                if (httpClient == null) {
-                    response = HttpUtil.executeUrl("GET", uriWithParams, TIMEOUT_MS);
-                } else {
+                if (httpClient != null) {
                     response = executeUrl(uriWithParams);
+                } else {
+                    // a fall back method
+                    response = HttpUtil.executeUrl("GET", uriWithParams, TIMEOUT_MS);
                 }
             } catch (DaikinCommunicationException ex) {
                 throw ex;

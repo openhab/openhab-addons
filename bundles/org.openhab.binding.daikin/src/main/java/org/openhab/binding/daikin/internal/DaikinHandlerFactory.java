@@ -64,20 +64,20 @@ public class DaikinHandlerFactory extends BaseThingHandlerFactory {
         return null;
     }
 
-    @Reference
-    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClient = httpClientFactory.createHttpClient("daikin");
-        this.httpClient.getSslContextFactory().setTrustAll(true);
-        if (!this.httpClient.isStarted()) {
-            try {
-                this.httpClient.start();
-            } catch (Exception e) {
-                this.httpClient = null;
-            }
-        }
-    }
+    // @Reference
+    // protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
+    //     this.httpClient = httpClientFactory.createHttpClient("daikin");
+    //     this.httpClient.getSslContextFactory().setTrustAll(true);
+    //     if (!this.httpClient.isStarted()) {
+    //         try {
+    //             this.httpClient.start();
+    //         } catch (Exception e) {
+    //             this.httpClient = null;
+    //         }
+    //     }
+    // }
 
-    protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClient = null;
-    }
+    // protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
+    //     this.httpClient = null;
+    // }
 }

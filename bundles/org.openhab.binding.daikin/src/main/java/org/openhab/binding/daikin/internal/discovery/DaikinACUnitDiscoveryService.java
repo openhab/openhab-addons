@@ -28,13 +28,13 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.net.NetUtil;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.daikin.internal.DaikinBindingConstants;
 import org.openhab.binding.daikin.internal.DaikinCommunicationForbiddenException;
 import org.openhab.binding.daikin.internal.DaikinWebTargets;
@@ -69,6 +69,15 @@ public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
 
     public DaikinACUnitDiscoveryService() {
         super(Collections.singleton(DaikinBindingConstants.THING_TYPE_AC_UNIT), 600, true);
+        this.httpClient = new HttpClient(new SslContextFactory(true)); // 
+        if (!this.httpClient.isStarted()) {
+            try {
+                this.httpClient.start();
+            } catch (Exception e) {
+                this.httpClient = null;
+                logger.warn("httpClient.start() failed. {}", e.getMessage());
+            }
+        }
         scanner = createScanner();
     }
 
@@ -139,7 +148,7 @@ public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
 
             Map<String, String> parsedData = InfoParser.parse(data);
             Boolean secure = "1".equals(parsedData.get("en_secure"));
-            String ssid =  Optional.ofNullable(parsedData.get("ssid")).orElse(host.replace(".", "_"));
+            String thingId = Optional.ofNullable(parsedData.get("ssid")).orElse(host.replace(".", "_"));
             String mac = Optional.ofNullable(parsedData.get("mac")).orElse("");
             String uuid = mac.isEmpty() ? UUID.randomUUID().toString() : UUID.nameUUIDFromBytes(mac.getBytes()).toString();
 
@@ -156,13 +165,15 @@ public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
                 found = true;
             }
             if (found) {
-                ThingUID thingUID = new ThingUID(DaikinBindingConstants.THING_TYPE_AC_UNIT, ssid);
-                DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
+                ThingUID thingUID = new ThingUID(DaikinBindingConstants.THING_TYPE_AC_UNIT, thingId);
+                DiscoveryResultBuilder resultBuilder = DiscoveryResultBuilder.create(thingUID)
                         .withProperty(DaikinConfiguration.HOST, host).withLabel("Daikin AC Unit (" + host + ")")
                         .withProperty(DaikinConfiguration.SECURE, secure)
-                        .withProperty(DaikinConfiguration.UUID, uuid)
-                        .withRepresentationProperty(DaikinConfiguration.HOST)
-                        .build();
+                        .withRepresentationProperty(DaikinConfiguration.HOST);
+                if (secure) {
+                    resultBuilder = resultBuilder.withProperty(DaikinConfiguration.UUID, uuid);
+                }
+                DiscoveryResult result = resultBuilder.build();
 
                 logger.debug("Successfully discovered host {}", host);
                 thingDiscovered(result);
@@ -170,7 +181,7 @@ public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
             }
             // look for Daikin Airbase controller
             if ("OK".equals(webTargets.getAirbaseBasicInfo().ret)) {
-                ThingUID thingUID = new ThingUID(DaikinBindingConstants.THING_TYPE_AIRBASE_AC_UNIT, ssid);
+                ThingUID thingUID = new ThingUID(DaikinBindingConstants.THING_TYPE_AIRBASE_AC_UNIT, thingId);
                 DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
                         .withProperty(DaikinConfiguration.HOST, host).withLabel("Daikin Airbase AC Unit (" + host + ")")
                         .withRepresentationProperty(DaikinConfiguration.HOST)
@@ -185,7 +196,7 @@ public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
             return false;
         }
         // Shouldn't get here unless we don't detect a controller. 
-        // Return true to continue with the next packet
+        // Return true to continue with the next packet, which comes from another adapter
         return true;
     }
 
@@ -201,22 +212,5 @@ public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
         }
 
         return addresses;
-    }
-
-    @Reference
-    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClient = httpClientFactory.createHttpClient("daikin");
-        this.httpClient.getSslContextFactory().setTrustAll(true);
-        if (!this.httpClient.isStarted()) {
-            try {
-                this.httpClient.start();
-            } catch (Exception e) {
-                this.httpClient = null;
-            }
-        }
-    }
-
-    protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClient = null;
     }
 }
