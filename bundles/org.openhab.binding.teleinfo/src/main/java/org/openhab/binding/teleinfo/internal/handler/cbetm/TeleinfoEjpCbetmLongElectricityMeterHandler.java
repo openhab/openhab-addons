@@ -26,6 +26,7 @@ import org.openhab.binding.teleinfo.internal.reader.cbetm.FrameCbetmLongEjpOptio
  * thing.
  *
  * @author Nicolas SIBERIL - Initial contribution
+ * @author olivierkeke - Change ADCO property to parameter
  */
 public class TeleinfoEjpCbetmLongElectricityMeterHandler extends TeleinfoAbstractCbetmElectricityMeterHandler {
 
