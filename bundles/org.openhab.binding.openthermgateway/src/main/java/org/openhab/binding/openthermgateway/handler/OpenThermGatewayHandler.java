@@ -85,17 +85,28 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
             String channel = channelUID.getId();
             String code = getGatewayCodeFromChannel(channel);
 
-            GatewayCommand gatewayCommand;
+            GatewayCommand gatewayCommand = null;
 
             if (command instanceof QuantityType<?>) {
-                double value  = ((QuantityType<?>) command).toUnit(SIUnits.CELSIUS).doubleValue();
-                gatewayCommand = GatewayCommand.parse(code, Double.toString(value));
-            } else {
+                QuantityType<?> quantityType = ((QuantityType<?>) command).toUnit(SIUnits.CELSIUS);
+
+                if (quantityType != null) {
+                    double value = quantityType.doubleValue();
+                    gatewayCommand = GatewayCommand.parse(code, Double.toString(value));
+                }
+            }
+
+            if (gatewayCommand == null) {
                 gatewayCommand = GatewayCommand.parse(code, command.toFullString());
             }
 
-            if (gatewayCommand != null && checkConnection()) {
-                connector.sendCommand(gatewayCommand);
+            if (checkConnection()) {
+                @Nullable
+                OpenThermGatewayConnector conn = connector;
+
+                if (conn != null) {
+                    conn.sendCommand(gatewayCommand);
+                }
             }
         }
     }
@@ -114,18 +125,24 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
 
     @Override
     public void disconnected() {
+        @Nullable
+        OpenThermGatewayConnector conn = connector;
+
+        @Nullable
+        OpenThermGatewayConfiguration conf = config;
+
         connecting = false;
-        
+
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Disconnected");
 
         // retry connection if disconnect is not explicitly requested
-        if (!explicitDisconnect && config.connectionRetryInterval > 0) {
+        if (conf != null && !explicitDisconnect && conf.connectionRetryInterval > 0) {
             scheduler.schedule(() -> {
-                if (connector != null && !connecting && !connector.isConnected()) {
+                if (conn != null && !connecting && !conn.isConnected()) {
                     connect();
                 }
-            }, config.connectionRetryInterval, TimeUnit.SECONDS);
-        }    
+            }, conf.connectionRetryInterval, TimeUnit.SECONDS);
+        }
     }
 
     @Override
@@ -133,7 +150,7 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
         if (DataItemGroup.dataItemGroups.containsKey(message.getID())) {
             DataItem[] dataItems = DataItemGroup.dataItemGroups.get(message.getID());
 
-            for (DataItem dataItem: dataItems) {
+            for (DataItem dataItem : dataItems) {
                 String channelId = dataItem.getSubject();
 
                 if (!OpenThermGatewayBindingConstants.SUPPORTED_CHANNEL_IDS.contains(channelId)) {
@@ -156,13 +173,14 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
                         break;
                     case FLOAT:
                         float value = message.getFloat();
-                        @Nullable Unit<?> unit = dataItem.getUnit();
+                        @Nullable
+                        Unit<?> unit = dataItem.getUnit();
                         state = (unit == null) ? new DecimalType(value) : new QuantityType<>(value, unit);
                         break;
                     case DOWTOD:
                         break;
                 }
-          
+
                 if (state != null) {
                     logger.debug("Received update for channel '{}': {}", channelId, state.toFullString());
                     updateState(channelId, state);
@@ -185,7 +203,10 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
     }
 
     private boolean checkConnection() {
-        if (connector != null && connector.isConnected()) {
+        @Nullable
+        OpenThermGatewayConnector conn = connector;
+
+        if (conn != null && conn.isConnected()) {
             return true;
         }
 
@@ -193,30 +214,40 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
     }
 
     private boolean connect() {
+        @Nullable
+        OpenThermGatewayConfiguration conf = config;
+
         disconnect();
 
-        logger.debug("Starting OpenTherm Gateway connector");
+        if (conf != null) {
+            logger.debug("Starting OpenTherm Gateway connector");
 
-        explicitDisconnect = false;
+            explicitDisconnect = false;
 
-        connector = new OpenThermGatewaySocketConnector(this, config.ipaddress, config.port);
+            connector = new OpenThermGatewaySocketConnector(this, conf.ipaddress, conf.port);
 
-        Thread thread = new Thread(connector, "OpenTherm Gateway Binding - socket listener thread");
-        thread.setDaemon(true);
-        thread.start();
+            Thread thread = new Thread(connector, "OpenTherm Gateway Binding - socket listener thread");
+            thread.setDaemon(true);
+            thread.start();
 
-        logger.debug("OpenTherm Gateway connector started");
+            logger.debug("OpenTherm Gateway connector started");
 
-        return true;
+            return true;
+        }
+
+        return false;
     }
 
     private void disconnect() {
-        if (connector != null) {
-            if (connector.isConnected()) {
+        @Nullable
+        OpenThermGatewayConnector conn = connector;
+
+        if (conn != null) {
+            if (conn.isConnected()) {
                 logger.debug("Stopping OpenTherm Gateway connector");
 
                 explicitDisconnect = true;
-                connector.stop();
+                conn.stop();
             }
 
             connector = null;

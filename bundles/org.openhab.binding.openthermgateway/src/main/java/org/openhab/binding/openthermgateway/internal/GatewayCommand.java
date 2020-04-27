@@ -48,12 +48,13 @@ public class GatewayCommand {
         this.validationSet = validationSet;
 
         if (!validate()) {
-            throw new IllegalArgumentException(String.format("Invalid value '%s' for code '%s'", this.message, this.code));
+            throw new IllegalArgumentException(
+                    String.format("Invalid value '%s' for code '%s'", this.message, this.code));
         }
     }
 
     private boolean validate() {
-        if (this.validationSet == null || this.validationSet.isEmpty()) {
+        if (this.validationSet.isEmpty()) {
             return true;
         }
 
@@ -69,22 +70,28 @@ public class GatewayCommand {
     }
 
     public static GatewayCommand parse(String code, String message) throws IllegalArgumentException {
-        if ((code == null || code.isEmpty()) && message.length() > 2 && message.charAt(2) == '=') {
+        if (code.isEmpty() && message.length() > 2 && message.charAt(2) == '=') {
             return parse(message.substring(0, 2), message.substring(3));
         }
 
-        if (code != null && code.length() == 2) {
+        if (code.length() == 2) {
             String codeUpperCase = code.toUpperCase();
 
             if (supportedCommands.containsKey(codeUpperCase)) {
                 String validateSet = supportedCommands.get(codeUpperCase);
+
+                if (validateSet == null) {
+                    validateSet = "";
+                }
+
                 return new GatewayCommand(codeUpperCase, message, validateSet);
             } else {
                 throw new IllegalArgumentException(String.format("Unsupported gateway code '%s'", code.toUpperCase()));
             }
         }
 
-        throw new IllegalArgumentException(String.format("Unable to parse gateway command with code '%s' and message '%s'", code, message));
+        throw new IllegalArgumentException(
+                String.format("Unable to parse gateway command with code '%s' and message '%s'", code, message));
     }
 
     private static final HashMap<String, @Nullable String> supportedCommands = getSupportedCommands();
