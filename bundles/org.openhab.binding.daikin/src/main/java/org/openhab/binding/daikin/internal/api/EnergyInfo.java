@@ -22,10 +22,13 @@ import java.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import sun.security.util.Debug;
+
 /**
  * Holds information from the get_day_power_ex call.
  *
- * @author Wouter Denayer <wouter@denayer.com> - Added to support energy reading reading
+ * @author Wouter Denayer <wouter@denayer.com> - Added to support energy reading
+ *         reading
  *
  */
 public class EnergyInfo {
@@ -34,8 +37,8 @@ public class EnergyInfo {
     public Optional<Double> energyHeatingLastWeek = Optional.empty();
     public Optional<Double> energyCoolingToday = Optional.empty();
     public Optional<Double> energyCoolingThisWeek = Optional.empty();
-    public Optional<Double> energyCoolingLastWeek = Optional.empty();  
-    
+    public Optional<Double> energyCoolingLastWeek = Optional.empty();
+
     private static final Logger logger = LoggerFactory.getLogger(EnergyInfo.class);
 
     private EnergyInfo() {
@@ -57,38 +60,38 @@ public class EnergyInfo {
                     String value = keyValue.length > 1 ? keyValue[1] : "";
                     return new String[] { key, value };
                 }).collect(Collectors.toMap(x -> x[0], x -> x[1]));
-        
-        if(responseMap.get("ret") != null && responseMap.get("ret").contentEquals("OK")) {
+
+        if (responseMap.get("ret") != null && responseMap.get("ret").contentEquals("OK")) {
             int dayOfWeek = Integer.parseInt(responseMap.get("s_dayw"));
-            
+            int thisWeekLastDayIndex = (dayOfWeek == 0) ? 7 : dayOfWeek; // API week starts on Sunday, ours on Monday
+
             // get the heating info
             String[] heatingValues = responseMap.get("week_heat").split("/");
-            info.energyHeatingToday = Optional.of(Double.parseDouble(heatingValues[0])/10);
-            double thisWeekEnergy = 0;         
-            int thisWeekLastDay = ((dayOfWeek+7) % 8);           
-            for (int i=0; i < thisWeekLastDay; i+=1) {
+            info.energyHeatingToday = Optional.of(Double.parseDouble(heatingValues[0]) / 10);
+            double thisWeekEnergy = 0;
+            for (int i = 0; i < thisWeekLastDayIndex; i += 1) {
                 thisWeekEnergy += Integer.parseInt(heatingValues[i]);
             }
             double previousWeekEnergy = 0;
-            for (int i=thisWeekLastDay; i < thisWeekLastDay+7; i+=1) {               
-                previousWeekEnergy += Integer.parseInt(heatingValues[i]);          
-            }            
-            info.energyHeatingThisWeek = Optional.of(thisWeekEnergy/10);
-            info.energyHeatingLastWeek = Optional.of(previousWeekEnergy/10);            
-            
+            for (int i = thisWeekLastDayIndex; i < thisWeekLastDayIndex + 7; i += 1) {
+                previousWeekEnergy += Integer.parseInt(heatingValues[i]);
+            }
+            info.energyHeatingThisWeek = Optional.of(thisWeekEnergy / 10);
+            info.energyHeatingLastWeek = Optional.of(previousWeekEnergy / 10);
+
             // get the cooling info
             String[] coolingValues = responseMap.get("week_cool").split("/");
-            info.energyCoolingToday = Optional.of(Double.parseDouble(coolingValues[0])/10);
+            info.energyCoolingToday = Optional.of(Double.parseDouble(coolingValues[0]) / 10);
             thisWeekEnergy = 0;
-            for (int i=0; i < thisWeekLastDay; i+=1) {
+            for (int i = 0; i < thisWeekLastDayIndex; i += 1) {
                 thisWeekEnergy += Integer.parseInt(coolingValues[i]);
             }
             previousWeekEnergy = 0;
-            for (int i=thisWeekLastDay; i < thisWeekLastDay+7; i+=1) {
-                previousWeekEnergy += Integer.parseInt(coolingValues[i]);          
-            }            
-            info.energyCoolingThisWeek = Optional.of(thisWeekEnergy/10);
-            info.energyCoolingLastWeek = Optional.of(previousWeekEnergy/10);            
+            for (int i = thisWeekLastDayIndex; i < thisWeekLastDayIndex + 7; i += 1) {
+                previousWeekEnergy += Integer.parseInt(coolingValues[i]);
+            }
+            info.energyCoolingThisWeek = Optional.of(thisWeekEnergy / 10);
+            info.energyCoolingLastWeek = Optional.of(previousWeekEnergy / 10);
         } else {
             logger.debug("did not receive 'ret=OK' from adapter");
         }
