@@ -87,5 +87,4 @@ public class ZCommand extends CubeCommand {
     public String getReturnStrings() {
         return "A:";
     }
-
 }

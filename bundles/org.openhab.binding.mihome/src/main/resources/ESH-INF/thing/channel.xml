@@ -60,7 +60,7 @@
 		<tags>
 			<tag>ColorTemperature</tag>
 		</tags>
-		<state pattern="%d K" />
+		<state pattern="%d K"/>
 	</channel-type>
 
 	<channel-type id="sound">

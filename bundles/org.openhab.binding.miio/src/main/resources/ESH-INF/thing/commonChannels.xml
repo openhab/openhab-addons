@@ -7,10 +7,10 @@
 	<channel-group-type id="network">
 		<label>Network</label>
 		<channels>
-			<channel id="ssid" typeId="ssid" />
-			<channel id="bssid" typeId="bssid" />
-			<channel id="rssi" typeId="rssi" />
-			<channel id="life" typeId="life" />
+			<channel id="ssid" typeId="ssid"/>
+			<channel id="bssid" typeId="bssid"/>
+			<channel id="rssi" typeId="rssi"/>
+			<channel id="life" typeId="life"/>
 		</channels>
 	</channel-group-type>
 
@@ -18,22 +18,22 @@
 	<channel-type id="ssid" advanced="true">
 		<item-type>String</item-type>
 		<label>SSID</label>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="bssid" advanced="true">
 		<item-type>String</item-type>
 		<label>BSSID</label>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="rssi" advanced="true">
 		<item-type>Number</item-type>
 		<label>RSSI</label>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="life" advanced="true">
 		<item-type>Number</item-type>
 		<label>Life</label>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- Common Actions channels -->
@@ -152,90 +152,90 @@
 	<channel-type id="temperature">
 		<item-type>Number</item-type>
 		<label>Temperature</label>
-		<state pattern="%.1f" readOnly="true" />
+		<state pattern="%.1f" readOnly="true"/>
 	</channel-type>
 	<channel-type id="humidity">
 		<item-type>Number</item-type>
 		<label>Humidity</label>
-		<state pattern="%.1f" readOnly="true" />
+		<state pattern="%.1f" readOnly="true"/>
 	</channel-type>
 	<channel-type id="pm25">
 		<item-type>Number</item-type>
 		<label>PM2.5</label>
 		<description>Particulate Matter 2.5</description>
-		<state pattern="%.1f" readOnly="true" />
+		<state pattern="%.1f" readOnly="true"/>
 	</channel-type>
 	<channel-type id="co2">
 		<item-type>Number</item-type>
 		<label>CO2</label>
 		<description>Carbon Dioxide</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="tvoc">
 		<item-type>Number</item-type>
 		<label>tVOC</label>
 		<description>Total Volatile Organic Compounds</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="aqi">
 		<item-type>Number</item-type>
 		<label>Air Quality Index</label>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="averageaqi">
 		<item-type>Number</item-type>
 		<label>Air Quality Index Average</label>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="favoritelevel">
 		<item-type>Number</item-type>
 		<label>Favorite_level</label>
-		<state pattern="%.0f" />
+		<state pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="filtermaxlife">
 		<item-type>Number</item-type>
 		<label>Filter Max Life</label>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="filterhours">
 		<item-type>Number</item-type>
 		<label>Filter Use Time</label>
-		<state pattern="%.0f" readOnly="true" />
+		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
 	<channel-type id="usedhours">
 		<item-type>Number</item-type>
 		<label>Run Time</label>
-		<state pattern="%.0f" readOnly="true" />
+		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
 	<channel-type id="motorspeed">
 		<item-type>Number</item-type>
 		<label>Motor Speed</label>
-		<state pattern="%.0f" readOnly="true" />
+		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
 	<channel-type id="filterlive">
 		<item-type>Number</item-type>
 		<label>Filter Life</label>
-		<state pattern="%.0f%%" readOnly="true" />
+		<state pattern="%.0f%%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="purifyvolume">
 		<item-type>Number</item-type>
 		<label>Volume Purified</label>
-		<state pattern="%.0f m3" readOnly="true" />
+		<state pattern="%.0f m3" readOnly="true"/>
 	</channel-type>
 	<channel-type id="current">
 		<item-type>Number</item-type>
 		<label>Current</label>
-		<state pattern="%.2fA" readOnly="true" />
+		<state pattern="%.2fA" readOnly="true"/>
 	</channel-type>
 	<channel-type id="powerUsage">
 		<item-type>Number</item-type>
 		<label>Power Usage</label>
-		<state pattern="%.0fW" readOnly="true" />
+		<state pattern="%.0fW" readOnly="true"/>
 	</channel-type>
 	<channel-type id="powerPrice">
 		<item-type>Number</item-type>
 		<label>Power Price</label>
-		<state pattern="%.0f kW/h" />
+		<state pattern="%.0f kW/h"/>
 	</channel-type>
 	<channel-type id="translevel">
 		<item-type>Number</item-type>
@@ -256,7 +256,7 @@
 	<channel-type id="angle">
 		<item-type>Number</item-type>
 		<label>Angle</label>
-		<state min="0" max="360" step="1" pattern="%.0f" readOnly="false" />
+		<state min="0" max="360" step="1" pattern="%.0f" readOnly="false"/>
 	</channel-type>
 	<channel-type id="move">
 		<item-type>String</item-type>
@@ -271,42 +271,42 @@
 	<channel-type id="poweroffTime">
 		<item-type>Number</item-type>
 		<label>Power Off Timer</label>
-		<state min="0" max="28800" step="1" pattern="%.0f" readOnly="false" />
+		<state min="0" max="28800" step="1" pattern="%.0f" readOnly="false"/>
 	</channel-type>
 	<channel-type id="speed">
 		<item-type>Number</item-type>
 		<label>Speed</label>
-		<state pattern="%.0f" readOnly="false" />
+		<state pattern="%.0f" readOnly="false"/>
 	</channel-type>
 	<channel-type id="speedLevel">
 		<item-type>Number</item-type>
 		<label>Speed Level</label>
-		<state min="0" max="99" step="1" pattern="%.0f%%" readOnly="false" />
+		<state min="0" max="99" step="1" pattern="%.0f%%" readOnly="false"/>
 	</channel-type>
 	<channel-type id="naturalLevel">
 		<item-type>Number</item-type>
 		<label>Natural Fan Level</label>
-		<state min="0" max="99" step="1" pattern="%.0f%%" readOnly="false" />
+		<state min="0" max="99" step="1" pattern="%.0f%%" readOnly="false"/>
 	</channel-type>
 	<channel-type id="acPower">
 		<item-type>Switch</item-type>
 		<label>AC Power</label>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="bat_state">
 		<item-type>String</item-type>
 		<label>Battery State</label>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="gonight">
 		<item-type>Switch</item-type>
 		<label>Go Night</label>
-		<state readOnly="false" />
+		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="usb">
 		<item-type>Switch</item-type>
 		<label>USB Power</label>
-		<state readOnly="false" />
+		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="humidifierMode">
 		<item-type>String</item-type>
@@ -334,7 +334,7 @@
 	<channel-type id="airFreshFavoriteSpeed">
 		<item-type>Number</item-type>
 		<label>Favorite Speed</label>
-		<state min="0" max="300" pattern="%.0f" readOnly="false" />
+		<state min="0" max="300" pattern="%.0f" readOnly="false"/>
 	</channel-type>
 	<channel-type id="airFreshDisplay">
 		<item-type>Switch</item-type>
@@ -366,7 +366,7 @@
 	<channel-type id="airFreshPTCStatus">
 		<item-type>Switch</item-type>
 		<label>PTC Status On/Off</label>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="airFreshPtcLevel">
 		<item-type>String</item-type>
@@ -382,22 +382,22 @@
 	<channel-type id="airFreshCurrentSpeed">
 		<item-type>Number</item-type>
 		<label>Current Speed</label>
-		<state pattern="%.0f m³/h" readOnly="true" />
+		<state pattern="%.0f m³/h" readOnly="true"/>
 	</channel-type>
 	<channel-type id="airFreshCO2">
 		<item-type>Number</item-type>
 		<label>CO2</label>
-		<state pattern="%.0f" readOnly="true" />
+		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
 	<channel-type id="airFreshPM25">
 		<item-type>Number</item-type>
 		<label>PM2.5</label>
-		<state pattern="%.0f" readOnly="true" />
+		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
 	<channel-type id="airFreshTemperature">
 		<item-type>Number</item-type>
 		<label>Temperature Outside</label>
-		<state pattern="%.0f°C" readOnly="true" />
+		<state pattern="%.0f°C" readOnly="true"/>
 	</channel-type>
 	<channel-type id="airFreshResetFilter">
 		<item-type>String</item-type>
@@ -421,22 +421,22 @@
 	<channel-type id="airFreshFilterPercents">
 		<item-type>Number</item-type>
 		<label>Filter Percents Remaining</label>
-		<state pattern="%.0f%%" readOnly="true" />
+		<state pattern="%.0f%%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="airFreshFilterDays">
 		<item-type>Number</item-type>
 		<label>Filter Days Remaining</label>
-		<state pattern="%.0f" readOnly="true" />
+		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
 	<channel-type id="airFreshFilterProPercents">
 		<item-type>Number</item-type>
 		<label>Filter Pro Percents Remaining</label>
-		<state pattern="%.0f%%" readOnly="true" />
+		<state pattern="%.0f%%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="airFreshFilterProDays">
 		<item-type>Number</item-type>
 		<label>Filter Pro Days Remaining</label>
-		<state pattern="%.0f" readOnly="true" />
+		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
 	<channel-type id="miot_uint8">
 		<item-type>Number</item-type>

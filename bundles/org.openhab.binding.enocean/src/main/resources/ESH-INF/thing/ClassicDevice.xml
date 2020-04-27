@@ -7,16 +7,16 @@
 	<!-- RockerSwitch -->
 	<thing-type id="classicDevice" extensible="rockerswitchListenerSwitch, rockerswitchListenerRollershutter">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Classic Device</label>
 		<description>This thing lets you control classic EnOcean devices by rocker switch messages (EEP: F6-02)</description>
 
 		<channels>
-			<channel typeId="virtualSwitchA" id="virtualSwitchA" />
-			<channel typeId="virtualRollershutterA" id="virtualRollershutterA" />
-			<channel typeId="virtualRockerswitchB" id="virtualRockerswitchB" />
+			<channel typeId="virtualSwitchA" id="virtualSwitchA"/>
+			<channel typeId="virtualRollershutterA" id="virtualRollershutterA"/>
+			<channel typeId="virtualRockerswitchB" id="virtualRockerswitchB"/>
 		</channels>
 
 		<config-description>
@@ -59,7 +59,7 @@
 		<item-type>Switch</item-type>
 		<label>Rocker Switch</label>
 		<description>The virtual rocker switch channel allows to send rocker msg.</description>
-		<config-description-ref uri="enocean:virtualRockerChannel:config" />
+		<config-description-ref uri="enocean:virtualRockerChannel:config"/>
 	</channel-type>
 
 	<!-- virtual rocker switch channel -->
@@ -67,7 +67,7 @@
 		<item-type>Rollershutter</item-type>
 		<label>Rollershutter</label>
 		<description>This channels allows to control a rollershutter through rocker msg.</description>
-		<config-description-ref uri="enocean:virtualRockerChannel:config" />
+		<config-description-ref uri="enocean:virtualRockerChannel:config"/>
 	</channel-type>
 
 	<!-- virtual rocker switch channel -->
@@ -92,14 +92,14 @@
 	<channel-type id="rockerswitchListenerSwitch">
 		<item-type>Switch</item-type>
 		<label>Rocker Switch Listener (Switch)</label>
-		<config-description-ref uri="enocean:listeningRockerChannel:config" />
+		<config-description-ref uri="enocean:listeningRockerChannel:config"/>
 	</channel-type>
 
 	<!-- rocker switch listener channel -->
 	<channel-type id="rockerswitchListenerRollershutter">
 		<item-type>Rollershutter</item-type>
 		<label>Rocker Switch Listener (Rollershutter)</label>
-		<config-description-ref uri="enocean:listeningRockerChannel:config" />
+		<config-description-ref uri="enocean:listeningRockerChannel:config"/>
 	</channel-type>
 
 </thing:thing-descriptions>

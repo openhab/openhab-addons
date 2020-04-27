@@ -25,5 +25,4 @@ public class TimeCommand extends BaseStringCommand {
     protected TimeCommand(int setId) {
         super('f', 'a', setId);
     }
-
 }

@@ -159,5 +159,4 @@ public class PLCDiscoveryService extends AbstractDiscoveryService {
         logger.debug("Stop scan for LOGO! bridge");
         super.stopScan();
     }
-
 }

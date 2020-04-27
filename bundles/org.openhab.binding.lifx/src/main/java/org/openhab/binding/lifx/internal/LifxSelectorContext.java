@@ -104,5 +104,4 @@ public class LifxSelectorContext {
     public void setUnicastKey(@Nullable SelectionKey unicastKey) {
         this.unicastKey = unicastKey;
     }
-
 }

@@ -56,5 +56,4 @@ public class PicoKeypadHandler extends BaseKeypadHandler {
                 break;
         }
     }
-
 }

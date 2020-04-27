@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.pushbullet.internal;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
 import java.util.Collections;
 import java.util.Set;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
  * The {@link PushbulletBindingConstants} class defines common constants, which are

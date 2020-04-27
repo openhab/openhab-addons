@@ -6,14 +6,14 @@
 
 	<thing-type id="cooling_ace4000" listed="false">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="dsmrBridge" />
+			<bridge-type-ref id="dsmrBridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Cooling Meter (ACE4000)</label>
 		<description>This is a cooling meter that complies to the ACE4000 GTMM Mk3 specification.</description>
 		<channels>
-			<channel id="cmeter_value_v2" typeId="coolingValueType" />
+			<channel id="cmeter_value_v2" typeId="coolingValueType"/>
 		</channels>
-		<config-description-ref uri="thing-type:dsmr:meterdescriptor" />
+		<config-description-ref uri="thing-type:dsmr:meterdescriptor"/>
 	</thing-type>
 </thing:thing-descriptions>

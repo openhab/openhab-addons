@@ -34,5 +34,4 @@ public class CommunicationStatus extends AbstractResponse {
     public void accept(DigiplexMessageHandler visitor) {
         visitor.handleCommunicationStatus(this);
     }
-
 }

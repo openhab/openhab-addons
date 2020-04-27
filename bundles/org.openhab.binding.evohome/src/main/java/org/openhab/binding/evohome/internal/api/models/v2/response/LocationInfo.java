@@ -59,5 +59,4 @@ public class LocationInfo {
     public String getName() {
         return name;
     }
-
 }

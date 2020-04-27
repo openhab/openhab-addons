@@ -192,7 +192,7 @@ public class ContentItem {
     public int getPresetID() {
         return presetID;
     }
-    
+
     public String getContainerArt() {
         return containerArt;
     }
@@ -249,7 +249,7 @@ public class ContentItem {
         }
         return xml;
     }
-    
+
     public StateOption toStateOption() {
         String stateOptionLabel = String.valueOf(presetID) + ": " + itemName;
         return new StateOption(String.valueOf(presetID), stateOptionLabel);

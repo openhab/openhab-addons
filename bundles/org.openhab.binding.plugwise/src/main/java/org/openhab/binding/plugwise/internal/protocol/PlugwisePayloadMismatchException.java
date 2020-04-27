@@ -36,5 +36,4 @@ public class PlugwisePayloadMismatchException extends RuntimeException {
         super(String.format("Plugwise %s payload mismatch: %s does not match %s", messageType.name(), payload,
                 pattern.pattern()));
     }
-
 }

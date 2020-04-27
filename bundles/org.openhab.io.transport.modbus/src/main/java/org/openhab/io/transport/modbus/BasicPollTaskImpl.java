@@ -95,5 +95,4 @@ public class BasicPollTaskImpl implements PollTask {
         return new EqualsBuilder().append(request, rhs.request).append(endpoint, rhs.endpoint)
                 .append(getCallback(), rhs.getCallback()).isEquals();
     }
-
 }

@@ -124,5 +124,4 @@ public abstract class UniFiClient {
                 "UniFiClient{mac: '%s', ip: '%s', hostname: '%s', alias: '%s', wired: %b, blocked: %b, device: %s}",
                 mac, ip, hostname, alias, isWired(), blocked, getDevice());
     }
-
 }

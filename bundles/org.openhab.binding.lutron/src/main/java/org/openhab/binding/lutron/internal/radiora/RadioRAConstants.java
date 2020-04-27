@@ -32,5 +32,4 @@ public class RadioRAConstants {
             "ra-switch");
     public static final ThingTypeUID THING_TYPE_PHANTOM = new ThingTypeUID(LutronBindingConstants.BINDING_ID,
             "ra-phantomButton");
-
 }

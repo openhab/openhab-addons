@@ -20,7 +20,7 @@ import java.util.List;
  * @author Marco Meyer - Initial contribution
  */
 public class ErrorList extends RobonectAnswer {
-    
+
     private List<ErrorEntry> errors;
 
     /**

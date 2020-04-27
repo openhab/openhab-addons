@@ -119,5 +119,4 @@ public class Atd100Handler extends WirelessChannelsHandler {
         // no commands supported
         return Optional.empty();
     }
-
 }

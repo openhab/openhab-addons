@@ -5,7 +5,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- DEFINITIONS of terms used in the binding: Feed is a XML document used for providing users with frequently updated content.
-		The most popular feed formats are RSS and Atom. Entry is a single element in the Feed, that contains reference (link), short
+		The most popular feed formats are RSS and Atom. Entry is a single element in the Feed, that contains reference (link),
+		short
 		description and other information like images, comments and etc. Entry in this binding is abstraction for RSS item element
 		and Atom entry element. -->
 
@@ -15,14 +16,14 @@
 		<description>Provides information about a feed.</description>
 
 		<channels>
-			<channel id="latest-title" typeId="latest-title" />
-			<channel id="latest-description" typeId="latest-description" />
-			<channel id="latest-date" typeId="latest-date" />
-			<channel id="author" typeId="author" />
-			<channel id="description" typeId="description" />
-			<channel id="title" typeId="title" />
-			<channel id="last-update" typeId="last-update" />
-			<channel id="number-of-entries" typeId="number-of-entries" />
+			<channel id="latest-title" typeId="latest-title"/>
+			<channel id="latest-description" typeId="latest-description"/>
+			<channel id="latest-date" typeId="latest-date"/>
+			<channel id="author" typeId="author"/>
+			<channel id="description" typeId="description"/>
+			<channel id="title" typeId="title"/>
+			<channel id="last-update" typeId="last-update"/>
+			<channel id="number-of-entries" typeId="number-of-entries"/>
 		</channels>
 
 		<config-description>
@@ -47,56 +48,56 @@
 		<item-type>String</item-type>
 		<label>Latest Title</label>
 		<description>Contains the title of the last feed entry.</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="latest-description">
 		<item-type>String</item-type>
 		<label>Latest Description</label>
 		<description>Contains the description of last feed entry.</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="latest-date">
 		<item-type>DateTime</item-type>
 		<label>Latest Published Date</label>
 		<description>Contains the published date of the last feed entry.</description>
-		<state readOnly="true" pattern="%tc %n" />
+		<state readOnly="true" pattern="%tc %n"/>
 	</channel-type>
 
 	<channel-type id="author" advanced="true">
 		<item-type>String</item-type>
 		<label>Author</label>
 		<description>The name of the feed author, if author is present</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="title" advanced="true">
 		<item-type>String</item-type>
 		<label>Title</label>
 		<description>The title of the feed</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="description" advanced="true">
 		<item-type>String</item-type>
 		<label>Description</label>
 		<description>Description of the feed</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="last-update" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Last Update</label>
 		<description>The last update date of the feed</description>
-		<state readOnly="true" pattern="%tc %n" />
+		<state readOnly="true" pattern="%tc %n"/>
 	</channel-type>
 
 	<channel-type id="number-of-entries" advanced="true">
 		<item-type>Number</item-type>
 		<label>Number of Entries</label>
 		<description>Number of entries in the feed</description>
-		<state readOnly="true" pattern="%d" />
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
 </thing:thing-descriptions>

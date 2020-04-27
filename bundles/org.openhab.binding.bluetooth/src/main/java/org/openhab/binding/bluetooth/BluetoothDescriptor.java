@@ -50,7 +50,6 @@ public class BluetoothDescriptor {
      */
     BluetoothCharacteristic getCharacteristic() {
         return characteristic;
-
     }
 
     /**
@@ -69,7 +68,6 @@ public class BluetoothDescriptor {
      */
     public UUID getUuid() {
         return uuid;
-
     }
 
     /**

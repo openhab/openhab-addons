@@ -49,5 +49,4 @@ public class VeluxGwFirmware {
     public String getfirmwareVersion() {
         return this.firmwareVersion;
     }
-
 }

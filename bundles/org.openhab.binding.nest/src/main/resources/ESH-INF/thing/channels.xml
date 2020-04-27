@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="nest" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+<thing:thing-descriptions bindingId="nest"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Common -->
 	<channel-type id="LastConnection" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Last Connection</label>
 		<description>Timestamp of the last successful interaction with Nest</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- Structure -->
@@ -45,14 +47,14 @@
 		<item-type>DateTime</item-type>
 		<label>Peak Period Start Time</label>
 		<description>Peak period start for the Rush Hour Rewards program</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="PeakPeriodEndTime" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Peak Period End Time</label>
 		<description>Peak period end for the Rush Hour Rewards program</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="EtaBegin" advanced="true">
@@ -68,7 +70,7 @@
 		<item-type>Switch</item-type>
 		<label>Rush Hour Rewards</label>
 		<description>If rush hour rewards system is enabled or not</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="SecurityState">
@@ -88,15 +90,15 @@
 		<label>Camera</label>
 		<description>Information about the camera</description>
 		<channels>
-			<channel id="streaming" typeId="Streaming" />
-			<channel id="audio_input_enabled" typeId="AudioInputEnabled" />
-			<channel id="public_share_enabled" typeId="PublicShareEnabled" />
-			<channel id="video_history_enabled" typeId="VideoHistoryEnabled" />
-			<channel id="app_url" typeId="AppUrl" />
-			<channel id="snapshot_url" typeId="SnapshotUrl" />
-			<channel id="public_share_url" typeId="PublicShareUrl" />
-			<channel id="web_url" typeId="WebUrl" />
-			<channel id="last_online_change" typeId="LastOnlineChange" />
+			<channel id="streaming" typeId="Streaming"/>
+			<channel id="audio_input_enabled" typeId="AudioInputEnabled"/>
+			<channel id="public_share_enabled" typeId="PublicShareEnabled"/>
+			<channel id="video_history_enabled" typeId="VideoHistoryEnabled"/>
+			<channel id="app_url" typeId="AppUrl"/>
+			<channel id="snapshot_url" typeId="SnapshotUrl"/>
+			<channel id="public_share_url" typeId="PublicShareUrl"/>
+			<channel id="web_url" typeId="WebUrl"/>
+			<channel id="last_online_change" typeId="LastOnlineChange"/>
 		</channels>
 	</channel-group-type>
 
@@ -152,102 +154,102 @@
 		<item-type>DateTime</item-type>
 		<label>Last Online Change</label>
 		<description>Timestamp of the last online status change</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-group-type id="CameraEvent">
 		<label>Camera Event</label>
 		<description>Information about the camera event</description>
 		<channels>
-			<channel id="has_motion" typeId="CameraEventHasMotion" />
-			<channel id="has_sound" typeId="CameraEventHasSound" />
-			<channel id="has_person" typeId="CameraEventHasPerson" />
-			<channel id="start_time" typeId="CameraEventStartTime" />
-			<channel id="end_time" typeId="CameraEventEndTime" />
-			<channel id="urls_expire_time" typeId="CameraEventUrlsExpireTime" />
-			<channel id="animated_image_url" typeId="CameraEventAnimatedImageUrl" />
-			<channel id="app_url" typeId="CameraEventAppUrl" />
-			<channel id="image_url" typeId="CameraEventImageUrl" />
-			<channel id="web_url" typeId="CameraEventWebUrl" />
-			<channel id="activity_zones" typeId="CameraEventActivityZones" />
+			<channel id="has_motion" typeId="CameraEventHasMotion"/>
+			<channel id="has_sound" typeId="CameraEventHasSound"/>
+			<channel id="has_person" typeId="CameraEventHasPerson"/>
+			<channel id="start_time" typeId="CameraEventStartTime"/>
+			<channel id="end_time" typeId="CameraEventEndTime"/>
+			<channel id="urls_expire_time" typeId="CameraEventUrlsExpireTime"/>
+			<channel id="animated_image_url" typeId="CameraEventAnimatedImageUrl"/>
+			<channel id="app_url" typeId="CameraEventAppUrl"/>
+			<channel id="image_url" typeId="CameraEventImageUrl"/>
+			<channel id="web_url" typeId="CameraEventWebUrl"/>
+			<channel id="activity_zones" typeId="CameraEventActivityZones"/>
 		</channels>
 	</channel-group-type>
-	
+
 	<channel-type id="CameraEventHasSound" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Has Sound</label>
 		<description>If sound was detected in the camera event</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="CameraEventHasMotion" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Has Motion</label>
 		<description>If motion was detected in the camera event</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="CameraEventHasPerson" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Has Person</label>
 		<description>If a person was detected in the camera event</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="CameraEventStartTime" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Start Time</label>
 		<description>Timestamp when the camera event started</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="CameraEventEndTime" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>End Time</label>
 		<description>Timestamp when the camera event ended</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="CameraEventUrlsExpireTime" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>URLs Expire Time</label>
 		<description>Timestamp when the camera event URLs expire</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="CameraEventWebUrl" advanced="true">
 		<item-type>String</item-type>
 		<label>Web URL</label>
 		<description>The web URL for the camera event, allows you to see the camera event in a web page</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="CameraEventAppUrl" advanced="true">
 		<item-type>String</item-type>
 		<label>App URL</label>
 		<description>The app URL for the camera event, allows you to see the camera event in an app</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="CameraEventImageUrl" advanced="true">
 		<item-type>String</item-type>
 		<label>Image URL</label>
 		<description>The URL showing an image for the camera event</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="CameraEventAnimatedImageUrl" advanced="true">
 		<item-type>String</item-type>
 		<label>Animated Image URL</label>
 		<description>The URL showing an animated image for the camera event</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="CameraEventActivityZones" advanced="true">
 		<item-type>String</item-type>
 		<label>Activity Zones</label>
 		<description>Identifiers for activity zones that detected the event (comma separated)</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- Smoke detector -->
@@ -295,14 +297,14 @@
 		<item-type>Switch</item-type>
 		<label>Manual Test Active</label>
 		<description>If the manual test is currently active</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="LastManualTestTime" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Last Manual Test Time</label>
 		<description>Timestamp of the last successful manual test</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- Thermostat -->
@@ -311,7 +313,7 @@
 		<label>Temperature</label>
 		<description>Current temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="SetPoint">
@@ -319,7 +321,7 @@
 		<label>Set Point</label>
 		<description>The set point temperature</description>
 		<category>Temperature</category>
-		<state pattern="%.1f %unit%" step="0.5" />
+		<state pattern="%.1f %unit%" step="0.5"/>
 	</channel-type>
 
 	<channel-type id="MaxSetPoint">
@@ -327,7 +329,7 @@
 		<label>Max Set Point</label>
 		<description>The max set point temperature</description>
 		<category>Temperature</category>
-		<state pattern="%.1f %unit%" step="0.5" />
+		<state pattern="%.1f %unit%" step="0.5"/>
 	</channel-type>
 
 	<channel-type id="MinSetPoint">
@@ -335,7 +337,7 @@
 		<label>Min Set Point</label>
 		<description>The min set point temperature</description>
 		<category>Temperature</category>
-		<state pattern="%.1f %unit%" step="0.5" />
+		<state pattern="%.1f %unit%" step="0.5"/>
 	</channel-type>
 
 	<channel-type id="EcoMaxSetPoint" advanced="true">
@@ -343,7 +345,7 @@
 		<label>Eco Max Set Point</label>
 		<description>The eco range max set point temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="EcoMinSetPoint" advanced="true">
@@ -351,7 +353,7 @@
 		<label>Eco Min Set Point</label>
 		<description>The eco range min set point temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="LockedMaxSetPoint" advanced="true">
@@ -359,7 +361,7 @@
 		<label>Locked Max Set Point</label>
 		<description>The locked range max set point temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="LockedMinSetPoint" advanced="true">
@@ -367,14 +369,14 @@
 		<label>Locked Min Set Point</label>
 		<description>The locked range min set point temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="Locked" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Locked</label>
 		<description>If the thermostat has the temperature locked to only be within a set range</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="Mode">
@@ -425,35 +427,35 @@
 		<label>Humidity</label>
 		<description>Indicates the current relative humidity</description>
 		<category>Humidity</category>
-		<state pattern="%.1f %unit%" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="TimeToTarget">
 		<item-type>Number:Time</item-type>
 		<label>Time to Target</label>
 		<description>Time left to the target temperature approximately</description>
-		<state pattern="%d %unit%" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="CanHeat" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Can Heat</label>
 		<description>If the thermostat can actually turn on heating</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="CanCool" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Can Cool</label>
 		<description>If the thermostat can actually turn on cooling</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="FanTimerActive" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Fan Timer Active</label>
 		<description>If the fan timer is engaged</description>
-		<state />
+		<state/>
 	</channel-type>
 
 	<channel-type id="FanTimerDuration" advanced="true">
@@ -478,41 +480,41 @@
 		<item-type>DateTime</item-type>
 		<label>Fan Timer Timeout</label>
 		<description>Timestamp when the fan stops running</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="HasFan" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Has Fan</label>
 		<description>If the thermostat can control the fan</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="HasLeaf" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Has Leaf</label>
 		<description>If the thermostat is currently in a leaf mode</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="SunlightCorrectionEnabled" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Sunlight Correction Enabled</label>
 		<description>If sunlight correction is enabled</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="SunlightCorrectionActive" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Sunlight Correction Active</label>
 		<description>If sunlight correction is active</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="UsingEmergencyHeat" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Using Emergency Heat</label>
 		<description>If the system is currently using emergency heat</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

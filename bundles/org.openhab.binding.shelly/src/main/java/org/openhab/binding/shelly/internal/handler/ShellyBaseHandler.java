@@ -166,7 +166,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 }
             }
         }, 2, TimeUnit.SECONDS);
-
     }
 
     /**

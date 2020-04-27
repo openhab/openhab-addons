@@ -63,5 +63,4 @@ public class PowermaxBindingConstants {
     public static final String EVENT_LOG = "event_log_%s";
     public static final String UPDATE_EVENT_LOGS = "update_event_logs";
     public static final String DOWNLOAD_SETUP = "download_setup";
-
 }

@@ -13,7 +13,8 @@
 		<parameter name="port" type="integer" min="1" max="65535">
 			<label>Port</label>
 			<description>Port for the SONY audio device to control.
-				Home Audio products usually use port 10000 and Personal Audio products usually use port 54480.</description>
+				Home Audio products usually use port 10000 and Personal Audio
+				products usually use port 54480.</description>
 			<default>10000</default>
 		</parameter>
 		<parameter name="path" type="text">
@@ -24,7 +25,9 @@
 		</parameter>
 		<parameter name="refreshInterval" type="integer" min="0">
 			<label>Refresh Interval</label>
-			<description>The refresh interval in seconds for polling the receiver (0=disable). Binding receive automatically updates from </description>
+			<description>The refresh interval in seconds for polling the receiver (0=disable). Binding receive automatically
+				updates from
+			</description>
 			<default>300</default>
 			<advanced>true</advanced>
 		</parameter>

@@ -33,5 +33,4 @@ public class A5_02_1B extends A5_02 {
     protected double getScaledMax() {
         return 130;
     }
-
 }

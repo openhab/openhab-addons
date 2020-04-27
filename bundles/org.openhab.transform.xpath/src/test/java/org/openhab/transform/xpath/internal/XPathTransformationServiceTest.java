@@ -38,5 +38,4 @@ public class XPathTransformationServiceTest extends AbstractTransformationServic
         // Asserts
         assertEquals("8", transformedResponse);
     }
-
 }

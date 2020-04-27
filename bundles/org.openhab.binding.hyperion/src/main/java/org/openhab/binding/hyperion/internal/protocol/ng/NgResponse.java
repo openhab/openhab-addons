@@ -55,5 +55,4 @@ public class NgResponse {
     public String getError() {
         return error;
     }
-
 }

@@ -35,5 +35,4 @@ public class OmnikInverterBindingConstants {
     public static final String CHANNEL_ENERGY_TODAY = "energyToday";
 
     public static final String CHANNEL_ENERGY_TOTAL = "energyTotal";
-
 }

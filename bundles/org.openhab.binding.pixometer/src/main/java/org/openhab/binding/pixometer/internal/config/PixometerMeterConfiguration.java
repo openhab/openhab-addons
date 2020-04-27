@@ -26,5 +26,4 @@ public class PixometerMeterConfiguration {
      * The resourceId of the current meter
      */
     public @NonNullByDefault({}) String resourceId;
-
 }

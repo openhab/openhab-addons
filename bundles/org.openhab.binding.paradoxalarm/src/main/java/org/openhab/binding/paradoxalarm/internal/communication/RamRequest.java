@@ -36,6 +36,4 @@ public class RamRequest extends Request {
     public String toString() {
         return "RamRequest [getType()=" + getType() + ", getRamBlockNumber()=" + getRamBlockNumber() + "]";
     }
-
-
 }

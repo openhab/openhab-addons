@@ -23,16 +23,16 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * In the functionbitmask element value the following bits are used:
  *
  * <ol>
- *     <li>Bit 0: HAN-FUN Gerät</li>
- *     <li>Bit 3: Button</li>
- *     <li>Bit 4: Alarm-Sensor</li>
- *     <li>Bit 6: Comet DECT, Heizkostenregler</li>
- *     <li>Bit 7: Energie Messgerät</li>
- *     <li>Bit 8: Temperatursensor</li>
- *     <li>Bit 9: Schaltsteckdose</li>
- *     <li>Bit 10: AVM DECT Repeater</li>
- *     <li>Bit 11: Mikrofon</li>
- *     <li>Bit 13: HAN-FUN Unit</li>
+ * <li>Bit 0: HAN-FUN Gerät</li>
+ * <li>Bit 3: Button</li>
+ * <li>Bit 4: Alarm-Sensor</li>
+ * <li>Bit 6: Comet DECT, Heizkostenregler</li>
+ * <li>Bit 7: Energie Messgerät</li>
+ * <li>Bit 8: Temperatursensor</li>
+ * <li>Bit 9: Schaltsteckdose</li>
+ * <li>Bit 10: AVM DECT Repeater</li>
+ * <li>Bit 11: Mikrofon</li>
+ * <li>Bit 13: HAN-FUN Unit</li>
  * </ol>
  *
  * @author Robert Bausdorf - Initial contribution

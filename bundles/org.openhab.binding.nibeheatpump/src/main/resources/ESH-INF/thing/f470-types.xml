@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="nibeheatpump"
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" 
-xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<channel-type id="f470-40004" advanced="false">
 		<item-type>Number</item-type>
@@ -1478,7 +1478,8 @@ xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https:/
 	<channel-type id="f470-43086" advanced="true">
 		<item-type>String</item-type>
 		<label>Prio</label>
-		<description>Indicates what heating action (HW/heat/pool) currently prioritised 10=Off 20=Hot Water 30=Heat 40=Pool 41=Pool 2 50=Transfer 60=Cooling</description>
+		<description>Indicates what heating action (HW/heat/pool) currently prioritised 10=Off 20=Hot Water 30=Heat 40=Pool
+			41=Pool 2 50=Transfer 60=Cooling</description>
 		<state pattern="%d" readOnly="true">
 			<options>
 				<option value="10">Off</option>
@@ -1664,7 +1665,8 @@ xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https:/
 	<channel-type id="f470-43514" advanced="true">
 		<item-type>String</item-type>
 		<label>EB100-EP14 PCA Base Relays</label>
-		<description>Indicates active relays on the PCA Base card. Please refer to the wiring diagram for relay description. Binary encoded. 1=on, 0=off. Bit0=K4,Bit1=K3,Bit2=K2,Bit3=K1</description>
+		<description>Indicates active relays on the PCA Base card. Please refer to the wiring diagram for relay description.
+			Binary encoded. 1=on, 0=off. Bit0=K4,Bit1=K3,Bit2=K2,Bit3=K1</description>
 		<state pattern="%d" readOnly="true">
 			<options>
 				<option value="1">on</option>
@@ -2186,7 +2188,8 @@ xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https:/
 	<channel-type id="f470-47131" advanced="true">
 		<item-type>String</item-type>
 		<label>Language</label>
-		<description>Display language in the heat pump 0=English 1=Svenska 2=Deutsch 3=Francais 4=Espanol 5=Suomi 6=Lietuviu 7=Cesky 8=Polski 9=Nederlands 10=Norsk 11=Dansk 12=Eesti 13=Latviesu 16=Magyar</description>
+		<description>Display language in the heat pump 0=English 1=Svenska 2=Deutsch 3=Francais 4=Espanol 5=Suomi 6=Lietuviu
+			7=Cesky 8=Polski 9=Nederlands 10=Norsk 11=Dansk 12=Eesti 13=Latviesu 16=Magyar</description>
 		<state min="0" max="21" step="1" pattern="%d" readOnly="false">
 			<options>
 				<option value="0">English</option>
@@ -2458,7 +2461,8 @@ xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https:/
 	<channel-type id="f470-47292" advanced="true">
 		<item-type>Number</item-type>
 		<label>Trend Temperature</label>
-		<description>Above the set outdoor temperature the addition activation time is limited to give the compressor more time to raise the hot water temperature.</description>
+		<description>Above the set outdoor temperature the addition activation time is limited to give the compressor more
+			time to raise the hot water temperature.</description>
 		<state min="0" max="200" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
 	</channel-type>
@@ -2678,13 +2682,15 @@ xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https:/
 	<channel-type id="f470-47388" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Alarm Lower Room Temp.</label>
-		<description>Lowers the room temperature during red light alarms to notify the occupants of the building that something is the matter 0=Off 1=On</description>
+		<description>Lowers the room temperature during red light alarms to notify the occupants of the building that
+			something is the matter 0=Off 1=On</description>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="f470-47389" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Alarm Lower HW Temp.</label>
-		<description>Lowers the hot water temperature during red light alarms to notify the occupants of the building that something is the matter 0=Off 1=On</description>
+		<description>Lowers the hot water temperature during red light alarms to notify the occupants of the building that
+			something is the matter 0=Off 1=On</description>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="f470-47391" advanced="true">
@@ -2742,35 +2748,40 @@ xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https:/
 	<channel-type id="f470-47399" advanced="true">
 		<item-type>Number</item-type>
 		<label>Room Sensor Factor S4</label>
-		<description>Setting of how much the difference between set and actual room temperature should affect the supply temperature.</description>
+		<description>Setting of how much the difference between set and actual room temperature should affect the supply
+			temperature.</description>
 		<state min="0" max="60" step="1" pattern="%.1f" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="f470-47400" advanced="true">
 		<item-type>Number</item-type>
 		<label>Room Sensor Factor S3</label>
-		<description>Setting of how much the difference between set and actual room temperature should affect the supply temperature.</description>
+		<description>Setting of how much the difference between set and actual room temperature should affect the supply
+			temperature.</description>
 		<state min="0" max="60" step="1" pattern="%.1f" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="f470-47401" advanced="true">
 		<item-type>Number</item-type>
 		<label>Room Sensor Factor S2</label>
-		<description>Setting of how much the difference between set and actual room temperature should affect the supply temperature.</description>
+		<description>Setting of how much the difference between set and actual room temperature should affect the supply
+			temperature.</description>
 		<state min="0" max="60" step="1" pattern="%.1f" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="f470-47402" advanced="true">
 		<item-type>Number</item-type>
 		<label>Room Sensor Factor S1</label>
-		<description>Setting of how much the difference between set and actual room temperature should affect the supply temperature.</description>
+		<description>Setting of how much the difference between set and actual room temperature should affect the supply
+			temperature.</description>
 		<state min="0" max="60" step="1" pattern="%.1f" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="f470-47442" advanced="true">
 		<item-type>String</item-type>
 		<label>Preset Flow Clim. Sys.</label>
-		<description>Preset flow setting for climate system. 0 = manual setting, 1 = radiator, 2 = floor heating, 3 = radiator + floor heating.</description>
+		<description>Preset flow setting for climate system. 0 = manual setting, 1 = radiator, 2 = floor heating, 3 = radiator
+			+ floor heating.</description>
 		<state min="0" max="3" step="1" pattern="%d" readOnly="false">
 			<options>
 				<option value="0">manual setting</option>
@@ -3176,28 +3187,32 @@ xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https:/
 	<channel-type id="f470-48685" advanced="true">
 		<item-type>Number</item-type>
 		<label>Room Sensor Factor S8</label>
-		<description>Setting of how much the difference between set and actual room temperature should affect the supply temperature.</description>
+		<description>Setting of how much the difference between set and actual room temperature should affect the supply
+			temperature.</description>
 		<state min="0" max="60" step="1" pattern="%.1f" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="f470-48686" advanced="true">
 		<item-type>Number</item-type>
 		<label>Room Sensor Factor S7</label>
-		<description>Setting of how much the difference between set and actual room temperature should affect the supply temperature.</description>
+		<description>Setting of how much the difference between set and actual room temperature should affect the supply
+			temperature.</description>
 		<state min="0" max="60" step="1" pattern="%.1f" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="f470-48687" advanced="true">
 		<item-type>Number</item-type>
 		<label>Room Sensor Factor S6</label>
-		<description>Setting of how much the difference between set and actual room temperature should affect the supply temperature.</description>
+		<description>Setting of how much the difference between set and actual room temperature should affect the supply
+			temperature.</description>
 		<state min="0" max="60" step="1" pattern="%.1f" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="f470-48688" advanced="true">
 		<item-type>Number</item-type>
 		<label>Room Sensor Factor S5</label>
-		<description>Setting of how much the difference between set and actual room temperature should affect the supply temperature.</description>
+		<description>Setting of how much the difference between set and actual room temperature should affect the supply
+			temperature.</description>
 		<state min="0" max="60" step="1" pattern="%.1f" readOnly="false">
 		</state>
 	</channel-type>
@@ -3274,49 +3289,57 @@ xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https:/
 	<channel-type id="f470-48810" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Prevent Humidity S8</label>
-		<description> </description>
+		<description>
+		</description>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="f470-48811" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Prevent Humidity S7</label>
-		<description> </description>
+		<description>
+		</description>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="f470-48812" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Prevent Humidity S6</label>
-		<description> </description>
+		<description>
+		</description>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="f470-48813" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Prevent Humidity S5</label>
-		<description> </description>
+		<description>
+		</description>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="f470-48814" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Prevent Humidity S4</label>
-		<description> </description>
+		<description>
+		</description>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="f470-48815" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Prevent Humidity S3</label>
-		<description> </description>
+		<description>
+		</description>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="f470-48816" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Prevent Humidity S2</label>
-		<description> </description>
+		<description>
+		</description>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="f470-48817" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Prevent Humidity S1</label>
-		<description> </description>
+		<description>
+		</description>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="f470-48889" advanced="true">
@@ -3328,14 +3351,16 @@ xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https:/
 	<channel-type id="f470-48926" advanced="true">
 		<item-type>Number</item-type>
 		<label>Humidity Factor</label>
-		<description>Setting of how much the difference between set and actual room humidity should affect the supply temperature.</description>
+		<description>Setting of how much the difference between set and actual room humidity should affect the supply
+			temperature.</description>
 		<state min="5" max="100" step="1" pattern="%.1f" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="f470-48927" advanced="true">
 		<item-type>Number</item-type>
 		<label>Humidity Cool Factor</label>
-		<description>Setting of how much the difference between set and actual room humidity should affect the supply temperature in cooling mode.</description>
+		<description>Setting of how much the difference between set and actual room humidity should affect the supply
+			temperature in cooling mode.</description>
 		<state min="0" max="255" step="1" pattern="%.1f" readOnly="false">
 		</state>
 	</channel-type>
@@ -3379,7 +3404,8 @@ xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https:/
 	<channel-type id="f470-49289" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Ground Water Pump Speed Control</label>
-		<description> </description>
+		<description>
+		</description>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="f470-49297" advanced="true">

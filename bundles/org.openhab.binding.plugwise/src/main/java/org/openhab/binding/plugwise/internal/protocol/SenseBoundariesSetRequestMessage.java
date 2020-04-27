@@ -71,5 +71,4 @@ public class SenseBoundariesSetRequestMessage extends Message {
         String upperBoundaryActionHex = String.format("%02X", boundaryAction.getUpperAction());
         return boundaryTypeHex + upperBoundaryHex + upperBoundaryActionHex + lowerBoundaryHex + lowerBoundaryActionHex;
     }
-
 }

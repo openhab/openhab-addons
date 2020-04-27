@@ -391,5 +391,4 @@ public class SunspecDiscoveryProcess {
 
         detectModel();
     }
-
 }

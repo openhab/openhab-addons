@@ -55,5 +55,4 @@ public class SinopeRoomTempData extends SinopeAppData {
         }
         return sb.toString();
     }
-
 }

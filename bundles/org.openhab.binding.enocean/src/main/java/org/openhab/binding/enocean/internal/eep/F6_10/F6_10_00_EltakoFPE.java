@@ -61,5 +61,4 @@ public class F6_10_00_EltakoFPE extends _RPSMessage {
         // FPE just sends 0b00010000 or 0b00000000 value, so we apply mask 0b11101111
         return super.validateData(bytes) && ((bytes[0] & (byte) 0xEF) == (byte) 0x00);
     }
-
 }

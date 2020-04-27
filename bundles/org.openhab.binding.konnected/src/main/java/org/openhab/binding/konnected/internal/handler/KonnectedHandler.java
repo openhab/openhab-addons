@@ -520,5 +520,4 @@ public class KonnectedHandler extends BaseThingHandler {
             return config;
         }
     }
-
 }

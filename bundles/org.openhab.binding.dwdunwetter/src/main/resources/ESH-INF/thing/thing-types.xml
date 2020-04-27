@@ -10,7 +10,7 @@
 		<config-description>
 			<parameter name="cellId" type="text" required="true">
 				<label>Cell-ID</label>
-				<description><![CDATA[ID of the area to retrieve weather warnings. 
+				<description><![CDATA[ID of the area to retrieve weather warnings.
 For a list of valid IDs look at https://www.dwd.de/DE/leistungen/opendata/help/warnungen/cap_warncellids_csv.csv.
 With the % sign at the end it is possible to query multiple cells at once. For example with 8111% are cells retrieved that starts with 8111.]]></description>
 			</parameter>
@@ -22,7 +22,7 @@ With the % sign at the end it is possible to query multiple cells at once. For e
 			<parameter name="warningCount" type="integer" min="1" max="15">
 				<default>1</default>
 				<label>Number of Provided Warnings</label>
-				<description><![CDATA[Number of warnings to provide. 
+				<description><![CDATA[Number of warnings to provide.
 For each warning there will multiple channels.
 The warnings are sorted by severity first and begin second so the first warning is always the one with the highest severity.]]></description>
 			</parameter>
@@ -33,7 +33,7 @@ The warnings are sorted by severity first and begin second so the first warning 
 		<item-type>DateTime</item-type>
 		<label>Last Updated</label>
 		<description>Timestamp of the last update from the endpoint</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="warning">
 		<item-type>Switch</item-type>
@@ -41,12 +41,12 @@ The warnings are sorted by severity first and begin second so the first warning 
 		<description><![CDATA[ON if a warning is present, OFF else.
 While be switched to ON only after all other channels - except the trigger channel - are updated.
 Will be switched to OFF before all other channels are updated to NULL]]></description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="updated">
 		<kind>trigger</kind>
 		<label>Updated</label>
-		<description><![CDATA[Triggers NEW if a warning is send the first time. 
+		<description><![CDATA[Triggers NEW if a warning is send the first time.
 This happens after all other channels are populated]]></description>
 		<event>
 			<options>
@@ -71,55 +71,55 @@ This happens after all other channels are populated]]></description>
 		<item-type>String</item-type>
 		<label>Description</label>
 		<description>Textual description of the warning.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="effective">
 		<item-type>DateTime</item-type>
 		<label>Issued</label>
 		<description>Issued Date and Time</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="onset">
 		<item-type>DateTime</item-type>
 		<label>Valid From</label>
 		<description>Start Date and Time for which the warning is valid</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="expires">
 		<item-type>DateTime</item-type>
 		<label>Valid To</label>
 		<description>End Date and Time for which the warning is valid</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="headline">
 		<item-type>String</item-type>
 		<label>Headline</label>
 		<description>Headline of the warning like "Amtliche Warnung vor FROST"</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="event">
 		<item-type>String</item-type>
 		<label>Type</label>
 		<description>Type of the warning, e.g. FROST</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="altitude">
 		<item-type>Number:Length</item-type>
 		<label>Height (from)</label>
 		<description>Lower Height above sea level for which the warning is valid</description>
-		<state readOnly="true" pattern="%d m" />
+		<state readOnly="true" pattern="%d m"/>
 	</channel-type>
 	<channel-type id="ceiling">
 		<item-type>Number:Length</item-type>
 		<label>Height (to)</label>
 		<description>Upper Height above sea level for which the warning is valid</description>
-		<state readOnly="true" pattern="%d m" />
+		<state readOnly="true" pattern="%d m"/>
 	</channel-type>
 	<channel-type id="instruction">
 		<item-type>String</item-type>
 		<label>Instruction</label>
 		<description>Instructions and safety information</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="urgency">
 		<item-type>String</item-type>

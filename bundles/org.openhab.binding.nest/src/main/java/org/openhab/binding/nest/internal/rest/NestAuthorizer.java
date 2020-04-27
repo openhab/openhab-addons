@@ -86,5 +86,4 @@ public class NestAuthorizer {
             throw new InvalidAccessTokenException("Access token request failed", e);
         }
     }
-
 }

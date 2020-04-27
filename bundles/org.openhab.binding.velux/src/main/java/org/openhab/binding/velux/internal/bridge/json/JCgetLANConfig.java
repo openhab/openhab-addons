@@ -186,5 +186,4 @@ class JCgetLANConfig extends GetLANConfig implements BridgeCommunicationProtocol
                 response.data.defaultGateway, response.data.dhcp);
         return gwLAN;
     }
-
 }

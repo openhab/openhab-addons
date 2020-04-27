@@ -90,7 +90,7 @@ public class ValloxMVHandler extends BaseThingHandler {
                             || (cmd == ValloxMVBindingConstants.STATE_ATHOME)
                             || (cmd == ValloxMVBindingConstants.STATE_AWAY)
                             || (cmd == ValloxMVBindingConstants.STATE_BOOST)) {
-                        //logger.debug("Changing state to: {}", command);
+                        // logger.debug("Changing state to: {}", command);
                         strUpdateValue = command.toString();
                     }
                 } catch (NumberFormatException nfe) {
@@ -146,7 +146,7 @@ public class ValloxMVHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing thing {}", getThing().getUID());
-    
+
         updateStatus(ThingStatus.UNKNOWN);
 
         String ip = getConfigAs(ValloxMVConfig.class).getIp();
@@ -160,10 +160,12 @@ public class ValloxMVHandler extends BaseThingHandler {
     }
 
     private void scheduleReadDataJob(int initialDelay) {
-        if (initialDelay < 0) initialDelay = 0;
+        if (initialDelay < 0)
+            initialDelay = 0;
 
         readDataInterval = getConfigAs(ValloxMVConfig.class).getUpdateinterval();
-        if (readDataInterval < 15) readDataInterval = 60;
+        if (readDataInterval < 15)
+            readDataInterval = 60;
 
         logger.debug("Data table request interval {} seconds, Request in {} seconds", readDataInterval, initialDelay);
 
@@ -178,7 +180,7 @@ public class ValloxMVHandler extends BaseThingHandler {
             if (!readDataJob.isDone()) {
                 readDataJob.cancel(true);
                 logger.debug("Scheduled data table requests cancelled");
-            }    
+            }
         }
     }
 

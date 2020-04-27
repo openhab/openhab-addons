@@ -33,7 +33,6 @@ public class JsonDevices {
         public @Nullable String softwareVersion;
         public boolean online;
         public @Nullable String @Nullable [] capabilities;
-
     }
 
     public @Nullable Device @Nullable [] devices;

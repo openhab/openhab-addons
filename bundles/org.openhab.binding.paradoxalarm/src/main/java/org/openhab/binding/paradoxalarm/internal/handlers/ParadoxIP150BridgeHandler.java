@@ -298,5 +298,4 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler
                     TimeUnit.SECONDS);
         }
     }
-
 }

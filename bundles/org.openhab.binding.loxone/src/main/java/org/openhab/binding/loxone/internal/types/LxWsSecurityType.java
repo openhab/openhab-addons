@@ -31,11 +31,12 @@ public enum LxWsSecurityType {
      * Token-based authentication with AES-256 command encryption
      */
     TOKEN;
+
     /**
      * Encode security type based on index
      *
      * @param index
-     *                  0 for auto, 1 for hash, 2 for token
+     *            0 for auto, 1 for hash, 2 for token
      * @return
      *         security type fo given index
      */

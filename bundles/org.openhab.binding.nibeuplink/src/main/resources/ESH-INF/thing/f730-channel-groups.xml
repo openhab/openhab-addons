@@ -6,32 +6,32 @@
 	<channel-group-type id="f730-compressor">
 		<label>Compressor Channels</label>
 		<channels>
-			<channel id="43181" typeId="f730-type-43181" />
-			<channel id="43424" typeId="f730-type-43424" />
-			<channel id="43420" typeId="f730-type-43420" />
-			<channel id="43416" typeId="f730-type-43416" />
-			<channel id="40022" typeId="f730-type-40022" />
-			<channel id="40019" typeId="f730-type-40019" />
-			<channel id="40018" typeId="f730-type-40018" />
-			<channel id="40017" typeId="f730-type-40017" />
-			<channel id="40020" typeId="f730-type-40020" />
-			<channel id="43136" typeId="f730-type-43136" />
-			<channel id="43122" typeId="f730-type-43122" />
-			<channel id="43123" typeId="f730-type-43123" />
-			<channel id="43066" typeId="f730-type-43066" />
+			<channel id="43181" typeId="f730-type-43181"/>
+			<channel id="43424" typeId="f730-type-43424"/>
+			<channel id="43420" typeId="f730-type-43420"/>
+			<channel id="43416" typeId="f730-type-43416"/>
+			<channel id="40022" typeId="f730-type-40022"/>
+			<channel id="40019" typeId="f730-type-40019"/>
+			<channel id="40018" typeId="f730-type-40018"/>
+			<channel id="40017" typeId="f730-type-40017"/>
+			<channel id="40020" typeId="f730-type-40020"/>
+			<channel id="43136" typeId="f730-type-43136"/>
+			<channel id="43122" typeId="f730-type-43122"/>
+			<channel id="43123" typeId="f730-type-43123"/>
+			<channel id="43066" typeId="f730-type-43066"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="f730-airsupply">
 		<label>Air Supply/Exhaust Channels</label>
 		<channels>
-			<channel id="10001" typeId="f730-type-10001" />
-			<channel id="40025" typeId="f730-type-40025" />
-			<channel id="40026" typeId="f730-type-40026" />
-			<channel id="43124" typeId="f730-type-43124" />
-			<channel id="41026" typeId="f730-type-41026" />
-			<channel id="43125" typeId="f730-type-43125" />
-			<channel id="40919" typeId="f730-type-40919" />
-			<channel id="40101" typeId="f730-type-40101" />
+			<channel id="10001" typeId="f730-type-10001"/>
+			<channel id="40025" typeId="f730-type-40025"/>
+			<channel id="40026" typeId="f730-type-40026"/>
+			<channel id="43124" typeId="f730-type-43124"/>
+			<channel id="41026" typeId="f730-type-41026"/>
+			<channel id="43125" typeId="f730-type-43125"/>
+			<channel id="40919" typeId="f730-type-40919"/>
+			<channel id="40101" typeId="f730-type-40101"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

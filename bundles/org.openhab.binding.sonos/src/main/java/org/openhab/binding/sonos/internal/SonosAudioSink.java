@@ -144,5 +144,4 @@ public class SonosAudioSink implements AudioSink {
     public void setVolume(PercentType volume) {
         handler.setVolume(volume);
     }
-
 }

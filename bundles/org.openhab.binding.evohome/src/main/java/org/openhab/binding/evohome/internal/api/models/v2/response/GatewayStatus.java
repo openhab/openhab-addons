@@ -44,5 +44,4 @@ public class GatewayStatus {
     public ActiveFault getActiveFault(int index) {
         return activeFaults.get(index);
     }
-
 }

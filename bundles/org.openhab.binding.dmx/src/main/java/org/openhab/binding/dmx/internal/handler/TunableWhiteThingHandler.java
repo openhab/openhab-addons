@@ -319,5 +319,4 @@ public class TunableWhiteThingHandler extends DmxThingHandler {
                     100 * currentValues.get(1) / (currentValues.get(0) + currentValues.get(1)));
         }
     }
-
 }

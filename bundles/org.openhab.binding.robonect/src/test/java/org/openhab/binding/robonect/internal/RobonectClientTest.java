@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.robonect.internal;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -29,11 +34,6 @@ import org.openhab.binding.robonect.internal.model.ErrorList;
 import org.openhab.binding.robonect.internal.model.MowerInfo;
 import org.openhab.binding.robonect.internal.model.Name;
 import org.openhab.binding.robonect.internal.model.VersionInfo;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * The goal of this class is to test the functionality of the RobonectClient,
@@ -163,11 +163,11 @@ public class RobonectClientTest {
         assertEquals("05D92D32-38355048-43203030", info.getRobonect().getSerial());
         verify(httpClientMock, times(1)).newRequest("http://123.456.789.123/json?cmd=version");
     }
-    
+
     @Test
     public void shouldHandleProperEncoding() throws InterruptedException, ExecutionException, TimeoutException {
-        byte[] responseBytesISO88591 = "{\"successful\": true, \"name\": \"Mein Automower\", \"status\": {\"status\": 7, \"stopped\": true, \"duration\": 192, \"mode\": 1, \"battery\": 95, \"hours\": 41}, \"timer\": {\"status\": 2}, \"error\" : {\"error_code\": 15, \"error_message\": \"Utanför arbetsområdet\", \"date\": \"02.05.2017\", \"time\": \"20:36:43\", \"unix\": 1493757403}, \"wlan\": {\"signal\": -75}}".getBytes(
-                StandardCharsets.ISO_8859_1);
+        byte[] responseBytesISO88591 = "{\"successful\": true, \"name\": \"Mein Automower\", \"status\": {\"status\": 7, \"stopped\": true, \"duration\": 192, \"mode\": 1, \"battery\": 95, \"hours\": 41}, \"timer\": {\"status\": 2}, \"error\" : {\"error_code\": 15, \"error_message\": \"Utanför arbetsområdet\", \"date\": \"02.05.2017\", \"time\": \"20:36:43\", \"unix\": 1493757403}, \"wlan\": {\"signal\": -75}}"
+                .getBytes(StandardCharsets.ISO_8859_1);
         when(httpClientMock.newRequest("http://123.456.789.123/json?cmd=status")).thenReturn(requestMock);
         when(requestMock.method(HttpMethod.GET)).thenReturn(requestMock);
         when(requestMock.timeout(30000L, TimeUnit.MILLISECONDS)).thenReturn(requestMock);
@@ -208,5 +208,4 @@ public class RobonectClientTest {
         when(requestMock.send()).thenThrow(new TimeoutException("Mock Timeout Exception"));
         MowerInfo answer = subject.getMowerInfo();
     }
-
 }

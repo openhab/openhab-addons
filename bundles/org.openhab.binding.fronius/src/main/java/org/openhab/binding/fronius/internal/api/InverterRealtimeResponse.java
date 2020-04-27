@@ -35,5 +35,4 @@ public class InverterRealtimeResponse extends BaseFroniusResponse {
     public void setBody(InverterRealtimeBody body) {
         this.body = body;
     }
-
 }

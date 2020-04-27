@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.linuxinput.internal;
 
+import java.io.IOException;
+import java.util.concurrent.CancellationException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -20,9 +23,6 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.util.concurrent.CancellationException;
 
 /**
  * Abstract handler, that encapsulates the lifecycle of an underlying device.
@@ -63,7 +63,7 @@ public abstract class DeviceReadingHandler extends BaseThingHandler {
                             logger.warn("Could not read event", e);
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                         }
-                    } , getClass(), getInstanceName());
+                    }, getClass(), getInstanceName());
                     thread.start();
                     worker = thread;
                 }
@@ -110,7 +110,8 @@ public abstract class DeviceReadingHandler extends BaseThingHandler {
     }
 
     private void stopWorker() throws InterruptedException {
-        @Nullable Thread activeWorker = this.worker;
+        @Nullable
+        Thread activeWorker = this.worker;
         logger.debug("interrupting worker {}", activeWorker);
         worker = null;
 

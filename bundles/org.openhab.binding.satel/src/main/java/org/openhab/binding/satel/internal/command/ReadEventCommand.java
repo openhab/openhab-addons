@@ -218,5 +218,4 @@ public class ReadEventCommand extends SatelCommandBase {
         }
         return true;
     }
-
 }

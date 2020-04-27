@@ -58,5 +58,4 @@ public class JinjaTransformationServiceTest {
         // Asserts
         Assert.assertEquals("Hello world!", transformedResponse);
     }
-
 }

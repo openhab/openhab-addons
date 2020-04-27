@@ -180,7 +180,6 @@ public class CircuitHandler extends BaseThingHandler implements DeviceStatusList
                 }
             }
         }
-
     }
 
     @Override
@@ -309,5 +308,4 @@ public class CircuitHandler extends BaseThingHandler implements DeviceStatusList
     public String getDeviceStatusListenerID() {
         return this.dSID;
     }
-
 }

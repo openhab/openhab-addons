@@ -138,5 +138,4 @@ public abstract class RpcResponseHandler<T> {
      * Creates a typed RpcRequest.
      */
     protected abstract RpcRequest<T> createRpcRequest();
-
 }

@@ -246,5 +246,4 @@ public enum SensorEnum {
     public Float getResolution() {
         return resolution;
     }
-
 }

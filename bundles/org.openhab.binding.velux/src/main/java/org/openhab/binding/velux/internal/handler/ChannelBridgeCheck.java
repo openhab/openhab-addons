@@ -112,5 +112,4 @@ final class ChannelBridgeCheck extends ChannelHandlerTemplate {
         } while (false); // common exit
         return newState;
     }
-
 }

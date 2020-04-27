@@ -98,5 +98,4 @@ final class BridgeChannels {
         LOGGER.trace("getAllLinkedChannelUIDs() returns {}.", channelUIDs);
         return channelUIDs;
     }
-
 }

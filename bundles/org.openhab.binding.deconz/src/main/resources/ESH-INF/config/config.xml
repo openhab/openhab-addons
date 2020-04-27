@@ -23,7 +23,8 @@
 		<parameter name="apikey" type="text" required="false">
 			<label>API Key</label>
 			<context>password</context>
-			<description>If no API Key is provided, a new one will be requested. You need to authorize the access on the deCONZ web interface.</description>
+			<description>If no API Key is provided, a new one will be requested. You need to authorize the access on the deCONZ
+				web interface.</description>
 		</parameter>
 		<parameter name="timeout" type="integer" required="false" unit="ms" min="0">
 			<label>Timeout</label>

@@ -43,5 +43,4 @@ public class TransitionLightStateResponse implements HasErrorResponse {
     public String toString() {
         return "TransitionLightStateResponse {service:{" + service + "}";
     }
-
 }

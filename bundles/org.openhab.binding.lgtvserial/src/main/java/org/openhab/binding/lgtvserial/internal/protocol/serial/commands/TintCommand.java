@@ -23,5 +23,4 @@ public class TintCommand extends BasePercentCommand {
     protected TintCommand(int setId) {
         super('k', 'j', setId);
     }
-
 }

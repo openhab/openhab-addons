@@ -104,7 +104,5 @@ public interface StateType {
         public int getBytesCount(boolean extendedCmd) {
             throw new UnsupportedOperationException("Illegal use of NONE state type");
         }
-
     };
-
 }

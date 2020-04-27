@@ -86,5 +86,4 @@ public class PlugwiseScanConfig {
                 + ", wakeupDuration=" + wakeupDuration + ", recalibrate=" + recalibrate + ", updateConfiguration="
                 + updateConfiguration + "]";
     }
-
 }

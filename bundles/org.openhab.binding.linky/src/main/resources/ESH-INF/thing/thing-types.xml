@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="linky" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="linky"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -7,15 +8,16 @@
 	<thing-type id="linky">
 		<label>Linky</label>
 		<description>
-		Provides your energy consumption data. 
-		In order to receive the data, you must activate your account at https://espace-client-particuliers.enedis.fr/web/espace-particuliers/compteur-linky.
+			Provides your energy consumption data.
+			In order to receive the data, you must activate your account at
+			https://espace-client-particuliers.enedis.fr/web/espace-particuliers/compteur-linky.
 		</description>
-		
+
 		<channel-groups>
-			<channel-group typeId="daily" id="daily" />
-			<channel-group typeId="weekly" id="weekly" />
-			<channel-group typeId="monthly" id="monthly" />
-			<channel-group typeId="yearly" id="yearly" />
+			<channel-group typeId="daily" id="daily"/>
+			<channel-group typeId="weekly" id="weekly"/>
+			<channel-group typeId="monthly" id="monthly"/>
+			<channel-group typeId="yearly" id="yearly"/>
 		</channel-groups>
 
 		<config-description>
@@ -31,11 +33,11 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-	
+
 	<channel-group-type id="daily">
 		<label>Daily consumption</label>
 		<channels>
-			<channel id="yesterday" typeId="consumption" >
+			<channel id="yesterday" typeId="consumption">
 				<label>Yesterday Consumption</label>
 			</channel>
 		</channels>
@@ -44,27 +46,27 @@
 	<channel-group-type id="weekly">
 		<label>Weekly consumption</label>
 		<channels>
-			<channel id="thisWeek" typeId="consumption" >
+			<channel id="thisWeek" typeId="consumption">
 				<label>Current Week Consumption</label>
 			</channel>
-			<channel id="lastWeek" typeId="consumption" >
+			<channel id="lastWeek" typeId="consumption">
 				<label>Last Week Consumption</label>
 			</channel>
 		</channels>
 	</channel-group-type>
-	
+
 	<channel-group-type id="monthly">
 		<label>Monthly consumption</label>
 		<channels>
-			<channel id="thisMonth" typeId="consumption" >
+			<channel id="thisMonth" typeId="consumption">
 				<label>Current Month Consumption</label>
 			</channel>
-			<channel id="lastMonth" typeId="consumption" >
+			<channel id="lastMonth" typeId="consumption">
 				<label>Last Month Consumption</label>
 			</channel>
 		</channels>
 	</channel-group-type>
-	
+
 	<channel-group-type id="yearly">
 		<label>Yearly consumption</label>
 		<channels>
@@ -75,7 +77,7 @@
 				<label>Last Year Consumption</label>
 			</channel>
 		</channels>
-	</channel-group-type>	
+	</channel-group-type>
 
 
 	<channel-type id="consumption">

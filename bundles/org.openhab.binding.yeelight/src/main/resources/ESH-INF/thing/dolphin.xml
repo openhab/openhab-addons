@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="yeelight" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="yeelight"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -8,10 +9,10 @@
 		<description>Yeelight White LED Bulb</description>
 
 		<channels>
-			<channel id="brightness" typeId="brightness" />
-			<channel id="command" typeId="command" />
+			<channel id="brightness" typeId="brightness"/>
+			<channel id="command" typeId="command"/>
 		</channels>
 
-		<config-description-ref uri="thing-type:device:base" />
+		<config-description-ref uri="thing-type:device:base"/>
 	</thing-type>
 </thing:thing-descriptions>

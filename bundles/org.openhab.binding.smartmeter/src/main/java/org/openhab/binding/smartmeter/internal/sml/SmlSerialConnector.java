@@ -169,5 +169,4 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
     protected boolean applyPeriod() {
         return true;
     }
-
 }

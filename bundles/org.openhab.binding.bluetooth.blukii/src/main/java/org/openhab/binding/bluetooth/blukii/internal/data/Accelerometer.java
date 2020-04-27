@@ -35,5 +35,4 @@ public class Accelerometer {
     public String toString() {
         return "Accelerometer [tiltX=" + tiltX + ", tiltY=" + tiltY + ", tiltZ=" + tiltZ + "]";
     }
-
 }

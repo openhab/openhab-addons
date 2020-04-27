@@ -82,5 +82,4 @@ public class GenericDataResponse implements DataResponse {
     public String getFuzzyDate() {
         return fuzzyDate;
     }
-
 }

@@ -114,5 +114,4 @@ public class NAWelcomeCameraHandler extends NetatmoModuleHandler<NAWelcomeCamera
     private boolean isLocal() {
         return (module == null || module.getIsLocal() == null) ? false : module.getIsLocal().booleanValue();
     }
-
 }

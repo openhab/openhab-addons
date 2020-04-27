@@ -354,5 +354,4 @@ public class AggregateDataResponsePublicApi implements DataResponse {
 
         targetMap.put(channel, result);
     }
-
 }

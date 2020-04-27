@@ -120,11 +120,11 @@ public class TrackerHandler extends BaseThingHandler {
     /**
      * Constructor.
      *
-     * @param thing              Thing.
+     * @param thing Thing.
      * @param notificationBroker Notification broker
-     * @param regions            Global region set
-     * @param sysLocation        Location of the system
-     * @param unitProvider       Unit provider
+     * @param regions Global region set
+     * @param sysLocation Location of the system
+     * @param unitProvider Unit provider
      */
     public TrackerHandler(Thing thing, NotificationBroker notificationBroker, Set<String> regions,
             PointType sysLocation, UnitProvider unitProvider) {
@@ -269,7 +269,7 @@ public class TrackerHandler extends BaseThingHandler {
      * Fire trigger event with regionName/enter|leave payload but only if the event differs from the last event.
      *
      * @param regionName Region name
-     * @param event      Occurred event
+     * @param event Occurred event
      */
     private void triggerRegionChannel(@NonNull String regionName, @NonNull String event) {
         Boolean lastState = lastTriggeredStates.get(regionName);

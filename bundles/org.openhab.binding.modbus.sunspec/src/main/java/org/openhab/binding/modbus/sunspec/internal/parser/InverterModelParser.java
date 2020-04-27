@@ -76,5 +76,4 @@ public class InverterModelParser extends AbstractBaseParser implements SunspecPa
 
         return block;
     }
-
 }

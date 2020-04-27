@@ -99,5 +99,4 @@ public class ModbusConstants {
                     .orElseThrow(() -> new IllegalArgumentException("Invalid valueType " + configValueType));
         }
     }
-
 }

@@ -31,5 +31,4 @@ public class ModbusUDPSlaveEndpoint extends ModbusIPSlaveEndpoint {
     public <R> R accept(ModbusSlaveEndpointVisitor<R> factory) {
         return factory.visit(this);
     }
-
 }

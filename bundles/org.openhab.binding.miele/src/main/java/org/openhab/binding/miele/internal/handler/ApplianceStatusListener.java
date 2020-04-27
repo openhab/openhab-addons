@@ -54,5 +54,4 @@ public interface ApplianceStatusListener {
      * @param appliance The XGW homedevice definition of the appliance that was removed
      */
     void onApplianceAdded(HomeDevice appliance);
-
 }

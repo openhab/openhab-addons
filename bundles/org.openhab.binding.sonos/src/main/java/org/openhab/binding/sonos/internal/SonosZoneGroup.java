@@ -90,5 +90,4 @@ public class SonosZoneGroup implements Cloneable {
     public int hashCode() {
         return id.hashCode();
     }
-
 }

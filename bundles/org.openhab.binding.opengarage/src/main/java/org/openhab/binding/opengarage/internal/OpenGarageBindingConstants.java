@@ -30,7 +30,7 @@ public class OpenGarageBindingConstants {
     private static final String BINDING_ID = "opengarage";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID OPENGARAGE_THING  = new ThingTypeUID(BINDING_ID, "opengarage");
+    public static final ThingTypeUID OPENGARAGE_THING = new ThingTypeUID(BINDING_ID, "opengarage");
 
     // List of all Channel ids
     public static final String CHANNEL_OG_DISTANCE = "distance";

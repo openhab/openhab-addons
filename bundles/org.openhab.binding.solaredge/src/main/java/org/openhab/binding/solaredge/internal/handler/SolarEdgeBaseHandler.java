@@ -152,5 +152,4 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
     public SolarEdgeConfiguration getConfiguration() {
         return this.getConfigAs(SolarEdgeConfiguration.class);
     }
-
 }

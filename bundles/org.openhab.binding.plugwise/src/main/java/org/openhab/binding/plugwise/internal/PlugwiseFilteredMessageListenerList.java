@@ -79,5 +79,4 @@ public class PlugwiseFilteredMessageListenerList {
 
         filteredListeners.removeAll(removedListeners);
     }
-
 }

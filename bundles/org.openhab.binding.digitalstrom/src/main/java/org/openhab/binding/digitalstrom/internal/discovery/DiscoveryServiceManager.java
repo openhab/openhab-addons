@@ -250,12 +250,10 @@ public class DiscoveryServiceManager
     @Override
     public void onTargetTemperatureChanged(Float newValue) {
         // nothing to do
-
     }
 
     @Override
     public void onControlValueChanged(Integer newValue) {
         // nothing to do
-
     }
 }

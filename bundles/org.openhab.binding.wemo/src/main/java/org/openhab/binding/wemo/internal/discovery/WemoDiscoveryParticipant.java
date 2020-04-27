@@ -159,5 +159,4 @@ public class WemoDiscoveryParticipant implements UpnpDiscoveryParticipant {
         }
         return null;
     }
-
 }

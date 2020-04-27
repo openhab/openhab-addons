@@ -55,5 +55,4 @@ public class LEDMapFeedback extends RadioRAFeedback {
 
         return bitmap.charAt(zone - 1);
     }
-
 }

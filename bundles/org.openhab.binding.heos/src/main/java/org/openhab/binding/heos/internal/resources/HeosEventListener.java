@@ -34,5 +34,4 @@ public interface HeosEventListener extends EventListener {
     void playerMediaChangeEvent(String pid, Map<String, String> info);
 
     void bridgeChangeEvent(String event, String result, String command);
-
 }

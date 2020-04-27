@@ -154,5 +154,4 @@ public class PacketFactory {
     public static @Nullable PacketHandler<?> createHandler(int packetType) {
         return getInstance().getHandler(packetType);
     }
-
 }

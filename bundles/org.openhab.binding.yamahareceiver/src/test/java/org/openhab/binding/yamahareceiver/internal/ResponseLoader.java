@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.yamahareceiver.internal;
 
-import org.apache.commons.io.IOUtils;
-
 import java.io.IOException;
 import java.io.InputStream;
+
+import org.apache.commons.io.IOUtils;
 
 /**
  * Helper for loading XML files from classpath.
@@ -36,5 +36,4 @@ public class ResponseLoader {
     public String load(String path, String model) throws IOException {
         return load(String.format("/%s/%s", model, path));
     }
-
 }

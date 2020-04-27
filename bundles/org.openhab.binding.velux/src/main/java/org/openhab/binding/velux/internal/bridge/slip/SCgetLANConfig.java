@@ -149,5 +149,4 @@ class SCgetLANConfig extends GetLANConfig implements SlipBridgeCommunicationProt
         logger.debug("getLANConfig() returns {}.", result);
         return result;
     }
-
 }

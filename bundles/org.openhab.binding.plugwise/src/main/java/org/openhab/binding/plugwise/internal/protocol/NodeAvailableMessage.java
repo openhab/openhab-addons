@@ -42,5 +42,4 @@ public class NodeAvailableMessage extends Message {
             throw new PlugwisePayloadMismatchException(NODE_AVAILABLE, PAYLOAD_PATTERN, payload);
         }
     }
-
 }

@@ -43,5 +43,4 @@ public class DimmerDevice extends AbstractEnergyLinkDevice {
         addParam(new DeviceParam(ParamType.LEVEL, String.valueOf(level)));
         addParam(new DeviceParam(ParamType.STATUS, (level > 0) ^ isInverted() ? "1" : "0"));
     }
-
 }

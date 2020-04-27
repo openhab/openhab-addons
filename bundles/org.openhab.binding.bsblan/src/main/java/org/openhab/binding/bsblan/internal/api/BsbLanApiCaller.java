@@ -12,12 +12,14 @@
  */
 package org.openhab.binding.bsblan.internal.api;
 
+import static org.openhab.binding.bsblan.internal.BsbLanBindingConstants.*;
+
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.io.IOException;
-import java.util.Set;
-import java.util.HashSet;
+import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -31,8 +33,6 @@ import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterSetResultDT
 import org.openhab.binding.bsblan.internal.configuration.BsbLanBridgeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.openhab.binding.bsblan.internal.BsbLanBindingConstants.*;
 
 /**
  * Utility class to call the BSB-LAN REST API.
@@ -72,7 +72,8 @@ public class BsbLanApiCaller {
         request.type = type;
 
         // make REST call and process response
-        BsbLanApiParameterSetResponseDTO setResponse = makeRestCall(BsbLanApiParameterSetResponseDTO.class, "POST", "/JS", request);
+        BsbLanApiParameterSetResponseDTO setResponse = makeRestCall(BsbLanApiParameterSetResponseDTO.class, "POST",
+                "/JS", request);
         if (setResponse == null) {
             logger.debug("Failed to set parameter {} to '{}': no response received", parameterId, value);
             return false;
@@ -122,7 +123,8 @@ public class BsbLanApiCaller {
      * @param content to add to request
      * @return the object representation of the json response
      */
-    private <T> @Nullable T makeRestCall(Class<T> responseType, String httpMethod, String apiPath, @Nullable BsbLanApiContentDTO request) {
+    private <T> @Nullable T makeRestCall(Class<T> responseType, String httpMethod, String apiPath,
+            @Nullable BsbLanApiContentDTO request) {
         try {
             String url = createApiBaseUrl() + apiPath;
             logger.trace("api request url = '{}'", url);

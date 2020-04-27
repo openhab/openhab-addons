@@ -96,5 +96,4 @@ public class XiaomiSensorMagnetHandler extends XiaomiSensorBaseHandlerWithTimer 
     void onTimer() {
         triggerChannel(CHANNEL_OPEN_ALARM, "ALARM");
     }
-
 }

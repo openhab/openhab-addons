@@ -52,5 +52,4 @@ public class GetInfoRequest extends Packet {
     public int[] expectedResponses() {
         return new int[] { StateInfoResponse.TYPE };
     }
-
 }

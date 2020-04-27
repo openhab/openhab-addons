@@ -48,5 +48,4 @@ public abstract class RiseSet {
     public void setSet(Range set) {
         this.set = set;
     }
-
 }

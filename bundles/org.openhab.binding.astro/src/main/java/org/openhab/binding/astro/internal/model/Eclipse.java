@@ -60,5 +60,4 @@ public class Eclipse {
                 .append("total", total == null ? null : total.getTime())
                 .append("partial", partial == null ? null : partial.getTime()).toString();
     }
-
 }

@@ -200,5 +200,4 @@ public abstract class NestBaseHandler<T> extends BaseThingHandler
     }
 
     protected abstract void update(T oldData, T data);
-
 }

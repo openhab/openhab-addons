@@ -164,5 +164,4 @@ public final class KeypadConfigTabletopSeetouch extends KeypadConfig {
         modelData.put("Generic", combinedList(BUTTONGROUP1, BUTTONGROUP2, BUTTONGROUP3, BUTTONGROUPBOTTOM_GENERIC,
                 LEDGROUP1, LEDGROUP2, LEDGROUP3, LEDGROUPBOTTOM_RL)); // Superset of all models
     }
-
 }

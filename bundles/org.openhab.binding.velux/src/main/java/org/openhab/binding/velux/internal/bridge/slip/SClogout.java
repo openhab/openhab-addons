@@ -98,5 +98,4 @@ class SClogout extends Logout implements SlipBridgeCommunicationProtocol {
     public boolean isCommunicationSuccessful() {
         return success;
     }
-
 }

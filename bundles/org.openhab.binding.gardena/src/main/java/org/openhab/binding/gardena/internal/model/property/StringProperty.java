@@ -32,5 +32,4 @@ public class StringProperty extends BaseProperty {
     public String getValue() {
         return value;
     }
-
 }

@@ -132,5 +132,4 @@ public class Iec62056_21SerialConnector extends ConnectorBase<DataMessage> {
             iec21Port.close();
         }
     }
-
 }

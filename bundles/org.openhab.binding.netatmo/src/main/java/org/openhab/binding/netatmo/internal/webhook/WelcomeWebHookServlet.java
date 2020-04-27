@@ -109,5 +109,4 @@ public class WelcomeWebHookServlet extends HttpServlet {
     public String getPath() {
         return path;
     }
-
 }

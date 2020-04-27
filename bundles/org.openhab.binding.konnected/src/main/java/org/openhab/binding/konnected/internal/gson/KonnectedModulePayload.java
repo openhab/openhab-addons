@@ -110,5 +110,4 @@ public class KonnectedModulePayload {
     public void setBlink(Boolean setBlink) {
         this.blink = setBlink;
     }
-
 }

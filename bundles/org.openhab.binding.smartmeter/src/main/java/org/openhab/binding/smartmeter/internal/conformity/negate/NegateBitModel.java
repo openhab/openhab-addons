@@ -93,5 +93,4 @@ public class NegateBitModel {
     public boolean isStatus() {
         return status;
     }
-
 }

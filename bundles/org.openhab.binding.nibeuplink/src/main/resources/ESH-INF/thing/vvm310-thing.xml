@@ -7,13 +7,13 @@
 		<label>Nibe VVM310 / VVM500</label>
 		<description>Nibe VVM310 / VVM500 heat pump connected through Nibe UpLink</description>
 		<channel-groups>
-			<channel-group typeId="base-base" id="base" />
-			<channel-group typeId="base-hotwater" id="hotwater" />
-			<channel-group typeId="vvm310-general" id="general" />
-			<channel-group typeId="vvm310-compressor" id="compressor" />
-			<channel-group typeId="vvm310-airsupply" id="airsupply" />
-			<channel-group typeId="custom-custom" id="custom" />
+			<channel-group typeId="base-base" id="base"/>
+			<channel-group typeId="base-hotwater" id="hotwater"/>
+			<channel-group typeId="vvm310-general" id="general"/>
+			<channel-group typeId="vvm310-compressor" id="compressor"/>
+			<channel-group typeId="vvm310-airsupply" id="airsupply"/>
+			<channel-group typeId="custom-custom" id="custom"/>
 		</channel-groups>
-		<config-description-ref uri="thing-type:nibeuplink:web" />
+		<config-description-ref uri="thing-type:nibeuplink:web"/>
 	</thing-type>
 </thing:thing-descriptions>

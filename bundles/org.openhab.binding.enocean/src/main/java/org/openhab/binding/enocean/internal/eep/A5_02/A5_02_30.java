@@ -48,5 +48,4 @@ public class A5_02_30 extends A5_02 {
     protected int getUnscaledTemperatureValue() {
         return getDB_1Value() + ((getDB_2Value() & 0b11) << 8);
     }
-
 }

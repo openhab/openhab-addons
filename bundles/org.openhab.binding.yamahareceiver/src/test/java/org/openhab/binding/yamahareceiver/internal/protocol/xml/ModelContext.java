@@ -12,15 +12,15 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
-import org.openhab.binding.yamahareceiver.internal.ResponseLoader;
-
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLConstants.Commands.SYSTEM_STATUS_CONFIG_CMD;
 import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLConstants.Commands.ZONE_BASIC_STATUS_CMD;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+import org.openhab.binding.yamahareceiver.internal.ResponseLoader;
 
 /**
  * Testing context for a selected Yamaha model.

@@ -114,5 +114,4 @@ public abstract class SinopeAnswer extends SinopeRequest {
         logger.debug("Answer  Frame: {}", ByteUtil.toString(internal_payload));
         super.setInternal_payload(internal_payload);
     }
-
 }

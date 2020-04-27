@@ -9,9 +9,9 @@
 		<description>OpenGarage Controller</description>
 
 		<channels>
-			<channel id="distance" typeId="opengarage-distance" />
-			<channel id="status" typeId="opengarage-status" />
-			<channel id="vehicle" typeId="opengarage-vehicle" />
+			<channel id="distance" typeId="opengarage-distance"/>
+			<channel id="status" typeId="opengarage-status"/>
+			<channel id="vehicle" typeId="opengarage-vehicle"/>
 		</channels>
 
 		<config-description>
@@ -43,7 +43,7 @@
 		<item-type>Number:Length</item-type>
 		<label>Distance</label>
 		<description>Distance Reading from the OG unit</description>
-		<state readOnly="true" pattern="%d %unit%" />
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="opengarage-status">
 		<item-type>Switch</item-type>

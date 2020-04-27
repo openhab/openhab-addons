@@ -64,6 +64,5 @@ public class EtherrainDiscoveryService extends AbstractDiscoveryService {
                 logger.debug("Nothing responded to request");
             }
         }
-
     }
 }

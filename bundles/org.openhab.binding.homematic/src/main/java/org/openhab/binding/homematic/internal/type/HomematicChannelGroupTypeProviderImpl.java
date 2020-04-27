@@ -87,5 +87,4 @@ public class HomematicChannelGroupTypeProviderImpl implements HomematicChannelGr
     public void addChannelGroupType(ChannelGroupType channelGroupType) {
         channelGroupTypesByUID.put(channelGroupType.getUID(), channelGroupType);
     }
-
 }

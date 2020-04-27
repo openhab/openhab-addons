@@ -37,11 +37,13 @@ public class PushbulletActions implements ThingActions {
 
     private @Nullable PushbulletHandler handler;
 
-    @Override public void setThingHandler(@Nullable ThingHandler handler) {
+    @Override
+    public void setThingHandler(@Nullable ThingHandler handler) {
         this.handler = (PushbulletHandler) handler;
     }
 
-    @Override public @Nullable ThingHandler getThingHandler() {
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
         return this.handler;
     }
 

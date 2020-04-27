@@ -33,5 +33,4 @@ public interface ModbusManagerListener {
      */
     public void onEndpointPoolConfigurationSet(ModbusSlaveEndpoint endpoint,
             @Nullable EndpointPoolConfiguration configuration);
-
 }

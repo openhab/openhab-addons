@@ -54,5 +54,4 @@ public class Relay {
         int quotient = relay / 100;
         return (relay - (quotient * 100)) + (quotient * 12);
     }
-
 }

@@ -43,7 +43,7 @@ public class SomfyTahomaGatewayHandler extends SomfyTahomaBaseThingHandler {
         if (ch != null) {
             updateState(ch.getUID(), new StringType(tahomaStatus));
         }
-        //update the firmware property
+        // update the firmware property
         String fw = status.getProtocolVersion();
         updateProperty(PROPERTY_FIRMWARE_VERSION, fw);
 
@@ -53,5 +53,4 @@ public class SomfyTahomaGatewayHandler extends SomfyTahomaBaseThingHandler {
     public String getGateWayId() {
         return getThing().getConfiguration().get("id").toString();
     }
-
 }

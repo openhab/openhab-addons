@@ -38,5 +38,4 @@ public class Atd100Config {
     public int getRefresh() {
         return refresh;
     }
-
 }

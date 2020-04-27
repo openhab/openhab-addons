@@ -151,5 +151,4 @@ public abstract class AbstractDigitalOwDevice extends AbstractOwDevice {
             throw new IllegalArgumentException("channel number out of range");
         }
     }
-
 }

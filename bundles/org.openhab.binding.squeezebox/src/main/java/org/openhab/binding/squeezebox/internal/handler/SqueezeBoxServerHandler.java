@@ -867,7 +867,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 public void updateListener(SqueezeBoxPlayerEventListener listener) {
                     listener.modeChangeEvent(mac, value);
                 }
-
             });
         }
 
@@ -880,7 +879,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 public void updateListener(SqueezeBoxPlayerEventListener listener) {
                     listener.sourceChangeEvent(mac, source);
                 }
-
             });
         }
 
@@ -910,7 +908,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                         public void updateListener(SqueezeBoxPlayerEventListener listener) {
                             listener.absoluteVolumeChangeEvent(mac, volume);
                         }
-
                     });
                 }
             }

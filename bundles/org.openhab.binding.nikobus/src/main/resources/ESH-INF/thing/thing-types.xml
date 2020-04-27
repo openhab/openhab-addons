@@ -24,14 +24,14 @@
 
 	<thing-type id="push-button">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="pc-link" />
+			<bridge-type-ref id="pc-link"/>
 		</supported-bridge-type-refs>
 
 		<label>Push Button</label>
 		<description>A single push button</description>
 
 		<channels>
-			<channel id="button" typeId="button" />
+			<channel id="button" typeId="button"/>
 		</channels>
 
 		<config-description>
@@ -61,7 +61,7 @@
 
 	<thing-type id="switch-module">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="pc-link" />
+			<bridge-type-ref id="pc-link"/>
 		</supported-bridge-type-refs>
 
 		<label>Switch Module</label>
@@ -116,7 +116,7 @@
 
 	<thing-type id="dimmer-module">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="pc-link" />
+			<bridge-type-ref id="pc-link"/>
 		</supported-bridge-type-refs>
 
 		<label>Dimmer Module</label>
@@ -171,7 +171,7 @@
 
 	<thing-type id="rollershutter-module">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="pc-link" />
+			<bridge-type-ref id="pc-link"/>
 		</supported-bridge-type-refs>
 
 		<label>Rollershutter Module</label>

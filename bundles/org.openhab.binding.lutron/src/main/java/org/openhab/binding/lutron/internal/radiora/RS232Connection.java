@@ -147,5 +147,4 @@ public class RS232Connection implements RadioRAConnection, SerialPortEventListen
     public void setListener(RadioRAFeedbackListener listener) {
         this.listener = listener;
     }
-
 }

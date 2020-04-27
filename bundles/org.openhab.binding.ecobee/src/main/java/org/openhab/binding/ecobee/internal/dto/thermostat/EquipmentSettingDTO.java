@@ -67,5 +67,4 @@ public class EquipmentSettingDTO {
      * technician/contractor assoicated with the thermostat.
      */
     public Boolean remindTechnician;
-
 }

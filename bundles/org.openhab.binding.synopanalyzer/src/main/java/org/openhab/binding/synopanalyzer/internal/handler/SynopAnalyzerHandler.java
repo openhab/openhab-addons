@@ -229,5 +229,4 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
             updateSynopChannels();
         }
     }
-
 }

@@ -162,5 +162,4 @@ class SClogin extends Login implements SlipBridgeCommunicationProtocol {
         logger.trace("getAuthToken() called, returning {}.", reqPassword.replaceAll(".", "*"));
         return reqPassword;
     }
-
 }

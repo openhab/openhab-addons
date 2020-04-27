@@ -7,7 +7,7 @@
 		<label>Tankerkönig Webservice</label>
 		<description>The Tankerkönig Webservice can handle 1 to 10 gas stations.</description>
 		<channels>
-			<channel id="holiday" typeId="holiday" />
+			<channel id="holiday" typeId="holiday"/>
 		</channels>
 		<config-description>
 			<parameter name="apikey" type="text" required="true">

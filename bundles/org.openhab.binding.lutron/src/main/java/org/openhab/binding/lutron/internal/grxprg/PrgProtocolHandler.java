@@ -377,7 +377,6 @@ class PrgProtocolHandler {
         if (zone < 1 || zone > 8) {
             throw new IllegalArgumentException("Invalid zone (must be between 1 and 8): " + zone);
         }
-
     }
 
     /**
@@ -1168,7 +1167,6 @@ class PrgProtocolHandler {
             _callback.statusChanged(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Exception occurred reading from PRG: " + exception);
         }
-
     }
 
     /**
@@ -1220,6 +1218,5 @@ class PrgProtocolHandler {
             } catch (InterruptedException e1) {
             }
         }
-
     }
 }

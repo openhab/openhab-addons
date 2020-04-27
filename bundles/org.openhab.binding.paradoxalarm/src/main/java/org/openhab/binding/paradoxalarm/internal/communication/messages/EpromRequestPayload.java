@@ -46,5 +46,4 @@ public class EpromRequestPayload extends MemoryRequestPayload implements IPPacke
         logger.trace("ControlByte value: {}", controlByte);
         return controlByte;
     }
-
 }

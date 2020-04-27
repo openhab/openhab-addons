@@ -496,5 +496,4 @@ public class NtpOSGiTest extends JavaOSGiTest {
             verify(eventSubscriberMock, atLeastOnce()).receive(ArgumentMatchers.any(Event.class));
         });
     }
-
 }

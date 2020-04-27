@@ -94,7 +94,6 @@ public class LightsAndGroupsTests {
         HueLightEntry device = cs.ds.lights.get(cs.mapItemUIDtoHueID(item));
         assertThat(device.item, is(item));
         assertThat(device.state, is(instanceOf(HueStatePlug.class)));
-
     }
 
     @Test

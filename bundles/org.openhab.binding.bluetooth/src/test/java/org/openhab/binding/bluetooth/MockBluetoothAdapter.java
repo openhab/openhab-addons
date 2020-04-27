@@ -66,5 +66,4 @@ public class MockBluetoothAdapter implements BluetoothAdapter {
     public boolean hasHandlerForDevice(BluetoothAddress address) {
         return false;
     }
-
 }

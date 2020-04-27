@@ -13,7 +13,6 @@
 package org.openhab.binding.neohub.internal;
 
 import static org.openhab.binding.neohub.internal.NeoHubBindingConstants.*;
-import org.openhab.binding.neohub.internal.NeoHubInfoResponse.DeviceInfo;
 
 import java.util.Collections;
 import java.util.List;
@@ -29,7 +28,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-
+import org.openhab.binding.neohub.internal.NeoHubInfoResponse.DeviceInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -132,5 +131,4 @@ public class NeoHubDiscoveryService extends AbstractDiscoveryService {
 
         logger.debug("discovered device={}, name={} ..", deviceType, deviceOpenHabId);
     }
-
 }

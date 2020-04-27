@@ -12,12 +12,13 @@
  */
 package org.openhab.binding.bsblan.internal.handler;
 
+import static org.openhab.binding.bsblan.internal.BsbLanBindingConstants.*;
+
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-
+import java.util.stream.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -33,8 +34,6 @@ import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterQueryRespon
 import org.openhab.binding.bsblan.internal.configuration.BsbLanBridgeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.openhab.binding.bsblan.internal.BsbLanBindingConstants.*;
 
 /**
  * Bridge for BSB-LAN devices.
@@ -81,14 +80,14 @@ public class BsbLanBridgeHandler extends BaseBridgeHandler {
         // validate 'host' configuration
         if (StringUtils.isBlank(bridgeConfig.host)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                "Parameter 'host' is mandatory and must be configured");
+                    "Parameter 'host' is mandatory and must be configured");
             return;
         }
 
         // validate 'refreshInterval' configuration
-        if (bridgeConfig.refreshInterval != null && bridgeConfig.refreshInterval <  MIN_REFRESH_INTERVAL) {
+        if (bridgeConfig.refreshInterval != null && bridgeConfig.refreshInterval < MIN_REFRESH_INTERVAL) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                String.format("Parameter 'refreshInterval' must be at least %d seconds", MIN_REFRESH_INTERVAL));
+                    String.format("Parameter 'refreshInterval' must be at least %d seconds", MIN_REFRESH_INTERVAL));
             return;
         }
 
@@ -129,19 +128,18 @@ public class BsbLanBridgeHandler extends BaseBridgeHandler {
         BsbLanApiCaller apiCaller = new BsbLanApiCaller(bridgeConfig);
 
         // refresh all parameters
-        Set<Integer> parameterIds = things.stream()
-                                    .filter(thing -> thing instanceof BsbLanParameterHandler)
-                                    .map(thing -> (BsbLanParameterHandler) thing)
-                                    .map(thing -> thing.getParameterId())
-                                    .collect(Collectors.toSet());
+        Set<Integer> parameterIds = things.stream().filter(thing -> thing instanceof BsbLanParameterHandler)
+                .map(thing -> (BsbLanParameterHandler) thing).map(thing -> thing.getParameterId())
+                .collect(Collectors.toSet());
 
         cachedParameterQueryResponse = apiCaller.queryParameters(parameterIds);
 
-        // InetAddress.isReachable(...) check returned false on RPi although the device is reachable (worked on Windows).
+        // InetAddress.isReachable(...) check returned false on RPi although the device is reachable (worked on
+        // Windows).
         // Therefore we check status depending on the response.
         if (cachedParameterQueryResponse == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                "Did not receive a response from BSB-LAN device. Check your configuration and if device is online.");
+                    "Did not receive a response from BSB-LAN device. Check your configuration and if device is online.");
             // continue processing, so things can go to OFFLINE too
         } else {
             // response received, tread device as reachable, refresh state now
@@ -160,7 +158,8 @@ public class BsbLanBridgeHandler extends BaseBridgeHandler {
         // use a local variable to avoid the build warning "Potential null pointer access"
         ScheduledFuture<?> localRefreshJob = refreshJob;
         if (localRefreshJob == null || localRefreshJob.isCancelled()) {
-            int interval = (config.refreshInterval != null) ? config.refreshInterval.intValue() : DEFAULT_REFRESH_INTERVAL;
+            int interval = (config.refreshInterval != null) ? config.refreshInterval.intValue()
+                    : DEFAULT_REFRESH_INTERVAL;
             refreshJob = scheduler.scheduleWithFixedDelay(this::doRefresh, 0, interval, TimeUnit.SECONDS);
         }
     }

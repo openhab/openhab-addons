@@ -64,7 +64,7 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
     BindingServlet bindingServlet;
     @Nullable
     Gson gson;
-    
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -102,8 +102,7 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
             return null;
         }
         Gson gson = this.gson;
-        if (gson == null)
-        {
+        if (gson == null) {
             gson = new Gson();
             this.gson = gson;
         }
@@ -133,8 +132,8 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
     private synchronized void registerDiscoveryService(AccountHandler bridgeHandler) {
         AmazonEchoDiscovery discoveryService = new AmazonEchoDiscovery(bridgeHandler);
         discoveryService.activate();
-        this.discoveryServiceRegistrations.put(bridgeHandler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
+        this.discoveryServiceRegistrations.put(bridgeHandler.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 
     @Override

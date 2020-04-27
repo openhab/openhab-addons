@@ -82,5 +82,4 @@ public class PowermaxInfoMessage extends PowermaxBaseMessage {
 
         return str;
     }
-
 }

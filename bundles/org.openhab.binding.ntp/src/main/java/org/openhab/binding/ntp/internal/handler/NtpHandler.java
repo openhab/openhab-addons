@@ -267,5 +267,4 @@ public class NtpHandler extends BaseThingHandler {
     public void channelLinked(ChannelUID channelUID) {
         refreshTimeDate();
     }
-
 }

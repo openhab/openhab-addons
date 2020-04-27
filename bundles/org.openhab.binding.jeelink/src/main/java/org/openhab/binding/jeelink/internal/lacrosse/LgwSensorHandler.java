@@ -71,17 +71,17 @@ public class LgwSensorHandler extends JeeLinkSensorHandler<LgwReading> {
                         updateState(TEMPERATURE_CHANNEL, new QuantityType<>(temp, SIUnits.CELSIUS));
                     }
 
-
                     if (reading.hasHumidity()) {
                         if (!hasHumidityChannel) {
                             ThingBuilder thingBuilder = editThing();
                             thingBuilder.withChannel(ChannelBuilder
                                     .create(new ChannelUID(getThing().getUID(), HUMIDITY_CHANNEL), "Number:Humidity")
-                                    .withType(new ChannelTypeUID(getThing().getThingTypeUID().getBindingId(), HUMIDITY_CHANNEL))
+                                    .withType(new ChannelTypeUID(getThing().getThingTypeUID().getBindingId(),
+                                            HUMIDITY_CHANNEL))
                                     .withLabel(StringUtils.capitalize(HUMIDITY_CHANNEL)).build());
                             updateThing(thingBuilder.build());
 
-                            hasHumidityChannel=true;
+                            hasHumidityChannel = true;
                         }
 
                         updateState(HUMIDITY_CHANNEL,
@@ -93,11 +93,12 @@ public class LgwSensorHandler extends JeeLinkSensorHandler<LgwReading> {
                             ThingBuilder thingBuilder = editThing();
                             thingBuilder.withChannel(ChannelBuilder
                                     .create(new ChannelUID(getThing().getUID(), PRESSURE_CHANNEL), "Number:Pressure")
-                                    .withType(new ChannelTypeUID(getThing().getThingTypeUID().getBindingId(), PRESSURE_CHANNEL))
+                                    .withType(new ChannelTypeUID(getThing().getThingTypeUID().getBindingId(),
+                                            PRESSURE_CHANNEL))
                                     .withLabel(StringUtils.capitalize(PRESSURE_CHANNEL)).build());
                             updateThing(thingBuilder.build());
 
-                            hasPressureChannel=true;
+                            hasPressureChannel = true;
                         }
 
                         updateState(PRESSURE_CHANNEL, new QuantityType<>(reading.getPressure(), HECTO(SIUnits.PASCAL)));

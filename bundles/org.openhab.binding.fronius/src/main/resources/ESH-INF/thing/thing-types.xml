@@ -1,31 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="fronius" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="fronius"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Powerinverter Thing Type -->
 	<thing-type id="powerinverter">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Fronius Symo Inverter</label>
 		<description>Fronius Symo power inverter</description>
 
 		<channels>
-			<channel id="inverterdatachannelpac" typeId="pac" />
-			<channel id="inverterdatachanneldayenergy" typeId="day_energy" />
-			<channel id="inverterdatachanneltotal" typeId="total_energy" />
-			<channel id="inverterdatachannelyear" typeId="year_energy" />
-			<channel id="inverterdatachannelfac" typeId="fac" />
-			<channel id="inverterdatachanneliac" typeId="iac" />
-			<channel id="inverterdatachannelidc" typeId="idc" />
-			<channel id="inverterdatachanneluac" typeId="uac" />
-			<channel id="inverterdatachanneludc" typeId="udc" />
-			<channel id="inverterdatadevicestatuserrorcode" typeId="devicestatus_errorcode" />
-			<channel id="inverterdatadevicestatusstatuscode" typeId="devicestatus_statuscode" />
-			<channel id="powerflowchannelpgrid" typeId="pGrid" />
-			<channel id="powerflowchannelpload" typeId="pLoad" />
-			<channel id="powerflowchannelpakku" typeId="pAkku" />
+			<channel id="inverterdatachannelpac" typeId="pac"/>
+			<channel id="inverterdatachanneldayenergy" typeId="day_energy"/>
+			<channel id="inverterdatachanneltotal" typeId="total_energy"/>
+			<channel id="inverterdatachannelyear" typeId="year_energy"/>
+			<channel id="inverterdatachannelfac" typeId="fac"/>
+			<channel id="inverterdatachanneliac" typeId="iac"/>
+			<channel id="inverterdatachannelidc" typeId="idc"/>
+			<channel id="inverterdatachanneluac" typeId="uac"/>
+			<channel id="inverterdatachanneludc" typeId="udc"/>
+			<channel id="inverterdatadevicestatuserrorcode" typeId="devicestatus_errorcode"/>
+			<channel id="inverterdatadevicestatusstatuscode" typeId="devicestatus_statuscode"/>
+			<channel id="powerflowchannelpgrid" typeId="pGrid"/>
+			<channel id="powerflowchannelpload" typeId="pLoad"/>
+			<channel id="powerflowchannelpakku" typeId="pAkku"/>
 		</channels>
 
 		<config-description>

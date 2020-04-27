@@ -28,5 +28,4 @@ public interface RpcResponse {
      * Returns the decoded data.
      */
     public Object[] getResponseData();
-
 }

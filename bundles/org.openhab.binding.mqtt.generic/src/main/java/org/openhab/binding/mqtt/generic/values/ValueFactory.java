@@ -72,5 +72,4 @@ public class ValueFactory {
         }
         return value;
     }
-
 }

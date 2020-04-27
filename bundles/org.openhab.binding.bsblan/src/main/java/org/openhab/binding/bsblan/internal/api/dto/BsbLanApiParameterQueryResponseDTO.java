@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.bsblan.internal.api.dto;
 
-import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiContentDTO;
-
 import java.util.HashMap;
 
 /**
@@ -23,5 +21,6 @@ import java.util.HashMap;
  * @author Peter Schraffl - Initial contribution
  */
 @SuppressWarnings("serial")
-public class BsbLanApiParameterQueryResponseDTO extends HashMap<Integer, BsbLanApiParameterDTO> implements BsbLanApiContentDTO {
+public class BsbLanApiParameterQueryResponseDTO extends HashMap<Integer, BsbLanApiParameterDTO>
+        implements BsbLanApiContentDTO {
 }

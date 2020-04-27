@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions
-	bindingId="siemensrds"
+<thing:thing-descriptions bindingId="siemensrds"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
@@ -45,7 +44,7 @@
 	<thing-type id="rds">
 
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="climatixic" />
+			<bridge-type-ref id="climatixic"/>
 		</supported-bridge-type-refs>
 
 		<label>RDS Thermostat</label>
@@ -92,8 +91,7 @@
 				<description>The thermostat is in Automatic Mode (Off = Manual Mode)</description>
 			</channel>
 
-			<channel id="occupancyModePresent"
-				typeId="occupancyModePresent">
+			<channel id="occupancyModePresent" typeId="occupancyModePresent">
 				<label>Occupancy Mode Present</label>
 				<description>The thermostat is in Present Occupancy Mode (Off = Away Mode)</description>
 			</channel>
@@ -103,8 +101,7 @@
 				<description>The domestic water heating is in Automatic Mode (Off = Manual Mode)</description>
 			</channel>
 
-			<channel id="hotWaterOutputState"
-				typeId="hotWaterOutputState">
+			<channel id="hotWaterOutputState" typeId="hotWaterOutputState">
 				<label>Hotwater Output State</label>
 				<description>The On/Off state of the domestic water heating</description>
 			</channel>
@@ -130,7 +127,7 @@
 		<label>Temperature</label>
 		<description>Measured temperature value</description>
 		<category>temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="targetTemperature">
@@ -138,7 +135,7 @@
 		<label>Target Temperature</label>
 		<description>Target temperature setting</description>
 		<category>temperature</category>
-		<state readOnly="false" pattern="%.1f %unit%" min="5" max="30" step="0.5" />
+		<state readOnly="false" pattern="%.1f %unit%" min="5" max="30" step="0.5"/>
 	</channel-type>
 
 	<channel-type id="thermostatOutputState">
@@ -146,7 +143,7 @@
 		<label>Thermostat Output State</label>
 		<description>The output state of the the thermostat (Heating, Cooling)</description>
 		<category>fire</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="roomHumidity">
@@ -154,7 +151,7 @@
 		<label>Humidity</label>
 		<description>Measured humidity value</description>
 		<category>humidity</category>
-		<state readOnly="true" pattern="%.0f %%r.H." />
+		<state readOnly="true" pattern="%.0f %%r.H."/>
 	</channel-type>
 
 	<channel-type id="roomAirQuality">
@@ -162,7 +159,7 @@
 		<label>Air Quality</label>
 		<description>Room Air Quality</description>
 		<category>qualityofservice</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="energySavingsLevel">
@@ -170,14 +167,14 @@
 		<label>Energy Savings Level</label>
 		<description>Energy savings level (Green Leaf)</description>
 		<category>qualityofservice</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="thermostatAutoMode">
 		<item-type>Switch</item-type>
 		<label>Thermostat Auto Mode</label>
 		<description>The thermostat is in Automatic Mode (Off = Manual Mode)</description>
-		<state readOnly="false" />
+		<state readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="occupancyModePresent">
@@ -185,21 +182,21 @@
 		<label>Occupancy Mode Present</label>
 		<description>The thermostat is in Present Occupancy Mode (Off = Away Mode)</description>
 		<category>presence</category>
-		<state readOnly="false" />
+		<state readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="hotWaterAutoMode">
 		<item-type>Switch</item-type>
 		<label>Hotwater Auto Mode</label>
 		<description>The domestic water heating is in Automatic Mode (Off = Manual Mode)</description>
-		<state readOnly="false" />
+		<state readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="hotWaterOutputState">
 		<item-type>Switch</item-type>
 		<label>Hotwater Output State</label>
 		<description>The On/Off state of the domestic water heating</description>
-		<state readOnly="false" />
+		<state readOnly="false"/>
 	</channel-type>
 
 </thing:thing-descriptions>

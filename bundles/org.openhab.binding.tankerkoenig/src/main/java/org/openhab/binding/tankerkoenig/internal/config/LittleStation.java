@@ -75,5 +75,4 @@ public class LittleStation {
     public void setOpen(Boolean isOpen) {
         this.open = isOpen;
     }
-
 }

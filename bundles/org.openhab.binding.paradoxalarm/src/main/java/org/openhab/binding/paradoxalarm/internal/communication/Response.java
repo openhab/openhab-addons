@@ -41,5 +41,4 @@ public class Response implements IResponse {
     public IRequest getRequest() {
         return request;
     }
-
 }

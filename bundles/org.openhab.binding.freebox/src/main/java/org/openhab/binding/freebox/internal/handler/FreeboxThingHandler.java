@@ -418,6 +418,5 @@ public class FreeboxThingHandler extends BaseThingHandler {
             }
             return result;
         }
-
     }
 }

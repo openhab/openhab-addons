@@ -318,10 +318,10 @@ public class InnogyClient {
      * @throws ApiException
      * @throws AuthenticationException
      */
-    public void setRollerShutterAction(final String capabilityId, final ShutterAction.ShutterActions rollerShutterAction)
+    public void setRollerShutterAction(final String capabilityId,
+            final ShutterAction.ShutterActions rollerShutterAction)
             throws IOException, ApiException, AuthenticationException {
-        executePost(API_URL_ACTION,
-                new ShutterAction(capabilityId, rollerShutterAction));
+        executePost(API_URL_ACTION, new ShutterAction(capabilityId, rollerShutterAction));
     }
 
     /**

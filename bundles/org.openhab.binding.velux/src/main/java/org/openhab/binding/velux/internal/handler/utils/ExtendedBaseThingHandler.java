@@ -64,5 +64,4 @@ public abstract class ExtendedBaseThingHandler extends BaseThingHandler {
     public void updateProperties(Map<String, String> properties) {
         super.updateProperties(properties);
     }
-
 }

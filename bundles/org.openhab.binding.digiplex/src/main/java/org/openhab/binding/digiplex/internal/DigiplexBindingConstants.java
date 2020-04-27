@@ -86,5 +86,4 @@ public class DigiplexBindingConstants {
     public static final StringType COMMAND_FAIL = new StringType("Fail");
 
     public static final int GLOBAL_AREA_NO = 0;
-
 }

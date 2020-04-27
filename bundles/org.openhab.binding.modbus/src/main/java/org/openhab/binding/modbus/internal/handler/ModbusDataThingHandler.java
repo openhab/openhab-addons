@@ -519,8 +519,8 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         boolean writeTransformationMissing = StringUtils.isBlank(config.getWriteTransform());
         writeTransformation = new Transformation(config.getWriteTransform());
         boolean writingCoil = WRITE_TYPE_COIL.equals(config.getWriteType());
-        writeParametersHavingTransformationOnly = (writeTypeMissing && writeStartMissing
-                && writeValueTypeMissing && !writeTransformationMissing);
+        writeParametersHavingTransformationOnly = (writeTypeMissing && writeStartMissing && writeValueTypeMissing
+                && !writeTransformationMissing);
         boolean allMissingOrAllPresentOrOnlyNonDefaultTransform = //
                 // read-only thing, no write specified
                 (writeTypeMissing && writeStartMissing && writeValueTypeMissing)
@@ -936,5 +936,4 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
             }
         }
     }
-
 }

@@ -370,5 +370,4 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
             return Introspector.decapitalize(super.getLocalName());
         }
     }
-
 }

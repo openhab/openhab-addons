@@ -27,5 +27,4 @@ public class InputListQueryRequest implements Request {
     public String getRequestString() {
         return "%1INST ?";
     }
-
 }

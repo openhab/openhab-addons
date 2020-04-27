@@ -506,5 +506,4 @@ public class LoginData {
     public void setMapLatitude(Double mapLatitude) {
         this.mapLatitude = mapLatitude;
     }
-
 }

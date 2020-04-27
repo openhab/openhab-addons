@@ -14,10 +14,10 @@ package org.openhab.binding.coronastats.internal.dto;
 
 import java.util.Set;
 
-import com.google.gson.annotations.SerializedName;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link CoronaStats} class is internal CoronaStats structure.

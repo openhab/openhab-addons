@@ -90,5 +90,4 @@ public class VeluxBridgeSetLimitation {
         logger.trace("setMaximumLimitation() finished with failure.");
         return false;
     }
-
 }

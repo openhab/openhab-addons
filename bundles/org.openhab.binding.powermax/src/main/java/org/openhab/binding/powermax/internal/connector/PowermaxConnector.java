@@ -198,5 +198,4 @@ public abstract class PowermaxConnector implements PowermaxConnectorInterface {
     public synchronized void setWaitingForResponse(long waitingForResponse) {
         this.waitingForResponse = waitingForResponse;
     }
-
 }

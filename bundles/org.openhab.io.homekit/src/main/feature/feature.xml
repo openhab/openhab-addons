@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <features name="org.openhab.io.homekit-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
-    <repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${ohc.version}/xml/features</repository>
+	<repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${ohc.version}/xml/features</repository>
 
-    <feature name="openhab-misc-homekit" description="HomeKit Integration" version="${project.version}">
-        <feature>openhab-runtime-base</feature>
-        <feature>openhab-transport-mdns</feature>
-        <feature>openhab.tp-netty</feature>
-        <bundle dependency="true">mvn:org.glassfish/javax.json/1.0.4</bundle>
-        <bundle dependency="true">mvn:javax.json/javax.json-api/1.0</bundle>
-        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.io.homekit/${project.version}</bundle>
-    </feature>
+	<feature name="openhab-misc-homekit" description="HomeKit Integration" version="${project.version}">
+		<feature>openhab-runtime-base</feature>
+		<feature>openhab-transport-mdns</feature>
+		<feature>openhab.tp-netty</feature>
+		<bundle dependency="true">mvn:org.glassfish/javax.json/1.0.4</bundle>
+		<bundle dependency="true">mvn:javax.json/javax.json-api/1.0</bundle>
+		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.io.homekit/${project.version}</bundle>
+	</feature>
 </features>

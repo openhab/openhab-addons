@@ -41,7 +41,7 @@ public abstract class HeosChannelHandler {
     /**
      *
      * @param bridge Requires the HeosBridgeHandler
-     * @param api    The HeosFacade class
+     * @param api The HeosFacade class
      */
     public HeosChannelHandler(HeosBridgeHandler bridge, HeosFacade api) {
         this.bridge = bridge;
@@ -52,9 +52,9 @@ public abstract class HeosChannelHandler {
      * Handle a command received from a channel. Requires the class which
      * wants to handle the command to decide which subclass has to be used
      *
-     * @param command    the command to handle
-     * @param id         of the group or player
-     * @param handler    The class which wants to handle the command
+     * @param command the command to handle
+     * @param id of the group or player
+     * @param handler The class which wants to handle the command
      * @param channelUID the channelUID of the handleCommand function
      */
     public void handleCommand(Command command, String id, Object handler, ChannelUID channelUID) {
@@ -74,8 +74,8 @@ public abstract class HeosChannelHandler {
      * Handles a command for classes without an id. Used
      * for BridgeHandler
      *
-     * @param command    the command to handle
-     * @param handler    The class which wants to handle the command
+     * @param command the command to handle
+     * @param handler The class which wants to handle the command
      * @param channelUID the channelUID of the handleCommand function
      */
     public void handleCommand(Command command, Object handler, ChannelUID channelUID) {

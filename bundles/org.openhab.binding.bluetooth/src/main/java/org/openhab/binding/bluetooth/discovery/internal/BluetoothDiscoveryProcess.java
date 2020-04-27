@@ -371,5 +371,4 @@ public class BluetoothDiscoveryProcess implements Supplier<DiscoveryResult>, Blu
     @Override
     public void onDescriptorUpdate(BluetoothDescriptor bluetoothDescriptor) {
     }
-
 }

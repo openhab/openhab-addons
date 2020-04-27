@@ -8,14 +8,14 @@
 		<item-type>DateTime</item-type>
 		<label>Last Status Store</label>
 		<description>Last Status Store</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="location">
 		<item-type>Location</item-type>
 		<label>Location</label>
 		<description>Location of the device</description>
-		<state readOnly="true" pattern="%2$s°N,%3$s°W, %1$s m" />
+		<state readOnly="true" pattern="%2$s°N,%3$s°W, %1$s m"/>
 	</channel-type>
 
 	<channel-type id="temperature">
@@ -23,7 +23,7 @@
 		<label>Temperature</label>
 		<description>Current temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="minTemp" advanced="true">
@@ -31,7 +31,7 @@
 		<label>Min Temp</label>
 		<description>Minimum Temperature on current day</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="minTempThisWeek" advanced="true">
@@ -39,7 +39,7 @@
 		<label>Min Temp This Week</label>
 		<description>Minimum Temperature this week</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="minTempThisMonth" advanced="true">
@@ -47,7 +47,7 @@
 		<label>Min Temp This Month</label>
 		<description>Minimum Temperature this month</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="maxTemp" advanced="true">
@@ -55,7 +55,7 @@
 		<label>Max Temp</label>
 		<description>Maximum Temperature on current day</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="maxTempThisWeek" advanced="true">
@@ -63,7 +63,7 @@
 		<label>Max Temp This Week</label>
 		<description>Maximum Temperature this week</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="maxTempThisMonth" advanced="true">
@@ -71,7 +71,7 @@
 		<label>Max Temp This Month</label>
 		<description>Maximum Temperature this month</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="temperatureTrend" advanced="true">
@@ -93,7 +93,7 @@
 		<label>Setpoint</label>
 		<description>Thermostat temperature setpoint</description>
 		<category>Temperature</category>
-		<state pattern="%.1f %unit%" readOnly="false" />
+		<state pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="setpointMode">
@@ -116,321 +116,321 @@
 		<item-type>Switch</item-type>
 		<label>Heating Status</label>
 		<description>Indicates whether the furnace is heating or not</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="ThermOrientation" advanced="true">
 		<item-type>Number</item-type>
 		<label>Orientation</label>
 		<description>Physical orientation of the thermostat module</description>
-		<state readOnly="true" pattern="%d" />
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="timeUtc" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Measurement Time</label>
 		<description>Timestamp when data was measured</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="lastPlugSeen" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Last Plug Seen</label>
 		<description>Last Plug Seen</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="dateMinCo2" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Date Min CO2</label>
 		<description>Date when minimum CO2 was reached on current day</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="dateMinCo2ThisWeek" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Date Min CO2 This Week</label>
 		<description>Date when minimum CO2 was reached this week</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="dateMinCo2ThisMonth" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Date Min CO2 This Month</label>
 		<description>Date when minimum CO2 was reached this month</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="dateMaxCo2" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Date Max CO2</label>
 		<description>Date when maximum CO2 was reached on current day</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="dateMaxCo2ThisWeek" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Date Max CO2 This Week</label>
 		<description>Date when maximum CO2 was reached this week</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="dateMaxCo2ThisMonth" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Date Max CO2 This Month</label>
 		<description>Date when maximum CO2 was reached this month</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="dateMinTemp" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Date Min Temp</label>
 		<description>Date when minimum temperature was reached on current day</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="dateMinTempThisWeek" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Date Min Temp This Week</label>
 		<description>Date when minimum temperature was reached this week</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="dateMinTempThisMonth" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Date Min Temp This Month</label>
 		<description>Date when minimum temperature was reached this month</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="dateMaxTemp" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Date Max Temp</label>
 		<description>Date when maximum temperature was reached on current day</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="dateMaxTempThisWeek" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Date Max Temp This Week</label>
 		<description>Date when maximum temperature was reached this week</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="dateMaxTempThisMonth" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Date Max Temp This Month</label>
 		<description>Date when maximum temperature was reached this month</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="dateMinHumidity" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Date Min Humidity</label>
 		<description>Date when minimum humidity was reached on current day</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="dateMinHumidityThisWeek" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Date Min Humidity This Week</label>
 		<description>Date when minimum humidity was reached this week</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="dateMinHumidityThisMonth" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Date Min Humidity This Month</label>
 		<description>Date when minimum humidity was reached this month</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="dateMaxHumidity" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Date Max Humidity</label>
 		<description>Date when maximum humidity was reached on current day</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="dateMaxHumidityThisWeek" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Date Max Humidity This Week</label>
 		<description>Date when maximum humidity was reached this week</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="dateMaxHumidityThisMonth" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Date Max Humidity This Month</label>
 		<description>Date when maximum humidity was reached this month</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="dateMinNoise" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Date Min Noise</label>
 		<description>Date when minimum noise was reached on current day</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="dateMinNoiseThisWeek" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Date Min Noise This Week</label>
 		<description>Date when minimum noise was reached this week</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="dateMinNoiseThisMonth" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Date Min Noise This Month</label>
 		<description>Date when minimum noise was reached this month</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="dateMaxNoise" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Date Max Noise</label>
 		<description>Date when maximum noise was reached on current day</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="dateMaxNoiseThisWeek" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Date Max Noise This Week</label>
 		<description>Date when maximum noise was reached this week</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="dateMaxNoiseThisMonth" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Date Max Noise This Month</label>
 		<description>Date when maximum noise was reached this month</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="dateMinPressure" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Date Min Pressure</label>
 		<description>Date when minimum pressure was reached on current day</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="dateMinPressureThisWeek" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Date Min Pressure This Week</label>
 		<description>Date when minimum pressure was reached this week</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="dateMinPressureThisMonth" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Date Min Pressure This Month</label>
 		<description>Date when minimum pressure was reached this month</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="dateMaxPressure" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Date Max Pressure</label>
 		<description>Date when maximum pressure was reached on current day</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="dateMaxPressureThisWeek" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Date Max Pressure This Week</label>
 		<description>Date when maximum pressure was reached this week</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="dateMaxPressureThisMonth" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Date Max Pressure This Month</label>
 		<description>Date when maximum pressure was reached this month</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="lastBilan" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Available Bilan</label>
 		<description>Month of the last available thermostat bilan</description>
-		<state readOnly="true" pattern="%1$td.%1$tm.%1$tY" />
+		<state readOnly="true" pattern="%1$td.%1$tm.%1$tY"/>
 	</channel-type>
 
 	<channel-type id="connectedBoiler" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Plug Connected Boiler</label>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="lastMessage" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Last Message</label>
 		<description>Last Message emitted by the module</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="setpointEndTime" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Setpoint End</label>
 		<description>Thermostat goes back to schedule after that timestamp.</description>
-		<state readOnly="true" pattern="%1$td.%1$tm.%1$tY %1$tH:%1$tM" />
+		<state readOnly="true" pattern="%1$td.%1$tm.%1$tY %1$tH:%1$tM"/>
 	</channel-type>
 
 	<channel-type id="lastThermSeen" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Last Therm Seen</label>
 		<description>Last Them Seen</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="co2">
 		<item-type>Number:Dimensionless</item-type>
 		<label>CO2</label>
 		<description>Air Quality</description>
-		<state readOnly="true" pattern="%d %unit%" />
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="minCo2" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Min Co2</label>
 		<description>Minimum CO2 on current day</description>
-		<state readOnly="true" pattern="%d %unit%" />
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="minCo2ThisWeek" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Min Co2 This Week</label>
 		<description>Minimum CO2 this week</description>
-		<state readOnly="true" pattern="%d %unit%" />
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="minCo2ThisMonth" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Min Co2 This Month</label>
 		<description>Minimum CO2 this month</description>
-		<state readOnly="true" pattern="%d %unit%" />
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="maxCo2" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Max Co2</label>
 		<description>Maximum CO2 on current day</description>
-		<state readOnly="true" pattern="%d %unit%" />
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="maxCo2ThisWeek" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Max Co2 This Week</label>
 		<description>Maximum CO2 this week</description>
-		<state readOnly="true" pattern="%d %unit%" />
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="maxCo2ThisMonth" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Max Co2 This Month</label>
 		<description>Maximum CO2 this month</description>
-		<state readOnly="true" pattern="%d %unit%" />
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="noise">
@@ -438,7 +438,7 @@
 		<label>Noise</label>
 		<description>Current Noise Level</description>
 		<category>Noise</category>
-		<state readOnly="true" pattern="%d %unit%" />
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="minNoise" advanced="true">
@@ -446,7 +446,7 @@
 		<label>Min Noise</label>
 		<description>Minimum Noise on current day</description>
 		<category>Noise</category>
-		<state readOnly="true" pattern="%d %unit%" />
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="minNoiseThisWeek" advanced="true">
@@ -454,7 +454,7 @@
 		<label>Min Noise This Week</label>
 		<description>Minimum Noise this week</description>
 		<category>Noise</category>
-		<state readOnly="true" pattern="%d %unit%" />
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="minNoiseThisMonth" advanced="true">
@@ -462,7 +462,7 @@
 		<label>Min Noise This Month</label>
 		<description>Minimum Noise this month</description>
 		<category>Noise</category>
-		<state readOnly="true" pattern="%d %unit%" />
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="maxNoise" advanced="true">
@@ -470,7 +470,7 @@
 		<label>Max Noise</label>
 		<description>Maximum Noise on current day</description>
 		<category>Noise</category>
-		<state readOnly="true" pattern="%d %unit%" />
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="maxNoiseThisWeek" advanced="true">
@@ -478,7 +478,7 @@
 		<label>Max Noise This Week</label>
 		<description>Maximum Noise this week</description>
 		<category>Noise</category>
-		<state readOnly="true" pattern="%d %unit%" />
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="maxNoiseThisMonth" advanced="true">
@@ -486,7 +486,7 @@
 		<label>Max Noise This Month</label>
 		<description>Maximum Noise this month</description>
 		<category>Noise</category>
-		<state readOnly="true" pattern="%d %unit%" />
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="healthindex">
@@ -509,7 +509,7 @@
 		<label>Pressure</label>
 		<description>Current pressure</description>
 		<category>Pressure</category>
-		<state readOnly="true" pattern="%.3f %unit%" />
+		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 
 	<channel-type id="minPressure" advanced="true">
@@ -517,7 +517,7 @@
 		<label>Min Pressure</label>
 		<description>Minimum Pressure on current day</description>
 		<category>Pressure</category>
-		<state readOnly="true" pattern="%.3f %unit%" />
+		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 
 	<channel-type id="minPressureThisWeek" advanced="true">
@@ -525,7 +525,7 @@
 		<label>Min Pressure This Week</label>
 		<description>Minimum Pressure this week</description>
 		<category>Pressure</category>
-		<state readOnly="true" pattern="%.3f %unit%" />
+		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 
 	<channel-type id="minPressureThisMonth" advanced="true">
@@ -533,7 +533,7 @@
 		<label>Min Pressure This Month</label>
 		<description>Minimum Pressure this month</description>
 		<category>Pressure</category>
-		<state readOnly="true" pattern="%.3f %unit%" />
+		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 
 	<channel-type id="maxPressure" advanced="true">
@@ -541,7 +541,7 @@
 		<label>Max Pressure</label>
 		<description>Maximum Pressure on current day</description>
 		<category>Pressure</category>
-		<state readOnly="true" pattern="%.3f %unit%" />
+		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 
 	<channel-type id="maxPressureThisWeek" advanced="true">
@@ -549,7 +549,7 @@
 		<label>Max Pressure This Week</label>
 		<description>Maximum Pressure this week</description>
 		<category>Pressure</category>
-		<state readOnly="true" pattern="%.3f %unit%" />
+		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 
 	<channel-type id="maxPressureThisMonth" advanced="true">
@@ -557,7 +557,7 @@
 		<label>Max Pressure This Month</label>
 		<description>Maximum Pressure this month</description>
 		<category>Pressure</category>
-		<state readOnly="true" pattern="%.3f %unit%" />
+		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 
 	<channel-type id="pressureTrend" advanced="true">
@@ -578,7 +578,7 @@
 		<item-type>String</item-type>
 		<label>Planning</label>
 		<description>Heat planning currently used</description>
-		<state pattern="%s" />
+		<state pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="absolutePressure" advanced="true">
@@ -586,7 +586,7 @@
 		<label>Abs Pressure</label>
 		<description>Absolute pressure</description>
 		<category>Pressure</category>
-		<state readOnly="true" pattern="%.3f %unit%" />
+		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 
 	<channel-type id="humidity">
@@ -594,7 +594,7 @@
 		<label>Humidity</label>
 		<description>Current humidity</description>
 		<category>Humidity</category>
-		<state readOnly="true" min="0" max="100" pattern="%d %unit%" />
+		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="minHumidity" advanced="true">
@@ -602,7 +602,7 @@
 		<label>Min Humidity</label>
 		<description>Minimum Humidity on current day</description>
 		<category>Humidity</category>
-		<state readOnly="true" min="0" max="100" pattern="%d %unit%" />
+		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="minHumidityThisWeek" advanced="true">
@@ -610,7 +610,7 @@
 		<label>Min Humidity This Week</label>
 		<description>Minimum Humidity this week</description>
 		<category>Humidity</category>
-		<state readOnly="true" min="0" max="100" pattern="%d %unit%" />
+		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="minHumidityThisMonth" advanced="true">
@@ -618,7 +618,7 @@
 		<label>Min Humidity This Month</label>
 		<description>Minimum Humidity this month</description>
 		<category>Humidity</category>
-		<state readOnly="true" min="0" max="100" pattern="%d %unit%" />
+		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="maxHumidity" advanced="true">
@@ -626,7 +626,7 @@
 		<label>Max Humidity</label>
 		<description>Maximum Humidity on current day</description>
 		<category>Humidity</category>
-		<state readOnly="true" min="0" max="100" pattern="%d %unit%" />
+		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="maxHumidityThisWeek" advanced="true">
@@ -634,7 +634,7 @@
 		<label>Max Humidity This Week</label>
 		<description>Minimum Humidity this week</description>
 		<category>Humidity</category>
-		<state readOnly="true" min="0" max="100" pattern="%d %unit%" />
+		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="maxHumidityThisMonth" advanced="true">
@@ -642,7 +642,7 @@
 		<label>Max Humidity This Month</label>
 		<description>Maximum Humidity this month</description>
 		<category>Humidity</category>
-		<state readOnly="true" min="0" max="100" pattern="%d %unit%" />
+		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="humidex">
@@ -650,7 +650,7 @@
 		<label>Humidex</label>
 		<description>Computed Humidex index</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.0f" />
+		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 
 	<channel-type id="heatIndex">
@@ -658,7 +658,7 @@
 		<label>Heat Index</label>
 		<description>Computed Heat Index</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.0f %unit%" />
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="dewPoint" advanced="true">
@@ -666,14 +666,14 @@
 		<label>Dewpoint</label>
 		<description>Computed Dewpoint Temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="dewPointDepression" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Dewpoint Depression</label>
 		<description>Computed Dewpoint Depression</description>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="rain">
@@ -681,7 +681,7 @@
 		<label>Rain</label>
 		<description>Quantity of water</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="rain1" advanced="true">
@@ -689,7 +689,7 @@
 		<label>Rain 1h</label>
 		<description>Quantity of water on last hour</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="rain24" advanced="true">
@@ -697,7 +697,7 @@
 		<label>Rain 24h</label>
 		<description>Quantity of water on last day</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="rainThisWeek" advanced="true">
@@ -705,7 +705,7 @@
 		<label>Rain This Week</label>
 		<description>Quantity of water this week</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="rainThisMonth" advanced="true">
@@ -713,7 +713,7 @@
 		<label>Rain This Month</label>
 		<description>Quantity of water this month</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="WindAngle">
@@ -721,7 +721,7 @@
 		<label>Wind Angle</label>
 		<description>Current 5 minutes average wind direction</description>
 		<category>Wind</category>
-		<state min="0" max="360" step="1" readOnly="true" pattern="%d %unit%" />
+		<state min="0" max="360" step="1" readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="WindStrength">
@@ -729,7 +729,7 @@
 		<label>Wind Strength</label>
 		<description>Current 5 minutes average wind speed</description>
 		<category>Wind</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="MaxWindStrength" advanced="true">
@@ -737,14 +737,14 @@
 		<label>Max Wind Strength</label>
 		<description>Maximum wind strength recorded</description>
 		<category>Wind</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="DateMaxWindStrength" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Date Max Wind Strength</label>
 		<description>Timestamp when MaxWindStrength was recorded.</description>
-		<state readOnly="true" pattern="%1$td.%1$tm.%1$tY %1$tH:%1$tM" />
+		<state readOnly="true" pattern="%1$td.%1$tm.%1$tY %1$tH:%1$tM"/>
 	</channel-type>
 
 	<channel-type id="GustAngle">
@@ -752,7 +752,7 @@
 		<label>Gust Angle</label>
 		<description>Direction of the last 5 minutes highest gust wind</description>
 		<category>Wind</category>
-		<state min="0" max="360" step="1" readOnly="true" pattern="%d %unit%" />
+		<state min="0" max="360" step="1" readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="GustStrength">
@@ -760,7 +760,7 @@
 		<label>Gust Strength</label>
 		<description>Speed of the last 5 minutes highest gust wind</description>
 		<category>Wind</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="homeEvent">

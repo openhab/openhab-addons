@@ -212,5 +212,4 @@ public class EtherRainHandler extends BaseThingHandler {
     public void dispose() {
         stopUpdateJob();
     }
-
 }

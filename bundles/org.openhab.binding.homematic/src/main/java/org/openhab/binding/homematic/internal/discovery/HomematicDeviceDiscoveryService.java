@@ -245,5 +245,4 @@ public class HomematicDeviceDiscoveryService extends AbstractDiscoveryService
                 .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).withTTL(timeToLive).build();
         thingDiscovered(discoveryResult);
     }
-
 }

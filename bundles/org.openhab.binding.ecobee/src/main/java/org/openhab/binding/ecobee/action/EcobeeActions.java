@@ -164,7 +164,8 @@ public class EcobeeActions implements ThingActions, IEcobeeActions {
     public static boolean controlPlug(@Nullable ThingActions actions, @Nullable String plugName,
             @Nullable String plugState, @Nullable Date startDateTime, @Nullable Date endDateTime,
             @Nullable String holdType, @Nullable Number holdHours) {
-        return invokeMethodOf(actions).controlPlug(plugName, plugState, startDateTime, endDateTime, holdType, holdHours);
+        return invokeMethodOf(actions).controlPlug(plugName, plugState, startDateTime, endDateTime, holdType,
+                holdHours);
     }
 
     /**

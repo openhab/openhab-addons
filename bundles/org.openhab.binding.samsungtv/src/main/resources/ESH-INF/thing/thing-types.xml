@@ -9,26 +9,26 @@
 		<description>Allows to control Samsung TV</description>
 
 		<channels>
-			<channel id="volume" typeId="volume" />
-			<channel id="mute" typeId="mute" />
-			<channel id="brightness" typeId="brightness" />
-			<channel id="contrast" typeId="contrast" />
-			<channel id="sharpness" typeId="sharpness" />
-			<channel id="colorTemperature" typeId="colortemperature" />
-			<channel id="sourceName" typeId="sourcename" />
-			<channel id="sourceId" typeId="sourceid" />
-			<channel id="channel" typeId="channel" />
-			<channel id="programTitle" typeId="programtitle" />
-			<channel id="channelName" typeId="channelname" />
-			<channel id="url" typeId="url" />
-			<channel id="stopBrowser" typeId="stopbrowser" />
-			<channel id="keyCode" typeId="keycode" />
-			<channel id="power" typeId="power" />
-			<channel id="artMode" typeId="artmode" />
-			<channel id="sourceApp" typeId="sourceapp" />
+			<channel id="volume" typeId="volume"/>
+			<channel id="mute" typeId="mute"/>
+			<channel id="brightness" typeId="brightness"/>
+			<channel id="contrast" typeId="contrast"/>
+			<channel id="sharpness" typeId="sharpness"/>
+			<channel id="colorTemperature" typeId="colortemperature"/>
+			<channel id="sourceName" typeId="sourcename"/>
+			<channel id="sourceId" typeId="sourceid"/>
+			<channel id="channel" typeId="channel"/>
+			<channel id="programTitle" typeId="programtitle"/>
+			<channel id="channelName" typeId="channelname"/>
+			<channel id="url" typeId="url"/>
+			<channel id="stopBrowser" typeId="stopbrowser"/>
+			<channel id="keyCode" typeId="keycode"/>
+			<channel id="power" typeId="power"/>
+			<channel id="artMode" typeId="artmode"/>
+			<channel id="sourceApp" typeId="sourceapp"/>
 		</channels>
 
-		<config-description-ref uri="thing-type:samsungtv:tv" />
+		<config-description-ref uri="thing-type:samsungtv:tv"/>
 	</thing-type>
 
 </thing:thing-descriptions>

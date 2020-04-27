@@ -50,5 +50,4 @@ public class WriteSpecImpl extends AbstractSpec implements OutboundSpec {
     public @Nullable GroupAddress getGroupAddress() {
         return groupAddress;
     }
-
 }

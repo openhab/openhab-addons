@@ -333,5 +333,4 @@ public class TelegramHandler extends BaseThingHandler {
     public HttpClient getClient() {
         return downloadDataClient;
     }
-
 }

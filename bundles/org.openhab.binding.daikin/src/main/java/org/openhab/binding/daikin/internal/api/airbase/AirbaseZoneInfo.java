@@ -14,9 +14,10 @@ package org.openhab.binding.daikin.internal.api.airbase;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.stream.IntStream;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,17 +54,17 @@ public class AirbaseZoneInfo {
         String[] Zones = zoneinfo.split("%3b");
 
         for (int i = 1; i < 9; i++)
-            info.zone[i] = "1".equals(Zones[i-1]);
+            info.zone[i] = "1".equals(Zones[i - 1]);
         return info;
     }
 
     public Map<String, String> getParamString() {
         Map<String, String> params = new LinkedHashMap<>();
-        String onoffstring = IntStream.range(1, zone.length).mapToObj(idx -> zone[idx] ? "1" : "0").collect(Collectors.joining("%3b"));
+        String onoffstring = IntStream.range(1, zone.length).mapToObj(idx -> zone[idx] ? "1" : "0")
+                .collect(Collectors.joining("%3b"));
         params.put("zone_name", zonenames);
         params.put("zone_onoff", onoffstring);
 
         return params;
     }
-
 }

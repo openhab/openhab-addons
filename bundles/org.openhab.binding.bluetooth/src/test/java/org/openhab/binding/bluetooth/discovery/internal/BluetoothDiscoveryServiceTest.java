@@ -476,7 +476,6 @@ public class BluetoothDiscoveryServiceTest {
             String id = device.getName() != null ? device.getName() : RandomStringUtils.randomAlphabetic(6);
             return new ThingUID(typeUID, device.getAdapter().getUID(), id);
         }
-
     }
 
     private class BadConnectionDevice extends MockBluetoothDevice {
@@ -502,5 +501,4 @@ public class BluetoothDiscoveryServiceTest {
             return false;
         }
     }
-
 }

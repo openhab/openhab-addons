@@ -150,8 +150,8 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
                 } else {
                     innogyBridgeHandler.commandSetRollerShutterStop(deviceId, ShutterAction.ShutterActions.UP);
                 }
-            } else if (command instanceof StopMoveType){
-                if (StopMoveType.STOP.equals(command)){
+            } else if (command instanceof StopMoveType) {
+                if (StopMoveType.STOP.equals(command)) {
                     innogyBridgeHandler.commandSetRollerShutterStop(deviceId, ShutterAction.ShutterActions.STOP);
                 }
             }
@@ -934,7 +934,6 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
 
             }
         }
-
     }
 
     /**

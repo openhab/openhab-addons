@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="onkyo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="onkyo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -8,53 +9,53 @@
 	<channel-group-type id="zone1Controls">
 		<label>Zone 1 (Main Zone)</label>
 		<channels>
-			<channel id="power" typeId="power" />
-			<channel id="input" typeId="input" />
-			<channel id="volume" typeId="volume" />
-			<channel id="mute" typeId="mute" />
+			<channel id="power" typeId="power"/>
+			<channel id="input" typeId="input"/>
+			<channel id="volume" typeId="volume"/>
+			<channel id="mute" typeId="mute"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="zone2Controls">
 		<label>Zone 2</label>
 		<channels>
-			<channel id="power" typeId="power" />
-			<channel id="input" typeId="input" />
-			<channel id="volume" typeId="volume" />
-			<channel id="mute" typeId="mute" />
+			<channel id="power" typeId="power"/>
+			<channel id="input" typeId="input"/>
+			<channel id="volume" typeId="volume"/>
+			<channel id="mute" typeId="mute"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="zone3Controls">
 		<label>Zone 3</label>
 		<channels>
-			<channel id="power" typeId="power" />
-			<channel id="input" typeId="input" />
-			<channel id="volume" typeId="volume" />
-			<channel id="mute" typeId="mute" />
+			<channel id="power" typeId="power"/>
+			<channel id="input" typeId="input"/>
+			<channel id="volume" typeId="volume"/>
+			<channel id="mute" typeId="mute"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="playerControls">
 		<label>Player</label>
 		<channels>
-			<channel id="control" typeId="control" />
-			<channel id="currentPlayingTime" typeId="currentPlayingTime" />
-			<channel id="title" typeId="title" />
-			<channel id="album" typeId="album" />
-			<channel id="artist" typeId="artist" />
-			<channel id="listenmode" typeId="listenmode" />
-			<channel id="playuri" typeId="playuri" />
-			<channel id="albumArt" typeId="albumArt" />
-			<channel id="albumArtUrl" typeId="albumArtUrl" />
+			<channel id="control" typeId="control"/>
+			<channel id="currentPlayingTime" typeId="currentPlayingTime"/>
+			<channel id="title" typeId="title"/>
+			<channel id="album" typeId="album"/>
+			<channel id="artist" typeId="artist"/>
+			<channel id="listenmode" typeId="listenmode"/>
+			<channel id="playuri" typeId="playuri"/>
+			<channel id="albumArt" typeId="albumArt"/>
+			<channel id="albumArtUrl" typeId="albumArtUrl"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="netMenuControls">
 		<label>Net/USB Menu</label>
 		<channels>
-			<channel id="title" typeId="title" />
-			<channel id="control" typeId="netControl" />
+			<channel id="title" typeId="title"/>
+			<channel id="control" typeId="netControl"/>
 			<channel id="item0" typeId="menuItem">
 				<label>Menu Item 0</label>
 				<description>Net/USB menu item at position 0</description>
@@ -95,7 +96,7 @@
 				<label>Menu Item 9</label>
 				<description>Net/USB menu item at position 9</description>
 			</channel>
-			<channel id="selection" typeId="menuSelection" />
+			<channel id="selection" typeId="menuSelection"/>
 		</channels>
 	</channel-group-type>
 

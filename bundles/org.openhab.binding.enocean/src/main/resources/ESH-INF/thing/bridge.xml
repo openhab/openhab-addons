@@ -10,8 +10,8 @@
 		<description>The EnOcean gateway connects to an ESP3 device.</description>
 
 		<channels>
-			<channel id="repeaterMode" typeId="repeaterMode" />
-			<channel typeId="setBaseId" id="setBaseId" />
+			<channel id="repeaterMode" typeId="repeaterMode"/>
+			<channel typeId="setBaseId" id="setBaseId"/>
 		</channels>
 
 		<config-description>

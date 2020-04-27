@@ -12,7 +12,7 @@
 		<description>@text/thing-type.velux.binding.description</description>
 		<category>NetworkAppliance</category>
 		<channels>
-			<channel id="information" typeId="information" />
+			<channel id="information" typeId="information"/>
 		</channels>
 		<properties>
 			<property name="bundleVersion">N/A</property>

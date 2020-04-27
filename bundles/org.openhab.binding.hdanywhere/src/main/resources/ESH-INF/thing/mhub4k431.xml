@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="hdanywhere"
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-		xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- HDanywhere Thing Type -->
 	<thing-type id="mhub4k431">
@@ -34,7 +34,8 @@
 	<channel-type id="port">
 		<item-type>Number</item-type>
 		<label>Output Port</label>
-		<description>The port channel allows to set or read the number of the input port that is connected to the output port. Valid values are 1 to 4</description>
+		<description>The port channel allows to set or read the number of the input port that is connected to the output port.
+			Valid values are 1 to 4</description>
 	</channel-type>
 
 </thing:thing-descriptions>

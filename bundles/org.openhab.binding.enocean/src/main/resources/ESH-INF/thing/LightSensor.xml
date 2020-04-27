@@ -6,7 +6,7 @@
 
 	<thing-type id="lightSensor">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Light Sensor</label>

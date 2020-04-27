@@ -204,5 +204,4 @@ public class FreeboxHandlerFactory extends BaseThingHandlerFactory {
     protected void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
         this.networkAddressService = null;
     }
-
 }

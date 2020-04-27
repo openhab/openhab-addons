@@ -201,7 +201,6 @@ public class RFXComLighting6Message extends RFXComDeviceMessageImpl<RFXComLighti
             default:
                 throw new RFXComUnsupportedChannelException("Channel " + channelId + " is not relevant here");
         }
-
     }
 
     @Override

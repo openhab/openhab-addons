@@ -31,11 +31,13 @@
 		<parameter name="host" type="text" required="false">
 			<context>network-address</context>
 			<label>Address</label>
-			<description>Host name or IP address of the Rotel device (IP connection) or the machine connected to the Rotel device (serial over IP)</description>
+			<description>Host name or IP address of the Rotel device (IP connection) or the machine connected to the Rotel device
+				(serial over IP)</description>
 		</parameter>
 		<parameter name="port" type="integer" required="false">
 			<label>Port</label>
-			<description>Communication port (IP or serial over IP). For IP connection to the Rotel device, keep the default port 9590</description>
+			<description>Communication port (IP or serial over IP). For IP connection to the Rotel device, keep the default port
+				9590</description>
 			<default>9590</default>
 		</parameter>
 	</config-description>
@@ -49,11 +51,13 @@
 		<parameter name="host" type="text" required="false">
 			<context>network-address</context>
 			<label>Address</label>
-			<description>Host name or IP address of the Rotel device (IP connection) or the machine connected to the Rotel device (serial over IP)</description>
+			<description>Host name or IP address of the Rotel device (IP connection) or the machine connected to the Rotel device
+				(serial over IP)</description>
 		</parameter>
 		<parameter name="port" type="integer" required="false">
 			<label>Port</label>
-			<description>Communication port (IP or serial over IP). For IP connection to the Rotel device, keep the default port 9590</description>
+			<description>Communication port (IP or serial over IP). For IP connection to the Rotel device, keep the default port
+				9590</description>
 			<default>9596</default>
 		</parameter>
 	</config-description>
@@ -67,11 +71,13 @@
 		<parameter name="host" type="text" required="false">
 			<context>network-address</context>
 			<label>Address</label>
-			<description>Host name or IP address of the Rotel device (IP connection) or the machine connected to the Rotel device (serial over IP)</description>
+			<description>Host name or IP address of the Rotel device (IP connection) or the machine connected to the Rotel device
+				(serial over IP)</description>
 		</parameter>
 		<parameter name="port" type="integer" required="false">
 			<label>Port</label>
-			<description>Communication port (IP or serial over IP). For IP connection to the Rotel device, keep the default port 9590</description>
+			<description>Communication port (IP or serial over IP). For IP connection to the Rotel device, keep the default port
+				9590</description>
 			<default>9590</default>
 		</parameter>
 		<parameter name="protocol" type="text" required="false">

@@ -76,7 +76,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
     private void createRSSIChannel() {
         if (thing.getChannel(RSSI) == null) {
             logger.debug("{} Creating a rssi channel", url);
-            createChannel(RSSI, "Number","RSSI Level");
+            createChannel(RSSI, "Number", "RSSI Level");
         }
     }
 
@@ -318,7 +318,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
     }
 
     public void updateThingChannels(SomfyTahomaState state) {
-        stateNames.forEach((k,v) -> {
+        stateNames.forEach((k, v) -> {
             if (v.equals(state.getName())) {
                 Channel ch = thing.getChannel(k);
                 if (ch != null) {

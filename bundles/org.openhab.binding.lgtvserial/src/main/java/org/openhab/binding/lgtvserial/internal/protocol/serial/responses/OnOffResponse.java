@@ -56,5 +56,4 @@ public class OnOffResponse implements LGSerialResponse {
     public boolean isSuccess() {
         return success;
     }
-
 }

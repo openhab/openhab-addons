@@ -140,5 +140,4 @@ public class IhcControllerServiceTest {
 
         assertTrue("Result bytes doesn't match to expected bytes", Arrays.equals(expectedResult, result.getData()));
     }
-
 }

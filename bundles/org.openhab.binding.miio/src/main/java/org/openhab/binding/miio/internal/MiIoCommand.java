@@ -104,5 +104,4 @@ public enum MiIoCommand {
         }
         return UNKNOWN;
     }
-
 }

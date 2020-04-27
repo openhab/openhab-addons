@@ -35,5 +35,4 @@ public class PowermaxStateEvent extends EventObject {
     public PowermaxState getState() {
         return state;
     }
-
 }

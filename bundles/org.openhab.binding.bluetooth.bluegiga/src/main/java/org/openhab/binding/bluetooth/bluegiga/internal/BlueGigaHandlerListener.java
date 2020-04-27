@@ -28,5 +28,4 @@ public interface BlueGigaHandlerListener {
      * @param reason a reason caused to be closed
      */
     void bluegigaClosed(Exception reason);
-
 }

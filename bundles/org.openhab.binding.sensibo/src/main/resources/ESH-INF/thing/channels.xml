@@ -11,7 +11,7 @@
 		<tags>
 			<tag>CurrentTemperature</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="currentHumidity">
 		<item-type>Number:Dimensionless</item-type>
@@ -20,7 +20,7 @@
 		<tags>
 			<tag>CurrentHumidity</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="masterSwitch">
 		<item-type>Switch</item-type>
@@ -33,6 +33,6 @@
 		<item-type>Number</item-type>
 		<label>Off Timer</label>
 		<description>Number of seconds until turning off</description>
-		<state readOnly="false" />
+		<state readOnly="false"/>
 	</channel-type>
 </thing:thing-descriptions>

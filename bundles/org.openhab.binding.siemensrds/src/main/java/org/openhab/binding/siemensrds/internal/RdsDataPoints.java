@@ -129,7 +129,7 @@ class RdsDataPoints {
                 LOGGER.trace("create: response={}", json);
             }
 
-            return GSON.fromJson(json, RdsDataPoints.class); 
+            return GSON.fromJson(json, RdsDataPoints.class);
         } catch (JsonSyntaxException | RdsCloudException | IOException e) {
             LOGGER.warn("create {}: \"{}\"", e.getClass().getName(), e.getMessage());
             return null;
@@ -482,7 +482,6 @@ abstract class BasePoint {
         }
         return String.format("{\"value\":%s}", newVal);
     }
-
 }
 
 /**

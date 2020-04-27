@@ -59,5 +59,4 @@ public class EtherRainBindingConstants {
     public static final String CHANNEL_ID_START_DELAY = "startdelay";
     public static final String CHANNEL_ID_EXECUTE = "execute";
     public static final String CHANNEL_ID_CLEAR = "clear";
-
 }

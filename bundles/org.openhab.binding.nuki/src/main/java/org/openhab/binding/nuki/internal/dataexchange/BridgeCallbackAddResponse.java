@@ -34,5 +34,4 @@ public class BridgeCallbackAddResponse extends NukiBaseResponse {
     public BridgeCallbackAddResponse(NukiBaseResponse nukiBaseResponse) {
         super(nukiBaseResponse.getStatus(), nukiBaseResponse.getMessage());
     }
-
 }

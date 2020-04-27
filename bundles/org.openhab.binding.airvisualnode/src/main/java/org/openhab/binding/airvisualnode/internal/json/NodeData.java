@@ -73,5 +73,4 @@ public class NodeData {
     public void setStatus(Status status) {
         this.status = status;
     }
-
 }

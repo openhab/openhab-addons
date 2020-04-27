@@ -128,7 +128,6 @@ public class DigiplexBridgeHandler extends BaseBridgeHandler implements SerialPo
         } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Communication error!");
         }
-
     }
 
     @SuppressWarnings("null")

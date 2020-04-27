@@ -41,5 +41,4 @@ public class SetLevelAction extends Action {
                 COMMAND_SOURCE);
         eventPublisher.post(event);
     }
-
 }

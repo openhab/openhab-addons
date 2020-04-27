@@ -158,5 +158,4 @@ public class LGSerialCommunicator {
             logger.debug("Thread interrupted while closing the communicator");
         }
     }
-
 }

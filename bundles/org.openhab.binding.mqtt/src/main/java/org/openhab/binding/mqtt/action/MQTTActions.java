@@ -91,7 +91,8 @@ public class MQTTActions implements ThingActions {
         publishMQTT(actions, topic, value, null);
     }
 
-    public static void publishMQTT(@Nullable ThingActions actions, @Nullable String topic, @Nullable String value, @Nullable Boolean retain) {
+    public static void publishMQTT(@Nullable ThingActions actions, @Nullable String topic, @Nullable String value,
+            @Nullable Boolean retain) {
         if (actions instanceof MQTTActions) {
             ((MQTTActions) actions).publishMQTT(topic, value, retain);
         } else {

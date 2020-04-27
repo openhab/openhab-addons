@@ -371,7 +371,6 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                 logger.error("checkThings(): Thing handler not found!");
             }
         }
-
     }
 
     /**

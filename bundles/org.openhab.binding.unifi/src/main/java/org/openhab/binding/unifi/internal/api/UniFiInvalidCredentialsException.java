@@ -25,5 +25,4 @@ public class UniFiInvalidCredentialsException extends UniFiException {
     public UniFiInvalidCredentialsException(String message) {
         super(message);
     }
-
 }

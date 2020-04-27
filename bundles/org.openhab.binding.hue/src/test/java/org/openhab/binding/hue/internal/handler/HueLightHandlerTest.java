@@ -400,5 +400,4 @@ public class HueLightHandlerTest {
         JsonElement jsonActual = parser.parse(actual);
         assertEquals(jsonExpected, jsonActual);
     }
-
 }

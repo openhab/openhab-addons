@@ -33,10 +33,10 @@ public class Channel {
     /**
      * constructor for channels with write access enabled wihtout a unit
      *
-     * @param id                   identifier of the channel
-     * @param name                 human readable name
-     * @param channelGroup         group of the channel
-     * @param writeApiUrl          API URL for channel updates
+     * @param id identifier of the channel
+     * @param name human readable name
+     * @param channelGroup group of the channel
+     * @param writeApiUrl API URL for channel updates
      * @param validationExpression expression to validate values before sent to the API
      */
     Channel(String id, String name, ChannelGroup channelGroup, @Nullable String writeApiUrl,
@@ -52,8 +52,8 @@ public class Channel {
     /**
      * constructor for channels without write access and without unit
      *
-     * @param id           identifier of the channel
-     * @param name         human readable name
+     * @param id identifier of the channel
+     * @param name human readable name
      * @param channelGroup group of the channel
      */
     Channel(String id, String name, ChannelGroup channelGroup) {

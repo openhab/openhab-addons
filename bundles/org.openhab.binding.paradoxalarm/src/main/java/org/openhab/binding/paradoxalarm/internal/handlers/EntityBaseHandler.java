@@ -57,7 +57,7 @@ public abstract class EntityBaseHandler extends BaseThingHandler {
         ParadoxPanel panel = ParadoxPanel.getInstance();
         if (!panel.isPanelSupported()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                "Panel " + panel.getPanelInformation().getPanelType().name() + " is not supported.");
+                    "Panel " + panel.getPanelInformation().getPanelType().name() + " is not supported.");
         }
     }
 
@@ -67,7 +67,8 @@ public abstract class EntityBaseHandler extends BaseThingHandler {
             if (ThingStatus.ONLINE == getThing().getStatus()) {
                 updateEntity();
             } else {
-                logger.debug("Received REFRESH command but {} has the following detailed status {}", getThing().getUID(), getThing().getStatusInfo());
+                logger.debug("Received REFRESH command but {} has the following detailed status {}",
+                        getThing().getUID(), getThing().getStatusInfo());
             }
         }
     }

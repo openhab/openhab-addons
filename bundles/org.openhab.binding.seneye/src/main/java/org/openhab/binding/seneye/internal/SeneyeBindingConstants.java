@@ -55,5 +55,4 @@ public class SeneyeBindingConstants {
     public static final String PARAMETER_POLLTIME = "polltime";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SENEYE);
-
 }

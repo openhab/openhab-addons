@@ -62,7 +62,5 @@ public class CommonModelParser extends AbstractBaseParser implements SunspecPars
         block.deviceAddress = extractUInt16(raw, 66, 1);
 
         return block;
-
     }
-
 }

@@ -52,5 +52,4 @@ public class GetLocationRequest extends Packet {
     public int[] expectedResponses() {
         return new int[] { StateLocationResponse.TYPE };
     }
-
 }

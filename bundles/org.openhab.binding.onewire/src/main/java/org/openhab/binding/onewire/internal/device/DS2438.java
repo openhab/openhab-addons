@@ -218,5 +218,4 @@ public class DS2438 extends AbstractOwDevice {
     public void setCurrentSensorType(CurrentSensorType currentSensorType) {
         this.currentSensorType = currentSensorType;
     }
-
 }

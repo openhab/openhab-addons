@@ -1,24 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="miele" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="miele"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Coffee machine -->
 	<thing-type id="coffeemachine">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="xgw3000" />
+			<bridge-type-ref id="xgw3000"/>
 		</supported-bridge-type-refs>
 
 		<label>Coffee Machine</label>
 		<description>This is a Miele@home compatible coffee machine</description>
 
 		<channels>
-			<channel id="state" typeId="state" />
-			<channel id="program" typeId="program" />
-			<channel id="type" typeId="type" />
-			<channel id="phase" typeId="phase" />
-			<channel id="door" typeId="door" />
-			<channel id="switch" typeId="switch" />
+			<channel id="state" typeId="state"/>
+			<channel id="program" typeId="program"/>
+			<channel id="type" typeId="type"/>
+			<channel id="phase" typeId="phase"/>
+			<channel id="door" typeId="door"/>
+			<channel id="switch" typeId="switch"/>
 		</channels>
 
 		<config-description>

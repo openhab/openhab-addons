@@ -29,5 +29,4 @@ public class AM43Configuration {
         return "AM43Configuration [address=" + address + ", refreshInterval=" + refreshInterval + ", invertPosition="
                 + invertPosition + ", commandTimeout=" + commandTimeout + "]";
     }
-
 }

@@ -112,5 +112,4 @@ public class HPWebServerClient {
         InputSource source = new InputSource(new StringReader(contentAsString));
         return builder.parse(source);
     }
-
 }

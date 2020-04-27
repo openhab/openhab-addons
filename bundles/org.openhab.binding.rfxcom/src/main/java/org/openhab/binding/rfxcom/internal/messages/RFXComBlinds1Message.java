@@ -49,8 +49,8 @@ public class RFXComBlinds1Message extends RFXComBatteryDeviceMessage<RFXComBlind
         T11(11), // ASP
         T12(12), // Confexx CNF24-2435
         T13(13), // Screenline
-        T18(18); //Cherubini
-        
+        T18(18); // Cherubini
+
         private final int subType;
 
         SubType(int subType) {

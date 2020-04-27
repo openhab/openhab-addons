@@ -123,5 +123,4 @@ public enum VeluxProductType {
     public static String toString(int nodeType) {
         return ActuatorType.get(nodeType).getDescription();
     }
-
 }

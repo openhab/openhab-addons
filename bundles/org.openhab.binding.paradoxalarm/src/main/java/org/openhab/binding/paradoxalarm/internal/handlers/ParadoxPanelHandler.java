@@ -48,9 +48,8 @@ public class ParadoxPanelHandler extends EntityBaseHandler {
             updateProperty(PANEL_TYPE_PROPERTY_NAME, panelInformation.getPanelType().name());
             updateProperty(PANEL_HARDWARE_VERSION_PROPERTY_NAME, panelInformation.getHardwareVersion().toString());
             updateProperty(PANEL_APPLICATION_VERSION_PROPERTY_NAME,
-                panelInformation.getApplicationVersion().toString());
-            updateProperty(PANEL_BOOTLOADER_VERSION_PROPERTY_NAME,
-                panelInformation.getBootLoaderVersion().toString());
+                    panelInformation.getApplicationVersion().toString());
+            updateProperty(PANEL_BOOTLOADER_VERSION_PROPERTY_NAME, panelInformation.getBootLoaderVersion().toString());
         }
     }
 }

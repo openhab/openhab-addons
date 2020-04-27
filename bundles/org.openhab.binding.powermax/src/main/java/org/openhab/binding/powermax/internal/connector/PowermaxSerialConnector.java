@@ -44,8 +44,8 @@ public class PowermaxSerialConnector extends PowermaxConnector implements Serial
      * Constructor
      *
      * @param serialPortManager the serial port manager
-     * @param serialPortName    the serial port name
-     * @param baudRate          the baud rate to be used
+     * @param serialPortName the serial port name
+     * @param baudRate the baud rate to be used
      */
     public PowermaxSerialConnector(SerialPortManager serialPortManager, String serialPortName, int baudRate) {
         this.serialPortManager = serialPortManager;
@@ -139,5 +139,4 @@ public class PowermaxSerialConnector extends PowermaxConnector implements Serial
         } catch (InterruptedException e) {
         }
     }
-
 }

@@ -79,7 +79,6 @@ public abstract class AbstractCommandCallback extends BufferingResponseListener 
         this.communicationStatus = new CommunicationStatus();
         this.config = config;
         this.gson = new Gson();
-
     }
 
     /**
@@ -118,7 +117,6 @@ public abstract class AbstractCommandCallback extends BufferingResponseListener 
         } else {
             communicationStatus.setHttpCode(Code.INTERNAL_SERVER_ERROR);
         }
-
     }
 
     @Override
@@ -183,5 +181,4 @@ public abstract class AbstractCommandCallback extends BufferingResponseListener 
     public final void setListener(StatusUpdateListener listener) {
         this.listener = listener;
     }
-
 }

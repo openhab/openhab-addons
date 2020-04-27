@@ -138,5 +138,4 @@ public class DeviceOutputValueSensorJob implements SensorJob {
     public static String getID(Device device) {
         return DeviceOutputValueSensorJob.class.getSimpleName() + "-" + device.getDSID().getValue();
     }
-
 }

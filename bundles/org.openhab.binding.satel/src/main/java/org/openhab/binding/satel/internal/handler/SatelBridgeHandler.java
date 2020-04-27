@@ -201,7 +201,7 @@ public abstract class SatelBridgeHandler extends ConfigStatusBridgeHandler imple
      * Sends given command to communication module.
      *
      * @param command a command to send
-     * @param async   if <code>false</code> method waits for the response
+     * @param async if <code>false</code> method waits for the response
      * @return <code>true</code> if send succeeded
      */
     public boolean sendCommand(SatelCommand command, boolean async) {
@@ -238,5 +238,4 @@ public abstract class SatelBridgeHandler extends ConfigStatusBridgeHandler imple
         }
         return false;
     }
-
 }

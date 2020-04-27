@@ -35,5 +35,4 @@ public class RemoteControllerException extends Exception {
     public RemoteControllerException(Throwable cause) {
         super(cause);
     }
-
 }

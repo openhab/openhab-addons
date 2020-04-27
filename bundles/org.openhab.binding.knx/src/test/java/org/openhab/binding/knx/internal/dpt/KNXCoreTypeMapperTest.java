@@ -29,5 +29,4 @@ public class KNXCoreTypeMapperTest {
         assertEquals("3", new KNXCoreTypeMapper().toDPTValue(new DecimalType("3"), "17.001"));
         assertEquals("3", new KNXCoreTypeMapper().toDPTValue(new DecimalType("3.0"), "17.001"));
     }
-
 }

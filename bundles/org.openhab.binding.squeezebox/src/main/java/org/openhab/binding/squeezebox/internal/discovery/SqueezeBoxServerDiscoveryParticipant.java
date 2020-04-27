@@ -109,5 +109,4 @@ public class SqueezeBoxServerDiscoveryParticipant implements UpnpDiscoveryPartic
         }
         return null;
     }
-
 }

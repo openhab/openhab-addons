@@ -86,5 +86,4 @@ class VeluxBindingConfig {
     public String getBindingConfig() {
         return this.bindingConfig;
     }
-
 }

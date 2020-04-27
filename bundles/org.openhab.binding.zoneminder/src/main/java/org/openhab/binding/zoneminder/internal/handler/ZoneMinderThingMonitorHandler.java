@@ -561,7 +561,6 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler im
         super.updateStatus(status);
         updateState(ZoneMinderConstants.CHANNEL_ONLINE,
                 ((status == ThingStatus.ONLINE) ? OnOffType.ON : OnOffType.OFF));
-
     }
 
     protected void recalculateChannelStates() {
@@ -655,7 +654,6 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler im
         // Now we can conclude on the Alarmed and Recording channel state
         channelRecordingState = (recordingFunction && recordingDetailedState && channelEnabled);
         channelAlarmedState = (alarmedFunction && alarmedDetailedState && channelEnabled);
-
     }
 
     @Override
@@ -759,7 +757,6 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler im
                 && (DataRefreshPriorityEnum.HIGH_PRIORITY == getRefreshPriority())) {
             stopPriorityRefresh();
         }
-
     }
 
     protected State getDetailedStatus() {
@@ -777,7 +774,6 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler im
         }
 
         return state;
-
     }
 
     /*

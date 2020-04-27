@@ -24,5 +24,4 @@ public class UniFiCommunicationException extends UniFiException {
     public UniFiCommunicationException(Throwable cause) {
         super(cause);
     }
-
 }

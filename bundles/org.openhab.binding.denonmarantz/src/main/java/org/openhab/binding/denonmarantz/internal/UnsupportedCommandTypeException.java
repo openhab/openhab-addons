@@ -29,5 +29,4 @@ public class UnsupportedCommandTypeException extends Exception {
     public UnsupportedCommandTypeException(String message) {
         super(message);
     }
-
 }

@@ -81,7 +81,7 @@ public class ParadoxAlarmHandlerFactory extends BaseThingHandlerFactory {
     private void registerDiscoveryService(ParadoxIP150BridgeHandler paradoxIP150BridgeHandler) {
         ParadoxDiscoveryService discoveryService = new ParadoxDiscoveryService(paradoxIP150BridgeHandler);
         ServiceRegistration<?> serviceRegistration = bundleContext.registerService(DiscoveryService.class.getName(),
-            discoveryService, new Hashtable<>());
+                discoveryService, new Hashtable<>());
         this.discoveryServiceRegs.put(paradoxIP150BridgeHandler.getThing().getUID(), serviceRegistration);
     }
 

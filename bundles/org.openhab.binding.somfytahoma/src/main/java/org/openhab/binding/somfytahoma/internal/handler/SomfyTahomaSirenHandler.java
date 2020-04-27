@@ -45,7 +45,7 @@ public class SomfyTahomaSirenHandler extends SomfyTahomaBaseThingHandler {
             return;
         }
 
-        //it is possible only to disable the siren
+        // it is possible only to disable the siren
         if (ONOFF_STATE.equals(channelUID.getId()) && command.equals(OnOffType.OFF)) {
             sendCommand(COMMAND_OFF);
         }
@@ -54,6 +54,5 @@ public class SomfyTahomaSirenHandler extends SomfyTahomaBaseThingHandler {
         if (MEMORIZED_VOLUME.equals(channelUID.getId()) && command instanceof StringType) {
             sendCommand("setMemorizedSimpleVolume", "[\"" + command.toString().toLowerCase() + "\"]");
         }
-
     }
 }

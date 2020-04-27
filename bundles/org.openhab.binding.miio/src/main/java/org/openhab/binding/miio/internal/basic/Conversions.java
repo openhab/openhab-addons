@@ -72,5 +72,4 @@ public class Conversions {
                 return value;
         }
     }
-
 }

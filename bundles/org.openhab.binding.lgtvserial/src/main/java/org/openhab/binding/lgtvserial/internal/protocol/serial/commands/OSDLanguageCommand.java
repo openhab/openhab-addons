@@ -23,5 +23,4 @@ public class OSDLanguageCommand extends BaseStringCommand {
     protected OSDLanguageCommand(int setId) {
         super('f', 'i', setId);
     }
-
 }

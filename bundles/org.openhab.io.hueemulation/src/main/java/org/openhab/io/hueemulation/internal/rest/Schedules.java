@@ -339,5 +339,4 @@ public class Schedules implements RegistryChangeListener<Rule> {
 
         return NetworkUtils.singleSuccess(cs.gson, uid, "id");
     }
-
 }

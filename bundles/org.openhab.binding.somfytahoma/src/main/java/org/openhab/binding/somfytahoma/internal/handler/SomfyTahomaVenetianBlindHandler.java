@@ -51,17 +51,18 @@ public class SomfyTahomaVenetianBlindHandler extends SomfyTahomaBaseThingHandler
             } else if (COMMAND_STOP.equals(cmd)) {
                 String executionId = getCurrentExecutions();
                 if (executionId != null) {
-                    //Check if the venetian blind is moving and STOP is sent => STOP it
+                    // Check if the venetian blind is moving and STOP is sent => STOP it
                     cancelExecution(executionId);
                 } else {
                     sendCommand(COMMAND_MY);
                 }
             } else {
-                String param = (COMMAND_SET_CLOSURE.equals(cmd) || COMMAND_SET_ORIENTATION.equals(cmd)) ? "[" + command.toString() + "]" : "[]";
+                String param = (COMMAND_SET_CLOSURE.equals(cmd) || COMMAND_SET_ORIENTATION.equals(cmd))
+                        ? "[" + command.toString() + "]"
+                        : "[]";
                 sendCommand(cmd, param);
             }
         }
-
     }
 
     private String getTahomaCommand(String command, String channelId) {

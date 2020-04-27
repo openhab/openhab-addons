@@ -12,6 +12,13 @@
  */
 package org.openhab.binding.robonect.internal.handler;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.util.Calendar;
 
 import org.eclipse.jetty.client.HttpClient;
@@ -34,7 +41,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openhab.binding.robonect.internal.RobonectBindingConstants;
 import org.openhab.binding.robonect.internal.RobonectClient;
-import org.openhab.binding.robonect.internal.handler.RobonectHandler;
 import org.openhab.binding.robonect.internal.model.ErrorEntry;
 import org.openhab.binding.robonect.internal.model.ErrorList;
 import org.openhab.binding.robonect.internal.model.MowerInfo;
@@ -45,20 +51,13 @@ import org.openhab.binding.robonect.internal.model.Status;
 import org.openhab.binding.robonect.internal.model.Timer;
 import org.openhab.binding.robonect.internal.model.Wlan;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 /**
  * The goal of this class is to test RobonectHandler in isolation.
  * 
  * @author Marco Meyer - Initial contribution
  */
 public class RobonectHandlerTest {
-    
+
     private RobonectHandler subject;
 
     @Mock
@@ -69,7 +68,7 @@ public class RobonectHandlerTest {
 
     @Mock
     private ThingHandlerCallback callbackMock;
-    
+
     @Mock
     private HttpClient httpClientMock;
 
@@ -100,7 +99,7 @@ public class RobonectHandlerTest {
         when(robonectThingMock.getUID()).thenReturn(new ThingUID("1:2:3"));
 
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_TIMER_NEXT_TIMER),
-                              RefreshType.REFRESH);
+                RefreshType.REFRESH);
 
         // then
         verify(callbackMock, times(1)).stateUpdated(
@@ -145,18 +144,18 @@ public class RobonectHandlerTest {
         when(robonectThingMock.getUID()).thenReturn(new ThingUID("1:2:3"));
 
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS),
-                              RefreshType.REFRESH);
+                RefreshType.REFRESH);
 
         // then
-        verify(callbackMock, times(1))
-                .stateUpdated(eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_ERROR_CODE)),
-                        errorCodeCaptor.capture());
-        verify(callbackMock, times(1))
-                .stateUpdated(eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_ERROR_MESSAGE)),
-                        errorMessageCaptor.capture());
-        verify(callbackMock, times(1))
-                .stateUpdated(eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_ERROR_DATE)),
-                        errorDateCaptor.capture());
+        verify(callbackMock, times(1)).stateUpdated(
+                eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_ERROR_CODE)),
+                errorCodeCaptor.capture());
+        verify(callbackMock, times(1)).stateUpdated(
+                eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_ERROR_MESSAGE)),
+                errorMessageCaptor.capture());
+        verify(callbackMock, times(1)).stateUpdated(
+                eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_ERROR_DATE)),
+                errorDateCaptor.capture());
 
         State errorDate = errorDateCaptor.getValue();
         assertTrue(errorDate instanceof DateTimeType);
@@ -196,18 +195,18 @@ public class RobonectHandlerTest {
         when(robonectThingMock.getUID()).thenReturn(new ThingUID("1:2:3"));
 
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS),
-                              RefreshType.REFRESH);
+                RefreshType.REFRESH);
 
         // then
-        verify(callbackMock, times(1))
-                .stateUpdated(eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_ERROR_CODE)),
-                        errorCodeCaptor.capture());
-        verify(callbackMock, times(1))
-                .stateUpdated(eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_ERROR_MESSAGE)),
-                        errorMessageCaptor.capture());
-        verify(callbackMock, times(1))
-                .stateUpdated(eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_ERROR_DATE)),
-                        errorDateCaptor.capture());
+        verify(callbackMock, times(1)).stateUpdated(
+                eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_ERROR_CODE)),
+                errorCodeCaptor.capture());
+        verify(callbackMock, times(1)).stateUpdated(
+                eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_ERROR_MESSAGE)),
+                errorMessageCaptor.capture());
+        verify(callbackMock, times(1)).stateUpdated(
+                eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_ERROR_DATE)),
+                errorDateCaptor.capture());
 
         assertEquals(errorCodeCaptor.getValue(), UnDefType.UNDEF);
         assertEquals(errorMessageCaptor.getValue(), UnDefType.UNDEF);
@@ -227,19 +226,18 @@ public class RobonectHandlerTest {
         when(robonectThingMock.getUID()).thenReturn(new ThingUID("1:2:3"));
 
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS),
-                              RefreshType.REFRESH);
+                RefreshType.REFRESH);
 
         // then
-        verify(callbackMock, times(1))
-                .stateUpdated(eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS)),
-                        stateCaptor.capture());
+        verify(callbackMock, times(1)).stateUpdated(
+                eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS)),
+                stateCaptor.capture());
 
         State value = stateCaptor.getValue();
         assertTrue(value instanceof DecimalType);
         DecimalType status = (DecimalType) value;
 
         assertEquals(MowerStatus.MOWING.getStatusCode(), status.intValue());
-
     }
 
     @Test
@@ -257,50 +255,49 @@ public class RobonectHandlerTest {
         MowerInfo mowerInfo = createSuccessfulMowerInfoResponse();
         ErrorList errorList = new ErrorList();
         errorList.setSuccessful(true);
-        
+
         // when
         when(robonectClientMock.getMowerInfo()).thenReturn(mowerInfo);
         when(robonectClientMock.errorList()).thenReturn(errorList);
         when(robonectThingMock.getUID()).thenReturn(new ThingUID("1:2:3"));
 
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS),
-                              RefreshType.REFRESH);
-        
+                RefreshType.REFRESH);
+
         // then
-        verify(callbackMock, times(1))
-                .stateUpdated(eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_MOWER_NAME)),
-                        stateCaptorName.capture());
+        verify(callbackMock, times(1)).stateUpdated(
+                eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_MOWER_NAME)),
+                stateCaptorName.capture());
         verify(callbackMock, times(1)).stateUpdated(
                 eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS_BATTERY)),
                 stateCaptorBattery.capture());
-        verify(callbackMock, times(1))
-                .stateUpdated(eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS)),
-                        stateCaptorStatus.capture());
+        verify(callbackMock, times(1)).stateUpdated(
+                eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS)),
+                stateCaptorStatus.capture());
         verify(callbackMock, times(1)).stateUpdated(
                 eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS_DURATION)),
                 stateCaptorDuration.capture());
-        verify(callbackMock, times(1))
-                .stateUpdated(eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS_HOURS)),
-                        stateCaptorHours.capture());
-        verify(callbackMock, times(1))
-                .stateUpdated(eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS_MODE)),
-                        stateCaptorMode.capture());
+        verify(callbackMock, times(1)).stateUpdated(
+                eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS_HOURS)),
+                stateCaptorHours.capture());
+        verify(callbackMock, times(1)).stateUpdated(
+                eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS_MODE)),
+                stateCaptorMode.capture());
         verify(callbackMock, times(1)).stateUpdated(
                 eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_MOWER_START)),
                 stateCaptorStarted.capture());
-        verify(callbackMock, times(1))
-                .stateUpdated(eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_WLAN_SIGNAL)),
-                        stateCaptorWlan.capture());
+        verify(callbackMock, times(1)).stateUpdated(
+                eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_WLAN_SIGNAL)),
+                stateCaptorWlan.capture());
 
         assertEquals("Mowy", stateCaptorName.getValue().toFullString());
-        assertEquals(99, ((DecimalType)stateCaptorBattery.getValue()).intValue());
-        assertEquals(4, ((DecimalType)stateCaptorStatus.getValue()).intValue());
-        assertEquals(55, ((QuantityType)stateCaptorDuration.getValue()).intValue());
-        assertEquals(22, ((QuantityType)stateCaptorHours.getValue()).intValue());
+        assertEquals(99, ((DecimalType) stateCaptorBattery.getValue()).intValue());
+        assertEquals(4, ((DecimalType) stateCaptorStatus.getValue()).intValue());
+        assertEquals(55, ((QuantityType) stateCaptorDuration.getValue()).intValue());
+        assertEquals(22, ((QuantityType) stateCaptorHours.getValue()).intValue());
         assertEquals(MowerMode.AUTO.name(), stateCaptorMode.getValue().toFullString());
         assertEquals(OnOffType.ON, stateCaptorStarted.getValue());
-        assertEquals(-88, ((DecimalType)stateCaptorWlan.getValue()).intValue());
-        
+        assertEquals(-88, ((DecimalType) stateCaptorWlan.getValue()).intValue());
     }
 
     private MowerInfo createSuccessfulMowerInfoResponse() {

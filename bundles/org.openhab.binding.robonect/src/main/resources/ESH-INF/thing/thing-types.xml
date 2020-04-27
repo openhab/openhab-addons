@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions
-		bindingId="robonect" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-		xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+<thing:thing-descriptions bindingId="robonect"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="mower">
 		<label>Mower</label>
@@ -17,7 +17,7 @@
 			<channel id="start" typeId="startType"/>
 			<channel id="status" typeId="mowerStatusType"/>
 			<channel id="status-duration" typeId="durationType"/>
-			
+
 			<channel id="timer-status" typeId="timerStatusType"/>
 			<channel id="timer-next" typeId="nextTimerType"/>
 
@@ -160,7 +160,7 @@
 		<item-type>Switch</item-type>
 		<label>Mowing Job</label>
 		<description>Starts a mowing job</description>
-		<config-description-ref uri="channel-type:job:config" />
+		<config-description-ref uri="channel-type:job:config"/>
 	</channel-type>
 
 	<channel-type id="timerStatusType">

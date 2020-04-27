@@ -69,5 +69,4 @@ public class OpenUVResult {
     public SafeExposureTime getSafeExposureTime() {
         return safeExposureTime;
     }
-
 }

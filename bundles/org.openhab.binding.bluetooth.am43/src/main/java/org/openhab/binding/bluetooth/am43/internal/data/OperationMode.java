@@ -34,5 +34,4 @@ public enum OperationMode {
     public static OperationMode valueOf(boolean bitValue) {
         return bitValue ? Inching : Continuous;
     }
-
 }

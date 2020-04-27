@@ -134,5 +134,4 @@ public class V1Info {
     public void setTransform(List<Transform> transform) {
         this.transform = transform;
     }
-
 }

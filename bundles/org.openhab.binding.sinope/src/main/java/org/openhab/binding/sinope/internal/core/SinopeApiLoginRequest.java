@@ -83,5 +83,4 @@ public class SinopeApiLoginRequest extends SinopeRequest {
     public SinopeApiLoginAnswer getReplyAnswer(InputStream r) throws IOException {
         return new SinopeApiLoginAnswer(r);
     }
-
 }

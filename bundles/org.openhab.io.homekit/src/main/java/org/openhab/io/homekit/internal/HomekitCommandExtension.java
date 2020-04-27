@@ -109,5 +109,4 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
         homekit.allowUnauthenticatedRequests(allow);
         console.println((allow ? "Enabled " : "Disabled ") + "unauthenticated HomeKit access");
     }
-
 }

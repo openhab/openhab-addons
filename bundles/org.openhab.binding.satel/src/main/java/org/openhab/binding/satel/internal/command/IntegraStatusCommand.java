@@ -78,5 +78,4 @@ public class IntegraStatusCommand extends SatelCommandBase {
         // dispatch version event
         eventDispatcher.dispatchEvent(new IntegraStatusEvent(getIntegraTime(), getStatusByte1(), getStatusByte2()));
     }
-
 }

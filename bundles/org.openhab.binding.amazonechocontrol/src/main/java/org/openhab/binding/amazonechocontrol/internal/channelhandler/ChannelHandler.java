@@ -55,6 +55,5 @@ public abstract class ChannelHandler {
 
     protected <T> @Nullable T parseJson(String json, Class<T> type) throws JsonSyntaxException {
         return gson.fromJson(json, type);
-
     }
 }

@@ -39,5 +39,4 @@ public abstract class GetScenes implements BridgeCommunicationProtocol {
      * @return <b>arrayOfScenes</b> as Array of VeluxScene describing the current scene configuration of the bridge.
      */
     public abstract VeluxScene[] getScenes();
-
 }

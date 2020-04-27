@@ -100,5 +100,4 @@ public class ZoneStatus {
     public List<String> getInputFuncList() {
         return this.inputFunctions;
     }
-
 }

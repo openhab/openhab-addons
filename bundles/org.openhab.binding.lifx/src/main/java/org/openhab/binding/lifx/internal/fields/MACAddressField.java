@@ -57,5 +57,4 @@ public class MACAddressField extends Field<MACAddress> {
         buf.rewind();
         return buf;
     }
-
 }

@@ -86,5 +86,4 @@ public class RgbLightDevice extends AbstractEnergyLinkDevice {
         return percent.toBigDecimal().multiply(BigDecimal.valueOf(255))
                 .divide(BigDecimal.valueOf(100), 2, BigDecimal.ROUND_HALF_UP).intValue();
     }
-
 }

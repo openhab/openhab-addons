@@ -86,5 +86,4 @@ public class NukiBindingConstants {
     // Nuki Binding additional Lock States
     public static final int LOCK_STATES_UNLOCKING_LOCKNGO = 1002;
     public static final int LOCK_STATES_UNLATCHING_LOCKNGO = 1007;
-
 }

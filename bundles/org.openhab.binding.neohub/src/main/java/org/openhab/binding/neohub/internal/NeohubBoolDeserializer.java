@@ -41,5 +41,4 @@ public class NeohubBoolDeserializer implements JsonDeserializer<NeohubBool> {
         }
         return new NeohubBool(false);
     }
-
 }

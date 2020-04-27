@@ -101,7 +101,6 @@ public class DeviceDescriptorXMLTest extends AbstractXMLProtocolTest {
             CommandsSpec zoneSpec = zonesCommandsSpec[i];
             assertCommands(zoneDesc, zoneSpec);
         }
-
     }
 
     private void assertCommands(DeviceDescriptorXML.HasCommands descWithCommands, CommandsSpec spec) {

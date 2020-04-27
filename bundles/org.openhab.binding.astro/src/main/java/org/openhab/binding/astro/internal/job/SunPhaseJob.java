@@ -68,5 +68,4 @@ public final class SunPhaseJob extends AbstractJob {
     public String toString() {
         return "Sun phase job " + getThingUID() + "/" + sunPhaseName;
     }
-
 }

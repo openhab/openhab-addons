@@ -331,7 +331,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
     }
 
     private void setPropertyIfPresent(final String key, final @Nullable Object data,
-                                      final Map<String, String> properties) {
+            final Map<String, String> properties) {
         if (data != null) {
             properties.put(key, data instanceof String ? (String) data : data.toString());
         }
@@ -466,7 +466,6 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
             }
 
         }
-
     }
 
     @Override
@@ -602,7 +601,6 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
         } else {
             logger.debug("link type {} not supported (yet?)", event.getSourceLinkType());
         }
-
     }
 
     /**
@@ -667,7 +665,6 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
         } else {
             logger.debug("Message received event not yet implemented for Messagetype {}.", message.getType());
         }
-
     }
 
     /**
@@ -865,6 +862,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
 
     /**
      * Sends the command to start or stop moving the rollershutter (ISR2) in a specified direction
+     * 
      * @param deviceId
      * @param action
      */

@@ -6,14 +6,14 @@
 	<channel-group-type id="custom-custom">
 		<label>Custom Sensors</label>
 		<channels>
-			<channel id="CH01" typeId="custom-type-CH01" />
-			<channel id="CH02" typeId="custom-type-CH02" />
-			<channel id="CH03" typeId="custom-type-CH03" />
-			<channel id="CH04" typeId="custom-type-CH04" />
-			<channel id="CH05" typeId="custom-type-CH05" />
-			<channel id="CH06" typeId="custom-type-CH06" />
-			<channel id="CH07" typeId="custom-type-CH07" />
-			<channel id="CH08" typeId="custom-type-CH08" />
+			<channel id="CH01" typeId="custom-type-CH01"/>
+			<channel id="CH02" typeId="custom-type-CH02"/>
+			<channel id="CH03" typeId="custom-type-CH03"/>
+			<channel id="CH04" typeId="custom-type-CH04"/>
+			<channel id="CH05" typeId="custom-type-CH05"/>
+			<channel id="CH06" typeId="custom-type-CH06"/>
+			<channel id="CH07" typeId="custom-type-CH07"/>
+			<channel id="CH08" typeId="custom-type-CH08"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

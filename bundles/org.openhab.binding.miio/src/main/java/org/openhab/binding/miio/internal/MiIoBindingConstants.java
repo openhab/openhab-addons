@@ -111,5 +111,4 @@ public final class MiIoBindingConstants {
             .of("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF", "00000000000000000000000000000000").collect(Collectors.toSet()));
 
     public static final String DATABASE_PATH = "database/";
-
 }

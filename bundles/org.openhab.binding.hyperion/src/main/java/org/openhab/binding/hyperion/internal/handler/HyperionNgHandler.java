@@ -459,7 +459,6 @@ public class HyperionNgHandler extends BaseThingHandler {
         } else {
             logger.debug("Channel {} unable to process command {}", CHANNEL_EFFECT, command);
         }
-
     }
 
     private void handleClear(Command command) throws IOException, CommandUnsuccessfulException {
@@ -494,5 +493,4 @@ public class HyperionNgHandler extends BaseThingHandler {
         }
         return response;
     }
-
 }

@@ -69,5 +69,4 @@ public class VolvoOnCallDiscoveryService extends AbstractDiscoveryService {
 
         stopScan();
     }
-
 }

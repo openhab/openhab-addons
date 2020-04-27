@@ -22,9 +22,7 @@ public class RdsCloudException extends RuntimeException {
 
     private static final long serialVersionUID = -7048044632627280917L;
 
-    public RdsCloudException(String message)
-    {
-      super(message);
+    public RdsCloudException(String message) {
+        super(message);
     }
-
 }

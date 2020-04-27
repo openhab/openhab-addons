@@ -21,5 +21,4 @@ package org.openhab.binding.neohub.internal;
 public class NeoBaseConfiguration {
 
     public String deviceNameInHub;
-
 }

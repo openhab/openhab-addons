@@ -46,5 +46,4 @@ public class ByteField extends Field<ByteBuffer> {
     public ByteBuffer bytesInternal(ByteBuffer value) {
         return value;
     }
-
 }

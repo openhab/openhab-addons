@@ -41,5 +41,4 @@ public class VelbusStatusRequestPacket extends VelbusPacket {
     protected byte[] getDataBytes() {
         return new byte[] { COMMAND_STATUS_REQUEST, channel };
     }
-
 }

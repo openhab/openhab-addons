@@ -24,5 +24,4 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public interface DigiplexResponse extends DigiplexMessage {
 
     void accept(DigiplexMessageHandler visitor);
-
 }

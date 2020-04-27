@@ -246,5 +246,4 @@ public class ChannelHandler extends BaseThingHandler {
         }
         return null;
     }
-
 }

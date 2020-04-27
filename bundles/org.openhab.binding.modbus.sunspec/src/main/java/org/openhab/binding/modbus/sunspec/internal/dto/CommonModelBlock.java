@@ -43,5 +43,4 @@ public class CommonModelBlock {
     public String model = "";
     public String version = "";
     public String serialNumber = "";
-
 }

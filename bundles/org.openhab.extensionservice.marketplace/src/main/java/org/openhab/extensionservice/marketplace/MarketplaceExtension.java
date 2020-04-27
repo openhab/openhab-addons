@@ -66,5 +66,4 @@ public class MarketplaceExtension extends Extension {
     public String getPackageFormat() {
         return packageFormat;
     }
-
 }

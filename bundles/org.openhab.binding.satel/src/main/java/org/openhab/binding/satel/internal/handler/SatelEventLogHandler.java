@@ -129,7 +129,6 @@ public class SatelEventLogHandler extends SatelThingHandler {
             return "EventLogEntry [index=" + index + ", prevIndex=" + prevIndex + ", timestamp=" + timestamp
                     + ", description=" + description + ", details=" + details + "]";
         }
-
     }
 
     public SatelEventLogHandler(Thing thing) {
@@ -334,7 +333,6 @@ public class SatelEventLogHandler extends SatelThingHandler {
         int getKind() {
             return descKind;
         }
-
     }
 
     private static class EventDescription extends EventDescriptionCacheEntry {
@@ -344,7 +342,6 @@ public class SatelEventLogHandler extends SatelThingHandler {
             super(eventText, descKind);
             this.readEventCmd = readEventCmd;
         }
-
     }
 
     private EventDescription readEventDescription(ReadEventCommand readEventCmd) {
@@ -418,5 +415,4 @@ public class SatelEventLogHandler extends SatelThingHandler {
         });
         return result == null ? NOT_AVAILABLE_TEXT : result;
     }
-
 }

@@ -102,7 +102,8 @@
 	<channel-type id="base-type-43005">
 		<item-type>Number</item-type>
 		<label>Degree Minutes (16 Bit)</label>
-		<description>Degree minutes, 16bit value (-32768 &lt; x &lt; 32767). Values outside valid values are rounded to the closest valid value.</description>
+		<description>Degree minutes, 16bit value (-32768 &lt; x &lt; 32767). Values outside valid values are rounded to the
+			closest valid value.</description>
 		<state min="-30000" max="30000" step="1" pattern="%d °*min" readOnly="false">
 		</state>
 	</channel-type>

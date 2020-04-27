@@ -91,5 +91,4 @@ public final class F730Channels extends BaseChannels {
             new QuantityChannel("40919", "Air mix", ChannelGroup.AIRSUPPLY, ScaleFactor.DIV_10, SIUnits.CELSIUS));
     public static final Channel CH_40101 = INSTANCE.addChannel(new QuantityChannel("40101", "BT28 Air mix Temp",
             ChannelGroup.AIRSUPPLY, ScaleFactor.DIV_10, SIUnits.CELSIUS));
-
 }

@@ -6,8 +6,8 @@
 
 	<thing-type id="inverter-single-phase">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="tcp" />
-			<bridge-type-ref id="serial" />
+			<bridge-type-ref id="tcp"/>
+			<bridge-type-ref id="serial"/>
 		</supported-bridge-type-refs>
 
 		<label>Single Phase Inverter</label>
@@ -15,68 +15,69 @@
 		<category>Inverter</category>
 
 		<channel-groups>
-			<channel-group id="deviceInformation" typeId="device-information" />
-			<channel-group id="acGeneral" typeId="ac-general" />
+			<channel-group id="deviceInformation" typeId="device-information"/>
+			<channel-group id="acGeneral" typeId="ac-general"/>
 			<channel-group id="acPhaseA" typeId="ac-phase">
 				<label>AC Detail</label>
 			</channel-group>
-			<channel-group id="dcGeneral" typeId="dc-general" />
+			<channel-group id="dcGeneral" typeId="dc-general"/>
 		</channel-groups>
 
 		<properties>
-			<property name="vendor" />
-			<property name="model" />
-			<property name="version" />
-			<property name="serialNumber" />
-			<property name="uniqueAddress" />
+			<property name="vendor"/>
+			<property name="model"/>
+			<property name="version"/>
+			<property name="serialNumber"/>
+			<property name="uniqueAddress"/>
 		</properties>
 
 		<representation-property>uniqueAddress</representation-property>
 
-		<config-description-ref uri="thing-type:sunspec:modbusconfig" />
+		<config-description-ref uri="thing-type:sunspec:modbusconfig"/>
 
 	</thing-type>
 
 	<thing-type id="inverter-split-phase">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="tcp" />
-			<bridge-type-ref id="serial" />
+			<bridge-type-ref id="tcp"/>
+			<bridge-type-ref id="serial"/>
 		</supported-bridge-type-refs>
 
 		<label>Split Phase Inverter</label>
-		<description>Split phase (Japanese grid and 240V grid in North America) inverter supporting SunSpec mapping over tcp modbus connection</description>
+		<description>Split phase (Japanese grid and 240V grid in North America) inverter supporting SunSpec mapping over tcp
+			modbus connection</description>
 		<category>Inverter</category>
 
 		<channel-groups>
-			<channel-group id="deviceInformation" typeId="device-information" />
-			<channel-group id="acGeneral" typeId="ac-general" />
+			<channel-group id="deviceInformation" typeId="device-information"/>
+			<channel-group id="acGeneral" typeId="ac-general"/>
 			<channel-group id="acPhaseA" typeId="ac-phase">
 				<label>AC Phase A (L1)</label>
 			</channel-group>
 			<channel-group id="acPhaseB" typeId="ac-phase">
 				<label>AC Phase B (L2)</label>
 			</channel-group>
-			<channel-group id="dcGeneral" typeId="dc-general" />
+			<channel-group id="dcGeneral" typeId="dc-general"/>
 		</channel-groups>
 
 		<properties>
-			<property name="vendor" />
-			<property name="model" />
-			<property name="version" />
-			<property name="serialNumber" />
-			<property name="uniqueAddress" />
+			<property name="vendor"/>
+			<property name="model"/>
+			<property name="version"/>
+			<property name="serialNumber"/>
+			<property name="uniqueAddress"/>
 		</properties>
 
 		<representation-property>uniqueAddress</representation-property>
 
-		<config-description-ref uri="thing-type:sunspec:modbusconfig" />
+		<config-description-ref uri="thing-type:sunspec:modbusconfig"/>
 
 	</thing-type>
 
 	<thing-type id="inverter-three-phase">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="tcp" />
-			<bridge-type-ref id="serial" />
+			<bridge-type-ref id="tcp"/>
+			<bridge-type-ref id="serial"/>
 		</supported-bridge-type-refs>
 
 		<label>Three Phase Inverter</label>
@@ -84,8 +85,8 @@
 		<category>Inverter</category>
 
 		<channel-groups>
-			<channel-group id="deviceInformation" typeId="device-information" />
-			<channel-group id="acGeneral" typeId="ac-general" />
+			<channel-group id="deviceInformation" typeId="device-information"/>
+			<channel-group id="acGeneral" typeId="ac-general"/>
 			<channel-group id="acPhaseA" typeId="ac-phase">
 				<label>AC Phase A (L1)</label>
 			</channel-group>
@@ -95,20 +96,20 @@
 			<channel-group id="acPhaseC" typeId="ac-phase">
 				<label>AC Phase C (L3)</label>
 			</channel-group>
-			<channel-group id="dcGeneral" typeId="dc-general" />
+			<channel-group id="dcGeneral" typeId="dc-general"/>
 		</channel-groups>
 
 		<properties>
-			<property name="vendor" />
-			<property name="model" />
-			<property name="version" />
-			<property name="serialNumber" />
-			<property name="uniqueAddress" />
+			<property name="vendor"/>
+			<property name="model"/>
+			<property name="version"/>
+			<property name="serialNumber"/>
+			<property name="uniqueAddress"/>
 		</properties>
 
 		<representation-property>uniqueAddress</representation-property>
 
-		<config-description-ref uri="thing-type:sunspec:modbusconfig" />
+		<config-description-ref uri="thing-type:sunspec:modbusconfig"/>
 
 	</thing-type>
 

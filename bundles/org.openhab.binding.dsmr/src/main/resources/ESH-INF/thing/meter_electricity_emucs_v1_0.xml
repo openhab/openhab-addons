@@ -6,31 +6,31 @@
 
 	<thing-type id="electricity_emucs_v1_0" listed="false">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="dsmrBridge" />
+			<bridge-type-ref id="dsmrBridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Electricity Meter (e-MUCS V1.0)</label>
 		<description>This is an electricity meter that complies to the e-MUCS V1.0 specification.</description>
 
 		<channels>
-			<channel id="emeter_equipment_identifier" typeId="equipmentIdType" />
-			<channel id="emeter_delivery_tariff1" typeId="deliveryTariff1BelgiumType" />
-			<channel id="emeter_delivery_tariff2" typeId="deliveryTariff2BelgiumType" />
-			<channel id="emeter_production_tariff1" typeId="productionTariff1BelgiumType" />
-			<channel id="emeter_production_tariff2" typeId="productionTariff2BelgiumType" />
-			<channel id="emeter_tariff_indicator" typeId="tariffIndicatorType" />
-			<channel id="emeter_actual_delivery" typeId="actualDeliveryType" />
-			<channel id="emeter_actual_production" typeId="actualProductionType" />
-			<channel id="emeter_switch_position" typeId="switchPositionType" />
-			<channel id="emeter_fuse_threshold_a" typeId="actualFuseThresholdAType" />
-			<channel id="emeter_treshold_kw" typeId="actualTresholdkWType" />
-			<channel id="emeter_instant_current_l1" typeId="instantCurrentL1Type" />
-			<channel id="emeter_instant_current_l2" typeId="instantCurrentL2Type" />
-			<channel id="emeter_instant_current_l3" typeId="instantCurrentL3Type" />
-			<channel id="emeter_instant_voltage_l1" typeId="instantVoltageL1Type" />
-			<channel id="emeter_instant_voltage_l2" typeId="instantVoltageL2Type" />
-			<channel id="emeter_instant_voltage_l3" typeId="instantVoltageL3Type" />
+			<channel id="emeter_equipment_identifier" typeId="equipmentIdType"/>
+			<channel id="emeter_delivery_tariff1" typeId="deliveryTariff1BelgiumType"/>
+			<channel id="emeter_delivery_tariff2" typeId="deliveryTariff2BelgiumType"/>
+			<channel id="emeter_production_tariff1" typeId="productionTariff1BelgiumType"/>
+			<channel id="emeter_production_tariff2" typeId="productionTariff2BelgiumType"/>
+			<channel id="emeter_tariff_indicator" typeId="tariffIndicatorType"/>
+			<channel id="emeter_actual_delivery" typeId="actualDeliveryType"/>
+			<channel id="emeter_actual_production" typeId="actualProductionType"/>
+			<channel id="emeter_switch_position" typeId="switchPositionType"/>
+			<channel id="emeter_fuse_threshold_a" typeId="actualFuseThresholdAType"/>
+			<channel id="emeter_treshold_kw" typeId="actualTresholdkWType"/>
+			<channel id="emeter_instant_current_l1" typeId="instantCurrentL1Type"/>
+			<channel id="emeter_instant_current_l2" typeId="instantCurrentL2Type"/>
+			<channel id="emeter_instant_current_l3" typeId="instantCurrentL3Type"/>
+			<channel id="emeter_instant_voltage_l1" typeId="instantVoltageL1Type"/>
+			<channel id="emeter_instant_voltage_l2" typeId="instantVoltageL2Type"/>
+			<channel id="emeter_instant_voltage_l3" typeId="instantVoltageL3Type"/>
 		</channels>
-		<config-description-ref uri="thing-type:dsmr:meterdescriptor" />
+		<config-description-ref uri="thing-type:dsmr:meterdescriptor"/>
 	</thing-type>
 </thing:thing-descriptions>

@@ -147,5 +147,4 @@ public interface AvrConnection {
      * @return
      */
     public String getConnectionName();
-
 }

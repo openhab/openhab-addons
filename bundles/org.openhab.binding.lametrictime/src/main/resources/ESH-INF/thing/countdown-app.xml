@@ -6,7 +6,7 @@
 
 	<thing-type id="countdownApp" listed="true">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="device" />
+			<bridge-type-ref id="device"/>
 		</supported-bridge-type-refs>
 
 		<label>LaMetric Time Timer</label>

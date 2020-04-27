@@ -35,5 +35,4 @@ public enum EtherRainOperatingStatus {
     public String getStatus() {
         return status;
     }
-
 }

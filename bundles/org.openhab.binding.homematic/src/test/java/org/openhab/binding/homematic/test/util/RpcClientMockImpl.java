@@ -82,7 +82,6 @@ public class RpcClientMockImpl extends RpcClient<String> {
             public String getMethodName() {
                 return methodName;
             }
-
         };
     }
 

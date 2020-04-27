@@ -6,9 +6,9 @@
 
 	<thing-type id="region">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
-		
+
 		<label>DWD Pollen Count Index (Region)</label>
 		<description>Pollen count index for a region or partregion</description>
 
@@ -46,12 +46,12 @@
 				<description>Information for rye</description>
 			</channel-group>
 		</channel-groups>
-		
+
 		<properties>
 			<property name="region_name"/>
 			<property name="partregion_name"/>
 		</properties>
-		
+
 		<config-description>
 			<parameter name="regionID" type="integer" required="true">
 				<label>Region</label>
@@ -88,7 +88,7 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-	
+
 	<channel-group-type id="pollentype">
 		<label>Pollen Type Group</label>
 		<description>For each pollen type there are three channels for today, tomorrow and day after tomorrow</description>

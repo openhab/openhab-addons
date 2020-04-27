@@ -75,5 +75,4 @@ public final class NibeUplinkBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_VVM320, THING_TYPE_VVM310, THING_TYPE_F730, THING_TYPE_F750,
                     THING_TYPE_F1145, THING_TYPE_F1155).collect(Collectors.toSet()));
-
 }

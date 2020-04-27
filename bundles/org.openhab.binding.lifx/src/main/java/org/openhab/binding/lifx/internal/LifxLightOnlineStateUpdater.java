@@ -126,5 +126,4 @@ public class LifxLightOnlineStateUpdater {
         unansweredEchoPackets = 0;
         currentLightState.setOnline();
     }
-
 }

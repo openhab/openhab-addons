@@ -94,8 +94,8 @@
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
-		<channel-type id="f1155-type-43439">
-	<item-type>Number:Dimensionless</item-type>
+	<channel-type id="f1155-type-43439">
+		<item-type>Number:Dimensionless</item-type>
 		<label>EP14-GP2 Brine Pump Speed</label>
 		<description>Brine pump speed EP14</description>
 		<state pattern="%d %%" readOnly="true">

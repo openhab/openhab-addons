@@ -101,5 +101,4 @@ public class SatelPartitionHandler extends SatelStateThingHandler {
 
         return Optional.empty();
     }
-
 }

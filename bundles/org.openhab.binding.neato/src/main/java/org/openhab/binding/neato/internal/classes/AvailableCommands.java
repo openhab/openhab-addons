@@ -64,5 +64,4 @@ public class AvailableCommands {
     public void setGoToBase(Boolean goToBase) {
         this.goToBase = goToBase;
     }
-
 }

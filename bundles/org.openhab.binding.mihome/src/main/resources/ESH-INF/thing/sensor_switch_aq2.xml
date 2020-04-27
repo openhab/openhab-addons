@@ -6,16 +6,16 @@
 
 	<thing-type id="sensor_switch_aq2">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Xiaomi Aqara Wireless Switch</label>
 		<description>Square-shaped mini wireless switch that allows to trigger four types of event: single click, double
 			click, long click press and long click release.</description>
 		<channels>
-			<channel id="button" typeId="button" />
-			<channel id="batteryLevel" typeId="system.battery-level" />
-			<channel id="lowBattery" typeId="system.low-battery" />
+			<channel id="button" typeId="button"/>
+			<channel id="batteryLevel" typeId="system.battery-level"/>
+			<channel id="lowBattery" typeId="system.low-battery"/>
 		</channels>
-		<config-description-ref uri="thing-type:mihome:device" />
+		<config-description-ref uri="thing-type:mihome:device"/>
 	</thing-type>
 </thing:thing-descriptions>

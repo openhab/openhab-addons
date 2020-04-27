@@ -136,5 +136,4 @@ public class UsersAndConfigTests {
         assertThat(response.getStatus(), is(403));
         assertThat(response.readEntity(String.class), containsString("error"));
     }
-
 }

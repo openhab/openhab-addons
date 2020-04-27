@@ -57,5 +57,4 @@ public class RFXComTemperatureHumidityMessageTest {
         testMessage("0A520211700200A72D0089", TH2, 17, 28674, 16.7, 45, NORMAL, 8, 9);
         testMessage("0A5205D42F000082590379", TH5, 212, 12032, 13, 89, WET, 7, 9);
     }
-
 }

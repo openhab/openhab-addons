@@ -40,7 +40,7 @@ public class MiIoCrypto {
             MessageDigest m = MessageDigest.getInstance("MD5");
             return m.digest(source);
         } catch (NoSuchAlgorithmException e) {
-            throw new MiIoCryptoException(e.getMessage(),e);
+            throw new MiIoCryptoException(e.getMessage(), e);
         }
     }
 
@@ -52,7 +52,7 @@ public class MiIoCrypto {
             System.arraycopy(token, 0, ivbuf, 16, 16);
             return m.digest(ivbuf);
         } catch (NoSuchAlgorithmException e) {
-            throw new MiIoCryptoException(e.getMessage(),e);
+            throw new MiIoCryptoException(e.getMessage(), e);
         }
     }
 
@@ -66,7 +66,7 @@ public class MiIoCrypto {
             return encrypted;
         } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException
                 | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
-            throw new MiIoCryptoException(e.getMessage(),e);
+            throw new MiIoCryptoException(e.getMessage(), e);
         }
     }
 
@@ -84,7 +84,7 @@ public class MiIoCrypto {
             return (crypted);
         } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException
                 | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
-            throw new MiIoCryptoException(e.getMessage(),e);
+            throw new MiIoCryptoException(e.getMessage(), e);
         }
     }
 
@@ -106,7 +106,7 @@ public class MiIoCrypto {
             }
         } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException
                 | BadPaddingException e) {
-            throw new MiIoCryptoException(e.getMessage(),e);
+            throw new MiIoCryptoException(e.getMessage(), e);
         }
     }
 }

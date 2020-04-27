@@ -231,7 +231,6 @@ public class ZoneTemperatureControlHandler extends BaseThingHandler implements T
         } else {
             logger.debug("Command sent to an unknown channel id: {}", channelUID);
         }
-
     }
 
     private boolean isTemperature() {
@@ -356,5 +355,4 @@ public class ZoneTemperatureControlHandler extends BaseThingHandler implements T
     public Integer getTemperationControlStatusListenrID() {
         return zoneID;
     }
-
 }

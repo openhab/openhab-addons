@@ -109,5 +109,4 @@ public class MillheatHandlerFactory extends BaseThingHandlerFactory {
             discoveryServiceRegs.remove(thingUID);
         }
     }
-
 }

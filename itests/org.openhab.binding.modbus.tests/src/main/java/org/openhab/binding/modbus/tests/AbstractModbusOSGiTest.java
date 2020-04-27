@@ -93,7 +93,6 @@ public abstract class AbstractModbusOSGiTest extends JavaOSGiTest {
             stateUpdates.computeIfAbsent(stateEvent.getItemName(), (item) -> new ArrayList<>())
                     .add(stateEvent.getItemState());
         }
-
     }
 
     private final Logger logger = LoggerFactory.getLogger(AbstractModbusOSGiTest.class);
@@ -243,5 +242,4 @@ public abstract class AbstractModbusOSGiTest extends JavaOSGiTest {
         modbusHandlerFactory.unsetModbusManager(mockedModbusManager);
         modbusHandlerFactory.setModbusManager(realModbusManager);
     }
-
 }

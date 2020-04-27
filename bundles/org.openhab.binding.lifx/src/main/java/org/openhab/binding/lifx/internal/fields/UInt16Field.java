@@ -36,5 +36,4 @@ public class UInt16Field extends Field<Integer> {
     public ByteBuffer bytesInternal(Integer value) {
         return ByteBuffer.allocate(2).putShort((short) (value & 0xFFFF));
     }
-
 }

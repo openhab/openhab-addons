@@ -13,7 +13,6 @@
 package org.openhab.binding.heos.handler;
 
 import static org.openhab.binding.heos.HeosBindingConstants.*;
-//import static org.openhab.binding.heos.internal.resources.HeosConstants.*;
 import static org.openhab.binding.heos.internal.resources.HeosConstants.*;
 
 import java.net.MalformedURLException;

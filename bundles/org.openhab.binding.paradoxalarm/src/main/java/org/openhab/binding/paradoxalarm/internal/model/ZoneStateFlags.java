@@ -45,5 +45,4 @@ public class ZoneStateFlags {
     public void setZonesLowBattery(byte[] zonesLowBattery) {
         this.zonesLowBattery = zonesLowBattery;
     }
-
 }

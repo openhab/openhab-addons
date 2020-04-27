@@ -48,5 +48,4 @@ public class HSBKField extends Field<HSBK> {
                 .put(FIELD_SATURATION.bytes(value.getSaturation())).put(FIELD_BRIGHTNESS.bytes(value.getBrightness()))
                 .put(FIELD_KELVIN.bytes(value.getKelvin()));
     }
-
 }

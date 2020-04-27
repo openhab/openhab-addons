@@ -39,8 +39,8 @@ public class FritzAhaSetHeatingTemperatureCallback extends FritzAhaReauthCallbac
     /**
      * Constructor
      *
-     * @param webIface    Interface to FRITZ!Box
-     * @param ain         AIN of the device that should be switched
+     * @param webIface Interface to FRITZ!Box
+     * @param ain AIN of the device that should be switched
      * @param temperature New temperature
      */
     public FritzAhaSetHeatingTemperatureCallback(FritzAhaWebInterface webIface, String ain, BigDecimal temperature) {

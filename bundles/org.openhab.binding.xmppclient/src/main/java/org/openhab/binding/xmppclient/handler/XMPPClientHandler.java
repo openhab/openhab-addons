@@ -12,29 +12,26 @@
  */
 package org.openhab.binding.xmppclient.handler;
 
-import org.jivesoftware.smack.*;
-
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import org.openhab.binding.xmppclient.action.XMPPActions;
-import org.openhab.binding.xmppclient.internal.XMPPClient;
-import org.openhab.binding.xmppclient.handler.XMPPClientConfiguration;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
+import org.jivesoftware.smack.*;
+import org.openhab.binding.xmppclient.action.XMPPActions;
+import org.openhab.binding.xmppclient.internal.XMPPClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
 
 /**
  * The {@link XMPPClientHandler} is responsible for handling commands, which are
@@ -97,8 +94,9 @@ public class XMPPClientHandler extends BaseBridgeHandler {
             return;
         }
 
-        for(Channel channel : thing.getChannels()) {
-            final PublishTriggerChannelConfig channelConfig = channel.getConfiguration().as(PublishTriggerChannelConfig.class);
+        for (Channel channel : thing.getChannels()) {
+            final PublishTriggerChannelConfig channelConfig = channel.getConfiguration()
+                    .as(PublishTriggerChannelConfig.class);
             PublishTriggerChannel c = new PublishTriggerChannel(channelConfig, channel.getUID(), xmppClient, this);
             channelStateByChannelUID.put(channel.getUID(), c);
             logger.info("XMPP added channel {} payload {}", channel.getUID().toString(), channelConfig.payload);

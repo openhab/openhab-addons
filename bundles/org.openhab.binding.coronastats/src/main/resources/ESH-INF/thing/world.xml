@@ -25,6 +25,6 @@
 				<description>Time between two API requests in minutes. Minimum 15 minutes.</description>
 			</parameter>
 		</config-description>
-		
+
 	</bridge-type>
 </thing:thing-descriptions>

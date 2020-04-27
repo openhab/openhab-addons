@@ -411,5 +411,4 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
     private KNXChannelType getKNXChannelType(Channel channel) {
         return KNXChannelTypes.getType(channel.getChannelTypeUID());
     }
-
 }

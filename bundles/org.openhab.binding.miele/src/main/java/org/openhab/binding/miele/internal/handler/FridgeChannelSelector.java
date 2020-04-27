@@ -77,8 +77,7 @@ public enum FridgeChannelSelector implements ApplianceChannelSelector {
     private final Class<? extends Type> typeClass;
     private final boolean isProperty;
 
-    FridgeChannelSelector(String propertyID, String channelID, Class<? extends Type> typeClass,
-            boolean isProperty) {
+    FridgeChannelSelector(String propertyID, String channelID, Class<? extends Type> typeClass, boolean isProperty) {
         this.mieleID = propertyID;
         this.channelID = channelID;
         this.typeClass = typeClass;

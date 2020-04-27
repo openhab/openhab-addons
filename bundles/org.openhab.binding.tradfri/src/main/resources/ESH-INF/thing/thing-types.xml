@@ -10,170 +10,170 @@
 
 		<representation-property>host</representation-property>
 
-		<config-description-ref uri="bridge-type:tradfri:gateway" />
+		<config-description-ref uri="bridge-type:tradfri:gateway"/>
 	</bridge-type>
 
 	<!-- thing types for devices -->
 	<!-- their IDs refer to the Zigbee Lightlink device ids (see chapter 2.2 in https://www.nxp.com/documents/user_manual/JN-UG-3091.pdf) -->
 	<thing-type id="0010">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="gateway" />
+			<bridge-type-ref id="gateway"/>
 		</supported-bridge-type-refs>
 
 		<label>On/Off Plug</label>
 		<description>A plug that can be switched on and off.</description>
 
 		<channels>
-			<channel id="power" typeId="system.power" />
+			<channel id="power" typeId="system.power"/>
 		</channels>
 
 		<representation-property>id</representation-property>
 
-		<config-description-ref uri="thing-type:tradfri:device" />
+		<config-description-ref uri="thing-type:tradfri:device"/>
 	</thing-type>
 
 	<thing-type id="0100">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="gateway" />
+			<bridge-type-ref id="gateway"/>
 		</supported-bridge-type-refs>
 
 		<label>Dimmable Light</label>
 		<description>A light that has continuous brightness control.</description>
 
 		<channels>
-			<channel id="brightness" typeId="brightness" />
+			<channel id="brightness" typeId="brightness"/>
 		</channels>
 
 		<representation-property>id</representation-property>
 
-		<config-description-ref uri="thing-type:tradfri:device" />
+		<config-description-ref uri="thing-type:tradfri:device"/>
 	</thing-type>
 
 	<thing-type id="0220">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="gateway" />
+			<bridge-type-ref id="gateway"/>
 		</supported-bridge-type-refs>
 
 		<label>Color Temperature Light</label>
 		<description>A dimmable light that supports different color temperature settings.</description>
 
 		<channels>
-			<channel id="brightness" typeId="brightness" />
-			<channel id="color_temperature" typeId="color_temperature" />
+			<channel id="brightness" typeId="brightness"/>
+			<channel id="color_temperature" typeId="color_temperature"/>
 		</channels>
 
 		<representation-property>id</representation-property>
 
-		<config-description-ref uri="thing-type:tradfri:device" />
+		<config-description-ref uri="thing-type:tradfri:device"/>
 	</thing-type>
 
 	<thing-type id="0210">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="gateway" />
+			<bridge-type-ref id="gateway"/>
 		</supported-bridge-type-refs>
 
 		<label>Color Light</label>
 		<description>A dimmable light that supports full colors and color temperature settings.</description>
 
 		<channels>
-			<channel id="color_temperature" typeId="color_temperature" />
-			<channel id="color" typeId="color" />
+			<channel id="color_temperature" typeId="color_temperature"/>
+			<channel id="color" typeId="color"/>
 		</channels>
 
 		<representation-property>id</representation-property>
 
-		<config-description-ref uri="thing-type:tradfri:device" />
+		<config-description-ref uri="thing-type:tradfri:device"/>
 	</thing-type>
 
 	<thing-type id="0107">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="gateway" />
+			<bridge-type-ref id="gateway"/>
 		</supported-bridge-type-refs>
 
 		<label>Occupancy Sensor</label>
 		<description>This represents the motion sensor capable of reporting the battery level.</description>
 
 		<channels>
-			<channel id="battery_level" typeId="system.battery-level" />
-			<channel id="battery_low" typeId="system.low-battery" />
+			<channel id="battery_level" typeId="system.battery-level"/>
+			<channel id="battery_low" typeId="system.low-battery"/>
 		</channels>
 
 		<representation-property>id</representation-property>
 
-		<config-description-ref uri="thing-type:tradfri:device" />
+		<config-description-ref uri="thing-type:tradfri:device"/>
 	</thing-type>
 
 	<thing-type id="0820" listed="false">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="gateway" />
+			<bridge-type-ref id="gateway"/>
 		</supported-bridge-type-refs>
 
 		<label>Non-Colour Controller</label>
 		<description>This represents the wireless dimmer sensor capable of reporting the battery level.</description>
 
 		<channels>
-			<channel id="battery_level" typeId="system.battery-level" />
-			<channel id="battery_low" typeId="system.low-battery" />
+			<channel id="battery_level" typeId="system.battery-level"/>
+			<channel id="battery_low" typeId="system.low-battery"/>
 		</channels>
 
 		<representation-property>id</representation-property>
 
-		<config-description-ref uri="thing-type:tradfri:device" />
+		<config-description-ref uri="thing-type:tradfri:device"/>
 	</thing-type>
 
 	<thing-type id="0830">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="gateway" />
+			<bridge-type-ref id="gateway"/>
 		</supported-bridge-type-refs>
 
 		<label>Non-Colour Scene Controller</label>
 		<description>This represents the remote control capable of reporting the battery level.</description>
 
 		<channels>
-			<channel id="battery_level" typeId="system.battery-level" />
-			<channel id="battery_low" typeId="system.low-battery" />
+			<channel id="battery_level" typeId="system.battery-level"/>
+			<channel id="battery_low" typeId="system.low-battery"/>
 		</channels>
 
 		<representation-property>id</representation-property>
 
-		<config-description-ref uri="thing-type:tradfri:device" />
+		<config-description-ref uri="thing-type:tradfri:device"/>
 	</thing-type>
 
 	<thing-type id="0202">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="gateway" />
+			<bridge-type-ref id="gateway"/>
 		</supported-bridge-type-refs>
 
 		<label>Window Covering Device</label>
 		<description>This represents a blind or curtain that can be moved up and down. Also reports current battery level.</description>
 
 		<channels>
-			<channel id="position" typeId="position" />
-			<channel id="battery_level" typeId="system.battery-level" />
-			<channel id="battery_low" typeId="system.low-battery" />
+			<channel id="position" typeId="position"/>
+			<channel id="battery_level" typeId="system.battery-level"/>
+			<channel id="battery_low" typeId="system.low-battery"/>
 		</channels>
 
 		<representation-property>id</representation-property>
 
-		<config-description-ref uri="thing-type:tradfri:device" />
+		<config-description-ref uri="thing-type:tradfri:device"/>
 	</thing-type>
 
 	<thing-type id="0203" listed="false">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="gateway" />
+			<bridge-type-ref id="gateway"/>
 		</supported-bridge-type-refs>
 
 		<label>Window Covering Controller</label>
 		<description>This represents the wireless open/close remote capable of reporting the battery level.</description>
 
 		<channels>
-			<channel id="battery_level" typeId="system.battery-level" />
-			<channel id="battery_low" typeId="system.low-battery" />
+			<channel id="battery_level" typeId="system.battery-level"/>
+			<channel id="battery_low" typeId="system.low-battery"/>
 		</channels>
 
 		<representation-property>id</representation-property>
 
-		<config-description-ref uri="thing-type:tradfri:device" />
+		<config-description-ref uri="thing-type:tradfri:device"/>
 	</thing-type>
 
 	<channel-type id="brightness">

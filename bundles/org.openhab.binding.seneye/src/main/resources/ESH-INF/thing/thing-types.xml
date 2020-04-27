@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="seneye"
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-		xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="monitor">
 		<label>Seneye Monitor</label>
@@ -21,8 +21,8 @@
 			<channel id="slideexpires" typeId="slideexpires"/>
 			<channel id="wrongslide" typeId="wrongslide"/>
 			<channel id="slideserial" typeId="slideserial"/>
-			<channel id="outofwater" typeId="outofwater" />
-			<channel id="disconnected" typeId="disconnected" />
+			<channel id="outofwater" typeId="outofwater"/>
+			<channel id="disconnected" typeId="disconnected"/>
 		</channels>
 		<config-description>
 			<parameter name="aquarium_name" type="text" required="true">
@@ -55,84 +55,84 @@
 		<item-type>Number</item-type>
 		<label>Temperature</label>
 		<description>The water temperature</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="ph">
 		<item-type>Number</item-type>
 		<label>PH</label>
 		<description>The PH Level</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="nh3">
 		<item-type>Number</item-type>
 		<label>NH3</label>
 		<description>The NH3 Level</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="nh4">
 		<item-type>Number</item-type>
 		<label>NH4</label>
 		<description>The NH4 Level</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="o2">
 		<item-type>Number</item-type>
 		<label>O2</label>
 		<description>The O2 Level</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="lux">
 		<item-type>Number</item-type>
 		<label>LUX</label>
 		<description>The LUX Light Level</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="par">
 		<item-type>Number</item-type>
 		<label>PAR</label>
 		<description>The PAR Light Level</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="kelvin">
 		<item-type>Number</item-type>
 		<label>Kelvin</label>
 		<description>The Kelvin Light Level</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="lastreading">
 		<item-type>DateTime</item-type>
 		<label>Last Reading</label>
 		<description>The last time your seneye is checked</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="slideexpires">
 		<item-type>DateTime</item-type>
 		<label>Slide Expiration</label>
 		<description>The time your slide expires</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="wrongslide">
 		<item-type>String</item-type>
 		<label>Wrong Slide</label>
 		<description>The Wrong Slide is in use (becomes 1 when the slide has expired)</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="slideserial">
 		<item-type>String</item-type>
 		<label>Slide Serial Number</label>
 		<description>The serial Number of the currently installed slide</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="outofwater">
 		<item-type>String</item-type>
 		<label>Out of Water</label>
 		<description>The Sensor is reporting being out of the water</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="disconnected">
 		<item-type>String</item-type>
 		<label>Disconnected</label>
 		<description>No readings have been uploaded for a while, check connection</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

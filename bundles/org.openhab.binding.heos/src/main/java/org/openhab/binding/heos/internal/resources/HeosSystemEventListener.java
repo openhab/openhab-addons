@@ -51,8 +51,8 @@ public class HeosSystemEventListener {
     /**
      * Notifies the registered listener of a changed state type event
      *
-     * @param pid     the ID of the player or group which has changed
-     * @param event   the name of the event (see {@link HeosConstants} for event types)
+     * @param pid the ID of the player or group which has changed
+     * @param event the name of the event (see {@link HeosConstants} for event types)
      * @param command the command of the event
      */
     public void fireStateEvent(String pid, String event, String command) {
@@ -62,7 +62,7 @@ public class HeosSystemEventListener {
     /**
      * Notifies the registered listener of a changed media type event
      *
-     * @param pid  the ID of the player or group which has changed
+     * @param pid the ID of the player or group which has changed
      * @param info an HashMap which contains the media information
      */
     public void fireMediaEvent(String pid, Map<String, String> info) {
@@ -72,8 +72,8 @@ public class HeosSystemEventListener {
     /**
      * Notifies the registered listener if a change of the bridge state
      *
-     * @param event   the event type
-     * @param result  the result (success or fail)
+     * @param event the event type
+     * @param result the result (success or fail)
      * @param command the command of the event
      */
     public void fireBridgeEvent(String event, String result, String command) {

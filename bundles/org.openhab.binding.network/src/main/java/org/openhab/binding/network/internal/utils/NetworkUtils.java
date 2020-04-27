@@ -12,6 +12,13 @@
  */
 package org.openhab.binding.network.internal.utils;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.*;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.net.util.SubnetUtils;
@@ -22,13 +29,6 @@ import org.eclipse.smarthome.core.net.NetUtil;
 import org.eclipse.smarthome.io.net.exec.ExecUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.*;
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Network utility functions for pinging and for determining all interfaces and assigned IP addresses.
@@ -62,7 +62,7 @@ public class NetworkUtils {
 
         try {
             // For each interface ...
-            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
+            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
                 NetworkInterface networkInterface = en.nextElement();
                 if (!networkInterface.isLoopback()) {
                     result.add(networkInterface.getName());
@@ -264,9 +264,9 @@ public class NetworkUtils {
                 // Because of the Windows issue, we need to check this. We assume that the ping was successful whenever
                 // this specific string is contained in the output
                 if (line.contains("TTL=") || line.contains("ttl=")) {
-                     PingResult pingResult = new PingResult(true, System.currentTimeMillis() - execStartTimeInMS);
-                     latencyParser.parseLatency(line).ifPresent(pingResult::setResponseTimeInMS);
-                     return Optional.of(pingResult);
+                    PingResult pingResult = new PingResult(true, System.currentTimeMillis() - execStartTimeInMS);
+                    latencyParser.parseLatency(line).ifPresent(pingResult::setResponseTimeInMS);
+                    return Optional.of(pingResult);
                 }
                 line = r.readLine();
             } while (line != null);
@@ -298,7 +298,7 @@ public class NetworkUtils {
      * @throws IOException The ping command could probably not be found
      */
     public Optional<PingResult> nativeARPPing(@Nullable ArpPingUtilEnum arpingTool, @Nullable String arpUtilPath,
-                                              String interfaceName, String ipV4address, int timeoutInMS) throws IOException, InterruptedException {
+            String interfaceName, String ipV4address, int timeoutInMS) throws IOException, InterruptedException {
         double execStartTimeInMS = System.currentTimeMillis();
 
         if (arpUtilPath == null || arpingTool == null || arpingTool == ArpPingUtilEnum.UNKNOWN_TOOL) {
@@ -333,7 +333,7 @@ public class NetworkUtils {
         double execStartTimeInMS = System.currentTimeMillis();
 
         try {
-            if(destinationAddress.isReachable(timeoutInMS)) {
+            if (destinationAddress.isReachable(timeoutInMS)) {
                 return Optional.of(new PingResult(true, System.currentTimeMillis() - execStartTimeInMS));
             } else {
                 return Optional.of(new PingResult(false, System.currentTimeMillis() - execStartTimeInMS));

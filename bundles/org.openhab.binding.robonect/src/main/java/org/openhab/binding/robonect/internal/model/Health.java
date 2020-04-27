@@ -19,9 +19,9 @@ package org.openhab.binding.robonect.internal.model;
  * @author Marco Meyer - Initial contribution
  */
 public class Health {
-    
+
     private int temperature;
-    
+
     private int humidity;
 
     /**

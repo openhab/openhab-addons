@@ -419,5 +419,4 @@ public class Scenes implements RegistryChangeListener<Rule> {
                 new HueSuccessGeneric(changeRequest.transitiontime,
                         "/scenes/" + id + "/lightstates/" + lightid + "/transitiontime")));
     }
-
 }

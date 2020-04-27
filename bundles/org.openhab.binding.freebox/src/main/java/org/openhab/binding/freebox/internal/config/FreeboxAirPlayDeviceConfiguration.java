@@ -27,5 +27,4 @@ public class FreeboxAirPlayDeviceConfiguration {
     public String name;
     public String password;
     public Boolean acceptAllMp3;
-
 }

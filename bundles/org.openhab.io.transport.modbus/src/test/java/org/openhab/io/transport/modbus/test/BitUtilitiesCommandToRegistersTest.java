@@ -292,7 +292,6 @@ public class BitUtilitiesCommandToRegistersTest {
                                 // should pick the low 64 bits
                                 ValueType.UINT64_SWAP, shorts(0x7909, 0x772E, 0xBBB7, 0xDFC5), })
                 .collect(Collectors.toList()));
-
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

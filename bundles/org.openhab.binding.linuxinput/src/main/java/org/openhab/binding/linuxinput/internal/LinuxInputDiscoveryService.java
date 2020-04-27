@@ -12,6 +12,17 @@
  */
 package org.openhab.binding.linuxinput.internal;
 
+import static org.openhab.binding.linuxinput.internal.LinuxInputBindingConstants.THING_TYPE_DEVICE;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.*;
+import java.time.Duration;
+import java.util.Collections;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
@@ -25,17 +36,6 @@ import org.openhab.binding.linuxinput.internal.evdev4j.jnr.EvdevLibrary;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.*;
-import java.time.Duration;
-import java.util.Collections;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.TimeUnit;
-
-import static org.openhab.binding.linuxinput.internal.LinuxInputBindingConstants.THING_TYPE_DEVICE;
 
 /**
  * Discovery service for LinuxInputHandlers based on the /dev/input directory.

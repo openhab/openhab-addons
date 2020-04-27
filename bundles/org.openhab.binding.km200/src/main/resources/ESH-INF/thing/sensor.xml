@@ -6,7 +6,7 @@
 
 	<thing-type id="sensor" listed="false">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="kmdevice" />
+			<bridge-type-ref id="kmdevice"/>
 		</supported-bridge-type-refs>
 		<label>Sensors</label>
 		<description>This thing is representing the sensors.</description>

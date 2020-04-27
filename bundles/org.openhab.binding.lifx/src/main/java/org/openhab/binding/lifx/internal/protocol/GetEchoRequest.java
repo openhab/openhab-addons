@@ -77,5 +77,4 @@ public class GetEchoRequest extends Packet {
         request.setPayload(payload);
         return request;
     }
-
 }

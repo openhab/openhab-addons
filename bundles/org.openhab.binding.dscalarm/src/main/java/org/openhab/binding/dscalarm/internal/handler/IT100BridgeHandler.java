@@ -168,7 +168,6 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
         }
 
         return message;
-
     }
 
     /**

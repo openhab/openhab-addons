@@ -58,5 +58,4 @@ public final class EventJob extends AbstractJob {
     public String toString() {
         return "Event job " + getThingUID() + "/" + channelID + "/" + event;
     }
-
 }

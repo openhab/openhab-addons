@@ -99,7 +99,6 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
             }
             return super.get(apiClass);
         }
-
     }
 
     public NetatmoBridgeHandler(@NonNull Bridge bridge, WelcomeWebHookServlet webHookServlet) {

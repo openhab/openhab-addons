@@ -51,5 +51,4 @@ public class SinopeDataWriteRequest extends SinopeDataRequest {
     public SinopeDataReadAnswer getReplyAnswer(InputStream r) throws IOException {
         return new SinopeDataReadAnswer(r, this.getAppData());
     }
-
 }

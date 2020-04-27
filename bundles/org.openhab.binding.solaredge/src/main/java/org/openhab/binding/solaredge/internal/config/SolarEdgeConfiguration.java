@@ -107,5 +107,4 @@ public class SolarEdgeConfiguration {
                 .append("aggregate data pollingInterval", getAggregateDataPollingInterval())
                 .append("asyncTimeout", getAsyncTimeout()).append("syncTimeout", getSyncTimeout()).toString();
     }
-
 }

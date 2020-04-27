@@ -269,5 +269,4 @@ public class VeluxDiscoveryService extends AbstractDiscoveryService implements R
         }
         logger.trace("discoverProducts() finished.");
     }
-
 }

@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions
-	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	bindingId="etherrain"
+<thing:thing-descriptions xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bindingId="etherrain"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- The EtherRain Thing Type -->
@@ -11,12 +9,12 @@
 		<description>This is a stand alone EtherRain device that allows sprinkler control</description>
 
 		<channels>
-			<channel id="commandstatus" typeId="commandstatus" />
-			<channel id="operatingstatus" typeId="operatingstatus" />
-			<channel id="operatingresult" typeId="operatingresult" />
+			<channel id="commandstatus" typeId="commandstatus"/>
+			<channel id="operatingstatus" typeId="operatingstatus"/>
+			<channel id="operatingresult" typeId="operatingresult"/>
 
-			<channel id="relayindex" typeId="relayindex" />
-			<channel id="rainsensor" typeId="rainsensor" />
+			<channel id="relayindex" typeId="relayindex"/>
+			<channel id="rainsensor" typeId="rainsensor"/>
 
 			<channel id="execute" typeId="execute">
 				<label>Execute</label>
@@ -103,7 +101,7 @@
 		<label>Command Status</label>
 		<description>Status of the last command given to the Etherrain</description>
 		<category>Water</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="operatingstatus">
@@ -111,7 +109,7 @@
 		<label>Operating Status</label>
 		<description>Current operating status of the Etherrain</description>
 		<category>Water</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="operatingresult">
@@ -119,7 +117,7 @@
 		<label>Operating Result</label>
 		<description>Result of operating status</description>
 		<category>Water</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="rainsensor">
@@ -127,7 +125,7 @@
 		<label>Rain</label>
 		<description>Provides feedback on whether the EtherRain device has detected rain or not</description>
 		<category>Sensor</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="runtime">
@@ -142,7 +140,7 @@
 		<label>Relay Index</label>
 		<description>Number of the last zone that was operating</description>
 		<category>Number</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="execute">

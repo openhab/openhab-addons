@@ -30,7 +30,6 @@ public class ModbusUnexpectedResponseFunctionCodeException extends ModbusTranspo
     public ModbusUnexpectedResponseFunctionCodeException(int requestFunctionCode, int responseFunctionCode) {
         this.requestFunctionCode = requestFunctionCode;
         this.responseFunctionCode = responseFunctionCode;
-
     }
 
     @Override
@@ -45,5 +44,4 @@ public class ModbusUnexpectedResponseFunctionCodeException extends ModbusTranspo
                 "ModbusUnexpectedResponseFunctionCodeException(requestFunctionCode=%d, responseFunctionCode=%d)",
                 requestFunctionCode, responseFunctionCode);
     }
-
 }

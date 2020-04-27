@@ -34,9 +34,9 @@ public interface NibeUplinkHandler extends ThingHandler, ChannelProvider {
      * Called from {@link NibeUplinkWebInterface#authenticate()} to update
      * the thing status because updateStatus is protected.
      *
-     * @param status       Bridge status
+     * @param status Bridge status
      * @param statusDetail Bridge status detail
-     * @param description  Bridge status description
+     * @param description Bridge status description
      */
     void setStatusInfo(ThingStatus status, ThingStatusDetail statusDetail, String description);
 
@@ -50,5 +50,4 @@ public interface NibeUplinkHandler extends ThingHandler, ChannelProvider {
     void updateChannelStatus(Map<Channel, State> values);
 
     NibeUplinkConfiguration getConfiguration();
-
 }

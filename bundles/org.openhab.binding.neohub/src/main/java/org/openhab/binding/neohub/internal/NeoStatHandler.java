@@ -64,5 +64,4 @@ public class NeoStatHandler extends NeoBaseHandler {
                 (deviceInfo.isHeating() || deviceInfo.isPreHeating() ? new StringType(VAL_HEATING)
                         : new StringType(VAL_OFF)));
     }
-
 }

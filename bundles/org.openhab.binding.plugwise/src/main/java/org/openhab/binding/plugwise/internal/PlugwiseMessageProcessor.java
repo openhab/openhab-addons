@@ -70,7 +70,6 @@ public class PlugwiseMessageProcessor implements SerialPortEventListener {
                 }
             }
         }
-
     }
 
     /** Matches Plugwise responses into the following groups: protocolHeader command sequence payload CRC */
@@ -244,5 +243,4 @@ public class PlugwiseMessageProcessor implements SerialPortEventListener {
             serialPort.removeEventListener();
         }
     }
-
 }

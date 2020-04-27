@@ -38,7 +38,8 @@
 			</parameter>
 			<parameter name="sensorPollingInterval" type="integer" min="50" step="1" unit="ms">
 				<label>Sensor Polling Interval</label>
-				<description>Milliseconds between fetching sensor-values from the Hue bridge. A higher value means more delay for the sensor values, but a too low value can cause congestion on the Hue bridge.</description>
+				<description>Milliseconds between fetching sensor-values from the Hue bridge. A higher value means more delay for
+					the sensor values, but a too low value can cause congestion on the Hue bridge.</description>
 				<required>true</required>
 				<default>500</default>
 			</parameter>

@@ -134,5 +134,4 @@ public class WakeOnLanUtility {
 
         return bytes;
     }
-
 }

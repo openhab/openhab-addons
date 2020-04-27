@@ -86,5 +86,4 @@ public class ThingChannelConstants {
         data.put("inverse", true);
         return new Configuration(data);
     }
-
 }

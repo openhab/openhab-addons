@@ -101,5 +101,4 @@ public class ThingConfiguration {
         LOGGER.trace("getValue({},{}) returns {}.", channelUID, configName, configurationValue);
         return configurationValue;
     }
-
 }

@@ -9,28 +9,28 @@
 		<description>WebOS based smart TV</description>
 
 		<channels>
-			<channel id="power" typeId="powerType" />
-			<channel id="mute" typeId="muteType" />
-			<channel id="volume" typeId="volumeType" />
-			<channel id="channel" typeId="channelType" />
-			<channel id="toast" typeId="toastType" />
-			<channel id="mediaPlayer" typeId="mediaPlayerType" />
-			<channel id="mediaStop" typeId="mediaStopType" />
-			<channel id="appLauncher" typeId="appLauncherChannelType" />
-			<channel id="rcButton" typeId="rcButtonType" />
+			<channel id="power" typeId="powerType"/>
+			<channel id="mute" typeId="muteType"/>
+			<channel id="volume" typeId="volumeType"/>
+			<channel id="channel" typeId="channelType"/>
+			<channel id="toast" typeId="toastType"/>
+			<channel id="mediaPlayer" typeId="mediaPlayerType"/>
+			<channel id="mediaStop" typeId="mediaStopType"/>
+			<channel id="appLauncher" typeId="appLauncherChannelType"/>
+			<channel id="rcButton" typeId="rcButtonType"/>
 		</channels>
 
 		<properties>
-			<property name="deviceId" />
-			<property name="lastConnected" />
-			<property name="deviceOS" />
-			<property name="deviceOSVersion" />
-			<property name="deviceOSReleaseVersion" />
+			<property name="deviceId"/>
+			<property name="lastConnected"/>
+			<property name="deviceOS"/>
+			<property name="deviceOSVersion"/>
+			<property name="deviceOSReleaseVersion"/>
 		</properties>
 		<representation-property>deviceId</representation-property>
 
 
-		<config-description-ref uri="thing-type:lgwebos:WebOSTV" />
+		<config-description-ref uri="thing-type:lgwebos:WebOSTV"/>
 	</thing-type>
 
 	<channel-type id="powerType">

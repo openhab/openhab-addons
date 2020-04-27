@@ -60,5 +60,4 @@ public class ConfigurationTest {
         String serialNumber = configuration.getSerialNumber();
         assertEquals("KEQ0544242", serialNumber);
     }
-
 }

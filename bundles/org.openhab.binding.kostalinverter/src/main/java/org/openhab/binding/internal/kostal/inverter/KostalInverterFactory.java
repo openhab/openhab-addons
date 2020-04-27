@@ -102,5 +102,4 @@ public class KostalInverterFactory extends BaseThingHandlerFactory {
     protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
         this.httpClient = null;
     }
-
 }

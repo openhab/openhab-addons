@@ -498,5 +498,4 @@ public class FreeboxApiManager {
             throw new FreeboxException("Computing the hmac-sha1 of the challenge and the app token failed", e);
         }
     }
-
 }

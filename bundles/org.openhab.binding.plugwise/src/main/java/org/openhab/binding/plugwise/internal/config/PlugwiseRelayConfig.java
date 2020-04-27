@@ -73,5 +73,4 @@ public class PlugwiseRelayConfig {
                 + ", temporarilyNotInNetwork=" + temporarilyNotInNetwork + ", updateConfiguration="
                 + updateConfiguration + "]";
     }
-
 }

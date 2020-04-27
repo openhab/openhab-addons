@@ -267,7 +267,8 @@
 		</parameter>
 		<parameter name="refresh" type="integer">
 			<label>Refresh Interval</label>
-			<description>Refresh interval for the temperature sensor (in seconds), default 300. If set to 0 or left empty, no refresh will be scheduled.</description>
+			<description>Refresh interval for the temperature sensor (in seconds), default 300. If set to 0 or left empty, no
+				refresh will be scheduled.</description>
 			<default>300</default>
 			<advanced>true</advanced>
 		</parameter>
@@ -334,7 +335,8 @@
 		</parameter>
 		<parameter name="refresh" type="integer">
 			<label>Refresh Interval</label>
-			<description>Refresh interval for the temperature sensor (in seconds), default 300. If set to 0 or left empty, no refresh will be scheduled.</description>
+			<description>Refresh interval for the temperature sensor (in seconds), default 300. If set to 0 or left empty, no
+				refresh will be scheduled.</description>
 			<default>300</default>
 			<advanced>true</advanced>
 		</parameter>

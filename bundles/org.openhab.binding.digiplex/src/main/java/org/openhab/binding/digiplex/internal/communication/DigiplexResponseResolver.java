@@ -214,5 +214,4 @@ public class DigiplexResponseResolver {
         }
         return new GenericEvent(eventGroup, eventNumber, areaNumber);
     }
-
 }

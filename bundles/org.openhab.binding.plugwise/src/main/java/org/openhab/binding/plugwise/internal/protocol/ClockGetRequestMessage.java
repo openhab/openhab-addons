@@ -27,5 +27,4 @@ public class ClockGetRequestMessage extends Message {
     public ClockGetRequestMessage(MACAddress macAddress) {
         super(CLOCK_GET_REQUEST, macAddress);
     }
-
 }

@@ -114,5 +114,4 @@ public class ChromecastHandlerFactory extends BaseThingHandlerFactory {
         ServiceRegistration<AudioSink> reg = audioSinkRegistrations.get(thing.getUID().toString());
         reg.unregister();
     }
-
 }

@@ -570,7 +570,6 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
         if (channel != null && isLinked(channel.getUID())) {
             updateState(channel.getUID(), state);
         }
-
     }
 
     /**

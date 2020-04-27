@@ -40,5 +40,4 @@ public class VelbusDimmerPacket extends VelbusPacket {
     protected byte[] getDataBytes() {
         return new byte[] { command, channel, percentage, dimspeedHighByte, dimspeedLowByte };
     }
-
 }

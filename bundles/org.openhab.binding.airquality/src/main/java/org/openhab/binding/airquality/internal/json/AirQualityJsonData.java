@@ -130,5 +130,4 @@ public class AirQualityJsonData {
     public String getDominentPol() {
         return dominentpol;
     }
-
 }

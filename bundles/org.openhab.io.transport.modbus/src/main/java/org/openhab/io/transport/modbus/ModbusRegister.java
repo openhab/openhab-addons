@@ -74,5 +74,4 @@ public interface ModbusRegister {
         }
         return buffer;
     }
-
 }

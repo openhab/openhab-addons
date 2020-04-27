@@ -53,5 +53,4 @@ public class DeviceInformationState implements Invalidateable {
         features.clear();
         properties.clear();
     }
-
 }

@@ -27,7 +27,7 @@
 	<channel-group-type id="printerStatus">
 		<label>Status</label>
 		<channels>
-			<channel id="status" typeId="status" />
+			<channel id="status" typeId="status"/>
 		</channels>
 	</channel-group-type>
 

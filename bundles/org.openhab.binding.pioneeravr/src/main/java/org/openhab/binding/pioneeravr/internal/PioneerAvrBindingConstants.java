@@ -45,26 +45,22 @@ public class PioneerAvrBindingConstants {
             Stream.of("SC-89", "SC-LX88", "SC-87", "SC-LX78", "SC-85", "SC-LX58", "SC-82", "SC-2024", "SC-81", "VSX-80")
                     .collect(Collectors.toSet()));
 
-    public static final Set<String> SUPPORTED_DEVICE_MODELS2016 = Collections.unmodifiableSet(
-            Stream.of("SC-99", "SC-LX89", "SC-97", "SC-LX79", "SC-95", "SC-LX59", "SC-92", "SC-91", "VSX-90", "VSX-45",
-            "VSX-830", "VSX-930", "VSX-1130")
-                    .collect(Collectors.toSet()));
+    public static final Set<String> SUPPORTED_DEVICE_MODELS2016 = Collections
+            .unmodifiableSet(Stream.of("SC-99", "SC-LX89", "SC-97", "SC-LX79", "SC-95", "SC-LX59", "SC-92", "SC-91",
+                    "VSX-90", "VSX-45", "VSX-830", "VSX-930", "VSX-1130").collect(Collectors.toSet()));
 
     public static final Set<String> SUPPORTED_DEVICE_MODELS2017 = Collections.unmodifiableSet(
             Stream.of("VSX-531", "VSX-531D", "VSX-831", "VSX-1131", "VSX-LX101", "VSX-LX301", "VSX-LX501")
                     .collect(Collectors.toSet()));
 
-    public static final Set<String> SUPPORTED_DEVICE_MODELS2018 = Collections.unmodifiableSet(
-            Stream.of("VSX-532", "VSX-832", "VSX-932", "VSX-LX102", "VSX-LX302", "VSX-LX502")
-                    .collect(Collectors.toSet()));
+    public static final Set<String> SUPPORTED_DEVICE_MODELS2018 = Collections.unmodifiableSet(Stream
+            .of("VSX-532", "VSX-832", "VSX-932", "VSX-LX102", "VSX-LX302", "VSX-LX502").collect(Collectors.toSet()));
 
     public static final Set<String> SUPPORTED_DEVICE_MODELS2019 = Collections.unmodifiableSet(
-            Stream.of("VSX-833", "VSX-933", "VSX-LX103", "VSX-LX303", "VSX-LX503")
-                    .collect(Collectors.toSet()));
+            Stream.of("VSX-833", "VSX-933", "VSX-LX103", "VSX-LX303", "VSX-LX503").collect(Collectors.toSet()));
 
-    public static final Set<String> SUPPORTED_DEVICE_MODELS2020 = Collections.unmodifiableSet(
-            Stream.of("VSX-534", "VSX-534D", "VSX-934", "VSX-LX104", "VSX-LX304", "VSX-LX504")
-                    .collect(Collectors.toSet()));
+    public static final Set<String> SUPPORTED_DEVICE_MODELS2020 = Collections.unmodifiableSet(Stream
+            .of("VSX-534", "VSX-534D", "VSX-934", "VSX-LX104", "VSX-LX304", "VSX-LX504").collect(Collectors.toSet()));
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID IP_AVR_THING_TYPE = new ThingTypeUID(BINDING_ID, "ipAvr");
@@ -108,5 +104,4 @@ public class PioneerAvrBindingConstants {
             IP_AVR_THING_TYPE2020, IP_AVR_THING_TYPE2019, IP_AVR_THING_TYPE2018, IP_AVR_THING_TYPE2017,
             IP_AVR_THING_TYPE2016, IP_AVR_THING_TYPE2015, IP_AVR_THING_TYPE2014, IP_AVR_UNSUPPORTED_THING_TYPE)
             .collect(Collectors.toSet());
-
 }

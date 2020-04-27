@@ -25,7 +25,7 @@ import io.github.hapjava.accessories.LockableLockMechanism;
 import io.github.hapjava.accessories.properties.LockMechanismState;
 
 /**
- * Implements the support of Lock accessories, mapping them to OpenHAB Switch type 
+ * Implements the support of Lock accessories, mapping them to OpenHAB Switch type
  *
  * @author blafois - Support for additional accessory type.
  *
@@ -101,5 +101,4 @@ public class HomekitLockImpl extends AbstractHomekitAccessoryImpl<SwitchItem> im
     public void unsubscribeTargetMechanismState() {
         getUpdater().unsubscribe(getItem());
     }
-
 }

@@ -23,14 +23,14 @@
 	<!-- Thing Types -->
 	<thing-type id="AM">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>PHC AM</label>
 		<description>Thing for an AM channel.</description>
 
 		<channel-groups>
-			<channel-group id="am" typeId="amChannels" />
+			<channel-group id="am" typeId="amChannels"/>
 		</channel-groups>
 
 		<config-description>
@@ -45,15 +45,15 @@
 
 	<thing-type id="EM">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>PHC EM</label>
 		<description>Thing for an EM channel.</description>
 
 		<channel-groups>
-			<channel-group id="em" typeId="emChannels" />
-			<channel-group id="emLed" typeId="amChannels" />
+			<channel-group id="em" typeId="emChannels"/>
+			<channel-group id="emLed" typeId="amChannels"/>
 		</channel-groups>
 
 		<config-description>
@@ -67,15 +67,15 @@
 
 	<thing-type id="JRM">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>PHC JRM</label>
 		<description>Thing for an JRM channel.</description>
 
 		<channel-groups>
-			<channel-group id="jrm" typeId="jrmChannels" />
-			<channel-group id="jrmT" typeId="jrmTimeChannels" />
+			<channel-group id="jrm" typeId="jrmChannels"/>
+			<channel-group id="jrmT" typeId="jrmTimeChannels"/>
 		</channel-groups>
 
 		<config-description>

@@ -43,5 +43,4 @@ public class EpromRequest extends Request {
     public String toString() {
         return "EpromRequest [getType()=" + getType() + ", entityType=" + entityType + ", entityId=" + entityId + "]";
     }
-
 }

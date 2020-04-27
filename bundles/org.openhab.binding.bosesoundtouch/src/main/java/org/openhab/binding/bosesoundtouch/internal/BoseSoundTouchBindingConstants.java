@@ -93,5 +93,4 @@ public class BoseSoundTouchBindingConstants {
     // Device information parameters;
     public static final String DEVICE_INFO_NAME = "INFO_NAME";
     public static final String DEVICE_INFO_TYPE = "INFO_TYPE";
-
 }

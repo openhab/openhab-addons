@@ -78,7 +78,6 @@ public class VeluxKLFAPI {
         public String toString() {
             return name;
         }
-
     }
 
     /**
@@ -352,7 +351,5 @@ public class VeluxKLFAPI {
                 return Command.UNDEFTYPE;
             }
         }
-
     }
-
 }

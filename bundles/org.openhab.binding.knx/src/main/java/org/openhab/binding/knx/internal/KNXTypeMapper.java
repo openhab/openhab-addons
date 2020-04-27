@@ -53,5 +53,4 @@ public interface KNXTypeMapper {
 
     @Nullable
     public Class<? extends Type> toTypeClass(@Nullable String dpt);
-
 }

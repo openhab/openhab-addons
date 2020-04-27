@@ -18,12 +18,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.gson.annotations.SerializedName;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link DWDRegion} class holds the internal data representation of each Region

@@ -120,7 +120,6 @@ public class Sensors implements RegistryChangeListener<Item> {
 
         HueSensorEntry sensor = new HueSensorEntry(element);
         cs.ds.sensors.put(hueID, sensor);
-
     }
 
     @Override

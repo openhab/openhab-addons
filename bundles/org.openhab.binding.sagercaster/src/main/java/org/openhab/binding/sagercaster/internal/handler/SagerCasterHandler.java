@@ -283,5 +283,4 @@ public class SagerCasterHandler extends BaseThingHandler {
             updateState(id, new DecimalType(value));
         }
     }
-
 }

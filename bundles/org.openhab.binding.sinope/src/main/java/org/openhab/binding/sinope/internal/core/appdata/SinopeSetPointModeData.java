@@ -54,5 +54,4 @@ public class SinopeSetPointModeData extends SinopeAppData {
     public void setSetPointMode(byte mode) {
         getData()[0] = mode;
     }
-
 }

@@ -1,24 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="bsblan" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="bsblan"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Parameter Thing Type -->
 	<thing-type id="parameter">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Parameter</label>
 		<description>Represents a single parameter available at the BSB-LAN device and identified by a numeric id.</description>
 
 		<channels>
-			<channel id="name" typeId="parameter_name" />
-			<channel id="number-value" typeId="parameter_number_value" />
-			<channel id="string-value" typeId="parameter_string_value" />
-			<channel id="switch-value" typeId="parameter_switch_value" />
-			<channel id="unit" typeId="parameter_unit" />
-			<channel id="description" typeId="parameter_description" />
-			<channel id="datatype" typeId="parameter_datatype" />
+			<channel id="name" typeId="parameter_name"/>
+			<channel id="number-value" typeId="parameter_number_value"/>
+			<channel id="string-value" typeId="parameter_string_value"/>
+			<channel id="switch-value" typeId="parameter_switch_value"/>
+			<channel id="unit" typeId="parameter_unit"/>
+			<channel id="description" typeId="parameter_description"/>
+			<channel id="datatype" typeId="parameter_datatype"/>
 		</channels>
 
 		<config-description>
@@ -62,7 +63,7 @@
 		<description>Value of the parameter</description>
 		<state readOnly="false"></state>
 	</channel-type>
-		<channel-type id="parameter_switch_value">
+	<channel-type id="parameter_switch_value">
 		<item-type>Switch</item-type>
 		<label>Value</label>
 		<description>Value of the parameter</description>

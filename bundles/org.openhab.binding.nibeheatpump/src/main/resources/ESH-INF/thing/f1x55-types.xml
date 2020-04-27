@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="nibeheatpump" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="nibeheatpump"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -665,7 +666,8 @@
 		<item-type>Number</item-type>
 		<label>External ERS 1 Accessory Relays</label>
 		<description>Indicates the status of the relays on the ERS accessory. The information is binary encoded. b0: K1,
-			b1: K2, b2: K3, b3: K4
+			b1:
+			K2, b2: K3, b3: K4
 		</description>
 		<state pattern="%d" readOnly="true">
 		</state>
@@ -905,7 +907,8 @@
 		<item-type>Number</item-type>
 		<label>Compressor Slow Down Reason</label>
 		<description>Bitmap telling the reason to why the compressor slows down. b0:inverter b1:brine b2:current b3:high
-			cond b4:hot gas b5:evaporator
+			cond
+			b4:hot gas b5:evaporator
 		</description>
 		<state pattern="%d" readOnly="true">
 		</state>
@@ -2087,7 +2090,8 @@
 		<item-type>Number</item-type>
 		<label>External ERS 4 Accessory Relays</label>
 		<description>Indicates the status of the relays on the ERS accessory. The information is binary encoded. b0: K1,
-			b1: K2, b2: K3, b3: K4
+			b1:
+			K2, b2: K3, b3: K4
 		</description>
 		<state pattern="%d" readOnly="true">
 		</state>
@@ -2096,7 +2100,8 @@
 		<item-type>Number</item-type>
 		<label>External ERS 3 Accessory Relays</label>
 		<description>Indicates the status of the relays on the ERS accessory. The information is binary encoded. b0: K1,
-			b1: K2, b2: K3, b3: K4
+			b1:
+			K2, b2: K3, b3: K4
 		</description>
 		<state pattern="%d" readOnly="true">
 		</state>
@@ -2105,7 +2110,8 @@
 		<item-type>Number</item-type>
 		<label>External ERS 2 Accessory Relays</label>
 		<description>Indicates the status of the relays on the ERS accessory. The information is binary encoded. b0: K1,
-			b1: K2, b2: K3, b3: K4
+			b1:
+			K2, b2: K3, b3: K4
 		</description>
 		<state pattern="%d" readOnly="true">
 		</state>
@@ -2303,7 +2309,8 @@
 		<item-type>Number</item-type>
 		<label>Degree Minutes (16 Bit)</label>
 		<description>Degree minutes, 16bit value (-32768 &lt; x &lt; 32767). Values outside valid values are rounded to
-			the closest valid value.
+			the
+			closest valid value.
 		</description>
 		<state min="-30000" max="30000" step="1" pattern="%.1f" readOnly="false">
 		</state>
@@ -2389,7 +2396,8 @@
 		<item-type>String</item-type>
 		<label>Prio</label>
 		<description>Indicates what heating action (HW/heat/pool) currently prioritised 10=Off 20=Hot Water 30=Heat
-			40=Pool 41=Pool 2 50=Transfer 60=Cooling
+			40=Pool
+			41=Pool 2 50=Transfer 60=Cooling
 		</description>
 		<state pattern="%d" readOnly="true">
 			<options>
@@ -2754,7 +2762,8 @@
 		<item-type>String</item-type>
 		<label>EB100-EP14 PCA Base Relays</label>
 		<description>Indicates active relays on the PCA Base card. Please refer to the wiring diagram for relay
-			description. Binary encoded. 1=on, 0=off. Bit0=K4,Bit1=K3,Bit2=K2,Bit3=K1
+			description.
+			Binary encoded. 1=on, 0=off. Bit0=K4,Bit1=K3,Bit2=K2,Bit3=K1
 		</description>
 		<state pattern="%d" readOnly="true">
 			<options>
@@ -3576,7 +3585,8 @@
 		<item-type>String</item-type>
 		<label>Language</label>
 		<description>Display language in the heat pump 0=English 1=Svenska 2=Deutsch 3=Francais 4=Espanol 5=Suomi
-			6=Lietuviu 7=Cesky 8=Polski 9=Nederlands 10=Norsk 11=Dansk 12=Eesti 13=Latviesu 16=Magyar
+			6=Lietuviu
+			7=Cesky 8=Polski 9=Nederlands 10=Norsk 11=Dansk 12=Eesti 13=Latviesu 16=Magyar
 		</description>
 		<state min="0" max="21" step="1" pattern="%d" readOnly="false">
 			<options>
@@ -3952,7 +3962,8 @@
 		<item-type>Number</item-type>
 		<label>FLM 1 Defrost</label>
 		<description>Minimum time between defrost in FLM 1|Minimum time between defrost in FLM 2|Minimum time between
-			defrost in FLM 3|Minimum time between defrost in FLM 4
+			defrost
+			in FLM 3|Minimum time between defrost in FLM 4
 		</description>
 		<state min="1" max="30" step="1" pattern="%d hrs" readOnly="false">
 		</state>
@@ -4264,7 +4275,8 @@
 		<item-type>Switch</item-type>
 		<label>Alarm Lower HW Temp.</label>
 		<description>Lowers the hot water temperature during red light alarms to notify the occupants of the building
-			that something is the matter 0=Off 1=On
+			that
+			something is the matter 0=Off 1=On
 		</description>
 		<state readOnly="false"></state>
 	</channel-type>
@@ -4402,7 +4414,8 @@
 		<item-type>String</item-type>
 		<label>Preset Flow Clim. Sys.</label>
 		<description>Preset flow setting for climate system. 0 = manual setting, 1 = radiator, 2 = floor heating, 3 =
-			radiator + floor heating.
+			radiator
+			+ floor heating.
 		</description>
 		<state min="0" max="3" step="1" pattern="%d" readOnly="false">
 			<options>
@@ -4593,7 +4606,8 @@
 		<item-type>Number</item-type>
 		<label>DM Diff Start Add.</label>
 		<description>The value below the last compressor step the degree minutes needed to be reached for the pump to
-			start electric addition
+			start
+			electric addition
 		</description>
 		<state min="-32767" max="32767" step="1" pattern="%d" readOnly="false">
 		</state>
@@ -4790,7 +4804,8 @@
 		<item-type>Switch</item-type>
 		<label>Cooling Use Mix. Valve S4</label>
 		<description>Sets if the valve should be used or not in cooling mode. Only applies if cooling is available in
-			the system
+			the
+			system
 		</description>
 		<state readOnly="false"></state>
 	</channel-type>
@@ -4798,7 +4813,8 @@
 		<item-type>Switch</item-type>
 		<label>Cooling Use Mix. Valve S3</label>
 		<description>Sets if the valve should be used or not in cooling mode. Only applies if cooling is available in
-			the system
+			the
+			system
 		</description>
 		<state readOnly="false"></state>
 	</channel-type>
@@ -4806,7 +4822,8 @@
 		<item-type>Switch</item-type>
 		<label>Cooling Use Mix. Valve S2</label>
 		<description>Sets if the valve should be used or not in cooling mode. Only applies if cooling is available in
-			the system
+			the
+			system
 		</description>
 		<state readOnly="false"></state>
 	</channel-type>
@@ -4814,7 +4831,8 @@
 		<item-type>Number</item-type>
 		<label>Cooling Use Mix. Valve S1</label>
 		<description>Sets if the valve should be used or not in cooling mode. Only applies if cooling is available in
-			the system
+			the
+			system
 		</description>
 		<state min="0" max="255" step="1" pattern="%d" readOnly="false">
 		</state>
@@ -5269,7 +5287,8 @@
 		<item-type>Switch</item-type>
 		<label>Cooling Use Mix. Valve S8</label>
 		<description>Sets if the valve should be used or not in cooling mode. Only applies if cooling is available in
-			the system
+			the
+			system
 		</description>
 		<state readOnly="false"></state>
 	</channel-type>
@@ -5277,7 +5296,8 @@
 		<item-type>Switch</item-type>
 		<label>Cooling Use Mix. Valve S7</label>
 		<description>Sets if the valve should be used or not in cooling mode. Only applies if cooling is available in
-			the system
+			the
+			system
 		</description>
 		<state readOnly="false"></state>
 	</channel-type>
@@ -5285,7 +5305,8 @@
 		<item-type>Switch</item-type>
 		<label>Cooling Use Mix. Valve S6</label>
 		<description>Sets if the valve should be used or not in cooling mode. Only applies if cooling is available in
-			the system
+			the
+			system
 		</description>
 		<state readOnly="false"></state>
 	</channel-type>
@@ -5293,7 +5314,8 @@
 		<item-type>Switch</item-type>
 		<label>Cooling Use Mix. Valve S5</label>
 		<description>Sets if the valve should be used or not in cooling mode. Only applies if cooling is available in
-			the system
+			the
+			system
 		</description>
 		<state readOnly="false"></state>
 	</channel-type>
@@ -5301,7 +5323,8 @@
 		<item-type>Switch</item-type>
 		<label>Heating Use Mix. Valve S8</label>
 		<description>Sets if the valve should be used or not in heating mode. Only applies if cooling is available in
-			the system. Otherwise the valve is always used in heating mode.
+			the
+			system. Otherwise the valve is always used in heating mode.
 		</description>
 		<state readOnly="false"></state>
 	</channel-type>
@@ -5309,7 +5332,8 @@
 		<item-type>Switch</item-type>
 		<label>Heating Use Mix. Valve S7</label>
 		<description>Sets if the valve should be used or not in heating mode. Only applies if cooling is available in
-			the system. Otherwise the valve is always used in heating mode.
+			the
+			system. Otherwise the valve is always used in heating mode.
 		</description>
 		<state readOnly="false"></state>
 	</channel-type>
@@ -5317,7 +5341,8 @@
 		<item-type>Switch</item-type>
 		<label>Heating Use Mix. Valve S6</label>
 		<description>Sets if the valve should be used or not in heating mode. Only applies if cooling is available in
-			the system. Otherwise the valve is always used in heating mode.
+			the
+			system. Otherwise the valve is always used in heating mode.
 		</description>
 		<state readOnly="false"></state>
 	</channel-type>
@@ -5325,7 +5350,8 @@
 		<item-type>Switch</item-type>
 		<label>Heating Use Mix. Valve S5</label>
 		<description>Sets if the valve should be used or not in heating mode. Only applies if cooling is available in
-			the system. Otherwise the valve is always used in heating mode.
+			the
+			system. Otherwise the valve is always used in heating mode.
 		</description>
 		<state readOnly="false"></state>
 	</channel-type>
@@ -5333,7 +5359,8 @@
 		<item-type>Switch</item-type>
 		<label>Heating Use Mix. Valve S4</label>
 		<description>Sets if the valve should be used or not in heating mode. Only applies if cooling is available in
-			the system. Otherwise the valve is always used in heating mode.
+			the
+			system. Otherwise the valve is always used in heating mode.
 		</description>
 		<state readOnly="false"></state>
 	</channel-type>
@@ -5341,7 +5368,8 @@
 		<item-type>Switch</item-type>
 		<label>Heating Use Mix. Valve S3</label>
 		<description>Sets if the valve should be used or not in heating mode. Only applies if cooling is available in
-			the system. Otherwise the valve is always used in heating mode.
+			the
+			system. Otherwise the valve is always used in heating mode.
 		</description>
 		<state readOnly="false"></state>
 	</channel-type>
@@ -5349,7 +5377,8 @@
 		<item-type>Switch</item-type>
 		<label>Heating Use Mix. Valve S2</label>
 		<description>Sets if the valve should be used or not in heating mode. Only applies if cooling is available in
-			the system. Otherwise the valve is always used in heating mode.
+			the
+			system. Otherwise the valve is always used in heating mode.
 		</description>
 		<state readOnly="false"></state>
 	</channel-type>
@@ -5357,7 +5386,8 @@
 		<item-type>Switch</item-type>
 		<label>Heating Use Mix. Valve S1</label>
 		<description>Sets if the valve should be used or not in heating mode. Only applies if cooling is available in
-			the system. Otherwise the valve is always used in heating mode.
+			the
+			system. Otherwise the valve is always used in heating mode.
 		</description>
 		<state readOnly="false"></state>
 	</channel-type>
@@ -6340,7 +6370,8 @@
 		<item-type>Switch</item-type>
 		<label>Smart Energy Source, Fixed Elec. Price From</label>
 		<description>Smart energy source, fixed electricity price part source, if spot electricity price are used. 0 =
-			fixed price. 1 = tariff.
+			fixed
+			price. 1 = tariff.
 		</description>
 		<state readOnly="false"></state>
 	</channel-type>
@@ -6355,7 +6386,8 @@
 		<item-type>Switch</item-type>
 		<label>Smart Energy Source, Shunt Add Price Source</label>
 		<description>Smart energy source, shunted addition price part source. From tariff or fixed price. 0 = fixed
-			price. 1 = tariff.
+			price. 1 =
+			tariff.
 		</description>
 		<state readOnly="false"></state>
 	</channel-type>

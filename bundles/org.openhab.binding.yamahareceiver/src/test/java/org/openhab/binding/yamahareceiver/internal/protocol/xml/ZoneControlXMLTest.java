@@ -12,16 +12,16 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
-import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-import org.openhab.binding.yamahareceiver.internal.state.ZoneControlState;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.openhab.binding.yamahareceiver.internal.TestModels.*;
 import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone.Main_Zone;
+
+import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.openhab.binding.yamahareceiver.internal.state.ZoneControlState;
 
 /**
  * Unit test for {@link ZoneControlXML}.
@@ -38,7 +38,8 @@ public class ZoneControlXMLTest extends AbstractZoneControlXMLTest {
         DeviceInformationXML deviceInformation = new DeviceInformationXML(con, deviceInformationState);
         deviceInformation.update();
 
-        subject = new ZoneControlXML(con, Main_Zone, zoneConfig, zoneControlStateListener, deviceInformationState, () -> inputConverter);
+        subject = new ZoneControlXML(con, Main_Zone, zoneConfig, zoneControlStateListener, deviceInformationState,
+                () -> inputConverter);
     }
 
     @Test
@@ -76,7 +77,6 @@ public class ZoneControlXMLTest extends AbstractZoneControlXMLTest {
         verify(con).send(eq("<Main_Zone><Volume><Mute>Off</Mute></Volume></Main_Zone>"));
     }
 
-
     @Test
     public void given_RX_V3900_when_mute_then_sendsProperCommand() throws Exception {
         given(RX_V3900);
@@ -98,7 +98,8 @@ public class ZoneControlXMLTest extends AbstractZoneControlXMLTest {
         subject.setVolumeDB(-2);
 
         // then
-        verify(con).send(eq("<Main_Zone><Volume><Lvl><Val>-20</Val><Exp>1</Exp><Unit>dB</Unit></Lvl></Volume></Main_Zone>"));
+        verify(con).send(
+                eq("<Main_Zone><Volume><Lvl><Val>-20</Val><Exp>1</Exp><Unit>dB</Unit></Lvl></Volume></Main_Zone>"));
     }
 
     @Test
@@ -140,7 +141,8 @@ public class ZoneControlXMLTest extends AbstractZoneControlXMLTest {
         subject.setSurroundProgram("Adventure");
 
         // then
-        verify(con).send(eq("<Main_Zone><Surround><Program_Sel><Current><Sound_Program>Adventure</Sound_Program></Current></Program_Sel></Surround></Main_Zone>"));
+        verify(con).send(eq(
+                "<Main_Zone><Surround><Program_Sel><Current><Sound_Program>Adventure</Sound_Program></Current></Program_Sel></Surround></Main_Zone>"));
     }
 
     @Test
@@ -151,9 +153,9 @@ public class ZoneControlXMLTest extends AbstractZoneControlXMLTest {
         subject.setSurroundProgram("Adventure");
 
         // then
-        verify(con).send(eq("<Main_Zone><Surr><Pgm_Sel><Straight>Off</Straight><Pgm>Adventure</Pgm></Pgm_Sel></Surr></Main_Zone>"));
+        verify(con).send(eq(
+                "<Main_Zone><Surr><Pgm_Sel><Straight>Off</Straight><Pgm>Adventure</Pgm></Pgm_Sel></Surr></Main_Zone>"));
     }
-
 
     @Test
     public void given_RX_S601D_when_surroundProgramStraight_then_sendsProperCommand() throws Exception {
@@ -163,7 +165,8 @@ public class ZoneControlXMLTest extends AbstractZoneControlXMLTest {
         subject.setSurroundProgram("Straight");
 
         // then
-        verify(con).send(eq("<Main_Zone><Surround><Program_Sel><Current><Straight>On</Straight></Current></Program_Sel></Surround></Main_Zone>"));
+        verify(con).send(eq(
+                "<Main_Zone><Surround><Program_Sel><Current><Straight>On</Straight></Current></Program_Sel></Surround></Main_Zone>"));
     }
 
     @Test
@@ -185,7 +188,8 @@ public class ZoneControlXMLTest extends AbstractZoneControlXMLTest {
         subject.setDialogueLevel(10);
 
         // then
-        verify(con).send(eq("<Main_Zone><Sound_Video><Dialogue_Adjust><Dialogue_Lvl>10</Dialogue_Lvl></Dialogue_Adjust></Sound_Video></Main_Zone>"));
+        verify(con).send(eq(
+                "<Main_Zone><Sound_Video><Dialogue_Adjust><Dialogue_Lvl>10</Dialogue_Lvl></Dialogue_Adjust></Sound_Video></Main_Zone>"));
     }
 
     @Test

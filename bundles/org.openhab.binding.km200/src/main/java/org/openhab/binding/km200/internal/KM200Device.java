@@ -188,7 +188,6 @@ public class KM200Device {
         logger.debug("readable;writeable;recordable;virtual;type;service;value;allowed;min;max;unit");
         printAllServices(serviceTreeMap);
         logger.debug("##################################################################");
-
     }
 
     /**

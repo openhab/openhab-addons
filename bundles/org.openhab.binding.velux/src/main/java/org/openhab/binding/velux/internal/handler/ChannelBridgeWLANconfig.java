@@ -86,5 +86,4 @@ final class ChannelBridgeWLANconfig extends ChannelHandlerTemplate {
         LOGGER.trace("handleRefresh() returns {}.", newState);
         return newState;
     }
-
 }

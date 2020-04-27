@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="netatmo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="netatmo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="NAWelcomeHome">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="netatmoapi" />
+			<bridge-type-ref id="netatmoapi"/>
 		</supported-bridge-type-refs>
 
 		<label>Welcome Home</label>
@@ -34,7 +35,7 @@
 		</channels>
 
 		<representation-property>id</representation-property>
-		<config-description-ref uri="thing-type:netatmo:welcomehome" />
+		<config-description-ref uri="thing-type:netatmo:welcomehome"/>
 	</thing-type>
 
 	<channel-type id="homecity">
@@ -99,12 +100,12 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="snapshot" >
+	<channel-type id="snapshot">
 		<item-type>Image</item-type>
 		<label>Event Snapshot</label>
 		<description>Event Snapshot</description>
 		<state readOnly="true"></state>
-	</channel-type>  
+	</channel-type>
 
 	<channel-type id="video_url" advanced="true">
 		<item-type>String</item-type>

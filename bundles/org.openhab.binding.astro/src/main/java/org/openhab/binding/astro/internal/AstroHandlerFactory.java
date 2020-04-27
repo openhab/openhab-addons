@@ -95,5 +95,4 @@ public class AstroHandlerFactory extends BaseThingHandlerFactory {
     protected void unsetCronScheduler(CronScheduler scheduler) {
         this.scheduler = null;
     }
-
 }

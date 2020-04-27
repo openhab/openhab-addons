@@ -379,5 +379,4 @@ public abstract class DSCAlarmBaseThingHandler extends BaseThingHandler {
             logger.debug("setPanelMessage(): Panel Message Set to - {}", message);
         }
     }
-
 }

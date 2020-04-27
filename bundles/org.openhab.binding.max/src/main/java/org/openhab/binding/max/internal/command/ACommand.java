@@ -28,5 +28,4 @@ public class ACommand extends CubeCommand {
     public String getReturnStrings() {
         return "A:";
     }
-
 }

@@ -41,6 +41,5 @@ public class JsonExchangeTokenResponse {
         public @Nullable String Expires;
         public @Nullable Boolean HttpOnly;
         public @Nullable String Name;
-
     }
 }

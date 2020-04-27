@@ -32,5 +32,4 @@ public class SenseBoxLoc {
     public void setGeometry(SenseBoxGeometry geometry) {
         this.geometry = geometry;
     }
-
 }

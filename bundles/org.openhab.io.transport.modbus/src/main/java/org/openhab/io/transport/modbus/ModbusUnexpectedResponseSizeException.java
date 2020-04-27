@@ -30,7 +30,6 @@ public class ModbusUnexpectedResponseSizeException extends ModbusTransportExcept
     public ModbusUnexpectedResponseSizeException(int requestSize, int responseSize) {
         this.requestSize = requestSize;
         this.responseSize = responseSize;
-
     }
 
     @Override
@@ -44,5 +43,4 @@ public class ModbusUnexpectedResponseSizeException extends ModbusTransportExcept
         return String.format("ModbusUnexpectedResponseSizeException(requestFunctionCode=%d, responseFunctionCode=%d)",
                 requestSize, responseSize);
     }
-
 }

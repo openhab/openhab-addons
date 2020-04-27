@@ -7,12 +7,12 @@
 		<item-type>DateTime</item-type>
 		<label>Last Reading</label>
 		<description>The last time that the current meter has been read.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="last_refresh_date">
 		<item-type>DateTime</item-type>
 		<label>Last Refresh</label>
 		<description>The last time that the thing has been refreshed.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>
