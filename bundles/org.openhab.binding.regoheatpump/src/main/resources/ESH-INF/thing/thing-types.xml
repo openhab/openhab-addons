@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="regoheatpump"
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-		xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Manage Rego 6xx based Heat Pump over IP -->
 	<thing-type id="ipRego6xx">
@@ -10,13 +10,13 @@
 		<description>Manage Rego 6xx based heat pump over TCP/IP</description>
 
 		<channel-groups>
-			<channel-group id="sensorValues" typeId="sensorValues" />
-			<channel-group id="controlData" typeId="controlData" />
-			<channel-group id="deviceValues" typeId="deviceValues" />
-			<channel-group id="settings" typeId="settings" />
-			<channel-group id="frontPanel" typeId="frontPanel" />
-			<channel-group id="status" typeId="status" />
-			<channel-group id="operatingTimes" typeId="operatingTimes" />
+			<channel-group id="sensorValues" typeId="sensorValues"/>
+			<channel-group id="controlData" typeId="controlData"/>
+			<channel-group id="deviceValues" typeId="deviceValues"/>
+			<channel-group id="settings" typeId="settings"/>
+			<channel-group id="frontPanel" typeId="frontPanel"/>
+			<channel-group id="status" typeId="status"/>
+			<channel-group id="operatingTimes" typeId="operatingTimes"/>
 		</channel-groups>
 
 		<config-description>
@@ -44,13 +44,13 @@
 		<description>Manage Rego 6xx based heat pump over serial port</description>
 
 		<channel-groups>
-			<channel-group id="sensorValues" typeId="sensorValues" />
-			<channel-group id="controlData" typeId="controlData" />
-			<channel-group id="deviceValues" typeId="deviceValues" />
-			<channel-group id="settings" typeId="settings" />
-			<channel-group id="frontPanel" typeId="frontPanel" />
-			<channel-group id="status" typeId="status" />
-			<channel-group id="operatingTimes" typeId="operatingTimes" />
+			<channel-group id="sensorValues" typeId="sensorValues"/>
+			<channel-group id="controlData" typeId="controlData"/>
+			<channel-group id="deviceValues" typeId="deviceValues"/>
+			<channel-group id="settings" typeId="settings"/>
+			<channel-group id="frontPanel" typeId="frontPanel"/>
+			<channel-group id="status" typeId="status"/>
+			<channel-group id="operatingTimes" typeId="operatingTimes"/>
 		</channel-groups>
 
 		<config-description>
@@ -73,10 +73,10 @@
 		<description>Access heat pump over Husdata interface connected via TCP/IP</description>
 
 		<channel-groups>
-			<channel-group id="sensorValues" typeId="sensorValues" />
-			<channel-group id="controlData" typeId="controlData" />
-			<channel-group id="deviceValues" typeId="deviceValues" />
-			<channel-group id="settings" typeId="settings" />
+			<channel-group id="sensorValues" typeId="sensorValues"/>
+			<channel-group id="controlData" typeId="controlData"/>
+			<channel-group id="deviceValues" typeId="deviceValues"/>
+			<channel-group id="settings" typeId="settings"/>
 		</channel-groups>
 
 		<config-description>
@@ -99,10 +99,10 @@
 		<description>Access heat pump over Husdata interface connected via serial port</description>
 
 		<channel-groups>
-			<channel-group id="sensorValues" typeId="sensorValues" />
-			<channel-group id="controlData" typeId="controlData" />
-			<channel-group id="deviceValues" typeId="deviceValues" />
-			<channel-group id="settings" typeId="settings" />
+			<channel-group id="sensorValues" typeId="sensorValues"/>
+			<channel-group id="controlData" typeId="controlData"/>
+			<channel-group id="deviceValues" typeId="deviceValues"/>
+			<channel-group id="settings" typeId="settings"/>
 		</channel-groups>
 
 		<config-description>
@@ -567,7 +567,8 @@
 	<channel-type id="adjCurveAt20" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Adjust Heat Curve At 20 °C</label>
-		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to
+			be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
 		<category>Temperature</category>
 		<state step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -575,7 +576,8 @@
 	<channel-type id="adjCurveAt15" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Adjust Heat Curve At 15 °C</label>
-		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to
+			be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
 		<category>Temperature</category>
 		<state step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -583,7 +585,8 @@
 	<channel-type id="adjCurveAt10" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Adjust Heat Curve At 10 °C</label>
-		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to
+			be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
 		<category>Temperature</category>
 		<state step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -591,7 +594,8 @@
 	<channel-type id="adjCurveAt5" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Adjust Heat Curve At 5 °C</label>
-		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to
+			be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
 		<category>Temperature</category>
 		<state step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -599,7 +603,8 @@
 	<channel-type id="adjCurveAt0" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Adjust Heat Curve At 0 °C</label>
-		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to
+			be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
 		<category>Temperature</category>
 		<state step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -607,7 +612,8 @@
 	<channel-type id="adjCurveAtMinus5" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Adjust Heat Curve At -5 °C</label>
-		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to
+			be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
 		<category>Temperature</category>
 		<state step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -615,7 +621,8 @@
 	<channel-type id="adjCurveAtMinus10" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Adjust Heat Curve At -10 °C</label>
-		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to
+			be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
 		<category>Temperature</category>
 		<state step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -623,7 +630,8 @@
 	<channel-type id="adjCurveAtMinus15" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Adjust Heat Curve At -15 °C</label>
-		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to
+			be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
 		<category>Temperature</category>
 		<state step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -631,7 +639,8 @@
 	<channel-type id="adjCurveAtMinus20" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Adjust Heat Curve At -20 °C</label>
-		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to
+			be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
 		<category>Temperature</category>
 		<state step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -639,7 +648,8 @@
 	<channel-type id="adjCurveAtMinus25" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Adjust Heat Curve At -25 °C</label>
-		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to
+			be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
 		<category>Temperature</category>
 		<state step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -647,7 +657,8 @@
 	<channel-type id="adjCurveAtMinus30" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Adjust Heat Curve At -30 °C</label>
-		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to
+			be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
 		<category>Temperature</category>
 		<state step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -655,7 +666,8 @@
 	<channel-type id="adjCurveAtMinus35" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Adjust Heat Curve At -35 °C</label>
-		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to
+			be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
 		<category>Temperature</category>
 		<state step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -794,7 +806,8 @@
 	<channel-type id="summerDisconnection" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Summer Disconnection</label>
-		<description>The function means the heat pump only produces hot water when the outdoor temperature rises above the set value</description>
+		<description>The function means the heat pump only produces hot water when the outdoor temperature rises above the set
+			value</description>
 		<category>Temperature</category>
 		<state min="10" max="30" step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>

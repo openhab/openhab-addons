@@ -37,5 +37,4 @@ public class LinkyBindingConstants {
     public static final String LAST_MONTH = "monthly#lastMonth";
     public static final String THIS_YEAR = "yearly#thisYear";
     public static final String LAST_YEAR = "yearly#lastYear";
-
 }

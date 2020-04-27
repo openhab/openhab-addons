@@ -51,5 +51,4 @@ public class AirQualityHandlerFactory extends BaseThingHandlerFactory {
 
         return null;
     }
-
 }

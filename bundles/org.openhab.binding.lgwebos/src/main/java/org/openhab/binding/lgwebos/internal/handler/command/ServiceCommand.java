@@ -98,5 +98,4 @@ public class ServiceCommand<T> {
     public String toString() {
         return "ServiceCommand [type=" + type + ", target=" + target + ", payload=" + payload + "]";
     }
-
 }

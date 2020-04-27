@@ -21,5 +21,4 @@ public interface PowerStateValues {
     public static final String ON_VALUE = "0";
     public static final String OFF_VALUE = "1";
     public static final String NETWORK_STANDBY_VALUE = "2";
-
 }

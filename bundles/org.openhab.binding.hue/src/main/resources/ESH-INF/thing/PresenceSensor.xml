@@ -6,17 +6,17 @@
 	<!-- Hue Presence Sensor -->
 	<thing-type id="0107">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Hue Presence Sensor</label>
 		<description>A motion sensor providing presence detection.</description>
 
 		<channels>
-			<channel id="presence" typeId="system.motion" />
-			<channel id="last_updated" typeId="last_updated" />
-			<channel id="battery_level" typeId="system.battery-level" />
-			<channel id="battery_low" typeId="system.low-battery" />
+			<channel id="presence" typeId="system.motion"/>
+			<channel id="last_updated" typeId="last_updated"/>
+			<channel id="battery_level" typeId="system.battery-level"/>
+			<channel id="battery_low" typeId="system.low-battery"/>
 		</channels>
 
 		<representation-property>uniqueId</representation-property>
@@ -33,7 +33,8 @@
 			</parameter>
 			<parameter name="ledindication" type="boolean">
 				<label>LED Indication</label>
-				<description>Turns device LED during normal operation on or off. Devices might still indicate exceptional operation (Reset, SW Update, Battery Low).</description>
+				<description>Turns device LED during normal operation on or off. Devices might still indicate exceptional operation
+					(Reset, SW Update, Battery Low).</description>
 			</parameter>
 			<parameter name="sensitivity" type="integer" min="0" step="1">
 				<label>Sensitivity</label>

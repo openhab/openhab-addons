@@ -36,5 +36,4 @@ public class Co2SensorDevice extends AbstractNumericValueDevice {
         DecimalType value = (DecimalType) item.getStateAs(DecimalType.class);
         addParam(new NumericValueParam(ParamType.CO2_VALUE, getUnit(), value));
     }
-
 }

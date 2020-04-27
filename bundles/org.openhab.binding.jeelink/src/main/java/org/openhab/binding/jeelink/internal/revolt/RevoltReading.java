@@ -41,8 +41,8 @@ public class RevoltReading implements Reading {
 
     @Override
     public String toString() {
-        return "sensorId=" + sensorId + ": voltage=" + voltage + ", current=" + current + ", frequency=" + frequency + 
-                ", power=" + power + ", powerFact=" + powerFact + ", consumption=" + consumption;
+        return "sensorId=" + sensorId + ": voltage=" + voltage + ", current=" + current + ", frequency=" + frequency
+                + ", power=" + power + ", powerFact=" + powerFact + ", consumption=" + consumption;
     }
 
     @Override

@@ -32,7 +32,6 @@ public class ShutterAction extends Action {
     private static final String CONSTANT = "Constant";
     private static final String NAMESPACE_COSIP = "CosipDevices.RWE";
 
-
     /**
      * Describes a Shutteraction
      *

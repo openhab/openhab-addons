@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
 import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Inputs.*;
 import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLConstants.Commands.ZONE_INPUT_QUERY;
+
+import org.junit.Test;
 
 /**
  * Unit test for {@link InputConverterXML}.
@@ -32,7 +32,8 @@ public class InputConverterXMLTest extends AbstractXMLProtocolTest {
         super.onSetUp();
 
         ctx.prepareForModel("HTR-4069");
-        ctx.respondWith(String.format("<Main_Zone>%s</Main_Zone>", ZONE_INPUT_QUERY), "Main_Zone_Input_Input_Sel_Item.xml");
+        ctx.respondWith(String.format("<Main_Zone>%s</Main_Zone>", ZONE_INPUT_QUERY),
+                "Main_Zone_Input_Input_Sel_Item.xml");
     }
 
     @Test
@@ -84,5 +85,4 @@ public class InputConverterXMLTest extends AbstractXMLProtocolTest {
         assertEquals("HDMI 1", hdmi1);
         assertEquals("BLUETOOTH", bluetooth);
     }
-
 }

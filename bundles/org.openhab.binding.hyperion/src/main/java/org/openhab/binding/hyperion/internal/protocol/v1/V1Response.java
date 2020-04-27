@@ -48,5 +48,4 @@ public class V1Response {
     public V1Info getInfo() {
         return info;
     }
-
 }

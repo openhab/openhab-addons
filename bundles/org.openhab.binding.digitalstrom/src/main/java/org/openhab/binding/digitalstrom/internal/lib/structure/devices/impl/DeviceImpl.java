@@ -1801,7 +1801,6 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
                 }
             }
         }
-
     }
 
     @Override

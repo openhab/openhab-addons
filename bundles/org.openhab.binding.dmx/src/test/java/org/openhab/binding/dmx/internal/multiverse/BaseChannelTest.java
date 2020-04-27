@@ -107,5 +107,4 @@ public class BaseChannelTest {
         assertThat(channelList.get(3).toString(), is(equalTo("2:102")));
         assertThat(channelList.get(4).toString(), is(equalTo("2:426")));
     }
-
 }

@@ -7,15 +7,15 @@
 	<thing-type id="x10">
 
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="serial" />
-			<bridge-type-ref id="ip" />
+			<bridge-type-ref id="serial"/>
+			<bridge-type-ref id="ip"/>
 		</supported-bridge-type-refs>
 
 		<label>X10 Device</label>
 		<description>This thing represents a physical X10 device.</description>
 
 		<channels>
-			<channel id="x10_status" typeId="x10_status" />
+			<channel id="x10_status" typeId="x10_status"/>
 		</channels>
 
 		<config-description>

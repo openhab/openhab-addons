@@ -6,13 +6,14 @@
 
 	<thing-type id="homie300">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="broker" />
-			<bridge-type-ref id="systemBroker" />
+			<bridge-type-ref id="broker"/>
+			<bridge-type-ref id="systemBroker"/>
 		</supported-bridge-type-refs>
 		<label>Homie MQTT Device</label>
-		<description>You need a configured Broker first. This thing represents a device, that follows the "MQTT Homie Convention" (Version 3.x).</description>
+		<description>You need a configured Broker first. This thing represents a device, that follows the "MQTT Homie
+			Convention" (Version 3.x).</description>
 		<properties>
-			<property name="homieversion" />
+			<property name="homieversion"/>
 		</properties>
 		<config-description>
 			<parameter name="deviceid" type="text" required="true">

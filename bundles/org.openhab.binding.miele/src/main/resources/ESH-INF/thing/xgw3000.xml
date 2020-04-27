@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="miele" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="miele"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -22,7 +23,8 @@
 			<parameter name="interface" type="text">
 				<context>network-address</context>
 				<label>Network Address of the Multicast Interface</label>
-				<description>Network address of openHAB host interface where the binding will listen for multicast events coming from the Miele@home gateway</description>
+				<description>Network address of openHAB host interface where the binding will listen for multicast events coming
+					from the Miele@home gateway</description>
 				<required>true</required>
 			</parameter>
 			<parameter name="userName" type="text">

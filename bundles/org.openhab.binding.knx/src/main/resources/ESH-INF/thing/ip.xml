@@ -36,7 +36,8 @@
 			</parameter>
 			<parameter name="localSourceAddr" type="text">
 				<label>Local Device Address</label>
-				<description>The Physical Address (Individual Address) in x.y.z notation for identification of this KNX/IP gateway within the KNX bus</description>
+				<description>The Physical Address (Individual Address) in x.y.z notation for identification of this KNX/IP gateway
+					within the KNX bus</description>
 				<default>0.0.0</default>
 			</parameter>
 			<parameter name="useNAT" type="boolean">
@@ -60,7 +61,7 @@
 				<description>Limits the read retries while initialization from the KNX bus</description>
 				<default>3</default>
 			</parameter>
-			<parameter name="autoReconnectPeriod" type="integer" >
+			<parameter name="autoReconnectPeriod" type="integer">
 				<label>Auto Reconnect Period</label>
 				<description>Seconds between connection retries when KNX link has been lost, 0 means never retry, minimum 30s</description>
 				<default>60</default>

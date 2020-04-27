@@ -437,5 +437,4 @@ public interface SysteminfoInterface {
      * @throws DeviceNotFoundException - thrown if process with this PID can not be found
      */
     public @Nullable DecimalType getProcessThreads(int pid) throws DeviceNotFoundException;
-
 }

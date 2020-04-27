@@ -49,5 +49,4 @@ public class OrviboHandlerFactory extends BaseThingHandlerFactory {
         }
         return null;
     }
-
 }

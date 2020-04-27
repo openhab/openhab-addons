@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="plugwise" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="plugwise"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="switch">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="stick" />
+			<bridge-type-ref id="stick"/>
 		</supported-bridge-type-refs>
 		<label>Plugwise Switch</label>
 		<description>A wireless wall switch</description>
 		<channels>
-			<channel id="lastseen" typeId="lastseen" />
-			<channel id="leftbuttonstate" typeId="leftbuttonstate" />
-			<channel id="rightbuttonstate" typeId="rightbuttonstate" />
+			<channel id="lastseen" typeId="lastseen"/>
+			<channel id="leftbuttonstate" typeId="leftbuttonstate"/>
+			<channel id="rightbuttonstate" typeId="rightbuttonstate"/>
 		</channels>
 		<representation-property>macAddress</representation-property>
-		<config-description-ref uri="thing-type:plugwise:switch" />
+		<config-description-ref uri="thing-type:plugwise:switch"/>
 	</thing-type>
 
 </thing:thing-descriptions>

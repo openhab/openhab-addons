@@ -54,5 +54,4 @@ public class SunspecDiscoveryParticipant implements ModbusDiscoveryParticipant {
             listener.discoveryFinished();
         }
     }
-
 }

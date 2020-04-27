@@ -70,5 +70,4 @@ public class XmlTVDiscoveryService extends AbstractDiscoveryService {
             }
         }
     }
-
 }

@@ -91,5 +91,4 @@ public class RtsDeviceHandler extends BaseThingHandler {
 
         }
     }
-
 }

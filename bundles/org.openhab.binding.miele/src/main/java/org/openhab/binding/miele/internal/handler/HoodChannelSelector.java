@@ -64,8 +64,7 @@ public enum HoodChannelSelector implements ApplianceChannelSelector {
     private final Class<? extends Type> typeClass;
     private final boolean isProperty;
 
-    HoodChannelSelector(String propertyID, String channelID, Class<? extends Type> typeClass,
-            boolean isProperty) {
+    HoodChannelSelector(String propertyID, String channelID, Class<? extends Type> typeClass, boolean isProperty) {
         this.mieleID = propertyID;
         this.channelID = channelID;
         this.typeClass = typeClass;

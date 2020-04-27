@@ -146,5 +146,4 @@ public class Heater {
     public void setPowerStatus(final boolean powerStatus) {
         this.powerStatus = powerStatus;
     }
-
 }

@@ -104,5 +104,4 @@ public abstract class AbstractAggregateDataResponsePrivateApi implements DataRes
         }
         targetMap.put(channel, result);
     }
-
 }

@@ -58,5 +58,4 @@ public class MelCloudHandlerFactory extends BaseThingHandlerFactory {
 
         return null;
     }
-
 }

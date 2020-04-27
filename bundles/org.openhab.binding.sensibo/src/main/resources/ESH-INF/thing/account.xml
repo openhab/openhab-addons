@@ -7,7 +7,7 @@
 	<bridge-type id="account">
 		<label>Sensibo API</label>
 		<description>This bridge represents the gateway to Sensibo API</description>
-		<config-description-ref uri="thing-type:sensibo:account" />
+		<config-description-ref uri="thing-type:sensibo:account"/>
 	</bridge-type>
 
 </thing:thing-descriptions>

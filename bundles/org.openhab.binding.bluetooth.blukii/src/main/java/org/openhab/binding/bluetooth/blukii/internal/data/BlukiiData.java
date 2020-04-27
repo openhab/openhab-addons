@@ -42,5 +42,4 @@ public class BlukiiData {
         return "BlukiiData [battery=" + battery + ", magnetometer=" + magnetometer + ", environment=" + environment
                 + ", accelerometer=" + accelerometer + "]";
     }
-
 }

@@ -113,5 +113,4 @@ public class SilvercrestWifiSocketDiscoveryService extends AbstractDiscoveryServ
     public SilvercrestWifiSocketMediator getMediator() {
         return this.mediator;
     }
-
 }

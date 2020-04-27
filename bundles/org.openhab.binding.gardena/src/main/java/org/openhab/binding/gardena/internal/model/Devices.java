@@ -30,5 +30,4 @@ public class Devices {
     public List<Device> getDevices() {
         return devices;
     }
-
 }

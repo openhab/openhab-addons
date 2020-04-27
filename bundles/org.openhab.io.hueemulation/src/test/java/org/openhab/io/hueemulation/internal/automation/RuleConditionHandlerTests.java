@@ -56,7 +56,6 @@ public class RuleConditionHandlerTests {
 
         public HueRuleConditionHandlerEx(Condition module, HueDataStore ds) {
             super(module, ds);
-
         }
 
         @Override
@@ -211,5 +210,4 @@ public class RuleConditionHandlerTests {
         subject = new HueRuleConditionHandler(c, ds);
         assertThat(subject.isSatisfied(context), is(true));
     }
-
 }

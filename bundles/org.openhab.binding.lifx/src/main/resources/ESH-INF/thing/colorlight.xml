@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="lifx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="lifx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="colorlight">
 		<label>LIFX Color Light</label>
 		<channels>
-			<channel id="color" typeId="color" />
-			<channel id="temperature" typeId="temperature" />
-			<channel id="signalstrength" typeId="system.signal-strength" />
+			<channel id="color" typeId="color"/>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="signalstrength" typeId="system.signal-strength"/>
 		</channels>
 		<representation-property>macAddress</representation-property>
-		<config-description-ref uri="thing-type:lifx:light" />
+		<config-description-ref uri="thing-type:lifx:light"/>
 	</thing-type>
 
 </thing:thing-descriptions>

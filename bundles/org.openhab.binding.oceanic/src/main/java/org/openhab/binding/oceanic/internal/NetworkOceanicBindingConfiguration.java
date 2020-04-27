@@ -20,5 +20,4 @@ public class NetworkOceanicBindingConfiguration {
     public String ipAddress;
     public Integer portNumber;
     public Integer interval;
-
 }

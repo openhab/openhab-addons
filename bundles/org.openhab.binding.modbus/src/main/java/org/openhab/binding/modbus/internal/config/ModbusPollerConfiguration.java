@@ -116,5 +116,4 @@ public class ModbusPollerConfiguration {
     public void setCacheMillis(long cacheMillis) {
         this.cacheMillis = cacheMillis;
     }
-
 }

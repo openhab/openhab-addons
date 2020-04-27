@@ -28,5 +28,4 @@ public class ResumeAction extends BaseAction {
         channel.resumeAction();
         return channel.getNewHiResValue(currentTime);
     }
-
 }

@@ -9,28 +9,28 @@
 		<description>This bridge represents the IP connection to the alarm system.</description>
 
 		<channels>
-			<channel id="system_status" typeId="system_status" />
-			<channel id="system_armed" typeId="system_armed" />
-			<channel id="arm_mode" typeId="arm_mode" />
-			<channel id="alarm_active" typeId="alarm_active" />
-			<channel id="ready" typeId="ready" />
-			<channel id="with_zones_bypassed" typeId="with_zones_bypassed" />
-			<channel id="trouble" typeId="trouble" />
-			<channel id="alert_in_memory" typeId="alert_in_memory" />
-			<channel id="pgm_status" typeId="pgm_status" />
-			<channel id="mode" typeId="mode" />
-			<channel id="event_log_1" typeId="event_log" />
-			<channel id="event_log_2" typeId="event_log" />
-			<channel id="event_log_3" typeId="event_log" />
-			<channel id="event_log_4" typeId="event_log" />
-			<channel id="event_log_5" typeId="event_log" />
-			<channel id="event_log_6" typeId="event_log" />
-			<channel id="event_log_7" typeId="event_log" />
-			<channel id="event_log_8" typeId="event_log" />
-			<channel id="event_log_9" typeId="event_log" />
-			<channel id="event_log_10" typeId="event_log" />
-			<channel id="update_event_logs" typeId="update_event_logs" />
-			<channel id="download_setup" typeId="download_setup" />
+			<channel id="system_status" typeId="system_status"/>
+			<channel id="system_armed" typeId="system_armed"/>
+			<channel id="arm_mode" typeId="arm_mode"/>
+			<channel id="alarm_active" typeId="alarm_active"/>
+			<channel id="ready" typeId="ready"/>
+			<channel id="with_zones_bypassed" typeId="with_zones_bypassed"/>
+			<channel id="trouble" typeId="trouble"/>
+			<channel id="alert_in_memory" typeId="alert_in_memory"/>
+			<channel id="pgm_status" typeId="pgm_status"/>
+			<channel id="mode" typeId="mode"/>
+			<channel id="event_log_1" typeId="event_log"/>
+			<channel id="event_log_2" typeId="event_log"/>
+			<channel id="event_log_3" typeId="event_log"/>
+			<channel id="event_log_4" typeId="event_log"/>
+			<channel id="event_log_5" typeId="event_log"/>
+			<channel id="event_log_6" typeId="event_log"/>
+			<channel id="event_log_7" typeId="event_log"/>
+			<channel id="event_log_8" typeId="event_log"/>
+			<channel id="event_log_9" typeId="event_log"/>
+			<channel id="event_log_10" typeId="event_log"/>
+			<channel id="update_event_logs" typeId="update_event_logs"/>
+			<channel id="download_setup" typeId="download_setup"/>
 		</channels>
 
 		<properties>
@@ -65,7 +65,8 @@
 			<parameter name="pinCode" type="text" required="false">
 				<context>password</context>
 				<label>PIN Code</label>
-				<description>The PIN code to use for arming/disarming the alarm system from openHAB. Not required except when Powerlink mode cannot be used.</description>
+				<description>The PIN code to use for arming/disarming the alarm system from openHAB. Not required except when
+					Powerlink mode cannot be used.</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="forceStandardMode" type="boolean" required="false">

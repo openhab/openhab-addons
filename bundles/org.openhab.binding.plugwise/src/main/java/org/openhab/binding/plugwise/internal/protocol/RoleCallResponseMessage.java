@@ -67,5 +67,4 @@ public class RoleCallResponseMessage extends Message {
             throw new PlugwisePayloadMismatchException(DEVICE_ROLE_CALL_RESPONSE, PAYLOAD_PATTERN, payload);
         }
     }
-
 }

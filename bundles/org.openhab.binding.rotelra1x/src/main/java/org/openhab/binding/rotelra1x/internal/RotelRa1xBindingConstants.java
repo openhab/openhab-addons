@@ -34,5 +34,4 @@ public class RotelRa1xBindingConstants {
     public static final String CHANNEL_BRIGHTNESS = "brightness";
     public static final String CHANNEL_FREQUENCY = "frequency";
     public static final String CHANNEL_SOURCE = "source";
-
 }

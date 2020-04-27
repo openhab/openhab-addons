@@ -7,15 +7,15 @@
 	<!-- OpenWeatherMap Binding -->
 	<thing-type id="weather-and-forecast">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="weather-api" />
+			<bridge-type-ref id="weather-api"/>
 		</supported-bridge-type-refs>
 
 		<label>Weather and Forecast</label>
 		<description>Provides current weather and forecast data from the OpenWeatherMap API.</description>
 
 		<channel-groups>
-			<channel-group id="station" typeId="station" />
-			<channel-group id="current" typeId="weather" />
+			<channel-group id="station" typeId="station"/>
+			<channel-group id="current" typeId="weather"/>
 			<channel-group id="forecastHours03" typeId="hourlyForecast">
 				<label>3 Hours Forecast</label>
 				<description>This is the weather forecast for the next 3 hours.</description>
@@ -76,19 +76,19 @@
 
 		<representation-property>location</representation-property>
 
-		<config-description-ref uri="thing-type:openweathermap:weather-and-forecast" />
+		<config-description-ref uri="thing-type:openweathermap:weather-and-forecast"/>
 	</thing-type>
 
 	<thing-type id="uvindex">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="weather-api" />
+			<bridge-type-ref id="weather-api"/>
 		</supported-bridge-type-refs>
 
 		<label>UV Index</label>
 		<description>Provides UV Index data from the OpenWeatherMap API.</description>
 
 		<channel-groups>
-			<channel-group id="current" typeId="uvindex" />
+			<channel-group id="current" typeId="uvindex"/>
 			<channel-group id="forecastTomorrow" typeId="uvindexForecast">
 				<label>Tomorrows Forecast</label>
 				<description>This is the UV Index forecast for tomorrow.</description>
@@ -113,7 +113,7 @@
 
 		<representation-property>location</representation-property>
 
-		<config-description-ref uri="thing-type:openweathermap:uvindex" />
+		<config-description-ref uri="thing-type:openweathermap:uvindex"/>
 	</thing-type>
 
 </thing:thing-descriptions>

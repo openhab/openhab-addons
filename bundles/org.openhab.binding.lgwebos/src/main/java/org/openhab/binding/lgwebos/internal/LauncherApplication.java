@@ -72,7 +72,6 @@ public class LauncherApplication extends BaseChannelHandler<AppInfo> {
                 handler.setOptions(channelId, options);
             }
         });
-
     }
 
     @Override
@@ -102,7 +101,6 @@ public class LauncherApplication extends BaseChannelHandler<AppInfo> {
                 logger.warn("TV does not support any app with id: {}.", value);
             }
         }
-
     }
 
     @Override

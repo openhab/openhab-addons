@@ -297,7 +297,6 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
                 public void setProperty(String propertyName, String propertyValue) {
                     getThing().setProperty(propertyName, propertyValue);
                 }
-
             });
 
             setProtocolHandler(new RioSystemProtocol(session, callback));
@@ -503,7 +502,6 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
         } else if (childHandler instanceof RioControllerHandler) {
             refreshNamedHandler(gson, RioControllerHandler.class, RioConstants.CHANNEL_SYSCONTROLLERS);
         }
-
     }
 
     /**
