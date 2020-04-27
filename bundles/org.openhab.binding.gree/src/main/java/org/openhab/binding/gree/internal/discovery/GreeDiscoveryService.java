@@ -21,15 +21,12 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.core.i18n.LocaleProvider;
-import org.eclipse.smarthome.core.i18n.TranslationProvider;
-import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.openhab.binding.gree.internal.GreeTranslationProvider;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,18 +43,14 @@ import org.slf4j.LoggerFactory;
 public class GreeDiscoveryService extends AbstractDiscoveryService {
     private static final int TIMEOUT = 10;
     private final Logger logger = LoggerFactory.getLogger(GreeDiscoveryService.class);
-    private final @Nullable TranslationProvider i18nProvider;
-    private final @Nullable LocaleProvider localeProvider;
+    private final GreeTranslationProvider messages;
     private final String broadcastAddress;
 
     private GreeDeviceFinder deviceFinder = new GreeDeviceFinder();
 
-    public GreeDiscoveryService(Bundle bundle, @Nullable TranslationProvider i18nProvider,
-            @Nullable LocaleProvider localeProvider, @Nullable NetworkAddressService networkAddressService) {
+    public GreeDiscoveryService(Bundle bundle, GreeTranslationProvider messages, String broadcastAddress) {
         super(SUPPORTED_THING_TYPES_UIDS, TIMEOUT);
-        this.i18nProvider = i18nProvider;
-        this.localeProvider = localeProvider;
-        String broadcastAddress = networkAddressService.getConfiguredBroadcastAddress();
+        this.messages = messages;
         this.broadcastAddress = broadcastAddress != null ? broadcastAddress : "192.168.255.255";
     }
 

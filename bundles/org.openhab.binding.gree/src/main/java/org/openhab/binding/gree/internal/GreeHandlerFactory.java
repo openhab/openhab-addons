@@ -15,6 +15,7 @@ package org.openhab.binding.gree.internal;
 import static org.openhab.binding.gree.internal.GreeBindingConstants.*;
 
 import java.util.Hashtable;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -31,6 +32,7 @@ import org.openhab.binding.gree.internal.discovery.GreeDiscoveryService;
 import org.openhab.binding.gree.internal.handler.GreeHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -45,16 +47,21 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding." + BINDING_ID, service = ThingHandlerFactory.class)
 public class GreeHandlerFactory extends BaseThingHandlerFactory {
     private @Nullable ServiceRegistration<?> serviceRegistration;
-    private @Nullable LocaleProvider localeProvider;
-    private @Nullable TranslationProvider i18nProvider;
-    private @Nullable NetworkAddressService networkAddressService;
+    private final GreeTranslationProvider messages;
+    private final String defBroadcastIp;
 
-    @Override
-    public void activate(ComponentContext componentContext) {
+    @Activate
+    public GreeHandlerFactory(@Reference NetworkAddressService networkAddressService,
+            @Reference LocaleProvider localeProvider, @Reference TranslationProvider i18nProvider,
+            ComponentContext componentContext, Map<String, Object> configProperties) {
         super.activate(componentContext);
 
-        GreeDiscoveryService discoveryService = new GreeDiscoveryService(bundleContext.getBundle(), i18nProvider,
-                localeProvider, networkAddressService);
+        messages = new GreeTranslationProvider(bundleContext.getBundle(), i18nProvider, localeProvider);
+
+        String broadcastAddress = networkAddressService.getConfiguredBroadcastAddress();
+        defBroadcastIp = broadcastAddress != null ? broadcastAddress : "";
+        GreeDiscoveryService discoveryService = new GreeDiscoveryService(bundleContext.getBundle(), messages,
+                defBroadcastIp);
         this.serviceRegistration = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
                 new Hashtable<String, Object>());
         discoveryService.activate();
@@ -68,11 +75,6 @@ public class GreeHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (THING_TYPE_GREEAIRCON.equals(thing.getThingTypeUID())) {
-            String defBroadcastIp = "";
-            if (networkAddressService != null) {
-                String baddress = networkAddressService.getConfiguredBroadcastAddress();
-                defBroadcastIp = baddress != null ? baddress : "";
-            }
             return new GreeHandler(thing, defBroadcastIp);
         }
 
@@ -92,32 +94,5 @@ public class GreeHandlerFactory extends BaseThingHandlerFactory {
 
     public void dispose() {
         unregisterDeviceDiscoveryService();
-    }
-
-    @Reference
-    protected void setLocaleProvider(LocaleProvider localeProvider) {
-        this.localeProvider = localeProvider;
-    }
-
-    protected void unsetLocaleProvider(LocaleProvider localeProvider) {
-        this.localeProvider = null;
-    }
-
-    @Reference
-    public void setTranslationProvider(TranslationProvider i18nProvider) {
-        this.i18nProvider = i18nProvider;
-    }
-
-    public void unsetTranslationProvider(TranslationProvider i18nProvider) {
-        this.i18nProvider = null;
-    }
-
-    @Reference
-    public void setNetworkAddressService(NetworkAddressService networkAddressService) {
-        this.networkAddressService = networkAddressService;
-    }
-
-    public void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
-        this.networkAddressService = null;
     }
 }

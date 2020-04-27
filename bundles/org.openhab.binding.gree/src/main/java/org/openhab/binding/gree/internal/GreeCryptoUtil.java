@@ -18,6 +18,8 @@ import java.util.Base64;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * @author John Cunha - Initial contribution
  * @author Markus Michels - Refactoring, adapted to OH 2.5x
  */
-
+@NonNullByDefault
 public class GreeCryptoUtil {
     static private final Logger logger = LoggerFactory.getLogger(GreeCryptoUtil.class);
     static String AES_General_Key = "a3K8Bx%2r8Y7#xDh";
@@ -41,7 +43,7 @@ public class GreeCryptoUtil {
         return AES_General_Key.getBytes();
     }
 
-    public static String decryptPack(byte[] keyarray, String message) throws Exception {
+    public static @Nullable String decryptPack(byte[] keyarray, String message) throws Exception {
         String descrytpedMessage = null;
         try {
             Key key = new SecretKeySpec(keyarray, "AES");
@@ -62,7 +64,7 @@ public class GreeCryptoUtil {
         return descrytpedMessage;
     }
 
-    public static String encryptPack(byte[] keyarray, String message) throws Exception {
+    public static @Nullable String encryptPack(byte[] keyarray, String message) throws Exception {
         String encrytpedMessage = null;
 
         try {

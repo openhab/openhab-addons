@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.gree.internal.GreeCryptoUtil;
 import org.openhab.binding.gree.internal.gson.GreeBindRequest4GsonDTO;
 import org.openhab.binding.gree.internal.gson.GreeBindRequestPack4GsonDTO;
@@ -42,7 +43,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
-import com.sun.istack.Nullable;
 
 /**
  * The GreeDevice object repesents a Gree Airconditioner and provides
@@ -59,14 +59,10 @@ public class GreeAirDevice {
     private InetAddress mAddress = InetAddress.getLoopbackAddress();
     private int mPort = 0;
     private String mKey = "";
-    private @Nullable GreeScanResponse4GsonDTO mScanResponseGson;
-    private @Nullable GreeBindResponse4GsonDTO bindResponseGson;
-    private @Nullable GreeStatusResponse4GsonDTO statusResponseGson;
-    private @Nullable GreeStatusResponsePack4GsonDTO prevStatusResponsePackGson;
-
-    public GreeAirDevice() {
-
-    }
+    private GreeScanResponse4GsonDTO mScanResponseGson;
+    private GreeBindResponse4GsonDTO bindResponseGson;
+    private GreeStatusResponse4GsonDTO statusResponseGson;
+    private GreeStatusResponsePack4GsonDTO prevStatusResponsePackGson;
 
     public Boolean getIsBound() {
         return mIsBound;
