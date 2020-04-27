@@ -410,9 +410,15 @@ public class VehicleHandler extends BaseThingHandler {
             case LOCATION_TIMESTAMP:
                 return position.getTimestamp();
             case CAR_LOCKED:
-                return status.carLocked;
+                if (status.getCarLocked().isPresent()) {
+                    return status.getCarLocked().get();
+                }
+                break;
             case ENGINE_RUNNING:
-                return status.engineRunning;
+                if (status.getEngineRunning().isPresent()) {
+                    return status.getEngineRunning().get();
+                }
+                break;
             case BRAKE_FLUID_LEVEL:
                 return new StringType(status.brakeFluid);
             case WASHER_FLUID_LEVEL:
@@ -464,10 +470,14 @@ public class VehicleHandler extends BaseThingHandler {
         VolvoOnCallBridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler != null) {
             if (activeOptions.containsKey(action)) {
-                if (vehicleStatus.carLocked != controlState) {
+                if (!vehicleStatus.getCarLocked().isPresent() || vehicleStatus.getCarLocked().get() != controlState) {
                     try {
-                        String address = SERVICE_URL + "vehicles/" + configuration.vin + "/" + action;
-                        bridgeHandler.postURL(address, "{}");
+                        StringBuilder address = new StringBuilder(SERVICE_URL);
+                        address.append("vehicles/");
+                        address.append(configuration.vin);
+                        address.append("/");
+                        address.append(action);
+                        bridgeHandler.postURL(address.toString(), "{}");
                     } catch (JsonSyntaxException | IOException e) {
                         logger.warn("Exception occurred during execution: {}", e.getMessage(), e);
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());

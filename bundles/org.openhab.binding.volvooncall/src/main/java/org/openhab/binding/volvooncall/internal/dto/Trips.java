@@ -25,5 +25,5 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class Trips {
-    public @Nullable List<Trip> trips = null;
+    public @Nullable List<Trip> trips;
 }

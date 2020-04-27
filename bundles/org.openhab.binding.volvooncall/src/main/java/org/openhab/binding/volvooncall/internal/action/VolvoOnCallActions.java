@@ -57,7 +57,8 @@ public class VolvoOnCallActions implements ThingActions {
     public void closeCarCommand() {
         logger.debug("closeCarCommand called");
         if (handler != null) {
-            handler.actionClose();
+            VehicleHandler nonNullHandler = handler;
+            nonNullHandler.actionClose();
         } else {
             logger.warn("VolvoOnCall Action service ThingHandler is null!");
         }
@@ -75,7 +76,8 @@ public class VolvoOnCallActions implements ThingActions {
     public void openCarCommand() {
         logger.debug("openCarCommand called");
         if (handler != null) {
-            handler.actionOpen();
+            VehicleHandler nonNullHandler = handler;
+            nonNullHandler.actionOpen();
         } else {
             logger.warn("VolvoOnCall Action service ThingHandler is null!");
         }
@@ -93,7 +95,8 @@ public class VolvoOnCallActions implements ThingActions {
     public void engineStartCommand(@ActionInput(name = "runtime", label = "Runtime") @Nullable Integer runtime) {
         logger.debug("engineStartCommand called");
         if (handler != null) {
-            handler.actionStart(runtime != null ? runtime : 5);
+            VehicleHandler nonNullHandler = handler;
+            nonNullHandler.actionStart(runtime != null ? runtime : 5);
         } else {
             logger.warn("VolvoOnCall Action service ThingHandler is null!");
         }
@@ -111,7 +114,8 @@ public class VolvoOnCallActions implements ThingActions {
     public void heaterStartCommand() {
         logger.debug("heaterStartCommand called");
         if (handler != null) {
-            handler.actionHeater(true);
+            VehicleHandler nonNullHandler = handler;
+            nonNullHandler.actionHeater(true);
         } else {
             logger.warn("VolvoOnCall Action service ThingHandler is null!");
         }
@@ -129,7 +133,8 @@ public class VolvoOnCallActions implements ThingActions {
     public void preclimatizationStartCommand() {
         logger.debug("preclimatizationStartCommand called");
         if (handler != null) {
-            handler.actionPreclimatization(true);
+            VehicleHandler nonNullHandler = handler;
+            nonNullHandler.actionPreclimatization(true);
         } else {
             logger.warn("VolvoOnCall Action service ThingHandler is null!");
         }
@@ -147,7 +152,8 @@ public class VolvoOnCallActions implements ThingActions {
     public void heaterStopCommand() {
         logger.debug("heaterStopCommand called");
         if (handler != null) {
-            handler.actionHeater(false);
+            VehicleHandler nonNullHandler = handler;
+            nonNullHandler.actionHeater(false);
         } else {
             logger.warn("VolvoOnCall Action service ThingHandler is null!");
         }
@@ -165,7 +171,8 @@ public class VolvoOnCallActions implements ThingActions {
     public void preclimatizationStopCommand() {
         logger.debug("preclimatizationStopCommand called");
         if (handler != null) {
-            handler.actionPreclimatization(false);
+            VehicleHandler nonNullHandler = handler;
+            nonNullHandler.actionPreclimatization(false);
         } else {
             logger.warn("VolvoOnCall Action service ThingHandler is null!");
         }
@@ -184,7 +191,8 @@ public class VolvoOnCallActions implements ThingActions {
             @ActionInput(name = "blink", label = "Blink") Boolean blink) {
         logger.debug("honkBlinkCommand called");
         if (handler != null) {
-            handler.actionHonkBlink(honk, blink);
+            VehicleHandler nonNullHandler = handler;
+            nonNullHandler.actionHonkBlink(honk, blink);
         } else {
             logger.warn("VolvoOnCall Action service ThingHandler is null!");
         }

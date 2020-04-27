@@ -41,9 +41,8 @@ public class VehiclePositionWrapper {
     private State getPositionAsState(PositionData details) {
         if (details.latitude != null && details.longitude != null) {
             return new PointType(details.latitude + "," + details.longitude);
-        } else {
-            return UnDefType.NULL;
         }
+        return UnDefType.NULL;
     }
 
     public State getPosition() {
@@ -51,17 +50,14 @@ public class VehiclePositionWrapper {
             return getPositionAsState(vehicle.position);
         } else if (vehicle.calculatedPosition.latitude != null) {
             return getPositionAsState(vehicle.calculatedPosition);
-        } else {
-            return UnDefType.NULL;
         }
+        return UnDefType.NULL;
     }
 
     public @Nullable String getPositionAsJSon() {
         PositionData details = vehicle.position;
         if (details != null && details.latitude != null && details.longitude != null) {
-            StringBuilder json = new StringBuilder();
-
-            json.append("{\"clientLatitude\":");
+            StringBuilder json = new StringBuilder("{\"clientLatitude\":");
             json.append(details.latitude);
             json.append(",\"clientLongitude\":");
             json.append(details.longitude);

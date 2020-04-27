@@ -37,35 +37,64 @@ public class Status {
     public int tripMeter1 = UNDEFINED;
     public int tripMeter2 = UNDEFINED;
 
-    public @NonNullByDefault({}) OnOffType carLocked;
-    public @NonNullByDefault({}) OnOffType engineRunning;
-    public @NonNullByDefault({}) String brakeFluid;
-    public @NonNullByDefault({}) String washerFluidLevel;
+    private @Nullable OnOffType carLocked;
+    private @Nullable OnOffType engineRunning;
+    public String brakeFluid = "";
+    public String washerFluidLevel = "";
     private @Nullable WindowsStatus windows;
     private @Nullable DoorsStatus doors;
     private @Nullable TyrePressure tyrePressure;
     private @Nullable HvBattery hvBattery;
     private @Nullable Heater heater;
-    public @NonNullByDefault({}) String serviceWarningStatus;
+    public String serviceWarningStatus = "";
 
     public Optional<WindowsStatus> getWindows() {
-        return Optional.ofNullable(windows);
+        if (windows != null) {
+            return Optional.of(windows);
+        }
+        return Optional.empty();
     }
 
     public Optional<DoorsStatus> getDoors() {
-        return Optional.ofNullable(doors);
+        if (doors != null) {
+            return Optional.of(doors);
+        }
+        return Optional.empty();
     }
 
     public Optional<TyrePressure> getTyrePressure() {
-        return Optional.ofNullable(tyrePressure);
+        if (tyrePressure != null) {
+            return Optional.of(tyrePressure);
+        }
+        return Optional.empty();
     }
 
     public Optional<HvBattery> getHvBattery() {
-        return Optional.ofNullable(hvBattery);
+        if (hvBattery != null) {
+            return Optional.of(hvBattery);
+        }
+        return Optional.empty();
     }
 
     public Optional<Heater> getHeater() {
-        return Optional.ofNullable(heater);
+        if (heater != null) {
+            return Optional.of(heater);
+        }
+        return Optional.empty();
+    }
+
+    public Optional<OnOffType> getCarLocked() {
+        if (carLocked != null) {
+            return Optional.of(carLocked);
+        }
+        return Optional.empty();
+    }
+
+    public Optional<OnOffType> getEngineRunning() {
+        if (engineRunning != null) {
+            return Optional.of(engineRunning);
+        }
+        return Optional.empty();
     }
 
     /*

@@ -51,9 +51,8 @@ public class TripDetail {
     private State getPositionAsState(PositionData details) {
         if (details.latitude != null && details.longitude != null) {
             return new PointType(details.latitude + "," + details.longitude);
-        } else {
-            return UnDefType.NULL;
         }
+        return UnDefType.NULL;
     }
 
     public State getStartTime() {
@@ -77,15 +76,24 @@ public class TripDetail {
     }
 
     public Optional<Integer> getFuelConsumption() {
-        return Optional.ofNullable(fuelConsumption);
+        if (fuelConsumption != null) {
+            return Optional.of(fuelConsumption);
+        }
+        return Optional.empty();
     }
 
     public Optional<Integer> getElectricalConsumption() {
-        return Optional.ofNullable(electricalConsumption);
+        if (electricalConsumption != null) {
+            return Optional.of(electricalConsumption);
+        }
+        return Optional.empty();
     }
 
     public Optional<Integer> getElectricalRegeneration() {
-        return Optional.ofNullable(electricalRegeneration);
+        if (electricalRegeneration != null) {
+            return Optional.of(electricalRegeneration);
+        }
+        return Optional.empty();
     }
 
 }
