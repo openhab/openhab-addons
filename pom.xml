@@ -78,6 +78,7 @@
     <bnd.includeresource>-${.}/NOTICE, -${.}/*.xsd</bnd.includeresource>
 
     <feature.directory>src/main/feature/feature.xml</feature.directory>
+    <spotless.check.skip>true</spotless.check.skip> <!-- Spotless disabled for now -->
     <spotless.version>1.30.0</spotless.version>
   </properties>
 
