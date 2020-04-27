@@ -42,7 +42,6 @@ public class HomekitTaggedItem {
 
     public HomekitTaggedItem(Item item, HomekitAccessoryType homekitAccessoryType) {
         this.item = item;
-
         this.parentGroupItem = null;
         this.homekitAccessoryType = homekitAccessoryType;
         this.homekitCharacteristicType = HomekitCharacteristicType.EMPTY;

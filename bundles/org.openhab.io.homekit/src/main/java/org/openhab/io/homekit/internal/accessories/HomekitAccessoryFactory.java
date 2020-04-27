@@ -129,7 +129,7 @@ public class HomekitAccessoryFactory {
                 accessoryImpl = accessoryImplClass.getConstructor(HomekitTaggedItem.class, List.class, ItemRegistry.class, HomekitAccessoryUpdater.class, HomekitSettings.class)
                     .newInstance(taggedItem, requiredCharacteristics, itemRegistry, updater, settings);
 
-                addOptionalCharacteristics(getOptionalCharacteristics(taggedItem, metadataRegistry),
+             addOptionalCharacteristics(getOptionalCharacteristics(taggedItem, metadataRegistry),
                                            accessoryImpl.getPrimaryService(),
                                            updater);
                 return accessoryImpl;

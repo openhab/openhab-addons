@@ -194,7 +194,6 @@ A full list of supported accessory types can be found in the table below.
 |                        | LockCurrentState             |                           | Switch                | current states of lock mechanism (OFF=SECURED, ON=UNSECURED)                                           |                                                                                                             
 |                        | LockTargetState              |                           | Switch                | target states of lock mechanism (OFF=SECURED, ON=UNSECURED)                                          |                                                                                                             
 |                       |                               |  Name                     | String                | Name of the lock                                                                                                                                                                                                                         |
-                    
  
 See the sample below for example items:
 

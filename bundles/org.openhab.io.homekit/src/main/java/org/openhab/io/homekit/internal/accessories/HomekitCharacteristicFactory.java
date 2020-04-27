@@ -105,11 +105,19 @@ public class HomekitCharacteristicFactory {
         }};
 
   /**
+<<<<<<< HEAD
    * create optional HomeKit characteristic
    * @param type type of characteristic
    * @param item corresponding OH item
    * @param updater update to keep OH item and HomeKit characteristic in sync
    * @return HomeKit characteristic
+=======
+   * create optional homekit characteristic
+   * @param type type of charateristic
+   * @param item corresponding OH item
+   * @param updater update to keep OH item and homekit characteristic in sync
+   * @return homekit characteristic
+>>>>>>> WIP upgrade to latest HAP library. major refactoring to add support for optional homekit characteristics
    */
     public static Characteristic createCharacteristic(HomekitCharacteristicType type, GenericItem item, HomekitAccessoryUpdater updater)
         throws HomekitException {

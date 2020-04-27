@@ -48,7 +48,6 @@ import io.github.hapjava.services.impl.ThermostatService;
  * @author Andy Lintner - Initial contribution
  */
 class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl<GroupItem> implements ThermostatAccessory {
-
     private Logger LOGGER = LoggerFactory.getLogger(HomekitThermostatImpl.class);
 
     public HomekitThermostatImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics, ItemRegistry itemRegistry,
@@ -264,6 +263,5 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl<GroupItem> impl
             return degrees;
         }
     }
-
 
 }
