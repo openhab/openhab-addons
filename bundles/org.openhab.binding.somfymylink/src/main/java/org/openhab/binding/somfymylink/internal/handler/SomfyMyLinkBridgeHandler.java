@@ -182,9 +182,11 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     }
 
     private void ensureKeepAlive() {
-        if (heartbeat == null) {
-            logger.debug("Starting keepalive job in {} min, every {} min", HEARTBEAT_MINUTES, HEARTBEAT_MINUTES);
-            heartbeat = this.scheduler.scheduleWithFixedDelay(this::sendKeepAlive, 1, 1, TimeUnit.MINUTES);
+        synchronized (heartbeat) {
+            if (heartbeat == null) {
+                logger.debug("Starting keepalive job in {} min, every {} min", HEARTBEAT_MINUTES, HEARTBEAT_MINUTES);
+                heartbeat = this.scheduler.scheduleWithFixedDelay(this::sendKeepAlive, 1, 1, TimeUnit.MINUTES);
+            }
         }
     }
 

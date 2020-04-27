@@ -79,10 +79,6 @@ public class SomfyShadeHandler extends BaseThingHandler {
             if (CHANNEL_SHADELEVEL.equals(channelUID.getId())) {
                 String targetId = channelUID.getThingUID().getId();
 
-                if (command instanceof RefreshType) {
-                    return;
-                }
-
                 if (command instanceof UpDownType) {
                     if (command.equals(UpDownType.DOWN)) {
                         getBridgeHandler().commandShadeDown(targetId);
