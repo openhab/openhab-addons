@@ -161,35 +161,39 @@ public class VerisureBaseThing implements VerisureThing {
             return false;
         }
 
-        if (name == null) {
+        String localName = name;
+        if (localName == null) {
             if (other.name != null) {
                 return false;
             }
-        } else if (name != null && !name.equals(other.name)) {
+        } else if (!localName.equals(other.name)) {
             return false;
         }
 
-        if (location == null) {
+        String localLocation = location;
+        if (localLocation == null) {
             if (other.location != null) {
                 return false;
             }
-        } else if (location != null && !location.equals(other.location)) {
+        } else if (!localLocation.equals(other.location)) {
             return false;
         }
 
-        if (status == null) {
+        String localStatus = status;
+        if (localStatus == null) {
             if (other.status != null) {
                 return false;
             }
-        } else if (status != null && !status.equals(other.status)) {
+        } else if (!localStatus.equals(other.status)) {
             return false;
         }
 
-        if (siteName == null) {
+        String localSiteName = siteName;
+        if (localSiteName == null) {
             if (other.siteName != null) {
                 return false;
             }
-        } else if (siteName != null && !siteName.equals(other.siteName)) {
+        } else if (!localSiteName.equals(other.siteName)) {
             return false;
         }
 
@@ -229,7 +233,6 @@ public class VerisureBaseThing implements VerisureThing {
         return builder.toString();
     }
 
-    @NonNullByDefault
     public static class Device {
 
         private @Nullable String deviceLabel;

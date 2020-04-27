@@ -93,7 +93,6 @@ public class VerisureMiceDetection extends VerisureBaseThing {
                 .append(temperatureTimestamp, rhs.temperatureTimestamp).isEquals();
     }
 
-    @NonNullByDefault
     public static class Data {
 
         private Installation installation = new Installation();
@@ -129,7 +128,6 @@ public class VerisureMiceDetection extends VerisureBaseThing {
         }
     }
 
-    @NonNullByDefault
     public static class Installation {
 
         private List<Mouse> mice = new ArrayList<>();
@@ -170,7 +168,6 @@ public class VerisureMiceDetection extends VerisureBaseThing {
         }
     }
 
-    @NonNullByDefault
     public static class Mouse {
 
         private Device device = new Device();
@@ -219,7 +216,6 @@ public class VerisureMiceDetection extends VerisureBaseThing {
         }
     }
 
-    @NonNullByDefault
     public static class Detection {
 
         private int count;
@@ -276,7 +272,6 @@ public class VerisureMiceDetection extends VerisureBaseThing {
 
     }
 
-    @NonNullByDefault
     public static class Device {
 
         private @Nullable String deviceLabel;
@@ -326,7 +321,6 @@ public class VerisureMiceDetection extends VerisureBaseThing {
         }
     }
 
-    @NonNullByDefault
     public static class Gui {
 
         private @Nullable String support;

@@ -843,7 +843,6 @@ public class VerisureSession {
         }
     }
 
-    @NonNullByDefault
     private final class VerisureInstallation {
         private @Nullable String installationName;
         private BigDecimal installationId = new BigDecimal(0);
@@ -877,7 +876,6 @@ public class VerisureSession {
         }
     }
 
-    @NonNullByDefault
     private static class Operation {
 
         @SuppressWarnings("unused")
@@ -900,7 +898,6 @@ public class VerisureSession {
         }
     }
 
-    @NonNullByDefault
     private static class Variables {
 
         @SuppressWarnings("unused")

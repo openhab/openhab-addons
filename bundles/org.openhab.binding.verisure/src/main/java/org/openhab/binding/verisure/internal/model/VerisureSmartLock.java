@@ -43,7 +43,6 @@ public class VerisureSmartLock {
         return doorLockVolumeSettings;
     }
 
-    @NonNullByDefault
     public static class DoorLockVolumeSettings {
         private @Nullable String volume;
         private @Nullable String voiceLevel;
@@ -99,11 +98,14 @@ public class VerisureSmartLock {
             }
             DoorLockVolumeSettings other = (DoorLockVolumeSettings) obj;
 
-            if (active == null) {
+            String localActive = active;
+            String localVoiceLevel = voiceLevel;
+            String localVolume = volume;
+            if (localActive == null) {
                 if (other.active != null) {
                     return false;
                 }
-            } else if (active != null && !active.equals(other.active)) {
+            } else if (!localActive.equals(other.active)) {
                 return false;
             }
             if (!availableVoiceLevels.equals(other.availableVoiceLevels)) {
@@ -112,18 +114,18 @@ public class VerisureSmartLock {
             if (!availableVolumes.equals(other.availableVolumes)) {
                 return false;
             }
-            if (voiceLevel == null) {
+            if (localVoiceLevel == null) {
                 if (other.voiceLevel != null) {
                     return false;
                 }
-            } else if (voiceLevel != null && !voiceLevel.equals(other.voiceLevel)) {
+            } else if (!localVoiceLevel.equals(other.voiceLevel)) {
                 return false;
             }
-            if (volume == null) {
+            if (localVolume == null) {
                 if (other.volume != null) {
                     return false;
                 }
-            } else if (volume != null && !volume.equals(other.volume)) {
+            } else if (!localVolume.equals(other.volume)) {
                 return false;
             }
             return true;
@@ -158,11 +160,12 @@ public class VerisureSmartLock {
             return false;
         }
         VerisureSmartLock other = (VerisureSmartLock) obj;
-        if (deviceLabel == null) {
+        String localDeviceLabel = deviceLabel;
+        if (localDeviceLabel == null) {
             if (other.deviceLabel != null) {
                 return false;
             }
-        } else if (deviceLabel != null && !deviceLabel.equals(other.deviceLabel)) {
+        } else if (!localDeviceLabel.equals(other.deviceLabel)) {
             return false;
         }
         if (!doorLockVolumeSettings.equals(other.doorLockVolumeSettings)) {

@@ -81,7 +81,6 @@ public class VerisureSmartLocks extends VerisureBaseThing {
         return new EqualsBuilder().append(data, rhs.data).isEquals();
     }
 
-    @NonNullByDefault
     public static class Data {
 
         private Installation installation = new Installation();
@@ -117,7 +116,6 @@ public class VerisureSmartLocks extends VerisureBaseThing {
         }
     }
 
-    @NonNullByDefault
     public static class Installation {
 
         @SerializedName("__typename")
@@ -159,7 +157,6 @@ public class VerisureSmartLocks extends VerisureBaseThing {
         }
     }
 
-    @NonNullByDefault
     public static class Doorlock {
 
         @SerializedName("__typename")

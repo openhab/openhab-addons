@@ -14,10 +14,9 @@ package org.openhab.binding.verisure.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.verisure.internal.handler.VerisureBridgeHandler;
 
 /**
- * Configuration class for {@link VerisureBridgeHandler} bridge used to connect to the
+ * Configuration class for VerisureBridgeHandler bridge used to connect to the
  * Verisure MyPage.
  *
  * @author Jarle Hjortland - Initial contribution

@@ -161,7 +161,6 @@ public class VerisureSmartPlugThingHandler extends VerisureThingHandler<Verisure
         return UnDefType.UNDEF;
     }
 
-    @NonNullByDefault
     private static class SmartPlug {
 
         @SuppressWarnings("unused")
@@ -184,7 +183,6 @@ public class VerisureSmartPlugThingHandler extends VerisureThingHandler<Verisure
         }
     }
 
-    @NonNullByDefault
     private static class Variables {
 
         @SuppressWarnings("unused")

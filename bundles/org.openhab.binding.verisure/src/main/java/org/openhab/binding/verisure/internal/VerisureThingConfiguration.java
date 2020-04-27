@@ -13,10 +13,9 @@
 package org.openhab.binding.verisure.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.verisure.internal.handler.VerisureThingHandler;
 
 /**
- * Configuration class for {@link VerisureThingHandler}.
+ * Configuration class for VerisureThingHandler.
  *
  *
  * @author Jan Gustafsson - Initial contribution

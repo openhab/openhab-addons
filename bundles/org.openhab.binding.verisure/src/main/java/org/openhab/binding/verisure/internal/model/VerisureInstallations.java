@@ -60,7 +60,6 @@ public class VerisureInstallations extends VerisureBaseThing {
         return new EqualsBuilder().append(data, rhs.data).isEquals();
     }
 
-    @NonNullByDefault
     public static class Data {
 
         private Account account = new Account();
@@ -93,7 +92,6 @@ public class VerisureInstallations extends VerisureBaseThing {
 
     }
 
-    @NonNullByDefault
     public static class Account {
 
         @SerializedName("__typename")
@@ -133,7 +131,6 @@ public class VerisureInstallations extends VerisureBaseThing {
         }
     }
 
-    @NonNullByDefault
     public static class Owainstallation {
 
         @SerializedName("__typename")

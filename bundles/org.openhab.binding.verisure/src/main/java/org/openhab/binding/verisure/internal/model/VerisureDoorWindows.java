@@ -72,7 +72,6 @@ public class VerisureDoorWindows extends VerisureBaseThing {
         return new EqualsBuilder().append(data, rhs.data).isEquals();
     }
 
-    @NonNullByDefault
     public static class Data {
 
         private Installation installation = new Installation();
@@ -108,7 +107,6 @@ public class VerisureDoorWindows extends VerisureBaseThing {
         }
     }
 
-    @NonNullByDefault
     public static class Installation {
 
         private List<DoorWindow> doorWindows = new ArrayList<>();
@@ -150,7 +148,6 @@ public class VerisureDoorWindows extends VerisureBaseThing {
         }
     }
 
-    @NonNullByDefault
     public static class DoorWindow {
 
         private Device device = new Device();

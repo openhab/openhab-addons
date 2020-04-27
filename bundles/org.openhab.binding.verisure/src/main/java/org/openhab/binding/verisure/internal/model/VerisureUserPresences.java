@@ -73,7 +73,6 @@ public class VerisureUserPresences extends VerisureBaseThing {
         return new EqualsBuilder().append(data, rhs.data).isEquals();
     }
 
-    @NonNullByDefault
     public static class Data {
 
         private Installation installation = new Installation();
@@ -109,7 +108,6 @@ public class VerisureUserPresences extends VerisureBaseThing {
         }
     }
 
-    @NonNullByDefault
     public static class Installation {
 
         private List<UserTracking> userTrackings = new ArrayList<>();
@@ -153,7 +151,6 @@ public class VerisureUserPresences extends VerisureBaseThing {
         }
     }
 
-    @NonNullByDefault
     public static class UserTracking {
         private boolean isCallingUser;
         private @Nullable String webAccount;

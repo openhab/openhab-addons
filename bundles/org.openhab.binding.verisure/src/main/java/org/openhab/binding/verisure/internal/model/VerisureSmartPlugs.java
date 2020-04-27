@@ -72,7 +72,6 @@ public class VerisureSmartPlugs extends VerisureBaseThing {
         return new EqualsBuilder().append(data, rhs.data).isEquals();
     }
 
-    @NonNullByDefault
     public static class Data {
 
         private Installation installation = new Installation();
@@ -108,7 +107,6 @@ public class VerisureSmartPlugs extends VerisureBaseThing {
         }
     }
 
-    @NonNullByDefault
     public static class Installation {
 
         private List<Smartplug> smartplugs = new ArrayList<>();
@@ -151,7 +149,6 @@ public class VerisureSmartPlugs extends VerisureBaseThing {
         }
     }
 
-    @NonNullByDefault
     public static class Smartplug {
 
         private Device device = new Device();

@@ -72,7 +72,6 @@ public class VerisureAlarms extends VerisureBaseThing {
         return new EqualsBuilder().append(data, rhs.data).isEquals();
     }
 
-    @NonNullByDefault
     public static class Data {
         private Installation installation = new Installation();
 
@@ -108,7 +107,6 @@ public class VerisureAlarms extends VerisureBaseThing {
 
     }
 
-    @NonNullByDefault
     public static class Installation {
 
         private ArmState armState = new ArmState();
@@ -155,7 +153,6 @@ public class VerisureAlarms extends VerisureBaseThing {
 
     }
 
-    @NonNullByDefault
     public static class ArmState {
 
         private @Nullable String type;

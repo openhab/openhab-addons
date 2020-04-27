@@ -168,7 +168,6 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler<VerisureAlar
         return UnDefType.UNDEF;
     }
 
-    @NonNullByDefault
     private static class Alarm {
 
         @SuppressWarnings("unused")
@@ -191,7 +190,6 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler<VerisureAlar
         }
     }
 
-    @NonNullByDefault
     private static class Variables {
 
         @SuppressWarnings("unused")

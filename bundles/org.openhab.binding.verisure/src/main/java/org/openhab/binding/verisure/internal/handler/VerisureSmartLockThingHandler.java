@@ -307,7 +307,6 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler<Verisure
         return UnDefType.UNDEF;
     }
 
-    @NonNullByDefault
     private static class SmartLock {
 
         @SuppressWarnings("unused")
@@ -330,7 +329,6 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler<Verisure
         }
     }
 
-    @NonNullByDefault
     private static class Variables {
 
         @SuppressWarnings("unused")
@@ -353,7 +351,6 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler<Verisure
         }
     }
 
-    @NonNullByDefault
     private static class Input {
 
         @SuppressWarnings("unused")

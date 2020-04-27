@@ -83,7 +83,6 @@ public class VerisureClimates extends VerisureBaseThing {
         return new EqualsBuilder().append(data, rhs.data).isEquals();
     }
 
-    @NonNullByDefault
     public static class Climate {
 
         private Device device = new Device();
@@ -155,7 +154,6 @@ public class VerisureClimates extends VerisureBaseThing {
 
     }
 
-    @NonNullByDefault
     public static class Data {
 
         private Installation installation = new Installation();
@@ -191,7 +189,6 @@ public class VerisureClimates extends VerisureBaseThing {
         }
     }
 
-    @NonNullByDefault
     public static class Installation {
 
         private List<Climate> climates = new ArrayList<>();
@@ -233,7 +230,6 @@ public class VerisureClimates extends VerisureBaseThing {
         }
     }
 
-    @NonNullByDefault
     public static class Device {
 
         private @Nullable String deviceLabel;
@@ -284,7 +280,6 @@ public class VerisureClimates extends VerisureBaseThing {
 
     }
 
-    @NonNullByDefault
     public static class Gui {
 
         private @Nullable String label;
