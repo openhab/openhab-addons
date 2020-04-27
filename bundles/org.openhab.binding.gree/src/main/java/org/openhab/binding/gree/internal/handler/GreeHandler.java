@@ -53,13 +53,15 @@ public class GreeHandler extends BaseThingHandler {
     private GreeDeviceFinder deviceFinder = new GreeDeviceFinder();
     private GreeAirDevice thisDevice = new GreeAirDevice();
     private @Nullable DatagramSocket clientSocket;
+    private final String defBroadcastAddress;
 
     private int refreshTime = 0;
     private @Nullable ScheduledFuture<?> refreshTask;
     private long lastRefreshTime = 0;
 
-    public GreeHandler(Thing thing) {
+    public GreeHandler(Thing thing, String broadcastAddress) {
         super(thing);
+        this.defBroadcastAddress = broadcastAddress;
     }
 
     @Override
@@ -79,7 +81,7 @@ public class GreeHandler extends BaseThingHandler {
     }
 
     private void initializeThing() {
-        logger.debug("{} is initializing", thing.getUID());
+        logger.debug("Thing {} is initializing", thing.getUID());
 
         if (!config.isValid()) {
             logger.debug("Config of {} is invalid. Check configuration", thing.getUID());
@@ -98,7 +100,9 @@ public class GreeHandler extends BaseThingHandler {
             clientSocket.setSoTimeout(DATAGRAM_SOCKET_TIMEOUT);
 
             // Firstly, lets find all Gree Airconditioners on the network
-            deviceFinder = new GreeDeviceFinder(config.getBroadcastAddress());
+            String broadcastIp = !config.getBroadcastAddress().isEmpty() ? config.getBroadcastAddress()
+                    : defBroadcastAddress;
+            deviceFinder = new GreeDeviceFinder(broadcastIp);
             deviceFinder.Scan(clientSocket);
             logger.debug("{} units found during discovery", deviceFinder.getScannedDeviceCount());
 

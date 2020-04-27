@@ -25,10 +25,10 @@
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
 				<label>Device IP Address</label>
-				<description>IP-Address of the Shelly device.</description>
+				<description>IP-Address of the GREE device.</description>
 				<context>network-address</context>
 			</parameter>
-			<parameter name="broadcastAddress" type="text" required="true">
+			<parameter name="broadcastAddress" type="text" required="false">
 				<label>Subnet Broadcast Address</label>
 				<description>Broadcast IP address of the local subnet.</description>
 				<context>network-address</context>

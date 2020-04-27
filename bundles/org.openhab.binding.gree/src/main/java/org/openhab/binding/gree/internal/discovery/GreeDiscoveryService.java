@@ -84,9 +84,15 @@ public class GreeDiscoveryService extends AbstractDiscoveryService {
             deviceFinder.Scan(clientSocket);
             clientSocket.close();
 
-            logger.debug("GREE {} units discovered", deviceFinder.getScannedDeviceCount());
-            createResult(deviceFinder.getDevices());
-        } catch (Exception e) {
+            int count = deviceFinder.getScannedDeviceCount();
+            logger.debug("{} units discovered", count);
+            if (count > 0) {
+                logger.debug("Adding uinits to Inbox");
+                createResult(deviceFinder.getDevices());
+            }
+        } catch (
+
+        Exception e) {
             logger.debug("Discovery failed", e);
         }
     }

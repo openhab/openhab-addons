@@ -66,6 +66,8 @@ public class GreeBindingConstants {
      **/
     public static final int DATAGRAM_SOCKET_TIMEOUT = 5000;
 
+    public static final int DISCOVERY_TIMEOUT_MS = 7000;
+
     /*
      * The IP Address used to used to send Scan Datagram to Gree Airconditioners.
      **/

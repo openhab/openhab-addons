@@ -68,18 +68,25 @@ public class GreeHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (THING_TYPE_GREEAIRCON.equals(thing.getThingTypeUID())) {
-            return new GreeHandler(thing);
+            String defBroadcastIp = "";
+            if (networkAddressService != null) {
+                String baddress = networkAddressService.getConfiguredBroadcastAddress();
+                defBroadcastIp = baddress != null ? baddress : "";
+            }
+            return new GreeHandler(thing, defBroadcastIp);
         }
 
         return null;
     }
 
     private synchronized void unregisterDeviceDiscoveryService() {
-        serviceRegistration.unregister();
-        GreeDiscoveryService discoveryService = (GreeDiscoveryService) bundleContext
-                .getService(serviceRegistration.getReference());
-        if (discoveryService != null) {
-            discoveryService.deactivate();
+        if (serviceRegistration != null) {
+            serviceRegistration.unregister();
+            GreeDiscoveryService discoveryService = (GreeDiscoveryService) bundleContext
+                    .getService(serviceRegistration.getReference());
+            if (discoveryService != null) {
+                discoveryService.deactivate();
+            }
         }
     }
 
