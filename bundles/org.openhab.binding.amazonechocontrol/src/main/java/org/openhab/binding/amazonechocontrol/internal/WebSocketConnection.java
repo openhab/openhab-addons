@@ -553,7 +553,7 @@ public class WebSocketConnection {
         }
 
         byte[] encodePing() {
-            // MSG 0x00000065 0x0e414e47 f 0x00000001 0xbc2fbb5f 0x00000062 
+            // MSG 0x00000065 0x0e414e47 f 0x00000001 0xbc2fbb5f 0x00000062
             this.messageId++;
             String msg = "MSG 0x00000065 "; // Message-type and Channel = CHANNEL_FOR_HEARTBEAT;
             msg += this.encodeNumber(this.messageId) + " f 0x00000001 ";
