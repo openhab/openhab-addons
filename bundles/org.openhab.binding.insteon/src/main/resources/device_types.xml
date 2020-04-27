@@ -81,6 +81,7 @@
 		<feature name="data">MotionSensorData</feature>
 		<feature name="lastheardfrom">GenericLastTime</feature>
 	</device>
+
 	<device productKey="0x000050">
 		<model>2486DWH6</model>
 		<description>KeypadLinc Dimmer - 6 Button</description>
@@ -96,6 +97,7 @@
 		</feature_group>
 		<feature name="lastheardfrom">GenericLastTime</feature>
 	</device>
+
 	<device productKey="0x000051">
 		<model>2486DWH8</model>
 		<description>KeypadLinc Dimmer - 8 Button</description>
@@ -118,11 +120,17 @@
 
 	<device productKey="0x000068">
 		<model>2472D</model>
-		<description>OutletLincDimmer</description>
+		<description>OutletLinc Dimmer</description>
 		<feature name="dimmer">GenericDimmer</feature>
 		<feature name="manualchange">ManualChange</feature>
 		<feature name="fastonoff">FastOnOff</feature>
 		<feature name="lastheardfrom">GenericLastTime</feature>
+		<feature name="ledonoff">LEDOnOff</feature>
+		<feature name="beep">Beep</feature>
+		<feature_group name="ext_group" type="ExtStatusGroup">
+			<feature name="ledbrightness">LEDBrightness</feature>
+			<feature name="ramprate">RampRate</feature>
+		</feature_group>
 	</device>
 
 	<!-- #################################################
@@ -576,5 +584,4 @@
 		</feature_group>
 		<feature name="lastheardfrom">GenericLastTime</feature>
 	</device>
-
 </xml>
