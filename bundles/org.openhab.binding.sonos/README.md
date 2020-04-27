@@ -10,9 +10,9 @@ This happens because of a TTL=1 for ALIVE packets send by Sonos devices, resulti
 
 ## Supported Things
 
-All available Sonos (playback) devices are supported by this binding. This includes the One, Play:1, Play:3, Play:5, Connect, Connect:Amp, Playbar, Playbase, Beam and Sub. The Bridge and Boost are not supported, but these devices do only have an auxiliary role in the Sonos network and do not have any playback capability. All supported Sonos devices are registered as an audio sink in the framework.
+All available Sonos (playback) devices are supported by this binding. This includes the One, OneSL, Play:1, Play:3, Play:5, Connect, Connect:Amp, Playbar, Playbase, Beam and Sub. The Bridge and Boost are not supported, but these devices do only have an auxiliary role in the Sonos network and do not have any playback capability. All supported Sonos devices are registered as an audio sink in the framework.
 
-When being defined in a \*.things file, the specific thing types One, PLAY1, PLAY3, PLAY5, PLAYBAR, PLAYBASE, Beam, CONNECT and CONNECTAMP should be used.
+When being defined in a \*.things file, the specific thing types One, OneSL, PLAY1, PLAY3, PLAY5, PLAYBAR, PLAYBASE, Beam, CONNECT and CONNECTAMP should be used.
 
 Please note that these thing types are case sensitive (you need to define them **exactly as stated above**).
 
