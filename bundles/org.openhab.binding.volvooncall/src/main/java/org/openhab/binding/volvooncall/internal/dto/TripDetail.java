@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.volvooncall.internal.dto;
 
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.UNDEFINED;
+
 import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -35,9 +37,9 @@ public class TripDetail {
     private @Nullable Integer fuelConsumption;
     private @Nullable Integer electricalConsumption;
     private @Nullable Integer electricalRegeneration;
-    public int distance;
-    public int startOdometer;
-    public int endOdometer;
+    public int distance = UNDEFINED;
+    public int startOdometer = UNDEFINED;
+    public int endOdometer = UNDEFINED;
     private @Nullable ZonedDateTime endTime;
     private @Nullable ZonedDateTime startTime;
     private @NonNullByDefault({}) PositionData startPosition;
