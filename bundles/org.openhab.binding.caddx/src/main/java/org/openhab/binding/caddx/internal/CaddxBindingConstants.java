@@ -71,6 +71,7 @@ public class CaddxBindingConstants {
     // Partition
     // Commands
     public static final String PARTITION_STATUS_REQUEST = "partition_status_request";
+    public static final String PARTITION_PRIMARY_COMMAND_WITH_PIN = "partition_primary_command_with_pin";
     public static final String PARTITION_PRIMARY_COMMAND = "partition_primary_command";
     public static final String PARTITION_SECONDARY_COMMAND = "partition_secondary_command";
     // Channels

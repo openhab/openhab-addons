@@ -252,6 +252,9 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
             case CaddxBindingConstants.PARTITION_STATUS_REQUEST:
                 msg = new CaddxMessage(CaddxMessageType.Partition_Status_Request, data);
                 break;
+            case CaddxBindingConstants.PARTITION_PRIMARY_COMMAND_WITH_PIN:
+                msg = new CaddxMessage(CaddxMessageType.Primary_Keypad_Function_with_PIN, data);
+                break;
             case CaddxBindingConstants.PARTITION_PRIMARY_COMMAND:
                 msg = new CaddxMessage(CaddxMessageType.Primary_Keypad_Function_without_PIN, data);
                 break;
