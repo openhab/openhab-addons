@@ -542,5 +542,4 @@ public class BiweeklyPresentableCalendarTest {
         assertNotNull(cmd7);
         assertEquals(QuantityType.class, cmd7.getClass());
     }
-
 }

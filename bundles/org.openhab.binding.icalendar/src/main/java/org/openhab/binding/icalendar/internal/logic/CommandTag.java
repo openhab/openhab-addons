@@ -178,5 +178,4 @@ public class CommandTag {
         return (userAuthorizationCode == null || userAuthorizationCode.isEmpty()
                 || userAuthorizationCode.equals(authorizationCode));
     }
-
 }

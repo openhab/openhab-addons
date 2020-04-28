@@ -40,5 +40,4 @@ public class ICalendarBindingConstants {
 
     // additional constants
     public static final int HTTP_TIMEOUT_SECS = 60;
-
 }

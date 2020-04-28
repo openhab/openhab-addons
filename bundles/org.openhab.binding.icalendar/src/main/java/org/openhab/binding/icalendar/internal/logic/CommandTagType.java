@@ -31,5 +31,4 @@ public enum CommandTagType {
     public static boolean prefixValid(@Nullable String line) {
         return (line != null) && (line.startsWith(BEGIN.toString()) || line.startsWith(END.toString()));
     }
-
 }

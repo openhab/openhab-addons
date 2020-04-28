@@ -199,6 +199,5 @@ class PullJob implements Runnable {
          * The only local definition. Rest of implementation is taken from Exception or is default.
          */
         private static final long serialVersionUID = 7033851403473533793L;
-
     }
 }

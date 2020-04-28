@@ -35,5 +35,4 @@ public class CalendarException extends Exception {
     public CalendarException(Exception source) {
         super("Implementation specific exception occurred", source);
     }
-
 }
