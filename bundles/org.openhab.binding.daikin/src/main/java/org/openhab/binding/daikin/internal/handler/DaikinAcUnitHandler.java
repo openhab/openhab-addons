@@ -33,6 +33,8 @@ import org.openhab.binding.daikin.internal.api.Enums.FanSpeed;
 import org.openhab.binding.daikin.internal.api.Enums.HomekitMode;
 import org.openhab.binding.daikin.internal.api.Enums.Mode;
 import org.openhab.binding.daikin.internal.api.SensorInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Handles communicating with a Daikin air conditioning unit.
@@ -43,6 +45,8 @@ import org.openhab.binding.daikin.internal.api.SensorInfo;
  */
 @NonNullByDefault
 public class DaikinAcUnitHandler extends DaikinBaseHandler {
+    private final Logger logger = LoggerFactory.getLogger(DaikinAcUnitHandler.class);
+
     public DaikinAcUnitHandler(Thing thing, DaikinDynamicStateDescriptionProvider stateDescriptionProvider) {
         super(thing, stateDescriptionProvider);
     }
@@ -138,6 +142,7 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
             webTargets.registerUuid(key);
         } catch (Exception e) {
             // suppress exceptions
+            logger.debug("registerUuid({}) error: {}", key, e.getMessage());
         }
     }
 }
