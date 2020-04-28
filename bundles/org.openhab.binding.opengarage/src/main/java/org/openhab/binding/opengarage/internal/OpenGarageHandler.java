@@ -37,7 +37,6 @@ import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-
 /**
  * The {@link OpenGarageHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -128,7 +127,8 @@ public class OpenGarageHandler extends BaseThingHandler {
         ControllerVariables controllerVariables = webTargets.getControllerVariables();
         updateStatus(ThingStatus.ONLINE);
         if (controllerVariables != null) {
-            updateState(OpenGarageBindingConstants.CHANNEL_OG_DISTANCE, new QuantityType<>(controllerVariables.dist, MetricPrefix.CENTI(SIUnits.METRE)));
+            updateState(OpenGarageBindingConstants.CHANNEL_OG_DISTANCE,
+                    new QuantityType<>(controllerVariables.dist, MetricPrefix.CENTI(SIUnits.METRE)));
             if (controllerVariables.door == 0) {
                 updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS, OnOffType.OFF);
                 updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_ROLLERSHUTTER, UpDownType.DOWN);
@@ -151,5 +151,4 @@ public class OpenGarageHandler extends BaseThingHandler {
     private void changeStatus(String status) throws OpenGarageCommunicationException {
         webTargets.setControllerVariables(status);
     }
-
 }

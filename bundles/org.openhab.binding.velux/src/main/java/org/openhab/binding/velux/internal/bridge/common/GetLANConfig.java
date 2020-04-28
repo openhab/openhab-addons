@@ -39,5 +39,4 @@ public abstract class GetLANConfig implements BridgeCommunicationProtocol {
      * @return <b>lanConfig</b> as VeluxGwLAN describing the current status of the bridge.
      */
     public abstract VeluxGwLAN getLANConfig();
-
 }

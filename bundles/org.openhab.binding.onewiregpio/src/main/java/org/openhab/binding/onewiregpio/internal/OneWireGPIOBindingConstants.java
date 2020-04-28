@@ -38,5 +38,4 @@ public class OneWireGPIOBindingConstants {
     public static final int MAX_PRECISION_VALUE = 3;
 
     public static final String FILE_TEMP_MARKER = "t=";
-
 }

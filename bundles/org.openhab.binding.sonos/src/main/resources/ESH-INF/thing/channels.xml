@@ -14,21 +14,22 @@
 	<channel-type id="alarm" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Set Alarm</label>
-		<description>Set the first occurring alarm either ON or OFF. Alarms first have to be defined through the Sonos Controller app</description>
+		<description>Set the first occurring alarm either ON or OFF. Alarms first have to be defined through the Sonos
+			Controller app</description>
 	</channel-type>
 
 	<channel-type id="alarmproperties" advanced="true">
 		<item-type>String</item-type>
 		<label>Alarm Properties</label>
 		<description>Properties of the alarm currently running</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="alarmrunning" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Alarm Is Running</label>
 		<description>Set to ON if the alarm was triggered</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="clearqueue" advanced="true">
@@ -41,49 +42,49 @@
 		<item-type>String</item-type>
 		<label>Coordinator</label>
 		<description>UDN of the coordinator for the current group</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="currentalbum">
 		<item-type>String</item-type>
 		<label>Current Album</label>
 		<description>Name of the album currently playing</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="currentalbumart">
 		<item-type>Image</item-type>
 		<label>Current Album Cover Art</label>
 		<description>Cover art of the album currently playing</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="currentalbumarturl" advanced="true">
 		<item-type>String</item-type>
 		<label>Current Album Cover Art URL</label>
 		<description>Cover art URL of the album currently playing</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="currenttrack" advanced="true">
 		<item-type>String</item-type>
 		<label>Current Track</label>
 		<description>Name of the current track or radio station currently playing</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="currenttrackuri" advanced="true">
 		<item-type>String</item-type>
 		<label>Current Track URI</label>
 		<description>URI of the current track</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="currenttransporturi" advanced="true">
 		<item-type>String</item-type>
 		<label>Current AV Transport URI</label>
 		<description>URI of the current AV transport</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="favorite" advanced="true">
@@ -102,7 +103,7 @@
 		<item-type>Switch</item-type>
 		<label>Local Coordinator</label>
 		<description>Indicator set to ON if this Zone Player is the Zone Group Coordinator</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="nightmode" advanced="true">
@@ -144,7 +145,8 @@
 	<channel-type id="publicaddress" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Public Address</label>
-		<description>Put all Zone Players in one group, and stream audio from the line-in from the Zone Player that triggered the command</description>
+		<description>Put all Zone Players in one group, and stream audio from the line-in from the Zone Player that triggered
+			the command</description>
 	</channel-type>
 
 	<channel-type id="radio" advanced="true">
@@ -206,14 +208,14 @@
 		<item-type>Number</item-type>
 		<label>Sleep Timer</label>
 		<description>Set/show the duration of the sleep timer in seconds</description>
-		<state min="0" max="68399" step="1" readOnly="false" pattern="%d s" />
+		<state min="0" max="68399" step="1" readOnly="false" pattern="%d s"/>
 	</channel-type>
 
 	<channel-type id="snooze" advanced="true">
 		<item-type>Number</item-type>
 		<label>Snooze</label>
 		<description>Snooze the running alarm, if any, with the given number of minutes</description>
-		<state readOnly="false" pattern="%d min" />
+		<state readOnly="false" pattern="%d min"/>
 	</channel-type>
 
 	<channel-type id="speechenhancement" advanced="true">
@@ -259,14 +261,14 @@
 		<item-type>String</item-type>
 		<label>Zone Group ID</label>
 		<description>Id of the Zone Group the Zone Player belongs to</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="zonename">
 		<item-type>String</item-type>
 		<label>Zone Name</label>
 		<description>Name of the Zone Group associated to the Zone Player</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- Extended channels (for SONOS PLAY5, CONNECT & CONNECT:AMP only) -->
@@ -274,7 +276,7 @@
 		<item-type>Switch</item-type>
 		<label>Line-in Connected</label>
 		<description>Indicator set to ON when the line-in of the Zone Player is connected</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="playlinein" advanced="true">

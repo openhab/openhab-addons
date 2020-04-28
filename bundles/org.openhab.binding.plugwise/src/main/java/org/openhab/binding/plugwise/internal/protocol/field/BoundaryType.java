@@ -35,5 +35,4 @@ public enum BoundaryType {
     public int toInt() {
         return identifier;
     }
-
 }

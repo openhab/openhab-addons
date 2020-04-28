@@ -27,9 +27,9 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.openhab.binding.lifx.internal.fields.HSBK;
 import org.openhab.binding.lifx.internal.listener.LifxLightStateListener;
+import org.openhab.binding.lifx.internal.protocol.Effect;
 import org.openhab.binding.lifx.internal.protocol.PowerState;
 import org.openhab.binding.lifx.internal.protocol.SignalStrength;
-import org.openhab.binding.lifx.internal.protocol.Effect;
 
 /**
  * The {@link LifxLightState} stores the properties that represent the state of a light.
@@ -195,5 +195,4 @@ public class LifxLightState {
     public void removeListener(LifxLightStateListener listener) {
         listeners.remove(listener);
     }
-
 }

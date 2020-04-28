@@ -29,5 +29,4 @@ public class NameToDataType extends XmlAdapter<String, LiveDataType> {
     public String marshal(LiveDataType v) throws Exception {
         return v.toString();
     }
-
 }

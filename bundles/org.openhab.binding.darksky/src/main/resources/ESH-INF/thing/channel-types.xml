@@ -9,30 +9,30 @@
 		<label>Current Weather</label>
 		<description>This is the current weather.</description>
 		<channels>
-			<channel id="time-stamp" typeId="time-stamp" />
-			<channel id="condition" typeId="condition" />
-			<channel id="icon" typeId="condition-icon" />
-			<channel id="icon-id" typeId="condition-icon-id" />
-			<channel id="temperature" typeId="system.outdoor-temperature" />
-			<channel id="apparent-temperature" typeId="apparent-temperature" />
-			<channel id="pressure" typeId="system.barometric-pressure" />
-			<channel id="humidity" typeId="system.atmospheric-humidity" />
-			<channel id="wind-speed" typeId="system.wind-speed" />
-			<channel id="wind-direction" typeId="system.wind-direction" />
-			<channel id="gust-speed" typeId="gust-speed" />
-			<channel id="cloudiness" typeId="cloudiness" />
-			<channel id="visibility" typeId="visibility" />
-			<channel id="rain" typeId="rain" />
-			<channel id="snow" typeId="snow" />
-			<channel id="precip-intensity" typeId="precip-intensity" />
-			<channel id="precip-probability" typeId="precip-probability" />
-			<channel id="precip-type" typeId="precip-type" />
-			<channel id="uvindex" typeId="uvindex" />
-			<channel id="ozone" typeId="ozone" />
-			<channel id="sunrise" typeId="sunrise" />
-			<channel id="sunrise-event" typeId="sunrise-event" />
-			<channel id="sunset" typeId="sunset" />
-			<channel id="sunset-event" typeId="sunset-event" />
+			<channel id="time-stamp" typeId="time-stamp"/>
+			<channel id="condition" typeId="condition"/>
+			<channel id="icon" typeId="condition-icon"/>
+			<channel id="icon-id" typeId="condition-icon-id"/>
+			<channel id="temperature" typeId="system.outdoor-temperature"/>
+			<channel id="apparent-temperature" typeId="apparent-temperature"/>
+			<channel id="pressure" typeId="system.barometric-pressure"/>
+			<channel id="humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="wind-speed" typeId="system.wind-speed"/>
+			<channel id="wind-direction" typeId="system.wind-direction"/>
+			<channel id="gust-speed" typeId="gust-speed"/>
+			<channel id="cloudiness" typeId="cloudiness"/>
+			<channel id="visibility" typeId="visibility"/>
+			<channel id="rain" typeId="rain"/>
+			<channel id="snow" typeId="snow"/>
+			<channel id="precip-intensity" typeId="precip-intensity"/>
+			<channel id="precip-probability" typeId="precip-probability"/>
+			<channel id="precip-type" typeId="precip-type"/>
+			<channel id="uvindex" typeId="uvindex"/>
+			<channel id="ozone" typeId="ozone"/>
+			<channel id="sunrise" typeId="sunrise"/>
+			<channel id="sunrise-event" typeId="sunrise-event"/>
+			<channel id="sunset" typeId="sunset"/>
+			<channel id="sunset-event" typeId="sunset-event"/>
 		</channels>
 	</channel-group-type>
 
@@ -40,26 +40,26 @@
 		<label>3 Hour Forecast</label>
 		<description>This is the 5 day / 3 hour weather forecast.</description>
 		<channels>
-			<channel id="time-stamp" typeId="hourly-forecast-time-stamp" />
-			<channel id="condition" typeId="forecasted-condition" />
-			<channel id="icon" typeId="condition-icon" />
-			<channel id="icon-id" typeId="condition-icon-id" />
-			<channel id="temperature" typeId="forecasted-outdoor-temperature" />
-			<channel id="apparent-temperature" typeId="forecasted-apparent-temperature" />
-			<channel id="pressure" typeId="forecasted-barometric-pressure" />
-			<channel id="humidity" typeId="forecasted-atmospheric-humidity" />
-			<channel id="wind-speed" typeId="forecasted-wind-speed" />
-			<channel id="wind-direction" typeId="forecasted-wind-direction" />
-			<channel id="gust-speed" typeId="forecasted-gust-speed" />
-			<channel id="cloudiness" typeId="forecasted-cloudiness" />
-			<channel id="visibility" typeId="forecasted-visibility" />
-			<channel id="rain" typeId="forecasted-rain" />
-			<channel id="snow" typeId="forecasted-snow" />
-			<channel id="precip-intensity" typeId="forecasted-precip-intensity" />
-			<channel id="precip-probability" typeId="forecasted-precip-probability" />
-			<channel id="precip-type" typeId="forecasted-precip-type" />
-			<channel id="uvindex" typeId="forecasted-uvindex" />
-			<channel id="ozone" typeId="forecasted-ozone" />
+			<channel id="time-stamp" typeId="hourly-forecast-time-stamp"/>
+			<channel id="condition" typeId="forecasted-condition"/>
+			<channel id="icon" typeId="condition-icon"/>
+			<channel id="icon-id" typeId="condition-icon-id"/>
+			<channel id="temperature" typeId="forecasted-outdoor-temperature"/>
+			<channel id="apparent-temperature" typeId="forecasted-apparent-temperature"/>
+			<channel id="pressure" typeId="forecasted-barometric-pressure"/>
+			<channel id="humidity" typeId="forecasted-atmospheric-humidity"/>
+			<channel id="wind-speed" typeId="forecasted-wind-speed"/>
+			<channel id="wind-direction" typeId="forecasted-wind-direction"/>
+			<channel id="gust-speed" typeId="forecasted-gust-speed"/>
+			<channel id="cloudiness" typeId="forecasted-cloudiness"/>
+			<channel id="visibility" typeId="forecasted-visibility"/>
+			<channel id="rain" typeId="forecasted-rain"/>
+			<channel id="snow" typeId="forecasted-snow"/>
+			<channel id="precip-intensity" typeId="forecasted-precip-intensity"/>
+			<channel id="precip-probability" typeId="forecasted-precip-probability"/>
+			<channel id="precip-type" typeId="forecasted-precip-type"/>
+			<channel id="uvindex" typeId="forecasted-uvindex"/>
+			<channel id="ozone" typeId="forecasted-ozone"/>
 		</channels>
 	</channel-group-type>
 
@@ -67,30 +67,30 @@
 		<label>Daily Forecast</label>
 		<description>This is the 16 day / daily weather forecast.</description>
 		<channels>
-			<channel id="time-stamp" typeId="daily-forecast-time-stamp" />
-			<channel id="condition" typeId="forecasted-condition" />
-			<channel id="icon" typeId="condition-icon" />
-			<channel id="icon-id" typeId="condition-icon-id" />
-			<channel id="min-temperature" typeId="forecasted-min-outdoor-temperature" />
-			<channel id="max-temperature" typeId="forecasted-max-outdoor-temperature" />
-			<channel id="min-apparent-temperature" typeId="forecasted-min-apparent-temperature" />
-			<channel id="max-apparent-temperature" typeId="forecasted-max-apparent-temperature" />
-			<channel id="pressure" typeId="forecasted-barometric-pressure" />
-			<channel id="humidity" typeId="forecasted-atmospheric-humidity" />
-			<channel id="wind-speed" typeId="forecasted-wind-speed" />
-			<channel id="wind-direction" typeId="forecasted-wind-direction" />
-			<channel id="gust-speed" typeId="forecasted-gust-speed" />
-			<channel id="cloudiness" typeId="forecasted-cloudiness" />
-			<channel id="visibility" typeId="forecasted-visibility" />
-			<channel id="rain" typeId="forecasted-rain" />
-			<channel id="snow" typeId="forecasted-snow" />
-			<channel id="precip-intensity" typeId="forecasted-precip-intensity" />
-			<channel id="precip-probability" typeId="forecasted-precip-probability" />
-			<channel id="precip-type" typeId="forecasted-precip-type" />
-			<channel id="uvindex" typeId="forecasted-uvindex" />
-			<channel id="ozone" typeId="forecasted-ozone" />
-			<channel id="sunrise" typeId="forecasted-sunrise" />
-			<channel id="sunset" typeId="forecasted-sunset" />
+			<channel id="time-stamp" typeId="daily-forecast-time-stamp"/>
+			<channel id="condition" typeId="forecasted-condition"/>
+			<channel id="icon" typeId="condition-icon"/>
+			<channel id="icon-id" typeId="condition-icon-id"/>
+			<channel id="min-temperature" typeId="forecasted-min-outdoor-temperature"/>
+			<channel id="max-temperature" typeId="forecasted-max-outdoor-temperature"/>
+			<channel id="min-apparent-temperature" typeId="forecasted-min-apparent-temperature"/>
+			<channel id="max-apparent-temperature" typeId="forecasted-max-apparent-temperature"/>
+			<channel id="pressure" typeId="forecasted-barometric-pressure"/>
+			<channel id="humidity" typeId="forecasted-atmospheric-humidity"/>
+			<channel id="wind-speed" typeId="forecasted-wind-speed"/>
+			<channel id="wind-direction" typeId="forecasted-wind-direction"/>
+			<channel id="gust-speed" typeId="forecasted-gust-speed"/>
+			<channel id="cloudiness" typeId="forecasted-cloudiness"/>
+			<channel id="visibility" typeId="forecasted-visibility"/>
+			<channel id="rain" typeId="forecasted-rain"/>
+			<channel id="snow" typeId="forecasted-snow"/>
+			<channel id="precip-intensity" typeId="forecasted-precip-intensity"/>
+			<channel id="precip-probability" typeId="forecasted-precip-probability"/>
+			<channel id="precip-type" typeId="forecasted-precip-type"/>
+			<channel id="uvindex" typeId="forecasted-uvindex"/>
+			<channel id="ozone" typeId="forecasted-ozone"/>
+			<channel id="sunrise" typeId="forecasted-sunrise"/>
+			<channel id="sunset" typeId="forecasted-sunset"/>
 		</channels>
 	</channel-group-type>
 
@@ -98,12 +98,12 @@
 		<label>Weather Warnings</label>
 		<description>Weather warnings issued for the requested location.</description>
 		<channels>
-			<channel id="title" typeId="alert-title" />
-			<channel id="description" typeId="alert-description" />
-			<channel id="severity" typeId="alert-severity" />
-			<channel id="issued" typeId="alert-issued" />
-			<channel id="expires" typeId="alert-expires" />
-			<channel id="uri" typeId="alert-uri" />
+			<channel id="title" typeId="alert-title"/>
+			<channel id="description" typeId="alert-description"/>
+			<channel id="severity" typeId="alert-severity"/>
+			<channel id="issued" typeId="alert-issued"/>
+			<channel id="expires" typeId="alert-expires"/>
+			<channel id="uri" typeId="alert-uri"/>
 		</channels>
 	</channel-group-type>
 
@@ -113,7 +113,7 @@
 		<label>Observation Time</label>
 		<description>Time of data observation.</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS" />
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
 	<channel-type id="hourly-forecast-time-stamp">
@@ -121,7 +121,7 @@
 		<label>Forecast Time</label>
 		<description>Time of data forecasted.</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS" />
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
 	<channel-type id="daily-forecast-time-stamp">
@@ -129,7 +129,7 @@
 		<label>Forecast Date</label>
 		<description>Date of data forecasted.</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td" />
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td"/>
 	</channel-type>
 
 	<channel-type id="condition">
@@ -137,7 +137,7 @@
 		<label>Weather Condition</label>
 		<description>Current weather condition.</description>
 		<category>Sun_Clouds</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="forecasted-condition">
@@ -145,21 +145,21 @@
 		<label>Forecasted Weather Condition</label>
 		<description>Forecasted weather condition.</description>
 		<category>Sun_Clouds</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="condition-icon">
 		<item-type>Image</item-type>
 		<label>Icon</label>
 		<description>Icon representing the weather condition.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="condition-icon-id" advanced="true">
 		<item-type>String</item-type>
 		<label>Icon Id</label>
 		<description>Id of the icon to create the URL.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="forecasted-outdoor-temperature">
@@ -167,7 +167,7 @@
 		<label>Forecasted Temperature</label>
 		<description>Forecasted outdoor temperature.</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="forecasted-min-outdoor-temperature">
@@ -175,7 +175,7 @@
 		<label>Minimum Temperature</label>
 		<description>Minimum forecasted outdoor temperature.</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="forecasted-max-outdoor-temperature">
@@ -183,7 +183,7 @@
 		<label>Maximum Temperature</label>
 		<description>Maximum forecasted outdoor temperature.</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="apparent-temperature">
@@ -191,7 +191,7 @@
 		<label>Apparent Temperature</label>
 		<description>Current apparent temperature.</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="forecasted-apparent-temperature">
@@ -199,7 +199,7 @@
 		<label>Forecasted Apparent Temperature</label>
 		<description>Forecasted apparent temperature.</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="forecasted-min-apparent-temperature">
@@ -207,7 +207,7 @@
 		<label>Minimum Apparent Temperature</label>
 		<description>Minimum forecasted apparent temperature.</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="forecasted-max-apparent-temperature">
@@ -215,7 +215,7 @@
 		<label>Maximum Apparent Temperature</label>
 		<description>Maximum forecasted apparent temperature.</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="forecasted-barometric-pressure">
@@ -223,7 +223,7 @@
 		<label>Forecasted Pressure</label>
 		<description>Forecasted barometric pressure.</description>
 		<category>Pressure</category>
-		<state readOnly="true" pattern="%.3f %unit%" />
+		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 
 	<channel-type id="forecasted-atmospheric-humidity">
@@ -231,7 +231,7 @@
 		<label>Forecasted Humidity</label>
 		<description>Forecasted atmospheric relative humidity.</description>
 		<category>Humidity</category>
-		<state readOnly="true" pattern="%.0f %%" />
+		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 
 	<channel-type id="forecasted-wind-speed">
@@ -239,7 +239,7 @@
 		<label>Forecasted Wind Speed</label>
 		<description>Forecasted wind speed.</description>
 		<category>Wind</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="forecasted-wind-direction">
@@ -247,7 +247,7 @@
 		<label>Forecasted Wind Direction</label>
 		<description>Forecasted wind direction expressed as an angle.</description>
 		<category>Wind</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="gust-speed" advanced="true">
@@ -255,7 +255,7 @@
 		<label>Gust Speed</label>
 		<description>Current gust speed.</description>
 		<category>Wind</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="forecasted-gust-speed" advanced="true">
@@ -263,7 +263,7 @@
 		<label>Forecasted Gust Speed</label>
 		<description>Forecasted gust speed.</description>
 		<category>Wind</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="cloudiness">
@@ -271,7 +271,7 @@
 		<label>Cloudiness</label>
 		<description>Current cloudiness.</description>
 		<category>Clouds</category>
-		<state readOnly="true" min="0" max="100" pattern="%d %unit%" />
+		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="forecasted-cloudiness">
@@ -279,21 +279,21 @@
 		<label>Forecasted Cloudiness</label>
 		<description>Forecasted cloudiness.</description>
 		<category>Clouds</category>
-		<state readOnly="true" min="0" max="100" pattern="%d %unit%" />
+		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="visibility">
 		<item-type>Number:Length</item-type>
 		<label>Visibility</label>
 		<description>Current visibility.</description>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="forecasted-visibility">
 		<item-type>Number:Length</item-type>
 		<label>Forecasted Visibility</label>
 		<description>Forecasted visibility.</description>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="rain">
@@ -301,7 +301,7 @@
 		<label>Rain</label>
 		<description>Current rain intensity.</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.2f mm/h" />
+		<state readOnly="true" pattern="%.2f mm/h"/>
 	</channel-type>
 
 	<channel-type id="forecasted-rain">
@@ -309,7 +309,7 @@
 		<label>Forecasted Rain Intensity</label>
 		<description>Forecasted rain intensity.</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.2f mm/h" />
+		<state readOnly="true" pattern="%.2f mm/h"/>
 	</channel-type>
 
 	<channel-type id="snow">
@@ -317,7 +317,7 @@
 		<label>Snow Intensity</label>
 		<description>Current snow intensity.</description>
 		<category>Snow</category>
-		<state readOnly="true" pattern="%.2f mm/h" />
+		<state readOnly="true" pattern="%.2f mm/h"/>
 	</channel-type>
 
 	<channel-type id="forecasted-snow">
@@ -325,35 +325,35 @@
 		<label>Forecasted Snow Intensity</label>
 		<description>Forecasted snow intensity.</description>
 		<category>Snow</category>
-		<state readOnly="true" pattern="%.2f mm/h" />
+		<state readOnly="true" pattern="%.2f mm/h"/>
 	</channel-type>
 
 	<channel-type id="precip-intensity">
 		<item-type>Number:Speed</item-type>
 		<label>Precipitation Intensity</label>
 		<description>Current precipitation intensity.</description>
-		<state readOnly="true" pattern="%.2f mm/h" />
+		<state readOnly="true" pattern="%.2f mm/h"/>
 	</channel-type>
 
 	<channel-type id="forecasted-precip-intensity">
 		<item-type>Number:Speed</item-type>
 		<label>Forecasted Precipitation Intensity</label>
 		<description>Forecasted precipitation intensity.</description>
-		<state readOnly="true" pattern="%.2f mm/h" />
+		<state readOnly="true" pattern="%.2f mm/h"/>
 	</channel-type>
 
 	<channel-type id="precip-probability">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Precipitation Probability</label>
 		<description>Current precipitation probability.</description>
-		<state readOnly="true" min="0" max="100" pattern="%d %unit%" />
+		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="forecasted-precip-probability">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Forecasted Precipitation Probability</label>
 		<description>Forecasted precipitation probability.</description>
-		<state readOnly="true" min="0" max="100" pattern="%d %unit%" />
+		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="precip-type">
@@ -386,28 +386,28 @@
 		<item-type>Number</item-type>
 		<label>UV Index</label>
 		<description>Current UV index.</description>
-		<state readOnly="true" pattern="%d" />
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="forecasted-uvindex">
 		<item-type>Number</item-type>
 		<label>Forecasted UV Index</label>
 		<description>Forecasted UV index.</description>
-		<state readOnly="true" pattern="%d" />
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="ozone">
 		<item-type>Number:ArealDensity</item-type>
 		<label>Ozone</label>
 		<description>Current ozone.</description>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="forecasted-ozone">
 		<item-type>Number:ArealDensity</item-type>
 		<label>Forecasted Ozone</label>
 		<description>Forecasted ozone.</description>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="sunrise">
@@ -415,7 +415,7 @@
 		<label>Sunrise</label>
 		<description>Sunrise of the current day.</description>
 		<category>Sun</category>
-		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS" />
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
 	<channel-type id="forecasted-sunrise">
@@ -423,7 +423,7 @@
 		<label>Forecasted Sunrise</label>
 		<description>Forecasted sunrise of the day.</description>
 		<category>Sun</category>
-		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS" />
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
 	<channel-type id="sunrise-event">
@@ -436,7 +436,7 @@
 				<option value="START">START</option>
 			</options>
 		</event>
-		<config-description-ref uri="channel-type:darksky:sunrise-sunset-event" />
+		<config-description-ref uri="channel-type:darksky:sunrise-sunset-event"/>
 	</channel-type>
 
 	<channel-type id="sunset">
@@ -444,7 +444,7 @@
 		<label>Sunset</label>
 		<description>Sunset of the current day.</description>
 		<category>Sun</category>
-		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS" />
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
 	<channel-type id="forecasted-sunset">
@@ -452,7 +452,7 @@
 		<label>Forecasted Sunset</label>
 		<description>Forecasted sunset of the day.</description>
 		<category>Sun</category>
-		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS" />
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
 	<channel-type id="sunset-event">
@@ -465,49 +465,49 @@
 				<option value="START">START</option>
 			</options>
 		</event>
-		<config-description-ref uri="channel-type:darksky:sunrise-sunset-event" />
+		<config-description-ref uri="channel-type:darksky:sunrise-sunset-event"/>
 	</channel-type>
 
 	<channel-type id="alert-title">
 		<item-type>String</item-type>
 		<label>Title</label>
 		<description>A brief description of the alert.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="alert-description">
 		<item-type>String</item-type>
 		<label>Description</label>
 		<description>A detailed description of the alert.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="alert-severity">
 		<item-type>String</item-type>
 		<label>Severity</label>
 		<description>The severity of the alert.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="alert-issued">
 		<item-type>DateTime</item-type>
 		<label>Issued</label>
 		<description>The time at which the alert was issued.</description>
-		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS" />
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
 	<channel-type id="alert-expires">
 		<item-type>DateTime</item-type>
 		<label>Expires</label>
 		<description>The time at which the alert will expire.</description>
-		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS" />
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
 	<channel-type id="alert-uri" advanced="true">
 		<item-type>String</item-type>
 		<label>URI</label>
 		<description>An external URI that one may refer to for detailed information about the alert.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -154,5 +154,4 @@ public class NeatoAccountHandler extends BaseBridgeHandler {
             return token;
         }
     }
-
 }

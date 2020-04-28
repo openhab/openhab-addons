@@ -23,5 +23,4 @@ public class VSizeCommand extends BasePercentCommand {
     protected VSizeCommand(int setId) {
         super('f', 't', setId);
     }
-
 }

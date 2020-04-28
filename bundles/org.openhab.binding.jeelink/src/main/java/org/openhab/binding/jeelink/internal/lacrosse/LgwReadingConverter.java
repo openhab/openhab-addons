@@ -35,21 +35,24 @@ public class LgwReadingConverter implements JeeLinkReadingConverter<LgwReading> 
         if (inputLine != null) {
             Matcher matcher = LINE_P.matcher(inputLine);
             if (matcher.matches()) {
-                /* Format
-                  OK WS 71  4   4   203 53  255 255 255 255 255 255 255 255 0    3 219  255 255 255 255 255 255 255 255 255
-                  OK WS 75  4   4   195 61  255 255 255 255 255 255 255 255 0  255 255  255 255 255 255 255 255 255 255 255
-                  OK WS 213 4   5   126 40  255 255 255 255 255 255 255 255 0   40  53  0   48  57
-                  OK WS ID  XXX TTT TTT HHH RRR RRR DDD DDD SSS SSS GGG GGG FFF PPP PPP GAS GAS GAS DEB DEB DEB LUX LUX LUX
-                  |  |  |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |-------------------------------------- Pressure LSB
-                  |  |  |   |   |   |   |   |   |   |   |   |   |   |   |   |   |------------------------------------------ Pressure MSB
-                  |  |  |   |   |   |   |   |   |   |   |   |   |   |   |   |-- Fix 0
-                  |  |  |   |   |   |   |-------------------------------------- Humidity (1 ... 99 %rH)                        FF = none
-                  |  |  |   |   |   |------------------------------------------ Temp * 10 + 1000 LSB (-40 ... +60 °C)          FF/FF = none
-                  |  |  |   |   |---------------------------------------------- Temp * 10 + 1000 MSB
-                  |  |  |   |-------------------------------------------------- fix "4"
-                  |  |  |------------------------------------------------------ Sensor ID (1 ... 63)
-                  |  |--------------------------------------------------------- fix "WS"
-                  |------------------------------------------------------------ fix "OK"
+                /*
+                 * Format
+                 * OK WS 71 4 4 203 53 255 255 255 255 255 255 255 255 0 3 219 255 255 255 255 255 255 255 255 255
+                 * OK WS 75 4 4 195 61 255 255 255 255 255 255 255 255 0 255 255 255 255 255 255 255 255 255 255 255
+                 * OK WS 213 4 5 126 40 255 255 255 255 255 255 255 255 0 40 53 0 48 57
+                 * OK WS ID XXX TTT TTT HHH RRR RRR DDD DDD SSS SSS GGG GGG FFF PPP PPP GAS GAS GAS DEB DEB DEB LUX LUX
+                 * LUX
+                 * | | | | | | | | | | | | | | | | | |-------------------------------------- Pressure LSB
+                 * | | | | | | | | | | | | | | | | |------------------------------------------ Pressure MSB
+                 * | | | | | | | | | | | | | | | |-- Fix 0
+                 * | | | | | | |-------------------------------------- Humidity (1 ... 99 %rH) FF = none
+                 * | | | | | |------------------------------------------ Temp * 10 + 1000 LSB (-40 ... +60 °C) FF/FF =
+                 * none
+                 * | | | | |---------------------------------------------- Temp * 10 + 1000 MSB
+                 * | | | |-------------------------------------------------- fix "4"
+                 * | | |------------------------------------------------------ Sensor ID (1 ... 63)
+                 * | |--------------------------------------------------------- fix "WS"
+                 * |------------------------------------------------------------ fix "OK"
                  */
                 logger.trace("Creating reading from: {}", inputLine);
 
@@ -57,7 +60,7 @@ public class LgwReadingConverter implements JeeLinkReadingConverter<LgwReading> 
 
                 Float temperature = "255".equals(matcher.group(2)) ? null
                         : (float) (Integer.parseInt(matcher.group(2)) * 256 + Integer.parseInt(matcher.group(3)) - 1000)
-                        / 10;
+                                / 10;
 
                 Integer humidity = "255".equals(matcher.group(4)) ? null : Integer.parseInt(matcher.group(4));
 

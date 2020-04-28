@@ -40,5 +40,4 @@ public enum BoundaryAction {
     public int getUpperAction() {
         return upperAction;
     }
-
 }

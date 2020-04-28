@@ -67,7 +67,6 @@ public class DeviceInspector {
         public Set<GroupAddress> getGroupAddresses() {
             return groupAddresses;
         }
-
     }
 
     public DeviceInspector(DeviceInfoClient client, IndividualAddress address) {
@@ -131,7 +130,6 @@ public class DeviceInspector {
                     e.getMessage());
         }
         return ret;
-
     }
 
     private @Nullable String toHex(byte @Nullable [] input, String separator) {
@@ -171,5 +169,4 @@ public class DeviceInspector {
         value = value << 16 | data[2] & 0xff << 8 | data[3] & 0xff;
         return value;
     }
-
 }

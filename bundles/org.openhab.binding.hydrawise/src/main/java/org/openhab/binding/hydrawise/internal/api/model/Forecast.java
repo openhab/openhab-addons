@@ -36,5 +36,4 @@ public class Forecast {
     public String icon;
 
     public String iconLocal;
-
 }

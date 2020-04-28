@@ -42,9 +42,9 @@ public class SatelMessage {
      * Creates new instance with specified command code and payload.
      *
      * @param command
-     *                    command code
+     *            command code
      * @param payload
-     *                    command payload
+     *            command payload
      */
     public SatelMessage(byte command, byte[] payload) {
         this.command = command;
@@ -193,5 +193,4 @@ public class SatelMessage {
         result = prime * result + Arrays.hashCode(payload);
         return result;
     }
-
 }

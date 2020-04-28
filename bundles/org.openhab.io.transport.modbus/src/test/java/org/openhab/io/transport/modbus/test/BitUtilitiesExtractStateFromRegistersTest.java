@@ -382,7 +382,6 @@ public class BitUtilitiesExtractStateFromRegistersTest {
                         new DecimalType("16124500437522872585"), ValueType.UINT64_SWAP,
                         shortArrayToRegisterArray(0x7909, 0x772E, 0xBBB7, 0xDFC5), 0 })
                 .collect(Collectors.toList()));
-
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

@@ -41,9 +41,9 @@ public class ControlObjectCommand extends ControlCommand {
      * Creates new command class instance for specified type of control.
      *
      * @param controlType type of controlled objects
-     * @param objects     bits that represents objects to control
-     * @param userCode    code of the user on behalf the control is made
-     * @param scheduler   scheduler object for scheduling refreshes
+     * @param objects bits that represents objects to control
+     * @param userCode code of the user on behalf the control is made
+     * @param scheduler scheduler object for scheduling refreshes
      */
     public ControlObjectCommand(ControlType controlType, byte[] objects, String userCode,
             ScheduledExecutorService scheduler) {
@@ -62,5 +62,4 @@ public class ControlObjectCommand extends ControlCommand {
                     TimeUnit.MILLISECONDS);
         }
     }
-
 }

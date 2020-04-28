@@ -49,5 +49,4 @@ public final class PositionalJob extends AbstractJob {
     public String toString() {
         return "Positional job " + getThingUID();
     }
-
 }

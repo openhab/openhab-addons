@@ -23,23 +23,23 @@ public class BsbLanApiParameterDTO {
 
     public enum DataType {
         @SerializedName("0")
-        DT_VALS(0),    // plain value
+        DT_VALS(0), // plain value
         @SerializedName("1")
-        DT_ENUM(1),    // value (8/16 Bit) followed by space followed by text
+        DT_ENUM(1), // value (8/16 Bit) followed by space followed by text
         @SerializedName("2")
-        DT_BITS(2),    // bit value followed by bitmask followed by text
+        DT_BITS(2), // bit value followed by bitmask followed by text
         @SerializedName("3")
-        DT_WDAY(3),    // weekday
+        DT_WDAY(3), // weekday
         @SerializedName("4")
-        DT_HHMM(4),    // hour:minute
+        DT_HHMM(4), // hour:minute
         @SerializedName("5")
-        DT_DTTM(5),    // date and time
+        DT_DTTM(5), // date and time
         @SerializedName("6")
-        DT_DDMM(6),    // day and month
+        DT_DDMM(6), // day and month
         @SerializedName("7")
-        DT_STRN(7),    // string
+        DT_STRN(7), // string
         @SerializedName("8")
-        DT_DWHM(8);    // PPS time (day of week, hour:minute)
+        DT_DWHM(8); // PPS time (day of week, hour:minute)
 
         private final int value;
 

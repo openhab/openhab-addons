@@ -65,5 +65,4 @@ public class RobonectHandlerFactory extends BaseThingHandlerFactory {
     protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
         this.httpClient = null;
     }
-
 }

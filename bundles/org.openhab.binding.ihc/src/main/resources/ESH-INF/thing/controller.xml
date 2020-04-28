@@ -10,28 +10,29 @@
 		<description></description>
 
 		<channels>
-			<channel typeId="controller-state" id="controllerState" />
-			<channel typeId="controller-uptime" id="controllerUptime" />
-			<channel typeId="controller-time" id="controllerTime" />
+			<channel typeId="controller-state" id="controllerState"/>
+			<channel typeId="controller-uptime" id="controllerUptime"/>
+			<channel typeId="controller-time" id="controllerTime"/>
 		</channels>
 
 		<properties>
-			<property name="controllerManufacturer" />
-			<property name="controllerSerialNumber" />
-			<property name="controllerSwVersion" />
-			<property name="controllerHwVersion" />
-			<property name="controllerIsWithoutViewer" />
-			<property name="controllerSwDate" />
-			<property name="controllerProductionDate" />
-			<property name="projectDate" />
-			<property name="projectNumber" />
+			<property name="controllerManufacturer"/>
+			<property name="controllerSerialNumber"/>
+			<property name="controllerSwVersion"/>
+			<property name="controllerHwVersion"/>
+			<property name="controllerIsWithoutViewer"/>
+			<property name="controllerSwDate"/>
+			<property name="controllerProductionDate"/>
+			<property name="projectDate"/>
+			<property name="projectNumber"/>
 		</properties>
 
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
 				<context>network-address</context>
 				<label>Network Address</label>
-				<description>Network/IP address of the IHC / ELKO controller without https prefix, but can contain TCP port if default port is not used</description>
+				<description>Network/IP address of the IHC / ELKO controller without https prefix, but can contain TCP port if
+					default port is not used</description>
 			</parameter>
 			<parameter name="username" type="text" required="true">
 				<label>User Name</label>
@@ -54,7 +55,8 @@
 			</parameter>
 			<parameter name="createChannelsAutomatically" type="boolean" required="false">
 				<label>Create Channels Automatically</label>
-				<description>Create channels automatically from project file. Project file loading parameter should be enabled as well.</description>
+				<description>Create channels automatically from project file. Project file loading parameter should be enabled as
+					well.</description>
 				<default>true</default>
 			</parameter>
 		</config-description>

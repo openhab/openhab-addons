@@ -9,8 +9,8 @@
 		<description></description>
 
 		<channel-groups>
-			<channel-group typeId="f1x55-sensor-group-channels" id="sensor" />
-			<channel-group typeId="f1x55-setting-group-channels" id="setting" />
+			<channel-group typeId="f1x55-sensor-group-channels" id="sensor"/>
+			<channel-group typeId="f1x55-setting-group-channels" id="setting"/>
 		</channel-groups>
 
 		<config-description>
@@ -57,7 +57,8 @@
 			</parameter>
 			<parameter name="throttleTime" type="integer" unit="ms">
 				<label>Throttle Incoming Data</label>
-				<description>Throttle incoming data read out messages from heat pump. 0 = throttle is disabled, otherwise throttle time in milliseconds.</description>
+				<description>Throttle incoming data read out messages from heat pump. 0 = throttle is disabled, otherwise throttle
+					time in milliseconds.</description>
 				<default>0</default>
 			</parameter>
 		</config-description>
@@ -69,8 +70,8 @@
 		<description></description>
 
 		<channel-groups>
-			<channel-group typeId="f1x55-sensor-group-channels" id="sensor" />
-			<channel-group typeId="f1x55-setting-group-channels" id="setting" />
+			<channel-group typeId="f1x55-sensor-group-channels" id="sensor"/>
+			<channel-group typeId="f1x55-setting-group-channels" id="setting"/>
 		</channel-groups>
 
 		<config-description>
@@ -117,7 +118,8 @@
 			</parameter>
 			<parameter name="throttleTime" type="integer" unit="ms">
 				<label>Throttle Incoming Data</label>
-				<description>Throttle incoming data read out messages from heat pump. 0 = throttle is disabled, otherwise throttle time in milliseconds.</description>
+				<description>Throttle incoming data read out messages from heat pump. 0 = throttle is disabled, otherwise throttle
+					time in milliseconds.</description>
 				<default>0</default>
 			</parameter>
 		</config-description>
@@ -128,8 +130,8 @@
 		<description></description>
 
 		<channel-groups>
-			<channel-group typeId="f1x55-sensor-group-channels" id="sensor" />
-			<channel-group typeId="f1x55-setting-group-channels" id="setting" />
+			<channel-group typeId="f1x55-sensor-group-channels" id="sensor"/>
+			<channel-group typeId="f1x55-setting-group-channels" id="setting"/>
 		</channel-groups>
 
 		<config-description>
@@ -157,7 +159,8 @@
 			</parameter>
 			<parameter name="throttleTime" type="integer" unit="ms">
 				<label>Throttle Incoming Data</label>
-				<description>Throttle incoming data read out messages from heat pump. 0 = throttle is disabled, otherwise throttle time in milliseconds.</description>
+				<description>Throttle incoming data read out messages from heat pump. 0 = throttle is disabled, otherwise throttle
+					time in milliseconds.</description>
 				<default>0</default>
 			</parameter>
 		</config-description>

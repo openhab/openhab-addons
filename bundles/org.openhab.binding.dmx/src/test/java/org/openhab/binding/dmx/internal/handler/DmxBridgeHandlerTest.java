@@ -79,7 +79,6 @@ public class DmxBridgeHandlerTest extends JavaTest {
             super.updateConfiguration();
             updateStatus(ThingStatus.ONLINE);
         }
-
     }
 
     private static final int TEST_UNIVERSE = 1;

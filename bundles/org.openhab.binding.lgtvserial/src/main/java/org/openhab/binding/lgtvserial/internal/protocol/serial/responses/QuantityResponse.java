@@ -50,5 +50,4 @@ public class QuantityResponse implements LGSerialResponse {
     public boolean isSuccess() {
         return success;
     }
-
 }

@@ -107,5 +107,4 @@ public class KeypadHandler extends BaseKeypadHandler {
         super(thing);
         kp = new KeypadConfigSeetouch();
     }
-
 }

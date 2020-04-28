@@ -8,7 +8,7 @@
 		<label>Harmony Hub</label>
 		<description>A Logitech Harmony Hub</description>
 		<channels>
-			<channel id="currentActivity" typeId="currentActivity" />
+			<channel id="currentActivity" typeId="currentActivity"/>
 			<channel id="activityStarting" typeId="eventTrigger">
 				<label>Activity Starting Trigger</label>
 				<description>Triggered when an activity is starting</description>
@@ -19,9 +19,10 @@
 			</channel>
 			<channel id="buttonPress" typeId="buttonPress">
 				<label>Button Press</label>
-				<description>The label/name of the button to press on a Harmony Hub which will be sent to the device associated with the current activity and label</description>
+				<description>The label/name of the button to press on a Harmony Hub which will be sent to the device associated with
+					the current activity and label</description>
 			</channel>
-			<channel id="player" typeId="player" />
+			<channel id="player" typeId="player"/>
 		</channels>
 		<properties>
 			<property name="name"></property>
@@ -43,12 +44,12 @@
 
 	<thing-type id="device">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="hub" />
+			<bridge-type-ref id="hub"/>
 		</supported-bridge-type-refs>
 		<label>Harmony Device</label>
 		<description>Logitech Harmony Hub Device</description>
 		<channels>
-			<channel id="buttonPress" typeId="buttonPress" />
+			<channel id="buttonPress" typeId="buttonPress"/>
 		</channels>
 		<config-description>
 			<parameter name="id" type="integer" required="false">
@@ -83,7 +84,8 @@
 	<channel-type id="player">
 		<item-type>Player</item-type>
 		<label>Player Control</label>
-		<description>Send player commands (Rewind,FastForward,Play,Pause,SkipForward,SkipBackwards) to the device associated with the current running activity.</description>
+		<description>Send player commands (Rewind,FastForward,Play,Pause,SkipForward,SkipBackwards) to the device associated
+			with the current running activity.</description>
 	</channel-type>
 
 </thing:thing-descriptions>

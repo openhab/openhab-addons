@@ -6,16 +6,16 @@
 	<!-- Hue Tap Switch -->
 	<thing-type id="0830">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Hue Tap Switch</label>
 		<description>A customizable switch.</description>
 
 		<channels>
-			<channel id="tap_switch_event" typeId="tap_switch_event" />
-			<channel id="tap_switch" typeId="tap_switch" />
-			<channel id="last_updated" typeId="last_updated" />
+			<channel id="tap_switch_event" typeId="tap_switch_event"/>
+			<channel id="tap_switch" typeId="tap_switch"/>
+			<channel id="last_updated" typeId="last_updated"/>
 		</channels>
 
 		<representation-property>uniqueId</representation-property>

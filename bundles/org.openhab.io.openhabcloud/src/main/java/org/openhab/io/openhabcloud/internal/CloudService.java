@@ -394,5 +394,4 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
             cloudClient.sendItemUpdate(ise.getItemName(), ise.getItemState().toString());
         }
     }
-
 }

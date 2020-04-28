@@ -20,7 +20,6 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,20 +51,17 @@ public class RdsCloudHandler extends BaseBridgeHandler {
         config = getConfigAs(RdsCloudConfiguration.class);
 
         if (config == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "missing configuration");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "missing configuration");
             return;
         }
 
         if (config.userEmail.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "missing email address");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "missing email address");
             return;
         }
 
         if (config.userPassword.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "missing password");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "missing password");
             return;
         }
 
@@ -74,8 +70,7 @@ public class RdsCloudHandler extends BaseBridgeHandler {
 
         if (config.pollingInterval < FAST_POLL_INTERVAL || config.pollingInterval > LAZY_POLL_INTERVAL) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    String.format("polling interval out of range [%d..%d]", FAST_POLL_INTERVAL,
-                            LAZY_POLL_INTERVAL));
+                    String.format("polling interval out of range [%d..%d]", FAST_POLL_INTERVAL, LAZY_POLL_INTERVAL));
             return;
         }
     }
@@ -104,8 +99,7 @@ public class RdsCloudHandler extends BaseBridgeHandler {
 
         if (accessToken != null) {
             if (getThing().getStatus() != ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, 
-                        "cloud server responded");
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "cloud server responded");
             }
         } else {
             if (getThing().getStatus() == ThingStatus.ONLINE) {

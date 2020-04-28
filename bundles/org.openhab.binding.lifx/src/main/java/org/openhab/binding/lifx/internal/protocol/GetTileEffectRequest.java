@@ -53,5 +53,4 @@ public class GetTileEffectRequest extends Packet {
     public int[] expectedResponses() {
         return new int[] { StateTileEffectResponse.TYPE };
     }
-
 }

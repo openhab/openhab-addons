@@ -61,5 +61,4 @@ public interface AvrCommand {
      * @return
      */
     public CommandType getCommandType();
-
 }

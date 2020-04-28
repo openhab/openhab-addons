@@ -114,5 +114,4 @@ public class LiveDataResponseMeterless implements DataResponse {
     public final void setOverview(Overview overview) {
         this.overview = overview;
     }
-
 }

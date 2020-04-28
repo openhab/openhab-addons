@@ -38,10 +38,9 @@ import org.jupnp.model.meta.RemoteDeviceIdentity;
 import org.jupnp.model.meta.RemoteService;
 import org.jupnp.model.types.DeviceType;
 import org.jupnp.model.types.UDN;
-import org.openhab.binding.hue.internal.discovery.HueBridgeDiscoveryParticipant;
 
 /**
- * Tests for {@link HueBridgeDiscoveryParticipant}.
+ * Tests for {@link org.openhab.binding.hue.internal.discovery.HueBridgeDiscoveryParticipant}.
  *
  * @author Kai Kreuzer - Initial contribution
  * @author Thomas Höfer - Added representation

@@ -336,5 +336,4 @@ public class PLCPulseHandler extends PLCCommonHandler {
             logger.debug("Channel {} will not accept {} items.", channelUID, type);
         }
     }
-
 }

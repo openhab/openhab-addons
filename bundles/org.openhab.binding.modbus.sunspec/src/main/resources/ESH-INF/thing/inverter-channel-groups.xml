@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="modbus" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -13,7 +14,7 @@
 			<channel id="status" typeId="status-type"/>
 		</channels>
 	</channel-group-type>
-	
+
 	<channel-group-type id="ac-general">
 		<label>AC Summary</label>
 		<channels>
@@ -30,18 +31,18 @@
 	<channel-group-type id="ac-phase">
 		<label>AC Phase</label>
 		<channels>
-			<channel id="ac-phase-current" typeId="ac-phase-current-type" />
-			<channel id="ac-voltage-to-next" typeId="ac-voltage-to-next-type" />
-			<channel id="ac-voltage-to-n" typeId="ac-voltage-to-n-type" />
+			<channel id="ac-phase-current" typeId="ac-phase-current-type"/>
+			<channel id="ac-voltage-to-next" typeId="ac-voltage-to-next-type"/>
+			<channel id="ac-voltage-to-n" typeId="ac-voltage-to-n-type"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="dc-general">
 		<label>DC summary</label>
 		<channels>
-			<channel id="dc-current" typeId="dc-current-type" />
-			<channel id="dc-voltage" typeId="dc-voltage-type" />
-			<channel id="dc-power" typeId="dc-power-type" />
+			<channel id="dc-current" typeId="dc-current-type"/>
+			<channel id="dc-voltage" typeId="dc-voltage-type"/>
+			<channel id="dc-power" typeId="dc-power-type"/>
 		</channels>
 	</channel-group-type>
 

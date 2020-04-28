@@ -67,5 +67,4 @@ public class MultiSwitchDevice extends AbstractDevice {
             itemValue = String.valueOf(((DecimalType) state).intValue());
         }
     }
-
 }

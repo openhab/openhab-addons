@@ -26,5 +26,4 @@ public class AirQualityConfiguration {
     public String location;
     public Integer stationId;
     public Integer refresh;
-
 }

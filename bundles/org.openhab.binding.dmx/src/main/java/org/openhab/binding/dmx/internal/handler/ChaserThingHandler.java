@@ -213,5 +213,4 @@ public class ChaserThingHandler extends DmxThingHandler {
             logger.debug("unknown state received: {} in channel {} thing {}", state, channelUID, this.thing.getUID());
         }
     }
-
 }

@@ -47,17 +47,14 @@ public class TestBridgeHandler extends DmxBridgeHandler {
 
     @Override
     protected void openConnection() {
-
     }
 
     @Override
     protected void closeConnection() {
-
     }
 
     @Override
     protected void sendDmxData() {
-
     }
 
     @Override

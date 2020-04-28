@@ -55,5 +55,4 @@ public class NewStatesCommand extends SatelCommandBase {
         // dispatch event
         eventDispatcher.dispatchEvent(new NewStatesEvent(getResponse().getPayload()));
     }
-
 }

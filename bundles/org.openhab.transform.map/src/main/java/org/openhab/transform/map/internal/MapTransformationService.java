@@ -69,5 +69,4 @@ public class MapTransformationService extends AbstractFileTransformationService<
             throw new TransformationException("An error occurred while opening file.", e);
         }
     }
-
 }

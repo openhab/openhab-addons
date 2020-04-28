@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="irtrans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="irtrans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Blaster/Receiver diode connected to an IRtrans transceiver -->
 	<thing-type id="blaster">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="ethernet" />
+			<bridge-type-ref id="ethernet"/>
 		</supported-bridge-type-refs>
 
 		<label>Blaster</label>
 		<description>This is an infrared transmitter that can send infrared commands</description>
 
 		<channels>
-			<channel id="io" typeId="io" />
+			<channel id="io" typeId="io"/>
 		</channels>
 
 		<config-description>
@@ -24,12 +25,14 @@
 
 			<parameter name="remote" type="text" required="true">
 				<label>Remote</label>
-				<description>The remote or manufacturer name which's commands will be allowed, as defined in the IRtrans server database and flashed into the transceiver. Can be '*' for any remote</description>
+				<description>The remote or manufacturer name which's commands will be allowed, as defined in the IRtrans server
+					database and flashed into the transceiver. Can be '*' for any remote</description>
 			</parameter>
 
 			<parameter name="command" type="text" required="true">
 				<label>Command</label>
-				<description>The name of the command will be allowed, as defined in the IRtrans server database and flashed into the transceiver. Can be '*' for any command</description>
+				<description>The name of the command will be allowed, as defined in the IRtrans server database and flashed into the
+					transceiver. Can be '*' for any command</description>
 			</parameter>
 		</config-description>
 	</thing-type>

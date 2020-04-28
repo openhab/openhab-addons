@@ -6,21 +6,21 @@
 
 	<thing-type id="heatpumpdevice">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="melcloudaccount" />
+			<bridge-type-ref id="melcloudaccount"/>
 		</supported-bridge-type-refs>
 		<label>Heatpump Device</label>
 		<description>Heatpump device</description>
 
 		<channels>
-			<channel id="power" typeId="power-channel" />
-			<channel id="tankWaterTemperature" typeId="tankWaterTemperature-channel" />
-			<channel id="forcedHotWaterMode" typeId="forcedHotWaterMode-channel" />
-			<channel id="roomTemperatureZone1" typeId="roomTemperatureZone1-channel" />
-			<channel id="setTemperatureZone1" typeId="setTemperatureZone1-channel" />
-			<channel id="hasPendingCommand" typeId="hasPendingCommand-channel" />
-			<channel id="offline" typeId="offline-channel" />
-			<channel id="lastCommunication" typeId="lastCommunication-channel" />
-			<channel id="nextCommunication" typeId="nextCommunication-channel" />			
+			<channel id="power" typeId="power-channel"/>
+			<channel id="tankWaterTemperature" typeId="tankWaterTemperature-channel"/>
+			<channel id="forcedHotWaterMode" typeId="forcedHotWaterMode-channel"/>
+			<channel id="roomTemperatureZone1" typeId="roomTemperatureZone1-channel"/>
+			<channel id="setTemperatureZone1" typeId="setTemperatureZone1-channel"/>
+			<channel id="hasPendingCommand" typeId="hasPendingCommand-channel"/>
+			<channel id="offline" typeId="offline-channel"/>
+			<channel id="lastCommunication" typeId="lastCommunication-channel"/>
+			<channel id="nextCommunication" typeId="nextCommunication-channel"/>
 		</channels>
 
 		<config-description>

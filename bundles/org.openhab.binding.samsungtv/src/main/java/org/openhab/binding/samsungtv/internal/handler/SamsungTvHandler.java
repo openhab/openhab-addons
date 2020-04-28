@@ -399,7 +399,6 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
                         logger.info("Service NOT found after {} attempts", count);
                     }
                 }
-
             }, 1000, TimeUnit.MILLISECONDS);
         }
     }

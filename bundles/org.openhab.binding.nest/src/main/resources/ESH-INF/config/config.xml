@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
@@ -26,14 +27,16 @@
 		<parameter name="pincode" type="text" groupName="oauth">
 			<label>Pincode</label>
 			<description>The single use pincode for obtaining an OAuth access token.
-			Get the pincode by accepting to the terms shown at the product authorization URL.
-			This value is automatically reset when the access token has been obtained</description>
+				Get the pincode by accepting to the terms
+				shown at the product authorization URL.
+				This value is automatically reset when the access token has been obtained</description>
 		</parameter>
 		<parameter name="accessToken" type="text" groupName="oauth">
 			<label>Access Token</label>
 			<description>The access token used for authenticating to the Nest API.
-			It is automatically obtained from Nest when the value is empty and 
-			a valid pincode parameter is entered</description>
+				It is automatically obtained from Nest when the
+				value is empty and
+				a valid pincode parameter is entered</description>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>

@@ -149,5 +149,4 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
      * @param bridgeConfiguration the connected bridge configuration
      */
     public abstract void refresh(FroniusBridgeConfiguration bridgeConfiguration);
-
 }

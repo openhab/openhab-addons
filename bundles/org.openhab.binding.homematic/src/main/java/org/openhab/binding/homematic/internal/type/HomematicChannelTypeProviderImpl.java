@@ -88,5 +88,4 @@ public class HomematicChannelTypeProviderImpl implements HomematicChannelTypePro
     public void addChannelType(ChannelType channelType) {
         channelTypesByUID.put(channelType.getUID(), channelType);
     }
-
 }

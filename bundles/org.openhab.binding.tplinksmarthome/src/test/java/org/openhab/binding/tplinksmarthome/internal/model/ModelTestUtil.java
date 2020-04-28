@@ -62,5 +62,4 @@ public final class ModelTestUtil {
                 .toString(ModelTestUtil.class.getResourceAsStream(filename + ".json"), StandardCharsets.UTF_8.name())
                 .replaceAll("[\n\r\t ]", "");
     }
-
 }
