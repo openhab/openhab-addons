@@ -34,12 +34,14 @@ No binding configuration required.
 The things can be configured either through the online configuration utility via discovery, or manually through the configuration file.
 The following table shows the available configuration parameters for each thing.
 
-| Thing     | Configuration Parameters                                                                                                                                                                     |
-|-----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| bridge    | protocol - Protocol used for the communication (Binary, Ascii) - Required.serialPort - Serial port for the bridge - Required.baud - Baud rate of the bridge - Not Required - default = 9600. |
-| partition | partitionNumber - Partition number (1-8) - Required.                                                                                                                                         |
-| zone      | zoneNumber - Zone number (1-192) - Required.                                                                                                                                                 |
-| keypad    | keypadAddress - Keypad address (192-255) - Required.                                                                                                                                         |
+| Thing     | Configuration Parameters                                                                     |
+|-----------|----------------------------------------------------------------------------------------------|
+| bridge    | serialPort - Serial port for the bridge - Required                                           |
+| bridge    | protocol - Protocol used for the communication (Binary, Ascii) - Required - Default = Binary |
+| bridge    | baud - Baud rate of the bridge - Required - Default = 9600                                   |
+| partition | partitionNumber - Partition number (1-8) - Required                                          |
+| zone      | zoneNumber - Zone number (1-192) - Required                                                  |
+| keypad    | keypadAddress - Keypad address (192-255) - Required                                          |
 
 The binding can be configured manually if discovery is not utilized.
 A full example is further below.

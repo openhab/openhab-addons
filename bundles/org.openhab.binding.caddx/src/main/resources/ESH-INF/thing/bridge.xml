@@ -30,7 +30,7 @@
 				<label>Baud Rate</label>
 				<description>The baud rate of the serial port. Valid values are 9600
 					(default), 19200, 38400, 57600, and 115200.</description>
-				<default>38400</default>
+				<default>9600</default>
 			</parameter>
 			
 			<parameter name="protocol" type="text" required="false">
