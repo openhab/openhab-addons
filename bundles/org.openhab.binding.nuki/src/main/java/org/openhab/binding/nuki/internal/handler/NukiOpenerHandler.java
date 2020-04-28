@@ -38,7 +38,7 @@ import org.openhab.binding.nuki.internal.dataexchange.NukiBaseResponse;
 import org.openhab.binding.nuki.internal.dataexchange.NukiHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.eclipse.jdt.annotation;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link NukiSmartLockHandler} is responsible for handling commands, which are

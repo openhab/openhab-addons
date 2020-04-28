@@ -14,7 +14,7 @@ package org.openhab.binding.nuki.internal.converter;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.eclipse.jdt.annotation;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import org.openhab.binding.nuki.internal.NukiBindingConstants;
 
