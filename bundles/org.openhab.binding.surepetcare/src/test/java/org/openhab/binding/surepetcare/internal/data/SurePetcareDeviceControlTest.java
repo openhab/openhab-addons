@@ -32,13 +32,24 @@ import org.openhab.binding.surepetcare.internal.dto.SurePetcareDeviceCurfewList;
 public class SurePetcareDeviceControlTest {
 
     @Test
-    public void testJsonDeserialize() throws ParseException {
+    public void testJsonDeserializeCurfewArray() throws ParseException {
         String testResponse = "{\"curfew\":[{\"enabled\":true,\"lock_time\":\"19:30\",\"unlock_time\":\"07:00\"}],\"locking\":0,\"fast_polling\":false}";
         SurePetcareDeviceControl response = SurePetcareConstants.GSON.fromJson(testResponse,
                 SurePetcareDeviceControl.class);
 
         assertEquals(1, response.curfewList.size());
         assertEquals(new Integer(0), response.lockingModeId);
+    }
+
+    @Test
+    public void testJsonDeserializeSingleCurfew() throws ParseException {
+        String testResponse = "{\"curfew\":{\"enabled\":true,\"lock_time\":\"19:00\",\"unlock_time\":\"08:00\"},\"fast_polling\":true}";
+
+        SurePetcareDeviceControl response = SurePetcareConstants.GSON.fromJson(testResponse,
+                SurePetcareDeviceControl.class);
+
+        assertEquals(1, response.curfewList.size());
+        assertEquals(true, response.fastPolling);
     }
 
     @Test

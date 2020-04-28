@@ -20,6 +20,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.openhab.binding.surepetcare.internal.utils.GsonColonDateTypeAdapter;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;

@@ -14,6 +14,9 @@ package org.openhab.binding.surepetcare.internal.dto;
 
 import java.util.List;
 
+import org.openhab.binding.surepetcare.internal.utils.SurePetcareDeviceCurfewListTypeAdapterFactory;
+
+import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -71,6 +74,7 @@ public class SurePetcareDeviceControl {
     @SerializedName("training_mode")
     public Integer trainingModeId;
     @SerializedName("curfew")
+    @JsonAdapter(SurePetcareDeviceCurfewListTypeAdapterFactory.class)
     public SurePetcareDeviceCurfewList curfewList;
 
     @Override

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.surepetcare.internal;
+package org.openhab.binding.surepetcare.internal.utils;
 
 import java.lang.reflect.Type;
 import java.text.FieldPosition;
