@@ -252,7 +252,7 @@ public abstract class ValloxBaseConnector implements ValloxConnector {
                         waitForAckByte = false;
                         sendTelegramToListeners(new Telegram(TelegramState.ACK, telegram.bytes));
                     } else {
-                        waitForAckByte = false;
+                        waitForAckByte = true;
                         writeToOutputStream(telegram);
                         sendQueue.addFirst(queueItem);
                     }
