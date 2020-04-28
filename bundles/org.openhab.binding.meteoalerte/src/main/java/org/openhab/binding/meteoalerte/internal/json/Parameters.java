@@ -12,25 +12,34 @@
  */
 package org.openhab.binding.meteoalerte.internal.json;
 
+import java.util.Optional;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link Parameters} is the Java class used to map the JSON
  * response to the webservice request.
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@NonNullByDefault
 public class Parameters {
-    private String dataset;
-    private String timezone;
+    private String dataset = "";
+    @SerializedName("timezone")
+    private String timeZone = "";
     private int rows;
-    private String format;
-    private Refine refine;
+    private String format = "";
+    private @Nullable Refine refine;
 
     public String getDataset() {
         return dataset;
     }
 
     public String getTimezone() {
-        return timezone;
+        return timeZone;
     }
 
     public int getRows() {
@@ -41,7 +50,11 @@ public class Parameters {
         return format;
     }
 
-    public Refine getRefine() {
-        return refine;
+    public Optional<Refine> getRefine() {
+        Refine refine = this.refine;
+        if (refine != null) {
+            return Optional.of(refine);
+        }
+        return Optional.empty();
     }
 }

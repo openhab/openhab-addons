@@ -46,8 +46,6 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.meteoalerte.internal.MeteoAlerteConfiguration;
 import org.openhab.binding.meteoalerte.internal.json.ApiResponse;
-import org.openhab.binding.meteoalerte.internal.json.Fields;
-import org.openhab.binding.meteoalerte.internal.json.Record;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +73,7 @@ public class MeteoAlerteHandler extends BaseThingHandler {
                     jsonDeserializationContext) -> ZonedDateTime.parse(json.getAsJsonPrimitive().getAsString()))
             .create();
 
-    // Time zone provider representing time zone configured in openHAB config
+    // Time zone provider representing time zone configured in openHAB configuration
     private final TimeZoneProvider timeZoneProvider;
 
     private @NonNullByDefault({}) ScheduledFuture<?> refreshJob;
@@ -120,29 +118,14 @@ public class MeteoAlerteHandler extends BaseThingHandler {
 
     private void updateAndPublish() {
         try {
-            ApiResponse apiResponse = getMeteoAlerteData();
-            if (apiResponse != null) {
-                updateChannels(apiResponse);
-            }
-        } catch (Exception e) {
-            logger.error("Exception occurred during execution: {}", e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Request new weather alert data to the webservice
-     *
-     * @return the api data object mapping the JSON response or null in case of error
-     */
-    private @Nullable ApiResponse getMeteoAlerteData() {
-        try {
             URL url = new URL(queryUrl);
             try {
                 URLConnection connection = url.openConnection();
                 String response = IOUtils.toString(connection.getInputStream());
                 IOUtils.closeQuietly(connection.getInputStream());
                 updateStatus(ThingStatus.ONLINE);
-                return gson.fromJson(response, ApiResponse.class);
+                ApiResponse apiResponse = gson.fromJson(response, ApiResponse.class);
+                updateChannels(apiResponse);
             } catch (IOException e) {
                 logger.warn("Error opening connection to Meteo Alerte webservice : {}", e.getMessage());
             }
@@ -150,49 +133,43 @@ public class MeteoAlerteHandler extends BaseThingHandler {
             logger.error("Malformed URL in Météo Alerte request : {}", queryUrl);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         }
-        return null;
     }
 
     /**
-     * Update the channel from the last Air Quality data retrieved
+     * Update the channel from the last Meteo Alerte data retrieved
      *
      * @param channelId the id identifying the channel to be updated
      */
-
     private void updateChannels(ApiResponse apiResponse) {
-        if (apiResponse.getRecords().length > 0) {
-            Record record = apiResponse.getRecords()[0];
-            if (record != null) {
-                Fields fields = record.getFields();
+        Arrays.stream(apiResponse.getRecords()).findFirst().ifPresent(record -> {
+            record.getFields().ifPresent(fields -> {
+                updateAlertString(WIND, fields.getVent());
+                updateAlertString(RAIN, fields.getPluieInondation());
+                updateAlertString(STORM, fields.getOrage());
+                updateAlertString(FLOOD, fields.getInondation());
+                updateAlertString(SNOW, fields.getNeige());
+                updateAlertString(HEAT, fields.getCanicule());
+                updateAlertString(FREEZE, fields.getGrandFroid());
+                updateAlertString(AVALANCHE, fields.getAvalanches());
 
-                updateAlertString(WIND, fields.getEtatVent());
-                updateAlertString(RAIN, fields.getEtatPluieInondation());
-                updateAlertString(STORM, fields.getEtatOrage());
-                updateAlertString(FLOOD, fields.getEtatInondation());
-                updateAlertString(SNOW, fields.getEtatNeige());
-                updateAlertString(HEAT, fields.getEtatCanicule());
-                updateAlertString(FREEZE, fields.getEtatGrandFroid());
-                updateAlertString(AVALANCHE, fields.getEtatAvalanches());
-
-                updateDate(OBSERVATIONTIME, fields.getDateInsert());
-                updateState(COMMENT, new StringType(fields.getVigilanceCommentaireTexte()));
-                updateIcon(WIND, fields.getEtatVent());
-                updateIcon(RAIN, fields.getEtatPluieInondation());
-                updateIcon(STORM, fields.getEtatOrage());
-                updateIcon(FLOOD, fields.getEtatInondation());
-                updateIcon(SNOW, fields.getEtatNeige());
-                updateIcon(HEAT, fields.getEtatCanicule());
-                updateIcon(FREEZE, fields.getEtatGrandFroid());
-                updateIcon(AVALANCHE, fields.getEtatAvalanches());
-
-            }
-        }
+                fields.getDateInsert().ifPresent(date -> updateDate(OBSERVATION_TIME, date));
+                updateState(COMMENT, new StringType(fields.getVigilanceComment()));
+                updateIcon(WIND, fields.getVent());
+                updateIcon(RAIN, fields.getPluieInondation());
+                updateIcon(STORM, fields.getOrage());
+                updateIcon(FLOOD, fields.getInondation());
+                updateIcon(SNOW, fields.getNeige());
+                updateIcon(HEAT, fields.getCanicule());
+                updateIcon(FREEZE, fields.getGrandFroid());
+                updateIcon(AVALANCHE, fields.getAvalanches());
+            });
+        });
     }
 
-    public void updateIcon(String channelId, @Nullable String value) {
+    public void updateIcon(String channelId, String value) {
         String iconChannelId = channelId + "-icon";
         if (isLinked(iconChannelId)) {
-            String pictoName = channelId + (value != null ? "_" + value.toLowerCase() : "");
+            String pictoName = channelId + (!value.isEmpty() ? "_" + value.toLowerCase() : "");
             byte[] image = getImage("picto" + File.separator + pictoName + ".gif");
             if (image != null) {
                 RawType picto = new RawType(image, "image/gif");
@@ -219,15 +196,15 @@ public class MeteoAlerteHandler extends BaseThingHandler {
         return data;
     }
 
-    public void updateAlertString(String channelId, @Nullable String value) {
-        if (value != null && isLinked(channelId)) {
+    public void updateAlertString(String channelId, String value) {
+        if (!value.isEmpty() && isLinked(channelId)) {
             int level = ALERT_LEVELS.indexOf(value);
             updateState(channelId, new StringType(Integer.toString(level)));
         }
     }
 
-    public void updateDate(String channelId, @Nullable ZonedDateTime zonedDateTime) {
-        if (zonedDateTime != null && isLinked(channelId)) {
+    public void updateDate(String channelId, ZonedDateTime zonedDateTime) {
+        if (isLinked(channelId)) {
             ZonedDateTime localDateTime = zonedDateTime.withZoneSameInstant(timeZoneProvider.getTimeZone());
             updateState(channelId, new DateTimeType(localDateTime));
         }

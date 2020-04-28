@@ -14,6 +14,8 @@ package org.openhab.binding.meteoalerte.internal;
 
 import static org.openhab.binding.meteoalerte.internal.MeteoAlerteBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -32,6 +34,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Gaël L'hopital - Initial contribution
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.airquality")
+@NonNullByDefault
 public class MeteoAlerteHandlerFactory extends BaseThingHandlerFactory {
 
     // Needed for converting UTC time to local time
@@ -48,7 +51,7 @@ public class MeteoAlerteHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_METEO_ALERT)) {

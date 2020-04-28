@@ -49,7 +49,7 @@ public class MeteoAlerteBindingConstants {
     public static final String HEAT_ICON = "canicule-icon";
     public static final String FREEZE_ICON = "grand-froid-icon";
     public static final String AVALANCHE_ICON = "avalanches-icon";
-    public static final String OBSERVATIONTIME = "observation-time";
+    public static final String OBSERVATION_TIME = "observation-time";
     public static final String COMMENT = "comment";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_METEO_ALERT);

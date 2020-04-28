@@ -13,6 +13,12 @@
 package org.openhab.binding.meteoalerte.internal.json;
 
 import java.time.ZonedDateTime;
+import java.util.Optional;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link Fields} is the Java class used to map the JSON
@@ -20,101 +26,131 @@ import java.time.ZonedDateTime;
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@NonNullByDefault
 public class Fields {
-    private String nom_reg;
-    private ZonedDateTime dateprevue;
-    private String typeprev;
-    private String etat_canicule;
-    private String nom_dept;
-    private String etat_grand_froid;
-    private String noversion;
-    private String etat_pluie_inondation;
-    private String etat_neige;
-    private String etat_vent;
-    private ZonedDateTime dateinsert;
-    private String etat_inondation;
-    private String etat_avalanches;
-    private String etat_orage;
+    @SerializedName("nom_reg")
+    private String nomReg = "";
+    @SerializedName("typeprev")
+    private String typePrev = "";
+    @SerializedName("etat_canicule")
+    private String canicule = "";
+    @SerializedName("nom_dept")
+    private String nomDept = "";
+    @SerializedName("etat_grand_froid")
+    private String grandFroid = "";
+    @SerializedName("noversion")
+    private String noVersion = "";
+    @SerializedName("etat_pluie_inondation")
+    private String pluieInondation = "";
+    @SerializedName("etat_neige")
+    private String neige = "";
+    @SerializedName("etat_vent")
+    private String vent = "";
+    @SerializedName("etat_inondation")
+    private String inondation = "";
+    @SerializedName("etat_avalanches")
+    private String avalanches = "";
+    @SerializedName("etat_orage")
+    private String orage = "";
     private int echeance;
-    private String etat_vague_submersion;
-    private String dep;
-    private ZonedDateTime daterun;
-    private String vigilancecommentaire_texte;
+    @SerializedName("etat_vague_submersion")
+    private String vagueSubmersion = "";
+    private String dep = "";
+    @SerializedName("vigilancecommentaire_texte")
+    private String vigilanceComment = "";
+    @SerializedName("dateprevue")
+    private @Nullable ZonedDateTime datePrevue;
+    @SerializedName("dateinsert")
+    private @Nullable ZonedDateTime dateInsert;
+    @SerializedName("daterun")
+    private @Nullable ZonedDateTime dateRun;
 
-    public String getVigilanceCommentaireTexte() {
-        return vigilancecommentaire_texte;
+    public String getVigilanceComment() {
+        return vigilanceComment;
     }
 
     public String getNomReg() {
-        return nom_reg;
+        return nomReg;
     }
 
-    public ZonedDateTime getDatePrevue() {
-        return dateprevue;
+    public Optional<ZonedDateTime> getDatePrevue() {
+        ZonedDateTime datePrevue = this.datePrevue;
+        if (datePrevue != null) {
+            return Optional.of(datePrevue);
+        }
+        return Optional.empty();
     }
 
     public String getTypePrev() {
-        return typeprev;
+        return typePrev;
     }
 
-    public String getEtatCanicule() {
-        return etat_canicule;
+    public String getCanicule() {
+        return canicule;
     }
 
     public String getNomDept() {
-        return nom_dept;
+        return nomDept;
     }
 
-    public String getEtatGrandFroid() {
-        return etat_grand_froid;
+    public String getGrandFroid() {
+        return grandFroid;
     }
 
     public String getNoVersion() {
-        return noversion;
+        return noVersion;
     }
 
-    public String getEtatPluieInondation() {
-        return etat_pluie_inondation;
+    public String getPluieInondation() {
+        return pluieInondation;
     }
 
-    public String getEtatNeige() {
-        return etat_neige;
+    public String getNeige() {
+        return neige;
     }
 
-    public String getEtatVent() {
-        return etat_vent;
+    public String getVent() {
+        return vent;
     }
 
-    public ZonedDateTime getDateInsert() {
-        return dateinsert;
+    public Optional<ZonedDateTime> getDateInsert() {
+        ZonedDateTime dateInsert = this.dateInsert;
+        if (dateInsert != null) {
+            return Optional.of(dateInsert);
+        }
+        return Optional.empty();
     }
 
-    public String getEtatInondation() {
-        return etat_inondation;
+    public String getInondation() {
+        return inondation;
     }
 
-    public String getEtatAvalanches() {
-        return etat_avalanches;
+    public String getAvalanches() {
+        return avalanches;
     }
 
-    public String getEtatOrage() {
-        return etat_orage;
+    public String getOrage() {
+        return orage;
     }
 
     public int getEcheance() {
         return echeance;
     }
 
-    public String getEtatVagueSubmersion() {
-        return etat_vague_submersion;
+    public String getVagueSubmersion() {
+        return vagueSubmersion;
     }
 
     public String getDep() {
         return dep;
     }
 
-    public ZonedDateTime getDateRun() {
-        return daterun;
+    public Optional<ZonedDateTime> getDateRun() {
+        ZonedDateTime dateRun = this.dateRun;
+        if (dateRun != null) {
+            return Optional.of(dateRun);
+        }
+        return Optional.empty();
     }
 
 }

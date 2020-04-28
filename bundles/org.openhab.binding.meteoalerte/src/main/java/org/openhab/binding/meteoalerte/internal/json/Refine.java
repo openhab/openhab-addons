@@ -12,16 +12,22 @@
  */
 package org.openhab.binding.meteoalerte.internal.json;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link Refine} is the Java class used to map the JSON
  * response to the webservice request.
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@NonNullByDefault
 public class Refine {
-    private String nom_dept;
+    @SerializedName("nom_dept")
+    private String nomDept = "";
 
     public String getNomDept() {
-        return nom_dept;
+        return nomDept;
     }
 }

@@ -12,23 +12,36 @@
  */
 package org.openhab.binding.meteoalerte.internal.json;
 
+import java.util.Optional;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link ApiResponse} is the Java class used to map the JSON
  * response to the webservice request.
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@NonNullByDefault
 public class ApiResponse {
-    private int nhits;
-    private Parameters parameters;
-    private Record[] records;
+    @SerializedName("nhits")
+    private int nHits;
+    private @Nullable Parameters parameters;
+    private Record[] records = {};
 
     public int getNHits() {
-        return nhits;
+        return nHits;
     }
 
-    public Parameters getParameters() {
-        return parameters;
+    public Optional<Parameters> getParameters() {
+        Parameters parameters = this.parameters;
+        if (parameters != null) {
+            return Optional.of(parameters);
+        }
+        return Optional.empty();
     }
 
     public Record[] getRecords() {

@@ -12,31 +12,46 @@
  */
 package org.openhab.binding.meteoalerte.internal.json;
 
+import java.util.Optional;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link Record} is the Java class used to map the JSON
  * response to the webservice request.
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@NonNullByDefault
 public class Record {
-    private String datasetid;
-    private String recordid;
-    private String record_timestamp;
-    private Fields fields;
+    @SerializedName("datasetid")
+    private String datasetId = "";
+    @SerializedName("recordid")
+    private String recordId = "";
+    @SerializedName("record_timestamp")
+    private String recordTimestamp = "";
+    private @Nullable Fields fields;
 
-    public String getDatasetDd() {
-        return datasetid;
+    public String getDatasetId() {
+        return datasetId;
     }
 
-    public String getRecordDd() {
-        return recordid;
+    public String getRecordId() {
+        return recordId;
     }
 
     public String getRecordTimestamp() {
-        return record_timestamp;
+        return recordTimestamp;
     }
 
-    public Fields getFields() {
-        return fields;
+    public Optional<Fields> getFields() {
+        Fields fields = this.fields;
+        if (fields != null) {
+            return Optional.of(fields);
+        }
+        return Optional.empty();
     }
 }
