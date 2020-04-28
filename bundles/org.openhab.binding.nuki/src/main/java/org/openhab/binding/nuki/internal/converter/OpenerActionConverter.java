@@ -14,6 +14,7 @@ package org.openhab.binding.nuki.internal.converter;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.eclipse.jdt.annotation;
 
 import org.openhab.binding.nuki.internal.NukiBindingConstants;
 
@@ -22,6 +23,7 @@ import org.openhab.binding.nuki.internal.NukiBindingConstants;
  *
  * @author Markus Katter - Initial contribution
  */
+
 @NonNullByDefault
 public abstract class OpenerActionConverter {
 
