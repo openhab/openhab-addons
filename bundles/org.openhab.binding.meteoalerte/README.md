@@ -19,8 +19,8 @@ The binding has no configuration options, all configuration is done at Thing lev
 
 The thing has a few configuration parameters:
 
-| Parameter | Description                                                          |
-|-----------|----------------------------------------------------------------------|
+| Parameter  | Description                                                         |
+|------------|---------------------------------------------------------------------|
 | department | Name of the department.                                             |
 | refresh    | Refresh interval in hours. Optional, the default value is 24 hours. |
 
@@ -28,10 +28,35 @@ The thing has a few configuration parameters:
 
 The Météo Alerte information that are retrieved is available as these channels:
 
-| Channel ID      | Item Type     | Description                                   |
-|-----------------|---------------|-----------------------------------------------|
-| observationTime | DateTime      | Observation date and time                     |
-| comment         | String        | General comments on alerts for the department |
+| Channel ID            | Item Type | Description                                   |
+|-----------------------|-----------|-----------------------------------------------|
+| observationTime       | DateTime  | Date and time of alert creation               |
+| comment               | String    | General comments on alerts for the department |
+| vent                  | String    | Wind alert level (*)                          |
+| pluie-inondation      | String    | Rain alert level (*)                          |
+| orage                 | String    | Storm alert level (*)                         |
+| inondation            | String    | Flood alert level (*)                         |
+| neige                 | String    | Snow alert level (*)                          |
+| canicule              | String    | Heat alert level (*)                          |
+| grand-froid           | String    | Cold alert level (*)                          |
+| avalanches            | String    | Avalanche alert level (*)                     |
+| pluie-inondation-icon | Image     | Pictogram of the Rain alert level             |
+| orage-icon            | Image     | Pictogram of Storm alert level                |
+| inondation-icon       | Image     | Pictogram of Flood alert level                |
+| neige-icon            | Image     | Pictogram of Snow alert level                 |
+| canicule-icon         | Image     | Pictogram of Heat alert level                 |
+| grand-froid-icon      | Image     | Pictogram of Cold alert level                 |
+| avalanches-icon       | Image     | Pictogram of Avalanche alert level            |
+
+(*) Each alert level is described by a color : 
+
+| Code | Color  | Description                               |
+|------|--------|-------------------------------------------|
+| 0    | Green  | No particular vigilance                   |
+| 1    | Yellow | Be attentive to the weather situation     |
+| 2    | Orange | Be "very vigilant" in the concerned areas |
+| 3    | Red    | Absolute vigilance required               |
+
 
 ## Full Example
 

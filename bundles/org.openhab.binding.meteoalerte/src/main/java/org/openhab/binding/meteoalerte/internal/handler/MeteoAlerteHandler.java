@@ -160,30 +160,32 @@ public class MeteoAlerteHandler extends BaseThingHandler {
      */
 
     private void updateChannels(ApiResponse apiResponse) {
-        Record record = apiResponse.getRecords()[0];
-        if (record != null) {
-            Fields fields = record.getFields();
+        if (apiResponse.getRecords().length > 0) {
+            Record record = apiResponse.getRecords()[0];
+            if (record != null) {
+                Fields fields = record.getFields();
 
-            updateAlertString(WIND, fields.getEtatVent());
-            updateAlertString(RAIN, fields.getEtatPluieInondation());
-            updateAlertString(STORM, fields.getEtatOrage());
-            updateAlertString(FLOOD, fields.getEtatInondation());
-            updateAlertString(SNOW, fields.getEtatNeige());
-            updateAlertString(HEAT, fields.getEtatCanicule());
-            updateAlertString(FREEZE, fields.getEtatGrandFroid());
-            updateAlertString(AVALANCHE, fields.getEtatAvalanches());
+                updateAlertString(WIND, fields.getEtatVent());
+                updateAlertString(RAIN, fields.getEtatPluieInondation());
+                updateAlertString(STORM, fields.getEtatOrage());
+                updateAlertString(FLOOD, fields.getEtatInondation());
+                updateAlertString(SNOW, fields.getEtatNeige());
+                updateAlertString(HEAT, fields.getEtatCanicule());
+                updateAlertString(FREEZE, fields.getEtatGrandFroid());
+                updateAlertString(AVALANCHE, fields.getEtatAvalanches());
 
-            updateDate(OBSERVATIONTIME, fields.getDateInsert());
-            updateState(COMMENT, new StringType(fields.getVigilanceCommentaireTexte()));
-            updateIcon(WIND, fields.getEtatVent());
-            updateIcon(RAIN, fields.getEtatPluieInondation());
-            updateIcon(STORM, fields.getEtatOrage());
-            updateIcon(FLOOD, fields.getEtatInondation());
-            updateIcon(SNOW, fields.getEtatNeige());
-            updateIcon(HEAT, fields.getEtatCanicule());
-            updateIcon(FREEZE, fields.getEtatGrandFroid());
-            updateIcon(AVALANCHE, fields.getEtatAvalanches());
+                updateDate(OBSERVATIONTIME, fields.getDateInsert());
+                updateState(COMMENT, new StringType(fields.getVigilanceCommentaireTexte()));
+                updateIcon(WIND, fields.getEtatVent());
+                updateIcon(RAIN, fields.getEtatPluieInondation());
+                updateIcon(STORM, fields.getEtatOrage());
+                updateIcon(FLOOD, fields.getEtatInondation());
+                updateIcon(SNOW, fields.getEtatNeige());
+                updateIcon(HEAT, fields.getEtatCanicule());
+                updateIcon(FREEZE, fields.getEtatGrandFroid());
+                updateIcon(AVALANCHE, fields.getEtatAvalanches());
 
+            }
         }
     }
 
