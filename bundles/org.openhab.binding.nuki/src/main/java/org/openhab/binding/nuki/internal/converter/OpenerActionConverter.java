@@ -14,20 +14,22 @@ package org.openhab.binding.nuki.internal.converter;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.nuki.internal.NukiBindingConstants;
 
 /**
  * The {@link LockActionConverter} is responsible for mapping Binding Lock States to Bridge HTTP-API Lock Actions.
  *
  * @author Markus Katter - Initial contribution
+ * @author Alexander Koch - Add Nuki Opener Support
  */
 
 @NonNullByDefault
 public abstract class OpenerActionConverter {
 
-    private static Map<Integer, Integer> mapping;
+    private static @Nullable Map<Integer, Integer> mapping;
 
     private static void setupMapping() {
         mapping = new HashMap<>();

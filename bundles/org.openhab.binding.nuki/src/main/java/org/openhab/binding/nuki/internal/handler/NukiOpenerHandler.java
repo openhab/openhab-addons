@@ -15,6 +15,8 @@ package org.openhab.binding.nuki.internal.handler;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -38,7 +40,6 @@ import org.openhab.binding.nuki.internal.dataexchange.NukiBaseResponse;
 import org.openhab.binding.nuki.internal.dataexchange.NukiHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link NukiSmartLockHandler} is responsible for handling commands, which are
@@ -52,9 +53,9 @@ public class NukiOpenerHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(NukiOpenerHandler.class);
     private static final int JOB_INTERVAL = 60;
 
-    private NukiHttpClient nukiHttpClient;
-    private ScheduledFuture<?> reInitJob;
-    private String nukiId;
+    private @Nullable NukiHttpClient nukiHttpClient;
+    private @Nullable ScheduledFuture<?> reInitJob;
+    private @Nullable String nukiId;
 
     public NukiOpenerHandler(Thing thing) {
         super(thing);
@@ -91,7 +92,7 @@ public class NukiOpenerHandler extends BaseThingHandler {
         }
     }
 
-    private void initializeHandler(ThingHandler bridgeHandler, ThingStatus bridgeStatus) {
+    private void initializeHandler(@Nullable ThingHandler bridgeHandler, @Nullable ThingStatus bridgeStatus) {
         if (bridgeHandler != null && bridgeStatus != null) {
             if (bridgeStatus == ThingStatus.ONLINE) {
                 nukiHttpClient = ((NukiBridgeHandler) bridgeHandler).getNukiHttpClient();
@@ -224,7 +225,8 @@ public class NukiOpenerHandler extends BaseThingHandler {
         }
     }
 
-    private boolean handleResponse(NukiBaseResponse nukiBaseResponse, String channelUID, String command) {
+    private boolean handleResponse(NukiBaseResponse nukiBaseResponse, @Nullable String channelUID,
+            @Nullable String command) {
         if (nukiBaseResponse.getStatus() == 200 && nukiBaseResponse.isSuccess()) {
             logger.debug("Command[{}] succeeded for channelUID[{}] on nukiId[{}]!", command, channelUID, nukiId);
             return true;
