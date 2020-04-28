@@ -221,7 +221,7 @@ public class DaikinWebTargets {
         } catch (DaikinCommunicationException e) {
             throw e;
         } catch (Exception e) {
-            throw new DaikinCommunicationException("Daikin HTTP error: " + e.getMessage());
+            throw new DaikinCommunicationException("Daikin HTTP error", e);
         }
     }
 
