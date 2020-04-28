@@ -148,7 +148,8 @@ public class VehicleHandler extends BaseThingHandler {
      * @param refresh : refresh frequency in minutes
      */
     private void startAutomaticRefresh(int refresh) {
-        if (refreshJob == null || (refreshJob != null && refreshJob.isCancelled())) {
+        ScheduledFuture<?> refreshJob = this.refreshJob;
+        if (refreshJob == null || refreshJob.isCancelled()) {
             refreshJob = scheduler.scheduleWithFixedDelay(this::queryApiAndUpdateChannels, 10, refresh,
                     TimeUnit.MINUTES);
         }
