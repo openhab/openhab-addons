@@ -148,7 +148,7 @@ public class VehicleHandler extends BaseThingHandler {
      * @param refresh : refresh frequency in minutes
      */
     private void startAutomaticRefresh(int refresh) {
-        if (refreshJob == null || refreshJob.isCancelled()) {
+        if (refreshJob == null || (refreshJob != null && refreshJob.isCancelled())) {
             refreshJob = scheduler.scheduleWithFixedDelay(this::queryApiAndUpdateChannels, 10, refresh,
                     TimeUnit.MINUTES);
         }
@@ -173,6 +173,7 @@ public class VehicleHandler extends BaseThingHandler {
             } catch (JsonSyntaxException | IOException e) {
                 logger.warn("Exception occurred during execution: {}", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                ScheduledFuture<?> refreshJob = this.refreshJob;
                 if (refreshJob != null) {
                     refreshJob.cancel(true);
                     refreshJob = null;

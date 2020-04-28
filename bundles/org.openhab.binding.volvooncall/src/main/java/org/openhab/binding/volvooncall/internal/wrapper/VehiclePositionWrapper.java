@@ -77,11 +77,11 @@ public class VehiclePositionWrapper {
     }
 
     public State getTimestamp() {
-        return vehicle.position.timestamp != null
-                ? new DateTimeType(vehicle.position.timestamp.withZoneSameInstant(ZoneId.systemDefault()))
-                : vehicle.calculatedPosition.timestamp != null
-                        ? new DateTimeType(
-                                vehicle.calculatedPosition.timestamp.withZoneSameInstant(ZoneId.systemDefault()))
+        return vehicle.position.getTimestamp().isPresent()
+                ? new DateTimeType(vehicle.position.getTimestamp().get().withZoneSameInstant(ZoneId.systemDefault()))
+                : vehicle.calculatedPosition.getTimestamp().isPresent()
+                        ? new DateTimeType(vehicle.calculatedPosition.getTimestamp().get()
+                                .withZoneSameInstant(ZoneId.systemDefault()))
                         : UnDefType.NULL;
     }
 }
