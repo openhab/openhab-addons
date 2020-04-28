@@ -232,7 +232,7 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
      */
     private boolean reloadCalendar() {
         if (!calendarFile.isFile()) {
-            logger.warn("Local file for loading calendar is missing.");
+            logger.info("Local file for reloading calendar is missing.");
             return false;
         }
         final ICalendarConfiguration config = configuration;

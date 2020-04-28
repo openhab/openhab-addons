@@ -296,13 +296,13 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
         final Instant start;
         final Instant end;
 
-        VEventWPeriod(VEvent vEvent, Instant start, Instant end) {
+        public VEventWPeriod(VEvent vEvent, Instant start, Instant end) {
             this.vEvent = vEvent;
             this.start = start;
             this.end = end;
         }
 
-        Event toEvent() {
+        public Event toEvent() {
             final Summary eventSummary = vEvent.getSummary();
             final String title = eventSummary != null ? eventSummary.getValue() : "-";
             final Description eventDescription = vEvent.getDescription();

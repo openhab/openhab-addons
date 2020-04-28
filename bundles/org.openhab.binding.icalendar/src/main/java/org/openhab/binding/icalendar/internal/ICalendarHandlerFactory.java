@@ -56,6 +56,11 @@ public class ICalendarHandlerFactory extends BaseThingHandlerFactory {
             @Reference EventPublisher eventPublisher) {
         this.eventPublisher = eventPublisher;
         sharedHttpClient = httpClientFactory.createHttpClient(BINDING_ID);
+        try {
+            sharedHttpClient.start();
+        } catch (Exception e) {
+            logger.debug("Exception while starting HttpClient.", e);
+        }
     }
 
     @Override
@@ -70,16 +75,10 @@ public class ICalendarHandlerFactory extends BaseThingHandlerFactory {
         if (!supportsThingType(thingTypeUID)) {
             return null;
         }
-        try {
-            if (!sharedHttpClient.isStarted()) {
-                sharedHttpClient.start();
-            }
-            return new ICalendarHandler(thing, sharedHttpClient, eventPublisher);
-        } catch (Exception e) {
-            logger.warn("Failed to create handler for thing with uid {}.", thing.getUID());
-            logger.debug("internal exception while creating or preparing handler.", e);
+        if (!sharedHttpClient.isStarted()) {
+            logger.warn("Required HttpClient is not started and this binding won't work in that case. Not starting.");
+            return null;
         }
-
-        return null;
+        return new ICalendarHandler(thing, sharedHttpClient, eventPublisher);
     }
 }
