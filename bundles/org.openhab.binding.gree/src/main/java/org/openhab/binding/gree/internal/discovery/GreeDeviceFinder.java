@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.gree.internal.discovery;
 
-import static org.openhab.binding.gree.internal.GreeBindingConstants.DISCOVERY_TIMEOUT_MS;
+import static org.openhab.binding.gree.internal.GreeBindingConstants.*;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.gree.internal.GreeCryptoUtil;
 import org.openhab.binding.gree.internal.gson.GreeScanReponsePack4GsonDTO;
 import org.openhab.binding.gree.internal.gson.GreeScanRequest4GsonDTO;
@@ -44,7 +46,7 @@ import com.google.gson.stream.JsonReader;
  * @author John Cunha - Initial contribution
  * @author Markus Michels - Refactoring, adapted to OH 2.5x
  */
-
+@NonNullByDefault
 public class GreeDeviceFinder {
     private final Logger logger = LoggerFactory.getLogger(GreeDeviceFinder.class);
 
@@ -60,7 +62,7 @@ public class GreeDeviceFinder {
         logger.debug("Broadtcast address {} converted to {}", broadcastAddress, mIPAddress.getHostAddress());
     }
 
-    public void Scan(DatagramSocket clientSocket) throws IOException, Exception {
+    public void scan(@Nullable DatagramSocket clientSocket) throws IOException, Exception {
         byte[] sendData = new byte[1024];
         byte[] receiveData = new byte[1024];
 
@@ -78,12 +80,14 @@ public class GreeDeviceFinder {
 
         logger.trace("Sending scan packet to {}", mIPAddress.getHostAddress());
 
+        clientSocket.setSoTimeout(DISCOVERY_TIMEOUT_MS);
         DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, mIPAddress, DISCOVERY_TIMEOUT_MS);
         clientSocket.send(sendPacket);
 
         // Loop for respnses from devices until we get a timeout.
-        boolean timeoutRecieved = false;
-        while (!timeoutRecieved) {
+        boolean scanning = true;
+        int retries = MAX_SCAN_CYCLES;
+        while (scanning && (retries > 0)) {
             // Receive a response
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
             try {
@@ -99,6 +103,7 @@ public class GreeDeviceFinder {
 
                 // If there was no pack, ignore the response
                 if (scanResponseGson.pack == null) {
+                    logger.debug("Invalid packet format, ignore");
                     continue;
                 }
 
@@ -109,9 +114,10 @@ public class GreeDeviceFinder {
 
                 // If something was wrong with the decryption, ignore the response
                 if (decryptedMsg == null) {
+                    logger.debug("Decryption failed, ignore response");
                     continue;
                 }
-                logger.trace("Response received from address {}: {}", remoteAddress.getHostAddress(), decryptedMsg);
+                logger.debug("Response received from address {}: {}", remoteAddress.getHostAddress(), decryptedMsg);
 
                 // Create the JSON to hold the response values
                 stringReader = new StringReader(decryptedMsg);
@@ -121,19 +127,23 @@ public class GreeDeviceFinder {
                 // Now make sure the device is reported as a Gree device
                 if (scanResponseGson.packJson.brand.equalsIgnoreCase("gree")) {
                     // Create a new GreeDevice
+                    logger.debug("Discovered device at {}:{}", remoteAddress, remotePort);
                     GreeAirDevice newDevice = new GreeAirDevice();
                     newDevice.setAddress(remoteAddress);
                     newDevice.setPort(remotePort);
                     newDevice.setScanResponseGson(scanResponseGson);
-
                     addDevice(newDevice);
                 } else {
                     logger.debug("Unit discovered, but brand is not GREE");
                 }
             } catch (SocketTimeoutException e) {
                 // We've received a timeout so lets quit searching for devices
-                timeoutRecieved = true;
+                scanning = false;
                 logger.debug("Discovery timed out");
+                break;
+            } catch (Exception e) {
+                logger.debug("Exception on device scan", e);
+                retries--;
             }
         }
     }
@@ -150,16 +160,18 @@ public class GreeDeviceFinder {
         return mDevicesHashMap;
     }
 
-    public GreeAirDevice getDeviceByIPAddress(String ipAddress) {
+    public @Nullable GreeAirDevice getDeviceByIPAddress(String ipAddress) {
         GreeAirDevice returnDevice = null;
 
         Set<String> keySet = mDevicesHashMap.keySet();
         Iterator<String> iter = keySet.iterator();
         while (returnDevice == null && iter.hasNext()) {
             Object thiskey = iter.next();
-            GreeAirDevice currDevice = mDevicesHashMap.get(thiskey);
-            if (currDevice != null && currDevice.getAddress().getHostAddress().equals(ipAddress)) {
-                returnDevice = currDevice;
+            if (mDevicesHashMap.containsKey(thiskey)) {
+                GreeAirDevice currDevice = mDevicesHashMap.get(thiskey);
+                if (currDevice.getAddress().getHostAddress().equals(ipAddress)) {
+                    returnDevice = currDevice;
+                }
             }
         }
 

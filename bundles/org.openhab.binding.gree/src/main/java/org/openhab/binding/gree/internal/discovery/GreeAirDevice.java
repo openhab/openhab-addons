@@ -51,6 +51,7 @@ import com.google.gson.stream.JsonReader;
  * @author John Cunha - Initial contribution
  * @author Markus Michels - Refactoring, adapted to OH 2.5x
  */
+// @NonNullByDefault
 public class GreeAirDevice {
     private final Logger logger = LoggerFactory.getLogger(GreeAirDevice.class);
     private final static Charset UTF8_CHARSET = Charset.forName("UTF-8");

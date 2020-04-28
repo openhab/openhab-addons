@@ -51,7 +51,7 @@ public class GreeDiscoveryService extends AbstractDiscoveryService {
     public GreeDiscoveryService(Bundle bundle, GreeTranslationProvider messages, String broadcastAddress) {
         super(SUPPORTED_THING_TYPES_UIDS, TIMEOUT);
         this.messages = messages;
-        this.broadcastAddress = broadcastAddress != null ? broadcastAddress : "192.168.255.255";
+        this.broadcastAddress = !broadcastAddress.isEmpty() ? broadcastAddress : "192.168.255.255";
     }
 
     public void activate() {
@@ -74,7 +74,7 @@ public class GreeDiscoveryService extends AbstractDiscoveryService {
         try {
             DatagramSocket clientSocket = new DatagramSocket();
             deviceFinder = new GreeDeviceFinder(broadcastAddress);
-            deviceFinder.Scan(clientSocket);
+            deviceFinder.scan(clientSocket);
             clientSocket.close();
 
             int count = deviceFinder.getScannedDeviceCount();

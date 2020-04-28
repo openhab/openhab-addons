@@ -15,6 +15,7 @@ package org.openhab.binding.gree.internal;
 import java.util.Collections;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -24,7 +25,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * @author John Cunha - Initial contribution
  * @author Markus Michels - Refactoring, adapted to OH 2.5x
  */
-// @NonNullByDefault
+@NonNullByDefault
 public class GreeBindingConstants {
 
     public static final String BINDING_ID = "gree";
@@ -67,6 +68,7 @@ public class GreeBindingConstants {
     public static final int DATAGRAM_SOCKET_TIMEOUT = 5000;
 
     public static final int DISCOVERY_TIMEOUT_MS = 7000;
+    public static final int MAX_SCAN_CYCLES = 3;
 
     /*
      * The IP Address used to used to send Scan Datagram to Gree Airconditioners.

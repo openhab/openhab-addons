@@ -103,7 +103,7 @@ public class GreeHandler extends BaseThingHandler {
             String broadcastIp = !config.getBroadcastAddress().isEmpty() ? config.getBroadcastAddress()
                     : defBroadcastAddress;
             deviceFinder = new GreeDeviceFinder(broadcastIp);
-            deviceFinder.Scan(clientSocket);
+            deviceFinder.scan(clientSocket);
             logger.debug("{} units found during discovery", deviceFinder.getScannedDeviceCount());
 
             // Now check that this one is amongst the air conditioners that responded.
