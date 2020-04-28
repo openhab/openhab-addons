@@ -22,6 +22,7 @@ import org.openhab.binding.nuki.internal.NukiBindingConstants;
  *
  * @author Markus Katter - Initial contribution
  */
+
 @NonNullByDefault
 public abstract class OpenerActionConverter {
 
