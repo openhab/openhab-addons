@@ -56,33 +56,34 @@ public class ValloxSerialConnector extends ValloxBaseConnector implements Serial
             return;
         }
         try {
-            SerialPort serialPort = this.serialPort;
+            SerialPort localSerialPort = serialPort;
             logger.debug("Connecting to {}", config.serialPort);
             SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(config.serialPort);
             if (portIdentifier == null) {
                 throw new IOException("No such port " + config.serialPort);
             }
-            serialPort = portIdentifier.open("vallox", SERIAL_PORT_READ_TIMEOUT);
-            serialPort.setSerialPortParams(SERIAL_BAUDRATE, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
+            localSerialPort = portIdentifier.open("vallox", SERIAL_PORT_READ_TIMEOUT);
+            localSerialPort.setSerialPortParams(SERIAL_BAUDRATE, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
                     SerialPort.PARITY_NONE);
 
-            inputStream = serialPort.getInputStream();
-            outputStream = serialPort.getOutputStream();
+            inputStream = localSerialPort.getInputStream();
+            outputStream = localSerialPort.getOutputStream();
             panelNumber = config.getPanelAsByte();
             connected = true;
 
-            serialPort.addEventListener(this);
+            localSerialPort.addEventListener(this);
 
-            serialPort.notifyOnDataAvailable(true);
-            serialPort.notifyOnBreakInterrupt(true);
-            serialPort.notifyOnFramingError(true);
-            serialPort.notifyOnOverrunError(true);
-            serialPort.notifyOnParityError(true);
+            localSerialPort.notifyOnDataAvailable(true);
+            localSerialPort.notifyOnBreakInterrupt(true);
+            localSerialPort.notifyOnFramingError(true);
+            localSerialPort.notifyOnOverrunError(true);
+            localSerialPort.notifyOnParityError(true);
 
-            serialPort.enableReceiveThreshold(SERIAL_RECEIVE_THRESHOLD_BYTES);
-            serialPort.enableReceiveTimeout(SERIAL_RECEIVE_TIMEOUT_MILLISECONDS);
+            localSerialPort.enableReceiveThreshold(SERIAL_RECEIVE_THRESHOLD_BYTES);
+            localSerialPort.enableReceiveTimeout(SERIAL_RECEIVE_TIMEOUT_MILLISECONDS);
 
             logger.debug("Connected to {}", config.serialPort);
+            serialPort = localSerialPort;
             startProcessorJobs();
         } catch (TooManyListenersException e) {
             throw new IOException("Too many listeners", e);
@@ -99,12 +100,12 @@ public class ValloxSerialConnector extends ValloxBaseConnector implements Serial
     @Override
     public void close() {
         super.close();
-        SerialPort serialPort = this.serialPort;
-        if (serialPort != null) {
-            serialPort.removeEventListener();
+        SerialPort localSerialPort = serialPort;
+        if (localSerialPort != null) {
+            localSerialPort.removeEventListener();
             IOUtils.closeQuietly(getInputStream());
             IOUtils.closeQuietly(getOutputStream());
-            serialPort.close();
+            localSerialPort.close();
             serialPort = null;
         }
         connected = false;
