@@ -51,14 +51,13 @@ public class CaddxCommunicator implements SerialPortEventListener {
     private final Set<CaddxPanelListener> listenerQueue = new HashSet<>();
     private final Deque<CaddxMessage> messages = new LinkedBlockingDeque<>();
     private final SynchronousQueue<CaddxMessage> exchanger = new SynchronousQueue<>();
-
-    private Thread communicator;
-    private CaddxProtocol protocol;
-    private String serialPortName;
-    private int baudRate;
-    private SerialPort serialPort;
-    private InputStream in;
-    private OutputStream out;
+    private final Thread communicator;
+    private final CaddxProtocol protocol;
+    private final String serialPortName;
+    private final int baudRate;
+    private final SerialPort serialPort;
+    private final InputStream in;
+    private final OutputStream out;
 
     // Receiver state variables
     private boolean inMessage = false;
