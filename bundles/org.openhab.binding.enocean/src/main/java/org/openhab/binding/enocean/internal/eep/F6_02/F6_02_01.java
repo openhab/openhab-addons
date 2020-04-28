@@ -60,7 +60,6 @@ public class F6_02_01 extends _RPSMessage {
         }
 
         if (t21 && nu) {
-
             byte dir1 = channelId.equals(CHANNEL_ROCKERSWITCH_CHANNELA) ? A0 : B0;
             byte dir2 = channelId.equals(CHANNEL_ROCKERSWITCH_CHANNELA) ? AI : BI;
 
@@ -85,9 +84,7 @@ public class F6_02_01 extends _RPSMessage {
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
             Function<String, State> getCurrentStateFunc, Configuration config) {
-
         if (command instanceof StringType) {
-
             StringType s = (StringType) command;
 
             if (s.equals(CommonTriggerEvents.DIR1_RELEASED) || s.equals(CommonTriggerEvents.DIR2_RELEASED)) {

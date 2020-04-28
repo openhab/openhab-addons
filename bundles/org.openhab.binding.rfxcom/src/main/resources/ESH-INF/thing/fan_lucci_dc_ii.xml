@@ -1,25 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="rfxcom" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="rfxcom"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="fan_lucci_dc_ii">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
-			<bridge-type-ref id="tcpbridge" />
-			<bridge-type-ref id="RFXtrx433" />
-			<bridge-type-ref id="RFXrec433" />
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="tcpbridge"/>
+			<bridge-type-ref id="RFXtrx433"/>
+			<bridge-type-ref id="RFXrec433"/>
 		</supported-bridge-type-refs>
 
 		<label>RFXCOM Fan Device - Lucci Air DC II</label>
 		<description>A Lucci Air DC II fan device.</description>
 
 		<channels>
-			<channel id="command" typeId="command" />
-			<channel id="commandString" typeId="commandString" />
+			<channel id="command" typeId="command"/>
+			<channel id="commandString" typeId="commandString"/>
 			<channel id="fanSpeed" typeId="fanspeed"/>
-			<channel id="fanLight" typeId="command" />
-			<channel id="signalLevel" typeId="system.signal-strength" />
+			<channel id="fanLight" typeId="command"/>
+			<channel id="signalLevel" typeId="system.signal-strength"/>
 		</channels>
 
 		<config-description>

@@ -17,8 +17,6 @@ import static org.openhab.binding.astro.test.cases.AstroBindingTestsData.*;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.measure.quantity.Time;
-
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
@@ -55,7 +53,7 @@ public final class AstroParametrizedTestCases {
 
         cases[2][0] = TEST_SUN_THING_ID;
         cases[2][1] = "rise#duration";
-        cases[2][2] = new QuantityType<Time>(2, SmartHomeUnits.MINUTE);
+        cases[2][2] = new QuantityType<>(2, SmartHomeUnits.MINUTE);
 
         cases[3][0] = TEST_SUN_THING_ID;
         cases[3][1] = "set#start";
@@ -67,7 +65,7 @@ public final class AstroParametrizedTestCases {
 
         cases[5][0] = TEST_SUN_THING_ID;
         cases[5][1] = "set#duration";
-        cases[5][2] = new QuantityType<Time>(2, SmartHomeUnits.MINUTE);
+        cases[5][2] = new QuantityType<>(2, SmartHomeUnits.MINUTE);
 
         cases[6][0] = TEST_SUN_THING_ID;
         cases[6][1] = "noon#start";
@@ -79,7 +77,7 @@ public final class AstroParametrizedTestCases {
 
         cases[8][0] = TEST_SUN_THING_ID;
         cases[8][1] = "noon#duration";
-        cases[8][2] = new QuantityType<Time>(1, SmartHomeUnits.MINUTE);
+        cases[8][2] = new QuantityType<>(1, SmartHomeUnits.MINUTE);
 
         cases[9][0] = TEST_SUN_THING_ID;
         cases[9][1] = "night#start";
@@ -91,7 +89,7 @@ public final class AstroParametrizedTestCases {
 
         cases[11][0] = TEST_SUN_THING_ID;
         cases[11][1] = "night#duration";
-        cases[11][2] = new QuantityType<Time>(589, SmartHomeUnits.MINUTE);
+        cases[11][2] = new QuantityType<>(589, SmartHomeUnits.MINUTE);
 
         cases[12][0] = TEST_SUN_THING_ID;
         cases[12][1] = "morningNight#start";
@@ -103,7 +101,7 @@ public final class AstroParametrizedTestCases {
 
         cases[14][0] = TEST_SUN_THING_ID;
         cases[14][1] = "morningNight#duration";
-        cases[14][2] = new QuantityType<Time>(272, SmartHomeUnits.MINUTE);
+        cases[14][2] = new QuantityType<>(272, SmartHomeUnits.MINUTE);
 
         cases[15][0] = TEST_SUN_THING_ID;
         cases[15][1] = "astroDawn#start";
@@ -115,7 +113,7 @@ public final class AstroParametrizedTestCases {
 
         cases[17][0] = TEST_SUN_THING_ID;
         cases[17][1] = "astroDawn#duration";
-        cases[17][2] = new QuantityType<Time>(26, SmartHomeUnits.MINUTE);
+        cases[17][2] = new QuantityType<>(26, SmartHomeUnits.MINUTE);
 
         cases[18][0] = TEST_SUN_THING_ID;
         cases[18][1] = "nauticDawn#start";
@@ -127,7 +125,7 @@ public final class AstroParametrizedTestCases {
 
         cases[20][0] = TEST_SUN_THING_ID;
         cases[20][1] = "nauticDawn#duration";
-        cases[20][2] = new QuantityType<Time>(26, SmartHomeUnits.MINUTE);
+        cases[20][2] = new QuantityType<>(26, SmartHomeUnits.MINUTE);
 
         cases[21][0] = TEST_SUN_THING_ID;
         cases[21][1] = "civilDawn#start";
@@ -139,7 +137,7 @@ public final class AstroParametrizedTestCases {
 
         cases[23][0] = TEST_SUN_THING_ID;
         cases[23][1] = "civilDawn#duration";
-        cases[23][2] = new QuantityType<Time>(22, SmartHomeUnits.MINUTE);
+        cases[23][2] = new QuantityType<>(22, SmartHomeUnits.MINUTE);
 
         cases[24][0] = TEST_SUN_THING_ID;
         cases[24][1] = "astroDusk#start";
@@ -151,7 +149,7 @@ public final class AstroParametrizedTestCases {
 
         cases[26][0] = TEST_SUN_THING_ID;
         cases[26][1] = "astroDusk#duration";
-        cases[26][2] = new QuantityType<Time>(26, SmartHomeUnits.MINUTE);
+        cases[26][2] = new QuantityType<>(26, SmartHomeUnits.MINUTE);
 
         cases[27][0] = TEST_SUN_THING_ID;
         cases[27][1] = "nauticDusk#start";
@@ -163,7 +161,7 @@ public final class AstroParametrizedTestCases {
 
         cases[29][0] = TEST_SUN_THING_ID;
         cases[29][1] = "nauticDusk#duration";
-        cases[29][2] = new QuantityType<Time>(26, SmartHomeUnits.MINUTE);
+        cases[29][2] = new QuantityType<>(26, SmartHomeUnits.MINUTE);
 
         cases[30][0] = TEST_SUN_THING_ID;
         cases[30][1] = "civilDusk#start";
@@ -175,7 +173,7 @@ public final class AstroParametrizedTestCases {
 
         cases[32][0] = TEST_SUN_THING_ID;
         cases[32][1] = "civilDusk#duration";
-        cases[32][2] = new QuantityType<Time>(23, SmartHomeUnits.MINUTE);
+        cases[32][2] = new QuantityType<>(23, SmartHomeUnits.MINUTE);
 
         cases[33][0] = TEST_SUN_THING_ID;
         cases[33][1] = "eveningNight#start";
@@ -187,7 +185,7 @@ public final class AstroParametrizedTestCases {
 
         cases[35][0] = TEST_SUN_THING_ID;
         cases[35][1] = "eveningNight#duration";
-        cases[35][2] = new QuantityType<Time>(318, SmartHomeUnits.MINUTE);
+        cases[35][2] = new QuantityType<>(318, SmartHomeUnits.MINUTE);
 
         cases[36][0] = TEST_SUN_THING_ID;
         cases[36][1] = "daylight#start";
@@ -199,7 +197,7 @@ public final class AstroParametrizedTestCases {
 
         cases[38][0] = TEST_SUN_THING_ID;
         cases[38][1] = "daylight#duration";
-        cases[38][2] = new QuantityType<Time>(697, SmartHomeUnits.MINUTE);
+        cases[38][2] = new QuantityType<>(697, SmartHomeUnits.MINUTE);
 
         cases[39][0] = TEST_MOON_THING_ID;
         cases[39][1] = "rise#start";
@@ -211,7 +209,7 @@ public final class AstroParametrizedTestCases {
 
         cases[41][0] = TEST_MOON_THING_ID;
         cases[41][1] = "rise#duration";
-        cases[41][2] = new QuantityType<Time>(0, SmartHomeUnits.MINUTE);
+        cases[41][2] = new QuantityType<>(0, SmartHomeUnits.MINUTE);
     }
 
     public List<Object[]> getCases() {

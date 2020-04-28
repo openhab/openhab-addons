@@ -47,6 +47,7 @@ import org.openhab.binding.digitalstrom.internal.lib.climate.constants.ControlSt
 import org.openhab.binding.digitalstrom.internal.lib.climate.jsonresponsecontainer.impl.TemperatureControlStatus;
 import org.openhab.binding.digitalstrom.internal.lib.listener.TemperatureControlStatusListener;
 import org.openhab.binding.digitalstrom.internal.lib.manager.StructureManager;
+import org.openhab.binding.digitalstrom.internal.lib.manager.impl.TemperatureControlManager;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.FunctionalColorGroupEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.OutputModeEnum;
 import org.openhab.binding.digitalstrom.internal.providers.DsChannelTypeProvider;
@@ -230,7 +231,6 @@ public class ZoneTemperatureControlHandler extends BaseThingHandler implements T
         } else {
             logger.debug("Command sent to an unknown channel id: {}", channelUID);
         }
-
     }
 
     private boolean isTemperature() {
@@ -312,7 +312,7 @@ public class ZoneTemperatureControlHandler extends BaseThingHandler implements T
     }
 
     private synchronized void loadChannel() {
-        List<Channel> newChannelList = new ArrayList<Channel>(1);
+        List<Channel> newChannelList = new ArrayList<>(1);
         if (currentChannelID != null) {
             newChannelList.add(ChannelBuilder
                     .create(new ChannelUID(this.getThing().getUID(), currentChannelID),
@@ -355,5 +355,4 @@ public class ZoneTemperatureControlHandler extends BaseThingHandler implements T
     public Integer getTemperationControlStatusListenrID() {
         return zoneID;
     }
-
 }

@@ -57,8 +57,7 @@ public class SonosBindingConstants {
                     CONNECTAMP_THING_TYPE_UID, SYMFONISK_THING_TYPE_UID)
             .collect(Collectors.toSet());
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(
-            SUPPORTED_KNOWN_THING_TYPES_UIDS);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(SUPPORTED_KNOWN_THING_TYPES_UIDS);
     static {
         SUPPORTED_THING_TYPES_UIDS.add(ZONEPLAYER_THING_TYPE_UID);
     }
@@ -116,5 +115,4 @@ public class SonosBindingConstants {
     public static final String IDENTIFICATION = "identification";
     public static final String MAC_ADDRESS = "macAddress";
     public static final String IP_ADDRESS = "ipAddress";
-
 }

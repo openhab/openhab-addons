@@ -56,14 +56,16 @@ public class InsteonDeviceHandler extends BaseThingHandler {
     private static final Set<String> ALL_CHANNEL_IDS = Collections.unmodifiableSet(Stream.of(
             InsteonBindingConstants.AC_DELAY, InsteonBindingConstants.BACKLIGHT_DURATION,
             InsteonBindingConstants.BATTERY_LEVEL, InsteonBindingConstants.BATTERY_WATERMARK_LEVEL,
-            InsteonBindingConstants.BOTTOM_OUTLET, InsteonBindingConstants.BUTTON_A, InsteonBindingConstants.BUTTON_B,
-            InsteonBindingConstants.BUTTON_C, InsteonBindingConstants.BUTTON_D, InsteonBindingConstants.BUTTON_E,
-            InsteonBindingConstants.BUTTON_F, InsteonBindingConstants.BUTTON_G, InsteonBindingConstants.BUTTON_H,
-            InsteonBindingConstants.BROADCAST_ON_OFF, InsteonBindingConstants.CONTACT,
+            InsteonBindingConstants.BEEP, InsteonBindingConstants.BOTTOM_OUTLET, InsteonBindingConstants.BUTTON_A,
+            InsteonBindingConstants.BUTTON_B, InsteonBindingConstants.BUTTON_C, InsteonBindingConstants.BUTTON_D,
+            InsteonBindingConstants.BUTTON_E, InsteonBindingConstants.BUTTON_F, InsteonBindingConstants.BUTTON_G,
+            InsteonBindingConstants.BUTTON_H, InsteonBindingConstants.BROADCAST_ON_OFF, InsteonBindingConstants.CONTACT,
             InsteonBindingConstants.COOL_SET_POINT, InsteonBindingConstants.DIMMER, InsteonBindingConstants.FAN,
             InsteonBindingConstants.FAN_MODE, InsteonBindingConstants.FAST_ON_OFF,
             InsteonBindingConstants.FAST_ON_OFF_BUTTON_A, InsteonBindingConstants.FAST_ON_OFF_BUTTON_B,
             InsteonBindingConstants.FAST_ON_OFF_BUTTON_C, InsteonBindingConstants.FAST_ON_OFF_BUTTON_D,
+            InsteonBindingConstants.FAST_ON_OFF_BUTTON_E, InsteonBindingConstants.FAST_ON_OFF_BUTTON_F,
+            InsteonBindingConstants.FAST_ON_OFF_BUTTON_G, InsteonBindingConstants.FAST_ON_OFF_BUTTON_H,
             InsteonBindingConstants.HEAT_SET_POINT, InsteonBindingConstants.HUMIDITY,
             InsteonBindingConstants.HUMIDITY_HIGH, InsteonBindingConstants.HUMIDITY_LOW,
             InsteonBindingConstants.IS_COOLING, InsteonBindingConstants.IS_HEATING,
@@ -72,15 +74,19 @@ public class InsteonDeviceHandler extends BaseThingHandler {
             InsteonBindingConstants.KEYPAD_BUTTON_E, InsteonBindingConstants.KEYPAD_BUTTON_F,
             InsteonBindingConstants.KEYPAD_BUTTON_G, InsteonBindingConstants.KEYPAD_BUTTON_H,
             InsteonBindingConstants.KWH, InsteonBindingConstants.LAST_HEARD_FROM,
-            InsteonBindingConstants.LED_BRIGHTNESS, InsteonBindingConstants.LIGHT_DIMMER,
-            InsteonBindingConstants.LIGHT_LEVEL, InsteonBindingConstants.LOAD_DIMMER,
+            InsteonBindingConstants.LED_BRIGHTNESS, InsteonBindingConstants.LED_ONOFF,
+            InsteonBindingConstants.LIGHT_DIMMER, InsteonBindingConstants.LIGHT_LEVEL,
+            InsteonBindingConstants.LIGHT_LEVEL_ABOVE_THRESHOLD, InsteonBindingConstants.LOAD_DIMMER,
             InsteonBindingConstants.LOAD_SWITCH, InsteonBindingConstants.LOAD_SWITCH_FAST_ON_OFF,
-            InsteonBindingConstants.LOAD_SWITCH_MANUAL_CHANGE, InsteonBindingConstants.MANUAL_CHANGE,
-            InsteonBindingConstants.MANUAL_CHANGE_BUTTON_A, InsteonBindingConstants.MANUAL_CHANGE_BUTTON_B,
-            InsteonBindingConstants.MANUAL_CHANGE_BUTTON_C, InsteonBindingConstants.MANUAL_CHANGE_BUTTON_D,
-            InsteonBindingConstants.NOTIFICATION, InsteonBindingConstants.ON_LEVEL, InsteonBindingConstants.RAMP_DIMMER,
-            InsteonBindingConstants.RAMP_RATE, InsteonBindingConstants.RESET, InsteonBindingConstants.STAGE1_DURATION,
-            InsteonBindingConstants.SWITCH, InsteonBindingConstants.SYSTEM_MODE, InsteonBindingConstants.TEMPERATURE,
+            InsteonBindingConstants.LOAD_SWITCH_MANUAL_CHANGE, InsteonBindingConstants.LOWBATTERY,
+            InsteonBindingConstants.MANUAL_CHANGE, InsteonBindingConstants.MANUAL_CHANGE_BUTTON_A,
+            InsteonBindingConstants.MANUAL_CHANGE_BUTTON_B, InsteonBindingConstants.MANUAL_CHANGE_BUTTON_C,
+            InsteonBindingConstants.MANUAL_CHANGE_BUTTON_D, InsteonBindingConstants.MANUAL_CHANGE_BUTTON_E,
+            InsteonBindingConstants.MANUAL_CHANGE_BUTTON_F, InsteonBindingConstants.MANUAL_CHANGE_BUTTON_G,
+            InsteonBindingConstants.MANUAL_CHANGE_BUTTON_H, InsteonBindingConstants.NOTIFICATION,
+            InsteonBindingConstants.ON_LEVEL, InsteonBindingConstants.RAMP_DIMMER, InsteonBindingConstants.RAMP_RATE,
+            InsteonBindingConstants.RESET, InsteonBindingConstants.STAGE1_DURATION, InsteonBindingConstants.SWITCH,
+            InsteonBindingConstants.SYSTEM_MODE, InsteonBindingConstants.TEMPERATURE,
             InsteonBindingConstants.TOP_OUTLET, InsteonBindingConstants.UPDATE, InsteonBindingConstants.WATTS)
             .collect(Collectors.toSet()));
 
@@ -154,7 +160,7 @@ public class InsteonDeviceHandler extends BaseThingHandler {
             InsteonDevice device = insteonBinding.makeNewDevice(insteonAddress, productKey);
 
             StringBuilder channelList = new StringBuilder();
-            List<Channel> channels = new ArrayList<Channel>();
+            List<Channel> channels = new ArrayList<>();
             String thingId = getThing().getUID().getAsString();
             for (String channelId : ALL_CHANNEL_IDS) {
                 String feature = channelId.toLowerCase();
@@ -215,8 +221,17 @@ public class InsteonDeviceHandler extends BaseThingHandler {
             if (!channels.isEmpty()) {
                 updateThing(editThing().withChannels(channels).build());
 
-                logger.debug("{} address = {} productKey = {} channels = {}", thingId, address, productKey,
-                        channelList.toString());
+                StringBuilder builder = new StringBuilder(thingId);
+                builder.append(" address = ");
+                builder.append(address);
+                builder.append(" productKey = ");
+                builder.append(productKey);
+                builder.append(" channels = ");
+                builder.append(channelList.toString());
+                String msg = builder.toString();
+                logger.debug("{}", msg);
+
+                getInsteonNetworkHandler().initialized(getThing().getUID(), msg);
 
                 updateStatus(ThingStatus.ONLINE);
             } else {
@@ -248,6 +263,8 @@ public class InsteonDeviceHandler extends BaseThingHandler {
             logger.debug("removed {} address = {}", getThing().getUID().getAsString(), address);
         }
 
+        getInsteonNetworkHandler().disposed(getThing().getUID());
+
         super.dispose();
     }
 
@@ -260,7 +277,7 @@ public class InsteonDeviceHandler extends BaseThingHandler {
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
-        HashMap<String, @Nullable String> params = new HashMap<String, @Nullable String>();
+        Map<String, @Nullable String> params = new HashMap<>();
         Channel channel = getThing().getChannel(channelUID.getId());
 
         Map<String, Object> channelProperties = channel.getConfiguration().getProperties();
@@ -320,18 +337,30 @@ public class InsteonDeviceHandler extends BaseThingHandler {
                 new InsteonAddress(config.getAddress()), productKey, params);
         getInsteonBinding().addFeatureListener(bindingConfig);
 
-        logger.debug("channel {} linked with the feature: {} parameters: {}", channelUID.getAsString(), feature,
-                params);
+        StringBuilder builder = new StringBuilder(channelUID.getAsString());
+        builder.append(" feature = ");
+        builder.append(feature);
+        builder.append(" parameters = ");
+        builder.append(params);
+        String msg = builder.toString();
+        logger.debug("{}", msg);
+
+        getInsteonNetworkHandler().linked(channelUID, msg);
     }
 
     @Override
     public void channelUnlinked(ChannelUID channelUID) {
         getInsteonBinding().removeFeatureListener(channelUID);
+        getInsteonNetworkHandler().unlinked(channelUID);
 
         logger.debug("channel {} unlinked ", channelUID.getAsString());
     }
 
+    private @Nullable InsteonNetworkHandler getInsteonNetworkHandler() {
+        return (InsteonNetworkHandler) getBridge().getHandler();
+    }
+
     private @Nullable InsteonBinding getInsteonBinding() {
-        return ((InsteonNetworkHandler) getBridge().getHandler()).getInsteonBinding();
+        return getInsteonNetworkHandler().getInsteonBinding();
     }
 }

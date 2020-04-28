@@ -41,5 +41,4 @@ public class ModbusResponseImpl implements ModbusResponse {
     public String toString() {
         return String.format("ModbusResponseImpl(responseFC=%d)", responseFunctionCode);
     }
-
 }

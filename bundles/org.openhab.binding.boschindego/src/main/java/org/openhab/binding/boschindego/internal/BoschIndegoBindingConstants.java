@@ -36,5 +36,4 @@ public class BoschIndegoBindingConstants {
     public static final String ERRORCODE = "errorcode";
     public static final String STATECODE = "statecode";
     public static final String READY = "ready";
-
 }

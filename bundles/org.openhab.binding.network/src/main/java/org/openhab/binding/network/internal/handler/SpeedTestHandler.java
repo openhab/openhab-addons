@@ -68,7 +68,7 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
         startRefreshTask();
     }
 
-    synchronized private void startSpeedTest() {
+    private synchronized void startSpeedTest() {
         if (speedTestSocket == null) {
             logger.debug("Network speedtest started");
             final SpeedTestSocket socket = new SpeedTestSocket(1500);
@@ -84,7 +84,7 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
         }
     }
 
-    synchronized private void stopSpeedTest() {
+    private synchronized void stopSpeedTest() {
         updateState(CHANNEL_TEST_ISRUNNING, OnOffType.OFF);
         updateProgress(UnDefType.NULL);
         updateState(CHANNEL_TEST_END, new DateTimeType());
@@ -103,7 +103,7 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
         timeouts = configuration.maxTimeout;
         if (testReport != null) {
             BigDecimal rate = testReport.getTransferRateBit();
-            QuantityType<DataTransferRate> quantity = new QuantityType<DataTransferRate>(rate, BIT_PER_SECOND)
+            QuantityType<DataTransferRate> quantity = new QuantityType<>(rate, BIT_PER_SECOND)
                     .toUnit(MEGABIT_PER_SECOND);
             if (quantity != null) {
                 switch (testReport.getSpeedTestMode()) {

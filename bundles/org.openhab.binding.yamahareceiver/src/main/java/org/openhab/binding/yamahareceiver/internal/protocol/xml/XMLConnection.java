@@ -76,7 +76,9 @@ public class XMLConnection extends AbstractConnection {
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Length", Integer.toString(message.length()));
 
-            connection.setConnectTimeout(CONNECTION_TIMEOUT_MS); // set a timeout in case the device is not reachable (went offline)
+            // Set a timeout in case the device is not reachable (went offline)
+            connection.setConnectTimeout(CONNECTION_TIMEOUT_MS);
+
             connection.setUseCaches(false);
             connection.setDoInput(true);
             connection.setDoOutput(true);
@@ -142,7 +144,6 @@ public class XMLConnection extends AbstractConnection {
     }
 
     public String getResponse(String path) throws IOException {
-
         URL url = createBaseUrl(path);
         logger.debug("Making GET to {}", url);
 
@@ -168,7 +169,6 @@ public class XMLConnection extends AbstractConnection {
     }
 
     private Charset getResponseCharset(HttpURLConnection connection, Charset defaultCharset) {
-
         // See https://stackoverflow.com/a/3934280/1906057
 
         Charset charset = defaultCharset;

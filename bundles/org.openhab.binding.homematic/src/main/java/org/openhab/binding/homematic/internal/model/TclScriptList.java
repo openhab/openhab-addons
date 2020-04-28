@@ -28,7 +28,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 public class TclScriptList {
 
     @XStreamImplicit
-    private List<TclScript> scripts = new ArrayList<TclScript>();
+    private List<TclScript> scripts = new ArrayList<>();
 
     /**
      * Returns all scripts.
@@ -36,5 +36,4 @@ public class TclScriptList {
     public List<TclScript> getScripts() {
         return scripts;
     }
-
 }

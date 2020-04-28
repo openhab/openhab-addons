@@ -292,7 +292,6 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         clearDeviceList();
         propertiesSet = false;
         roomPropertiesSet = false;
-
     }
 
     public void cubeReboot() {
@@ -941,7 +940,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
      * Updates the room information by sending M command
      */
     public void sendDeviceAndRoomNameUpdate(String comment) {
-        if (devices.size() > 0) {
+        if (!devices.isEmpty()) {
             SendCommand sendCommand = new SendCommand("Cube(" + getThing().getUID().getId() + ")",
                     new MCommand(devices, rooms), comment);
             queueCommand(sendCommand);
@@ -981,7 +980,6 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         }
         queueCommand(new SendCommand("Cube(" + getThing().getUID().getId() + ")", new FCommand(ntpServer1, ntpServer2),
                 "Update NTP info"));
-
     }
 
     private boolean socketConnect() throws UnknownHostException, IOException {

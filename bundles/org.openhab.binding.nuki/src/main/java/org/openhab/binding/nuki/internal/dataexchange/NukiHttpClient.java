@@ -261,5 +261,4 @@ public class NukiHttpClient {
             return new BridgeCallbackRemoveResponse(handleException(e));
         }
     }
-
 }

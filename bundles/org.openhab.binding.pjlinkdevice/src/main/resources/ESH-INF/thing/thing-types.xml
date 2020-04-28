@@ -9,60 +9,68 @@
 		<description>A PJLink compatible device, e.g. a digital projector</description>
 
 		<channels>
-			<channel id="power" typeId="power" />
-			<channel id="input" typeId="input" />
-			<channel id="audioMute" typeId="audioMute" />
-			<channel id="videoMute" typeId="videoMute" />
-			<channel id="lamp1Hours" typeId="lampHours" />
-			<channel id="lamp1Active" typeId="lampActive" />
+			<channel id="power" typeId="power"/>
+			<channel id="input" typeId="input"/>
+			<channel id="audioMute" typeId="audioMute"/>
+			<channel id="videoMute" typeId="videoMute"/>
+			<channel id="lamp1Hours" typeId="lampHours"/>
+			<channel id="lamp1Active" typeId="lampActive"/>
 		</channels>
 
 		<config-description>
-			<parameter name="ipAddress" type="text" required="true" min="1">
+			<parameter-group name="basic">
+				<context>basic</context>
+				<label>Basic Settings</label>
+			</parameter-group>
+			<parameter-group name="refresh">
+				<label>Polling Settings</label>
+				<description>Use these settings to configure how the status of the PJLink device will be refreshed</description>
+			</parameter-group>
+			<parameter name="ipAddress" type="text" required="true" min="1" groupName="basic">
 				<context>network-address</context>
 				<label>IP Address</label>
 				<description>The address of the PJLink device to control.</description>
 			</parameter>
-			<parameter name="adminPassword" type="text">
-				<context>password</context>
-				<label>Password</label>
-				<description>The password of the PJLink device.</description>
-			</parameter>
-			<parameter name="tcpPort" type="integer" min="1" max="65535">
+			<parameter name="tcpPort" type="integer" min="1" max="65535" groupName="basic">
 				<default>4352</default>
 				<label>TCP Port</label>
 				<description>The TCP port of the PJLink device to control.</description>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" min="0">
-				<default>5</default>
-				<label>Refresh Interval (s)</label>
-				<description>How often to poll the device state (in seconds). A value of zero will disable polling.</description>
+			<parameter name="adminPassword" type="text" groupName="basic">
+				<context>password</context>
+				<label>Password</label>
+				<description>The password of the PJLink device.</description>
 			</parameter>
-			<parameter name="refreshPower" type="boolean">
-				<default>false</default>
-				<label>Poll for Power State</label>
-				<description>Enable polling for the power state. Only considered if the refreshInterval interval is greater than
-					zero.</description>
-			</parameter>
-			<parameter name="refreshMute" type="boolean">
-				<default>false</default>
-				<label>Poll for Mute State</label>
-				<description>Enable polling for the mute state. Only considered if the refreshInterval interval is greater than
-					zero.</description>
-			</parameter>
-			<parameter name="refreshInputChannel" type="boolean">
-				<default>false</default>
-				<label>Poll for Selected Input Channel</label>
-				<description>Enable polling for the selected input channel. Only considered if the refreshInterval interval is
-					greater than zero.</description>
-			</parameter>
-			<parameter name="autoReconnectInterval" type="integer" min="0">
+			<parameter name="autoReconnectInterval" type="integer" min="0" groupName="basic">
 				<label>Auto Reconnect Interval</label>
 				<description>Seconds between connection retries when connection to the PJLink device has been lost, 0 means never
 					retry, minimum 30s</description>
 				<default>60</default>
 			</parameter>
-			<parameter name="refreshLampState" type="boolean">
+			<parameter name="refreshInterval" type="integer" min="0" groupName="refresh">
+				<default>5</default>
+				<label>Refresh Interval (s)</label>
+				<description>How often to poll the device state (in seconds). A value of zero will disable polling.</description>
+			</parameter>
+			<parameter name="refreshPower" type="boolean" groupName="refresh">
+				<default>false</default>
+				<label>Poll for Power State</label>
+				<description>Enable polling for the power state. Only considered if the refreshInterval interval is greater than
+					zero.</description>
+			</parameter>
+			<parameter name="refreshMute" type="boolean" groupName="refresh">
+				<default>false</default>
+				<label>Poll for Mute State</label>
+				<description>Enable polling for the mute state. Only considered if the refreshInterval interval is greater than
+					zero.</description>
+			</parameter>
+			<parameter name="refreshInputChannel" type="boolean" groupName="refresh">
+				<default>false</default>
+				<label>Poll for Selected Input Channel</label>
+				<description>Enable polling for the selected input channel. Only considered if the refreshInterval interval is
+					greater than zero.</description>
+			</parameter>
+			<parameter name="refreshLampState" type="boolean" groupName="refresh">
 				<default>false</default>
 				<label>Poll for Lamp State</label>
 				<description>Enable polling for the lamp state. Only considered if the refresh interval is greater than zero.</description>
@@ -99,7 +107,7 @@
 		<item-type>Number</item-type>
 		<label>Lamp Hours</label>
 		<description>How long the lamp has been in use (in hours)</description>
-		<state readOnly="true" pattern="%d h" />
+		<state readOnly="true" pattern="%d h"/>
 		<config-description>
 			<parameter name="lampNumber" type="integer" min="1" max="8">
 				<label>Lamp Number</label>
@@ -113,7 +121,7 @@
 		<item-type>Switch</item-type>
 		<label>Lamp Active</label>
 		<description>Is the lamp in use?</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 		<config-description>
 			<parameter name="lampNumber" type="integer" min="1" max="8">
 				<label>Lamp Number</label>

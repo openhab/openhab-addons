@@ -43,8 +43,7 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
     });
 
     public MiIoUnsupportedHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService) {
-        super(thing);
-        this.miIoDatabaseWatchService = miIoDatabaseWatchService;
+        super(thing, miIoDatabaseWatchService);
     }
 
     @Override

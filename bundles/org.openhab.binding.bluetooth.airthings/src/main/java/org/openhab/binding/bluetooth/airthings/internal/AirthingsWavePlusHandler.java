@@ -156,7 +156,7 @@ public class AirthingsWavePlusHandler extends BeaconBluetoothHandler {
                     case IDLE:
                         logger.debug("Read data from device {}...", address);
                         BluetoothCharacteristic characteristic = device.getCharacteristic(uuid);
-                        if (device.readCharacteristic(characteristic)) {
+                        if (characteristic != null && device.readCharacteristic(characteristic)) {
                             readState = ReadState.READING;
                         } else {
                             logger.debug("Read data from device {} failed", address);

@@ -13,6 +13,7 @@
 package org.openhab.binding.digitalstrom.internal.lib.event.constants;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The {@link EventResponseEnum} contains digitalSTROM-Event properties of the events at {@link EventNames}.
@@ -66,7 +67,7 @@ public enum EventResponseEnum {
     INPUT_INDEX("inputIndex");
 
     private final String id;
-    static final HashMap<String, EventResponseEnum> EVENT_RESPONSE_FIELDS = new HashMap<String, EventResponseEnum>();
+    static final Map<String, EventResponseEnum> EVENT_RESPONSE_FIELDS = new HashMap<>();
 
     static {
         for (EventResponseEnum ev : EventResponseEnum.values()) {

@@ -41,7 +41,7 @@ public class HmChannel {
     private HmDevice device;
     private boolean initialized;
     private Integer lastFunction;
-    private Map<HmDatapointInfo, HmDatapoint> datapoints = new HashMap<HmDatapointInfo, HmDatapoint>();
+    private Map<HmDatapointInfo, HmDatapoint> datapoints = new HashMap<>();
 
     public HmChannel(String type, Integer number) {
         this.type = type;
@@ -219,5 +219,4 @@ public class HmChannel {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("number", number).append("type", type)
                 .append("initialized", initialized).toString();
     }
-
 }

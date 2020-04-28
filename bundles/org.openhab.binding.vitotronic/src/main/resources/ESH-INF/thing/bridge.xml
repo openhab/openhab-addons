@@ -6,7 +6,7 @@
 
 	<bridge-type id="bridge">
 		<label>Bridge Vitotronic Optolink Adapter</label>
-		<description>This bridge represents the Vitotronic Optolink adapter 
+		<description>This bridge represents the Vitotronic Optolink adapter
 		</description>
 
 		<config-description>
@@ -15,8 +15,7 @@
 				<label>IP Address</label>
 				<description>The IP address of the Optolink adapter</description>
 			</parameter>
-			<parameter name="port" type="integer" required="false" min="1024"
-				max="49151">
+			<parameter name="port" type="integer" required="false" min="1024" max="49151">
 				<context>network-address</context>
 				<label>Adapter Port</label>
 				<description>Port of the LAN gateway</description>
@@ -26,8 +25,7 @@
 				<label>Adapter ID</label>
 				<description>The ID of the adapter.</description>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" required="false" min="60"
-				max="600">
+			<parameter name="refreshInterval" type="integer" required="false" min="60" max="600">
 				<context>refresh</context>
 				<label>Refresh Interval</label>
 				<description>Refreshtime in seconds.</description>

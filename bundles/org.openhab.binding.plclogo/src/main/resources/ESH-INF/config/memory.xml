@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:plclogo:memory">
-		<parameter name="block" type="text" pattern="VB(\d|[1-9]\d|[1-7]\d{2}|8[0-4]\d|850)\.[0-7]|VB(\d|[1-9]\d|[1-7]\d{2}|8[0-4]\d|850)|VW(\d|[1-9]\d|[1-7]\d{2}|8[0-4]\d)|VD(\d|[1-9]\d|[1-7]\d{2}|8[0-3]\d|84[0-7])">
+		<parameter name="block" type="text"
+			pattern="VB(\d|[1-9]\d|[1-7]\d{2}|8[0-4]\d|850)\.[0-7]|VB(\d|[1-9]\d|[1-7]\d{2}|8[0-4]\d|850)|VW(\d|[1-9]\d|[1-7]\d{2}|8[0-4]\d)|VD(\d|[1-9]\d|[1-7]\d{2}|8[0-3]\d|84[0-7])">
 			<label>LOGO! Memory Address</label>
 			<description>LOGO! memory address</description>
 			<required>true</required>

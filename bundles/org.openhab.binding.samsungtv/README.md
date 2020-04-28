@@ -22,6 +22,7 @@ Tested TV models:
 | LE40C650    | PARTIAL | Supported channels: `volume`, `mute`, `channel`, `keyCode`, `brightness`, `contrast`, `colorTemperature`, `power` (only power off, unable to power on) |
 | UE55LS003   | PARTIAL | Supported channels: `volume`, `mute`, `sourceApp`, `url`, `keyCode`, `power`, `artMode`                                                                |
 | UE43MU6199  | PARTIAL | Supported channels: `volume`, `mute`, `power` (at least)                                                                |
+| UE46F6510SS  | PARTIAL | Supported channels: `volume`, `mute`, `channel` (at least)                                                                |
 
 ## Discovery
 
@@ -43,6 +44,7 @@ E.g.
 ```
 Thing samsungtv:tv:livingroom [ hostName="192.168.1.10", port=55000, macAddress="78:bd:bc:9f:12:34", refreshInterval=1000 ]
 ```
+
 Different ports are used in different models. It may be 55000, 8001 or 8002.
 Try to scan for new Things in Paper UI to find TV easily.
 

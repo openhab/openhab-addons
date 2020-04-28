@@ -37,7 +37,7 @@ public class LIRCConnector {
 
     private final Logger logger = LoggerFactory.getLogger(LIRCConnector.class);
 
-    private Set<LIRCEventListener> listeners = new CopyOnWriteArraySet<LIRCEventListener>();
+    private Set<LIRCEventListener> listeners = new CopyOnWriteArraySet<>();
     private Socket socket;
     private InputStream in;
     private OutputStream out;
@@ -193,5 +193,4 @@ public class LIRCConnector {
             logger.error("Error invoking event listener", e);
         }
     }
-
 }

@@ -9,11 +9,11 @@
 		<description>Yeelight White LED Bulb v2</description>
 
 		<channels>
-			<channel id="brightness" typeId="brightness" />
-			<channel id="colorTemperature" typeId="colorTemperature" />
-			<channel id="command" typeId="command" />
+			<channel id="brightness" typeId="brightness"/>
+			<channel id="colorTemperature" typeId="colorTemperature"/>
+			<channel id="command" typeId="command"/>
 		</channels>
 
-		<config-description-ref uri="thing-type:device:base" />
+		<config-description-ref uri="thing-type:device:base"/>
 	</thing-type>
 </thing:thing-descriptions>

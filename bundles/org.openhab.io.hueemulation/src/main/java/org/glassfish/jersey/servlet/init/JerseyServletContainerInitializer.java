@@ -25,6 +25,5 @@ import javax.servlet.ServletContext;
 public class JerseyServletContainerInitializer implements ServletContainerInitializer {
     @Override
     public void onStartup(Set<Class<?>> c, ServletContext ctx) {
-
     }
 }

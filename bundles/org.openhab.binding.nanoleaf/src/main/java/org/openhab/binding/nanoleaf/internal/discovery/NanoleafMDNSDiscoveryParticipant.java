@@ -39,7 +39,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Martin Raepple - Initial contribution
  * @author Stefan Höhn - further improvements for static defined things
- * @see <a href="https://www.eclipse.org/smarthome/documentation/development/bindings/discovery-services.html">MSDN Discovery</a>
+ * @see <a href="https://www.eclipse.org/smarthome/documentation/development/bindings/discovery-services.html">MSDN
+ *      Discovery</a>
  */
 @Component(immediate = true, configurationPid = "discovery.nanoleaf")
 @NonNullByDefault
@@ -76,10 +77,10 @@ public class NanoleafMDNSDiscoveryParticipant implements MDNSDiscoveryParticipan
         String qualifiedName = service.getQualifiedName();
         logger.debug("AVR found: {}", qualifiedName);
 
-        logger.trace("Discovered nanoleaf host: {} port: {} firmWare: {} modelId: {} qualifiedName: {}", host, port, firmwareVersion,
-                modelId, qualifiedName);
-        logger.debug("Adding Nanoleaf controller {} with FW version {} found at {} {} to inbox", qualifiedName, firmwareVersion, host,
-                port);
+        logger.trace("Discovered nanoleaf host: {} port: {} firmWare: {} modelId: {} qualifiedName: {}", host, port,
+                firmwareVersion, modelId, qualifiedName);
+        logger.debug("Adding Nanoleaf controller {} with FW version {} found at {} {} to inbox", qualifiedName,
+                firmwareVersion, host, port);
         if (!OpenAPIUtils.checkRequiredFirmware(service.getPropertyString("md"), firmwareVersion)) {
             logger.warn("Nanoleaf controller firmware is too old. Must be {} or higher",
                     MODEL_ID_LIGHTPANELS.equals(modelId) ? API_MIN_FW_VER_LIGHTPANELS : API_MIN_FW_VER_CANVAS);

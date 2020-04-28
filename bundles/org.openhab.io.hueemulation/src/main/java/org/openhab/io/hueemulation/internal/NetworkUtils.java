@@ -138,5 +138,4 @@ public class NetworkUtils {
         return Response.ok(gson.toJson(responses, new TypeToken<List<?>>() {
         }.getType())).build();
     }
-
 }

@@ -24,5 +24,4 @@ public class UniFiExpiredSessionException extends UniFiException {
     public UniFiExpiredSessionException(String message) {
         super(message);
     }
-
 }

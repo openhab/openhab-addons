@@ -82,7 +82,7 @@ public enum SensorEnum {
     private final Float max;
     private final Float resolution;
 
-    static final Map<Short, SensorEnum> SENSOR_ENUMS = new HashMap<Short, SensorEnum>();
+    static final Map<Short, SensorEnum> SENSOR_ENUMS = new HashMap<>();
 
     SensorEnum(Short sensorType, String unit, String unitShortcut, int min, float max, float resolution,
             String plattern) {
@@ -246,5 +246,4 @@ public enum SensorEnum {
     public Float getResolution() {
         return resolution;
     }
-
 }

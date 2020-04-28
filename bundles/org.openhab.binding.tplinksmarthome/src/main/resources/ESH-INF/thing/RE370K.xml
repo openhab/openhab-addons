@@ -10,12 +10,12 @@
 		<category>PowerOutlet</category>
 
 		<channels>
-			<channel id="switch" typeId="switch-readonly" />
-			<channel id="rssi" typeId="rssi" />
+			<channel id="switch" typeId="switch-readonly"/>
+			<channel id="rssi" typeId="rssi"/>
 		</channels>
 
 		<representation-property>deviceId</representation-property>
 
-		<config-description-ref uri="thing-type:device:plug" />
+		<config-description-ref uri="thing-type:device:plug"/>
 	</thing-type>
 </thing:thing-descriptions>

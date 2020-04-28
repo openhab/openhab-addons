@@ -82,7 +82,7 @@
 
 	<thing-type id="rgbiboxLed">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridgeV6" />
+			<bridge-type-ref id="bridgeV6"/>
 		</supported-bridge-type-refs>
 		<label>Integrated Bulb (iBox)</label>
 		<description>Integrated bulb of the ibox bridge with no dedicated white channel and therefore no saturation control
@@ -90,12 +90,12 @@
 		<category>Lightbulb</category>
 
 		<channels>
-			<channel id="ledwhitemode" typeId="ledwhitemode" />
-			<channel id="ledbrightness" typeId="ledbrightness" />
-			<channel id="ledcolor" typeId="ledcolor" />
-			<channel id="animation_speed_relative" typeId="animation_speed_relative" />
-			<channel id="animation_mode" typeId="animation_mode" />
-			<channel id="animation_mode_relative" typeId="animation_mode_relative" />
+			<channel id="ledwhitemode" typeId="ledwhitemode"/>
+			<channel id="ledbrightness" typeId="ledbrightness"/>
+			<channel id="ledcolor" typeId="ledcolor"/>
+			<channel id="animation_speed_relative" typeId="animation_speed_relative"/>
+			<channel id="animation_mode" typeId="animation_mode"/>
+			<channel id="animation_mode_relative" typeId="animation_mode_relative"/>
 		</channels>
 
 		<config-description>
@@ -110,22 +110,22 @@
 
 	<thing-type id="rgbwLed">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridgeV6" />
+			<bridge-type-ref id="bridgeV6"/>
 		</supported-bridge-type-refs>
 		<label>Color Bulb with Cold White (iBox)</label>
 		<description>Color bulb with white channel for the new Milight/Easybulb system.</description>
 		<category>Lightbulb</category>
 
 		<channels>
-			<channel id="ledlink" typeId="ledlink" />
-			<channel id="ledunlink" typeId="ledunlink" />
-			<channel id="lednightmode" typeId="lednightmode" />
-			<channel id="ledwhitemode" typeId="ledwhitemode" />
-			<channel id="ledbrightness" typeId="ledbrightness" />
-			<channel id="ledcolor" typeId="ledcolor" />
-			<channel id="animation_speed_relative" typeId="animation_speed_relative" />
-			<channel id="animation_mode" typeId="animation_mode" />
-			<channel id="animation_mode_relative" typeId="animation_mode_relative" />
+			<channel id="ledlink" typeId="ledlink"/>
+			<channel id="ledunlink" typeId="ledunlink"/>
+			<channel id="lednightmode" typeId="lednightmode"/>
+			<channel id="ledwhitemode" typeId="ledwhitemode"/>
+			<channel id="ledbrightness" typeId="ledbrightness"/>
+			<channel id="ledcolor" typeId="ledcolor"/>
+			<channel id="animation_speed_relative" typeId="animation_speed_relative"/>
+			<channel id="animation_mode" typeId="animation_mode"/>
+			<channel id="animation_mode_relative" typeId="animation_mode_relative"/>
 		</channels>
 
 		<config-description>
@@ -140,24 +140,24 @@
 
 	<thing-type id="rgbwwLed">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridgeV6" />
+			<bridge-type-ref id="bridgeV6"/>
 		</supported-bridge-type-refs>
 		<label>Color Bulb with Cold/warm White (iBox)</label>
 		<description>Color bulb with warm and cold white support for the new Milight/Easybulb system.</description>
 		<category>Lightbulb</category>
 
 		<channels>
-			<channel id="ledlink" typeId="ledlink" />
-			<channel id="ledunlink" typeId="ledunlink" />
-			<channel id="lednightmode" typeId="lednightmode" />
-			<channel id="ledwhitemode" typeId="ledwhitemode" />
-			<channel id="ledtemperature" typeId="ledtemperature" />
-			<channel id="ledbrightness" typeId="ledbrightness" />
-			<channel id="ledsaturation" typeId="ledsaturation" />
-			<channel id="ledcolor" typeId="ledcolor" />
-			<channel id="animation_speed_relative" typeId="animation_speed_relative" />
-			<channel id="animation_mode" typeId="animation_mode" />
-			<channel id="animation_mode_relative" typeId="animation_mode_relative" />
+			<channel id="ledlink" typeId="ledlink"/>
+			<channel id="ledunlink" typeId="ledunlink"/>
+			<channel id="lednightmode" typeId="lednightmode"/>
+			<channel id="ledwhitemode" typeId="ledwhitemode"/>
+			<channel id="ledtemperature" typeId="ledtemperature"/>
+			<channel id="ledbrightness" typeId="ledbrightness"/>
+			<channel id="ledsaturation" typeId="ledsaturation"/>
+			<channel id="ledcolor" typeId="ledcolor"/>
+			<channel id="animation_speed_relative" typeId="animation_speed_relative"/>
+			<channel id="animation_mode" typeId="animation_mode"/>
+			<channel id="animation_mode_relative" typeId="animation_mode_relative"/>
 		</channels>
 
 		<config-description>

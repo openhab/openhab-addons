@@ -108,5 +108,4 @@ public class HttpUtils {
         String cliPort = resp.getAsJsonObject().get("result").getAsJsonObject().get("_p2").getAsString();
         return Integer.parseInt(cliPort);
     }
-
 }

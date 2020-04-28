@@ -104,5 +104,4 @@ public class BasicModbusReadRequestBlueprint implements ModbusReadRequestBluepri
         return new EqualsBuilder().append(slaveId, rhs.slaveId).append(functionCode, rhs.functionCode)
                 .append(start, rhs.start).append(length, rhs.length).isEquals();
     }
-
 }

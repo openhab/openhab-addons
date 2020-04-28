@@ -68,7 +68,7 @@ public class RobonectClient {
      * The {@link JobSettings} class holds the values required for starting a job.
      */
     public static class JobSettings {
-        
+
         private static final String TIME_REGEX = "^[012]\\d:\\d\\d$";
 
         private final Logger logger = LoggerFactory.getLogger(RobonectClient.class);
@@ -128,7 +128,6 @@ public class RobonectClient {
             this.duration = duration;
             return this;
         }
-
     }
 
     private static class BasicResult implements Authentication.Result {
@@ -136,7 +135,6 @@ public class RobonectClient {
         private final HttpHeader header;
         private final URI uri;
         private final String value;
-
 
         public BasicResult(HttpHeader header, URI uri, String value) {
             this.header = header;
@@ -155,16 +153,14 @@ public class RobonectClient {
         public String toString() {
             return String.format("Basic authentication result for %s", this.uri);
         }
-
     }
-
 
     /**
      * Creates an instance of RobonectClient which allows to communicate with the specified endpoint via the passed
      * httpClient instance.
      *
      * @param httpClient - The HttpClient to use for the communication.
-     * @param endpoint   - The endpoint information for connecting and issuing commands.
+     * @param endpoint - The endpoint information for connecting and issuing commands.
      */
     public RobonectClient(HttpClient httpClient, RobonectEndpoint endpoint) {
         this.httpClient = httpClient;
@@ -179,10 +175,8 @@ public class RobonectClient {
     private void addPreemptiveAuthentication(HttpClient httpClient, RobonectEndpoint endpoint) {
         AuthenticationStore auth = httpClient.getAuthenticationStore();
         URI uri = URI.create(baseUrl);
-        auth.addAuthenticationResult(new BasicResult(HttpHeader.AUTHORIZATION, uri,
-                                                     "Basic "
-                                                     + B64Code.encode(endpoint.getUser() + ":" + endpoint.getPassword(),
-                                                                      StandardCharsets.ISO_8859_1)));
+        auth.addAuthenticationResult(new BasicResult(HttpHeader.AUTHORIZATION, uri, "Basic "
+                + B64Code.encode(endpoint.getUser() + ":" + endpoint.getPassword(), StandardCharsets.ISO_8859_1)));
     }
 
     /**
@@ -194,9 +188,10 @@ public class RobonectClient {
         String responseString = sendCommand(new StatusCommand());
         MowerInfo mowerInfo = parser.parse(responseString, MowerInfo.class);
         if (jobRunning) {
-            // mode might have been changed on the mower. Also Mode JOB does not really exist on the mower, thus cannot be checked here
+            // mode might have been changed on the mower. Also Mode JOB does not really exist on the mower, thus cannot
+            // be checked here
             if (mowerInfo.getStatus().getMode() == MowerMode.AUTO
-                || mowerInfo.getStatus().getMode() == MowerMode.HOME) {
+                    || mowerInfo.getStatus().getMode() == MowerMode.HOME) {
                 jobRunning = false;
             } else if (mowerInfo.getError() != null) {
                 jobRunning = false;
@@ -246,7 +241,8 @@ public class RobonectClient {
     }
 
     /**
-     * Sets the mode of the mower. See {@link ModeCommand.Mode} for details about the available modes. Not allowed is mode
+     * Sets the mode of the mower. See {@link ModeCommand.Mode} for details about the available modes. Not allowed is
+     * mode
      * {@link ModeCommand.Mode#JOB}.
      *
      * @param mode - the desired mower mode.
@@ -291,7 +287,7 @@ public class RobonectClient {
                 logger.debug("send HTTP GET to: {} ", command.toCommandURL(baseUrl));
             }
             ContentResponse response = httpClient.newRequest(command.toCommandURL(baseUrl)).method(HttpMethod.GET)
-                .timeout(30000, TimeUnit.MILLISECONDS).send();
+                    .timeout(30000, TimeUnit.MILLISECONDS).send();
             String responseString = null;
 
             // jetty uses UTF-8 as default encoding. However, HTTP 1.1 specifies ISO_8859_1
@@ -322,14 +318,13 @@ public class RobonectClient {
         return parser.parse(versionResponse, VersionInfo.class);
     }
 
-
     public boolean isJobRunning() {
         return jobRunning;
     }
 
     public RobonectAnswer startJob(JobSettings settings) {
-        Command jobCommand = new ModeCommand(ModeCommand.Mode.JOB).withRemoteStart(settings.remoteStart).withAfter(
-            settings.after).withDuration(settings.duration);
+        Command jobCommand = new ModeCommand(ModeCommand.Mode.JOB).withRemoteStart(settings.remoteStart)
+                .withAfter(settings.after).withDuration(settings.duration);
         String responseString = sendCommand(jobCommand);
         RobonectAnswer answer = parser.parse(responseString, RobonectAnswer.class);
         if (answer.isSuccessful()) {

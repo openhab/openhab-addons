@@ -327,7 +327,7 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
             validationMessages.put("autoReconnectInterval", "allowed values are 0 (never) or >30");
         }
 
-        if (validationMessages.size() > 0) {
+        if (!validationMessages.isEmpty()) {
             String message = validationMessages.entrySet().stream()
                     .map((Map.Entry<String, String> a) -> (a.getKey() + ": " + a.getValue()))
                     .collect(Collectors.joining("; "));

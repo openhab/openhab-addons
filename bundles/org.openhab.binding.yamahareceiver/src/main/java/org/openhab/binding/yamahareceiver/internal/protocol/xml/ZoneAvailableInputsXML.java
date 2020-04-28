@@ -49,7 +49,6 @@ public class ZoneAvailableInputsXML implements ZoneAvailableInputs {
 
     public ZoneAvailableInputsXML(AbstractConnection con, Zone zone, AvailableInputStateListener observer,
             Supplier<InputConverter> inputConverterSupplier) {
-
         this.conReference = new WeakReference<>(con);
         this.zone = zone;
         this.observer = observer;

@@ -14,7 +14,7 @@ foreach (sys_var_id, dom.GetObject(ID_SYSTEM_VARIABLES).EnumUsedIDs()) {
     Write("' description='");   WriteXML(var_obj.DPInfo());
     Write("' info='");          WriteXML(var_obj.Name());
     Write("' value='");         WriteXML(var_obj.Value());
-    
+
     var var_type = "UNKNOWN";
     if (var_obj.ValueType() == 2   ) { var_type = "BOOL";  }
     if (var_obj.ValueType() == 16  ) { var_type = "ENUM";  }
@@ -97,8 +97,8 @@ Write('</valid></result>');
 		]]>
 		</data>
 	</script>
-    <script name="getAllDeviceNames">
-        <data>
+	<script name="getAllDeviceNames">
+		<data>
         <![CDATA[
 string dev_id;
 Write('<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>\n');
@@ -112,10 +112,10 @@ foreach (dev_id, root.Devices().EnumUsedIDs()) {
 }
 Write("</list>");
         ]]>
-        </data>
-    </script>
-    <script name="getAllChannelValues">
-        <data>
+		</data>
+	</script>
+	<script name="getAllChannelValues">
+		<data>
         <![CDATA[
 string channel = "{channel_name}";
 string datapointNames = "{datapoint_names}";
@@ -133,10 +133,10 @@ foreach (datapointName, datapointNames) {
 }
 Write("</list>");
         ]]>
-        </data>
-    </script>
-    <script name="getParamsetDescription">
-        <data>
+		</data>
+	</script>
+	<script name="getParamsetDescription">
+		<data>
         <![CDATA[
 Write('<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>\n');
 Write('<list>\n');
@@ -179,18 +179,18 @@ if (objectFound) {
     string name = dp_obj.Name().StrValueByIndex(".",2);
     datapointNames = datapointNames # name # "\t";
   }
-  
+
   foreach (datapointName, datapointNames) {
     object dp_obj = channel_obj.DPByHssDP(datapointName);
     if (dp_obj) {
       Write("  <entry");
       Write(" name='");         WriteXML(datapointName);
-      
+
       var dp_type = "UNKNOWN";
       if (dp_obj.ValueType() == 2) {
         if (dp_obj.ValueSubType() == 28) { dp_type = "ACTION";  }
         else { dp_type = "BOOL"; }
-      } 
+      }
       if (dp_obj.ValueType() == 16) {
         if (dp_obj.ValueSubType() == 0 || dp_obj.ValueSubType() == 27) { dp_type = "INTEGER"; }
         else { dp_type = "ENUM"; }
@@ -201,7 +201,7 @@ if (objectFound) {
       if (dp_obj.ValueType() == 20  ) { dp_type = "STRING"; }
       Write("' valueType='");     WriteXML(dp_type);
 
-      Write("' value='"); 
+      Write("' value='");
       if (dp_type == "BOOL") {
         Write("false");
       }
@@ -219,7 +219,7 @@ if (objectFound) {
       if (dp_type == "ENUM") {
         Write("' options='");     WriteXML(dp_obj.ValueList());
       }
-  
+
       if ((dp_type == "FLOAT") || (dp_type == "INTEGER") || (dp_type == "ENUM")) {
         Write("' min='");         WriteXML(dp_obj.ValueMin());
         Write("' max='");         WriteXML(dp_obj.ValueMax());
@@ -232,6 +232,6 @@ if (objectFound) {
 }
 Write("</list>");
         ]]>
-        </data>
-    </script>
+		</data>
+	</script>
 </scripts>

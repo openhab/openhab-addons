@@ -8,10 +8,10 @@
 		<label>SMA Energy Meter</label>
 
 		<channels>
-			<channel id="powerIn" typeId="powerInType" />
-			<channel id="powerOut" typeId="powerOutType" />
-			<channel id="energyIn" typeId="energyInType" />
-			<channel id="energyOut" typeId="energyOutType" />
+			<channel id="powerIn" typeId="powerInType"/>
+			<channel id="powerOut" typeId="powerOutType"/>
+			<channel id="energyIn" typeId="energyInType"/>
+			<channel id="energyOut" typeId="energyOutType"/>
 		</channels>
 
 		<properties>
@@ -25,8 +25,7 @@
 				<description>IP address of the multicast group</description>
 				<default>239.12.255.254</default>
 			</parameter>
-			<parameter name="port" type="integer" required="false" min="1024"
-				max="49151">
+			<parameter name="port" type="integer" required="false" min="1024" max="49151">
 				<label>Port</label>
 				<description>Port of the multicast group</description>
 				<default>9522</default>
@@ -45,24 +44,24 @@
 		<item-type>Number</item-type>
 		<label>Purchased Power</label>
 		<category>Energy</category>
-		<state pattern="%.2f W" readOnly="true" />
+		<state pattern="%.2f W" readOnly="true"/>
 	</channel-type>
 	<channel-type id="powerOutType">
 		<item-type>Number</item-type>
 		<label>Grid Feed-in Power</label>
 		<category>Energy</category>
-		<state pattern="%.2f W" readOnly="true" />
+		<state pattern="%.2f W" readOnly="true"/>
 	</channel-type>
 	<channel-type id="energyInType">
 		<item-type>Number</item-type>
 		<label>Purchased Energy</label>
 		<category>Energy</category>
-		<state pattern="%.2f kWh" readOnly="true" />
+		<state pattern="%.2f kWh" readOnly="true"/>
 	</channel-type>
 	<channel-type id="energyOutType">
 		<item-type>Number</item-type>
 		<label>Grid Feed-in Energy</label>
 		<category>Energy</category>
-		<state pattern="%.2f kWh" readOnly="true" />
+		<state pattern="%.2f kWh" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

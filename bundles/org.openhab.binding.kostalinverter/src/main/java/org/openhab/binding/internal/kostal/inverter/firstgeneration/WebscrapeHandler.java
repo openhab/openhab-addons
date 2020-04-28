@@ -100,7 +100,7 @@ public class WebscrapeHandler extends BaseThingHandler {
     }
 
     private static List<String> getTag(Document doc, String tag) {
-        ArrayList<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         Iterator<Element> elIt = doc.getElementsByTag(tag).iterator();
         while (elIt.hasNext()) {
             String content = elIt.next().text();
@@ -130,5 +130,4 @@ public class WebscrapeHandler extends BaseThingHandler {
             }
         }
     }
-
 }

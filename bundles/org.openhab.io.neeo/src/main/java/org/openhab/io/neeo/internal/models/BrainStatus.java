@@ -126,5 +126,4 @@ public class BrainStatus {
         return "BrainStatus [brainId=" + brainId + ", brainName=" + brainName + ", brainUrl=" + brainUrl
                 + ", callbackUrl=" + callbackUrl + ", connected=" + connected + "]";
     }
-
 }

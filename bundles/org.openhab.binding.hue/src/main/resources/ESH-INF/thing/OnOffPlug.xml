@@ -6,14 +6,14 @@
 	<!-- Generic thing for OnOff plugs (ZigBee Device ID: 0x0010) -->
 	<thing-type id="0010">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>On/Off Plug-in Unit</label>
 		<description>An outlet that could be switched on and off.</description>
 
 		<channels>
-			<channel id="switch" typeId="switch" />
+			<channel id="switch" typeId="switch"/>
 		</channels>
 
 		<representation-property>uniqueId</representation-property>

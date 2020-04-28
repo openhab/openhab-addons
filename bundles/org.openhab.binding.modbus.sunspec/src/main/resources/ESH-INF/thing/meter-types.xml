@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="meter-single-phase">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="tcp"/>
+			<bridge-type-ref id="serial"/>
+		</supported-bridge-type-refs>
+
+		<label>Single Phase Meter</label>
+		<description>Single phase (AN or AB) meter supporting SunSpec mapping over modbus connection</description>
+		<category>Meter</category>
+
+		<channel-groups>
+			<channel-group id="acGeneral" typeId="meter-ac-general"/>
+			<channel-group id="acPhaseA" typeId="meter-ac-phase">
+				<label>AC Phase A</label>
+			</channel-group>
+		</channel-groups>
+
+		<properties>
+			<property name="vendor"/>
+			<property name="model"/>
+			<property name="version"/>
+			<property name="serialNumber"/>
+			<property name="uniqueAddress"/>
+		</properties>
+
+		<representation-property>uniqueAddress</representation-property>
+
+		<config-description-ref uri="thing-type:sunspec:modbusconfig"/>
+	</thing-type>
+
+	<thing-type id="meter-split-phase">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="tcp"/>
+			<bridge-type-ref id="serial"/>
+		</supported-bridge-type-refs>
+
+		<label>Split Phase Meter</label>
+		<description>Split phase (ABN) meter supporting SunSpec mapping over modbus connection</description>
+		<category>Meter</category>
+
+		<channel-groups>
+			<channel-group id="acGeneral" typeId="meter-ac-general"/>
+			<channel-group id="acPhaseA" typeId="meter-ac-phase">
+				<label>AC Phase A</label>
+			</channel-group>
+			<channel-group id="acPhaseB" typeId="meter-ac-phase">
+				<label>AC Phase B</label>
+			</channel-group>
+		</channel-groups>
+
+		<properties>
+			<property name="vendor"/>
+			<property name="model"/>
+			<property name="version"/>
+			<property name="serialNumber"/>
+			<property name="uniqueAddress"/>
+		</properties>
+
+		<representation-property>uniqueAddress</representation-property>
+
+		<config-description-ref uri="thing-type:sunspec:modbusconfig"/>
+	</thing-type>
+
+	<thing-type id="meter-wye-phase">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="tcp"/>
+			<bridge-type-ref id="serial"/>
+		</supported-bridge-type-refs>
+
+		<label>Three Phase Meter, Wye-Connected</label>
+		<description>Wye-connected three phase (ABCN) meter supporting SunSpec mapping over modbus connection</description>
+		<category>Meter</category>
+
+		<channel-groups>
+			<channel-group id="acGeneral" typeId="meter-ac-general"/>
+			<channel-group id="acPhaseA" typeId="meter-ac-phase">
+				<label>AC Phase A</label>
+			</channel-group>
+			<channel-group id="acPhaseB" typeId="meter-ac-phase">
+				<label>AC Phase B</label>
+			</channel-group>
+			<channel-group id="acPhaseC" typeId="meter-ac-phase">
+				<label>AC Phase C</label>
+			</channel-group>
+		</channel-groups>
+
+		<properties>
+			<property name="vendor"/>
+			<property name="model"/>
+			<property name="version"/>
+			<property name="serialNumber"/>
+			<property name="uniqueAddress"/>
+		</properties>
+
+		<representation-property>uniqueAddress</representation-property>
+
+		<config-description-ref uri="thing-type:sunspec:modbusconfig"/>
+	</thing-type>
+
+	<thing-type id="meter-delta-phase">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="tcp"/>
+			<bridge-type-ref id="serial"/>
+		</supported-bridge-type-refs>
+
+		<label>Three Phase Meter, Delta-Connected</label>
+		<description>Delta-connected three phase (ABC) meter supporting SunSpec mapping over modbus connection</description>
+		<category>Meter</category>
+
+		<channel-groups>
+			<channel-group id="acGeneral" typeId="meter-ac-general"/>
+			<channel-group id="acPhaseA" typeId="meter-ac-phase">
+				<label>AC Phase A</label>
+			</channel-group>
+			<channel-group id="acPhaseB" typeId="meter-ac-phase">
+				<label>AC Phase B</label>
+			</channel-group>
+			<channel-group id="acPhaseC" typeId="meter-ac-phase">
+				<label>AC Phase C</label>
+			</channel-group>
+		</channel-groups>
+
+		<properties>
+			<property name="vendor"/>
+			<property name="model"/>
+			<property name="version"/>
+			<property name="serialNumber"/>
+			<property name="uniqueAddress"/>
+		</properties>
+
+		<representation-property>uniqueAddress</representation-property>
+
+		<config-description-ref uri="thing-type:sunspec:modbusconfig"/>
+	</thing-type>
+</thing:thing-descriptions>

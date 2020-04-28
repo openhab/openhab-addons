@@ -45,7 +45,11 @@ import org.eclipse.smarthome.io.transport.mqtt.MqttService;
 import org.eclipse.smarthome.io.transport.mqtt.MqttServiceObserver;
 import org.openhab.io.mqttembeddedbroker.Constants;
 import org.openhab.io.mqttembeddedbroker.internal.MqttEmbeddedBrokerDetectStart.MqttEmbeddedBrokerStartedListener;
-import org.osgi.service.component.annotations.*;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Modified;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -107,7 +111,6 @@ public class EmbeddedBrokerService
 
         @Override
         public void onConnectionLost(InterceptConnectionLostMessage arg0) {
-
         }
 
         @Override
@@ -117,22 +120,18 @@ public class EmbeddedBrokerService
 
         @Override
         public void onMessageAcknowledged(InterceptAcknowledgedMessage arg0) {
-
         }
 
         @Override
         public void onPublish(InterceptPublishMessage arg0) {
-
         }
 
         @Override
         public void onSubscribe(InterceptSubscribeMessage arg0) {
-
         }
 
         @Override
         public void onUnsubscribe(InterceptUnsubscribeMessage arg0) {
-
         }
     }
 
@@ -144,16 +143,18 @@ public class EmbeddedBrokerService
     private @Nullable MqttBrokerConnection connection;
 
     @Activate
-    public EmbeddedBrokerService(@Reference MqttService mqttService, Map<String, Object> configuration) throws IOException {
+    public EmbeddedBrokerService(@Reference MqttService mqttService, Map<String, Object> configuration)
+            throws IOException {
         this.service = mqttService;
         initialize(configuration);
     }
+
     @Modified
     public void modified(Map<String, Object> configuration) throws IOException {
         deactivate();
         initialize(configuration);
     }
-    
+
     public void initialize(Map<String, Object> configuration) throws IOException {
         ServiceConfiguration config = new Configuration(configuration).as(ServiceConfiguration.class);
         int port = config.port == null ? (config.port = config.secure ? 8883 : 1883) : config.port;
@@ -214,7 +215,7 @@ public class EmbeddedBrokerService
                 }
             }).get(10, TimeUnit.SECONDS);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-           logger.warn("Could not cleanly shutdown connection or server.", e);
+            logger.warn("Could not cleanly shutdown connection or server.", e);
         }
         connection = null;
     }
@@ -301,16 +302,14 @@ public class EmbeddedBrokerService
         ISslContextCreator sslContextCreator = secure ? nettySSLcontextCreator() : null;
 
         try {
-            server.startServer(new MemoryConfig(properties), null, sslContextCreator, authentificator,
-                    authorizer);
+            server.startServer(new MemoryConfig(properties), null, sslContextCreator, authentificator, authorizer);
         } catch (IllegalArgumentException e) {
             if (e.getMessage().contains("Could not deserialize")) {
                 Path persistenceFilePath = Paths.get((new File(persistenceFilename)).getAbsolutePath());
                 logger.warn("persistence corrupt: {}, deleting {}", e.getMessage(), persistenceFilePath);
                 Files.delete(persistenceFilePath);
                 // retry starting broker, if it fails again, don't catch exception
-                server.startServer(new MemoryConfig(properties), null, sslContextCreator, authentificator,
-                        authorizer);
+                server.startServer(new MemoryConfig(properties), null, sslContextCreator, authentificator, authorizer);
             }
         }
         this.server = server;

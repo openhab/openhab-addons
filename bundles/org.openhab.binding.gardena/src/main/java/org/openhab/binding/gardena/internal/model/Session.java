@@ -51,5 +51,4 @@ public class Session {
     public SessionAttributes getSessionAttributes() {
         return sessionAttributes;
     }
-
 }

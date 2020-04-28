@@ -6,54 +6,54 @@
 	<channel-group-type id="vvm320-general">
 		<label>General Channels</label>
 		<channels>
-			<channel id="44270" typeId="vvm320-type-44270" />
-			<channel id="40121" typeId="vvm320-type-40121" />
-			<channel id="44302" typeId="vvm320-type-44302" />
-			<channel id="47011" typeId="vvm320-type-47011" />
-			<channel id="47394" typeId="vvm320-type-47394" />
-			<channel id="47402" typeId="vvm320-type-47402" />
-			<channel id="48793" typeId="vvm320-type-48793" />
-			<channel id="47374" typeId="vvm320-type-47374" />
-			<channel id="47375" typeId="vvm320-type-47375" />
-			<channel id="47376" typeId="vvm320-type-47376" />
-			<channel id="47377" typeId="vvm320-type-47377" />
+			<channel id="44270" typeId="vvm320-type-44270"/>
+			<channel id="40121" typeId="vvm320-type-40121"/>
+			<channel id="44302" typeId="vvm320-type-44302"/>
+			<channel id="47011" typeId="vvm320-type-47011"/>
+			<channel id="47394" typeId="vvm320-type-47394"/>
+			<channel id="47402" typeId="vvm320-type-47402"/>
+			<channel id="48793" typeId="vvm320-type-48793"/>
+			<channel id="47374" typeId="vvm320-type-47374"/>
+			<channel id="47375" typeId="vvm320-type-47375"/>
+			<channel id="47376" typeId="vvm320-type-47376"/>
+			<channel id="47377" typeId="vvm320-type-47377"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="vvm320-compressor">
 		<label>Compressor Channels</label>
 		<channels>
-			<channel id="44362" typeId="vvm320-type-44362" />
-			<channel id="44396" typeId="vvm320-type-44396" />
-			<channel id="44703" typeId="vvm320-type-44703" />
-			<channel id="44073" typeId="vvm320-type-44073" />
-			<channel id="40737" typeId="vvm320-type-40737" />
-			<channel id="44071" typeId="vvm320-type-44071" />
-			<channel id="44069" typeId="vvm320-type-44069" />
-			<channel id="44061" typeId="vvm320-type-44061" />
-			<channel id="44060" typeId="vvm320-type-44060" />
-			<channel id="44059" typeId="vvm320-type-44059" />
-			<channel id="44058" typeId="vvm320-type-44058" />
-			<channel id="44055" typeId="vvm320-type-44055" />
-			<channel id="44363" typeId="vvm320-type-44363" />
-			<channel id="44699" typeId="vvm320-type-44699" />
-			<channel id="40782" typeId="vvm320-type-40782" />
-			<channel id="44701" typeId="vvm320-type-44701" />
-			<channel id="44702" typeId="vvm320-type-44702" />
-			<channel id="44700" typeId="vvm320-type-44700" />
-			<channel id="44457" typeId="vvm320-type-44457" />
+			<channel id="44362" typeId="vvm320-type-44362"/>
+			<channel id="44396" typeId="vvm320-type-44396"/>
+			<channel id="44703" typeId="vvm320-type-44703"/>
+			<channel id="44073" typeId="vvm320-type-44073"/>
+			<channel id="40737" typeId="vvm320-type-40737"/>
+			<channel id="44071" typeId="vvm320-type-44071"/>
+			<channel id="44069" typeId="vvm320-type-44069"/>
+			<channel id="44061" typeId="vvm320-type-44061"/>
+			<channel id="44060" typeId="vvm320-type-44060"/>
+			<channel id="44059" typeId="vvm320-type-44059"/>
+			<channel id="44058" typeId="vvm320-type-44058"/>
+			<channel id="44055" typeId="vvm320-type-44055"/>
+			<channel id="44363" typeId="vvm320-type-44363"/>
+			<channel id="44699" typeId="vvm320-type-44699"/>
+			<channel id="40782" typeId="vvm320-type-40782"/>
+			<channel id="44701" typeId="vvm320-type-44701"/>
+			<channel id="44702" typeId="vvm320-type-44702"/>
+			<channel id="44700" typeId="vvm320-type-44700"/>
+			<channel id="44457" typeId="vvm320-type-44457"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="vvm320-airsupply">
 		<label>Air Supply/Exhaust Channels</label>
 		<channels>
-			<channel id="40025" typeId="vvm320-type-40025" />
-			<channel id="40026" typeId="vvm320-type-40026" />
-			<channel id="40075" typeId="vvm320-type-40075" />
-			<channel id="40183" typeId="vvm320-type-40183" />
-			<channel id="40311" typeId="vvm320-type-40311" />
-			<channel id="40312" typeId="vvm320-type-40312" />
-			<channel id="40942" typeId="vvm320-type-40942" />
-			<channel id="47260" typeId="vvm320-type-47260" />
+			<channel id="40025" typeId="vvm320-type-40025"/>
+			<channel id="40026" typeId="vvm320-type-40026"/>
+			<channel id="40075" typeId="vvm320-type-40075"/>
+			<channel id="40183" typeId="vvm320-type-40183"/>
+			<channel id="40311" typeId="vvm320-type-40311"/>
+			<channel id="40312" typeId="vvm320-type-40312"/>
+			<channel id="40942" typeId="vvm320-type-40942"/>
+			<channel id="47260" typeId="vvm320-type-47260"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

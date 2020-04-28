@@ -79,12 +79,11 @@ public class SearchEngine {
      * @return list of precompiled patterns. If pattern parameter is null, empty list is returned.
      */
     private List<Pattern> compilePatterns(@Nullable String patterns) throws PatternSyntaxException {
-        List<Pattern> patternsList = new ArrayList<Pattern>();
+        List<Pattern> patternsList = new ArrayList<>();
 
         if (patterns != null && !patterns.isEmpty()) {
             String list[] = patterns.split("\\|");
             if (list.length > 0) {
-
                 for (String patternStr : list) {
                     patternsList.add(Pattern.compile(patternStr));
                 }

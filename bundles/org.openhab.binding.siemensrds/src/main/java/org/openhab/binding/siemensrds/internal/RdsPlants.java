@@ -77,5 +77,4 @@ class RdsPlants {
     public List<PlantInfo> getPlants() {
         return plants;
     }
-
 }

@@ -33,6 +33,7 @@ public class NameCommand implements Command {
 
     /**
      * sets the mower name.
+     * 
      * @param newName - the mower name.
      * @return - the command instance.
      */
@@ -42,8 +43,8 @@ public class NameCommand implements Command {
     }
 
     /**
-     * @param baseURL - will be passed by the {@link RobonectClient} in the form 
-     *                http://xxx.xxx.xxx/json?
+     * @param baseURL - will be passed by the {@link RobonectClient} in the form
+     *            http://xxx.xxx.xxx/json?
      * @return
      */
     @Override
@@ -52,9 +53,10 @@ public class NameCommand implements Command {
             return baseURL + "?cmd=name";
         } else {
             try {
-                return baseURL + "?cmd=name&name=" + URLEncoder.encode(newName, StandardCharsets.ISO_8859_1.displayName());
+                return baseURL + "?cmd=name&name="
+                        + URLEncoder.encode(newName, StandardCharsets.ISO_8859_1.displayName());
             } catch (UnsupportedEncodingException e) {
-                logger.error( "Could not encode name {} ",newName, e);
+                logger.error("Could not encode name {} ", newName, e);
                 return baseURL + "?cmd=name";
             }
         }

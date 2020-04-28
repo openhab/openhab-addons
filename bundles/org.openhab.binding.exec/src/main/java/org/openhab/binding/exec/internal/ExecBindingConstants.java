@@ -13,10 +13,7 @@
 package org.openhab.binding.exec.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.config.core.ConfigConstants;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
-import java.io.File;
 
 /**
  * The {@link ExecBindingConstants} class defines common constants, which are

@@ -65,5 +65,4 @@ public class TrippableDevice extends AbstractDevice {
             addParam(new DeviceParam(ParamType.LAST_TRIP, String.valueOf(System.currentTimeMillis())));
         }
     }
-
 }

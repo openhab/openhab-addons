@@ -75,5 +75,4 @@ public class NgInfo {
     public List<Effect> getEffects() {
         return effects;
     }
-
 }

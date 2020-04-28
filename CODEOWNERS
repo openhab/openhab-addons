@@ -2,9 +2,10 @@
 # It should always list the active maintainers of certain add-ons.
 
 # As a fallback, if no specific maintainer is listed below, assign the PR to the repo maintainers team:
-*       @openhab/2-x-add-ons-maintainers
+*       @openhab/add-ons-maintainers
 
 # Add-on maintainers:
+/bundles/org.openhab.binding.adorne/ @theiding
 /bundles/org.openhab.binding.airquality/ @kubawolanin
 /bundles/org.openhab.binding.airvisualnode/ @3cky
 /bundles/org.openhab.binding.allplay/ @dominicdesu
@@ -25,10 +26,12 @@
 /bundles/org.openhab.binding.bluetooth.ruuvitag/ @ssalonen
 /bundles/org.openhab.binding.boschindego/ @jofleck
 /bundles/org.openhab.binding.bosesoundtouch/ @marvkis @tratho
+/bundles/org.openhab.binding.bsblan/ @hypetsch
 /bundles/org.openhab.binding.buienradar/ @gedejong
 /bundles/org.openhab.binding.chromecast/ @kaikreuzer
 /bundles/org.openhab.binding.cm11a/ @BobRak
 /bundles/org.openhab.binding.coolmasternet/ @projectgus
+/bundles/org.openhab.binding.coronastats/ @DerOetzi
 /bundles/org.openhab.binding.daikin/ @caffineehacker
 /bundles/org.openhab.binding.darksky/ @cweitkamp
 /bundles/org.openhab.binding.deconz/ @davidgraeff
@@ -40,10 +43,13 @@
 /bundles/org.openhab.binding.doorbird/ @mhilbush
 /bundles/org.openhab.binding.dscalarm/ @RSStephens
 /bundles/org.openhab.binding.dsmr/ @Hilbrand
+/bundles/org.openhab.binding.ecobee/ @mhilbush
+/bundles/org.openhab.binding.dwdpollenflug/ @DerOetzi
 /bundles/org.openhab.binding.dwdunwetter/ @limdul79
 /bundles/org.openhab.binding.elerotransmitterstick/ @vbier
 /bundles/org.openhab.binding.enocean/ @fruggy83
 /bundles/org.openhab.binding.enturno/ @klocsson
+/bundles/org.openhab.binding.etherrain/ @dfad1469
 /bundles/org.openhab.binding.evohome/ @Nebula83
 /bundles/org.openhab.binding.exec/ @kgoderis
 /bundles/org.openhab.binding.feed/ @svilenvul
@@ -89,6 +95,7 @@
 /bundles/org.openhab.binding.lgtvserial/ @fa2k
 /bundles/org.openhab.binding.lgwebos/ @sprehn
 /bundles/org.openhab.binding.lifx/ @wborn
+/bundles/org.openhab.binding.linky/ @clinique @lolodomo
 /bundles/org.openhab.binding.linuxinput/ @t-8ch
 /bundles/org.openhab.binding.lirc/ @kabili207
 /bundles/org.openhab.binding.logreader/ @paulianttila
@@ -154,10 +161,12 @@
 /bundles/org.openhab.binding.rotel/ @lolodomo
 /bundles/org.openhab.binding.rotelra1x/ @fa2k
 /bundles/org.openhab.binding.russound/ @tmrobert8
+/bundles/org.openhab.binding.sagercaster/ @clinique
 /bundles/org.openhab.binding.samsungtv/ @paulianttila
 /bundles/org.openhab.binding.satel/ @druciak
 /bundles/org.openhab.binding.seneye/ @nikotanghe
 /bundles/org.openhab.binding.sensebox/ @hakan42
+/bundles/org.openhab.binding.sensibo/ @seime
 /bundles/org.openhab.binding.serialbutton/ @kaikreuzer
 /bundles/org.openhab.binding.shelly/ @markus7017
 /bundles/org.openhab.binding.siemensrds/ @andrewfg
@@ -175,6 +184,7 @@
 /bundles/org.openhab.binding.sonyprojector/ @lolodomo
 /bundles/org.openhab.binding.spotify/ @Hilbrand
 /bundles/org.openhab.binding.squeezebox/ @digitaldan @mhilbush
+/bundles/org.openhab.binding.modbus.sunspec/ @mrbig
 /bundles/org.openhab.binding.synopanalyzer/ @clinique
 /bundles/org.openhab.binding.systeminfo/ @svilenvul
 /bundles/org.openhab.binding.tado/ @dfrommi
@@ -182,6 +192,7 @@
 /bundles/org.openhab.binding.telegram/ @ZzetT
 /bundles/org.openhab.binding.tellstick/ @jarlebh
 /bundles/org.openhab.binding.tesla/ @kgoderis
+/bundles/org.openhab.binding.tibber/ @kjoglum
 /bundles/org.openhab.binding.tplinksmarthome/ @Hilbrand
 /bundles/org.openhab.binding.tradfri/ @cweitkamp @kaikreuzer
 /bundles/org.openhab.binding.unifi/ @mgbowman
@@ -215,15 +226,15 @@
 /bundles/org.openhab.io.transport.modbus/ @ssalonen
 /bundles/org.openhab.io.webaudio/ @kaikreuzer
 /bundles/org.openhab.persistence.mapdb/ @mkhl
-/bundles/org.openhab.transform.exec/ @openhab/2-x-add-ons-maintainers
-/bundles/org.openhab.transform.javascript/ @openhab/2-x-add-ons-maintainers
+/bundles/org.openhab.transform.exec/ @openhab/add-ons-maintainers
+/bundles/org.openhab.transform.javascript/ @openhab/add-ons-maintainers
 /bundles/org.openhab.transform.jinja/ @jochen314
 /bundles/org.openhab.transform.jsonpath/ @clinique
-/bundles/org.openhab.transform.map/ @openhab/2-x-add-ons-maintainers
-/bundles/org.openhab.transform.regex/ @openhab/2-x-add-ons-maintainers
+/bundles/org.openhab.transform.map/ @openhab/add-ons-maintainers
+/bundles/org.openhab.transform.regex/ @openhab/add-ons-maintainers
 /bundles/org.openhab.transform.scale/ @clinique
-/bundles/org.openhab.transform.xpath/ @openhab/2-x-add-ons-maintainers
-/bundles/org.openhab.transform.xslt/ @openhab/2-x-add-ons-maintainers
+/bundles/org.openhab.transform.xpath/ @openhab/add-ons-maintainers
+/bundles/org.openhab.transform.xslt/ @openhab/add-ons-maintainers
 /bundles/org.openhab.voice.googletts/ @gbicskei
 /bundles/org.openhab.voice.mactts/ @kaikreuzer
 /bundles/org.openhab.voice.marytts/ @kaikreuzer

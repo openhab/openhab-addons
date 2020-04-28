@@ -33,5 +33,4 @@ public class InputInstructionRequest implements Request {
     public String getRequestString() {
         return "%1INPT " + this.command.getTarget().getPJLinkRepresentation();
     }
-
 }

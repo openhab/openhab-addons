@@ -15,14 +15,14 @@ package org.openhab.binding.xmppclient.internal;
 import java.util.Collections;
 import java.util.Set;
 
-import org.openhab.binding.xmppclient.XMPPClientBindingConstants;
-import org.openhab.binding.xmppclient.handler.XMPPClientHandler;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.openhab.binding.xmppclient.XMPPClientBindingConstants;
+import org.openhab.binding.xmppclient.handler.XMPPClientHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -33,8 +33,8 @@ import org.osgi.service.component.annotations.Component;
  */
 @Component(configurationPid = "binding.xmppclient", service = ThingHandlerFactory.class)
 public class XMPPClientHandlerFactory extends BaseThingHandlerFactory {
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = 
-            Collections.singleton(XMPPClientBindingConstants.BRIDGE_TYPE_XMPP);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .singleton(XMPPClientBindingConstants.BRIDGE_TYPE_XMPP);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

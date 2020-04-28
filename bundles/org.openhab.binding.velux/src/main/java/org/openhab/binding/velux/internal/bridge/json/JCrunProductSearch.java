@@ -47,7 +47,8 @@ class JCrunProductSearch extends RunProductSearch implements JsonBridgeCommunica
      */
 
     /**
-     * Bridge I/O Request message used by {@link org.openhab.binding.velux.internal.bridge.json.JsonVeluxBridge JsonVeluxBridge}
+     * Bridge I/O Request message used by {@link org.openhab.binding.velux.internal.bridge.json.JsonVeluxBridge
+     * JsonVeluxBridge}
      * for serializing.
      *
      * Resulting JSON:
@@ -70,7 +71,7 @@ class JCrunProductSearch extends RunProductSearch implements JsonBridgeCommunica
 
         public Request() {
             this.action = "checkLostNodes";
-            this.params = new HashMap<String, String>();
+            this.params = new HashMap<>();
         }
     }
 
@@ -99,7 +100,6 @@ class JCrunProductSearch extends RunProductSearch implements JsonBridgeCommunica
         @SuppressWarnings("unused")
         private String[] data = {};
         private String[] errors = {};
-
     }
 
     /*
@@ -145,5 +145,4 @@ class JCrunProductSearch extends RunProductSearch implements JsonBridgeCommunica
     public String[] getErrors() {
         return response.errors;
     }
-
 }

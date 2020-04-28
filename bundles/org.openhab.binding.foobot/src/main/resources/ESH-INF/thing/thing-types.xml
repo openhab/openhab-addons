@@ -10,7 +10,7 @@
 		<description>Your Foobot account.</description>
 
 		<channels>
-			<channel id="apiKeyLimitRemaining" typeId="api-key-limit-remaining" />
+			<channel id="apiKeyLimitRemaining" typeId="api-key-limit-remaining"/>
 		</channels>
 
 		<config-description>
@@ -36,20 +36,20 @@
 	<!-- Foobot Device -->
 	<thing-type id="device">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="account" />
+			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 
 		<label>Foobot</label>
 		<description>A Foobot device.</description>
 
 		<channels>
-			<channel id="time" typeId="time" />
-			<channel id="pm" typeId="pm" />
-			<channel id="temperature" typeId="temperature" />
-			<channel id="humidity" typeId="humidity" />
-			<channel id="co2" typeId="co2" />
-			<channel id="voc" typeId="voc" />
-			<channel id="gpi" typeId="gpi" />
+			<channel id="time" typeId="time"/>
+			<channel id="pm" typeId="pm"/>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="humidity" typeId="humidity"/>
+			<channel id="co2" typeId="co2"/>
+			<channel id="voc" typeId="voc"/>
+			<channel id="gpi" typeId="gpi"/>
 		</channels>
 
 		<representation-property>uuid</representation-property>
@@ -66,52 +66,52 @@
 		<item-type>DateTime</item-type>
 		<label>Last Readout</label>
 		<description>The last time the sensor data was uploaded to Foobot</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="pm">
 		<item-type>Number:Density</item-type>
 		<label>Particulate Matter</label>
 		<description>Particulate Matter Level</description>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="humidity">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Humidity Level</description>
 		<category>Humidity</category>
-		<state readOnly="true" pattern="%d %%" />
+		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 	<channel-type id="co2">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Carbon Dioxide</label>
 		<description>Carbon dioxide Level</description>
 		<category>CarbonDioxide</category>
-		<state readOnly="true" pattern="%d ppm" />
+		<state readOnly="true" pattern="%d ppm"/>
 	</channel-type>
 	<channel-type id="voc">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Volatile Compounds</label>
 		<description>Volatile Organic Compounds Level</description>
-		<state readOnly="true" pattern="%d ppb" />
+		<state readOnly="true" pattern="%d ppb"/>
 	</channel-type>
 	<channel-type id="gpi">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Pollution Index</label>
 		<description>Global Pollution Index Level</description>
-		<state readOnly="true" pattern="%.0f %%" />
+		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 	<channel-type id="api-key-limit-remaining" advanced="true">
 		<item-type>Number</item-type>
 		<label>Remaining Api Limit</label>
 		<description>The remaining number of calls that can be made to the api today</description>
-		<state readOnly="true" pattern="%d" />
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
 </thing:thing-descriptions>

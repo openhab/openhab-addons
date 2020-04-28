@@ -56,7 +56,7 @@ public class TelldusCoreDeviceController implements DeviceChangeListener, Sensor
 
     public TelldusCoreDeviceController(long resendInterval) {
         this.resendInterval = resendInterval;
-        messageQue = Collections.synchronizedSortedMap(new TreeMap<Device, TelldusCoreSendEvent>());
+        messageQue = Collections.synchronizedSortedMap(new TreeMap<>());
         telldusCoreWorker = new TelldusCoreWorker(messageQue);
         workerThread = new Thread(telldusCoreWorker);
     }
@@ -143,7 +143,6 @@ public class TelldusCoreDeviceController implements DeviceChangeListener, Sensor
     @Override
     public void onRequest(TellstickDeviceEvent newDevices) {
         setLastSend(newDevices.getTimestamp());
-
     }
 
     private void sendEvent(Device device, int resendCount, boolean isdimmer, Command command)

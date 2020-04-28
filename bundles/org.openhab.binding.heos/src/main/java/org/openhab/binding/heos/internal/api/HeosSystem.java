@@ -23,8 +23,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-// import org.eclipse.smarthome.core.thing.ThingStatus;
-// import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.openhab.binding.heos.internal.resources.HeosCommands;
 import org.openhab.binding.heos.internal.resources.HeosGroup;
 import org.openhab.binding.heos.internal.resources.HeosPlayer;

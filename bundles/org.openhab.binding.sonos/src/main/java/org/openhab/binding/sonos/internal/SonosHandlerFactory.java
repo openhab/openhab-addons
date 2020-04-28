@@ -122,7 +122,7 @@ public class SonosHandlerFactory extends BaseThingHandlerFactory {
             SonosAudioSink audioSink = new SonosAudioSink(handler, audioHTTPServer, callbackUrl);
             @SuppressWarnings("unchecked")
             ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) getBundleContext()
-                    .registerService(AudioSink.class.getName(), audioSink, new Hashtable<String, Object>());
+                    .registerService(AudioSink.class.getName(), audioSink, new Hashtable<>());
             audioSinkRegistrations.put(thing.getUID().toString(), reg);
 
             return handler;
@@ -168,5 +168,4 @@ public class SonosHandlerFactory extends BaseThingHandlerFactory {
             return new ThingUID(thingTypeUID, udn);
         }
     }
-
 }

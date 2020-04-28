@@ -42,5 +42,4 @@ public interface ZoneMinderHandler {
             throws IllegalArgumentException, GeneralSecurityException, IOException, ZoneMinderUrlNotFoundException;
 
     void onBridgeDisconnected(ZoneMinderServerBridgeHandler bridge);
-
 }

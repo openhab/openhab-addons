@@ -1,119 +1,139 @@
 {
-    "deviceMapping": {
-        "id": [
-            "yeelink.light.ceiling1",
-            "yeelink.light.ceiling3",
-            "yeelink.light.ceiling5",
-            "yeelink.light.ceiling6",
-            "yeelink.light.ceiling7",
-            "yeelink.light.ceiling8"
-        ],
-        "channels": [
-            {
-                "property": "power",
-                "friendlyName": "Power",
-                "channel": "power",
-                "type": "Switch",
-                "refresh": true,
-                "ChannelGroup": "",
-                "actions": [
-                    {
-                        "command": "set_power",
-                        "parameterType": "ONOFF"
-                    }
-                ]
-            },
-            {
-                "property": "bright",
-                "friendlyName": "Brightness",
-                "channel": "brightness",
-                "type": "Number",
-                "refresh": true,
-                "ChannelGroup": "actions",
-                "actions": [
-                    {
-                        "command": "set_bright",
-                        "parameterType": "NUMBER"
-                    }
-                ]
-            },
-            {
-                "property": "delayoff",
-                "friendlyName": "Shutdowm Timer",
-                "channel": "delayoff",
-                "type": "Number",
-                "refresh": true,
-                "ChannelGroup": "actions",
-                "actions": [
-                    {
-                        "command": "cron_add",
-                        "parameterType": "NUMBER",
-                        "preCommandParameter1": "0"
-                    }
-                ]
-            },
-            {
-                "property": "ct",
-                "friendlyName": "Color Temperature",
-                "channel": "colorTemperature",
-                "type": "Number",
-                "refresh": true,
-                "ChannelGroup": "actions",
-                "actions": [
-                    {
-                        "command": "set_ct_abx",
-                        "parameterType": "NUMBER",
-                        "parameter1": "\"smooth\"",
-                        "parameter2": "500"
-                    }
-                ]
-            },
-            {
-                "property": "color_mode",
-                "friendlyName": "Color Mode",
-                "channel": "colorMode",
-                "type": "Number",
-                "refresh": true,
-                "ChannelGroup": "",
-                "actions": []
-            },
-            {
-                "property": "name",
-                "friendlyName": "Name",
-                "channel": "name",
-                "type": "String",
-                "refresh": true,
-                "ChannelGroup": "actions",
-                "actions": [
-                    {
-                        "command": "set_name",
-                        "parameterType": "STRING"
-                    }
-                ]
-            },
-            {
-                "property": "",
-                "friendlyName": "Set Scene",
-                "channel": "customScene",
-                "type": "String",
-                "refresh": false,
-                "ChannelGroup": "actions",
-                "actions": [
-                    {
-                        "command": "set_scene",
-                        "parameterType": "CUSTOMSTRING"
-                    }
-                ]
-            },
-            {
-                "property": "nl_br",
-                "friendlyName": "Nightlight Brightness",
-                "channel": "nightlightBrightness",
-                "type": "Number",
-                "refresh": true,
-                "ChannelGroup": "",
-                "actions": []
-            }
-        ]
-    }
+	"deviceMapping": {
+		"id": [
+			"yeelink.light.ceiling1",
+			"yeelink.light.ceiling3",
+			"yeelink.light.ceiling5",
+			"yeelink.light.ceiling6",
+			"yeelink.light.ceiling7",
+			"yeelink.light.ceiling8",
+			"yeelink.light.ceiling9",
+			"yeelink.light.ceiling11",
+			"yeelink.light.ceiling12",
+			"yeelink.light.ceiling13"
+		],
+		"channels": [
+			{
+				"property": "power",
+				"friendlyName": "Power",
+				"channel": "power",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "",
+				"actions": [
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "bright",
+				"friendlyName": "Brightness",
+				"channel": "brightness",
+				"type": "Dimmer",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_bright",
+						"parameterType": "NUMBER",
+						"condition": {
+							"name": "BrightnessExisting"
+						}
+					},
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF",
+						"condition": {
+							"name": "BrightnessOnOff"
+						}
+					}
+				]
+			},
+			{
+				"property": "delayoff",
+				"friendlyName": "Shutdown Timer",
+				"channel": "delayoff",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "cron_add",
+						"parameterType": "NUMBER",
+						"parameters": [
+							0,
+							"$value$"
+						]
+					}
+				]
+			},
+			{
+				"property": "ct",
+				"friendlyName": "Color Temperature",
+				"channel": "colorTemperature",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_ct_abx",
+						"parameterType": "NUMBER",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500
+						]
+					}
+				]
+			},
+			{
+				"property": "color_mode",
+				"friendlyName": "Color Mode",
+				"channel": "colorMode",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "",
+				"actions": []
+			},
+			{
+				"property": "name",
+				"friendlyName": "Name",
+				"channel": "name",
+				"type": "String",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_name",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "",
+				"friendlyName": "Set Scene",
+				"channel": "customScene",
+				"type": "String",
+				"refresh": false,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_scene",
+						"parameterType": "CUSTOMSTRING"
+					}
+				]
+			},
+			{
+				"property": "nl_br",
+				"friendlyName": "Nightlight Brightness",
+				"channel": "nightlightBrightness",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "",
+				"actions": []
+			}
+		]
+	}
 }

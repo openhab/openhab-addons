@@ -72,5 +72,4 @@ public class ScheduledEvent {
     public Recurrence getRecurrence() {
         return recurrence;
     }
-
 }

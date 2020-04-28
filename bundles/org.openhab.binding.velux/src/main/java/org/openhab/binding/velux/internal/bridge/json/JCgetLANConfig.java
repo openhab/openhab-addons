@@ -68,7 +68,7 @@ class JCgetLANConfig extends GetLANConfig implements BridgeCommunicationProtocol
 
         public Request() {
             this.action = "get";
-            this.params = new HashMap<String, String>();
+            this.params = new HashMap<>();
         }
     }
 
@@ -186,5 +186,4 @@ class JCgetLANConfig extends GetLANConfig implements BridgeCommunicationProtocol
                 response.data.defaultGateway, response.data.dhcp);
         return gwLAN;
     }
-
 }

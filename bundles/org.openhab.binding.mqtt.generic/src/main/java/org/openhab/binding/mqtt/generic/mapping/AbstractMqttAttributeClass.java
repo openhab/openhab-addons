@@ -172,7 +172,7 @@ public abstract class AbstractMqttAttributeClass implements SubscribeFieldToMQTT
             int timeout) {
         // We first need to unsubscribe old subscriptions if any
         final CompletableFuture<@Nullable Void> startFuture;
-        if (subscriptions.size() > 0) {
+        if (!subscriptions.isEmpty()) {
             startFuture = unsubscribe();
         } else {
             startFuture = CompletableFuture.completedFuture(null);
@@ -316,5 +316,4 @@ public abstract class AbstractMqttAttributeClass implements SubscribeFieldToMQTT
      * Implement this method in your field class and return "this".
      */
     public abstract Object getFieldsOf();
-
 }

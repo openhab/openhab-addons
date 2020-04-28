@@ -25,7 +25,7 @@
 		<item-type>String</item-type>
 		<label>Direct Access to OWFS-Path (String)</label>
 		<description>Allows direct access to the OWFS</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 		<config-description>
 			<parameter name="path" type="text">
 				<label>OWFS Path</label>
@@ -45,7 +45,7 @@
 		<item-type>Number</item-type>
 		<label>Direct Access to OWFS-Path (Number)</label>
 		<description>Allows direct access to the OWFS</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 		<config-description>
 			<parameter name="path" type="text">
 				<label>OWFS Path</label>

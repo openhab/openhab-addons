@@ -45,8 +45,8 @@ public class NestTestBridgeHandler extends NestBridgeHandler {
         }
     }
 
-    public final static ThingTypeUID THING_TYPE_TEST_BRIDGE = new ThingTypeUID(BINDING_ID, "test_account");
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_TEST_BRIDGE);
+    public static final ThingTypeUID THING_TYPE_TEST_BRIDGE = new ThingTypeUID(BINDING_ID, "test_account");
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_TEST_BRIDGE);
 
     private String redirectUrl;
 
@@ -59,5 +59,4 @@ public class NestTestBridgeHandler extends NestBridgeHandler {
     protected NestRedirectUrlSupplier createRedirectUrlSupplier() throws InvalidAccessTokenException {
         return new NestTestRedirectUrlSupplier(getHttpHeaders());
     }
-
 }

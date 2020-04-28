@@ -6,10 +6,13 @@
 
 	<thing-type id="sensor_vibration">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Aqara Vibration Sensor</label>
-		<description>Incorporates high-precision six-axis acceleration and gyroscopes, used for collecting external vibration and motion data. Used to monitor the door and windows with status, important items alarmed, and can also monitor user's bed activity, to help determine the quality of sleep. Installation: Click the reset button on the sensor in the selected sensor installation location.</description>
+		<description>Incorporates high-precision six-axis acceleration and gyroscopes, used for collecting external vibration
+			and motion data. Used to monitor the door and windows with status, important items alarmed, and can also monitor
+			user's bed activity, to help determine the quality of sleep. Installation: Click the reset button on the sensor in
+			the selected sensor installation location.</description>
 		<channels>
 			<channel id="action" typeId="vibrationAction"></channel>
 			<channel id="lastAction" typeId="lastAction"></channel>
@@ -18,10 +21,10 @@
 			<channel id="orientationY" typeId="orientationY"></channel>
 			<channel id="orientationZ" typeId="orientationZ"></channel>
 			<channel id="bedActivity" typeId="bedActivity"></channel>
-			<channel id="batteryLevel" typeId="system.battery-level" />
-			<channel id="lowBattery" typeId="system.low-battery" />
+			<channel id="batteryLevel" typeId="system.battery-level"/>
+			<channel id="lowBattery" typeId="system.low-battery"/>
 		</channels>
-		<config-description-ref uri="thing-type:mihome:device" />
+		<config-description-ref uri="thing-type:mihome:device"/>
 	</thing-type>
 
 	<channel-type id="vibrationAction">

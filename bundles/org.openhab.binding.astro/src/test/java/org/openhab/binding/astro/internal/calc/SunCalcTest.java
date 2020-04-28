@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.astro.internal.calc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -44,12 +42,12 @@ import org.openhab.binding.astro.internal.model.SunPhaseName;
  */
 public class SunCalcTest {
 
-    private final static TimeZone TIME_ZONE = TimeZone.getTimeZone("Europe/Amsterdam");
-    private final static Calendar FEB_27_2019 = SunCalcTest.newCalendar(2019, Calendar.FEBRUARY, 27, 1, 0, TIME_ZONE);
-    private final static double AMSTERDAM_LATITUDE = 52.367607;
-    private final static double AMSTERDAM_LONGITUDE = 4.8978293;
-    private final static double AMSTERDAM_ALTITUDE = 0.0;
-    private final static int ACCURACY_IN_MILLIS = 3 * 60 * 1000;
+    private static final TimeZone TIME_ZONE = TimeZone.getTimeZone("Europe/Amsterdam");
+    private static final Calendar FEB_27_2019 = SunCalcTest.newCalendar(2019, Calendar.FEBRUARY, 27, 1, 0, TIME_ZONE);
+    private static final double AMSTERDAM_LATITUDE = 52.367607;
+    private static final double AMSTERDAM_LONGITUDE = 4.8978293;
+    private static final double AMSTERDAM_ALTITUDE = 0.0;
+    private static final int ACCURACY_IN_MILLIS = 3 * 60 * 1000;
 
     private SunCalc sunCalc;
 
@@ -279,7 +277,7 @@ public class SunCalcTest {
     /***
      * Constructs a <code>GregorianCalendar</code> with the given date and time set
      * for the provided time zone.
-     * 
+     *
      * @param year
      *            the value used to set the <code>YEAR</code> calendar field in the
      *            calendar.

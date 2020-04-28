@@ -91,5 +91,4 @@ public abstract class BaseTemperatureControl extends BaseZoneIdentifier {
     public Boolean isNotSetOff() {
         return !ControlModes.OFF.getID().equals(controlMode);
     }
-
 }

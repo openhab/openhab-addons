@@ -37,7 +37,7 @@ import org.osgi.service.component.annotations.ReferencePolicy;
  */
 @Component(service = { HomematicChannelTypeProvider.class, ChannelTypeProvider.class }, immediate = true)
 public class HomematicChannelTypeProviderImpl implements HomematicChannelTypeProvider {
-    private final Map<ChannelTypeUID, ChannelType> channelTypesByUID = new HashMap<ChannelTypeUID, ChannelType>();
+    private final Map<ChannelTypeUID, ChannelType> channelTypesByUID = new HashMap<>();
     protected List<HomematicThingTypeExcluder> homematicThingTypeExcluders = new CopyOnWriteArrayList<>();
 
     @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
@@ -88,5 +88,4 @@ public class HomematicChannelTypeProviderImpl implements HomematicChannelTypePro
     public void addChannelType(ChannelType channelType) {
         channelTypesByUID.put(channelType.getUID(), channelType);
     }
-
 }
