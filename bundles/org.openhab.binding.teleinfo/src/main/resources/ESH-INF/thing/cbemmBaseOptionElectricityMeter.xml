@@ -21,7 +21,7 @@
 		<config-description>
 			<parameter name="adco" type="text" required="true">
 				<label>ADCO</label>
-				<description>Electricity meter identifier</description>
+				<description>Electricity meter identifier (format: 12 characters / e.g: '031528042289')</description>
 				<limitToOptions>false</limitToOptions>
 			</parameter>
 		</config-description>
