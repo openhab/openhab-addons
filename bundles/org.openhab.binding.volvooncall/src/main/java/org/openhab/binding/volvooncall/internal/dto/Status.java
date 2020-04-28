@@ -49,6 +49,7 @@ public class Status {
     public String serviceWarningStatus = "";
 
     public Optional<WindowsStatus> getWindows() {
+        WindowsStatus windows = this.windows;
         if (windows != null) {
             return Optional.of(windows);
         }
@@ -56,6 +57,7 @@ public class Status {
     }
 
     public Optional<DoorsStatus> getDoors() {
+        DoorsStatus doors = this.doors;
         if (doors != null) {
             return Optional.of(doors);
         }
@@ -63,6 +65,7 @@ public class Status {
     }
 
     public Optional<TyrePressure> getTyrePressure() {
+        TyrePressure tyrePressure = this.tyrePressure;
         if (tyrePressure != null) {
             return Optional.of(tyrePressure);
         }
@@ -70,6 +73,7 @@ public class Status {
     }
 
     public Optional<HvBattery> getHvBattery() {
+        HvBattery hvBattery = this.hvBattery;
         if (hvBattery != null) {
             return Optional.of(hvBattery);
         }
@@ -77,6 +81,7 @@ public class Status {
     }
 
     public Optional<Heater> getHeater() {
+        Heater heater = this.heater;
         if (heater != null) {
             return Optional.of(heater);
         }
@@ -84,6 +89,7 @@ public class Status {
     }
 
     public Optional<OnOffType> getCarLocked() {
+        OnOffType carLocked = this.carLocked;
         if (carLocked != null) {
             return Optional.of(carLocked);
         }
@@ -91,6 +97,7 @@ public class Status {
     }
 
     public Optional<OnOffType> getEngineRunning() {
+        OnOffType engineRunning = this.engineRunning;
         if (engineRunning != null) {
             return Optional.of(engineRunning);
         }

@@ -76,6 +76,7 @@ public class TripDetail {
     }
 
     public Optional<Integer> getFuelConsumption() {
+        Integer fuelConsumption = this.fuelConsumption;
         if (fuelConsumption != null) {
             return Optional.of(fuelConsumption);
         }
@@ -83,6 +84,7 @@ public class TripDetail {
     }
 
     public Optional<Integer> getElectricalConsumption() {
+        Integer electricalConsumption = this.electricalConsumption;
         if (electricalConsumption != null) {
             return Optional.of(electricalConsumption);
         }
@@ -90,6 +92,7 @@ public class TripDetail {
     }
 
     public Optional<Integer> getElectricalRegeneration() {
+        Integer electricalRegeneration = this.electricalRegeneration;
         if (electricalRegeneration != null) {
             return Optional.of(electricalRegeneration);
         }
