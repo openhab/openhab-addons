@@ -130,7 +130,7 @@ public class NukiOpenerHandler extends BaseThingHandler {
         }
 
         if (command instanceof RefreshType) {
-            handleCommandRefreshType(channelUID, command);
+            scheduler.execute(()->handleCommandRefreshType(channelUID, command));
             return;
         }
 
