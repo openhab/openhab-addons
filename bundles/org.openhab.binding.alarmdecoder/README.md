@@ -12,7 +12,7 @@ There are several versions of the adapter available:
 This binding allows openHAB to access the state of wired or wireless contacts and motion detectors connected to supported alarm panels, as well as the state of attached keypads and the messages send to attached LRR devices.
 Support is also available for sending keypad commands, including special/programmable keys supported by your panel.
 
-For those upgrading from the OH1 version of the binding, the [original OH1 README](doc/README_OH1.md) file is available for reference.
+For those upgrading from the OH1 version of the binding, the [original OH1 README](https://www.openhab.org/v2.5/addons/bindings/alarmdecoder1/) file is available for reference.
 
 ## Supported Things
 
