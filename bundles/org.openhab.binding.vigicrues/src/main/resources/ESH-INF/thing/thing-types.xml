@@ -10,8 +10,8 @@
 		</description>
 
 		<channels>
-            <channel id="height" typeId="height" />
-            <channel id="flow" typeId="flow" />
+			<channel id="height" typeId="height" />
+			<channel id="flow" typeId="flow" />
 			<channel id="observation-time" typeId="observation-time" />
 		</channels>
 
@@ -28,11 +28,11 @@
 		</config-description>
 	</thing-type>
 
-    <channel-type id="flow">
-        <item-type>Number:VolumetricFlowRate</item-type>
-        <label>Current Flow</label>
-        <state readOnly="true" pattern="%.2f %unit%"/>
-    </channel-type>
+	<channel-type id="flow">
+		<item-type>Number:VolumetricFlowRate</item-type>
+		<label>Current Flow</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
 
 	<channel-type id="observation-time">
 		<item-type>DateTime</item-type>
@@ -41,10 +41,10 @@
 		<state readOnly="true"/>
 	</channel-type>
 	
-    <channel-type id="height">
-        <item-type>Number:Length</item-type>
-        <label>Height</label>
-        <description>Water level in the river</description>
-        <state readOnly="true" pattern="%.2f %unit%"/>
-    </channel-type>
+	<channel-type id="height">
+		<item-type>Number:Length</item-type>
+		<label>Height</label>
+		<description>Water level in the river</description>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
 </thing:thing-descriptions>
