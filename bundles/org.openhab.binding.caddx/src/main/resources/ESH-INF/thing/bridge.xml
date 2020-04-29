@@ -26,19 +26,30 @@
 					are e.g. COM1 for Windows and /dev/ttyS0 or /dev/ttyUSB0 for Linux.</description>
 			</parameter>
 
-			<parameter name="baudrate" type="integer" required="false">
+			<parameter name="baudrate" type="integer" required="true">
 				<label>Baud Rate</label>
 				<description>The baud rate of the serial port. Valid values are 9600
 					(default), 19200, 38400, 57600, and 115200.</description>
 				<default>9600</default>
+				<options>
+					<option value="9600">9600</option>
+					<option value="19200">19200</option>
+					<option value="38400">38400</option>
+					<option value="57600">57600</option>
+					<option value="115200">115200</option>
+				</options>
 			</parameter>
 			
-			<parameter name="protocol" type="text" required="false">
+			<parameter name="protocol" type="text" required="true">
 				<context>protocol</context>
 				<label>Caddx Bridge Protocol</label>
 				<description>The configured panel protocol. Valid values
 					are Binary and Ascii.</description>
 				<default>Binary</default>
+				<options>
+					<option value="Ascii">Ascii</option>
+					<option value="Binary">Binary</option>
+				</options>
 			</parameter>
 
 		</config-description>

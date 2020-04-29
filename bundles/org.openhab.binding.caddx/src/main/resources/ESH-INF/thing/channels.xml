@@ -25,7 +25,7 @@
 	</channel-type>
 	
 	<channel-type id="panel_flag">
-		<item-type>Switch</item-type>
+		<item-type>Contact</item-type>
 		<label>Panel Flag</label>
 		<description>Panel flag</description>
 		<state readOnly="true"></state>
@@ -33,7 +33,7 @@
 	
 	<!-- partition -->
 	<channel-type id="partition_condition">
-		<item-type>Switch</item-type>
+		<item-type>Contact</item-type>
 		<label>Partition Condition</label>
 		<description>Partition Condition</description>
 		<state readOnly="true"></state>
@@ -94,21 +94,21 @@
 	</channel-type>
 
 	<channel-type id="zone_partition">
-		<item-type>Switch</item-type>
+		<item-type>Contact</item-type>
 		<label>Zone Partition</label>
 		<description>Zone Partition</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="zone_type">
-		<item-type>Switch</item-type>
+		<item-type>Contact</item-type>
 		<label>Zone Type</label>
 		<description>Zone Type</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="zone_condition">
-		<item-type>Switch</item-type>
+		<item-type>Contact</item-type>
 		<label>Zone Condition</label>
 		<description>Zone Condition</description>
 		<state readOnly="true"></state>

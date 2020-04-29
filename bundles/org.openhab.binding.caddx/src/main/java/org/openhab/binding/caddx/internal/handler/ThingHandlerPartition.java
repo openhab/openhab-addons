@@ -13,6 +13,7 @@
 package org.openhab.binding.caddx.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -48,11 +49,13 @@ public class ThingHandlerPartition extends CaddxBaseThingHandler {
 
     @Override
     public void updateChannel(ChannelUID channelUID, String data) {
-        // All Zone channels are OnOffType
-        OnOffType onOffType;
-
-        onOffType = ("true".equals(data)) ? OnOffType.ON : OnOffType.OFF;
-        updateState(channelUID, onOffType);
+        if (CaddxBindingConstants.PARTITION_PRIMARY_COMMAND.equals(channelUID.getId())
+                || CaddxBindingConstants.PARTITION_SECONDARY_COMMAND.equals(channelUID.getId())) {
+            updateState(channelUID, new DecimalType(data));
+        } else {
+            OnOffType onOffType = ("true".equals(data)) ? OnOffType.ON : OnOffType.OFF;
+            updateState(channelUID, onOffType);
+        }
     }
 
     @Override
