@@ -19,9 +19,6 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The CryptoUtil class provides functionality for encrypting and decrypting
@@ -32,7 +29,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class GreeCryptoUtil {
-    static private final Logger logger = LoggerFactory.getLogger(GreeCryptoUtil.class);
     static String AES_General_Key = "a3K8Bx%2r8Y7#xDh";
 
     public static String GetAESGeneralKey() {
@@ -43,8 +39,7 @@ public class GreeCryptoUtil {
         return AES_General_Key.getBytes();
     }
 
-    public static @Nullable String decryptPack(byte[] keyarray, String message) throws Exception {
-        String descrytpedMessage = null;
+    public static String decryptPack(byte[] keyarray, String message) throws GreeException {
         try {
             Key key = new SecretKeySpec(keyarray, "AES");
             // BASE64Decoder decoder = new BASE64Decoder();
@@ -57,16 +52,13 @@ public class GreeCryptoUtil {
             aesCipher.init(Cipher.DECRYPT_MODE, key);
             byte[] bytePlainText = aesCipher.doFinal(imageByte);
 
-            descrytpedMessage = new String(bytePlainText);
+            return new String(bytePlainText);
         } catch (Exception ex) {
-            logger.debug("Decryption of recieved data failed", ex);
+            throw new GreeException(ex, "Decryption of recieved data failed");
         }
-        return descrytpedMessage;
     }
 
-    public static @Nullable String encryptPack(byte[] keyarray, String message) throws Exception {
-        String encrytpedMessage = null;
-
+    public static String encryptPack(byte[] keyarray, String message) throws GreeException {
         try {
             Key key = new SecretKeySpec(keyarray, "AES");
             Cipher aesCipher = Cipher.getInstance("AES");
@@ -74,11 +66,10 @@ public class GreeCryptoUtil {
             byte[] bytePlainText = aesCipher.doFinal(message.getBytes());
 
             Base64.Encoder newencoder = Base64.getEncoder();
-            encrytpedMessage = new String(newencoder.encode(bytePlainText));
-            encrytpedMessage = encrytpedMessage.substring(0, encrytpedMessage.length());
+            String encrytpedMessage = new String(newencoder.encode(bytePlainText));
+            return encrytpedMessage.substring(0, encrytpedMessage.length());
         } catch (Exception ex) {
-            logger.debug("Unable to encrypt outbound data", ex);
+            throw new GreeException(ex, "Unable to encrypt outbound data");
         }
-        return encrytpedMessage;
     }
 }

@@ -15,9 +15,11 @@ package org.openhab.binding.gree.internal.discovery;
 
 import static org.openhab.binding.gree.internal.GreeBindingConstants.*;
 
+import java.io.IOException;
 import java.net.DatagramSocket;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -26,17 +28,17 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.openhab.binding.gree.internal.GreeException;
 import org.openhab.binding.gree.internal.GreeTranslationProvider;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Device discovery creates a thing in the inbox for each vehicle
- * found in the data received from {@link CarNetAccountHandler}.
+ * {@link GreeDiscoveryService} implements the device discovery service. UDP broadtcast ius used to find the devices on
+ * the local subnet.
  *
- * @author John Cunha - Initial contribution
- * @author Markus Michels - Refactoring, adapted to OH 2.5x
+ * @author Markus Michels - Initial contribution
  *
  */
 @NonNullByDefault
@@ -52,6 +54,7 @@ public class GreeDiscoveryService extends AbstractDiscoveryService {
         super(SUPPORTED_THING_TYPES_UIDS, TIMEOUT);
         this.messages = messages;
         this.broadcastAddress = !broadcastAddress.isEmpty() ? broadcastAddress : "192.168.255.255";
+        logger.debug("Auto-detected broadcast IP = {}", this.broadcastAddress);
     }
 
     public void activate() {
@@ -71,11 +74,11 @@ public class GreeDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
+        Optional<DatagramSocket> clientSocket = Optional.empty();
         try {
-            DatagramSocket clientSocket = new DatagramSocket();
+            clientSocket = Optional.of(new DatagramSocket());
             deviceFinder = new GreeDeviceFinder(broadcastAddress);
-            deviceFinder.scan(clientSocket);
-            clientSocket.close();
+            deviceFinder.scan(clientSocket, true);
 
             int count = deviceFinder.getScannedDeviceCount();
             logger.debug("{} units discovered", count);
@@ -83,22 +86,28 @@ public class GreeDiscoveryService extends AbstractDiscoveryService {
                 logger.debug("Adding uinits to Inbox");
                 createResult(deviceFinder.getDevices());
             }
-        } catch (
-
-        Exception e) {
-            logger.debug("Discovery failed", e);
+        } catch (IOException e) {
+            logger.debug("{}",
+                    new GreeException(e, "I/O exception while scanning the network for GREE devices").toString());
+        } catch (GreeException e) {
+            logger.debug("Discovery failed: {}", e.toString());
+        } finally {
+            if (clientSocket.isPresent()) {
+                clientSocket.get().close();
+            }
         }
     }
 
     public void createResult(HashMap<String, GreeAirDevice> deviceList) {
         for (Map.Entry<String, GreeAirDevice> d : deviceList.entrySet()) {
             GreeAirDevice device = d.getValue();
-            logger.debug("Discovery for [{}]", device.getName());
+            String ipAddress = device.getAddress().getHostAddress();
+            logger.debug("Device {} discovered at {}, MAC={}", device.getName(), ipAddress, device.getId());
             Map<String, Object> properties = new TreeMap<String, Object>();
             properties.put(Thing.PROPERTY_VENDOR, device.getVendor());
             properties.put(Thing.PROPERTY_MODEL_ID, device.getModel());
             properties.put(Thing.PROPERTY_MAC_ADDRESS, device.getId());
-            properties.put(PROPERTY_IP, device.getAddress().toString());
+            properties.put(PROPERTY_IP, ipAddress);
             properties.put(PROPERTY_BROADCAST, broadcastAddress);
             ThingUID thingUID = new ThingUID(THING_TYPE_GREEAIRCON, device.getId());
             DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withProperties(properties)

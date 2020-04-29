@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.gree.internal.discovery;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -22,9 +23,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
+import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.gree.internal.GreeCryptoUtil;
+import org.openhab.binding.gree.internal.GreeException;
 import org.openhab.binding.gree.internal.gson.GreeBindRequest4GsonDTO;
 import org.openhab.binding.gree.internal.gson.GreeBindRequestPack4GsonDTO;
 import org.openhab.binding.gree.internal.gson.GreeBindResponse4GsonDTO;
@@ -56,41 +60,41 @@ public class GreeAirDevice {
     private final Logger logger = LoggerFactory.getLogger(GreeAirDevice.class);
     private final static Charset UTF8_CHARSET = Charset.forName("UTF-8");
     private final static HashMap<String, HashMap<String, Integer>> tempRanges = createTempRangeMap();
-    private boolean mIsBound = false;
-    private InetAddress mAddress = InetAddress.getLoopbackAddress();
-    private int mPort = 0;
-    private String mKey = "";
+    private boolean isBound = false;
+    private InetAddress ipAddress = InetAddress.getLoopbackAddress();
+    private int port = 0;
+    private String encKey = "";
     private GreeScanResponse4GsonDTO mScanResponseGson;
     private GreeBindResponse4GsonDTO bindResponseGson;
     private GreeStatusResponse4GsonDTO statusResponseGson;
     private GreeStatusResponsePack4GsonDTO prevStatusResponsePackGson;
 
     public Boolean getIsBound() {
-        return mIsBound;
+        return isBound;
     }
 
     public void setIsBound(boolean isBound) {
-        this.mIsBound = isBound;
+        this.isBound = isBound;
     }
 
     public InetAddress getAddress() {
-        return mAddress;
+        return ipAddress;
     }
 
     public void setAddress(InetAddress address) {
-        this.mAddress = address;
+        this.ipAddress = address;
     }
 
     public int getPort() {
-        return mPort;
+        return port;
     }
 
     public void setPort(int port) {
-        this.mPort = port;
+        this.port = port;
     }
 
     public String getKey() {
-        return mKey;
+        return encKey;
     }
 
     public String getId() {
@@ -125,57 +129,63 @@ public class GreeAirDevice {
         return statusResponseGson;
     }
 
-    public void bindWithDevice(DatagramSocket clientSocket) throws Exception {
+    public void bindWithDevice(Optional<DatagramSocket> socket) throws GreeException {
+        Validate.isTrue(socket.isPresent());
         byte[] sendData = new byte[1024];
         byte[] receiveData = new byte[347];
         Gson gson = new Gson();
 
-        // Prep the Binding Request pack
-        GreeBindRequestPack4GsonDTO bindReqPackGson = new GreeBindRequestPack4GsonDTO();
-        bindReqPackGson.mac = getId();
-        bindReqPackGson.t = "bind";
-        bindReqPackGson.uid = 0;
-        String bindReqPackStr = gson.toJson(bindReqPackGson);
+        try {
+            // Prep the Binding Request pack
+            GreeBindRequestPack4GsonDTO bindReqPackGson = new GreeBindRequestPack4GsonDTO();
+            bindReqPackGson.mac = getId();
+            bindReqPackGson.t = "bind";
+            bindReqPackGson.uid = 0;
+            String bindReqPackStr = gson.toJson(bindReqPackGson);
 
-        // Now Encrypt the Binding Request pack
-        String encryptedBindReqPacket = GreeCryptoUtil.encryptPack(GreeCryptoUtil.GetAESGeneralKeyByteArray(),
-                bindReqPackStr);
+            // Now Encrypt the Binding Request pack
+            String encryptedBindReqPacket = GreeCryptoUtil.encryptPack(GreeCryptoUtil.GetAESGeneralKeyByteArray(),
+                    bindReqPackStr);
 
-        // Prep the Binding Request
-        GreeBindRequest4GsonDTO bindReqGson = new GreeBindRequest4GsonDTO();
-        bindReqGson.cid = "app";
-        bindReqGson.i = 1;
-        bindReqGson.t = "pack";
-        bindReqGson.uid = 0;
-        bindReqGson.pack = new String(encryptedBindReqPacket.getBytes(), UTF8_CHARSET);
-        String bindReqStr = gson.toJson(bindReqGson);
-        sendData = bindReqStr.getBytes();
+            // Prep the Binding Request
+            GreeBindRequest4GsonDTO bindReqGson = new GreeBindRequest4GsonDTO();
+            bindReqGson.cid = "app";
+            bindReqGson.i = 1;
+            bindReqGson.t = "pack";
+            bindReqGson.uid = 0;
+            bindReqGson.pack = new String(encryptedBindReqPacket.getBytes(), UTF8_CHARSET);
+            String bindReqStr = gson.toJson(bindReqGson);
+            sendData = bindReqStr.getBytes();
 
-        // Now Send the request
-        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, getAddress(), getPort());
-        clientSocket.send(sendPacket);
+            // Now Send the request
+            DatagramSocket clientSocket = socket.get();
+            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, getAddress(), getPort());
+            clientSocket.send(sendPacket);
 
-        // Recieve a response
-        DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-        clientSocket.receive(receivePacket);
-        String modifiedSentence = new String(receivePacket.getData());
+            // Recieve a response
+            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+            clientSocket.receive(receivePacket);
+            String modifiedSentence = new String(receivePacket.getData());
 
-        // Read the response
-        StringReader stringReader = new StringReader(modifiedSentence);
-        bindResponseGson = gson.fromJson(new JsonReader(stringReader), GreeBindResponse4GsonDTO.class);
-        bindResponseGson.decryptedPack = GreeCryptoUtil.decryptPack(GreeCryptoUtil.GetAESGeneralKeyByteArray(),
-                bindResponseGson.pack);
+            // Read the response
+            StringReader stringReader = new StringReader(modifiedSentence);
+            bindResponseGson = gson.fromJson(new JsonReader(stringReader), GreeBindResponse4GsonDTO.class);
+            bindResponseGson.decryptedPack = GreeCryptoUtil.decryptPack(GreeCryptoUtil.GetAESGeneralKeyByteArray(),
+                    bindResponseGson.pack);
 
-        // Create the JSON to hold the response values
-        stringReader = new StringReader(bindResponseGson.decryptedPack);
-        bindResponseGson.packJson = gson.fromJson(new JsonReader(stringReader), GreeBindResponsePack4GsonDTO.class);
+            // Create the JSON to hold the response values
+            stringReader = new StringReader(bindResponseGson.decryptedPack);
+            bindResponseGson.packJson = gson.fromJson(new JsonReader(stringReader), GreeBindResponsePack4GsonDTO.class);
 
-        // Now set the key and flag to indicate the bind was succesful
-        mKey = bindResponseGson.packJson.key;
-        setIsBound(true);
+            // Now set the key and flag to indicate the bind was succesful
+            encKey = bindResponseGson.packJson.key;
+            setIsBound(true);
+        } catch (IOException e) {
+            throw new GreeException(e, "failed");
+        }
     }
 
-    public void setDevicePower(DatagramSocket clientSocket, Integer value) throws Exception {
+    public void setDevicePower(DatagramSocket clientSocket, Integer value) throws GreeException {
         // Only allow this to happen if this device has been bound and values are valid
         if ((!Objects.equals(getIsBound(), Boolean.TRUE)) || (value.intValue() < 0 || value.intValue() > 1)) {
             return;
@@ -187,11 +197,11 @@ public class GreeAirDevice {
         executeCommand(clientSocket, parameters);
     }
 
-    public Integer getDevicePower() {
+    public int getDevicePower() {
         return getIntStatusVal("Pow");
     }
 
-    public void SetDeviceMode(DatagramSocket clientSocket, Integer value) throws Exception {
+    public void SetDeviceMode(DatagramSocket clientSocket, Integer value) throws GreeException {
         // Only allow this to happen if this device has been bound and values are valid
         if ((!Objects.equals(getIsBound(), Boolean.TRUE)) || (value.intValue() < 0 || value.intValue() > 4)) {
             return;
@@ -207,7 +217,7 @@ public class GreeAirDevice {
         return getIntStatusVal("Mod");
     }
 
-    public void setDeviceSwingVertical(DatagramSocket clientSocket, Integer value) throws Exception {
+    public void setDeviceSwingVertical(DatagramSocket clientSocket, Integer value) throws GreeException {
         // Only allow this to happen if this device has been bound and values are valid
         // Only values 0,1,2,3,4,5,6,10,11 allowed
         if ((!Objects.equals(getIsBound(), Boolean.TRUE)) || (value.intValue() < 0 || value.intValue() > 11)
@@ -224,17 +234,17 @@ public class GreeAirDevice {
         return getIntStatusVal("SwUpDn");
     }
 
-    public void setDeviceWindspeed(DatagramSocket clientSocket, Integer value) throws Exception {
-        // Only allow this to happen if this device has been bound and values are valid
-        /*
-         * Possible values are :
-         * 0 : Auto
-         * 1 : Low
-         * 2 : Medium Low
-         * 3 : Medium
-         * 4 : Medium High
-         * 5 : High
-         */
+    /**
+     * Only allow this to happen if this device has been bound and values are valid
+     * Possible values are :
+     * 0 : Auto
+     * 1 : Low
+     * 2 : Medium Low
+     * 3 : Medium
+     * 4 : Medium High
+     * 5 : High
+     */
+    public void setDeviceWindspeed(DatagramSocket clientSocket, Integer value) throws GreeException {
         if ((!Objects.equals(getIsBound(), Boolean.TRUE)) || (value.intValue() < 0 || value.intValue() > 5)) {
             return;
         }
@@ -252,7 +262,7 @@ public class GreeAirDevice {
         return getIntStatusVal("WdSpd");
     }
 
-    public void setDeviceTurbo(DatagramSocket clientSocket, Integer value) throws Exception {
+    public void setDeviceTurbo(DatagramSocket clientSocket, Integer value) throws GreeException {
         // Only allow this to happen if this device has been bound and values are valid
         if ((!Objects.equals(getIsBound(), Boolean.TRUE)) || (value.intValue() < 0 || value.intValue() > 1)) {
             return;
@@ -268,7 +278,7 @@ public class GreeAirDevice {
         return getIntStatusVal("Tur");
     }
 
-    public void setDeviceLight(DatagramSocket clientSocket, Integer value) throws Exception {
+    public void setDeviceLight(DatagramSocket clientSocket, Integer value) throws GreeException {
         // Only allow this to happen if this device has been bound and values are valid
         if ((!Objects.equals(getIsBound(), Boolean.TRUE)) || (value.intValue() < 0 || value.intValue() > 1)) {
             return;
@@ -284,11 +294,11 @@ public class GreeAirDevice {
         return getIntStatusVal("Lig");
     }
 
-    private static HashMap<String, HashMap<String, Integer>> createTempRangeMap() { // Create Hash Look Up for C and F
-                                                                                    // Temperature Ranges for gree A/C
-                                                                                    // units
-                                                                                    // f_range = {86,61}, c_range=
-                                                                                    // {16,30}
+    /**
+     * Create Hash Look Up for C and F
+     * Temperature Ranges for gree A/C units (f_range = {86,61}, c_range={16,30}
+     */
+    private static HashMap<String, HashMap<String, Integer>> createTempRangeMap() {
         HashMap<String, HashMap<String, Integer>> tempRanges = new HashMap<>();
         HashMap<String, Integer> hmf = new HashMap<>();
         HashMap<String, Integer> hmc = new HashMap<>();
@@ -304,11 +314,12 @@ public class GreeAirDevice {
         return tempRanges;
     }
 
+    /**
+     * Checks input ranges for validity and TempUn for validity
+     * Uses newVal as priority and tries to validate and determine intent
+     * For example if value is 75 and TempUn says Celsius, change TempUn to Fahrenheit
+     */
     private Integer[] validateTemperatureRangeForTempSet(Integer newValIn, @Nullable Integer CorFIn) {
-        // Checks input ranges for validity and TempUn for validity
-        // Uses newVal as priority and tries to validate and determine intent
-        // For example if value is 75 and TempUn says Celsius, change TempUn to Fahrenheit
-        //
         final String[] minMaxLUT = { "max", "min" }; // looks up 0 = C = max, 1 = F = min
         final String[] tempScaleLUT = { "C", "F" }; // Look Up Table used to convert TempUn integer 0,1 to "C" to "F"
                                                     // string for hashmap
@@ -332,12 +343,8 @@ public class GreeAirDevice {
             validRangeCorF = "INVALID";
         }
 
-        @Nullable
-        Integer CorF = CorFIn;
-        if (CorF == null) {
-            // if CorF wasnt initialized or is null set it from lookup
-            CorF = nullCorFLUT.get(validRangeCorF);
-        }
+        // if CorF wasnt initialized or is null set it from lookup
+        Integer CorF = CorFIn != null ? CorFIn : nullCorFLUT.get(validRangeCorF);
 
         if ((CorF == 1) && (validRangeCorF == "C")) {
             CorF = 0; // input temp takes priority
@@ -351,7 +358,7 @@ public class GreeAirDevice {
         return new Integer[] { newVal, CorF };
     }
 
-    public void setDeviceTempSet(DatagramSocket clientSocket, Integer value) throws Exception {
+    public void setDeviceTempSet(DatagramSocket clientSocket, Integer value) throws GreeException {
         // **value** : set temperature in degrees celsius or Fahrenheit
         // Only allow this to happen if this device has been bound
         if (getIsBound() != Boolean.TRUE) {
@@ -402,7 +409,7 @@ public class GreeAirDevice {
         return getIntStatusVal("SetTem");
     }
 
-    public void setDeviceAir(DatagramSocket clientSocket, Integer value) throws Exception {
+    public void setDeviceAir(DatagramSocket clientSocket, Integer value) throws GreeException {
         // Only allow this to happen if this device has been bound
         if (getIsBound() != Boolean.TRUE) {
             return;
@@ -419,7 +426,7 @@ public class GreeAirDevice {
         return getIntStatusVal("Air");
     }
 
-    public void setDeviceDry(DatagramSocket clientSocket, Integer value) throws Exception {
+    public void setDeviceDry(DatagramSocket clientSocket, Integer value) throws GreeException {
         // Only allow this to happen if this device has been bound
         if (getIsBound() != Boolean.TRUE) {
             return;
@@ -436,7 +443,7 @@ public class GreeAirDevice {
         return getIntStatusVal("Blo");
     }
 
-    public void setDeviceHealth(DatagramSocket clientSocket, Integer value) throws Exception {
+    public void setDeviceHealth(DatagramSocket clientSocket, Integer value) throws GreeException {
         // Only allow this to happen if this device has been bound
         if (getIsBound() != Boolean.TRUE) {
             return;
@@ -453,7 +460,7 @@ public class GreeAirDevice {
         return getIntStatusVal("Health");
     }
 
-    public void setDevicePwrSaving(DatagramSocket clientSocket, Integer value) throws Exception {
+    public void setDevicePwrSaving(DatagramSocket clientSocket, Integer value) throws GreeException {
         // Only allow this to happen if this device has been bound
         if (getIsBound() != Boolean.TRUE) {
             return;
@@ -475,7 +482,7 @@ public class GreeAirDevice {
         return getIntStatusVal("SvSt");
     }
 
-    public @Nullable Integer getIntStatusVal(String valueName) {
+    public int getIntStatusVal(String valueName) {
         /*
          * Note : Values can be:
          * "Pow": Power (0 or 1)
@@ -506,7 +513,7 @@ public class GreeAirDevice {
         List<Integer> valList = new ArrayList<>(Arrays.asList(values));
         int valueArrayposition = colList.indexOf(valueName);
         if (valueArrayposition == -1) {
-            return null;
+            return -1;
         }
 
         // Now get the Corresponding value
@@ -514,9 +521,9 @@ public class GreeAirDevice {
         return value;
     }
 
-    public @Nullable Boolean hasStatusValChanged(String valueName) {
+    public boolean hasStatusValChanged(String valueName) throws GreeException {
         if (prevStatusResponsePackGson == null) {
-            return true;
+            return false;
         }
         // Find the valueName in the Current Status object
         String currcolumns[] = statusResponseGson.packJson.cols;
@@ -525,7 +532,7 @@ public class GreeAirDevice {
         List<Integer> currvalList = new ArrayList<>(Arrays.asList(currvalues));
         int currvalueArrayposition = currcolList.indexOf(valueName);
         if (currvalueArrayposition == -1) {
-            return null;
+            throw new GreeException("Unable to decode device status");
         }
         // Now get the Corresponding value
         int currvalue = currvalList.get(currvalueArrayposition);
@@ -537,7 +544,7 @@ public class GreeAirDevice {
         List<Integer> prevvalList = new ArrayList<>(Arrays.asList(prevvalues));
         int prevvalueArrayposition = prevcolList.indexOf(valueName);
         if (prevvalueArrayposition == -1) {
-            return null;
+            throw new GreeException("Unable to get status value");
         }
         // Now get the Corresponding value
         int prevvalue = prevvalList.get(prevvalueArrayposition);
@@ -546,137 +553,145 @@ public class GreeAirDevice {
         return currvalue != prevvalue;
     }
 
-    protected void executeCommand(DatagramSocket clientSocket, HashMap<String, Integer> parameters) throws Exception {
+    protected void executeCommand(DatagramSocket clientSocket, HashMap<String, Integer> parameters)
+            throws GreeException {
         byte[] sendData = new byte[1024];
         byte[] receiveData = new byte[1024];
         Gson gson = new Gson();
 
-        // Convert the parameter map values to arrays
-        String[] keyArray = parameters.keySet().toArray(new String[0]);
-        Integer[] valueArray = parameters.values().toArray(new Integer[0]);
+        try {
+            // Convert the parameter map values to arrays
+            String[] keyArray = parameters.keySet().toArray(new String[0]);
+            Integer[] valueArray = parameters.values().toArray(new Integer[0]);
 
-        // Prep the Command Request pack
-        GreeExecuteCommandPack4GsonDTO execCmdPackGson = new GreeExecuteCommandPack4GsonDTO();
-        execCmdPackGson.opt = keyArray;
-        execCmdPackGson.p = valueArray;
-        execCmdPackGson.t = "cmd";
-        String execCmdPackStr = gson.toJson(execCmdPackGson);
+            // Prep the Command Request pack
+            GreeExecuteCommandPack4GsonDTO execCmdPackGson = new GreeExecuteCommandPack4GsonDTO();
+            execCmdPackGson.opt = keyArray;
+            execCmdPackGson.p = valueArray;
+            execCmdPackGson.t = "cmd";
+            String execCmdPackStr = gson.toJson(execCmdPackGson);
 
-        // Now Encrypt the Binding Request pack
-        String encryptedCommandReqPacket = GreeCryptoUtil.encryptPack(getKey().getBytes(), execCmdPackStr);
-        // String unencryptedCommandReqPacket = CryptoUtil.decryptPack(device.getKey().getBytes(),
-        // encryptedCommandReqPacket);
+            // Now Encrypt the Binding Request pack
+            String encryptedCommandReqPacket = GreeCryptoUtil.encryptPack(getKey().getBytes(), execCmdPackStr);
+            // String unencryptedCommandReqPacket = CryptoUtil.decryptPack(device.getKey().getBytes(),
+            // encryptedCommandReqPacket);
 
-        // Prep the Command Request
-        GreeExecCommand4GsonDTO execCmdGson = new GreeExecCommand4GsonDTO();
-        execCmdGson.cid = "app";
-        execCmdGson.i = 0;
-        execCmdGson.t = "pack";
-        execCmdGson.uid = 0;
-        execCmdGson.pack = new String(encryptedCommandReqPacket.getBytes(), UTF8_CHARSET);
-        String execCmdStr = gson.toJson(execCmdGson);
-        sendData = execCmdStr.getBytes();
-        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, getAddress(), getPort());
-        clientSocket.send(sendPacket);
+            // Prep the Command Request
+            GreeExecCommand4GsonDTO execCmdGson = new GreeExecCommand4GsonDTO();
+            execCmdGson.cid = "app";
+            execCmdGson.i = 0;
+            execCmdGson.t = "pack";
+            execCmdGson.uid = 0;
+            execCmdGson.pack = new String(encryptedCommandReqPacket.getBytes(), UTF8_CHARSET);
+            String execCmdStr = gson.toJson(execCmdGson);
+            sendData = execCmdStr.getBytes();
+            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, getAddress(), getPort());
+            clientSocket.send(sendPacket);
 
-        // Recieve a response
-        DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-        clientSocket.receive(receivePacket);
-        String modifiedSentence = new String(receivePacket.getData());
-        // System.out.println("FROM SERVER:" + modifiedSentence);
-        // byte[] modifiedSentenceArray = receivePacket.getData();
+            // Recieve a response
+            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+            clientSocket.receive(receivePacket);
+            String modifiedSentence = new String(receivePacket.getData());
+            // System.out.println("FROM SERVER:" + modifiedSentence);
+            // byte[] modifiedSentenceArray = receivePacket.getData();
 
-        // Read the response
-        StringReader stringReader = new StringReader(modifiedSentence);
-        GreeExecResponse4GsonDTO execResponseGson = gson.fromJson(new JsonReader(stringReader),
-                GreeExecResponse4GsonDTO.class);
-        execResponseGson.decryptedPack = GreeCryptoUtil.decryptPack(this.getKey().getBytes(), execResponseGson.pack);
+            // Read the response
+            StringReader stringReader = new StringReader(modifiedSentence);
+            GreeExecResponse4GsonDTO execResponseGson = gson.fromJson(new JsonReader(stringReader),
+                    GreeExecResponse4GsonDTO.class);
+            execResponseGson.decryptedPack = GreeCryptoUtil.decryptPack(this.getKey().getBytes(),
+                    execResponseGson.pack);
 
-        // Create the JSON to hold the response values
-        stringReader = new StringReader(execResponseGson.decryptedPack);
-        execResponseGson.packJson = gson.fromJson(new JsonReader(stringReader), GreeExecResponsePack4GsonDTO.class);
+            // Create the JSON to hold the response values
+            stringReader = new StringReader(execResponseGson.decryptedPack);
+            execResponseGson.packJson = gson.fromJson(new JsonReader(stringReader), GreeExecResponsePack4GsonDTO.class);
+        } catch (IOException e) {
+            throw new GreeException(e, "Exception on command execution");
+        }
 
     }
 
-    public void getDeviceStatus(DatagramSocket clientSocket) throws Exception {
+    public void getDeviceStatus(DatagramSocket clientSocket) throws GreeException {
         Gson gson = new Gson();
         byte[] sendData = new byte[1024];
         byte[] receiveData = new byte[1024];
 
-        // Set the values in the HashMap
-        ArrayList<String> columns = new ArrayList<>();
-        columns.add("Pow");
-        columns.add("Mod");
-        columns.add("SetTem");
-        columns.add("WdSpd");
-        columns.add("Air");
-        columns.add("Blo");
-        columns.add("Health");
-        columns.add("SwhSlp");
-        columns.add("Lig");
-        columns.add("SwingLfRig");
-        columns.add("SwUpDn");
-        columns.add("Quiet");
-        columns.add("Tur");
-        columns.add("StHt");
-        columns.add("TemUn");
-        columns.add("HeatCoolType");
-        columns.add("TemRec");
-        columns.add("SvSt");
-        columns.add("NoiseSet");
+        try {
+            // Set the values in the HashMap
+            ArrayList<String> columns = new ArrayList<>();
+            columns.add("Pow");
+            columns.add("Mod");
+            columns.add("SetTem");
+            columns.add("WdSpd");
+            columns.add("Air");
+            columns.add("Blo");
+            columns.add("Health");
+            columns.add("SwhSlp");
+            columns.add("Lig");
+            columns.add("SwingLfRig");
+            columns.add("SwUpDn");
+            columns.add("Quiet");
+            columns.add("Tur");
+            columns.add("StHt");
+            columns.add("TemUn");
+            columns.add("HeatCoolType");
+            columns.add("TemRec");
+            columns.add("SvSt");
+            columns.add("NoiseSet");
 
-        // Convert the parameter map values to arrays
-        String[] colArray = columns.toArray(new String[0]);
+            // Convert the parameter map values to arrays
+            String[] colArray = columns.toArray(new String[0]);
 
-        // Prep the Command Request pack
-        GreeReqStatusPack4GsonDTO reqStatusPackGson = new GreeReqStatusPack4GsonDTO();
-        reqStatusPackGson.t = "status";
-        reqStatusPackGson.cols = colArray;
-        reqStatusPackGson.mac = getId();
-        String reqStatusPackStr = gson.toJson(reqStatusPackGson);
+            // Prep the Command Request pack
+            GreeReqStatusPack4GsonDTO reqStatusPackGson = new GreeReqStatusPack4GsonDTO();
+            reqStatusPackGson.t = "status";
+            reqStatusPackGson.cols = colArray;
+            reqStatusPackGson.mac = getId();
+            String reqStatusPackStr = gson.toJson(reqStatusPackGson);
 
-        // Now Encrypt the Binding Request pack
-        String encryptedStatusReqPacket = GreeCryptoUtil.encryptPack(getKey().getBytes(), reqStatusPackStr);
+            // Now Encrypt the Binding Request pack
+            String encryptedStatusReqPacket = GreeCryptoUtil.encryptPack(getKey().getBytes(), reqStatusPackStr);
 
-        // Prep the Status Request
-        GreeReqStatus4GsonDTO reqStatusGson = new GreeReqStatus4GsonDTO();
-        reqStatusGson.cid = "app";
-        reqStatusGson.i = 0;
-        reqStatusGson.t = "pack";
-        reqStatusGson.uid = 0;
-        reqStatusGson.pack = new String(encryptedStatusReqPacket.getBytes(), UTF8_CHARSET);
-        String execCmdStr = gson.toJson(reqStatusGson);
-        sendData = execCmdStr.getBytes();
-        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, getAddress(), getPort());
-        clientSocket.send(sendPacket);
+            // Prep the Status Request
+            GreeReqStatus4GsonDTO reqStatusGson = new GreeReqStatus4GsonDTO();
+            reqStatusGson.cid = "app";
+            reqStatusGson.i = 0;
+            reqStatusGson.t = "pack";
+            reqStatusGson.uid = 0;
+            reqStatusGson.pack = new String(encryptedStatusReqPacket.getBytes(), UTF8_CHARSET);
+            String execCmdStr = gson.toJson(reqStatusGson);
+            sendData = execCmdStr.getBytes();
+            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, getAddress(), getPort());
+            clientSocket.send(sendPacket);
 
-        logger.trace("Sending Status request packet to device");
+            // Recieve a response
+            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+            clientSocket.receive(receivePacket);
+            String modifiedSentence = new String(receivePacket.getData());
 
-        // Recieve a response
-        DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-        clientSocket.receive(receivePacket);
-        logger.trace("Status request packet received from device");
-        String modifiedSentence = new String(receivePacket.getData());
+            // Keep a copy of the old response to be used to check if values have changed
+            // If first time running, there will not be a previous GreeStatusResponsePack4Gson
+            if (statusResponseGson != null && statusResponseGson.packJson != null) {
+                prevStatusResponsePackGson = new GreeStatusResponsePack4GsonDTO(statusResponseGson.packJson);
+            }
 
-        // Keep a copy of the old response to be used to check if values have changed
-        // If first time running, there will not be a previous GreeStatusResponsePack4Gson
-        if (statusResponseGson != null && statusResponseGson.packJson != null) {
-            prevStatusResponsePackGson = new GreeStatusResponsePack4GsonDTO(statusResponseGson.packJson);
+            // Read the response
+            StringReader stringReader = new StringReader(modifiedSentence);
+            statusResponseGson = gson.fromJson(new JsonReader(stringReader), GreeStatusResponse4GsonDTO.class);
+            statusResponseGson.decryptedPack = GreeCryptoUtil.decryptPack(this.getKey().getBytes(),
+                    statusResponseGson.pack);
+
+            logger.trace("Response from device: {}", statusResponseGson.decryptedPack);
+
+            // Create the JSON to hold the response values
+            stringReader = new StringReader(statusResponseGson.decryptedPack);
+
+            statusResponseGson.packJson = gson.fromJson(new JsonReader(stringReader),
+                    GreeStatusResponsePack4GsonDTO.class);
+            updateTempFtoC();
+        } catch (IOException e) {
+            throw new GreeException(e, "I/O exception while receiving data");
         }
-
-        // Read the response
-        StringReader stringReader = new StringReader(modifiedSentence);
-        statusResponseGson = gson.fromJson(new JsonReader(stringReader), GreeStatusResponse4GsonDTO.class);
-        statusResponseGson.decryptedPack = GreeCryptoUtil.decryptPack(this.getKey().getBytes(),
-                statusResponseGson.pack);
-
-        logger.trace("Response from device: {}", statusResponseGson.decryptedPack);
-
-        // Create the JSON to hold the response values
-        stringReader = new StringReader(statusResponseGson.decryptedPack);
-
-        statusResponseGson.packJson = gson.fromJson(new JsonReader(stringReader), GreeStatusResponsePack4GsonDTO.class);
-        updateTempFtoC();
     }
 
     private void updateTempFtoC() {

@@ -48,7 +48,6 @@ import org.osgi.service.component.annotations.Reference;
 public class GreeHandlerFactory extends BaseThingHandlerFactory {
     private @Nullable ServiceRegistration<?> serviceRegistration;
     private final GreeTranslationProvider messages;
-    private final String defBroadcastIp;
 
     @Activate
     public GreeHandlerFactory(@Reference NetworkAddressService networkAddressService,
@@ -59,7 +58,7 @@ public class GreeHandlerFactory extends BaseThingHandlerFactory {
         messages = new GreeTranslationProvider(bundleContext.getBundle(), i18nProvider, localeProvider);
 
         String broadcastAddress = networkAddressService.getConfiguredBroadcastAddress();
-        defBroadcastIp = broadcastAddress != null ? broadcastAddress : "";
+        String defBroadcastIp = broadcastAddress != null ? broadcastAddress : "";
         GreeDiscoveryService discoveryService = new GreeDiscoveryService(bundleContext.getBundle(), messages,
                 defBroadcastIp);
         this.serviceRegistration = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
@@ -75,9 +74,8 @@ public class GreeHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (THING_TYPE_GREEAIRCON.equals(thing.getThingTypeUID())) {
-            return new GreeHandler(thing, defBroadcastIp);
+            return new GreeHandler(thing, messages);
         }
-
         return null;
     }
 

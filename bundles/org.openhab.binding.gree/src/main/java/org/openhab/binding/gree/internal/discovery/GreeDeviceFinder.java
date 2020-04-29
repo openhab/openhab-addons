@@ -23,11 +23,14 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.Set;
 
+import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.gree.internal.GreeCryptoUtil;
+import org.openhab.binding.gree.internal.GreeException;
 import org.openhab.binding.gree.internal.gson.GreeScanReponsePack4GsonDTO;
 import org.openhab.binding.gree.internal.gson.GreeScanRequest4GsonDTO;
 import org.openhab.binding.gree.internal.gson.GreeScanResponse4GsonDTO;
@@ -59,10 +62,10 @@ public class GreeDeviceFinder {
 
     public GreeDeviceFinder(String broadcastAddress) throws UnknownHostException {
         mIPAddress = InetAddress.getByName(broadcastAddress);
-        logger.debug("Broadtcast address {} converted to {}", broadcastAddress, mIPAddress.getHostAddress());
     }
 
-    public void scan(@Nullable DatagramSocket clientSocket) throws IOException, Exception {
+    public void scan(Optional<DatagramSocket> socket, boolean scanNetwork) throws GreeException {
+        Validate.isTrue(socket.isPresent());
         byte[] sendData = new byte[1024];
         byte[] receiveData = new byte[1024];
 
@@ -79,72 +82,74 @@ public class GreeDeviceFinder {
         sendData = scanReq.getBytes();
 
         logger.trace("Sending scan packet to {}", mIPAddress.getHostAddress());
+        try {
+            DatagramSocket clientSocket = socket.get();
+            clientSocket.setSoTimeout(DISCOVERY_TIMEOUT_MS);
+            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, mIPAddress, DISCOVERY_TIMEOUT_MS);
+            clientSocket.send(sendPacket);
 
-        clientSocket.setSoTimeout(DISCOVERY_TIMEOUT_MS);
-        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, mIPAddress, DISCOVERY_TIMEOUT_MS);
-        clientSocket.send(sendPacket);
+            // Loop for respnses from devices until we get a timeout.
+            boolean scanning = true;
+            int retries = MAX_SCAN_CYCLES;
+            while (scanning && (retries > 0)) {
+                // Receive a response
+                DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+                try {
+                    clientSocket.receive(receivePacket);
+                    InetAddress remoteAddress = receivePacket.getAddress();
+                    int remotePort = receivePacket.getPort();
 
-        // Loop for respnses from devices until we get a timeout.
-        boolean scanning = true;
-        int retries = MAX_SCAN_CYCLES;
-        while (scanning && (retries > 0)) {
-            // Receive a response
-            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-            try {
-                clientSocket.receive(receivePacket);
-                InetAddress remoteAddress = receivePacket.getAddress();
-                int remotePort = receivePacket.getPort();
+                    // Read the response
+                    String modifiedSentence = new String(receivePacket.getData());
+                    StringReader stringReader = new StringReader(modifiedSentence);
+                    GreeScanResponse4GsonDTO scanResponseGson = gson.fromJson(new JsonReader(stringReader),
+                            GreeScanResponse4GsonDTO.class);
 
-                // Read the response
-                String modifiedSentence = new String(receivePacket.getData());
-                StringReader stringReader = new StringReader(modifiedSentence);
-                GreeScanResponse4GsonDTO scanResponseGson = gson.fromJson(new JsonReader(stringReader),
-                        GreeScanResponse4GsonDTO.class);
+                    // If there was no pack, ignore the response
+                    if (scanResponseGson.pack == null) {
+                        logger.debug("Invalid packet format, ignore");
+                        continue;
+                    }
 
-                // If there was no pack, ignore the response
-                if (scanResponseGson.pack == null) {
-                    logger.debug("Invalid packet format, ignore");
-                    continue;
+                    // Decrypt message - a a GreeException is thrown when something went wrong
+                    scanResponseGson.decryptedPack = GreeCryptoUtil
+                            .decryptPack(GreeCryptoUtil.GetAESGeneralKeyByteArray(), scanResponseGson.pack);
+                    String decryptedMsg = GreeCryptoUtil.decryptPack(GreeCryptoUtil.GetAESGeneralKeyByteArray(),
+                            scanResponseGson.pack);
+
+                    logger.debug("Response received from address {}: {}", remoteAddress.getHostAddress(), decryptedMsg);
+
+                    // Create the JSON to hold the response values
+                    stringReader = new StringReader(decryptedMsg);
+                    scanResponseGson.packJson = gson.fromJson(new JsonReader(stringReader),
+                            GreeScanReponsePack4GsonDTO.class);
+
+                    // Now make sure the device is reported as a Gree device
+                    if (scanResponseGson.packJson.brand.equalsIgnoreCase("gree")) {
+                        // Create a new GreeDevice
+                        logger.debug("Discovered device at {}:{}", remoteAddress.getHostAddress(), remotePort);
+                        GreeAirDevice newDevice = new GreeAirDevice();
+                        newDevice.setAddress(remoteAddress);
+                        newDevice.setPort(remotePort);
+                        newDevice.setScanResponseGson(scanResponseGson);
+                        addDevice(newDevice);
+                    } else {
+                        logger.debug("Unit discovered, but brand is not GREE");
+                    }
+
+                    scanning = scanNetwork;
+                } catch (SocketTimeoutException e) {
+                    // We've received a timeout so lets quit searching for devices
+                    scanning = false;
+                    break;
+                } catch (IOException e) {
+                    if (--retries == 0) {
+                        throw new GreeException(e, "Exception on device scan");
+                    }
                 }
-
-                scanResponseGson.decryptedPack = GreeCryptoUtil.decryptPack(GreeCryptoUtil.GetAESGeneralKeyByteArray(),
-                        scanResponseGson.pack);
-                String decryptedMsg = GreeCryptoUtil.decryptPack(GreeCryptoUtil.GetAESGeneralKeyByteArray(),
-                        scanResponseGson.pack);
-
-                // If something was wrong with the decryption, ignore the response
-                if (decryptedMsg == null) {
-                    logger.debug("Decryption failed, ignore response");
-                    continue;
-                }
-                logger.debug("Response received from address {}: {}", remoteAddress.getHostAddress(), decryptedMsg);
-
-                // Create the JSON to hold the response values
-                stringReader = new StringReader(decryptedMsg);
-                scanResponseGson.packJson = gson.fromJson(new JsonReader(stringReader),
-                        GreeScanReponsePack4GsonDTO.class);
-
-                // Now make sure the device is reported as a Gree device
-                if (scanResponseGson.packJson.brand.equalsIgnoreCase("gree")) {
-                    // Create a new GreeDevice
-                    logger.debug("Discovered device at {}:{}", remoteAddress, remotePort);
-                    GreeAirDevice newDevice = new GreeAirDevice();
-                    newDevice.setAddress(remoteAddress);
-                    newDevice.setPort(remotePort);
-                    newDevice.setScanResponseGson(scanResponseGson);
-                    addDevice(newDevice);
-                } else {
-                    logger.debug("Unit discovered, but brand is not GREE");
-                }
-            } catch (SocketTimeoutException e) {
-                // We've received a timeout so lets quit searching for devices
-                scanning = false;
-                logger.debug("Discovery timed out");
-                break;
-            } catch (Exception e) {
-                logger.debug("Exception on device scan", e);
-                retries--;
             }
+        } catch (IOException e) {
+            throw new GreeException(e, "I/O exception during device scan");
         }
     }
 
