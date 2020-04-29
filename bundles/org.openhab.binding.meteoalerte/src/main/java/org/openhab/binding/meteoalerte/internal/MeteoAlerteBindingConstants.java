@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
- * The {@link AirQualityBinding} class defines common constants, which are
+ * The {@link MeteoAlerteBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Gaël L'hopital - Initial contribution

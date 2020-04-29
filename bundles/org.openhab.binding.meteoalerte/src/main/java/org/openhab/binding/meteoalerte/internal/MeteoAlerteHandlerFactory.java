@@ -33,7 +33,7 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Gaël L'hopital - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, configurationPid = "binding.airquality")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.meteoalerte")
 @NonNullByDefault
 public class MeteoAlerteHandlerFactory extends BaseThingHandlerFactory {
 

@@ -112,7 +112,7 @@ public class MeteoAlerteHandler extends BaseThingHandler {
         if (command instanceof RefreshType) {
             updateAndPublish();
         } else {
-            logger.debug("The Air Quality binding is read-only and can not handle command {}", command);
+            logger.debug("The Meteo Alerte binding is read-only and can not handle command {}", command);
         }
     }
 
