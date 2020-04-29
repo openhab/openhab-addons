@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vigiecrues.internal;
+package org.openhab.binding.vigicrues.internal;
 
-import static org.openhab.binding.vigiecrues.internal.VigieCruesBindingConstants.*;
+import static org.openhab.binding.vigicrues.internal.VigiCruesBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -22,26 +22,26 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.vigiecrues.internal.handler.VigieCruesHandler;
+import org.openhab.binding.vigicrues.internal.handler.VigiCruesHandler;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link VigieCruesHandlerFactory} is responsible for creating things and thing
+ * The {@link VigiCruesHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Gaël L'hopital - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, configurationPid = "binding.vigiecrues")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.vigicrues")
 @NonNullByDefault
-public class VigieCruesHandlerFactory extends BaseThingHandlerFactory {
+public class VigiCruesHandlerFactory extends BaseThingHandlerFactory {
 
     // Needed for converting UTC time to local time
     private final TimeZoneProvider timeZoneProvider;
 
     @Activate
-    public VigieCruesHandlerFactory(@Reference TimeZoneProvider timeZoneProvider) {
+    public VigiCruesHandlerFactory(@Reference TimeZoneProvider timeZoneProvider) {
         this.timeZoneProvider = timeZoneProvider;
     }
 
@@ -54,8 +54,8 @@ public class VigieCruesHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_VIGIE_CRUES)) {
-            return new VigieCruesHandler(thing, timeZoneProvider);
+        if (thingTypeUID.equals(THING_TYPE_VIGI_CRUES)) {
+            return new VigiCruesHandler(thing, timeZoneProvider);
         }
 
         return null;

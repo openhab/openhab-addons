@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vigiecrues.internal.json;
+package org.openhab.binding.vigicrues.internal.json;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 

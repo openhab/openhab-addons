@@ -10,18 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vigiecrues.internal;
+package org.openhab.binding.vigicrues.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link VigieCruesConfiguration} is the class used to match the
+ * The {@link VigiCruesConfiguration} is the class used to match the
  * thing configuration.
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class VigieCruesConfiguration {
-    public String station = "";
-    public Integer refresh = 24;
+public class VigiCruesConfiguration {
+    public String id = "";
+    public Integer refresh = 30;
 }

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vigiecrues.internal.json;
+package org.openhab.binding.vigicrues.internal.json;
 
 import java.util.Optional;
 
@@ -20,13 +20,13 @@ import org.eclipse.jdt.annotation.Nullable;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link ApiResponse} is the Java class used to map the JSON
- * response to the webservice request.
+ * The {@link OpenDatasoftResponse} is the Java class used to map the JSON
+ * response to an opendatasoft endpoint request.
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class ApiResponse {
+public class OpenDatasoftResponse {
     @SerializedName("nhits")
     private int nHits;
     private @Nullable Parameters parameters;

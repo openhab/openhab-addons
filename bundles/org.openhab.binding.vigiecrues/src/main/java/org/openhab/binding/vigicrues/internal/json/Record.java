@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vigiecrues.internal.json;
+package org.openhab.binding.vigicrues.internal.json;
 
 import java.util.Optional;
 
@@ -33,7 +33,7 @@ public class Record {
     private String recordId = "";
     @SerializedName("record_timestamp")
     private String recordTimestamp = "";
-    private @Nullable Fields fields;
+    private @Nullable VigiCruesFields fields;
 
     public String getDatasetId() {
         return datasetId;
@@ -47,8 +47,8 @@ public class Record {
         return recordTimestamp;
     }
 
-    public Optional<Fields> getFields() {
-        Fields fields = this.fields;
+    public Optional<VigiCruesFields> getFields() {
+        VigiCruesFields fields = this.fields;
         if (fields != null) {
             return Optional.of(fields);
         }

@@ -8,8 +8,8 @@
     <version>2.5.5-SNAPSHOT</version>
   </parent>
 
-  <artifactId>org.openhab.binding.vigiecrues</artifactId>
+  <artifactId>org.openhab.binding.vigicrues</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Vigie Crues Binding</name>
+  <name>openHAB Add-ons :: Bundles :: VigiCrues Binding</name>
 
 </project>

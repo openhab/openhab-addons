@@ -10,14 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vigiecrues.internal.json;
+package org.openhab.binding.vigicrues.internal.json;
 
+import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-
-import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link Parameters} is the Java class used to map the JSON
@@ -27,19 +27,19 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class Parameters {
-    private String dataset = "";
-    @SerializedName("timezone")
-    private String timeZone = "";
+    private String[] dataset = {};
+    private String timezone = "";
     private int rows;
     private String format = "";
     private @Nullable Refine refine;
+    private String[] facet = {};
 
-    public String getDataset() {
-        return dataset;
+    public Optional<String> getDataset() {
+        return Arrays.stream(dataset).findFirst();
     }
 
-    public String getTimezone() {
-        return timeZone;
+    public ZoneId getTimezone() {
+        return ZoneId.of(timezone);
     }
 
     public int getRows() {
@@ -56,5 +56,9 @@ public class Parameters {
             return Optional.of(refine);
         }
         return Optional.empty();
+    }
+
+    public String[] getFacets() {
+        return facet;
     }
 }
