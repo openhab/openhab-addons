@@ -22,6 +22,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
+import org.eclipse.smarthome.core.library.types.StopMoveType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -31,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.openhab.binding.opengarage.internal.OpenGarageWebTargets;
 import org.openhab.binding.opengarage.internal.api.ControllerVariables;
+import org.openhab.binding.opengarage.internal.api.Enums.OpenGarageCommand;
 import org.openhab.binding.opengarage.internal.OpenGarageConfiguration;
 
 import java.io.IOException;
@@ -60,14 +62,23 @@ public class OpenGarageHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
-            if (channelUID.getId().equals(OpenGarageBindingConstants.CHANNEL_OG_STATUS) || channelUID.getId().equals(OpenGarageBindingConstants.CHANNEL_OG_STATUS_ROLLERSHUTTER)) {
-                if (command.equals(OnOffType.ON) || command.equals(UpDownType.UP)) {
-                    changeStatus("open");
-                } else if (command.equals(OnOffType.OFF) || command.equals(UpDownType.DOWN)) {
-                    changeStatus("close");
-                } else if (command.equals("STOP")) {
-                    changeStatus("click");
-                } 
+                logger.warn("Received command {} for thing '{}' on channel {}", command, thing.getUID().getAsString(),
+                    channelUID.getId());
+                switch (channelUID.getId()) {
+                    case OpenGarageBindingConstants.CHANNEL_OG_STATUS:
+                    case OpenGarageBindingConstants.CHANNEL_OG_STATUS_ROLLERSHUTTER:
+                        if (command.equals(OnOffType.ON) || command.equals(UpDownType.UP)) {
+                            changeStatus(OpenGarageCommand.OPEN.getValue());
+                            return;
+                        } else if (command.equals(OnOffType.OFF) || command.equals(UpDownType.DOWN)) {
+                            changeStatus(OpenGarageCommand.CLOSE.getValue());
+                            return;
+                        } else if (command.equals(StopMoveType.STOP)) {
+                            changeStatus(OpenGarageCommand.CLICK.getValue());
+                            return;
+                        } 
+                        break;
+                    default:
             }
         } catch (OpenGarageCommunicationException ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());

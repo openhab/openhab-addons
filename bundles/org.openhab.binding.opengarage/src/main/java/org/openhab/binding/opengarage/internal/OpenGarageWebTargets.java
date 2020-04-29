@@ -16,6 +16,7 @@ import java.io.IOException;
 
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.opengarage.internal.api.ControllerVariables;
+import org.openhab.binding.opengarage.internal.api.Enums.OpenGarageCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,19 +46,17 @@ public class OpenGarageWebTargets {
 
     public void setControllerVariables(String request) throws OpenGarageCommunicationException {
         logger.debug("Received request: {}", request);
-          if (request.equals("open")) {
-              logger.debug("Received request to open door");
-              String queryParams = "&open=1";
-              invoke(changeControllerVariablesUri, queryParams);
-          } else if (request.equals("close")) {
-              logger.debug("Received request to close door");
-              String queryParams = "&close=1";
-              invoke(changeControllerVariablesUri, queryParams);
-          } else if (request.equals("click")) {
-              logger.debug("Received request to click remote button");
-              String queryParams = "&click=1";
-              invoke(changeControllerVariablesUri, queryParams);
-          }
+        String queryParams = null;
+        if (request.equals(OpenGarageCommand.OPEN.getValue())) {
+              queryParams = "&open=1";
+        } else if (request.equals(OpenGarageCommand.CLOSE.getValue())) {
+              queryParams = "&close=1";
+        } else if (request.equals(OpenGarageCommand.CLICK.getValue())) {
+              queryParams = "&click=1";
+        }
+        if (queryParams != null) {
+            invoke(changeControllerVariablesUri, queryParams);
+        }
     }
 
     private String invoke(String uri) throws OpenGarageCommunicationException {
