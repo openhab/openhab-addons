@@ -227,13 +227,13 @@ public class NukiOpenerHandler extends BaseThingHandler {
 
     private boolean handleResponse(NukiBaseResponse nukiBaseResponse, @Nullable String channelUID,
             @Nullable String command) {
-        if (nukiBaseResponse.getStatus() == 200 && nukiBaseResponse.isSuccess()) {
-            logger.debug("Command[{}] succeeded for channelUID[{}] on nukiId[{}]!", command, channelUID, nukiId);
-            return true;
-        } else if (nukiBaseResponse.getStatus() != 200) {
+        if (nukiBaseResponse.getStatus() != 200) {
             logger.debug("Request to Bridge failed! status[{}] - message[{}]", nukiBaseResponse.getStatus(),
                     nukiBaseResponse.getMessage());
-        } else if (!nukiBaseResponse.isSuccess()) {
+        } else if (nukiBaseResponse.isSuccess()) {
+            logger.debug("Command[{}] succeeded for channelUID[{}] on nukiId[{}]!", command, channelUID, nukiId);
+            return true;
+        } else {
             logger.debug(
                     "Request from Bridge to Opener failed! status[{}] - message[{}] - isSuccess[{}]. Check if Nuki Opener is powered on!",
                     nukiBaseResponse.getStatus(), nukiBaseResponse.getMessage(), nukiBaseResponse.isSuccess());
