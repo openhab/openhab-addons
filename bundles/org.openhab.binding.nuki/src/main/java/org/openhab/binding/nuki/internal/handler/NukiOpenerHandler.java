@@ -264,11 +264,12 @@ public class NukiOpenerHandler extends BaseThingHandler {
 
     private void stopReInitJob() {
         logger.trace("Stopping reInitJob for Opener[{}].", nukiId);
-        if (reInitJob != null && !reInitJob.isCancelled()) {
+        ScheduledFuture<?> reInitJob = this.reInitJob;
+        if (reInitJob != null) {
             logger.trace("Stopped reInitJob for Opener[{}].", nukiId);
             reInitJob.cancel(true);
         }
-        reInitJob = null;
+        this.reInitJob = null;
     }
 
     public void handleApiServletUpdate(ChannelUID channelUID, State newState) {
