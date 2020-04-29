@@ -21,7 +21,7 @@ import org.eclipse.smarthome.core.i18n.TranslationProvider;
 import org.osgi.framework.Bundle;
 
 /**
- * {@link ShellyTranslationProvider} provides i18n message lookup
+ * {@link GreeTranslationProvider} provides i18n message lookup
  *
  * @author Markus Michels - Initial contribution
  */
@@ -45,7 +45,7 @@ public class GreeTranslationProvider {
     }
 
     public @Nullable String get(String key, @Nullable Object... arguments) {
-        return getText(key.contains("@text/") || key.contains(".shelly.") ? key : "message." + key, arguments);
+        return getText(key.contains("@text/") ? key : "message." + key, arguments);
     }
 
     public @Nullable String getText(String key, @Nullable Object... arguments) {

@@ -15,16 +15,21 @@ package org.openhab.binding.gree.internal.handler;
 import static org.openhab.binding.gree.internal.GreeBindingConstants.*;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.DatagramSocket;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -43,8 +48,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link GreeHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link GreeHandler} is responsible for handling commands, which are sent to one of the channels.
  *
  * @author John Cunha - Initial contribution
  * @author Markus Michels - Refactoring, adapted to OH 2.5x
@@ -70,11 +74,16 @@ public class GreeHandler extends BaseThingHandler {
     public void initialize() {
         // logger.debug("Start initializing!");
         config = getConfigAs(GreeConfiguration.class);
-        logger.debug("Config for {} is {}", thing.getUID(), config);
+        logger.debug("Config for {} is {}", thing.getUID(), config.toString());
+        if (config.ipAddress.isEmpty() || (config.refresh < 0)) {
+            logger.debug("Config of {} is invalid. Check configuration", thing.getUID());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Invalid configuration. Check thing configuration.");
+            return;
+        }
 
         // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
         // the framework is then able to reuse the resources from the thing handler initialization.
-        // we set this upfront to reliably check status updates in unit tests.
         updateStatus(ThingStatus.UNKNOWN);
 
         scheduler.execute(() -> {
@@ -86,13 +95,6 @@ public class GreeHandler extends BaseThingHandler {
         logger.debug("Thing {} is initializing", thing.getUID());
 
         try {
-            if (!config.isValid()) {
-                logger.debug("Config of {} is invalid. Check configuration", thing.getUID());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Invalid configuration. Check thing configuration.");
-                return;
-            }
-
             // Create a new Datagram socket with a specified timeout
             clientSocket = Optional.of(new DatagramSocket());
             if (!clientSocket.isPresent()) {
@@ -102,18 +104,18 @@ public class GreeHandler extends BaseThingHandler {
             clientSocket.get().setSoTimeout(DATAGRAM_SOCKET_TIMEOUT);
 
             // Find the GREE device
-            deviceFinder = new GreeDeviceFinder(config.getIpAddress());
+            deviceFinder = new GreeDeviceFinder(config.ipAddress);
             deviceFinder.scan(clientSocket, false);
             logger.debug("{} units found matching IP address", deviceFinder.getScannedDeviceCount());
 
             // Now check that this one is amongst the air conditioners that responded.
-            GreeAirDevice newDevice = deviceFinder.getDeviceByIPAddress(config.getIpAddress());
+            GreeAirDevice newDevice = deviceFinder.getDeviceByIPAddress(config.ipAddress);
             if (newDevice != null) {
                 // Ok, our device responded, now let's Bind with it
                 device = newDevice;
                 device.bindWithDevice(clientSocket);
                 if (device.getIsBound()) {
-                    logger.info("GREE AirConditioner {} bound successful", thing.getUID());
+                    logger.debug("GREE AirConditioner {} bound successful", thing.getUID());
                     updateStatus(ThingStatus.ONLINE);
 
                     // Start the automatic refresh cycles
@@ -137,7 +139,7 @@ public class GreeHandler extends BaseThingHandler {
             // The thing is updated by the scheduled automatic refresh so do nothing here.
         } else {
             if (!clientSocket.isPresent()) {
-                logger.info("Thing not properlyx initialized, abort command");
+                logger.debug("Thing not properlyx initialized, abort command");
                 return;
             }
 
@@ -227,123 +229,46 @@ public class GreeHandler extends BaseThingHandler {
             }
         };
 
-        refreshTask = scheduler.scheduleWithFixedDelay(refresher, 0, config.getRefresh(), TimeUnit.SECONDS);
-        logger.debug("Automatic refresh started ({} second interval)", config.getRefresh());
+        refreshTask = scheduler.scheduleWithFixedDelay(refresher, 0, config.refresh, TimeUnit.SECONDS);
+        logger.debug("Automatic refresh started ({} second interval)", config.refresh);
     }
 
-    private void publishChannelIfLinked(ChannelUID channelUID) {
+    private void publishChannelIfLinked(ChannelUID channelUID) throws GreeException {
         try {
             String channelID = channelUID.getId();
             Optional<State> state = Optional.empty();
             switch (channelUID.getIdWithoutGroup()) {
                 case POWER_CHANNEL:
-                    /*
-                     * if (device.hasStatusValChanged("Pow")) {
-                     * logger.trace("Pow value has changed!");
-                     * statusChanged = true;
-                     * state = device.getDevicePower() == 1 ? OnOffType.ON : OnOffType.OFF;
-                     * }
-                     */
                     state = updateOnOff("Pow");
                     break;
                 case MODE_CHANNEL:
-                    /*
-                     * if (device.hasStatusValChanged("Mod")) {
-                     * logger.trace("Mod value has changed!");
-                     * statusChanged = true;
-                     * state = new DecimalType(device.getDeviceMode());
-                     * }
-                     */
                     state = updateNumber("Mod");
                     break;
                 case TURBO_CHANNEL:
-                    /*
-                     * if (device.hasStatusValChanged("Tur")) {
-                     * logger.trace("Mod value has changed!");
-                     * statusChanged = true;
-                     * state = device.getDeviceTurbo() == 1 ? OnOffType.ON : OnOffType.OFF;
-                     * }
-                     */
                     state = updateOnOff("Tur");
                     break;
                 case LIGHT_CHANNEL:
-                    /*
-                     * if (device.hasStatusValChanged("Lig")) {
-                     * logger.trace("Lig value has changed!");
-                     * statusChanged = true;
-                     * state = device.getDeviceLight() == 1 ? OnOffType.ON : OnOffType.OFF;
-                     * }
-                     */
                     state = updateOnOff("Lig");
                     break;
                 case TEMP_CHANNEL:
-                    /*
-                     * if (device.hasStatusValChanged("SetTem")) {
-                     * logger.trace("SetTem value has changed!");
-                     * statusChanged = true;
-                     * state = new DecimalType(device.getDeviceTempSet());
-                     * }
-                     */
-                    state = updateNumber("SetTem");
+                    state = updateTemp("SetTem");
                     break;
                 case SWINGV_CHANNEL:
-                    /*
-                     * if (device.hasStatusValChanged("SwUpDn")) {
-                     * logger.trace("SwUpDn value has changed!");
-                     * statusChanged = true;
-                     * state = new DecimalType(device.getDeviceSwingVertical());
-                     * }
-                     */
                     state = updateNumber("SwUpDn");
                     break;
                 case WINDSPEED_CHANNEL:
-                    /*
-                     * if (device.hasStatusValChanged("WdSpd")) {
-                     * logger.trace("WdSpd value has changed!");
-                     * statusChanged = true;
-                     * state = new DecimalType(device.getDeviceWindspeed());
-                     * }
-                     */
                     state = updateNumber("WdSpd");
                     break;
                 case AIR_CHANNEL:
-                    /*
-                     * if (device.hasStatusValChanged("Air")) {
-                     * logger.trace("Air value has changed!");
-                     * statusChanged = true;
-                     * state = device.getDeviceAir() == 1 ? OnOffType.ON : OnOffType.OFF;
-                     * }
-                     */
                     state = updateOnOff("Air");
                     break;
                 case DRY_CHANNEL:
-                    /*
-                     * if (device.hasStatusValChanged("Blo")) {
-                     * logger.trace("Blo value has changed!");
-                     * statusChanged = true;
-                     * state = device.getDeviceDry() == 1 ? OnOffType.ON : OnOffType.OFF;
-                     * }
-                     */
                     state = updateOnOff("Blo");
                     break;
                 case HEALTH_CHANNEL:
-                    /*
-                     * if (device.hasStatusValChanged("Health")) {
-                     * logger.trace("Health value has changed!");
-                     * statusChanged = true;
-                     * state = device.getDeviceHealth() == 1 ? OnOffType.ON : OnOffType.OFF;
-                     * }
-                     */
                     state = updateOnOff("Health");
                     break;
                 case PWRSAV_CHANNEL:
-                    /*
-                     * if (device.hasStatusValChanged("SvSt")) {
-                     * logger.trace("SvSt value has changed!");
-                     * statusChanged = true;
-                     * state = device.getDevicePwrSaving() == 1 ? OnOffType.ON : OnOffType.OFF;
-                     * }
-                     */
                     state = updateOnOff("SvSt");
                     break;
             }
@@ -351,7 +276,7 @@ public class GreeHandler extends BaseThingHandler {
                 logger.trace("Updating channel {} : {}", channelID, state.get());
                 updateState(channelID, state.get());
             }
-        } catch (GreeException e) {
+        } catch (GreeException | IllegalArgumentException e) {
             logger.debug("Exception on channel update", e);
         }
     }
@@ -368,6 +293,18 @@ public class GreeHandler extends BaseThingHandler {
             return Optional.of(new DecimalType(device.getIntStatusVal(valueName)));
         }
         return Optional.empty();
+    }
+
+    private Optional<State> updateTemp(final String valueName) throws GreeException {
+        if (device.hasStatusValChanged(valueName)) {
+            return Optional.of(toQuantityType(device.getIntStatusVal(valueName), DIGITS_TEMP, SIUnits.CELSIUS));
+        }
+        return Optional.empty();
+    }
+
+    public static State toQuantityType(int value, int digits, Unit<?> unit) {
+        BigDecimal bd = new BigDecimal(value);
+        return new QuantityType<>(bd.setScale(digits, BigDecimal.ROUND_HALF_UP), unit);
     }
 
     @Override

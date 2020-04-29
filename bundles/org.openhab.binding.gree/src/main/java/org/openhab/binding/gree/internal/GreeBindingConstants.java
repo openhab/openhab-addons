@@ -36,9 +36,7 @@ public class GreeBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID GREE_THING_TYPE = new ThingTypeUID(BINDING_ID, "airconditioner");
 
-    /**
-     * Contains the IP network address of the Gree Airconditioner.
-     */
+    // Thing configuration items
     public static final String PROPERTY_IP = "ipAddress";
     public static final String PROPERTY_BROADCAST = "broadcastAddress";
 
@@ -55,14 +53,13 @@ public class GreeBindingConstants {
     public static final String HEALTH_CHANNEL = "health";
     public static final String PWRSAV_CHANNEL = "powersave";
 
-    // UDPPort used to communicate using UDP with Gree Airconditioners. .
+    // UDPPort used to communicate using UDP with GREE Airconditioners. .
     public static final int GREE_PORT = 7000;
 
     /*
      * The timeout for the Datagram socket used to communicate with Gree Airconditioners.
      * This is particularly important when scanning for devices because this will effectively
      * be the amount of time spent scanning.
-     *
      */
     public static final int DATAGRAM_SOCKET_TIMEOUT = 5000;
     public static final int MINIMUM_REFRESH_TIME_MS = 1000;
@@ -70,6 +67,8 @@ public class GreeBindingConstants {
 
     public static final int DISCOVERY_TIMEOUT_MS = 7000;
     public static final int MAX_SCAN_CYCLES = 3;
+
+    public static final int DIGITS_TEMP = 1;
 
     public static final String CHARSET = "UTF-8";
 }

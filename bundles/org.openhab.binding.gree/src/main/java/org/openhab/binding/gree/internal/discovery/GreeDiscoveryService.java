@@ -81,7 +81,7 @@ public class GreeDiscoveryService extends AbstractDiscoveryService {
             deviceFinder.scan(clientSocket, true);
 
             int count = deviceFinder.getScannedDeviceCount();
-            logger.debug("{} units discovered", count);
+            logger.info("{}", messages.get("discovery.result", count));
             if (count > 0) {
                 logger.debug("Adding uinits to Inbox");
                 createResult(deviceFinder.getDevices());
@@ -102,7 +102,7 @@ public class GreeDiscoveryService extends AbstractDiscoveryService {
         for (Map.Entry<String, GreeAirDevice> d : deviceList.entrySet()) {
             GreeAirDevice device = d.getValue();
             String ipAddress = device.getAddress().getHostAddress();
-            logger.debug("Device {} discovered at {}, MAC={}", device.getName(), ipAddress, device.getId());
+            logger.debug("{}", messages.get("discovery.newunit", device.getName(), ipAddress, device.getId()));
             Map<String, Object> properties = new TreeMap<String, Object>();
             properties.put(Thing.PROPERTY_VENDOR, device.getVendor());
             properties.put(Thing.PROPERTY_MODEL_ID, device.getModel());

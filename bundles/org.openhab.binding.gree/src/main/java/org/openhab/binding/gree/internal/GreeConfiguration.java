@@ -22,50 +22,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class GreeConfiguration {
-    private String ipAddress = "";
-    private String broadcastAddress = "";
-    private int refresh = 0;
-
-    public String getIpAddress() {
-        return ipAddress;
-    }
-
-    public String getBroadcastAddress() {
-        return broadcastAddress;
-    }
-
-    public void setRefresh(Integer refresh) {
-        this.refresh = refresh;
-    }
-
-    public void setIpAddress(String ipAddress) {
-        this.ipAddress = ipAddress;
-    }
-
-    public void setBroadcastAddress(String ipAddress) {
-        this.broadcastAddress = ipAddress;
-    }
-
-    public Integer getRefresh() {
-        return refresh;
-    }
-
-    public boolean isValid() {
-        try {
-            if (ipAddress.isEmpty()) {
-                return false;
-            }
-            if (broadcastAddress.isEmpty()) {
-                return false;
-            }
-            if (refresh <= 0) {
-                throw new IllegalArgumentException("Refresh time must be positive number!");
-            }
-            return true;
-        } catch (Exception err) {
-            return false;
-        }
-    }
+    public String ipAddress = "";
+    public String broadcastAddress = "";
+    public int refresh = 60;
 
     @Override
     public String toString() {

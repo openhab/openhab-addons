@@ -197,10 +197,6 @@ public class GreeAirDevice {
         executeCommand(clientSocket, parameters);
     }
 
-    public int getDevicePower() {
-        return getIntStatusVal("Pow");
-    }
-
     public void SetDeviceMode(DatagramSocket clientSocket, Integer value) throws GreeException {
         // Only allow this to happen if this device has been bound and values are valid
         if ((!Objects.equals(getIsBound(), Boolean.TRUE)) || (value.intValue() < 0 || value.intValue() > 4)) {
@@ -211,10 +207,6 @@ public class GreeAirDevice {
         HashMap<String, Integer> parameters = new HashMap<>();
         parameters.put("Mod", value);
         executeCommand(clientSocket, parameters);
-    }
-
-    public int getDeviceMode() {
-        return getIntStatusVal("Mod");
     }
 
     public void setDeviceSwingVertical(DatagramSocket clientSocket, Integer value) throws GreeException {
@@ -228,10 +220,6 @@ public class GreeAirDevice {
         HashMap<String, Integer> parameters = new HashMap<>();
         parameters.put("SwUpDn", value);
         executeCommand(clientSocket, parameters);
-    }
-
-    public int getDeviceSwingVertical() {
-        return getIntStatusVal("SwUpDn");
     }
 
     /**
@@ -256,10 +244,6 @@ public class GreeAirDevice {
         parameters.put("Tur", 0);
         parameters.put("NoiseSet", 0);
         executeCommand(clientSocket, parameters);
-    }
-
-    public int getDeviceWindspeed() {
-        return getIntStatusVal("WdSpd");
     }
 
     public void setDeviceTurbo(DatagramSocket clientSocket, Integer value) throws GreeException {
@@ -288,10 +272,6 @@ public class GreeAirDevice {
         HashMap<String, Integer> parameters = new HashMap<>();
         parameters.put("Lig", value);
         executeCommand(clientSocket, parameters);
-    }
-
-    public int getDeviceLight() {
-        return getIntStatusVal("Lig");
     }
 
     /**
@@ -384,9 +364,9 @@ public class GreeAirDevice {
             // SetTem input to A/C always in Celsius despite passing in 1 to TemUn
             outVal = new Integer((int) Math.round((newVal - 32.) * 5.0 / 9.0)); // Integer Truncated
             // ******************TempRec TemSet Mapping for setting Fahrenheit****************************
-            // Fahren = [68. , 69. , 70. , 71. , 72. , 73. , 74. , 75. , 76. , 77. , 78. , 79. , 80. , 81. , 82. , 83. ,
+            // F = [68. , 69. , 70. , 71. , 72. , 73. , 74. , 75. , 76. , 77. , 78. , 79. , 80. , 81. , 82. , 83. ,
             // 84. , 85. , 86. ]
-            // Celsiu = [20.0, 20.5, 21.1, 21.6, 22.2, 22.7, 23.3, 23.8, 24.4, 25.0, 25.5, 26.1, 26.6, 27.2, 27.7, 28.3,
+            // C = [20.0, 20.5, 21.1, 21.6, 22.2, 22.7, 23.3, 23.8, 24.4, 25.0, 25.5, 26.1, 26.6, 27.2, 27.7, 28.3,
             // 28.8, 29.4, 30.0]
             // TemSet = [20, 21, 21, 22, 22, 23, 23, 24, 25, 25, 26, 26, 27, 27, 28, 28, 29, 29, 30, 30]
             // TemRec = [ 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0]
@@ -405,10 +385,6 @@ public class GreeAirDevice {
         executeCommand(clientSocket, parameters);
     }
 
-    public int getDeviceTempSet() {
-        return getIntStatusVal("SetTem");
-    }
-
     public void setDeviceAir(DatagramSocket clientSocket, Integer value) throws GreeException {
         // Only allow this to happen if this device has been bound
         if (getIsBound() != Boolean.TRUE) {
@@ -420,10 +396,6 @@ public class GreeAirDevice {
         parameters.put("Air", value);
 
         executeCommand(clientSocket, parameters);
-    }
-
-    public int getDeviceAir() {
-        return getIntStatusVal("Air");
     }
 
     public void setDeviceDry(DatagramSocket clientSocket, Integer value) throws GreeException {
@@ -439,10 +411,6 @@ public class GreeAirDevice {
         executeCommand(clientSocket, parameters);
     }
 
-    public int getDeviceDry() {
-        return getIntStatusVal("Blo");
-    }
-
     public void setDeviceHealth(DatagramSocket clientSocket, Integer value) throws GreeException {
         // Only allow this to happen if this device has been bound
         if (getIsBound() != Boolean.TRUE) {
@@ -454,10 +422,6 @@ public class GreeAirDevice {
         parameters.put("Health", value);
 
         executeCommand(clientSocket, parameters);
-    }
-
-    public int getDeviceHealth() {
-        return getIntStatusVal("Health");
     }
 
     public void setDevicePwrSaving(DatagramSocket clientSocket, Integer value) throws GreeException {
@@ -476,10 +440,6 @@ public class GreeAirDevice {
         parameters.put("SlpMod", new Integer(0));
 
         executeCommand(clientSocket, parameters);
-    }
-
-    public int getDevicePwrSaving() {
-        return getIntStatusVal("SvSt");
     }
 
     public int getIntStatusVal(String valueName) {
@@ -696,15 +656,14 @@ public class GreeAirDevice {
 
     private void updateTempFtoC() {
         // Status message back from A/C always reports degrees C
-        // If using Fahrenheit, us SetTem, TemUn and TemRec to
-        // reconstruct the Fahrenheit temperature
+        // If using Fahrenheit, us SetTem, TemUn and TemRec to reconstruct the Fahrenheit temperature
         // Get Celsius or Fahrenheit from status message
-        Integer CorF = getIntStatusVal("TemUn");
-        Integer newVal = getIntStatusVal("SetTem");
-        Integer halfStep = getIntStatusVal("TemRec");
+        int CorF = getIntStatusVal("TemUn");
+        int newVal = getIntStatusVal("SetTem");
+        int halfStep = getIntStatusVal("TemRec");
 
-        if (CorF == null || newVal == null || halfStep == null) {
-            logger.warn("SetTem,TemUn or TemRec is invalid, not performing conversion");
+        if ((CorF == -1) || (newVal == -1) || (halfStep == -1)) {
+            throw new IllegalArgumentException("SetTem,TemUn or TemRec is invalid, not performing conversion");
         } else if (CorF == 1) { // convert SetTem to Fahrenheit
             // Find the valueName in the Returned Status object
             String columns[] = statusResponseGson.packJson.cols;
@@ -715,15 +674,12 @@ public class GreeAirDevice {
                 // convert Celsius to Fahrenheit,
                 // SetTem status returns degrees C regardless of TempUn setting
 
-                // Perform the float Celsius to Fahrenheit conversion
-                // add or subtract 0.5 based on the value of TemRec
-                // (0 = -0.5, 1 = +0.5)
-                // Pass into a rounding function, this yeild the correct Fahrenheit
-                // Temperature to match A/C display
+                // Perform the float Celsius to Fahrenheit conversion add or subtract 0.5 based on the value of TemRec
+                // (0 = -0.5, 1 = +0.5). Pass into a rounding function, this yeild the correct Fahrenheit Temperature to
+                // match A/C display
                 newVal = new Integer((int) Math.round(((newVal * 9.0 / 5.0) + 32.0) + halfStep - 0.5));
 
-                // Update the status array with F temp ,
-                // assume this is updating the array in situ
+                // Update the status array with F temp, assume this is updating the array in situ
                 values[valueArrayposition] = newVal;
             }
         }

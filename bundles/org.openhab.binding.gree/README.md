@@ -1,8 +1,8 @@
 # GREE Binding
 
-This binding allows you too add GREE Air Conditioners as things. Once added as a thing, the user can control the Air Conditioner, similarly to how the Air Conditioner is controlled using the remote control or smartphone app.
+This binding integrates GREE Air Conditioners.
 
-Note : The GREE Air Conditioner must already be setup on the wifi network and must have a fixed IP Address.
+Note : The GREE Air Conditioner must already be setup on the WiFi network and must have a fixed IP Address.
 
 ## Supported Things
 
@@ -10,11 +10,12 @@ This binding supports one Thing type `airconditioner`.
 
 ## Discovery
 
-Discovery is possible but as yet is not supported in this binding.
+Once the GREE is on the network (WiFi active) it could be discovery automatically.
+An IP broadcast message is sent and every responding units gets added to the Inbox. 
 
 ## Binding Configuration
 
-No binding configuration required.
+No binding configuration is required.
 
 #### Manual Thing Creation
 
@@ -23,7 +24,9 @@ Fans can be manually created in the *PaperUI* or *HABmin*, or by placing a *.thi
 
 ## Thing Configuration
 
-The Air Conditioners IP address and refresh rate (in seconds) and network broadcast address are set at time of discovery.  However, in the event that any of this information changes, the Air Conditioners configuration must be updated.
+The Air Conditioner's IP address is mandantory, all other parameters are optional. 
+If the broadcast is not set (default) it will be derived from openHAB's network setting (PaperUI:Configuration:System:Network Settings). 
+Change this only for good reasons.
 
 ## Channels
 
@@ -54,24 +57,24 @@ The following channels are supported for fans:
 Things:
 
 ```
-Thing gree:airconditioner:b2d08bb1 [ ipAddress="192.168.12.62", refresh=2 ]
+Thing gree:airconditioner:a1234561 [ ipAddress="192.168.1.111", refresh=2 ]
 ```
 
 Items:
 
 ```
-Switch AirconPower                  { channel="gree:airconditioner:b2d08bb1:power" }
-Number AirconMode                   { channel="gree:airconditioner:b2d08bb1:modec" }
-Switch AirconTurbo                  { channel="gree:airconditioner:b2d08bb1:turbo" }
-Switch AirconLight                  { channel="gree:airconditioner:b2d08bb1:light" }
-Number AirconTemp "Temperature [%.1f °C]" {channel="gree:airconditioner:b2d08bb1:temperature" }
-Number AirconTempSet                { channel="gree:airconditioner:b2d08bb1:temperature" }
-Number AirconSwingVertical          { channel="gree:airconditioner:b2d08bb1:swingvertical" }
-Number AirconFanSpeed               { channel="gree:airconditioner:b2d08bb1:windspeed" }
-Switch AirconAir                    { channel="gree:airconditioner:b2d08bb1:air" }
-Switch AirconDry                    { channel="gree:airconditioner:b2d08bb1:dry" }
-Switch AirconHealth                 { channel="gree:airconditioner:b2d08bb1:health" }
-Switch AirconPowerSaving            { channel="gree:airconditioner:b2d08bb1:powersave" }
+Switch AirconPower                  { channel="gree:airconditioner:a1234561:power" }
+Number AirconMode                   { channel="gree:airconditioner:a1234561:modec" }
+Switch AirconTurbo                  { channel="gree:airconditioner:a1234561:turbo" }
+Switch AirconLight                  { channel="gree:airconditioner:a1234561:light" }
+Number AirconTemp "Temperature [%.1f °C]" {channel="gree:airconditioner:a1234561:temperature" }
+Number AirconTempSet                { channel="gree:airconditioner:a1234561:temperature" }
+Number AirconSwingVertical          { channel="gree:airconditioner:a1234561:swingvertical" }
+Number AirconFanSpeed               { channel="gree:airconditioner:a1234561:windspeed" }
+Switch AirconAir                    { channel="gree:airconditioner:a1234561:air" }
+Switch AirconDry                    { channel="gree:airconditioner:a1234561:dry" }
+Switch AirconHealth                 { channel="gree:airconditioner:a1234561:health" }
+Switch AirconPowerSaving            { channel="gree:airconditioner:a1234561:powersave" }
 ```
 
 Sitemap:

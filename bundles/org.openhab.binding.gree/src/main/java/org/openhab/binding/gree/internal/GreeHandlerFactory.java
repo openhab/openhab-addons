@@ -37,8 +37,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link GreeHandlerFactory} is responsible for creating things and thing
- * handlers.
+ * The {@link GreeHandlerFactory} is responsible for creating things and thing handlers.
  *
  * @author John Cunha - Initial contribution
  * @author Markus Michels - Refactoring, adapted to OH 2.5x

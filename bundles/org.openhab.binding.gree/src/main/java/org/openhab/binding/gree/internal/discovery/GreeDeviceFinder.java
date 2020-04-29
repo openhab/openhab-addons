@@ -42,9 +42,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 
 /**
- * The GreeDeviceFinder provides functionality for searching for
- * Gree Airconditioners on the network and keeping a list of
- * found devices.
+ * The GreeDeviceFinder provides functionality for searching for GREE Airconditioners on the network and keeping a list
+ * of found devices.
  *
  * @author John Cunha - Initial contribution
  * @author Markus Michels - Refactoring, adapted to OH 2.5x
@@ -70,13 +69,10 @@ public class GreeDeviceFinder {
         byte[] receiveData = new byte[1024];
 
         // Send the Scan message
-        // GreeProtocolUtils protocolUtils = new GreeProtocolUtils();
-        // sendData = protocolUtils.CreateScanRequest();
         GreeScanRequest4GsonDTO scanGson = new GreeScanRequest4GsonDTO();
         scanGson.t = "scan";
 
         GsonBuilder gsonBuilder = new GsonBuilder();
-        // gsonBuilder.setLenient();
         Gson gson = gsonBuilder.create();
         String scanReq = gson.toJson(scanGson);
         sendData = scanReq.getBytes();
