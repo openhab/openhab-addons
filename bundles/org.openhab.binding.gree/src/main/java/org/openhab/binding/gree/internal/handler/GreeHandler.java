@@ -223,7 +223,11 @@ public class GreeHandler extends BaseThingHandler {
                         publishChannelIfLinked(channel.getUID());
                     }
 
-                } catch (GreeException | RuntimeException e) {
+                } catch (GreeException e) {
+                    if (!e.isTimeout()) {
+                        logger.debug("Unable to perform auto-update: {}", e.toString());
+                    }
+                } catch (RuntimeException e) {
                     logger.debug("Unable to perform auto-update", e);
                 }
             }

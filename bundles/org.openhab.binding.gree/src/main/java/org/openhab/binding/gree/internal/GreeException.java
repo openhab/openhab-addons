@@ -13,6 +13,7 @@
 package org.openhab.binding.gree.internal;
 
 import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.text.MessageFormat;
 import java.util.concurrent.ExecutionException;
@@ -79,8 +80,9 @@ public class GreeException extends Exception {
 
     public boolean isTimeout() {
         Class<?> extype = !isEmpty() ? getCauseClass() : null;
-        return (extype != null) && ((extype == TimeoutException.class) || (extype == ExecutionException.class)
-                || (extype == InterruptedException.class) || getMessage().toLowerCase().contains("timeout"));
+        return (extype != null) && ((extype == SocketTimeoutException.class) || (extype == TimeoutException.class)
+                || (extype == ExecutionException.class) || (extype == InterruptedException.class)
+                || getMessage().toLowerCase().contains("timeout"));
     }
 
     public boolean isUnknownHost() {
