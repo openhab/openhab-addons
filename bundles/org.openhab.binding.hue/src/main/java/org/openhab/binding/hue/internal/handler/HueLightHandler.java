@@ -94,10 +94,15 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
 
     private static final String OSRAM_PAR16_50_TW_MODEL_ID = "PAR16_50_TW";
 
-    private final Logger logger = LoggerFactory.getLogger(HueLightHandler.class);
+    private static final long BYPASS_LIGHT_POLL_DURATION = 1000;
 
-    private @NonNullByDefault({}) String lightId;
+    @NonNullByDefault({})
+    private String lightId;
 
+    private @Nullable FullLight lastFullLight;
+    private Long lastTimeCmd = 0L;
+
+    // TODO think those two can be refactored with lastFullLight
     private @Nullable Integer lastSentColorTemp;
     private @Nullable Integer lastSentBrightness;
 
@@ -139,11 +144,15 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
             }
 
             lightId = configLightId;
-            // note: this call implicitly registers our handler as a listener on the bridge
-            HueClient bridgeHandler = getHueClient();
+            // note: this call implicitly registers our handler as a listener on
+            // the bridge
+            final HueClient bridgeHandler = getHueClient();
+
             if (bridgeHandler != null) {
                 if (bridgeStatus == ThingStatus.ONLINE) {
-                    initializeProperties(bridgeHandler.getLightById(lightId));
+                    FullLight fullLight = bridgeHandler.getLightById(lightId);
+                    lastFullLight = fullLight;
+                    initializeProperties(fullLight);
                     updateStatus(ThingStatus.ONLINE);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
@@ -157,19 +166,28 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
         }
     }
 
-    private synchronized void initializeProperties(@Nullable FullLight fullLight) {
-        if (!propertiesInitializedSuccessfully && fullLight != null) {
-            Map<String, String> properties = editProperties();
-            String softwareVersion = fullLight.getSoftwareVersion();
-            if (softwareVersion != null) {
-                properties.put(PROPERTY_FIRMWARE_VERSION, softwareVersion);
-            }
-            String modelId = fullLight.getNormalizedModelID();
-            if (modelId != null) {
-                properties.put(PROPERTY_MODEL_ID, modelId);
-                String vendor = getVendor(modelId);
-                if (vendor != null) {
-                    properties.put(PROPERTY_VENDOR, vendor);
+    private synchronized void initializeProperties(@Nullable FullHueObject fullLight) {
+        if (!propertiesInitializedSuccessfully) {
+            if (fullLight != null) {
+                Map<String, String> properties = editProperties();
+                String softwareVersion = fullLight.getSoftwareVersion();
+                if (softwareVersion != null) {
+                    properties.put(PROPERTY_FIRMWARE_VERSION, softwareVersion);
+                }
+                String modelId = fullLight.getNormalizedModelID();
+                if (modelId != null) {
+                    properties.put(PROPERTY_MODEL_ID, modelId);
+                    String vendor = getVendor(modelId);
+                    if (vendor != null) {
+                        properties.put(PROPERTY_VENDOR, vendor);
+                    }
+                } else {
+                    properties.put(PROPERTY_VENDOR, fullLight.getManufacturerName());
+                }
+                properties.put(PRODUCT_NAME, fullLight.getProductName());
+                String uniqueID = fullLight.getUniqueID();
+                if (uniqueID != null) {
+                    properties.put(UNIQUE_ID, uniqueID);
                 }
             } else {
                 properties.put(PROPERTY_VENDOR, fullLight.getManufacturerName());
@@ -220,7 +238,7 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
             return;
         }
 
-        FullLight light = bridgeHandler.getLightById(lightId);
+        final FullLight light = lastFullLight;
         if (light == null) {
             logger.debug("hue light not known on bridge. Cannot handle command.");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -344,7 +362,9 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
             if (tmpColorTemp != null) {
                 lastSentColorTemp = tmpColorTemp;
             }
-            bridgeHandler.updateLightState(light, lightState);
+            hueBridge.updateLightState(light, lightState);
+
+            lastTimeCmd = System.currentTimeMillis();
         } else {
             logger.warn("Command sent to an unknown channel id: {}:{}", getThing().getUID(), channel);
         }
@@ -442,6 +462,13 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
             logger.trace("Received state change for another handler's light ({}). Will be ignored.", fullLight.getId());
             return;
         }
+
+        if (System.currentTimeMillis() - lastTimeCmd <= BYPASS_LIGHT_POLL_DURATION) {
+            logger.trace("Bypass light update after command ({}).", fullLight.getId());
+            return;
+        }
+
+        lastFullLight = fullLight;
 
         initializeProperties(fullLight);
 
