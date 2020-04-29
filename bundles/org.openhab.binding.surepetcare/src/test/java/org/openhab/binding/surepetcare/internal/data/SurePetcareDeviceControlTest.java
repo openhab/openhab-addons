@@ -38,7 +38,7 @@ public class SurePetcareDeviceControlTest {
                 SurePetcareDeviceControl.class);
 
         assertEquals(1, response.curfewList.size());
-        assertEquals(new Integer(0), response.lockingModeId);
+        assertEquals(Integer.valueOf(0), response.lockingModeId);
     }
 
     @Test
@@ -55,7 +55,7 @@ public class SurePetcareDeviceControlTest {
     @Test
     public void testJsonSerializeLockingMode() throws ParseException {
         SurePetcareDeviceControl control = new SurePetcareDeviceControl();
-        control.lockingModeId = new Integer(4);
+        control.lockingModeId = Integer.valueOf(4);
 
         String json = SurePetcareConstants.GSON.toJson(control);
         assertEquals("{\"locking\":4}", json);

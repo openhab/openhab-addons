@@ -92,9 +92,9 @@ public class SurePetcarePetTest {
         String testReponse = "{\"id\":34675,\"name\":\"Cat\",\"gender\":0,\"date_of_birth\":\"2017-08-01T00:00:00+00:00\",\"weight\":\"3.5\",\"comments\":\"Test Comment\",\"household_id\":87435,\"breed_id\":382,\"photo_id\":23412,\"species_id\":1,\"tag_id\":60456,\"version\":\"Mw==\",\"created_at\":\"2019-09-02T09:27:17+00:00\",\"updated_at\":\"2019-10-03T12:17:48+00:00\",\"conditions\":[{\"id\":18,\"version\":\"MA==\",\"created_at\":\"2019-10-03T12:17:48+00:00\",\"updated_at\":\"2019-10-03T12:17:48+00:00\"},{\"id\":17,\"version\":\"MA==\",\"created_at\":\"2019-10-03T12:17:48+00:00\",\"updated_at\":\"2019-10-03T12:17:48+00:00\"}],\"photo\":{\"id\":79293,\"location\":\"https:\\/\\/surehub.s3.amazonaws.com\\/user-photos\\/thm\\/23412\\/z70LUtqaHVhlsdfuyHKJH5HDysg5AR6GvQwdAZptCgeZU.jpg\",\"uploading_user_id\":52815,\"version\":\"MA==\",\"created_at\":\"2019-09-02T09:31:07+00:00\",\"updated_at\":\"2019-09-02T09:31:07+00:00\"},\"position\":{\"tag_id\":60456,\"device_id\":318986,\"where\":1,\"since\":\"2019-10-03T10:23:37+00:00\"},\"status\":{\"activity\":{\"tag_id\":60456,\"device_id\":318986,\"where\":1,\"since\":\"2019-10-03T10:23:37+00:00\"}}}";
         SurePetcarePet response = SurePetcareConstants.GSON.fromJson(testReponse, SurePetcarePet.class);
 
-        assertEquals(new Integer(34675), response.id);
+        assertEquals(Integer.valueOf(34675), response.id);
         assertEquals("Cat", response.name);
-        assertEquals(new Integer(0), response.genderId);
+        assertEquals(Integer.valueOf(0), response.genderId);
 
         Date dobDate;
         synchronized (simpleDateFormat) {
