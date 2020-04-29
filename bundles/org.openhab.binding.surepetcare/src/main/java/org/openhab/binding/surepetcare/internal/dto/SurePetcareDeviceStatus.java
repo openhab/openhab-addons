@@ -22,25 +22,6 @@ import com.google.gson.annotations.SerializedName;
  */
 public class SurePetcareDeviceStatus {
 
-    public class Locking {
-        @SerializedName("mode")
-        public Integer modeId;
-    }
-
-    public class Version {
-        public class Device {
-            public String hardware;
-            public String firmware;
-        }
-
-        public Device device = new Device();
-    }
-
-    public class Signal {
-        public Float deviceRssi;
-        public Float hubRssi;
-    }
-
     @SerializedName("led_mode")
     public Integer ledModeId;
     @SerializedName("pairing_mode")
@@ -61,6 +42,25 @@ public class SurePetcareDeviceStatus {
         this.online = source.online;
         this.signal = source.signal;
         return this;
+    }
+
+    public class Locking {
+        @SerializedName("mode")
+        public Integer modeId;
+    }
+
+    public class Version {
+        public class Device {
+            public String hardware;
+            public String firmware;
+        }
+
+        public Device device = new Device();
+    }
+
+    public class Signal {
+        public Float deviceRssi;
+        public Float hubRssi;
     }
 
 }

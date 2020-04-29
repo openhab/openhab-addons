@@ -58,7 +58,7 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SurePetcareBridgeHandler.class);
 
-    private SurePetcareAPIHelper petcareAPI;
+    private final SurePetcareAPIHelper petcareAPI;
     private @Nullable ScheduledFuture<?> topologyPollingJob = null;
     private @Nullable ScheduledFuture<?> petStatusPollingJob = null;
 
@@ -68,6 +68,7 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
     }
 
     @Override
+    @SuppressWarnings("null")
     public void initialize() {
         logger.debug("Initializing Sure Petcare bridge handler.");
         SurePetcareBridgeConfiguration config = getConfigAs(SurePetcareBridgeConfiguration.class);

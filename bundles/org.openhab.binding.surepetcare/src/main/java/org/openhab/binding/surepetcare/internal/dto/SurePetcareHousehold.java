@@ -23,6 +23,17 @@ import com.google.gson.annotations.SerializedName;
  */
 public class SurePetcareHousehold extends SurePetcareBaseObject {
 
+    public String name;
+    public String shareCode;
+    public Integer timezoneId;
+    @SerializedName("users")
+    public List<HouseholdUsers> householdUsers = null;
+
+    @Override
+    public String toString() {
+        return "SurePetcareHousehold [id=" + id + ", name=" + name + "]";
+    }
+
     public class HouseholdUsers {
         public class User {
             @SerializedName("id")
@@ -33,17 +44,6 @@ public class SurePetcareHousehold extends SurePetcareBaseObject {
 
         @SerializedName("user")
         public User user;
-    }
-
-    public String name;
-    public String shareCode;
-    public Integer timezoneId;
-    @SerializedName("users")
-    public List<HouseholdUsers> householdUsers = null;
-
-    @Override
-    public String toString() {
-        return "SurePetcareHousehold [id=" + id + ", name=" + name + "]";
     }
 
 }

@@ -19,6 +19,17 @@ package org.openhab.binding.surepetcare.internal.dto;
  */
 public class SurePetcareLoginResponse {
 
+    public Data data;
+
+    @Override
+    public String toString() {
+        return "SurePetcareJsonLoginResponse [data=" + data + "]";
+    }
+
+    public String getToken() {
+        return data.token;
+    }
+
     public class Data {
 
         public SurePetcareUser user;
@@ -32,17 +43,6 @@ public class SurePetcareLoginResponse {
         public String toString() {
             return "Data [user=" + user + ", token=" + token + "]";
         }
-    }
-
-    public Data data;
-
-    @Override
-    public String toString() {
-        return "SurePetcareJsonLoginResponse [data=" + data + "]";
-    }
-
-    public String getToken() {
-        return data.token;
     }
 
 }

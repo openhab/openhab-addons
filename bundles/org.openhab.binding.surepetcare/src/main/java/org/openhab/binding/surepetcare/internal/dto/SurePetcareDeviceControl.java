@@ -28,6 +28,34 @@ import com.google.gson.annotations.SerializedName;
  */
 public class SurePetcareDeviceControl {
 
+    @SerializedName("locking")
+    public Integer lockingModeId;
+    public Boolean fastPolling;
+    @SerializedName("led_mode")
+    public Integer ledModeId;
+    @SerializedName("pairing_mode")
+    public Integer pairingModeId;
+    public Bowls bowls;
+    @SerializedName("lid")
+    public Lid lid;
+    @SerializedName("training_mode")
+    public Integer trainingModeId;
+    @SerializedName("curfew")
+    @JsonAdapter(SurePetcareDeviceCurfewListTypeAdapterFactory.class)
+    public SurePetcareDeviceCurfewList curfewList;
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder("SurePetcareDeviceControl [");
+        builder.append("lockingModeId=").append(lockingModeId);
+        builder.append(", fastPolling=").append(fastPolling);
+        builder.append(", ledModeId=").append(ledModeId);
+        builder.append(", pairingModeId=").append(pairingModeId);
+        builder.append(", trainingModeId=").append(trainingModeId);
+        builder.append(", curfew=").append(curfewList);
+        return builder.toString();
+    }
+
     public class Bowls {
         public class BowlSettings {
             @SerializedName("food_type")
@@ -59,34 +87,6 @@ public class SurePetcareDeviceControl {
         public Lid(Integer closeDelayId) {
             this.closeDelayId = closeDelayId;
         }
-    }
-
-    @SerializedName("locking")
-    public Integer lockingModeId;
-    public Boolean fastPolling;
-    @SerializedName("led_mode")
-    public Integer ledModeId;
-    @SerializedName("pairing_mode")
-    public Integer pairingModeId;
-    public Bowls bowls;
-    @SerializedName("lid")
-    public Lid lid;
-    @SerializedName("training_mode")
-    public Integer trainingModeId;
-    @SerializedName("curfew")
-    @JsonAdapter(SurePetcareDeviceCurfewListTypeAdapterFactory.class)
-    public SurePetcareDeviceCurfewList curfewList;
-
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder("SurePetcareDeviceControl [");
-        builder.append("lockingModeId=").append(lockingModeId);
-        builder.append(", fastPolling=").append(fastPolling);
-        builder.append(", ledModeId=").append(ledModeId);
-        builder.append(", pairingModeId=").append(pairingModeId);
-        builder.append(", trainingModeId=").append(trainingModeId);
-        builder.append(", curfew=").append(curfewList);
-        return builder.toString();
     }
 
 }

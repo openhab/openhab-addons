@@ -109,6 +109,7 @@ public class SurePetcareDiscoveryService extends AbstractDiscoveryService
     }
 
     @Override
+    @SuppressWarnings("null")
     protected void stopBackgroundDiscovery() {
         if (discoveryJob != null) {
             discoveryJob.cancel(true);
