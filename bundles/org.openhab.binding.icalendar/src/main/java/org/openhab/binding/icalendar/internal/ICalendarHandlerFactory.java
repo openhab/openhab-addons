@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.icalendar.internal;
 
-import static org.openhab.binding.icalendar.internal.ICalendarBindingConstants.*;
+import static org.openhab.binding.icalendar.internal.ICalendarBindingConstants.THING_TYPE_CALENDAR;
 
 import java.util.Collections;
 import java.util.Set;
@@ -31,8 +31,6 @@ import org.openhab.binding.icalendar.internal.handler.ICalendarHandler;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ICalendarHandlerFactory} is responsible for creating things and thing
@@ -47,7 +45,6 @@ public class ICalendarHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_CALENDAR);
 
-    private final Logger logger = LoggerFactory.getLogger(ICalendarHandlerFactory.class);
     private final HttpClient sharedHttpClient;
     private final EventPublisher eventPublisher;
 
@@ -55,12 +52,7 @@ public class ICalendarHandlerFactory extends BaseThingHandlerFactory {
     public ICalendarHandlerFactory(@Reference HttpClientFactory httpClientFactory,
             @Reference EventPublisher eventPublisher) {
         this.eventPublisher = eventPublisher;
-        sharedHttpClient = httpClientFactory.createHttpClient(BINDING_ID);
-        try {
-            sharedHttpClient.start();
-        } catch (Exception e) {
-            logger.debug("Exception while starting HttpClient.", e);
-        }
+        sharedHttpClient = httpClientFactory.getCommonHttpClient();
     }
 
     @Override
@@ -73,10 +65,6 @@ public class ICalendarHandlerFactory extends BaseThingHandlerFactory {
         final ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (!supportsThingType(thingTypeUID)) {
-            return null;
-        }
-        if (!sharedHttpClient.isStarted()) {
-            logger.warn("Required HttpClient is not started and this binding won't work in that case. Not starting.");
             return null;
         }
         return new ICalendarHandler(thing, sharedHttpClient, eventPublisher);
