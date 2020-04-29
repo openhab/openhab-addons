@@ -19,7 +19,6 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.config.discovery.DiscoveryServiceRegistry;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -46,7 +45,6 @@ public class SamsungTvHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(SAMSUNG_TV_THING_TYPE);
 
     private @NonNullByDefault({}) UpnpIOService upnpIOService;
-    private @NonNullByDefault({}) DiscoveryServiceRegistry discoveryServiceRegistry;
     private @NonNullByDefault({}) UpnpService upnpService;
 
     @Reference
@@ -62,7 +60,7 @@ public class SamsungTvHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(SAMSUNG_TV_THING_TYPE)) {
-            return new SamsungTvHandler(thing, upnpIOService, discoveryServiceRegistry, upnpService, webSocketFactory);
+            return new SamsungTvHandler(thing, upnpIOService, upnpService, webSocketFactory);
         }
 
         return null;
@@ -75,15 +73,6 @@ public class SamsungTvHandlerFactory extends BaseThingHandlerFactory {
 
     protected void unsetUpnpIOService(UpnpIOService upnpIOService) {
         this.upnpIOService = null;
-    }
-
-    @Reference
-    protected void setDiscoveryServiceRegistry(DiscoveryServiceRegistry discoveryServiceRegistry) {
-        this.discoveryServiceRegistry = discoveryServiceRegistry;
-    }
-
-    protected void unsetDiscoveryServiceRegistry(DiscoveryServiceRegistry discoveryServiceRegistry) {
-        this.discoveryServiceRegistry = null;
     }
 
     @Reference
