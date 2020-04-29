@@ -117,14 +117,7 @@ public class NukiOpenerHandler extends BaseThingHandler {
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         logger.debug("bridgeStatusChanged({}) for Opener[{}].", bridgeStatusInfo, nukiId);
-        scheduler.execute(() -> {
-            Bridge bridge = getBridge();
-            if (bridge == null) {
-                initializeHandler(null, bridgeStatusInfo.getStatus());
-            } else {
-                initializeHandler(bridge.getHandler(), bridgeStatusInfo.getStatus());
-            }
-        });
+        scheduler.execute(this::initializeHandler);
     }
 
     @Override
