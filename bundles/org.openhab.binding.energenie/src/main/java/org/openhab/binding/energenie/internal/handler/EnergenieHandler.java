@@ -138,7 +138,7 @@ public class EnergenieHandler extends BaseThingHandler {
         }
     }
 
-    private @Nullable Boolean refreshState() {
+    private boolean refreshState() {
         final EnergenieSocket socket = this.energenieSocket;
 
         if (socket != null) {
@@ -147,7 +147,7 @@ public class EnergenieHandler extends BaseThingHandler {
                 if (thing.getStatus() != ThingStatus.ONLINE && ThingHandlerHelper.isHandlerInitialized(thing)) {
                     updateStatus(ThingStatus.ONLINE);
                 }
-                return Boolean.TRUE;
+                return true;
             } catch (final UnknownHostException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Can't find host: " + e.getMessage());
@@ -160,7 +160,7 @@ public class EnergenieHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
             }
         }
-        return null;
+        return false;
     }
 
     public void stateUpdate(final byte[] status) {

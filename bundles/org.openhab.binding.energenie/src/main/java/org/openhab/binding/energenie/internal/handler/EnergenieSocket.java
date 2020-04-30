@@ -90,6 +90,7 @@ class EnergenieSocket {
             throw new IOException("No connection");
         }
         output.write(MESSAGE);
+        output.flush();
         logger.trace("Start Condition '{}' send to EG", MESSAGE);
         input.read(taskSocket.task);
 
@@ -100,6 +101,7 @@ class EnergenieSocket {
         final byte[] solutionMessage = calculateSolution(taskSocket.task);
 
         output.write(solutionMessage);
+        output.flush();
         logger.trace("Solution '{}' send to EG", solutionMessage);
         readStatus(input, taskSocket);
         return taskSocket;
@@ -114,18 +116,12 @@ class EnergenieSocket {
     }
 
     private byte[] updateStatus(final TaskSocket taskSocket) throws IOException {
-        final InputStream input = taskSocket.socket.getInputStream();
+        final byte[] status = decryptStatus(taskSocket);
 
-        if (input == null) {
-            throw new IOException("No connection");
-        } else {
-            final byte[] status = decryptStatus(taskSocket);
-
-            if (logger.isTraceEnabled()) {
-                logger.trace("EG responded with status (int) '{}' (hex) '{}'", status, HexUtils.bytesToHex(status));
-            }
-            return status;
+        if (logger.isTraceEnabled()) {
+            logger.trace("EG responded with status (int) '{}' (hex) '{}'", status, HexUtils.bytesToHex(status));
         }
+        return status;
     }
 
     private byte[] calculateSolution(final byte[] task) {
