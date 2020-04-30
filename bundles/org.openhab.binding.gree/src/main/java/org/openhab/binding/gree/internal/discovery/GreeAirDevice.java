@@ -483,7 +483,7 @@ public class GreeAirDevice {
 
     public boolean hasStatusValChanged(String valueName) throws GreeException {
         if (prevStatusResponsePackGson == null) {
-            return false;
+            return true; // update value if there is no previous one
         }
         // Find the valueName in the Current Status object
         String currcolumns[] = statusResponseGson.packJson.cols;

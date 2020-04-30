@@ -64,7 +64,7 @@ Items:
 
 ```
 Switch AirconPower                  { channel="gree:airconditioner:a1234561:power" }
-Number AirconMode                   { channel="gree:airconditioner:a1234561:modec" }
+Number AirconMode                   { channel="gree:airconditioner:a1234561:mode" }
 Switch AirconTurbo                  { channel="gree:airconditioner:a1234561:turbo" }
 Switch AirconLight                  { channel="gree:airconditioner:a1234561:light" }
 Number AirconTemp "Temperature [%.1f °C]" {channel="gree:airconditioner:a1234561:temperature" }

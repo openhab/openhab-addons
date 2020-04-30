@@ -139,7 +139,7 @@ public class GreeHandler extends BaseThingHandler {
             // The thing is updated by the scheduled automatic refresh so do nothing here.
         } else {
             if (!clientSocket.isPresent()) {
-                logger.debug("Thing not properlyx initialized, abort command");
+                logger.debug("Thing not properly initialized, abort command");
                 return;
             }
 
