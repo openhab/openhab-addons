@@ -223,5 +223,4 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         }
         return ret;
     }
-
 }

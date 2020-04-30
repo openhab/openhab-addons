@@ -31,5 +31,4 @@ public class BridgeApiCallbackListDto {
     public void setCallbacks(List<BridgeApiCallbackListCallbackDto> callbacks) {
         this.callbacks = callbacks;
     }
-
 }

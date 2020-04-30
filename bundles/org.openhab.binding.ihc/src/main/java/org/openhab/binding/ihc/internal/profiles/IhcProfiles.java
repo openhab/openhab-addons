@@ -34,5 +34,4 @@ public interface IhcProfiles {
             .withSupportedItemTypes(CoreItemFactory.DIMMER, CoreItemFactory.ROLLERSHUTTER, CoreItemFactory.CONTACT,
                     CoreItemFactory.SWITCH, CoreItemFactory.PLAYER)
             .build();
-
 }

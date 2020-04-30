@@ -84,5 +84,4 @@ public class FridgeFreezerHandler extends MieleApplianceHandler<FridgeFreezerCha
                     channelID, command.toString());
         }
     }
-
 }

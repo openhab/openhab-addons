@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="globalcache" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="globalcache"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -10,9 +11,9 @@
 		<description>iTach Flex Device</description>
 
 		<channel-groups>
-			<channel-group id="sl-m1" typeId="sl-m1" />
-			<channel-group id="ir-m1" typeId="ir-m1" />
-			<channel-group id="cc-m1" typeId="cc-m1" />
+			<channel-group id="sl-m1" typeId="sl-m1"/>
+			<channel-group id="ir-m1" typeId="ir-m1"/>
+			<channel-group id="cc-m1" typeId="cc-m1"/>
 		</channel-groups>
 
 		<config-description>

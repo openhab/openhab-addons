@@ -24,7 +24,9 @@
 		</parameter>
 		<parameter name="refreshInterval" type="integer" min="0">
 			<label>Refresh Interval</label>
-			<description>The refresh interval in seconds for polling the receiver (0=disable). Binding receive automatically updates from </description>
+			<description>The refresh interval in seconds for polling the receiver (0=disable). Binding receive automatically
+				updates from
+			</description>
 			<default>0</default>
 			<advanced>true</advanced>
 		</parameter>

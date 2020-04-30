@@ -37,14 +37,16 @@
 			pattern="(36[0]|3[0-5][0-9]|[12][0-9][0-9]|[1-9][0-9]|[0-9]),(100|[1-9][0-9]|[0-9]),(100|[1-9][0-9]|[0-9])"
 			required="false">
 			<label>Power On Color</label>
-			<description>Comma separated Hue (0-360), saturation (0-100) and brightness (0-100) levels used when switching on the light. Use empty value to leave it as is.</description>
+			<description>Comma separated Hue (0-360), saturation (0-100) and brightness (0-100) levels used when switching on the
+				light. Use empty value to leave it as is.</description>
 		</parameter>
 	</config-description>
 
 	<config-description uri="channel-type:lifx:temperature">
 		<parameter name="powerOnTemperature" type="integer" min="0" max="100" required="false" unit="%">
 			<label>Power On Temperature</label>
-			<description>Color temperature level used when switching on the light. Use empty value to leave color temperature as is.</description>
+			<description>Color temperature level used when switching on the light. Use empty value to leave color temperature as
+				is.</description>
 		</parameter>
 	</config-description>
 

@@ -50,14 +50,15 @@ public class SetModeAction extends Action {
         String modeDeviceName = device.getLinks().get("curmode");
         AbstractDevice modeDevice = deviceRegistry.getDevice(ItemProcessor.getDeviceId(modeDeviceName));
         if (modeDevice == null) {
-            logger.error("Couldn't resolve linked CurMode device '{}', make sure the Item has iss tags", modeDeviceName);
+            logger.error("Couldn't resolve linked CurMode device '{}', make sure the Item has iss tags",
+                    modeDeviceName);
             return;
         }
 
         Item modeItem = modeDevice.getItem();
 
-        ItemCommandEvent event = ItemEventFactory.createCommandEvent(modeItem.getName(), new StringType(value), COMMAND_SOURCE);
+        ItemCommandEvent event = ItemEventFactory.createCommandEvent(modeItem.getName(), new StringType(value),
+                COMMAND_SOURCE);
         eventPublisher.post(event);
     }
-
 }

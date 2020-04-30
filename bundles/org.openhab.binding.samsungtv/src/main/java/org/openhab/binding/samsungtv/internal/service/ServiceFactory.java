@@ -46,21 +46,20 @@ public class ServiceFactory {
      * @param type
      * @param upnpIOService
      * @param udn
-     * @param pollingInterval
      * @param host
      * @param port
      * @return
      */
     public static @Nullable SamsungTvService createService(String type, UpnpIOService upnpIOService, String udn,
-            int pollingInterval, String host, int port) {
+            String host, int port) {
         SamsungTvService service = null;
 
         switch (type) {
             case MainTVServerService.SERVICE_NAME:
-                service = new MainTVServerService(upnpIOService, udn, pollingInterval);
+                service = new MainTVServerService(upnpIOService, udn);
                 break;
             case MediaRendererService.SERVICE_NAME:
-                service = new MediaRendererService(upnpIOService, udn, pollingInterval);
+                service = new MediaRendererService(upnpIOService, udn);
                 break;
             // will not be created automatically
             case RemoteControllerService.SERVICE_NAME:

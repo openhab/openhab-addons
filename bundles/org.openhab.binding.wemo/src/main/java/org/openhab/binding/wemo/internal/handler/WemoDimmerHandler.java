@@ -610,5 +610,4 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
     @Override
     public void onStatusChanged(boolean status) {
     }
-
 }

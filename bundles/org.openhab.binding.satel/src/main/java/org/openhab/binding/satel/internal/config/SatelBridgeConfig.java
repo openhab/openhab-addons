@@ -59,5 +59,4 @@ public class SatelBridgeConfig {
         final String encoding = this.encoding;
         return encoding == null ? Charset.defaultCharset() : Charset.forName(encoding);
     }
-
 }

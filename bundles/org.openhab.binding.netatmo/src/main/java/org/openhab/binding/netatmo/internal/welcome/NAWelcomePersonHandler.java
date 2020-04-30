@@ -121,5 +121,4 @@ public class NAWelcomePersonHandler extends NetatmoModuleHandler<NAWelcomePerson
             invalidateParentCacheAndRefresh();
         }
     }
-
 }

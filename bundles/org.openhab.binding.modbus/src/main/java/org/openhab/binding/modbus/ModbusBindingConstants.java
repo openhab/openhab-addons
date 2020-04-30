@@ -25,5 +25,4 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class ModbusBindingConstants {
 
     public static final String BINDING_ID = "modbus";
-
 }

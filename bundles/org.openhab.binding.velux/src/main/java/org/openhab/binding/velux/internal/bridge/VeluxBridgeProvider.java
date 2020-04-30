@@ -55,5 +55,4 @@ public interface VeluxBridgeProvider {
      *         containing all API methods.
      */
     public @Nullable BridgeAPI bridgeAPI();
-
 }

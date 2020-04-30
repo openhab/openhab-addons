@@ -44,5 +44,4 @@ public abstract class _VLDMessage extends EEP {
     protected boolean validateData(byte[] bytes) {
         return true;
     }
-
 }

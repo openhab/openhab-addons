@@ -436,7 +436,6 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         for (EchoHandler child : echoHandlers) {
             child.updateNotifications(timeStamp, timeStampNow, pushPayload, notifications);
         }
-
     }
 
     private void refreshData() {
@@ -699,7 +698,6 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         } catch (HttpException | JsonSyntaxException | IOException | URISyntaxException | ConnectionException e) {
             logger.warn("get flash briefing profiles fails", e);
         }
-
     }
 
     @Override

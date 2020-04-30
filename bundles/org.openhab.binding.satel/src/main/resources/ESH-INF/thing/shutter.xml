@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="satel" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="satel"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="shutter">
 
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="ethm-1" />
-			<bridge-type-ref id="int-rs" />
+			<bridge-type-ref id="ethm-1"/>
+			<bridge-type-ref id="int-rs"/>
 		</supported-bridge-type-refs>
 
 		<label>Roller Shutter</label>
 		<description>A roller shutter connected to two subsequent outputs.</description>
 
 		<channels>
-			<channel typeId="shutter_state" id="shutter_state" />
+			<channel typeId="shutter_state" id="shutter_state"/>
 		</channels>
 
 		<config-description>

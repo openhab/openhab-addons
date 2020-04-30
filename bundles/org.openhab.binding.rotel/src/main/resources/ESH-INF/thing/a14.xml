@@ -10,21 +10,21 @@
 		<description>Connection to the Rotel A14 integrated amplifier</description>
 
 		<channels>
-			<channel id="power" typeId="system.power" />
-			<channel id="source" typeId="source" />
-			<channel id="volume" typeId="system.volume" />
-			<channel id="mute" typeId="system.mute" />
-			<channel id="bass" typeId="bass" />
-			<channel id="treble" typeId="treble" />
-			<channel id="frequency" typeId="frequency" />
-			<channel id="brightness" typeId="brightness" />
+			<channel id="power" typeId="system.power"/>
+			<channel id="source" typeId="source"/>
+			<channel id="volume" typeId="system.volume"/>
+			<channel id="mute" typeId="system.mute"/>
+			<channel id="bass" typeId="bass"/>
+			<channel id="treble" typeId="treble"/>
+			<channel id="frequency" typeId="frequency"/>
+			<channel id="brightness" typeId="brightness"/>
 		</channels>
 
 		<properties>
 			<property name="protocol">ASCII_V2</property>
 		</properties>
 
-		<config-description-ref uri="thing-type:rotel:serialandip" />
+		<config-description-ref uri="thing-type:rotel:serialandip"/>
 	</thing-type>
 
 </thing:thing-descriptions>

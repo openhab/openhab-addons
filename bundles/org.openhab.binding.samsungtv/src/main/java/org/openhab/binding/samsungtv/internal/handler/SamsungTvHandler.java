@@ -19,10 +19,10 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryListener;
@@ -39,6 +39,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.io.net.http.WebSocketFactory;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
@@ -71,10 +72,12 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
 
     private final Logger logger = LoggerFactory.getLogger(SamsungTvHandler.class);
 
-    private UpnpIOService upnpIOService;
-    private DiscoveryServiceRegistry discoveryServiceRegistry;
-    private UpnpService upnpService;
-    private WebSocketFactory webSocketFactory;
+    private final UpnpIOService upnpIOService;
+    private final DiscoveryServiceRegistry discoveryServiceRegistry;
+    private final UpnpService upnpService;
+    private final WebSocketFactory webSocketFactory;
+
+    private SamsungTvConfiguration configuration;
 
     private @Nullable ThingUID upnpThingUID = null;
 
@@ -87,6 +90,8 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
     /* Store if art mode is supported to be able to skip switching power state to ON during initialization */
     boolean artModeIsSupported = false;
 
+    private @Nullable ScheduledFuture<?> pollingJob;
+
     public SamsungTvHandler(Thing thing, UpnpIOService upnpIOService, DiscoveryServiceRegistry discoveryServiceRegistry,
             UpnpService upnpService, WebSocketFactory webSocketFactory) {
         super(thing);
@@ -97,6 +102,7 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
         this.upnpService = upnpService;
         this.discoveryServiceRegistry = discoveryServiceRegistry;
         this.webSocketFactory = webSocketFactory;
+        this.configuration = getConfigAs(SamsungTvConfiguration.class);
     }
 
     @Override
@@ -148,14 +154,27 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
 
         logger.debug("Initializing Samsung TV handler for uid '{}'", getThing().getUID());
 
+        configuration = getConfigAs(SamsungTvConfiguration.class);
+
         discoveryServiceRegistry.addDiscoveryListener(this);
 
         checkAndCreateServices();
+
+        logger.debug("Start refresh task, interval={}", configuration.refreshInterval);
+        pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, configuration.refreshInterval,
+                TimeUnit.MILLISECONDS);
     }
 
     @Override
     public void dispose() {
         logger.debug("Disposing SamsungTvHandler");
+
+        if (pollingJob != null) {
+            if (!pollingJob.isCancelled()) {
+                pollingJob.cancel(true);
+            }
+            pollingJob = null;
+        }
 
         discoveryServiceRegistry.removeDiscoveryListener(this);
         shutdown();
@@ -187,6 +206,21 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
         updateState(SOURCE_APP, new StringType(""));
     }
 
+    private void poll() {
+        for (SamsungTvService service : services) {
+            for (String channel : service.getSupportedChannelNames()) {
+                if (isLinked(channel)) {
+                    // Avoid redundant REFRESH commands when 2 channels are linked to the same UPnP action request
+                    if ((channel.equals(SOURCE_ID) && isLinked(SOURCE_NAME))
+                            || (channel.equals(CHANNEL_NAME) && isLinked(PROGRAM_TITLE))) {
+                        continue;
+                    }
+                    service.handleCommand(channel, RefreshType.REFRESH);
+                }
+            }
+        }
+    }
+
     @Override
     public synchronized void valueReceived(String variable, State value) {
         logger.debug("Received value '{}':'{}' for thing '{}'", variable, value, this.getThing().getUID());
@@ -200,7 +234,7 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
     }
 
     @Override
-    public void reportError(@NonNull ThingStatusDetail statusDetail, @Nullable String message, @Nullable Throwable e) {
+    public void reportError(ThingStatusDetail statusDetail, @Nullable String message, @Nullable Throwable e) {
         logger.debug("Error was reported: {}", message, e);
         updateStatus(ThingStatus.OFFLINE, statusDetail, message);
     }
@@ -221,7 +255,6 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
     }
 
     private synchronized void createService(RemoteDevice device) {
-        SamsungTvConfiguration configuration = getConfigAs(SamsungTvConfiguration.class);
         if (configuration.hostName != null
                 && configuration.hostName.equals(device.getIdentity().getDescriptorURL().getHost())) {
             String modelName = device.getDetails().getModelDetails().getModelName();
@@ -232,7 +265,7 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
 
             if (existingService == null || !existingService.isUpnp()) {
                 SamsungTvService newService = ServiceFactory.createService(type, upnpIOService, udn,
-                        configuration.refreshInterval, configuration.hostName, configuration.port);
+                        configuration.hostName, configuration.port);
 
                 if (newService != null) {
                     if (existingService != null) {
@@ -272,7 +305,6 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
             RemoteControllerService service = (RemoteControllerService) findServiceInstance(
                     RemoteControllerService.SERVICE_NAME);
             if (service == null) {
-                SamsungTvConfiguration configuration = getConfigAs(SamsungTvConfiguration.class);
                 service = RemoteControllerService.createNonUpnpService(configuration.hostName, configuration.port);
                 startService(service);
             } else {
@@ -300,8 +332,6 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
 
     @Override
     public void thingDiscovered(DiscoveryService source, DiscoveryResult result) {
-        SamsungTvConfiguration configuration = getConfigAs(SamsungTvConfiguration.class);
-
         if (configuration.hostName != null
                 && configuration.hostName.equals(result.getProperties().get(SamsungTvConfiguration.HOST_NAME))) {
             logger.debug("thingDiscovered: {}, {}", result.getProperties().get(SamsungTvConfiguration.HOST_NAME),
@@ -311,14 +341,14 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
             if (StringUtils.isEmpty(configuration.macAddress)) {
                 String macAddress = WakeOnLanUtility.getMACAddress(configuration.hostName);
                 if (macAddress != null) {
-                    getConfig().put(SamsungTvConfiguration.MAC_ADDRESS, macAddress);
+                    putConfig(SamsungTvConfiguration.MAC_ADDRESS, macAddress);
                     logger.debug("thingDiscovered, macAddress: {}", macAddress);
                 }
             }
             if (SamsungTvConfiguration.PROTOCOL_NONE.equals(configuration.protocol)) {
                 Map<String, Object> properties = RemoteControllerService.discover(configuration.hostName);
                 for (Map.Entry<String, Object> property : properties.entrySet()) {
-                    getConfig().put(property.getKey(), property.getValue());
+                    putConfig(property.getKey(), property.getValue());
                     logger.debug("thingDiscovered, {}: {}", property.getKey(), property.getValue());
                 }
             }
@@ -356,8 +386,6 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
      * @param command Command to resend
      */
     private void sendWOLandResendCommand(String channel, Command command) {
-        SamsungTvConfiguration configuration = getConfigAs(SamsungTvConfiguration.class);
-
         if (configuration.macAddress == null || configuration.macAddress.isEmpty()) {
             logger.warn("Cannot send WOL packet to {} MAC address unknown", configuration.hostName);
             return;
@@ -399,7 +427,6 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
                         logger.info("Service NOT found after {} attempts", count);
                     }
                 }
-
             }, 1000, TimeUnit.MILLISECONDS);
         }
     }
@@ -407,6 +434,7 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
     @Override
     public void putConfig(@Nullable String key, @Nullable Object value) {
         getConfig().put(key, value);
+        configuration = getConfigAs(SamsungTvConfiguration.class);
     }
 
     @Override

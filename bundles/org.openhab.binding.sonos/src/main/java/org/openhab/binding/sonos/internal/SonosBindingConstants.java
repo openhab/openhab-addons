@@ -116,5 +116,4 @@ public class SonosBindingConstants {
     public static final String IDENTIFICATION = "identification";
     public static final String MAC_ADDRESS = "macAddress";
     public static final String IP_ADDRESS = "ipAddress";
-
 }

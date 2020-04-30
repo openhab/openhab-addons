@@ -235,7 +235,7 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
             TadoZoneStateAdapter state = new TadoZoneStateAdapter(zoneState, getTemperatureUnit());
             updateStateIfNotNull(TadoBindingConstants.CHANNEL_ZONE_CURRENT_TEMPERATURE, state.getInsideTemperature());
             updateStateIfNotNull(TadoBindingConstants.CHANNEL_ZONE_HUMIDITY, state.getHumidity());
-            
+
             updateStateIfNotNull(TadoBindingConstants.CHANNEL_ZONE_HEATING_POWER, state.getHeatingPower());
             updateStateIfNotNull(TadoBindingConstants.CHANNEL_ZONE_AC_POWER, state.getAcPower());
 
@@ -257,7 +257,7 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Could not connect to server due to " + e.getMessage());
         }
-        
+
         TadoHomeHandler home = getHomeHandler();
         if (home != null) {
             updateState(TadoBindingConstants.CHANNEL_ZONE_BATTERY_LOW_ALARM, home.getBatteryLowAlarm(getZoneId()));
@@ -307,5 +307,4 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
             updateState(channelID, state);
         }
     }
-
 }

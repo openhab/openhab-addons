@@ -245,5 +245,4 @@ public class BluetoothDeviceSnapshot extends BluetoothDevice {
             this.softwareRevision = softwareRevision;
         }
     }
-
 }

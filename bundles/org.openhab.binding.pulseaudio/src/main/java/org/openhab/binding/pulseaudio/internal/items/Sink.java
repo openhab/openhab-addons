@@ -58,5 +58,4 @@ public class Sink extends AbstractAudioDeviceConfig {
             this.combinedSinks.add(sink);
         }
     }
-
 }

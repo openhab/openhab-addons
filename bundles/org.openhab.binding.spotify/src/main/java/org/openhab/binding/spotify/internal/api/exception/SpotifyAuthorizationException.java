@@ -39,5 +39,4 @@ public class SpotifyAuthorizationException extends RuntimeException {
     public SpotifyAuthorizationException(String message, Throwable exception) {
         super(message, exception);
     }
-
 }

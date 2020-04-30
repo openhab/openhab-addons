@@ -231,7 +231,6 @@ public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
                 } else {
                     throw new TimeoutException("No response from BlueGiga controller");
                 }
-
             }
 
             @Override

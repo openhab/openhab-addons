@@ -52,5 +52,4 @@ public class UserAccount {
     public String getUserId() {
         return userId;
     }
-
 }

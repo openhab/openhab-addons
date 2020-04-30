@@ -8,7 +8,7 @@
 		<label>Smarty Meter</label>
 		<description>The Luxembourgian Smart Meter 'Smarty'</description>
 
-		<config-description-ref uri="thing-type:dsmr:smartybridgesettings" />
+		<config-description-ref uri="thing-type:dsmr:smartybridgesettings"/>
 	</bridge-type>
 
 </thing:thing-descriptions>

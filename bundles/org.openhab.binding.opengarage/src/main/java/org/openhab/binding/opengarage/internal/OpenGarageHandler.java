@@ -12,29 +12,27 @@
  */
 package org.openhab.binding.opengarage.internal;
 
+import java.io.IOException;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.MetricPrefix;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.QuantityType;
-import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.library.unit.SIUnits;
-import org.eclipse.smarthome.core.library.unit.MetricPrefix;
+import org.openhab.binding.opengarage.internal.api.ControllerVariables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.openhab.binding.opengarage.internal.OpenGarageWebTargets;
-import org.openhab.binding.opengarage.internal.api.ControllerVariables;
-import org.openhab.binding.opengarage.internal.OpenGarageConfiguration;
-
-import java.io.IOException;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 /**
  * The {@link OpenGarageHandler} is responsible for handling commands, which are
@@ -60,7 +58,7 @@ public class OpenGarageHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
             logger.warn("Received command {} for thing '{}' on channel {}", command, thing.getUID().getAsString(),
-                         channelUID.getId());
+                    channelUID.getId());
             switch (channelUID.getId()) {
                 case OpenGarageBindingConstants.CHANNEL_OG_STATUS:
                     if (command instanceof OnOffType) {
@@ -71,8 +69,8 @@ public class OpenGarageHandler extends BaseThingHandler {
                 default:
             }
 
-            logger.debug("Received command {} of wrong type for thing '{}' on channel {}", command, thing.getUID().getAsString(),
-                        channelUID.getId());
+            logger.debug("Received command {} of wrong type for thing '{}' on channel {}", command,
+                    thing.getUID().getAsString(), channelUID.getId());
         } catch (OpenGarageCommunicationException ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
         }
@@ -131,7 +129,8 @@ public class OpenGarageHandler extends BaseThingHandler {
         ControllerVariables controllerVariables = webTargets.getControllerVariables();
         updateStatus(ThingStatus.ONLINE);
         if (controllerVariables != null) {
-            updateState(OpenGarageBindingConstants.CHANNEL_OG_DISTANCE, new QuantityType<>(controllerVariables.dist, MetricPrefix.CENTI(SIUnits.METRE)));
+            updateState(OpenGarageBindingConstants.CHANNEL_OG_DISTANCE,
+                    new QuantityType<>(controllerVariables.dist, MetricPrefix.CENTI(SIUnits.METRE)));
             if (controllerVariables.door == 0) {
                 updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS, OnOffType.OFF);
             } else if (controllerVariables.door == 1) {
@@ -150,5 +149,4 @@ public class OpenGarageHandler extends BaseThingHandler {
     private void changeStatus(boolean status) throws OpenGarageCommunicationException {
         webTargets.setControllerVariables(status);
     }
-
 }

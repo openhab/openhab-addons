@@ -49,5 +49,4 @@ public class SOAPCallStateChanged extends SOAPDataField {
     public void setDirection(String direction) {
         this.direction = direction;
     }
-
 }

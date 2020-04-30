@@ -61,7 +61,7 @@ public abstract class AbstractCallbackServlet extends HttpServlet {
      * Constructor called at binding startup.
      *
      * @param discoveryService Discovery service for new trackers.
-     * @param trackerRegistry  Tracker handler registry
+     * @param trackerRegistry Tracker handler registry
      */
     protected AbstractCallbackServlet(TrackerDiscoveryService discoveryService, TrackerRegistry trackerRegistry) {
         this.discoveryService = discoveryService;
@@ -73,7 +73,7 @@ public abstract class AbstractCallbackServlet extends HttpServlet {
     /**
      * Process the HTTP requests from tracker applications
      *
-     * @param req  HTTP request
+     * @param req HTTP request
      * @param resp HTTP response
      */
     @Override

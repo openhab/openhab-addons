@@ -31,5 +31,4 @@ public class VelbusChannelNameRequestPacket extends VelbusPacket {
     protected byte[] getDataBytes() {
         return new byte[] { COMMAND_MODULE_NAME_REQUEST, ALL_CHANNELS };
     }
-
 }

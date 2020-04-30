@@ -296,5 +296,4 @@ class SCgetLimitation extends GetProductLimitation implements SlipBridgeCommunic
     public int getLimitation() {
         return limitationValue;
     }
-
 }

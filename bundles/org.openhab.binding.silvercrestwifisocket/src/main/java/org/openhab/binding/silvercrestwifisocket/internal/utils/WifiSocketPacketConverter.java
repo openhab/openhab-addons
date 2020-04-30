@@ -289,5 +289,4 @@ public class WifiSocketPacketConverter {
         }
         return builder.toString();
     }
-
 }
