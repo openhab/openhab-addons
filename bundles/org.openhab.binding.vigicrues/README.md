@@ -1,5 +1,7 @@
 # VigiCrues Binding
 
+This binding allows to get data regarding water flow and water height on major french rivers.
+These data are made public through OpenDataSoft website. 
 
 ## Supported Things
 
@@ -36,17 +38,16 @@ The thing has a few configuration parameters:
 | id        | Id of the station.                                                      |
 | refresh   | Refresh interval in minutes. Optional, the default value is 30 minutes. |
 
-https://voiprovider.wordpress.com/2019/01/02/pyvigicrues-un-module-python-pour-collecter-les-data-des-cours-deau-en-france/
 
 ## Channels
 
-The Météo Alerte information that are retrieved is available as these channels:
+The VigiCrues information that retrieved are made available with these channels:
 
-| Channel ID      | Item Type                 | Description                   |
-|-----------------|---------------------------|-------------------------------|
-| observationTime | DateTime                  | Date and time of measurement  |
-| flow            | Number:VolumetricFlowRate | Volume of water per time unit |
-| height          | Number:Length             | Water height of the river     |
+| Channel ID       | Item Type                 | Description                   |
+|------------------|---------------------------|-------------------------------|
+| observation-time | DateTime                  | Date and time of measurement  |
+| flow             | Number:VolumetricFlowRate | Volume of water per time unit |
+| height           | Number:Length             | Water height of the river     |
 
 
 ## Full Example
@@ -54,6 +55,32 @@ The Météo Alerte information that are retrieved is available as these channels
 vigicrues.things:
 
 ```
-Thing vigicrues:station:poissy @ "Station Poissy" [id="H300000201", refresh=30]
+Thing vigicrues:station:poissy "Station Poissy" @ "VigiCrues" [id="H300000201", refresh=30]
+Thing vigicrues:station:vernon "Station Vernon" @ "VigiCrues" [id="H320000104", refresh=30]
 ```
 
+vigicrues.items:
+
+```
+Group gVigiCrues "VigiCrues" <flow>
+    Number:Length VC_hauteur "Hauteur Eau Poissy [%.2f %unit%]"  <none> (gVigiCrues) {channel="vigicrues:station:poissy:height"}
+    Number:VolumetricFlowRate VC_debit "Débit Eau Vernon [%.2f %unit%]" <flow> (gVigiCrues) {channel="vigicrues:station:vernon:flow"}
+    DateTime VC_ObservationPTS "Timestamp Poissy [%1$tH:%1$tM]" <time> (gVigiCrues) {channel="vigicrues:station:poissy:observation-time" }
+    DateTime VC_ObservationVTS "Timestamp Vernon [%1$tH:%1$tM]" <time> (gVigiCrues) {channel="vigicrues:station:vernon:observation-time" }
+```
+
+vigicrues.sitemap:
+
+```
+sitemap vigicrues label="VigiCrues" {
+    Frame {
+        Default item=VC_hauteur
+        Default item=VC_debit
+    }
+
+    Frame {
+        Switch item=VC_ObservationPTS mappings=[REFRESH='MAJ !']
+        Default item=VC_ObservationVTS
+    }
+}
+```

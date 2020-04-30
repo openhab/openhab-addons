@@ -126,6 +126,7 @@ public class VigiCruesHandler extends BaseThingHandler {
                 });
             } catch (IOException e) {
                 logger.warn("Error opening connection to VigiCrues webservice : {}", e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
         } catch (MalformedURLException e) {
             logger.error("Malformed URL in VigiCrues request : {}", queryUrl);
