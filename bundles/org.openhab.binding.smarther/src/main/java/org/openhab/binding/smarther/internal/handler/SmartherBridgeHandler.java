@@ -283,19 +283,15 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
         } catch (SmartherAuthorizationException e) {
             logger.warn("Bridge[{}] Authorization error during polling: {}", thing.getUID(), e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-            stopPoll(true);
             return false;
         } catch (SmartherGatewayException e) {
             logger.warn("Bridge[{}] API Gateway error during polling: {}", thing.getUID(), e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            stopPoll(true);
             return false;
         } catch (RuntimeException e) {
-            // This only should catch RuntimeException as the apiCall don't throw other exceptions.
             logger.warn("Bridge[{}] Unexpected error during polling, please report if this keeps occurring: ",
                     thing.getUID(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
-            stopPoll(true);
             return false;
         }
     }

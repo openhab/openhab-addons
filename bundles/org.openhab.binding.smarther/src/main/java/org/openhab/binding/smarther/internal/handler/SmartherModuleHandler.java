@@ -451,7 +451,6 @@ public class SmartherModuleHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             return false;
         } catch (RuntimeException e) {
-            // This only should catch RuntimeException as the apiCall don't throw other exceptions.
             logger.warn("Module[{}] Unexpected error during polling, please report if this keeps occurring: ",
                     thing.getUID(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
