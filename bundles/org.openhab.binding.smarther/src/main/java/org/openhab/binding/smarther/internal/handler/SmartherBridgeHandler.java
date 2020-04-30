@@ -289,6 +289,7 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             return false;
         } catch (RuntimeException e) {
+            // All other exceptions apart from Authorization and Gateway issues
             logger.warn("Bridge[{}] Unexpected error during polling, please report if this keeps occurring: ",
                     thing.getUID(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
