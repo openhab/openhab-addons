@@ -91,7 +91,7 @@ public class NeoHubDiscoveryService extends AbstractDiscoveryService {
 
     private void discoverDevices() {
         NeoHubInfoResponse infoResponse;
-        if ((infoResponse = hub.fromNeoHubFetchPollingResponse()) != null) {
+        if ((infoResponse = hub.fromNeoHubReadInfoResponse()) != null) {
             List<DeviceInfo> devices;
             if ((devices = infoResponse.getDevices()) != null) {
                 for (DeviceInfo device : devices) {
