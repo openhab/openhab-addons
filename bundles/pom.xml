@@ -42,6 +42,7 @@
     <module>org.openhab.binding.adorne</module>
     <module>org.openhab.binding.airquality</module>
     <module>org.openhab.binding.airvisualnode</module>
+    <module>org.openhab.binding.alarmdecoder</module>
     <module>org.openhab.binding.allplay</module>
     <module>org.openhab.binding.amazondashbutton</module>
     <module>org.openhab.binding.amazonechocontrol</module>
