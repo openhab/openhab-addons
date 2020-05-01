@@ -1,3 +1,0 @@
-OK
-OK
-VAR ups1 ups.status "OL"

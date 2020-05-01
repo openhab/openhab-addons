@@ -14,7 +14,8 @@ package org.openhab.voice.googletts.internal;
 
 import java.util.Locale;
 
-import org.eclipse.smarthome.core.voice.Voice;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.voice.Voice;
 import org.openhab.voice.googletts.internal.protocol.SsmlVoiceGender;
 
 /**
@@ -22,6 +23,7 @@ import org.openhab.voice.googletts.internal.protocol.SsmlVoiceGender;
  *
  * @author Gabor Bicskei - Initial contribution
  */
+@NonNullByDefault
 public class GoogleTTSVoice implements Voice {
 
     /**

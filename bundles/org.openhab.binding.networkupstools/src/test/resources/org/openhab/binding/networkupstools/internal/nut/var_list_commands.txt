@@ -1,3 +1,0 @@
-USERNAME test
-PASSWORD pwd
-LIST VAR ups1

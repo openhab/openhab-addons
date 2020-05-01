@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<YAMAHA_AV rsp="GET" RC="0">
-    <System>
-        <Party_Mode>
-            <Mode>On</Mode>
-        </Party_Mode>
-    </System>
-</YAMAHA_AV>

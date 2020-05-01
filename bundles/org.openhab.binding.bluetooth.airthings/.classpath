@@ -6,7 +6,11 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+<<<<<<< HEAD:bundles/org.openhab.binding.bluetooth.airthings/.classpath
 	<classpathentry excluding="**" kind="src" output="target/classes" path="src/main/resources">
+=======
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11">
+>>>>>>> fdaf61a557629afe95d43120e5fe9fc3cc7bd705:itests/org.openhab.persistence.mapdb.tests/.classpath
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>

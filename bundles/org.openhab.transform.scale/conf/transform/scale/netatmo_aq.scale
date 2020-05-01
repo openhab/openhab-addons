@@ -1,6 +1,0 @@
-[0..899]=Excellente qualite d'air
-[900..1099]=Correcte
-[1100..1599]=Air intérieur contamine, aeration recommandee
-[1600..10000]=Air intérieur fortement contamine
-[..]=inconnu ⁉
-format=%label% (%value%) !

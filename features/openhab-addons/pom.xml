@@ -1,14 +1,24 @@
+<<<<<<< HEAD
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+=======
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+>>>>>>> fdaf61a557629afe95d43120e5fe9fc3cc7bd705
 
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.openhab.addons.features.karaf</groupId>
     <artifactId>org.openhab.addons.reactor.features.karaf</artifactId>
+<<<<<<< HEAD
     <version>2.5.4-SNAPSHOT</version>
+=======
+    <version>3.0.0-SNAPSHOT</version>
+>>>>>>> fdaf61a557629afe95d43120e5fe9fc3cc7bd705
   </parent>
 
-  <artifactId>org.openhab.addons.features.karaf.openhab-addons</artifactId>
+  <artifactId>org.openhab.addons.features.karaf.openhab-addons3</artifactId>
   <packaging>feature</packaging>
 
   <name>openHAB Add-ons :: Features :: Karaf :: Add-ons</name>
@@ -17,7 +27,11 @@
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
+<<<<<<< HEAD
       <artifactId>openhab-addons-external</artifactId>
+=======
+      <artifactId>org.openhab.addons.features.karaf.openhab-addons-external3</artifactId>
+>>>>>>> fdaf61a557629afe95d43120e5fe9fc3cc7bd705
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
@@ -44,6 +58,7 @@
                   <header file="src/main/resources/header.xml" filtering="no"/>
                   <fileset dir="${basedirRoot}/bundles">
                     <include name="*/src/main/feature/feature.xml"/>
+<<<<<<< HEAD
                     <exclude name="**/org.openhab.binding.bluetooth*/**/feature.xml"/>
                     <exclude name="**/org.openhab.binding.mqtt*/**/feature.xml"/>
                     <!-- temporarily disabled due to malfunction -->
@@ -52,6 +67,12 @@
                   <filterchain>
                     <linecontainsRegExp>
                       <regexp pattern="(feature&gt;)|(feature\s)|(bundle&gt;)|(bundle\s)|(configfile&gt;)|(configfile\s)"/>
+=======
+                  </fileset>
+                  <filterchain>
+                    <linecontainsRegExp>
+                      <regexp pattern="(feature&gt;)|(feature\s)|(bundle&gt;)|(bundle\s)"/>
+>>>>>>> fdaf61a557629afe95d43120e5fe9fc3cc7bd705
                     </linecontainsRegExp>
                   </filterchain>
                   <footer file="src/main/resources/footer.xml" filtering="no"/>
@@ -69,9 +90,6 @@
             <id>karaf-feature-verification</id>
             <configuration>
               <features>
-                <feature>openhab-binding-bluetooth</feature>
-                <feature>openhab-binding-mqtt</feature>
-                <feature>openhab-misc-ruleengine</feature>
               </features>
             </configuration>
           </execution>

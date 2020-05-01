@@ -11,6 +11,7 @@ https://www.eclipse.org/legal/epl-2.0/.
 == Source Code
 
 https://github.com/openhab/openhab-addons
+<<<<<<< HEAD
 
 == Third-party Content
 
@@ -48,3 +49,5 @@ threetenbp
 * License: BSD License
 * Project: https://www.threeten.org/threetenbp
 * Source:  https://github.com/ThreeTen/threetenbp
+=======
+>>>>>>> fdaf61a557629afe95d43120e5fe9fc3cc7bd705

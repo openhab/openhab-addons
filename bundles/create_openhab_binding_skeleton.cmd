@@ -10,8 +10,12 @@ IF %ARGC% NEQ 3 (
 	exit /B 1
 )
 
+<<<<<<< HEAD
 SET OpenhabCoreVersion="2.5.0"
 SET OpenhabVersion="2.5.4-SNAPSHOT"
+=======
+SET OpenhabVersion="3.0.0-SNAPSHOT"
+>>>>>>> fdaf61a557629afe95d43120e5fe9fc3cc7bd705
 
 SET BindingIdInCamelCase=%~1
 SET BindingIdInLowerCase=%BindingIdInCamelCase%

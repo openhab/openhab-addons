@@ -12,14 +12,10 @@
  */
 package org.openhab.voice.googletts.internal;
 
-import static java.util.Collections.*;
-
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -29,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -36,9 +33,16 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.io.FilenameUtils;
-import org.eclipse.smarthome.core.audio.AudioFormat;
-import org.eclipse.smarthome.io.net.http.HttpRequestBuilder;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.MimeTypes;
+import org.openhab.core.audio.AudioFormat;
+import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
+import org.openhab.core.auth.client.oauth2.OAuthClientService;
+import org.openhab.core.auth.client.oauth2.OAuthException;
+import org.openhab.core.auth.client.oauth2.OAuthFactory;
+import org.openhab.core.auth.client.oauth2.OAuthResponseException;
+import org.openhab.core.io.net.http.HttpRequestBuilder;
 import org.openhab.voice.googletts.internal.protocol.AudioConfig;
 import org.openhab.voice.googletts.internal.protocol.AudioEncoding;
 import org.openhab.voice.googletts.internal.protocol.ListVoicesResponse;
@@ -48,12 +52,11 @@ import org.openhab.voice.googletts.internal.protocol.SynthesizeSpeechRequest;
 import org.openhab.voice.googletts.internal.protocol.SynthesizeSpeechResponse;
 import org.openhab.voice.googletts.internal.protocol.Voice;
 import org.openhab.voice.googletts.internal.protocol.VoiceSelectionParams;
+import org.osgi.service.cm.Configuration;
+import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.api.gax.core.FixedCredentialsProvider;
-import com.google.auth.Credentials;
-import com.google.auth.oauth2.GoogleCredentials;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -63,21 +66,16 @@ import com.google.gson.GsonBuilder;
  * @author Gabor Bicskei - Initial contribution and API
  */
 class GoogleCloudAPI {
-    /**
-     * Default encoding
-     */
-    private static final String UTF_8 = "UTF-8";
 
-    /**
-     * JSON content type
-     */
-    private static final String APPLICATION_JSON = "application/json";
+    private static final char EXTENSION_SEPARATOR = '.';
+    private static final char UNIX_SEPARATOR = '/';
+    private static final char WINDOWS_SEPARATOR = '\\';
 
-    /**
-     * Authorization header
-     */
-    private static final String AUTH_HEADER_NAME = "Authorization";
+    private static final String BEARER = "Bearer ";
 
+    private static final String GCP_AUTH_URI = "https://accounts.google.com/o/oauth2/auth";
+    private static final String GCP_TOKEN_URI = "https://accounts.google.com/o/oauth2/token";
+    private static final String GCP_REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob";
     /**
      * Google Cloud Platform authorization scope
      */
@@ -111,23 +109,27 @@ class GoogleCloudAPI {
     /**
      * Configuration
      */
-    private GoogleTTSConfig config;
+    private @Nullable GoogleTTSConfig config;
 
     /**
      * Status flag
      */
     private boolean initialized;
 
-    private Credentials credentials;
-
     private final Gson gson = new GsonBuilder().create();
+    private final ConfigurationAdmin configAdmin;
+    private final OAuthFactory oAuthFactory;
+
+    private @Nullable OAuthClientService oAuthService;
 
     /**
      * Constructor.
      *
      * @param cacheFolder Service cache folder
      */
-    GoogleCloudAPI(File cacheFolder) {
+    GoogleCloudAPI(ConfigurationAdmin configAdmin, OAuthFactory oAuthFactory, File cacheFolder) {
+        this.configAdmin = configAdmin;
+        this.oAuthFactory = oAuthFactory;
         this.cacheFolder = cacheFolder;
     }
 
@@ -138,24 +140,32 @@ class GoogleCloudAPI {
      */
     void setConfig(GoogleTTSConfig config) {
         this.config = config;
-        String serviceAccountKey = config.getServiceAccountKey();
-        if (serviceAccountKey != null && !serviceAccountKey.isEmpty()) {
+
+        String clientId = config.clientId;
+        String clientSecret = config.clientSecret;
+        if (clientId != null && !clientId.isEmpty() && clientSecret != null && !clientSecret.isEmpty()) {
             try {
-                credentials = createCredentials(serviceAccountKey);
+                final OAuthClientService oAuthService = oAuthFactory.createOAuthClientService(
+                        GoogleTTSService.SERVICE_PID, GCP_TOKEN_URI, GCP_AUTH_URI, clientId, clientSecret, GCP_SCOPE,
+                        false);
+                this.oAuthService = oAuthService;
+                getAccessToken();
                 initialized = true;
                 initVoices();
-            } catch (IOException e) {
-                logger.error("Error initializing the service", e);
+            } catch (AuthenticationException | IOException ex) {
+                logger.warn("Error initializing Google Cloud TTS service: {}", ex.getMessage());
+                oAuthService = null;
                 initialized = false;
+                voices.clear();
             }
         } else {
-            credentials = null;
+            oAuthService = null;
             initialized = false;
             voices.clear();
         }
 
         // maintain cache
-        if (config.getPurgeCache() != null && config.getPurgeCache()) {
+        if (config.purgeCache) {
             File[] files = cacheFolder.listFiles();
             if (files != null && files.length > 0) {
                 Arrays.stream(files).forEach(File::delete);
@@ -164,17 +174,53 @@ class GoogleCloudAPI {
         }
     }
 
-    private Credentials createCredentials(String serviceAccountKey) throws IOException {
-        try (ByteArrayInputStream bis = new ByteArrayInputStream(serviceAccountKey.getBytes())) {
-            GoogleCredentials credential = GoogleCredentials.fromStream(bis)
-                    .createScoped(Collections.singleton(GCP_SCOPE));
-            return FixedCredentialsProvider.create(credential).getCredentials();
+    /**
+     * Fetches the OAuth2 tokens from Google Cloud Platform if the auth-code is set in the configuration. If successful
+     * the auth-code will be removed from the configuration.
+     */
+    private void getAccessToken() throws AuthenticationException, IOException {
+        String authcode = config.authcode;
+        if (authcode != null && !authcode.isEmpty()) {
+            logger.debug("Trying to get access and refresh tokens.");
+            try {
+                oAuthService.getAccessTokenResponseByAuthorizationCode(authcode, GCP_REDIRECT_URI);
+            } catch (OAuthException | OAuthResponseException ex) {
+                logger.debug("Error fetching access token: {}", ex.getMessage(), ex);
+                throw new AuthenticationException(
+                        "Error fetching access token. Invalid authcode? Please generate a new one.");
+            }
+
+            config.authcode = null;
+
+            try {
+                Configuration serviceConfig = configAdmin.getConfiguration(GoogleTTSService.SERVICE_PID);
+                Dictionary<String, Object> configProperties = serviceConfig.getProperties();
+                if (configProperties != null) {
+                    configProperties.put(GoogleTTSService.PARAM_AUTHCODE, "");
+                    serviceConfig.update(configProperties);
+                }
+            } catch (IOException e) {
+                // should not happen
+                logger.warn(
+                        "Failed to update configuration for Google Cloud TTS service. Please clear the 'authcode' configuration parameter manualy.");
+            }
         }
     }
 
-    private String getAuthorization() throws IOException {
-        Map<String, List<String>> metadata = credentials.getRequestMetadata();
-        return metadata.get(AUTH_HEADER_NAME).get(0);
+    private String getAuthorizationHeader() throws AuthenticationException, IOException {
+        final AccessTokenResponse accessTokenResponse;
+        try {
+            accessTokenResponse = oAuthService.getAccessTokenResponse();
+        } catch (OAuthException | OAuthResponseException ex) {
+            logger.debug("Error fetching access token: {}", ex.getMessage(), ex);
+            throw new AuthenticationException(
+                    "Error fetching access token. Invalid authcode? Please generate a new one.");
+        }
+        if (accessTokenResponse == null || accessTokenResponse.getAccessToken() == null
+                || accessTokenResponse.getAccessToken().isEmpty()) {
+            throw new AuthenticationException("No access token. Is this thing authorized?");
+        }
+        return BEARER + accessTokenResponse.getAccessToken();
     }
 
     /**
@@ -198,7 +244,7 @@ class GoogleCloudAPI {
      * @return Set of locales
      */
     Set<Locale> getSupportedLocales() {
-        return unmodifiableSet(voices.keySet());
+        return voices.keySet();
     }
 
     /**
@@ -209,16 +255,15 @@ class GoogleCloudAPI {
      */
     Set<GoogleTTSVoice> getVoicesForLocale(Locale locale) {
         Set<GoogleTTSVoice> localeVoices = voices.get(locale);
-        return localeVoices != null ? unmodifiableSet(localeVoices) : emptySet();
+        return localeVoices != null ? localeVoices : Collections.emptySet();
     }
 
     /**
      * Google API call to load locales and voices.
      */
-    private void initVoices() throws IOException {
-        if (credentials != null) {
+    private void initVoices() throws AuthenticationException, IOException {
+        if (oAuthService != null) {
             voices.clear();
-
             for (GoogleTTSVoice voice : listVoices()) {
                 Locale locale = voice.getLocale();
                 Set<GoogleTTSVoice> localeVoices;
@@ -235,15 +280,15 @@ class GoogleCloudAPI {
         }
     }
 
-    @SuppressWarnings({ "unused", "null" })
-    private List<GoogleTTSVoice> listVoices() throws IOException {
-        HttpRequestBuilder builder = HttpRequestBuilder.getFrom(LIST_VOICES_URL).withHeader(AUTH_HEADER_NAME,
-                getAuthorization());
+    @SuppressWarnings("null")
+    private List<GoogleTTSVoice> listVoices() throws AuthenticationException, IOException {
+        HttpRequestBuilder builder = HttpRequestBuilder.getFrom(LIST_VOICES_URL)
+                .withHeader(HttpHeader.AUTHORIZATION.name(), getAuthorizationHeader());
 
         ListVoicesResponse listVoicesResponse = gson.fromJson(builder.getContentAsString(), ListVoicesResponse.class);
 
         if (listVoicesResponse == null || listVoicesResponse.getVoices() == null) {
-            return emptyList();
+            return Collections.emptyList();
         }
 
         List<GoogleTTSVoice> result = new ArrayList<>();
@@ -291,6 +336,12 @@ class GoogleCloudAPI {
                 saveAudioAndTextToFile(text, audioFileInCache, audio, voice.getTechnicalName());
             }
             return audio;
+        } catch (AuthenticationException ex) {
+            logger.warn("Error initializing Google Cloud TTS service: {}", ex.getMessage());
+            oAuthService = null;
+            initialized = false;
+            voices.clear();
+            return null;
         } catch (FileNotFoundException ex) {
             logger.warn("Could not write {} to cache", audioFileInCache, ex);
             return null;
@@ -318,7 +369,7 @@ class GoogleCloudAPI {
 
         // write text to file for transparency too
         // this allows to know which contents is in which audio file
-        String textFileName = FilenameUtils.removeExtension(cacheFile.getName()) + ".txt";
+        String textFileName = removeExtension(cacheFile.getName()) + ".txt";
         logger.debug("Caching text file {}", textFileName);
         try (FileOutputStream textFileOutputStream = new FileOutputStream(new File(cacheFolder, textFileName))) {
             // @formatter:off
@@ -331,8 +382,20 @@ class GoogleCloudAPI {
                     .append(text)
                     .append(System.lineSeparator());
             // @formatter:on
-            textFileOutputStream.write(sb.toString().getBytes(UTF_8));
+            textFileOutputStream.write(sb.toString().getBytes(StandardCharsets.UTF_8));
         }
+    }
+
+    /**
+     * Removes the extension of a file name.
+     *
+     * @param fileName the file name to remove the extension of
+     * @return the filename without the extension
+     */
+    private String removeExtension(String fileName) {
+        int extensionPos = fileName.lastIndexOf(EXTENSION_SEPARATOR);
+        int lastSeparator = Math.max(fileName.lastIndexOf(UNIX_SEPARATOR), fileName.lastIndexOf(WINDOWS_SEPARATOR));
+        return lastSeparator > extensionPos ? fileName : fileName.substring(0, extensionPos);
     }
 
     /**
@@ -343,10 +406,11 @@ class GoogleCloudAPI {
      * @param audioFormat Audio encoding format
      * @return Audio input stream or {@code null} when encoding exceptions occur
      */
-    @SuppressWarnings({ "unused", "null" })
-    private byte[] synthesizeSpeechByGoogle(String text, GoogleTTSVoice voice, String audioFormat) throws IOException {
-        AudioConfig audioConfig = new AudioConfig(AudioEncoding.valueOf(audioFormat), config.getPitch(),
-                config.getSpeakingRate(), config.getVolumeGainDb());
+    @SuppressWarnings({ "null", "unused" })
+    private byte[] synthesizeSpeechByGoogle(String text, GoogleTTSVoice voice, String audioFormat)
+            throws AuthenticationException, IOException {
+        AudioConfig audioConfig = new AudioConfig(AudioEncoding.valueOf(audioFormat), config.pitch, config.speakingRate,
+                config.volumeGainDb);
         SynthesisInput synthesisInput = new SynthesisInput(text);
         VoiceSelectionParams voiceSelectionParams = new VoiceSelectionParams(voice.getLocale().getLanguage(),
                 voice.getLabel(), SsmlVoiceGender.valueOf(voice.getSsmlGender()));
@@ -355,7 +419,8 @@ class GoogleCloudAPI {
                 voiceSelectionParams);
 
         HttpRequestBuilder builder = HttpRequestBuilder.postTo(SYTNHESIZE_SPEECH_URL)
-                .withHeader(AUTH_HEADER_NAME, getAuthorization()).withContent(gson.toJson(request), APPLICATION_JSON);
+                .withHeader(HttpHeader.AUTHORIZATION.name(), getAuthorizationHeader())
+                .withContent(gson.toJson(request), MimeTypes.Type.APPLICATION_JSON.name());
 
         SynthesizeSpeechResponse synthesizeSpeechResponse = gson.fromJson(builder.getContentAsString(),
                 SynthesizeSpeechResponse.class);
@@ -376,17 +441,11 @@ class GoogleCloudAPI {
      */
     private String getUniqueFilenameForText(String text, String voiceName) {
         try {
-            byte[] bytesOfMessage = (config.toConfigString() + text).getBytes(UTF_8);
             MessageDigest md = MessageDigest.getInstance("MD5");
-            byte[] md5Hash = md.digest(bytesOfMessage);
-            BigInteger bigInt = new BigInteger(1, md5Hash);
-            StringBuilder hashText = new StringBuilder(bigInt.toString(16));
-            // Now we need to zero pad it if you actually want the full 32 chars.
-            while (hashText.length() < 32) {
-                hashText.insert(0, "0");
-            }
-            return voiceName + "_" + hashText;
-        } catch (UnsupportedEncodingException | NoSuchAlgorithmException ex) {
+            byte[] bytesOfMessage = (config.toConfigString() + text).getBytes(StandardCharsets.UTF_8);
+            String fileNameHash = String.format("%032x", new BigInteger(1, md.digest(bytesOfMessage)));
+            return voiceName + "_" + fileNameHash;
+        } catch (NoSuchAlgorithmException ex) {
             // should not happen
             logger.error("Could not create MD5 hash for '{}'", text, ex);
             return null;
@@ -396,5 +455,4 @@ class GoogleCloudAPI {
     boolean isInitialized() {
         return initialized;
     }
-
 }
