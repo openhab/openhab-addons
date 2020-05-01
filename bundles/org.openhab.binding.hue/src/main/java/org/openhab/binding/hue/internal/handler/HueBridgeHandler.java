@@ -209,6 +209,8 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                     if (discovery != null) {
                         discovery.onSensorAdded(hueBridge, sensor);
                     }
+
+                    lastSensorStates.put(sensorId, sensor);
                 } else {
                     lastSensorStateCopy.remove(sensorId);
                     if (sensorStatusListener.onSensorStateChanged(hueBridge, sensor)) {
