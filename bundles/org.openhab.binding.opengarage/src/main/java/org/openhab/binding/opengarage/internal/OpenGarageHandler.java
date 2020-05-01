@@ -73,7 +73,7 @@ public class OpenGarageHandler extends BaseThingHandler {
                         } else if (command.equals(OnOffType.OFF) || command.equals(UpDownType.DOWN)) {
                             changeStatus(OpenGarageCommand.CLOSE.getValue());
                             return;
-                        } else if (command.equals(StopMoveType.STOP)) {
+                        } else if (command.equals(StopMoveType.STOP) || command.equals(StopMoveType.MOVE)) {
                             changeStatus(OpenGarageCommand.CLICK.getValue());
                             return;
                         } 
