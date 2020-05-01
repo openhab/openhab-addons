@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.satel.internal.command;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.satel.internal.event.EventDispatcher;
 import org.openhab.binding.satel.internal.protocol.SatelMessage;
 
@@ -20,6 +21,7 @@ import org.openhab.binding.satel.internal.protocol.SatelMessage;
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public interface SatelCommand {
 
     /**
@@ -36,11 +38,11 @@ public interface SatelCommand {
      *
      */
     public enum State {
-        NEW,
-        ENQUEUED,
-        SENT,
-        SUCCEEDED,
-        FAILED
+    NEW,
+    ENQUEUED,
+    SENT,
+    SUCCEEDED,
+    FAILED
     }
 
     /**
@@ -65,10 +67,18 @@ public interface SatelCommand {
     SatelMessage getRequest();
 
     /**
+     * Checks whether a response message matches request enclosed in this object.
+     *
+     * @param response response message
+     * @return <code>true</code> if given response matches the request
+     */
+    boolean matches(SatelMessage response);
+
+    /**
      * Handles response received for the command. Usually generates an event with received data.
      *
      * @param eventDispatcher event dispatcher
-     * @param response response to handle
+     * @param response        response to handle
      * @return <code>true</code> if response has been successfully handled
      */
     boolean handleResponse(EventDispatcher eventDispatcher, SatelMessage response);

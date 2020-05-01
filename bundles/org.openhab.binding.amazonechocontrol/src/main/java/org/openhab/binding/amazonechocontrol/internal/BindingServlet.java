@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,10 +57,8 @@ public class BindingServlet extends HttpServlet {
         servletUrl = "/" + servletUrlWithoutRoot;
         try {
             httpService.registerServlet(servletUrl, this, null, httpService.createDefaultHttpContext());
-        } catch (ServletException e) {
-            logger.warn("Register servlet fails {}", e);
-        } catch (NamespaceException e) {
-            logger.warn("Register servlet fails {}", e);
+        } catch (NamespaceException | ServletException e) {
+            logger.warn("Register servlet fails", e);
         }
     }
 
@@ -123,7 +121,7 @@ public class BindingServlet extends HttpServlet {
         try {
             resp.getWriter().write(html.toString());
         } catch (IOException e) {
-            logger.warn("return html failed with uri syntax error {}", e);
+            logger.warn("return html failed with uri syntax error", e);
         }
     }
 }

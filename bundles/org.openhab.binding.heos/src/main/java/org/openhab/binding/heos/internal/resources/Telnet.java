@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -64,7 +64,7 @@ public class Telnet {
     /**
      * Connects to a host with the specified IP address and port
      *
-     * @param ip   IP Address of the host
+     * @param ip IP Address of the host
      * @param port where to be connected
      * @return True if connection was successful
      * @throws SocketException
@@ -154,6 +154,7 @@ public class Telnet {
      * I more than one line is read every line is an
      * element in the returned {@code ArrayList<>}
      * Reading timed out after 3000 milliseconds. For another timing
+     *
      * @see readLine(int timeOut).
      *
      * @return A list with all read commands
@@ -231,9 +232,9 @@ public class Telnet {
      * @throws IOException
      */
     public void disconnect() throws IOException {
-        inputStream.close();
-        outStream.close();
+        logger.debug("Disconnecting TelnetClient...");
         client.disconnect();
+        logger.debug("Telnet client disconnected");
     }
 
     /**

@@ -76,7 +76,7 @@
 			},
 			{
 				"property": "led_b",
-				"friendlyName": "Led Brightness",
+				"friendlyName": "LED Brightness",
 				"channel": "bright",
 				"type": "Number",
 				"refresh": true,

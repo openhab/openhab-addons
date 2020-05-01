@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 public class Parser {
     private static final Logger LOGGER = LoggerFactory.getLogger(Parser.class);
 
-    private static final Pattern PATTERN = Pattern.compile("^\\s+([a-z\\s._]+)[:=]\\s*<?\"?([^>\"]+)\"?>?$");
+    private static final Pattern PATTERN = Pattern.compile("^\\s*([a-z\\s._]+)[:=]\\s*<?\\\"?([^>\\\"]+)\\\"?>?$");
     private static final Pattern VOLUME_PATTERN = Pattern
             .compile("^([\\w\\-]+):( *[\\d]+ \\/)? *([\\d]+)% *\\/? *([\\d\\-., dB]+)?$");
     private static final Pattern FALL_BACK_PATTERN = Pattern

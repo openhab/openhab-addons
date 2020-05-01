@@ -13,10 +13,10 @@
 			"H"
 		],
 		"cns": [
-			{
-				"type": "I1",
-				"identifier": "I2"
-			}
+			[
+				"I1",
+				"I2"
+			]
 		],
 		"name": "J",
 		"mdl": "K",

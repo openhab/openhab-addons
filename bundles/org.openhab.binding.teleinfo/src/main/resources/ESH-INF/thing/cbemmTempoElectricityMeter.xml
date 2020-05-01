@@ -5,7 +5,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="cbemm_tempo_electricitymeter" listed="false">
-		<label>Single-phase Electricity meter with TEMPO option - CBEMM (aka "Compteur Bleu Electronique Monophasé Multitarif")</label>
+		<label>Single-phase Electricity meter with TEMPO option - CBEMM (aka "Compteur Bleu Electronique Monophasé
+			Multitarif")</label>
 
 		<channels>
 			<channel id="isousc" typeId="isouscType" />
@@ -27,9 +28,13 @@
 			<channel id="lastUpdate" typeId="lastUpdateType" />
 		</channels>
 
-		<properties>
-			<property name="adco">adco</property>
-		</properties>
+		<config-description>
+			<parameter name="adco" type="text" required="true" pattern="^\w{12}$">
+				<label>ADCO</label>
+				<description>Electricity meter identifier (format: 12 characters / e.g: '031528042289')</description>
+				<limitToOptions>false</limitToOptions>
+			</parameter>
+		</config-description>
 
 	</thing-type>
 

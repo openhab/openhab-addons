@@ -52,7 +52,10 @@ The following channel is supported by the `station` thing.
 |                    |             |    | used as the time the station will be kept open when      |
 |                    |             |    | switched on. It is advised to add persistence for items  |
 |                    |             |    | linked to this channel, the binding does not persist     |
-|                    |             |    | values of it.
+|                    |             |    | values of it.                                            |
+| queued             | Switch      | RW | Indicates that the station is queued to be turned on.    |
+|                    |             |    | The channel cannot be turned on, only turning it off is  |
+|                    |             |    | supported (which removes the station from the queue).    |
 
 When using the `nextDuration` channel, it is advised to setup persistence (e.g. MapDB) in order to persist the value through restarts.
 

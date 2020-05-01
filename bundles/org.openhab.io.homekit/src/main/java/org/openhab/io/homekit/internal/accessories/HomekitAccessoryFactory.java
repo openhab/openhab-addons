@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,7 +30,7 @@ import org.openhab.io.homekit.internal.battery.BatteryStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.beowulfe.hap.HomekitAccessory;
+import io.github.hapjava.HomekitAccessory;
 
 /**
  * Creates a HomekitAccessory for a given HomekitTaggedItem.
@@ -113,6 +113,8 @@ public class HomekitAccessoryFactory {
                                         "Carbon monoxide accessory group should have a carbon monoxide sensor in it"));
                 return new HomekitSmokeSensorImpl(carbonMonoxideSensorAccessory, itemRegistry, updater,
                         BatteryStatus.getFromCharacteristics(characteristicItems));
+            case LOCK:
+                return new HomekitLockImpl(taggedItem, itemRegistry, updater);
         }
 
         throw new HomekitException("Unknown homekit type: " + taggedItem.getAccessoryType());

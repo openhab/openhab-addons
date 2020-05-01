@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,6 +25,7 @@ import org.openhab.binding.teleinfo.internal.reader.cbemm.FrameCbemmTempoOption;
  * thing.
  *
  * @author Nicolas SIBERIL - Initial contribution
+ * @author olivierkeke - Change ADCO property to parameter
  */
 public class TeleinfoTempoCbemmElectricityMeterHandler extends TeleinfoAbstractCbemmElectricityMeterHandler {
 
@@ -36,7 +37,7 @@ public class TeleinfoTempoCbemmElectricityMeterHandler extends TeleinfoAbstractC
     public void onFrameReceived(@NonNull TeleinfoAbstractControllerHandler controllerHandler, @NonNull Frame frame) {
         final FrameCbemmTempoOption frameCbemmTempoOption = (FrameCbemmTempoOption) frame;
 
-        String adco = getThing().getProperties().get(THING_TEMPO_CBEMM_ELECTRICITY_METER_PROPERTY_ADCO);
+        String adco = (String) getThing().getConfiguration().get(THING_TEMPO_CBEMM_ELECTRICITY_METER_PROPERTY_ADCO);
         if (adco.equalsIgnoreCase(frameCbemmTempoOption.getAdco())) {
             updateStatesForCommonCbemmChannels(frameCbemmTempoOption);
             updateStatesForTempoFrameOption(frameCbemmTempoOption);

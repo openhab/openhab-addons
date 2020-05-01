@@ -63,7 +63,7 @@
 			},
 			{
 				"property": "led",
-				"friendlyName": "Led Status",
+				"friendlyName": "LED Status",
 				"channel": "led",
 				"type": "Switch",
 				"refresh": true,
@@ -77,7 +77,7 @@
 			},
 			{
 				"property": "bright",
-				"friendlyName": "Led Brightness",
+				"friendlyName": "LED Brightness",
 				"channel": "bright",
 				"type": "Number",
 				"refresh": true,

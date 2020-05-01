@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.enocean.internal.messages;
+
+import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.util.HexUtils;
@@ -43,9 +45,7 @@ public class RDVersionResponse extends Response {
             apiVersion = String.format("%d.%d.%d.%d", payload[5] & 0xff, payload[6] & 0xff, payload[7] & 0xff,
                     payload[8] & 0xff);
 
-            byte[] chip = new byte[4];
-            System.arraycopy(payload, 9, chip, 0, 4);
-            chipId = HexUtils.bytesToHex(chip);
+            chipId = HexUtils.bytesToHex(Arrays.copyOfRange(payload, 9, 13));
 
             StringBuffer sb = new StringBuffer();
             for (int i = 17; i < payload.length; i++) {

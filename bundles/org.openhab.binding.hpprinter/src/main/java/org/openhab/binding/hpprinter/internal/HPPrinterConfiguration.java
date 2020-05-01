@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,17 +12,21 @@
  */
 package org.openhab.binding.hpprinter.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link HPPrinterConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Stewart Cossey - Initial contribution
  */
+@NonNullByDefault
 public class HPPrinterConfiguration {
     public static final String IP_ADDRESS = "ipAddress";
     public static final String USAGE_INTERVAL = "usageInterval";
     public static final String STATUS_INTERVAL = "statusInterval";
 
-    public String ipAddress;
+    public @Nullable String ipAddress;
     public int usageInterval;
     public int statusInterval;
 }

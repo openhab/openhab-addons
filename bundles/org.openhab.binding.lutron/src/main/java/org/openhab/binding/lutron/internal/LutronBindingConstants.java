@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,6 +49,7 @@ public class LutronBindingConstants {
     public static final ThingTypeUID THING_TYPE_GRAFIKEYEKEYPAD = new ThingTypeUID(BINDING_ID, "grafikeyekeypad");
     public static final ThingTypeUID THING_TYPE_BLIND = new ThingTypeUID(BINDING_ID, "blind");
     public static final ThingTypeUID THING_TYPE_PALLADIOMKEYPAD = new ThingTypeUID(BINDING_ID, "palladiomkeypad");
+    public static final ThingTypeUID THING_TYPE_WCI = new ThingTypeUID(BINDING_ID, "wci");
 
     // List of all Channel ids
     public static final String CHANNEL_LIGHTLEVEL = "lightlevel";
@@ -71,6 +72,9 @@ public class LutronBindingConstants {
     public static final String PASSWORD = "password";
     public static final String SERIAL_NUMBER = "serialNumber";
     public static final String DISCOVERY_FILE = "discoveryFile";
+
+    public static final String PROPERTY_PRODFAM = "productFamily";
+    public static final String PROPERTY_PRODTYP = "productType";
 
     // Thing config properties
     public static final String INTEGRATION_ID = "integrationId";

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -731,7 +731,7 @@ class RioSourceProtocol extends AbstractRioProtocol {
             try {
                 httpClient.stop();
             } catch (Exception e) {
-                logger.debug("Error stopping the httpclient: {}", e);
+                logger.debug("Error stopping the httpclient", e);
             }
         }
         super.dispose();

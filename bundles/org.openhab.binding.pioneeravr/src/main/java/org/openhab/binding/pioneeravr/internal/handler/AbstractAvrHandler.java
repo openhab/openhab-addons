@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -227,11 +227,11 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
                     break;
 
                 default:
-                    logger.debug("Unkown response type from AVR @{}. Response discarded: {}", event.getData(),
+                    logger.debug("Unknown response type from AVR @{}. Response discarded: {}", event.getData(),
                             event.getConnection());
             }
         } catch (AvrConnectionException e) {
-            logger.debug("Unkown response type from AVR @{}. Response discarded: {}", event.getData(),
+            logger.debug("Unknown response type from AVR @{}. Response discarded: {}", event.getData(),
                     event.getConnection());
         }
     }

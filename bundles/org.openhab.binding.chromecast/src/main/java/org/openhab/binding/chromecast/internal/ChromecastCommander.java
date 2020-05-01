@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -172,7 +172,7 @@ public class ChromecastCommander {
         }
     }
 
-    private void handleStop(final Command command) {
+    public void handleStop(final Command command) {
         if (command == OnOffType.ON) {
             try {
                 chromeCast.stopApp();
@@ -255,8 +255,8 @@ public class ChromecastCommander {
                 chromeCast.stopApp();
                 logger.debug("Media player app stopped");
             }
-        } catch (final Exception e) {
-            logger.debug("Failed stopping media player app: {}", e);
+        } catch (final IOException e) {
+            logger.debug("Failed stopping media player app", e);
         }
     }
 }

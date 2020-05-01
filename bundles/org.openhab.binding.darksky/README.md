@@ -200,7 +200,7 @@ Number:Speed localCurrentSnowIntensity "Current snow intensity [%.2f mm/h]" <sno
 Number:Speed localCurrentPrecipitationIntensity "Current precipitation intensity [%.2f mm/h]" <rain> { channel="darksky:weather-and-forecast:api:local:current#precip-intensity" }
 Number:Dimensionless localCurrentPrecipitationProbability "Current precipitation probability [%d %unit%]" <rain> { channel="darksky:weather-and-forecast:api:local:current#precip-probability" }
 String localCurrentPrecipitationType "Current precipitation type [%s]" <rain> { channel="darksky:weather-and-forecast:api:local:current#precip-type" }
-Number localCurrentUVIndex "Current precipitation probability [%d]" <none> { channel="darksky:weather-and-forecast:api:local:current#uvindex" }
+Number localCurrentUVIndex "Current UV index [%d]" <none> { channel="darksky:weather-and-forecast:api:local:current#uvindex" }
 Number:ArealDensity localCurrentOzone "Current ozone [%.1f %unit%]" <none> { channel="darksky:weather-and-forecast:api:local:current#ozone" }
 DateTime localSunrise "Sunrise [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <sun> { channel="darksky:weather-and-forecast:api:local:current#sunrise" }
 DateTime localSunset "Sunset [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <sun> { channel="darksky:weather-and-forecast:api:local:current#sunset" }
@@ -234,11 +234,11 @@ Number:Temperature localDailyForecastDay2MinTemperature "Minimum temperature in 
 Number:Temperature localDailyForecastDay2MaxTemperature "Maximum temperature in 2 days [%.1f %unit%]" <temperature> { channel="darksky:weather-and-forecast:api:local:forecastDay2#max-temperature" }
 ...
 
-String localAlert1Title "Weather warning! [%s]" <error> { channel="darksky:weather-and-forecast:api:local:alert1#title" }
-String localAlert1Description "Description [%s]" <error> { channel="darksky:weather-and-forecast:api:local:alert1#description" }
-String localAlert1Severity "Severity [%s]" <error> { channel="darksky:weather-and-forecast:api:local:alert1#severity" }
-DateTime localAlert1Issued "Issued [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM]" <time> { channel="darksky:weather-and-forecast:api:local:alert1#issued" }
-DateTime localAlert1Expires "Expires [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM]" <time> { channel="darksky:weather-and-forecast:api:local:alert1#expires" }
+String localAlert1Title "Weather warning! [%s]" <error> { channel="darksky:weather-and-forecast:api:local:alerts1#title" }
+String localAlert1Description "Description [%s]" <error> { channel="darksky:weather-and-forecast:api:local:alerts1#description" }
+String localAlert1Severity "Severity [%s]" <error> { channel="darksky:weather-and-forecast:api:local:alerts1#severity" }
+DateTime localAlert1Issued "Issued [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM]" <time> { channel="darksky:weather-and-forecast:api:local:alerts1#issued" }
+DateTime localAlert1Expires "Expires [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM]" <time> { channel="darksky:weather-and-forecast:api:local:alerts1#expires" }
 
 String miamiCurrentCondition "Current condition in Miami [%s]" <sun_clouds> { channel="darksky:weather-and-forecast:api:miami:current#condition" }
 Image miamiCurrentConditionIcon "Icon" { channel="darksky:weather-and-forecast:api:miami:current#icon" }
@@ -294,8 +294,8 @@ sitemap demo label="Dark Sky" {
         Image item=localDailyForecastTodayConditionIcon
         Text item=localDailyForecastTodayMinTemperature
         Text item=localDailyForecastTodayMaxTemperature
-        Text item=localDailyForecastTodayMinApprentTemperature
-        Text item=localDailyForecastTodayMaxApprentTemperature
+        Text item=localDailyForecastTodayMinApparentTemperature
+        Text item=localDailyForecastTodayMaxApparentTemperature
         Text item=localDailyForecastTodayPressure
         Text item=localDailyForecastTodayHumidity
         Text item=localDailyForecastTodayWindSpeed

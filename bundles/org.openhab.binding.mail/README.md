@@ -31,7 +31,7 @@ For authentication `username` and `password` need to be supplied.
 
 The `refresh`, `security`, `port`, `username` and `password` parameters are optional.
 
-The `refresh` parameter is the time in seconds between two refreshes of the thing`s channels.
+The `refresh` parameter is the time in seconds between two refreshes of the thing's channels.
 If omitted, the default of 60s is used.
 The `security` parameter defines the transport security and can be set to `PLAIN` (default), `SSL` or `TLS`.
 The `port` parameter is used to change the default ports for the SMTP server.
@@ -110,7 +110,7 @@ Using different character sets may produce unwanted results.
 Examples:
 
 ```
-val mailActions = getActions("mail","mail:smtp:sampleserver")
+val mailActions = getActions("mail","mail:smtp:samplesmtp")
 mailActions.sendMail("mail@example.com", "Test subject", "This is the mail content.")
 mailActions.sendMail("mail1@example.com, mail2@example.com", "Test subject", "This is the mail content sent to multiple recipients.")
 

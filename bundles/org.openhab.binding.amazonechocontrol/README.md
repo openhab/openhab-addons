@@ -132,8 +132,8 @@ It will be configured at runtime by using the save channel to store the current 
 | musicProviderId       | String      | R/W         | echo, echoshow, echospot      | Current Music provider
 | playMusicVoiceCommand | String      | W           | echo, echoshow, echospot      | Write Only! Voice command as text. E.g. 'Yesterday from the Beatles' 
 | startCommand          | String      | W           | echo, echoshow, echospot      | Write Only! Used to start anything. Available options: Weather, Traffic, GoodMorning, SingASong, TellStory, FlashBriefing and FlashBriefing.<FlahshbriefingDeviceID> (Note: The options are case sensitive)
-| announcement          | String      | W           | echo, echoshow, echospot      | Write Only! Display the announcement message on the display. See in the tutorial section to learn how it’s possible to set the title and turn off the sound.
-| textToSpeech          | String      | W           | echo, echoshow, echospot      | Write Only! Write some text to this channel and Alexa will speak it. It is possible to use plain text or SSML: e.g. `<speak>I want to tell you a secret.<amazon:effect name="whispered">I am not a real human.</amazon:effect></speak>`
+| announcement          | String      | W           | echo, echoshow, echospot      | Write Only! Display the announcement message on the display. Please note: the announcement feature must be activated in the alexa app at the echo device. See in the tutorial section to learn how it’s possible to set the title and turn off the sound.
+| textToSpeech          | String      | W           | echo, echoshow, echospot      | Write Only! Write some text to this channel and Alexa will speak it. It is possible to use plain text or SSML: e.g. `<speak>I want to tell you a secret.<amazon:effect name="whispered">I am not a real human. Please note: the announcement feature must be activated in the alexa app at the echo device to use SSML. </amazon:effect></speak>`
 | textToSpeechVolume    | Dimmer      | R/W         | echo, echoshow, echospot      | Volume of the textToSpeech channel, if 0 the current volume will be used
 | lastVoiceCommand      | String      | R/W         | echo, echoshow, echospot      | Last voice command spoken to the device. Writing to the channel starts voice output.
 | mediaProgress         | Dimmer      | R/W         | echo, echoshow, echospot      | Media progress in percent 
@@ -363,13 +363,17 @@ end
 ```
 
 Expert:
-You can use a json formatted string to control the title and the sound:
+You can use a json formatted string to control title, sound and volume:
 
 ```php
-{ "sound": true, "speak":"<Speak>" "title": "<Title>", "body": "<Body Text>"}
+{ "sound": true, "speak":"<Speak>" "title": "<Title>", "body": "<Body Text>", "volume": 20}
 ```
 
-The combination of sound=true and speak in SSML syntax is not allowed
+The combination of `sound=true` and `speak` in SSML syntax is not allowed.
+Not all properties need to be specified.
+The value for `volume` can be between 0 and 100 to set the volume.
+A volume value smaller then 0 means that the current alexa volume should be used.
+No specification uses the volume from the `textToSpeechVolume` channel.
 
 Note: If you turn off the sound and Alexa is playing music, it will anyway turn down the volume for a moment. This behavior can not be changed.
 

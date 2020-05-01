@@ -106,6 +106,13 @@ Switching, Brightness and Color is done using the `color` channel.
 * LED On/Off
 * Wi-Fi signal strength (RSSI)
 
+### KP303 Smart Wi-Fi Power Outlet, 3-Sockets
+
+* Power On/Off Group
+* Power On/Off Outlets
+* LED On/Off
+* Wi-Fi signal strength (RSSI)
+
 ### KP400 Smart Outdoor Plug
 
 * Power On/Off Group
@@ -258,19 +265,19 @@ Either `deviceId` or `ipAddress` must be set.
 
 All devices support some of the following channels:
 
-| Channel Type ID     | Item Type                | Description                                    | Thing types supporting this channel                                                         |
-|---------------------|--------------------------|------------------------------------------------|---------------------------------------------------------------------------------------------|
-| switch              | Switch                   | Power the device on or off.                    | HS100, HS103, HS105, HS107, HS110, HS200, HS210, HS300, KP100, KP200, KP400, RE270K, RE370K |
-| brightness          | Dimmer                   | Set the brightness of device or dimmer.        | HS220, KB100, KL110, KL120, LB100, LB110, LB120, LB200                                      |
-| colorTemperature    | Dimmer                   | Set the color temperature in percentage.       | KB130, KL120, KL130, LB120, LB130, LB230                                                    |
-| colorTemperatureAbs | Number                   | Set the color temperature in Kelvin.           | KB130, KL120, KL130, LB120, LB130, LB230                                                    |
-| color               | Color                    | Set the color of the light.                    | KB130, KL130, LB130, LB230                                                                  |
-| power               | Number:Power             | Actual energy usage in Watt.                   | HS110, HS300, KLxxx, LBxxx                                                                  |
-| eneryUsage          | Number:Energy            | Energy Usage in kWh.                           | HS110, HS300                                                                                |
-| current             | Number:ElectricCurrent   | Actual current usage in Ampere.                | HS110, HS300                                                                                |
-| voltage             | Number:ElectricPotential | Actual voltage usage in Volt.                  | HS110, HS300                                                                                |
-| led                 | Switch                   | Switch the status LED on the device on or off. | HS100, HS103, HS105, HS107, HS110, HS200, HS210, HS220, HS300, KP100, KP200, KP400          |
-| rssi                | Number:Power             | Wi-Fi signal strength indicator in dBm.        | All                                                                                         |
+| Channel Type ID     | Item Type                | Description                                    | Thing types supporting this channel                                                                |
+|---------------------|--------------------------|------------------------------------------------|----------------------------------------------------------------------------------------------------|
+| switch              | Switch                   | Power the device on or off.                    | HS100, HS103, HS105, HS107, HS110, HS200, HS210, HS300, KP100, KP200, KP303, KP400, RE270K, RE370K |
+| brightness          | Dimmer                   | Set the brightness of device or dimmer.        | HS220, KB100, KL110, KL120, LB100, LB110, LB120, LB200                                             |
+| colorTemperature    | Dimmer                   | Set the color temperature in percentage.       | KB130, KL120, KL130, LB120, LB130, LB230                                                           |
+| colorTemperatureAbs | Number                   | Set the color temperature in Kelvin.           | KB130, KL120, KL130, LB120, LB130, LB230                                                           |
+| color               | Color                    | Set the color of the light.                    | KB130, KL130, LB130, LB230                                                                         |
+| power               | Number:Power             | Actual energy usage in Watt.                   | HS110, HS300, KLxxx, LBxxx                                                                         |
+| eneryUsage          | Number:Energy            | Energy Usage in kWh.                           | HS110, HS300                                                                                       |
+| current             | Number:ElectricCurrent   | Actual current usage in Ampere.                | HS110, HS300                                                                                       |
+| voltage             | Number:ElectricPotential | Actual voltage usage in Volt.                  | HS110, HS300                                                                                       |
+| led                 | Switch                   | Switch the status LED on the device on or off. | HS100, HS103, HS105, HS107, HS110, HS200, HS210, HS220, HS300, KP100, KP303, KP200, KP400          |
+| rssi                | Number:Power             | Wi-Fi signal strength indicator in dBm.        | All                                                                                                |
 
 The outlet devices (HS107, HS300, KP200, KP400) have group channels.
 This means the channel is prefixed with the group id.

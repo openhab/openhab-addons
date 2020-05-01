@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.satel.internal.command;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Command class for command that clear troubles memory.
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public class ClearTroublesCommand extends ControlCommand {
 
     public static final byte COMMAND_CODE = (byte) 0x8b;
@@ -24,8 +27,7 @@ public class ClearTroublesCommand extends ControlCommand {
     /**
      * Creates new command class instance.
      *
-     * @param userCode
-     *            code of the user on behalf the control is made
+     * @param userCode code of the user on behalf the control is made
      */
     public ClearTroublesCommand(String userCode) {
         super(COMMAND_CODE, userCodeToBytes(userCode));

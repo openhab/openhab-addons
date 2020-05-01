@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,7 +27,7 @@ public class FrameUtil {
      * Compute the checksum of the given group line.
      *
      * @param groupLine group line ("etiquette" <SPACE> "valeur"). Note: the SPACE before the checksum of the group line
-     *                      must not include in checksum computation.
+     *            must not include in checksum computation.
      * @return the checksum of the given group line.
      */
     public static char computeGroupLineChecksum(final String label, final String value) {

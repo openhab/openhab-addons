@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,6 +29,8 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The handler factory retrieves the binding configuration and is responsible for creating
@@ -40,6 +42,8 @@ import org.osgi.service.component.annotations.Modified;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.network")
 public class NetworkHandlerFactory extends BaseThingHandlerFactory {
     final NetworkBindingConfiguration configuration = new NetworkBindingConfiguration();
+
+    private final Logger logger = LoggerFactory.getLogger(NetworkHandlerFactory.class);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -65,6 +69,7 @@ public class NetworkHandlerFactory extends BaseThingHandlerFactory {
         // configuration, the values are automatically available in all handlers. Because they all
         // share the same instance.
         configuration.update(new Configuration(config).as(NetworkBindingConfiguration.class));
+        logger.debug("Updated binding configuration to {}", configuration);
     }
 
     @Override

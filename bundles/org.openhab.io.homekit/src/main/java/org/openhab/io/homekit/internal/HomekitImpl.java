@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,8 +36,8 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.beowulfe.hap.HomekitRoot;
-import com.beowulfe.hap.HomekitServer;
+import io.github.hapjava.HomekitRoot;
+import io.github.hapjava.HomekitServer;
 
 /**
  * Provides access to openHAB items via the Homekit API

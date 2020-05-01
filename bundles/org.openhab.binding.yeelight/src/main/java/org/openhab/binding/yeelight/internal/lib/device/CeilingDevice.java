@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,9 +41,8 @@ public class CeilingDevice extends DeviceBase {
     public void onNotify(String msg) {
         JsonObject result = new JsonParser().parse(msg).getAsJsonObject();
         try {
-            String id = "-1";
             if (result.has("id")) {
-                id = result.get("id").getAsString();
+                String id = result.get("id").getAsString();
                 // for cmd transaction.
 
                 if (mQueryList.contains(id)) {
@@ -69,7 +68,7 @@ public class CeilingDevice extends DeviceBase {
                 }
             }
         } catch (Exception e) {
-            logger.debug("Problem setting values: {}", e);
+            logger.debug("Problem setting values", e);
         }
 
         super.onNotify(msg);

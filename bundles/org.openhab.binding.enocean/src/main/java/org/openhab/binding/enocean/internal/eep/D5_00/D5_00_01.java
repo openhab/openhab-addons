@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,9 +20,9 @@ import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.enocean.internal.config.EnOceanChannelContactConfig;
 import org.openhab.binding.enocean.internal.eep.Base._1BSMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
-import org.openhab.binding.enocean.internal.config.EnOceanChannelContactConfig;
 
 /**
  *
@@ -42,7 +42,8 @@ public class D5_00_01 extends _1BSMessage {
     }
 
     @Override
-    protected State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc, Configuration config) {
+    protected State convertToStateImpl(String channelId, String channelTypeId,
+            Function<String, State> getCurrentStateFunc, Configuration config) {
         if (channelId.equals(CHANNEL_CONTACT)) {
             EnOceanChannelContactConfig c = config.as(EnOceanChannelContactConfig.class);
             if (c.inverted) {
