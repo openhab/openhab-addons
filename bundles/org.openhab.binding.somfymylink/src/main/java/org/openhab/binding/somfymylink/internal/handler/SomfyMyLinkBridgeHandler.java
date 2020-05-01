@@ -24,6 +24,7 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadLocalRandom;
@@ -342,35 +343,35 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                     out.write(sendBuffer, 0, sendBuffer.length);
 
                     // now read the reply
+                    long startTime = System.currentTimeMillis();
+                    long elapsedTime = 0L;
                     char[] readBuff = new char[1024];
                     int readCount;
                     String message = "";
 
                     // while we are getting data ...
                     while (((readCount = in.read(readBuff)) != -1)) {
-                        logger.debug("Got response. Len: " + readCount);
                         message += new String(readBuff, 0, readCount);
 
+                        // try and parse the message
+                        logger.debug("Got response: " + message);
+
                         try {
-                            logger.debug("Got message: " + message);
-
-                            JsonParser parser = new JsonParser();
-                            JsonObject jsonObj = parser.parse(message).getAsJsonObject();
-
-                            if (jsonObj != null && jsonObj.has("error")) {
-                                SomfyMyLinkErrorResponse errorResponse = gson.fromJson(message,
-                                        SomfyMyLinkErrorResponse.class);
-
-                                logger.info("Error communicating with mylink: {}", errorResponse.error.message);
-                                throw new SomfyMyLinkException(
-                                        "Error communicating with mylink: " + errorResponse.error.message);
-                            }
-
-                            return gson.fromJson(message, responseType);
-                        } catch (JsonSyntaxException e) {
-                            // it wasn't a full message?
-                            logger.debug("Trouble parsing message received. Message:" + e.getMessage());
+                            SomfyMyLinkResponseBase response = parseResponse(message, responseType);
+                            logger.debug("Got full message: " + message);
+                            return response;
+                        } catch (SomfyMyLinkException e) {
+                            // trouble parsing the message, probably incomplete
                         }
+
+                        elapsedTime = (new Date()).getTime() - startTime;
+
+                        // if its been over 1 min waiting for a correct and full response then abort
+                        if(elapsedTime >= 60000) {
+                            throw new SomfyMyLinkException("Timeout waiting for reply from mylink");
+                        }
+
+                        Thread.sleep(250); // pause for 250ms
                     }
                 }
 
@@ -390,6 +391,22 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                 return null;
             }
         }
+    }
+
+    private SomfyMyLinkResponseBase parseResponse(String message, Type responseType)
+    {
+        JsonParser parser = new JsonParser();
+        JsonObject jsonObj = parser.parse(message).getAsJsonObject();
+
+        if (jsonObj != null && jsonObj.has("error")) {
+            SomfyMyLinkErrorResponse errorResponse = gson.fromJson(message,
+                    SomfyMyLinkErrorResponse.class);
+
+            logger.info("Error parsing mylink response: {}", errorResponse.error.message);
+            throw new SomfyMyLinkException("Incomplete message.");
+        }
+
+        return gson.fromJson(message, responseType);
     }
 
     private Socket getConnection() throws UnknownHostException, IOException {
