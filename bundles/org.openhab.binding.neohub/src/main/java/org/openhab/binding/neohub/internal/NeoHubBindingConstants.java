@@ -112,6 +112,7 @@ public class NeoHubBindingConstants {
     public static final String CMD_CODE_AWAY = "{\"FROST_%s\":\"%s\"}";
     public static final String CMD_CODE_TIMER = "{\"TIMER_%s\":\"%s\"}";
     public static final String CMD_CODE_MANUAL = "{\"MANUAL_%s\":\"%s\"}";
+    public static final String CMD_CODE_READ_DCB = "{\"READ_DCB\":100}";
 
     /*
      * openHAB status strings

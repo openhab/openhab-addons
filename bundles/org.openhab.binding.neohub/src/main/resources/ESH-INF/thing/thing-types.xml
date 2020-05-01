@@ -139,7 +139,7 @@
 		<label>Target Temperature</label>
 		<description>Target temperature setting</description>
 		<category>temperature</category>
-		<state readOnly="false" pattern="%.1f %unit%" min="5" max="30" step="1"/>
+		<state readOnly="false" pattern="%.1f %unit%" step="1"/>
 	</channel-type>
 
 	<channel-type id="thermostatOutputState">

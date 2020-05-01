@@ -19,7 +19,10 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -178,7 +181,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
      * @return a class that contains the full status of all devices
      *
      */
-    protected NeoHubInfoResponse fromNeoHubFetchPollingResponse() {
+    protected NeoHubInfoResponse fromNeoHubReadInfoResponse() {
         if (socket == null || config == null) {
             logger.warn(MSG_HUB_CONFIG);
             return null;
@@ -191,7 +194,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
             NeoHubInfoResponse newInfoResponse = NeoHubInfoResponse.createInfoResponse(response);
 
             if (newInfoResponse == null) {
-                logger.warn(MSG_FMT_POLL_ERR, "failed to create InfoResponse");
+                logger.warn(MSG_FMT_POLL_ERR, "failed to create INFO Response");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 return null;
             }
@@ -214,22 +217,50 @@ public class NeoHubHandler extends BaseBridgeHandler {
         }
     }
 
+    /**
+     * sends a JSON "READ_DCB" request to the NeoHub
+     *
+     * @return a class that contains the full status of all devices
+     *
+     */
+    protected NeoHubReadDcbResponse fromNeoHubReadDcbResponse() {
+        try {
+            @Nullable
+            String response = socket.sendMessage(CMD_CODE_READ_DCB);
+
+            NeoHubReadDcbResponse dcbResponse = NeoHubReadDcbResponse.createReadDcbResponse(response);
+
+            if (dcbResponse == null) {
+                logger.warn(MSG_FMT_POLL_ERR, "failed to create DCB Response");
+                return null;
+            }
+
+            return dcbResponse;
+        } catch (Exception e) {
+            logger.warn(MSG_FMT_POLL_ERR, e.getMessage());
+            return null;
+        }
+    }
+
     /*
      * this is the callback used by the lazy polling scheduler.. fetches the info
      * for all devices from the NeoHub, and passes the results the respective device
      * handlers
      */
     private synchronized void lazyPollingSchedulerExecute() {
-        NeoHubInfoResponse infoResponse = fromNeoHubFetchPollingResponse();
+        NeoHubInfoResponse infoResponse = fromNeoHubReadInfoResponse();
 
         if (infoResponse != null) {
-            List<Thing> children = getThing().getThings();
+            // determine temperatureUnit
+            NeoHubReadDcbResponse dcbResponse = fromNeoHubReadDcbResponse();
+            Unit<?> temperatureUnit = (dcbResponse != null) ? dcbResponse.getTemperatureUnit() : SIUnits.CELSIUS;
 
-            // dispatch myInfoResponse to each of the hub's owned devices ..
+            // dispatch infoResponse to each of the hub's owned devices ..
+            List<Thing> children = getThing().getThings();
             for (Thing child : children) {
                 ThingHandler device = child.getHandler();
                 if (device instanceof NeoBaseHandler) {
-                    ((NeoBaseHandler) device).toBaseSendPollResponse(infoResponse);
+                    ((NeoBaseHandler) device).toBaseSendPollResponse(infoResponse, temperatureUnit);
                 }
             }
         }
