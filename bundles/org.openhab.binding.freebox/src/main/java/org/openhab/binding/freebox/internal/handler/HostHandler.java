@@ -57,7 +57,8 @@ public class HostHandler extends APIConsumerHandler {
     protected Map<String, String> discoverAttributes() throws FreeboxException {
         final Map<String, String> properties = super.discoverAttributes();
         LanHost lanHost = getApiManager().execute(new APIRequests.LanHost(config.macAddress));
-        lanHost.getNames().forEach(name -> properties.put(name.getSource().name(), name.getName()));
+        lanHost.getNames()
+                .ifPresent(names -> names.forEach(name -> properties.put(name.getSource().name(), name.getName())));
         return properties;
     }
 

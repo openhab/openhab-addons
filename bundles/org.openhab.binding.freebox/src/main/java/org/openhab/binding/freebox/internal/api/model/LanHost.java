@@ -110,8 +110,11 @@ public class LanHost {
         return Math.max(lastActivity, lastTimeReachable);
     }
 
-    public List<LanHostName> getNames() {
-        return names;
+    public Optional<List<LanHostName>> getNames() {
+        if (this.names != null) {
+            return Optional.of(names);
+        }
+        return Optional.empty();
     }
 
     public List<LanHostL3Connectivity> getL3Connectivities() {
