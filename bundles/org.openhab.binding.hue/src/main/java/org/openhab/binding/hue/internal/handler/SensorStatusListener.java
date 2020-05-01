@@ -33,7 +33,7 @@ public interface SensorStatusListener {
      * @param bridge The bridge the changed sensor is connected to.
      * @param sensor The sensor which received the state update.
      */
-    void onSensorStateChanged(@Nullable HueBridge bridge, FullSensor sensor);
+    boolean onSensorStateChanged(@Nullable HueBridge bridge, FullSensor sensor);
 
     /**
      * This method is called whenever a sensor is removed.
@@ -58,4 +58,6 @@ public interface SensorStatusListener {
      * @param sensor The added sensor
      */
     void onSensorAdded(@Nullable HueBridge bridge, FullSensor sensor);
+
+    String getSensorId();
 }

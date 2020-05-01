@@ -455,20 +455,25 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
     }
 
     @Override
-    public void onLightStateChanged(@Nullable HueBridge bridge, FullLight fullLight) {
+    public boolean onLightStateChanged(@Nullable HueBridge bridge, FullLight fullLight) {
         logger.trace("onLightStateChanged() was called");
 
         if (!fullLight.getId().equals(lightId)) {
             logger.trace("Received state change for another handler's light ({}). Will be ignored.", fullLight.getId());
-            return;
+            return true;
         }
 
         if (System.currentTimeMillis() - lastTimeCmd <= BYPASS_LIGHT_POLL_DURATION) {
             logger.trace("Bypass light update after command ({}).", fullLight.getId());
-            return;
+            return false;
         }
 
-        lastFullLight = fullLight;
+        final FullLight lastState = lastFullLight;
+        if (lastState == null || !lastState.equals(fullLight)) {
+            lastFullLight = fullLight;
+        } else {
+            return true;
+        }
 
         initializeProperties(fullLight);
 
@@ -515,16 +520,15 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
             updateState(CHANNEL_ALERT, stringType);
             scheduleAlertStateRestore(stringType);
         }
+
+        return true;
     }
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
-        HueClient handler = getHueClient();
-        if (handler != null) {
-            FullLight light = handler.getLightById(lightId);
-            if (light != null) {
-                onLightStateChanged(null, light);
-            }
+        final FullLight light = lastFullLight;
+        if (light != null) {
+            onLightStateChanged(null, light);
         }
     }
 
@@ -617,5 +621,10 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Collections.singletonList(LightActions.class);
+    }
+
+    @Override
+    public String getLightId() {
+        return lightId;
     }
 }

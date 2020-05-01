@@ -26,6 +26,8 @@ import org.openhab.binding.hue.internal.HueBridge;
 @NonNullByDefault
 public interface LightStatusListener {
 
+    String getLightId();
+
     /**
      * This method is called whenever the state of the given light has changed. The new state can be obtained by
      * {@link FullLight#getState()}.
@@ -33,7 +35,7 @@ public interface LightStatusListener {
      * @param bridge The bridge the changed light is connected to.
      * @param light The light which received the state update.
      */
-    void onLightStateChanged(@Nullable HueBridge bridge, FullLight light);
+    boolean onLightStateChanged(@Nullable HueBridge bridge, FullLight light);
 
     /**
      * This method is called whenever a light is removed.

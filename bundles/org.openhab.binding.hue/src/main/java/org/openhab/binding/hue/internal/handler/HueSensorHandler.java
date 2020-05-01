@@ -230,12 +230,12 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
     }
 
     @Override
-    public void onSensorStateChanged(@Nullable HueBridge bridge, FullSensor sensor) {
+    public boolean onSensorStateChanged(@Nullable HueBridge bridge, FullSensor sensor) {
         logger.trace("onSensorStateChanged() was called");
 
         if (!sensor.getId().equals(sensorId)) {
             logger.trace("Received state change for another handler's sensor ({}). Will be ignored.", sensor.getId());
-            return;
+            return true;
         }
 
         initializeProperties(sensor);
@@ -297,6 +297,8 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
             updateConfiguration(config);
             configInitializedSuccessfully = true;
         }
+
+        return true;
     }
 
     @Override
@@ -347,5 +349,10 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
         if (sensor.getId().equals(sensorId)) {
             onSensorStateChanged(bridge, sensor);
         }
+    }
+
+    @Override
+    public String getSensorId() {
+        return sensorId;
     }
 }
