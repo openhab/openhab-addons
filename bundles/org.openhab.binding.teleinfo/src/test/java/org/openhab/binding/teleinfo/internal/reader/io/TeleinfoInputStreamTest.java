@@ -170,4 +170,19 @@ public class TeleinfoInputStreamTest {
             Assert.assertNull(frameCbemmEvolutionIccBaseOption.getAdps());
         }
     }
+
+    @Test
+    public void testInvalidADPSgrouplineWithAutoRepairActivated()
+            throws FileNotFoundException, IOException, InvalidFrameException, TimeoutException {
+
+        try (TeleinfoInputStream in = new TeleinfoInputStream(
+                new FileInputStream(TestUtils.getTestFile("invalid-adps-groupline.raw")), true)) {
+            Frame frame = in.readNextFrame();
+
+            Assert.assertNotNull(frame);
+            Assert.assertEquals(FrameCbemmEvolutionIccBaseOption.class, frame.getClass());
+            FrameCbemmEvolutionIccBaseOption frameCbemmEvolutionIccBaseOption = (FrameCbemmEvolutionIccBaseOption) frame;
+            Assert.assertEquals(new Integer(37), frameCbemmEvolutionIccBaseOption.getAdps());
+        }
+    }
 }

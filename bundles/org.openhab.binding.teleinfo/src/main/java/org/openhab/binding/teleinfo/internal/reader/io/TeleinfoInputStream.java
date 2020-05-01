@@ -92,6 +92,7 @@ public class TeleinfoInputStream extends InputStream {
     private ExecutorService executorService = Executors.newFixedThreadPool(2);
     private long waitNextHeaderFrameTimeoutInMs;
     private long readingFrameTimeoutInMs;
+    private boolean autoRepairInvalidADPSgroupLine;
 
     static {
         LABEL_VALUE_CONVERTERS = new HashMap<>();
@@ -104,17 +105,23 @@ public class TeleinfoInputStream extends InputStream {
     }
 
     public TeleinfoInputStream(final InputStream teleinfoInputStream) {
-        this(teleinfoInputStream, DEFAULT_TIMEOUT_WAIT_NEXT_HEADER_FRAME, DEFAULT_TIMEOUT_READING_FRAME);
+        this(teleinfoInputStream, DEFAULT_TIMEOUT_WAIT_NEXT_HEADER_FRAME, DEFAULT_TIMEOUT_READING_FRAME, false);
+    }
+
+    public TeleinfoInputStream(final InputStream teleinfoInputStream, boolean autoRepairInvalidADPSgroupLine) {
+        this(teleinfoInputStream, DEFAULT_TIMEOUT_WAIT_NEXT_HEADER_FRAME, DEFAULT_TIMEOUT_READING_FRAME,
+                autoRepairInvalidADPSgroupLine);
     }
 
     public TeleinfoInputStream(final InputStream teleinfoInputStream, long waitNextHeaderFrameTimeoutInMs,
-            long readingFrameTimeoutInMs) {
+            long readingFrameTimeoutInMs, boolean autoRepairInvalidADPSgroupLine) {
         if (teleinfoInputStream == null) {
             throw new IllegalArgumentException("Teleinfo inputStream not null");
         }
 
         this.waitNextHeaderFrameTimeoutInMs = waitNextHeaderFrameTimeoutInMs;
         this.readingFrameTimeoutInMs = readingFrameTimeoutInMs;
+        this.autoRepairInvalidADPSgroupLine = autoRepairInvalidADPSgroupLine;
 
         try {
             this.bufferedReader = new BufferedReader(new InputStreamReader(teleinfoInputStream, "ASCII"));
@@ -210,12 +217,19 @@ public class TeleinfoInputStream extends InputStream {
                         throw new InvalidFrameException(error);
                     }
 
-                    final Label label;
+                    Label label;
                     try {
                         label = Label.valueOf(labelStr);
                     } catch (IllegalArgumentException e) {
-                        final String error = String.format("The label '%s' is unknown", labelStr);
-                        throw new InvalidFrameException(error);
+                        if (autoRepairInvalidADPSgroupLine && labelStr.startsWith(Label.ADPS.name())) {
+                            // in this hardware issue, label variable is composed by label name and value. E.g: ADPS032
+                            logger.warn("Try to auto repair malformed ADPS groupLine '%s'", labelStr);
+                            label = Label.ADPS;
+                            valueString = labelStr.substring(Label.ADPS.name().length());
+                        } else {
+                            final String error = String.format("The label '%s' is unknown", labelStr);
+                            throw new InvalidFrameException(error);
+                        }
                     }
 
                     Class<?> labelType = label.getType();
@@ -273,6 +287,14 @@ public class TeleinfoInputStream extends InputStream {
 
     public void setReadingFrameTimeoutInMs(long readingFrameTimeoutInMs) {
         this.readingFrameTimeoutInMs = readingFrameTimeoutInMs;
+    }
+
+    public boolean isAutoRepairInvalidADPSgroupLine() {
+        return autoRepairInvalidADPSgroupLine;
+    }
+
+    public void setAutoRepairInvalidADPSgroupLine(boolean autoRepairInvalidADPSgroupLine) {
+        this.autoRepairInvalidADPSgroupLine = autoRepairInvalidADPSgroupLine;
     }
 
     @Override
