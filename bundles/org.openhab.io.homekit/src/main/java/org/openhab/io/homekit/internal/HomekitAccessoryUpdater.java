@@ -22,7 +22,7 @@ import org.eclipse.smarthome.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.github.hapjava.HomekitCharacteristicChangeCallback;
+import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 
 /**
  * Subscribes and unsubscribes from Item changes to enable notification to HomeKit

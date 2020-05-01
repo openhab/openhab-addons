@@ -23,47 +23,47 @@ import org.openhab.io.homekit.internal.HomekitCharacteristicType;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
-import io.github.hapjava.accessories.CarbonMonoxideSensorAccessory;
+import io.github.hapjava.accessories.CarbonDioxideSensorAccessory;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
-import io.github.hapjava.characteristics.impl.carbonmonoxidesensor.CarbonMonoxideDetectedEnum;
-import io.github.hapjava.services.impl.CarbonMonoxideSensorService;
+import io.github.hapjava.characteristics.impl.carbondioxidesensor.CarbonDioxideDetectedEnum;
+import io.github.hapjava.services.impl.CarbonDioxideSensorService;
 
 /**
  *
  * @author Cody Cutrer - Initial contribution
  */
-public class HomekitCarbonMonoxideSensorImpl extends AbstractHomekitAccessoryImpl
-        implements CarbonMonoxideSensorAccessory {
+public class HomekitCarbonDioxideSensorImpl extends AbstractHomekitAccessoryImpl
+        implements CarbonDioxideSensorAccessory {
 
-    private final BooleanItemReader carbonMonoxideDetectedReader;
+    private final BooleanItemReader carbonDioxideDetectedReader;
 
-    public HomekitCarbonMonoxideSensorImpl(HomekitTaggedItem taggedItem,
+    public HomekitCarbonDioxideSensorImpl(HomekitTaggedItem taggedItem,
             List<HomekitTaggedItem> mandatoryCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings)
             throws IncompleteAccessoryException {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
-        this.carbonMonoxideDetectedReader = new BooleanItemReader(
-                getItem(HomekitCharacteristicType.CARBON_MONOXIDE_DETECTED_STATE, GenericItem.class), OnOffType.ON,
+        this.carbonDioxideDetectedReader = new BooleanItemReader(
+                getItem(HomekitCharacteristicType.CARBON_DIOXIDE_DETECTED_STATE, GenericItem.class), OnOffType.ON,
                 OpenClosedType.OPEN);
-        getServices().add(new CarbonMonoxideSensorService(this));
+        getServices().add(new CarbonDioxideSensorService(this));
     }
 
     @Override
-    public CompletableFuture<CarbonMonoxideDetectedEnum> getCarbonMonoxideDetectedState() {
-        Boolean state = this.carbonMonoxideDetectedReader.getValue();
+    public CompletableFuture<CarbonDioxideDetectedEnum> getCarbonDioxideDetectedState() {
+        Boolean state = this.carbonDioxideDetectedReader.getValue();
         if (state == null) {
-            return CompletableFuture.completedFuture(null);
+            return CompletableFuture.completedFuture(CarbonDioxideDetectedEnum.NORMAL);
         }
         return CompletableFuture
-                .completedFuture(state ? CarbonMonoxideDetectedEnum.ABNORMAL : CarbonMonoxideDetectedEnum.NORMAL);
+                .completedFuture(state ? CarbonDioxideDetectedEnum.ABNORMAL : CarbonDioxideDetectedEnum.NORMAL);
     }
 
     @Override
-    public void subscribeCarbonMonoxideDetectedState(HomekitCharacteristicChangeCallback callback) {
-        subscribe(HomekitCharacteristicType.CARBON_MONOXIDE_DETECTED_STATE, callback);
+    public void subscribeCarbonDioxideDetectedState(HomekitCharacteristicChangeCallback callback) {
+        subscribe(HomekitCharacteristicType.CARBON_DIOXIDE_DETECTED_STATE, callback);
     }
 
     @Override
-    public void unsubscribeCarbonMonoxideDetectedState() {
-        unsubscribe(HomekitCharacteristicType.CARBON_MONOXIDE_DETECTED_STATE);
+    public void unsubscribeCarbonDioxideDetectedState() {
+        unsubscribe(HomekitCharacteristicType.CARBON_DIOXIDE_DETECTED_STATE);
     }
 }
