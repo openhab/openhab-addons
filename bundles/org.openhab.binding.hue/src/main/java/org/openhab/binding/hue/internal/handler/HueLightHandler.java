@@ -46,7 +46,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.hue.internal.FullHueObject;
 import org.openhab.binding.hue.internal.FullLight;
 import org.openhab.binding.hue.internal.HueBridge;
 import org.openhab.binding.hue.internal.State;
@@ -94,13 +93,12 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
 
     private static final String OSRAM_PAR16_50_TW_MODEL_ID = "PAR16_50_TW";
 
-    @NonNullByDefault({})
-    private String lightId;
+    private final Logger logger = LoggerFactory.getLogger(HueLightHandler.class);
+
+    private @NonNullByDefault({}) String lightId;
 
     private @Nullable Integer lastSentColorTemp;
     private @Nullable Integer lastSentBrightness;
-
-    private final Logger logger = LoggerFactory.getLogger(HueLightHandler.class);
 
     // Flag to indicate whether the bulb is of type Osram par16 50 TW or not
     private boolean isOsramPar16 = false;
@@ -134,11 +132,11 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
             }
 
             lightId = configLightId;
-            // note: this call implicitly registers our handler as a listener on
-            // the bridge
-            if (getHueClient() != null) {
+            // note: this call implicitly registers our handler as a listener on the bridge
+            HueClient bridgeHandler = getHueClient();
+            if (bridgeHandler != null) {
                 if (bridgeStatus == ThingStatus.ONLINE) {
-                    initializeProperties();
+                    initializeProperties(bridgeHandler.getLightById(lightId));
                     updateStatus(ThingStatus.ONLINE);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
@@ -152,34 +150,31 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
         }
     }
 
-    private synchronized void initializeProperties() {
-        if (!propertiesInitializedSuccessfully) {
-            FullHueObject fullLight = getLight();
-            if (fullLight != null) {
-                Map<String, String> properties = editProperties();
-                String softwareVersion = fullLight.getSoftwareVersion();
-                if (softwareVersion != null) {
-                    properties.put(PROPERTY_FIRMWARE_VERSION, softwareVersion);
-                }
-                String modelId = fullLight.getNormalizedModelID();
-                if (modelId != null) {
-                    properties.put(PROPERTY_MODEL_ID, modelId);
-                    String vendor = getVendor(modelId);
-                    if (vendor != null) {
-                        properties.put(PROPERTY_VENDOR, vendor);
-                    }
-                } else {
-                    properties.put(PROPERTY_VENDOR, fullLight.getManufacturerName());
-                }
-                properties.put(PRODUCT_NAME, fullLight.getProductName());
-                String uniqueID = fullLight.getUniqueID();
-                if (uniqueID != null) {
-                    properties.put(UNIQUE_ID, uniqueID);
-                }
-                updateProperties(properties);
-                isOsramPar16 = OSRAM_PAR16_50_TW_MODEL_ID.equals(modelId);
-                propertiesInitializedSuccessfully = true;
+    private synchronized void initializeProperties(@Nullable FullLight fullLight) {
+        if (!propertiesInitializedSuccessfully && fullLight != null) {
+            Map<String, String> properties = editProperties();
+            String softwareVersion = fullLight.getSoftwareVersion();
+            if (softwareVersion != null) {
+                properties.put(PROPERTY_FIRMWARE_VERSION, softwareVersion);
             }
+            String modelId = fullLight.getNormalizedModelID();
+            if (modelId != null) {
+                properties.put(PROPERTY_MODEL_ID, modelId);
+                String vendor = getVendor(modelId);
+                if (vendor != null) {
+                    properties.put(PROPERTY_VENDOR, vendor);
+                }
+            } else {
+                properties.put(PROPERTY_VENDOR, fullLight.getManufacturerName());
+            }
+            properties.put(PRODUCT_NAME, fullLight.getProductName());
+            String uniqueID = fullLight.getUniqueID();
+            if (uniqueID != null) {
+                properties.put(UNIQUE_ID, uniqueID);
+            }
+            updateProperties(properties);
+            isOsramPar16 = OSRAM_PAR16_50_TW_MODEL_ID.equals(modelId);
+            propertiesInitializedSuccessfully = true;
         }
     }
 
@@ -205,27 +200,19 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
         }
     }
 
-    private @Nullable FullLight getLight() {
-        HueClient bridgeHandler = getHueClient();
-        if (bridgeHandler != null) {
-            return bridgeHandler.getLightById(lightId);
-        }
-        return null;
-    }
-
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         handleCommand(channelUID.getId(), command, defaultFadeTime);
     }
 
     public void handleCommand(String channel, Command command, long fadeTime) {
-        HueClient hueBridge = getHueClient();
-        if (hueBridge == null) {
+        HueClient bridgeHandler = getHueClient();
+        if (bridgeHandler == null) {
             logger.warn("hue bridge handler not found. Cannot handle command without bridge.");
             return;
         }
 
-        FullLight light = getLight();
+        FullLight light = bridgeHandler.getLightById(lightId);
         if (light == null) {
             logger.debug("hue light not known on bridge. Cannot handle command.");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -349,7 +336,7 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
             if (tmpColorTemp != null) {
                 lastSentColorTemp = tmpColorTemp;
             }
-            hueBridge.updateLightState(light, lightState);
+            bridgeHandler.updateLightState(light, lightState);
         } else {
             logger.warn("Command sent to an unknown channel id: {}:{}", getThing().getUID(), channel);
         }
@@ -448,7 +435,7 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
             return;
         }
 
-        initializeProperties();
+        initializeProperties(fullLight);
 
         lastSentColorTemp = null;
         lastSentBrightness = null;
