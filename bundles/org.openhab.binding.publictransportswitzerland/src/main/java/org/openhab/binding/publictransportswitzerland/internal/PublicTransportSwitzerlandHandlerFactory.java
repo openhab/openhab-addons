@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.openhab.binding.publictransportswitzerland.internal.stationboard.PublicTransportSwitzerlandStationboardHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -36,7 +37,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.publictransportswitzerland", service = ThingHandlerFactory.class)
 public class PublicTransportSwitzerlandHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SAMPLE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_STATIONBOARD);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -47,8 +48,8 @@ public class PublicTransportSwitzerlandHandlerFactory extends BaseThingHandlerFa
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_SAMPLE.equals(thingTypeUID)) {
-            return new PublicTransportSwitzerlandHandler(thing);
+        if (THING_TYPE_STATIONBOARD.equals(thingTypeUID)) {
+            return new PublicTransportSwitzerlandStationboardHandler(thing);
         }
 
         return null;
