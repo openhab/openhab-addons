@@ -64,9 +64,8 @@ vigicrues.items:
 ```
 Group gVigiCrues "VigiCrues" <flow>
     Number:Length VC_hauteur "Hauteur Eau Poissy [%.2f %unit%]"  <none> (gVigiCrues) {channel="vigicrues:station:poissy:height"}
-    Number:VolumetricFlowRate VC_debit "Débit Eau Vernon [%.2f %unit%]" <flow> (gVigiCrues) {channel="vigicrues:station:vernon:flow"}
-    DateTime VC_ObservationPTS "Timestamp Poissy [%1$tH:%1$tM]" <time> (gVigiCrues) {channel="vigicrues:station:poissy:observation-time" }
-    DateTime VC_ObservationVTS "Timestamp Vernon [%1$tH:%1$tM]" <time> (gVigiCrues) {channel="vigicrues:station:vernon:observation-time" }
+    Number:VolumetricFlowRate VC_debit "Débit Eau Poissy [%.2f %unit%]" <flow> (gVigiCrues) {channel="vigicrues:station:poissy:flow"}
+    DateTime VC_ObservationPTS "Timestamp [%1$tH:%1$tM]" <time> (gVigiCrues) {channel="vigicrues:station:poissy:observation-time" }
 ```
 
 vigicrues.sitemap:
@@ -76,11 +75,7 @@ sitemap vigicrues label="VigiCrues" {
     Frame {
         Default item=VC_hauteur
         Default item=VC_debit
-    }
-
-    Frame {
-        Switch item=VC_ObservationPTS mappings=[REFRESH='MAJ !']
-        Default item=VC_ObservationVTS
+        Default item=VC_ObservationPTS
     }
 }
 ```
