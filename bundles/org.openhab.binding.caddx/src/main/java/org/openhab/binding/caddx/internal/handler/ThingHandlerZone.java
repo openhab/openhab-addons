@@ -14,6 +14,7 @@ package org.openhab.binding.caddx.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -54,11 +55,13 @@ public class ThingHandlerZone extends CaddxBaseThingHandler {
             updateState(channelUID, new StringType(data));
 
             logger.trace("  updateChannel: {} = {}", channelUID, data);
-        } else {
-            // All Zone channels are OnOffType
-            OnOffType onOffType;
+        } else if (channelUID.getId().equals(CaddxBindingConstants.ZONE_FAULTED)) {
+            OpenClosedType openClosedType = ("true".equals(data)) ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
+            updateState(channelUID, openClosedType);
 
-            onOffType = ("true".equals(data)) ? OnOffType.ON : OnOffType.OFF;
+            logger.trace("  updateChannel: {} = {}", channelUID, data);
+        } else {
+            OnOffType onOffType = ("true".equals(data)) ? OnOffType.ON : OnOffType.OFF;
             updateState(channelUID, onOffType);
 
             logger.trace("  updateChannel: {} = {}", channelUID, onOffType);

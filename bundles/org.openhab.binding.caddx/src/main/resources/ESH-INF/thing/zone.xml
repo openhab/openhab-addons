@@ -153,7 +153,7 @@
 			</channel>
 			
 			<!-- Zone conditions -->
-			<channel id="zone_faulted" typeId="zone_condition">
+			<channel id="zone_faulted" typeId="zone_status">
 				<label>Faulted</label>
 				<description>Faulted (or delayed trip)</description>
 			</channel>
