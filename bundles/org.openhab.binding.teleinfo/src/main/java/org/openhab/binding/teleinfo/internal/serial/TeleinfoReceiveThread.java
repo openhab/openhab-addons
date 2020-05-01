@@ -36,12 +36,15 @@ public class TeleinfoReceiveThread extends Thread implements SerialPortEventList
 
     private SerialPort serialPort;
     private TeleinfoReceiveThreadListener listener;
+    private boolean autoRepairInvalidADPSgroupLine;
 
-    public TeleinfoReceiveThread(SerialPort serialPort, @NonNull final TeleinfoReceiveThreadListener listener) {
+    public TeleinfoReceiveThread(SerialPort serialPort, @NonNull final TeleinfoReceiveThreadListener listener,
+            boolean autoRepairInvalidADPSgroupLine) {
         super("TeleinfoReceiveThread");
 
         this.serialPort = serialPort;
         this.listener = listener;
+        this.autoRepairInvalidADPSgroupLine = autoRepairInvalidADPSgroupLine;
     }
 
     @Override
@@ -58,7 +61,7 @@ public class TeleinfoReceiveThread extends Thread implements SerialPortEventList
         logger.debug("Starting Teleinfo thread: Receive");
         try (TeleinfoInputStream teleinfoStream = new TeleinfoInputStream(serialPort.getInputStream(),
                 TeleinfoInputStream.DEFAULT_TIMEOUT_WAIT_NEXT_HEADER_FRAME * 100,
-                TeleinfoInputStream.DEFAULT_TIMEOUT_READING_FRAME * 100)) {
+                TeleinfoInputStream.DEFAULT_TIMEOUT_READING_FRAME * 100, autoRepairInvalidADPSgroupLine)) {
             while (!interrupted()) {
                 try {
                     Frame nextFrame = teleinfoStream.readNextFrame();

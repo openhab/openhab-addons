@@ -163,7 +163,7 @@ public class TeleinfoSerialportReader extends TeleinfoReaderAdaptor {
                 logger.trace("reading next frame...");
                 try {
                     TeleinfoInputStream teleinfoInputStream = new TeleinfoInputStream(serialPort.getInputStream(),
-                            waitNextHeaderFrameTimeoutInMs, readingFrameTimeoutInMs) {
+                            waitNextHeaderFrameTimeoutInMs, readingFrameTimeoutInMs, false) {
                         @Override
                         public void close() {
                             // don't close underlying input stream

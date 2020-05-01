@@ -176,7 +176,7 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
             serialPort.enableReceiveThreshold(1);
             serialPort.enableReceiveTimeout(SERIAL_RECEIVE_TIMEOUT);
             logger.debug("Starting receive thread");
-            receiveThread = new TeleinfoReceiveThread(serialPort, this);
+            receiveThread = new TeleinfoReceiveThread(serialPort, this, config.autoRepairInvalidADPSgroupLine);
             receiveThread.start();
 
             // RXTX serial port library causes high CPU load
