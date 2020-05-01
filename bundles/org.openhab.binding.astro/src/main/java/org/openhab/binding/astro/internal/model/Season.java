@@ -12,8 +12,14 @@
  */
 package org.openhab.binding.astro.internal.model;
 
+import static org.eclipse.smarthome.core.library.unit.MetricPrefix.MILLI;
+
 import java.util.Calendar;
 
+import javax.measure.quantity.Time;
+
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
 
 /**
@@ -104,5 +110,26 @@ public class Season {
      */
     public Calendar getNextSeason() {
         return DateTimeUtils.getNext(spring, summer, autumn, winter);
+    }
+
+    /**
+     * Returns the next season name.
+     */
+    public SeasonName getNextName() {
+        int ordinal = name.ordinal() + 1;
+        if (ordinal > 3) {
+            ordinal = 0;
+        }
+        return SeasonName.values()[ordinal];
+    }
+
+    /**
+     * Returns the time left for current season
+     */
+    public QuantityType<Time> getTimeLeft() {
+        Calendar now = Calendar.getInstance();
+        Calendar next = getNextSeason();
+        return new QuantityType<>(next.getTimeInMillis() - now.getTimeInMillis(), MILLI(SmartHomeUnits.SECOND))
+                .toUnit(SmartHomeUnits.DAY);
     }
 }
