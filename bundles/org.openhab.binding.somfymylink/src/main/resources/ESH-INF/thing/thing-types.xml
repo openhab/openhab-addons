@@ -9,7 +9,7 @@
 		<label>Somfy MyLink</label>
 		<description>Somfy MyLink bridge enabling communication with Somfy devices</description>
 		<channels>
-			<channel id="sceneid" typeId="scenelist" />
+			<channel id="sceneid" typeId="scenelist"/>
 		</channels>
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
@@ -27,12 +27,12 @@
 	<!-- Scene Type -->
 	<thing-type id="scene">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="mylink" />
+			<bridge-type-ref id="mylink"/>
 		</supported-bridge-type-refs>
 		<label>Somfy Scene</label>
 		<description>Scene control</description>
 		<channels>
-			<channel id="scenecontrol" typeId="button" />
+			<channel id="scenecontrol" typeId="button"/>
 		</channels>
 
 		<config-description>
@@ -46,12 +46,12 @@
 	<!-- Shade Type -->
 	<thing-type id="shade">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="mylink" />
+			<bridge-type-ref id="mylink"/>
 		</supported-bridge-type-refs>
 		<label>Somfy Shade</label>
 		<description>Controls shades</description>
 		<channels>
-			<channel id="shadelevel" typeId="shadeControl" />
+			<channel id="shadelevel" typeId="shadeControl"/>
 		</channels>
 
 		<config-description>

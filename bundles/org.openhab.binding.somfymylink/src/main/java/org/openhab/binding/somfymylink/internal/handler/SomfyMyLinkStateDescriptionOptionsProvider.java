@@ -27,8 +27,8 @@ import org.osgi.service.component.annotations.Reference;
  */
 @Component(service = { DynamicStateDescriptionProvider.class, SomfyMyLinkStateDescriptionOptionsProvider.class })
 @NonNullByDefault
-public class SomfyMyLinkStateDescriptionOptionsProvider extends BaseDynamicStateDescriptionProvider  {
-    
+public class SomfyMyLinkStateDescriptionOptionsProvider extends BaseDynamicStateDescriptionProvider {
+
     @Reference
     protected void setChannelTypeI18nLocalizationService(
             final ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService) {

@@ -33,5 +33,4 @@ public class SomfyMyLinkBindingConstants {
     // Thing config properties
     public static final String TARGET_ID = "targetId";
     public static final String SCENE_ID = "sceneId";
-
 }

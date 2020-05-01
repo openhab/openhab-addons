@@ -62,7 +62,6 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link SomfyMyLinkBridgeHandler} is responsible for handling commands, which are
@@ -367,7 +366,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                         elapsedTime = (new Date()).getTime() - startTime;
 
                         // if its been over 1 min waiting for a correct and full response then abort
-                        if(elapsedTime >= 60000) {
+                        if (elapsedTime >= 60000) {
                             throw new SomfyMyLinkException("Timeout waiting for reply from mylink");
                         }
 
@@ -393,14 +392,12 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    private SomfyMyLinkResponseBase parseResponse(String message, Type responseType)
-    {
+    private SomfyMyLinkResponseBase parseResponse(String message, Type responseType) {
         JsonParser parser = new JsonParser();
         JsonObject jsonObj = parser.parse(message).getAsJsonObject();
 
         if (jsonObj != null && jsonObj.has("error")) {
-            SomfyMyLinkErrorResponse errorResponse = gson.fromJson(message,
-                    SomfyMyLinkErrorResponse.class);
+            SomfyMyLinkErrorResponse errorResponse = gson.fromJson(message, SomfyMyLinkErrorResponse.class);
 
             logger.info("Error parsing mylink response: {}", errorResponse.error.message);
             throw new SomfyMyLinkException("Incomplete message.");

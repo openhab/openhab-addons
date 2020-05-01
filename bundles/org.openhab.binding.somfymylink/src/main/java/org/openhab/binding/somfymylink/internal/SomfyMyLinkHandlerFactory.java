@@ -75,5 +75,4 @@ public class SomfyMyLinkHandlerFactory extends BaseThingHandlerFactory {
     protected void unsetDynamicStateDescriptionProvider(SomfyMyLinkStateDescriptionOptionsProvider provider) {
         this.stateDescriptionProvider = null;
     }
-
 }
