@@ -30,5 +30,6 @@ public class PublicTransportSwitzerlandBindingConstants {
     public static final ThingTypeUID THING_TYPE_STATIONBOARD = new ThingTypeUID(BINDING_ID, "stationboard");
 
     // List of all Channel ids
+    public static final String CHANNEL_CSV = "csv";
     public static final String CHANNEL_JSON = "json";
 }
