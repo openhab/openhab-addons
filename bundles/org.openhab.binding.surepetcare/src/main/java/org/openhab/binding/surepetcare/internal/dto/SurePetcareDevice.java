@@ -68,8 +68,18 @@ public class SurePetcareDevice extends SurePetcareBaseObject {
         properties.put("productName", ProductType.findByTypeId(productId).name);
         properties.put(Thing.PROPERTY_MAC_ADDRESS, macAddress);
         properties.put(Thing.PROPERTY_SERIAL_NUMBER, serialNumber);
-        properties.put(Thing.PROPERTY_HARDWARE_VERSION, status.version.device.hardware);
-        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, status.version.device.firmware);
+        if (status.version.device != null) {
+            properties.put(Thing.PROPERTY_HARDWARE_VERSION, status.version.device.hardware);
+            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, status.version.device.firmware);
+        }
+        if (status.version.lcd != null) {
+            properties.put(Thing.PROPERTY_HARDWARE_VERSION, status.version.lcd.hardware);
+            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, status.version.lcd.firmware);
+        }
+        if (status.version.rf != null) {
+            properties.put("rfHardwareVersion", status.version.rf.hardware);
+            properties.put("rfFirmwareVersion", status.version.rf.firmware);
+        }
         if (pairingAt != null) {
             properties.put("pairingAt", pairingAt.toString());
         }

@@ -55,7 +55,11 @@ public class SurePetcareDeviceStatus {
             public String firmware;
         }
 
+        // for Cat flaps only
         public Device device = new Device();
+        // for Pet flaps only
+        public Device lcd = new Device();
+        public Device rf = new Device();
     }
 
     public class Signal {

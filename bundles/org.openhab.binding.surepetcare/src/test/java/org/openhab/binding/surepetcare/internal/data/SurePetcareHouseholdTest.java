@@ -30,7 +30,7 @@ import org.openhab.binding.surepetcare.internal.dto.SurePetcareHousehold;
 public class SurePetcareHouseholdTest {
 
     @Test
-    public void testJsonDeserialize() throws ParseException {
+    public void testJsonDeserialize1() throws ParseException {
         String testReponse = "{\"id\":67241,\"name\":\"Test Home\",\"share_code\":\"BFHvjQ8DgvnP\",\"timezone_id\":340,\"version\":\"MA==\",\"created_at\":\"2019-09-02T08:20:45+00:00\",\"updated_at\":\"2019-09-02T08:20:48+00:00\",\"invites\":[{\"id\":12352,\"code\":\"QDEZHNNHFG\",\"email_address\":\"user1@gugus.com\",\"creator_user_id\":32712,\"acceptor_user_id\":87621,\"owner\":false,\"write\":true,\"status\":1,\"version\":\"Mg==\",\"created_at\":\"2019-09-09T10:33:36+00:00\",\"updated_at\":\"2019-09-09T11:59:39+00:00\",\"user\":{\"acceptor\":{\"id\":87621,\"name\":\"User1\"},\"creator\":{\"id\":32712,\"name\":\"Admin User\"}}}],\"users\":[{\"id\":32712,\"owner\":true,\"write\":true,\"version\":\"MA==\",\"created_at\":\"2019-09-02T08:20:45+00:00\",\"updated_at\":\"2019-09-02T08:20:50+00:00\",\"user\":{\"id\":32712,\"name\":\"Admin User\"}},{\"id\":87621,\"owner\":false,\"write\":true,\"version\":\"MA==\",\"created_at\":\"2019-09-09T11:59:39+00:00\",\"updated_at\":\"2019-09-09T11:59:39+00:00\",\"user\":{\"id\":87621,\"name\":\"User1\"}}]}";
         SurePetcareHousehold response = SurePetcareConstants.GSON.fromJson(testReponse, SurePetcareHousehold.class);
 
@@ -40,4 +40,14 @@ public class SurePetcareHouseholdTest {
         assertEquals(Integer.valueOf(340), response.timezoneId);
     }
 
+    @Test
+    public void testJsonDeserialize2() throws ParseException {
+        String testReponse = "{\"id\":21005,\"name\":\"Test Home\",\"share_code\":\"BFHvjQ8DgvnP\",\"timezone_id\":320,\"version\":\"MQ==\",\"created_at\":\"2018-12-21T17:50:07+00:00\",\"updated_at\":\"2018-12-21T17:50:07+00:00\",\"invites\":[{\"id\":10414,\"code\":\"KHDSUYRBKJF\",\"email_address\":\"test@gmx.de\",\"creator_user_id\":22360,\"owner\":false,\"write\":false,\"status\":0,\"version\":\"MA==\",\"created_at\":\"2018-12-22T09:15:10+00:00\",\"updated_at\":\"2018-12-22T09:15:10+00:00\",\"user\":{\"creator\":{\"id\":22360,\"name\":\"Owner Name\"}}}],\"users\":[{\"id\":22360,\"owner\":true,\"write\":true,\"version\":\"MQ==\",\"created_at\":\"2018-12-21T17:50:07+00:00\",\"updated_at\":\"2018-12-21T17:50:13+00:00\",\"user\":{\"id\":22360,\"name\":\"Owner Name\"}}]}";
+        SurePetcareHousehold response = SurePetcareConstants.GSON.fromJson(testReponse, SurePetcareHousehold.class);
+
+        assertEquals(Integer.valueOf(21005), response.id);
+        assertEquals("Test Home", response.name);
+        assertEquals("BFHvjQ8DgvnP", response.shareCode);
+        assertEquals(Integer.valueOf(320), response.timezoneId);
+    }
 }
