@@ -9,6 +9,7 @@ It provides cheap sensors for temperature, humidity, digital I/O and more.
 The OneWire File System (OWFS, https://owfs.org) provides an abstraction layer between the OneWire bus and this binding. 
 It is assumed that you already have a working OWFS installation.
 Besides your sensors, you need a busmaster device (e.g. DS9490R). 
+After the isntallation of the addon the server must be restarted
 
 ## Supported Things
 
