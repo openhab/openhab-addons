@@ -27,6 +27,7 @@ import org.openhab.binding.teleinfo.internal.reader.cbetm.FrameCbetmLongTempoOpt
  * thing.
  *
  * @author Nicolas SIBERIL - Initial contribution
+ * @author olivierkeke - Change ADCO property to parameter
  */
 public class TeleinfoTempoCbetmLongElectricityMeterHandler extends TeleinfoAbstractCbetmElectricityMeterHandler {
 
@@ -38,7 +39,7 @@ public class TeleinfoTempoCbetmLongElectricityMeterHandler extends TeleinfoAbstr
     public void onFrameReceived(@NonNull TeleinfoAbstractControllerHandler controllerHandler, @NonNull Frame frame) {
         final FrameCbetm frameCbetm = (FrameCbetm) frame;
 
-        String adco = getThing().getProperties().get(THING_TEMPO_CBETM_ELECTRICITY_METER_PROPERTY_ADCO);
+        String adco = (String) getThing().getConfiguration().get(THING_TEMPO_CBETM_ELECTRICITY_METER_PROPERTY_ADCO);
         if (adco.equalsIgnoreCase(frameCbetm.getAdco())) {
             updateStatesForCommonCbetmChannels(frameCbetm);
 

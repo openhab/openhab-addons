@@ -25,6 +25,7 @@ import org.openhab.binding.teleinfo.internal.reader.cbemm.FrameCbemmEjpOption;
  * thing.
  *
  * @author Nicolas SIBERIL - Initial contribution
+ * @author olivierkeke - Change ADCO property to parameter
  */
 public class TeleinfoEjpCbemmElectricityMeterHandler extends TeleinfoAbstractCbemmElectricityMeterHandler {
 
@@ -36,7 +37,7 @@ public class TeleinfoEjpCbemmElectricityMeterHandler extends TeleinfoAbstractCbe
     public void onFrameReceived(@NonNull TeleinfoAbstractControllerHandler controllerHandler, @NonNull Frame frame) {
         final FrameCbemmEjpOption frameCbemmEjpOption = (FrameCbemmEjpOption) frame;
 
-        String adco = getThing().getProperties().get(THING_EJP_CBEMM_ELECTRICITY_METER_PROPERTY_ADCO);
+        String adco = (String) getThing().getConfiguration().get(THING_EJP_CBEMM_ELECTRICITY_METER_PROPERTY_ADCO);
         if (adco.equalsIgnoreCase(frameCbemmEjpOption.getAdco())) {
             updateStatesForCommonCbemmChannels(frameCbemmEjpOption);
             updateStatesForEjpFrameOption(frameCbemmEjpOption);
