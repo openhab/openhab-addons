@@ -494,21 +494,21 @@
 		<description>Select the source input</description>
 	</channel-type>
 
-	<channel-type id="treble" advanced="true">
+	<channel-type id="treble">
 		<item-type>Number</item-type>
 		<label>Treble Adjustment</label>
 		<description>Adjust the treble</description>
 		<state min="-7" max="7" step="1" pattern="%d" />
 	</channel-type>
 	
-	<channel-type id="bass" advanced="true">
+	<channel-type id="bass">
 		<item-type>Number</item-type>
 		<label>Bass Adjustment</label>
 		<description>Adjust the bass</description>
 		<state min="-7" max="7" step="1" pattern="%d" />
 	</channel-type>
 	
-	<channel-type id="balance" advanced="true">
+	<channel-type id="balance">
 		<item-type>Number</item-type>
 		<label>Balance Adjustment</label>
 		<description>Adjust the balance</description>
