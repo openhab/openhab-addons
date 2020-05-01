@@ -26,6 +26,11 @@ import org.openhab.binding.hue.internal.HueBridge;
 @NonNullByDefault
 public interface LightStatusListener {
 
+    /**
+     * This method returns the light Id
+     * 
+     * @return lightId of thing or DISCOVERY for discovery service
+     */
     String getLightId();
 
     /**
@@ -34,6 +39,7 @@ public interface LightStatusListener {
      *
      * @param bridge The bridge the changed light is connected to.
      * @param light The light which received the state update.
+     * @return The light handler returns true if it accepts the new state.
      */
     boolean onLightStateChanged(@Nullable HueBridge bridge, FullLight light);
 

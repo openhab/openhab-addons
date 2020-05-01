@@ -458,9 +458,10 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
     public boolean onLightStateChanged(@Nullable HueBridge bridge, FullLight fullLight) {
         logger.trace("onLightStateChanged() was called");
 
+        // TODO Maybe this check is obsolete
         if (!fullLight.getId().equals(lightId)) {
             logger.trace("Received state change for another handler's light ({}). Will be ignored.", fullLight.getId());
-            return true;
+            return false;
         }
 
         if (System.currentTimeMillis() - lastTimeCmd <= BYPASS_LIGHT_POLL_DURATION) {
@@ -534,21 +535,21 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
 
     @Override
     public void onLightRemoved(@Nullable HueBridge bridge, FullLight light) {
-        if (light.getId().equals(lightId)) {
+        if (light.getId().equals(lightId)) { // TODO Maybe this check is obsolete
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.light-removed");
         }
     }
 
     @Override
     public void onLightGone(@Nullable HueBridge bridge, FullLight light) {
-        if (light.getId().equals(lightId)) {
+        if (light.getId().equals(lightId)) { // TODO Maybe this check is obsolete
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "@text/offline.light-not-reachable");
         }
     }
 
     @Override
     public void onLightAdded(@Nullable HueBridge bridge, FullLight light) {
-        if (light.getId().equals(lightId)) {
+        if (light.getId().equals(lightId)) { // TODO Maybe this check is obsolete
             onLightStateChanged(bridge, light);
         }
     }

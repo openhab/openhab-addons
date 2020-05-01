@@ -27,11 +27,19 @@ import org.openhab.binding.hue.internal.HueBridge;
 public interface SensorStatusListener {
 
     /**
+     * This method returns the sensor Id
+     * 
+     * @return sensor id of thing or DISCOVERY for discovery service
+     */
+    String getSensorId();
+
+    /**
      * This method is called whenever the state of the given sensor has changed. The new state can be obtained by
      * {@link FullSensor#getState()}.
      *
      * @param bridge The bridge the changed sensor is connected to.
      * @param sensor The sensor which received the state update.
+     * @return The sensor handler returns true if it accepts the new state.
      */
     boolean onSensorStateChanged(@Nullable HueBridge bridge, FullSensor sensor);
 
@@ -58,6 +66,4 @@ public interface SensorStatusListener {
      * @param sensor The added sensor
      */
     void onSensorAdded(@Nullable HueBridge bridge, FullSensor sensor);
-
-    String getSensorId();
 }
