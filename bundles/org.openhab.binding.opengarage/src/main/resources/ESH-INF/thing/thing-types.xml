@@ -60,7 +60,7 @@
 	</channel-type>
 	<channel-type id="opengarage-status-rollershutter">
 		<item-type>Rollershutter</item-type>
-		<label>Rollershuter Status</label>
+		<label>Rollershutter Status</label>
 		<description>Roller Shutter Status of the OG unit</description>
 	</channel-type>
 	<channel-type id="opengarage-vehicle">

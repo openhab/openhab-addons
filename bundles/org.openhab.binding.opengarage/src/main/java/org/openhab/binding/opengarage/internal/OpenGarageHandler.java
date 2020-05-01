@@ -68,13 +68,13 @@ public class OpenGarageHandler extends BaseThingHandler {
                     case OpenGarageBindingConstants.CHANNEL_OG_STATUS:
                     case OpenGarageBindingConstants.CHANNEL_OG_STATUS_ROLLERSHUTTER:
                         if (command.equals(OnOffType.ON) || command.equals(UpDownType.UP)) {
-                            changeStatus(OpenGarageCommand.OPEN.getValue());
+                            changeStatus(OpenGarageCommand.OPEN);
                             return;
                         } else if (command.equals(OnOffType.OFF) || command.equals(UpDownType.DOWN)) {
-                            changeStatus(OpenGarageCommand.CLOSE.getValue());
+                            changeStatus(OpenGarageCommand.CLOSE);
                             return;
                         } else if (command.equals(StopMoveType.STOP) || command.equals(StopMoveType.MOVE)) {
-                            changeStatus(OpenGarageCommand.CLICK.getValue());
+                            changeStatus(OpenGarageCommand.CLICK);
                             return;
                         } 
                         break;
@@ -159,7 +159,7 @@ public class OpenGarageHandler extends BaseThingHandler {
         }
     }
 
-    private void changeStatus(String status) throws OpenGarageCommunicationException {
+    private void changeStatus(OpenGarageCommand status) throws OpenGarageCommunicationException {
         webTargets.setControllerVariables(status);
     }
 }

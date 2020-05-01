@@ -44,14 +44,15 @@ public class OpenGarageWebTargets {
         return ControllerVariables.parse(response);
     }
 
-    public void setControllerVariables(String request) throws OpenGarageCommunicationException {
+    public void setControllerVariables(OpenGarageCommand request) throws OpenGarageCommunicationException {
         logger.debug("Received request: {}", request);
         String queryParams = null;
-        if (request.equals(OpenGarageCommand.OPEN.getValue())) {
+        switch (request) {
+            case OPEN:
               queryParams = "&open=1";
-        } else if (request.equals(OpenGarageCommand.CLOSE.getValue())) {
+            case CLOSE:
               queryParams = "&close=1";
-        } else if (request.equals(OpenGarageCommand.CLICK.getValue())) {
+            case CLICK:
               queryParams = "&click=1";
         }
         if (queryParams != null) {
