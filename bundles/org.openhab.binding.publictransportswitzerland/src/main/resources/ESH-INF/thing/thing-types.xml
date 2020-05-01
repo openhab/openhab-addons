@@ -4,29 +4,27 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
-	<thing-type id="sample">
-		<label>PublicTransportSwitzerland Binding Thing</label>
-		<description>Sample thing for PublicTransportSwitzerland Binding</description>
+	<thing-type id="stationboard">
+		<label>Public Transport Switzerland - Stationboard</label>
+		<description>Upcoming departures</description>
 
 		<channels>
-			<channel id="channel1" typeId="sample-channel" />
+			<channel id="json" typeId="json" />
 		</channels>
 
 		<config-description>
-			<parameter name="config1" type="text" required="true">
-				<label>Sample Parameter</label>
-				<description>This is a sample text configuration parameter</description>
+			<parameter name="station" type="text" required="true">
+				<label>Station</label>
+				<description>The name of the station</description>
 			</parameter>
 		</config-description>
 
 	</thing-type>
 
-	<!-- Sample Channel Type -->
-	<channel-type id="sample-channel">
-		<item-type>publictransportswitzerlandItem</item-type>
-		<label>PublicTransportSwitzerland Binding Channel</label>
-		<description>Sample channel for PublicTransportSwitzerland Binding</description>
+	<channel-type id="json">
+		<item-type>String</item-type>
+		<label>Public Transport Switzerland - JSON</label>
+		<description>The raw json response</description>
 	</channel-type>
 
 </thing:thing-descriptions>

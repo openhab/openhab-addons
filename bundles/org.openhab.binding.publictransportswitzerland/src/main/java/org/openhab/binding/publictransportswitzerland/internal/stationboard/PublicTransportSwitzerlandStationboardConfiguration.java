@@ -10,17 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.publictransportswitzerland.internal;
+package org.openhab.binding.publictransportswitzerland.internal.stationboard;
 
 /**
- * The {@link PublicTransportSwitzerlandConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link PublicTransportSwitzerlandStationboardConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Jeremy Stucki & Stefanie Jäger - Initial contribution
  */
-public class PublicTransportSwitzerlandConfiguration {
+public class PublicTransportSwitzerlandStationboardConfiguration {
 
     /**
-     * Sample configuration parameter. Replace with your own.
+     * The station name
      */
-    public String config1;
+    public String station;
 }
