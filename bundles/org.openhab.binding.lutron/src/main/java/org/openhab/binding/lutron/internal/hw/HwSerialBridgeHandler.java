@@ -201,7 +201,6 @@ public class HwSerialBridgeHandler extends BaseBridgeHandler implements SerialPo
                 logger.error("Error parsing incoming message", e);
             }
         }
-
     }
 
     private HwDimmerHandler findHandler(String address) {
@@ -267,5 +266,4 @@ public class HwSerialBridgeHandler extends BaseBridgeHandler implements SerialPo
 
         logger.debug("Finished disposing bridge.");
     }
-
 }

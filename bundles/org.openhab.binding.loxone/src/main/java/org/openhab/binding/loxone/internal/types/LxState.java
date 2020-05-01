@@ -39,8 +39,8 @@ public class LxState {
     /**
      * Create a control state object.
      *
-     * @param uuid    UUID of the state
-     * @param name    name of the state
+     * @param uuid UUID of the state
+     * @param name name of the state
      * @param control control to which this state belongs
      */
     public LxState(LxUuid uuid, String name, LxControl control) {

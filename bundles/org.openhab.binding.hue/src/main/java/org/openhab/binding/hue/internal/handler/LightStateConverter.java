@@ -21,10 +21,10 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.openhab.binding.hue.internal.State;
-import org.openhab.binding.hue.internal.StateUpdate;
 import org.openhab.binding.hue.internal.State.AlertMode;
 import org.openhab.binding.hue.internal.State.ColorMode;
 import org.openhab.binding.hue.internal.State.Effect;
+import org.openhab.binding.hue.internal.StateUpdate;
 
 /**
  * The {@link LightStateConverter} is responsible for mapping Eclipse SmartHome
@@ -310,5 +310,4 @@ public class LightStateConverter {
         }
         return percentValue;
     }
-
 }

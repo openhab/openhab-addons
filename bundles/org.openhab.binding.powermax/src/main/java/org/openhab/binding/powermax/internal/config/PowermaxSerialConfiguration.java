@@ -28,5 +28,4 @@ public class PowermaxSerialConfiguration {
     public Boolean forceStandardMode;
     public String panelType;
     public Boolean autoSyncTime;
-
 }

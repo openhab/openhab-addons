@@ -17,11 +17,11 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mihome.internal.discovery.XiaomiBridgeDiscoveryService;
 import org.openhab.binding.mihome.internal.handler.XiaomiBridgeHandler;
 import org.slf4j.Logger;
@@ -38,71 +38,66 @@ import com.google.gson.JsonParser;
  * @author Dieter Schmidt - JavaDoc, refactored, reviewed
  *
  */
+@NonNullByDefault
 public abstract class XiaomiSocket {
 
     static final String MCAST_ADDR = "224.0.0.50";
+
     private static final int BUFFER_LENGTH = 1024;
-    private DatagramPacket datagramPacket = new DatagramPacket(new byte[BUFFER_LENGTH], BUFFER_LENGTH);
-
-    private List<XiaomiSocketListener> listeners = new CopyOnWriteArrayList<>();
-
     private static final JsonParser PARSER = new JsonParser();
 
     private final Logger logger = LoggerFactory.getLogger(XiaomiSocket.class);
 
-    private static Map<Integer, DatagramSocket> openSockets = new ConcurrentHashMap<>();
+    private final DatagramPacket datagramPacket = new DatagramPacket(new byte[BUFFER_LENGTH], BUFFER_LENGTH);
+    private final Set<XiaomiSocketListener> listeners = new CopyOnWriteArraySet<>();
 
-    private int port;
-    private DatagramSocket socket;
-    private Thread socketReceiveThread;
+    private final int port;
+    private @Nullable DatagramSocket socket;
+    private final Thread socketReceiveThread = new Thread(this::receiveData);
 
     /**
      * Sets up an {@link XiaomiSocket} with the MiHome multicast address and a random port
      *
+     * @param owner identifies the socket owner
      */
-    public XiaomiSocket() {
-        this(0);
+    public XiaomiSocket(String owner) {
+        this(0, owner);
     }
 
     /**
      * Sets up an {@link XiaomiSocket} with the MiHome multicast address and a specific port
      *
-     * @param port - the socket will be bound to this port
+     * @param port the socket will be bound to this port
+     * @param owner identifies the socket owner
      */
-    public XiaomiSocket(int port) {
+    public XiaomiSocket(int port, String owner) {
         this.port = port;
+        socketReceiveThread.setName("XiaomiSocketReceiveThread(" + port + ", " + owner + ")");
     }
 
-    public void intialize() {
+    public void initialize() {
         setupSocket();
-        runReceiveThread();
-    }
-
-    protected void runReceiveThread() {
-        socketReceiveThread = new ReceiverThread();
-        socketReceiveThread.start();
-        if (getSocket() != null) {
-            getOpenSockets().put(getSocket().getLocalPort(), getSocket());
-            logger.debug("There are {} open sockets: {}", getOpenSockets().size(), getOpenSockets());
+        if (!socketReceiveThread.isAlive()) {
+            logger.trace("Starting receiver thread {}", socketReceiveThread);
+            socketReceiveThread.start();
         }
     }
 
-    abstract DatagramSocket setupSocket();
+    protected abstract void setupSocket();
 
     /**
      * Interrupts the {@link ReceiverThread} and closes the {@link XiaomiSocket}.
      */
     private void closeSocket() {
         synchronized (XiaomiSocket.class) {
-            if (socketReceiveThread != null) {
-                logger.debug("Interrupting Thread {}", socketReceiveThread);
-                socketReceiveThread.interrupt();
-            }
-            if (getSocket() != null) {
-                logger.debug("Closing socket {}", getSocket());
-                openSockets.remove(getSocket().getLocalPort());
-                getSocket().close();
-                setSocket(null);
+            logger.debug("Interrupting receiver thread {}", socketReceiveThread);
+            socketReceiveThread.interrupt();
+
+            DatagramSocket socket = this.socket;
+            if (socket != null) {
+                logger.debug("Closing socket {}", socket);
+                socket.close();
+                this.socket = null;
             }
         }
     }
@@ -111,15 +106,16 @@ public abstract class XiaomiSocket {
      * Registers a {@link XiaomiSocketListener} to be called back, when data is received.
      * If no {@link XiaomiSocket} exists, when the method is called, it is being set up.
      *
-     * @param listener - {@link XiaomiSocketListener} to be called back
+     * @param listener {@link XiaomiSocketListener} to be called back
      */
     public synchronized void registerListener(XiaomiSocketListener listener) {
-        if (!getListeners().contains(listener)) {
-            logger.trace("Adding socket listener {}", listener);
-            getListeners().add(listener);
+        if (listeners.add(listener)) {
+            logger.trace("Added socket listener {}", listener);
         }
-        if (getSocket() == null) {
-            intialize();
+
+        DatagramSocket socket = this.socket;
+        if (socket == null) {
+            initialize();
         }
     }
 
@@ -127,12 +123,14 @@ public abstract class XiaomiSocket {
      * Unregisters a {@link XiaomiSocketListener}. If there are no listeners left,
      * the {@link XiaomiSocket} is being closed.
      *
-     * @param listener - {@link XiaomiSocketListener} to be unregistered
+     * @param listener {@link XiaomiSocketListener} to be unregistered
      */
     public synchronized void unregisterListener(XiaomiSocketListener listener) {
-        getListeners().remove(listener);
+        if (listeners.remove(listener)) {
+            logger.trace("Removed socket listener {}", listener);
+        }
 
-        if (getListeners().isEmpty()) {
+        if (listeners.isEmpty()) {
             closeSocket();
         }
     }
@@ -140,36 +138,35 @@ public abstract class XiaomiSocket {
     /**
      * Sends a message through the {@link XiaomiSocket} to a specific address and port
      *
-     * @param message - Message to be sent
-     * @param address - Address, to which the message shall be sent
-     * @param port - Port, through which the message shall be sent
+     * @param message the message to be sent
+     * @param address the message destination address
+     * @param port the message destination port
      */
     public void sendMessage(String message, InetAddress address, int port) {
+        DatagramSocket socket = this.socket;
+        if (socket == null) {
+            logger.error("Error while sending message (socket is null)");
+            return;
+        }
+
         try {
             byte[] sendData = message.getBytes(StandardCharsets.UTF_8);
             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, address, port);
             logger.trace("Sending message: {} to {}:{}", message, address, port);
-            getSocket().send(sendPacket);
+            socket.send(sendPacket);
         } catch (IOException e) {
-            logger.error("Sending error", e);
+            logger.error("Error while sending message", e);
         }
     }
 
     /**
-     * @return - the port number of this {@link XiaomiSocket}
+     * @return the port number of this {@link XiaomiSocket}
      */
     public int getPort() {
         return port;
     }
 
-    /**
-     * @return - a list of already open sockets
-     */
-    public static Map<Integer, DatagramSocket> getOpenSockets() {
-        return openSockets;
-    }
-
-    protected DatagramSocket getSocket() {
+    protected @Nullable DatagramSocket getSocket() {
         return socket;
     }
 
@@ -177,71 +174,58 @@ public abstract class XiaomiSocket {
         this.socket = socket;
     }
 
-    protected List<XiaomiSocketListener> getListeners() {
-        return listeners;
+    /**
+     * This method is the main method of the receiver thread for the {@link XiaomiBridgeSocket}.
+     * If the socket has data, it parses the data to a json object and calls all
+     * {@link XiaomiSocketListener} and passes the data to them.
+     */
+    private void receiveData() {
+        DatagramSocket socket = this.socket;
+        if (socket == null) {
+            logger.error("Failed to receive data (socket is null)");
+            return;
+        }
+
+        Thread currentThread = Thread.currentThread();
+        int localPort = socket.getLocalPort();
+
+        try {
+            while (!currentThread.isInterrupted()) {
+                logger.trace("Thread {} waiting for data on port {}", currentThread.getName(), localPort);
+                socket.receive(datagramPacket);
+                InetAddress address = datagramPacket.getAddress();
+                logger.debug("Received Datagram from {}:{} on port {}", address.getHostAddress(),
+                        datagramPacket.getPort(), localPort);
+                String sentence = new String(datagramPacket.getData(), 0, datagramPacket.getLength());
+                JsonObject message = PARSER.parse(sentence).getAsJsonObject();
+                notifyListeners(message, address);
+                logger.trace("Data received and notified {} listeners", listeners.size());
+            }
+        } catch (IOException e) {
+            if (!currentThread.isInterrupted()) {
+                logger.error("Error while receiving", e);
+            } else {
+                logger.trace("Receiver thread was interrupted");
+            }
+        }
+        logger.debug("Receiver thread ended");
     }
 
     /**
-     * The thread, which waits for data on the {@link XiaomiSocket} and handles it, when received
+     * Notifies all {@link XiaomiSocketListener} on the parent {@link XiaomiSocket}. First checks for any matching
+     * {@link XiaomiBridgeHandler}, before passing to any {@link XiaomiBridgeDiscoveryService}.
      *
-     * @author Patrick Boos - Initial contribution
-     * @author Dieter Schmidt - comments and synchronized block for callback instead of copy
-     *
+     * @param message the data message as {@link JsonObject}
+     * @param address the address from which the message was received
      */
-    private class ReceiverThread extends Thread {
-        @Override
-        public void run() {
-            logger.trace("Staring reveicer thread for socket on port {}", getSocket().getLocalPort());
-            receiveData(getSocket(), datagramPacket);
-        }
-
-        /**
-         * This method is the main method of the {@link ReceiverThread} for the {@link XiaomiBridgeSocket}.
-         * If the socket has data, it parses the data to a json object and calls all
-         * {@link XiaomiSocketListener} and passes the data to them.
-         *
-         * @param socket - The multicast socket to listen to
-         * @param dgram - The datagram to receive
-         */
-        private void receiveData(DatagramSocket socket, DatagramPacket dgram) {
-            try {
-                while (true) {
-                    logger.trace("Thread {} waiting for data on port {}", this, socket.getLocalPort());
-                    socket.receive(dgram);
-                    InetAddress address = dgram.getAddress();
-                    logger.debug("Received Datagram from {}:{} on Port {}", address.getHostAddress(), dgram.getPort(),
-                            socket.getLocalPort());
-                    String sentence = new String(dgram.getData(), 0, dgram.getLength());
-                    JsonObject message = PARSER.parse(sentence).getAsJsonObject();
-                    notifyAll(getListeners(), message, address);
-                    logger.trace("Data received and notified {} listeners", getListeners().size());
-                }
-            } catch (IOException e) {
-                if (!isInterrupted()) {
-                    logger.error("Error while receiving", e);
-                } else {
-                    logger.trace("Receiver thread was interrupted");
-                }
-            }
-            logger.debug("Receiver thread ended");
-        }
-
-        /**
-         * Notifies all {@link XiaomiSocketListener} on the parent {@link XiaomiSocket}. First checks for any matching
-         * {@link XiaomiBridgeHandler}, before passing to any {@link XiaomiBridgeDiscoveryService}.
-         *
-         * @param listeners - a list of all {@link XiaomiSocketListener} to notify
-         * @param message - the data message as {@link JsonObject}
-         */
-        synchronized void notifyAll(List<XiaomiSocketListener> listeners, JsonObject message, InetAddress address) {
-            for (XiaomiSocketListener listener : listeners) {
-                if (listener instanceof XiaomiBridgeHandler) {
-                    if (((XiaomiBridgeHandler) listener).getHost().equals(address)) {
-                        listener.onDataReceived(message);
-                    }
-                } else if (listener instanceof XiaomiBridgeDiscoveryService) {
+    private void notifyListeners(JsonObject message, InetAddress address) {
+        for (XiaomiSocketListener listener : listeners) {
+            if (listener instanceof XiaomiBridgeHandler) {
+                if (((XiaomiBridgeHandler) listener).getHost().equals(address)) {
                     listener.onDataReceived(message);
                 }
+            } else if (listener instanceof XiaomiBridgeDiscoveryService) {
+                listener.onDataReceived(message);
             }
         }
     }

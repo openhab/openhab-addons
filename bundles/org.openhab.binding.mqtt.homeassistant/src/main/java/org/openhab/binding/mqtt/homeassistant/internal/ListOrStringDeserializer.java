@@ -88,6 +88,5 @@ public class ListOrStringDeserializer extends TypeAdapter<List<String>> {
         in.endArray();
 
         return result;
-
     }
 }

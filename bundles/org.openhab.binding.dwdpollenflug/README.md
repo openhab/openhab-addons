@@ -11,17 +11,22 @@ https://isabel.dwd.de/DE/leistungen/gefahrenindizespollen/gefahrenindexpollen.ht
 This binding supports a bridge thing (`bridge`), which polls the dataset for Germany in an adjustable interval. 
 And it supports a region thing (`region`), representing the data for all pollen types of a region or partregion.
 
+## Discovery
+
+This binding adds a default `bridge` thing to the Inbox. 
+This can be used for `region` things you may add manually.
+
 ## Thing Configuration
 
 ### Bridge
 
-| Property  | Default | Required | Description                                                                          |
+| Parameter | Default | Required | Description                                                                          |
 | --------- | :-----: | :------: | ------------------------------------------------------------------------------------ |
 | `refresh` |   30    |    no    | Define the interval for polling the data from DWD in minutes. Minimum is 15 minutes. |
 
 ### Region
 
-| Property   | Default | Required | Description                                                                                              |
+| Parameter  | Default | Required | Description                                                                                              |
 | ---------- | :-----: | :------: | -------------------------------------------------------------------------------------------------------- |
 | `regionID` |    -    |   yes    | In PaperUI just select the region you want to display data for. For files-configuration see table below. |
 

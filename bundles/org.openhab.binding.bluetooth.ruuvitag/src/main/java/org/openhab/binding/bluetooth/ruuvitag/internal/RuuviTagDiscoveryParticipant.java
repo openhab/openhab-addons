@@ -76,5 +76,4 @@ public class RuuviTagDiscoveryParticipant implements BluetoothDiscoveryParticipa
                 .withRepresentationProperty(BluetoothBindingConstants.CONFIGURATION_ADDRESS)
                 .withBridge(device.getAdapter().getUID()).withLabel(label).build();
     }
-
 }

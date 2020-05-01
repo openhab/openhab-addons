@@ -107,7 +107,7 @@ public class NeoBaseHandler extends BaseThingHandler {
             logger.warn(MSG_FMT_DEVICE_CONFIG, getThing().getLabel());
             return;
         }
-        
+
         if (myInfo.isOffline()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             logger.debug(MSG_FMT_DEVICE_COMM, getThing().getLabel());
@@ -117,7 +117,7 @@ public class NeoBaseHandler extends BaseThingHandler {
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
         }
-        
+
         toOpenHabSendChannelValues(myInfo);
     }
 
@@ -146,27 +146,27 @@ public class NeoBaseHandler extends BaseThingHandler {
                  * issue command, check result, and update status accordingly
                  */
                 switch (hub.toNeoHubSendChannelValue(cmdStr)) {
-                case SUCCEEDED:
-                    logger.debug(MSG_FMT_COMMAND_OK, getThing().getLabel());
+                    case SUCCEEDED:
+                        logger.debug(MSG_FMT_COMMAND_OK, getThing().getLabel());
 
-                    if (getThing().getStatus() != ThingStatus.ONLINE) {
-                        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
-                    }
+                        if (getThing().getStatus() != ThingStatus.ONLINE) {
+                            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                        }
 
-                    // initialize the de-bouncer for this channel
-                    debouncer.initialize(channelId);
+                        // initialize the de-bouncer for this channel
+                        debouncer.initialize(channelId);
 
-                    break;
+                        break;
 
-                case ERR_COMMUNICATION:
-                    logger.debug(MSG_HUB_COMM);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                    break;
+                    case ERR_COMMUNICATION:
+                        logger.debug(MSG_HUB_COMM);
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                        break;
 
-                case ERR_INITIALIZATION:
-                    logger.warn(MSG_HUB_CONFIG);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-                    break;
+                    case ERR_INITIALIZATION:
+                        logger.warn(MSG_HUB_CONFIG);
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                        break;
                 }
             } else {
                 logger.debug(MSG_HUB_CONFIG);

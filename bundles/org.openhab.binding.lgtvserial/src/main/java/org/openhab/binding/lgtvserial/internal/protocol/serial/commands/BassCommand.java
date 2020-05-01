@@ -23,5 +23,4 @@ public class BassCommand extends BasePercentCommand {
     protected BassCommand(int setId) {
         super('k', 's', setId);
     }
-
 }

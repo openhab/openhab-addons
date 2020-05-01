@@ -248,5 +248,4 @@ public class NeoHubHandler extends BaseBridgeHandler {
             lazyPollingSchedulerExecute();
         }
     }
-
 }

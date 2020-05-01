@@ -27,7 +27,7 @@ import io.github.hapjava.HomekitAuthInfo;
 import io.github.hapjava.HomekitServer;
 
 /**
- * Provides a mechanism to store authenticated homekit client details inside the
+ * Provides a mechanism to store authenticated HomeKit client details inside the
  * ESH StorageService, by implementing HomekitAuthInfo.
  *
  * @author Andy Lintner - Initial contribution
@@ -126,5 +126,4 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
             storage.put("privateKey", Base64.getEncoder().encodeToString(HomekitServer.generateKey()));
         }
     }
-
 }

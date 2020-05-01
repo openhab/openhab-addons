@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<thing-type id="bae091x">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="owserver" />
+			<bridge-type-ref id="owserver"/>
 		</supported-bridge-type-refs>
 		<label>Multisensor BAE0910</label>
 		<description>1-wire multisensor (BAE0910-based)</description>
@@ -150,7 +150,7 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Analog Input</label>
 		<description>Analog input (ADC)</description>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 		<config-description>
 			<parameter name="hires" type="boolean">
 				<label>Hires</label>
@@ -163,6 +163,6 @@
 	<channel-type id="bae-counter">
 		<item-type>Number</item-type>
 		<label>Counter</label>
-		<state readOnly="true" pattern="%d" />
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 </thing:thing-descriptions>

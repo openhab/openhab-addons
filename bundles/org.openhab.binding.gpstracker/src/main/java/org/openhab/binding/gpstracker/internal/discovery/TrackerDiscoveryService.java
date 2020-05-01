@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.gpstracker.internal.discovery;
 
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
@@ -26,11 +31,6 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 /**
  * The {@link TrackerDiscoveryService} class provides discovery service for the binding to discover trackers. Discovery
  * process is initiated by the tracker by sending a GPS log record. Based on the tracker id received in thin record an
@@ -39,7 +39,8 @@ import java.util.Set;
  * @author Gabor Bicskei - Initial contribution
  */
 @NonNullByDefault
-@Component(service = { DiscoveryService.class, TrackerDiscoveryService.class }, immediate = true, configurationPid = "discovery.gpstracker")
+@Component(service = { DiscoveryService.class,
+        TrackerDiscoveryService.class }, immediate = true, configurationPid = "discovery.gpstracker")
 public class TrackerDiscoveryService extends AbstractDiscoveryService {
     /**
      * Discovery timeout
@@ -96,8 +97,7 @@ public class TrackerDiscoveryService extends AbstractDiscoveryService {
         ThingUID id = new ThingUID(GPSTrackerBindingConstants.THING_TYPE_TRACKER, trackerId);
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(id)
                 .withProperty(ConfigHelper.CONFIG_TRACKER_ID, trackerId)
-                .withThingType(GPSTrackerBindingConstants.THING_TYPE_TRACKER)
-                .withLabel("GPS Tracker " + trackerId)
+                .withThingType(GPSTrackerBindingConstants.THING_TYPE_TRACKER).withLabel("GPS Tracker " + trackerId)
                 .build();
         this.thingDiscovered(discoveryResult);
     }

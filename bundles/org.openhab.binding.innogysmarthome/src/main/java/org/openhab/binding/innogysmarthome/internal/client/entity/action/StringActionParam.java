@@ -59,5 +59,4 @@ public class StringActionParam {
     public void setValue(String value) {
         this.value = value;
     }
-
 }

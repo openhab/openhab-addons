@@ -44,25 +44,25 @@
 	<thing-type id="wirelessClient">
 
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="controller" />
+			<bridge-type-ref id="controller"/>
 		</supported-bridge-type-refs>
 		<label>UniFi Wireless Client</label>
 		<description>A wireless client connected to a UniFi wireless network</description>
 
 		<channels>
 			<!-- common wired + wireless client channels -->
-			<channel id="online" typeId="online" />
-			<channel id="site" typeId="site" />
-			<channel id="macAddress" typeId="macAddress" />
-			<channel id="ipAddress" typeId="ipAddress" />
-			<channel id="uptime" typeId="uptime" />
-			<channel id="lastSeen" typeId="lastSeen" />
-			<channel id="blocked" typeId="blocked" />
+			<channel id="online" typeId="online"/>
+			<channel id="site" typeId="site"/>
+			<channel id="macAddress" typeId="macAddress"/>
+			<channel id="ipAddress" typeId="ipAddress"/>
+			<channel id="uptime" typeId="uptime"/>
+			<channel id="lastSeen" typeId="lastSeen"/>
+			<channel id="blocked" typeId="blocked"/>
 			<!-- additional wireless client channels -->
-			<channel id="ap" typeId="ap" />
-			<channel id="essid" typeId="essid" />
-			<channel id="rssi" typeId="rssi" />
-			<channel id="reconnect" typeId="reconnect" />
+			<channel id="ap" typeId="ap"/>
+			<channel id="essid" typeId="essid"/>
+			<channel id="rssi" typeId="rssi"/>
+			<channel id="reconnect" typeId="reconnect"/>
 		</channels>
 
 		<representation-property>cid</representation-property>

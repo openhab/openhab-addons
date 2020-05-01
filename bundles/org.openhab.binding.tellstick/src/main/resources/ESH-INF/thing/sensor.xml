@@ -6,67 +6,67 @@
 
 	<thing-type id="sensor">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="telldus-core" />
-			<bridge-type-ref id="telldus-live" />
+			<bridge-type-ref id="telldus-core"/>
+			<bridge-type-ref id="telldus-live"/>
 		</supported-bridge-type-refs>
 
 		<label>Sensor</label>
 		<description>This Thing defines a Sensor</description>
 		<channels>
-			<channel id="humidity" typeId="humidity" />
-			<channel id="timestamp" typeId="timestamp" />
-			<channel id="temperature" typeId="temperature" />
-			<channel id="lux" typeId="lux" />
+			<channel id="humidity" typeId="humidity"/>
+			<channel id="timestamp" typeId="timestamp"/>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="lux" typeId="lux"/>
 		</channels>
-		<config-description-ref uri="thing-type:tellstick:sensor-config" />
+		<config-description-ref uri="thing-type:tellstick:sensor-config"/>
 	</thing-type>
 
 	<thing-type id="rainsensor">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="telldus-core" />
-			<bridge-type-ref id="telldus-live" />
+			<bridge-type-ref id="telldus-core"/>
+			<bridge-type-ref id="telldus-live"/>
 		</supported-bridge-type-refs>
 
 		<label>RainSensor</label>
 		<description>This Thing defines a Rain Sensor</description>
 		<channels>
-			<channel id="timestamp" typeId="timestamp" />
-			<channel id="rainrate" typeId="rainrate" />
-			<channel id="raintotal" typeId="raintotal" />
+			<channel id="timestamp" typeId="timestamp"/>
+			<channel id="rainrate" typeId="rainrate"/>
+			<channel id="raintotal" typeId="raintotal"/>
 		</channels>
-		<config-description-ref uri="thing-type:tellstick:sensor-config" />
+		<config-description-ref uri="thing-type:tellstick:sensor-config"/>
 	</thing-type>
 
 	<thing-type id="powersensor">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="telldus-live" />
+			<bridge-type-ref id="telldus-live"/>
 		</supported-bridge-type-refs>
 
 		<label>PowerSensor</label>
 		<description>This Thing defines a Power Sensor</description>
 		<channels>
-			<channel id="timestamp" typeId="timestamp" />
-			<channel id="watt" typeId="watt" />
-			<channel id="ampere" typeId="ampere" />
+			<channel id="timestamp" typeId="timestamp"/>
+			<channel id="watt" typeId="watt"/>
+			<channel id="ampere" typeId="ampere"/>
 		</channels>
-		<config-description-ref uri="thing-type:tellstick:sensor-config" />
+		<config-description-ref uri="thing-type:tellstick:sensor-config"/>
 	</thing-type>
 
 	<thing-type id="windsensor">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="telldus-core" />
-			<bridge-type-ref id="telldus-live" />
+			<bridge-type-ref id="telldus-core"/>
+			<bridge-type-ref id="telldus-live"/>
 		</supported-bridge-type-refs>
 
 		<label>WindSensor</label>
 		<description>This Thing defines a Wind Sensor</description>
 		<channels>
-			<channel id="timestamp" typeId="timestamp" />
-			<channel id="windgust" typeId="windgust" />
-			<channel id="winddirection" typeId="winddirection" />
-			<channel id="windaverage" typeId="windaverage" />
+			<channel id="timestamp" typeId="timestamp"/>
+			<channel id="windgust" typeId="windgust"/>
+			<channel id="winddirection" typeId="winddirection"/>
+			<channel id="windaverage" typeId="windaverage"/>
 		</channels>
-		<config-description-ref uri="thing-type:tellstick:sensor-config" />
+		<config-description-ref uri="thing-type:tellstick:sensor-config"/>
 	</thing-type>
 
 	<channel-type id="temperature">
@@ -91,7 +91,7 @@
 		<item-type>Number:Length</item-type>
 		<label>Rainrate</label>
 		<description>The current rain rate</description>
-		<state pattern="%d %unit%" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="raintotal">
@@ -121,7 +121,7 @@
 		<label>Wind Direction</label>
 		<description>Current wind direction</description>
 		<category>Wind</category>
-		<state min="0" max="360" step="1" readOnly="true" pattern="%.1f %unit%" />
+		<state min="0" max="360" step="1" readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="watt">
@@ -136,7 +136,7 @@
 		<item-type>Number:Illuminance</item-type>
 		<label>Lux</label>
 		<description>Current lumination</description>
-		<state readOnly="true" pattern="%f %unit%" />
+		<state readOnly="true" pattern="%f %unit%"/>
 	</channel-type>
 
 	<channel-type id="ampere">

@@ -34,10 +34,9 @@ import org.eclipse.smarthome.test.java.JavaTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openhab.binding.dmx.internal.handler.ArtnetBridgeHandler;
 
 /**
- * Tests cases for {@link ArtnetBridgeHandler}.
+ * Tests cases for {@link org.openhab.binding.dmx.internal.handler.ArtnetBridgeHandler}.
  *
  * @author Jan N. Klug - Initial contribution
  */
@@ -102,5 +101,4 @@ public class ArtnetBridgeHandlerTest extends JavaTest {
         bridgeHandler.handleConfigurationUpdate(bridgeProperties);
         waitForAssert(() -> assertThat(bridgeHandler.getUniverseId(), is(TEST_UNIVERSE)));
     }
-
 }

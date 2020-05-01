@@ -200,5 +200,4 @@ public enum DishwasherChannelSelector implements ApplianceChannelSelector {
 
         return null;
     }
-
 }

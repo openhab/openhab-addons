@@ -144,5 +144,4 @@ public class Device {
         Device comp = (Device) obj;
         return new EqualsBuilder().append(comp.getId(), id).isEquals();
     }
-
 }

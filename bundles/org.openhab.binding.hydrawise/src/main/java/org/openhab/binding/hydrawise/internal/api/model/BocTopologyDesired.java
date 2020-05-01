@@ -22,5 +22,4 @@ import java.util.List;
 public class BocTopologyDesired {
 
     public List<Object> bocGateways;
-
 }

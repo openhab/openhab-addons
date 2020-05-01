@@ -468,5 +468,4 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
     @Override
     public void onStatusChanged(boolean status) {
     }
-
 }

@@ -23,5 +23,4 @@ public class NeoHubConfiguration {
     public String hostName;
     public int portNumber;
     public int pollingInterval;
-
 }

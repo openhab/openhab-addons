@@ -28,5 +28,4 @@ public class GUIState {
 
     public GUIState() {
     }
-
 }

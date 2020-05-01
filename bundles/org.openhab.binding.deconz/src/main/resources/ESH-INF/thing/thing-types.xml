@@ -8,23 +8,23 @@
 		<label>deCONZ</label>
 		<description>A running deCONZ software instance</description>
 
-		<config-description-ref uri="thing-type:deconz:bridge" />
+		<config-description-ref uri="thing-type:deconz:bridge"/>
 	</bridge-type>
 
 	<thing-type id="presencesensor">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="deconz" />
+			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Presence Sensor</label>
 		<description>A Presence sensor</description>
 		<channels>
-			<channel typeId="presence" id="presence" />
-			<channel typeId="last_updated" id="last_updated" />
+			<channel typeId="presence" id="presence"/>
+			<channel typeId="last_updated" id="last_updated"/>
 		</channels>
 
 		<representation-property>uid</representation-property>
 
-		<config-description-ref uri="thing-type:deconz:sensor" />
+		<config-description-ref uri="thing-type:deconz:sensor"/>
 	</thing-type>
 
 	<channel-type id="presence">
@@ -39,23 +39,23 @@
 		<label>Last Updated</label>
 		<description>The date and time when the sensor was last updated.</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS" />
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
 	<thing-type id="powersensor">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="deconz" />
+			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Power Sensor</label>
 		<description>A power sensor</description>
 		<channels>
-			<channel typeId="power" id="power" />
-			<channel typeId="last_updated" id="last_updated" />
+			<channel typeId="power" id="power"/>
+			<channel typeId="last_updated" id="last_updated"/>
 		</channels>
 
 		<representation-property>uid</representation-property>
 
-		<config-description-ref uri="thing-type:deconz:sensor" />
+		<config-description-ref uri="thing-type:deconz:sensor"/>
 	</thing-type>
 
 	<channel-type id="power">
@@ -71,7 +71,7 @@
 		<label>Voltage</label>
 		<description>Current voltage</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="current">
@@ -79,12 +79,12 @@
 		<label>Current</label>
 		<description>Current current</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<thing-type id="consumptionsensor">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="deconz" />
+			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Consumption Sensor</label>
 		<description>A consumption sensor</description>
@@ -95,7 +95,7 @@
 
 		<representation-property>uid</representation-property>
 
-		<config-description-ref uri="thing-type:deconz:sensor" />
+		<config-description-ref uri="thing-type:deconz:sensor"/>
 	</thing-type>
 
 	<channel-type id="consumption">
@@ -107,19 +107,19 @@
 
 	<thing-type id="switch">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="deconz" />
+			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Switch/Button</label>
 		<description>A switch or button</description>
 		<channels>
-			<channel typeId="buttonevent" id="buttonevent" />
-			<channel typeId="button" id="button" />
-			<channel typeId="last_updated" id="last_updated" />
+			<channel typeId="buttonevent" id="buttonevent"/>
+			<channel typeId="button" id="button"/>
+			<channel typeId="last_updated" id="last_updated"/>
 		</channels>
 
 		<representation-property>uid</representation-property>
 
-		<config-description-ref uri="thing-type:deconz:sensor" />
+		<config-description-ref uri="thing-type:deconz:sensor"/>
 	</thing-type>
 
 	<channel-type id="buttonevent">
@@ -165,21 +165,21 @@
 
 	<thing-type id="lightsensor">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="deconz" />
+			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Light Sensor</label>
 		<description>A light sensor</description>
 		<channels>
-			<channel typeId="lightlux" id="lightlux" />
-			<channel typeId="light_level" id="light_level" />
-			<channel typeId="dark" id="dark" />
-			<channel typeId="daylight" id="daylight" />
-			<channel typeId="last_updated" id="last_updated" />
+			<channel typeId="lightlux" id="lightlux"/>
+			<channel typeId="light_level" id="light_level"/>
+			<channel typeId="dark" id="dark"/>
+			<channel typeId="daylight" id="daylight"/>
+			<channel typeId="last_updated" id="last_updated"/>
 		</channels>
 
 		<representation-property>uid</representation-property>
 
-		<config-description-ref uri="thing-type:deconz:sensor" />
+		<config-description-ref uri="thing-type:deconz:sensor"/>
 	</thing-type>
 
 	<channel-type id="lightlux">
@@ -193,37 +193,37 @@
 		<item-type>Number</item-type>
 		<label>Light Level</label>
 		<description>Current light level.</description>
-		<state readOnly="true" pattern="%d" />
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="dark">
 		<item-type>Switch</item-type>
 		<label>Dark</label>
 		<description>Light level is below the darkness threshold.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="daylight">
 		<item-type>Switch</item-type>
 		<label>Daylight</label>
 		<description>Light level is above the daylight threshold.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<thing-type id="temperaturesensor">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="deconz" />
+			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Temperature Sensor</label>
 		<description>A temperature sensor</description>
 		<channels>
-			<channel typeId="temperature" id="temperature" />
-			<channel typeId="last_updated" id="last_updated" />
+			<channel typeId="temperature" id="temperature"/>
+			<channel typeId="last_updated" id="last_updated"/>
 		</channels>
 
 		<representation-property>uid</representation-property>
 
-		<config-description-ref uri="thing-type:deconz:sensor" />
+		<config-description-ref uri="thing-type:deconz:sensor"/>
 	</thing-type>
 
 	<channel-type id="temperature">
@@ -235,18 +235,18 @@
 
 	<thing-type id="humiditysensor">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="deconz" />
+			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Humidity Sensor</label>
 		<description>A humidity sensor</description>
 		<channels>
-			<channel typeId="humidity" id="humidity" />
-			<channel typeId="last_updated" id="last_updated" />
+			<channel typeId="humidity" id="humidity"/>
+			<channel typeId="last_updated" id="last_updated"/>
 		</channels>
 
 		<representation-property>uid</representation-property>
 
-		<config-description-ref uri="thing-type:deconz:sensor" />
+		<config-description-ref uri="thing-type:deconz:sensor"/>
 	</thing-type>
 
 	<channel-type id="humidity">
@@ -258,7 +258,7 @@
 
 	<thing-type id="pressuresensor">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="deconz" />
+			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Pressure Sensor</label>
 		<description>A pressure senor</description>
@@ -269,7 +269,7 @@
 
 		<representation-property>uid</representation-property>
 
-		<config-description-ref uri="thing-type:deconz:sensor" />
+		<config-description-ref uri="thing-type:deconz:sensor"/>
 	</thing-type>
 
 	<channel-type id="pressure">
@@ -281,7 +281,7 @@
 
 	<thing-type id="daylightsensor">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="deconz" />
+			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Daylight Sensor</label>
 		<description>A daylight sensor</description>
@@ -292,7 +292,7 @@
 
 		<representation-property>uid</representation-property>
 
-		<config-description-ref uri="thing-type:deconz:sensor" />
+		<config-description-ref uri="thing-type:deconz:sensor"/>
 	</thing-type>
 
 	<channel-type id="value">
@@ -317,18 +317,18 @@
 
 	<thing-type id="openclosesensor">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="deconz" />
+			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Open/Close Sensor</label>
 		<description>A open/close sensor</description>
 		<channels>
-			<channel typeId="open" id="open" />
-			<channel typeId="last_updated" id="last_updated" />
+			<channel typeId="open" id="open"/>
+			<channel typeId="last_updated" id="last_updated"/>
 		</channels>
 
 		<representation-property>uid</representation-property>
 
-		<config-description-ref uri="thing-type:deconz:sensor" />
+		<config-description-ref uri="thing-type:deconz:sensor"/>
 	</thing-type>
 
 	<channel-type id="open">
@@ -340,101 +340,101 @@
 
 	<thing-type id="waterleakagesensor">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="deconz" />
+			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Water Leakage Sensor</label>
 		<description>A water leakage sensor</description>
 		<channels>
-			<channel typeId="waterleakage" id="waterleakage" />
-			<channel typeId="last_updated" id="last_updated" />
+			<channel typeId="waterleakage" id="waterleakage"/>
+			<channel typeId="last_updated" id="last_updated"/>
 		</channels>
 
 		<representation-property>uid</representation-property>
 
-		<config-description-ref uri="thing-type:deconz:sensor" />
+		<config-description-ref uri="thing-type:deconz:sensor"/>
 	</thing-type>
 
 	<channel-type id="waterleakage">
 		<item-type>Switch</item-type>
 		<label>Water Leakage</label>
 		<description>Water leakage detected</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<thing-type id="firesensor">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="deconz" />
+			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Fire Sensor</label>
 		<description>A fire sensor</description>
 		<channels>
-			<channel typeId="fire" id="fire" />
-			<channel typeId="last_updated" id="last_updated" />
+			<channel typeId="fire" id="fire"/>
+			<channel typeId="last_updated" id="last_updated"/>
 		</channels>
 
 		<representation-property>uid</representation-property>
 
-		<config-description-ref uri="thing-type:deconz:sensor" />
+		<config-description-ref uri="thing-type:deconz:sensor"/>
 	</thing-type>
 
 	<channel-type id="fire">
 		<item-type>Switch</item-type>
 		<label>Fire</label>
 		<description>A fire was detected.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<thing-type id="alarmsensor">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="deconz" />
+			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Alarm Sensor</label>
 		<description>An alarm sensor</description>
 		<channels>
-			<channel typeId="alarm" id="alarm" />
-			<channel typeId="last_updated" id="last_updated" />
+			<channel typeId="alarm" id="alarm"/>
+			<channel typeId="last_updated" id="last_updated"/>
 		</channels>
 
 		<representation-property>uid</representation-property>
 
-		<config-description-ref uri="thing-type:deconz:sensor" />
+		<config-description-ref uri="thing-type:deconz:sensor"/>
 	</thing-type>
 
 	<channel-type id="alarm">
 		<item-type>Switch</item-type>
 		<label>Alarm</label>
 		<description>Alarm was triggered.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="tampered">
 		<item-type>Switch</item-type>
 		<label>Tampered</label>
 		<description>A zone is being tampered.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<thing-type id="vibrationsensor">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="deconz" />
+			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Vibration Sensor</label>
 		<description>A vibration sensor</description>
 		<channels>
-			<channel typeId="vibration" id="vibration" />
-			<channel typeId="last_updated" id="last_updated" />
+			<channel typeId="vibration" id="vibration"/>
+			<channel typeId="last_updated" id="last_updated"/>
 		</channels>
 
 		<representation-property>uid</representation-property>
 
-		<config-description-ref uri="thing-type:deconz:sensor" />
+		<config-description-ref uri="thing-type:deconz:sensor"/>
 	</thing-type>
 
 	<channel-type id="vibration">
 		<item-type>Switch</item-type>
 		<label>Vibration</label>
 		<description>Vibration was detected.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

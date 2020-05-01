@@ -36,5 +36,4 @@ public class UniFiTidyLowerCaseStringDeserializer implements JsonDeserializer<St
         String s = json.getAsJsonPrimitive().getAsString();
         return StringUtils.lowerCase(StringUtils.strip(s));
     }
-
 }

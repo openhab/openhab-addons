@@ -61,5 +61,4 @@ public class AuthenticationCommand<ResponseType extends Response<?>> implements 
     public PJLinkDevice getDevice() {
         return this.device;
     }
-
 }

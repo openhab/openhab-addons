@@ -57,13 +57,15 @@ public class RevoltSensorHandler extends JeeLinkSensorHandler<RevoltReading> {
 
                     logger.debug(
                             "updating states for thing {}: power={}, powerFactor={}, consumption={}, current={}, voltage={}, frequency={} ",
-                            getThing().getUID().getId(), power, powerFactor, consumption, current, reading.getVoltage(), reading.getFrequency());
+                            getThing().getUID().getId(), power, powerFactor, consumption, current, reading.getVoltage(),
+                            reading.getFrequency());
 
                     updateState(CURRENT_POWER_CHANNEL, new QuantityType<>(power, SmartHomeUnits.WATT));
                     updateState(POWER_FACTOR_CHANNEL, new DecimalType(powerFactor));
                     updateState(CONSUMPTION_CHANNEL, new QuantityType<>(consumption, SmartHomeUnits.WATT_HOUR));
                     updateState(ELECTRIC_CURRENT_CHANNEL, new QuantityType<>(current, SmartHomeUnits.AMPERE));
-                    updateState(ELECTRIC_POTENTIAL_CHANNEL, new QuantityType<>(reading.getVoltage(), SmartHomeUnits.VOLT));
+                    updateState(ELECTRIC_POTENTIAL_CHANNEL,
+                            new QuantityType<>(reading.getVoltage(), SmartHomeUnits.VOLT));
                     updateState(FREQUENCY_CHANNEL, new QuantityType<>(reading.getFrequency(), SmartHomeUnits.HERTZ));
                 }
             }

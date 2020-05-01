@@ -67,5 +67,4 @@ public class UidUtils {
 
         return thing.getUID().getId();
     }
-
 }

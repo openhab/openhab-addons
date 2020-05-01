@@ -65,8 +65,7 @@ public class XiaomiActorCurtainHandler extends XiaomiActorBaseHandler {
                         status = lastDirection;
                     }
                 } else if (command instanceof PercentType) {
-                    getXiaomiBridgeHandler().writeToDevice(getItemId(), new String[] { STATUS },
-                            new Object[] { AUTO });
+                    getXiaomiBridgeHandler().writeToDevice(getItemId(), new String[] { STATUS }, new Object[] { AUTO });
                     getXiaomiBridgeHandler().writeToDevice(getItemId(), new String[] { CURTAIN_LEVEL },
                             new Object[] { status });
                 } else {
@@ -114,5 +113,4 @@ public class XiaomiActorCurtainHandler extends XiaomiActorBaseHandler {
             }
         }
     }
-
 }

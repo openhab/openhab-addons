@@ -24,5 +24,4 @@ public class IncompleteMessageException extends Exception {
      * required variable to avoid IncorrectMultilineIndexException warning
      */
     private static final long serialVersionUID = -8882867114144637120L;
-
 }

@@ -398,7 +398,6 @@ public class AllPlayHandler extends BaseThingHandler
     public void onLoopModeChanged(LoopMode loopMode) {
         logger.debug("{}: LoopMode changed to {}", speaker.getName(), loopMode);
         updateState(LOOP_MODE, new StringType(loopMode.toString()));
-
     }
 
     @Override

@@ -80,5 +80,4 @@ public class BlukiiDiscoveryParticipant implements BluetoothDiscoveryParticipant
             return null;
         }
     }
-
 }

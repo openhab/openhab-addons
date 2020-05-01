@@ -56,5 +56,4 @@ public class BridgeApiLockStateRequestDto {
     public void setBatteryCritical(boolean batteryCritical) {
         this.batteryCritical = batteryCritical;
     }
-
 }
