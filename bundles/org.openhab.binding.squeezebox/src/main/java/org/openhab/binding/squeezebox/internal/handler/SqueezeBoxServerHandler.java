@@ -866,9 +866,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             if (action.equals("newsong")) {
                 mode = "play";
                 // Execute in separate thread to avoid delaying listener
-                scheduler.execute(() -> {
-                    updateCustomButtons(mac);
-                });
+                scheduler.execute(() -> updateCustomButtons(mac));
                 // Set the track duration to 0
                 updatePlayer(new PlayerUpdateEvent() {
                     @Override

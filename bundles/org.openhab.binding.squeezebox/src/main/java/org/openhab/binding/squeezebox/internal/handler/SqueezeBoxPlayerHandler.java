@@ -301,12 +301,12 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
                 squeezeBoxServerHandler.playFavorite(mac, command.toString());
                 break;
             case CHANNEL_LIKE:
-                if (likeCommand != null) {
+                if (likeCommand != null && command.equals(OnOffType.ON)) {
                     squeezeBoxServerHandler.like(mac, likeCommand);
                 }
                 break;
             case CHANNEL_UNLIKE:
-                if (unlikeCommand != null) {
+                if (unlikeCommand != null && command.equals(OnOffType.ON)) {
                     squeezeBoxServerHandler.unlike(mac, unlikeCommand);
                 }
                 break;

@@ -13,11 +13,8 @@
 package org.openhab.binding.squeezebox.internal.dto;
 
 import java.lang.reflect.Type;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
-import org.apache.commons.lang.StringUtils;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -40,18 +37,17 @@ public class ButtonDTODeserializer implements JsonDeserializer<ButtonDTO> {
         if (jsonElement.isJsonPrimitive() && jsonElement.getAsJsonPrimitive().isNumber()) {
             Integer value = jsonElement.getAsInt();
             button = new ButtonDTO();
-            button.custom = Boolean.FALSE;
-            button.enabled = value == 0 ? Boolean.FALSE : Boolean.TRUE;
+            button.custom = false;
+            button.enabled = value != 0;
         } else if (jsonElement.isJsonObject()) {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
             button = new ButtonDTO();
-            button.custom = Boolean.TRUE;
+            button.custom = true;
             button.icon = jsonObject.get("icon").getAsString();
             button.jiveStyle = jsonObject.get("jiveStyle").getAsString();
             button.toolTip = jsonObject.get("tooltip").getAsString();
-            List<String> commandList = StreamSupport.stream(jsonObject.getAsJsonArray("command").spliterator(), false)
-                    .map(JsonElement::getAsString).collect(Collectors.toList());
-            button.command = StringUtils.join(commandList, " ");
+            button.command = StreamSupport.stream(jsonObject.getAsJsonArray("command").spliterator(), false)
+                    .map(JsonElement::getAsString).collect(Collectors.joining(" "));
         }
         return button;
     }
