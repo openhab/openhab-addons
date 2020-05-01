@@ -14,6 +14,7 @@ package org.openhab.binding.energenie.internal;
 
 import javax.measure.Unit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.types.State;
@@ -27,6 +28,7 @@ import org.slf4j.LoggerFactory;
  * @author Hans-Jörg Merk - Initial contribution
  */
 
+@NonNullByDefault
 public enum EnergeniePWMStateEnum {
     VOLTAGE("var V  = ", 9, 20, 10, SmartHomeUnits.VOLT),
     CURRENT("var V  = ", 9, 20, 100, SmartHomeUnits.AMPERE),
@@ -76,11 +78,9 @@ public enum EnergeniePWMStateEnum {
             final String[] slicedResponse = slicedResponseTmp.split(";");
             logger.trace("transformed state response = {} - {}", slicedResponse[0], slicedResponse[1]);
             final double value;
-
             try {
                 value = Double.parseDouble(slicedResponse[0]) / divisor;
                 return QuantityType.valueOf(value, unit);
-
             } catch (NumberFormatException e) {
                 logger.debug("Could not Parse State", e);
                 return UnDefType.UNDEF;

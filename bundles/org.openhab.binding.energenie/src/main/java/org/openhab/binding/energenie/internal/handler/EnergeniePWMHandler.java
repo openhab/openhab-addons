@@ -62,11 +62,7 @@ public class EnergeniePWMHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            try {
-                scheduler.execute(this::getState);
-            } catch (Exception e) {
-                logger.debug("Exception during poll", e);
-            }
+            scheduler.execute(this::getState);
         }
     }
 

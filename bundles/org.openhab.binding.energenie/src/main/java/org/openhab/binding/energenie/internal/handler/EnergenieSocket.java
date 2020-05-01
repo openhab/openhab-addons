@@ -69,6 +69,7 @@ class EnergenieSocket {
                     logger.trace("Control message send to EG (int) '{}' (hex)'{}'", ctrl, HexUtils.bytesToHex(ctrl));
                 }
                 output.write(encryptControls(ctrl, taskSocket.task));
+                output.flush();
                 readStatus(input, taskSocket);
                 return updateStatus(taskSocket);
             }
