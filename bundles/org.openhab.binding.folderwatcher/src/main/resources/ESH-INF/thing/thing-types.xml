@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="folderwatcher"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="ftpfolder">
+		<label>FTP Folder</label>
+		<description>FTP folder to be watched</description>
+
+		<channels>
+			<channel id="newfile" typeId="newfile-channel" />
+		</channels>
+
+		<config-description>
+			<parameter name="ftpAddress" type="text" required="true">
+				<label>FTP Server</label>
+				<description>Address of FTP server</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="ftpPort" type="integer" min="1" max="65535">
+				<label>FTP Port</label>
+				<default>21</default>
+				<description>FTP server's port</description>
+			</parameter>
+			<parameter name="secureMode" type="text">
+				<label>FTP Security</label>
+				<limitToOptions>true</limitToOptions>
+				<options>
+					<option value="NONE">None</option>
+					<option value="IMPLICIT">TLS/SSL Implicit</option>
+					<option value="EXPLICIT">TLS/SSL Explicit</option>
+				</options>
+				<default>NONE</default>
+				<description>FTP Security settings</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="ftpUsername" type="text" required="true">
+				<label>Username</label>
+				<description>User name</description>
+			</parameter>
+			<parameter name="ftpPassword" type="text" required="true">
+				<label>Password</label>
+				<description>FTP server password</description>
+				<context>password</context>
+			</parameter>
+			<parameter name="ftpDir" type="text" required="true">
+				<label>Root Directory</label>
+				<description>Root directory to be watched</description>
+			</parameter>
+			<parameter name="listHidden" type="boolean">
+				<label>List Hidden</label>
+				<default>false</default>
+				<description>Allow listing of hidden files</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="listRecursiveFtp" type="boolean">
+				<label>List Sub Folders</label>
+				<default>false</default>
+				<description>Allow listing of sub folders</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="connectionTimeout" type="integer" min="1" unit="s">
+				<label>Connection Timeout</label>
+				<description>Connection timeout for FTP request, sec</description>
+				<default>30</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="pollInterval" type="integer" min="1" unit="s">
+				<label>Polling Interval</label>
+				<description>Interval for polling folder changes, sec</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="diffHours" type="integer" min="1" unit="h">
+				<label>Timestamp Difference</label>
+				<description>How many hours back to analyze</description>
+				<default>24</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="newfile-channel">
+		<kind>trigger</kind>
+		<label>New File Name(s)</label>
+		<description>A new file name</description>
+		<category>String</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<thing-type id="localfolder">
+		<label>Local Folder</label>
+		<description>Local folder to be watched</description>
+
+		<channels>
+			<channel id="newfile" typeId="newfile-channel" />
+		</channels>
+
+		<config-description>
+			<parameter name="localDir" type="text" required="true">
+				<label>Local Directory</label>
+				<description>Local directory to be watched</description>
+			</parameter>
+			<parameter name="pollIntervalLocal" type="integer" min="1" unit="s">
+				<label>Polling Interval</label>
+				<description>Interval for polling folder changes, sec</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="listHiddenLocal" type="boolean">
+				<label>List Hidden</label>
+				<default>false</default>
+				<description>Allow listing of hidden files</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="listRecursiveLocal" type="boolean">
+				<label>List Sub Folders</label>
+				<default>false</default>
+				<description>Allow listing of sub folders</description>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>
