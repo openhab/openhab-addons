@@ -19,6 +19,7 @@ import java.util.Arrays;
  *
  * @author Q42 - Initial contribution
  * @author Denis Dudnik - moved Jue library source code inside the smarthome Hue binding
+ * @author Laurent Garnier - add few methods to update the object
  */
 public class State {
     private boolean on;
@@ -99,6 +100,10 @@ public class State {
         return on;
     }
 
+    public void setOn(boolean on) {
+        this.on = on;
+    }
+
     /**
      * Returns the brightness.
      *
@@ -106,6 +111,10 @@ public class State {
      */
     public int getBrightness() {
         return bri;
+    }
+
+    public void setBri(int bri) {
+        this.bri = bri;
     }
 
     /**
@@ -117,6 +126,10 @@ public class State {
         return hue;
     }
 
+    public void setHue(int hue) {
+        this.hue = hue;
+    }
+
     /**
      * Returns the saturation.
      *
@@ -124,6 +137,10 @@ public class State {
      */
     public int getSaturation() {
         return sat;
+    }
+
+    public void setSaturation(int sat) {
+        this.sat = sat;
     }
 
     /**
@@ -135,6 +152,10 @@ public class State {
         return xy;
     }
 
+    public void setXY(float[] xy) {
+        this.xy = xy;
+    }
+
     /**
      * Returns the color temperature.
      *
@@ -142,6 +163,10 @@ public class State {
      */
     public int getColorTemperature() {
         return ct;
+    }
+
+    public void setColorTemperature(int ct) {
+        this.ct = ct;
     }
 
     /**
@@ -167,6 +192,10 @@ public class State {
             return null;
         }
         return ColorMode.valueOf(colormode.toUpperCase());
+    }
+
+    public void setColormode(ColorMode colormode) {
+        this.colormode = colormode.name();
     }
 
     /**

@@ -55,6 +55,7 @@ import com.google.gson.JsonParser;
  * @author Andre Fuechsel - search for lights with given serial number added
  * @author Denis Dudnik - moved Jue library source code inside the smarthome Hue binding, minor code cleanup
  * @author Samuel Leisering - added cached config and API-Version
+ * @author Laurent Garnier - change the return type of getGroups
  */
 @NonNullByDefault
 public class HueBridge {
@@ -415,20 +416,23 @@ public class HueBridge {
      * @return list of groups
      * @throws UnauthorizedException thrown if the user no longer exists
      */
-    public List<Group> getGroups() throws IOException, ApiException {
+    public List<FullGroup> getGroups() throws IOException, ApiException {
         requireAuthentication();
 
         Result result = http.get(getRelativeURL("groups"));
 
         handleErrors(result);
 
-        Map<String, Group> groupMap = safeFromJson(result.getBody(), Group.GSON_TYPE);
-        ArrayList<Group> groupList = new ArrayList<>();
+        Map<String, FullGroup> groupMap = safeFromJson(result.getBody(), FullGroup.GSON_TYPE);
+        ArrayList<FullGroup> groupList = new ArrayList<>();
 
-        groupList.add(new Group());
+        if (groupMap.get("0") == null) {
+            // Group 0 is not returned, we create it as in fact it exists
+            groupList.add(getGroup(new Group()));
+        }
 
         for (String id : groupMap.keySet()) {
-            Group group = groupMap.get(id);
+            FullGroup group = groupMap.get(id);
             group.setId(id);
             groupList.add(group);
         }
