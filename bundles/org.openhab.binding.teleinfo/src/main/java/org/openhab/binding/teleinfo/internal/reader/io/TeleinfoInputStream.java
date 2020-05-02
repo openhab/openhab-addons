@@ -223,7 +223,7 @@ public class TeleinfoInputStream extends InputStream {
                     } catch (IllegalArgumentException e) {
                         if (autoRepairInvalidADPSgroupLine && labelStr.startsWith(Label.ADPS.name())) {
                             // in this hardware issue, label variable is composed by label name and value. E.g: ADPS032
-                            logger.warn("Try to auto repair malformed ADPS groupLine '%s'", labelStr);
+                            logger.warn("Try to auto repair malformed ADPS groupLine '{}'", labelStr);
                             label = Label.ADPS;
                             valueString = labelStr.substring(Label.ADPS.name().length());
                         } else {
