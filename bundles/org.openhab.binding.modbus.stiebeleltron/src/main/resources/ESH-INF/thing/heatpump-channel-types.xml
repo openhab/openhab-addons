@@ -133,4 +133,29 @@
 		<label>Summer operation mode</label>
 		<state readOnly="true"/>
 	</channel-type>			
+	<channel-type id="operation-mode-type">
+		<item-type>Number</item-type>
+		<label>Operation mode</label>
+		<state readOnly="true"/>
+	</channel-type>		
+	<channel-type id="comfort-temperature-heating-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Comfort temperature heating</label>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>	
+	<channel-type id="eco-temperature-heating-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Eco temperature heating</label>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>	
+	<channel-type id="comfort-temperature-water-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Comfort temperature water</label>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>	
+	<channel-type id="eco-temperature-water-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Eco temperature water</label>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>				
 </thing:thing-descriptions>

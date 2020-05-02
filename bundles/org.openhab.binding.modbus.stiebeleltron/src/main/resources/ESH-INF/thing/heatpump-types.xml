@@ -14,6 +14,7 @@
 
 		<channel-groups>
 			<channel-group id="systemState" typeId="system-state" /> 
+			<channel-group id="systemParameter" typeId="system-parameter" /> 
 			<channel-group id="systemInformation" typeId="system-information" />
 			<channel-group id="energyInformation" typeId="energy-information" />
 		</channel-groups>

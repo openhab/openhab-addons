@@ -33,6 +33,7 @@ public class StiebelEltronBindingConstants {
 
     // Channel group ids
     public static final String GROUP_SYSTEM_STATE = "systemState";
+    public static final String GROUP_SYSTEM_PARAMETER = "systemParameter";
     public static final String GROUP_SYSTEM_INFO = "systemInformation";
     public static final String GROUP_ENERGY_INFO = "energyInformation";
 
@@ -65,4 +66,9 @@ public class StiebelEltronBindingConstants {
     public static final String CHANNEL_IS_PUMPING = "is-pumping";
     public static final String CHANNEL_IS_SUMMER = "is-summer";
 
+    public static final String CHANNEL_OPERATION_MODE = "operation-mode";
+    public static final String CHANNEL_COMFORT_TEMPERATURE_HEATING = "comfort-temperature-heating";
+    public static final String CHANNEL_ECO_TEMPERATURE_HEATING = "eco-temperature-heating";
+    public static final String CHANNEL_COMFORT_TEMPERATURE_WATER = "comfort-temperature-water";
+    public static final String CHANNEL_ECO_TEMPERATURE_WATER = "eco-temperature-water";
 }

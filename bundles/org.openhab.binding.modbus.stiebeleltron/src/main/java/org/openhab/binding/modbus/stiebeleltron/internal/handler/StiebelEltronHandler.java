@@ -24,6 +24,7 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -41,9 +42,11 @@ import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
 import org.openhab.binding.modbus.stiebeleltron.internal.StiebelEltronConfiguration;
 import org.openhab.binding.modbus.stiebeleltron.internal.dto.EnergyBlock;
 import org.openhab.binding.modbus.stiebeleltron.internal.dto.SystemBlock;
+import org.openhab.binding.modbus.stiebeleltron.internal.dto.SystemParameterBlock;
 import org.openhab.binding.modbus.stiebeleltron.internal.dto.SystemStateBlock;
 import org.openhab.binding.modbus.stiebeleltron.internal.parser.EnergyBlockParser;
 import org.openhab.binding.modbus.stiebeleltron.internal.parser.SystemBlockParser;
+import org.openhab.binding.modbus.stiebeleltron.internal.parser.SystemParameterBlockParser;
 import org.openhab.binding.modbus.stiebeleltron.internal.parser.SystemStateBlockParser;
 import org.openhab.io.transport.modbus.BasicModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.BasicPollTaskImpl;
@@ -95,7 +98,7 @@ public class StiebelEltronHandler extends BaseThingHandler {
         /**
          * Register poll task This is where we set up our regular poller
          */
-        public synchronized void registerPollTask(int address, int length) {
+        public synchronized void registerPollTask(int address, int length, ModbusReadFunctionCode readFunctionCode) {
 
             logger.debug("Setting up regular polling");
 
@@ -110,7 +113,7 @@ public class StiebelEltronHandler extends BaseThingHandler {
             logger.debug("Setting up regular polling");
 
             BasicModbusReadRequestBlueprint request = new BasicModbusReadRequestBlueprint(getSlaveId(),
-                    ModbusReadFunctionCode.READ_INPUT_REGISTERS, address, length, myconfig.getMaxTries());
+                    readFunctionCode, address, length, myconfig.getMaxTries());
 
             pollTask = new BasicPollTaskImpl(myendpoint, request, new ModbusReadCallback() {
 
@@ -169,6 +172,10 @@ public class StiebelEltronHandler extends BaseThingHandler {
      */
     private final SystemStateBlockParser systemstateBlockParser = new SystemStateBlockParser();
     /**
+     * Parser used to convert incoming raw messages into system parameter blocks
+     */
+    private final SystemParameterBlockParser systemParameterBlockParser = new SystemParameterBlockParser();
+    /**
      * Parser used to convert incoming raw messages into model blocks
      */
     private final EnergyBlockParser energyBlockParser = new EnergyBlockParser();
@@ -184,6 +191,10 @@ public class StiebelEltronHandler extends BaseThingHandler {
      * This is the task used to poll the device
      */
     private volatile @Nullable AbstractBasePoller systemStatePoller = null;
+    /**
+     * This is the task used to poll the device
+     */
+    private volatile @Nullable AbstractBasePoller systemParameterPoller = null;
     /**
      * This is the slave endpoint we're connecting to
      */
@@ -253,7 +264,7 @@ public class StiebelEltronHandler extends BaseThingHandler {
                 }
 
             };
-            systemPoller.registerPollTask(500, 36);
+            systemPoller.registerPollTask(500, 36, ModbusReadFunctionCode.READ_INPUT_REGISTERS);
         }
         if (energyPoller == null) {
             energyPoller = new AbstractBasePoller() {
@@ -263,17 +274,27 @@ public class StiebelEltronHandler extends BaseThingHandler {
                 }
 
             };
-            energyPoller.registerPollTask(3500, 16);
+            energyPoller.registerPollTask(3500, 16, ModbusReadFunctionCode.READ_INPUT_REGISTERS);
         }
         if (systemStatePoller == null) {
-            systemPoller = new AbstractBasePoller() {
+            systemStatePoller = new AbstractBasePoller() {
                 @Override
                 protected void handlePolledData(ModbusRegisterArray registers) {
                     handlePolledSystemStateData(registers);
                 }
 
             };
-            systemPoller.registerPollTask(2500, 2);
+            systemStatePoller.registerPollTask(2500, 2, ModbusReadFunctionCode.READ_INPUT_REGISTERS);
+        }
+        if (systemParameterPoller == null) {
+            systemParameterPoller = new AbstractBasePoller() {
+                @Override
+                protected void handlePolledData(ModbusRegisterArray registers) {
+                    handlePolledSystemParameterData(registers);
+                }
+
+            };
+            systemParameterPoller.registerPollTask(1500, 11, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS);
         }
     }
 
@@ -526,7 +547,7 @@ public class StiebelEltronHandler extends BaseThingHandler {
         SystemStateBlock block = systemstateBlockParser.parse(registers);
         boolean is_heating = (block.state & 16) != 0;
         updateState(channelUID(GROUP_SYSTEM_STATE, CHANNEL_IS_HEATING),
-        is_heating ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+                is_heating ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
         updateState(channelUID(GROUP_SYSTEM_STATE, CHANNEL_IS_HEATING_WATER),
                 (block.state & 32) != 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
         updateState(channelUID(GROUP_SYSTEM_STATE, CHANNEL_IS_COOLING),
@@ -536,6 +557,23 @@ public class StiebelEltronHandler extends BaseThingHandler {
         updateState(channelUID(GROUP_SYSTEM_STATE, CHANNEL_IS_PUMPING),
                 (block.state & 1) != 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
 
+    }
+
+    protected void handlePolledSystemParameterData(ModbusRegisterArray registers) {
+        logger.trace("System state block received, size: {}", registers.size());
+
+        SystemParameterBlock block = systemParameterBlockParser.parse(registers);
+        updateState(channelUID(GROUP_SYSTEM_PARAMETER, CHANNEL_OPERATION_MODE),
+                new DecimalType(block.operation_mode));
+
+        updateState(channelUID(GROUP_SYSTEM_PARAMETER, CHANNEL_COMFORT_TEMPERATURE_HEATING),
+                getScaled(block.comfort_temperature_heating, CELSIUS));
+        updateState(channelUID(GROUP_SYSTEM_PARAMETER, CHANNEL_ECO_TEMPERATURE_HEATING),
+                getScaled(block.eco_temperature_heating, CELSIUS));
+        updateState(channelUID(GROUP_SYSTEM_PARAMETER, CHANNEL_COMFORT_TEMPERATURE_WATER),
+                getScaled(block.comfort_temperature_water, CELSIUS));
+        updateState(channelUID(GROUP_SYSTEM_PARAMETER, CHANNEL_ECO_TEMPERATURE_WATER),
+                getScaled(block.eco_temperature_water, CELSIUS));
     }
 
     @Override
