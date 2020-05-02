@@ -335,7 +335,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                 logger.debug("Sending: {}", command);
                 try (Socket socket = getConnection();
                         OutputStream out = socket.getOutputStream();
-                        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
+                        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.US_ASCII))) {
                     byte[] sendBuffer = command.getBytes(StandardCharsets.US_ASCII);
 
                     // send the command
