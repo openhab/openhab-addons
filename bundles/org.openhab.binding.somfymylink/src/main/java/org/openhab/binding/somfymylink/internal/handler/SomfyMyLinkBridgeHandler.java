@@ -339,7 +339,8 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                     byte[] sendBuffer = command.getBytes(StandardCharsets.US_ASCII);
 
                     // send the command
-                    out.write(sendBuffer, 0, sendBuffer.length);
+                    out.write(sendBuffer);
+                    out.flush();
 
                     // now read the reply
                     long startTime = System.currentTimeMillis();
