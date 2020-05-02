@@ -336,12 +336,13 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         CompletableFuture<@Nullable Void> future = new CompletableFuture<>();
         commandExecutor.execute(() -> {
             try {
-                logger.debug("Sending: {}", command);
                 try (Socket socket = getConnection(); OutputStream out = socket.getOutputStream()) {
                     byte[] sendBuffer = command.getBytes(StandardCharsets.US_ASCII);
                     // send the command
+                    logger.debug("Sending: {}", command);
                     out.write(sendBuffer);
                     out.flush();
+                    logger.debug("Sent: {}", command);
                 }
                 // give time for mylink to process
                 Thread.sleep(CONNECTION_DELAY);
@@ -365,14 +366,14 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         CompletableFuture<@Nullable T> future = new CompletableFuture<>();
 
         commandExecutor.submit(() -> {
-            try {
-                logger.debug("Sending: {}", command);
+            try {                
                 try (Socket socket = getConnection();
                         OutputStream out = socket.getOutputStream();
                         BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.US_ASCII))) {
                     byte[] sendBuffer = command.getBytes(StandardCharsets.US_ASCII);
 
                     // send the command
+                    logger.debug("Sending: {}", command);
                     out.write(sendBuffer);
                     out.flush();
 
@@ -388,8 +389,6 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                         message += new String(readBuff, 0, readCount);
 
                         // try and parse the message
-                        logger.debug("Got response: {}", message);
-
                         try {
                             T response = parseResponse(message, responseType);
                             logger.debug("Got full message: {}", message);
