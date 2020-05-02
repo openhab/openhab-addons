@@ -86,7 +86,7 @@ public class ZonePlayerDiscoveryParticipant implements UpnpDiscoveryParticipant 
                         modelName = "CONNECTAMP";
                         break;
                     case "One SL":
-                        modelName = "OneSL";
+                        modelName = "One";
                         break;
                     default:
                         break;

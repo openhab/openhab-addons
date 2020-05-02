@@ -54,7 +54,6 @@
 			<channel id="sleeptimer" typeId="sleeptimer"/>
 			<channel id="currenttransporturi" typeId="currenttransporturi"/>
 			<channel id="currenttrackuri" typeId="currenttrackuri"/>
-			<channel id="speechenhancement" typeId="speechenhancement" />
 		</channels>
 
 		<properties>
