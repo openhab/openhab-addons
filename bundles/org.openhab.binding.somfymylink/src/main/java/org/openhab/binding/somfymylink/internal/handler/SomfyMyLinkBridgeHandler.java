@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
@@ -97,6 +98,8 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     private @Nullable SomfyMyLinkStateDescriptionOptionsProvider stateDescriptionProvider;
 
     private @Nullable ExecutorService commandExecutor;
+
+    private static final SomfyMyLinkShade[] emptyShadeList = new SomfyMyLinkShade[0];
 
     // Gson & parser
     private final Gson gson = new Gson();
@@ -190,11 +193,9 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     }
 
     private void ensureKeepAlive() {
-        synchronized (heartbeat) {
-            if (heartbeat == null) {
-                logger.debug("Starting keepalive job in {} min, every {} min", HEARTBEAT_MINUTES, HEARTBEAT_MINUTES);
-                heartbeat = this.scheduler.scheduleWithFixedDelay(this::sendKeepAlive, 1, 1, TimeUnit.MINUTES);
-            }
+        if (heartbeat == null) {
+            logger.debug("Starting keepalive job in {} min, every {} min", HEARTBEAT_MINUTES, HEARTBEAT_MINUTES);
+            heartbeat = this.scheduler.scheduleWithFixedDelay(this::sendKeepAlive, 1, 1, TimeUnit.MINUTES);
         }
     }
 
@@ -232,31 +233,37 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     public SomfyMyLinkShade[] getShadeList() throws SomfyMyLinkException {
         String command = buildShadeCommand("mylink.status.info", "*.*");
         try {
-            SomfyMyLinkShadesResponse response = (SomfyMyLinkShadesResponse) sendCommandWithResponse(command,
-            SomfyMyLinkShadesResponse.class).get();
+            SomfyMyLinkShadesResponse response = sendCommandWithResponse(command, 
+                SomfyMyLinkShadesResponse.class).get();
             if (response != null) {
                 return response.getResult();
             } else {
-                return new SomfyMyLinkShade[0];
+                return emptyShadeList;
             }
         }
         catch (Exception e) {
             logger.debug("Exception while getting shade list. Message: {}", e.getMessage());
-            return new SomfyMyLinkShade[0];
+            return emptyShadeList;
         }
     }
 
     public void sendPing() throws SomfyMyLinkException {
         String command = buildShadeCommand("mylink.status.ping", "*.*");
-        sendCommandWithResponse(command, SomfyMyLinkPingResponse.class);
-        return;
+        try {
+            sendCommandWithResponse(command, SomfyMyLinkPingResponse.class).get();
+        } 
+        catch (InterruptedException e) {
+            throw new SomfyMyLinkException("Problem pinging.", e);
+        } catch (ExecutionException e) {
+            throw new SomfyMyLinkException("Problem pinging.", e);
+        }
     }
 
     public SomfyMyLinkScene[] getSceneList() throws SomfyMyLinkException {
         String command = buildShadeCommand("mylink.scene.list", "*.*");
 
         try {
-            SomfyMyLinkScenesResponse response = (SomfyMyLinkScenesResponse) sendCommandWithResponse(command,
+            SomfyMyLinkScenesResponse response = sendCommandWithResponse(command,
                 SomfyMyLinkScenesResponse.class).get();
 
             if (response != null) {
@@ -275,9 +282,13 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                 return new SomfyMyLinkScene[0];
             }
         }
-        catch (Exception e) {
+        catch (InterruptedException e) {
             logger.debug("Exception while getting scene list. Message: {}", e.getMessage());
-            return new SomfyMyLinkScene[0];
+            throw new SomfyMyLinkException("Problem getting scene list.", e);
+        }
+        catch (ExecutionException e) {
+            logger.debug("Exception while getting scene list. Message: {}", e.getMessage());
+            throw new SomfyMyLinkException("Problem getting scene list.", e);
         }
     }
 
@@ -329,7 +340,8 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                 try (Socket socket = getConnection(); OutputStream out = socket.getOutputStream()) {
                     byte[] sendBuffer = command.getBytes(StandardCharsets.US_ASCII);
                     // send the command
-                    out.write(sendBuffer, 0, sendBuffer.length);
+                    out.write(sendBuffer);
+                    out.flush();
                 }
                 // give time for mylink to process
                 Thread.sleep(CONNECTION_DELAY);
@@ -382,18 +394,17 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                             T response = parseResponse(message, responseType);
                             logger.debug("Got full message: {}", message);
                             future.complete(response);
+                            return;
                         } catch (SomfyMyLinkException e) {
                             // trouble parsing the message, probably incomplete
+                            // if its been over 1 min waiting for a correct and full response then abort
+                            elapsedTime = (new Date()).getTime() - startTime;
+                            if (elapsedTime >= 60000) {
+                                future.completeExceptionally(new SomfyMyLinkException("Timeout waiting for reply from mylink"));
+                                return;
+                            }
+                            Thread.sleep(250); // pause for 250ms
                         }
-
-                        elapsedTime = (new Date()).getTime() - startTime;
-
-                        // if its been over 1 min waiting for a correct and full response then abort
-                        if (elapsedTime >= 60000) {
-                            future.completeExceptionally(new SomfyMyLinkException("Timeout waiting for reply from mylink"));
-                        }
-
-                        Thread.sleep(250); // pause for 250ms
                     }
                 }
 
@@ -412,7 +423,6 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                 future.complete(null);
             }
         });
-
         return future;
     }
 
