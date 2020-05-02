@@ -39,16 +39,16 @@ public class HomekitContactSensorImpl extends AbstractHomekitAccessoryImpl imple
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
         this.contactSensedReader = new BooleanItemReader(
-                getItem(HomekitCharacteristicType.CONTACT_SENSOR_STATE, GenericItem.class), OnOffType.OFF,
-                OpenClosedType.CLOSED);
+                getItem(HomekitCharacteristicType.CONTACT_SENSOR_STATE, GenericItem.class), OnOffType.ON,
+                OpenClosedType.OPEN);
         getServices().add(new ContactSensorService(this));
     }
 
     @Override
     public CompletableFuture<ContactStateEnum> getCurrentState() {
-        Boolean contactDetected = contactSensedReader.getValue();
-        return CompletableFuture.completedFuture(
-                (contactDetected == Boolean.TRUE) ? ContactStateEnum.DETECTED : ContactStateEnum.NOT_DETECTED);
+        Boolean isOpen = contactSensedReader.getValue();
+        return CompletableFuture
+                .completedFuture((isOpen == Boolean.TRUE) ? ContactStateEnum.NOT_DETECTED : ContactStateEnum.DETECTED);
     }
 
     @Override

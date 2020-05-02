@@ -12,6 +12,7 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -44,8 +45,8 @@ public class HomekitHumiditySensorImpl extends AbstractHomekitAccessoryImpl impl
         @Nullable
         DecimalType state = getStateAs(HomekitCharacteristicType.RELATIVE_HUMIDITY, DecimalType.class);
         if (state != null) {
-            int multiplicator = getAccessoryConfiguration(CONFIG_MULTIPLICATOR, 1);
-            return CompletableFuture.completedFuture(state.doubleValue() * multiplicator);
+            BigDecimal multiplicator = getAccessoryConfiguration(CONFIG_MULTIPLICATOR, BigDecimal.valueOf(1.0));
+            return CompletableFuture.completedFuture((state.toBigDecimal().multiply(multiplicator)).doubleValue());
         }
         return CompletableFuture.completedFuture(0.0);
     }
