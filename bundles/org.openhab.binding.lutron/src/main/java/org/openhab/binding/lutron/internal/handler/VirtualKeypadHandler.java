@@ -28,9 +28,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class VirtualKeypadHandler extends BaseKeypadHandler {
 
-    private static final String MODEL_OPTION_CASETA = "Caseta";
-    private static final String MODEL_OPTION_OTHER = "Other";
-
     private class Component implements KeypadComponent {
         private final int id;
         private final String channel;
@@ -84,15 +81,11 @@ public class VirtualKeypadHandler extends BaseKeypadHandler {
 
     @Override
     protected void configureComponents(@Nullable String model) {
-        String mod = model == null ? MODEL_OPTION_OTHER : model;
-        logger.debug("Configuring components for virtual keypad for model {}", mod);
-        boolean caseta = mod.equalsIgnoreCase(MODEL_OPTION_CASETA);
+        logger.debug("Configuring components for virtual keypad");
 
         for (int x = 1; x <= 100; x++) {
             buttonList.add(new Component(x, String.format("button%d", x), "Virtual Button", ComponentType.BUTTON));
-            if (!caseta) { // Caseta scene buttons have no virtual LEDs
-                ledList.add(new Component(x + 100, String.format("led%d", x), "Virtual LED", ComponentType.LED));
-            }
+            ledList.add(new Component(x + 100, String.format("led%d", x), "Virtual LED", ComponentType.LED));
         }
     }
 
@@ -101,4 +94,5 @@ public class VirtualKeypadHandler extends BaseKeypadHandler {
         // Mark all channels "Advanced" since most are unlikely to be used in any particular config
         advancedChannels = true;
     }
+
 }
