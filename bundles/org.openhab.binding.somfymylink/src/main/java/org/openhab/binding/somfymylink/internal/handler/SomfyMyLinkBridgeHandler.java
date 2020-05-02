@@ -26,6 +26,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
@@ -34,6 +37,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.common.NamedThreadFactory;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -92,6 +96,8 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
 
     private @Nullable SomfyMyLinkStateDescriptionOptionsProvider stateDescriptionProvider;
 
+    private @Nullable ExecutorService commandExecutor;
+
     // Gson & parser
     private final Gson gson = new Gson();
 
@@ -127,6 +133,8 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Initializing mylink");
         config = getThing().getConfiguration().as(SomfyMyLinkConfiguration.class);
+
+        commandExecutor = Executors.newSingleThreadExecutor(new NamedThreadFactory(thing.getUID().getAsString(), true));
 
         if (validConfiguration(config)) {
             this.discoveryServiceRegistration = FrameworkUtil.getBundle(SomfyMyLinkBridgeHandler.class)
@@ -303,8 +311,9 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    private void sendCommand(String command) throws SomfyMyLinkException {
-        synchronized (CONNECTION_LOCK) {
+    private CompletableFuture<@Nullable Void> sendCommand(String command) {
+        CompletableFuture<@Nullable Void> future = new CompletableFuture<>();
+        commandExecutor.execute(() -> {
             try {
                 logger.debug("Sending: {}", command);
                 try (Socket socket = getConnection(); OutputStream out = socket.getOutputStream()) {
@@ -312,20 +321,21 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                     // send the command
                     out.write(sendBuffer, 0, sendBuffer.length);
                 }
-
                 // give time for mylink to process
                 Thread.sleep(CONNECTION_DELAY);
             } catch (SocketTimeoutException e) {
                 logger.warn("Timeout sending command to mylink: {} Message: {}", command, e.getMessage());
-                throw new SomfyMyLinkException("Timeout sending command to mylink", e);
+                future.completeExceptionally(new SomfyMyLinkException("Timeout sending command to mylink", e));
             } catch (IOException e) {
                 logger.warn("Problem sending command to mylink: {} Message: {}", command, e.getMessage());
-                throw new SomfyMyLinkException("Problem sending command to mylink", e);
+                future.completeExceptionally(new SomfyMyLinkException("Problem sending command to mylink", e));
             } catch (InterruptedException e) {
                 logger.debug("Interrupted while waiting after sending command to mylink: {} Message: {}", command,
                         e.getMessage());
             }
-        }
+            future.complete(null);
+        });
+        return future;
     }
 
     private @Nullable SomfyMyLinkResponseBase sendCommandWithResponse(String command, Type responseType)
@@ -452,6 +462,8 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         logger.debug("Dispose called on {}", SomfyMyLinkBridgeHandler.class);
         disconnect();
 
+        dispose(commandExecutor);
+
         if (discoveryServiceRegistration != null) {
             this.discovery.deactivate();
             this.discoveryServiceRegistration.unregister();
@@ -459,5 +471,11 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         }
 
         logger.debug("Dispose finishing on {}", SomfyMyLinkBridgeHandler.class);
+    }
+
+    private static void dispose(@Nullable ExecutorService executor) {
+        if (executor != null) {
+            executor.shutdownNow();
+        }
     }
 }
