@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.modbus.sunspec.internal.handler;
 
-import static org.openhab.binding.modbus.sunspec.internal.SunSpecConstants.*;
+import static org.openhab.binding.modbus.sunspec.internal.SunSpecConstants.PROPERTY_UNIQUE_ADDRESS;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -152,18 +152,11 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
             return;
         }
 
-        // Try properties first
-        @Nullable
-        ModelBlock mainBlock = getAddressFromProperties();
-
-        if (mainBlock == null) {
-            mainBlock = getAddressFromConfig();
-        }
-
-        if (mainBlock != null) {
-            publishUniqueAddress(mainBlock);
+        Optional<ModelBlock> mainBlock = getAddressFromConfig();
+        if (mainBlock.isPresent()) {
+            publishUniqueAddress(mainBlock.get());
             updateStatus(ThingStatus.UNKNOWN);
-            registerPollTask(mainBlock);
+            registerPollTask(mainBlock.get());
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "SunSpec item should either have the address and length configuration set or should been created by auto discovery");
@@ -172,38 +165,18 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
     }
 
     /**
-     * Load and parse configuration from the properties
-     * These will be set by the auto discovery process
-     */
-    private @Nullable ModelBlock getAddressFromProperties() {
-        Map<String, String> properties = thing.getProperties();
-        if (!properties.containsKey(PROPERTY_BLOCK_ADDRESS) || !properties.containsKey(PROPERTY_BLOCK_LENGTH)) {
-            return null;
-        }
-        try {
-            ModelBlock block = new ModelBlock();
-            block.address = Integer.parseInt(thing.getProperties().get(PROPERTY_BLOCK_ADDRESS));
-            block.length = Integer.parseInt(thing.getProperties().get(PROPERTY_BLOCK_LENGTH));
-            return block;
-        } catch (NumberFormatException ex) {
-            logger.debug("Could not parse address and length properties, error: {}", ex.getMessage());
-            return null;
-        }
-    }
-
-    /**
      * Load configuration from main configuration
      */
-    private @Nullable ModelBlock getAddressFromConfig() {
+    private Optional<ModelBlock> getAddressFromConfig() {
         @Nullable
         SunSpecConfiguration myconfig = config;
         if (myconfig == null) {
-            return null;
+            return Optional.empty();
         }
         ModelBlock block = new ModelBlock();
         block.address = myconfig.address;
         block.length = myconfig.length;
-        return block;
+        return Optional.of(block);
     }
 
     /**
@@ -372,9 +345,8 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
         });
 
         long refreshMillis = myconfig.getRefreshMillis();
-        @Nullable
-        PollTask task = pollTask;
-        if (task != null) {
+        if (pollTask != null) {
+            PollTask task = pollTask;
             managerRef.registerRegularPoll(task, refreshMillis, 1000);
         }
     }
