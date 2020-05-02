@@ -186,7 +186,7 @@ public abstract class StreamAvrConnection implements AvrConnection {
     }
 
     @Override
-    public boolean sendSourceInputQuery(int zone) {
+    public boolean sendInputSourceQuery(int zone) {
         return sendCommand(RequestResponseFactory.getIpControlCommand(SimpleCommandType.INPUT_QUERY, zone));
     }
 
