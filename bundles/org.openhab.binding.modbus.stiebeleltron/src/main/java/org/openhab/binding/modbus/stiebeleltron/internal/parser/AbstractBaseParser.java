@@ -24,12 +24,12 @@ import org.openhab.io.transport.modbus.ModbusRegisterArray;
  * Base class for parsers with some helper methods
  *
  * @author Nagy Attila Gabor - Initial contribution
- *
+ * @author Paul Frank - Added more methods
  */
 @NonNullByDefault
 public class AbstractBaseParser {
 
-        /**
+    /**
      * Extract an optional double value
      *
      * @param raw the register array to extract from
@@ -37,8 +37,8 @@ public class AbstractBaseParser {
      * @return the parsed value or empty if the field is not implemented
      */
     protected Optional<Double> extractOptionalDouble(ModbusRegisterArray raw, int index) {
-        return ModbusBitUtilities.extractStateFromRegisters(raw, index, ValueType.INT16).map(value-> ((float)value.intValue())/10.0)
-                .filter(value -> value != (short) 0x8000);
+        return ModbusBitUtilities.extractStateFromRegisters(raw, index, ValueType.INT16)
+                .map(value -> ((float) value.intValue()) / 10.0).filter(value -> value != (short) 0x8000);
     }
 
     /**
@@ -52,6 +52,7 @@ public class AbstractBaseParser {
     protected Double extractDouble(ModbusRegisterArray raw, int index, double def) {
         return extractOptionalDouble(raw, index).orElse(def);
     }
+
     /**
      * Extract an optional int16 value
      *

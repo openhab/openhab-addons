@@ -30,7 +30,6 @@ public class StiebelEltronBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "heatpump");
 
-
     // Channel group ids
     public static final String GROUP_SYSTEM_STATE = "systemState";
     public static final String GROUP_SYSTEM_PARAMETER = "systemParameter";

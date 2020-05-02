@@ -47,7 +47,7 @@ public class StiebelEltronHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SAMPLE);
 
-        /**
+    /**
      * This factory needs a reference to the ModbusManager wich is provided
      * by the org.openhab.io.transport.modbus bundle. Please make
      * sure it's installed and enabled before using this bundle

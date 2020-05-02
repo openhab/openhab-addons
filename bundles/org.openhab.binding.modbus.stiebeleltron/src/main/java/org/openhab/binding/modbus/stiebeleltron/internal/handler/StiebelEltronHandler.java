@@ -17,7 +17,6 @@ import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.KILOWATT_HO
 import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.PERCENT;
 import static org.openhab.binding.modbus.stiebeleltron.internal.StiebelEltronBindingConstants.*;
 
-
 import java.math.BigDecimal;
 import java.util.Optional;
 
@@ -43,11 +42,11 @@ import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
 import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
 import org.openhab.binding.modbus.stiebeleltron.internal.StiebelEltronConfiguration;
 import org.openhab.binding.modbus.stiebeleltron.internal.dto.EnergyBlock;
-import org.openhab.binding.modbus.stiebeleltron.internal.dto.SystemBlock;
+import org.openhab.binding.modbus.stiebeleltron.internal.dto.SystemInformationBlock;
 import org.openhab.binding.modbus.stiebeleltron.internal.dto.SystemParameterBlock;
 import org.openhab.binding.modbus.stiebeleltron.internal.dto.SystemStateBlock;
 import org.openhab.binding.modbus.stiebeleltron.internal.parser.EnergyBlockParser;
-import org.openhab.binding.modbus.stiebeleltron.internal.parser.SystemBlockParser;
+import org.openhab.binding.modbus.stiebeleltron.internal.parser.SystemInfromationBlockParser;
 import org.openhab.binding.modbus.stiebeleltron.internal.parser.SystemParameterBlockParser;
 import org.openhab.binding.modbus.stiebeleltron.internal.parser.SystemStateBlockParser;
 import org.openhab.io.transport.modbus.BasicModbusReadRequestBlueprint;
@@ -75,7 +74,7 @@ import net.wimpi.modbus.Modbus;
 
 /**
  * The {@link Modbus.StiebelEltronHandler} is responsible for handling commands,
- * which are sent to one of the channels.
+ * which are sent to one of the channels and for polling the modbus.
  *
  * @author Paul Frank - Initial contribution
  */
@@ -142,7 +141,7 @@ public class StiebelEltronHandler extends BaseThingHandler {
                         if (StiebelEltronHandler.this.getThing().getStatus() != ThingStatus.ONLINE) {
                             updateStatus(ThingStatus.ONLINE);
                         }
-                    }catch(Exception error){
+                    } catch (Exception error) {
                         StiebelEltronHandler.this.handleError(error);
                     }
                 }
@@ -182,7 +181,7 @@ public class StiebelEltronHandler extends BaseThingHandler {
     /**
      * Parser used to convert incoming raw messages into system blocks
      */
-    private final SystemBlockParser systemBlockParser = new SystemBlockParser();
+    private final SystemInfromationBlockParser systemInformationBlockParser = new SystemInfromationBlockParser();
     /**
      * Parser used to convert incoming raw messages into system state blocks
      */
@@ -229,7 +228,7 @@ public class StiebelEltronHandler extends BaseThingHandler {
     /**
      * Instances of this handler should get a reference to the modbus manager
      *
-     * @param thing         the thing to handle
+     * @param thing the thing to handle
      * @param modbusManager the modbus manager
      */
     public StiebelEltronHandler(Thing thing, ModbusManager modbusManager) {
@@ -237,6 +236,10 @@ public class StiebelEltronHandler extends BaseThingHandler {
         this.modbusManager = modbusManager;
     }
 
+    /**
+     * @param address address of the value to be written on the modbus
+     * @param shortValue value to be written on the modbus
+     */
     protected void writeInt16(int address, short shortValue) {
         // big endian byte ordering
         byte b1 = (byte) (shortValue >> 8);
@@ -272,6 +275,11 @@ public class StiebelEltronHandler extends BaseThingHandler {
         modbusManager.submitOneTimeWrite(writeTask);
     }
 
+    /**
+     * @param command get the value of this command.
+     * @return short the value of the command multiplied by 10 (see datatype 2 in the stiebel eltron modbus
+     *         documentation)
+     */
     private short getScaledInt16Value(Command command) {
         if (command instanceof QuantityType) {
             QuantityType<?> c = (QuantityType<?>) command;
@@ -280,9 +288,14 @@ public class StiebelEltronHandler extends BaseThingHandler {
         if (command instanceof DecimalType) {
             DecimalType c = (DecimalType) command;
             return (short) (c.doubleValue() * 10);
-        }        
+        }
         return 0;
     }
+
+    /**
+     * @param command get the value of this command.
+     * @return short the value of the command as short
+     */
     private short getInt16Value(Command command) {
         if (command instanceof DecimalType) {
             DecimalType c = (DecimalType) command;
@@ -290,8 +303,9 @@ public class StiebelEltronHandler extends BaseThingHandler {
         }
         return 0;
     }
+
     /**
-     * Handle incoming commands. This binding is read-only by default
+     * Handle incoming commands.
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
@@ -333,8 +347,8 @@ public class StiebelEltronHandler extends BaseThingHandler {
     }
 
     /*
-     * This method starts the operation of this handler Load the config object of
-     * the block Connect to the slave bridge Start the periodic polling
+     * This method starts the operation of this handler
+     * Connect to the slave bridge Start the periodic polling
      */
     private void startUp() {
 
@@ -351,7 +365,7 @@ public class StiebelEltronHandler extends BaseThingHandler {
             systemInformationPoller = new AbstractBasePoller() {
                 @Override
                 protected void handlePolledData(ModbusRegisterArray registers) {
-                    handlePolledSystemData(registers);
+                    handlePolledSystemInformationData(registers);
                 }
 
             };
@@ -398,7 +412,7 @@ public class StiebelEltronHandler extends BaseThingHandler {
     }
 
     /**
-     * Unregister the poll task and release the endpoint reference
+     * Unregister the poll tasks and release the endpoint reference
      */
     private void tearDown() {
         logger.trace("unregisterPollTasks");
@@ -425,7 +439,7 @@ public class StiebelEltronHandler extends BaseThingHandler {
             systemParameterPoller.unregisterPollTask();
 
             systemParameterPoller = null;
-        }        
+        }
 
         unregisterEndpoint();
     }
@@ -510,12 +524,10 @@ public class StiebelEltronHandler extends BaseThingHandler {
         endpoint = null;
     }
 
-
     /**
      * Returns value divided by the 10
      *
-     * @param value       the value to alter
-     * @param scaleFactor the scale factor to use (may be negative)
+     * @param value the value to alter
      * @return the scaled value as a DecimalType
      */
     protected State getScaled(Number value, Unit<?> unit) {
@@ -523,10 +535,10 @@ public class StiebelEltronHandler extends BaseThingHandler {
     }
 
     /**
-     * Returns high value + low value / 1000
+     * Returns high value * 1000 + low value
      *
-     * @param value       the value to alter
-     * @param scaleFactor the scale factor to use (may be negative)
+     * @param high the high value
+     * @param low the low valze
      * @return the scaled value as a DecimalType
      */
     protected State getEnergyQuantity(int high, int low) {
@@ -541,10 +553,10 @@ public class StiebelEltronHandler extends BaseThingHandler {
      *
      * @param registers byte array read from the modbus slave
      */
-    protected void handlePolledSystemData(ModbusRegisterArray registers) {
-        logger.trace("System block received, size: {}", registers.size());
+    protected void handlePolledSystemInformationData(ModbusRegisterArray registers) {
+        logger.trace("System Information block received, size: {}", registers.size());
 
-        SystemBlock block = systemBlockParser.parse(registers);
+        SystemInformationBlock block = systemInformationBlockParser.parse(registers);
 
         // System information group
         updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_FEK_TEMPERATURE), getScaled(block.temperature_fek, CELSIUS));
@@ -600,6 +612,13 @@ public class StiebelEltronHandler extends BaseThingHandler {
                 getEnergyQuantity(block.consumption_water_total_high, block.consumption_water_total_low));
     }
 
+    /**
+     * This method is called each time new data has been polled from the modbus
+     * slave The register array is first parsed, then each of the channels are
+     * updated to the new values
+     *
+     * @param registers byte array read from the modbus slave
+     */
     protected void handlePolledSystemStateData(ModbusRegisterArray registers) {
         logger.trace("System state block received, size: {}", registers.size());
 
@@ -618,6 +637,13 @@ public class StiebelEltronHandler extends BaseThingHandler {
 
     }
 
+    /**
+     * This method is called each time new data has been polled from the modbus
+     * slave The register array is first parsed, then each of the channels are
+     * updated to the new values
+     *
+     * @param registers byte array read from the modbus slave
+     */
     protected void handlePolledSystemParameterData(ModbusRegisterArray registers) {
         logger.trace("System state block received, size: {}", registers.size());
 
@@ -634,6 +660,9 @@ public class StiebelEltronHandler extends BaseThingHandler {
                 getScaled(block.eco_temperature_water, CELSIUS));
     }
 
+    /**
+     * @param bridgeStatusInfo
+     */
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         super.bridgeStatusChanged(bridgeStatusInfo);
