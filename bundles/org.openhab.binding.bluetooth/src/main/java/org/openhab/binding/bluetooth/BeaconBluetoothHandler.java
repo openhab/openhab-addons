@@ -15,7 +15,6 @@ package org.openhab.binding.bluetooth;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -116,17 +115,14 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
      */
     protected void updateRSSI() {
         if (device != null) {
-            updateRSSI(device.getRssi());
-        }
-    }
-
-    private void updateRSSI(@Nullable Integer rssi) {
-        if (rssi != null && rssi != 0) {
-            updateState(BluetoothBindingConstants.CHANNEL_TYPE_RSSI, new DecimalType(rssi));
-            updateStatusBasedOnRssi(true);
-        } else {
-            updateState(BluetoothBindingConstants.CHANNEL_TYPE_RSSI, UnDefType.NULL);
-            updateStatusBasedOnRssi(false);
+            Integer rssi = device.getRssi();
+            if (rssi != null && rssi != 0) {
+                updateState(BluetoothBindingConstants.CHANNEL_TYPE_RSSI, new DecimalType(rssi));
+                updateStatusBasedOnRssi(true);
+            } else {
+                updateState(BluetoothBindingConstants.CHANNEL_TYPE_RSSI, UnDefType.NULL);
+                updateStatusBasedOnRssi(false);
+            }
         }
     }
 
@@ -148,7 +144,8 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
     public void onScanRecordReceived(BluetoothScanNotification scanNotification) {
         int rssi = scanNotification.getRssi();
         if (rssi != Integer.MIN_VALUE) {
-            updateRSSI(rssi);
+            device.setRssi(rssi);
+            updateRSSI();
         }
     }
 

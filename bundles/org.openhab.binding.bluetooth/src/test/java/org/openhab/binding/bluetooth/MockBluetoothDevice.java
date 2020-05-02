@@ -15,7 +15,6 @@ package org.openhab.binding.bluetooth;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.bluetooth.BluetoothCharacteristic.GattCharacteristic;
 import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
 
@@ -24,7 +23,7 @@ import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotif
  *
  * @author Connor Petty - Initial contribution
  */
-public class MockBluetoothDevice extends BaseBluetoothDevice {
+public class MockBluetoothDevice extends BluetoothDevice {
 
     private AtomicBoolean servicesDiscovered = new AtomicBoolean(false);
 
@@ -89,30 +88,4 @@ public class MockBluetoothDevice extends BaseBluetoothDevice {
     protected void notifyListeners(BluetoothEventType event, Object... args) {
         CompletableFuture.runAsync(() -> super.notifyListeners(event, args));
     }
-
-    @Override
-    public boolean writeCharacteristic(@NonNull BluetoothCharacteristic characteristic) {
-        return false;
-    }
-
-    @Override
-    public boolean enableNotifications(@NonNull BluetoothCharacteristic characteristic) {
-        return false;
-    }
-
-    @Override
-    public boolean disableNotifications(@NonNull BluetoothCharacteristic characteristic) {
-        return false;
-    }
-
-    @Override
-    public boolean enableNotifications(@NonNull BluetoothDescriptor descriptor) {
-        return false;
-    }
-
-    @Override
-    public boolean disableNotifications(@NonNull BluetoothDescriptor descriptor) {
-        return false;
-    }
-
 }

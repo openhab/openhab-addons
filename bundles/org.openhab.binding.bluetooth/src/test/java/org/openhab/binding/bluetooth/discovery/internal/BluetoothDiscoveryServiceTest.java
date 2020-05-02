@@ -47,7 +47,6 @@ import org.openhab.binding.bluetooth.BluetoothDevice;
 import org.openhab.binding.bluetooth.MockBluetoothAdapter;
 import org.openhab.binding.bluetooth.MockBluetoothDevice;
 import org.openhab.binding.bluetooth.TestUtils;
-import org.openhab.binding.bluetooth.discovery.BluetoothDiscoveryDevice;
 import org.openhab.binding.bluetooth.discovery.BluetoothDiscoveryParticipant;
 import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
 import org.slf4j.Logger;
@@ -113,8 +112,8 @@ public class BluetoothDiscoveryServiceTest {
 
     @Test
     public void ignoreRssiDuplicateTest() {
-        MockBluetoothAdapter mockAdapter1 = new MockBluetoothAdapter();
-        MockBluetoothDevice device = mockAdapter1.getDevice(TestUtils.randomAddress());
+        BluetoothAdapter mockAdapter1 = new MockBluetoothAdapter();
+        BluetoothDevice device = mockAdapter1.getDevice(TestUtils.randomAddress());
         discoveryService.deviceDiscovered(device);
         // changing the rssi should not result in a new discovery
         device.setRssi(100);
@@ -127,8 +126,8 @@ public class BluetoothDiscoveryServiceTest {
 
     @Test
     public void nonDuplicateNameTest() throws InterruptedException {
-        MockBluetoothAdapter mockAdapter1 = new MockBluetoothAdapter();
-        MockBluetoothDevice device = mockAdapter1.getDevice(TestUtils.randomAddress());
+        BluetoothAdapter mockAdapter1 = new MockBluetoothAdapter();
+        BluetoothDevice device = mockAdapter1.getDevice(TestUtils.randomAddress());
         discoveryService.deviceDiscovered(device);
         // this second call should produce another result
         device.setName("sdfad");
@@ -141,8 +140,8 @@ public class BluetoothDiscoveryServiceTest {
 
     @Test
     public void nonDuplicateTxPowerTest() {
-        MockBluetoothAdapter mockAdapter1 = new MockBluetoothAdapter();
-        MockBluetoothDevice device = mockAdapter1.getDevice(TestUtils.randomAddress());
+        BluetoothAdapter mockAdapter1 = new MockBluetoothAdapter();
+        BluetoothDevice device = mockAdapter1.getDevice(TestUtils.randomAddress());
         discoveryService.deviceDiscovered(device);
         // this second call should produce another result
         device.setTxPower(10);
@@ -155,8 +154,8 @@ public class BluetoothDiscoveryServiceTest {
 
     @Test
     public void nonDuplicateManufacturerIdTest() {
-        MockBluetoothAdapter mockAdapter1 = new MockBluetoothAdapter();
-        MockBluetoothDevice device = mockAdapter1.getDevice(TestUtils.randomAddress());
+        BluetoothAdapter mockAdapter1 = new MockBluetoothAdapter();
+        BluetoothDevice device = mockAdapter1.getDevice(TestUtils.randomAddress());
         discoveryService.deviceDiscovered(device);
         // this second call should produce another result
         device.setManufacturerId(100);
@@ -317,8 +316,8 @@ public class BluetoothDiscoveryServiceTest {
     @Test
     public void removeUpdatedDefaultDeviceTest() {
         Mockito.doReturn(null).when(participant1).createResult(ArgumentMatchers.any());
-        MockBluetoothAdapter mockAdapter1 = new MockBluetoothAdapter();
-        MockBluetoothDevice device = mockAdapter1.getDevice(TestUtils.randomAddress());
+        BluetoothAdapter mockAdapter1 = new MockBluetoothAdapter();
+        BluetoothDevice device = mockAdapter1.getDevice(TestUtils.randomAddress());
         discoveryService.deviceDiscovered(device);
         device.setName("somename");
         discoveryService.deviceDiscovered(device);
@@ -355,12 +354,12 @@ public class BluetoothDiscoveryServiceTest {
     public void replaceOlderDiscoveryTest() {
         Mockito.doReturn(null).when(participant1).createResult(ArgumentMatchers.any());
 
-        MockBluetoothAdapter mockAdapter1 = new MockBluetoothAdapter();
-        MockBluetoothDevice device = mockAdapter1.getDevice(TestUtils.randomAddress());
+        BluetoothAdapter mockAdapter1 = new MockBluetoothAdapter();
+        BluetoothDevice device = mockAdapter1.getDevice(TestUtils.randomAddress());
 
         MockDiscoveryParticipant participant2 = new MockDiscoveryParticipant() {
             @Override
-            public @Nullable DiscoveryResult createResult(BluetoothDiscoveryDevice device) {
+            public @Nullable DiscoveryResult createResult(BluetoothDevice device) {
                 Integer manufacturer = device.getManufacturerId();
                 if (manufacturer != null && manufacturer.equals(10)) {
                     // without a device name it should produce a random ThingUID
@@ -425,13 +424,13 @@ public class BluetoothDiscoveryServiceTest {
 
         MockDiscoveryParticipant participant2 = new MockDiscoveryParticipant() {
             @Override
-            public @Nullable DiscoveryResult createResult(BluetoothDiscoveryDevice device) {
+            public @Nullable DiscoveryResult createResult(BluetoothDevice device) {
                 try {
                     pauseLatch.await();
                 } catch (InterruptedException e) {
                     // do nothing
                 }
-                ((BluetoothDeviceSnapshot) device).setName(deviceName);
+                device.setName(deviceName);
                 callCount.incrementAndGet();
                 return super.createResult(device);
             }
@@ -466,14 +465,14 @@ public class BluetoothDiscoveryServiceTest {
         }
 
         @Override
-        public @Nullable DiscoveryResult createResult(BluetoothDiscoveryDevice device) {
+        public @Nullable DiscoveryResult createResult(BluetoothDevice device) {
             return DiscoveryResultBuilder.create(getThingUID(device)).withLabel(RandomStringUtils.randomAlphabetic(6))
                     .withRepresentationProperty(RandomStringUtils.randomAlphabetic(6))
                     .withBridge(device.getAdapter().getUID()).build();
         }
 
         @Override
-        public @NonNull ThingUID getThingUID(BluetoothDiscoveryDevice device) {
+        public @NonNull ThingUID getThingUID(BluetoothDevice device) {
             String id = device.getName() != null ? device.getName() : RandomStringUtils.randomAlphabetic(6);
             return new ThingUID(typeUID, device.getAdapter().getUID(), id);
         }

@@ -12,13 +12,18 @@
  */
 package org.openhab.binding.bluetooth.discovery.internal;
 
+import java.util.Collection;
 import java.util.Objects;
+import java.util.UUID;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.BluetoothAddress;
+import org.openhab.binding.bluetooth.BluetoothCharacteristic;
+import org.openhab.binding.bluetooth.BluetoothDescriptor;
 import org.openhab.binding.bluetooth.BluetoothDevice;
-import org.openhab.binding.bluetooth.discovery.BluetoothDiscoveryDevice;
+import org.openhab.binding.bluetooth.BluetoothDeviceListener;
+import org.openhab.binding.bluetooth.BluetoothService;
 
 /**
  * The {@link BluetoothDeviceSnapshot} acts as a dummy {@link BluetoothDevice} implementation that simply acts as a
@@ -27,114 +32,106 @@ import org.openhab.binding.bluetooth.discovery.BluetoothDiscoveryDevice;
  * @author Connor Petty - Initial Contribution
  */
 @NonNullByDefault
-public class BluetoothDeviceSnapshot extends BluetoothDiscoveryDevice {
+public class BluetoothDeviceSnapshot extends BluetoothDevice {
 
-    private @Nullable String name;
-    private @Nullable Integer manufacturer;
-    private @Nullable Integer txPower;
+    private BluetoothDevice delegate;
 
     public BluetoothDeviceSnapshot(BluetoothDevice device) {
-        super(device);
+        super(device.getAdapter(), device.getAddress());
+        this.delegate = device;
         this.txPower = device.getTxPower();
         this.manufacturer = device.getManufacturerId();
         this.name = device.getName();
+        this.model = device.getModel();
+        this.serialNumber = device.getSerialNumber();
+        this.hardwareRevision = device.getHardwareRevision();
+        this.firmwareRevision = device.getFirmwareRevision();
+        this.softwareRevision = device.getSoftwareRevision();
     }
 
     @Override
-    public @Nullable String getName() {
-        return name;
+    public boolean connect() {
+        return delegate.connect();
     }
 
-    /**
-     * Set the name of the device
-     *
-     * @param name a {@link String} defining the device name
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     * Sets the manufacturer id for the device
-     *
-     * @param manufacturer the manufacturer id
-     */
-    public void setManufacturerId(int manufacturer) {
-        this.manufacturer = manufacturer;
-    }
-
-    /**
-     * Returns the manufacturer ID of the device
-     *
-     * @return an integer with manufacturer ID of the device, or null if not known
-     */
     @Override
-    public @Nullable Integer getManufacturerId() {
-        return manufacturer;
+    public boolean disconnect() {
+        return delegate.disconnect();
     }
 
-    /**
-     * Sets the device transmit power
-     *
-     * @param power the current transmitter power in dBm
-     */
-    public void setTxPower(int txPower) {
-        this.txPower = txPower;
-    }
-
-    /**
-     * Returns the last Transmit Power value or null if no transmit power has been received
-     *
-     * @return the last reported transmitter power value in dBm
-     */
     @Override
-    public @Nullable Integer getTxPower() {
-        return txPower;
+    public boolean enableNotifications(BluetoothCharacteristic characteristic) {
+        return delegate.enableNotifications(characteristic);
     }
 
-    /**
-     * Set the model of the device
-     *
-     * @param model a {@link String} defining the device model
-     */
-    public void setModel(String model) {
-        this.model = model;
+    @Override
+    public boolean enableNotifications(BluetoothDescriptor descriptor) {
+        return delegate.enableNotifications(descriptor);
     }
 
-    /**
-     * Set the serial number of the device
-     *
-     * @param model a {@link String} defining the serial number
-     */
-    public void setSerialNumberl(String serialNumber) {
-        this.serialNumber = serialNumber;
+    @Override
+    public boolean disableNotifications(BluetoothCharacteristic characteristic) {
+        return delegate.disableNotifications(characteristic);
     }
 
-    /**
-     * Set the hardware revision of the device
-     *
-     * @param model a {@link String} defining the hardware revision
-     */
-    public void setHardwareRevision(String hardwareRevision) {
-        this.hardwareRevision = hardwareRevision;
+    @Override
+    public boolean disableNotifications(BluetoothDescriptor descriptor) {
+        return delegate.disableNotifications(descriptor);
     }
 
-    /**
-     * Set the firmware revision of the device
-     *
-     * @param model a {@link String} defining the firmware revision
-     */
-    public void setFirmwareRevision(String firmwareRevision) {
-        this.firmwareRevision = firmwareRevision;
+    @Override
+    public boolean discoverServices() {
+        return delegate.discoverServices();
     }
 
-    /**
-     * Set the software revision of the device
-     *
-     * @param model a {@link String} defining the software revision
-     */
-    public void setSoftwareRevision(String softwareRevision) {
-        this.softwareRevision = softwareRevision;
+    @Override
+    public void addListener(BluetoothDeviceListener listener) {
+        delegate.addListener(listener);
+    }
+
+    @Override
+    public void removeListener(BluetoothDeviceListener listener) {
+        delegate.removeListener(listener);
+    }
+
+    @Override
+    public ConnectionState getConnectionState() {
+        return delegate.getConnectionState();
+    }
+
+    @Override
+    public Collection<BluetoothService> getServices() {
+        return delegate.getServices();
+    }
+
+    @Override
+    public @Nullable BluetoothService getServices(UUID uuid) {
+        return delegate.getServices(uuid);
+    }
+
+    @Override
+    public @Nullable BluetoothCharacteristic getCharacteristic(UUID uuid) {
+        return delegate.getCharacteristic(uuid);
+    }
+
+    @Override
+    public boolean hasListeners() {
+        return delegate.hasListeners();
+    }
+
+    @Override
+    public boolean supportsService(UUID uuid) {
+        return delegate.supportsService(uuid);
+    }
+
+    @Override
+    public boolean readCharacteristic(BluetoothCharacteristic characteristic) {
+        return delegate.readCharacteristic(characteristic);
+    }
+
+    @Override
+    public boolean writeCharacteristic(BluetoothCharacteristic characteristic) {
+        return delegate.writeCharacteristic(characteristic);
     }
 
     @Override
@@ -212,7 +209,7 @@ public class BluetoothDeviceSnapshot extends BluetoothDiscoveryDevice {
      *
      * @return true if this snapshot changed as a result of this operation
      */
-    public void merge(BluetoothDeviceSnapshot device) {
+    public void merge(BluetoothDevice device) {
         Integer txPower = device.getTxPower();
         Integer manufacturer = device.getManufacturerId();
         String name = device.getName();
