@@ -45,12 +45,11 @@ public class DaikinHttpClientFactoryImpl implements DaikinHttpClientFactory {
         if (httpClient != null) {
             try {
                 httpClient.stop();
+                logger.debug("Daikin http client stopped");
             } catch (Exception e) {
-                logger.error("error while stopping Daikin http client", e);
-                // nothing else we can do here
+                logger.debug("error while stopping Daikin http client", e);
             }
             httpClient = null;
-            logger.debug("Daikin http client stopped");
         }
     }
 
@@ -60,7 +59,7 @@ public class DaikinHttpClientFactoryImpl implements DaikinHttpClientFactory {
         return httpClient;
     }
 
-    private void initialize() {
+    private synchronized void initialize() {
         if (httpClient == null) {
             httpClient = new HttpClient(new SslContextFactory(true));
             try {

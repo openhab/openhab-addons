@@ -134,7 +134,7 @@ public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
             socket.receive(incomingPacket);
 
             String host = incomingPacket.getAddress().toString().substring(1);
-            String data = new String(incomingPacket.getData());
+            String data = new String(incomingPacket.getData(), 0, incomingPacket.getLength(), "US-ASCII");
             logger.debug("Received packet from {}: {}", host, data);
 
             Map<String, String> parsedData = InfoParser.parse(data);
