@@ -237,16 +237,18 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
 
         // TODO Maybe this check is obsolete
         if (!sensor.getId().equals(sensorId)) {
-            logger.trace("Received state change for another handler's sensor ({}). Will be ignored.", sensor.getId());
+            logger.debug("Received state change for another handler's sensor ({}). Will be ignored.", sensor.getId());
             return false;
         }
 
-        final FullSensor lastState = lastFullSensor;
-        if (lastState == null || !lastState.equals(sensor)) {
+        final FullSensor lastSensor = lastFullSensor;
+        if (lastSensor == null || !lastSensor.getState().equals(sensor.getState())) {
             lastFullSensor = sensor;
         } else {
             return true;
         }
+
+        logger.trace("New state for sensor {}", sensorId);
 
         initializeProperties(sensor);
 

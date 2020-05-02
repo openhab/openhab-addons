@@ -203,7 +203,7 @@ public class HueLightDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public boolean onLightStateChanged(@Nullable HueBridge bridge, FullLight light) {
-        return true;
+        return false;
     }
 
     private @Nullable ThingUID getThingUID(FullHueObject hueObject) {
@@ -276,7 +276,7 @@ public class HueLightDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public boolean onSensorStateChanged(@Nullable HueBridge bridge, FullSensor sensor) {
-        return true;
+        return false;
     }
 
     @Override

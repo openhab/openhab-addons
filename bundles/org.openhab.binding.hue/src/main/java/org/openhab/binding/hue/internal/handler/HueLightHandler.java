@@ -460,21 +460,23 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
 
         // TODO Maybe this check is obsolete
         if (!fullLight.getId().equals(lightId)) {
-            logger.trace("Received state change for another handler's light ({}). Will be ignored.", fullLight.getId());
+            logger.debug("Received state change for another handler's light ({}). Will be ignored.", fullLight.getId());
             return false;
         }
 
         if (System.currentTimeMillis() - lastTimeCmd <= BYPASS_LIGHT_POLL_DURATION) {
-            logger.trace("Bypass light update after command ({}).", fullLight.getId());
+            logger.debug("Bypass light update after command ({}).", lightId);
             return false;
         }
 
-        final FullLight lastState = lastFullLight;
-        if (lastState == null || !lastState.equals(fullLight)) {
+        final FullLight lastLight = lastFullLight;
+        if (lastLight == null || !lastLight.getState().equals(fullLight.getState())) {
             lastFullLight = fullLight;
         } else {
             return true;
         }
+
+        logger.trace("New state for light {}", lightId);
 
         initializeProperties(fullLight);
 

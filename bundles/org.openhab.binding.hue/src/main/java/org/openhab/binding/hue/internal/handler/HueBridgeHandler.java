@@ -194,7 +194,6 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         @Override
         protected void doConnectedRun() throws IOException, ApiException {
             Map<String, FullSensor> lastSensorStateCopy = new HashMap<>(lastSensorStates);
-            lastSensorStates.clear();
 
             final SensorStatusListener discovery = discoveryListener;
 
@@ -212,7 +211,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
 
                     lastSensorStates.put(sensorId, sensor);
                 } else {
-                    lastSensorStateCopy.remove(sensorId);
+                    logger.trace("Hue sensor '{}' state update.", sensorId);
                     if (sensorStatusListener.onSensorStateChanged(hueBridge, sensor)) {
                         lastSensorStates.put(sensorId, sensor);
                     }
@@ -222,6 +221,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
             // Check for removed sensors
             lastSensorStateCopy.forEach((sensorId, sensor) -> {
                 logger.debug("Hue sensor '{}' removed.", sensorId);
+                lastSensorStates.remove(sensorId);
                 final SensorStatusListener sensorStatusListener = sensorStatusListeners.get(sensorId);
                 if (sensorStatusListener != null) {
                     try {
@@ -242,7 +242,6 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         @Override
         protected void doConnectedRun() throws IOException, ApiException {
             Map<String, FullLight> lastLightStateCopy = new HashMap<>(lastLightStates);
-            lastLightStates.clear();
 
             List<FullLight> lights;
             if (ApiVersionUtils.supportsFullLights(hueBridge.getVersion())) {
@@ -746,9 +745,6 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     public boolean registerDiscoveryListener(HueLightDiscoveryService listener) {
         if (discoveryListener == null) {
             discoveryListener = listener;
-            startLightPolling();
-            startSensorPolling();
-
             return true;
         }
 
@@ -758,14 +754,6 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     public boolean unregisterDiscoveryListener(HueLightDiscoveryService listener) {
         if (discoveryListener != null) {
             discoveryListener = null;
-            if (lightStatusListeners.isEmpty()) {
-                stopLightPolling();
-            }
-
-            if (sensorStatusListeners.isEmpty()) {
-                stopSensorPolling();
-            }
-
             return true;
         }
 
