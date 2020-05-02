@@ -150,8 +150,8 @@ Number PoolHeatMode            "Pool Heat Mode [%d]"                          (g
 String PoolHeatModeStr         "Pool Heat Mode [%s]"                          (gPool)   { channel="pentair:easytouch:1:main:poolheatmodestr" }
 Number SpaHeatMode             "Spa Heat Mode [%d]"                           (gPool)   { channel="pentair:easytouch:1:main:spaheatmode" }
 String SpaHeatModeStr          "Spa Heat Mode [%s]"                           (gPool)   { channel="pentair:easytouch:1:main:spaheatmodestr" }
-PoolSetPoint                   "Pool Set Point [%.1f °F]"                     (gPool)   { channel="pentair:easytouch:1:main:poolsetpoint" }
-Number SpaSetPoint             "Spa Set Point [%.1f °F]"                      (gPool)   { channel="pentair:easytouch:1:main:spasetpoint" }    
+Number PoolSetPoint            "Pool Set Point [%.1f °F]"     <temperature>   (gPool)   { channel="pentair:easytouch:1:main:poolsetpoint" }
+Number SpaSetPoint             "Spa Set Point [%.1f °F]"      <temperature>   (gPool)   { channel="pentair:easytouch:1:main:spasetpoint" }    
 Number HeatActive              "Heat Active [%d]"                             (gPool)  { channel="pentair:easytouch:1:main:heatactive" }
 
 Switch Mode_Spa                 "Spa Mode"                                    (gPool)  { channel = "pentair:easytouch:1:main:spa" }
