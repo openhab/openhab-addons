@@ -19,7 +19,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * The {@link PublicTransportSwitzerlandBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
- * @author Jeremy Stucki & Stefanie Jäger - Initial contribution
+ * @author Jeremy Stucki - Initial contribution
  */
 @NonNullByDefault
 public class PublicTransportSwitzerlandBindingConstants {

@@ -31,7 +31,7 @@ import org.osgi.service.component.annotations.Component;
  * The {@link PublicTransportSwitzerlandHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
- * @author Jeremy Stucki & Stefanie Jäger - Initial contribution
+ * @author Jeremy Stucki - Initial contribution
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.publictransportswitzerland", service = ThingHandlerFactory.class)
