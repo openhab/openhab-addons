@@ -12,13 +12,15 @@
  */
 package org.openhab.binding.shelly.internal.coap;
 
-import static org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.COIOT_PORT;
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.COIOT_PORT;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
+import org.apache.commons.lang.Validate;
 import org.eclipse.californium.core.CoapResource;
 import org.eclipse.californium.core.CoapServer;
 import org.eclipse.californium.core.coap.CoAP;
@@ -32,7 +34,6 @@ import org.eclipse.californium.core.network.config.NetworkConfig;
 import org.eclipse.californium.elements.UdpMulticastConnector;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.util.ConcurrentHashSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,12 +46,14 @@ import org.slf4j.LoggerFactory;
 public class ShellyCoapServer {
     private final Logger logger = LoggerFactory.getLogger(ShellyCoapServer.class);
 
-    boolean started = false;
-    private CoapEndpoint statusEndpoint = new CoapEndpoint.Builder().build();
+    private @Nullable CoapEndpoint statusEndpoint;
     private @Nullable UdpMulticastConnector statusConnector;
-    private final CoapServer server = new CoapServer(NetworkConfig.getStandard(), COIOT_PORT);;
-    private final Set<ShellyCoapListener> coapListeners = new ConcurrentHashSet<>();
+    private @Nullable CoapServer server;
+    boolean started = false;
+    private final Set<ShellyCoapListener> coapListeners = new CopyOnWriteArraySet<>();
 
+    @SuppressWarnings("null")
+    @NonNullByDefault
     protected class ShellyStatusListener extends CoapResource {
 
         private ShellyCoapServer listener;
@@ -75,11 +78,21 @@ public class ShellyCoapServer {
                 }
             }
         }
+
     }
 
-    public synchronized void start(String localIp, ShellyCoapListener listener) throws UnknownHostException {
-        if (!started) {
-            logger.debug("Initializing CoIoT listener (local IP={}:{})", localIp, COIOT_PORT);
+    public void addListener(ShellyCoapListener listener) {
+        coapListeners.add(listener);
+    }
+
+    public void removeListener(ShellyCoapListener listener) {
+        coapListeners.remove(listener);
+    }
+
+    @SuppressWarnings("null")
+    synchronized void init(String localIp) throws UnknownHostException {
+        if (server == null) {
+            logger.debug("Initializing CoIoT listener (local IP={}", localIp);
             NetworkConfig nc = NetworkConfig.getStandard();
             InetAddress localAddr = InetAddress.getByName(localIp);
             InetSocketAddress localPort = new InetSocketAddress(COIOT_PORT);
@@ -87,16 +100,21 @@ public class ShellyCoapServer {
             // Join the multicast group on the selected network interface
             statusConnector = new UdpMulticastConnector(localAddr, localPort, CoAP.MULTICAST_IPV4); // bind UDP listener
             statusEndpoint = new CoapEndpoint.Builder().setNetworkConfig(nc).setConnector(statusConnector).build();
+
+            server = new CoapServer(NetworkConfig.getStandard(), COIOT_PORT);
+            Validate.notNull(server);
             server.addEndpoint(statusEndpoint);
             CoapResource cit = new ShellyStatusListener("cit", this);
             CoapResource s = new ShellyStatusListener("s", this);
             cit.add(s);
             server.add(cit);
-            started = true;
         }
+    }
 
-        if (!coapListeners.contains(listener)) {
-            coapListeners.add(listener);
+    public void start() {
+        if (!started) {
+            logger.debug("Start CoIoT Listener");
+            started = true;
         }
     }
 
@@ -122,26 +140,20 @@ public class ShellyCoapServer {
     /**
      * Cancel pending requests and shutdown the client
      */
-    public void stop(ShellyCoapListener listener) {
-        coapListeners.remove(listener);
-        if (coapListeners.isEmpty()) {
-            stop();
-        }
-    }
-
-    private synchronized void stop() {
+    @SuppressWarnings("null")
+    public void stop() {
         if (started) {
-            // Last listener
-            server.stop();
-            statusEndpoint.stop();
-            coapListeners.clear();
-            started = false;
-            logger.debug("CoAP Listener stopped");
+            if (server != null) {
+                server.stop();
+            }
+            if (statusEndpoint != null) {
+                statusEndpoint.stop();
+            }
         }
-
     }
 
     public void dispose() {
         stop();
     }
+
 }
