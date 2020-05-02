@@ -29,6 +29,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -42,6 +44,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.measure.quantity.Temperature;
 
@@ -57,10 +61,12 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.max.internal.MaxBackupUtils;
 import org.openhab.binding.max.internal.MaxBindingConstants;
+import org.openhab.binding.max.internal.actions.MaxCubeActions;
 import org.openhab.binding.max.internal.command.ACommand;
 import org.openhab.binding.max.internal.command.CCommand;
 import org.openhab.binding.max.internal.command.CubeCommand;
@@ -80,6 +86,7 @@ import org.openhab.binding.max.internal.device.DeviceType;
 import org.openhab.binding.max.internal.device.HeatingThermostat;
 import org.openhab.binding.max.internal.device.RoomInformation;
 import org.openhab.binding.max.internal.device.ThermostatModeType;
+import org.openhab.binding.max.internal.discovery.MaxDeviceDiscoveryService;
 import org.openhab.binding.max.internal.exceptions.UnprocessableMessageException;
 import org.openhab.binding.max.internal.message.CMessage;
 import org.openhab.binding.max.internal.message.FMessage;
@@ -276,7 +283,13 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    private void cubeConfigReset() {
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.unmodifiableSet(
+                Stream.of(MaxDeviceDiscoveryService.class, MaxCubeActions.class).collect(Collectors.toSet()));
+    }
+
+    public void cubeConfigReset() {
         logger.debug("Resetting configuration for MAX! Cube {}", getThing().getUID());
         sendCubeCommand(new ACommand());
         for (Device di : devices) {

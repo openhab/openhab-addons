@@ -48,7 +48,6 @@ import org.slf4j.LoggerFactory;
 public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(MaxCubeHandlerFactory.class);
-    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     @Override
     public @Nullable Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
@@ -80,43 +79,18 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
 
     private ThingUID getMaxCubeDeviceUID(ThingTypeUID thingTypeUID, @Nullable ThingUID thingUID,
             Configuration configuration, ThingUID bridgeUID) {
-        String serialNumber = (String) configuration.get(Thing.PROPERTY_SERIAL_NUMBER);
-
         if (thingUID == null) {
+            String serialNumber = (String) configuration.get(Thing.PROPERTY_SERIAL_NUMBER);
             return new ThingUID(thingTypeUID, serialNumber, bridgeUID.getId());
         }
         return thingUID;
-    }
-
-    private synchronized void registerDeviceDiscoveryService(MaxCubeBridgeHandler maxCubeBridgeHandler) {
-        MaxDeviceDiscoveryService discoveryService = new MaxDeviceDiscoveryService(maxCubeBridgeHandler);
-        discoveryService.activate();
-
-        this.discoveryServiceRegs.put(maxCubeBridgeHandler.getThing().getUID(),
-                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
-    }
-
-    @Override
-    protected synchronized void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof MaxCubeBridgeHandler) {
-            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.remove(thingHandler.getThing().getUID());
-            // remove discovery service, if bridge handler is removed
-            MaxDeviceDiscoveryService service = (MaxDeviceDiscoveryService) bundleContext
-                    .getService(serviceReg.getReference());
-            serviceReg.unregister();
-            if (service != null) {
-                service.deactivate();
-            }
-        }
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (CUBEBRIDGE_THING_TYPE.equals(thingTypeUID)) {
-            MaxCubeBridgeHandler handler = new MaxCubeBridgeHandler((Bridge) thing);
-            registerDeviceDiscoveryService(handler);
-            return handler;
+            return new MaxCubeBridgeHandler((Bridge) thing);
         } else if (SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new MaxDevicesHandler(thing);
         } else {
