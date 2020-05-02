@@ -26,7 +26,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -84,11 +83,10 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
 
     private final LauncherApplication appLauncher = new LauncherApplication();
 
+    private @Nullable LGWebOSTVSocket socket;
     private final WebSocketClient webSocketClient;
 
     private final LGWebOSStateDescriptionOptionProvider stateDescriptionProvider;
-
-    private @Nullable LGWebOSTVSocket socket;
 
     private @Nullable ScheduledFuture<?> reconnectJob;
     private @Nullable ScheduledFuture<?> keepAliveJob;
@@ -134,7 +132,7 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
             return;
         }
 
-        LGWebOSTVSocket s = new LGWebOSTVSocket(webSocketClient, this, host, c.getPort(), scheduler);
+        LGWebOSTVSocket s = new LGWebOSTVSocket(webSocketClient, this, host, c.getPort());
         s.setListener(this);
         socket = s;
 
@@ -267,9 +265,6 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
     @Override
     public void onStateChanged(LGWebOSTVSocket.State state) {
         switch (state) {
-            case DISCONNECTING:
-                postUpdate(CHANNEL_POWER, OnOffType.OFF);
-                break;
             case DISCONNECTED:
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "TV is off");
                 channelHandlers.forEach((k, v) -> {
@@ -311,7 +306,6 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
         logger.debug("Connection failed - error: {}", error);
 
         switch (getSocket().getState()) {
-            case DISCONNECTING:
             case DISCONNECTED:
                 break;
             case CONNECTING:
