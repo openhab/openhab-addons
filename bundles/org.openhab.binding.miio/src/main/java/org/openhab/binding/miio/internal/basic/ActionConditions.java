@@ -16,8 +16,6 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.HSBType;
-import org.eclipse.smarthome.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,33 +40,35 @@ public class ActionConditions {
      * @return value in case firmware is matching, return null if not
      */
     private static @Nullable JsonElement firmwareCheck(MiIoDeviceActionCondition condition,
-            @Nullable Map<String, Object> deviceVariables, @Nullable JsonElement value) {
+            Map<String, Object> deviceVariables, @Nullable JsonElement value) {
         // TODO: placeholder for firmware version check to allow for firmware dependent actions
         return value;
     }
 
     /**
-     * Check if the value is a valid brightness for operating power On/Off switch.
-     * If brightness <1 returns Off, if >=1 returns On
+     * Check if the value is a valid brightness between 1-99.
+     * If <1 returns Off, if >99 returns On to activate the power On/Off switch
      *
      * @param value
      * @return
      */
     private static @Nullable JsonElement brightness(@Nullable JsonElement value) {
         if (value != null && value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber()) {
-            if (value.getAsInt() < 1) {
-                return new JsonPrimitive("off");
-            } else {
+            int intVal = value.getAsInt();
+            if (intVal > 99) {
                 return new JsonPrimitive("on");
+            }
+            if (intVal < 1) {
+                return new JsonPrimitive("off");
             }
         } else {
             LOGGER.debug("Could not parse brightness. Value '{}' is not an int", value);
         }
-        return value;
+        return null;
     }
 
     /**
-     * Check if the value is a valid brightness between 1-100 which can be send to brightness channel.
+     * Check if the value is a valid brightness between 1-99 which can be send to brightness channel.
      * If not returns a null
      *
      * @param value
@@ -77,36 +77,17 @@ public class ActionConditions {
     private static @Nullable JsonElement brightnessExists(@Nullable JsonElement value) {
         if (value != null && value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber()) {
             int intVal = value.getAsInt();
-            if (intVal > 0 && intVal <= 100) {
+            if (intVal > 0 && intVal < 99) {
                 return value;
-            } else if (intVal > 100) {
-                return new JsonPrimitive(100);
             }
-            return null;
         } else {
             LOGGER.debug("Could not parse brightness. Value '{}' is not an int", value);
-        }
-        return value;
-    }
-
-    /**
-     * Check if the value is a color which can be send to Color channel.
-     * If not returns a null
-     *
-     * @param command
-     *
-     * @param value
-     * @return
-     */
-    private static @Nullable JsonElement hsbOnly(@Nullable Command command, @Nullable JsonElement value) {
-        if (command != null && command instanceof HSBType) {
-            return value;
         }
         return null;
     }
 
     public static @Nullable JsonElement executeAction(MiIoDeviceActionCondition condition,
-            @Nullable Map<String, Object> deviceVariables, @Nullable JsonElement value, @Nullable Command command) {
+            Map<String, Object> deviceVariables, @Nullable JsonElement value) {
         switch (condition.getName().toUpperCase()) {
             case "FIRMWARE":
                 return firmwareCheck(condition, deviceVariables, value);
@@ -114,8 +95,6 @@ public class ActionConditions {
                 return brightnessExists(value);
             case "BRIGHTNESSONOFF":
                 return brightness(value);
-            case "HSBONLY":
-                return hsbOnly(command, value);
             default:
                 LOGGER.debug("Condition {} not found. Returning '{}'", condition,
                         value != null ? value.toString() : "");

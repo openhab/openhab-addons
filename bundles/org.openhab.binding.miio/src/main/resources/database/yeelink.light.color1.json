@@ -10,7 +10,6 @@
 			"yeelink.light.bslamp1",
 			"yeelink.light.bslamp2"
 		],
-		"maxProperties": 7,
 		"channels": [
 			{
 				"property": "power",
@@ -54,7 +53,7 @@
 				"property": "delayoff",
 				"friendlyName": "Shutdown Timer",
 				"channel": "delayoff",
-				"type": "Number",
+				"type": "String",
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [
@@ -121,28 +120,13 @@
 					{
 						"command": "set_rgb",
 						"parameterType": "COLOR",
-						"condition": {
-							"name": "HSBOnly"
-						},
+						"parameter1": "\"smooth\"",
+						"parameter2": "500",
 						"parameters": [
 							"$value$",
 							"smooth",
 							500
 						]
-					},
-					{
-						"command": "set_bright",
-						"parameterType": "NUMBER",
-						"condition": {
-							"name": "BrightnessExisting"
-						}
-					},
-					{
-						"command": "set_power",
-						"parameterType": "ONOFF",
-						"condition": {
-							"name": "BrightnessOnOff"
-						}
 					}
 				]
 			},
