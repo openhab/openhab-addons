@@ -129,7 +129,7 @@ public class VigiCruesHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
         } catch (MalformedURLException e) {
-            logger.error("Malformed URL in VigiCrues request : {}", queryUrl);
+            logger.warn("Malformed URL in VigiCrues request : {}", queryUrl);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         }
     }
