@@ -17,6 +17,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,35 +27,35 @@ import org.slf4j.LoggerFactory;
  * @author Dieter Schmidt - Initial contribution
  *
  */
+@NonNullByDefault
 public class XiaomiDiscoverySocket extends XiaomiSocket {
 
     private static final int MCAST_PORT = 4321;
 
     private final Logger logger = LoggerFactory.getLogger(XiaomiDiscoverySocket.class);
 
-    public XiaomiDiscoverySocket() {
-        super();
+    public XiaomiDiscoverySocket(String owner) {
+        super(owner);
     }
 
     /**
      * Sets up the {@link XiaomiDiscoverySocket}.
      *
      * Connects the socket to the specific multicast address and port.
-     * Starts the {@link ReceiverThread} for the socket.
      */
     @Override
-    DatagramSocket setupSocket() {
+    protected void setupSocket() {
         synchronized (XiaomiDiscoverySocket.class) {
             try {
                 logger.debug("Setup discovery socket");
-                setSocket(new DatagramSocket(0));
-                logger.debug("Initialized socket to {}:{} on {}:{}", getSocket().getInetAddress(),
-                        getSocket().getPort(), getSocket().getLocalAddress(), getSocket().getLocalPort());
+                DatagramSocket socket = new DatagramSocket(0);
+                setSocket(socket);
+                logger.debug("Initialized socket to {}:{} on {}:{}", socket.getInetAddress(), socket.getPort(),
+                        socket.getLocalAddress(), socket.getLocalPort());
             } catch (IOException e) {
                 logger.error("Setup socket error", e);
             }
         }
-        return getSocket();
     }
 
     /**
@@ -70,5 +71,4 @@ public class XiaomiDiscoverySocket extends XiaomiSocket {
             logger.error("Sending error", e);
         }
     }
-
 }

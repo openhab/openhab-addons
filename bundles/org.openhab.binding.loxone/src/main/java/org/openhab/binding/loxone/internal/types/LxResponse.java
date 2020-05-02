@@ -117,7 +117,7 @@ public class LxResponse {
      * Deserializes response value as a given type
      *
      * @param gson GSON object used for deserialization
-     * @param      <T> class to deserialize response to
+     * @param <T> class to deserialize response to
      * @param type class type to deserialize response to
      * @return deserialized response
      */

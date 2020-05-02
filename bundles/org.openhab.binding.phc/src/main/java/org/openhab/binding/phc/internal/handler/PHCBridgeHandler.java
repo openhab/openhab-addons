@@ -124,13 +124,10 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
                 public void run() {
                     processQueueLoop();
                 }
-
             }.start();
-
         } catch (PortInUseException | TooManyListenersException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Could not open serial port " + serialPort + ": " + e.getMessage());
-
         } catch (UnsupportedCommOperationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Could not configure serial port " + serialPort + ": " + e.getMessage());
@@ -175,7 +172,6 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
             } else {
                 processInputStream(buffer);
             }
-
         } catch (IOException e) {
             // ignore
         } catch (InterruptedException e) {
@@ -269,14 +265,12 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
                     }
 
                     queue.put(System.currentTimeMillis() + SEND_RETRY_TIME_MILLIS, qo);
-
                 } else if (qo.getCounter() >= SEND_RETRY_COUNT
                         && !qo.getModuleType().equals(PHCBindingConstants.CHANNELS_JRM)) {
                     // Can´t process the acknowledgement of JRM yet.
                     logger.info("No acknowlgdge from the module {} received.", qo.getModuleAddress());
                 }
             }
-
         }
     }
 

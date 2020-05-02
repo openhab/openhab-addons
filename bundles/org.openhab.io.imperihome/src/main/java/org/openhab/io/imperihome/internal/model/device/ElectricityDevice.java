@@ -114,5 +114,4 @@ public class ElectricityDevice extends AbstractNumericValueDevice {
         kwhParam.setValue(valueParam.getValue());
         addParam(kwhParam);
     }
-
 }

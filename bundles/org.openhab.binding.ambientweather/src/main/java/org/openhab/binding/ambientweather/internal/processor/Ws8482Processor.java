@@ -58,8 +58,8 @@ public class Ws8482Processor extends AbstractProcessor {
         // Update the weather data channels
         handler.updateDate(channelGroupId, CH_OBSERVATION_TIME, data.date);
         handler.updateString(channelGroupId, CH_BATTERY_INDICATOR, data.battout);
-        handler.updateQuantity(channelGroupId, CH_TEMPERATURE, data.tempf, ImperialUnits.FAHRENHEIT);
-        handler.updateQuantity(channelGroupId, CH_HUMIDITY, data.humidity, SmartHomeUnits.PERCENT);
+        handler.updateQuantity(channelGroupId, CH_TEMPERATURE, data.tempinf, ImperialUnits.FAHRENHEIT);
+        handler.updateQuantity(channelGroupId, CH_HUMIDITY, data.humidityin, SmartHomeUnits.PERCENT);
 
         // Update the remote sensor channels
         remoteSensor.updateChannels(handler, jsonData);

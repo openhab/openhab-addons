@@ -23,5 +23,4 @@ public class SpeakerCommand extends BaseOnOffCommand {
     protected SpeakerCommand(int setId) {
         super('d', 'v', setId);
     }
-
 }

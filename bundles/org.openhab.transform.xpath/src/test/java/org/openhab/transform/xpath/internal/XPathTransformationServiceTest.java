@@ -17,7 +17,6 @@ import static org.junit.Assert.assertEquals;
 import org.eclipse.smarthome.core.transform.TransformationException;
 import org.junit.Before;
 import org.junit.Test;
-import org.openhab.transform.xpath.internal.XPathTransformationService;
 
 /**
  * @author Thomas.Eichstaedt-Engelen
@@ -33,12 +32,10 @@ public class XPathTransformationServiceTest extends AbstractTransformationServic
 
     @Test
     public void testTransformByXPath() throws TransformationException {
-
         // method under test
         String transformedResponse = processor.transform("//current_conditions/temp_c/@data", source);
 
         // Asserts
         assertEquals("8", transformedResponse);
     }
-
 }

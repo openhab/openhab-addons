@@ -100,5 +100,4 @@ public class XiaomiActorPlugHandler extends XiaomiActorBaseHandler {
             }
         }
     }
-
 }

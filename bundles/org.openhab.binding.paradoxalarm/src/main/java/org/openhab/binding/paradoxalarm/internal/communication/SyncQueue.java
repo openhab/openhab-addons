@@ -77,7 +77,6 @@ public class SyncQueue {
         return request;
     }
 
-
     public synchronized IRequest peekSendQueue() {
         return sendQueue.peek();
     }

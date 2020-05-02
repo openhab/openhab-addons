@@ -9,8 +9,8 @@
 		</description>
 
 		<channels>
-			<channel id="free_mem" typeId="free_mem" />
-			<channel id="duty_cycle" typeId="duty_cycle" />
+			<channel id="free_mem" typeId="free_mem"/>
+			<channel id="duty_cycle" typeId="duty_cycle"/>
 		</channels>
 
 		<representation-property>serialNumber</representation-property>
@@ -121,14 +121,14 @@
 		<item-type>Number</item-type>
 		<label>Free Memory Slots</label>
 		<description>Free memory slots to store commands send to the devices</description>
-		<state pattern="%d" readOnly="true" />
+		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="duty_cycle" advanced="true">
 		<item-type>Number</item-type>
 		<label>Duty Cycle</label>
 		<description>Duty Cycle for sending commands to the devices</description>
-		<state pattern="%d %%" readOnly="true" />
+		<state pattern="%d %%" readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

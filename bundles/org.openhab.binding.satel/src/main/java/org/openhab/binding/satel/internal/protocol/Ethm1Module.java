@@ -50,9 +50,9 @@ public class Ethm1Module extends SatelModule {
      * Creates new instance with host, port, timeout and encryption key set to
      * specified values.
      *
-     * @param host          host name or IP of ETHM-1 module
-     * @param port          TCP port the module listens on
-     * @param timeout       timeout value in milliseconds for connect/read/write operations
+     * @param host host name or IP of ETHM-1 module
+     * @param port TCP port the module listens on
+     * @param timeout timeout value in milliseconds for connect/read/write operations
      * @param encryptionKey encryption key for encrypted communication
      */
     public Ethm1Module(String host, int port, int timeout, String encryptionKey) {
@@ -254,5 +254,4 @@ public class Ethm1Module extends SatelModule {
             os.flush();
         }
     }
-
 }

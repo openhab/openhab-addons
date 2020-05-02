@@ -219,5 +219,4 @@ public class HmChannel {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("number", number).append("type", type)
                 .append("initialized", initialized).toString();
     }
-
 }

@@ -26,7 +26,7 @@ import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotif
  * @author Connor Petty - Initial contribution
  */
 @NonNullByDefault
-public class MockBluetoothDevice extends BluetoothDevice {
+public class MockBluetoothDevice extends BaseBluetoothDevice {
 
     private AtomicBoolean servicesDiscovered = new AtomicBoolean(false);
 
@@ -90,6 +90,31 @@ public class MockBluetoothDevice extends BluetoothDevice {
     @Override
     protected void notifyListeners(BluetoothEventType event, Object... args) {
         CompletableFuture.runAsync(() -> super.notifyListeners(event, args));
+    }
+
+    @Override
+    public boolean writeCharacteristic(BluetoothCharacteristic characteristic) {
+        return false;
+    }
+
+    @Override
+    public boolean enableNotifications(BluetoothCharacteristic characteristic) {
+        return false;
+    }
+
+    @Override
+    public boolean disableNotifications(BluetoothCharacteristic characteristic) {
+        return false;
+    }
+
+    @Override
+    public boolean enableNotifications(BluetoothDescriptor descriptor) {
+        return false;
+    }
+
+    @Override
+    public boolean disableNotifications(BluetoothDescriptor descriptor) {
+        return false;
     }
 
 }

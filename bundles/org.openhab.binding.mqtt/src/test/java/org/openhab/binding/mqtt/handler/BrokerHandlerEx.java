@@ -18,7 +18,6 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.mockito.Mockito;
-import org.openhab.binding.mqtt.handler.BrokerHandler;
 
 /**
  * Overwrite BrokerHandler to return our mocked/extended MqttBrokerConnection in

@@ -175,7 +175,6 @@ public class FoobotDeviceHandler extends BaseThingHandler {
         if (lastTime instanceof DecimalType) {
             ((DecimalType) lastTime).intValue();
         }
-
     }
 
     @Override
@@ -218,5 +217,4 @@ public class FoobotDeviceHandler extends BaseThingHandler {
                 ? (FoobotAccountHandler) getBridge().getHandler()
                 : null;
     }
-
 }

@@ -72,5 +72,4 @@ public class HaIDTests {
         Collection<HaID> restoreList = HaID.fromConfig(haConfig);
         assertThat(restoreList, hasItem(new HaID("homeassistant/switch/node/name/config")));
     }
-
 }

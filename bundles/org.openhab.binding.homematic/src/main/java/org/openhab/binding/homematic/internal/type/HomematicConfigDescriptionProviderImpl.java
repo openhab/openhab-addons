@@ -88,5 +88,4 @@ public class HomematicConfigDescriptionProviderImpl implements HomematicConfigDe
     public void addConfigDescription(ConfigDescription configDescription) {
         configDescriptionsByURI.put(configDescription.getUID(), configDescription);
     }
-
 }

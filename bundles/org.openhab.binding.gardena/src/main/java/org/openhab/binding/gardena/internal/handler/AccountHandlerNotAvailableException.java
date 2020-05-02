@@ -24,5 +24,4 @@ public class AccountHandlerNotAvailableException extends Exception {
     public AccountHandlerNotAvailableException(String message) {
         super(message);
     }
-
 }

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="meter-ac-general">
+		<label>Summary</label>
+		<channels>
+			<channel id="ac-total-current" typeId="ac-total-current-type"/>
+			<channel id="ac-average-voltage-to-n" typeId="ac-average-voltage-to-n-type"/>
+			<channel id="ac-average-voltage-to-next" typeId="ac-average-voltage-to-next-type"/>
+			<channel id="ac-frequency" typeId="ac-frequency-type"/>
+			<channel id="ac-total-real-power" typeId="ac-total-real-power-type"/>
+			<channel id="ac-total-apparent-power" typeId="ac-total-apparent-power-type"/>
+			<channel id="ac-total-reactive-power" typeId="ac-total-reactive-power-type"/>
+			<channel id="ac-average-power-factor" typeId="ac-average-power-factor-type"/>
+			<channel id="ac-total-exported-real-energy" typeId="ac-total-exported-real-energy-type"/>
+			<channel id="ac-total-imported-real-energy" typeId="ac-total-imported-real-energy-type"/>
+			<channel id="ac-total-exported-apparent-energy" typeId="ac-total-exported-apparent-energy-type"/>
+			<channel id="ac-total-imported-apparent-energy" typeId="ac-total-imported-apparent-energy-type"/>
+			<channel id="ac-total-imported-reactive-energy-q1" typeId="ac-total-imported-reactive-energy-q1-type"/>
+			<channel id="ac-total-imported-reactive-energy-q2" typeId="ac-total-imported-reactive-energy-q2-type"/>
+			<channel id="ac-total-exported-reactive-energy-q3" typeId="ac-total-exported-reactive-energy-q3-type"/>
+			<channel id="ac-total-exported-reactive-energy-q4" typeId="ac-total-exported-reactive-energy-q4-type"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="meter-ac-phase">
+		<label>Phase</label>
+		<channels>
+			<channel id="ac-phase-current" typeId="ac-phase-current-type"/>
+			<channel id="ac-voltage-to-n" typeId="ac-voltage-to-n-type"/>
+			<channel id="ac-voltage-to-next" typeId="ac-voltage-to-next-type"/>
+			<channel id="ac-real-power" typeId="ac-real-power-type"/>
+			<channel id="ac-apparent-power" typeId="ac-apparent-power-type"/>
+			<channel id="ac-reactive-power" typeId="ac-reactive-power-type"/>
+			<channel id="ac-power-factor" typeId="ac-power-factor-type"/>
+			<channel id="ac-exported-real-energy" typeId="ac-exported-real-energy-type"/>
+			<channel id="ac-imported-real-energy" typeId="ac-imported-real-energy-type"/>
+			<channel id="ac-exported-apparent-energy" typeId="ac-exported-apparent-energy-type"/>
+			<channel id="ac-imported-apparent-energy" typeId="ac-imported-apparent-energy-type"/>
+			<channel id="ac-imported-reactive-energy-q1" typeId="ac-imported-reactive-energy-q1-type"/>
+			<channel id="ac-imported-reactive-energy-q2" typeId="ac-imported-reactive-energy-q2-type"/>
+			<channel id="ac-exported-reactive-energy-q3" typeId="ac-exported-reactive-energy-q3-type"/>
+			<channel id="ac-exported-reactive-energy-q4" typeId="ac-exported-reactive-energy-q4-type"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

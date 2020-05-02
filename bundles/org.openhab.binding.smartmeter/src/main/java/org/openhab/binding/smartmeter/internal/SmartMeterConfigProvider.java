@@ -51,7 +51,6 @@ public class SmartMeterConfigProvider implements ConfigOptionProvider {
         }
 
         switch (param) {
-
             case SmartMeterBindingConstants.CONFIGURATION_SERIAL_MODE:
                 List<ParameterOption> options = new ArrayList<>();
 
@@ -78,5 +77,4 @@ public class SmartMeterConfigProvider implements ConfigOptionProvider {
         }
         return null;
     }
-
 }

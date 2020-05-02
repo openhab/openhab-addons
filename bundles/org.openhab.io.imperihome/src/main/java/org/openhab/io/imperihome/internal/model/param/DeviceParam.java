@@ -58,7 +58,6 @@ public class DeviceParam {
             return false;
         }
         return value != null ? value.equals(that.value) : that.value == null;
-
     }
 
     @Override
@@ -70,5 +69,4 @@ public class DeviceParam {
     public String toString() {
         return "DeviceParam{" + "key=" + key + ", value='" + value + '\'' + '}';
     }
-
 }

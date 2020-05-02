@@ -19,7 +19,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.bluetooth.BluetoothDevice;
 
 /**
  * A {@link BluetoothDiscoveryParticipant} that is registered as a service is picked up by the BluetoothDiscoveryService
@@ -45,7 +44,7 @@ public interface BluetoothDiscoveryParticipant {
      * @return the according discovery result or <code>null</code>, if device is not
      *         supported by this participant
      */
-    public @Nullable DiscoveryResult createResult(BluetoothDevice device);
+    public @Nullable DiscoveryResult createResult(BluetoothDiscoveryDevice device);
 
     /**
      * Returns the thing UID for a Bluetooth device
@@ -53,7 +52,7 @@ public interface BluetoothDiscoveryParticipant {
      * @param device the Bluetooth device
      * @return a thing UID or <code>null</code>, if the device is not supported by this participant
      */
-    public @Nullable ThingUID getThingUID(BluetoothDevice device);
+    public @Nullable ThingUID getThingUID(BluetoothDiscoveryDevice device);
 
     /**
      * Returns true if this participant requires the device to be connected before it can produce a
@@ -69,7 +68,7 @@ public interface BluetoothDiscoveryParticipant {
      * @param device the Bluetooth device
      * @return true if a connection is required before calling {@link createResult(BluetoothDevice)}
      */
-    public default boolean requiresConnection(BluetoothDevice device) {
+    public default boolean requiresConnection(BluetoothDiscoveryDevice device) {
         return false;
     }
 }

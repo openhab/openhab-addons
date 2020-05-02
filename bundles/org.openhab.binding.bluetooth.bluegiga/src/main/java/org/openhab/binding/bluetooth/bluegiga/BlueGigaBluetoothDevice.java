@@ -20,9 +20,11 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
+import org.openhab.binding.bluetooth.BaseBluetoothDevice;
 import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.BluetoothCharacteristic;
 import org.openhab.binding.bluetooth.BluetoothCompletionStatus;
+import org.openhab.binding.bluetooth.BluetoothDescriptor;
 import org.openhab.binding.bluetooth.BluetoothDevice;
 import org.openhab.binding.bluetooth.BluetoothService;
 import org.openhab.binding.bluetooth.bluegiga.handler.BlueGigaBridgeHandler;
@@ -52,7 +54,7 @@ import org.slf4j.LoggerFactory;
  * @author Chris Jackson - Initial contribution
  */
 @NonNullByDefault
-public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGigaEventListener {
+public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements BlueGigaEventListener {
     private final long TIMEOUT_SEC = 60;
 
     private final Logger logger = LoggerFactory.getLogger(BlueGigaBluetoothDevice.class);
@@ -86,19 +88,16 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
     private @Nullable ScheduledFuture<?> procedureTimer;
 
     private Runnable connectTimeoutTask = new Runnable() {
-
         @Override
         public void run() {
             if (connectionState == ConnectionState.CONNECTING) {
                 logger.debug("Connection timeout for device {}", address);
                 connectionState = ConnectionState.DISCONNECTED;
             }
-
         }
     };
 
     private Runnable procedureTimeoutTask = new Runnable() {
-
         @Override
         public void run() {
             logger.debug("Procedure {} timeout for device {}", procedureProgress, address);
@@ -170,6 +169,30 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
         procedureTimer = startTimer(procedureTimeoutTask, TIMEOUT_SEC);
         procedureProgress = BlueGigaProcedure.GET_SERVICES;
         return true;
+    }
+
+    @Override
+    public boolean enableNotifications(BluetoothCharacteristic characteristic) {
+        // TODO will be implemented in a followup PR
+        return false;
+    }
+
+    @Override
+    public boolean disableNotifications(BluetoothCharacteristic characteristic) {
+        // TODO will be implemented in a followup PR
+        return false;
+    }
+
+    @Override
+    public boolean enableNotifications(BluetoothDescriptor descriptor) {
+        // TODO will be implemented in a followup PR
+        return false;
+    }
+
+    @Override
+    public boolean disableNotifications(BluetoothDescriptor descriptor) {
+        // TODO will be implemented in a followup PR
+        return false;
     }
 
     @Override
@@ -248,7 +271,6 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
     }
 
     private void handleScanEvent(BlueGigaScanResponseEvent event) {
-
         // Check if this is addressed to this device
         if (!address.equals(new BluetoothAddress(event.getSender()))) {
             return;
@@ -282,7 +304,7 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
                                 Map<Short, int[]> eirRecord = (Map<Short, int[]>) obj;
                                 Map.Entry<Short, int[]> eirEntry = eirRecord.entrySet().iterator().next();
 
-                                manufacturer = (int) eirEntry.getKey();
+                                manufacturer = eirEntry.getKey().intValue();
 
                                 int[] manufacturerInt = eirEntry.getValue();
                                 manufacturerData = new byte[manufacturerInt.length + 2];
@@ -543,4 +565,5 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
     private ScheduledFuture<?> startTimer(Runnable command, long timeout) {
         return scheduler.schedule(command, timeout, TimeUnit.SECONDS);
     }
+
 }

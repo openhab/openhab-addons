@@ -70,5 +70,4 @@ public class EtherRainUdpResponse {
     public String getAdditionalParameters() {
         return additionalParameters;
     }
-
 }

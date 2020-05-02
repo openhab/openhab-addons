@@ -45,12 +45,10 @@ public class QuantityTypeConverter extends AbstractTypeConverter<QuantityType<? 
 
     @Override
     protected Object toBinding(QuantityType<? extends Quantity<?>> type, HmDatapoint dp) throws ConverterException {
-
         if (dp.isIntegerType()) {
             return toUnitFromDatapoint(type, dp).intValue();
         }
         return round(toUnitFromDatapoint(type, dp).doubleValue()).doubleValue();
-
     }
 
     private QuantityType<? extends Quantity<?>> toUnitFromDatapoint(QuantityType<? extends Quantity<?>> type,
@@ -148,5 +146,4 @@ public class QuantityTypeConverter extends AbstractTypeConverter<QuantityType<? 
         // increase logging verbosity for this type of converter
         return LogLevel.DEBUG;
     }
-
 }

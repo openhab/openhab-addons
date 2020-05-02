@@ -22,8 +22,6 @@ import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
-import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
-import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
@@ -41,12 +39,11 @@ import name.eskildsen.zoneminder.IZoneMinderMonitorData;
  * @author Martin S. Eskildsen - Initial contribution
  */
 public class ZoneMinderDiscoveryService extends AbstractDiscoveryService
-        implements ExtendedDiscoveryService, DiscoveryService, ThingHandlerService {
+        implements DiscoveryService, ThingHandlerService {
 
     private final Logger logger = LoggerFactory.getLogger(ZoneMinderDiscoveryService.class);
 
     private @NonNullByDefault({}) ZoneMinderServerBridgeHandler serverHandler;
-    private DiscoveryServiceCallback discoveryServiceCallback;
 
     public ZoneMinderDiscoveryService() {
         super(30);
@@ -74,11 +71,6 @@ public class ZoneMinderDiscoveryService extends AbstractDiscoveryService
     public void deactivate() {
         logger.debug("[DISCOVERY]: Deactivating ZoneMinder discovery service for {}",
                 serverHandler.getThing().getUID());
-    }
-
-    @Override
-    public void setDiscoveryServiceCallback(DiscoveryServiceCallback discoveryServiceCallback) {
-        this.discoveryServiceCallback = discoveryServiceCallback;
     }
 
     @Override

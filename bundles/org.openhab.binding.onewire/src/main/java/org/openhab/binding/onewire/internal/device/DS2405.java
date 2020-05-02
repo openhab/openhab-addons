@@ -42,5 +42,4 @@ public class DS2405 extends AbstractDigitalOwDevice {
 
         super.configureChannels();
     }
-
 }

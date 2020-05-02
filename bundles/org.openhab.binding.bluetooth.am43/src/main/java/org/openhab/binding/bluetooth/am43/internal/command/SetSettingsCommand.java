@@ -45,5 +45,4 @@ public class SetSettingsCommand extends AM43Command {
         return new byte[] { (byte) dataHead, (byte) deviceSpeed, 0, (byte) ((deviceLength & 0xFF00) >> 8),
                 (byte) (deviceLength & 0xFF), (byte) deviceDiameter };
     }
-
 }

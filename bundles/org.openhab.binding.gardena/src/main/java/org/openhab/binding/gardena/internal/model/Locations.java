@@ -30,5 +30,4 @@ public class Locations {
     public List<Location> getLocations() {
         return locations;
     }
-
 }

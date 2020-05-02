@@ -16,7 +16,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.openhab.binding.xmppclient.internal.XMPPClient;
 
 /**
- * Subscribes to a chat and calls {@link AbstractBrokerHandler#triggerChannel(ChannelUID, String)} if a value has been 
+ * Subscribes to a chat and calls {@link AbstractBrokerHandler#triggerChannel(ChannelUID, String)} if a value has been
  * received.
  *
  * @author Pavel Gololobov - Initial contribution
@@ -27,7 +27,8 @@ public class PublishTriggerChannel implements XMPPClientMessageSubscriber {
     private final ChannelUID uid;
     private final XMPPClientHandler handler;
 
-    PublishTriggerChannel(PublishTriggerChannelConfig config, ChannelUID uid, XMPPClient connection, XMPPClientHandler handler) {
+    PublishTriggerChannel(PublishTriggerChannelConfig config, ChannelUID uid, XMPPClient connection,
+            XMPPClientHandler handler) {
         this.config = config;
         this.uid = uid;
         this.connection = connection;
@@ -50,7 +51,7 @@ public class PublishTriggerChannel implements XMPPClientMessageSubscriber {
             return;
         }
         String eventValue = "";
-        if(!config.separator.isEmpty()) {
+        if (!config.separator.isEmpty()) {
             eventValue = from + config.separator + payload;
         } else {
             eventValue = payload;

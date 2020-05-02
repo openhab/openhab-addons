@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
  * the methods provide a cache for faster access,
  * <ul>
  * <li>{@link #Thing2VeluxActuator} Constructor,</LI>
+ * <li>{@link #isKnown} returns whether actuator is well-known,</LI>
  * <li>{@link #getProductBridgeIndex} returns the Velux bridge index for access,</LI>
  * <li>{@link #isInverted} returns a flag about value inversion.</LI>
  * </UL>
@@ -51,8 +52,8 @@ public class Thing2VeluxActuator {
     private void mapThing2Velux() {
         if (!ThingConfiguration.exists(bridgeHandler, channelUID,
                 VeluxBindingProperties.CONFIG_ACTUATOR_SERIALNUMBER)) {
-            logger.warn("mapThing2Velux(): aborting processing as {} is not set.",
-                    VeluxBindingProperties.CONFIG_ACTUATOR_SERIALNUMBER);
+            logger.trace("mapThing2Velux(): aborting processing as {} is not set within {}.",
+                    VeluxBindingProperties.CONFIG_ACTUATOR_SERIALNUMBER, channelUID);
             return;
         }
         String actuatorSerial = (String) ThingConfiguration.getValue(bridgeHandler, channelUID,
@@ -114,6 +115,16 @@ public class Thing2VeluxActuator {
     }
 
     /**
+     * Returns true, if the actuator is known within the bridge.
+     * <p>
+     *
+     * @return <b>isKnown</B> as boolean.
+     */
+    public boolean isKnown() {
+        return (!(this.getProductBridgeIndex() == ProductBridgeIndex.UNKNOWN));
+    }
+
+    /**
      * Returns the flag whether a value inversion in intended for the Velux device based on the Thing configuration
      * which belongs to the channel passed during constructor.
      * <p>
@@ -129,5 +140,4 @@ public class Thing2VeluxActuator {
         }
         return isInverted;
     }
-
 }

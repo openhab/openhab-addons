@@ -21,9 +21,9 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.daikin.internal.handler.DaikinAcUnitHandler;
 import org.openhab.binding.daikin.internal.handler.DaikinAirbaseUnitHandler;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.Activate;
 
 /**
  * The {@link DaikinHandlerFactory} is responsible for creating things and thing
@@ -31,7 +31,7 @@ import org.osgi.service.component.annotations.Activate;
  *
  * @author Tim Waterhouse <tim@timwaterhouse.com> - Initial contribution
  * @author Paul Smedley <paul@smedley.id.au> - Modifications to support Airbase Controllers
-
+ * 
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.daikin")
 @NonNullByDefault

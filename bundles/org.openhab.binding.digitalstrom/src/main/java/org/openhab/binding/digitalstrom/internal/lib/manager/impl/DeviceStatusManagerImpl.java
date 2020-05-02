@@ -473,7 +473,6 @@ public class DeviceStatusManagerImpl implements DeviceStatusManager {
                 }
             }
         }
-
     }
 
     private void removeSensorJob(Device eshDevice, DeviceStateUpdate deviceStateUpdate) {
@@ -1206,7 +1205,6 @@ public class DeviceStatusManagerImpl implements DeviceStatusManager {
         if (totalPowerConsumptionListener != null) {
             totalPowerConsumptionListener.onEnergyMeterValueChanged(val);
         }
-
     }
 
     @Override

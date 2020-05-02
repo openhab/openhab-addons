@@ -42,5 +42,4 @@ public class AbstractHueOSGiTestParent extends JavaOSGiTest {
             }
         });
     }
-
 }

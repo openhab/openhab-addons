@@ -91,5 +91,4 @@ public abstract class Command {
             this.manualOverride = manualOverride;
         }
     }
-
 }

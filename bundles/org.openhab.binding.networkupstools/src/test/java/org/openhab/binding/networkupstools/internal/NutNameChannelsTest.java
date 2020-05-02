@@ -56,11 +56,11 @@ public class NutNameChannelsTest {
     private static final String TEMPLATE_ITEM_TYPE = "<item-type>%s</item-type>";
     private static final String TEMPLATE_LABEL = "<label>%s</label>";
     private static final String TEMPLATE_DESCRIPTION = "<description>%s</description>";
-    private static final String TEMPLATE_STATE = "<state pattern=\"%s\" readOnly=\"true\" />";
-    private static final String TEMPLATE_STATE_NO_PATTERN = "<state readOnly=\"true\" />";
+    private static final String TEMPLATE_STATE = "<state pattern=\"%s\" readOnly=\"true\"/>";
+    private static final String TEMPLATE_STATE_NO_PATTERN = "<state readOnly=\"true\"/>";
     private static final String TEMPLATE_STATE_OPTIONS = "<state readOnly=\"true\">";
     private static final String TEMPLATE_CHANNEL_TYPE_END = "</channel-type>";
-    private static final String TEMPLATE_CHANNEL = "<channel id=\"%s\" typeId=\"%s\" />";
+    private static final String TEMPLATE_CHANNEL = "<channel id=\"%s\" typeId=\"%s\"/>";
 
     private static final String README_IS_ADVANCED = "yes";
 
@@ -221,5 +221,4 @@ public class NutNameChannelsTest {
         }
         return pattern;
     }
-
 }

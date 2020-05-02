@@ -351,7 +351,6 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler implem
         }
 
         return state;
-
     }
 
     protected State getChannelBoolAsOnOffState(boolean value) {
@@ -392,5 +391,4 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler implem
             }
         }
     }
-
 }

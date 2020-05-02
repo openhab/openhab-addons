@@ -186,7 +186,7 @@ public class ChaserThingHandler extends DmxThingHandler {
 
     @Override
     public void dispose() {
-        if (channels.size() != 0) {
+        if (!channels.isEmpty()) {
             Bridge bridge = getBridge();
             if (bridge != null) {
                 DmxBridgeHandler bridgeHandler = (DmxBridgeHandler) bridge.getHandler();
@@ -213,5 +213,4 @@ public class ChaserThingHandler extends DmxThingHandler {
             logger.debug("unknown state received: {} in channel {} thing {}", state, channelUID, this.thing.getUID());
         }
     }
-
 }

@@ -44,5 +44,4 @@ public interface ControlType {
      * @return command identifier
      */
     BitSet getControlledStates();
-
 }

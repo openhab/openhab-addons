@@ -21,18 +21,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOParticipant;
@@ -52,41 +48,30 @@ import org.slf4j.LoggerFactory;
 public class MediaRendererService implements UpnpIOParticipant, SamsungTvService {
 
     public static final String SERVICE_NAME = "MediaRenderer";
-    private final List<String> supportedCommands = Arrays.asList(VOLUME, MUTE, BRIGHTNESS, CONTRAST, SHARPNESS,
+    private static final List<String> SUPPORTED_CHANNELS = Arrays.asList(VOLUME, MUTE, BRIGHTNESS, CONTRAST, SHARPNESS,
             COLOR_TEMPERATURE);
 
     private final Logger logger = LoggerFactory.getLogger(MediaRendererService.class);
 
-    private @Nullable UpnpIOService service;
+    private final UpnpIOService service;
 
-    private ScheduledExecutorService scheduler;
-    private @Nullable ScheduledFuture<?> pollingJob;
-
-    private String udn;
-    private int pollingInterval;
+    private final String udn;
 
     private Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<>());
 
     private Set<EventListener> listeners = new CopyOnWriteArraySet<>();
 
-    public MediaRendererService(@Nullable UpnpIOService upnpIOService, String udn, int pollingInterval) {
+    private boolean started;
+
+    public MediaRendererService(UpnpIOService upnpIOService, String udn) {
         logger.debug("Creating a Samsung TV MediaRenderer service");
-
-        if (upnpIOService != null) {
-            service = upnpIOService;
-        } else {
-            logger.debug("upnpIOService not set.");
-        }
-
+        this.service = upnpIOService;
         this.udn = udn;
-        this.pollingInterval = pollingInterval;
-
-        scheduler = Executors.newScheduledThreadPool(1);
     }
 
     @Override
     public List<String> getSupportedChannelNames() {
-        return supportedCommands;
+        return SUPPORTED_CHANNELS;
     }
 
     @Override
@@ -101,18 +86,14 @@ public class MediaRendererService implements UpnpIOParticipant, SamsungTvService
 
     @Override
     public void start() {
-        if (pollingJob == null || pollingJob.isCancelled()) {
-            logger.debug("Start refresh task, interval={}", pollingInterval);
-            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, pollingInterval, TimeUnit.MILLISECONDS);
-        }
+        service.registerParticipant(this);
+        started = true;
     }
 
     @Override
     public void stop() {
-        if (pollingJob != null && !pollingJob.isCancelled()) {
-            pollingJob.cancel(true);
-            pollingJob = null;
-        }
+        service.unregisterParticipant(this);
+        started = false;
     }
 
     @Override
@@ -125,23 +106,47 @@ public class MediaRendererService implements UpnpIOParticipant, SamsungTvService
         return true;
     }
 
-    private Runnable pollingRunnable = () -> {
-        if (isRegistered()) {
-            updateResourceState("RenderingControl", "GetVolume",
-                    SamsungTvUtils.buildHashMap("InstanceID", "0", "Channel", "Master"));
-            updateResourceState("RenderingControl", "GetMute",
-                    SamsungTvUtils.buildHashMap("InstanceID", "0", "Channel", "Master"));
-            updateResourceState("RenderingControl", "GetBrightness", SamsungTvUtils.buildHashMap("InstanceID", "0"));
-            updateResourceState("RenderingControl", "GetContrast", SamsungTvUtils.buildHashMap("InstanceID", "0"));
-            updateResourceState("RenderingControl", "GetSharpness", SamsungTvUtils.buildHashMap("InstanceID", "0"));
-            updateResourceState("RenderingControl", "GetColorTemperature",
-                    SamsungTvUtils.buildHashMap("InstanceID", "0"));
-        }
-    };
-
     @Override
     public void handleCommand(String channel, Command command) {
         logger.debug("Received channel: {}, command: {}", channel, command);
+
+        if (!started) {
+            return;
+        }
+
+        if (command == RefreshType.REFRESH) {
+            if (isRegistered()) {
+                switch (channel) {
+                    case VOLUME:
+                        updateResourceState("RenderingControl", "GetVolume",
+                                SamsungTvUtils.buildHashMap("InstanceID", "0", "Channel", "Master"));
+                        break;
+                    case MUTE:
+                        updateResourceState("RenderingControl", "GetMute",
+                                SamsungTvUtils.buildHashMap("InstanceID", "0", "Channel", "Master"));
+                        break;
+                    case BRIGHTNESS:
+                        updateResourceState("RenderingControl", "GetBrightness",
+                                SamsungTvUtils.buildHashMap("InstanceID", "0"));
+                        break;
+                    case CONTRAST:
+                        updateResourceState("RenderingControl", "GetContrast",
+                                SamsungTvUtils.buildHashMap("InstanceID", "0"));
+                        break;
+                    case SHARPNESS:
+                        updateResourceState("RenderingControl", "GetSharpness",
+                                SamsungTvUtils.buildHashMap("InstanceID", "0"));
+                        break;
+                    case COLOR_TEMPERATURE:
+                        updateResourceState("RenderingControl", "GetColorTemperature",
+                                SamsungTvUtils.buildHashMap("InstanceID", "0"));
+                        break;
+                    default:
+                        break;
+                }
+            }
+            return;
+        }
 
         switch (channel) {
             case VOLUME:
@@ -269,7 +274,6 @@ public class MediaRendererService implements UpnpIOParticipant, SamsungTvService
 
         updateResourceState("RenderingControl", "GetMute",
                 SamsungTvUtils.buildHashMap("InstanceID", "0", "Channel", "Master"));
-
     }
 
     private void setBrightness(Command command) {
@@ -338,12 +342,7 @@ public class MediaRendererService implements UpnpIOParticipant, SamsungTvService
 
     @Override
     public void onStatusChanged(boolean status) {
-        // do nothing
+        logger.debug("onStatusChanged: status={}", status);
     }
 
-    private void reportError(String message, Throwable e) {
-        for (EventListener listener : listeners) {
-            listener.reportError(ThingStatusDetail.COMMUNICATION_ERROR, message, e);
-        }
-    }
 }

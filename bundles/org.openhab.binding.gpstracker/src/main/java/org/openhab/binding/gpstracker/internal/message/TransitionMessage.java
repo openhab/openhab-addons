@@ -23,8 +23,8 @@ public class TransitionMessage extends LocationMessage {
 
     /**
      * Event that triggered the transition (iOS,Android/string/required)
-     *      enter The tracker entered the defined geographical region or BLE Beacon range (iOS)
-     *      leave The tracker left the defined geographical region or BLE Beacon range (iOS)
+     * enter The tracker entered the defined geographical region or BLE Beacon range (iOS)
+     * leave The tracker left the defined geographical region or BLE Beacon range (iOS)
      */
     @SerializedName("event")
     String event;

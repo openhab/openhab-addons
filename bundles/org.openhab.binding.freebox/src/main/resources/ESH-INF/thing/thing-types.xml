@@ -9,31 +9,31 @@
 		<description>Provides various informations regarding the status of the Freebox Server</description>
 
 		<channels>
-			<channel id="fwversion" typeId="fwversion" />
-			<channel id="uptime" typeId="uptime" />
-			<channel id="restarted" typeId="restarted" />
-			<channel id="tempcpum" typeId="tempcpum" />
-			<channel id="tempcpub" typeId="tempcpub" />
-			<channel id="tempswitch" typeId="tempswitch" />
-			<channel id="fanspeed" typeId="fanspeed" />
-			<channel id="reboot" typeId="reboot" />
-			<channel id="lcd_brightness" typeId="lcd_brightness" />
-			<channel id="lcd_orientation" typeId="lcd_orientation" />
-			<channel id="lcd_forced" typeId="lcd_forced" />
-			<channel id="wifi_status" typeId="wifi_status" />
-			<channel id="ftp_status" typeId="ftp_status" />
-			<channel id="airmedia_status" typeId="airmedia_status" />
-			<channel id="upnpav_status" typeId="upnpav_status" />
-			<channel id="sambafileshare_status" typeId="sambafileshare_status" />
-			<channel id="sambaprintershare_status" typeId="sambaprintershare_status" />
-			<channel id="xdsl_status" typeId="xdsl_status" />
-			<channel id="ftth_status" typeId="ftth_status" />
-			<channel id="line_status" typeId="line_status" />
-			<channel id="ipv4" typeId="ipv4" />
-			<channel id="rate_up" typeId="rate_up" />
-			<channel id="rate_down" typeId="rate_down" />
-			<channel id="bytes_up" typeId="bytes_up" />
-			<channel id="bytes_down" typeId="bytes_down" />
+			<channel id="fwversion" typeId="fwversion"/>
+			<channel id="uptime" typeId="uptime"/>
+			<channel id="restarted" typeId="restarted"/>
+			<channel id="tempcpum" typeId="tempcpum"/>
+			<channel id="tempcpub" typeId="tempcpub"/>
+			<channel id="tempswitch" typeId="tempswitch"/>
+			<channel id="fanspeed" typeId="fanspeed"/>
+			<channel id="reboot" typeId="reboot"/>
+			<channel id="lcd_brightness" typeId="lcd_brightness"/>
+			<channel id="lcd_orientation" typeId="lcd_orientation"/>
+			<channel id="lcd_forced" typeId="lcd_forced"/>
+			<channel id="wifi_status" typeId="wifi_status"/>
+			<channel id="ftp_status" typeId="ftp_status"/>
+			<channel id="airmedia_status" typeId="airmedia_status"/>
+			<channel id="upnpav_status" typeId="upnpav_status"/>
+			<channel id="sambafileshare_status" typeId="sambafileshare_status"/>
+			<channel id="sambaprintershare_status" typeId="sambaprintershare_status"/>
+			<channel id="xdsl_status" typeId="xdsl_status"/>
+			<channel id="ftth_status" typeId="ftth_status"/>
+			<channel id="line_status" typeId="line_status"/>
+			<channel id="ipv4" typeId="ipv4"/>
+			<channel id="rate_up" typeId="rate_up"/>
+			<channel id="rate_down" typeId="rate_down"/>
+			<channel id="bytes_up" typeId="bytes_up"/>
+			<channel id="bytes_down" typeId="bytes_down"/>
 		</channels>
 
 		<properties>
@@ -55,7 +55,7 @@
 				<required>false</required>
 			</parameter>
 
-			<parameter name="refreshInterval" type="integer" min="1">
+			<parameter name="refreshInterval" type="integer" min="1" unit="s">
 				<label>Refresh Interval</label>
 				<description>The refresh interval in seconds which is used to poll given Freebox Server</description>
 				<default>30</default>
@@ -107,29 +107,29 @@
 
 	<thing-type id="phone">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="server" />
+			<bridge-type-ref id="server"/>
 		</supported-bridge-type-refs>
 
 		<label>Phone</label>
 		<description>Provides various informations regarding the phone state and the phone calls</description>
 
 		<channel-groups>
-			<channel-group id="state" typeId="state" />
-			<channel-group id="any" typeId="any" />
-			<channel-group id="accepted" typeId="accepted" />
-			<channel-group id="missed" typeId="missed" />
-			<channel-group id="outgoing" typeId="outgoing" />
+			<channel-group id="state" typeId="state"/>
+			<channel-group id="any" typeId="any"/>
+			<channel-group id="accepted" typeId="accepted"/>
+			<channel-group id="missed" typeId="missed"/>
+			<channel-group id="outgoing" typeId="outgoing"/>
 		</channel-groups>
 
 		<config-description>
-			<parameter name="refreshPhoneInterval" type="integer" min="0">
+			<parameter name="refreshPhoneInterval" type="integer" min="0" unit="s">
 				<label>Phone State Refresh Interval</label>
 				<description>The refresh interval in seconds which is used to poll given Freebox Server for phone state</description>
 				<default>2</default>
 				<required>false</required>
 			</parameter>
 
-			<parameter name="refreshPhoneCallsInterval" type="integer" min="0">
+			<parameter name="refreshPhoneCallsInterval" type="integer" min="0" unit="s">
 				<label>Phone Calls Refresh Interval</label>
 				<description>The refresh interval in seconds which is used to poll given Freebox Server for phone calls</description>
 				<default>60</default>
@@ -141,14 +141,14 @@
 
 	<thing-type id="net_device">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="server" />
+			<bridge-type-ref id="server"/>
 		</supported-bridge-type-refs>
 
 		<label>Network Device</label>
 		<description>Provides network device reachability</description>
 
 		<channels>
-			<channel id="reachable" typeId="reachable" />
+			<channel id="reachable" typeId="reachable"/>
 		</channels>
 
 		<config-description>
@@ -164,14 +164,14 @@
 
 	<thing-type id="net_interface">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="server" />
+			<bridge-type-ref id="server"/>
 		</supported-bridge-type-refs>
 
 		<label>Network Interface</label>
 		<description>Provides network interface reachability</description>
 
 		<channels>
-			<channel id="reachable" typeId="reachable" />
+			<channel id="reachable" typeId="reachable"/>
 		</channels>
 
 		<config-description>
@@ -187,15 +187,15 @@
 
 	<thing-type id="airplay">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="server" />
+			<bridge-type-ref id="server"/>
 		</supported-bridge-type-refs>
 
 		<label>AirPlay Receiver</label>
 		<description>Provides media control from one AirPlay device</description>
 
 		<channels>
-			<channel id="playurl" typeId="playurl" />
-			<channel id="stop" typeId="stop" />
+			<channel id="playurl" typeId="playurl"/>
+			<channel id="stop" typeId="stop"/>
 		</channels>
 
 		<config-description>
@@ -225,8 +225,8 @@
 		<label>Phone</label>
 		<description>The phone state</description>
 		<channels>
-			<channel id="onhook" typeId="onhook" />
-			<channel id="ringing" typeId="ringing" />
+			<channel id="onhook" typeId="onhook"/>
+			<channel id="ringing" typeId="ringing"/>
 		</channels>
 	</channel-group-type>
 
@@ -234,11 +234,11 @@
 		<label>Call</label>
 		<description>The last phone call</description>
 		<channels>
-			<channel id="call_number" typeId="call_number" />
-			<channel id="call_duration" typeId="call_duration" />
-			<channel id="call_timestamp" typeId="call_timestamp" />
-			<channel id="call_status" typeId="call_status" />
-			<channel id="call_name" typeId="call_name" />
+			<channel id="call_number" typeId="call_number"/>
+			<channel id="call_duration" typeId="call_duration"/>
+			<channel id="call_timestamp" typeId="call_timestamp"/>
+			<channel id="call_status" typeId="call_status"/>
+			<channel id="call_name" typeId="call_name"/>
 		</channels>
 	</channel-group-type>
 
@@ -246,10 +246,10 @@
 		<label>Accepted Call</label>
 		<description>The last accepted phone call</description>
 		<channels>
-			<channel id="call_number" typeId="caller_number" />
-			<channel id="call_duration" typeId="call_duration" />
-			<channel id="call_timestamp" typeId="call_timestamp" />
-			<channel id="call_name" typeId="caller_name" />
+			<channel id="call_number" typeId="caller_number"/>
+			<channel id="call_duration" typeId="call_duration"/>
+			<channel id="call_timestamp" typeId="call_timestamp"/>
+			<channel id="call_name" typeId="caller_name"/>
 		</channels>
 	</channel-group-type>
 
@@ -257,10 +257,10 @@
 		<label>Missed Call</label>
 		<description>The last missed phone call</description>
 		<channels>
-			<channel id="call_number" typeId="caller_number" />
-			<channel id="call_duration" typeId="call_duration" />
-			<channel id="call_timestamp" typeId="call_timestamp" />
-			<channel id="call_name" typeId="caller_name" />
+			<channel id="call_number" typeId="caller_number"/>
+			<channel id="call_duration" typeId="call_duration"/>
+			<channel id="call_timestamp" typeId="call_timestamp"/>
+			<channel id="call_name" typeId="caller_name"/>
 		</channels>
 	</channel-group-type>
 
@@ -268,10 +268,10 @@
 		<label>Outgoing Call</label>
 		<description>The last outgoing phone call</description>
 		<channels>
-			<channel id="call_number" typeId="called_number" />
-			<channel id="call_duration" typeId="call_duration" />
-			<channel id="call_timestamp" typeId="call_timestamp" />
-			<channel id="call_name" typeId="called_name" />
+			<channel id="call_number" typeId="called_number"/>
+			<channel id="call_duration" typeId="call_duration"/>
+			<channel id="call_timestamp" typeId="call_timestamp"/>
+			<channel id="call_name" typeId="called_name"/>
 		</channels>
 	</channel-group-type>
 
@@ -279,14 +279,14 @@
 		<item-type>String</item-type>
 		<label>Firmware Version</label>
 		<description>Version of the Freebox Server Firmware</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="uptime" advanced="true">
 		<item-type>Number</item-type>
 		<label>Server Uptime</label>
 		<description>Time since last reboot of the Freebox Server</description>
-		<state readOnly="true" pattern="%d s" />
+		<state readOnly="true" pattern="%d s"/>
 	</channel-type>
 
 	<channel-type id="restarted" advanced="true">
@@ -294,7 +294,7 @@
 		<label>Just Restarted</label>
 		<description>Has the Freebox server have restarted during the last poll period</description>
 		<category>Alarm</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="reboot">
@@ -309,7 +309,7 @@
 		<label>CPUm Temperature</label>
 		<description>Actual measured CPU Marvell temperature of the Freebox Server</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%d °C" />
+		<state readOnly="true" pattern="%d °C"/>
 	</channel-type>
 
 	<channel-type id="tempcpub" advanced="true">
@@ -317,7 +317,7 @@
 		<label>CPUb Temperature</label>
 		<description>Actual measured CPU Broadcom (xDSL) temperature of the Freebox Server</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%d °C" />
+		<state readOnly="true" pattern="%d °C"/>
 	</channel-type>
 
 	<channel-type id="tempswitch" advanced="true">
@@ -325,14 +325,14 @@
 		<label>Switch Temperature</label>
 		<description>Actual measured switch temperature of the Freebox Server</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%d °C" />
+		<state readOnly="true" pattern="%d °C"/>
 	</channel-type>
 
 	<channel-type id="fanspeed" advanced="true">
 		<item-type>Number</item-type>
 		<label>Fan Speed</label>
 		<description>Actual measured fan speed (rpm) of the Freebox Server</description>
-		<state readOnly="true" pattern="%d rpm" />
+		<state readOnly="true" pattern="%d rpm"/>
 	</channel-type>
 
 	<channel-type id="lcd_brightness" advanced="true">
@@ -340,7 +340,7 @@
 		<label>Screen Brightness</label>
 		<description>Brightness level of the screen in percent</description>
 		<category>DimmableLight</category>
-		<state pattern="%d %%" />
+		<state pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="lcd_orientation">
@@ -410,56 +410,56 @@
 		<item-type>String</item-type>
 		<label>xDSL Status</label>
 		<description>Status of the xDSL line</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
-	
+
 	<channel-type id="ftth_status">
 		<item-type>Switch</item-type>
 		<label>FTTH Status</label>
 		<description>Status of the Fiber Optic line</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="line_status">
 		<item-type>String</item-type>
 		<label>Line Status</label>
 		<description>Status of network line connexion</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="ipv4" advanced="true">
 		<item-type>String</item-type>
 		<label>IP Address</label>
 		<description>Public IP Address of the Freebox Server</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="rate_up" advanced="true">
 		<item-type>Number</item-type>
 		<label>Upload Rate</label>
 		<description>Current upload rate in byte/s</description>
-		<state readOnly="true" pattern="%d b/s" />
+		<state readOnly="true" pattern="%d b/s"/>
 	</channel-type>
 
 	<channel-type id="rate_down" advanced="true">
 		<item-type>Number</item-type>
 		<label>Download Rate</label>
 		<description>Current download rate in byte/s</description>
-		<state readOnly="true" pattern="%d b/s" />
+		<state readOnly="true" pattern="%d b/s"/>
 	</channel-type>
 
 	<channel-type id="bytes_up" advanced="true">
 		<item-type>Number</item-type>
 		<label>Uploaded</label>
 		<description>Total uploaded bytes since last connection</description>
-		<state readOnly="true" pattern="%d bytes" />
+		<state readOnly="true" pattern="%d bytes"/>
 	</channel-type>
 
 	<channel-type id="bytes_down" advanced="true">
 		<item-type>Number</item-type>
 		<label>Downloaded</label>
 		<description>Total downloaded bytes since last connection</description>
-		<state readOnly="true" pattern="%d bytes" />
+		<state readOnly="true" pattern="%d bytes"/>
 	</channel-type>
 
 	<channel-type id="onhook">
@@ -467,7 +467,7 @@
 		<label>On-hook</label>
 		<description>Indicates whether the phone is on hook</description>
 		<category>Switch</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="ringing">
@@ -475,42 +475,42 @@
 		<label>Ringing</label>
 		<description>Is the phone ringing</description>
 		<category>Alarm</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="call_number">
 		<item-type>String</item-type>
 		<label>Phone Number</label>
 		<description>Called number for outgoing calls. Caller number for incoming calls</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="called_number">
 		<item-type>String</item-type>
 		<label>Phone Number</label>
 		<description>Called number</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="caller_number">
 		<item-type>String</item-type>
 		<label>Phone Number</label>
 		<description>Caller number</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="call_duration">
 		<item-type>Number</item-type>
 		<label>Duration</label>
 		<description>Call duration in seconds</description>
-		<state readOnly="true" pattern="%d s" />
+		<state readOnly="true" pattern="%d s"/>
 	</channel-type>
 
 	<channel-type id="call_timestamp">
 		<item-type>DateTime</item-type>
 		<label>Timestamp</label>
 		<description>Call creation timestamp</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="call_status">
@@ -530,21 +530,21 @@
 		<item-type>String</item-type>
 		<label>Call Name</label>
 		<description>Called name for outgoing calls. Caller name for incoming calls</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="called_name">
 		<item-type>String</item-type>
 		<label>Called Name</label>
 		<description>Called name</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="caller_name">
 		<item-type>String</item-type>
 		<label>Caller Name</label>
 		<description>Caller name</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="reachable">
@@ -552,7 +552,7 @@
 		<label>Reachable</label>
 		<description>Indicates whether the network device is reachable</description>
 		<category>Switch</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="playurl">

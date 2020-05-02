@@ -17,6 +17,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -136,14 +137,17 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
      */
     protected void updateRSSI() {
         if (device != null) {
-            Integer rssi = device.getRssi();
-            if (rssi != null && rssi != 0) {
-                updateState(BluetoothBindingConstants.CHANNEL_TYPE_RSSI, new DecimalType(rssi));
-                updateStatusBasedOnRssi(true);
-            } else {
-                updateState(BluetoothBindingConstants.CHANNEL_TYPE_RSSI, UnDefType.NULL);
-                updateStatusBasedOnRssi(false);
-            }
+            updateRSSI(device.getRssi());
+        }
+    }
+
+    private void updateRSSI(@Nullable Integer rssi) {
+        if (rssi != null && rssi != 0) {
+            updateState(BluetoothBindingConstants.CHANNEL_TYPE_RSSI, new DecimalType(rssi));
+            updateStatusBasedOnRssi(true);
+        } else {
+            updateState(BluetoothBindingConstants.CHANNEL_TYPE_RSSI, UnDefType.NULL);
+            updateStatusBasedOnRssi(false);
         }
     }
 
@@ -152,7 +156,7 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
      */
     protected void updateLastActivityTime() {
         if (device != null) {
-            ZonedDateTime activityTime = device.getLastActivityTime();
+            ZonedDateTime activityTime = device.getLastSeenTime();
             if (activityTime != null) {
                 updateState(BluetoothBindingConstants.CHANNEL_TYPE_LAST_ACTIVITY_TIME, new DateTimeType(activityTime));
             } else {
@@ -195,7 +199,7 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
     }
 
     private void onActivity() {
-        device.updateLastActivityTime();
+        device.updateLastSeenTime();
         updateLastActivityTime();
     }
 
@@ -204,8 +208,7 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
         onActivity();
         int rssi = scanNotification.getRssi();
         if (rssi != Integer.MIN_VALUE) {
-            device.setRssi(rssi);
-            updateRSSI();
+            updateRSSI(rssi);
         }
     }
 
@@ -252,5 +255,4 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
         updateAdapter();
         updateAdapterLocation();
     }
-
 }

@@ -39,5 +39,4 @@ public class Module extends AbstractDeviceConfig {
     public String toString() {
         return name;
     }
-
 }

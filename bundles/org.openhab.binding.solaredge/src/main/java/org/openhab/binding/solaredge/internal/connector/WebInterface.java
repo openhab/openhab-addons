@@ -159,7 +159,6 @@ public class WebInterface implements AtomicReferenceTrait {
                 command.performAction(httpClient);
             }
         }
-
     }
 
     /**
@@ -201,14 +200,12 @@ public class WebInterface implements AtomicReferenceTrait {
         setAuthenticated(false);
 
         if (preCheck()) {
-
             SolarEdgeCommand tokenCheckCommand;
 
             StatusUpdateListener tokenCheckListener = new StatusUpdateListener() {
 
                 @Override
                 public void update(CommunicationStatus status) {
-
                     String errorMessageCodeFound;
                     String errorMessgaeCodeForbidden;
                     if (config.isUsePrivateApi()) {
@@ -285,7 +282,6 @@ public class WebInterface implements AtomicReferenceTrait {
 
         this.handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, preCheckStatusMessage);
         return false;
-
     }
 
     /**
@@ -319,5 +315,4 @@ public class WebInterface implements AtomicReferenceTrait {
     private void setAuthenticated(boolean authenticated) {
         this.authenticated = authenticated;
     }
-
 }

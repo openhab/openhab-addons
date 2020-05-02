@@ -12,6 +12,15 @@
  */
 package org.openhab.binding.airvisualnode.internal.handler;
 
+import static org.eclipse.smarthome.core.library.unit.MetricPrefix.MICRO;
+import static org.eclipse.smarthome.core.library.unit.SIUnits.CELSIUS;
+import static org.eclipse.smarthome.core.library.unit.SIUnits.CUBIC_METRE;
+import static org.eclipse.smarthome.core.library.unit.SIUnits.GRAM;
+import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.ONE;
+import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.PARTS_PER_MILLION;
+import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.PERCENT;
+import static org.openhab.binding.airvisualnode.internal.AirVisualNodeBindingConstants.*;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
@@ -27,14 +36,6 @@ import org.apache.commons.io.IOUtils;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
-import static org.eclipse.smarthome.core.library.unit.SIUnits.CELSIUS;
-import static org.eclipse.smarthome.core.library.unit.SIUnits.GRAM;
-import static org.eclipse.smarthome.core.library.unit.SIUnits.CUBIC_METRE;
-import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.ONE;
-import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.PERCENT;
-import static org.openhab.binding.airvisualnode.internal.AirVisualNodeBindingConstants.*;
-import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.PARTS_PER_MILLION;
-import static org.eclipse.smarthome.core.library.unit.MetricPrefix.MICRO;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -196,7 +197,8 @@ public class AirVisualNodeHandler extends BaseThingHandler {
         if (CHANNEL_BATTERY_LEVEL.equals(channelId)) {
             state = new DecimalType(BigDecimal.valueOf(nodeData.getStatus().getBattery()).longValue());
         } else if (CHANNEL_WIFI_STRENGTH.equals(channelId)) {
-            state = new DecimalType(BigDecimal.valueOf(Math.max(0, nodeData.getStatus().getWifiStrength()-1)).longValue());
+            state = new DecimalType(
+                    BigDecimal.valueOf(Math.max(0, nodeData.getStatus().getWifiStrength() - 1)).longValue());
         } else {
             // Handle binding-specific channel IDs
             switch (channelId) {
@@ -211,7 +213,8 @@ public class AirVisualNodeHandler extends BaseThingHandler {
                     break;
                 case CHANNEL_PM_25:
                     // PM2.5 is in ug/m3
-                    state = new QuantityType<>(nodeData.getMeasurements().getPm25Ugm3(), MICRO(GRAM).divide(CUBIC_METRE));
+                    state = new QuantityType<>(nodeData.getMeasurements().getPm25Ugm3(),
+                            MICRO(GRAM).divide(CUBIC_METRE));
                     break;
                 case CHANNEL_TEMP_CELSIUS:
                     state = new QuantityType<>(nodeData.getMeasurements().getTemperatureC(), CELSIUS);
@@ -237,5 +240,4 @@ public class AirVisualNodeHandler extends BaseThingHandler {
 
         return state;
     }
-
 }

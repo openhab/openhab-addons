@@ -303,5 +303,4 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
     @Override
     public void onValueReceived(String variable, String value, String service) {
     }
-
 }

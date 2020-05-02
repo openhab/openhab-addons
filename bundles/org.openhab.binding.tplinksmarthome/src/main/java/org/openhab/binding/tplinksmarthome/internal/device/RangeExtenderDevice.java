@@ -35,8 +35,7 @@ public class RangeExtenderDevice extends SwitchDevice {
     }
 
     @Override
-    protected @Nullable SetRelayState setOnOffState(ChannelUID channelUid, OnOffType onOff)
-            throws IOException {
+    protected @Nullable SetRelayState setOnOffState(ChannelUID channelUid, OnOffType onOff) throws IOException {
         // It's unknown what the command is to send to the device so it's not supported.
         return null;
     }

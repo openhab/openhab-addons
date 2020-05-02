@@ -26,5 +26,4 @@ public class RealTimeClockGetRequestMessage extends Message {
     public RealTimeClockGetRequestMessage(MACAddress macAddress) {
         super(REAL_TIME_CLOCK_GET_REQUEST, macAddress);
     }
-
 }

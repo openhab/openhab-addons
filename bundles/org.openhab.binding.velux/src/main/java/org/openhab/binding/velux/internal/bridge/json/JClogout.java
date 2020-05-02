@@ -133,5 +133,4 @@ class JClogout extends Logout implements JsonBridgeCommunicationProtocol {
     public String[] getErrors() {
         return response.errors;
     }
-
 }

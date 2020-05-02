@@ -197,7 +197,7 @@ public class ThingDashboardService extends DefaultServletService {
     /**
      * Helper method to produce an examples rules file and write it to the {@link HttpServletResponse}
      *
-     * @param resp   the non-null {@link HttpServletResponse}
+     * @param resp the non-null {@link HttpServletResponse}
      * @param device the non-null {@link NeeoDevice}
      * @throws IOException if an IOException occurs while writing the file
      */
@@ -235,7 +235,7 @@ public class ThingDashboardService extends DefaultServletService {
     /**
      * Helper method to append a line of text ot the string builder with a line separator
      *
-     * @param sb   a non-null string builder
+     * @param sb a non-null string builder
      * @param text the non-null, possibly empty text
      */
     private void appendLine(StringBuilder sb, String text) {

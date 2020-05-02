@@ -34,7 +34,7 @@ public class FritzAhaSetSwitchCallback extends FritzAhaReauthCallback {
      * Constructor
      *
      * @param webIface Interface to FRITZ!Box
-     * @param ain      AIN of the device that should be switched
+     * @param ain AIN of the device that should be switched
      * @param switchOn true - switch on, false - switch off
      */
     public FritzAhaSetSwitchCallback(FritzAhaWebInterface webIface, String ain, boolean switchOn) {

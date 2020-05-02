@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="pulseaudio" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="pulseaudio"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="sourceOutput">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>A Pulseaudio Source Output</label>
 		<description>represents a pulseaudio source-output</description>
 
 		<channels>
-			<channel id="volume" typeId="volume" />
-			<channel id="mute" typeId="mute" />
-			<channel id="state" typeId="state" />
+			<channel id="volume" typeId="volume"/>
+			<channel id="mute" typeId="mute"/>
+			<channel id="state" typeId="state"/>
 		</channels>
 		<config-description>
 			<parameter name="name" type="text">

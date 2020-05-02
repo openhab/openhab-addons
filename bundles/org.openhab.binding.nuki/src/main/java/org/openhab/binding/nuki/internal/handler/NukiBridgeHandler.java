@@ -191,5 +191,4 @@ public class NukiBridgeHandler extends BaseBridgeHandler {
             }
         }
     }
-
 }

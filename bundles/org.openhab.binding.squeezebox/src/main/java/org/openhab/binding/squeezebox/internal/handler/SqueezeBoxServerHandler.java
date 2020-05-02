@@ -380,7 +380,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
 
         // Mark the server ONLINE. bridgeStatusChanged will cause the players to come ONLINE
         updateStatus(ThingStatus.ONLINE);
-
     }
 
     /**
@@ -587,7 +586,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     break;
                 default:
                     logger.trace("Unhandled player update message type '{}'.", messageType);
-
             }
         }
 
@@ -869,7 +867,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 public void updateListener(SqueezeBoxPlayerEventListener listener) {
                     listener.modeChangeEvent(mac, value);
                 }
-
             });
         }
 
@@ -882,7 +879,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 public void updateListener(SqueezeBoxPlayerEventListener listener) {
                     listener.sourceChangeEvent(mac, source);
                 }
-
             });
         }
 
@@ -912,7 +908,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                         public void updateListener(SqueezeBoxPlayerEventListener listener) {
                             listener.absoluteVolumeChangeEvent(mac, volume);
                         }
-
                     });
                 }
             }

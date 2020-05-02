@@ -32,7 +32,7 @@ public class WSFloatingPointValue extends WSResourceValue {
 
     @Override
     public String toString() {
-        return String.format("[resourceId=%d, value=%.2f, min=%.2f, max=%.2f]", super.resourceID, value,
-                minimumValue, maximumValue);
+        return String.format("[resourceId=%d, value=%.2f, min=%.2f, max=%.2f]", super.resourceID, value, minimumValue,
+                maximumValue);
     }
 }

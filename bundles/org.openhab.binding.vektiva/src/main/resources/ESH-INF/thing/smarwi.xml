@@ -10,8 +10,8 @@
 		<description>Smarwi thing for Vektiva Binding</description>
 
 		<channels>
-			<channel id="control" typeId="control" />
-			<channel id="status" typeId="status" />
+			<channel id="control" typeId="control"/>
+			<channel id="status" typeId="status"/>
 		</channels>
 
 		<config-description>

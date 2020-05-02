@@ -42,5 +42,4 @@ public interface ModbusWriteCallback extends ModbusCallback {
      * @param response response matching the write request
      */
     void onWriteResponse(ModbusWriteRequestBlueprint request, ModbusResponse response);
-
 }

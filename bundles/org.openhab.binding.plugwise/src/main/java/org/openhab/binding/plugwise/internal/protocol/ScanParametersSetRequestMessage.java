@@ -45,5 +45,4 @@ public class ScanParametersSetRequestMessage extends Message {
         String switchOffDelayHex = String.format("%02X", switchOffDelay.toMinutes());
         return sensitivityHex + daylightOverrideHex + switchOffDelayHex;
     }
-
 }

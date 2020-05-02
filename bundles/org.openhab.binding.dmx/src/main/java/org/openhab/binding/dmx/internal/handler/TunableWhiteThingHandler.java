@@ -274,7 +274,7 @@ public class TunableWhiteThingHandler extends DmxThingHandler {
 
     @Override
     public void dispose() {
-        if (channels.size() != 0) {
+        if (!channels.isEmpty()) {
             channels.get(0).removeListener(new ChannelUID(this.thing.getUID(), CHANNEL_BRIGHTNESS_CW));
             channels.get(1).removeListener(new ChannelUID(this.thing.getUID(), CHANNEL_BRIGHTNESS_WW));
         }
@@ -319,5 +319,4 @@ public class TunableWhiteThingHandler extends DmxThingHandler {
                     100 * currentValues.get(1) / (currentValues.get(0) + currentValues.get(1)));
         }
     }
-
 }

@@ -38,7 +38,6 @@ public abstract class AbstractSpec {
         } else {
             this.dpt = defaultDPT;
         }
-
     }
 
     /**
@@ -65,5 +64,4 @@ public abstract class AbstractSpec {
     public final String getDPT() {
         return dpt;
     }
-
 }

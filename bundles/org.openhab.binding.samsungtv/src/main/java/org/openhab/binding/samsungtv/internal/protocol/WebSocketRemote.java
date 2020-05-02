@@ -157,7 +157,6 @@ class WebSocketRemote extends WebSocketBase {
 
         String method = "ms.channel.emit";
         Params params = new Params();
-
     }
 
     void getApps() {
@@ -188,7 +187,6 @@ class WebSocketRemote extends WebSocketBase {
             String event = "ed.apps.launch";
             String to = "host";
             Data data = new Data();
-
         }
 
         String method = "ms.channel.emit";
@@ -225,5 +223,4 @@ class WebSocketRemote extends WebSocketBase {
     void sendKeyData(boolean press, String key) {
         sendCommand(remoteControllerWebSocket.gson.toJson(new JSONRemoteControl(press, key)));
     }
-
 }

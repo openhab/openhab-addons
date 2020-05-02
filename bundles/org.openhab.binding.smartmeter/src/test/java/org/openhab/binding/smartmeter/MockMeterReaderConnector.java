@@ -39,7 +39,6 @@ public class MockMeterReaderConnector extends ConnectorBase<Object> {
 
     @Override
     public void closeConnection() {
-
     }
 
     @Override

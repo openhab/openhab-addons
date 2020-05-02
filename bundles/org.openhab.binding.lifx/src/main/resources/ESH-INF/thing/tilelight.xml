@@ -7,13 +7,13 @@
 	<thing-type id="tilelight">
 		<label>LIFX Tile Light</label>
 		<channels>
-			<channel id="color" typeId="color" />
-			<channel id="temperature" typeId="temperature" />
-			<channel id="signalstrength" typeId="system.signal-strength" />
-			<channel id="effect" typeId="effect" />
+			<channel id="color" typeId="color"/>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="signalstrength" typeId="system.signal-strength"/>
+			<channel id="effect" typeId="effect"/>
 		</channels>
 		<representation-property>macAddress</representation-property>
-		<config-description-ref uri="thing-type:lifx:light" />
+		<config-description-ref uri="thing-type:lifx:light"/>
 	</thing-type>
 
 </thing:thing-descriptions>
