@@ -20,11 +20,14 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link WatcherCommon} class contains commonly used methods.
  *
  * @author Alexandr Salamatov - Initial contribution
  */
+@NonNullByDefault
 public class WatcherCommon {
 
     public static List<String> initStorage(File file) throws IOException {

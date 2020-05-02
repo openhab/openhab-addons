@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.folderwatcher.internal.handler;
 
-import static org.openhab.binding.folderwatcher.internal.FolderWatcherBindingConstants.CHANNEL_LOCALFILENAME;
+import static org.openhab.binding.folderwatcher.internal.FolderWatcherBindingConstants.CHANNEL_NEWFILE;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,32 +36,37 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.folderwatcher.internal.common.WatcherCommon;
 import org.openhab.binding.folderwatcher.internal.config.FolderLocalWatcherConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link FolderLocalWatcherHandler} is responsible for handling commands, which are
+ * The {@link LocalFolderWatcherHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Alexandr Salamatov - Initial contribution
  */
 @NonNullByDefault
-public class FolderLocalWatcherHandler extends BaseThingHandler {
-    private final Logger logger = LoggerFactory.getLogger(FolderLocalWatcherHandler.class);
+public class LocalFolderWatcherHandler extends BaseThingHandler {
+    private final Logger logger = LoggerFactory.getLogger(LocalFolderWatcherHandler.class);
     private @Nullable FolderLocalWatcherConfiguration config;
     private @Nullable File currentLocalListingFile;
     private @Nullable ScheduledFuture<?> executionJob;
     private List<String> currentLocalListing = new ArrayList<>();
     private List<String> previousLocalListing = new ArrayList<>();
 
-    public FolderLocalWatcherHandler(Thing thing) {
+    public LocalFolderWatcherHandler(Thing thing) {
         super(thing);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.debug("Channel {} triggered with command {}", channelUID.getId(), command);
+        if (command instanceof RefreshType) {
+            refreshFolderInformation();
+        }
     }
 
     @Override
@@ -91,12 +96,13 @@ public class FolderLocalWatcherHandler extends BaseThingHandler {
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Polling interval can't be null or negative");
+            return;
         }
-
     }
 
     @Override
     public void dispose() {
+        ScheduledFuture<?> executionJob = this.executionJob;
         if (executionJob != null) {
             executionJob.cancel(true);
         }
@@ -104,16 +110,16 @@ public class FolderLocalWatcherHandler extends BaseThingHandler {
 
     @SuppressWarnings("null")
     private void refreshFolderInformation() {
-        final String RootDir = config.localDir;
+        final String rootDir = config.localDir;
 
         try {
             currentLocalListing.clear();
 
-            Files.walkFileTree(Paths.get(RootDir), new FileVisitor<Path>() {
+            Files.walkFileTree(Paths.get(rootDir), new FileVisitor<Path>() {
                 @Override
                 public FileVisitResult preVisitDirectory(Path dir, @Nullable BasicFileAttributes attrs)
                         throws IOException {
-                    if (dir.compareTo(Paths.get(RootDir)) != 0 && !config.listRecursiveLocal) {
+                    if (!dir.equals(Paths.get(rootDir)) && !config.listRecursiveLocal) {
                         return FileVisitResult.SKIP_SUBTREE;
                     }
                     return FileVisitResult.CONTINUE;
@@ -130,21 +136,19 @@ public class FolderLocalWatcherHandler extends BaseThingHandler {
 
                 @Override
                 public FileVisitResult visitFileFailed(Path file, @Nullable IOException exc) throws IOException {
-
                     return FileVisitResult.CONTINUE;
                 }
 
                 @Override
                 public FileVisitResult postVisitDirectory(Path dir, @Nullable IOException exc) throws IOException {
-
                     return FileVisitResult.CONTINUE;
                 }
             });
 
             List<String> diffLocalListing = new ArrayList<>(currentLocalListing);
             diffLocalListing.removeAll(previousLocalListing);
-            diffLocalListing.forEach(file -> triggerChannel(CHANNEL_LOCALFILENAME, file));
-            if (!diffLocalListing.isEmpty()) {
+            diffLocalListing.forEach(file -> triggerChannel(CHANNEL_NEWFILE, file));
+            if (!diffLocalListing.isEmpty() && currentLocalListingFile != null) {
                 WatcherCommon.saveNewListing(diffLocalListing, currentLocalListingFile);
             }
             previousLocalListing = new ArrayList<>(currentLocalListing);

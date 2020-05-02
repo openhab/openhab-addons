@@ -25,8 +25,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.folderwatcher.internal.handler.FolderLocalWatcherHandler;
-import org.openhab.binding.folderwatcher.internal.handler.FolderWatcherHandler;
+import org.openhab.binding.folderwatcher.internal.handler.FtpFolderWatcherHandler;
+import org.openhab.binding.folderwatcher.internal.handler.LocalFolderWatcherHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -52,9 +52,9 @@ public class FolderWatcherHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_FTPFOLDER.equals(thingTypeUID)) {
-            return new FolderWatcherHandler(thing);
+            return new FtpFolderWatcherHandler(thing);
         } else if (THING_TYPE_LOCALFOLDER.equals(thingTypeUID)) {
-            return new FolderLocalWatcherHandler(thing);
+            return new LocalFolderWatcherHandler(thing);
         }
         return null;
     }
