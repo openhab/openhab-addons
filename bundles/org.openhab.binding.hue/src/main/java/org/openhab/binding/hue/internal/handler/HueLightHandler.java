@@ -225,7 +225,7 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
             return;
         }
 
-        FullLight light = lastFullLight;
+        final FullLight light = lastFullLight;
         if (light == null) {
             logger.debug("hue light not known on bridge. Cannot handle command.");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,

@@ -170,7 +170,7 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
             return;
         }
 
-        FullSensor sensor = lastFullSensor;
+        final FullSensor sensor = lastFullSensor;
 
         if (sensor == null) {
             logger.debug("hue sensor not known on bridge. Cannot handle command.");
@@ -210,7 +210,7 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
                 return;
             }
 
-            FullSensor sensor = lastFullSensor;
+            final FullSensor sensor = lastFullSensor;
             if (sensor == null) {
                 logger.debug("hue sensor not known on bridge. Cannot handle command.");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
