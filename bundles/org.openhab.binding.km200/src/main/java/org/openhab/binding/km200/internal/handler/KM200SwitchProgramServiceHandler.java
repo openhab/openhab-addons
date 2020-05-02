@@ -14,14 +14,11 @@ package org.openhab.binding.km200.internal.handler;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.km200.internal.KM200Device;
 import org.openhab.binding.km200.internal.KM200ServiceObject;
@@ -35,47 +32,59 @@ import com.google.gson.JsonObject;
  * The KM200SwitchProgramService representing a switch program service with its all capabilities
  *
  * @author Markus Eckhardt - Initial contribution
- * @NonNullByDefault is not working here because of the switchMap array handling
  */
-
 public class KM200SwitchProgramServiceHandler {
     private final Logger logger = LoggerFactory.getLogger(KM200SwitchProgramServiceHandler.class);
 
     private int maxNbOfSwitchPoints = 8;
     private int maxNbOfSwitchPointsPerDay = 8;
     private int switchPointTimeRaster = 10;
-    private String setpointProperty = "";
-    private String positiveSwitch = "";
-    private String negativeSwitch = "";
+    private String setpointProperty;
+    private String positiveSwitch;
+    private String negativeSwitch;
 
     protected final Integer MIN_TIME = 0;
     protected final Integer MAX_TIME = 1430;
-    protected final static String TYPE_MONDAY = "Mo";
-    protected final static String TYPE_TUESDAY = "Tu";
-    protected final static String TYPE_WEDNESDAY = "We";
-    protected final static String TYPE_THURSDAY = "Th";
-    protected final static String TYPE_FRIDAY = "Fr";
-    protected final static String TYPE_SATURDAY = "Sa";
-    protected final static String TYPE_SUNDAY = "Su";
+    protected final String TYPE_MONDAY = "Mo";
+    protected final String TYPE_TUESDAY = "Tu";
+    protected final String TYPE_WEDNESDAY = "We";
+    protected final String TYPE_THURSDAY = "Th";
+    protected final String TYPE_FRIDAY = "Fr";
+    protected final String TYPE_SATURDAY = "Sa";
+    protected final String TYPE_SUNDAY = "Su";
 
     private String activeDay = TYPE_MONDAY;
     private Integer activeCycle = 1;
 
     /* Night- and daylist for all weekdays */
-    public Map<String, Map<String, List<Integer>>> switchMap = new HashMap<>();
+    public Map<String, Map<String, List<Integer>>> switchMap;
 
     /* List with all days */
-    private static List<String> days = new ArrayList<>(Arrays.asList(TYPE_MONDAY, TYPE_TUESDAY, TYPE_WEDNESDAY,
-            TYPE_THURSDAY, TYPE_FRIDAY, TYPE_SATURDAY, TYPE_SUNDAY));
-
-    public static List<@NonNull StateOption> daysList = new ArrayList<>(
-            Arrays.asList(new StateOption(TYPE_MONDAY, "Monday"), new StateOption(TYPE_TUESDAY, "Tuesday"),
-                    new StateOption(TYPE_WEDNESDAY, "Wednesday"), new StateOption(TYPE_THURSDAY, "Thursday"),
-                    new StateOption(TYPE_FRIDAY, "Friday"), new StateOption(TYPE_SATURDAY, "Saturday"),
-                    new StateOption(TYPE_SUNDAY, "Sunday")));
-
+    private List<String> days;
+    public static List<StateOption> daysList;
     /* List with setpoints */
-    private List<String> setpoints = new ArrayList<>();
+    private List<String> setpoints;
+
+    public KM200SwitchProgramServiceHandler() {
+        switchMap = new HashMap<>();
+        days = new ArrayList<>();
+        days.add(TYPE_MONDAY);
+        days.add(TYPE_TUESDAY);
+        days.add(TYPE_WEDNESDAY);
+        days.add(TYPE_THURSDAY);
+        days.add(TYPE_FRIDAY);
+        days.add(TYPE_SATURDAY);
+        days.add(TYPE_SUNDAY);
+        daysList = new ArrayList<>();
+        daysList.add(new StateOption(TYPE_MONDAY, "Monday"));
+        daysList.add(new StateOption(TYPE_TUESDAY, "Tuesday"));
+        daysList.add(new StateOption(TYPE_WEDNESDAY, "Wednesday"));
+        daysList.add(new StateOption(TYPE_THURSDAY, "Thursday"));
+        daysList.add(new StateOption(TYPE_FRIDAY, "Friday"));
+        daysList.add(new StateOption(TYPE_SATURDAY, "Saturday"));
+        daysList.add(new StateOption(TYPE_SUNDAY, "Sunday"));
+        setpoints = new ArrayList<>();
+    }
 
     /**
      * This function inits the week list
@@ -95,9 +104,9 @@ public class KM200SwitchProgramServiceHandler {
      * This function adds a switch to the switchmap
      */
     void addSwitch(String day, String setpoint, int time) {
-        logger.trace("Adding day: {} setpoint: {} time: {}", day, setpoint, time);
+        logger.debug("Adding day: {} setpoint: {} time: {}", day, setpoint, time);
         if (!days.contains(day)) {
-            logger.warn("This type of weekday is not supported, get day: {}", day);
+            logger.error("This type of weekday is not supported, get day: {}", day);
             throw new IllegalArgumentException("This type of weekday is not supported, get day: " + day);
         }
         if (!setpoints.contains(setpoint)) {
@@ -128,19 +137,27 @@ public class KM200SwitchProgramServiceHandler {
      *
      */
     void removeAllSwitches() {
-        switchMap.clear();
+        if (switchMap != null) {
+            switchMap.clear();
+        }
     }
 
     public void setMaxNbOfSwitchPoints(Integer nbr) {
-        maxNbOfSwitchPoints = nbr;
+        if (nbr != null) {
+            maxNbOfSwitchPoints = nbr;
+        }
     }
 
     public void setMaxNbOfSwitchPointsPerDay(Integer nbr) {
-        maxNbOfSwitchPointsPerDay = nbr;
+        if (nbr != null) {
+            maxNbOfSwitchPointsPerDay = nbr;
+        }
     }
 
     public void setSwitchPointTimeRaster(Integer raster) {
-        switchPointTimeRaster = raster;
+        if (raster != null) {
+            switchPointTimeRaster = raster;
+        }
     }
 
     public void setSetpointProperty(String property) {
@@ -152,8 +169,8 @@ public class KM200SwitchProgramServiceHandler {
      */
     public void setActiveDay(String day) {
         if (!days.contains(day)) {
-            logger.warn("This type of weekday is not supported, get day: {}", day);
-            return;
+            logger.error("This type of weekday is not supported, get day: {}", day);
+            throw new IllegalArgumentException("This type of weekday is not supported, get day: " + day);
         }
         activeDay = day;
     }
@@ -163,8 +180,8 @@ public class KM200SwitchProgramServiceHandler {
      */
     public void setActiveCycle(Integer cycle) {
         if (cycle > this.getMaxNbOfSwitchPoints() / 2 || cycle > this.getMaxNbOfSwitchPointsPerDay() / 2 || cycle < 1) {
-            logger.warn("The value of cycle is not valid, get cycle: {}", cycle);
-            return;
+            logger.error("The value of cycle is not valid, get cycle: {}", cycle);
+            throw new IllegalArgumentException("The value of cycle is not valid, get cycle: " + cycle.toString());
         }
         /* limit the cycle to the next one after last (for creating a new one) */
         if (cycle > (getNbrCycles() + 1) || getNbrCycles() == 0) {
@@ -228,6 +245,7 @@ public class KM200SwitchProgramServiceHandler {
                 }
             }
         }
+
     }
 
     /**
@@ -300,17 +318,15 @@ public class KM200SwitchProgramServiceHandler {
      * This function determines the positive and negative switch point names
      */
     public boolean determineSwitchNames(KM200Device device) {
-        if (!setpointProperty.isEmpty()) {
+        if (setpointProperty != null) {
+            logger.debug("Determine switch names..");
             KM200ServiceObject setpObject = device.getServiceObject(setpointProperty);
-            if (null != setpObject) {
-                if (setpObject.serviceTreeMap.keySet().isEmpty()) {
-                    return false;
-                }
-                for (String key : setpObject.serviceTreeMap.keySet()) {
-                    setpoints.add(key);
-                }
-            } else {
+            if (setpObject.serviceTreeMap.keySet().isEmpty()) {
                 return false;
+            }
+            for (String key : setpObject.serviceTreeMap.keySet()) {
+                logger.debug("Key: {}", key);
+                setpoints.add(key);
             }
         }
         return true;
@@ -324,14 +340,14 @@ public class KM200SwitchProgramServiceHandler {
             /* Update the list of switching points */
             removeAllSwitches();
             JsonArray sPoints = nodeRoot.get("switchPoints").getAsJsonArray();
-            logger.trace("sPoints: {}", nodeRoot);
-            if (positiveSwitch.isEmpty() || negativeSwitch.isEmpty()) {
+            logger.debug("sPoints: {}", nodeRoot);
+            if (positiveSwitch == null || negativeSwitch == null) {
                 /* First start. Determine the positive and negative switching points */
                 if (sPoints.size() > 0) {
                     for (int i = 0; i < sPoints.size(); i++) {
                         JsonObject subJSON = sPoints.get(i).getAsJsonObject();
                         String setpoint = subJSON.get("setpoint").getAsString();
-                        if (positiveSwitch.isEmpty() || negativeSwitch.isEmpty()) {
+                        if (positiveSwitch == null || negativeSwitch == null) {
                             positiveSwitch = setpoint;
                             negativeSwitch = setpoint;
                         } else {
@@ -342,29 +358,25 @@ public class KM200SwitchProgramServiceHandler {
                         }
                     }
                 } else {
-                    if (!setpointProperty.isEmpty()) {
+                    if (setpointProperty != null) {
                         BigDecimal firstVal = null;
                         KM200ServiceObject setpObject = device.getServiceObject(setpointProperty);
-                        if (null != setpObject) {
-                            logger.debug("No switch points set. Use alternative way. {}", nodeRoot);
-                            for (String key : setpoints) {
-                                if (positiveSwitch.isEmpty() || negativeSwitch.isEmpty()) {
+                        logger.debug("No switch points set. Use alternative way. {}", nodeRoot);
+                        for (String key : setpoints) {
+                            if (positiveSwitch == null || negativeSwitch == null) {
+                                positiveSwitch = key;
+                                negativeSwitch = key;
+                                firstVal = (BigDecimal) setpObject.serviceTreeMap.get(key).getValue();
+                            } else {
+                                BigDecimal nextVal = (BigDecimal) setpObject.serviceTreeMap.get(key).getValue();
+                                if (nextVal.compareTo(firstVal) > 0) {
                                     positiveSwitch = key;
-                                    negativeSwitch = key;
-                                    firstVal = (BigDecimal) setpObject.serviceTreeMap.get(key).getValue();
                                 } else {
-                                    BigDecimal nextVal = (BigDecimal) setpObject.serviceTreeMap.get(key).getValue();
-                                    if (null != nextVal) {
-                                        if (nextVal.compareTo(firstVal) > 0) {
-                                            positiveSwitch = key;
-                                        } else {
-                                            negativeSwitch = key;
-                                        }
-                                    }
+                                    negativeSwitch = key;
                                 }
-                                if (!positiveSwitch.equalsIgnoreCase(negativeSwitch)) {
-                                    break;
-                                }
+                            }
+                            if (!positiveSwitch.equalsIgnoreCase(negativeSwitch)) {
+                                break;
                             }
                         }
                     }
@@ -394,7 +406,7 @@ public class KM200SwitchProgramServiceHandler {
     /**
      * This function updates objects JSONData on the actual set switch points.
      */
-    public @Nullable JsonObject getUpdatedJSONData(KM200ServiceObject parObject) {
+    public JsonObject getUpdatedJSONData(KM200ServiceObject parObject) {
         synchronized (switchMap) {
             boolean prepareNewOnly = false;
             JsonArray sPoints = new JsonArray();
@@ -437,13 +449,9 @@ public class KM200SwitchProgramServiceHandler {
             }
             logger.debug("New switching points: {}", sPoints);
             JsonObject switchRoot = parObject.getJSONData();
-            if (null != switchRoot) {
-                switchRoot.remove("switchPoints");
-                switchRoot.add("switchPoints", sPoints);
-                parObject.setJSONData(switchRoot);
-            } else {
-                logger.debug("Jsojnoject switchRoot not found");
-            }
+            switchRoot.remove("switchPoints");
+            switchRoot.add("switchPoints", sPoints);
+            parObject.setJSONData(switchRoot);
             /* Preparation for are new cycle, don't sent it to the device */
             if (prepareNewOnly) {
                 return null;
@@ -465,15 +473,15 @@ public class KM200SwitchProgramServiceHandler {
         return switchPointTimeRaster;
     }
 
-    public @Nullable String getSetpointProperty() {
+    public String getSetpointProperty() {
         return setpointProperty;
     }
 
-    public @Nullable String getPositiveSwitch() {
+    public String getPositiveSwitch() {
         return positiveSwitch;
     }
 
-    public @Nullable String getNegativeSwitch() {
+    public String getNegativeSwitch() {
         return negativeSwitch;
     }
 
@@ -484,13 +492,16 @@ public class KM200SwitchProgramServiceHandler {
         synchronized (switchMap) {
             Map<String, List<Integer>> weekP = switchMap.get(getPositiveSwitch());
             Map<String, List<Integer>> weekN = switchMap.get(getNegativeSwitch());
-            if (weekP.isEmpty() && weekN.isEmpty()) {
-                return 0;
+            if (weekP != null && weekN != null) {
+                if (weekP.isEmpty() && weekN.isEmpty()) {
+                    return 0;
+                }
+                List<Integer> daysListP = weekP.get(getActiveDay());
+                List<Integer> daysListN = weekN.get(getActiveDay());
+                return Math.min(daysListP.size(), daysListN.size());
             }
-            List<Integer> daysListP = weekP.get(getActiveDay());
-            List<Integer> daysListN = weekN.get(getActiveDay());
-            return Math.min(daysListP.size(), daysListN.size());
         }
+        return null;
     }
 
     /**

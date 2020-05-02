@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -38,7 +37,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author Markus Eckhardt - Initial contribution
  */
-@NonNullByDefault
 public class KM200GatewayDiscoveryService extends AbstractDiscoveryService implements KM200GatewayStatusListener {
 
     private final Logger logger = LoggerFactory.getLogger(KM200GatewayDiscoveryService.class);
@@ -49,6 +47,7 @@ public class KM200GatewayDiscoveryService extends AbstractDiscoveryService imple
 
     public KM200GatewayDiscoveryService(KM200GatewayHandler gateway) {
         super(KM200GatewayHandler.SUPPORTED_THING_TYPES_UIDS, timeOut, true);
+        logger.debug("KM200GatewayDiscoveryService {}", gateway);
         this.gateway = gateway;
         this.gateway.addGatewayStatusListener(this);
     }
@@ -86,23 +85,22 @@ public class KM200GatewayDiscoveryService extends AbstractDiscoveryService imple
         }
         ThingUID thingUID = null;
         ThingUID bridgeUID = gateway.getThing().getUID();
+        logger.debug("Checking bridgeUID: {} ", bridgeUID.getAsString());
         for (KM200ThingType tType : KM200ThingType.values()) {
             String root = tType.getRootPath();
             if (root.isEmpty()) {
                 continue;
             }
+            logger.debug("typeuid: {}", tType.getThingTypeUID());
             String checkService = tType.getActiveCheckSubPath();
+            logger.debug("root: {}", root);
             if (gateway.getDevice().containsService(root)) {
                 boolean enumOnly = true;
                 KM200ServiceObject object = gateway.getDevice().getServiceObject(root);
-                if (null == object) {
-                    logger.warn("No root service object found");
-                    return;
-                }
                 Set<String> keys = object.serviceTreeMap.keySet();
                 /* Check whether all sub services are refEnum */
                 for (String key : keys) {
-                    if (!DATA_TYPE_REF_ENUM.equals(object.serviceTreeMap.get(key).getServiceType())) {
+                    if (!"refEnum".equals(object.serviceTreeMap.get(key).getServiceType())) {
                         enumOnly = false;
                         break;
                     }
@@ -114,13 +112,9 @@ public class KM200GatewayDiscoveryService extends AbstractDiscoveryService imple
                         if (checkService != null) {
                             String checkServicePath = root + "/" + key + "/" + checkService;
                             if (gateway.getDevice().containsService(checkServicePath)) {
-                                KM200ServiceObject serviceObject = gateway.getDevice()
-                                        .getServiceObject(checkServicePath);
-                                if (null != serviceObject) {
-                                    Object val = serviceObject.getValue();
-                                    if (null != val && "INACTIVE".equals(val)) {
-                                        continue;
-                                    }
+                                if ("INACTIVE"
+                                        .equals(gateway.getDevice().getServiceObject(checkServicePath).getValue())) {
+                                    continue;
                                 }
                             }
                         }
@@ -150,29 +144,26 @@ public class KM200GatewayDiscoveryService extends AbstractDiscoveryService imple
                                     currParaRepl = switchObject.serviceTreeMap.entrySet().iterator().next().getKey();
                                 }
                             }
-                            KM200SwitchProgramServiceHandler valPara = (KM200SwitchProgramServiceHandler) switchObject.serviceTreeMap
-                                    .entrySet().iterator().next().getValue().getValueParameter();
-                            if (null != valPara) {
-                                String posName = valPara.getPositiveSwitch();
-                                String negName = valPara.getNegativeSwitch();
-                                if (null == posName || null == negName) {
-                                    logger.warn("Service switches not found!");
-                                    return;
-                                }
-                                ThingUID subThingUID = new ThingUID(tType.getThingTypeUID(), bridgeUID,
-                                        key + "-switchprogram");
-                                Map<String, Object> subProperties = new HashMap<>(4);
-                                subProperties.put("root", KM200Utils.translatesPathToName(
-                                        root + "/" + key + "/" + SWITCH_PROGRAM_PATH_NAME + "/" + currParaRepl));
-                                subProperties.put(SWITCH_PROGRAM_CURRENT_PATH_NAME,
-                                        KM200Utils.translatesPathToName(currentPathName));
-                                subProperties.put(SWITCH_PROGRAM_POSITIVE, posName);
-                                subProperties.put(SWITCH_PROGRAM_NEGATIVE, negName);
-                                DiscoveryResult subDiscoveryResult = DiscoveryResultBuilder.create(subThingUID)
-                                        .withBridge(bridgeUID).withLabel(key + " switch program")
-                                        .withProperties(subProperties).build();
-                                thingDiscovered(subDiscoveryResult);
-                            }
+
+                            String posName = ((KM200SwitchProgramServiceHandler) switchObject.serviceTreeMap.entrySet()
+                                    .iterator().next().getValue().getValueParameter()).getPositiveSwitch();
+                            String negName = ((KM200SwitchProgramServiceHandler) switchObject.serviceTreeMap.entrySet()
+                                    .iterator().next().getValue().getValueParameter()).getNegativeSwitch();
+                            ThingUID subThingUID = new ThingUID(tType.getThingTypeUID(), bridgeUID,
+                                    key + "-switchprogram");
+                            Map<String, Object> subProperties = new HashMap<>(4);
+                            subProperties.put("root", KM200Utils.translatesPathToName(
+                                    root + "/" + key + "/" + SWITCH_PROGRAM_PATH_NAME + "/" + currParaRepl));
+                            subProperties.put(SWITCH_PROGRAM_CURRENT_PATH_NAME,
+                                    KM200Utils.translatesPathToName(currentPathName));
+                            subProperties.put(SWITCH_PROGRAM_POSITIVE, posName);
+                            subProperties.put(SWITCH_PROGRAM_NEGATIVE, negName);
+                            logger.debug("enum thingUID {} bridgeUID {} withLabel {} root {}", thingUID, bridgeUID, key,
+                                    root);
+                            DiscoveryResult subDiscoveryResult = DiscoveryResultBuilder.create(subThingUID)
+                                    .withBridge(bridgeUID).withLabel(key + " switch program")
+                                    .withProperties(subProperties).build();
+                            thingDiscovered(subDiscoveryResult);
                         }
                     }
                 } else {
@@ -181,6 +172,7 @@ public class KM200GatewayDiscoveryService extends AbstractDiscoveryService imple
                     thingUID = new ThingUID(tType.getThingTypeUID(), bridgeUID, key);
                     Map<String, Object> properties = new HashMap<>(1);
                     properties.put("root", KM200Utils.translatesPathToName(root));
+                    logger.debug("thingUID {} bridgeUID {} withLabel {} root {}", thingUID, bridgeUID, key, root);
                     DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
                             .withLabel(key).withProperties(properties).build();
                     thingDiscovered(discoveryResult);

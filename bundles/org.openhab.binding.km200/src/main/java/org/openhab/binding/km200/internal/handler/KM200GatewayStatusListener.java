@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.km200.internal.handler;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 
 /**
@@ -21,7 +20,6 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
  *
  * @author Markus Eckhardt - Initial contribution
  */
-@NonNullByDefault
 public interface KM200GatewayStatusListener {
     public void gatewayStatusChanged(ThingStatus status);
 }

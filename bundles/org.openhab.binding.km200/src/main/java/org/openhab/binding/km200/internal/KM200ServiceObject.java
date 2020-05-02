@@ -15,9 +15,6 @@ package org.openhab.binding.km200.internal;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-
 import com.google.gson.JsonObject;
 
 /**
@@ -25,25 +22,25 @@ import com.google.gson.JsonObject;
  *
  * @author Markus Eckhardt - Initial contribution
  */
-@NonNullByDefault
 public class KM200ServiceObject {
     private int readable;
     private int writeable;
     private int recordable;
     private int virtual;
     private boolean updated;
-    private @Nullable String parent;
+    private String parent;
     private String fullServiceName;
     private String serviceType;
-    private @Nullable JsonObject jsonData;
-    private @Nullable Object value;
-    private @Nullable Object valueParameter;
+    private JsonObject jsonData;
+    private Object value;
+    private Object valueParameter;
 
     /* Device services */
     public Map<String, KM200ServiceObject> serviceTreeMap;
+    KM200ServiceObject parentObject;
 
     public KM200ServiceObject(String fullServiceName, String serviceType, int readable, int writeable, int recordable,
-            int virtual, @Nullable String parent) {
+            int virtual, String parent, KM200ServiceObject parentObject) {
         serviceTreeMap = new HashMap<>();
         this.fullServiceName = fullServiceName;
         this.serviceType = serviceType;
@@ -52,6 +49,7 @@ public class KM200ServiceObject {
         this.recordable = recordable;
         this.virtual = virtual;
         this.parent = parent;
+        this.parentObject = parentObject;
         updated = false;
     }
 
@@ -93,15 +91,15 @@ public class KM200ServiceObject {
         return fullServiceName;
     }
 
-    public @Nullable Object getValue() {
+    public Object getValue() {
         return value;
     }
 
-    public @Nullable Object getValueParameter() {
+    public Object getValueParameter() {
         return valueParameter;
     }
 
-    public @Nullable String getParent() {
+    public String getParent() {
         return parent;
     }
 
@@ -113,7 +111,7 @@ public class KM200ServiceObject {
         return updated;
     }
 
-    public @Nullable JsonObject getJSONData() {
+    public JsonObject getJSONData() {
         return jsonData;
     }
 }

@@ -20,8 +20,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
@@ -37,7 +35,6 @@ import org.openhab.binding.km200.internal.discovery.KM200GatewayDiscoveryService
 import org.openhab.binding.km200.internal.handler.KM200GatewayHandler;
 import org.openhab.binding.km200.internal.handler.KM200ThingHandler;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -49,7 +46,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author Markus Eckhardt - Initial contribution
  */
-@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.km200")
 public class KM200HandlerFactory extends BaseThingHandlerFactory {
 
@@ -61,18 +57,29 @@ public class KM200HandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(KM200HandlerFactory.class);
 
-    private final KM200ChannelTypeProvider channelTypeProvider;
+    private KM200ChannelTypeProvider channelTypeProvider;
 
     /**
      * shared instance of HTTP client for asynchronous calls
      */
-    private final HttpClient httpClient;
+    private HttpClient httpClient;
 
-    @Activate
-    public KM200HandlerFactory(@Reference HttpClientFactory httpClientFactory,
-            @Reference KM200ChannelTypeProvider channelTypeProvider) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
+    @Reference
+    protected void setChannelTypeProvider(KM200ChannelTypeProvider channelTypeProvider) {
         this.channelTypeProvider = channelTypeProvider;
+    }
+
+    protected void unsetChannelTypeProvider(KM200ChannelTypeProvider channelTypeProvider) {
+        this.channelTypeProvider = null;
+    }
+
+    @Reference
+    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+    }
+
+    protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
+        this.httpClient = null;
     }
 
     @Override
@@ -81,13 +88,15 @@ public class KM200HandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected @Nullable Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID) {
+    protected Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID) {
+        logger.debug("Create thing UID: {}", thingUID);
         return createThing(thingTypeUID, configuration, thingUID);
     }
 
     @Override
-    protected @Nullable ThingHandler createHandler(Thing thing) {
+    protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        logger.debug("Create thing handler for: {}", thingTypeUID.getAsString());
         if (KM200GatewayHandler.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             logger.debug("It's a gataway: {}", thingTypeUID.getAsString());
             KM200GatewayHandler gatewayHandler = new KM200GatewayHandler((Bridge) thing, httpClient);
@@ -105,8 +114,10 @@ public class KM200HandlerFactory extends BaseThingHandlerFactory {
     protected synchronized void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof KM200GatewayHandler) {
             ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(thingHandler.getThing().getUID());
-            serviceReg.unregister();
-            discoveryServiceRegs.remove(thingHandler.getThing().getUID());
+            if (serviceReg != null) {
+                serviceReg.unregister();
+                discoveryServiceRegs.remove(thingHandler.getThing().getUID());
+            }
         }
     }
 

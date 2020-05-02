@@ -17,8 +17,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.util.BytesContentProvider;
@@ -32,11 +30,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author Markus Eckhardt - Initial contribution
  */
-@NonNullByDefault
 public class KM200Comm<KM200BindingProvider> {
 
     private final Logger logger = LoggerFactory.getLogger(KM200Comm.class);
-    private final HttpClient httpClient;
+    private HttpClient httpClient;
     private final KM200Device remoteDevice;
     private Integer maxNbrRepeats;
 
@@ -56,27 +53,30 @@ public class KM200Comm<KM200BindingProvider> {
     /**
      * This function does the GET http communication to the device
      */
-    public byte @Nullable [] getDataFromService(String service) {
+    public byte[] getDataFromService(String service) {
         byte[] responseBodyB64 = null;
         int statusCode = 0;
 
-        ContentResponse contentResponse = null;
+        ContentResponse contentresponse = null;
+
         logger.debug("Starting receive connection...");
 
         try {
             // Create an instance of HttpClient.
             for (int i = 0; i < maxNbrRepeats.intValue() && statusCode != HttpStatus.OK_200; i++) {
-                contentResponse = httpClient.newRequest(remoteDevice.getIP4Address() + service, 80).scheme("http")
+
+                contentresponse = httpClient.newRequest(remoteDevice.getIP4Address() + service, 80).scheme("http")
                         .agent("TeleHeater/2.2.3").accept("application/json").method(HttpMethod.GET)
                         .timeout(5, TimeUnit.SECONDS).send();
+
                 // Execute the method.
-                statusCode = contentResponse.getStatus();
+                statusCode = contentresponse.getStatus();
 
                 // Release the connection.
                 switch (statusCode) {
                     case HttpStatus.OK_200:
                         remoteDevice.setCharSet(StandardCharsets.UTF_8.name());
-                        responseBodyB64 = contentResponse.getContent();
+                        responseBodyB64 = contentresponse.getContent();
                         break;
                     case HttpStatus.INTERNAL_SERVER_ERROR_500:
                         /* Unknown problem with the device, wait and try again */
@@ -93,7 +93,7 @@ public class KM200Comm<KM200BindingProvider> {
                         responseBodyB64 = null;
                         break;
                     default:
-                        logger.debug("HTTP GET failed: {}", contentResponse.getReason());
+                        logger.debug("HTTP GET failed: {}", contentresponse.getReason());
                         responseBodyB64 = null;
                         break;
                 }
@@ -118,10 +118,12 @@ public class KM200Comm<KM200BindingProvider> {
         logger.debug("Starting send connection...");
         try {
             for (int i = 0; i < maxNbrRepeats.intValue() && rCode != HttpStatus.NO_CONTENT_204; i++) {
+
                 // Create a method instance.
                 contentResponse = httpClient.newRequest("http://" + remoteDevice.getIP4Address() + service)
                         .method(HttpMethod.POST).agent("TeleHeater/2.2.3").accept("application/json")
                         .content(new BytesContentProvider(data)).timeout(5, TimeUnit.SECONDS).send();
+
                 rCode = contentResponse.getStatus();
                 switch (rCode) {
                     case HttpStatus.NO_CONTENT_204: // The default return value
@@ -144,6 +146,7 @@ public class KM200Comm<KM200BindingProvider> {
         } catch (TimeoutException e) {
             logger.debug("Call to {} {} timed out.", remoteDevice.getIP4Address(), service);
         }
+        logger.debug("Returncode: {}", rCode);
         return rCode;
 
     }
