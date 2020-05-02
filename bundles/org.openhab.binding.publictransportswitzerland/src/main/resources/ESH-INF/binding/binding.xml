@@ -3,8 +3,8 @@
 	xmlns:binding="https://openhab.org/schemas/binding/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
-	<name>PublicTransportSwitzerland Binding</name>
-	<description>This is the binding for PublicTransportSwitzerland.</description>
+	<name>Public Transport Switzerland Binding</name>
+	<description>Connects to the "Swiss public transport API" to provide real-time public transport information.</description>
 	<author>Jeremy Stucki &amp; Stefanie Jäger</author>
 
 </binding:binding>
