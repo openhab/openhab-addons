@@ -15,6 +15,7 @@ package org.openhab.binding.daikin.internal.handler;
 import java.io.IOException;
 import java.util.Optional;
 
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -47,8 +48,8 @@ import org.slf4j.LoggerFactory;
 public class DaikinAcUnitHandler extends DaikinBaseHandler {
     private final Logger logger = LoggerFactory.getLogger(DaikinAcUnitHandler.class);
 
-    public DaikinAcUnitHandler(Thing thing, DaikinDynamicStateDescriptionProvider stateDescriptionProvider) {
-        super(thing, stateDescriptionProvider);
+    public DaikinAcUnitHandler(Thing thing, DaikinDynamicStateDescriptionProvider stateDescriptionProvider, HttpClient httpClient) {
+        super(thing, stateDescriptionProvider, httpClient);
     }
 
     @Override

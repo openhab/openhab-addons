@@ -26,6 +26,7 @@ import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
@@ -35,8 +36,8 @@ import org.eclipse.smarthome.core.net.NetUtil;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.daikin.internal.DaikinBindingConstants;
 import org.openhab.binding.daikin.internal.DaikinCommunicationForbiddenException;
+import org.openhab.binding.daikin.internal.DaikinHttpClientFactory;
 import org.openhab.binding.daikin.internal.DaikinWebTargets;
-import org.openhab.binding.daikin.internal.config.DaikinConfiguration;
 import org.openhab.binding.daikin.internal.api.BasicInfo;
 import org.openhab.binding.daikin.internal.api.ControlInfo;
 import org.openhab.binding.daikin.internal.api.InfoParser;
@@ -44,6 +45,7 @@ import org.openhab.binding.daikin.internal.api.airbase.AirbaseBasicInfo;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseControlInfo;
 import org.openhab.binding.daikin.internal.config.DaikinConfiguration;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,6 +63,7 @@ public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
 
     private Logger logger = LoggerFactory.getLogger(DaikinACUnitDiscoveryService.class);
 
+    private HttpClient httpClient;
     private final Runnable scanner;
     private ScheduledFuture<?> backgroundFuture;
 
@@ -140,7 +143,7 @@ public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
             String mac = Optional.ofNullable(parsedData.get("mac")).orElse("");
             String uuid = mac.isEmpty() ? UUID.randomUUID().toString() : UUID.nameUUIDFromBytes(mac.getBytes()).toString();
 
-            DaikinWebTargets webTargets = new DaikinWebTargets(host, secure, null);
+            DaikinWebTargets webTargets = new DaikinWebTargets(httpClient, host, secure, null);
             boolean found = false;
 
             // look for Daikin controller
@@ -200,5 +203,10 @@ public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
         }
 
         return addresses;
+    }
+
+    @Reference
+    protected void setDaikinHttpClientFactory(final DaikinHttpClientFactory httpClientFactory) {
+        this.httpClient = httpClientFactory.getHttpClient();
     }
 }

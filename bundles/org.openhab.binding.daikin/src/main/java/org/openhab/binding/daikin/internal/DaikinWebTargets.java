@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
@@ -28,6 +27,7 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.daikin.internal.api.BasicInfo;
 import org.openhab.binding.daikin.internal.api.ControlInfo;
+import org.openhab.binding.daikin.internal.api.InfoParser;
 import org.openhab.binding.daikin.internal.api.SensorInfo;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseBasicInfo;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseControlInfo;
@@ -62,20 +62,12 @@ public class DaikinWebTargets {
     private String setAirbaseZoneInfoUri;
 
     private String uuid;
-    private static HttpClient httpClient;
+    private final HttpClient httpClient;
 
     private Logger logger = LoggerFactory.getLogger(DaikinWebTargets.class);
 
-    public DaikinWebTargets(String host, Boolean secure, String uuid) {
-        if (httpClient == null) {
-            httpClient = new HttpClient(new SslContextFactory(true));
-            try {
-                httpClient.start();
-            } catch (Exception e) {
-                httpClient = null;
-                logger.warn("httpClient.start() failed. {}", e.getMessage());
-            }
-        }
+    public DaikinWebTargets(HttpClient httpClient, String host, Boolean secure, String uuid) {
+        this.httpClient = httpClient;
         this.uuid = uuid;
 
         String baseUri = (secure != null && secure.booleanValue() ? "https://" : "http://") + host + "/";
@@ -180,6 +172,7 @@ public class DaikinWebTargets {
                     response = executeUrl(uriWithParams);
                 } else {
                     // a fall back method
+                    logger.debug("Using HttpUtil fall scback");
                     response = HttpUtil.executeUrl("GET", uriWithParams, TIMEOUT_MS);
                 }
             } catch (DaikinCommunicationException ex) {

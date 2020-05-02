@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.measure.quantity.Temperature;
 
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -57,6 +58,8 @@ import org.slf4j.LoggerFactory;
 public abstract class DaikinBaseHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(DaikinBaseHandler.class);
 
+    private final HttpClient httpClient;
+
     private long refreshInterval;
 
     protected @Nullable DaikinWebTargets webTargets;
@@ -82,9 +85,10 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
 
     protected abstract void registerUuid(String key);
 
-    public DaikinBaseHandler(Thing thing, DaikinDynamicStateDescriptionProvider stateDescriptionProvider) {
+    public DaikinBaseHandler(Thing thing, DaikinDynamicStateDescriptionProvider stateDescriptionProvider, HttpClient httpClient) {
         super(thing);
         this.stateDescriptionProvider = stateDescriptionProvider;
+        this.httpClient = httpClient;
     }
 
     @Override
@@ -142,7 +146,7 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
             if (config.uuid != null) {
                 config.uuid = config.uuid.replaceAll("\\s|-", "");
             }
-            webTargets = new DaikinWebTargets(config.host, config.secure, config.uuid);
+            webTargets = new DaikinWebTargets(httpClient, config.host, config.secure, config.uuid);
             refreshInterval = config.refresh;
 
             schedulePoll();

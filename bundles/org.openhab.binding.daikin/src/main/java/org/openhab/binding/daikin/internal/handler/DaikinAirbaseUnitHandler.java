@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -52,8 +53,8 @@ public class DaikinAirbaseUnitHandler extends DaikinBaseHandler {
     private final Logger logger = LoggerFactory.getLogger(DaikinAirbaseUnitHandler.class);
     private AirbaseModelInfo airbaseModelInfo;
 
-    public DaikinAirbaseUnitHandler(Thing thing, DaikinDynamicStateDescriptionProvider stateDescriptionProvider) {
-        super(thing, stateDescriptionProvider);
+    public DaikinAirbaseUnitHandler(Thing thing, DaikinDynamicStateDescriptionProvider stateDescriptionProvider, HttpClient httpClient) {
+        super(thing, stateDescriptionProvider, httpClient);
     }
 
     @Override
