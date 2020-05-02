@@ -6,64 +6,64 @@
 
 	<channel-type id="fek-temperature-type">
 		<item-type>Number:Temperature</item-type>
-		<label>FFK Temperature</label>
+		<label>FFK temperature</label>
 		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
 	<channel-type id="fek-temperature-setpoint-type">
 		<item-type>Number:Temperature</item-type>
-		<label>FFK Temperature set point</label>
+		<label>FFK temperature set point</label>
 		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 	<channel-type id="fek-humidity-type">
 		<item-type>Number:Dimensionless</item-type>
-		<label>FFK Humidity</label>
+		<label>FFK humidity</label>
 		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 	<channel-type id="fek-dewpoint-type">
 		<item-type>Number:Temperature</item-type>
-		<label>FFK Dewpoint</label>
+		<label>FFK dewpoint</label>
 		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 	<channel-type id="outdoor-temperature-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Outdoor Temperature</label>
+		<label>Outdoor temperature</label>
 		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
 	<channel-type id="hk1-temperature-type">
 		<item-type>Number:Temperature</item-type>
-		<label>HK1 Temperature</label>
+		<label>HK1 temperature</label>
 		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 	<channel-type id="hk1-temperature-setpoint-type">
 		<item-type>Number:Temperature</item-type>
-		<label>HK1 Temperature set point</label>
+		<label>HK1 temperature set point</label>
 		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 	<channel-type id="supply-temperature-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Supply Temperature</label>
+		<label>Supply temperature</label>
 		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 	<channel-type id="return-temperature-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Return Temperature</label>
+		<label>Return temperature</label>
 		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 	<channel-type id="source-temperature-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Source Temperature</label>
+		<label>Source temperature</label>
 		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 	<channel-type id="water-temperature-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Water Temperature</label>
+		<label>Water temperature</label>
 		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 	<channel-type id="water-temperature-setpoint-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Water Temperature set point</label>
+		<label>Water temperature set point</label>
 		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 

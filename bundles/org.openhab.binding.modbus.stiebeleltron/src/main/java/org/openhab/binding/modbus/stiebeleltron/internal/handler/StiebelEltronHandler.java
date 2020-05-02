@@ -70,7 +70,6 @@ import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.wimpi.modbus.Modbus;
 
 /**
  * The {@link Modbus.StiebelEltronHandler} is responsible for handling commands,
@@ -81,7 +80,6 @@ import net.wimpi.modbus.Modbus;
 @NonNullByDefault
 public class StiebelEltronHandler extends BaseThingHandler {
 
-    @NonNullByDefault
     public abstract class AbstractBasePoller {
         /**
          * Logger instance
@@ -241,6 +239,11 @@ public class StiebelEltronHandler extends BaseThingHandler {
      * @param shortValue value to be written on the modbus
      */
     protected void writeInt16(int address, short shortValue) {
+        @Nullable
+        StiebelEltronConfiguration myconfig = StiebelEltronHandler.this.config;
+        if (myconfig == null) {
+            throw new IllegalStateException("registerPollTask called without proper configuration");
+        }        
         // big endian byte ordering
         byte b1 = (byte) (shortValue >> 8);
         byte b2 = (byte) shortValue;
@@ -249,10 +252,10 @@ public class StiebelEltronHandler extends BaseThingHandler {
         ModbusRegisterArray data = new BasicModbusRegisterArray(new ModbusRegister[] { register });
 
         BasicModbusWriteRegisterRequestBlueprint request = new BasicModbusWriteRegisterRequestBlueprint(slaveId,
-                address, data, false, config.getMaxTries());
+                address, data, false, myconfig.getMaxTries());
 
         ModbusSlaveEndpoint slaveEndpoint = this.endpoint;
-        if (request == null || slaveEndpoint == null) {
+        if (slaveEndpoint == null) {
             return;
         }
 
@@ -362,44 +365,48 @@ public class StiebelEltronHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
 
         if (systemInformationPoller == null) {
-            systemInformationPoller = new AbstractBasePoller() {
+            AbstractBasePoller poller = new AbstractBasePoller() {
                 @Override
                 protected void handlePolledData(ModbusRegisterArray registers) {
                     handlePolledSystemInformationData(registers);
                 }
 
             };
-            systemInformationPoller.registerPollTask(500, 36, ModbusReadFunctionCode.READ_INPUT_REGISTERS);
+            poller.registerPollTask(500, 36, ModbusReadFunctionCode.READ_INPUT_REGISTERS);
+            systemInformationPoller = poller;
         }
         if (energyPoller == null) {
-            energyPoller = new AbstractBasePoller() {
+            AbstractBasePoller poller  = new AbstractBasePoller() {
                 @Override
                 protected void handlePolledData(ModbusRegisterArray registers) {
                     handlePolledEnergyData(registers);
                 }
 
             };
-            energyPoller.registerPollTask(3500, 16, ModbusReadFunctionCode.READ_INPUT_REGISTERS);
+            poller.registerPollTask(3500, 16, ModbusReadFunctionCode.READ_INPUT_REGISTERS);
+            energyPoller = poller;
         }
         if (systemStatePoller == null) {
-            systemStatePoller = new AbstractBasePoller() {
+            AbstractBasePoller poller  = new AbstractBasePoller() {
                 @Override
                 protected void handlePolledData(ModbusRegisterArray registers) {
                     handlePolledSystemStateData(registers);
                 }
 
             };
-            systemStatePoller.registerPollTask(2500, 2, ModbusReadFunctionCode.READ_INPUT_REGISTERS);
+            poller.registerPollTask(2500, 2, ModbusReadFunctionCode.READ_INPUT_REGISTERS);
+            systemStatePoller = poller;
         }
         if (systemParameterPoller == null) {
-            systemParameterPoller = new AbstractBasePoller() {
+            AbstractBasePoller poller  = new AbstractBasePoller() {
                 @Override
                 protected void handlePolledData(ModbusRegisterArray registers) {
                     handlePolledSystemParameterData(registers);
                 }
 
             };
-            systemParameterPoller.registerPollTask(1500, 11, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS);
+            poller.registerPollTask(1500, 11, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS);
+            systemParameterPoller = poller;
         }
     }
 
