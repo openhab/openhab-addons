@@ -17,6 +17,7 @@ import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.KILOWATT_HO
 import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.PERCENT;
 import static org.openhab.binding.modbus.stiebeleltron.internal.StiebelEltronBindingConstants.*;
 
+
 import java.math.BigDecimal;
 import java.util.Optional;
 
@@ -36,6 +37,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
 import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
@@ -49,17 +51,27 @@ import org.openhab.binding.modbus.stiebeleltron.internal.parser.SystemBlockParse
 import org.openhab.binding.modbus.stiebeleltron.internal.parser.SystemParameterBlockParser;
 import org.openhab.binding.modbus.stiebeleltron.internal.parser.SystemStateBlockParser;
 import org.openhab.io.transport.modbus.BasicModbusReadRequestBlueprint;
+import org.openhab.io.transport.modbus.BasicModbusRegister;
+import org.openhab.io.transport.modbus.BasicModbusRegisterArray;
+import org.openhab.io.transport.modbus.BasicModbusWriteRegisterRequestBlueprint;
 import org.openhab.io.transport.modbus.BasicPollTaskImpl;
+import org.openhab.io.transport.modbus.BasicWriteTask;
 import org.openhab.io.transport.modbus.BitArray;
 import org.openhab.io.transport.modbus.ModbusManager;
 import org.openhab.io.transport.modbus.ModbusReadCallback;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
+import org.openhab.io.transport.modbus.ModbusRegister;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
+import org.openhab.io.transport.modbus.ModbusResponse;
+import org.openhab.io.transport.modbus.ModbusWriteCallback;
+import org.openhab.io.transport.modbus.ModbusWriteRequestBlueprint;
 import org.openhab.io.transport.modbus.PollTask;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import net.wimpi.modbus.Modbus;
 
 /**
  * The {@link Modbus.StiebelEltronHandler} is responsible for handling commands,
@@ -89,7 +101,7 @@ public class StiebelEltronHandler extends BaseThingHandler {
                 return;
             }
             logger.debug("Unregistering polling from ModbusManager");
-            StiebelEltronHandler.this.managerRef.unregisterRegularPoll(task);
+            StiebelEltronHandler.this.modbusManager.unregisterRegularPoll(task);
 
             pollTask = null;
 
@@ -124,10 +136,14 @@ public class StiebelEltronHandler extends BaseThingHandler {
                         logger.info("Received empty register array on poll");
                         return;
                     }
-                    handlePolledData(registers);
+                    try {
+                        handlePolledData(registers);
 
-                    if (StiebelEltronHandler.this.getThing().getStatus() != ThingStatus.ONLINE) {
-                        updateStatus(ThingStatus.ONLINE);
+                        if (StiebelEltronHandler.this.getThing().getStatus() != ThingStatus.ONLINE) {
+                            updateStatus(ThingStatus.ONLINE);
+                        }
+                    }catch(Exception error){
+                        StiebelEltronHandler.this.handleError(error);
                     }
                 }
 
@@ -146,7 +162,7 @@ public class StiebelEltronHandler extends BaseThingHandler {
             @Nullable
             PollTask task = pollTask;
             if (task != null) {
-                StiebelEltronHandler.this.managerRef.registerRegularPoll(task, refreshMillis, 1000);
+                StiebelEltronHandler.this.modbusManager.registerRegularPoll(task, refreshMillis, 1000);
             }
         }
 
@@ -182,7 +198,7 @@ public class StiebelEltronHandler extends BaseThingHandler {
     /**
      * This is the task used to poll the device
      */
-    private volatile @Nullable AbstractBasePoller systemPoller = null;
+    private volatile @Nullable AbstractBasePoller systemInformationPoller = null;
     /**
      * This is the task used to poll the device
      */
@@ -208,25 +224,100 @@ public class StiebelEltronHandler extends BaseThingHandler {
     /**
      * Reference to the modbus manager
      */
-    protected ModbusManager managerRef;
+    protected ModbusManager modbusManager;
 
     /**
      * Instances of this handler should get a reference to the modbus manager
      *
-     * @param thing      the thing to handle
-     * @param managerRef the modbus manager
+     * @param thing         the thing to handle
+     * @param modbusManager the modbus manager
      */
-    public StiebelEltronHandler(Thing thing, ModbusManager managerRef) {
+    public StiebelEltronHandler(Thing thing, ModbusManager modbusManager) {
         super(thing);
-        this.managerRef = managerRef;
+        this.modbusManager = modbusManager;
     }
 
+    protected void writeInt16(int address, short shortValue) {
+        // big endian byte ordering
+        byte b1 = (byte) (shortValue >> 8);
+        byte b2 = (byte) shortValue;
+
+        ModbusRegister register = new BasicModbusRegister(b1, b2);
+        ModbusRegisterArray data = new BasicModbusRegisterArray(new ModbusRegister[] { register });
+
+        BasicModbusWriteRegisterRequestBlueprint request = new BasicModbusWriteRegisterRequestBlueprint(slaveId,
+                address, data, false, config.getMaxTries());
+
+        ModbusSlaveEndpoint slaveEndpoint = this.endpoint;
+        if (request == null || slaveEndpoint == null) {
+            return;
+        }
+
+        BasicWriteTask writeTask = new BasicWriteTask(slaveEndpoint, request, new ModbusWriteCallback() {
+            @Override
+            public void onWriteResponse(ModbusWriteRequestBlueprint request, ModbusResponse response) {
+                if (hasConfigurationError()) {
+                    return;
+                }
+                logger.debug("Successful write, matching request {}", request);
+                StiebelEltronHandler.this.updateStatus(ThingStatus.ONLINE);
+            }
+
+            @Override
+            public void onError(ModbusWriteRequestBlueprint request, Exception error) {
+                StiebelEltronHandler.this.handleError(error);
+            }
+        });
+        logger.trace("Submitting write task: {}", writeTask);
+        modbusManager.submitOneTimeWrite(writeTask);
+    }
+
+    private short getScaledInt16Value(Command command) {
+        if (command instanceof QuantityType) {
+            QuantityType<?> c = (QuantityType<?>) command;
+            return (short) (c.doubleValue() * 10);
+        }
+        if (command instanceof DecimalType) {
+            DecimalType c = (DecimalType) command;
+            return (short) (c.doubleValue() * 10);
+        }        
+        return 0;
+    }
+    private short getInt16Value(Command command) {
+        if (command instanceof DecimalType) {
+            DecimalType c = (DecimalType) command;
+            return c.shortValue();
+        }
+        return 0;
+    }
     /**
      * Handle incoming commands. This binding is read-only by default
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // Currently we do not support any commands
+        if (RefreshType.REFRESH == command) {
+            // TODO: Implement refresh
+        } else {
+            if (GROUP_SYSTEM_PARAMETER.equals(channelUID.getGroupId())) {
+                switch (channelUID.getIdWithoutGroup()) {
+                    case CHANNEL_OPERATION_MODE:
+                        writeInt16(1500, getInt16Value(command));
+                        break;
+                    case CHANNEL_COMFORT_TEMPERATURE_HEATING:
+                        writeInt16(1501, getScaledInt16Value(command));
+                        break;
+                    case CHANNEL_ECO_TEMPERATURE_HEATING:
+                        writeInt16(1502, getScaledInt16Value(command));
+                        break;
+                    case CHANNEL_COMFORT_TEMPERATURE_WATER:
+                        writeInt16(1509, getScaledInt16Value(command));
+                        break;
+                    case CHANNEL_ECO_TEMPERATURE_WATER:
+                        writeInt16(1510, getScaledInt16Value(command));
+                        break;
+                }
+            }
+        }
     }
 
     /**
@@ -256,15 +347,15 @@ public class StiebelEltronHandler extends BaseThingHandler {
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        if (systemPoller == null) {
-            systemPoller = new AbstractBasePoller() {
+        if (systemInformationPoller == null) {
+            systemInformationPoller = new AbstractBasePoller() {
                 @Override
                 protected void handlePolledData(ModbusRegisterArray registers) {
                     handlePolledSystemData(registers);
                 }
 
             };
-            systemPoller.registerPollTask(500, 36, ModbusReadFunctionCode.READ_INPUT_REGISTERS);
+            systemInformationPoller.registerPollTask(500, 36, ModbusReadFunctionCode.READ_INPUT_REGISTERS);
         }
         if (energyPoller == null) {
             energyPoller = new AbstractBasePoller() {
@@ -311,24 +402,30 @@ public class StiebelEltronHandler extends BaseThingHandler {
      */
     private void tearDown() {
         logger.trace("unregisterPollTasks");
-        if (systemPoller != null) {
-            logger.debug("Unregistering polling from ModbusManager");
-            systemPoller.unregisterPollTask();
+        if (systemInformationPoller != null) {
+            logger.debug("Unregistering systemInformationPoller from ModbusManager");
+            systemInformationPoller.unregisterPollTask();
 
-            systemPoller = null;
+            systemInformationPoller = null;
         }
         if (energyPoller != null) {
-            logger.debug("Unregistering polling from ModbusManager");
+            logger.debug("Unregistering energyPoller from ModbusManager");
             energyPoller.unregisterPollTask();
 
             energyPoller = null;
         }
         if (systemStatePoller != null) {
-            logger.debug("Unregistering polling from ModbusManager");
+            logger.debug("Unregistering systemStatePoller from ModbusManager");
             systemStatePoller.unregisterPollTask();
 
-            systemPoller = null;
+            systemStatePoller = null;
         }
+        if (systemParameterPoller != null) {
+            logger.debug("Unregistering systemParameterPoller from ModbusManager");
+            systemParameterPoller.unregisterPollTask();
+
+            systemParameterPoller = null;
+        }        
 
         unregisterEndpoint();
     }
@@ -413,44 +510,6 @@ public class StiebelEltronHandler extends BaseThingHandler {
         endpoint = null;
     }
 
-    /**
-     * Register poll task This is where we set up our regular poller
-     * 
-     * private synchronized @Nullable PollTask registerPollTask(int address, int
-     * length) { if (config == null || endpoint == null) { throw new
-     * IllegalStateException("registerPollTask called without proper
-     * configuration"); }
-     * 
-     * logger.debug("Setting up regular polling");
-     * 
-     * BasicModbusReadRequestBlueprint request = new
-     * BasicModbusReadRequestBlueprint(getSlaveId(),
-     * ModbusReadFunctionCode.READ_INPUT_REGISTERS, address, length, //
-     * READ_MULTIPLE_REGISTERS config.getMaxTries());
-     * 
-     * PollTask pollTask = new BasicPollTaskImpl(endpoint, request, new
-     * ModbusReadCallback() {
-     * 
-     * @Override public void onRegisters(@Nullable ModbusReadRequestBlueprint
-     *           request,
-     * @Nullable ModbusRegisterArray registers) { if (registers == null) {
-     *           logger.info("Received empty register array on poll"); return; }
-     *           switch(address){ case 500: handlePolledSystemData(registers);
-     *           break; case 3500: handlePolledEnergyData(registers); break; }
-     * 
-     *           if (getThing().getStatus() != ThingStatus.ONLINE) {
-     *           updateStatus(ThingStatus.ONLINE); } }
-     * 
-     * @Override public void onError(@Nullable ModbusReadRequestBlueprint
-     *           request, @Nullable Exception error) { handleError(error); }
-     * 
-     * @Override public void onBits(@Nullable ModbusReadRequestBlueprint
-     *           request, @Nullable BitArray bits) { // don't care, we don't expect
-     *           this result } });
-     * 
-     *           managerRef.registerRegularPoll(pollTask, config.getRefreshMillis(),
-     *           1000); return pollTask; }
-     */
 
     /**
      * Returns value divided by the 10
@@ -563,8 +622,7 @@ public class StiebelEltronHandler extends BaseThingHandler {
         logger.trace("System state block received, size: {}", registers.size());
 
         SystemParameterBlock block = systemParameterBlockParser.parse(registers);
-        updateState(channelUID(GROUP_SYSTEM_PARAMETER, CHANNEL_OPERATION_MODE),
-                new DecimalType(block.operation_mode));
+        updateState(channelUID(GROUP_SYSTEM_PARAMETER, CHANNEL_OPERATION_MODE), new DecimalType(block.operation_mode));
 
         updateState(channelUID(GROUP_SYSTEM_PARAMETER, CHANNEL_COMFORT_TEMPERATURE_HEATING),
                 getScaled(block.comfort_temperature_heating, CELSIUS));
