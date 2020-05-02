@@ -40,7 +40,6 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateOption;
-import org.glassfish.jersey.client.ClientProperties;
 import org.openhab.binding.lametrictime.internal.LaMetricTimeBindingConstants;
 import org.openhab.binding.lametrictime.internal.LaMetricTimeConfigStatusMessage;
 import org.openhab.binding.lametrictime.internal.LaMetricTimeUtil;
@@ -74,6 +73,11 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
 
     private static final long CONNECTION_CHECK_INTERVAL = 60;
 
+    // TODO: Those constants are Jersey specific - once we move away from Jersey,
+    // this must be changed to https://stackoverflow.com/a/49736022 (assuming we have a JAX-RS 2.1 implementation).
+    public static final String READ_TIMEOUT = "jersey.config.client.readTimeout";
+    public static final String CONNECT_TIMEOUT = "jersey.config.client.connectTimeout";
+
     private final Logger logger = LoggerFactory.getLogger(LaMetricTimeHandler.class);
 
     private final StateDescriptionOptionsProvider stateDescriptionProvider;
@@ -99,8 +103,8 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
         logger.debug("Creating LaMetric Time client");
         Configuration clockConfig = new Configuration().withDeviceHost(bindingConfig.host)
                 .withDeviceApiKey(bindingConfig.apiKey).withLogging(logger.isDebugEnabled());
-        ClientBuilder clientBuilder = ClientBuilder.newBuilder().property(ClientProperties.CONNECT_TIMEOUT, 10000)
-                .property(ClientProperties.READ_TIMEOUT, 10000);
+        ClientBuilder clientBuilder = ClientBuilder.newBuilder().property(CONNECT_TIMEOUT, 10000).property(READ_TIMEOUT,
+                10000);
         clock = LaMetricTime.create(clockConfig, clientBuilder);
 
         connectionJob = scheduler.scheduleWithFixedDelay(() -> {
