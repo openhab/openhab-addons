@@ -60,8 +60,9 @@ public class HomekitWindowCoveringImpl extends AbstractHomekitAccessoryImpl impl
     public CompletableFuture<Void> setTargetPosition(int value) throws Exception {
         final @Nullable RollershutterItem item = getItem(HomekitCharacteristicType.TARGET_POSITION,
                 RollershutterItem.class);
-        if (item != null)
+        if (item != null) {
             item.send(new PercentType(100 - value));
+        }
         return CompletableFuture.completedFuture(null);
     }
 

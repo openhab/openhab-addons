@@ -47,9 +47,8 @@ public class HomekitContactSensorImpl extends AbstractHomekitAccessoryImpl imple
     @Override
     public CompletableFuture<ContactStateEnum> getCurrentState() {
         Boolean contactDetected = contactSensedReader.getValue();
-        return CompletableFuture
-                .completedFuture(((contactDetected != null) && (contactDetected)) ? ContactStateEnum.DETECTED
-                        : ContactStateEnum.NOT_DETECTED);
+        return CompletableFuture.completedFuture(
+                (contactDetected == Boolean.TRUE) ? ContactStateEnum.DETECTED : ContactStateEnum.NOT_DETECTED);
     }
 
     @Override

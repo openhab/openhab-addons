@@ -102,7 +102,7 @@ public class HomekitImpl implements Homekit {
                 startBridge();
             }
         } catch (IOException | InvalidAlgorithmParameterException e) {
-            logger.debug("Could not initialize HomeKit connector: {}", e.getMessage());
+            logger.warn("Could not initialize HomeKit connector: {}", e.getMessage());
             return;
         }
     }

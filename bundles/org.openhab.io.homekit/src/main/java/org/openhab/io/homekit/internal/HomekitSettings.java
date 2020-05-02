@@ -34,7 +34,7 @@ public class HomekitSettings {
     public String thermostatTargetModeAuto = "Auto";
     public String thermostatTargetModeOff = "Off";
     public String thermostatCurrentModeHeating = "Heating";
-    public String thermostatCurrentModeCooling = "Cooling   ";
+    public String thermostatCurrentModeCooling = "Cooling";
     public String thermostatCurrentModeOff = "Off";
     public String networkInterface;
 

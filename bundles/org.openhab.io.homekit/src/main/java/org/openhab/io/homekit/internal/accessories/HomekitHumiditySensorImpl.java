@@ -31,6 +31,7 @@ import io.github.hapjava.services.impl.HumiditySensorService;
  * @author Andy Lintner - Initial contribution
  */
 public class HomekitHumiditySensorImpl extends AbstractHomekitAccessoryImpl implements HumiditySensorAccessory {
+    private final static String CONFIG_MULTIPLICATOR = "homekitMultiplicator";
 
     public HomekitHumiditySensorImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
@@ -43,7 +44,8 @@ public class HomekitHumiditySensorImpl extends AbstractHomekitAccessoryImpl impl
         @Nullable
         DecimalType state = getStateAs(HomekitCharacteristicType.RELATIVE_HUMIDITY, DecimalType.class);
         if (state != null) {
-            return CompletableFuture.completedFuture(state.doubleValue());
+            int multiplicator = getAccessoryConfiguration(CONFIG_MULTIPLICATOR, 1);
+            return CompletableFuture.completedFuture(state.doubleValue() * multiplicator);
         }
         return CompletableFuture.completedFuture(0.0);
     }

@@ -48,7 +48,7 @@ import io.github.hapjava.services.impl.ValveService;
  * @author Eugen Freiter - timer implementation
  */
 public class HomekitValveImpl extends AbstractHomekitAccessoryImpl implements ValveAccessory {
-    private final Logger LOGGER = LoggerFactory.getLogger(HomekitValveImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(HomekitValveImpl.class);
     private static final String CONFIG_VALVE_TYPE = "homekitValveType";
     private static final String CONFIG_DEFAULT_DURATION = "homekitDefaultDuration";
 
@@ -108,10 +108,10 @@ public class HomekitValveImpl extends AbstractHomekitAccessoryImpl implements Va
                             future.cancel(true);
                         }
                         valveTimer = timerService.schedule(() -> {
-                            LOGGER.debug("valve timer is over. switching off the valve");
+                            logger.trace("valve timer is over. switching off the valve");
                             switchOffValve();
                         }, duration, TimeUnit.SECONDS);
-                        LOGGER.debug("started valve timer for {} seconds.", duration);
+                        logger.trace("started valve timer for {} seconds.", duration);
                     }
                 }
             } else {

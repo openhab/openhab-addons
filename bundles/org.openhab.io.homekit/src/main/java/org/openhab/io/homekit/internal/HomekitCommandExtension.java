@@ -84,11 +84,11 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
 
     @Override
     public List<String> getUsages() {
-        return Arrays.asList(new String[] { buildCommandUsage(SUBCMD_LIST_ACCESSORIES, "list all HomeKit accessories"),
+        return Arrays.asList(buildCommandUsage(SUBCMD_LIST_ACCESSORIES, "list all HomeKit accessories"),
                 buildCommandUsage(SUBCMD_PRINT_ACCESSORY + " <accessory id>", "print accessorty details"),
                 buildCommandUsage(SUBCMD_CLEAR_PAIRINGS, "removes all pairings with HomeKit clients"),
                 buildCommandUsage(SUBCMD_ALLOW_UNAUTHENTICATED + " <boolean>",
-                        "enables or disables unauthenticated access to facilitate debugging") });
+                        "enables or disables unauthenticated access to facilitate debugging"));
     }
 
     @Reference
@@ -129,13 +129,12 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
             try {
                 console.println(v.getId() + " " + v.getName().get());
             } catch (InterruptedException | ExecutionException e) {
-                logger.error("Cannot list accessories", e);
+                logger.warn("Cannot list accessories", e);
             }
         });
     }
 
     private void printAccessory(Integer accessory_id, Console console) {
-
         homekit.getAccessories().forEach(v -> {
             try {
                 if (v.getId() == accessory_id) {
@@ -150,7 +149,7 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
                     });
                 }
             } catch (InterruptedException | ExecutionException e) {
-                logger.error("Cannot print accessory", e);
+                logger.warn("Cannot print accessory", e);
             }
         });
     }

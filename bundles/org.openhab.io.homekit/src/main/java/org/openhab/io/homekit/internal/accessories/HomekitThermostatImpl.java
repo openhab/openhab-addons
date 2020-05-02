@@ -47,7 +47,7 @@ import io.github.hapjava.services.impl.ThermostatService;
  * @author Andy Lintner - Initial contribution
  */
 class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements ThermostatAccessory {
-    private Logger LOGGER = LoggerFactory.getLogger(HomekitThermostatImpl.class);
+    private Logger logger = LoggerFactory.getLogger(HomekitThermostatImpl.class);
 
     public HomekitThermostatImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
@@ -63,8 +63,7 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements Ther
         if (characteristic.isPresent()) {
             stringValue = characteristic.get().getItem().getState().toString();
         } else {
-            LOGGER.error("Missing mandatory characteristic {}",
-                    HomekitCharacteristicType.CURRENT_HEATING_COOLING_STATE);
+            logger.warn("Missing mandatory characteristic {}", HomekitCharacteristicType.CURRENT_HEATING_COOLING_STATE);
         }
 
         CurrentHeatingCoolingStateEnum mode;
@@ -76,10 +75,10 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements Ther
         } else if (stringValue.equalsIgnoreCase(getSettings().thermostatCurrentModeOff)) {
             mode = CurrentHeatingCoolingStateEnum.OFF;
         } else if (stringValue.equals("UNDEF") || stringValue.equals("NULL")) {
-            LOGGER.debug("Heating cooling target mode not available. Relaying value of OFF to Homekit");
+            logger.warn("Heating cooling target mode not available. Relaying value of OFF to Homekit");
             mode = CurrentHeatingCoolingStateEnum.OFF;
         } else {
-            LOGGER.error("Unrecognized heatingCoolingCurrentMode: {}. Expected {}, {}, or {} strings in value.",
+            logger.warn("Unrecognized heatingCoolingCurrentMode: {}. Expected {}, {}, or {} strings in value.",
                     stringValue, getSettings().thermostatCurrentModeCooling, getSettings().thermostatCurrentModeHeating,
                     getSettings().thermostatCurrentModeOff);
             mode = CurrentHeatingCoolingStateEnum.OFF;
@@ -102,7 +101,7 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements Ther
         if (characteristic.isPresent()) {
             stringValue = characteristic.get().getItem().getState().toString();
         } else {
-            LOGGER.error("Missing mandatory characteristic {}", HomekitCharacteristicType.TARGET_HEATING_COOLING_STATE);
+            logger.warn("Missing mandatory characteristic {}", HomekitCharacteristicType.TARGET_HEATING_COOLING_STATE);
         }
         TargetHeatingCoolingStateEnum mode;
 
@@ -115,10 +114,10 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements Ther
         } else if (stringValue.equalsIgnoreCase(getSettings().thermostatTargetModeOff)) {
             mode = TargetHeatingCoolingStateEnum.OFF;
         } else if (stringValue.equals("UNDEF") || stringValue.equals("NULL")) {
-            LOGGER.debug("Heating cooling target mode not available. Relaying value of OFF to Homekit");
+            logger.warn("Heating cooling target mode not available. Relaying value of OFF to Homekit");
             mode = TargetHeatingCoolingStateEnum.OFF;
         } else {
-            LOGGER.warn("Unrecognized heating cooling target mode: {}. Expected {}, {}, {}, or {} strings in value.",
+            logger.warn("Unrecognized heating cooling target mode: {}. Expected {}, {}, {}, or {} strings in value.",
                     stringValue, getSettings().thermostatTargetModeCool, getSettings().thermostatTargetModeHeat,
                     getSettings().thermostatTargetModeAuto, getSettings().thermostatTargetModeOff);
             mode = TargetHeatingCoolingStateEnum.OFF;
@@ -169,7 +168,7 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements Ther
         if (characteristic.isPresent()) {
             ((StringItem) characteristic.get().getItem()).send(new StringType(modeString));
         } else {
-            LOGGER.error("Missing mandatory characteristic {}", HomekitCharacteristicType.TARGET_HEATING_COOLING_STATE);
+            logger.warn("Missing mandatory characteristic {}", HomekitCharacteristicType.TARGET_HEATING_COOLING_STATE);
         }
     }
 
@@ -181,7 +180,7 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements Ther
             ((NumberItem) characteristic.get().getItem())
                     .send(new DecimalType(BigDecimal.valueOf(convertFromCelsius(value))));
         } else {
-            LOGGER.error("Missing mandatory characteristic {}", HomekitCharacteristicType.TARGET_TEMPERATURE);
+            logger.warn("Missing mandatory characteristic {}", HomekitCharacteristicType.TARGET_TEMPERATURE);
         }
     }
 

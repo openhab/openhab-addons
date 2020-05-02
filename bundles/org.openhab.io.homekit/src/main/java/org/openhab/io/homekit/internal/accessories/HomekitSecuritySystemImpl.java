@@ -42,7 +42,7 @@ import io.github.hapjava.services.impl.SecuritySystemService;
  * @author Cody Cutrer - Initial contribution
  */
 public class HomekitSecuritySystemImpl extends AbstractHomekitAccessoryImpl implements SecuritySystemAccessory {
-    private final Logger LOGGER = LoggerFactory.getLogger(HomekitSecuritySystemImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(HomekitSecuritySystemImpl.class);
 
     public HomekitSecuritySystemImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
@@ -57,27 +57,36 @@ public class HomekitSecuritySystemImpl extends AbstractHomekitAccessoryImpl impl
                 StringType.class);
         if (itemState != null) {
             String stringValue = itemState.toString();
-            if (stringValue.equalsIgnoreCase("DISARMED")) {
-                state = CurrentSecuritySystemStateEnum.DISARMED;
-            } else if (stringValue.equalsIgnoreCase("AWAY_ARM")) {
-                state = CurrentSecuritySystemStateEnum.AWAY_ARM;
-            } else if (stringValue.equalsIgnoreCase("STAY_ARM")) {
-                state = CurrentSecuritySystemStateEnum.STAY_ARM;
-            } else if (stringValue.equalsIgnoreCase("NIGHT_ARM")) {
-                state = CurrentSecuritySystemStateEnum.NIGHT_ARM;
-            } else if (stringValue.equalsIgnoreCase("TRIGGERED")) {
-                state = CurrentSecuritySystemStateEnum.TRIGGERED;
-            } else if (stringValue.equals("UNDEF") || stringValue.equals("NULL")) {
-                LOGGER.debug("Security system target state not available. Relaying value of DISARM to HomeKit");
-                state = CurrentSecuritySystemStateEnum.DISARMED;
-            } else {
-                LOGGER.error(
-                        "Unrecognized security system target state: {}. Expected DISARM, AWAY_ARM, STAY_ARM, NIGHT_ARM strings in value.",
-                        stringValue);
-                state = CurrentSecuritySystemStateEnum.DISARMED;
+            switch (stringValue.toUpperCase()) {
+                case "DISARMED":
+                    state = CurrentSecuritySystemStateEnum.DISARMED;
+                    break;
+                case "AWAY_ARM":
+                    state = CurrentSecuritySystemStateEnum.AWAY_ARM;
+                    break;
+                case "STAY_ARM":
+                    state = CurrentSecuritySystemStateEnum.STAY_ARM;
+                    break;
+                case "NIGHT_ARM":
+                    state = CurrentSecuritySystemStateEnum.NIGHT_ARM;
+                    break;
+                case "TRIGGERED":
+                    state = CurrentSecuritySystemStateEnum.TRIGGERED;
+                    break;
+                case "UNDEF":
+                case "NULL":
+                    logger.warn("Security system target state not available. Relaying value of DISARM to HomeKit");
+                    state = CurrentSecuritySystemStateEnum.DISARMED;
+                    break;
+                default:
+                    logger.warn(
+                            "Unrecognized security system target state: {}. Expected DISARM, AWAY_ARM, STAY_ARM, NIGHT_ARM strings in value.",
+                            stringValue);
+                    state = CurrentSecuritySystemStateEnum.DISARMED;
+                    break;
             }
         } else {
-            LOGGER.debug("Security system target state not available. Relaying value of DISARM to HomeKit");
+            logger.warn("Security system target state not available. Relaying value of DISARM to HomeKit");
             state = CurrentSecuritySystemStateEnum.DISARMED;
         }
         return CompletableFuture.completedFuture(state);
@@ -90,7 +99,7 @@ public class HomekitSecuritySystemImpl extends AbstractHomekitAccessoryImpl impl
         if (item != null)
             item.send(new StringType(state.toString()));
         else
-            LOGGER.warn("Item for target security state at accessory {} not found.", this.getName());
+            logger.warn("Item for target security state at accessory {} not found.", this.getName());
     }
 
     @Override
@@ -101,25 +110,34 @@ public class HomekitSecuritySystemImpl extends AbstractHomekitAccessoryImpl impl
                 StringType.class);
         if (itemState != null) {
             String stringValue = itemState.toString();
-            if (stringValue.equalsIgnoreCase("DISARM")) {
-                state = TargetSecuritySystemStateEnum.DISARM;
-            } else if (stringValue.equalsIgnoreCase("AWAY_ARM")) {
-                state = TargetSecuritySystemStateEnum.AWAY_ARM;
-            } else if (stringValue.equalsIgnoreCase("STAY_ARM")) {
-                state = TargetSecuritySystemStateEnum.STAY_ARM;
-            } else if (stringValue.equalsIgnoreCase("NIGHT_ARM")) {
-                state = TargetSecuritySystemStateEnum.NIGHT_ARM;
-            } else if (stringValue.equals("UNDEF") || stringValue.equals("NULL")) {
-                LOGGER.debug("Security system target state not available. Relaying value of DISARM to HomeKit");
-                state = TargetSecuritySystemStateEnum.DISARM;
-            } else {
-                LOGGER.error(
-                        "Unrecognized security system target state: {}. Expected DISARM, AWAY_ARM, STAY_ARM, NIGHT_ARM strings in value.",
-                        stringValue);
-                state = TargetSecuritySystemStateEnum.DISARM;
+            switch (stringValue.toUpperCase()) {
+                case "DISARM":
+                    state = TargetSecuritySystemStateEnum.DISARM;
+                    break;
+                case "AWAY_ARM":
+                    state = TargetSecuritySystemStateEnum.AWAY_ARM;
+                    break;
+                case "STAY_ARM":
+                    state = TargetSecuritySystemStateEnum.STAY_ARM;
+                    break;
+                case "NIGHT_ARM":
+                    state = TargetSecuritySystemStateEnum.NIGHT_ARM;
+                    break;
+                case "UNDEF":
+                case "NULL":
+                    logger.warn("Security system target state not available. Relaying value of DISARM to HomeKit");
+                    state = TargetSecuritySystemStateEnum.DISARM;
+                    break;
+                default:
+                    logger.warn(
+                            "Unrecognized security system target state: {}. Expected DISARM, AWAY_ARM, STAY_ARM, NIGHT_ARM strings in value.",
+                            stringValue);
+                    state = TargetSecuritySystemStateEnum.DISARM;
+                    break;
+
             }
         } else {
-            LOGGER.debug("Security system target state not available. Relaying value of DISARM to HomeKit");
+            logger.warn("Security system target state not available. Relaying value of DISARM to HomeKit");
             state = TargetSecuritySystemStateEnum.DISARM;
         }
         return CompletableFuture.completedFuture(state);

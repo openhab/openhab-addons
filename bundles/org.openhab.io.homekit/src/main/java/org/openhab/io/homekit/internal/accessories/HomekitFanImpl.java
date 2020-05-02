@@ -49,8 +49,9 @@ class HomekitFanImpl extends AbstractHomekitAccessoryImpl implements FanAccessor
     @Override
     public CompletableFuture<Void> setActive(final boolean state) throws Exception {
         final @Nullable SwitchItem item = getItem(HomekitCharacteristicType.ACTIVE_STATUS, SwitchItem.class);
-        if (item != null)
+        if (item != null) {
             item.send(OnOffType.from(state));
+        }
         return CompletableFuture.completedFuture(null);
     }
 

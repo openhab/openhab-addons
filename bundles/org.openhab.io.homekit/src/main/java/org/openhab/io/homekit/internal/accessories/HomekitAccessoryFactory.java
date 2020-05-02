@@ -28,7 +28,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.items.GenericItem;
@@ -61,7 +60,7 @@ import io.github.hapjava.services.Service;
  */
 @NonNullByDefault
 public class HomekitAccessoryFactory {
-    private static final Logger LOGGER = LoggerFactory.getLogger(HomekitAccessoryFactory.class);
+    private static final Logger logger = LoggerFactory.getLogger(HomekitAccessoryFactory.class);
     public final static String METADATA_KEY = "homekit"; // prefix for HomeKit meta information in items.xml
 
     /** List of mandatory attributes for each accessory type. **/
@@ -158,12 +157,12 @@ public class HomekitAccessoryFactory {
     public static HomekitAccessory create(HomekitTaggedItem taggedItem, MetadataRegistry metadataRegistry,
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws HomekitException {
 
-        LOGGER.debug("Constructing {} of accessoryType {}", taggedItem.getName(), taggedItem.getAccessoryType());
+        logger.trace("Constructing {} of accessoryType {}", taggedItem.getName(), taggedItem.getAccessoryType());
         final List<HomekitTaggedItem> requiredCharacteristics = getMandatoryCharacteristics(taggedItem,
                 metadataRegistry);
         if ((mandatoryCharacteristics.get(taggedItem.getAccessoryType()) != null) && (requiredCharacteristics
                 .size() < mandatoryCharacteristics.get(taggedItem.getAccessoryType()).length)) {
-            LOGGER.error("Accessory of type {} must have following characteristics {}. Found only {}",
+            logger.warn("Accessory of type {} must have following characteristics {}. Found only {}",
                     taggedItem.getAccessoryType(), mandatoryCharacteristics.get(taggedItem.getAccessoryType()),
                     requiredCharacteristics);
             throw new HomekitException("Missing mandatory characteristics");
@@ -181,12 +180,12 @@ public class HomekitAccessoryFactory {
                 addOptionalCharacteristics(accessoryImpl, metadataRegistry);
                 return accessoryImpl;
             } else {
-                LOGGER.error("Unsupported HomeKit type: {}", taggedItem.getAccessoryType());
+                logger.warn("Unsupported HomeKit type: {}", taggedItem.getAccessoryType());
                 throw new HomekitException("Unsupported HomeKit type: " + taggedItem.getAccessoryType());
             }
         } catch (NoSuchMethodException | IllegalAccessException | InstantiationException
                 | InvocationTargetException e) {
-            LOGGER.error("Cannot instantiate accessory implementation for accessory {}", taggedItem.getAccessoryType(),
+            logger.warn("Cannot instantiate accessory implementation for accessory {}", taggedItem.getAccessoryType(),
                     e);
             throw new HomekitException(
                     "Cannot instantiate accessory implementation for accessory " + taggedItem.getAccessoryType());
@@ -208,7 +207,7 @@ public class HomekitAccessoryFactory {
         String[] tags = !legacyMode ? metadata.getValue().split(",") : item.getTags().toArray(new String[0]); // fallback
                                                                                                               // to tags
 
-        LOGGER.debug("item {} meta data {}  tags {} ", item.getName(), metadata, tags);
+        logger.trace("item {} meta data {}  tags {} ", item.getName(), metadata, tags);
         for (String tag : tags) {
             final String[] meta = tag.split("\\.");
             Optional<HomekitAccessoryType> accessoryType = HomekitAccessoryType.valueOfTag(meta[0].trim());
@@ -273,9 +272,9 @@ public class HomekitAccessoryFactory {
      * @param metadataRegistry meta data registry
      * @return list of mandatory
      */
-    private static @NonNull List<HomekitTaggedItem> getMandatoryCharacteristics(HomekitTaggedItem taggedItem,
+    private static List<HomekitTaggedItem> getMandatoryCharacteristics(HomekitTaggedItem taggedItem,
             MetadataRegistry metadataRegistry) {
-        LOGGER.debug("get mandatory characteristics for item {}: isGroup? {}, isMember? {}", taggedItem.getName(),
+        logger.trace("get mandatory characteristics for item {}: isGroup? {}, isMember? {}", taggedItem.getName(),
                 taggedItem.isGroup(), taggedItem.isMemberOfAccessoryGroup());
         List<HomekitTaggedItem> collectedCharacteristics = new ArrayList<>();
         if (taggedItem.isGroup()) {
@@ -330,7 +329,7 @@ public class HomekitAccessoryFactory {
 
         characteristics.forEach((type, item) -> {
             try {
-                LOGGER.debug("adding optional characteristic: {} for item {}", type, item.getName());
+                logger.trace("adding optional characteristic: {} for item {}", type, item.getName());
 
                 final Characteristic characteristic = HomekitCharacteristicFactory.createCharacteristic(type, item,
                         accessory.getUpdater());
@@ -346,7 +345,7 @@ public class HomekitAccessoryFactory {
                         type, accessory.getRootAccessory().getRootDeviceGroupItem(),
                         getItemConfiguration(item, metadataRegistry)));
             } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | HomekitException e) {
-                LOGGER.error("Not supported optional HomeKit characteristic. Service type {}, characteristic type {}",
+                logger.warn("Not supported optional HomeKit characteristic. Service type {}, characteristic type {}",
                         service.getType(), type, e);
             }
         });
@@ -361,7 +360,7 @@ public class HomekitAccessoryFactory {
      */
     private static Map<HomekitCharacteristicType, GenericItem> getOptionalCharacteristics(HomekitTaggedItem taggedItem,
             MetadataRegistry metadataRegistry) {
-        LOGGER.debug("get optional characteristics for item {}: isGroup? {}, isMember? {}", taggedItem.getName(),
+        logger.trace("get optional characteristics for item {}: isGroup? {}, isMember? {}", taggedItem.getName(),
                 taggedItem.isGroup(), taggedItem.isMemberOfAccessoryGroup());
         Map<HomekitCharacteristicType, GenericItem> characteristicItems = new HashMap<>();
         if (taggedItem.isGroup()) {
@@ -377,15 +376,16 @@ public class HomekitAccessoryFactory {
                     .filter(c -> !isMandatoryCharacteristic(taggedItem.getAccessoryType(), legacyCheck(c.getValue())))
                     .forEach(characteristic -> characteristicItems.put(legacyCheck(characteristic.getValue()),
                             (GenericItem) taggedItem.getItem()));
-
-            if (implicitOptionalCharacteristics.get(taggedItem.getAccessoryType()) != null) {
-                Arrays.stream(implicitOptionalCharacteristics.get(taggedItem.getAccessoryType()))
+            final HomekitCharacteristicType[] implCharacteristics = implicitOptionalCharacteristics
+                    .get(taggedItem.getAccessoryType());
+            if (implCharacteristics != null) {
+                Arrays.stream(implCharacteristics)
                         .filter(c -> !isMandatoryCharacteristic(taggedItem.getAccessoryType(), c))
                         .forEach(characteristic -> characteristicItems.put(legacyCheck(characteristic),
                                 (GenericItem) taggedItem.getItem()));
             }
         }
-        LOGGER.debug("characteristics for {} = {}", taggedItem.getName(), characteristicItems);
+        logger.trace("characteristics for {} = {}", taggedItem.getName(), characteristicItems);
         return Collections.unmodifiableMap(characteristicItems);
     }
 

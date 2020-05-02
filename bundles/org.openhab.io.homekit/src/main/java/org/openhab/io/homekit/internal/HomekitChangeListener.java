@@ -117,7 +117,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
      * @param item The item that has been changed or removed.
      */
     private synchronized void markDirty(Item item) {
-        logger.debug("Mark dirty item {}", item.getLabel());
+        logger.trace("Mark dirty item {}", item.getLabel());
         pendingUpdates.add(item.getName());
         /*
          * If findMyAccessoryGroups fails because the accessory group has already been deleted, then we can count on a
@@ -144,13 +144,13 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
     }
 
     private synchronized void applyUpdates() {
-        logger.debug("apply updates");
+        logger.trace("apply updates");
         Iterator<String> iter = pendingUpdates.iterator();
 
         while (iter.hasNext()) {
             String name = iter.next();
             accessoryRegistry.remove(name);
-            logger.debug(" add items {}", name);
+            logger.trace(" add items {}", name);
             getItemOptional(name).ifPresent(this::createRootAccessories);
         }
         pendingUpdates.clear();
@@ -198,14 +198,14 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
      * @param item
      */
     private void createRootAccessories(Item item) {
-        logger.debug("create root accessory {}", item.getLabel());
+        logger.trace("create root accessory {}", item.getLabel());
         final List<Entry<HomekitAccessoryType, HomekitCharacteristicType>> accessoryTypes = HomekitAccessoryFactory
                 .getAccessoryTypes(item, metadataRegistry);
         final List<GroupItem> groups = HomekitAccessoryFactory.getAccessoryGroups(item, itemRegistry, metadataRegistry);
-        logger.debug("Item {} has groups {}", item.getName(), groups);
+        logger.trace("Item {} has groups {}", item.getName(), groups);
         if (!accessoryTypes.isEmpty() && groups.isEmpty()) { // it has homekit accessory type and is not part of bigger
                                                              // homekit group item
-            logger.debug("Item {} is a HomeKit accessory of types {}", item.getName(), accessoryTypes);
+            logger.trace("Item {} is a HomeKit accessory of types {}", item.getName(), accessoryTypes);
             accessoryTypes.stream().filter(accessory -> accessory.getValue() == EMPTY) // no characteristic => root
                                                                                        // accessory or group
                     .forEach(rootAccessory -> createRootAccessory(new HomekitTaggedItem(item, rootAccessory.getKey(),
@@ -215,7 +215,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
 
     private void createRootAccessory(HomekitTaggedItem taggedItem) {
         try {
-            logger.debug("Adding HomeKit device {}", taggedItem.getItem().getUID());
+            logger.trace("Adding HomeKit device {}", taggedItem.getItem().getUID());
             accessoryRegistry.addRootAccessory(taggedItem.getName(),
                     HomekitAccessoryFactory.create(taggedItem, metadataRegistry, updater, settings));
         } catch (HomekitException e) {

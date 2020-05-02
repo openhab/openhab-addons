@@ -20,6 +20,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.items.GenericItem;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -78,8 +79,9 @@ import io.github.hapjava.characteristics.impl.windowcovering.TargetVerticalTiltA
  *
  * @author Eugen Freiter - Initial contribution
  */
+@NonNullByDefault
 public class HomekitCharacteristicFactory {
-    private static final Logger LOGGER = LoggerFactory.getLogger(HomekitCharacteristicFactory.class);
+    private static final Logger logger = LoggerFactory.getLogger(HomekitCharacteristicFactory.class);
 
     // List of optional characteristics and corresponding method to create them.
     private final static Map<HomekitCharacteristicType, BiFunction<GenericItem, HomekitAccessoryUpdater, Characteristic>> optional = new HashMap<HomekitCharacteristicType, BiFunction<GenericItem, HomekitAccessoryUpdater, Characteristic>>() {
@@ -129,13 +131,13 @@ public class HomekitCharacteristicFactory {
      */
     public static Characteristic createCharacteristic(HomekitCharacteristicType type, GenericItem item,
             HomekitAccessoryUpdater updater) throws HomekitException {
-        LOGGER.debug("createCharacteristic, type {} item {}", type, item);
+        logger.trace("createCharacteristic, type {} item {}", type, item);
         if (type != null) {
             if (optional.containsKey(type)) {
                 return optional.get(type).apply(item, updater);
             }
         }
-        LOGGER.error("Unsupported optional characteristic. Item type {}, characteristic type {}", item.getType(), type);
+        logger.warn("Unsupported optional characteristic. Item type {}, characteristic type {}", item.getType(), type);
         throw new HomekitException("Unsupported optional characteristic. Characteristic type \"" + item.getType());
     }
 
@@ -145,16 +147,17 @@ public class HomekitCharacteristicFactory {
     private static <T extends CharacteristicEnum> CompletableFuture<T> getEnumFromItem(GenericItem item, T offEnum,
             T onEnum, T defaultEnum) {
         final State state = item.getState();
-        if (state instanceof OnOffType)
+        if (state instanceof OnOffType) {
             return CompletableFuture.completedFuture(state.equals(OnOffType.OFF) ? offEnum : onEnum);
-        if (state instanceof OpenClosedType)
+        } else if (state instanceof OpenClosedType) {
             return CompletableFuture.completedFuture(state.equals(OpenClosedType.CLOSED) ? offEnum : onEnum);
-        if (state instanceof DecimalType)
+        } else if (state instanceof DecimalType) {
             return CompletableFuture
                     .completedFuture(item.getStateAs(DecimalType.class).intValue() == 0 ? offEnum : onEnum);
-        if (state instanceof UnDefType)
+        } else if (state instanceof UnDefType) {
             return CompletableFuture.completedFuture(defaultEnum);
-        LOGGER.error(
+        }
+        logger.warn(
                 "Item state {} is not supported. Only OnOffType,OpenClosedType and Decimal (0/1) are supported. Ignore item {}",
                 state.getClass(), item.getName());
         return CompletableFuture.completedFuture(defaultEnum);
@@ -164,18 +167,20 @@ public class HomekitCharacteristicFactory {
             CharacteristicEnum onEnum) {
         final State state = item.getState();
         if (state instanceof OnOffType) {
-            if (value.equals(offEnum))
+            if (value.equals(offEnum)) {
                 item.setState(OnOffType.OFF);
-            else if (value.equals(onEnum)) {
+            } else if (value.equals(onEnum)) {
                 item.setState(OnOffType.ON);
-            } else
-                LOGGER.error("Enum value {} is not supported. Only following values are supported: {},{}", value,
+            } else {
+                logger.warn("Enum value {} is not supported. Only following values are supported: {},{}", value,
                         offEnum, onEnum);
+            }
         } else if (item.getState() instanceof DecimalType) {
             item.setState(new DecimalType(value.getCode()));
-        } else
-            LOGGER.error("Item state {} is not supported. Only OnOffType and DecimalType (0/1) are supported.",
+        } else {
+            logger.warn("Item state {} is not supported. Only OnOffType and DecimalType (0/1) are supported.",
                     item.getState());
+        }
     }
 
     public static Supplier<CompletableFuture<Integer>> getCompletedFutureInt(GenericItem item) {
@@ -187,7 +192,7 @@ public class HomekitCharacteristicFactory {
         }
         if (item.getState() instanceof UnDefType)
             return () -> CompletableFuture.completedFuture(0);
-        LOGGER.error("Item state {} is not supported for {}. Only PercentType and DecimalType (0/100) are supported.",
+        logger.warn("Item state {} is not supported for {}. Only PercentType and DecimalType (0/100) are supported.",
                 item.getState(), item.getName());
         return () -> CompletableFuture.completedFuture(0);
     }

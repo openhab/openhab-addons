@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.items.GenericItem;
 import org.eclipse.smarthome.core.items.Item;
@@ -41,7 +40,7 @@ import io.github.hapjava.services.Service;
  * @author Andy Lintner - Initial contribution
  */
 abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
-    private Logger LOGGER = LoggerFactory.getLogger(AbstractHomekitAccessoryImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(AbstractHomekitAccessoryImpl.class);
     protected List<HomekitTaggedItem> characteristics;
     private final HomekitTaggedItem accessory;
     private final HomekitAccessoryUpdater updater;
@@ -118,7 +117,7 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
         if (characteristic.isPresent()) {
             getUpdater().subscribe((GenericItem) characteristic.get().getItem(), characteristicType.getTag(), callback);
         } else {
-            LOGGER.error("Missing mandatory characteristic {}", characteristicType);
+            logger.warn("Missing mandatory characteristic {}", characteristicType);
         }
     }
 
@@ -127,7 +126,7 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
         if (characteristic.isPresent()) {
             getUpdater().unsubscribe((GenericItem) characteristic.get().getItem(), characteristicType.getTag());
         } else {
-            LOGGER.error("Missing mandatory characteristic {}", characteristicType);
+            logger.warn("Missing mandatory characteristic {}", characteristicType);
         }
     }
 
@@ -136,7 +135,7 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
         if (taggedItem.isPresent() && taggedItem.get().getItem().getState() != null) {
             return (T) taggedItem.get().getItem().getStateAs(type);
         }
-        LOGGER.error("State for characteristic {} at accessory {} cannot be retrieved.", characteristic,
+        logger.warn("State for characteristic {} at accessory {} cannot be retrieved.", characteristic,
                 accessory.getId());
 
         return null;
@@ -148,17 +147,17 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
             if (type.isInstance(taggedItem.get().getItem()))
                 return (T) getCharacteristic(characteristic).get().getItem();
             else
-                LOGGER.error("Unsupported item type for characteristic {} at accessory {}. Expected {}, got {}",
+                logger.warn("Unsupported item type for characteristic {} at accessory {}. Expected {}, got {}",
                         characteristic, accessory.getItem().getLabel(), type, taggedItem.get().getItem().getClass());
         } else {
-            LOGGER.error("Mandatory characteristic {} not found at accessory {}. ", characteristic,
+            logger.warn("Mandatory characteristic {} not found at accessory {}. ", characteristic,
                     accessory.getItem().getLabel());
 
         }
         return null;
     }
 
-    protected @NonNull <T extends Object> T getAccessoryConfiguration(@NonNull String key, @NonNull T defaultValue) {
+    protected <T> T getAccessoryConfiguration(String key, T defaultValue) {
         if ((accessory.getConfiguration() != null) && (accessory.getConfiguration().get(key) != null)) {
             return (T) accessory.getConfiguration().get(key);
         }
