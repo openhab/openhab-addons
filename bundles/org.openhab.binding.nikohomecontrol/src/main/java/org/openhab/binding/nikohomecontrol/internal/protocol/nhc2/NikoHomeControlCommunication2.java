@@ -683,7 +683,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             device.properties.add(overruleActiveProp);
 
             NhcProperty overruleSetpointProp = new NhcProperty();
-            overruleSetpointProp.overruleSetpoint = String.valueOf(overruleTemp / 10.0);
+            overruleSetpointProp.overruleSetpoint = String.valueOf(overruleTemp);
             device.properties.add(overruleSetpointProp);
 
             NhcProperty overruleTimeProp = new NhcProperty();
