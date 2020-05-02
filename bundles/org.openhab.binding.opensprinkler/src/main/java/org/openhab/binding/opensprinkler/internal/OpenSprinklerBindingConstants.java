@@ -47,7 +47,6 @@ public class OpenSprinklerBindingConstants {
 
     // List of all Channel ids
     public static final String SENSOR_RAIN = "rainsensor";
-    public static final String SENSOR_CURRENT_DRAW = "currentDraw";
     public static final String STATION_STATE = "stationState";
     public static final String STATION_QUEUED = "queued";
     public static final String REMAINING_WATER_TIME = "remainingWaterTime";

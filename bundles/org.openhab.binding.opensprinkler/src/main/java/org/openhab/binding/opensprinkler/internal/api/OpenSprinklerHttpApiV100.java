@@ -31,7 +31,6 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
 import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiException;
 import org.openhab.binding.opensprinkler.internal.config.OpenSprinklerHttpInterfaceConfig;
-import org.openhab.binding.opensprinkler.internal.model.NoCurrentDrawSensorException;
 import org.openhab.binding.opensprinkler.internal.model.StationProgram;
 import org.openhab.binding.opensprinkler.internal.util.Parse;
 
@@ -182,15 +181,6 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     }
 
     @Override
-    public int currentDraw() throws CommunicationApiException, NoCurrentDrawSensorException {
-        JcResponse info = statusInfo();
-        if (info.curr == null) {
-            throw new NoCurrentDrawSensorException();
-        }
-        return info.curr;
-    }
-
-    @Override
     public int getNumberOfStations() throws CommunicationApiException {
         String returnContent;
 
@@ -269,7 +259,6 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
         public List<List<Integer>> ps;
         @SerializedName(value = "sn1", alternate = "rs")
         public int rs;
-        public Integer curr;
     }
 
     /**

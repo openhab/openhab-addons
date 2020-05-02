@@ -12,24 +12,14 @@
  */
 package org.openhab.binding.opensprinkler.internal.handler;
 
-import static org.eclipse.smarthome.core.library.unit.MetricPrefix.MILLI;
-import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.*;
-
-import javax.measure.quantity.ElectricCurrent;
+import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.SENSOR_RAIN;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.QuantityType;
-import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
-import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
-import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
-import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
-import org.openhab.binding.opensprinkler.internal.model.NoCurrentDrawSensorException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,51 +36,20 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
 
     @Override
     protected void updateChannel(ChannelUID channel) {
-        try {
-            switch (channel.getIdWithoutGroup()) {
-                case SENSOR_RAIN:
+        switch (channel.getIdWithoutGroup()) {
+            case SENSOR_RAIN:
+                try {
                     if (getApi().isRainDetected()) {
                         updateState(channel, OnOffType.ON);
                     } else {
                         updateState(channel, OnOffType.OFF);
                     }
-                    break;
-                case SENSOR_CURRENT_DRAW:
-                    updateState(channel,
-                            new QuantityType<ElectricCurrent>(getApi().currentDraw(), MILLI(SmartHomeUnits.AMPERE)));
-                    break;
-                default:
-                    logger.debug("Not updating unknown channel {}", channel);
-            }
-        } catch (CommunicationApiException | NoCurrentDrawSensorException e) {
-            logger.debug("Could not update {}", channel, e);
-        }
-    }
-
-    @Override
-    public void initialize() {
-        ChannelUID currentDraw = new ChannelUID(thing.getUID(), "currentDraw");
-        if (thing.getChannel(currentDraw) == null) {
-            ThingBuilder thingBuilder = editThing();
-            try {
-                getApi().currentDraw();
-
-                Channel currentDrawChannel = ChannelBuilder.create(currentDraw, "Number:ElectricCurrent")
-                        .withType(new ChannelTypeUID(BINDING_ID, SENSOR_CURRENT_DRAW)).withLabel("Current Draw")
-                        .withDescription("Provides the current draw.").build();
-                thingBuilder.withChannel(currentDrawChannel);
-
-                updateThing(thingBuilder.build());
-            } catch (NoCurrentDrawSensorException e) {
-                if (thing.getChannel(currentDraw) != null) {
-                    thingBuilder.withoutChannel(currentDraw);
+                } catch (CommunicationApiException e) {
+                    logger.debug("Could not update rainsensor", e);
                 }
-                updateThing(thingBuilder.build());
-            } catch (CommunicationApiException e) {
-                logger.debug("Could not query current draw. Not removing channel as it could be temporary.", e);
-            }
+            default:
+                logger.debug("Not updating unknown channel {}", channel);
         }
-        super.initialize();
     }
 
     @Override
