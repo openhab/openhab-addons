@@ -62,7 +62,7 @@ public class OpenGarageHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
-                logger.warn("Received command {} for thing '{}' on channel {}", command, thing.getUID().getAsString(),
+                logger.debug("Received command {} for thing '{}' on channel {}", command, thing.getUID().getAsString(),
                     channelUID.getId());
                 switch (channelUID.getId()) {
                     case OpenGarageBindingConstants.CHANNEL_OG_STATUS:
