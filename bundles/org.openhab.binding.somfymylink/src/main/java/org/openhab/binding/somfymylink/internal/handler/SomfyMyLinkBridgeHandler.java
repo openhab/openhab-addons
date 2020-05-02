@@ -231,15 +231,19 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
 
     public SomfyMyLinkShade[] getShadeList() throws SomfyMyLinkException {
         String command = buildShadeCommand("mylink.status.info", "*.*");
-
-        SomfyMyLinkShadesResponse response = (SomfyMyLinkShadesResponse) sendCommandWithResponse(command,
-                SomfyMyLinkShadesResponse.class);
-
-        if (response != null) {
-            return response.getResult();
+        try {
+            SomfyMyLinkShadesResponse response = (SomfyMyLinkShadesResponse) sendCommandWithResponse(command,
+            SomfyMyLinkShadesResponse.class).get();
+            if (response != null) {
+                return response.getResult();
+            } else {
+                return new SomfyMyLinkShade[0];
+            }
         }
-
-        return new SomfyMyLinkShade[0];
+        catch (Exception e) {
+            logger.debug("Exception while getting shade list. Message: {}", e.getMessage());
+            return new SomfyMyLinkShade[0];
+        }
     }
 
     public void sendPing() throws SomfyMyLinkException {
@@ -251,24 +255,30 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     public SomfyMyLinkScene[] getSceneList() throws SomfyMyLinkException {
         String command = buildShadeCommand("mylink.scene.list", "*.*");
 
-        SomfyMyLinkScenesResponse response = (SomfyMyLinkScenesResponse) sendCommandWithResponse(command,
-                SomfyMyLinkScenesResponse.class);
+        try {
+            SomfyMyLinkScenesResponse response = (SomfyMyLinkScenesResponse) sendCommandWithResponse(command,
+                SomfyMyLinkScenesResponse.class).get();
 
-        if (response != null) {
-            List<StateOption> options = new ArrayList<>();
-            for (SomfyMyLinkScene scene : response.result) {
-                options.add(new StateOption(scene.getTargetID(), scene.getName()));
+            if (response != null) {
+                List<StateOption> options = new ArrayList<>();
+                for (SomfyMyLinkScene scene : response.result) {
+                    options.add(new StateOption(scene.getTargetID(), scene.getName()));
+                }
+
+                logger.debug("Setting {} options on bridge", options.size());
+
+                stateDescriptionProvider.setStateOptions(
+                        new ChannelUID(getThing().getUID(), SomfyMyLinkBindingConstants.CHANNEL_SCENES), options);
+
+                return response.getResult();
+            } else {
+                return new SomfyMyLinkScene[0];
             }
-
-            logger.debug("Setting {} options on bridge", options.size());
-
-            stateDescriptionProvider.setStateOptions(
-                    new ChannelUID(getThing().getUID(), SomfyMyLinkBindingConstants.CHANNEL_SCENES), options);
-
-            return response.getResult();
         }
-
-        return new SomfyMyLinkScene[0];
+        catch (Exception e) {
+            logger.debug("Exception while getting scene list. Message: {}", e.getMessage());
+            return new SomfyMyLinkScene[0];
+        }
     }
 
     public void commandShadeUp(String targetId) throws SomfyMyLinkException {
@@ -338,9 +348,11 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         return future;
     }
 
-    private @Nullable SomfyMyLinkResponseBase sendCommandWithResponse(String command, Type responseType)
+    private <T extends SomfyMyLinkResponseBase> CompletableFuture<@Nullable T> sendCommandWithResponse(String command, Class<T> responseType)
             throws SomfyMyLinkException {
-        synchronized (CONNECTION_LOCK) {
+        CompletableFuture<@Nullable T> future = new CompletableFuture<>();
+
+        commandExecutor.submit(() -> {
             try {
                 logger.debug("Sending: {}", command);
                 try (Socket socket = getConnection();
@@ -367,9 +379,9 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                         logger.debug("Got response: {}", message);
 
                         try {
-                            SomfyMyLinkResponseBase response = parseResponse(message, responseType);
+                            T response = parseResponse(message, responseType);
                             logger.debug("Got full message: {}", message);
-                            return response;
+                            future.complete(response);
                         } catch (SomfyMyLinkException e) {
                             // trouble parsing the message, probably incomplete
                         }
@@ -378,7 +390,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
 
                         // if its been over 1 min waiting for a correct and full response then abort
                         if (elapsedTime >= 60000) {
-                            throw new SomfyMyLinkException("Timeout waiting for reply from mylink");
+                            future.completeExceptionally(new SomfyMyLinkException("Timeout waiting for reply from mylink"));
                         }
 
                         Thread.sleep(250); // pause for 250ms
@@ -388,21 +400,23 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                 // only if we didn't already get a response give time for mylink to process
                 Thread.sleep(CONNECTION_DELAY);
 
-                return null;
+                future.complete(null);
             } catch (SocketTimeoutException e) {
                 logger.info("Timeout sending command to mylink: {} Message: {}", command, e.getMessage());
-                throw new SomfyMyLinkException("Timeout sending command to mylink", e);
+                future.completeExceptionally(new SomfyMyLinkException("Timeout sending command to mylink", e));
             } catch (IOException e) {
                 logger.info("Problem sending command to mylink: {} Message: {}", command, e.getMessage());
-                throw new SomfyMyLinkException("Problem sending command to mylink", e);
+                future.completeExceptionally(new SomfyMyLinkException("Problem sending command to mylink", e));
             } catch (InterruptedException e) {
                 logger.debug("Interrupted while waiting after sending command to mylink: {} Message: {}", command, e.getMessage());
-                return null;
+                future.complete(null);
             }
-        }
+        });
+
+        return future;
     }
 
-    private SomfyMyLinkResponseBase parseResponse(String message, Type responseType) {
+    private <T extends SomfyMyLinkResponseBase> T parseResponse(String message, Class<T> responseType) {
         JsonParser parser = new JsonParser();
         JsonObject jsonObj = parser.parse(message).getAsJsonObject();
 
