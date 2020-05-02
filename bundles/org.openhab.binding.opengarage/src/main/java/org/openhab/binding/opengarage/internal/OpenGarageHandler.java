@@ -156,7 +156,7 @@ public class OpenGarageHandler extends BaseThingHandler {
                 updateState(OpenGarageBindingConstants.CHANNEL_OG_VEHICLE, new StringType("No vehicle detected"));
             } else if (controllerVariables.vehicle == 1) {
                 updateState(OpenGarageBindingConstants.CHANNEL_OG_VEHICLE, new StringType("Vehicle detected"));
-            } else if (controllerVariables.vehicle == 3) {
+            } else if (controllerVariables.vehicle == 2) {
                 updateState(OpenGarageBindingConstants.CHANNEL_OG_VEHICLE, new StringType("Vehicle Status Unknown"));
             }
         }
