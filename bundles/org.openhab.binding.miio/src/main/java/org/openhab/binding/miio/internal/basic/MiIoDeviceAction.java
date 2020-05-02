@@ -15,7 +15,6 @@ package org.openhab.binding.miio.internal.basic;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
-import com.google.gson.JsonArray;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -45,16 +44,6 @@ public class MiIoDeviceAction {
     @SerializedName("parameter3")
     @Expose
     private @Nullable String parameter3;
-    private @Nullable JsonArray parameters;
-
-    public JsonArray getParameters() {
-        final @Nullable JsonArray parameter = this.parameters;
-        return parameter != null ? parameter : new JsonArray();
-    }
-
-    public void setParameters(JsonArray parameters) {
-        this.parameters = parameters;
-    }
 
     public String getCommand() {
         final @Nullable String command = this.command;

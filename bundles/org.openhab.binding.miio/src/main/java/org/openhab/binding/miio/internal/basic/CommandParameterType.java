@@ -26,7 +26,6 @@ public enum CommandParameterType {
     ONOFF("onoff"),
     ONOFFPARA("onoffpara"),
     ONOFFBOOL("onoffbool"),
-    ONOFFBOOLSTRING("onoffboolstring"),
     STRING("string"),
     CUSTOMSTRING("customstring"),
     NUMBER("number"),

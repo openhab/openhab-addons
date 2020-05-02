@@ -52,10 +52,7 @@
 					{
 						"command": "cron_add",
 						"parameterType": "NUMBER",
-						"parameters": [
-							0,
-							"$value$"
-						]
+						"preCommandParameter1": "0"
 					}
 				]
 			},
@@ -70,11 +67,8 @@
 					{
 						"command": "set_ct_abx",
 						"parameterType": "NUMBER",
-						"parameters": [
-							"$value$",
-							"smooth",
-							500
-						]
+						"parameter1": "\"smooth\"",
+						"parameter2": "500"
 					}
 				]
 			},

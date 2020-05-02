@@ -11,6 +11,7 @@
 				"channel": "power",
 				"type": "Switch",
 				"refresh": true,
+				"channelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_power",
