@@ -50,10 +50,13 @@ public class OpenGarageWebTargets {
         switch (request) {
             case OPEN:
               queryParams = "&open=1";
+              break;
             case CLOSE:
               queryParams = "&close=1";
+              break;
             case CLICK:
               queryParams = "&click=1";
+              break;
         }
         if (queryParams != null) {
             invoke(changeControllerVariablesUri, queryParams);
