@@ -274,6 +274,7 @@ public class OwserverConnection {
         try {
             write(requestPacket);
             do {
+                logger.trace("fetching owserver data ...");
                 if (requestPacket.getMessageType() == OwserverMessageType.PRESENT
                         || requestPacket.getMessageType() == OwserverMessageType.NOP) {
                     returnPacket = read(true);
@@ -436,6 +437,9 @@ public class OwserverConnection {
             }
         } catch (EOFException e) {
             // nothing to read
+            logger.error("EOFException: {}", e.getMessage());
+            returnPacket.setPayload("error");
+            returnPacket.setReturnCode(-1);
         } catch (OwException e) {
             checkConnection();
             throw e;
@@ -452,4 +456,5 @@ public class OwserverConnection {
 
         return returnPacket;
     }
+
 }
