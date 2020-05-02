@@ -54,6 +54,8 @@ The following channels are supported for fans:
 
 ## Full Example
 
+### Generic
+
 Things:
 
 ```
@@ -105,4 +107,49 @@ Frame label="Options"
    Switch item=AirconHealth label="Health" icon=smiley
    Switch item=AirconPowerSaving label="Power Saving" icon=poweroutlet
 }
+```
+
+### Google Home Assistant
+
+This example shows who to make the GREE Air Conditioner controllable by Google HA (A/C mode + temperature)
+
+Items:
+
+```
+Group Gree_Modechannel                 "Gree"        { ga="Thermostat" } // új Gree bindinggal
+// Gree Klíma
+    Switch   GreeAirConditioner_Powerchannel           "Aircon"                                        {channel="greeair:greeairthing:a1234561:powerchannel", ga="Switch"}
+    Number   GreeAirConditioner_Modechannel            "Aircon Mode"                                   {channel="greeair:greeairthing:a1234561:modechannel"}
+    String   GreeAirConditioner_Modechannel_GA         "Aircon Mode" (gGreeAirConditioner_Modechannel) {ga="thermostatMode" }
+    Switch   GreeAirConditioner_Turbochannel           "Turbo"                                         {channel="greeair:greeairthing:a1234561:turbochannel"}
+    Switch   GreeAirConditioner_Lightchannel           "Light"                                         {channel="greeair:greeairthing:a1234561:lightchannel"}
+    Number   GreeAirConditioner_Tempchannel            "Aircon Temperature"  (gGre
+```
+
+Rule:
+```
+rule "Translate Mode from GA 2"
+when
+        Item GreeMode_GA changed
+then        
+        if(GreeMode_GA.state == "off" ) {
+            sendCommand(GreePower,OFF)
+         }  else {
+            if(GreePower.state == OFF) {
+                sendCommand(GreePower,ON)
+            }
+            if(GreeMode_GA.state == "cool" ) {
+                sendCommand(GreeMode,1)
+             }
+            if(GreeMode_GA.state == "dry" ) {
+                sendCommand(GreeMode,2)
+             }
+            if(GreeMode_GA.state == "fan-only" ) {
+                sendCommand(GreeMode,3) 
+             }
+            if(GreeMode_GA.state == "heat" ) {
+                sendCommand(GreeMode,4)
+             }
+        }
+end
 ```

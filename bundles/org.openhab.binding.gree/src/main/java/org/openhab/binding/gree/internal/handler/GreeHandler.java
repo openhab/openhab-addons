@@ -150,7 +150,42 @@ public class GreeHandler extends BaseThingHandler {
                         device.setDevicePower(socket, (OnOffType) command == OnOffType.ON ? 1 : 0);
                         break;
                     case MODE_CHANNEL:
-                        device.SetDeviceMode(socket, ((DecimalType) command).intValue());
+                        int mode = -1;
+                        if (command instanceof OnOffType) {
+                            device.setDevicePower(socket, (OnOffType) command == OnOffType.ON ? 1 : 0);
+                        } else if (command instanceof DecimalType) {
+                            mode = ((DecimalType) command).intValue();
+                        } else {
+                            String m = command.toString();
+                            switch (m) {
+                                case MODE_AUTO:
+                                    mode = GREE_MODE_AUTO;
+                                    break;
+                                case MODE_COOL:
+                                    mode = GREE_MODE_COOL;
+                                    break;
+                                case MODE_HEAT:
+                                    mode = GREE_MODE_HEAT;
+                                    break;
+                                case MODE_DRY:
+                                    mode = GREE_MODE_DRY;
+                                    break;
+                                case MODE_FAN:
+                                    mode = GREE_MODE_FAN;
+                                    break;
+                                case MODE_ON:
+                                case MODE_OFF:
+                                    device.setDevicePower(socket, m.equals(MODE_ON) ? 1 : 0);
+                                    break;
+                                default:
+                                    logger.debug("Invalid mode requested: {}", command);
+                                    break;
+                            }
+                            if (mode != -1) {
+                                device.SetDeviceMode(socket, mode);
+                                updateState(channelUID, new DecimalType(mode));
+                            }
+                        }
                         break;
                     case TURBO_CHANNEL:
                         device.setDeviceTurbo(socket, (OnOffType) command == OnOffType.ON ? 1 : 0);

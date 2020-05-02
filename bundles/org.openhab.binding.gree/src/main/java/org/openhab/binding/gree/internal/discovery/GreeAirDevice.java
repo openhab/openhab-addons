@@ -153,6 +153,7 @@ public class GreeAirDevice {
             bindReqGson.i = 1;
             bindReqGson.t = "pack";
             bindReqGson.uid = 0;
+            bindReqGson.tcid = getId();
             bindReqGson.pack = new String(encryptedBindReqPacket.getBytes(), UTF8_CHARSET);
             String bindReqStr = gson.toJson(bindReqGson);
             sendData = bindReqStr.getBytes();
@@ -542,6 +543,7 @@ public class GreeAirDevice {
             execCmdGson.i = 0;
             execCmdGson.t = "pack";
             execCmdGson.uid = 0;
+            execCmdGson.tcid = getId();
             execCmdGson.pack = new String(encryptedCommandReqPacket.getBytes(), UTF8_CHARSET);
             String execCmdStr = gson.toJson(execCmdGson);
             sendData = execCmdStr.getBytes();
@@ -618,6 +620,7 @@ public class GreeAirDevice {
             reqStatusGson.i = 0;
             reqStatusGson.t = "pack";
             reqStatusGson.uid = 0;
+            reqStatusGson.tcid = getId();
             reqStatusGson.pack = new String(encryptedStatusReqPacket.getBytes(), UTF8_CHARSET);
             String execCmdStr = gson.toJson(reqStatusGson);
             sendData = execCmdStr.getBytes();

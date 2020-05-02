@@ -27,5 +27,5 @@ public class GreeExecCommand4GsonDTO {
     public String t = null;
     public int uid = 0;
     public String pack = null;
-
+    public String tcid = null;
 }

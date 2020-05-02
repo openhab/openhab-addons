@@ -26,5 +26,5 @@ public class GreeBindRequest4GsonDTO {
     public int i = 0;
     public String pack = null;
     public String cid = null;
-
+    public String tcid = null;
 }
