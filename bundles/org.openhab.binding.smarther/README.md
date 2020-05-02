@@ -4,6 +4,8 @@ The Smarther binding implements a bridge to the Legrand/Bticino Smarther v2.0 AP
 
 Smarther chronothermostat is produced by Bticino (https://www.bticino.com/products-catalogue/smarther-the-connected-thermostat/), has its own API set and doesn't support the OpenWebNet protocol.
 
+Companion HABPanel widget can be found here: [BTicino Smarther HABPanel widget](https://github.com/MrRonfo/openhab-smarther-widget)
+
 # Configuring the binding
 
 The binding requires you to register an Application with Legrand Developer portal at https://developer.legrand.com - this will get you a set of Client ID and Client Secret parameters to be used by your binding configuration
