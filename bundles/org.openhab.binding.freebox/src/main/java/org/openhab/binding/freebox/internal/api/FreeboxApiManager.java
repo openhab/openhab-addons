@@ -28,7 +28,8 @@ import java.util.concurrent.TimeUnit;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.eclipse.smarthome.core.util.HexUtils;
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.freebox.internal.api.model.FreeboxAirMediaConfig;
 import org.openhab.binding.freebox.internal.api.model.FreeboxAirMediaConfigResponse;
@@ -132,7 +133,7 @@ public class FreeboxApiManager {
         boolean granted = false;
         try {
             String token = appToken;
-            if (token == null || token.isEmpty()) {
+            if (StringUtils.isEmpty(token)) {
                 FreeboxAuthorizeRequest request = new FreeboxAuthorizeRequest(appId, appName, appVersion, deviceName);
                 FreeboxAuthorizeResult response = executePostUrl("login/authorize/", gson.toJson(request),
                         FreeboxAuthorizeResponse.class, false);
@@ -350,7 +351,7 @@ public class FreeboxApiManager {
         FreeboxAirMediaReceiverRequest request = new FreeboxAirMediaReceiverRequest();
         request.setStartAction();
         request.setVideoMediaType();
-        if (airPlayPassword != null && !airPlayPassword.isEmpty()) {
+        if (StringUtils.isNotEmpty(airPlayPassword)) {
             request.setPassword(airPlayPassword);
         }
         request.setMedia(url);
@@ -362,7 +363,7 @@ public class FreeboxApiManager {
         FreeboxAirMediaReceiverRequest request = new FreeboxAirMediaReceiverRequest();
         request.setStopAction();
         request.setVideoMediaType();
-        if (airPlayPassword != null && !airPlayPassword.isEmpty()) {
+        if (StringUtils.isNotEmpty(airPlayPassword)) {
             request.setPassword(airPlayPassword);
         }
         executePostUrl("airmedia/receivers/" + encodeUrl(airPlayName) + "/", gson.toJson(request),
@@ -492,8 +493,11 @@ public class FreeboxApiManager {
             // Compute the hmac on input data bytes
             byte[] rawHmac = mac.doFinal(value.getBytes());
 
-            // Convert raw bytes to a String
-            return HexUtils.bytesToHex(rawHmac);
+            // Convert raw bytes to Hex
+            byte[] hexBytes = new Hex().encode(rawHmac);
+
+            // Covert array of Hex bytes to a String
+            return new String(hexBytes, StandardCharsets.UTF_8);
         } catch (IllegalArgumentException | NoSuchAlgorithmException | InvalidKeyException | IllegalStateException e) {
             throw new FreeboxException("Computing the hmac-sha1 of the challenge and the app token failed", e);
         }

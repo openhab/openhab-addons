@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.millheat.internal.handler;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +23,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -42,7 +44,6 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.millheat.internal.MillheatCommunicationException;
 import org.openhab.binding.millheat.internal.client.BooleanSerializer;
 import org.openhab.binding.millheat.internal.client.RequestLogger;
@@ -87,7 +88,6 @@ import com.google.gson.GsonBuilder;
  */
 @NonNullByDefault
 public class MillheatAccountHandler extends BaseBridgeHandler {
-    private static final String SHA_1_ALGORITHM = "SHA-1";
     private static final int MIN_TIME_BETWEEEN_MODEL_UPDATES_MS = 30_000;
     private static final int NUM_NONCE_CHARS = 16;
     private static final String CONTENT_TYPE = "application/x-zc-object";
@@ -155,16 +155,15 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
                                 rsp.errorDescription));
             } else {
                 // No error provided on login, proceed to find token and userid
-                String localToken = rsp.token.trim();
+                token = StringUtils.trimToNull(rsp.token);
                 userId = rsp.userId == null ? null : rsp.userId.toString();
-                if (localToken == null || localToken.isEmpty()) {
+                if (token == null) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "error login in, no token provided");
                 } else if (userId == null) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "error login in, no userId provided");
                 } else {
-                    token = localToken;
                     return true;
                 }
             }
@@ -230,7 +229,7 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
         try {
             final Request request = buildLoggedInRequest(req);
             return sendRequest(request, req, responseType);
-        } catch (NoSuchAlgorithmException e) {
+        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
             throw new MillheatCommunicationException("Error building Millheat request: " + e.getMessage(), e);
         }
     }
@@ -344,13 +343,12 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
         }
     }
 
-    private Request buildLoggedInRequest(final AbstractRequest req) throws NoSuchAlgorithmException {
+    private Request buildLoggedInRequest(final AbstractRequest req)
+            throws NoSuchAlgorithmException, UnsupportedEncodingException {
         final String nonce = getRandomString(NUM_NONCE_CHARS);
         final String timestamp = String.valueOf(System.currentTimeMillis() / 1000);
         final String signatureBasis = REQUEST_TIMEOUT + timestamp + nonce + token;
-        MessageDigest md = MessageDigest.getInstance(SHA_1_ALGORITHM);
-        byte[] sha1Hash = md.digest(signatureBasis.getBytes(StandardCharsets.UTF_8));
-        final String signature = HexUtils.bytesToHex(sha1Hash).toLowerCase();
+        final String signature = DigestUtils.shaHex(signatureBasis);
         final String reqJson = gson.toJson(req);
 
         final Request request = httpClient.newRequest(serviceEndpoint + req.getRequestUrl());

@@ -21,6 +21,8 @@ import java.util.function.BiConsumer;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.loxone.internal.LxServerHandler;
 import org.openhab.binding.loxone.internal.LxServerHandlerApi;
@@ -133,13 +135,13 @@ public abstract class LxWsSecurity {
             return null;
         }
         try {
-            byte[] hashKeyBytes = HexUtils.hexToBytes(hashKeyHex);
+            byte[] hashKeyBytes = Hex.decodeHex(hashKeyHex.toCharArray());
             SecretKeySpec signKey = new SecretKeySpec(hashKeyBytes, "HmacSHA1");
             Mac mac = Mac.getInstance("HmacSHA1");
             mac.init(signKey);
             byte[] rawData = mac.doFinal(string.getBytes());
             return HexUtils.bytesToHex(rawData);
-        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
+        } catch (DecoderException | NoSuchAlgorithmException | InvalidKeyException e) {
             return null;
         }
     }
