@@ -5,9 +5,7 @@
 
 	<thing-type id="department">
 		<label>Alertes Département</label>
-		<description>
-			Fournit les niveaux d'alerte météo pour un département.
-		</description>
+		<description>Fournit les niveaux d'alerte météo pour un département.</description>
 
 		<channels>
 			<channel id="vent" typeId="alert-level">
@@ -168,7 +166,7 @@
 			</parameter>
 			<parameter name="refresh" type="integer" min="1" required="true" unit="h">
 				<label>Fréquence de rafraichissement</label>
-				<description>Période d'actualisation des données.</description>
+				<description>Période d'actualisation des données (heure).</description>
 				<default>24</default>
 			</parameter>
 		</config-description>
@@ -202,7 +200,7 @@
 
 	<channel-type id="condition-icon">
 		<item-type>Image</item-type>
-		<label>Icon</label>
+		<label>Pictogramme</label>
 		<description>Pictogramme associé au niveau d'alerte.</description>
 		<state readOnly="true" />
 	</channel-type>
