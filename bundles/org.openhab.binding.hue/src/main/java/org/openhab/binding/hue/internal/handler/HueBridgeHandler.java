@@ -79,24 +79,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueClient {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
-
-    private static final String DEVICE_TYPE = "EclipseSmartHome";
-
-    private static enum StatusType {
-        ADDED,
-        REMOVED,
-        GONE,
-        CHANGED
-    }
-
-    private final Logger logger = LoggerFactory.getLogger(HueBridgeHandler.class);
-
-    private final Map<String, FullLight> lastLightStates = new ConcurrentHashMap<>();
-    private final Map<String, FullSensor> lastSensorStates = new ConcurrentHashMap<>();
-
-    private final List<LightStatusListener> lightStatusListeners = new CopyOnWriteArrayList<>();
-    private final List<SensorStatusListener> sensorStatusListeners = new CopyOnWriteArrayList<>();
+    private long lightPollingInterval = TimeUnit.SECONDS.toSeconds(10);
+    private long sensorPollingInterval = TimeUnit.MILLISECONDS.toMillis(500);
 
     final ReentrantLock pollingLock = new ReentrantLock();
 
@@ -164,6 +148,32 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         }
     }
 
+    private static final String STATE_ADDED = "added";
+    private static final String STATE_GONE = "gone";
+    private static final String STATE_CHANGED = "changed";
+
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
+
+    private static final String DEVICE_TYPE = "EclipseSmartHome";
+
+    private final Logger logger = LoggerFactory.getLogger(HueBridgeHandler.class);
+
+    private final Map<String, FullLight> lastLightStates = new ConcurrentHashMap<>();
+    private final Map<String, FullSensor> lastSensorStates = new ConcurrentHashMap<>();
+
+    private boolean lastBridgeConnectionState = false;
+
+    private boolean propertiesInitializedSuccessfully = false;
+
+    private final List<LightStatusListener> lightStatusListeners = new CopyOnWriteArrayList<>();
+    private final List<SensorStatusListener> sensorStatusListeners = new CopyOnWriteArrayList<>();
+
+    private @Nullable ScheduledFuture<?> lightPollingJob;
+    private @Nullable ScheduledFuture<?> sensorPollingJob;
+
+    private @NonNullByDefault({}) HueBridge hueBridge = null;
+    private @NonNullByDefault({}) HueBridgeConfig hueBridgeConfig = null;
+
     private final Runnable sensorPollingRunnable = new PollingRunnable() {
         @Override
         protected void doConnectedRun() throws IOException, ApiException {
@@ -177,12 +187,13 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                     lastSensorStates.put(sensorId, sensor);
                     if (!lastFullSensorState.equals(sensor.getState())) {
                         logger.debug("Status update for Hue sensor '{}' detected: {}", sensorId, sensor.getState());
-                        notifySensorStatusListeners(sensor, StatusType.CHANGED);
+                        notifySensorStatusListeners(sensor, STATE_CHANGED);
                     }
                 } else {
                     lastSensorStates.put(sensorId, sensor);
                     logger.debug("Hue sensor '{}' added.", sensorId);
-                    notifySensorStatusListeners(sensor, StatusType.ADDED);
+                    notifySensorStatusListeners(sensor, STATE_ADDED);
+
                 }
             }
 
@@ -190,7 +201,13 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
             for (Entry<String, FullSensor> fullSensorEntry : lastSensorStateCopy.entrySet()) {
                 lastSensorStates.remove(fullSensorEntry.getKey());
                 logger.debug("Hue sensor '{}' removed.", fullSensorEntry.getKey());
-                notifySensorStatusListeners(fullSensorEntry.getValue(), StatusType.REMOVED);
+                for (SensorStatusListener sensorStatusListener : sensorStatusListeners) {
+                    try {
+                        sensorStatusListener.onSensorRemoved(hueBridge, fullSensorEntry.getValue());
+                    } catch (Exception e) {
+                        logger.error("An exception occurred while calling the Sensor Listeners", e);
+                    }
+                }
             }
         }
     };
@@ -215,12 +232,12 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                     lastLightStates.put(lightId, fullLight);
                     if (!lastFullLightState.equals(fullLight.getState())) {
                         logger.debug("Status update for Hue light '{}' detected.", lightId);
-                        notifyLightStatusListeners(fullLight, StatusType.CHANGED);
+                        notifyLightStatusListeners(fullLight, STATE_CHANGED);
                     }
                 } else {
                     lastLightStates.put(lightId, fullLight);
                     logger.debug("Hue light '{}' added.", lightId);
-                    notifyLightStatusListeners(fullLight, StatusType.ADDED);
+                    notifyLightStatusListeners(fullLight, STATE_ADDED);
                 }
             }
 
@@ -228,23 +245,16 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
             for (Entry<String, FullLight> fullLightEntry : lastLightStateCopy.entrySet()) {
                 lastLightStates.remove(fullLightEntry.getKey());
                 logger.debug("Hue light '{}' removed.", fullLightEntry.getKey());
-                notifyLightStatusListeners(fullLightEntry.getValue(), StatusType.REMOVED);
+                for (LightStatusListener lightStatusListener : lightStatusListeners) {
+                    try {
+                        lightStatusListener.onLightRemoved(hueBridge, fullLightEntry.getValue());
+                    } catch (Exception e) {
+                        logger.error("An exception occurred while calling the BridgeHeartbeatListener", e);
+                    }
+                }
             }
         }
     };
-
-    private long lightPollingInterval = TimeUnit.SECONDS.toSeconds(10);
-    private long sensorPollingInterval = TimeUnit.MILLISECONDS.toMillis(500);
-
-    private boolean lastBridgeConnectionState = false;
-
-    private boolean propertiesInitializedSuccessfully = false;
-
-    private @Nullable ScheduledFuture<?> lightPollingJob;
-    private @Nullable ScheduledFuture<?> sensorPollingJob;
-
-    private @NonNullByDefault({}) HueBridge hueBridge = null;
-    private @NonNullByDefault({}) HueBridgeConfig hueBridgeConfig = null;
 
     public HueBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -323,7 +333,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } else if (e instanceof EntityNotAvailableException) {
             logger.debug("Error while accessing light: {}", e.getMessage(), e);
-            notifyLightStatusListeners(light, StatusType.GONE);
+            notifyLightStatusListeners(light, STATE_GONE);
         } else if (e instanceof ApiException) {
             // This should not happen - if it does, it is most likely some bug that should be reported.
             logger.warn("Error while accessing light: {}", e.getMessage(), e);
@@ -337,7 +347,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } else if (e instanceof EntityNotAvailableException) {
             logger.debug("Error while accessing sensor: {}", e.getMessage(), e);
-            notifySensorStatusListeners(sensor, StatusType.GONE);
+            notifySensorStatusListeners(sensor, STATE_GONE);
         } else if (e instanceof ApiException) {
             // This should not happen - if it does, it is most likely some bug that should be reported.
             logger.warn("Error while accessing sensor: {}", e.getMessage(), e);
@@ -351,7 +361,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } else if (e instanceof EntityNotAvailableException) {
             logger.debug("Error while accessing sensor: {}", e.getMessage(), e);
-            notifySensorStatusListeners(sensor, StatusType.GONE);
+            notifySensorStatusListeners(sensor, STATE_GONE);
         } else if (e instanceof ApiException) {
             // This should not happen - if it does, it is most likely some bug that should be reported.
             logger.warn("Error while accessing sensor: {}", e.getMessage(), e);
@@ -690,12 +700,12 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     }
 
     /**
-     * Iterate through lightStatusListeners and notify them about a status change.
+     * Iterate through lightStatusListeners and notify them about a changed or added light state.
      *
      * @param fullLight
-     * @param type the type of change
+     * @param type Can be "changed" if just a state has changed or "added" if this is a new light on the bridge.
      */
-    private void notifyLightStatusListeners(final FullLight fullLight, StatusType type) {
+    private void notifyLightStatusListeners(final FullLight fullLight, final String type) {
         if (lightStatusListeners.isEmpty()) {
             logger.debug("No light status listeners to notify of light change for light '{}'", fullLight.getId());
             return;
@@ -704,20 +714,20 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         for (LightStatusListener lightStatusListener : lightStatusListeners) {
             try {
                 switch (type) {
-                    case ADDED:
+                    case STATE_ADDED:
                         logger.debug("Sending lightAdded for light '{}'", fullLight.getId());
                         lightStatusListener.onLightAdded(hueBridge, fullLight);
                         break;
-                    case REMOVED:
-                        lightStatusListener.onLightRemoved(hueBridge, fullLight);
-                        break;
-                    case GONE:
+                    case STATE_GONE:
                         lightStatusListener.onLightGone(hueBridge, fullLight);
                         break;
-                    case CHANGED:
+                    case STATE_CHANGED:
                         logger.debug("Sending lightStateChanged for light '{}'", fullLight.getId());
                         lightStatusListener.onLightStateChanged(hueBridge, fullLight);
                         break;
+                    default:
+                        throw new IllegalArgumentException(
+                                "Could not notify lightStatusListeners for unknown event type " + type);
                 }
             } catch (Exception e) {
                 logger.error("An exception occurred while calling the BridgeHeartbeatListener", e);
@@ -725,7 +735,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         }
     }
 
-    private void notifySensorStatusListeners(final FullSensor fullSensor, StatusType type) {
+    private void notifySensorStatusListeners(final FullSensor fullSensor, final String type) {
         if (sensorStatusListeners.isEmpty()) {
             logger.debug("No sensor status listeners to notify of sensor change for sensor '{}'", fullSensor.getId());
             return;
@@ -734,20 +744,20 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         for (SensorStatusListener sensorStatusListener : sensorStatusListeners) {
             try {
                 switch (type) {
-                    case ADDED:
+                    case STATE_ADDED:
                         logger.debug("Sending sensorAdded for sensor '{}'", fullSensor.getId());
                         sensorStatusListener.onSensorAdded(hueBridge, fullSensor);
                         break;
-                    case REMOVED:
-                        sensorStatusListener.onSensorRemoved(hueBridge, fullSensor);
-                        break;
-                    case GONE:
+                    case STATE_GONE:
                         sensorStatusListener.onSensorGone(hueBridge, fullSensor);
                         break;
-                    case CHANGED:
+                    case STATE_CHANGED:
                         logger.debug("Sending sensorStateChanged for sensor '{}'", fullSensor.getId());
                         sensorStatusListener.onSensorStateChanged(hueBridge, fullSensor);
                         break;
+                    default:
+                        throw new IllegalArgumentException(
+                                "Could not notify sensorStatusListeners for unknown event type " + type);
                 }
             } catch (Exception e) {
                 logger.error("An exception occurred while calling the Sensor Listeners", e);
