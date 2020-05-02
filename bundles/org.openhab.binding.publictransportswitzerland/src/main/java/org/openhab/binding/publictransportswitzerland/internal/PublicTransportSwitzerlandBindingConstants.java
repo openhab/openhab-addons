@@ -32,4 +32,7 @@ public class PublicTransportSwitzerlandBindingConstants {
     // List of all Channel ids
     public static final String CHANNEL_CSV = "csv";
     public static final String CHANNEL_JSON = "json";
+
+    public static final String BASE_URL = "https://transport.opendata.ch/v1/";
+
 }

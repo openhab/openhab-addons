@@ -29,14 +29,16 @@ import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
-import static org.openhab.binding.publictransportswitzerland.internal.PublicTransportSwitzerlandBindingConstants.CHANNEL_CSV;
-import static org.openhab.binding.publictransportswitzerland.internal.PublicTransportSwitzerlandBindingConstants.CHANNEL_JSON;
+import static org.openhab.binding.publictransportswitzerland.internal.PublicTransportSwitzerlandBindingConstants.*;
 
 /**
  * The {@link PublicTransportSwitzerlandStationboardHandler} is responsible for handling commands, which are
@@ -50,6 +52,15 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
     private final Logger logger = LoggerFactory.getLogger(PublicTransportSwitzerlandStationboardHandler.class);
 
     private @Nullable ScheduledFuture<?> updateDataJob;
+
+    // Limit the API response to the necessary fields
+    private final String fieldFilters = createFilterForFields(
+            "stationboard/to",
+            "stationboard/category",
+            "stationboard/number",
+            "stationboard/stop/departureTimestamp",
+            "stationboard/stop/delay",
+            "stationboard/stop/platform");
 
     public PublicTransportSwitzerlandStationboardHandler(Thing thing) {
         super(thing);
@@ -76,7 +87,10 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
         PublicTransportSwitzerlandStationboardConfiguration config = getConfigAs(PublicTransportSwitzerlandStationboardConfiguration.class);
 
         try {
-            String response = HttpUtil.executeUrl("GET", "https://transport.opendata.ch/v1/stationboard?station=" + config.station, 10_000);
+            String escapedStation = URLEncoder.encode(config.station, StandardCharsets.UTF_8.name());
+            String requestUrl = BASE_URL + "stationboard?station=" + escapedStation + fieldFilters;
+
+            String response = HttpUtil.executeUrl("GET", requestUrl, 10_000);
             JsonElement jsonObject = new JsonParser().parse(response);
 
             updateCsvChannel(jsonObject);
@@ -89,6 +103,10 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
             updateState(CHANNEL_CSV, new StringType("No data available"));
             updateState(CHANNEL_JSON, new StringType("{}"));
         }
+    }
+
+    private String createFilterForFields(String... fields) {
+        return Arrays.stream(fields).map((field) -> "&fields[]=" + field).collect(Collectors.joining());
     }
 
     private void updateJsonChannel(JsonElement jsonObject) {
@@ -104,9 +122,9 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
             JsonObject departureObject = jsonElement.getAsJsonObject();
             JsonObject stopObject = departureObject.get("stop").getAsJsonObject();
 
-            String departureTime = stopObject.get("departureTimestamp").getAsString();
+            String category = departureObject.get("category").getAsString();
+            String number = departureObject.get("number").getAsString();
             String destination = departureObject.get("to").getAsString();
-            String track = stopObject.get("platform").getAsString();
 
             JsonElement delayElement = departureObject.get("delay");
             String delay = "";
@@ -114,7 +132,10 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
                 delay = delayElement.getAsString();
             }
 
-            departures.add(String.join("\t", departureTime, destination, track, delay));
+            String departureTime = stopObject.get("departureTimestamp").getAsString();
+            String track = stopObject.get("platform").getAsString();
+
+            departures.add(String.join("\t", category, number, departureTime, destination, track, delay));
         }
 
         updateState(CHANNEL_CSV, new StringType(String.join("\n", departures)));
