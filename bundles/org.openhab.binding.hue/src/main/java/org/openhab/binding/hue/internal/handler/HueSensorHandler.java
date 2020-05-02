@@ -174,6 +174,12 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
             return;
         }
 
+        HueClient bridgeHandler = getHueClient();
+        if (bridgeHandler == null) {
+            logger.warn("hue bridge handler not found. Cannot handle command without bridge.");
+            return;
+        }
+
         StateUpdate sensorState = new StateUpdate();
         switch (channel) {
             case STATE_STATUS:
