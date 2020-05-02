@@ -23,7 +23,6 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.insteon.internal.driver.IOStream;
@@ -160,7 +159,6 @@ public class HubIOStream extends IOStream implements Runnable {
      * @throws IOException
      */
     private synchronized void clearBuffer() throws IOException {
-        logger.trace("clearing buffer");
         getURL("/1?XB=M=1");
         bufferIdx = 0;
     }
@@ -173,15 +171,14 @@ public class HubIOStream extends IOStream implements Runnable {
      */
     public synchronized void write(ByteBuffer msg) throws IOException {
         poll(); // fetch the status buffer before we send out commands
+        clearBuffer(); // clear the status buffer explicitly.
 
         StringBuilder b = new StringBuilder();
         while (msg.remaining() > 0) {
             b.append(String.format("%02x", msg.get()));
         }
         String hexMSG = b.toString();
-        logger.trace("writing a message");
         getURL("/3?" + hexMSG + "=I=3");
-        bufferIdx = 0;
     }
 
     /**
@@ -213,22 +210,10 @@ public class HubIOStream extends IOStream implements Runnable {
             return; // XXX why return here????
         }
 
-        if (StringUtils.repeat("0", data.length()).equals(data)) {
-            logger.trace("skip cleared buffer");
-            bufferIdx = 0;
-            return;
-        }
-
         StringBuilder msg = new StringBuilder();
         if (nIdx < bufferIdx) {
-            String msgStart = data.substring(bufferIdx, data.length());
-            String msgEnd = data.substring(0, nIdx);
-            if (StringUtils.repeat("0", msgStart.length()).equals(msgStart)) {
-                logger.trace("discard cleared buffer wrap around msg start");
-                msgStart = "";
-            }
-
-            msg.append(msgStart + msgEnd);
+            msg.append(data.substring(bufferIdx, data.length()));
+            msg.append(data.substring(0, nIdx));
             logger.trace("wrap around: copying new data on: {}", msg.toString());
         } else {
             msg.append(data.substring(bufferIdx, nIdx));
@@ -293,6 +278,8 @@ public class HubIOStream extends IOStream implements Runnable {
             }
 
             String s = baos.toString();
+            logger.trace("read:\n{}", s);
+
             return s;
         } finally {
             bis.close();
