@@ -168,6 +168,14 @@
 			<channel id="summer" typeId="summer"/>
 			<channel id="autumn" typeId="autumn"/>
 			<channel id="winter" typeId="winter"/>
+			<channel id="nextName" typeId="seasonName">
+				<label>Next Season</label>
+				<description>The name of the next season</description>
+			</channel>
+			<channel id="timeLeft" typeId="duration">
+				<label>Time Left</label>
+				<description>The time remaining before season change</description>
+			</channel>
 		</channels>
 	</channel-group-type>
 
