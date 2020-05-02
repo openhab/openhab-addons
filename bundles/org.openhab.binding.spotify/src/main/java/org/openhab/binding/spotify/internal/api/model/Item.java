@@ -27,7 +27,7 @@ public class Item {
     private List<String> availableMarkets;
     private Integer discNumber;
     private long durationMs;
-    private boolean explicit;
+    private Boolean explicit;
     private ExternalIds externalIds;
     private ExternalUrl externalUrls;
     private String href;
@@ -59,7 +59,7 @@ public class Item {
         return durationMs;
     }
 
-    public boolean isExplicit() {
+    public Boolean getExplicit() {
         return explicit;
     }
 
