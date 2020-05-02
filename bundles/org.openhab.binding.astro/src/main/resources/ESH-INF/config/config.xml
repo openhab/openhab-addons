@@ -11,7 +11,7 @@
 			<label>Location</label>
 			<description>The latitude, longitude and altitude separated with a comma (lat,long,[alt])</description>
 		</parameter>
-		<parameter name="interval" type="integer" min="1" max="86400">
+		<parameter name="interval" type="integer" min="1" max="86400" unit="s">
 			<label>Interval</label>
 			<description>Refresh interval for positional data calculation in seconds.</description>
 			<default>300</default>
@@ -19,7 +19,7 @@
 	</config-description>
 
 	<config-description uri="channel-type:astro:config">
-		<parameter name="offset" type="integer" min="-1440" max="1440">
+		<parameter name="offset" type="integer" min="-1440" max="1440" unit="min">
 			<label>Offset</label>
 			<description>Moves an event or datetime value forward or backward (in minutes)</description>
 			<default>0</default>
