@@ -84,13 +84,6 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
 
     private static final String DEVICE_TYPE = "EclipseSmartHome";
 
-    private static enum StatusType {
-        ADDED,
-        REMOVED,
-        GONE,
-        CHANGED
-    }
-
     private final Logger logger = LoggerFactory.getLogger(HueBridgeHandler.class);
 
     private final Map<String, FullLight> lastLightStates = new ConcurrentHashMap<>();
@@ -166,29 +159,6 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
             return true;
         }
     }
-
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
-
-    private static final String DEVICE_TYPE = "EclipseSmartHome";
-
-    private final Logger logger = LoggerFactory.getLogger(HueBridgeHandler.class);
-
-    private final Map<String, FullLight> lastLightStates = new ConcurrentHashMap<>();
-    private final Map<String, FullSensor> lastSensorStates = new ConcurrentHashMap<>();
-
-    private boolean lastBridgeConnectionState = false;
-
-    private boolean propertiesInitializedSuccessfully = false;
-
-    private @Nullable HueLightDiscoveryService discoveryListener;
-    private final Map<String, LightStatusListener> lightStatusListeners = new ConcurrentHashMap<>();
-    private final Map<String, SensorStatusListener> sensorStatusListeners = new ConcurrentHashMap<>();
-
-    private @Nullable ScheduledFuture<?> lightPollingJob;
-    private @Nullable ScheduledFuture<?> sensorPollingJob;
-
-    private @NonNullByDefault({}) HueBridge hueBridge = null;
-    private @NonNullByDefault({}) HueBridgeConfig hueBridgeConfig = null;
 
     private final Runnable sensorPollingRunnable = new PollingRunnable() {
         @Override

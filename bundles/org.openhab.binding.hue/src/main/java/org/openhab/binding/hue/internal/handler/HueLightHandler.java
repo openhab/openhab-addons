@@ -94,10 +94,11 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
 
     private static final String OSRAM_PAR16_50_TW_MODEL_ID = "PAR16_50_TW";
 
+    private final Logger logger = LoggerFactory.getLogger(HueLightHandler.class);
+
     private static final long BYPASS_LIGHT_POLL_DURATION = 1000;
 
-    @NonNullByDefault({})
-    private String lightId;
+    private @NonNullByDefault({}) String lightId;
 
     private @Nullable FullLight lastFullLight;
     private Long lastTimeCmd = 0L;
@@ -143,15 +144,11 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
             }
 
             lightId = configLightId;
-            // note: this call implicitly registers our handler as a listener on
-            // the bridge
-            final HueClient bridgeHandler = getHueClient();
-
+            // note: this call implicitly registers our handler as a listener on the bridge
+            HueClient bridgeHandler = getHueClient();
             if (bridgeHandler != null) {
                 if (bridgeStatus == ThingStatus.ONLINE) {
-                    FullLight fullLight = bridgeHandler.getLightById(lightId);
-                    lastFullLight = fullLight;
-                    initializeProperties(fullLight);
+                    initializeProperties(bridgeHandler.getLightById(lightId));
                     updateStatus(ThingStatus.ONLINE);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
@@ -228,7 +225,7 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
             return;
         }
 
-        final FullLight light = lastFullLight;
+        FullLight light = lastFullLight;
         if (light == null) {
             logger.debug("hue light not known on bridge. Cannot handle command.");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
