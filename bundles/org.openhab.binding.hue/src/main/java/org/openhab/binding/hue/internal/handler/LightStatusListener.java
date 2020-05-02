@@ -66,4 +66,10 @@ public interface LightStatusListener {
      * @param light The light which is added.
      */
     void onLightAdded(@Nullable HueBridge bridge, FullLight light);
+
+    void enablePollBypassBeforeCmd();
+
+    void enablePollBypassAfterCmd(@Nullable Long fadeTime);
+
+    void disablePollBypass();
 }

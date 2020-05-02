@@ -390,7 +390,8 @@ public class HueLightHandlerTest {
         hueLightHandler.handleCommand(new ChannelUID(new ThingUID("hue::test"), channel), command);
 
         ArgumentCaptor<StateUpdate> captorStateUpdate = ArgumentCaptor.forClass(StateUpdate.class);
-        verify(mockClient).updateLightState(any(FullLight.class), captorStateUpdate.capture());
+        verify(mockClient).updateLightState(any(LightStatusListener.class), any(FullLight.class),
+                captorStateUpdate.capture());
         assertJson(expectedReply, captorStateUpdate.getValue().toJson());
     }
 

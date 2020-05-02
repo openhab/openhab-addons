@@ -115,6 +115,14 @@ public interface HueClient {
     void updateLightState(FullLight light, StateUpdate stateUpdate);
 
     /**
+     * Updates the given light.
+     *
+     * @param light the light to be updated
+     * @param stateUpdate the state update
+     */
+    void updateLightState(LightStatusListener listener, FullLight light, StateUpdate stateUpdate);
+
+    /**
      * Updates the given sensors config.
      *
      * @param sensor the light to be updated

@@ -342,15 +342,28 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
 
     @Override
     public void updateLightState(FullLight light, StateUpdate stateUpdate) {
+        final LightStatusListener listener = lightStatusListeners.get(light.getId());
+        if (listener == null) {
+            logger.debug("Update light state without handler skipped {}.", light.getId());
+            return;
+        }
+        updateLightState(listener, light, stateUpdate);
+    }
+
+    @Override
+    public void updateLightState(LightStatusListener listener, FullLight light, StateUpdate stateUpdate) {
         if (hueBridge != null) {
+            listener.enablePollBypassBeforeCmd();
             hueBridge.setLightState(light, stateUpdate).thenAccept(result -> {
                 try {
                     hueBridge.handleErrors(result);
+                    listener.enablePollBypassAfterCmd(stateUpdate.getTransitionTime());
                 } catch (Exception e) {
-                    handleStateUpdateException(light, stateUpdate, e);
+                    listener.disablePollBypass();
+                    handleStateUpdateException(listener, light, stateUpdate, e);
                 }
             }).exceptionally(e -> {
-                handleStateUpdateException(light, stateUpdate, e);
+                handleStateUpdateException(listener, light, stateUpdate, e);
                 return null;
             });
         } else {
@@ -412,15 +425,16 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         }
     }
 
-    private void handleStateUpdateException(FullLight light, StateUpdate stateUpdate, Throwable e) {
+    private void handleStateUpdateException(LightStatusListener listener, FullLight light, StateUpdate stateUpdate,
+            Throwable e) {
         if (e instanceof DeviceOffException) {
             if (stateUpdate.getColorTemperature() != null && stateUpdate.getBrightness() == null) {
                 // If there is only a change of the color temperature, we do not want the light
                 // to be turned on (i.e. change its brightness).
                 return;
             } else {
-                updateLightState(light, LightStateConverter.toOnOffLightState(OnOffType.ON));
-                updateLightState(light, stateUpdate);
+                updateLightState(listener, light, LightStateConverter.toOnOffLightState(OnOffType.ON));
+                updateLightState(listener, light, stateUpdate);
             }
         } else if (e instanceof IOException) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());

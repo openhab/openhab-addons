@@ -94,14 +94,15 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
 
     private static final String OSRAM_PAR16_50_TW_MODEL_ID = "PAR16_50_TW";
 
-    private final Logger logger = LoggerFactory.getLogger(HueLightHandler.class);
+    private static final long BYPASS_MIN_DURATION_BEFORE_CMD = 2000L;
+    private static final long BYPASS_MIN_DURATION_AFTER_CMD = 250L;
 
-    private static final long BYPASS_LIGHT_POLL_DURATION = 1000;
+    private final Logger logger = LoggerFactory.getLogger(HueLightHandler.class);
 
     private @NonNullByDefault({}) String lightId;
 
     private @Nullable FullLight lastFullLight;
-    private Long lastTimeCmd = 0L;
+    private Long endBypassTime = 0L;
 
     private @Nullable Integer lastSentColorTemp;
     private @Nullable Integer lastSentBrightness;
@@ -225,7 +226,7 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
             return;
         }
 
-        final FullLight light = lastFullLight;
+        final FullLight light = lastFullLight == null ? bridgeHandler.getLightById(lightId) : lastFullLight;
         if (light == null) {
             logger.debug("hue light not known on bridge. Cannot handle command.");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -349,12 +350,26 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
             if (tmpColorTemp != null) {
                 lastSentColorTemp = tmpColorTemp;
             }
-
-            lastTimeCmd = System.currentTimeMillis();
-            bridgeHandler.updateLightState(light, lightState);
+            bridgeHandler.updateLightState(this, light, lightState);
         } else {
             logger.warn("Command sent to an unknown channel id: {}:{}", getThing().getUID(), channel);
         }
+    }
+
+    @Override
+    public void enablePollBypassBeforeCmd() {
+        endBypassTime = System.currentTimeMillis() + BYPASS_MIN_DURATION_BEFORE_CMD;
+    }
+
+    @Override
+    public void enablePollBypassAfterCmd(@Nullable Long fadeTime) {
+        endBypassTime = System.currentTimeMillis() + BYPASS_MIN_DURATION_AFTER_CMD
+                + ((fadeTime != null) ? fadeTime.longValue() : 0L);
+    }
+
+    @Override
+    public void disablePollBypass() {
+        endBypassTime = 0L;
     }
 
     /*
@@ -445,7 +460,7 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
     public boolean onLightStateChanged(@Nullable HueBridge bridge, FullLight fullLight) {
         logger.trace("onLightStateChanged() was called");
 
-        if (System.currentTimeMillis() - lastTimeCmd <= BYPASS_LIGHT_POLL_DURATION) {
+        if (System.currentTimeMillis() <= endBypassTime) {
             logger.debug("Bypass light update after command ({}).", lightId);
             return false;
         }

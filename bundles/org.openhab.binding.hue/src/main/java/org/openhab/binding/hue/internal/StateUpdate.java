@@ -27,6 +27,7 @@ public class StateUpdate extends ConfigUpdate {
 
     private Integer colorTemperature;
     private Integer brightness;
+    private Long transitiontime;
 
     /**
      * Turn light on.
@@ -193,7 +194,12 @@ public class StateUpdate extends ConfigUpdate {
         }
 
         commands.add(new Command("transitiontime", timeMillis / 100));
+        this.transitiontime = timeMillis;
         return this;
+    }
+
+    public Long getTransitionTime() {
+        return transitiontime;
     }
 
     /**
