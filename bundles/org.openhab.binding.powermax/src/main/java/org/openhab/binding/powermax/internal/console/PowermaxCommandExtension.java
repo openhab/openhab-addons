@@ -95,5 +95,4 @@ public class PowermaxCommandExtension extends AbstractConsoleCommandExtension {
     protected void unsetThingRegistry(ThingRegistry thingRegistry) {
         this.thingRegistry = null;
     }
-
 }

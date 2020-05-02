@@ -6,16 +6,16 @@
 
 	<thing-type id="rgbv2Led">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridgeV3" />
+			<bridge-type-ref id="bridgeV3"/>
 		</supported-bridge-type-refs>
 		<label>Color Bulb (old)</label>
 		<description>The oldest produced color bulb. Without a white channel. No saturation support.</description>
 		<category>Lightbulb</category>
 
 		<channels>
-			<channel id="ledbrightness" typeId="ledbrightness" />
-			<channel id="ledcolor" typeId="ledcolor" />
-			<channel id="animation_mode_relative" typeId="animation_mode_relative" />
+			<channel id="ledbrightness" typeId="ledbrightness"/>
+			<channel id="ledcolor" typeId="ledcolor"/>
+			<channel id="animation_mode_relative" typeId="animation_mode_relative"/>
 		</channels>
 
 		<config-description>

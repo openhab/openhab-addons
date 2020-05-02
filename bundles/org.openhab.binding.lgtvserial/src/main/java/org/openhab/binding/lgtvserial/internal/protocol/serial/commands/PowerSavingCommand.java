@@ -23,5 +23,4 @@ public class PowerSavingCommand extends BaseStringCommand {
     protected PowerSavingCommand(int setId) {
         super('f', 'l', setId);
     }
-
 }

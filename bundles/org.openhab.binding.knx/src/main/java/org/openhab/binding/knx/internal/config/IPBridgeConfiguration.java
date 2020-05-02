@@ -52,5 +52,4 @@ public class IPBridgeConfiguration extends BridgeConfiguration {
     public String getLocalSourceAddr() {
         return localSourceAddr;
     }
-
 }

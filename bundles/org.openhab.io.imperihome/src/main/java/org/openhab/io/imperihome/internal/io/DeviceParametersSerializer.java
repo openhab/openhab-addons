@@ -38,5 +38,4 @@ public class DeviceParametersSerializer implements JsonSerializer<DeviceParamete
         }
         return result;
     }
-
 }

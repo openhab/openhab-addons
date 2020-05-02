@@ -313,5 +313,4 @@ public class LifxSelectorUtil {
         }
         return false;
     }
-
 }

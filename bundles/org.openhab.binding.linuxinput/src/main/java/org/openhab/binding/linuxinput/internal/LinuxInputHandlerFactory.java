@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.linuxinput.internal;
 
+import static org.openhab.binding.linuxinput.internal.LinuxInputBindingConstants.THING_TYPE_DEVICE;
+
+import java.util.Collections;
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -20,11 +25,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
-
-import java.util.Collections;
-import java.util.Set;
-
-import static org.openhab.binding.linuxinput.internal.LinuxInputBindingConstants.THING_TYPE_DEVICE;
 
 /**
  * InputHandlerFactory for Linux Input devices.

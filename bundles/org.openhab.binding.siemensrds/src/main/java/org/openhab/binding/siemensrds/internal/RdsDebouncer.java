@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.siemensrds.internal;
 
-import static org.openhab.binding.siemensrds.internal.RdsBindingConstants.*;
+import static org.openhab.binding.siemensrds.internal.RdsBindingConstants.DEBOUNCE_DELAY;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -26,7 +26,7 @@ import java.util.Map;
  */
 public class RdsDebouncer {
 
-    private final Map<String, DebounceDelay> channels = new HashMap<String, DebounceDelay>();
+    private final Map<String, DebounceDelay> channels = new HashMap<>();
 
     static class DebounceDelay {
 
@@ -53,5 +53,4 @@ public class RdsDebouncer {
     public Boolean timeExpired(String channelId) {
         return (channels.containsKey(channelId) ? channels.get(channelId).timeExpired() : true);
     }
-
 }

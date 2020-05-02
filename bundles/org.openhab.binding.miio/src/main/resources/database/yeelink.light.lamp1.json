@@ -28,19 +28,29 @@
 				"property": "bright",
 				"friendlyName": "Brightness",
 				"channel": "brightness",
-				"type": "Number",
+				"type": "Dimmer",
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_bright",
-						"parameterType": "NUMBER"
+						"parameterType": "NUMBER",
+						"condition": {
+							"name": "BrightnessExisting"
+						}
+					},
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF",
+						"condition": {
+							"name": "BrightnessOnOff"
+						}
 					}
 				]
 			},
 			{
 				"property": "delayoff",
-				"friendlyName": "Shutdowm Timer",
+				"friendlyName": "Shutdown Timer",
 				"channel": "delayoff",
 				"type": "Number",
 				"refresh": true,
@@ -49,7 +59,10 @@
 					{
 						"command": "cron_add",
 						"parameterType": "NUMBER",
-						"preCommandParameter1": "0"
+						"parameters": [
+							0,
+							"$value$"
+						]
 					}
 				]
 			},
@@ -64,8 +77,11 @@
 					{
 						"command": "set_ct_abx",
 						"parameterType": "NUMBER",
-						"parameter1": "\"smooth\"",
-						"parameter2": "500"
+						"parameters": [
+							"$value$",
+							"smooth",
+							500
+						]
 					}
 				]
 			},

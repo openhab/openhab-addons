@@ -40,5 +40,4 @@ public abstract class GetProducts implements BridgeCommunicationProtocol {
      * @return <b>arrayOfVeluxProducts</b> as Array of VeluxProduct.
      */
     public abstract VeluxProduct[] getProducts();
-
 }

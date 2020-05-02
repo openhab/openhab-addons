@@ -6,7 +6,8 @@
 	<name>PJLinkDevice Binding</name>
 	<description>This binding can control PJLink compatible devices.
 
-		The PJLink protocol was mainly standardized for digital projectors, but some other types of devices also use it, in
+		The PJLink protocol was mainly standardized for digital
+		projectors, but some other types of devices also use it, in
 		particular TV screens.</description>
 	<author>Nils Schnabel</author>
 

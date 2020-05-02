@@ -13,6 +13,7 @@
 package org.openhab.binding.velbus.internal;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.smarthome.core.thing.ChannelUID;
 
@@ -47,7 +48,7 @@ public class VelbusModuleAddress {
     }
 
     public byte[] getActiveAddresses() {
-        ArrayList<Byte> activeAddresses = new ArrayList<Byte>();
+        List<Byte> activeAddresses = new ArrayList<>();
         activeAddresses.add(address);
 
         for (int i = 0; i < subAddresses.length; i++) {

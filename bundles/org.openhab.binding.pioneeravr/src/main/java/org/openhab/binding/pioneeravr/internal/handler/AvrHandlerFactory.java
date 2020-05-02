@@ -38,6 +38,8 @@ public class AvrHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
             Stream.of(PioneerAvrBindingConstants.IP_AVR_THING_TYPE, PioneerAvrBindingConstants.IP_AVR_THING_TYPE2014,
                     PioneerAvrBindingConstants.IP_AVR_THING_TYPE2015, PioneerAvrBindingConstants.IP_AVR_THING_TYPE2016,
+                    PioneerAvrBindingConstants.IP_AVR_THING_TYPE2017, PioneerAvrBindingConstants.IP_AVR_THING_TYPE2018,
+                    PioneerAvrBindingConstants.IP_AVR_THING_TYPE2019, PioneerAvrBindingConstants.IP_AVR_THING_TYPE2020,
                     PioneerAvrBindingConstants.IP_AVR_UNSUPPORTED_THING_TYPE,
                     PioneerAvrBindingConstants.SERIAL_AVR_THING_TYPE).collect(Collectors.toSet()));
 
@@ -58,6 +60,10 @@ public class AvrHandlerFactory extends BaseThingHandlerFactory {
                 || thingTypeUID.equals(PioneerAvrBindingConstants.IP_AVR_THING_TYPE2014)
                 || thingTypeUID.equals(PioneerAvrBindingConstants.IP_AVR_THING_TYPE2015)
                 || thingTypeUID.equals(PioneerAvrBindingConstants.IP_AVR_THING_TYPE2016)
+                || thingTypeUID.equals(PioneerAvrBindingConstants.IP_AVR_THING_TYPE2017)
+                || thingTypeUID.equals(PioneerAvrBindingConstants.IP_AVR_THING_TYPE2018)
+                || thingTypeUID.equals(PioneerAvrBindingConstants.IP_AVR_THING_TYPE2019)
+                || thingTypeUID.equals(PioneerAvrBindingConstants.IP_AVR_THING_TYPE2020)
                 || thingTypeUID.equals(PioneerAvrBindingConstants.IP_AVR_UNSUPPORTED_THING_TYPE)) {
             return new IpAvrHandler(thing);
         } else if (thingTypeUID.equals(PioneerAvrBindingConstants.SERIAL_AVR_THING_TYPE)) {

@@ -47,8 +47,8 @@ class JCgetFirmware extends GetFirmware implements JsonBridgeCommunicationProtoc
      */
 
     /**
-     * Bridge I/O Request message used by {@link org.openhab.binding.velux.internal.bridge.json.JsonVeluxBridge JsonVeluxBridge}
-     * for serializing.
+     * Bridge I/O Request message used by {@link org.openhab.binding.velux.internal.bridge.json.JsonVeluxBridge
+     * JsonVeluxBridge} for serializing.
      * <P>
      * Resulting JSON:
      *
@@ -67,7 +67,7 @@ class JCgetFirmware extends GetFirmware implements JsonBridgeCommunicationProtoc
 
         public Request() {
             this.action = "getFirmware";
-            this.params = new HashMap<String, String>();
+            this.params = new HashMap<>();
         }
     }
 
@@ -162,5 +162,4 @@ class JCgetFirmware extends GetFirmware implements JsonBridgeCommunicationProtoc
         VeluxGwFirmware gwFirmware = new VeluxGwFirmware(response.data.version);
         return gwFirmware;
     }
-
 }

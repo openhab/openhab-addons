@@ -15,6 +15,7 @@ package org.openhab.binding.denonmarantz.internal;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
@@ -72,8 +73,8 @@ public class DenonMarantzBindingConstants {
     public static final String CHANNEL_ZONE4_MUTE = "zone4#mute";
     public static final String CHANNEL_ZONE4_INPUT = "zone4#input";
 
-    // HashMap of Zone2 Channel Type UIDs (to be added to Thing later when needed)
-    public static final LinkedHashMap<String, ChannelTypeUID> ZONE2_CHANNEL_TYPES = new LinkedHashMap<String, ChannelTypeUID>();
+    // Map of Zone2 Channel Type UIDs (to be added to Thing later when needed)
+    public static final Map<String, ChannelTypeUID> ZONE2_CHANNEL_TYPES = new LinkedHashMap<>();
     static {
         ZONE2_CHANNEL_TYPES.put(CHANNEL_ZONE2_POWER, new ChannelTypeUID(BINDING_ID, "zonePower"));
         ZONE2_CHANNEL_TYPES.put(CHANNEL_ZONE2_VOLUME, new ChannelTypeUID(BINDING_ID, "volume"));
@@ -82,8 +83,8 @@ public class DenonMarantzBindingConstants {
         ZONE2_CHANNEL_TYPES.put(CHANNEL_ZONE2_INPUT, new ChannelTypeUID(BINDING_ID, "input"));
     }
 
-    // HashMap of Zone3 Channel Type UIDs (to be added to Thing later when needed)
-    public static final LinkedHashMap<String, ChannelTypeUID> ZONE3_CHANNEL_TYPES = new LinkedHashMap<String, ChannelTypeUID>();
+    // Map of Zone3 Channel Type UIDs (to be added to Thing later when needed)
+    public static final Map<String, ChannelTypeUID> ZONE3_CHANNEL_TYPES = new LinkedHashMap<>();
     static {
         ZONE3_CHANNEL_TYPES.put(CHANNEL_ZONE3_POWER, new ChannelTypeUID(BINDING_ID, "zonePower"));
         ZONE3_CHANNEL_TYPES.put(CHANNEL_ZONE3_VOLUME, new ChannelTypeUID(BINDING_ID, "volume"));
@@ -92,8 +93,8 @@ public class DenonMarantzBindingConstants {
         ZONE3_CHANNEL_TYPES.put(CHANNEL_ZONE3_INPUT, new ChannelTypeUID(BINDING_ID, "input"));
     }
 
-    // HashMap of Zone4 Channel Type UIDs (to be added to Thing later when needed)
-    public static final LinkedHashMap<String, ChannelTypeUID> ZONE4_CHANNEL_TYPES = new LinkedHashMap<String, ChannelTypeUID>();
+    // Map of Zone4 Channel Type UIDs (to be added to Thing later when needed)
+    public static final Map<String, ChannelTypeUID> ZONE4_CHANNEL_TYPES = new LinkedHashMap<>();
     static {
         ZONE4_CHANNEL_TYPES.put(CHANNEL_ZONE4_POWER, new ChannelTypeUID(BINDING_ID, "zonePower"));
         ZONE4_CHANNEL_TYPES.put(CHANNEL_ZONE4_VOLUME, new ChannelTypeUID(BINDING_ID, "volume"));
@@ -108,7 +109,7 @@ public class DenonMarantzBindingConstants {
      * thing-types.xml)
      * See https://github.com/eclipse/smarthome/pull/4787#issuecomment-362287430
      */
-    public static final HashMap<String, String> CHANNEL_ITEM_TYPES = new HashMap<String, String>();
+    public static final Map<String, String> CHANNEL_ITEM_TYPES = new HashMap<>();
     static {
         CHANNEL_ITEM_TYPES.put(CHANNEL_ZONE2_POWER, "Switch");
         CHANNEL_ITEM_TYPES.put(CHANNEL_ZONE2_VOLUME, "Dimmer");

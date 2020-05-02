@@ -358,7 +358,8 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
 
     @Override
     public void onConnectionCreated(AbstractConnection connection) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Waiting for connection with Yamaha device");
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                "Waiting for connection with Yamaha device");
 
         this.connection = connection;
         this.systemControl = null;
@@ -372,6 +373,7 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
 
     /**
      * Attempts to perform a one-time initialization after a connection is created.
+     * 
      * @return true if initialization was successful
      */
     private boolean ensureConnectionInitialized() {
@@ -402,7 +404,9 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
 
     private void onConnectivityError(Exception e) {
         String description = e.getMessage();
-        logger.debug("Communication error. Either the Yamaha thing configuration is invalid or the device is offline. Details: {}", description);
+        logger.debug(
+                "Communication error. Either the Yamaha thing configuration is invalid or the device is offline. Details: {}",
+                description);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, description);
     }
 

@@ -25,7 +25,7 @@ public class HistoryList {
     private List<HistoryItem> values;
 
     public HistoryList() {
-        this(new LinkedList<HistoryItem>());
+        this(new LinkedList<>());
     }
 
     public HistoryList(List<HistoryItem> resultItems) {
@@ -39,5 +39,4 @@ public class HistoryList {
     public void setValues(List<HistoryItem> values) {
         this.values = values;
     }
-
 }

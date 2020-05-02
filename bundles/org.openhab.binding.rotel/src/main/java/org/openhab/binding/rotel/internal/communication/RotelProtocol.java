@@ -64,5 +64,4 @@ public enum RotelProtocol {
         }
         throw new RotelException("Invalid protocol name: " + name);
     }
-
 }

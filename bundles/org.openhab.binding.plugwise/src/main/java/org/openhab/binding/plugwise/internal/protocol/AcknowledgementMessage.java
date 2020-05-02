@@ -162,5 +162,4 @@ public class AcknowledgementMessage extends Message {
             throw new PlugwisePayloadMismatchException(ACKNOWLEDGEMENT_V2, V2_EXTENDED_PAYLOAD_PATTERN, payload);
         }
     }
-
 }

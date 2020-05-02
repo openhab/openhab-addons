@@ -28,5 +28,4 @@ public class ControllerConfiguration {
     public String host;
     public int port = 10102;
     public int refresh = 5; // seconds
-
 }

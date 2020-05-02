@@ -40,7 +40,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = ThingHandlerFactory.class, immediate = true)
 public class SinopeHandlerFactory extends BaseThingHandlerFactory {
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = SinopeBindingConstants.SUPPORTED_THING_TYPES_UIDS;
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = SinopeBindingConstants.SUPPORTED_THING_TYPES_UIDS;
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     @Override
@@ -65,8 +65,8 @@ public class SinopeHandlerFactory extends BaseThingHandlerFactory {
     private synchronized void registerDiscoveryService(SinopeGatewayHandler bridge) {
         SinopeThingsDiscoveryService discoveryService = new SinopeThingsDiscoveryService(bridge);
 
-        this.discoveryServiceRegs.put(bridge.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+        this.discoveryServiceRegs.put(bridge.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 
     @Override

@@ -28,7 +28,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.CoreItemFactory;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -45,10 +47,12 @@ import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.eclipse.smarthome.core.types.StateDescription;
+import org.eclipse.smarthome.core.types.StateDescriptionFragment;
+import org.eclipse.smarthome.core.types.StateDescriptionFragmentBuilder;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.km200.internal.KM200ChannelTypeProvider;
 import org.openhab.binding.km200.internal.KM200ServiceObject;
@@ -63,10 +67,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author Markus Eckhardt - Initial contribution
  */
+@NonNullByDefault
 public class KM200ThingHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(KM200ThingHandler.class);
-    private static URI configDescriptionUriChannel;
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
             .of(THING_TYPE_DHW_CIRCUIT, THING_TYPE_HEATING_CIRCUIT, THING_TYPE_SOLAR_CIRCUIT, THING_TYPE_HEAT_SOURCE,
@@ -74,17 +78,11 @@ public class KM200ThingHandler extends BaseThingHandler {
                     THING_TYPE_GATEWAY, THING_TYPE_NOTIFICATION, THING_TYPE_SYSTEM, THING_TYPE_SYSTEMSTATES)
             .collect(Collectors.toSet()));
 
-    private KM200ChannelTypeProvider channelTypeProvider;
+    private final KM200ChannelTypeProvider channelTypeProvider;
 
     public KM200ThingHandler(Thing thing, KM200ChannelTypeProvider channelTypeProvider) {
         super(thing);
         this.channelTypeProvider = channelTypeProvider;
-        try {
-            configDescriptionUriChannel = new URI(CONFIG_DESCRIPTION_URI_CHANNEL);
-        } catch (URISyntaxException ex) {
-            logger.warn("Can't create ConfigDescription URI '{}', ConfigDescription for channels not avilable!",
-                    CONFIG_DESCRIPTION_URI_CHANNEL);
-        }
     }
 
     @Override
@@ -98,27 +96,30 @@ public class KM200ThingHandler extends BaseThingHandler {
             return;
         }
         Channel channel = getThing().getChannel(channelUID.getId());
-
-        if (command instanceof DateTimeType || command instanceof DecimalType || command instanceof StringType
-                || command instanceof OnOffType) {
-            gateway.prepareMessage(this.getThing(), channel, command);
-        } else if (command instanceof RefreshType) {
-            gateway.refreshChannel(channel);
-        } else {
-            logger.warn("Unsupported Command: {} Class: {}", command.toFullString(), command.getClass());
+        if (null != channel) {
+            if (command instanceof DateTimeType || command instanceof DecimalType || command instanceof StringType
+                    || command instanceof OnOffType) {
+                gateway.prepareMessage(this.getThing(), channel, command);
+            } else if (command instanceof RefreshType) {
+                gateway.refreshChannel(channel);
+            } else {
+                logger.warn("Unsupported Command: {} Class: {}", command.toFullString(), command.getClass());
+            }
         }
     }
 
     /**
      * Choose a tag for a channel
      */
-    Set<String> checkTag(String unitOfMeasure, boolean readOnly) {
-        Set<String> tags = new HashSet<String>();
+    Set<String> checkTags(String unitOfMeasure, @Nullable Boolean readOnly) {
+        Set<String> tags = new HashSet<>();
         if (unitOfMeasure.indexOf("°C") == 0 || unitOfMeasure.indexOf("K") == 0) {
-            if (readOnly) {
-                tags.add("CurrentTemperature");
-            } else {
-                tags.add("TargetTemperature");
+            if (null != readOnly) {
+                if (readOnly) {
+                    tags.add("CurrentTemperature");
+                } else {
+                    tags.add("TargetTemperature");
+                }
             }
         }
         return tags;
@@ -127,10 +128,12 @@ public class KM200ThingHandler extends BaseThingHandler {
     /**
      * Choose a category for a channel
      */
-    String checkCategory(String unitOfMeasure, String topCategory, boolean readOnly) {
+    String checkCategory(String unitOfMeasure, String topCategory, @Nullable Boolean readOnly) {
         String category = null;
         if (unitOfMeasure.indexOf("°C") == 0 || unitOfMeasure.indexOf("K") == 0) {
-            if (unitOfMeasure.indexOf("°C") == 0 || unitOfMeasure.indexOf("K") == 0) {
+            if (null == readOnly) {
+                category = topCategory;
+            } else {
                 if (readOnly) {
                     category = "Temperature";
                 } else {
@@ -160,27 +163,46 @@ public class KM200ThingHandler extends BaseThingHandler {
     /**
      * Creates a new channel
      */
+    @Nullable
     Channel createChannel(ChannelTypeUID channelTypeUID, ChannelUID channelUID, String root, String type,
-            String currentPathName, String description, String label, boolean addProperties, boolean switchProgram,
-            StateDescription state, String unitOfMeasure) {
+            @Nullable String currentPathName, String description, String label, boolean addProperties,
+            boolean switchProgram, StateDescriptionFragment state, String unitOfMeasure) {
+        URI configDescriptionUriChannel = null;
         Channel newChannel = null;
+        ChannelType channelType = null;
         Map<String, String> chProperties = new HashMap<>();
         String itemType = "";
         String category = null;
-        if ("Number".equals(type)) {
+        if (CoreItemFactory.NUMBER.equals(type)) {
             itemType = "NumberType";
             category = "Number";
-        } else if ("String".equals(type)) {
+        } else if (CoreItemFactory.STRING.equals(type)) {
             itemType = "StringType";
             category = "Text";
+        } else {
+            logger.info("Channeltype {} not supported", type);
+            return null;
         }
-        ChannelType channelType = new ChannelType(channelTypeUID, false, itemType, ChannelKind.STATE, label,
-                description, checkCategory(unitOfMeasure, category, state.isReadOnly()),
-                checkTag(unitOfMeasure, state.isReadOnly()), state, null, configDescriptionUriChannel);
+        try {
+            configDescriptionUriChannel = new URI(CONFIG_DESCRIPTION_URI_CHANNEL);
+            channelType = ChannelTypeBuilder.state(channelTypeUID, label, itemType) //
+                    .withDescription(description) //
+                    .withCategory(checkCategory(unitOfMeasure, category, state.isReadOnly())) //
+                    .withTags(checkTags(unitOfMeasure, state.isReadOnly())) //
+                    .withStateDescription(state.toStateDescription()) //
+                    .withConfigDescriptionURI(configDescriptionUriChannel).build();
+        } catch (URISyntaxException ex) {
+            logger.warn("Can't create ConfigDescription URI '{}', ConfigDescription for channels not avilable!",
+                    CONFIG_DESCRIPTION_URI_CHANNEL);
+            channelType = ChannelTypeBuilder.state(channelTypeUID, label, itemType) //
+                    .withDescription(description) //
+                    .withCategory(checkCategory(unitOfMeasure, category, state.isReadOnly())) //
+                    .withTags(checkTags(unitOfMeasure, state.isReadOnly())).build();
+        }
         channelTypeProvider.addChannelType(channelType);
 
         chProperties.put("root", KM200Utils.translatesPathToName(root));
-        if (switchProgram) {
+        if (null != currentPathName && switchProgram) {
             chProperties.put(SWITCH_PROGRAM_CURRENT_PATH_NAME, currentPathName);
         }
         if (addProperties) {
@@ -216,44 +238,72 @@ public class KM200ThingHandler extends BaseThingHandler {
                 logger.debug("Bridge: not initialized: {}", bridge);
                 return;
             }
-            List<Channel> subChannels = new ArrayList<Channel>();
+            List<Channel> subChannels = new ArrayList<>();
             if (gateway.getDevice().containsService(service)) {
                 KM200ServiceObject serObj = gateway.getDevice().getServiceObject(service);
-                addChannels(serObj, thing, subChannels, "");
+                if (null != serObj) {
+                    addChannels(serObj, thing, subChannels, "");
+                }
             } else if (service.contains(SWITCH_PROGRAM_PATH_NAME)) {
                 String currentPathName = thing.getProperties().get(SWITCH_PROGRAM_CURRENT_PATH_NAME);
-                StateDescription state = new StateDescription(null, null, null, "%s", false,
-                        KM200SwitchProgramServiceHandler.daysList);
+                StateDescriptionFragment state = StateDescriptionFragmentBuilder.create().withPattern("%s")
+                        .withOptions(KM200SwitchProgramServiceHandler.daysList).build();
                 Channel newChannel = createChannel(new ChannelTypeUID(thing.getUID().getAsString() + ":" + "weekday"),
-                        new ChannelUID(thing.getUID(), "weekday"), service + "/" + "weekday", "String", currentPathName,
-                        "Current selected weekday for cycle selection", "Weekday", true, true, state, "");
-                subChannels.add(newChannel);
+                        new ChannelUID(thing.getUID(), "weekday"), service + "/" + "weekday", CoreItemFactory.STRING,
+                        currentPathName, "Current selected weekday for cycle selection", "Weekday", true, true, state,
+                        "");
+                if (null == newChannel) {
+                    logger.warn("Creation of the channel {} was not possible", thing.getUID());
+                } else {
+                    subChannels.add(newChannel);
+                }
 
-                state = new StateDescription(BigDecimal.valueOf(0), null, BigDecimal.valueOf(1), "%d", true, null);
+                state = StateDescriptionFragmentBuilder.create().withMinimum(BigDecimal.ZERO).withStep(BigDecimal.ONE)
+                        .withPattern("%d").withReadOnly(true).build();
                 newChannel = createChannel(new ChannelTypeUID(thing.getUID().getAsString() + ":" + "nbrCycles"),
-                        new ChannelUID(thing.getUID(), "nbrCycles"), service + "/" + "nbrCycles", "Number",
-                        currentPathName, "Number of switching cycles", "Number", true, true, state, "");
-                subChannels.add(newChannel);
+                        new ChannelUID(thing.getUID(), "nbrCycles"), service + "/" + "nbrCycles",
+                        CoreItemFactory.NUMBER, currentPathName, "Number of switching cycles", "Number", true, true,
+                        state, "");
+                if (null == newChannel) {
+                    logger.warn("Creation of the channel {} was not possible", thing.getUID());
+                } else {
+                    subChannels.add(newChannel);
+                }
 
-                state = new StateDescription(BigDecimal.valueOf(0), null, BigDecimal.valueOf(1), "%d", false, null);
+                state = StateDescriptionFragmentBuilder.create().withMinimum(BigDecimal.ZERO).withStep(BigDecimal.ONE)
+                        .withPattern("%d").build();
                 newChannel = createChannel(new ChannelTypeUID(thing.getUID().getAsString() + ":" + "cycle"),
-                        new ChannelUID(thing.getUID(), "cycle"), service + "/" + "cycle", "Number", currentPathName,
-                        "Current selected cycle", "Cycle", true, true, state, "");
-                subChannels.add(newChannel);
+                        new ChannelUID(thing.getUID(), "cycle"), service + "/" + "cycle", CoreItemFactory.NUMBER,
+                        currentPathName, "Current selected cycle", "Cycle", true, true, state, "");
+                if (null == newChannel) {
+                    logger.warn("Creation of the channel {} was not possible", thing.getUID());
+                } else {
+                    subChannels.add(newChannel);
+                }
 
-                state = new StateDescription(BigDecimal.valueOf(0), null, BigDecimal.valueOf(1), "%d minutes", false,
-                        null);
+                state = StateDescriptionFragmentBuilder.create().withMinimum(BigDecimal.ZERO).withStep(BigDecimal.ONE)
+                        .withPattern("%d minutes").build();
                 String posName = thing.getProperties().get(SWITCH_PROGRAM_POSITIVE);
                 newChannel = createChannel(new ChannelTypeUID(thing.getUID().getAsString() + ":" + posName),
-                        new ChannelUID(thing.getUID(), posName), service + "/" + posName, "Number", currentPathName,
-                        "Positive switch of the cycle, like 'Day' 'On'", posName, true, true, state, "minutes");
-                subChannels.add(newChannel);
+                        new ChannelUID(thing.getUID(), posName), service + "/" + posName, CoreItemFactory.NUMBER,
+                        currentPathName, "Positive switch of the cycle, like 'Day' 'On'", posName, true, true, state,
+                        "minutes");
+                if (null == newChannel) {
+                    logger.warn("Creation of the channel {} was not possible", thing.getUID());
+                } else {
+                    subChannels.add(newChannel);
+                }
 
                 String negName = thing.getProperties().get(SWITCH_PROGRAM_NEGATIVE);
                 newChannel = createChannel(new ChannelTypeUID(thing.getUID().getAsString() + ":" + negName),
-                        new ChannelUID(thing.getUID(), negName), service + "/" + negName, "Number", currentPathName,
-                        "Negative switch of the cycle, like 'Night' 'Off'", negName, true, true, state, "minutes");
-                subChannels.add(newChannel);
+                        new ChannelUID(thing.getUID(), negName), service + "/" + negName, CoreItemFactory.NUMBER,
+                        currentPathName, "Negative switch of the cycle, like 'Night' 'Off'", negName, true, true, state,
+                        "minutes");
+                if (null == newChannel) {
+                    logger.warn("Creation of the channel {} was not possible", thing.getUID());
+                } else {
+                    subChannels.add(newChannel);
+                }
             }
             ThingBuilder thingBuilder = editThing();
             List<Channel> actChannels = thing.getChannels();
@@ -307,7 +357,7 @@ public class KM200ThingHandler extends BaseThingHandler {
             String subKeyType = serObj.serviceTreeMap.get(subKey).getServiceType();
             boolean readOnly;
             String unitOfMeasure = "";
-            StateDescription state = null;
+            StateDescriptionFragment state = null;
             ChannelTypeUID channelTypeUID = new ChannelTypeUID(
                     thing.getUID().getAsString() + ":" + subNameAddon + subKey);
             Channel newChannel = null;
@@ -320,27 +370,33 @@ public class KM200ThingHandler extends BaseThingHandler {
             if ("temperatures".compareTo(thing.getUID().getId()) == 0) {
                 unitOfMeasure = "°C";
             }
-            logger.debug("Create things: {} id: {} channel: {}", thing.getUID(), subKey, thing.getUID().getId());
+            logger.trace("Create things: {} id: {} channel: {}", thing.getUID(), subKey, thing.getUID().getId());
             switch (subKeyType) {
-                case "stringValue":
+                case DATA_TYPE_STRING_VALUE:
                     /* Creating an new channel type with capabilities from service */
-                    List<@NonNull StateOption> options = null;
+                    List<StateOption> options = null;
                     if (serObj.serviceTreeMap.get(subKey).getValueParameter() != null) {
-                        options = new ArrayList<StateOption>();
+                        options = new ArrayList<>();
                         // The type is definitely correct here
                         @SuppressWarnings("unchecked")
                         List<String> subValParas = (List<String>) serObj.serviceTreeMap.get(subKey).getValueParameter();
-                        for (String para : subValParas) {
-                            StateOption stateOption = new StateOption(para, para);
-                            options.add(stateOption);
+                        if (null != subValParas) {
+                            for (String para : subValParas) {
+                                StateOption stateOption = new StateOption(para, para);
+                                options.add(stateOption);
+                            }
                         }
                     }
-                    state = new StateDescription(null, null, null, "%s", readOnly, options);
-                    newChannel = createChannel(channelTypeUID, channelUID, root, "String", null, subKey, subKey, true,
-                            false, state, unitOfMeasure);
+                    StateDescriptionFragmentBuilder builder = StateDescriptionFragmentBuilder.create().withPattern("%s")
+                            .withReadOnly(readOnly);
+                    if (options != null && !options.isEmpty()) {
+                        builder.withOptions(options);
+                    }
+                    state = builder.build();
+                    newChannel = createChannel(channelTypeUID, channelUID, root, CoreItemFactory.STRING, null, subKey,
+                            subKey, true, false, state, unitOfMeasure);
                     break;
-
-                case "floatValue":
+                case DATA_TYPE_FLOAT_VALUE:
                     /*
                      * Check whether the value is a NaN. Usually all floats are BigDecimal. If it's a double then it's
                      * Double.NaN. In this case we are ignoring this channel.
@@ -348,7 +404,7 @@ public class KM200ThingHandler extends BaseThingHandler {
                     BigDecimal minVal = null;
                     BigDecimal maxVal = null;
                     BigDecimal step = null;
-                    BigDecimal val = null;
+                    final BigDecimal val;
                     Object tmpVal = serObj.serviceTreeMap.get(subKey).getValue();
                     if (tmpVal instanceof Double) {
                         continue;
@@ -368,22 +424,34 @@ public class KM200ThingHandler extends BaseThingHandler {
                         // The type is definitely correct here
                         @SuppressWarnings("unchecked")
                         List<Object> subValParas = (List<Object>) serObj.serviceTreeMap.get(subKey).getValueParameter();
-                        minVal = (BigDecimal) subValParas.get(0);
-                        maxVal = (BigDecimal) subValParas.get(1);
-                        if (subValParas.size() > 2) {
-                            unitOfMeasure = (String) subValParas.get(2);
-                            if ("C".compareTo(unitOfMeasure) == 0) {
-                                unitOfMeasure = "°C";
+                        if (null != subValParas) {
+                            minVal = (BigDecimal) subValParas.get(0);
+                            maxVal = (BigDecimal) subValParas.get(1);
+                            if (subValParas.size() > 2) {
+                                unitOfMeasure = (String) subValParas.get(2);
+                                if ("C".equals(unitOfMeasure)) {
+                                    unitOfMeasure = "°C";
+                                }
                             }
+                            step = BigDecimal.valueOf(0.5);
                         }
-                        step = BigDecimal.valueOf(0.5);
                     }
-                    state = new StateDescription(minVal, maxVal, step, "%.1f " + unitOfMeasure, readOnly, null);
-                    newChannel = createChannel(channelTypeUID, channelUID, root, "Number", null, subKey, subKey, true,
-                            false, state, unitOfMeasure);
+                    builder = StateDescriptionFragmentBuilder.create().withPattern("%.1f " + unitOfMeasure)
+                            .withReadOnly(readOnly);
+                    if (minVal != null) {
+                        builder.withMinimum(minVal);
+                    }
+                    if (maxVal != null) {
+                        builder.withMaximum(maxVal);
+                    }
+                    if (step != null) {
+                        builder.withStep(step);
+                    }
+                    state = builder.build();
+                    newChannel = createChannel(channelTypeUID, channelUID, root, CoreItemFactory.NUMBER, null, subKey,
+                            subKey, true, false, state, unitOfMeasure);
                     break;
-
-                case "refEnum":
+                case DATA_TYPE_REF_ENUM:
                     /* Check whether the sub service should be ignored */
                     boolean ignoreIt = false;
                     for (KM200ThingType tType : KM200ThingType.values()) {
@@ -401,17 +469,19 @@ public class KM200ThingHandler extends BaseThingHandler {
                     /* Search for new services in sub path */
                     addChannels(serObj.serviceTreeMap.get(subKey), thing, subChannels, subKey + "_");
                     break;
-
-                case "errorList":
+                case DATA_TYPE_ERROR_LIST:
                     if ("nbrErrors".equals(subKey) || "error".equals(subKey)) {
-                        state = new StateDescription(null, null, null, "%.0f ", readOnly, null);
+                        state = StateDescriptionFragmentBuilder.create().withPattern("%.0f").withReadOnly(readOnly)
+                                .build();
                         newChannel = createChannel(new ChannelTypeUID(thing.getUID().getAsString() + ":" + subKey),
-                                channelUID, root, "Number", null, subKey, subKey, true, false, state, unitOfMeasure);
-                    } else if ("errorString".equals(subKey)) {
-                        state = new StateDescription(null, null, null, "%s", readOnly, null);
-                        newChannel = createChannel(new ChannelTypeUID(thing.getUID().getAsString() + ":" + subKey),
-                                channelUID, root, "String", null, "Error message", "Text", true, false, state,
+                                channelUID, root, CoreItemFactory.NUMBER, null, subKey, subKey, true, false, state,
                                 unitOfMeasure);
+                    } else if ("errorString".equals(subKey)) {
+                        state = StateDescriptionFragmentBuilder.create().withPattern("%s").withReadOnly(readOnly)
+                                .build();
+                        newChannel = createChannel(new ChannelTypeUID(thing.getUID().getAsString() + ":" + subKey),
+                                channelUID, root, CoreItemFactory.STRING, null, "Error message", "Text", true, false,
+                                state, unitOfMeasure);
                     }
                     break;
             }

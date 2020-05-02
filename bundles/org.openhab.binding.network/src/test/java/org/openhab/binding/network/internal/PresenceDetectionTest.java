@@ -70,7 +70,7 @@ public class PresenceDetectionTest {
 
         subject = spy(new PresenceDetection(listener, (int) CACHETIME));
         subject.networkUtils = networkUtils;
-        subject.cache = spy(new ExpiringCacheAsync<PresenceDetectionValue>(CACHETIME, () -> {
+        subject.cache = spy(new ExpiringCacheAsync<>(CACHETIME, () -> {
             subject.performPresenceDetection(false);
         }));
 
@@ -115,9 +115,10 @@ public class PresenceDetectionTest {
 
     @Test
     public void partialAndFinalCallbackTests() throws InterruptedException, IOException {
-        doReturn(Optional.of(new PingResult(true, 10))).when(networkUtils).nativePing(eq(IpPingMethodEnum.WINDOWS_PING), anyString(), anyInt());
-        doReturn(Optional.of(new PingResult(true, 10))).when(networkUtils).nativeARPPing(eq(ArpPingUtilEnum.IPUTILS_ARPING), anyString(), anyString(),
-                any(), anyInt());
+        doReturn(Optional.of(new PingResult(true, 10))).when(networkUtils).nativePing(eq(IpPingMethodEnum.WINDOWS_PING),
+                anyString(), anyInt());
+        doReturn(Optional.of(new PingResult(true, 10))).when(networkUtils)
+                .nativeARPPing(eq(ArpPingUtilEnum.IPUTILS_ARPING), anyString(), anyString(), any(), anyInt());
         doReturn(Optional.of(new PingResult(true, 10))).when(networkUtils).servicePing(anyString(), anyInt(), anyInt());
 
         assertTrue(subject.performPresenceDetection(false));
@@ -137,9 +138,10 @@ public class PresenceDetectionTest {
 
     @Test
     public void cacheTest() throws InterruptedException, IOException {
-        doReturn(Optional.of(new PingResult(true, 10))).when(networkUtils).nativePing(eq(IpPingMethodEnum.WINDOWS_PING), anyString(), anyInt());
-        doReturn(Optional.of(new PingResult(true, 10))).when(networkUtils).nativeARPPing(eq(ArpPingUtilEnum.IPUTILS_ARPING), anyString(), anyString(),
-                any(), anyInt());
+        doReturn(Optional.of(new PingResult(true, 10))).when(networkUtils).nativePing(eq(IpPingMethodEnum.WINDOWS_PING),
+                anyString(), anyInt());
+        doReturn(Optional.of(new PingResult(true, 10))).when(networkUtils)
+                .nativeARPPing(eq(ArpPingUtilEnum.IPUTILS_ARPING), anyString(), anyString(), any(), anyInt());
         doReturn(Optional.of(new PingResult(true, 10))).when(networkUtils).servicePing(anyString(), anyInt(), anyInt());
 
         doReturn(executorService).when(subject).getThreadsFor(anyInt());

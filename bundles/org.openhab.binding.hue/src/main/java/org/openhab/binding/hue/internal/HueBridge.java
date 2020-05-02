@@ -377,10 +377,10 @@ public class HueBridge {
         requireAuthentication();
 
         String body = update.toJson();
-        return http.putAsync(getRelativeURL("sensors/" + enc(sensor.getId()) + "/state"), body, update.getMessageDelay(),
-                scheduler);
-    }    
-    
+        return http.putAsync(getRelativeURL("sensors/" + enc(sensor.getId()) + "/state"), body,
+                update.getMessageDelay(), scheduler);
+    }
+
     /**
      * Changes the config of a sensor.
      *

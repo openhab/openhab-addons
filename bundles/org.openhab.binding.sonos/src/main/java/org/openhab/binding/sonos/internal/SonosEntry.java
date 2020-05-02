@@ -147,5 +147,4 @@ public class SonosEntry implements Serializable {
     public void setDesc(String desc) {
         this.desc = desc;
     }
-
 }

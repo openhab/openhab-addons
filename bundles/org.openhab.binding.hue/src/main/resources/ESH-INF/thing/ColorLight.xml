@@ -6,16 +6,16 @@
 	<!-- Generic thing for color lights (ZigBee Device ID: 0x0200) -->
 	<thing-type id="0200">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Color Light</label>
 		<description>A dimmable light with changeable colors.</description>
 
 		<channels>
-			<channel id="color" typeId="color" />
-			<channel id="alert" typeId="alert" />
-			<channel id="effect" typeId="effect" />
+			<channel id="color" typeId="color"/>
+			<channel id="alert" typeId="alert"/>
+			<channel id="effect" typeId="effect"/>
 		</channels>
 
 		<representation-property>uniqueId</representation-property>

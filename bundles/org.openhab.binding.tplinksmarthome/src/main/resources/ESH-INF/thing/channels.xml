@@ -10,7 +10,7 @@
 		<label>Switch</label>
 		<description>Shows the switch state of the Smart Home device.</description>
 		<category>Switch</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="led" advanced="true">
 		<item-type>Switch</item-type>
@@ -25,7 +25,7 @@
 		<label>Color Temperature</label>
 		<description>This channel supports adjusting the color temperature from 2700K to 6500K.</description>
 		<category>ColorLight</category>
-		<state min="2700" max="6500" pattern="%d K" />
+		<state min="2700" max="6500" pattern="%d K"/>
 	</channel-type>
 
 	<channel-type id="colorTemperatureAbs2" advanced="true">
@@ -33,7 +33,7 @@
 		<label>Color Temperature</label>
 		<description>This channel supports adjusting the color temperature from 2500K to 9000K.</description>
 		<category>ColorLight</category>
-		<state min="2500" max="9000" pattern="%d K" />
+		<state min="2500" max="9000" pattern="%d K"/>
 	</channel-type>
 
 	<!-- Energy Channel types -->
@@ -80,27 +80,27 @@
 		<label>Outlet Group</label>
 		<category>PowerOutlet</category>
 		<channels>
-			<channel id="switch" typeId="system.power" />
-			<channel id="led" typeId="led" />
-			<channel id="rssi" typeId="rssi" />
+			<channel id="switch" typeId="system.power"/>
+			<channel id="led" typeId="led"/>
+			<channel id="rssi" typeId="rssi"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="switch-outlet">
 		<label>Outlet</label>
 		<category>PowerOutlet</category>
 		<channels>
-			<channel id="switch" typeId="system.power" />
+			<channel id="switch" typeId="system.power"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="energy-outlet">
 		<label>Outlet</label>
 		<category>PowerOutlet</category>
 		<channels>
-			<channel id="switch" typeId="system.power" />
-			<channel id="power" typeId="power" />
-			<channel id="energyUsage" typeId="energy-usage" />
-			<channel id="current" typeId="current" />
-			<channel id="voltage" typeId="voltage" />
+			<channel id="switch" typeId="system.power"/>
+			<channel id="power" typeId="power"/>
+			<channel id="energyUsage" typeId="energy-usage"/>
+			<channel id="current" typeId="current"/>
+			<channel id="voltage" typeId="voltage"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

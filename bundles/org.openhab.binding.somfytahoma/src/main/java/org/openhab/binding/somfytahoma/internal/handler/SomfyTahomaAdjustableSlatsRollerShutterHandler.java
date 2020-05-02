@@ -38,7 +38,7 @@ public class SomfyTahomaAdjustableSlatsRollerShutterHandler extends SomfyTahomaB
         stateNames.put(CONTROL, CLOSURE_OR_ROCKER_STATE);
         stateNames.put(ROCKER, CLOSURE_OR_ROCKER_STATE);
         stateNames.put(ORIENTATION, SLATE_ORIENTATION_STATE);
-        //override state type because the control may return string 'rocker'
+        // override state type because the control may return string 'rocker'
         cacheStateType(CONTROL, TYPE_PERCENT);
     }
 

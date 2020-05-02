@@ -37,5 +37,4 @@ public class CustomChannel extends Channel {
             this.channelCode = channelCode.toString();
         }
     }
-
 }

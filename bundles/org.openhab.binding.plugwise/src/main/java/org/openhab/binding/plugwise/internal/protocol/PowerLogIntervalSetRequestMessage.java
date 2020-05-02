@@ -42,5 +42,4 @@ public class PowerLogIntervalSetRequestMessage extends Message {
         String productionIntervalHex = String.format("%04X", productionInterval.toMinutes());
         return consumptionIntervalHex + productionIntervalHex;
     }
-
 }

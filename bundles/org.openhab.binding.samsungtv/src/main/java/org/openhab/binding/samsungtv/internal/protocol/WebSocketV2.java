@@ -102,7 +102,6 @@ class WebSocketV2 extends WebSocketBase {
                     break;
                 default:
                     logger.debug("V2 Unknown event: {}", msg);
-
             }
         } catch (JsonSyntaxException e) {
             logger.warn("{}: Error ({}) in message: {}", this.getClass().getSimpleName(), e.getMessage(), msg, e);

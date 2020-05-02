@@ -6,7 +6,7 @@
 
 	<thing-type id="appliance" listed="false">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="kmdevice" />
+			<bridge-type-ref id="kmdevice"/>
 		</supported-bridge-type-refs>
 		<label>Appliance</label>
 		<description>This thing is representing the appliance (The heater inside of this heating system).</description>

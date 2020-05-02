@@ -35,5 +35,4 @@ public enum Sensitivity {
     public int toInt() {
         return value;
     }
-
 }

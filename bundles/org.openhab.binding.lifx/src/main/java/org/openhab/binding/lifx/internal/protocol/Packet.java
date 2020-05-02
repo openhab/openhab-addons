@@ -394,5 +394,4 @@ public abstract class Packet {
         }
         return false;
     }
-
 }

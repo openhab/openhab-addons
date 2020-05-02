@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 public class FtpUploadHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(FtpUploadHandlerFactory.class);
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_IMAGERECEIVER);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_IMAGERECEIVER);
 
     private final int DEFAULT_PORT = 2121;
     private final int DEFAULT_IDLE_TIMEOUT = 60;
@@ -60,7 +60,6 @@ public class FtpUploadHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
-
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_IMAGERECEIVER)) {

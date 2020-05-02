@@ -79,7 +79,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
      * We need to remember some states to change offsets in volume, time index,
      * etc..
      */
-    protected Map<String, State> stateMap = Collections.synchronizedMap(new HashMap<String, State>());
+    protected Map<String, State> stateMap = Collections.synchronizedMap(new HashMap<>());
 
     /**
      * Keeps current track time
@@ -377,7 +377,6 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     @Override
     public void currentPlaylistShuffleEvent(String mac, int shuffle) {
         updateChannel(mac, CHANNEL_CURRENT_PLAYLIST_SHUFFLE, new DecimalType(shuffle));
-
     }
 
     @Override
@@ -388,7 +387,6 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     @Override
     public void titleChangeEvent(String mac, String title) {
         updateChannel(mac, CHANNEL_TITLE, new StringType(title));
-
     }
 
     @Override

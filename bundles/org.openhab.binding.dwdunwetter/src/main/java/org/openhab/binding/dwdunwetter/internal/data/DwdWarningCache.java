@@ -60,5 +60,4 @@ public class DwdWarningCache {
                 .collect(Collectors.toList());
         oldEntries.forEach(idExpiresMap::remove);
     }
-
 }

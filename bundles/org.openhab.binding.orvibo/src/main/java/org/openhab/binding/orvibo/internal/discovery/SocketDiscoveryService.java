@@ -118,5 +118,4 @@ public class SocketDiscoveryService extends AbstractDiscoveryService implements 
         DiscoveryResult discoveryResult = createDiscoveryResult(socket);
         thingDiscovered(discoveryResult);
     }
-
 }

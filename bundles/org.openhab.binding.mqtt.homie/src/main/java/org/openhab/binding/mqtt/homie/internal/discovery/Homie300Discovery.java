@@ -103,7 +103,6 @@ public class Homie300Discovery extends AbstractMQTTDiscovery {
             // The name is nice to have, but not required, use deviceId as fallback
             publishDevice(connectionBridge, connection, deviceID, topic, deviceID);
         }
-
     }
 
     void publishDevice(ThingUID connectionBridge, MqttBrokerConnection connection, String deviceID, String topic,

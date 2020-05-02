@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
+import static org.mockito.MockitoAnnotations.initMocks;
+
 import org.junit.Before;
 import org.mockito.Mock;
-
-import static org.mockito.MockitoAnnotations.initMocks;
 
 /**
  * Baseline for tests for the XML protocol implementation.
@@ -39,5 +39,4 @@ public abstract class AbstractXMLProtocolTest {
 
     protected void onSetUp() throws Exception {
     }
-
 }

@@ -59,6 +59,6 @@ Fragment-Host: org.openhab.binding.avmfritz
 	org.eclipse.jetty.websocket.common;version='[9.4.20,9.4.21)',\
 	org.eclipse.jetty.xml;version='[9.4.20,9.4.21)',\
 	org.ops4j.pax.web.pax-web-api;version='[7.2.11,7.2.12)',\
-	ch.qos.logback.classic;version='[1.2.3,1.2.4)',\
-	org.openhab.binding.avmfritz;version='[2.5.4,2.5.5)',\
-	org.openhab.binding.avmfritz.tests;version='[2.5.4,2.5.5)'
+	org.openhab.binding.avmfritz;version='[2.5.5,2.5.6)',\
+	org.openhab.binding.avmfritz.tests;version='[2.5.5,2.5.6)',\
+	slf4j.simple;version='[1.7.21,1.7.22)'

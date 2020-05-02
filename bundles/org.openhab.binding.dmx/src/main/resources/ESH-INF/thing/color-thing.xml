@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="dmx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+<thing:thing-descriptions bindingId="dmx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<!-- Dimmer -->
 	<thing-type id="color">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="artnet-bridge" />
-			<bridge-type-ref id="lib485-bridge" />
-			<bridge-type-ref id="sacn-bridge" />
+			<bridge-type-ref id="artnet-bridge"/>
+			<bridge-type-ref id="lib485-bridge"/>
+			<bridge-type-ref id="sacn-bridge"/>
 		</supported-bridge-type-refs>
 		<label>DMX Color (RGB) Dimmer</label>
 		<description>A RGB capable dimmer</description>
 		<channels>
-			<channel id="brightness_r" typeId="brightness" />
-			<channel id="brightness_g" typeId="brightness" />
-			<channel id="brightness_b" typeId="brightness" />
-			<channel id="color" typeId="color" />
+			<channel id="brightness_r" typeId="brightness"/>
+			<channel id="brightness_g" typeId="brightness"/>
+			<channel id="brightness_b" typeId="brightness"/>
+			<channel id="color" typeId="color"/>
 		</channels>
 		<config-description>
 			<parameter name="dmxid" type="text">
@@ -33,13 +35,15 @@
 			</parameter>
 			<parameter name="turnonvalue" type="text">
 				<label>Turn-On Value(s)</label>
-				<description>Format is "value[, value, ...]", has to be a multiple of three. If less values than channels are defined, they are reused from the beginning.</description>
+				<description>Format is "value[, value, ...]", has to be a multiple of three. If less values than channels are
+					defined, they are reused from the beginning.</description>
 				<required>false</required>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="turnoffvalue" type="text">
 				<label>Turn-Off Value(s)</label>
-				<description>Format is "value[, value, ...]", has to be a multiple of three. If less values than channels are defined, they are reused from the beginning.</description>
+				<description>Format is "value[, value, ...]", has to be a multiple of three. If less values than channels are
+					defined, they are reused from the beginning.</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="dynamicturnonvalue" type="boolean">

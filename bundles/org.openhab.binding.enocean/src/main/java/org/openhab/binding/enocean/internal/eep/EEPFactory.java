@@ -40,7 +40,6 @@ public class EEPFactory {
     private static final Logger logger = LoggerFactory.getLogger(EEPFactory.class);
 
     public static EEP createEEP(EEPType eepType) {
-
         try {
             Class<? extends EEP> cl = eepType.getEEPClass();
             if (cl == null) {
@@ -183,7 +182,6 @@ public class EEPFactory {
         }
 
         return null;
-
     }
 
     public static EEP buildResponseEEPFromTeachInERP1(ERP1Message msg, byte[] senderId) {

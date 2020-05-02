@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ParadoxUtil {
 
-    private final static Logger logger = LoggerFactory.getLogger(ParadoxUtil.class);
+    private static final Logger logger = LoggerFactory.getLogger(ParadoxUtil.class);
 
     public static byte calculateChecksum(byte[] payload) {
         int result = 0;
@@ -74,7 +74,6 @@ public class ParadoxUtil {
         if (!result.isEmpty()) {
             logger.trace(result);
         }
-
     }
 
     public static byte setBit(byte byteValue, int i, int j) {

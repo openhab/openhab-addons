@@ -26,7 +26,7 @@ public class FreeboxPhoneStatusResponse extends FreeboxResponse<List<FreeboxPhon
     @Override
     public void evaluate() throws FreeboxException {
         super.evaluate();
-        if (getResult() == null || getResult().size() == 0) {
+        if (getResult() == null || getResult().isEmpty()) {
             throw new FreeboxException("No phone status in response", this);
         }
     }

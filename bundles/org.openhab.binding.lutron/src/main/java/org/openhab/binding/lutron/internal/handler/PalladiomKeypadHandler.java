@@ -67,5 +67,4 @@ public class PalladiomKeypadHandler extends BaseKeypadHandler {
         super(thing);
         kp = new KeypadConfigPalladiom();
     }
-
 }

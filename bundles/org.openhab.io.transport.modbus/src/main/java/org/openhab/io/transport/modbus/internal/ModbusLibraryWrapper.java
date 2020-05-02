@@ -324,5 +324,4 @@ public class ModbusLibraryWrapper {
                     response);
         }
     }
-
 }

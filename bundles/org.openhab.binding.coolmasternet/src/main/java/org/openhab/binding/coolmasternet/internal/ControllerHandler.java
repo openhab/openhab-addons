@@ -52,6 +52,9 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ControllerHandler extends BaseBridgeHandler {
+    private static final byte LF = "\n".getBytes(StandardCharsets.US_ASCII)[0];
+    private static final byte PROMPT = ">".getBytes(StandardCharsets.US_ASCII)[0];
+    private static final int SINK_TIMEOUT = 1000;
     private static final int SOCKET_TIMEOUT = 2000;
 
     private final Logger logger = LoggerFactory.getLogger(ControllerHandler.class);
@@ -75,6 +78,8 @@ public class ControllerHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         stopRefresh();
+        logger.debug("Disconnecting CoolMasterNet Controller handler...");
+        disconnect();
         super.dispose();
     }
 
@@ -145,26 +150,20 @@ public class ControllerHandler extends BaseBridgeHandler {
 
                 logger.trace("Sending command '{}'", command);
                 OutputStream out = localSocket.getOutputStream();
-                out.write(command.getBytes());
-                out.write("\r\n".getBytes());
+                out.write(command.getBytes(StandardCharsets.US_ASCII));
+                out.write(LF);
 
-                try (Reader isr = new InputStreamReader(localSocket.getInputStream());
-                        BufferedReader in = new BufferedReader(isr)) {
-                    while (true) {
-                        String line = in.readLine();
-                        logger.trace("Read result '{}'", line);
-                        if ("OK".equals(line)) {
-                            return response.toString();
-                        }
-                        response.append(line);
-                        if (response.length() > 100) {
-                            /*
-                             * Usually this loop times out on errors, but in the case that we just keep getting
-                             * data we should also fail with an error.
-                             */
-                            throw new CoolMasterClientError(
-                                    String.format("Got gibberish response to command %s", command));
-                        }
+                final Reader isr = new InputStreamReader(localSocket.getInputStream(), StandardCharsets.US_ASCII);
+                final BufferedReader in = new BufferedReader(isr);
+                while (true) {
+                    String line = in.readLine();
+                    logger.trace("Read result '{}'", line);
+                    if (line == null || "OK".equals(line)) {
+                        return response.toString();
+                    }
+                    response.append(line);
+                    if (response.length() > 100) {
+                        throw new CoolMasterClientError(String.format("Unexpected response to command %s", command));
                     }
                 }
             } catch (SocketTimeoutException e) {
@@ -205,21 +204,41 @@ public class ControllerHandler extends BaseBridgeHandler {
                 }
 
                 InputStream in = localSocket.getInputStream();
-                /* Flush anything pending in the input stream */
-                while (in.available() > 0) {
-                    in.read();
+
+                // Sink (clear) buffer until earlier of the SINK_TIMEOUT or > prompt
+                try {
+                    localSocket.setSoTimeout(SINK_TIMEOUT);
+                    while (true) {
+                        int b = in.read();
+                        if (b == -1) {
+                            break;
+                        }
+                        if (b == PROMPT) {
+                            if (in.available() > 0) {
+                                throw new IOException("Unexpected data following prompt");
+                            }
+                            logger.trace("Buffer empty following unsolicited > prompt");
+                            return;
+                        }
+                    }
+                } catch (final SocketTimeoutException expectedFromRead) {
+                } finally {
+                    localSocket.setSoTimeout(SOCKET_TIMEOUT);
                 }
-                /* Send a CRLF, expect a > prompt (and a CRLF) back */
-                OutputStream out = localSocket.getOutputStream();
-                out.write("\r\n".getBytes(StandardCharsets.US_ASCII));
-                /*
-                 * this will time out with IOException if it doesn't see that prompt
-                 * with no other data following it, within 1 second (socket timeout)
-                 */
-                final byte prompt = ">".getBytes(StandardCharsets.US_ASCII)[0];
-                while (in.read() != prompt || in.available() > 3) {
-                    continue; // empty by design
+
+                // Solicit for a prompt given we haven't received one earlier
+                final OutputStream out = localSocket.getOutputStream();
+                out.write(LF);
+
+                // Block until the > prompt arrives or IOE if SOCKET_TIMEOUT
+                final int b = in.read();
+                if (b != PROMPT) {
+                    throw new IOException("Unexpected character received");
                 }
+                if (in.available() > 0) {
+                    throw new IOException("Unexpected data following prompt");
+                }
+                logger.trace("Buffer empty following solicited > prompt");
             } catch (IOException e) {
                 disconnect();
                 logger.debug("{}", e.getLocalizedMessage(), e);
@@ -261,6 +280,7 @@ public class ControllerHandler extends BaseBridgeHandler {
         }
     }
 
+    @NonNullByDefault
     public class CoolMasterClientError extends Exception {
         private static final long serialVersionUID = 1L;
 

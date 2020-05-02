@@ -45,5 +45,5 @@ Fragment-Host: org.openhab.binding.astro
 	org.eclipse.jetty.servlet;version='[9.4.20,9.4.21)',\
 	org.eclipse.jetty.util;version='[9.4.20,9.4.21)',\
 	org.openhab.core.test;version='[2.5.0,2.5.1)',\
-	org.openhab.binding.astro;version='[2.5.4,2.5.5)',\
-	org.openhab.binding.astro.tests;version='[2.5.4,2.5.5)'
+	org.openhab.binding.astro;version='[2.5.5,2.5.6)',\
+	org.openhab.binding.astro.tests;version='[2.5.5,2.5.6)'

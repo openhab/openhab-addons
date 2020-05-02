@@ -37,5 +37,4 @@ public enum RtsCommand {
     public String getActionKey() {
         return actionKey;
     }
-
 }

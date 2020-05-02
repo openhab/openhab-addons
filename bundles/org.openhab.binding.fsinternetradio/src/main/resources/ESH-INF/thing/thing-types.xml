@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="fsinternetradio" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="fsinternetradio"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -8,14 +9,14 @@
 		<description>An internet radio device based on the Frontier Silicon chipset.</description>
 
 		<channels>
-			<channel id="power" typeId="power" />
-			<channel id="mode" typeId="mode" />
-			<channel id="volume-absolute" typeId="volume-absolute" />
-			<channel id="volume-percent" typeId="volume-percent" />
-			<channel id="mute" typeId="mute" />
-			<channel id="play-info-name" typeId="play-info-name" />
-			<channel id="play-info-text" typeId="play-info-text" />
-			<channel id="preset" typeId="preset" />
+			<channel id="power" typeId="power"/>
+			<channel id="mode" typeId="mode"/>
+			<channel id="volume-absolute" typeId="volume-absolute"/>
+			<channel id="volume-percent" typeId="volume-percent"/>
+			<channel id="mute" typeId="mute"/>
+			<channel id="play-info-name" typeId="play-info-name"/>
+			<channel id="play-info-text" typeId="play-info-text"/>
+			<channel id="preset" typeId="preset"/>
 		</channels>
 
 		<properties>
@@ -63,14 +64,14 @@
 		<label>Volume</label>
 		<description>Volume (min=0, max=32).</description>
 		<category>SoundVolume</category>
-		<state min="0" max="32" step="1" />
+		<state min="0" max="32" step="1"/>
 	</channel-type>
 	<channel-type id="volume-percent">
 		<item-type>Dimmer</item-type>
 		<label>Volume</label>
 		<description>Volume (in percent).</description>
 		<category>SoundVolume</category>
-		<state min="0" max="100" step="3" /> <!-- 3% correspond to 1 absolute step -->
+		<state min="0" max="100" step="3"/> <!-- 3% correspond to 1 absolute step -->
 	</channel-type>
 	<channel-type id="mute">
 		<item-type>Switch</item-type>
@@ -81,19 +82,19 @@
 		<item-type>String</item-type>
 		<label>Current Title</label>
 		<description>The name of the current radio station or track.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="play-info-text">
 		<item-type>String</item-type>
 		<label>Info Text</label>
 		<description>Additional information e.g. of the current radio station.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="mode">
 		<item-type>Number</item-type>
 		<label>Mode</label>
 		<description>The radio mode, e.g. FM radio, internet radio, AUX, etc.</description>
-		<state min="0" step="1" />
+		<state min="0" step="1"/>
 	</channel-type>
 
 </thing:thing-descriptions>

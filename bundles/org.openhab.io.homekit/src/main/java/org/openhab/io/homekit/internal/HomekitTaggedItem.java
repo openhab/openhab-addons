@@ -84,9 +84,8 @@ public class HomekitTaggedItem {
                     throw new BadItemConfigurationException(
                             "Item belongs to multiple Groups which are tagged as Homekit devices.");
             }
-
         } catch (BadItemConfigurationException e) {
-            logger.warn("Item {} was misconfigured: {}. Excluding item from homekit.", item.getName(), e.getMessage());
+            logger.warn("Item {} was misconfigured: {}. Excluding item from HomeKit.", item.getName(), e.getMessage());
             homekitAccessoryType = null;
             homekitCharacteristicType = null;
             parentGroupItem = null;
@@ -115,7 +114,7 @@ public class HomekitTaggedItem {
     }
 
     /**
-     * Returns whether or not this item refers to an item that fully specifies a Homekit accessory. Mutually
+     * Returns whether or not this item refers to an item that fully specifies a HomeKit accessory. Mutually
      * exclusive
      * to isCharacteristic(). Primary devices must belong to a root accessory group.
      */
@@ -124,7 +123,7 @@ public class HomekitTaggedItem {
     }
 
     /**
-     * Returns whether or not this item is in a group that specifies a Homekit accessory. It is not possible to be a
+     * Returns whether or not this item is in a group that specifies a HomeKit accessory. It is not possible to be a
      * characteristic and an accessory. Further, all characteristics belong to a
      * root deviceGroup.
      */
@@ -153,9 +152,9 @@ public class HomekitTaggedItem {
     }
 
     /**
-     * Returns whether or not this item belongs to a Homekit accessory group.
+     * Returns whether or not this item belongs to a HomeKit accessory group.
      *
-     * Characteristic devices must belong to a Homekit accessory group.
+     * Characteristic devices must belong to a HomeKit accessory group.
      */
     public boolean isMemberOfAccessoryGroup() {
         return parentGroupItem != null;
@@ -172,7 +171,7 @@ public class HomekitTaggedItem {
         if (CREATED_ACCESSORY_IDS.containsKey(id)) {
             if (!CREATED_ACCESSORY_IDS.get(id).equals(item.getName())) {
                 logger.warn(
-                        "Could not create homekit accessory {} because its hash conflicts with {}. This is a 1:1,000,000 chance occurrence. Change one of the names and consider playing the lottery. See https://github.com/openhab/openhab-addons/issues/257#issuecomment-125886562",
+                        "Could not create HomeKit accessory {} because its hash conflicts with {}. This is a 1:1,000,000 chance occurrence. Change one of the names and consider playing the lottery. See https://github.com/openhab/openhab-addons/issues/257#issuecomment-125886562",
                         item.getName(), CREATED_ACCESSORY_IDS.get(id));
                 return 0;
             }

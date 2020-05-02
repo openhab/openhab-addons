@@ -87,10 +87,9 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     private static final String CHANNEL_CONFIG_QUOTE_LIST = "quoteList";
 
     private List<SqueezeBoxPlayerEventListener> squeezeBoxPlayerListeners = Collections
-            .synchronizedList(new ArrayList<SqueezeBoxPlayerEventListener>());
+            .synchronizedList(new ArrayList<>());
 
-    private Map<String, SqueezeBoxPlayer> players = Collections
-            .synchronizedMap(new HashMap<String, SqueezeBoxPlayer>());
+    private Map<String, SqueezeBoxPlayer> players = Collections.synchronizedMap(new HashMap<>());
 
     // client socket and listener thread
     private Socket clientSocket;
@@ -381,7 +380,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
 
         // Mark the server ONLINE. bridgeStatusChanged will cause the players to come ONLINE
         updateStatus(ThingStatus.ONLINE);
-
     }
 
     /**
@@ -588,7 +586,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     break;
                 default:
                     logger.trace("Unhandled player update message type '{}'.", messageType);
-
             }
         }
 
@@ -870,7 +867,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 public void updateListener(SqueezeBoxPlayerEventListener listener) {
                     listener.modeChangeEvent(mac, value);
                 }
-
             });
         }
 
@@ -883,7 +879,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 public void updateListener(SqueezeBoxPlayerEventListener listener) {
                     listener.sourceChangeEvent(mac, source);
                 }
-
             });
         }
 
@@ -913,7 +908,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                         public void updateListener(SqueezeBoxPlayerEventListener listener) {
                             listener.absoluteVolumeChangeEvent(mac, volume);
                         }
-
                     });
                 }
             }

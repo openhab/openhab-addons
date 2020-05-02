@@ -124,7 +124,6 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
                     }
                 }
                 gateway.startWatchdogs();
-
             } catch (IOException ex) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
                 logger.debug(
@@ -427,5 +426,4 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
             getGateway().deleteDevice(address, reset, force, defer);
         });
     }
-
 }

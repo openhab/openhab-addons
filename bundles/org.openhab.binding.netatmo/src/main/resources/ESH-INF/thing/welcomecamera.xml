@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="netatmo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="netatmo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="NACamera">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="netatmoapi" />
+			<bridge-type-ref id="netatmoapi"/>
 		</supported-bridge-type-refs>
 
 		<label>Welcome Camera</label>
@@ -23,7 +24,7 @@
 		</channels>
 
 		<representation-property>id</representation-property>
-		<config-description-ref uri="thing-type:netatmo:nawelcomecamera" />
+		<config-description-ref uri="thing-type:netatmo:nawelcomecamera"/>
 	</thing-type>
 
 
@@ -51,7 +52,8 @@
 	<channel-type id="is_locale" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Is Local</label>
-		<description>Only for scope access_camera. If Camera and application requesting the information are on the same network (true/false)</description>
+		<description>Only for scope access_camera. If Camera and application requesting the information are on the same
+			network (true/false)</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -62,7 +64,7 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="live_picture" >
+	<channel-type id="live_picture">
 		<item-type>Image</item-type>
 		<label>Live Snapshot</label>
 		<description>Camera Live Snapshot</description>

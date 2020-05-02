@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="bosesoundtouch" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="bosesoundtouch"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -51,63 +52,63 @@
 		<item-type>String</item-type>
 		<label>Album</label>
 		<description>Current playing album name</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="nowPlayingArtist" advanced="true">
 		<item-type>String</item-type>
 		<label>Artist</label>
 		<description>Current playing artist name</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="nowPlayingArtwork">
 		<item-type>Image</item-type>
 		<label>Artwork</label>
 		<description>Artwork for the current playing song</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="nowPlayingDescription" advanced="true">
 		<item-type>String</item-type>
 		<label>Description</label>
 		<description>Description to current playing song</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="nowPlayingGenre" advanced="true">
 		<item-type>String</item-type>
 		<label>Genre</label>
 		<description>Genre of current playing song</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="nowPlayingItemName">
 		<item-type>String</item-type>
 		<label>Now Playing</label>
 		<description>Visible description shown in display</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="nowPlayingStationLocation" advanced="true">
 		<item-type>String</item-type>
 		<label>Station Location</label>
 		<description>Location of current playing radio station</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="nowPlayingStationName" advanced="true">
 		<item-type>String</item-type>
 		<label>Station Name</label>
 		<description>Name of current playing radio station</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="nowPlayingTrack" advanced="true">
 		<item-type>String</item-type>
 		<label>Track</label>
 		<description>Track currently playing</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="operationMode_default">
@@ -158,7 +159,7 @@
 		<item-type>Switch</item-type>
 		<label>Rating Enabled</label>
 		<description>Current source allows rating</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="saveAsPreset" advanced="true">
@@ -171,14 +172,14 @@
 		<item-type>Switch</item-type>
 		<label>Skip Enabled</label>
 		<description>Current source allows skipping to next track</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="skipPreviousEnabled" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Skip/Previous Enabled</label>
 		<description>Current source allows scrolling through tracks</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="volume">
@@ -193,7 +194,7 @@
 		<item-type>Number</item-type>
 		<label>Bass</label>
 		<description>Bass (-9 minimum, 0 maximum)</description>
-		<state min="-9" max="0" step="1" pattern="%d" readOnly="false" />
+		<state min="-9" max="0" step="1" pattern="%d" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="operationMode_BST_10_20_30">
@@ -286,6 +287,6 @@
 		<item-type>String</item-type>
 		<label>Notification Sound</label>
 		<description>Play a notification sound by a given URI</description>
-		<config-description-ref uri="channel-type:bosesoundtouch:notificationSound" />
+		<config-description-ref uri="channel-type:bosesoundtouch:notificationSound"/>
 	</channel-type>
 </thing:thing-descriptions>

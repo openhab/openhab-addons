@@ -46,7 +46,6 @@ public class HydrawiseLocalHandler extends HydrawiseHandler {
         logger.trace("Connecting to host {}", configuration.host);
         client.setCredentials(configuration.host, configuration.username, configuration.password);
         pollController();
-
     }
 
     @Override

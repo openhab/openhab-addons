@@ -21,7 +21,6 @@ import org.eclipse.smarthome.core.thing.CommonTriggerEvents;
 import org.eclipse.smarthome.test.java.JavaTest;
 import org.junit.Before;
 import org.junit.Test;
-import org.openhab.binding.homematic.internal.communicator.virtual.ButtonVirtualDatapointHandler;
 import org.openhab.binding.homematic.internal.misc.HomematicClientException;
 import org.openhab.binding.homematic.internal.misc.HomematicConstants;
 import org.openhab.binding.homematic.internal.misc.MiscUtils;
@@ -138,14 +137,12 @@ public class ButtonDatapointTest extends JavaTest {
     private class MockEventReceiver {
 
         public void eventReceived(HmDatapoint dp) throws IOException, HomematicClientException {
-
             if (bvdpHandler.canHandleEvent(dp)) {
                 bvdpHandler.handleEvent(null, dp);
             }
             if (dp.isPressDatapoint() && MiscUtils.isTrueValue(dp.getValue())) {
                 disableDatapoint(dp);
             }
-
         }
 
         private void disableDatapoint(HmDatapoint dp) {
@@ -154,11 +151,8 @@ public class ButtonDatapointTest extends JavaTest {
                     Thread.sleep(DISABLE_DATAPOINT_DELAY);
                     dp.setValue(Boolean.FALSE);
                 } catch (InterruptedException e) {
-
                 }
             }).start();
         }
-
     }
-
 }

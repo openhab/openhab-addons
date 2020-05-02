@@ -52,5 +52,4 @@ public class NeeoMacrosDeserializer implements JsonDeserializer<@Nullable NeeoMa
         }
         return null;
     }
-
 }

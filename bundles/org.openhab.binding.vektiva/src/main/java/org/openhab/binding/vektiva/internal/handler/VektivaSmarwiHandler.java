@@ -12,6 +12,15 @@
  */
 package org.openhab.binding.vektiva.internal.handler;
 
+import static org.openhab.binding.vektiva.internal.VektivaBindingConstants.*;
+
+import java.io.IOException;
+import java.net.URI;
+import java.util.Map;
+import java.util.concurrent.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -34,15 +43,6 @@ import org.openhab.binding.vektiva.internal.config.VektivaSmarwiConfiguration;
 import org.openhab.binding.vektiva.internal.net.VektivaSmarwiSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.net.URI;
-import java.util.Map;
-import java.util.concurrent.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static org.openhab.binding.vektiva.internal.VektivaBindingConstants.*;
 
 /**
  * The {@link VektivaSmarwiHandler} is responsible for handling commands, which are
@@ -143,14 +143,16 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
             return response;
         } catch (InterruptedException e) {
             logger.debug("API execution has been interrupted", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "API execution has been interrupted");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "API execution has been interrupted");
             Thread.currentThread().interrupt();
         } catch (TimeoutException e) {
             logger.debug("Timeout during API execution", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Timeout during API execution");
         } catch (ExecutionException e) {
             logger.debug("Exception during API execution", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Exception during API execution: " + e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Exception during API execution: " + e.getMessage());
         }
         return null;
     }
@@ -195,14 +197,16 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
             }
         } catch (InterruptedException e) {
             logger.debug("API execution has been interrupted", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "API execution has been interrupted");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "API execution has been interrupted");
             Thread.currentThread().interrupt();
         } catch (TimeoutException e) {
             logger.debug("Timeout during status update", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Timeout during status update");
         } catch (ExecutionException e) {
             logger.debug("Exception during status update", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Exception during status update: " + e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Exception during status update: " + e.getMessage());
         }
         session = null;
     }
@@ -212,8 +216,8 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
             updateStatus(ThingStatus.ONLINE);
         }
 
-        Map<String, String> values = Stream.of(content.split("\n")).map(s -> s.split(":"))
-                .filter(s -> s.length == 2).collect(Collectors.toMap(s -> s[0], s -> s[1]));
+        Map<String, String> values = Stream.of(content.split("\n")).map(s -> s.split(":")).filter(s -> s.length == 2)
+                .collect(Collectors.toMap(s -> s[0], s -> s[1]));
 
         updateProperty("Product type", values.getOrDefault("t", NA));
         updateProperty(Thing.PROPERTY_FIRMWARE_VERSION, values.getOrDefault("fw", NA));
@@ -254,17 +258,14 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
             return fut.get();
         } catch (IOException ex) {
             logger.debug("Cannot connect websocket client", ex);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Cannot connect websocket client");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot connect websocket client");
         } catch (InterruptedException ex) {
             logger.debug("Cannot create websocket session", ex);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Cannot create websocket session");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot create websocket session");
             Thread.currentThread().interrupt();
         } catch (ExecutionException ex) {
             logger.debug("Cannot create websocket session", ex);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Cannot create websocket session");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot create websocket session");
         }
         return null;
     }

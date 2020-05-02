@@ -60,7 +60,7 @@ public class Device {
     protected static final String PROTOCOL_ID_VIRTUAL = "Virtual";
     protected static final String PROTOCOL_ID_WMBUS = "wMBus";
 
-    public static final List<String> EMPTY_CAPABILITY_LINK_LIST = new ArrayList<String>();
+    public static final List<String> EMPTY_CAPABILITY_LINK_LIST = new ArrayList<>();
 
     /**
      * Unique id for the device, always available in model.
@@ -457,7 +457,6 @@ public class Device {
      */
     public void setIsBatteryPowered(boolean hasBattery) {
         batteryPowered = hasBattery;
-
     }
 
     /**
@@ -540,5 +539,4 @@ public class Device {
                 + getType() + " name=" + getConfig().getName() + "]";
         return string;
     }
-
 }

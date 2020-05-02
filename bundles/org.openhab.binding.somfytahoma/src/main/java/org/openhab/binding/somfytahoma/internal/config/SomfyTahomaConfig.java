@@ -15,7 +15,7 @@ package org.openhab.binding.somfytahoma.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link SomfyTahomaConfig} is  is the base class for configuration
+ * The {@link SomfyTahomaConfig} is is the base class for configuration
  * information held by devices and modules.
  *
  * @author Ondrej Pecta - Initial contribution

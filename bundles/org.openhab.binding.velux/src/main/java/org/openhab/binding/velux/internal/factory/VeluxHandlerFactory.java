@@ -58,9 +58,9 @@ public class VeluxHandlerFactory extends BaseThingHandlerFactory {
 
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<>();
 
-    private Set<VeluxBindingHandler> veluxBindingHandlers = new HashSet<VeluxBindingHandler>();
-    private Set<VeluxBridgeHandler> veluxBridgeHandlers = new HashSet<VeluxBridgeHandler>();
-    private Set<VeluxHandler> veluxHandlers = new HashSet<VeluxHandler>();
+    private Set<VeluxBindingHandler> veluxBindingHandlers = new HashSet<>();
+    private Set<VeluxBridgeHandler> veluxBridgeHandlers = new HashSet<>();
+    private Set<VeluxHandler> veluxHandlers = new HashSet<>();
 
     private @NonNullByDefault({}) LocaleProvider localeProvider;
     private @NonNullByDefault({}) TranslationProvider i18nProvider;
@@ -71,9 +71,8 @@ public class VeluxHandlerFactory extends BaseThingHandlerFactory {
     private void registerDeviceDiscoveryService(VeluxBridgeHandler bridgeHandler) {
         VeluxDiscoveryService discoveryService = new VeluxDiscoveryService(bridgeHandler, localization);
         ServiceRegistration<?> discoveryServiceReg = bundleContext.registerService(DiscoveryService.class.getName(),
-                discoveryService, new Hashtable<String, Object>());
+                discoveryService, new Hashtable<>());
         discoveryServiceRegistrations.put(bridgeHandler.getThing().getUID(), discoveryServiceReg);
-
     }
 
     // Even if the compiler tells, that the value of <remove> cannot be null, it is possible!
@@ -131,7 +130,6 @@ public class VeluxHandlerFactory extends BaseThingHandlerFactory {
         logger.trace("VeluxHandlerFactory(locale={},translation={}) called.", givenLocaleProvider, givenI18nProvider);
         localeProvider = givenLocaleProvider;
         i18nProvider = givenI18nProvider;
-
     }
 
     @Reference
@@ -203,5 +201,4 @@ public class VeluxHandlerFactory extends BaseThingHandlerFactory {
         updateBindingState();
         super.removeHandler(thingHandler);
     }
-
 }
