@@ -23,10 +23,10 @@ import com.google.gson.annotations.SerializedName;
 public class MiIoInfoDTO {
     @SerializedName("life")
     @Expose
-    public Long life;
+    public Integer life;
     @SerializedName("cfg_time")
     @Expose
-    public Long cfgTime;
+    public Integer cfgTime;
     @SerializedName("token")
     @Expose
     public String token;
@@ -41,7 +41,7 @@ public class MiIoInfoDTO {
     public String hwVer;
     @SerializedName("uid")
     @Expose
-    public Long uid;
+    public Integer uid;
     @SerializedName("model")
     @Expose
     public String model;
@@ -53,5 +53,5 @@ public class MiIoInfoDTO {
     public String mcuFwVer;
     @SerializedName("mmfree")
     @Expose
-    public Long mmfree;
+    public Integer mmfree;
 }
