@@ -66,6 +66,7 @@ public class OpenGarageHandler extends BaseThingHandler {
                     channelUID.getId());
                 switch (channelUID.getId()) {
                     case OpenGarageBindingConstants.CHANNEL_OG_STATUS:
+                    case OpenGarageBindingConstants.CHANNEL_OG_STATUS_SWITCH:
                     case OpenGarageBindingConstants.CHANNEL_OG_STATUS_ROLLERSHUTTER:
                         if (command.equals(OnOffType.ON) || command.equals(UpDownType.UP)) {
                             changeStatus(OpenGarageCommand.OPEN);
@@ -142,10 +143,12 @@ public class OpenGarageHandler extends BaseThingHandler {
                     new QuantityType<>(controllerVariables.dist, MetricPrefix.CENTI(SIUnits.METRE)));
             if (controllerVariables.door == 0) {
                 updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS, OnOffType.OFF);
+                updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_SWITCH, OnOffType.OFF);
                 updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_ROLLERSHUTTER, UpDownType.DOWN);
                 updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_CONTACT, OpenClosedType.CLOSED);
             } else if (controllerVariables.door == 1) {
                 updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS, OnOffType.ON);
+                updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_SWITCH, OnOffType.ON);
                 updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_ROLLERSHUTTER, UpDownType.UP);
                 updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_CONTACT, OpenClosedType.OPEN);
             }

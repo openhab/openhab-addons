@@ -11,6 +11,7 @@
 		<channels>
 			<channel id="distance" typeId="opengarage-distance" />
 			<channel id="status" typeId="opengarage-status" />
+			<channel id="status-switch" typeId="opengarage-status-switch" />
 			<channel id="status-contact" typeId="opengarage-status-contact" />
 			<channel id="status-rollershutter" typeId="opengarage-status-rollershutter" />
 			<channel id="vehicle" typeId="opengarage-vehicle" />
@@ -47,7 +48,12 @@
 		<description>Distance Reading from the OG unit</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
-	<channel-type id="opengarage-status">
+	<channel-type id="opengarage-status  advanced="true"">
+		<item-type>Switch</item-type>
+		<label>Status</label>
+		<description>On/Off Status of the OG unit (Now deprecated, use opengarage-status-switch instead</description>
+	</channel-type>
+	<channel-type id="opengarage-status-switch">
 		<item-type>Switch</item-type>
 		<label>Status</label>
 		<description>On/Off Status of the OG unit</description>
