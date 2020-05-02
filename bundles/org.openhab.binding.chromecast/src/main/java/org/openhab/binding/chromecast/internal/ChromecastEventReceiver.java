@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.chromecast.internal;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,10 +28,8 @@ import su.litvak.chromecast.api.v2.Status;
  *
  * @author Jason Holmes - Initial contribution
  */
-@NonNullByDefault
 public class ChromecastEventReceiver implements ChromeCastSpontaneousEventListener, ChromeCastConnectionEventListener {
-    private final Logger logger = LoggerFactory.getLogger(ChromecastEventReceiver.class);
-
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final ChromecastScheduler scheduler;
     private final ChromecastStatusUpdater statusUpdater;
 
@@ -42,20 +39,21 @@ public class ChromecastEventReceiver implements ChromeCastSpontaneousEventListen
     }
 
     @Override
-    public void connectionEventReceived(final @NonNullByDefault({}) ChromeCastConnectionEvent event) {
+    public void connectionEventReceived(ChromeCastConnectionEvent event) {
         if (event.isConnected()) {
             statusUpdater.updateStatus(ThingStatus.ONLINE);
             scheduler.scheduleRefresh();
         } else {
             scheduler.cancelRefresh();
             statusUpdater.updateStatus(ThingStatus.OFFLINE);
+
             // We might have just had a connection problem, let's try to reconnect.
             scheduler.scheduleConnect();
         }
     }
 
     @Override
-    public void spontaneousEventReceived(final @NonNullByDefault({}) ChromeCastSpontaneousEvent event) {
+    public void spontaneousEventReceived(final ChromeCastSpontaneousEvent event) {
         switch (event.getType()) {
             case CLOSE:
                 statusUpdater.updateMediaStatus(null);
@@ -74,4 +72,5 @@ public class ChromecastEventReceiver implements ChromeCastSpontaneousEventListen
                 break;
         }
     }
+
 }

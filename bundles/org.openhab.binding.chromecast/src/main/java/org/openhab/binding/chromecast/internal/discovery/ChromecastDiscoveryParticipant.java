@@ -20,8 +20,6 @@ import java.util.Set;
 
 import javax.jmdns.ServiceInfo;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.mdns.MDNSDiscoveryParticipant;
@@ -38,14 +36,12 @@ import org.slf4j.LoggerFactory;
  * @author Daniel Walters - Change discovery protocol to mDNS
  */
 @Component(immediate = true)
-@NonNullByDefault
 public class ChromecastDiscoveryParticipant implements MDNSDiscoveryParticipant {
-    private final Logger logger = LoggerFactory.getLogger(ChromecastDiscoveryParticipant.class);
-
     private static final String PROPERTY_MODEL = "md";
     private static final String PROPERTY_FRIENDLY_NAME = "fn";
     private static final String PROPERTY_DEVICE_ID = "id";
     private static final String SERVICE_TYPE = "_googlecast._tcp.local.";
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -58,13 +54,13 @@ public class ChromecastDiscoveryParticipant implements MDNSDiscoveryParticipant 
     }
 
     @Override
-    public @Nullable DiscoveryResult createResult(ServiceInfo service) {
+    public DiscoveryResult createResult(ServiceInfo service) {
         final ThingUID uid = getThingUID(service);
         if (uid == null) {
             return null;
         }
 
-        final Map<String, Object> properties = new HashMap<>(5);
+        final Map<String, Object> properties = new HashMap<>(2);
         String host = service.getHostAddresses()[0];
         properties.put(HOST, host);
         int port = service.getPort();
@@ -80,7 +76,7 @@ public class ChromecastDiscoveryParticipant implements MDNSDiscoveryParticipant 
         return result;
     }
 
-    private @Nullable ThingTypeUID getThingType(final ServiceInfo service) {
+    private ThingTypeUID getThingType(final ServiceInfo service) {
         String model = service.getPropertyString(PROPERTY_MODEL); // model
         logger.debug("Chromecast Type: {}", model);
         if (model == null) {
@@ -96,7 +92,7 @@ public class ChromecastDiscoveryParticipant implements MDNSDiscoveryParticipant 
     }
 
     @Override
-    public @Nullable ThingUID getThingUID(ServiceInfo service) {
+    public ThingUID getThingUID(ServiceInfo service) {
         ThingTypeUID thingTypeUID = getThingType(service);
         if (thingTypeUID != null) {
             String id = service.getPropertyString(PROPERTY_DEVICE_ID); // device id

@@ -17,8 +17,6 @@ import static org.openhab.binding.chromecast.internal.ChromecastBindingConstants
 
 import java.io.IOException;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.NextPreviousType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -42,10 +40,8 @@ import su.litvak.chromecast.api.v2.Status;
  *
  * @author Jason Holmes - Initial contribution
  */
-@NonNullByDefault
 public class ChromecastCommander {
-    private final Logger logger = LoggerFactory.getLogger(ChromecastCommander.class);
-
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final ChromeCast chromeCast;
     private final ChromecastScheduler scheduler;
     private final ChromecastStatusUpdater statusUpdater;
@@ -60,6 +56,10 @@ public class ChromecastCommander {
     }
 
     public void handleCommand(final ChannelUID channelUID, final Command command) {
+        if (chromeCast == null) {
+            return;
+        }
+
         if (command instanceof RefreshType) {
             scheduler.scheduleRefresh();
             return;
@@ -219,7 +219,7 @@ public class ChromecastCommander {
         }
     }
 
-    void playMedia(@Nullable String title, @Nullable String url, @Nullable String mimeType) {
+    void playMedia(String title, String url, String mimeType) {
         try {
             if (chromeCast.isAppAvailable(MEDIA_PLAYER)) {
                 if (!chromeCast.isAppRunning(MEDIA_PLAYER)) {

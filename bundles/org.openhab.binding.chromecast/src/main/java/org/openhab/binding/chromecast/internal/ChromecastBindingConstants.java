@@ -42,6 +42,7 @@ public class ChromecastBindingConstants {
     // Config Parameters
     public static final String HOST = "ipAddress";
     public static final String PORT = "port";
+    public static final String REFRESH_RATE_SECONDS = "refreshRate";
     public static final String DEVICE_ID = "deviceId";
 
     // Channel IDs

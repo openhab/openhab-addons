@@ -15,11 +15,10 @@ package org.openhab.binding.chromecast.internal.factory;
 import static org.openhab.binding.chromecast.internal.ChromecastBindingConstants.SUPPORTED_THING_TYPES_UIDS;
 
 import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.audio.AudioHTTPServer;
 import org.eclipse.smarthome.core.audio.AudioSink;
 import org.eclipse.smarthome.core.net.HttpServiceUtil;
@@ -32,35 +31,30 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.chromecast.internal.handler.ChromecastHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ChromecastHandlerFactory} is responsible for creating things and thing handlers.
+ * The {@link ChromecastHandlerFactory} is responsible for creating things and thing
+ * handlers.
  *
  * @author Kai Kreuzer - Initial contribution
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.chromecast")
-@NonNullByDefault
 public class ChromecastHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(ChromecastHandlerFactory.class);
 
-    private final Map<String, ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
-    private final AudioHTTPServer audioHTTPServer;
-    private final NetworkAddressService networkAddressService;
+    private Map<String, ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
+    private AudioHTTPServer audioHTTPServer;
+    private NetworkAddressService networkAddressService;
 
     /** url (scheme+server+port) to use for playing notification sounds. */
-    private @Nullable String callbackUrl;
+    private String callbackUrl = null;
 
-    @Activate
-    public ChromecastHandlerFactory(final @Reference AudioHTTPServer audioHTTPServer,
-            final @Reference NetworkAddressService networkAddressService) {
+    public ChromecastHandlerFactory() {
         logger.debug("Creating new instance of ChromecastHandlerFactory");
-        this.audioHTTPServer = audioHTTPServer;
-        this.networkAddressService = networkAddressService;
     }
 
     @Override
@@ -76,18 +70,19 @@ public class ChromecastHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected @Nullable ThingHandler createHandler(Thing thing) {
-        ChromecastHandler handler = new ChromecastHandler(thing, audioHTTPServer, createCallbackUrl());
+    protected ThingHandler createHandler(Thing thing) {
+        String callbackUrl = createCallbackUrl();
+        ChromecastHandler handler = new ChromecastHandler(thing, audioHTTPServer, callbackUrl);
 
         @SuppressWarnings("unchecked")
         ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
-                .registerService(AudioSink.class.getName(), handler, null);
+                .registerService(AudioSink.class.getName(), handler, new Hashtable<>());
         audioSinkRegistrations.put(thing.getUID().toString(), reg);
 
         return handler;
     }
 
-    private @Nullable String createCallbackUrl() {
+    private String createCallbackUrl() {
         if (callbackUrl != null) {
             return callbackUrl;
         } else {
@@ -115,4 +110,21 @@ public class ChromecastHandlerFactory extends BaseThingHandlerFactory {
         reg.unregister();
     }
 
+    @Reference
+    protected void setAudioHTTPServer(AudioHTTPServer audioHTTPServer) {
+        this.audioHTTPServer = audioHTTPServer;
+    }
+
+    protected void unsetAudioHTTPServer(AudioHTTPServer audioHTTPServer) {
+        this.audioHTTPServer = null;
+    }
+
+    @Reference
+    protected void setNetworkAddressService(NetworkAddressService networkAddressService) {
+        this.networkAddressService = networkAddressService;
+    }
+
+    protected void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
+        this.networkAddressService = null;
+    }
 }
