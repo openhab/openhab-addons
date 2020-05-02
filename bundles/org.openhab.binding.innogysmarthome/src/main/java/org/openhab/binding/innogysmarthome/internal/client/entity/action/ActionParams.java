@@ -32,8 +32,6 @@ public class ActionParams {
 
     private StringActionParam operationMode;
 
-    private StringActionParam rampDirection;
-
     /**
      * @return the onState
      */
@@ -118,17 +116,4 @@ public class ActionParams {
         this.operationMode = operationMode;
     }
 
-    /**
-     * @return the rampDirection
-     */
-    public StringActionParam getRampDirection() {
-        return rampDirection;
-    }
-
-    /**
-     * @param rampDirection the rampDirection to set
-     */
-    public void setRampDirection(StringActionParam rampDirection) {
-        this.rampDirection = rampDirection;
-    }
 }

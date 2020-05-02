@@ -23,7 +23,12 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.*;
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
+import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -37,7 +42,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.innogysmarthome.internal.client.entity.action.ShutterAction;
 import org.openhab.binding.innogysmarthome.internal.client.entity.capability.Capability;
 import org.openhab.binding.innogysmarthome.internal.client.entity.capability.CapabilityState;
 import org.openhab.binding.innogysmarthome.internal.client.entity.device.Device;
@@ -140,19 +144,19 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
                         invertValueIfConfigured(CHANNEL_ROLLERSHUTTER, rollerShutterLevel.intValue()));
             } else if (command instanceof OnOffType) {
                 if (OnOffType.ON.equals(command)) {
-                    innogyBridgeHandler.commandSetRollerShutterStop(deviceId, ShutterAction.ShutterActions.DOWN);
+                    innogyBridgeHandler.commandSetRollerShutterLevel(deviceId,
+                            invertValueIfConfigured(CHANNEL_ROLLERSHUTTER, 100));
                 } else {
-                    innogyBridgeHandler.commandSetRollerShutterStop(deviceId, ShutterAction.ShutterActions.UP);
+                    innogyBridgeHandler.commandSetRollerShutterLevel(deviceId,
+                            invertValueIfConfigured(CHANNEL_ROLLERSHUTTER, 0));
                 }
             } else if (command instanceof UpDownType) {
                 if (UpDownType.DOWN.equals(command)) {
-                    innogyBridgeHandler.commandSetRollerShutterStop(deviceId, ShutterAction.ShutterActions.DOWN);
+                    innogyBridgeHandler.commandSetRollerShutterLevel(deviceId,
+                            invertValueIfConfigured(CHANNEL_ROLLERSHUTTER, 100));
                 } else {
-                    innogyBridgeHandler.commandSetRollerShutterStop(deviceId, ShutterAction.ShutterActions.UP);
-                }
-            } else if (command instanceof StopMoveType){
-                if (StopMoveType.STOP.equals(command)){
-                    innogyBridgeHandler.commandSetRollerShutterStop(deviceId, ShutterAction.ShutterActions.STOP);
+                    innogyBridgeHandler.commandSetRollerShutterLevel(deviceId,
+                            invertValueIfConfigured(CHANNEL_ROLLERSHUTTER, 0));
                 }
             }
 
