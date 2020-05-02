@@ -12,7 +12,6 @@
  */
 package org.openhab.extensionservice.marketplace.internal;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.xml.util.XmlDocumentReader;
 import org.openhab.extensionservice.marketplace.internal.model.Category;
 import org.openhab.extensionservice.marketplace.internal.model.Marketplace;
@@ -26,7 +25,6 @@ import com.thoughtworks.xstream.XStream;
  * @author Kai Kreuzer - Initial contribution and API
  *
  */
-@NonNullByDefault
 public class MarketplaceXMLReader extends XmlDocumentReader<Marketplace> {
 
     public MarketplaceXMLReader() {
@@ -34,11 +32,11 @@ public class MarketplaceXMLReader extends XmlDocumentReader<Marketplace> {
     }
 
     @Override
-    public void registerConverters(@NonNullByDefault({}) XStream xstream) {
+    public void registerConverters(XStream xstream) {
     }
 
     @Override
-    public void registerAliases(@NonNullByDefault({}) XStream xstream) {
+    public void registerAliases(XStream xstream) {
         xstream.alias("marketplace", Marketplace.class);
         xstream.addImplicitArray(Marketplace.class, "categories");
         xstream.alias("category", Category.class);

@@ -12,8 +12,6 @@
  */
 package org.openhab.extensionservice.marketplace;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.extension.Extension;
 
 /**
@@ -22,7 +20,6 @@ import org.eclipse.smarthome.core.extension.Extension;
  * @author Kai Kreuzer - Initial contribution and API
  *
  */
-@NonNullByDefault
 public class MarketplaceExtension extends Extension {
 
     // constants used to construct extension IDs
@@ -42,8 +39,7 @@ public class MarketplaceExtension extends Extension {
     private transient String packageFormat;
 
     public MarketplaceExtension(String id, String type, String label, String version, String link, boolean installed,
-            String description, @Nullable String backgroundColor, String imageLink, String downloadUrl,
-            String packageFormat) {
+            String description, String backgroundColor, String imageLink, String downloadUrl, String packageFormat) {
         super(id, type, label, version, link, installed, description, backgroundColor, imageLink);
         this.downloadUrl = downloadUrl;
         this.packageFormat = packageFormat;

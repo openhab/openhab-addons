@@ -12,7 +12,7 @@
  */
 package org.openhab.extensionservice.marketplace;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.extensionservice.marketplace.MarketplaceExtensionHandler;
 
 /**
  * This is an exception that can be thrown by {@link MarketplaceExtensionHandler}s if some operation fails.
@@ -20,7 +20,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Kai Kreuzer - Initial contribution and API
  *
  */
-@NonNullByDefault
 public class MarketplaceHandlerException extends Exception {
 
     private static final long serialVersionUID = -5652014141471618161L;
