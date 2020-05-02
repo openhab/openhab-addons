@@ -46,8 +46,7 @@ Optionally, a refresh `interval` (in seconds) can be defined to also calculate p
     * **group** `season`
         * **channel**: 
             * `spring, summer, autumn, winter` (DateTime)
-            * `name`,`nextName` (String), values `SPRING, SUMMER, AUTUMN, WINTER`
-            * `timeLeft` (Number:Time)
+            * `name` (String), values `SPRING, SUMMER, AUTUMN, WINTER`
     * **group** `eclipse`
         * **channel**: 
             * `total, partial, ring` (DateTime)
