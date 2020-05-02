@@ -44,7 +44,7 @@ import static org.openhab.binding.publictransportswitzerland.internal.PublicTran
  * The {@link PublicTransportSwitzerlandStationboardHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author Jeremy Stucki & Stefanie Jäger - Initial contribution
+ * @author Jeremy Stucki - Initial contribution
  */
 @NonNullByDefault
 public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHandler {

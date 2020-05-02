@@ -15,7 +15,7 @@ package org.openhab.binding.publictransportswitzerland.internal.stationboard;
 /**
  * The {@link PublicTransportSwitzerlandStationboardConfiguration} class contains fields mapping thing configuration parameters.
  *
- * @author Jeremy Stucki & Stefanie Jäger - Initial contribution
+ * @author Jeremy Stucki - Initial contribution
  */
 public class PublicTransportSwitzerlandStationboardConfiguration {
 
