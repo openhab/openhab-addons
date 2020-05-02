@@ -43,4 +43,5 @@ public class GenericSensorDevice extends AbstractNumericValueDevice {
             addParam(new DeviceParam(ParamType.GENERIC_VALUE, strVal));
         }
     }
+
 }

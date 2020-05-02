@@ -25,4 +25,5 @@ public class SerialBridgeConfiguration extends BridgeConfiguration {
     public String getSerialPort() {
         return serialPort;
     }
+
 }

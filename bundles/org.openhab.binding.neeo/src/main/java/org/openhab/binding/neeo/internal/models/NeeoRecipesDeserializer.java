@@ -52,4 +52,5 @@ public class NeeoRecipesDeserializer implements JsonDeserializer<@Nullable NeeoR
         }
         return null;
     }
+
 }

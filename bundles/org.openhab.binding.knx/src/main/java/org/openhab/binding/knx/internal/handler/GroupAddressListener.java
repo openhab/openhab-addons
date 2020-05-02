@@ -33,4 +33,5 @@ public interface GroupAddressListener extends BusMessageListener {
      * @param destination
      */
     public boolean listensTo(GroupAddress destination);
+
 }

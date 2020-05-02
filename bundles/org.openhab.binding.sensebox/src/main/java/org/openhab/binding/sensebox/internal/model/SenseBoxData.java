@@ -14,10 +14,9 @@ package org.openhab.binding.sensebox.internal.model;
 
 import java.util.List;
 
-import org.eclipse.smarthome.core.thing.ThingStatus;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import org.eclipse.smarthome.core.thing.ThingStatus;
 
 /**
  * The {@link SenseBoxData} holds a de-serialized representation
@@ -195,11 +194,13 @@ public class SenseBoxData {
         this.particulateMatter2dot5 = particulateMatter2dot5;
     }
 
-    public SenseBoxSensor getParticulateMatter10() {
+    public SenseBoxSensor getParticulateMatter10()
+    {
         return particulateMatter10;
     }
 
-    public void setParticulateMatter10(SenseBoxSensor particulateMatter10) {
+    public void setParticulateMatter10(SenseBoxSensor particulateMatter10)
+    {
         this.particulateMatter10 = particulateMatter10;
     }
 }

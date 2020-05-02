@@ -202,7 +202,8 @@ public class XMLResponseHandler extends DefaultHandler {
                         }
                         state = XMLHandlerState.Unprocessed;
                     } else if (state != XMLHandlerState.Volume && state != XMLHandlerState.Presets
-                            && state != XMLHandlerState.Group && state != XMLHandlerState.Unprocessed) {
+                            && state != XMLHandlerState.Group
+                            && state != XMLHandlerState.Unprocessed) {
                         if (!checkDeviceId(localName, attributes, false)) {
                             state = XMLHandlerState.Unprocessed;
                             break;

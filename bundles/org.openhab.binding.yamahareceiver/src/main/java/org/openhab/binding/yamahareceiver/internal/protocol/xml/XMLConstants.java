@@ -57,4 +57,5 @@ public class XMLConstants {
         FEATURE_BY_YNC_TAG.put("USB", Feature.USB);
         FEATURE_BY_YNC_TAG.put("NET_USB", Feature.NET_USB);
     }
+
 }

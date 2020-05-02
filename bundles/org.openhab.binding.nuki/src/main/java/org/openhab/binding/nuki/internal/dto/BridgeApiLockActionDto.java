@@ -38,4 +38,5 @@ public class BridgeApiLockActionDto {
     public void setBatteryCritical(boolean batteryCritical) {
         this.batteryCritical = batteryCritical;
     }
+
 }

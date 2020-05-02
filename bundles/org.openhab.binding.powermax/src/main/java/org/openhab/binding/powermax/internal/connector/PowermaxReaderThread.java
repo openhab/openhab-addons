@@ -150,4 +150,5 @@ public class PowermaxReaderThread extends Thread {
         }
         return (checksum == expected);
     }
+
 }

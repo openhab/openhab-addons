@@ -69,4 +69,5 @@ public class LinkyConsumptionData {
             return valeur > 0;
         }
     }
+
 }

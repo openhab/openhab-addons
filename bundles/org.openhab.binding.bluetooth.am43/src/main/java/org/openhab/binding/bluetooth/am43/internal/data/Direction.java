@@ -34,4 +34,5 @@ public enum Direction {
     public static Direction valueOf(boolean bitValue) {
         return bitValue ? Forward : Reverse;
     }
+
 }

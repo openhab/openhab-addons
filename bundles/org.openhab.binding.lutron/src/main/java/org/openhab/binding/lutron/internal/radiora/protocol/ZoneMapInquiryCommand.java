@@ -32,4 +32,5 @@ public class ZoneMapInquiryCommand extends RadioRACommand {
     public List<String> getArgs() {
         return Collections.emptyList();
     }
+
 }

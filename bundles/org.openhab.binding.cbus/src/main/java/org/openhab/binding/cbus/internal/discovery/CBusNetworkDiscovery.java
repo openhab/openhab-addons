@@ -79,4 +79,5 @@ public class CBusNetworkDiscovery extends AbstractDiscoveryService {
         super.stopScan();
         removeOlderResults(getTimestampOfLastScan());
     }
+
 }

@@ -161,4 +161,5 @@ class SCgetFirmware extends GetFirmware implements SlipBridgeCommunicationProtoc
         logger.trace("getFirmware() returns {}.", result);
         return new VeluxGwFirmware(result);
     }
+
 }

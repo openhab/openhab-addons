@@ -113,4 +113,5 @@ public class Localization {
         logger.trace("getText() returns {}.", text);
         return text;
     }
+
 }

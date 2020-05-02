@@ -57,4 +57,5 @@ public class TagsResponse extends Packet {
     public int[] expectedResponses() {
         return new int[] {};
     }
+
 }

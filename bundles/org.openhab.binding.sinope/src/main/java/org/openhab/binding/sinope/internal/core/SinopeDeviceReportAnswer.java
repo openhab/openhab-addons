@@ -82,4 +82,5 @@ public class SinopeDeviceReportAnswer extends SinopeAnswer {
         sb.append(String.format("\n\tDeviceId: %s", ByteUtil.toString(getDeviceId())));
         return sb.toString();
     }
+
 }

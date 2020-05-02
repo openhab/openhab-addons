@@ -52,4 +52,5 @@ public class OpenClosedTypeConverter extends AbstractTypeConverter<OpenClosedTyp
     private boolean isInvert(HmDatapoint dp) {
         return !DATAPOINT_NAME_SENSOR.equals(dp.getName()) && !isStateInvertDatapoint(dp);
     }
+
 }

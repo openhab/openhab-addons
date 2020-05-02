@@ -99,6 +99,7 @@ public class RFXComJD2XXConnector extends RFXComBaseConnector {
         in = null;
 
         logger.debug("Closed");
+
     }
 
     @Override

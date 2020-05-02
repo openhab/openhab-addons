@@ -48,4 +48,5 @@ public abstract class BaseAction {
         startTime = 0;
         state = ActionState.WAITING;
     }
+
 }

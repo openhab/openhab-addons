@@ -229,4 +229,5 @@ public class HeosResponseDecoder {
     public HeosJsonParser getHeosJsonParser() {
         return parser;
     }
+
 }

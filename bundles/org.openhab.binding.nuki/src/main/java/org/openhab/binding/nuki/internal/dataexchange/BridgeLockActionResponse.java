@@ -42,4 +42,5 @@ public class BridgeLockActionResponse extends NukiBaseResponse {
     public void setBatteryCritical(boolean batteryCritical) {
         this.batteryCritical = batteryCritical;
     }
+
 }

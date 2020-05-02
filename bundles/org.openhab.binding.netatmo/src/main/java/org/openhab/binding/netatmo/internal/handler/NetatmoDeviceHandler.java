@@ -231,4 +231,5 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
     public void expireData() {
         refreshStrategy.expireData();
     }
+
 }

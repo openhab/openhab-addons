@@ -129,4 +129,5 @@ public abstract class UniFiBaseThingHandler<E, C> extends BaseThingHandler {
     protected abstract void refreshChannel(E entity, ChannelUID channelUID);
 
     protected abstract void handleCommand(E entity, ChannelUID channelUID, Command command) throws UniFiException;
+
 }

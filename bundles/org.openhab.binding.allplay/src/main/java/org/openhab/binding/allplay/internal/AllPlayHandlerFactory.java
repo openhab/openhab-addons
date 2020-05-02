@@ -158,4 +158,5 @@ public class AllPlayHandlerFactory extends BaseThingHandlerFactory {
         }
         return callbackUrl;
     }
+
 }

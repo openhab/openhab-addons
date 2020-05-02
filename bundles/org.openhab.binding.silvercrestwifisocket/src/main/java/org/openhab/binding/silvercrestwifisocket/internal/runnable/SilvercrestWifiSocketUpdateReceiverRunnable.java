@@ -130,4 +130,5 @@ public class SilvercrestWifiSocketUpdateReceiverRunnable implements Runnable {
     public void shutdown() {
         this.shutdown = true;
     }
+
 }

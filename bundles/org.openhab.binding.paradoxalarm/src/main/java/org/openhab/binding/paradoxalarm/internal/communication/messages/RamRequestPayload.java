@@ -32,4 +32,5 @@ public class RamRequestPayload extends MemoryRequestPayload implements IPPacketP
     protected byte calculateControlByte() {
         return CONTROL_BYTE;
     }
+
 }

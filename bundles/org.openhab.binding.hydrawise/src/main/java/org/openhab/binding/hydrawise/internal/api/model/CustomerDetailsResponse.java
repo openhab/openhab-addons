@@ -46,4 +46,5 @@ public class CustomerDetailsResponse extends Response {
     public Integer tandcVersion;
 
     public Features features;
+
 }

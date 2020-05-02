@@ -74,4 +74,5 @@ public class WemoDiscoveryService extends AbstractDiscoveryService {
         removeOlderResults(getTimestampOfLastScan());
         super.stopScan();
     }
+
 }

@@ -60,4 +60,5 @@ public class AggregateWeekDataResponsePrivateApi extends AbstractAggregateDataRe
 
         return valueMap;
     }
+
 }

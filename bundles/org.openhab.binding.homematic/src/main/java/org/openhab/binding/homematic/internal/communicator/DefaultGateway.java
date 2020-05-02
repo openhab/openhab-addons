@@ -57,4 +57,5 @@ public class DefaultGateway extends AbstractHomematicGateway {
     protected void loadDeviceNames(Collection<HmDevice> devices) throws IOException {
         // not supported
     }
+
 }

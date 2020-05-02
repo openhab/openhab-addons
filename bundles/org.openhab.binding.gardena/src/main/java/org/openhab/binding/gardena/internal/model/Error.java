@@ -60,4 +60,5 @@ public class Error {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("id", id).append("status", status)
                 .append("title", title).append("detail", detail).toString();
     }
+
 }

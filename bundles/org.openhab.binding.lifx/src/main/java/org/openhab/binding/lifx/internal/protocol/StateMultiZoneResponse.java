@@ -95,4 +95,5 @@ public class StateMultiZoneResponse extends Packet {
     public int[] expectedResponses() {
         return new int[] {};
     }
+
 }

@@ -30,4 +30,5 @@ public class LEDState {
         this.white = white;
         this.white2 = white2;
     }
+
 }

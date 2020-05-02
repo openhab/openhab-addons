@@ -48,4 +48,5 @@ public interface BridgeCommunicationProtocol {
      * @return true if the communication was successful, and false otherwise.
      */
     public boolean isCommunicationSuccessful();
+
 }

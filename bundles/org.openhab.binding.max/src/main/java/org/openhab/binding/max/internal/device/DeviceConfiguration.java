@@ -126,4 +126,5 @@ public final class DeviceConfiguration {
     public void setProperties(HashMap<String, Object> properties) {
         this.properties = properties;
     }
+
 }

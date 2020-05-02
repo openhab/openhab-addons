@@ -35,4 +35,5 @@ public class BridgeCallbackRemoveResponse extends NukiBaseResponse {
     public BridgeCallbackRemoveResponse(NukiBaseResponse nukiBaseResponse) {
         super(nukiBaseResponse.getStatus(), nukiBaseResponse.getMessage());
     }
+
 }

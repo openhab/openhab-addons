@@ -27,4 +27,5 @@ public interface LifxChannelFactory {
     Channel createColorZoneChannel(ThingUID thingUID, int index);
 
     Channel createTemperatureZoneChannel(ThingUID thingUID, int index);
+
 }

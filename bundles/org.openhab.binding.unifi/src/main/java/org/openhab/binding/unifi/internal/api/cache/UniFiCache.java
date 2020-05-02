@@ -93,4 +93,5 @@ public abstract class UniFiCache<T> {
     }
 
     protected abstract String getSuffix(T value, String prefix);
+
 }

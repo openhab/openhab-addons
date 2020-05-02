@@ -30,11 +30,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.openhab.binding.mqtt.handler.AbstractBrokerHandler;
+import org.openhab.binding.mqtt.handler.SystemBrokerHandler;
 import org.openhab.binding.mqtt.internal.MqttThingID;
 import org.osgi.service.cm.ConfigurationException;
 
 /**
- * Tests cases for {@link org.openhab.binding.mqtt.handler.AbstractBrokerHandler}.
+ * Tests cases for {@link AbstractBrokerHandler}.
  *
  * @author David Graeff - Initial contribution
  */

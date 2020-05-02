@@ -287,4 +287,5 @@ class SCrunScene extends RunScene implements SlipBridgeCommunicationProtocol {
         this.reqVelocity = velocity;
         return this;
     }
+
 }

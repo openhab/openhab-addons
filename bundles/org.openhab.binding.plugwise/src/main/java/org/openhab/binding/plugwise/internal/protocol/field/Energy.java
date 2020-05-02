@@ -120,4 +120,5 @@ public class Energy {
     private void updateStart(Duration interval) {
         utcStart = utcEnd.minus(interval);
     }
+
 }

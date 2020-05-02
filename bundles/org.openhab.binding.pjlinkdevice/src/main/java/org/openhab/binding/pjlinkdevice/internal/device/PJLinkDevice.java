@@ -358,6 +358,7 @@ public class PJLinkDevice {
 
     public Set<Input> getAvailableInputs() throws ResponseException, IOException, AuthenticationException {
         return new InputListQueryCommand(this).execute().getResult();
+
     }
 
     public void dispose() {

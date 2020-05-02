@@ -55,4 +55,5 @@ public class SettingCommand extends Command {
     public void setDeviceId(String deviceId) {
         this.deviceId = deviceId;
     }
+
 }

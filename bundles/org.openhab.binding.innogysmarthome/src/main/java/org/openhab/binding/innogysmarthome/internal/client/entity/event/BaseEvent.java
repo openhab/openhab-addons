@@ -149,4 +149,5 @@ public class BaseEvent {
     public boolean isStateChangedEvent() {
         return TYPE_STATE_CHANGED.equals(getType());
     }
+
 }

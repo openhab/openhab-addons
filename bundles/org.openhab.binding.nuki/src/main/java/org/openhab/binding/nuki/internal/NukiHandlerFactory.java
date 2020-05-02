@@ -139,4 +139,5 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
         logger.trace("callbackUrl[{}]", callbackUrl);
         return callbackUrl;
     }
+
 }

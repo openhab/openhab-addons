@@ -118,4 +118,5 @@ final class ChannelSceneAction extends ChannelHandlerTemplate {
         } while (false); // common exit
         return newValue;
     }
+
 }

@@ -37,4 +37,5 @@ public interface InputConverter {
      * @return canonical name
      */
     String fromStateName(String name);
+
 }

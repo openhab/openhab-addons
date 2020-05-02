@@ -59,4 +59,5 @@ public class NestTestBridgeHandler extends NestBridgeHandler {
     protected NestRedirectUrlSupplier createRedirectUrlSupplier() throws InvalidAccessTokenException {
         return new NestTestRedirectUrlSupplier(getHttpHeaders());
     }
+
 }

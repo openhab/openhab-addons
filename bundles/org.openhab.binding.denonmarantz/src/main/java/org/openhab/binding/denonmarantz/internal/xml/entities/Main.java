@@ -36,4 +36,5 @@ public class Main {
     public void setPower(OnOffType power) {
         this.power = power;
     }
+
 }

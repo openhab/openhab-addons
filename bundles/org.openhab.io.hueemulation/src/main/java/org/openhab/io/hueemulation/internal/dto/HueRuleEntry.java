@@ -136,4 +136,5 @@ public class HueRuleEntry {
             return c;
         }
     }
+
 }

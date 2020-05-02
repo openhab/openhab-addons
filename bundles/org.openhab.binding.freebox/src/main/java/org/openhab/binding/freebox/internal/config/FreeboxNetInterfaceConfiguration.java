@@ -24,4 +24,5 @@ public class FreeboxNetInterfaceConfiguration {
     public static final String IP_ADDRESS = "ipAddress";
 
     public String ipAddress;
+
 }

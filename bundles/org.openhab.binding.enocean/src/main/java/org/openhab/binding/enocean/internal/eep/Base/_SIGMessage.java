@@ -46,4 +46,5 @@ public abstract class _SIGMessage extends EEP {
     protected boolean validateData(byte[] bytes) {
         return true;
     }
+
 }

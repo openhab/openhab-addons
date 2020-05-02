@@ -52,4 +52,5 @@ public class TCPServerBridgeConfiguration {
      * The Protocol Type - 1 for IT-100 API or 2 for Envisalink TPI.
      */
     public Integer protocol;
+
 }

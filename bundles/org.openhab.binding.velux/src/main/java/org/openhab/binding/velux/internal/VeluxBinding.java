@@ -120,4 +120,5 @@ public class VeluxBinding extends VeluxBridgeConfiguration {
         logger.trace("checked() done.");
         return this;
     }
+
 }

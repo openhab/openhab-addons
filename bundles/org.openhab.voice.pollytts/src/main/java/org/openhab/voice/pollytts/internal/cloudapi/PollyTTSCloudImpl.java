@@ -130,4 +130,5 @@ public class PollyTTSCloudImpl {
                 .withVoiceId(voiceID).withOutputFormat(OutputFormat.fromValue(format));
         return client.synthesizeSpeech(request).getAudioStream();
     }
+
 }

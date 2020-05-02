@@ -72,4 +72,5 @@ public class UniFiThingHandlerFactory extends BaseThingHandlerFactory {
     public void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
         // nop
     }
+
 }

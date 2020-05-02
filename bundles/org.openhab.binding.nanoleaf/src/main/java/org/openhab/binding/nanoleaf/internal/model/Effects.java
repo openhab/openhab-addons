@@ -52,4 +52,5 @@ public class Effects {
     public void setWrite(@Nullable Write write) {
         this.write = write;
     }
+
 }

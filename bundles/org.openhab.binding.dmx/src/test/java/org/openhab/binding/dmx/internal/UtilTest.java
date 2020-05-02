@@ -17,6 +17,7 @@ import static org.junit.Assert.assertThat;
 
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.junit.Test;
+import org.openhab.binding.dmx.internal.Util;
 import org.openhab.binding.dmx.internal.multiverse.DmxChannel;
 
 /**
@@ -59,6 +60,7 @@ public class UtilTest {
         // middle
         value = Util.toDmxValue(new PercentType(50));
         assertThat(value, is(127));
+
     }
 
     @Test
@@ -89,4 +91,5 @@ public class UtilTest {
         value = Util.fadeTimeFraction(100, 155, 2550);
         assertThat(value, is(550));
     }
+
 }

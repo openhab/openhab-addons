@@ -20,4 +20,5 @@ package org.openhab.binding.fronius.internal;
  */
 public class FroniusBaseDeviceConfiguration {
     public Integer deviceId;
+
 }

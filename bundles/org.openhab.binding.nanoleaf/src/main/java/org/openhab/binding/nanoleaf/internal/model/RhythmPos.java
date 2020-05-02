@@ -54,4 +54,5 @@ public class RhythmPos {
     public void setOrientation(float o) {
         this.orientation = o;
     }
+
 }

@@ -114,4 +114,5 @@ public class PowerControlPower extends BaseChannelHandler<CommandConfirmation> {
     public interface ConfigProvider {
         String getMacAddress();
     }
+
 }

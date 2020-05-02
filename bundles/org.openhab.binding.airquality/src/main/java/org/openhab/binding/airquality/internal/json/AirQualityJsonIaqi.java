@@ -84,4 +84,5 @@ public class AirQualityJsonIaqi {
     public BigDecimal getW() {
         return wind.getValue();
     }
+
 }

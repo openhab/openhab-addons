@@ -38,4 +38,5 @@ public class BridgeApiCallbackAddDto {
     public void setMessage(String message) {
         this.message = message;
     }
+
 }

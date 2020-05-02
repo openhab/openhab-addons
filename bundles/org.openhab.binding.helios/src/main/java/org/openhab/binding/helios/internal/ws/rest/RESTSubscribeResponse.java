@@ -23,4 +23,5 @@ public class RESTSubscribeResponse {
 
     RESTSubscribeResponse() {
     }
+
 }

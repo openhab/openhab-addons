@@ -95,4 +95,5 @@ public class ExecuteResult {
         return "ExecuteResult [estimatedDuration=" + estimatedDuration + ", name=" + name + ", startTime=" + startTime
                 + ", steps=" + Arrays.toString(steps) + ", type=" + type + "]";
     }
+
 }

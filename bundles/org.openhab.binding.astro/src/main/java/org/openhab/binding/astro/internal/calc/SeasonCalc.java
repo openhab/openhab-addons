@@ -160,4 +160,5 @@ public class SeasonCalc {
     private double cosDeg(double deg) {
         return Math.cos(deg * Math.PI / 180);
     }
+
 }

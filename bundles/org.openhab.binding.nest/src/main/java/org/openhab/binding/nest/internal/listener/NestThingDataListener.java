@@ -43,4 +43,5 @@ public interface NestThingDataListener<T> {
      * @param nestId identifies the Nest thing
      */
     void onMissingData(String nestId);
+
 }

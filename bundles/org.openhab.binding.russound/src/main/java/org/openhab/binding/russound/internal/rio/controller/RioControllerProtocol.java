@@ -146,6 +146,7 @@ class RioControllerProtocol extends AbstractRioProtocol {
         } else {
             logger.debug("Invalid Controller Notification response: '{}'", resp);
         }
+
     }
 
     /**

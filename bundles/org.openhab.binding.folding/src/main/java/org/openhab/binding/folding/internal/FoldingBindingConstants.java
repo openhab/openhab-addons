@@ -34,4 +34,5 @@ public class FoldingBindingConstants {
 
     // List of all Channel ids
     public static final String CHANNEL_STATUS = "status";
+
 }

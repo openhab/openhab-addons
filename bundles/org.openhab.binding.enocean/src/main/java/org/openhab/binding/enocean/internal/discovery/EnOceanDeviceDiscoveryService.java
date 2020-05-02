@@ -171,4 +171,5 @@ public class EnOceanDeviceDiscoveryService extends AbstractDiscoveryService impl
         // we just want teach in msg, so return zero here
         return 0;
     }
+
 }

@@ -80,4 +80,5 @@ public class Ethm1BridgeHandler extends SatelBridgeHandler {
 
         return configStatusMessages;
     }
+
 }

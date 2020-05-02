@@ -379,4 +379,5 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
     public void lifeCycleStopping(@Nullable LifeCycle arg0) {
         logger.trace("WebSocketClient stopping");
     }
+
 }

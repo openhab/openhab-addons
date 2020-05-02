@@ -118,4 +118,5 @@ public class SystemControlXMLTest extends AbstractXMLProtocolTest {
         assertTrue(state.power);
         assertFalse(state.partyMode);
     }
+
 }

@@ -318,4 +318,5 @@ public class JsonVeluxBridge extends VeluxBridge {
             throws JsonSyntaxException, IOException {
         return io(url, "", request, classOfResponse);
     }
+
 }

@@ -22,4 +22,5 @@ import org.openhab.binding.bluetooth.BaseBluetoothBridgeHandlerConfiguration;
 public class BlueZAdapterConfiguration extends BaseBluetoothBridgeHandlerConfiguration {
 
     public String address;
+
 }

@@ -155,6 +155,7 @@ class WebSocketArt extends WebSocketBase {
 
         String method = "ms.channel.emit";
         Params params = new Params();
+
     }
 
     void getArtmodeStatus() {

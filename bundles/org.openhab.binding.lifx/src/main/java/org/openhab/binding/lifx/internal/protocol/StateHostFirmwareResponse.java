@@ -84,4 +84,5 @@ public class StateHostFirmwareResponse extends Packet {
     public int[] expectedResponses() {
         return new int[] {};
     }
+
 }

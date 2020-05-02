@@ -14,9 +14,8 @@ package org.openhab.binding.linuxinput.internal.evdev4j;
 
 import java.util.Optional;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 import jnr.constants.Constant;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * @author Thomas Weißschuh - Initial contribution

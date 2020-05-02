@@ -129,4 +129,5 @@ public class GardenaConfig {
                 .append("sessionTimeout", sessionTimeout).append("connectionTimeout", connectionTimeout)
                 .append("refresh", refresh).toString();
     }
+
 }

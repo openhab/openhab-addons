@@ -41,4 +41,5 @@ public class SomfyTahomaExternalAlarmHandler extends SomfyTahomaBaseThingHandler
             sendCommand(command.toString());
         }
     }
+
 }

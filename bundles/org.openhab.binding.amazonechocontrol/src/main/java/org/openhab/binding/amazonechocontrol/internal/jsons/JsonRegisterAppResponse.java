@@ -59,6 +59,7 @@ public class JsonRegisterAppResponse {
         public String device_serial_number;
         @Nullable
         public String device_type;
+
     }
 
     public static class CustomerInfo {

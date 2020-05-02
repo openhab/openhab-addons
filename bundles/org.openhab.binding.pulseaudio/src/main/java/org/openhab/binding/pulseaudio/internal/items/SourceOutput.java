@@ -32,4 +32,5 @@ public class SourceOutput extends AbstractAudioDeviceConfig {
     public void setSource(Source source) {
         this.source = source;
     }
+
 }

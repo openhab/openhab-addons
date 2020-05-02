@@ -218,4 +218,5 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
             }
         }
     }
+
 }

@@ -58,4 +58,5 @@ public class StatePowerResponse extends Packet {
     public int[] expectedResponses() {
         return new int[] {};
     }
+
 }

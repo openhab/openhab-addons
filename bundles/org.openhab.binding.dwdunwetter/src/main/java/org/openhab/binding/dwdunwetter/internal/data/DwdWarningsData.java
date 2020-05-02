@@ -309,4 +309,5 @@ public class DwdWarningsData {
         dataAccessCached = new ExpiringCache<>(Duration.ofMinutes(MIN_REFRESH_WAIT_MINUTES),
                 () -> dataAccess.getDataFromEndpoint(""));
     }
+
 }

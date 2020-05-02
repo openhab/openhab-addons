@@ -175,4 +175,5 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
         } while (false); // common exit
         return newValue;
     }
+
 }

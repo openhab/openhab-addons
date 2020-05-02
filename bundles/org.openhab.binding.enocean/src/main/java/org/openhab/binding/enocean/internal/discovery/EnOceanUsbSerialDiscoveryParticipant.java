@@ -98,4 +98,5 @@ public class EnOceanUsbSerialDiscoveryParticipant implements UsbSerialDiscoveryP
             return ENOCEAN_USB300_DONGLE_DEFAULT_LABEL;
         }
     }
+
 }

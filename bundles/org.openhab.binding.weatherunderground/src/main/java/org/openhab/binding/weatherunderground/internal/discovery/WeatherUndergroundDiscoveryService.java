@@ -151,4 +151,5 @@ public class WeatherUndergroundDiscoveryService extends AbstractDiscoveryService
         thingDiscovered(DiscoveryResultBuilder.create(localWeatherThing).withLabel("Local Weather")
                 .withProperties(properties).withBridge(bridgeUID).build());
     }
+
 }

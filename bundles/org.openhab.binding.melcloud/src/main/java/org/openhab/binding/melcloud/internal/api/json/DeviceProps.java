@@ -1102,4 +1102,5 @@ public class DeviceProps {
     public void setUnits(List<Object> units) {
         this.units = units;
     }
+
 }

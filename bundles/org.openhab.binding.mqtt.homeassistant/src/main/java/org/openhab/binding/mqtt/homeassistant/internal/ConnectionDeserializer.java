@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal;
 
-import java.lang.reflect.Type;
-
 import com.google.gson.*;
+
+import java.lang.reflect.Type;
 
 /**
  * The {@link ConnectionDeserializer} will de-serialize a connection-list

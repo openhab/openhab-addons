@@ -45,4 +45,5 @@ public class AirQualityJsonCity {
         }
         return String.join(",", list);
     }
+
 }

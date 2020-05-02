@@ -33,4 +33,5 @@ public class LocationOwner {
 
     @SerializedName("lastname")
     private String lastName;
+
 }

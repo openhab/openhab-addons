@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.opengarage.internal.api;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class for holding the set of parameters used to read the controller variables.
@@ -37,6 +37,7 @@ public class ControllerVariables {
     public String cid;
     public int rssi;
 
+
     private ControllerVariables() {
     }
 
@@ -56,4 +57,5 @@ public class ControllerVariables {
         info.rssi = jsonObject.get("rssi").getAsInt();
         return info;
     }
+
 }

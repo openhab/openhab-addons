@@ -281,4 +281,5 @@ public enum Product {
 
         throw new IllegalArgumentException(id + " is not a valid product ID");
     }
+
 }

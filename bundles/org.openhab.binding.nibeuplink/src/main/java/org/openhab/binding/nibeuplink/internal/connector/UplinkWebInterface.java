@@ -161,6 +161,7 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
                 command.performAction(httpClient);
             }
         }
+
     }
 
     /**
@@ -261,6 +262,7 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
         this.uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                 preCheckStatusMessage);
         return false;
+
     }
 
     /**

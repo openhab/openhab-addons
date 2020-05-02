@@ -22,4 +22,5 @@ public class HDPowerViewSceneConfiguration {
     public static final String ID = "id";
 
     public int id;
+
 }

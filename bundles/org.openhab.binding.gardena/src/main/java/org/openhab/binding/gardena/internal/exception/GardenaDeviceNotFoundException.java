@@ -25,4 +25,5 @@ public class GardenaDeviceNotFoundException extends GardenaException {
     public GardenaDeviceNotFoundException(String message) {
         super(message);
     }
+
 }

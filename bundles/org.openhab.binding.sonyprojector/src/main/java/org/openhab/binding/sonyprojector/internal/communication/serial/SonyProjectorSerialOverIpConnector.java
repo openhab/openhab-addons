@@ -125,4 +125,5 @@ public class SonyProjectorSerialOverIpConnector extends SonyProjectorSerialConne
             throw new SonyProjectorException("readInput failed: " + e.getMessage());
         }
     }
+
 }

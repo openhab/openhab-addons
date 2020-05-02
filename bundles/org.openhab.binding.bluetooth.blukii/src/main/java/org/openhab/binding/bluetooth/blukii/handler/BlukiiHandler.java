@@ -76,4 +76,5 @@ public class BlukiiHandler extends BeaconBluetoothHandler implements BluetoothDe
         }
         super.onScanRecordReceived(scanNotification);
     }
+
 }

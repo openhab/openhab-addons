@@ -216,4 +216,5 @@ public class NestThermostatHandler extends NestBaseHandler<Thermostat> {
             updateStatus(newStatus);
         }
     }
+
 }

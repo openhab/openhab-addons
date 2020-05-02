@@ -168,4 +168,5 @@ public class OwserverBridgeHandlerTest extends JavaTest {
 
         waitForAssert(() -> assertFalse(bridgeHandler.isRefreshable()));
     }
+
 }

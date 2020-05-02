@@ -306,4 +306,5 @@ public class Sun extends RiseSet implements Planet {
                 .append("eveningNight", getEveningNight()).append("eclipse", eclipse).append("phase", phase)
                 .append("radiation", radiation).toString();
     }
+
 }

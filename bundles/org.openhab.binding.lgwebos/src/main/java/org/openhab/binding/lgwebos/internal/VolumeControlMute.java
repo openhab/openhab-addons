@@ -70,4 +70,5 @@ public class VolumeControlMute extends BaseChannelHandler<Boolean> {
             }
         };
     }
+
 }

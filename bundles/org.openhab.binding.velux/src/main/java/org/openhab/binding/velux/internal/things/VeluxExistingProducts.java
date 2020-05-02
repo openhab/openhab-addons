@@ -202,4 +202,5 @@ public class VeluxExistingProducts {
     public String toString() {
         return toString(true, VeluxBindingConstants.OUTPUT_VALUE_SEPARATOR);
     }
+
 }

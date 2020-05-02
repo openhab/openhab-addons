@@ -43,4 +43,5 @@ class TypeDateTime extends KNXChannelType {
     protected String getDefaultDPT(String gaConfigKey) {
         return DPTXlatorDateTime.DPT_DATE_TIME.getID();
     }
+
 }

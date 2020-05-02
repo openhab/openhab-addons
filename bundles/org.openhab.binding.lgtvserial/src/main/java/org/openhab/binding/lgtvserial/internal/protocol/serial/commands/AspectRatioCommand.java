@@ -23,4 +23,5 @@ public class AspectRatioCommand extends BaseStringCommand {
     protected AspectRatioCommand(int setId) {
         super('k', 'c', setId);
     }
+
 }

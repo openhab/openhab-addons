@@ -31,4 +31,5 @@ public class IdentificationResponse extends PrefixedResponse<String> {
     protected String parseResponseWithoutPrefix(String responseWithoutPrefix) throws ResponseException {
         return responseWithoutPrefix;
     }
+
 }

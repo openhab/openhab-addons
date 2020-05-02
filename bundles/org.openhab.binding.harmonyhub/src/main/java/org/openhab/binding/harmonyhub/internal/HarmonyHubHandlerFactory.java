@@ -177,4 +177,5 @@ public class HarmonyHubHandlerFactory extends BaseThingHandlerFactory
         }
         channelTypes.removeAll(removes);
     }
+
 }

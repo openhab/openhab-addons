@@ -134,4 +134,5 @@ public final class VeluxProductSerialNo {
                 ? serialNumberString.substring(0, serialNumberString.length() - 1)
                 : serialNumberString;
     }
+
 }

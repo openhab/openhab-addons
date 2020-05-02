@@ -23,6 +23,7 @@ import org.openhab.binding.dmx.internal.DmxBindingConstants.ListenerType;
 import org.openhab.binding.dmx.internal.action.FadeAction;
 import org.openhab.binding.dmx.internal.action.ResumeAction;
 import org.openhab.binding.dmx.internal.handler.DimmerThingHandler;
+import org.openhab.binding.dmx.internal.multiverse.DmxChannel;
 
 /**
  * Tests cases for Channel
@@ -142,4 +143,5 @@ public class DmxChannelTest {
         assertThat(dmxChannel.hasRunningActions(), is(false));
         Mockito.verify(dimmerThingHandler).updateChannelValue(valueChannelUID, 127);
     }
+
 }

@@ -164,4 +164,5 @@ public class VeluxBridgeActuators {
         }
         return (numberOfActuators > 0);
     }
+
 }

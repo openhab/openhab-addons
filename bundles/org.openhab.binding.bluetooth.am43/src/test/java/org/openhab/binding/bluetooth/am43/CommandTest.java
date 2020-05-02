@@ -49,4 +49,5 @@ public class CommandTest {
 
         Assert.assertArrayEquals(expected, actual);
     }
+
 }

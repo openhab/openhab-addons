@@ -80,4 +80,5 @@ public class WeatherUtils {
         result = temperature + 0.555555556 * (result - 10);
         return result;
     }
+
 }

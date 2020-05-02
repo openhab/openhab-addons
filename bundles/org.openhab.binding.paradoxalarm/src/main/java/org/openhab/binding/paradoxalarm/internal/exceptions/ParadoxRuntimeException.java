@@ -29,8 +29,7 @@ public class ParadoxRuntimeException extends RuntimeException {
         super();
     }
 
-    public ParadoxRuntimeException(String message, Throwable cause, boolean enableSuppression,
-            boolean writableStackTrace) {
+    public ParadoxRuntimeException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 
@@ -39,7 +38,7 @@ public class ParadoxRuntimeException extends RuntimeException {
     }
 
     public ParadoxRuntimeException(Throwable cause) {
-        this("This is a Paradox Binding wrapper of RuntimeException. For detailed error message, see the original exception. Short message: "
-                + cause.getMessage(), cause);
+        this("This is a Paradox Binding wrapper of RuntimeException. For detailed error message, see the original exception. Short message: " + cause.getMessage(), cause);
     }
+
 }

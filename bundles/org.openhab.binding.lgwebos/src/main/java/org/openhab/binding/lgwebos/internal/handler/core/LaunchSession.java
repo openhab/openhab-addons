@@ -167,4 +167,5 @@ public class LaunchSession {
     public void close(ResponseListener<CommandConfirmation> listener) {
         socket.closeLaunchSession(this, listener);
     }
+
 }

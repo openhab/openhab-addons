@@ -130,4 +130,5 @@ public class WifiConnection implements ConnectionBase {
         mDevice.setAutoConnect(false);
         return false;
     }
+
 }

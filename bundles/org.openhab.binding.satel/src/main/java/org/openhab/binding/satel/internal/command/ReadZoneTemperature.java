@@ -67,4 +67,5 @@ public class ReadZoneTemperature extends SatelCommandBase {
         int zoneNbr = getResponse().getPayload()[0];
         eventDispatcher.dispatchEvent(new ZoneTemperatureEvent(zoneNbr == 0 ? 256 : zoneNbr, getTemperature()));
     }
+
 }

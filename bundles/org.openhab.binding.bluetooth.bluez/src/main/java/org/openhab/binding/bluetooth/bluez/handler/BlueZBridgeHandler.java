@@ -166,4 +166,5 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
         }
         super.dispose();
     }
+
 }

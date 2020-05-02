@@ -93,4 +93,5 @@ public class MMessageTest {
         assertEquals(5, roomInformation.size());
         assertEquals("badkamer", roomInformation.get(0).getName());
     }
+
 }

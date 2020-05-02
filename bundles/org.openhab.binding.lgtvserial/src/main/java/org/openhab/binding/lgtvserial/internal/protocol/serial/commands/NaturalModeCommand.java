@@ -23,4 +23,5 @@ public class NaturalModeCommand extends BaseOnOffCommand {
     protected NaturalModeCommand(int setId) {
         super('d', 'j', setId);
     }
+
 }

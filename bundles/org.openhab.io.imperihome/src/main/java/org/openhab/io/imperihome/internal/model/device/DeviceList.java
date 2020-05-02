@@ -35,4 +35,5 @@ public class DeviceList {
     public String toString() {
         return "DeviceList{" + "devices=" + devices + '}';
     }
+
 }

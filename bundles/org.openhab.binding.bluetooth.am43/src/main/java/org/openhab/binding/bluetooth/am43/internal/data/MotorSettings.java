@@ -107,4 +107,5 @@ public class MotorSettings {
     public void setDiameter(int diameter) {
         this.diameter = diameter;
     }
+
 }

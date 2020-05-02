@@ -654,4 +654,5 @@ public class BluetoothCharacteristic {
             return uuid;
         }
     }
+
 }

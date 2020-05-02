@@ -38,4 +38,5 @@ public abstract class BasePercentCommand extends BaseLGSerialCommand {
         String decimalValue = Integer.toString(Integer.parseInt(data, 16));
         return new PercentResponse(set, success, PercentType.valueOf(decimalValue));
     }
+
 }

@@ -164,4 +164,5 @@ final class ChannelVShutterPosition extends ChannelHandlerTemplate {
         LOGGER.trace("handleCommand() returns {}.", newValue);
         return newValue;
     }
+
 }

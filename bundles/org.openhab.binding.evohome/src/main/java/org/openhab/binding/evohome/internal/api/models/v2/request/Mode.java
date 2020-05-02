@@ -42,4 +42,5 @@ public class Mode {
 
     @SerializedName("permanent")
     private boolean permanent;
+
 }

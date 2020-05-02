@@ -120,4 +120,5 @@ public class NAHealthyHomeCoachHandler extends NetatmoDeviceHandler<NAHealthyHom
         }
         return null;
     }
+
 }

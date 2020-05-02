@@ -50,4 +50,5 @@ public class SinopeHeatLevelData extends SinopeAppData {
         }
         return sb.toString();
     }
+
 }

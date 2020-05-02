@@ -49,4 +49,5 @@ public class Palette {
     public void setBrightness(int brightness) {
         this.brightness = brightness;
     }
+
 }

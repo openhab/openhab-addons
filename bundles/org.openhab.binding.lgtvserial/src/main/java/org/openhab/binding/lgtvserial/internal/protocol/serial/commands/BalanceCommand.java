@@ -23,4 +23,5 @@ public class BalanceCommand extends BasePercentCommand {
     protected BalanceCommand(int setId) {
         super('k', 't', setId);
     }
+
 }

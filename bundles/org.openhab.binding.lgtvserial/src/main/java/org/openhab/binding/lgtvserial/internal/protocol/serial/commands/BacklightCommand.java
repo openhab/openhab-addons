@@ -23,4 +23,5 @@ public class BacklightCommand extends BasePercentCommand {
     protected BacklightCommand(int setId) {
         super('m', 'g', setId);
     }
+
 }

@@ -139,4 +139,5 @@ public class SatelSystemHandler extends SatelStateThingHandler {
 
         return result;
     }
+
 }

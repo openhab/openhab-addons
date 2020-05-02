@@ -38,4 +38,5 @@ public class UniFiSiteInstanceCreator implements InstanceCreator<UniFiSite> {
     public UniFiSite createInstance(Type type) {
         return new UniFiSite(controller);
     }
+
 }

@@ -98,6 +98,7 @@ public class RioSystemFavoritesProtocol extends AbstractRioProtocol {
         for (int x = 1; x <= 32; x++) {
             systemFavorites[x - 1] = new RioFavorite(x);
         }
+
     }
 
     /**

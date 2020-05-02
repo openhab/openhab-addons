@@ -41,4 +41,5 @@ class TypeNumber extends KNXChannelType {
     protected Set<String> getAllGAKeys() {
         return Collections.singleton(GA);
     }
+
 }

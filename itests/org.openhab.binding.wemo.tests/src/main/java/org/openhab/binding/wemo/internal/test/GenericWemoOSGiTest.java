@@ -176,4 +176,5 @@ public abstract class GenericWemoOSGiTest extends JavaOSGiTest {
         RemoteDevice localDevice = new RemoteDevice(identity, type, details, service);
         mockUpnpService.getRegistry().addDevice(localDevice);
     }
+
 }

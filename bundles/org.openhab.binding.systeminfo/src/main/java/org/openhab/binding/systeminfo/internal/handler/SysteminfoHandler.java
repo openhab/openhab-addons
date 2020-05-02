@@ -234,6 +234,7 @@ public class SysteminfoHandler extends BaseThingHandler {
         scheduler.schedule(() -> {
             publishData(lowPriorityChannels);
         }, WAIT_TIME_CHANNEL_ITEM_LINK_INIT, TimeUnit.SECONDS);
+
     }
 
     private void publishData(Set<ChannelUID> channels) {
@@ -600,4 +601,5 @@ public class SysteminfoHandler extends BaseThingHandler {
     public void dispose() {
         stopScheduledUpdates();
     }
+
 }

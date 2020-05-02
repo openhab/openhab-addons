@@ -66,4 +66,5 @@ public class BitArrayWrappingBitVector implements BitArray {
     public boolean equals(@Nullable Object obj) {
         return sizeAndValuesEquals(obj);
     }
+
 }

@@ -560,4 +560,5 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
 
         return new ChannelTypeUID(BINDING_ID, channelTypeId);
     }
+
 }

@@ -34,6 +34,7 @@ import org.eclipse.smarthome.test.java.JavaOSGiTest;
 import org.eclipse.smarthome.test.storage.VolatileStorageService;
 import org.junit.Before;
 import org.junit.Test;
+import org.openhab.binding.hue.internal.discovery.HueBridgeNupnpDiscovery;
 
 /**
  *

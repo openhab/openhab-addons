@@ -52,5 +52,6 @@ public class ApiVersionTest {
 
         assertTrue(v.compare(new ApiVersion(0, 2, 3)) > 0);
         assertTrue(v.compare(new ApiVersion(3, 2, 3)) < 0);
+
     }
 }

@@ -439,4 +439,5 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
             }
         }
     }
+
 }

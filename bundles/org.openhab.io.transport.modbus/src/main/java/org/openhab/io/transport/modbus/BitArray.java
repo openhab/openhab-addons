@@ -85,4 +85,5 @@ public interface BitArray extends Iterable<Boolean> {
         IntStream.range(0, size()).mapToObj(i -> getBit(i) ? '1' : '0').forEach(buffer::append);
         return buffer.toString();
     }
+
 }

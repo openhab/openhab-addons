@@ -78,4 +78,5 @@ public class SatelEventLogActions implements ThingActions {
             throw new IllegalArgumentException("Instance is not a SatelEventLogActions class.");
         }
     }
+
 }

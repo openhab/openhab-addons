@@ -56,4 +56,5 @@ public class SenseReportRequestMessage extends Message {
             throw new PlugwisePayloadMismatchException(SENSE_REPORT_REQUEST, PAYLOAD_PATTERN, payload);
         }
     }
+
 }

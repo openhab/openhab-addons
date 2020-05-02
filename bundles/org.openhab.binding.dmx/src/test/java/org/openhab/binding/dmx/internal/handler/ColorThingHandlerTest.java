@@ -34,10 +34,11 @@ import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.junit.Before;
 import org.junit.Test;
+import org.openhab.binding.dmx.internal.handler.ColorThingHandler;
 import org.openhab.binding.dmx.test.AbstractDmxThingTestParent;
 
 /**
- * Tests cases for {@link org.openhab.binding.dmx.internal.handler.ColorThingHandler} in RGB mode.
+ * Tests cases for {@link ColorThingHandler} in RGB mode.
  *
  * @author Jan N. Klug - Initial contribution
  */
@@ -215,4 +216,5 @@ public class ColorThingHandlerTest extends AbstractDmxThingTestParent {
                     state -> assertThat(((PercentType) state).doubleValue(), is(closeTo(29.8, 0.5))));
         });
     }
+
 }

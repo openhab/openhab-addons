@@ -177,4 +177,5 @@ public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
         return "http://api.voicerss.org/?key=" + apiKey + "&hl=" + locale + "&c=" + audioFormat
                 + "&f=44khz_16bit_mono&src=" + encodedMsg;
     }
+
 }

@@ -28,4 +28,5 @@ public interface LGSerialResponseListener {
     void onSuccess(ChannelUID channel, LGSerialResponse response);
 
     void onFailure(ChannelUID channel, LGSerialResponse response);
+
 }

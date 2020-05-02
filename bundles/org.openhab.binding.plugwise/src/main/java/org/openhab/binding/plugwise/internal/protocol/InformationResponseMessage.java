@@ -123,4 +123,5 @@ public class InformationResponseMessage extends Message {
             throw new PlugwisePayloadMismatchException(DEVICE_INFORMATION_RESPONSE, PAYLOAD_PATTERN, payload);
         }
     }
+
 }

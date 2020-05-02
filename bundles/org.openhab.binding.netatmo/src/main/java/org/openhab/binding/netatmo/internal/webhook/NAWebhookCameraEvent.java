@@ -152,4 +152,5 @@ public class NAWebhookCameraEvent {
     public List<NAWebhookCameraEventPerson> getPersons() {
         return persons;
     }
+
 }

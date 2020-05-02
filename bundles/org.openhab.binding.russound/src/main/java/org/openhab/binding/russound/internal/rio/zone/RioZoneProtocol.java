@@ -142,6 +142,7 @@ class RioZoneProtocol extends AbstractRioProtocol
 
         this.zoneFavorites[0] = new RioFavorite(1);
         this.zoneFavorites[1] = new RioFavorite(2);
+
     }
 
     /**
@@ -823,6 +824,7 @@ class RioZoneProtocol extends AbstractRioProtocol
         } else {
             logger.warn("Invalid Zone Notification response: '{}'", resp);
         }
+
     }
 
     /**
@@ -936,6 +938,7 @@ class RioZoneProtocol extends AbstractRioProtocol
         if (m.matches()) {
             handleZoneFavoriteNotification(m, response);
         }
+
     }
 
     /**
@@ -947,4 +950,5 @@ class RioZoneProtocol extends AbstractRioProtocol
         favoritesProtocol.removeListener(this);
         super.dispose();
     }
+
 }

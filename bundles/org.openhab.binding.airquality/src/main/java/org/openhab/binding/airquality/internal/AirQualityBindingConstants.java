@@ -72,4 +72,5 @@ public class AirQualityBindingConstants {
     public static final Unit<Temperature> API_TEMPERATURE_UNIT = SIUnits.CELSIUS;
     public static final Unit<Dimensionless> API_HUMIDITY_UNIT = SmartHomeUnits.PERCENT;
     public static final Unit<Pressure> API_PRESSURE_UNIT = HECTO(SIUnits.PASCAL);
+
 }

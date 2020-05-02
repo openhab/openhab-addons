@@ -68,6 +68,7 @@ public class VitotronicBridgeHandler extends BaseBridgeHandler {
     public void updateStatus(ThingStatus status) {
         super.updateStatus(status);
         updateThingHandlersStatus(status);
+
     }
 
     public void updateStatus() {
@@ -76,6 +77,7 @@ public class VitotronicBridgeHandler extends BaseBridgeHandler {
         } else {
             updateStatus(ThingStatus.OFFLINE);
         }
+
     }
 
     // Managing Thing Discovery Service
@@ -132,6 +134,7 @@ public class VitotronicBridgeHandler extends BaseBridgeHandler {
                 logger.trace("thingHandler for thing: {} not registered", thingID);
             }
         }
+
     }
 
     private void updateThingHandlerStatus(VitotronicThingHandler thingHandler, ThingStatus status) {
@@ -189,6 +192,7 @@ public class VitotronicBridgeHandler extends BaseBridgeHandler {
             sendSocketData("list");
             isDiscover = true;
         }
+
     }
 
     public ThingStatus getStatus() {
@@ -356,6 +360,7 @@ public class VitotronicBridgeHandler extends BaseBridgeHandler {
                 logger.error("Error in parsing data");
                 logger.trace("Diagnostic: ", e);
             }
+
         }
 
         @Override
@@ -382,6 +387,7 @@ public class VitotronicBridgeHandler extends BaseBridgeHandler {
                     isChannel = false;
                     break;
             }
+
         }
 
         // Unused function of xmlReader
@@ -416,5 +422,7 @@ public class VitotronicBridgeHandler extends BaseBridgeHandler {
         @Override
         public void endPrefixMapping(String prefix) throws SAXException {
         }
+
     }
+
 }

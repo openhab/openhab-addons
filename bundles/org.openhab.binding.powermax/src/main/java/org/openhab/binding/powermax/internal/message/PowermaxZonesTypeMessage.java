@@ -52,4 +52,5 @@ public class PowermaxZonesTypeMessage extends PowermaxBaseMessage {
 
         return updatedState;
     }
+
 }

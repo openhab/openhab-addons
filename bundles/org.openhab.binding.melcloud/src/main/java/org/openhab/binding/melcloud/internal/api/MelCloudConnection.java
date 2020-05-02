@@ -185,6 +185,7 @@ public class MelCloudConnection {
             setConnected(false);
             throw new MelCloudCommException("Error occurred during heatpump device command sending", e);
         }
+
     }
 
     public synchronized boolean isConnected() {

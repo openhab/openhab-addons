@@ -167,4 +167,5 @@ public class AccountHandler extends BaseBridgeHandler {
     private void setTokenExpiryDate(long expiresIn) {
         this.tokenExpiryDate = System.nanoTime() + expiresIn;
     }
+
 }

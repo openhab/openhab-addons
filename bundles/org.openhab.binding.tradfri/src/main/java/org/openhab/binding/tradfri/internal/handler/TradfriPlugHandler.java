@@ -80,4 +80,5 @@ public class TradfriPlugHandler extends TradfriThingHandler {
             }
         }
     }
+
 }

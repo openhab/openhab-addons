@@ -48,4 +48,5 @@ public abstract class BaseStringCommand extends BaseLGSerialCommand {
     protected LGSerialResponse createResponse(int set, boolean success, String data) {
         return new StringResponse(set, success, data);
     }
+
 }

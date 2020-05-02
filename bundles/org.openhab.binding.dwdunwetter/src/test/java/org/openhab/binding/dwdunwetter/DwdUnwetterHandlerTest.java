@@ -91,6 +91,7 @@ public class DwdUnwetterHandlerTest extends JavaTest {
 
         // assert that the (temporary) UNKNOWN status was to the mocked thing first:
         assertThat(statusInfoCaptor.getAllValues().get(0).getStatus(), is(ThingStatus.UNKNOWN));
+
     }
 
     /**
@@ -137,4 +138,5 @@ public class DwdUnwetterHandlerTest extends JavaTest {
         }
         return null;
     }
+
 }

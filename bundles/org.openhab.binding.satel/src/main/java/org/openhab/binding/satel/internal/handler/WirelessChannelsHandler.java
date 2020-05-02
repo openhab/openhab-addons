@@ -125,4 +125,5 @@ public abstract class WirelessChannelsHandler extends SatelStateThingHandler {
         String channelId = stateType.toString().toLowerCase();
         return new ChannelUID(getThing().getUID(), channelId);
     }
+
 }

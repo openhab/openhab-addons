@@ -69,4 +69,5 @@ public class NetworkBindingConstants {
         SUPPORTED_THING_TYPES_UIDS.add(BACKWARDS_COMPATIBLE_DEVICE);
         SUPPORTED_THING_TYPES_UIDS.add(SPEEDTEST_DEVICE);
     }
+
 }

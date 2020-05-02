@@ -62,4 +62,5 @@ public class NeeoThingUIDSerializer implements JsonSerializer<NeeoThingUID>, Jso
 
         return new JsonPrimitive(uid.getAsString());
     }
+
 }

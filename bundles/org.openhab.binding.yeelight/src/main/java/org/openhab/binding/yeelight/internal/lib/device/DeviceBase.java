@@ -397,6 +397,7 @@ public abstract class DeviceBase {
 
     public void registerConnectStateListener(DeviceConnectionStateListener listener) {
         mConnectionListeners.add(listener);
+
     }
 
     public void registerStatusChangedListener(DeviceStatusChangeListener listener) {
@@ -430,4 +431,5 @@ public abstract class DeviceBase {
             connect();
         }
     }
+
 }

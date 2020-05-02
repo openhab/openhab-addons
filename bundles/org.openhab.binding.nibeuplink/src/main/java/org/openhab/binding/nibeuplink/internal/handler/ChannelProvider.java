@@ -32,4 +32,5 @@ public interface ChannelProvider {
 
     @Nullable
     Channel getSpecificChannel(String channelCode);
+
 }

@@ -162,4 +162,5 @@ class JCgetFirmware extends GetFirmware implements JsonBridgeCommunicationProtoc
         VeluxGwFirmware gwFirmware = new VeluxGwFirmware(response.data.version);
         return gwFirmware;
     }
+
 }

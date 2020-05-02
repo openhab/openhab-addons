@@ -71,4 +71,5 @@ public class SetPowerRequest extends Packet {
     public int[] expectedResponses() {
         return new int[] { StatePowerResponse.TYPE };
     }
+
 }

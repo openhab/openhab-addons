@@ -32,4 +32,5 @@ public class ClearTroublesCommand extends ControlCommand {
     public ClearTroublesCommand(String userCode) {
         super(COMMAND_CODE, userCodeToBytes(userCode));
     }
+
 }

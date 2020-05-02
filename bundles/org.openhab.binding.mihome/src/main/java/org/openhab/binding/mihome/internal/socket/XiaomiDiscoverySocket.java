@@ -71,4 +71,5 @@ public class XiaomiDiscoverySocket extends XiaomiSocket {
             logger.error("Sending error", e);
         }
     }
+
 }

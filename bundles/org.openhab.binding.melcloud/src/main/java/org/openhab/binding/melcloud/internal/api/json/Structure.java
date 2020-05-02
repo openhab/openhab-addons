@@ -69,4 +69,5 @@ public class Structure {
     public void setClients(List<Object> clients) {
         this.clients = clients;
     }
+
 }

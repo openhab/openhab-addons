@@ -42,4 +42,5 @@ public class HyperionBuild {
     public void setVersion(String version) {
         this.version = version;
     }
+
 }

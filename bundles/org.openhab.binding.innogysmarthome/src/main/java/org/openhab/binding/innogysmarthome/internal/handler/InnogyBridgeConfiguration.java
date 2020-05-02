@@ -29,4 +29,5 @@ public class InnogyBridgeConfiguration {
     public String clientId = InnogyBindingConstants.CLIENT_ID_INNOGY_SMARTHOME;
     public String clientSecret = InnogyBindingConstants.CLIENT_SECRET_INNOGY_SMARTHOME;
     public String redirectUrl = InnogyBindingConstants.REDIRECT_URL_INNOGY_SMARTHOME;
+
 }

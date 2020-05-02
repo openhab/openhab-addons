@@ -1087,4 +1087,5 @@ public class TeslaChannelSelectorProxy {
     public State getState(String s, TeslaChannelSelector selector, Map<String, String> properties) {
         return selector.getState(s, this, properties);
     }
+
 }

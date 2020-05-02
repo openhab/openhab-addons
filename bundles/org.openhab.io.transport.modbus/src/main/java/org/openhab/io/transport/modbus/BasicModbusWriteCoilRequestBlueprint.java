@@ -47,6 +47,7 @@ public class BasicModbusWriteCoilRequestBlueprint implements ModbusWriteCoilRequ
         public String toString() {
             return "SingleBitArray(bit=" + toBinaryString() + ")";
         }
+
     }
 
     private int slaveId;

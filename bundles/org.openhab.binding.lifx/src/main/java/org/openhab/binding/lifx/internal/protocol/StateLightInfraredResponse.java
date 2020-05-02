@@ -56,4 +56,5 @@ public class StateLightInfraredResponse extends Packet {
     public int[] expectedResponses() {
         return new int[] {};
     }
+
 }

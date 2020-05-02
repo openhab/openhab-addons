@@ -37,4 +37,5 @@ public class AdjustmentCommand extends HyperionCommand {
     public void setAdjustment(Adjustment adjustment) {
         this.adjustment = adjustment;
     }
+
 }

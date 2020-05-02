@@ -31,4 +31,5 @@ public class SessionNotFoundException extends ApiException {
     public SessionNotFoundException(String message) {
         super(message);
     }
+
 }

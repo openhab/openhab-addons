@@ -163,4 +163,5 @@ public class DeviceType {
             return (s.replaceAll(",$", ""));
         }
     }
+
 }

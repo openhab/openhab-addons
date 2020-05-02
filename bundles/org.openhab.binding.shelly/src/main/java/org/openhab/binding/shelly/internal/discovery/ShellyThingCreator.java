@@ -113,4 +113,5 @@ public class ShellyThingCreator {
 
         return THING_TYPE_UNKNOWN_STR;
     }
+
 }

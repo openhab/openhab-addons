@@ -167,6 +167,7 @@ public class RFXComHomeConfortMessage extends RFXComDeviceMessageImpl<RFXComHome
         } else {
             throw new RFXComUnsupportedChannelException("Channel " + channelId + " is not relevant here");
         }
+
     }
 
     @Override

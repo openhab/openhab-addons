@@ -70,4 +70,5 @@ public interface DigiplexMessageHandler {
 
     default void handleTroubleEvent(TroubleEvent troubleEvent) {
     }
+
 }

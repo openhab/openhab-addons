@@ -170,4 +170,5 @@ public class VeluxProductPosition {
         }
         return (int) result;
     }
+
 }

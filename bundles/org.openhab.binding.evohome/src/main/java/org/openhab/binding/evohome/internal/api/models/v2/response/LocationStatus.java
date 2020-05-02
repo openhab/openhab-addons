@@ -39,4 +39,5 @@ public class LocationStatus {
     public List<GatewayStatus> getGateways() {
         return gateways;
     }
+
 }

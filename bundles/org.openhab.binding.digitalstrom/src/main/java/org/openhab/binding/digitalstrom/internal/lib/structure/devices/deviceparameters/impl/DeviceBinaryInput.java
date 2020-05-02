@@ -175,4 +175,5 @@ public class DeviceBinaryInput {
         return "DeviceBinaryInput [targetGroupType=" + targetGroupType + ", targetGroup=" + targetGroup + ", inputType="
                 + inputType + ", inputId=" + inputId + ", state=" + stateValue + "]";
     }
+
 }

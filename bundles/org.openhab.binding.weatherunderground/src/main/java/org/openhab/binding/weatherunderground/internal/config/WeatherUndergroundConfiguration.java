@@ -26,4 +26,5 @@ public class WeatherUndergroundConfiguration {
     public String location;
     public String language;
     public Integer refresh;
+
 }

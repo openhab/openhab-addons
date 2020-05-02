@@ -53,4 +53,5 @@ public class Temperature {
     public String toString() {
         return String.format("%.3f\u00B0C", value);
     }
+
 }

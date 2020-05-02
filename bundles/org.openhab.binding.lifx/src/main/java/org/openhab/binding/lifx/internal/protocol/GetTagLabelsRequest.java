@@ -64,4 +64,5 @@ public class GetTagLabelsRequest extends Packet {
     public int[] expectedResponses() {
         return new int[] { TagLabelsResponse.TYPE };
     }
+
 }

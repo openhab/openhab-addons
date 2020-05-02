@@ -67,4 +67,5 @@ public class LifxLightContext {
     public ScheduledExecutorService getScheduler() {
         return scheduler;
     }
+
 }

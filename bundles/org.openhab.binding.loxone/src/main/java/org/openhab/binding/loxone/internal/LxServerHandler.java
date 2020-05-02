@@ -736,4 +736,5 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
         }
         return name;
     }
+
 }

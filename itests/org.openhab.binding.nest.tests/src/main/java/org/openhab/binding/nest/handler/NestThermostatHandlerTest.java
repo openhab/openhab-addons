@@ -297,4 +297,5 @@ public class NestThermostatHandlerTest extends NestThingHandlerOSGiTest {
         handleCommand(channelId, new QuantityType<>(21, CELSIUS));
         assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, apiPropertyName, "70");
     }
+
 }

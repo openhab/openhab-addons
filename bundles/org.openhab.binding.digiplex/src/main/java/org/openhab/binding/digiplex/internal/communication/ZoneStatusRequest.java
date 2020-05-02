@@ -32,4 +32,5 @@ public class ZoneStatusRequest implements DigiplexRequest {
     public String getSerialMessage() {
         return String.format("RZ%03d\r", zoneNo);
     }
+
 }

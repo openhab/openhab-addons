@@ -134,6 +134,7 @@ public class LGWebOSActions implements ThingActions {
             return Collections.emptyList();
         }
         return appInfos;
+
     }
 
     public List<Application> getApplications() {
@@ -152,6 +153,7 @@ public class LGWebOSActions implements ThingActions {
             logger.warn("Device with ThingID {} does not support any app with id: {}.",
                     getLGWebOSHandler().getThing().getUID(), appId);
         }
+
     }
 
     @RuleAction(label = "@text/actionLaunchApplicationWithParamsLabel", description = "@text/actionLaunchApplicationWithParamsDesc")

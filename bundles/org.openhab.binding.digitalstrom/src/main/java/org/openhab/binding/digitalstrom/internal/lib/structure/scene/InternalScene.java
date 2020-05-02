@@ -230,6 +230,7 @@ public class InternalScene {
      */
     public List<Device> getDeviceList() {
         return this.devices;
+
     }
 
     /**
@@ -328,6 +329,7 @@ public class InternalScene {
         this.listener = listener;
         this.listener.onSceneAdded(this);
         checkDeviceSceneConfig();
+
     }
 
     /**

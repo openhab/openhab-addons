@@ -55,4 +55,5 @@ public class ChannelConfiguration {
     public List<GroupAddressConfiguration> getReadGAs() {
         return getListenGAs().stream().filter(ga -> ga.isRead()).collect(toList());
     }
+
 }

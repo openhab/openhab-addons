@@ -52,4 +52,5 @@ public class DateAndTime {
     public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
     }
+
 }

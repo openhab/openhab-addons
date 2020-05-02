@@ -34,4 +34,5 @@ public class SerialButtonBindingConstants {
 
     // Config parameters
     public static final String PARAMETER_CONFIG = "port";
+
 }

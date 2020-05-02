@@ -76,4 +76,5 @@ public class SerialClient extends AbstractKNXClient {
             }
         }
     }
+
 }

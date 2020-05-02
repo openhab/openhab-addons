@@ -27,4 +27,5 @@ public class InputQueryRequest implements Request {
     public String getRequestString() {
         return "%1INPT ?";
     }
+
 }

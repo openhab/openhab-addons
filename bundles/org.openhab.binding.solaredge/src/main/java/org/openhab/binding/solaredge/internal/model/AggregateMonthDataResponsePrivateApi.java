@@ -60,4 +60,5 @@ public class AggregateMonthDataResponsePrivateApi extends AbstractAggregateDataR
 
         return valueMap;
     }
+
 }

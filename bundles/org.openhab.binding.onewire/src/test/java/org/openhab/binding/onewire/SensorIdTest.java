@@ -74,4 +74,5 @@ public class SensorIdTest {
         assertTrue(sensorId1.equals(sensorId2));
         assertFalse(sensorId1.equals(sensorId3));
     }
+
 }

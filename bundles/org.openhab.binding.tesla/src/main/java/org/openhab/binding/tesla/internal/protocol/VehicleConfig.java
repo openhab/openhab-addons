@@ -41,4 +41,5 @@ public class VehicleConfig {
     public String third_row_seats;
     public String trim_badging;
     public String wheel_type;
+
 }

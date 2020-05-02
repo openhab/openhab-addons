@@ -220,4 +220,5 @@ public class GsonParsingTest {
         assertEquals("blocked", error.getMessage());
         assertEquals("bb514046-edc9-4bca-8239-f7a3cfb0925a", error.getInstance());
     }
+
 }

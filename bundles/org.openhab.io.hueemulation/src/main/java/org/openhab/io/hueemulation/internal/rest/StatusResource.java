@@ -249,6 +249,7 @@ public class StatusResource implements RegistryListener {
     @NonNullByDefault({})
     @Override
     public void localDeviceRemoved(Registry registry, LocalDevice device) {
+
     }
 
     @NonNullByDefault({})
@@ -260,4 +261,5 @@ public class StatusResource implements RegistryListener {
     public void afterShutdown() {
         selfTestUpnpFound = upnpStatus.service_not_registered;
     }
+
 }

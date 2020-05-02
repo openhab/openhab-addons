@@ -27,4 +27,5 @@ public interface LGSerialResponse {
     State getState();
 
     boolean isSuccess();
+
 }

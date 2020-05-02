@@ -736,4 +736,5 @@ public class LxControl {
         }
         return new ChannelUID(config.thingHandler.getThingId(), controlId);
     }
+
 }

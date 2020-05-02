@@ -50,4 +50,5 @@ public class ReadResponseSpecImpl extends AbstractSpec implements OutboundSpec {
     public Type getType() {
         return type;
     }
+
 }

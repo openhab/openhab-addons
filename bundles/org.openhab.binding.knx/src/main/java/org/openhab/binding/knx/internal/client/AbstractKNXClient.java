@@ -469,5 +469,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
                 }
             }
         }
+
     }
+
 }

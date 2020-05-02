@@ -411,6 +411,7 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
         } catch (RemoteControllerException e) {
             reportError(String.format("Could not send command to device on %s:%d", host, port), e);
         }
+
     }
 
     private void sendKeyCodePress(KeyCode key) {
@@ -421,6 +422,7 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
         } catch (RemoteControllerException e) {
             reportError(String.format("Could not send command to device on %s:%d", host, port), e);
         }
+
     }
 
     /**
@@ -500,6 +502,7 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
         for (EventListener listener : listeners) {
             listener.putConfig(key, value);
         }
+
     }
 
     @Override

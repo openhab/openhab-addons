@@ -126,4 +126,5 @@ public final class SendCommand {
                 .append("cubeCommand", cubeCommand).append("serialNumber", serialNumber).append("key", key)
                 .append("commandText", commandText).toString();
     }
+
 }

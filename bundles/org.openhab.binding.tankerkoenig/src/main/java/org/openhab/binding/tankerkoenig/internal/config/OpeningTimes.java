@@ -64,4 +64,5 @@ public class OpeningTimes {
         }
         return sb.toString();
     }
+
 }

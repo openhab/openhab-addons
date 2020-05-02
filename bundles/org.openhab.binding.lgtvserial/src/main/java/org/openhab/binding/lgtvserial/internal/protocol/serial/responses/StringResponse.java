@@ -50,4 +50,5 @@ public class StringResponse implements LGSerialResponse {
     public boolean isSuccess() {
         return success;
     }
+
 }

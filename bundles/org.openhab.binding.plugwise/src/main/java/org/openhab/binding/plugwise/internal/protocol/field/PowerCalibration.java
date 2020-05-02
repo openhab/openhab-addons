@@ -56,4 +56,5 @@ public class PowerCalibration {
         return "PowerCalibration [gainA=" + gainA + ", gainB=" + gainB + ", offsetTotal=" + offsetTotal
                 + ", offsetNoise=" + offsetNoise + "]";
     }
+
 }

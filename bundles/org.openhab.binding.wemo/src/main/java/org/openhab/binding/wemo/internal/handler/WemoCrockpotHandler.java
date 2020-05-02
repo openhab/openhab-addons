@@ -303,4 +303,5 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
     @Override
     public void onStatusChanged(boolean status) {
     }
+
 }

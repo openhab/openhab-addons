@@ -50,4 +50,5 @@ public class PercentResponse implements LGSerialResponse {
     public boolean isSuccess() {
         return success;
     }
+
 }

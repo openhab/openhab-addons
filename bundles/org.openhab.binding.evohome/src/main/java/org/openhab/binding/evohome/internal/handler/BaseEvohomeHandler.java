@@ -136,4 +136,5 @@ public abstract class BaseEvohomeHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Id not configured");
         }
     }
+
 }

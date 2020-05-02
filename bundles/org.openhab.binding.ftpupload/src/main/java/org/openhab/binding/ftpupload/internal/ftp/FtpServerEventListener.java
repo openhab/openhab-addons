@@ -29,4 +29,5 @@ public interface FtpServerEventListener {
      * @param data Received raw data.
      */
     void fileReceived(@NonNull String userName, @NonNull String filename, byte[] data);
+
 }

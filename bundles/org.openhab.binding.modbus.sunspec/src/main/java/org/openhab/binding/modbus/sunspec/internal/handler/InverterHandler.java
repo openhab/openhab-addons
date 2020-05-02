@@ -149,4 +149,5 @@ public class InverterHandler extends AbstractSunSpecHandler {
 
         resetCommunicationError();
     }
+
 }

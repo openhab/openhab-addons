@@ -76,4 +76,5 @@ public class PowermaxZoneState {
     public void setArmed(Boolean armed) {
         this.armed = armed;
     }
+
 }

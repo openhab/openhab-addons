@@ -970,5 +970,6 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
             startClients();
             startServers();
         }
+
     }
 }

@@ -100,4 +100,5 @@ public class VeluxBridgeGetLimitation {
     public VeluxProductPosition getLimitation() {
         return limitationResult;
     }
+
 }

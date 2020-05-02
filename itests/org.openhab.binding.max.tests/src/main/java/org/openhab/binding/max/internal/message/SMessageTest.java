@@ -65,4 +65,5 @@ public class SMessageTest {
         freeMemory = message2.getDutyCycle();
         assertEquals(0, freeMemory);
     }
+
 }

@@ -304,4 +304,5 @@ public class SonyProjectorSerialConnector extends SonyProjectorConnector impleme
         } catch (InterruptedException e) {
         }
     }
+
 }

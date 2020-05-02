@@ -85,9 +85,13 @@ class GoogleTTSConfig {
 
     @Override
     public String toString() {
-        return "GoogleTTSConfig{" + "serviceAccountKey='" + serviceAccountKey + '\'' + ", pitch=" + pitch
-                + ", speakingRate=" + speakingRate + ", volumeGainDb=" + volumeGainDb + ", purgeCache=" + purgeCache
-                + '}';
+        return "GoogleTTSConfig{" +
+                "serviceAccountKey='" + serviceAccountKey + '\'' +
+                ", pitch=" + pitch +
+                ", speakingRate=" + speakingRate +
+                ", volumeGainDb=" + volumeGainDb +
+                ", purgeCache=" + purgeCache +
+                '}';
     }
 
     String toConfigString() {

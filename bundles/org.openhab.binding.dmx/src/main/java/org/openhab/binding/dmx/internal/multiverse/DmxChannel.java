@@ -356,4 +356,5 @@ public class DmxChannel extends BaseDmxChannel {
             logger.trace("listener {} not found in DMX channel {}", thingChannel, this);
         }
     }
+
 }

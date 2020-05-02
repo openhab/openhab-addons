@@ -231,4 +231,5 @@ public interface Job extends SchedulerRunnable, Runnable {
      * Returns the thing UID that is associated with this {@link Job} (cannot be {@code null})
      */
     public String getThingUID();
+
 }

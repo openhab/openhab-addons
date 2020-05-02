@@ -41,4 +41,5 @@ public class RotelMessageEvent extends EventObject {
     public String getValue() {
         return value;
     }
+
 }

@@ -316,4 +316,5 @@ public abstract class AbstractMqttAttributeClass implements SubscribeFieldToMQTT
      * Implement this method in your field class and return "this".
      */
     public abstract Object getFieldsOf();
+
 }

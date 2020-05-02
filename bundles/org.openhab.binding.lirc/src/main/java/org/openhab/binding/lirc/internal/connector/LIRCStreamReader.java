@@ -137,4 +137,5 @@ public class LIRCStreamReader extends Thread {
         LIRCResponse response = new LIRCResponse(command, success, data);
         connector.sendMessageToListeners(response);
     }
+
 }

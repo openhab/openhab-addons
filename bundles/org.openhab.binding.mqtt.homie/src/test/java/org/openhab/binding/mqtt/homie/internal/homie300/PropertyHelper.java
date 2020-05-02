@@ -15,9 +15,10 @@ package org.openhab.binding.mqtt.homie.internal.homie300;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.ChannelState;
+import org.openhab.binding.mqtt.homie.internal.homie300.Property;
 
 /**
- * Helper to access {@link org.openhab.binding.mqtt.homie.internal.homie300.Property} internals.
+ * Helper to access {@link Property} internals.
  *
  * @author David Graeff - Initial contribution
  */

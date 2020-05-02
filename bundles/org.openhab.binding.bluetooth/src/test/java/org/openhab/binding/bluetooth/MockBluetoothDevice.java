@@ -88,4 +88,5 @@ public class MockBluetoothDevice extends BluetoothDevice {
     protected void notifyListeners(BluetoothEventType event, Object... args) {
         CompletableFuture.runAsync(() -> super.notifyListeners(event, args));
     }
+
 }

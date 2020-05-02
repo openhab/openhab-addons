@@ -66,4 +66,5 @@ public class HydrawiseBindingConstants {
     public static final String PROPERTY_DESCRIPTION = "description";
     public static final String PROPERTY_LOCATION = "location";
     public static final String PROPERTY_ADDRESS = "address";
+
 }

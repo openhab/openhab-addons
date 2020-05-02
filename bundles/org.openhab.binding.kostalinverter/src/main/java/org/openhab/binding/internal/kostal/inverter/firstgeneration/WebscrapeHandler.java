@@ -130,4 +130,5 @@ public class WebscrapeHandler extends BaseThingHandler {
             }
         }
     }
+
 }

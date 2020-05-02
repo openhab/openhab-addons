@@ -113,4 +113,5 @@ public class ErrorStatusQueryResponse extends
         }
         return result;
     }
+
 }

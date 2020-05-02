@@ -304,4 +304,5 @@ public class DSCAlarmHandlerFactory extends BaseThingHandlerFactory {
 
         super.removeHandler(thingHandler);
     }
+
 }

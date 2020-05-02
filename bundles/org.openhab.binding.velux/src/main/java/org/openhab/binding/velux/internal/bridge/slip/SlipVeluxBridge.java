@@ -381,4 +381,5 @@ public class SlipVeluxBridge extends VeluxBridge {
         logger.debug("bridgeDirectCommunicate({}) returns {}.", commandString, success ? "success" : "failure");
         return success;
     }
+
 }

@@ -100,4 +100,5 @@ public class MarketplaceRuleTemplateProvider extends DefaultAbstractManagedProvi
             logger.error("Cannot close input stream.", e);
         }
     }
+
 }

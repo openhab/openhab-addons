@@ -60,4 +60,5 @@ public class SetChoiceAction extends Action {
                 COMMAND_SOURCE);
         eventPublisher.post(event);
     }
+
 }

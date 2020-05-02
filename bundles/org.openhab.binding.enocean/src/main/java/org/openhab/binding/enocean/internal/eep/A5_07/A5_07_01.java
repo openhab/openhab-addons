@@ -47,4 +47,5 @@ public class A5_07_01 extends A5_07 {
 
         return getSupplyVoltage(getDB_3Value());
     }
+
 }

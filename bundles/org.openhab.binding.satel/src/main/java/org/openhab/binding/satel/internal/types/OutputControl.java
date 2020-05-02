@@ -51,4 +51,5 @@ public enum OutputControl implements ControlType {
     public BitSet getControlledStates() {
         return stateBits;
     }
+
 }

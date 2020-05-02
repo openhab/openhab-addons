@@ -51,4 +51,5 @@ public abstract class RunScene implements BridgeCommunicationProtocol {
     public RunScene setVelocity(int velocity) {
         return this;
     }
+
 }

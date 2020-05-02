@@ -21,7 +21,8 @@ public class ParadoxException extends Exception {
 
     private static final long serialVersionUID = -5771699322577106346L;
 
-    public ParadoxException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public ParadoxException(String message, Throwable cause, boolean enableSuppression,
+            boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 
@@ -36,4 +37,5 @@ public class ParadoxException extends Exception {
     public ParadoxException(Throwable cause) {
         super(cause);
     }
+
 }

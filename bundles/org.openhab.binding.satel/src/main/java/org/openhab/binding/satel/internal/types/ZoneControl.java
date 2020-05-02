@@ -46,4 +46,5 @@ public enum ZoneControl implements ControlType {
     public BitSet getControlledStates() {
         return stateBits;
     }
+
 }

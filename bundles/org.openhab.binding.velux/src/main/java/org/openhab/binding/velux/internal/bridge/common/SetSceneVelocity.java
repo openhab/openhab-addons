@@ -33,4 +33,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public abstract class SetSceneVelocity implements BridgeCommunicationProtocol {
 
     public abstract SetSceneVelocity setMode(int id, boolean silent);
+
 }

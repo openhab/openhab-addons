@@ -66,6 +66,7 @@ public class PlugwiseMessageSender {
                 }
             }
         }
+
     }
 
     /** Default maximum number of attempts to send a message */
@@ -198,4 +199,5 @@ public class PlugwiseMessageSender {
             }
         }
     }
+
 }

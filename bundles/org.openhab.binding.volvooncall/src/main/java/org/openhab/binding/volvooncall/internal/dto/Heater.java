@@ -29,4 +29,7 @@ public class Heater {
      * Currently unused in the binding, maybe interesting in the future
      * private ZonedDateTime timestamp;
      */
+
 }
+
+

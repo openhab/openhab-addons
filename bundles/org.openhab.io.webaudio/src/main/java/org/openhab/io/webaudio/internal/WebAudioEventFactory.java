@@ -56,4 +56,5 @@ public class WebAudioEventFactory extends AbstractEventFactory {
         String payload = serializePayload(url);
         return new PlayURLEvent(PLAY_URL_TOPIC, payload, url);
     }
+
 }

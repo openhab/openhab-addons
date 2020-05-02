@@ -42,4 +42,5 @@ public class CM11ABindingConstants {
      */
     public static final String CHANNEL_LIGHTLEVEL = "lightlevel";
     public static final String CHANNEL_SWITCH = "switchstatus";
+
 }

@@ -456,6 +456,7 @@ public class InsteonBinding {
             } else {
                 handleInsteonMessage(msg, fromPort);
             }
+
         }
 
         @Override

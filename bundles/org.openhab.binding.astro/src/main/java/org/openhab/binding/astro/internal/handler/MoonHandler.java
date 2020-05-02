@@ -87,4 +87,5 @@ public class MoonHandler extends AstroThingHandler {
     private void initializeMoon() {
         moon = moonCalc.getMoonInfo(Calendar.getInstance(), thingConfig.getLatitude(), thingConfig.getLongitude());
     }
+
 }

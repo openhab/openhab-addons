@@ -23,4 +23,5 @@ public class HPositionCommand extends BasePercentCommand {
     protected HPositionCommand(int setId) {
         super('f', 'q', setId);
     }
+
 }

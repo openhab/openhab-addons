@@ -37,4 +37,5 @@ public interface PacketHandler<T extends Packet> {
      *             could not be parsed
      */
     public abstract T handle(ByteBuffer buf);
+
 }

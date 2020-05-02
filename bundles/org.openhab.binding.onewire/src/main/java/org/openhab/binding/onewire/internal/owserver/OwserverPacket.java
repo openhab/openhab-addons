@@ -342,5 +342,7 @@ public class OwserverPacket {
 
         return String.format("%s, size %d, controlFlags 0x%08x, payload '%s'", prefix, HEADER_SIZE + payloadLength,
                 controlFlags, getPayloadString().replaceAll("\\p{C}", "?"));
+
     }
+
 }

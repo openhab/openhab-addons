@@ -46,4 +46,5 @@ abstract class PropertyHandlerTemplate {
             VeluxBridgeHandler thisBridgeHandler) {
         throw new IllegalStateException("handleRefresh hasn't been set up in the subclass");
     }
+
 }

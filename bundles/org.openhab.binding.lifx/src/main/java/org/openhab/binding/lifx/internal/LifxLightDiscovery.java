@@ -354,4 +354,5 @@ public class LifxLightDiscovery extends AbstractDiscoveryService {
 
         return builder.build();
     }
+
 }

@@ -40,6 +40,7 @@ public class UtilTest {
         QuantityType<Density> absoluteHumidity = (QuantityType<Density>) Util.calculateAbsoluteHumidity(temperature,
                 relativeHumidity);
         assertEquals(12.93, absoluteHumidity.doubleValue(), 0.01);
+
     }
 
     @Test

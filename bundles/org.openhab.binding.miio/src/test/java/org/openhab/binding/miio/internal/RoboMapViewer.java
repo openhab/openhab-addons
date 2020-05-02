@@ -39,6 +39,7 @@ import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
 
+//import org.apache.log4j.PropertyConfigurator;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.Ignore;
@@ -212,6 +213,7 @@ public class RoboMapViewer extends JFrame {
                     logger.debug("Error finding next file:{}", e);
                 }
             }
+
         });
 
         openButton.addActionListener(new ActionListener() {
@@ -256,6 +258,7 @@ public class RoboMapViewer extends JFrame {
         } catch (SecurityException | InvalidPathException e) {
             logger.debug("Error finding first file:{}", e);
         }
+
     }
 
     private void updateStatusLine() {

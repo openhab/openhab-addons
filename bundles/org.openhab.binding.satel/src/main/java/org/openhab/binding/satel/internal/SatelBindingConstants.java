@@ -74,4 +74,5 @@ public class SatelBindingConstants {
     public static final String CHANNEL_DESCRIPTION = "description";
     public static final String CHANNEL_DETAILS = "details";
     public static final String CHANNEL_TEMPERATURE = "temperature";
+
 }

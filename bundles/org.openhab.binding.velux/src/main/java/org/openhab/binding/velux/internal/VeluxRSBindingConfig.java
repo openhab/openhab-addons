@@ -18,6 +18,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+//import org.openhab.model.item.binding.BindingConfigParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -152,6 +153,7 @@ public class VeluxRSBindingConfig extends VeluxBindingConfig {
         }
         logger.trace("getNextAscendingLevel() returning {}.", this.rollershutterLevel);
         return this.rollershutterLevel;
+
     }
 
     /**
@@ -170,6 +172,7 @@ public class VeluxRSBindingConfig extends VeluxBindingConfig {
         }
         logger.trace("getNextDescendingLevel() returning {}.", this.rollershutterLevel);
         return this.rollershutterLevel;
+
     }
 
     /**

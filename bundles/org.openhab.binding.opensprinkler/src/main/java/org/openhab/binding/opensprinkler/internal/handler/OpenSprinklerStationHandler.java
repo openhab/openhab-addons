@@ -231,4 +231,5 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
         }
         return config.stationIndex;
     }
+
 }

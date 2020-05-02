@@ -70,4 +70,5 @@ public class DeviceFactory {
         LOGGER.debug("{}: DeviceFactory Device info = {}, port = {}", TAG, device.getAddress(), device.getPort());
         return device;
     }
+
 }

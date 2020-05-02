@@ -116,4 +116,5 @@ public class LinkyCommandExtension extends AbstractConsoleCommandExtension {
                 new String[] { buildCommandUsage("<thingUID> " + REPORT + " <start day> <end day> [<separator>]",
                         "report daily consumptions between two dates") });
     }
+
 }

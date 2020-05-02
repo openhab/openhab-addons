@@ -217,4 +217,5 @@ public class PlugwiseSenseHandler extends AbstractSleepingEndDeviceHandler {
 
         super.updateConfiguration(configuration);
     }
+
 }

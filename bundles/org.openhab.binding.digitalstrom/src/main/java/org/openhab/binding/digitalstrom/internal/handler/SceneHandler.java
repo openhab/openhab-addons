@@ -304,6 +304,7 @@ public class SceneHandler extends BaseThingHandler implements SceneStatusListene
         } else {
             logger.warn("Command sent to an unknown channel id: {}", channelUID);
         }
+
     }
 
     private synchronized BridgeHandler getBridgeHandler() {

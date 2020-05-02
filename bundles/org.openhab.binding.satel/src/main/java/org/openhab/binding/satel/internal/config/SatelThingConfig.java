@@ -82,4 +82,5 @@ public class SatelThingConfig {
     public boolean isWireless() {
         return wireless;
     }
+
 }

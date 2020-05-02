@@ -54,4 +54,5 @@ public enum TagType {
     public boolean isMultiValue() {
         return multiValue;
     }
+
 }

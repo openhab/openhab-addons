@@ -126,8 +126,7 @@ public interface EvdevLibrary {
 
     @SuppressWarnings("unused")
     class ReadFlag {
-        private ReadFlag() {
-        }
+        private ReadFlag() { }
 
         public static final int SYNC = 1;
         public static final int NORMAL = 2;
@@ -136,8 +135,7 @@ public interface EvdevLibrary {
     }
 
     class KeyEventValue {
-        private KeyEventValue() {
-        }
+        private KeyEventValue() { }
 
         public static final int UP = 0;
         public static final int DOWN = 1;

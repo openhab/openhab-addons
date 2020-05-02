@@ -84,4 +84,5 @@ public final class RequestResponseFactory {
     public static Response getIpControlResponse(String responseData) {
         return new Response(responseData);
     }
+
 }

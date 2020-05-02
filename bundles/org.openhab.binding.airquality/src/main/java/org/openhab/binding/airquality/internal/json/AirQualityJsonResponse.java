@@ -34,4 +34,5 @@ public class AirQualityJsonResponse {
     public AirQualityJsonData getData() {
         return data;
     }
+
 }

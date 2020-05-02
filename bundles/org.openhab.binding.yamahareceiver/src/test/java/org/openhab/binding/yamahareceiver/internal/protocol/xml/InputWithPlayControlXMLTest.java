@@ -12,15 +12,6 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.openhab.binding.yamahareceiver.internal.TestModels.*;
-import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Inputs.*;
-
-import java.util.function.Consumer;
-
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -28,6 +19,15 @@ import org.mockito.Mock;
 import org.openhab.binding.yamahareceiver.internal.config.YamahaBridgeConfig;
 import org.openhab.binding.yamahareceiver.internal.state.PlayInfoState;
 import org.openhab.binding.yamahareceiver.internal.state.PlayInfoStateListener;
+
+import java.util.function.Consumer;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.openhab.binding.yamahareceiver.internal.TestModels.*;
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Inputs.*;
 
 /**
  * Unit test for {@link InputWithPlayControlXML}.
@@ -95,6 +95,7 @@ public class InputWithPlayControlXMLTest extends AbstractZoneControlXMLTest {
         verify(con).send(eq("<Spotify><Play_Control><Playback>Skip Rev</Playback></Play_Control></Spotify>"));
     }
 
+
     @Test
     public void given_RX_S601D_and_Bluetooth_when_playStopPause_then_sendsProperCommand() throws Exception {
         given(RX_S601D, INPUT_BLUETOOTH, ctx -> {
@@ -141,6 +142,7 @@ public class InputWithPlayControlXMLTest extends AbstractZoneControlXMLTest {
         verify(con).send(eq("<NET_RADIO><Play_Control><Playback>Skip Fwd</Playback></Play_Control></NET_RADIO>"));
         verify(con).send(eq("<NET_RADIO><Play_Control><Playback>Skip Rev</Playback></Play_Control></NET_RADIO>"));
     }
+
 
     @Test
     public void given_RX_S601D_and_Spotify_when_update_then_stateIsProperlyRead() throws Exception {
@@ -246,6 +248,7 @@ public class InputWithPlayControlXMLTest extends AbstractZoneControlXMLTest {
         given(RX_V3900, INPUT_NET_RADIO, ctx -> {
             ctx.respondWith("<NET_USB><Play_Info>GetParam</Play_Info></NET_USB>", "NET_USB_Play_Info.xml");
         });
+
 
         // when
         subject.update();

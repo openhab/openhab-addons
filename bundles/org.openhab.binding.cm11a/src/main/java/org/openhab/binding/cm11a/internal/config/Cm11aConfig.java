@@ -29,4 +29,5 @@ public class Cm11aConfig {
      * refresh rate - I don't think we will need this
      */
     public int refresh = 60;
+
 }

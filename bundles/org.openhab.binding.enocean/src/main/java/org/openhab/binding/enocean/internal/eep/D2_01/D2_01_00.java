@@ -27,4 +27,5 @@ public class D2_01_00 extends D2_01 {
     public D2_01_00(ERP1Message packet) {
         super(packet);
     }
+
 }

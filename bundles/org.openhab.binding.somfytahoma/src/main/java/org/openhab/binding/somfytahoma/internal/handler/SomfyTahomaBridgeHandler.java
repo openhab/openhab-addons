@@ -23,6 +23,9 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonSyntaxException;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -41,10 +44,6 @@ import org.openhab.binding.somfytahoma.internal.config.SomfyTahomaConfig;
 import org.openhab.binding.somfytahoma.internal.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link SomfyTahomaBridgeHandler} is responsible for handling commands, which are
@@ -172,20 +171,17 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
         try {
             url = TAHOMA_API_URL + "login";
-            String urlParameters = "userId=" + urlEncode(thingConfig.getEmail()) + "&userPassword="
-                    + urlEncode(thingConfig.getPassword());
+            String urlParameters = "userId=" + urlEncode(thingConfig.getEmail()) + "&userPassword=" + urlEncode(thingConfig.getPassword());
 
             ContentResponse response = sendRequestBuilder(url, HttpMethod.POST)
-                    .content(new StringContentProvider(urlParameters),
-                            "application/x-www-form-urlencoded; charset=UTF-8")
+                    .content(new StringContentProvider(urlParameters), "application/x-www-form-urlencoded; charset=UTF-8")
                     .send();
 
             if (logger.isTraceEnabled()) {
                 logger.trace("Login response: {}", response.getContentAsString());
             }
 
-            SomfyTahomaLoginResponse data = gson.fromJson(response.getContentAsString(),
-                    SomfyTahomaLoginResponse.class);
+            SomfyTahomaLoginResponse data = gson.fromJson(response.getContentAsString(), SomfyTahomaLoginResponse.class);
             if (data.isSuccess()) {
                 logger.debug("SomfyTahoma version: {}", data.getVersion());
                 String id = registerEvents();
@@ -197,8 +193,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
                     logger.debug("Events id error: {}", id);
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Error logging in: " + data.getError());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error logging in: " + data.getError());
                 if (data.getError().startsWith(TOO_MANY_REQUESTS)) {
                     setTooManyRequests();
                 }
@@ -209,8 +204,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             if (e instanceof ExecutionException) {
                 if (e.getMessage().contains(AUTHENTICATION_CHALLENGE)) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Authentication challenge");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Authentication challenge");
                     setTooManyRequests();
                     return;
                 }
@@ -329,6 +323,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             }
         }
     }
+
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
@@ -489,7 +484,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
                 processGatewayEvent(event);
                 break;
             default:
-                // ignore other states
+                //ignore other states
         }
     }
 
@@ -502,7 +497,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             }
         }
 
-        // update all states only if necessary
+        //update all states only if necessary
         if (needsUpdate) {
             updateAllStates();
             reconciliation = false;
@@ -546,7 +541,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
     }
 
     private void processGatewayEvent(SomfyTahomaEvent event) {
-        // update gateway status
+        //update gateway status
         for (Thing th : getThing().getThings()) {
             if (THING_TYPE_GATEWAY.equals(th.getThingTypeUID())) {
                 SomfyTahomaGatewayHandler gatewayHandler = (SomfyTahomaGatewayHandler) th.getHandler();
@@ -611,7 +606,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             return;
         }
 
-        // force Tahoma to ask for actual states
+        //force Tahoma to ask for actual states
         forceGatewaySync();
     }
 
@@ -637,33 +632,27 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         }
     }
 
-    private String sendPostToTahomaWithCookie(String url, String urlParameters)
-            throws InterruptedException, ExecutionException, TimeoutException {
+    private String sendPostToTahomaWithCookie(String url, String urlParameters) throws InterruptedException, ExecutionException, TimeoutException {
         return sendMethodToTahomaWithCookie(url, HttpMethod.POST, urlParameters);
     }
 
-    private String sendGetToTahomaWithCookie(String url)
-            throws InterruptedException, ExecutionException, TimeoutException {
+    private String sendGetToTahomaWithCookie(String url) throws InterruptedException, ExecutionException, TimeoutException {
         return sendMethodToTahomaWithCookie(url, HttpMethod.GET);
     }
 
-    private String sendPutToTahomaWithCookie(String url)
-            throws InterruptedException, ExecutionException, TimeoutException {
+    private String sendPutToTahomaWithCookie(String url) throws InterruptedException, ExecutionException, TimeoutException {
         return sendMethodToTahomaWithCookie(url, HttpMethod.PUT);
     }
 
-    private String sendDeleteToTahomaWithCookie(String url)
-            throws InterruptedException, ExecutionException, TimeoutException {
+    private String sendDeleteToTahomaWithCookie(String url) throws InterruptedException, ExecutionException, TimeoutException {
         return sendMethodToTahomaWithCookie(url, HttpMethod.DELETE);
     }
 
-    private String sendMethodToTahomaWithCookie(String url, HttpMethod method)
-            throws InterruptedException, ExecutionException, TimeoutException {
+    private String sendMethodToTahomaWithCookie(String url, HttpMethod method) throws InterruptedException, ExecutionException, TimeoutException {
         return sendMethodToTahomaWithCookie(url, method, "");
     }
 
-    private String sendMethodToTahomaWithCookie(String url, HttpMethod method, String urlParameters)
-            throws InterruptedException, ExecutionException, TimeoutException {
+    private String sendMethodToTahomaWithCookie(String url, HttpMethod method, String urlParameters) throws InterruptedException, ExecutionException, TimeoutException {
         logger.trace("Sending {} to url: {} with data: {}", method.asString(), url, urlParameters);
         Request request = sendRequestBuilder(url, method);
         if (StringUtils.isNotEmpty(urlParameters)) {
@@ -683,9 +672,13 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
     }
 
     private Request sendRequestBuilder(String url, HttpMethod method) {
-        return httpClient.newRequest(url).method(method).header(HttpHeader.ACCEPT_LANGUAGE, "en-US,en")
-                .header(HttpHeader.ACCEPT_ENCODING, "gzip, deflate").header("X-Requested-With", "XMLHttpRequest")
-                .timeout(TAHOMA_TIMEOUT, TimeUnit.SECONDS).agent(TAHOMA_AGENT);
+        return httpClient.newRequest(url)
+                .method(method)
+                .header(HttpHeader.ACCEPT_LANGUAGE, "en-US,en")
+                .header(HttpHeader.ACCEPT_ENCODING, "gzip, deflate")
+                .header("X-Requested-With", "XMLHttpRequest")
+                .timeout(TAHOMA_TIMEOUT, TimeUnit.SECONDS)
+                .agent(TAHOMA_AGENT);
     }
 
     public void sendCommand(String io, String command, String params) {
@@ -707,9 +700,8 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             url = EXEC_URL + "apply";
 
             String value = params.equals("[]") ? command : params.replace("\"", "");
-            String urlParameters = "{\"label\":\"" + getThingLabelByURL(io) + " - " + value
-                    + " - OH2\",\"actions\":[{\"deviceURL\":\"" + io + "\",\"commands\":[{\"name\":\"" + command
-                    + "\",\"parameters\":" + params + "}]}]}";
+            String urlParameters = "{\"label\":\"" + getThingLabelByURL(io) + " - " + value + " - OH2\",\"actions\":[{\"deviceURL\":\"" + io + "\",\"commands\":[{\"name\":\""
+                    + command + "\",\"parameters\":" + params + "}]}]}";
 
             line = sendPostToTahomaWithCookie(url, urlParameters);
 
@@ -748,10 +740,10 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         Thing th = getThingByDeviceUrl(io);
         if (th != null) {
             if (th.getProperties().containsKey(NAME_STATE)) {
-                // Return label from Tahoma
+                //Return label from Tahoma
                 return th.getProperties().get(NAME_STATE).replace("\"", "");
             }
-            // Return label from OH2
+            //Return label from OH2
             return th.getLabel() != null ? th.getLabel().replace("\"", "") : "";
         }
         return "null";
@@ -807,6 +799,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         if (!UNAUTHORIZED.equals(execId) && execId != null) {
             registerExecution(id, execId);
         }
+
     }
 
     private boolean reLogin() {

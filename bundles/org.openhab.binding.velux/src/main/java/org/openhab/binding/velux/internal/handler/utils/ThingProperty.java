@@ -100,4 +100,5 @@ public class ThingProperty {
         }
         setValue(thingOfChannel, propertyName, propertyValue);
     }
+
 }

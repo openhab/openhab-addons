@@ -27,4 +27,5 @@ public class ErrorStatusQueryRequest implements Request {
     public String getRequestString() {
         return "%1ERST ?";
     }
+
 }

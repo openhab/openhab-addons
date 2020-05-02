@@ -208,4 +208,5 @@ public class MessageProcessorTest {
             // OK, correct Exception was thrown
         }
     }
+
 }

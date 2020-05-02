@@ -98,4 +98,5 @@ public class SinopeAuthenticationKeyAnswer extends SinopeAnswer {
         sb.append(String.format("\n\tBackoff: %s", ByteUtil.toString(getBackoff())));
         return sb.toString();
     }
+
 }

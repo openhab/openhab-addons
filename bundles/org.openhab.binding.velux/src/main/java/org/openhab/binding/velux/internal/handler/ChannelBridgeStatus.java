@@ -68,4 +68,5 @@ final class ChannelBridgeStatus extends ChannelHandlerTemplate {
         LOGGER.trace("handleRefresh() returns {}.", newState);
         return newState;
     }
+
 }

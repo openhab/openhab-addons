@@ -124,4 +124,5 @@ public class BridgeInfoResponse extends NukiBaseResponse {
     public void setScanResults(List<BridgeApiInfoScanResultDto> scanResults) {
         this.scanResults = scanResults;
     }
+
 }

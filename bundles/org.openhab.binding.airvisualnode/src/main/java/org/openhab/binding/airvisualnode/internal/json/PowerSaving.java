@@ -13,7 +13,6 @@
 package org.openhab.binding.airvisualnode.internal.json;
 
 import java.util.List;
-
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -58,4 +57,5 @@ public class PowerSaving {
     public void setMode(String mode) {
         this.mode = mode;
     }
+
 }

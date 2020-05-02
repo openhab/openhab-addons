@@ -150,4 +150,5 @@ public class WemoHandlerFactory extends BaseThingHandlerFactory {
         this.discoveryServiceRegs.put(wemoBridgeHandler.getThing().getUID(),
                 bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
+
 }

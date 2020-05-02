@@ -31,4 +31,5 @@ public class RemoteAccessNotAllowedException extends ApiException {
     public RemoteAccessNotAllowedException(String message) {
         super(message);
     }
+
 }

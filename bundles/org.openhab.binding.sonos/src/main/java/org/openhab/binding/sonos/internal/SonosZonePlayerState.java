@@ -25,4 +25,5 @@ public class SonosZonePlayerState {
     public String relTime;
     public SonosEntry entry;
     public long track;
+
 }

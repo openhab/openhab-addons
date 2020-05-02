@@ -438,4 +438,5 @@ public class HmDatapoint implements Cloneable {
                 .append("description", description).append("info", info).append("paramsetType", paramsetType)
                 .append("virtual", virtual).append("trigger", trigger).toString();
     }
+
 }

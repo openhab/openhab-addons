@@ -24,4 +24,5 @@ public class RdsCloudConfiguration {
     public String userPassword;
     public int pollingInterval;
     public String apiKey;
+
 }

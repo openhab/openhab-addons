@@ -19,6 +19,5 @@ package org.openhab.binding.xmppclient.handler;
  */
 public interface XMPPClientMessageSubscriber {
     public void processMessage(String from, String payload);
-
     public String getName();
 }

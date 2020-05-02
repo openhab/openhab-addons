@@ -282,4 +282,5 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
     protected static String getBlockFromChannel(final @Nullable Channel channel) {
         return channel == null ? NOT_SUPPORTED : channel.getProperties().get(BLOCK_PROPERTY);
     }
+
 }

@@ -58,4 +58,5 @@ public class PowermaxDownloadRetryMessage extends PowermaxBaseMessage {
 
         return str;
     }
+
 }

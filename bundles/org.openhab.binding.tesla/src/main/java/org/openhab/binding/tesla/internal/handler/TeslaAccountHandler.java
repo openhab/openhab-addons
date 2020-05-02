@@ -528,6 +528,7 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
                 logger.error("An exception occurred while executing a request to the vehicle: '{}'", e.getMessage(), e);
             }
         }
+
     }
 
     public Request newRequest(TeslaVehicleHandler teslaVehicleHandler, String command, String payLoad,
@@ -539,4 +540,5 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Collections.singletonList(TeslaVehicleDiscoveryService.class);
     }
+
 }

@@ -98,4 +98,5 @@ public class NeeoRoom {
         return "NeeoRoom [name=" + name + ", key=" + key + ", scenarios=" + scenarios + ", devices=" + devices
                 + ", recipes=" + recipes + "]";
     }
+
 }

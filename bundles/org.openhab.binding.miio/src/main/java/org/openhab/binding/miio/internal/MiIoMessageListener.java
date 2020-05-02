@@ -38,4 +38,5 @@ public interface MiIoMessageListener {
      * @param statusDetail Status details text
      */
     void onStatusUpdated(ThingStatus status, ThingStatusDetail statusDetail);
+
 }

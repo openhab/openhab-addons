@@ -41,4 +41,5 @@ public class BeehiveAuthentication {
     public void setCurrentTime(String currentTime) {
         this.currentTime = currentTime;
     }
+
 }

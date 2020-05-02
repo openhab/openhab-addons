@@ -159,4 +159,5 @@ public abstract class Message {
     private String typeToHexString() {
         return String.format("%04X", type.toInt());
     }
+
 }

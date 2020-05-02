@@ -73,4 +73,5 @@ public class SetDimAbsoluteRequest extends Packet {
     public int[] expectedResponses() {
         return new int[] {};
     }
+
 }

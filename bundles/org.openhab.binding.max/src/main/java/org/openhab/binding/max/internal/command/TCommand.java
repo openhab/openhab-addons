@@ -61,4 +61,5 @@ public class TCommand extends CubeCommand {
     public String getReturnStrings() {
         return "A:";
     }
+
 }

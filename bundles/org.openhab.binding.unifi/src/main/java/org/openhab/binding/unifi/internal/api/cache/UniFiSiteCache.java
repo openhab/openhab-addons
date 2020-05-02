@@ -40,4 +40,5 @@ public class UniFiSiteCache extends UniFiCache<UniFiSite> {
         }
         return null;
     }
+
 }

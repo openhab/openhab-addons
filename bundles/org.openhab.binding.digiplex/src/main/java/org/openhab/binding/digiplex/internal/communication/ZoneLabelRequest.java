@@ -32,4 +32,5 @@ public class ZoneLabelRequest implements DigiplexRequest {
     public String getSerialMessage() {
         return String.format("ZL%03d\r", zoneNo);
     }
+
 }

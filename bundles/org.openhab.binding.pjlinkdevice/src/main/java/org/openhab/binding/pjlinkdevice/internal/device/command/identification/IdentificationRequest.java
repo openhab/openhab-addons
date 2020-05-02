@@ -33,4 +33,5 @@ public class IdentificationRequest implements Request {
     public String getRequestString() {
         return "%1" + this.command.getIdentificationProperty().getPJLinkCommandPrefix() + " ?";
     }
+
 }

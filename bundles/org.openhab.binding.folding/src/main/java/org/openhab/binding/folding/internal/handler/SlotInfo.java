@@ -27,4 +27,5 @@ public class SlotInfo {
     public String id, status, description, reason;
     public Map<String, String> options;
     boolean idle;
+
 }

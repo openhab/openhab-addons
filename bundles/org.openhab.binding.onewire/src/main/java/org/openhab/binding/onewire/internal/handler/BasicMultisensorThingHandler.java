@@ -117,4 +117,5 @@ public class BasicMultisensorThingHandler extends OwBaseThingHandler {
 
         updateProperties(properties);
     }
+
 }

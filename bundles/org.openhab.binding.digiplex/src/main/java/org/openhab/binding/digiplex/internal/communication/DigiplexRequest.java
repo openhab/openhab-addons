@@ -24,4 +24,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public interface DigiplexRequest extends DigiplexMessage {
 
     String getSerialMessage();
+
 }

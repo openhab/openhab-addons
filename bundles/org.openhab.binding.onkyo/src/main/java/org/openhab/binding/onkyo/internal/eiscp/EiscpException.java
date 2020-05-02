@@ -36,4 +36,5 @@ public class EiscpException extends Exception {
     public EiscpException(Throwable cause) {
         super(cause);
     }
+
 }

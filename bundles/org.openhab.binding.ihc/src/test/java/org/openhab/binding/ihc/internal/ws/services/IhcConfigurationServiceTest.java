@@ -98,4 +98,5 @@ public class IhcConfigurationServiceTest {
         assertEquals("3.06.c", result.getRfModuleSoftwareVersion());
         assertEquals("640C10140000", result.getRfModuleSerialNumber());
     }
+
 }

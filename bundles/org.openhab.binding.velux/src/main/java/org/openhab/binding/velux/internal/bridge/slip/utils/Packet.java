@@ -276,4 +276,5 @@ public class Packet {
         return String.format("%d.%d.%d.%d", ((ipAddress >>> 24) & 0xFF), ((ipAddress >>> 16) & 0xFF),
                 ((ipAddress >>> 8) & 0xFF), (ipAddress & 0xFF));
     }
+
 }

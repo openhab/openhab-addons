@@ -109,4 +109,5 @@ public class RFXComLighting1MessageTest {
         assertEquals(OpenClosedType.CLOSED, msg.convertToState(CHANNEL_CONTACT, deviceState));
         assertEquals(StringType.valueOf("DIM"), msg.convertToState(CHANNEL_COMMAND_STRING, deviceState));
     }
+
 }

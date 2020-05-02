@@ -23,4 +23,5 @@ public class ColorTemperatureCommand extends BaseStringCommand {
     protected ColorTemperatureCommand(int setId) {
         super('k', 'u', setId);
     }
+
 }

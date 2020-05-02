@@ -122,4 +122,5 @@ public class SetColorZonesRequest extends Packet {
     public int[] expectedResponses() {
         return new int[] {};
     }
+
 }

@@ -46,4 +46,5 @@ public class EnergyMeterConfig {
     public void setPollingPeriod(Integer pollingPeriod) {
         this.pollingPeriod = pollingPeriod;
     }
+
 }

@@ -59,4 +59,5 @@ public class ReloadRssiVirtualDatapointHandler extends AbstractVirtualDatapointH
             }
         }
     }
+
 }

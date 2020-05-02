@@ -74,4 +74,5 @@ public class TripDetail {
     public long getDurationInMinutes() {
         return Duration.between(startTime, endTime).toMinutes();
     }
+
 }

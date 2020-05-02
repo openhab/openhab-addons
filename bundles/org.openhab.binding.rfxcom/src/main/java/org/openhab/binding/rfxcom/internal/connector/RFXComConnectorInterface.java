@@ -56,4 +56,5 @@ public interface RFXComConnectorInterface {
      * @param listener Event listener instance to remove.
      */
     void removeEventListener(RFXComEventListener listener);
+
 }

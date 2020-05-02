@@ -34,4 +34,5 @@ public class UnsupportedDevice extends Device {
     public String getName() {
         return "Unsupported device";
     }
+
 }

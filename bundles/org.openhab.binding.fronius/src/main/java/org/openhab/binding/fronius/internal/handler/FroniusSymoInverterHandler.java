@@ -216,4 +216,5 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
         location = location.replace("%DEVICEID%", Integer.toString(deviceId));
         return collectDataFormUrl(InverterRealtimeResponse.class, location);
     }
+
 }

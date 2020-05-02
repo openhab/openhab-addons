@@ -41,4 +41,5 @@ public class ComponentStateCommand extends HyperionCommand {
     public void setComponentState(ComponentState componentState) {
         this.componentState = componentState;
     }
+
 }

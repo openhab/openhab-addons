@@ -72,4 +72,5 @@ public class SignalStrength {
     public String toString() {
         return "SignalStrength [milliWatts=" + milliWatts + ", rssi=" + Math.round(toRSSI()) + "]";
     }
+
 }

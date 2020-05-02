@@ -39,4 +39,5 @@ public abstract class GetFirmware implements BridgeCommunicationProtocol {
      * @return <b>firmware</b> as VeluxGwFirmware describing the current software of the bridge.
      */
     public abstract VeluxGwFirmware getFirmware();
+
 }

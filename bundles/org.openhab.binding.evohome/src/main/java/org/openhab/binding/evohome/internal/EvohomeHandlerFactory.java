@@ -105,4 +105,5 @@ public class EvohomeHandlerFactory extends BaseThingHandlerFactory {
     protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
         this.httpClient = null;
     }
+
 }

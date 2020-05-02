@@ -109,4 +109,5 @@ class SCrunProductSearch extends RunProductSearch implements SlipBridgeCommunica
         logger.trace("getState() returns {} ({}).", thisGwState, thisGwState.toDescription());
         return thisGwState;
     }
+
 }

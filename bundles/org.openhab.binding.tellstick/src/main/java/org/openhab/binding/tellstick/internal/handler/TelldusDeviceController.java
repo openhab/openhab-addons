@@ -59,4 +59,5 @@ public interface TelldusDeviceController {
      *
      */
     void dispose();
+
 }

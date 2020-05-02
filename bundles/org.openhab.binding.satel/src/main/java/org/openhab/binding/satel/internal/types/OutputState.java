@@ -50,4 +50,5 @@ public enum OutputState implements StateType {
     public int getBytesCount(boolean extendedCmd) {
         return getPayloadLength(extendedCmd);
     }
+
 }

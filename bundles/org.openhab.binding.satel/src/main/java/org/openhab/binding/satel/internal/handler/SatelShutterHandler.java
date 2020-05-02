@@ -97,4 +97,5 @@ public class SatelShutterHandler extends SatelStateThingHandler {
 
         return result == null ? Optional.empty() : Optional.of(result);
     }
+
 }

@@ -140,4 +140,5 @@ public class HomekitSettings {
         }
         return true;
     }
+
 }

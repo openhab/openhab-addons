@@ -816,4 +816,5 @@ public enum RotelModel {
         }
         throw new RotelException("Invalid model name: " + name);
     }
+
 }

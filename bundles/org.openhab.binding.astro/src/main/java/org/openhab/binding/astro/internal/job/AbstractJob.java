@@ -44,4 +44,5 @@ public abstract class AbstractJob implements Job {
             throw new IllegalArgumentException(errorMessage);
         }
     }
+
 }

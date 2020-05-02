@@ -25,4 +25,5 @@ public class FreeboxPhoneConfiguration {
 
     public Integer refreshPhoneInterval;
     public Integer refreshPhoneCallsInterval;
+
 }

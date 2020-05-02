@@ -242,4 +242,5 @@ public class RFXComBindingConstants {
                     put(PacketType.WIND, RFXComBindingConstants.THING_TYPE_WIND);
                 }
             });
+
 }

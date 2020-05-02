@@ -200,4 +200,5 @@ public class CameraEvent {
                 .append(animatedImageUrl).append(", activityZoneIds=").append(activityZoneIds).append("]");
         return builder.toString();
     }
+
 }

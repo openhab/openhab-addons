@@ -88,6 +88,7 @@ public class ShellyDeviceProfile {
     public Map<String, String> irCodes = new HashMap<>(); // Sense: list of stored IR codes
 
     public ShellyDeviceProfile() {
+
     }
 
     public ShellyDeviceProfile initialize(String thingType, String json) throws ShellyApiException {

@@ -38,4 +38,5 @@ public class AvrConnectionException extends RuntimeException {
     public AvrConnectionException(Throwable cause) {
         super(cause);
     }
+
 }

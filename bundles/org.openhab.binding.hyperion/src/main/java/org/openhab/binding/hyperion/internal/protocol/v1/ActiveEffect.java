@@ -53,4 +53,5 @@ public class ActiveEffect {
     public void setTimeout(int timeout) {
         this.timeout = timeout;
     }
+
 }

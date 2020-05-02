@@ -92,4 +92,5 @@ public class NestSmokeDetectorHandler extends NestBaseHandler<SmokeDetector> {
             updateStatus(newStatus);
         }
     }
+
 }

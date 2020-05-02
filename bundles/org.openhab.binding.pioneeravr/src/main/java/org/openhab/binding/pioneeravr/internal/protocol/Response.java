@@ -165,4 +165,5 @@ public class Response implements AvrResponse {
     public Integer getZone() {
         return this.zone;
     }
+
 }

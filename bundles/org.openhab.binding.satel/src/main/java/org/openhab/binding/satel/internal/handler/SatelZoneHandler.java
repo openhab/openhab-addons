@@ -82,4 +82,5 @@ public class SatelZoneHandler extends WirelessChannelsHandler {
         }
         return result;
     }
+
 }

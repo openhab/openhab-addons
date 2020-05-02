@@ -94,4 +94,5 @@ public class LeapMotionDiscoveryService extends AbstractDiscoveryService {
     private void removeDiscoveryResult() {
         removeOlderResults(System.currentTimeMillis());
     }
+
 }

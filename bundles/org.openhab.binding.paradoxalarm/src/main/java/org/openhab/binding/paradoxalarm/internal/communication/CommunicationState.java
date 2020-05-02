@@ -83,6 +83,7 @@ public enum CommunicationState {
             }
             return false;
         }
+
     },
     STEP2 {
 
@@ -98,6 +99,7 @@ public enum CommunicationState {
                     .setCommand(HeaderCommand.LOGIN_COMMAND1);
             sendPacket(communicator, packet);
         }
+
     },
     STEP3 {
 
@@ -113,6 +115,7 @@ public enum CommunicationState {
                     .setCommand(HeaderCommand.LOGIN_COMMAND2);
             sendPacket(communicator, packet);
         }
+
     },
     STEP4 {
 
@@ -144,6 +147,7 @@ public enum CommunicationState {
                 LOGOUT.runPhase(communicator);
             }
         }
+
     },
     STEP5 {
 
@@ -159,6 +163,7 @@ public enum CommunicationState {
                     .setCommand(HeaderCommand.SERIAL_CONNECTION_INITIATED);
             sendPacket(communicator, packet);
         }
+
     },
     STEP6 {
 
@@ -186,6 +191,7 @@ public enum CommunicationState {
             logger.debug("Phase {} completed successfully.", this);
             nextState().runPhase(communicator, initializationMessage);
         }
+
     },
     STEP7 {
 
@@ -292,6 +298,7 @@ public enum CommunicationState {
                 }
             }, 300, TimeUnit.MILLISECONDS);
         }
+
     },
     INITIALIZE_DATA {
 
@@ -308,6 +315,7 @@ public enum CommunicationState {
             }
             ONLINE.runPhase(communicator);
         }
+
     },
     ONLINE {
 
@@ -322,6 +330,7 @@ public enum CommunicationState {
             communicator.setOnline(true);
             logger.info("Successfully established communication with the panel.");
         }
+
     },
     LOGOUT {
 
@@ -341,6 +350,7 @@ public enum CommunicationState {
             // sendPacket(communicator, logoutPacket);
             nextState().runPhase(communicator);
         }
+
     },
     OFFLINE {
 
@@ -354,6 +364,7 @@ public enum CommunicationState {
             communicator.close();
             communicator.setOnline(false);
         }
+
     };
 
     protected final Logger logger = LoggerFactory.getLogger(CommunicationState.class);

@@ -42,4 +42,5 @@ public class SwitchDevice extends AbstractEnergyLinkDevice {
             }
         }
     }
+
 }

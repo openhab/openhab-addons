@@ -32,4 +32,5 @@ public class DoubleState extends BaseState {
     public void setValue(Double value) {
         this.value = value;
     }
+
 }

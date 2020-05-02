@@ -106,4 +106,5 @@ public class CustomReadingInstanceDeserializer implements JsonDeserializer<Readi
     private boolean checkStringForNullValues(String s) {
         return (s == null || s.isEmpty() || s.equals("null"));
     }
+
 }

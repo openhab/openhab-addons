@@ -24,4 +24,5 @@ public class AvailableInputState {
 
     // List of inputs with <Input ID, Input Name>
     public Map<String, String> availableInputs = new TreeMap<>();
+
 }

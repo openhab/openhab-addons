@@ -250,6 +250,7 @@ public class RobonectHandler extends BaseThingHandler {
         } else {
             logger.error("Could not retrieve mower info. Robonect error response message: {}", info.getErrorMessage());
         }
+
     }
 
     private void clearErrorInfo() {
@@ -339,6 +340,7 @@ public class RobonectHandler extends BaseThingHandler {
         Runnable runnable = new MowerChannelPoller(TimeUnit.SECONDS.toMillis(robonectConfig.getOfflineTimeout()));
         int pollInterval = robonectConfig.getPollInterval();
         pollingJob = scheduler.scheduleWithFixedDelay(runnable, 0, pollInterval, TimeUnit.SECONDS);
+
     }
 
     @Override

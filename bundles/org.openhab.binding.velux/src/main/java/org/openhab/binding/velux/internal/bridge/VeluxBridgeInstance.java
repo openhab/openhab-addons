@@ -65,4 +65,5 @@ public interface VeluxBridgeInstance {
      * @return VeluxExistingScenes containing all registered scenes, or <B>null</B> in case of any error.
      */
     public VeluxExistingScenes existingScenes();
+
 }

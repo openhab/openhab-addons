@@ -34,7 +34,6 @@ import org.openhab.binding.lifx.internal.fields.HSBK;
 import org.openhab.binding.lifx.internal.listener.LifxLightStateListener;
 import org.openhab.binding.lifx.internal.protocol.AcknowledgementResponse;
 import org.openhab.binding.lifx.internal.protocol.ApplicationRequest;
-import org.openhab.binding.lifx.internal.protocol.Effect;
 import org.openhab.binding.lifx.internal.protocol.GetColorZonesRequest;
 import org.openhab.binding.lifx.internal.protocol.GetLightInfraredRequest;
 import org.openhab.binding.lifx.internal.protocol.GetLightPowerRequest;
@@ -49,6 +48,7 @@ import org.openhab.binding.lifx.internal.protocol.SetLightPowerRequest;
 import org.openhab.binding.lifx.internal.protocol.SetPowerRequest;
 import org.openhab.binding.lifx.internal.protocol.SetTileEffectRequest;
 import org.openhab.binding.lifx.internal.protocol.SignalStrength;
+import org.openhab.binding.lifx.internal.protocol.Effect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -386,4 +386,5 @@ public class LifxLightStateChanger implements LifxLightStateListener {
             }
         }
     }
+
 }

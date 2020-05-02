@@ -83,4 +83,5 @@ public class StateUtils {
             return new StringType(propertyValue.toString());
         }
     }
+
 }

@@ -278,12 +278,10 @@ public abstract class StreamAvrConnection implements AvrConnection {
         AvrCommand commandToSend = null;
 
         if (command == IncreaseDecreaseType.INCREASE) {
-            commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.LISTENING_MODE_CHANGE_CYCLIC,
-                    zone);
+            commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.LISTENING_MODE_CHANGE_CYCLIC, zone);
         } else if (command instanceof StringType) {
             String listeningModeValue = ((StringType) command).toString();
-            commandToSend = RequestResponseFactory
-                    .getIpControlCommand(ParameterizedCommandType.LISTENING_MODE_SET, zone)
+            commandToSend = RequestResponseFactory.getIpControlCommand(ParameterizedCommandType.LISTENING_MODE_SET, zone)
                     .setParameter(listeningModeValue);
         } else {
             throw new CommandTypeNotSupportedException("Command type not supported.");
@@ -382,5 +380,7 @@ public abstract class StreamAvrConnection implements AvrConnection {
                 // This exception should never happen.
             }
         }
+
     }
+
 }

@@ -112,6 +112,7 @@ public class HueLightDiscoveryService extends AbstractDiscoveryService
         removeOlderResults(new Date().getTime(), hueBridgeHandler.getThing().getUID());
         hueBridgeHandler.unregisterLightStatusListener(this);
         hueBridgeHandler.unregisterSensorStatusListener(this);
+
     }
 
     @Override

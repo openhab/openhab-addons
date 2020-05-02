@@ -237,4 +237,5 @@ public class Connection {
         }
         logger.trace("resetConnection() done.");
     }
+
 }

@@ -679,6 +679,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
     private boolean updateChannel(Map<String, State> updates, String group, String channel, State value) {
         updates.put(mkChannelId(group, channel), value);
         return true;
+
     }
 
     /**
@@ -874,8 +875,10 @@ public class ShellyCoapHandler implements ShellyCoapListener {
             public void onTimeout() {
                 logger.debug("{}: CoAP Request timed out", thingName);
             }
+
         });
         return request;
+
     }
 
     /**
@@ -964,5 +967,6 @@ public class ShellyCoapHandler implements ShellyCoapListener {
 
     private static String completeUrl(String ipAddress, String uri) {
         return "coap://" + ipAddress + ":" + COIOT_PORT + uri;
+
     }
 }

@@ -31,4 +31,5 @@ public class TemperatureStatus {
     public double getTemperature() {
         return temperature;
     }
+
 }

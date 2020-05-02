@@ -46,5 +46,7 @@ public class SomfyTahomaSmokeSensorHandler extends SomfyTahomaContactSensorHandl
         } else if (ALARM_CHECK.equals(channelUID.getId())) {
             sendCommand(COMMAND_CHECK_TRIGGER, "[\"" + command.toString().toLowerCase() + "\"]");
         }
+
     }
 }
+

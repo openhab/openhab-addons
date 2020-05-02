@@ -81,4 +81,5 @@ public class StateWifiInfoResponse extends Packet {
     public int[] expectedResponses() {
         return new int[] {};
     }
+
 }

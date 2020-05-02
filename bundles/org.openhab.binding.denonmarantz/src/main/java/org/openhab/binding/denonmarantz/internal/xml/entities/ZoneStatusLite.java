@@ -78,4 +78,5 @@ public class ZoneStatusLite {
     public void setMute(OnOffType mute) {
         this.mute = mute;
     }
+
 }

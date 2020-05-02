@@ -23,4 +23,5 @@ public class PictureModeCommand extends BaseStringCommand {
     protected PictureModeCommand(int setId) {
         super('d', 'x', setId);
     }
+
 }

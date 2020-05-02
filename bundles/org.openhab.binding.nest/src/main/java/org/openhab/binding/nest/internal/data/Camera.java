@@ -206,4 +206,5 @@ public class Camera extends BaseNestDevice {
                 .append("]");
         return builder.toString();
     }
+
 }

@@ -12,10 +12,6 @@
  */
 package org.openhab.binding.xmppclient.internal;
 
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.jivesoftware.smack.*;
 import org.jivesoftware.smack.chat2.Chat;
 import org.jivesoftware.smack.chat2.ChatManager;
@@ -25,10 +21,16 @@ import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.disco.packet.DiscoverInfo.Identity;
+
 import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.stringprep.XmppStringprepException;
 import org.openhab.binding.xmppclient.handler.XMPPClientMessageSubscriber;
+
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,11 +55,11 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
         subscribers.remove(channel);
     }
 
-    public void connect(String host, Integer port, String login, String domain, String password)
+    public void connect(String host, Integer port, String login, String domain, String password) 
             throws XMPPException, SmackException, IOException {
         disconnect();
         String serverHost = domain;
-        if ((host != null) && !host.isEmpty()) {
+        if((host != null) && !host.isEmpty()) {
             serverHost = host;
         }
 
@@ -88,17 +90,17 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
     }
 
     public void disconnect() {
-        if (connection != null) {
+        if(connection != null) {
             connection.disconnect();
         }
     }
 
     public void sendMessage(String to, String message) {
-        if (connection == null) {
+        if(connection == null) {
             logger.warn("XMPP connection is null");
             return;
         }
-        if (chatManager == null) {
+        if(chatManager == null) {
             logger.warn("XMPP chatManager is null");
             return;
         }
@@ -114,7 +116,7 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
     @Override
     public void newIncomingMessage(EntityBareJid from, Message message, Chat chat) {
         logger.debug("XMPP {} says {}", from.asBareJid().toString(), message.getBody());
-        for (XMPPClientMessageSubscriber subscriber : subscribers) {
+        for(XMPPClientMessageSubscriber subscriber : subscribers) {
             logger.debug("Push to subscriber {}", subscriber.getName());
             subscriber.processMessage(from.asBareJid().toString(), message.getBody());
         }
@@ -138,7 +140,7 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
     @Override
     public void connectionClosedOnError(Exception e) {
         logger.debug("Connection to XMPP server was lost.");
-        if (connection != null) {
+        if(connection != null) {
             connection.disconnect();
             try {
                 connection.connect().login();

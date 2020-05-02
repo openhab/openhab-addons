@@ -376,4 +376,5 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
     public static boolean isIgnoredDatapoint(HmDatapoint dp) {
         return StringUtils.indexOfAny(dp.getName(), IGNORE_DATAPOINT_NAMES) != -1;
     }
+
 }

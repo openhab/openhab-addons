@@ -65,4 +65,5 @@ public class TagLabelsResponse extends Packet {
     public int[] expectedResponses() {
         return new int[] {};
     }
+
 }

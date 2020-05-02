@@ -158,4 +158,5 @@ public abstract class SinopeDataAnswer extends SinopeAnswer {
 
         return sb.toString();
     }
+
 }

@@ -82,4 +82,5 @@ public final class LGHomBotBindingConstants {
     private LGHomBotBindingConstants() {
         // No need to instance this class.
     }
+
 }

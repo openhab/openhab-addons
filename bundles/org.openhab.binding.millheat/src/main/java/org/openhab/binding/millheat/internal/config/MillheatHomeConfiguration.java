@@ -25,4 +25,5 @@ public class MillheatHomeConfiguration {
     public String toString() {
         return "MillheatHomeConfiguration [homeId=" + homeId + "]";
     }
+
 }

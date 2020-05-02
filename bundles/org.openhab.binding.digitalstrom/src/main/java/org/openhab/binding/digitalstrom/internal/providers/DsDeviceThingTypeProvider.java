@@ -172,4 +172,5 @@ public class DsDeviceThingTypeProvider extends BaseDsI18n implements ThingTypePr
         }
         return null;
     }
+
 }

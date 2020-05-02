@@ -43,4 +43,5 @@ public interface AvailabilityTracker {
      * This is used to time out the availability of the device after some time without receiving a message.
      */
     public void resetMessageReceived();
+
 }

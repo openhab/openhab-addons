@@ -173,4 +173,5 @@ public class FreeboxAirPlayAudioSink implements AudioSink {
     public void setVolume(PercentType volume) {
         throw new UnsupportedOperationException("Volume can not be set");
     }
+
 }

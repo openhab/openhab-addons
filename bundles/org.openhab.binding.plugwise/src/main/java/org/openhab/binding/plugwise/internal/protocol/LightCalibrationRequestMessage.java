@@ -26,4 +26,5 @@ public class LightCalibrationRequestMessage extends Message {
     public LightCalibrationRequestMessage(MACAddress macAddress) {
         super(LIGHT_CALIBRATION_REQUEST, macAddress);
     }
+
 }

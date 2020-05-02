@@ -226,4 +226,5 @@ class JCgetScenes extends GetScenes implements JsonBridgeCommunicationProtocol {
         }
         return scenes;
     }
+
 }

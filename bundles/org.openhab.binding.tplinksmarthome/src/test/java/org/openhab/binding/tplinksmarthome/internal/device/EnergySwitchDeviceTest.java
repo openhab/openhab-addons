@@ -83,4 +83,5 @@ public class EnergySwitchDeviceTest {
         assertSame("Unknown channel should return UNDEF", UnDefType.UNDEF,
                 device.updateChannel(CHANNEL_UID_OTHER, deviceState));
     }
+
 }

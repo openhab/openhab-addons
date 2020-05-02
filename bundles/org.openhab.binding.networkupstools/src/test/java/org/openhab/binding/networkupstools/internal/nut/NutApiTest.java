@@ -102,4 +102,5 @@ public class NutApiTest {
             assertThat("Should send commands correctly", actualCommands.toString(), is(expectedCommands));
         }
     }
+
 }

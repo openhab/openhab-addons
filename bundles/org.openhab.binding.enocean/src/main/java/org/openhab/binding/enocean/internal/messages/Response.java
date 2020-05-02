@@ -52,6 +52,7 @@ public class Response extends BasePacket {
 
             throw new InvalidParameterException("Unknown response type");
         }
+
     }
 
     protected ResponseType responseType;

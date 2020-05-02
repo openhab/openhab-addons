@@ -135,4 +135,5 @@ public class WeatherUndergroundHandlerFactory extends BaseThingHandlerFactory {
             }
         }
     }
+
 }

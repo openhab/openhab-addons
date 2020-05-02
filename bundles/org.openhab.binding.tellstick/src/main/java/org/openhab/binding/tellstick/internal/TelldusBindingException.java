@@ -35,4 +35,5 @@ public class TelldusBindingException extends TellstickException {
     public String getMessage() {
         return msg;
     }
+
 }

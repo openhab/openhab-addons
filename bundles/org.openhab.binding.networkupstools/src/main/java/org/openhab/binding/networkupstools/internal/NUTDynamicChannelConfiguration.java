@@ -24,4 +24,5 @@ import org.eclipse.jdt.annotation.Nullable;
 public class NUTDynamicChannelConfiguration {
     public String networkupstools = "";
     public @Nullable String unit;
+
 }

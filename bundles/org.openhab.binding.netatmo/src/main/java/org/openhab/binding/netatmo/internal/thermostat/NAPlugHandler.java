@@ -96,4 +96,5 @@ public class NAPlugHandler extends NetatmoDeviceHandler<NAPlug> {
         }
         return null;
     }
+
 }

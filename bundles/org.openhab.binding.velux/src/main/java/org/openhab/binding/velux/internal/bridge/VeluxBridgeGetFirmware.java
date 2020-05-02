@@ -101,4 +101,5 @@ public class VeluxBridgeGetFirmware {
         }
         return channel;
     }
+
 }

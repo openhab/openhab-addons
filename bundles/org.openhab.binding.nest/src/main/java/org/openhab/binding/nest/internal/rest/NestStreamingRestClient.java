@@ -223,4 +223,5 @@ public class NestStreamingRestClient {
             logger.warn("An exception occurred while processing the inbound event", e);
         }
     }
+
 }

@@ -718,4 +718,5 @@ public class LifxLightHandler extends BaseThingHandler {
             updateStatus(status, statusDetail);
         }
     }
+
 }

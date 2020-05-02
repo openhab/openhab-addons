@@ -140,4 +140,5 @@ public class Thing2VeluxActuator {
         }
         return isInverted;
     }
+
 }

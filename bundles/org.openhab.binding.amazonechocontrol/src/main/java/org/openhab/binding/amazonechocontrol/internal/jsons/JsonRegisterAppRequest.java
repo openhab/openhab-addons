@@ -43,6 +43,7 @@ public class JsonRegisterAppRequest {
         public JsonWebSiteCookie @Nullable [] website_cookies;
         @Nullable
         public String domain = ".amazon.com";
+
     }
 
     public static class RegistrationData {

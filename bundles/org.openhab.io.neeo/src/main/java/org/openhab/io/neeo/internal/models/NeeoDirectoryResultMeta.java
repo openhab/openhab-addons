@@ -121,4 +121,5 @@ public class NeeoDirectoryResultMeta {
         return "NeeoDiscoveryListResultMeta [totalItems=" + totalItems + ", totalMatchingItems=" + totalMatchingItems
                 + ", current=" + current + ", previous=" + previous + ", next=" + next + "]";
     }
+
 }

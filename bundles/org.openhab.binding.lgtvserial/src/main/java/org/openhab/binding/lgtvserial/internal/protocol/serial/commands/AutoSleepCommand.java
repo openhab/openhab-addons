@@ -23,4 +23,5 @@ public class AutoSleepCommand extends BaseDecimalCommand {
     protected AutoSleepCommand(int setId) {
         super('f', 'g', setId);
     }
+
 }

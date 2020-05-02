@@ -42,4 +42,5 @@ public class DeviceConfig {
     public BigDecimal getReadInterval() {
         return readInterval;
     }
+
 }

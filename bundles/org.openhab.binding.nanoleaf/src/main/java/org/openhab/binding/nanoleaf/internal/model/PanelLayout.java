@@ -41,4 +41,5 @@ public class PanelLayout {
     public void setGlobalOrientation(GlobalOrientation globalOrientation) {
         this.globalOrientation = globalOrientation;
     }
+
 }

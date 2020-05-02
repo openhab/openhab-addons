@@ -33,4 +33,5 @@ public class PowerInstructionRequest implements Request {
     public String getRequestString() {
         return "%1POWR " + this.command.getTarget().getPJLinkRepresentation();
     }
+
 }

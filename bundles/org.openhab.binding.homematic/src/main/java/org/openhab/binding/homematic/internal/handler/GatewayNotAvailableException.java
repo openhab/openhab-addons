@@ -23,4 +23,5 @@ public class GatewayNotAvailableException extends Exception {
     public GatewayNotAvailableException(String message) {
         super(message);
     }
+
 }

@@ -203,4 +203,5 @@ public class ClassicWiFiLEDDriver extends AbstractWiFiLEDDriver {
         String string = builder.toString();
         return string.substring(0, string.length() - 1);
     }
+
 }

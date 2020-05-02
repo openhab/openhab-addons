@@ -131,4 +131,5 @@ public final class LifxMessageUtil {
     public static long randomSourceId() {
         return UUID.randomUUID().getLeastSignificantBits() & (-1L >>> 32);
     }
+
 }

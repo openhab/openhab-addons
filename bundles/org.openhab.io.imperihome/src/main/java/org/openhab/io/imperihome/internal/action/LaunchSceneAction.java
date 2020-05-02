@@ -55,4 +55,5 @@ public class LaunchSceneAction extends Action {
             eventPublisher.post(event);
         }
     }
+
 }

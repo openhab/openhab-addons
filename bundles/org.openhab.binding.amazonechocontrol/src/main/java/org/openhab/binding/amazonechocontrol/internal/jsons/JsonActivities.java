@@ -49,6 +49,7 @@ public class JsonActivities {
             public @Nullable String deviceAccountId;
             public @Nullable String deviceType;
             public @Nullable String serialNumber;
+
         }
 
         public static class Description {
@@ -56,6 +57,7 @@ public class JsonActivities {
             public @Nullable String summary;
             public @Nullable String firstUtteranceId;
             public @Nullable String firstStreamId;
+
         }
 
         public Description ParseDescription() {

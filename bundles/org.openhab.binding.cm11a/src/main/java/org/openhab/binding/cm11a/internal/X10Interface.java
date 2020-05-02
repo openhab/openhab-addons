@@ -805,4 +805,5 @@ public class X10Interface extends Thread implements SerialPortEventListener {
             serialPort.close();
         }
     }
+
 }

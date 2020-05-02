@@ -41,4 +41,5 @@ public class IRKeyCodeCommand extends BaseStringCommand {
     public LGSerialResponse parseResponse(String response) {
         return null;
     }
+
 }

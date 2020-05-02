@@ -27,4 +27,5 @@ public class SetPositionCommand extends AM43Command {
     public SetPositionCommand(int position) {
         super(COMMAND, (byte) position);
     }
+
 }

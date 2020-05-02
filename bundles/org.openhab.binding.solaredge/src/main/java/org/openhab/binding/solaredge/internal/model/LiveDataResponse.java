@@ -79,6 +79,7 @@ public class LiveDataResponse implements DataResponse {
         public BatteryValue storage;
 
         public List<Connection> connections;
+
     }
 
     private SiteCurrentPowerFlow siteCurrentPowerFlow;

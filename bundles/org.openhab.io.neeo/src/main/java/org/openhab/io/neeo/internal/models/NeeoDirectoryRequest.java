@@ -86,4 +86,5 @@ public class NeeoDirectoryRequest {
         return "NeeoDiscoveryListResultPosition [offset=" + offset + ", limit=" + limit + ", browseIdentifier="
                 + browseIdentifier + "]";
     }
+
 }

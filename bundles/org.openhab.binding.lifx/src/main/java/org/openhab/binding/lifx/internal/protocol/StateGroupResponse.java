@@ -90,4 +90,5 @@ public class StateGroupResponse extends Packet {
     public int[] expectedResponses() {
         return new int[] {};
     }
+
 }

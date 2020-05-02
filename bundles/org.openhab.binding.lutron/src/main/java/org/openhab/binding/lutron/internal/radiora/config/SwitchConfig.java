@@ -29,4 +29,5 @@ public class SwitchConfig {
     public void setZoneNumber(int zoneNumber) {
         this.zoneNumber = zoneNumber;
     }
+
 }

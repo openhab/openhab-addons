@@ -353,6 +353,7 @@ public class SilvercrestWifiSocketHandler extends BaseThingHandler {
             logger.error("The Mac address passed is not valid! {}", e.getMacAddress());
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         }
+
     }
 
     /**

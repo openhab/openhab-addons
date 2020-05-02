@@ -553,4 +553,5 @@ public class Device {
     public void setPermissions(Permissions permissions) {
         this.permissions = permissions;
     }
+
 }

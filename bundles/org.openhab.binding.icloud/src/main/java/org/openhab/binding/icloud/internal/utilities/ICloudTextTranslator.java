@@ -44,4 +44,5 @@ public class ICloudTextTranslator {
     public String getDefaultText(@Nullable String key) {
         return i18nProvider.getText(bundle, key, key, Locale.ENGLISH);
     }
+
 }

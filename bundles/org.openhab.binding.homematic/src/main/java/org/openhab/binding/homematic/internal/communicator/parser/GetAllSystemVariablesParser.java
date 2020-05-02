@@ -67,4 +67,5 @@ public class GetAllSystemVariablesParser extends CommonRpcParser<Object[], Void>
             return HmValueType.STRING;
         }
     }
+
 }

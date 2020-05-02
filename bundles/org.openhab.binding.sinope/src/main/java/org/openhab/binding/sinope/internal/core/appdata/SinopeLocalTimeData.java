@@ -25,4 +25,5 @@ public class SinopeLocalTimeData extends SinopeAppData {
     public SinopeLocalTimeData() {
         super(new byte[] { 0x00, 0x00, 0x06, 0x00 }, new byte[] { 0, 0, 0 });
     }
+
 }

@@ -123,4 +123,5 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
         }
         return ret;
     }
+
 }

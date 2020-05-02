@@ -93,4 +93,5 @@ public class UidUtils {
     public static String getHomematicAddress(Thing thing) {
         return thing.getUID().getId();
     }
+
 }

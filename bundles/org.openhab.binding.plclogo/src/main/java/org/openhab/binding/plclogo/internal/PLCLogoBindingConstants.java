@@ -187,4 +187,5 @@ public class PLCLogoBindingConstants {
         buffer.put(LOGO_0BA8, LOGO_MEMORY_0BA8);
         LOGO_MEMORY_BLOCK = Collections.unmodifiableMap(buffer);
     }
+
 }

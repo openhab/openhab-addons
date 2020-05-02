@@ -126,4 +126,5 @@ public class IPClient extends AbstractKNXClient {
         }
         return conn;
     }
+
 }

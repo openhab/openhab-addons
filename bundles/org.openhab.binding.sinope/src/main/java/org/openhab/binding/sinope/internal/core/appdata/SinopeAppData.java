@@ -132,4 +132,5 @@ public class SinopeAppData {
     public void cleanData() {
         this.data = null;
     }
+
 }

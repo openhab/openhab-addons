@@ -46,4 +46,5 @@ public class DwdUnwetterBindingConstants {
     public static final String CHANNEL_CEILING = "ceiling";
     public static final String CHANNEL_INSTRUCTION = "instruction";
     public static final String CHANNEL_URGENCY = "urgency";
+
 }

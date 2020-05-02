@@ -112,4 +112,5 @@ public class ModbusSerialThingHandler
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Collections.singleton(ModbusEndpointDiscoveryService.class);
     }
+
 }

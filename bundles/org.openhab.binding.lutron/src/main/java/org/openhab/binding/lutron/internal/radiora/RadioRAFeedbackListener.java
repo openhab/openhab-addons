@@ -23,4 +23,5 @@ import org.openhab.binding.lutron.internal.radiora.protocol.RadioRAFeedback;
 public interface RadioRAFeedbackListener {
 
     void handleRadioRAFeedback(RadioRAFeedback feedback);
+
 }

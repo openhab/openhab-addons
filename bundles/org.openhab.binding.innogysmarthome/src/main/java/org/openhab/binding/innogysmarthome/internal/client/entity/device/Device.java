@@ -457,6 +457,7 @@ public class Device {
      */
     public void setIsBatteryPowered(boolean hasBattery) {
         batteryPowered = hasBattery;
+
     }
 
     /**
@@ -539,4 +540,5 @@ public class Device {
                 + getType() + " name=" + getConfig().getName() + "]";
         return string;
     }
+
 }

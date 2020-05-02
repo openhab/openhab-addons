@@ -143,4 +143,5 @@ public class ImageMeta {
     public void setPixolusVersion(String pixolusVersion) {
         this.pixolusVersion = pixolusVersion;
     }
+
 }

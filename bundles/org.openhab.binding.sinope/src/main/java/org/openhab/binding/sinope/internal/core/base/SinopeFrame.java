@@ -124,4 +124,5 @@ abstract class SinopeFrame {
     protected void setInternal_payload(byte[] internal_payload) {
         this.internal_payload = internal_payload;
     }
+
 }

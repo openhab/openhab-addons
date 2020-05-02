@@ -41,4 +41,5 @@ public abstract class AbstractNumericValueDevice extends AbstractDevice {
     public String toString() {
         return getClass().getSimpleName() + "{" + "super=" + super.toString() + ", unit='" + unit + '\'' + '}';
     }
+
 }

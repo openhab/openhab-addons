@@ -100,4 +100,5 @@ public class DeviceMethod {
     public String getCmdId() {
         return String.valueOf(mIndex);
     }
+
 }

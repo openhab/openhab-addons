@@ -59,4 +59,5 @@ public class MaxCubeBridgeConfiguration {
 
     /** NTP Server 2 hostname */
     public String ntpServer2;
+
 }

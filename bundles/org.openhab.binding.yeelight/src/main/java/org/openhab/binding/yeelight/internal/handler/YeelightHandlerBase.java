@@ -339,5 +339,6 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
         // Duration should not be null, but just in case do a null check.
         return getThing().getConfiguration().get(PARAMETER_DURATION) == null ? 500
                 : ((Number) getThing().getConfiguration().get(PARAMETER_DURATION)).intValue();
+
     }
 }

@@ -66,4 +66,5 @@ public class Location {
         Location comp = (Location) obj;
         return new EqualsBuilder().append(comp.getId(), id).isEquals();
     }
+
 }

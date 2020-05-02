@@ -37,4 +37,5 @@ public class OrviboActivator implements BundleActivator {
     public void stop(BundleContext context) throws Exception {
         s20Client.disconnect();
     }
+
 }

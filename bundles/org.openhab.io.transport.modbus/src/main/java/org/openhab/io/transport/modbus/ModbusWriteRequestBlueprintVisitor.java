@@ -37,4 +37,5 @@ public interface ModbusWriteRequestBlueprintVisitor {
      * @param blueprint
      */
     public void visit(ModbusWriteRegisterRequestBlueprint blueprint);
+
 }

@@ -47,4 +47,5 @@ public abstract class GetProduct implements BridgeCommunicationProtocol {
      * @return <b>veluxProduct</b> as VeluxProduct.
      */
     public abstract VeluxProduct getProduct();
+
 }

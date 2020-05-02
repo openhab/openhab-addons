@@ -169,4 +169,5 @@ public class PowermaxDiscoveryService extends AbstractDiscoveryService implement
             thingDiscovered(discoveryResult);
         }
     }
+
 }

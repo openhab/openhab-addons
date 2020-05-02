@@ -253,6 +253,7 @@ public class PrgBridgeHandler extends BaseBridgeHandler {
             public void run() {
                 connect();
             }
+
         }, 1, TimeUnit.SECONDS);
     }
 
@@ -317,6 +318,7 @@ public class PrgBridgeHandler extends BaseBridgeHandler {
                         _retryConnection = null;
                         connect();
                     }
+
                 }, config.getRetryPolling(), TimeUnit.SECONDS);
             }
         } else {

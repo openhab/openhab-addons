@@ -605,4 +605,5 @@ public class PlugwiseRelayDeviceHandler extends AbstractPlugwiseThingHandler {
 
         updateTasks(recurringTasks);
     }
+
 }

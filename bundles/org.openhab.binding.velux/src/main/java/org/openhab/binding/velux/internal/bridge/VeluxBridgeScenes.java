@@ -126,4 +126,5 @@ public class VeluxBridgeScenes {
         }
         return (channel.existingScenes.getNoMembers() > 0);
     }
+
 }

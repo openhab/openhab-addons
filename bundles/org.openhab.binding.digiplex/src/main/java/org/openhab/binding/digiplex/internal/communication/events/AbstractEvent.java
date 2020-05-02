@@ -46,4 +46,5 @@ public abstract class AbstractEvent implements DigiplexResponse {
         }
         return false;
     }
+
 }

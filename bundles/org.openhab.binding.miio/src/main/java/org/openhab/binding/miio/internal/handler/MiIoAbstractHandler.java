@@ -474,4 +474,5 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             logger.debug("Error while handing message {}", response.getResponse(), e);
         }
     }
+
 }

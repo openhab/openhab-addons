@@ -193,4 +193,5 @@ class JCgetProducts extends GetProducts implements JsonBridgeCommunicationProtoc
         }
         return products;
     }
+
 }

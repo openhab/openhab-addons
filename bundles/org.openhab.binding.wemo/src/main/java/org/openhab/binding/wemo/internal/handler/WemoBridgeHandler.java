@@ -64,4 +64,5 @@ public class WemoBridgeHandler extends BaseBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         // Not needed, all commands are handled in the {@link WemoLightHandler}
     }
+
 }

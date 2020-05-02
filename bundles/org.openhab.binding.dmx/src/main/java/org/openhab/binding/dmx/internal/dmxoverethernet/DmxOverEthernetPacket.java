@@ -94,4 +94,5 @@ public abstract class DmxOverEthernetPacket {
     public int getPayloadSize() {
         return this.payloadSize;
     }
+
 }

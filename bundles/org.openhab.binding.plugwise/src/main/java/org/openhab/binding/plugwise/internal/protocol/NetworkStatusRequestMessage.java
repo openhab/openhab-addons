@@ -24,4 +24,5 @@ public class NetworkStatusRequestMessage extends Message {
     public NetworkStatusRequestMessage() {
         super(NETWORK_STATUS_REQUEST);
     }
+
 }

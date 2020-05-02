@@ -75,4 +75,5 @@ public interface SocketSession {
      * @throws java.io.IOException an exception that occurred while sending
      */
     void sendCommand(String command) throws IOException;
+
 }

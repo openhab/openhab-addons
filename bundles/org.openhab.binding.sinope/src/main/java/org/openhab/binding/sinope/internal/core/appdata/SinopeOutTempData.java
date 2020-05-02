@@ -55,4 +55,5 @@ public class SinopeOutTempData extends SinopeAppData {
         }
         return sb.toString();
     }
+
 }

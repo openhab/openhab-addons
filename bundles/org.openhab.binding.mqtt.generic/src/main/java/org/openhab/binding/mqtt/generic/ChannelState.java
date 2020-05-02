@@ -411,4 +411,5 @@ public class ChannelState implements MqttMessageSubscriber {
     public void setConnection(MqttBrokerConnection connection) {
         this.connection = connection;
     }
+
 }

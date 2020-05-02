@@ -170,4 +170,5 @@ public class BuienradarPredictionAPI implements PredictionAPI {
         }
         return Optional.of(predictions);
     }
+
 }

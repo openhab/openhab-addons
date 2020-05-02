@@ -62,11 +62,10 @@ public class DeviceRegistry implements Iterable<AbstractDevice> {
     }
 
     public void add(AbstractDevice device) {
-        // Workaround for Eclipse SH bug: ignore add-event for same item
-        // https://github.com/eclipse/smarthome/issues/3160
+        //Workaround for Eclipse SH bug: ignore add-event for same item
+        //https://github.com/eclipse/smarthome/issues/3160
         if (devices.containsKey(device.getId())) {
-            logger.warn("Ignoring duplicate device #{}, name={}, item={}", device.getId(), device.getName(),
-                    device.getItemName());
+            logger.warn("Ignoring duplicate device #{}, name={}, item={}", device.getId(), device.getName(), device.getItemName());
             return;
         }
 
@@ -113,4 +112,5 @@ public class DeviceRegistry implements Iterable<AbstractDevice> {
         }
         rooms = newRooms;
     }
+
 }

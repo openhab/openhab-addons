@@ -107,4 +107,5 @@ public class PowermaxTcpConnector extends PowermaxConnector {
             return 0;
         }
     }
+
 }

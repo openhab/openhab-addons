@@ -43,4 +43,5 @@ class TypeContact extends KNXChannelType {
     protected String getDefaultDPT(String gaConfigKey) {
         return DPTXlatorBoolean.DPT_OPENCLOSE.getID();
     }
+
 }

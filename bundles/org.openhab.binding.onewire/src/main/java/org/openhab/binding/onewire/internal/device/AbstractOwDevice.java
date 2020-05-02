@@ -137,4 +137,5 @@ public abstract class AbstractOwDevice {
         }
         return sensorType;
     }
+
 }

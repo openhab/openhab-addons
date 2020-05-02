@@ -164,4 +164,5 @@ public class BaseNestDevice implements NestIdentifiable {
                 .append(", structureId=").append(structureId).append(", whereId=").append(whereId).append("]");
         return builder.toString();
     }
+
 }

@@ -146,4 +146,5 @@ public class QuantityTypeConverter extends AbstractTypeConverter<QuantityType<? 
         // increase logging verbosity for this type of converter
         return LogLevel.DEBUG;
     }
+
 }

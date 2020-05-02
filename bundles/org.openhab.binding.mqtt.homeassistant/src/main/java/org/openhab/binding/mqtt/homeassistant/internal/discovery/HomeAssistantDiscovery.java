@@ -222,4 +222,5 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
             }
         }
     }
+
 }

@@ -51,4 +51,5 @@ public enum AreaStatus {
     public StringType toStringType() {
         return new StringType(this.toString());
     }
+
 }

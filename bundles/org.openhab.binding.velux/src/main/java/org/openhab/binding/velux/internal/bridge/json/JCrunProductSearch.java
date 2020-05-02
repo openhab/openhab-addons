@@ -100,6 +100,7 @@ class JCrunProductSearch extends RunProductSearch implements JsonBridgeCommunica
         @SuppressWarnings("unused")
         private String[] data = {};
         private String[] errors = {};
+
     }
 
     /*
@@ -145,4 +146,5 @@ class JCrunProductSearch extends RunProductSearch implements JsonBridgeCommunica
     public String[] getErrors() {
         return response.errors;
     }
+
 }

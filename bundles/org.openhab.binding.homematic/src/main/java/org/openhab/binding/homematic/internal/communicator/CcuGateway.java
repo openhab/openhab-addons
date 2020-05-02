@@ -237,4 +237,5 @@ public class CcuGateway extends AbstractHomematicGateway {
             throw new IOException("The resource homematic/tclrega-scripts.xml could not be loaded!", e);
         }
     }
+
 }

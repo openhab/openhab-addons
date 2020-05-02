@@ -87,4 +87,5 @@ public class SMAEnergyMeterDiscoveryService extends AbstractDiscoveryService {
 
         logger.debug("Thing discovered '{}'", result);
     }
+
 }

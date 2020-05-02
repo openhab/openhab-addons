@@ -37,4 +37,5 @@ public class TransformCommand extends HyperionCommand {
     public void setTransform(Transform transform) {
         this.transform = transform;
     }
+
 }

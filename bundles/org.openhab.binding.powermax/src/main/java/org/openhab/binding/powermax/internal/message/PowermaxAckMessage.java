@@ -49,4 +49,5 @@ public class PowermaxAckMessage extends PowermaxBaseMessage {
 
         return updatedState;
     }
+
 }

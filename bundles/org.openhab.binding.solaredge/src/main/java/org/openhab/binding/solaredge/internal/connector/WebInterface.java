@@ -159,6 +159,7 @@ public class WebInterface implements AtomicReferenceTrait {
                 command.performAction(httpClient);
             }
         }
+
     }
 
     /**
@@ -282,6 +283,7 @@ public class WebInterface implements AtomicReferenceTrait {
 
         this.handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, preCheckStatusMessage);
         return false;
+
     }
 
     /**
@@ -315,4 +317,5 @@ public class WebInterface implements AtomicReferenceTrait {
     private void setAuthenticated(boolean authenticated) {
         this.authenticated = authenticated;
     }
+
 }

@@ -106,4 +106,5 @@ public class DigitalSTROMBindingConstants {
     public static final String API_VERSION = "apiVersion";
     public static final String DSP_SW_VERSION = "armSwVersion";
     public static final String ARM_SW_VERSION = "dspSwVersion";
+
 }

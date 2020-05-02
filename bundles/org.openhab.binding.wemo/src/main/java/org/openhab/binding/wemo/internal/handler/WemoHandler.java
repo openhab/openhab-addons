@@ -499,4 +499,5 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
     @Override
     public void onStatusChanged(boolean status) {
     }
+
 }

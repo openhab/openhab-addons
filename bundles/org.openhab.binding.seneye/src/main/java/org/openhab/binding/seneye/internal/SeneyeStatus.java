@@ -57,4 +57,5 @@ public class SeneyeStatus {
     public String getDisconnectedString() {
         return disconnected;
     }
+
 }

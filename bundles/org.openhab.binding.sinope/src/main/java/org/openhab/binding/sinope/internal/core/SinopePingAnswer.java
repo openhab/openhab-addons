@@ -41,4 +41,5 @@ public class SinopePingAnswer extends SinopeAnswer {
     protected byte[] getCommand() {
         return new byte[] { 0x00, 0x13 };
     }
+
 }

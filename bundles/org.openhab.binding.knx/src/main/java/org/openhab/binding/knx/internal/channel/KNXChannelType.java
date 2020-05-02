@@ -212,4 +212,5 @@ public abstract class KNXChannelType {
     public String toString() {
         return channelTypeIDs.toString();
     }
+
 }

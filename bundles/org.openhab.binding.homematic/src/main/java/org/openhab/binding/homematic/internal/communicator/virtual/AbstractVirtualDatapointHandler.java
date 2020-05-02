@@ -78,4 +78,5 @@ public abstract class AbstractVirtualDatapointHandler implements VirtualDatapoin
         channel.addDatapoint(dp);
         return dp;
     }
+
 }

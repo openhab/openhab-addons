@@ -78,4 +78,5 @@ public class EvoParser extends AbstractParser {
 
         return new ZoneState(isOpened, isTampered, hasLowBattery);
     }
+
 }

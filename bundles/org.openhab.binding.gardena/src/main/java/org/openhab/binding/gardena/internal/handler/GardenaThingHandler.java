@@ -367,4 +367,5 @@ public class GardenaThingHandler extends BaseThingHandler {
 
         return ((GardenaAccountHandler) getBridge().getHandler()).getGardenaSmart();
     }
+
 }

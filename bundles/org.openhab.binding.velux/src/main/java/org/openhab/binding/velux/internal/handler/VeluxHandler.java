@@ -124,4 +124,5 @@ public class VeluxHandler extends ExtendedBaseThingHandler {
             super.handleConfigurationUpdate(configurationParameters);
         }
     }
+
 }

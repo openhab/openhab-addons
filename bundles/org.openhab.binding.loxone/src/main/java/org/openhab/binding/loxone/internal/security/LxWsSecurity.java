@@ -215,4 +215,5 @@ public abstract class LxWsSecurity {
             return new LxWsSecurityToken(debugId, thingHandler, socket, user, password);
         }
     }
+
 }

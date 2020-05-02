@@ -222,4 +222,5 @@ public class HueLightDiscoveryServiceOSGiTest extends AbstractHueOSGiTestParent 
         });
         hueBridgeHandler.initialize();
     }
+
 }

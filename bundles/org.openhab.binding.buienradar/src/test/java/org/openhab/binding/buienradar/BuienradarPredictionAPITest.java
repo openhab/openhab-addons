@@ -85,4 +85,5 @@ public class BuienradarPredictionAPITest {
                 parsed.getDateTimeOfPrediction());
         assertEquals(BigDecimal.valueOf(0, 2), parsed.getIntensity());
     }
+
 }

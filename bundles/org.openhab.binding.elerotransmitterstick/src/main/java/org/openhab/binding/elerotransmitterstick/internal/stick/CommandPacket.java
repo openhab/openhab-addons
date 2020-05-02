@@ -58,4 +58,5 @@ public class CommandPacket {
     public String toString() {
         return HexUtils.bytesToHex(data);
     }
+
 }

@@ -180,4 +180,5 @@ public abstract class Cm11aAbstractHandler extends BaseThingHandler {
     public State addBrightsToCurrentState(int dims) {
         return addDimsToCurrentState(-dims);
     }
+
 }

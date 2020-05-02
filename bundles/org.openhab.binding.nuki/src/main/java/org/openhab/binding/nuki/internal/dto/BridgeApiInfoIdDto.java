@@ -38,4 +38,5 @@ public class BridgeApiInfoIdDto {
     public void setServerId(int serverId) {
         this.serverId = serverId;
     }
+
 }

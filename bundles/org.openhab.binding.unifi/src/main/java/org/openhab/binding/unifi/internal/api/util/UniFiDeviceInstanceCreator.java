@@ -38,4 +38,5 @@ public class UniFiDeviceInstanceCreator implements InstanceCreator<UniFiDevice> 
     public UniFiDevice createInstance(Type type) {
         return new UniFiDevice(controller);
     }
+
 }

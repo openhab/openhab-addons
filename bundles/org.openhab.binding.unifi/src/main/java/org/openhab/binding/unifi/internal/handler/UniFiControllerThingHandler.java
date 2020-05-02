@@ -196,4 +196,5 @@ public class UniFiControllerThingHandler extends BaseBridgeHandler {
             });
         }
     }
+
 }

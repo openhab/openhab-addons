@@ -75,4 +75,5 @@ public class BasicModbusRegisterArray implements ModbusRegisterArray {
         StringBuffer buffer = new StringBuffer(registers.length * 2).append("ModbusRegisterArrayImpl(");
         return appendHexString(buffer).append(')').toString();
     }
+
 }

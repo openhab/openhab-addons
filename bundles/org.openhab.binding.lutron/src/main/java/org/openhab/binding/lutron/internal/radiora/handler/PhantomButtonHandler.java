@@ -51,6 +51,7 @@ public class PhantomButtonHandler extends LutronHandler {
         if (feedback instanceof LEDMapFeedback) {
             handleLEDMapFeedback((LEDMapFeedback) feedback);
         }
+
     }
 
     private void handleLEDMapFeedback(LEDMapFeedback feedback) {
@@ -58,4 +59,5 @@ public class PhantomButtonHandler extends LutronHandler {
 
         updateState(LutronBindingConstants.CHANNEL_SWITCH, zoneEnabled ? OnOffType.ON : OnOffType.OFF);
     }
+
 }

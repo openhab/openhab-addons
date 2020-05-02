@@ -292,6 +292,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         clearDeviceList();
         propertiesSet = false;
         roomPropertiesSet = false;
+
     }
 
     public void cubeReboot() {
@@ -980,6 +981,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         }
         queueCommand(new SendCommand("Cube(" + getThing().getUID().getId() + ")", new FCommand(ntpServer1, ntpServer2),
                 "Update NTP info"));
+
     }
 
     private boolean socketConnect() throws UnknownHostException, IOException {

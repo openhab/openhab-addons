@@ -59,4 +59,5 @@ public class KonnectedBindingConstants {
     public static final String CHANNEL_ACTUATOR_PAUSE = "pause";
 
     public static final String CHANNEL_ONVALUE = "onvalue";
+
 }

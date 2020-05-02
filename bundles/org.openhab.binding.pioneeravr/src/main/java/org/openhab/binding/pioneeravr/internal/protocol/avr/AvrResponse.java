@@ -94,4 +94,5 @@ public interface AvrResponse {
      * @return
      */
     public Integer getZone();
+
 }

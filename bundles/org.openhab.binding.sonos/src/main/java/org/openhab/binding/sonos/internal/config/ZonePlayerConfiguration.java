@@ -27,4 +27,5 @@ public class ZonePlayerConfiguration {
     public Integer refresh;
     public Integer notificationTimeout;
     public Integer notificationVolume;
+
 }

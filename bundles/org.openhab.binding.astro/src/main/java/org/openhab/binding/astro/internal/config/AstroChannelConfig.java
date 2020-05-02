@@ -64,4 +64,5 @@ public class AstroChannelConfig {
     public void setLatest(String latest) {
         this.latest = latest;
     }
+
 }

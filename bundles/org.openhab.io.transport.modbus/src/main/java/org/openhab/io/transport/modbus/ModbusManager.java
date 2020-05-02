@@ -103,4 +103,5 @@ public interface ModbusManager {
      * @return set of registered regular polls
      */
     public Set<PollTask> getRegisteredRegularPolls();
+
 }

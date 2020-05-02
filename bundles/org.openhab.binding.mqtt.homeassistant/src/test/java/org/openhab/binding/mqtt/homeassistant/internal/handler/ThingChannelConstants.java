@@ -57,4 +57,5 @@ public class ThingChannelConstants {
         data.put("transformationPattern", "JSONPATH:" + jsonPathPattern);
         return new Configuration(data);
     }
+
 }

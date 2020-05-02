@@ -26,4 +26,5 @@ class NeohubBool {
     public NeohubBool(boolean value) {
         this.value = value;
     }
+
 }

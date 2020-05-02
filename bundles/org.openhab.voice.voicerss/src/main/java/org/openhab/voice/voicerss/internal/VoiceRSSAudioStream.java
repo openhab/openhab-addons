@@ -32,4 +32,5 @@ class VoiceRSSAudioStream extends FileAudioStream {
     public VoiceRSSAudioStream(File audioFile, AudioFormat format) throws AudioException {
         super(audioFile, format);
     }
+
 }

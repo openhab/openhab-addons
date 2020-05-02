@@ -118,4 +118,5 @@ public class PowermaxZoneSettings {
     public boolean isAlwaysInAlarm() {
         return alwaysInAlarm;
     }
+
 }

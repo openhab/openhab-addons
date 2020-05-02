@@ -122,4 +122,5 @@ public class SlipRFC1055 {
         logger.trace("decode() provides payload: {}.", new Packet(payload));
         return payload;
     }
+
 }

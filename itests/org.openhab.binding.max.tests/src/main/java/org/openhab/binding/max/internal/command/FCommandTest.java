@@ -55,4 +55,5 @@ public class FCommandTest {
         commandStr = scmd.getCommandString();
         assertEquals("f:" + '\r' + '\n', commandStr);
     }
+
 }

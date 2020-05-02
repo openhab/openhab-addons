@@ -25,4 +25,5 @@ public class SonyProjectorSerialOverIpConfiguration {
     public @NonNullByDefault({}) String host;
     public @NonNullByDefault({}) Integer port;
     public @NonNullByDefault({}) String model;
+
 }

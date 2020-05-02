@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.network.internal.toberemoved.cache;
 
+import org.openhab.binding.network.internal.toberemoved.cache.ExpiringCacheAsync;
+
 /**
  * Helper class to make the package private cacheUpdater field available for tests.
  *

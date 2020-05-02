@@ -223,4 +223,5 @@ public class PowermaxStatusMessage extends PowermaxBaseMessage {
 
         return str;
     }
+
 }

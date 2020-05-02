@@ -194,4 +194,5 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
 
         throw new IllegalArgumentException("Unsupported device type discovered : " + thingType);
     }
+
 }

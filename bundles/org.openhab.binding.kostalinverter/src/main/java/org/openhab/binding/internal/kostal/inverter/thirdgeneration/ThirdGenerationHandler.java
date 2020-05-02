@@ -482,4 +482,5 @@ public class ThirdGenerationHandler extends BaseThingHandler {
 
         updateStatus(ThingStatus.ONLINE);
     }
+
 }

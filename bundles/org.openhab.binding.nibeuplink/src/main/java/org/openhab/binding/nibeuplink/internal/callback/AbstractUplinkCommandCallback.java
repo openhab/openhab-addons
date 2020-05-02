@@ -167,4 +167,5 @@ public abstract class AbstractUplinkCommandCallback extends BufferingResponseLis
     public final void setListener(StatusUpdateListener listener) {
         this.listener = listener;
     }
+
 }

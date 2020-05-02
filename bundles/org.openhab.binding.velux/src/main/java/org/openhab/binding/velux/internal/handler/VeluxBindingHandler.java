@@ -237,4 +237,5 @@ public class VeluxBindingHandler extends ExtendedBaseThingHandler {
         currentNumberOfThings = veluxThingCount;
         updateVisibleInformation();
     }
+
 }

@@ -105,4 +105,5 @@ public class ModbusTcpConfiguration {
     public void setDiscoveryEnabled(boolean enableDiscovery) {
         this.enableDiscovery = enableDiscovery;
     }
+
 }

@@ -123,4 +123,5 @@ public class EncryptionHelper {
         }
         return new String(hexChars);
     }
+
 }

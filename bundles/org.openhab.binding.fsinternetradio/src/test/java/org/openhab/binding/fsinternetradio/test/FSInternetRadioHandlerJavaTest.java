@@ -892,5 +892,6 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
         assertThat(status.getStatus(), is(ThingStatus.OFFLINE));
         assertThat(status.getStatusDetail(), is(ThingStatusDetail.COMMUNICATION_ERROR));
         assertThat(status.getDescription().contains(exceptionMessage), is(true));
+
     }
 }

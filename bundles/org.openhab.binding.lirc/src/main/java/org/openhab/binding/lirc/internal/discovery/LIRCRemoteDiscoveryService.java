@@ -77,4 +77,5 @@ public class LIRCRemoteDiscoveryService extends AbstractDiscoveryService impleme
                 .withProperties(properties).build();
         thingDiscovered(discoveryResult);
     }
+
 }

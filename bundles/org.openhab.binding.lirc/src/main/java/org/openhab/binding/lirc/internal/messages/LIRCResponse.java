@@ -41,4 +41,5 @@ public class LIRCResponse {
     public String[] getData() {
         return data;
     }
+
 }

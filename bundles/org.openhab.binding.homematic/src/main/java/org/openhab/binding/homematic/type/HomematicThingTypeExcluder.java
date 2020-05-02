@@ -89,4 +89,5 @@ public interface HomematicThingTypeExcluder {
      *         excluded
      */
     public boolean isConfigDescriptionExcluded(URI configDescriptionURI);
+
 }

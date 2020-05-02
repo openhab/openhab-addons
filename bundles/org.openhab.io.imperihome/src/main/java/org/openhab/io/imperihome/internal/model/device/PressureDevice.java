@@ -36,4 +36,5 @@ public class PressureDevice extends AbstractNumericValueDevice {
         DecimalType value = (DecimalType) item.getStateAs(DecimalType.class);
         addParam(new NumericValueParam(ParamType.PRESSURE_VALUE, getUnit(), value));
     }
+
 }

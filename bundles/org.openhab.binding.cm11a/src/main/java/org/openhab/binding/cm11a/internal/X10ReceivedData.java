@@ -150,4 +150,5 @@ public class X10ReceivedData {
         }
         return true;
     }
+
 }

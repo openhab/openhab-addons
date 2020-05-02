@@ -57,4 +57,5 @@ public class BridgeJsonParameters {
     public String getName() {
         return name;
     }
+
 }

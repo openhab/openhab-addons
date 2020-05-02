@@ -118,4 +118,5 @@ public class TempHygroDevice extends AbstractNumericValueDevice {
         tempParam.setValue(valueParam.getValue());
         addParam(tempParam);
     }
+
 }

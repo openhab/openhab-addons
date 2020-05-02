@@ -69,6 +69,7 @@ public class TVControlChannel extends BaseChannelHandler<ChannelInfo> {
                 handler.setOptions(channelId, options);
             }
         });
+
     }
 
     @Override
@@ -99,6 +100,7 @@ public class TVControlChannel extends BaseChannelHandler<ChannelInfo> {
                 logger.info("TV does not have a channel: {}.", value);
             }
         }
+
     }
 
     @Override

@@ -80,6 +80,7 @@ public enum NibeHeatPumpProtocolStates implements NibeHeatPumpProtocolState {
             }
             return false;
         }
+
     },
     OK_MESSAGE_RECEIVED {
         @Override
@@ -101,6 +102,7 @@ public enum NibeHeatPumpProtocolStates implements NibeHeatPumpProtocolState {
             }
             return true;
         }
+
     },
     WRITE_TOKEN_RECEIVED {
         @Override
@@ -110,6 +112,7 @@ public enum NibeHeatPumpProtocolStates implements NibeHeatPumpProtocolState {
             context.state(WAIT_START);
             return true;
         }
+
     },
     READ_TOKEN_RECEIVED {
         @Override
@@ -119,6 +122,7 @@ public enum NibeHeatPumpProtocolStates implements NibeHeatPumpProtocolState {
             context.state(WAIT_START);
             return true;
         }
+
     },
     CHECKSUM_FAILURE {
         @Override

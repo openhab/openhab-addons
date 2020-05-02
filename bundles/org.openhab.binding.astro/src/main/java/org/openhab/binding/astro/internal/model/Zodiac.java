@@ -30,4 +30,5 @@ public class Zodiac {
     public ZodiacSign getSign() {
         return sign;
     }
+
 }

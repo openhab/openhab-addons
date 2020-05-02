@@ -55,4 +55,5 @@ public class LGWebOSConfiguration {
         return "WebOSConfiguration [host=" + host + ", port=" + port + ", key.length=" + getKey().length()
                 + ", macAddress=" + macAddress + "]";
     }
+
 }

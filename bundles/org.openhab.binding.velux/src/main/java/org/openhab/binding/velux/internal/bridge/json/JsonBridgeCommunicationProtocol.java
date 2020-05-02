@@ -89,4 +89,5 @@ interface JsonBridgeCommunicationProtocol extends BridgeCommunicationProtocol {
      * @return <b>errors</b> as String[] describing the status of the operation according to the request in depth.
      */
     String[] getErrors();
+
 }

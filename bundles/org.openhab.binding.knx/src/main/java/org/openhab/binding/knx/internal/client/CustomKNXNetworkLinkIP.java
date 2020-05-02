@@ -33,4 +33,5 @@ public class CustomKNXNetworkLinkIP extends KNXNetworkLinkIP {
             throws KNXException, InterruptedException {
         super(serviceMode, conn, settings);
     }
+
 }

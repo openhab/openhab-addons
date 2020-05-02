@@ -53,4 +53,5 @@ public class UniFiWirelessClient extends UniFiClient {
     public Integer getRssi() {
         return rssi;
     }
+
 }

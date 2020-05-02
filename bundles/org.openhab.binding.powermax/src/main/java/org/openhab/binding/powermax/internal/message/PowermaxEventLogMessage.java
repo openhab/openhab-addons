@@ -167,4 +167,5 @@ public class PowermaxEventLogMessage extends PowermaxBaseMessage {
 
         return str;
     }
+
 }

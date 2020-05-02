@@ -144,4 +144,5 @@ class RdsAccessToken {
         }
         return (expDate == null || expDate.before(new Date()));
     }
+
 }

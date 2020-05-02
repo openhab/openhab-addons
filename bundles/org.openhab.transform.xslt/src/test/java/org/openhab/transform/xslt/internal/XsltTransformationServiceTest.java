@@ -38,4 +38,5 @@ public class XsltTransformationServiceTest extends AbstractTransformationService
         // Asserts
         assertEquals("8", transformedResponse);
     }
+
 }

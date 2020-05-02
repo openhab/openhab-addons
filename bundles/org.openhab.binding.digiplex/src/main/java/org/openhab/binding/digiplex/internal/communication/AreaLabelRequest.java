@@ -32,4 +32,5 @@ public class AreaLabelRequest implements DigiplexRequest {
     public String getSerialMessage() {
         return String.format("AL%03d\r", areaNo);
     }
+
 }

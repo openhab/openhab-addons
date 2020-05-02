@@ -53,4 +53,5 @@ public class SinopeBindingConstants {
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_GATEWAY);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_THERMO);
     }
+
 }

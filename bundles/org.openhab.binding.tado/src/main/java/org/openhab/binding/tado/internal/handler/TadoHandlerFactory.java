@@ -92,4 +92,5 @@ public class TadoHandlerFactory extends BaseThingHandlerFactory {
             }
         }
     }
+
 }

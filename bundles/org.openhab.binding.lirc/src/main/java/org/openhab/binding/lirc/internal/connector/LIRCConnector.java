@@ -193,4 +193,5 @@ public class LIRCConnector {
             logger.error("Error invoking event listener", e);
         }
     }
+
 }

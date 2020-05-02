@@ -36,4 +36,5 @@ public class CommandTypeNotSupportedException extends Exception {
     public CommandTypeNotSupportedException(Throwable cause) {
         super(cause);
     }
+
 }

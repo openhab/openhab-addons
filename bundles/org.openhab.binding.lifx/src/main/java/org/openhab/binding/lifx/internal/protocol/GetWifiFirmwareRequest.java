@@ -52,4 +52,5 @@ public class GetWifiFirmwareRequest extends Packet {
     public int[] expectedResponses() {
         return new int[] { StateWifiFirmwareResponse.TYPE };
     }
+
 }

@@ -125,4 +125,5 @@ public class MeterValue<Q extends Quantity<Q>> {
     public void setStatus(String status) {
         this.status = status;
     }
+
 }

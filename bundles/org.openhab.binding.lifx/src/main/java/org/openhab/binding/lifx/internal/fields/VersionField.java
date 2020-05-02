@@ -39,4 +39,5 @@ public class VersionField extends Field<Version> {
     public ByteBuffer bytesInternal(Version value) {
         return ByteBuffer.allocate(4).putInt((int) (((value.getMajor() << 16) | value.getMinor()) & 0xFFFFFFFFL));
     }
+
 }

@@ -318,4 +318,5 @@ public class AirQualityHandler extends BaseThingHandler {
 
         return null;
     }
+
 }

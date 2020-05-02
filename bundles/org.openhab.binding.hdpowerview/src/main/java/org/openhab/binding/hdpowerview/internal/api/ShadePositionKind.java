@@ -41,4 +41,5 @@ public enum ShadePositionKind {
             return null;
         }
     }
+
 }

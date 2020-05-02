@@ -33,4 +33,5 @@ public class On implements BooleanState {
     public void setValue(boolean value) {
         this.value = value;
     }
+
 }

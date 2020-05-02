@@ -67,4 +67,5 @@ public class DeviceInformationXMLTest extends AbstractXMLProtocolTest {
         assertTrue("Zones detected", state.zones.containsAll(Arrays.asList(Main_Zone, Zone_2, Zone_3)));
         assertTrue("Features detected", state.features.containsAll(Arrays.asList(TUNER, BLUETOOTH)));
     }
+
 }

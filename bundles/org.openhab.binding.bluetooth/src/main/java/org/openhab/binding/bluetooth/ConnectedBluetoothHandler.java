@@ -254,4 +254,5 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
     protected void activateChannel(@Nullable BluetoothCharacteristic characteristic, ChannelTypeUID channelTypeUID) {
         activateChannel(characteristic, channelTypeUID, null);
     }
+
 }

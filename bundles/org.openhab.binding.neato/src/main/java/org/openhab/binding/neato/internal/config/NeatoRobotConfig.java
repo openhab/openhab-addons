@@ -52,4 +52,5 @@ public class NeatoRobotConfig {
     public String toString() {
         return "NeatoRobotConfig [refresh=" + refresh + ", secret=" + secret + ", serial=" + serial + "]";
     }
+
 }

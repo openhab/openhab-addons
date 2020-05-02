@@ -102,4 +102,5 @@ public class SilvercrestWifiSocketHandlerFactory extends BaseThingHandlerFactory
         }
         super.unregisterHandler(thing);
     }
+
 }

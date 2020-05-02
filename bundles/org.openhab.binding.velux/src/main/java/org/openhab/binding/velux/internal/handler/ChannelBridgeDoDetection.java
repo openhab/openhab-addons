@@ -74,4 +74,5 @@ final class ChannelBridgeDoDetection extends ChannelHandlerTemplate {
         }
         return null;
     }
+
 }

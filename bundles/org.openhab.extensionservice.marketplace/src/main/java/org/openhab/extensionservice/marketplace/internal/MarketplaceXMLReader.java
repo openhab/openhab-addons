@@ -50,4 +50,5 @@ public class MarketplaceXMLReader extends XmlDocumentReader<Marketplace> {
         // ignore what we do not know
         xstream.ignoreUnknownElements();
     }
+
 }

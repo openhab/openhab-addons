@@ -89,4 +89,5 @@ public class DSMRMeterDetectorTest {
                     1, detectMeters.stream().filter(e -> e.getMeterType() == meter).count());
         }
     }
+
 }

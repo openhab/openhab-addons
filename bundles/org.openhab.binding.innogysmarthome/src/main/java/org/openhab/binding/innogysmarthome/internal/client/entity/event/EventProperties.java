@@ -579,4 +579,5 @@ public class EventProperties {
     public Double getMemoryUsage() {
         return memoryUsage;
     }
+
 }

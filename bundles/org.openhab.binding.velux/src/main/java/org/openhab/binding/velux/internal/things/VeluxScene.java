@@ -137,4 +137,5 @@ public class VeluxScene {
         return String.format("Scene \"%s\" (index %d) with %ssilent mode and %d actions", this.name,
                 this.bridgeSceneIndex.toInt(), this.silent ? "" : "non-", this.productStates.length);
     }
+
 }

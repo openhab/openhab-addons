@@ -38,4 +38,5 @@ public class Sensor {
     public Integer active;
 
     public List<Object> relays = null;
+
 }

@@ -135,4 +135,5 @@ public class XmlRpcServer implements RpcServer {
             baseRequest.setHandled(true);
         }
     }
+
 }

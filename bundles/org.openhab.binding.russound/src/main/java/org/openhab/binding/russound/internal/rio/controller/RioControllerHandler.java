@@ -74,6 +74,7 @@ public class RioControllerHandler extends AbstractBridgeHandler<RioControllerPro
      */
     public RioControllerHandler(Bridge bridge) {
         super(bridge);
+
     }
 
     /**
@@ -202,6 +203,7 @@ public class RioControllerHandler extends AbstractBridgeHandler<RioControllerPro
         getProtocolHandler().postOnline();
 
         refreshNamedHandler(gson, RioZoneHandler.class, RioConstants.CHANNEL_CTLZONES);
+
     }
 
     /**

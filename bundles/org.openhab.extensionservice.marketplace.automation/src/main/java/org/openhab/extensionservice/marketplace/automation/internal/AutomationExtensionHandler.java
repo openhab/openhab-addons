@@ -87,4 +87,5 @@ public class AutomationExtensionHandler implements MarketplaceExtensionHandler {
         URL url = new URL(urlString);
         return IOUtils.toString(url);
     }
+
 }

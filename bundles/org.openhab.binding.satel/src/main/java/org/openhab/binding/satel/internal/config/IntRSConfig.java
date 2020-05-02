@@ -33,4 +33,5 @@ public class IntRSConfig extends SatelBridgeConfig {
     public @Nullable String getPort() {
         return port;
     }
+
 }

@@ -377,6 +377,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     @Override
     public void currentPlaylistShuffleEvent(String mac, int shuffle) {
         updateChannel(mac, CHANNEL_CURRENT_PLAYLIST_SHUFFLE, new DecimalType(shuffle));
+
     }
 
     @Override
@@ -387,6 +388,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     @Override
     public void titleChangeEvent(String mac, String title) {
         updateChannel(mac, CHANNEL_TITLE, new StringType(title));
+
     }
 
     @Override

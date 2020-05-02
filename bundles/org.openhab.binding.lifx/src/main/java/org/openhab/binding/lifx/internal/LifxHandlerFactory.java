@@ -70,4 +70,5 @@ public class LifxHandlerFactory extends BaseThingHandlerFactory {
     protected void unsetChannelFactory(LifxChannelFactory channelFactory) {
         this.channelFactory = null;
     }
+
 }

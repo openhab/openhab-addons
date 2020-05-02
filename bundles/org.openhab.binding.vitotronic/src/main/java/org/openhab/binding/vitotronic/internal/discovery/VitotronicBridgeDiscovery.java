@@ -104,4 +104,5 @@ public class VitotronicBridgeDiscovery extends AbstractDiscoveryService {
         ThingUID uid = new ThingUID(VitotronicBindingConstants.THING_TYPE_UID_BRIDGE, adapterID);
         thingDiscovered(DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(adapterID).build());
     }
+
 }

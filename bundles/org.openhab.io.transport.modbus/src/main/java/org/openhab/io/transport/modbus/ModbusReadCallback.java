@@ -46,4 +46,5 @@ public interface ModbusReadCallback extends ModbusCallback {
      *            {@link ModbusUnexpectedTransactionIdException} or {@link ModbusTransportException}.
      */
     void onError(ModbusReadRequestBlueprint request, Exception error);
+
 }

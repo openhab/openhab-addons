@@ -28,4 +28,5 @@ public class PowerCalibrationRequestMessage extends Message {
     public PowerCalibrationRequestMessage(MACAddress macAddress) {
         super(POWER_CALIBRATION_REQUEST, macAddress);
     }
+
 }

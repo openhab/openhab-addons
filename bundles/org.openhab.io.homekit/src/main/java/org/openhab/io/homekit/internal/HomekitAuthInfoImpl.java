@@ -126,4 +126,5 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
             storage.put("privateKey", Base64.getEncoder().encodeToString(HomekitServer.generateKey()));
         }
     }
+
 }

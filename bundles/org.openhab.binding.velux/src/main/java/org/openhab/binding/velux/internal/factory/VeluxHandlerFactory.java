@@ -73,6 +73,7 @@ public class VeluxHandlerFactory extends BaseThingHandlerFactory {
         ServiceRegistration<?> discoveryServiceReg = bundleContext.registerService(DiscoveryService.class.getName(),
                 discoveryService, new Hashtable<>());
         discoveryServiceRegistrations.put(bridgeHandler.getThing().getUID(), discoveryServiceReg);
+
     }
 
     // Even if the compiler tells, that the value of <remove> cannot be null, it is possible!
@@ -130,6 +131,7 @@ public class VeluxHandlerFactory extends BaseThingHandlerFactory {
         logger.trace("VeluxHandlerFactory(locale={},translation={}) called.", givenLocaleProvider, givenI18nProvider);
         localeProvider = givenLocaleProvider;
         i18nProvider = givenI18nProvider;
+
     }
 
     @Reference
@@ -201,4 +203,5 @@ public class VeluxHandlerFactory extends BaseThingHandlerFactory {
         updateBindingState();
         super.removeHandler(thingHandler);
     }
+
 }

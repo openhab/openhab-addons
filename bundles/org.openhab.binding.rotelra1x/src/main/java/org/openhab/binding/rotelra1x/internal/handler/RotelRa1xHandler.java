@@ -381,4 +381,5 @@ public class RotelRa1xHandler extends BaseThingHandler {
             sendIfPowerOn("get_current_source!");
         }
     }
+
 }

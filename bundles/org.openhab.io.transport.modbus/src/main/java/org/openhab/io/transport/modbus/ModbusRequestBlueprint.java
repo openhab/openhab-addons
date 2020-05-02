@@ -60,4 +60,5 @@ public interface ModbusRequestBlueprint {
      * @return number of maximum tries
      */
     public int getMaxTries();
+
 }

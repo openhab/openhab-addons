@@ -131,4 +131,5 @@ public class JavaSoundAudioSource implements AudioSource {
     public Set<AudioFormat> getSupportedFormats() {
         return Collections.singleton(audioFormat);
     }
+
 }

@@ -79,4 +79,5 @@ public class HyperionBindingConstants {
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_SERVER_V1);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_SERVER_NG);
     }
+
 }

@@ -41,4 +41,5 @@ public class DeleteDevicesParser extends CommonRpcParser<Object[], List<String>>
         }
         return adresses;
     }
+
 }

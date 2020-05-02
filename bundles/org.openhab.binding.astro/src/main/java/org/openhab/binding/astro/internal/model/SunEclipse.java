@@ -47,4 +47,5 @@ public class SunEclipse extends Eclipse {
                 .append("partial", DateTimeUtils.getDate(getPartial())).append("ring", DateTimeUtils.getDate(ring))
                 .toString();
     }
+
 }

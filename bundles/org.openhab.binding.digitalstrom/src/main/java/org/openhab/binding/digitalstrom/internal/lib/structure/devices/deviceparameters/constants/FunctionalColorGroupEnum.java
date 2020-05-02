@@ -99,4 +99,5 @@ public enum FunctionalColorGroupEnum {
     public List<Short> getFunctionalColorGroup() {
         return colorGroup;
     }
+
 }

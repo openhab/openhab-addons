@@ -48,5 +48,7 @@ public class AreaArmDisarmResponse extends AbstractResponse {
     @Override
     public void accept(DigiplexMessageHandler visitor) {
         visitor.handleArmDisarmAreaResponse(this);
+
     }
+
 }

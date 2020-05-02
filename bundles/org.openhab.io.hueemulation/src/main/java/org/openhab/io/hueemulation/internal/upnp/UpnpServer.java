@@ -233,6 +233,7 @@ public class UpnpServer extends HttpServlet implements Consumer<HueEmulationConf
 
         xmlDocWithAddress = String.format(xmlDoc, urlBase, r.addressString, cs.ds.config.bridgeid, cs.ds.config.uuid,
                 cs.ds.config.devicename);
+
     }
 
     protected @Nullable HueEmulationConfigWithRuntime performAddressTest(

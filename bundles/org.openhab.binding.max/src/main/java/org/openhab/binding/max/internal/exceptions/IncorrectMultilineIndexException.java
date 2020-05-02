@@ -24,4 +24,5 @@ public class IncorrectMultilineIndexException extends Exception {
      * required variable to avoid IncorrectMultilineIndexException warning
      */
     private static final long serialVersionUID = 3102159039702650238L;
+
 }

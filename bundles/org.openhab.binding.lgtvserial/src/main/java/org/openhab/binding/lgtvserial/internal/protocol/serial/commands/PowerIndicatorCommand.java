@@ -23,4 +23,5 @@ public class PowerIndicatorCommand extends BaseOnOffCommand {
     protected PowerIndicatorCommand(int setId) {
         super('f', 'o', setId);
     }
+
 }

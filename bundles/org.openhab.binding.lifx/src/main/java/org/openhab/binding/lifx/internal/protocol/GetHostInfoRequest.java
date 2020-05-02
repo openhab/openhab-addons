@@ -52,4 +52,5 @@ public class GetHostInfoRequest extends Packet {
     public int[] expectedResponses() {
         return new int[] { StateHostInfoResponse.TYPE };
     }
+
 }

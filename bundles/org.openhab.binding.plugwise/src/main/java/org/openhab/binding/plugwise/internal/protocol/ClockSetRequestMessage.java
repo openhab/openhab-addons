@@ -53,4 +53,5 @@ public class ClockSetRequestMessage extends Message {
 
         return year + month + minutes + logaddress + hour + minute + second + dayOfWeek;
     }
+
 }

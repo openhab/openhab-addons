@@ -50,6 +50,7 @@ public class PowerQueryResponse extends PrefixedResponse<PowerQueryResponse.Powe
 
             throw new ResponseException("Cannot understand power status: " + code);
         }
+
     }
 
     public PowerQueryResponse(String response) throws ResponseException {

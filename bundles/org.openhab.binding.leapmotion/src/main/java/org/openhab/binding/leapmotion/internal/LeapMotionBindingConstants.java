@@ -40,4 +40,5 @@ public class LeapMotionBindingConstants {
     public static final String GESTURE_ANTICLOCKWISE = "anticlockwise";
     public static final String GESTURE_FINGERS = "fingers";
     public static final String GESTURE_NOHAND = "nohand";
+
 }

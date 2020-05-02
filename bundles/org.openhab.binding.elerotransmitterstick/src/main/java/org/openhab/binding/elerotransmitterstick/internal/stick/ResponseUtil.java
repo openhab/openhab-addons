@@ -52,4 +52,5 @@ public class ResponseUtil {
 
         return Arrays.copyOfRange(result, 0, idx);
     }
+
 }

@@ -34,4 +34,5 @@ public class PowerFlowRealtimeResponse extends BaseFroniusResponse {
     public void setBody(PowerFlowRealtimeBody body) {
         this.body = body;
     }
+
 }

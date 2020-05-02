@@ -65,6 +65,7 @@ public class SmartMeterChannelTypeProvider implements ChannelTypeProvider, Meter
     @Override
     public void errorOccurred(Throwable e) {
         // Nothing to do if there is an reading error...
+
     }
 
     @Override
@@ -111,4 +112,5 @@ public class SmartMeterChannelTypeProvider implements ChannelTypeProvider, Meter
     public ChannelTypeUID getChannelTypeIdForObis(String obis) {
         return obisChannelMap.get(obis).getUID();
     }
+
 }

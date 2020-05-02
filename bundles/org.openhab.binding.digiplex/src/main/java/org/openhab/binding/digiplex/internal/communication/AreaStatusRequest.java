@@ -32,4 +32,5 @@ public class AreaStatusRequest implements DigiplexRequest {
     public String getSerialMessage() {
         return String.format("RA%03d\r", areaNo);
     }
+
 }

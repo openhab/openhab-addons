@@ -44,4 +44,5 @@ public class NewDevicesParser extends CommonRpcParser<Object[], List<String>> {
         }
         return adresses;
     }
+
 }

@@ -33,4 +33,5 @@ public class UnknownResponse implements DigiplexResponse {
     public void accept(DigiplexMessageHandler visitor) {
         visitor.handleUnknownResponse(this);
     }
+
 }

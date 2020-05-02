@@ -95,4 +95,5 @@ public class Rhythm {
     public void setRhythmPos(RhythmPos rhythmPos) {
         this.rhythmPos = rhythmPos;
     }
+
 }

@@ -371,4 +371,5 @@ public class TelldusDevicesHandler extends BaseThingHandler implements DeviceSta
     @Override
     public void onDeviceAdded(Bridge bridge, Device device) {
     }
+
 }

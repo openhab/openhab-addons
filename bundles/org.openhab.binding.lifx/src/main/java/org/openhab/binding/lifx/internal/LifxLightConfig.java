@@ -43,4 +43,5 @@ public class LifxLightConfig {
     public Duration getFadeTime() {
         return Duration.ofMillis(fadetime);
     }
+
 }

@@ -39,4 +39,5 @@ public class SMAEnergyMeterBindingConstants {
     public static final String CHANNEL_POWER_OUT = "powerOut";
     public static final String CHANNEL_ENERGY_IN = "energyIn";
     public static final String CHANNEL_ENERGY_OUT = "energyOut";
+
 }

@@ -52,6 +52,7 @@ public class SimpleRequestBuilder {
     private static final Lock LOCK = new ReentrantLock();
 
     private SimpleRequestBuilder() {
+
     }
 
     /**

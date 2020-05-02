@@ -136,4 +136,5 @@ public class NeeoBrain {
         return "NeeoBrain [name=" + name + ", version=" + version + ", label=" + label + ", configured=" + configured
                 + ", key=" + key + ", airkey=" + airkey + ", lastchange=" + lastchange + ", rooms=" + rooms + "]";
     }
+
 }

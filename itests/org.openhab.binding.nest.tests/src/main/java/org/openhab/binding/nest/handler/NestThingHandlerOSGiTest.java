@@ -347,4 +347,5 @@ public abstract class NestThingHandlerOSGiTest extends JavaOSGiTest {
             throw new IllegalArgumentException("Invalid date time argument: " + text, e);
         }
     }
+
 }

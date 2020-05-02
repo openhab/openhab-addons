@@ -49,4 +49,5 @@ public class WindcentraleHandlerFactory extends BaseThingHandlerFactory {
 
         return null;
     }
+
 }

@@ -125,4 +125,5 @@ public class AirQualityDiscoveryService extends AbstractDiscoveryService {
     protected void unsetLocationProvider(LocationProvider locationProvider) {
         this.locationProvider = null;
     }
+
 }

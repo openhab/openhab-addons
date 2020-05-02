@@ -124,4 +124,5 @@ public class ChannelHandlerSendMessage extends ChannelHandler {
             public @Nullable String text;
         }
     }
+
 }

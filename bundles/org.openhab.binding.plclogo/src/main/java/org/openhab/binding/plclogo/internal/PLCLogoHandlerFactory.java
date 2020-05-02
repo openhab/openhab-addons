@@ -85,4 +85,5 @@ public class PLCLogoHandlerFactory extends BaseThingHandlerFactory {
 
         return null;
     }
+
 }

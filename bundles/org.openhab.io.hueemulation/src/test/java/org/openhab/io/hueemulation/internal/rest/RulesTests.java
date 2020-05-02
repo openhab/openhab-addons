@@ -276,4 +276,5 @@ public class RulesTests {
         assertThat(entry.actions.get(0).address, is("/lights/switch1/state"));
         assertThat(entry.conditions.get(0).address, is("/lights/switch1/state/on"));
     }
+
 }

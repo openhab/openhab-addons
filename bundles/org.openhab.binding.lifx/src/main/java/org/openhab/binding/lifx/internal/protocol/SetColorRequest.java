@@ -89,4 +89,5 @@ public class SetColorRequest extends Packet {
     public int[] expectedResponses() {
         return new int[] { StateResponse.TYPE };
     }
+
 }

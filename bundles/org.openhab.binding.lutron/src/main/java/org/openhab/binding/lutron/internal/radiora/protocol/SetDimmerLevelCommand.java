@@ -54,4 +54,5 @@ public class SetDimmerLevelCommand extends RadioRACommand {
 
         return args;
     }
+
 }

@@ -94,4 +94,5 @@ public class CRC8 implements Checksum {
     public void reset() {
         value = init;
     }
+
 }

@@ -93,4 +93,5 @@ public final class NestDataUtil {
             return new BufferedReader(reader).lines().parallel().collect(Collectors.joining("\n"));
         }
     }
+
 }

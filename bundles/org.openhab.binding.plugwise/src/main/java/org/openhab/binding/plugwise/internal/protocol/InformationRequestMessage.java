@@ -27,4 +27,5 @@ public class InformationRequestMessage extends Message {
     public InformationRequestMessage(MACAddress macAddress) {
         super(DEVICE_INFORMATION_REQUEST, macAddress);
     }
+
 }

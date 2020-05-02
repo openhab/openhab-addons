@@ -42,4 +42,5 @@ public interface HomematicChannelTypeProvider extends ChannelTypeProvider {
      *         before
      */
     public ChannelType getInternalChannelType(ChannelTypeUID channelTypeUID);
+
 }

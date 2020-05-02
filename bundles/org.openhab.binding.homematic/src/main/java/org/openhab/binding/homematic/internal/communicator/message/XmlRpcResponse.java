@@ -170,5 +170,6 @@ public class XmlRpcResponse implements RpcResponse {
         public void characters(char[] ch, int start, int length) throws SAXException {
             tagValue.append(new String(ch, start, length));
         }
+
     }
 }

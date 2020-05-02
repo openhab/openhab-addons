@@ -55,4 +55,5 @@ public enum DwdXmlTag {
         return Arrays.asList(DwdXmlTag.values()).stream().filter(t -> StringUtils.equals(t.getTag(), tag)).findFirst()
                 .orElse(UNKNOWN);
     }
+
 }

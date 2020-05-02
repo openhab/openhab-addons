@@ -27,4 +27,5 @@ public class PulsedCcoHandler extends CcoHandler {
         super(thing);
         this.outputType = CcoOutputType.PULSED;
     }
+
 }

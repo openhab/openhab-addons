@@ -77,4 +77,5 @@ public class SmartMeterHandlerFactory extends BaseThingHandlerFactory {
 
         return null;
     }
+
 }

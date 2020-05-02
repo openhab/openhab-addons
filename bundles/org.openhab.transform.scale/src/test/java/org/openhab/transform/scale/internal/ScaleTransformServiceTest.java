@@ -146,4 +146,5 @@ public class ScaleTransformServiceTest {
         String transformedResponse = processor.transform(existingscale, source);
         Assert.assertEquals("Correcte (992) !", transformedResponse);
     }
+
 }

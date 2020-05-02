@@ -81,4 +81,5 @@ interface SlipBridgeCommunicationProtocol extends BridgeCommunicationProtocol {
      *         is a boolean signaling the end of this transaction.
      */
     public boolean isCommunicationFinished();
+
 }

@@ -102,4 +102,5 @@ public abstract class OpenSprinklerBaseBridgeHandler extends BaseBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         // Nothing to do for the bridge handler
     }
+
 }

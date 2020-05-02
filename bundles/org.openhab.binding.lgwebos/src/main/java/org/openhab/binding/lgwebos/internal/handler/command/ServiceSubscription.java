@@ -53,4 +53,5 @@ public class ServiceSubscription<T> extends ServiceCommand<T> {
         super(uri, payload, converter, listener);
         type = Type.subscribe;
     }
+
 }

@@ -54,4 +54,5 @@ public class SerialCommunicatorFactory {
     protected synchronized void deleteInstance(String port) {
         instances.remove(port).close();
     }
+
 }

@@ -28,4 +28,5 @@ public class PowerChangeRequestMessage extends Message {
     public PowerChangeRequestMessage(MACAddress macAddress, boolean powerState) {
         super(POWER_CHANGE_REQUEST, macAddress, powerState ? "01" : "00");
     }
+
 }

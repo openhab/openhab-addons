@@ -61,4 +61,5 @@ public class SetSetPointAction extends Action {
         ItemCommandEvent event = ItemEventFactory.createCommandEvent(item.getName(), command, COMMAND_SOURCE);
         eventPublisher.post(event);
     }
+
 }

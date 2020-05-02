@@ -40,4 +40,5 @@ public class RuuviTagBindingConstants {
     public static final String CHANNEL_ID_ACCELERATIONZ = "accelerationz";
     public static final String CHANNEL_ID_MEASUREMENT_SEQUENCE_NUMBER = "measurementSequenceNumber";
     public static final String CHANNEL_ID_MOVEMENT_COUNTER = "movementCounter";
+
 }

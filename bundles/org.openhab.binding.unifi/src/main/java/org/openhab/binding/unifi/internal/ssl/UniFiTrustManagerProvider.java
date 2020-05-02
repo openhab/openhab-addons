@@ -36,4 +36,5 @@ public class UniFiTrustManagerProvider implements TlsTrustManagerProvider {
     public X509ExtendedTrustManager getTrustManager() {
         return UniFiTrustManager.getInstance();
     }
+
 }

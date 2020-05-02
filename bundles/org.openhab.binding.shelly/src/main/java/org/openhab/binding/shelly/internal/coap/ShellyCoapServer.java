@@ -138,6 +138,7 @@ public class ShellyCoapServer {
             started = false;
             logger.debug("CoAP Listener stopped");
         }
+
     }
 
     public void dispose() {

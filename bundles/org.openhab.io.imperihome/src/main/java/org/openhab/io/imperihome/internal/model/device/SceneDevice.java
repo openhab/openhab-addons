@@ -24,4 +24,5 @@ public class SceneDevice extends AbstractDevice {
     public SceneDevice(Item item) {
         super(DeviceType.SCENE, item);
     }
+
 }

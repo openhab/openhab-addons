@@ -209,4 +209,5 @@ public class MeterHandler extends AbstractSunSpecHandler {
                                                                                                         // should be
                                                                                                         // VAR_HOUR
     }
+
 }

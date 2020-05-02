@@ -69,4 +69,5 @@ public class Annotation {
     public void setImage(Integer image) {
         this.image = image;
     }
+
 }

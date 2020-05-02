@@ -24,4 +24,5 @@ public class NetworkResetRequestMessage extends Message {
     public NetworkResetRequestMessage(String payload) {
         super(NETWORK_RESET_REQUEST, payload);
     }
+
 }

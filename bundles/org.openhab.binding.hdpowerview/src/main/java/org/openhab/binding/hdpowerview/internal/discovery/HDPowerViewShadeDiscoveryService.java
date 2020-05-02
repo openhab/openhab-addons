@@ -94,4 +94,5 @@ public class HDPowerViewShadeDiscoveryService extends AbstractDiscoveryService {
             stopScan();
         };
     }
+
 }

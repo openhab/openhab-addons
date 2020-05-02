@@ -101,4 +101,5 @@ public class NeeoAction {
         return "NeeoAction [action=" + action + ", actionParameter=" + actionParameter + ", recipe=" + recipe
                 + ", device=" + device + ", room=" + room + "]";
     }
+
 }

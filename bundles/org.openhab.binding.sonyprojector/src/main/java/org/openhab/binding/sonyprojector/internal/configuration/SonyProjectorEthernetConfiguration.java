@@ -28,4 +28,5 @@ public class SonyProjectorEthernetConfiguration {
     public @Nullable Integer port;
     public @Nullable String community;
     public @Nullable String model;
+
 }

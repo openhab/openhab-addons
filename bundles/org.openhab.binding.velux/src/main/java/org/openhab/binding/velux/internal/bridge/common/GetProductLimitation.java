@@ -47,4 +47,5 @@ public abstract class GetProductLimitation implements BridgeCommunicationProtoco
      * @return <b>limitation</b> as int.
      */
     public abstract int getLimitation();
+
 }

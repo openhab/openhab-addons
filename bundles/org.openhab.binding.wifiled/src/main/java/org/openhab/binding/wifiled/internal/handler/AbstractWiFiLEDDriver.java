@@ -213,4 +213,5 @@ public abstract class AbstractWiFiLEDDriver {
     protected byte[] getBytesForPower(boolean on) {
         return new byte[] { 0x71, on ? (byte) 0x23 : 0x24 };
     }
+
 }

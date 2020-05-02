@@ -115,4 +115,5 @@ public class DeviceInfoClientImpl implements DeviceInfoClient {
     public boolean isConnected() {
         return managementClient.isOpen();
     }
+
 }

@@ -169,4 +169,5 @@ public class TadoApiTypeUtils {
 
         return modeCapabilities != null ? modeCapabilities : new AcModeCapabilities();
     }
+
 }

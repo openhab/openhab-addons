@@ -266,4 +266,5 @@ public class DeviceStatus {
     public void setFlowEndAction(int flowEndAction) {
         this.flowEndAction = flowEndAction;
     }
+
 }

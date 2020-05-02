@@ -141,4 +141,5 @@ public class ThirdGenerationBindingConstants {
     public static final String CHANNEL_STATISTIC_YIELD_MONTH = "statisticYieldMonth";
     public static final String CHANNEL_STATISTIC_YIELD_TOTAL = "statisticYieldTotal";
     public static final String CHANNEL_STATISTIC_YIELD_YEAR = "statisticYieldYear";
+
 }

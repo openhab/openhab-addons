@@ -26,4 +26,5 @@ public class UnknownRpcFailureException extends IOException {
     public UnknownRpcFailureException(String message) {
         super(message);
     }
+
 }

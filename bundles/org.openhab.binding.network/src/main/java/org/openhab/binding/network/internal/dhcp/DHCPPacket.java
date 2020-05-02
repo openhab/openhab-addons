@@ -89,6 +89,7 @@ class DHCPPacket {
         BadPacketException(String message, Throwable cause) {
             super(message, cause);
         }
+
     }
 
     private byte op;

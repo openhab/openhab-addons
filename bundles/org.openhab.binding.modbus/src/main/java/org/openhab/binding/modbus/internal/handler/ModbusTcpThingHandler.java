@@ -101,4 +101,5 @@ public class ModbusTcpThingHandler
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Collections.singleton(ModbusEndpointDiscoveryService.class);
     }
+
 }

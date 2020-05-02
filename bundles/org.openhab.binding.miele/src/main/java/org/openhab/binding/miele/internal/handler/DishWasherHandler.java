@@ -79,4 +79,5 @@ public class DishWasherHandler extends MieleApplianceHandler<DishwasherChannelSe
                     channelID, command.toString());
         }
     }
+
 }

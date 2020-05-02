@@ -19,4 +19,5 @@ public class SerialOceanicBindingConfiguration {
 
     public String port;
     public Integer interval;
+
 }

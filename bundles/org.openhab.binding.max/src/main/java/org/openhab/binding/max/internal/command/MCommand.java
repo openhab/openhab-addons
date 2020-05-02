@@ -181,4 +181,5 @@ public class MCommand extends CubeCommand {
     public String getReturnStrings() {
         return "A:";
     }
+
 }

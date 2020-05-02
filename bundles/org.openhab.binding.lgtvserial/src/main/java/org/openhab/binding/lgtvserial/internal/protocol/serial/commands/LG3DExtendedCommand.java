@@ -23,4 +23,5 @@ public class LG3DExtendedCommand extends BaseStringCommand {
     protected LG3DExtendedCommand(int setId) {
         super('x', 'v', setId);
     }
+
 }

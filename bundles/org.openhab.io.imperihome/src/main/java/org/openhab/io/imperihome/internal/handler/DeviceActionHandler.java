@@ -64,4 +64,5 @@ public class DeviceActionHandler {
             device.performAction(action, value);
         }
     }
+
 }

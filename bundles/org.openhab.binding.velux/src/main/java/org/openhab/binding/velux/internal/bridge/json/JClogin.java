@@ -167,4 +167,5 @@ class JClogin extends Login implements JsonBridgeCommunicationProtocol {
     public String getAuthToken() {
         return response.getToken();
     }
+
 }

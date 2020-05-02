@@ -49,4 +49,5 @@ public class OmnikInverterMessageTest {
     public void testGetEnergyToday() {
         assertEquals(11.13, message.getEnergyToday(), 0.01);
     }
+
 }

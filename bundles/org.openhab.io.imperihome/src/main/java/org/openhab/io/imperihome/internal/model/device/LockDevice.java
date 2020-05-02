@@ -42,4 +42,5 @@ public class LockDevice extends AbstractDevice {
             }
         }
     }
+
 }

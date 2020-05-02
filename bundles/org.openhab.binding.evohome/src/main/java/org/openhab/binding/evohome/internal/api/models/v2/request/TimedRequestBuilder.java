@@ -47,4 +47,5 @@ public abstract class TimedRequestBuilder<T> implements RequestBuilder<T> {
     protected int getDay() {
         return day;
     }
+
 }

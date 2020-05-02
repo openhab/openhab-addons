@@ -28,4 +28,5 @@ public class ControlCommand extends AM43Command {
     public ControlCommand(ControlAction action) {
         super(COMMAND, action.getCode());
     }
+
 }

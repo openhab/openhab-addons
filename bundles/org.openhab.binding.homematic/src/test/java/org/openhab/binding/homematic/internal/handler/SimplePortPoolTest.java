@@ -21,11 +21,13 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.openhab.binding.homematic.internal.handler.SimplePortPool;
 
 /**
- * Tests for {@link org.openhab.binding.homematic.internal.handler.SimplePortPool}.
- *
+ * Tests for {@link SimplePortPool}.
+ * 
  * @author Florian Stolte - Initial Contribution
+ *
  */
 public class SimplePortPoolTest {
 

@@ -168,4 +168,5 @@ public class WriteRequestJsonUtilitiesTest {
     public void testEmptyList() {
         assertThat(WriteRequestJsonUtilities.fromJson(3, "[]").size(), is(equalTo(0)));
     }
+
 }

@@ -68,4 +68,5 @@ public class SatelOutputHandler extends WirelessChannelsHandler {
         }
         return result;
     }
+
 }

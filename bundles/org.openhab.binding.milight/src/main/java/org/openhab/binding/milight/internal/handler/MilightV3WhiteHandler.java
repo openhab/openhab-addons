@@ -205,4 +205,5 @@ public class MilightV3WhiteHandler extends AbstractLedV3Handler {
         sendQueue.queue(createRepeatable(cOn).addNonRepeatable(NEXT_ANIMATION_MODE));
         state.animationMode = Math.min(state.animationMode + 1, MAX_ANIM_MODES);
     }
+
 }

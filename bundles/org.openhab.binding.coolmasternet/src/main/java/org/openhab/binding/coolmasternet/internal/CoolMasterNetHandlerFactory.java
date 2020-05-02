@@ -52,4 +52,5 @@ public class CoolMasterNetHandlerFactory extends BaseThingHandlerFactory {
 
         return null;
     }
+
 }

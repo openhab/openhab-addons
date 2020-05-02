@@ -135,4 +135,5 @@ public class PowerFlowRealtimeSite {
     public void setMeterLocation(String meterLocation) {
         this.meterLocation = meterLocation;
     }
+
 }

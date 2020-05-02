@@ -56,4 +56,5 @@ public interface SystemControl extends IStateUpdatable {
      * @throws ReceivedMessageParseException
      */
     void setPartyModeVolume(boolean increment) throws IOException, ReceivedMessageParseException;
+
 }

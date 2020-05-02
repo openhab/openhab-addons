@@ -93,4 +93,5 @@ public class NestDevices {
                 .append(", cameras=").append(cameras).append("]");
         return builder.toString();
     }
+
 }

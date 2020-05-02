@@ -166,4 +166,5 @@ class JCgetDeviceStatus extends GetDeviceStatus implements JsonBridgeCommunicati
         }
         return new VeluxGwState(stateValue, subStateValue);
     }
+
 }

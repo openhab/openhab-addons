@@ -47,4 +47,5 @@ public class TemperatureControlSystemStatus {
     public List<ZoneStatus> getZones() {
         return zones;
     }
+
 }

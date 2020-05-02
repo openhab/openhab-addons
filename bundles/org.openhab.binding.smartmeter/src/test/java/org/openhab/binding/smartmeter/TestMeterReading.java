@@ -150,6 +150,7 @@ public class TestMeterReading {
             protected <Q extends @NonNull Quantity<Q>> void populateValueCache(Object smlFile) {
                 addObisCache(new MeterValue("123", "333", null));
             }
+
         };
     }
 }

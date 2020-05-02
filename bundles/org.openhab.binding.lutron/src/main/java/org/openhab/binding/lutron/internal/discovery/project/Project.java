@@ -48,4 +48,5 @@ public class Project {
     public List<GreenMode> getGreenModes() {
         return greenmodes != null ? greenmodes : Collections.<GreenMode> emptyList();
     }
+
 }

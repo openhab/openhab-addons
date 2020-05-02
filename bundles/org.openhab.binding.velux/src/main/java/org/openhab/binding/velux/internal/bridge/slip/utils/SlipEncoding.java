@@ -166,4 +166,5 @@ public class SlipEncoding {
     public String toString() {
         return new Packet(message).toString();
     }
+
 }

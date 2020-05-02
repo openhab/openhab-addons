@@ -109,5 +109,7 @@ public class KNXChannelTypeTest {
         protected @NonNull String getDefaultDPT(@NonNull String gaConfigKey) {
             return "";
         }
+
     }
+
 }

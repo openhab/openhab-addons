@@ -73,4 +73,5 @@ public enum DeviceType {
 
         return null;
     }
+
 }

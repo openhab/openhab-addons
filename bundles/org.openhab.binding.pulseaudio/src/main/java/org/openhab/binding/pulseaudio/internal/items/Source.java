@@ -33,4 +33,5 @@ public class Source extends AbstractAudioDeviceConfig {
     public void setMonitorOf(Sink sink) {
         this.monitorOf = sink;
     }
+
 }

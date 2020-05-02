@@ -109,6 +109,7 @@ public class StructureManagerImpl implements StructureManager {
      * Creates a new {@link StructureManagerImpl} without {@link Device}s.
      */
     public StructureManagerImpl() {
+
     }
 
     @Override

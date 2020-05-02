@@ -80,4 +80,5 @@ public class HeosResponse {
     public void setRawResponseMessage(String rawResponseMessage) {
         this.rawResponseMessage = rawResponseMessage;
     }
+
 }

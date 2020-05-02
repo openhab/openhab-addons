@@ -189,4 +189,5 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
     protected @Nullable Integer getDataTimestamp() {
         return dataTimeStamp;
     }
+
 }

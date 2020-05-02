@@ -55,4 +55,5 @@ class TypeRollershutter extends KNXChannelType {
     protected Set<String> getAllGAKeys() {
         return Stream.of(UP_DOWN_GA, STOP_MOVE_GA, POSITION_GA).collect(toSet());
     }
+
 }

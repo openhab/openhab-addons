@@ -12,17 +12,19 @@
  */
 package org.openhab.binding.bsblan.internal.helper;
 
-import static org.openhab.binding.bsblan.internal.BsbLanBindingConstants.*;
-
 import org.apache.commons.lang.StringEscapeUtils;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
+
+import static org.openhab.binding.bsblan.internal.BsbLanBindingConstants.*;
 import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterDTO;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,7 +95,8 @@ public class BsbLanParameterConverter {
                 default:
                     return new DecimalType(Double.parseDouble(parameter.value));
             }
-        } catch (NumberFormatException e) {
+        }
+        catch (NumberFormatException e) {
             // silently ignore - there is not "tryParse"
         }
         return null;
@@ -110,7 +113,6 @@ public class BsbLanParameterConverter {
 
     /**
      * Converts a Command back to a value which is sent to the BSB-LAN device afterwards.
-     * 
      * @param channelId
      * @param command
      * @return null if conversion fails or channel is readonly.

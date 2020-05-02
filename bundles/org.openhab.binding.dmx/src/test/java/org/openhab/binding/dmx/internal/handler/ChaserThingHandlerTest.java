@@ -36,11 +36,12 @@ import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.junit.Before;
 import org.junit.Test;
+import org.openhab.binding.dmx.internal.handler.ChaserThingHandler;
 import org.openhab.binding.dmx.test.AbstractDmxThingTestParent;
 import org.openhab.binding.dmx.test.TestBridgeHandler;
 
 /**
- * Tests cases for {@link org.openhab.binding.dmx.internal.handler.ChaserThingHandler}.
+ * Tests cases for {@link ChaserThingHandler}.
  *
  * @author Jan N. Klug - Initial contribution
  */
@@ -182,6 +183,7 @@ public class ChaserThingHandlerTest extends AbstractDmxThingTestParent {
             }
         };
         initializeHandler(chaserThingHandler);
+
     }
 
     private void initializeTestBridge() {

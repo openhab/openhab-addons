@@ -57,6 +57,7 @@ public class SceneReadingJobExecutor extends AbstractSensorJobExecutor {
         addSensorJobToCircuitScheduler(sensorJob);
         logger.debug("Add SceneReadingJob from device with dSID {} and high-priority to SceneReadingSobExecutor",
                 sensorJob.getDSID());
+
     }
 
     @Override

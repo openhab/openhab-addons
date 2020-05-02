@@ -272,4 +272,5 @@ class SCgetProducts extends GetProducts implements SlipBridgeCommunicationProtoc
             return new VeluxProduct[0];
         }
     }
+
 }

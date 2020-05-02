@@ -25,4 +25,5 @@ public class SeneyeDeviceReadingNh4 {
     public boolean status;
     public double curr;
     public SeneyeDeviceReadingAdvice[] advices;
+
 }

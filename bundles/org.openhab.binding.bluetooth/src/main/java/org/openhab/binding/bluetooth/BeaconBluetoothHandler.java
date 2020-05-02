@@ -173,4 +173,5 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
     @Override
     public void onDescriptorUpdate(BluetoothDescriptor bluetoothDescriptor) {
     }
+
 }

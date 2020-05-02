@@ -27,4 +27,5 @@ public class ClearAllCommand extends HyperionCommand {
     public ClearAllCommand() {
         super(NAME);
     }
+
 }

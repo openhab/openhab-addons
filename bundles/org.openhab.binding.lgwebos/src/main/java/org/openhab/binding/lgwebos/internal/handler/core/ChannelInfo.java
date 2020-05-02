@@ -106,4 +106,5 @@ public class ChannelInfo {
         }
         return true;
     }
+
 }

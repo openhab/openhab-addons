@@ -30,4 +30,5 @@ public class RoomList {
     public void setRooms(Collection<Room> rooms) {
         this.rooms = rooms;
     }
+
 }

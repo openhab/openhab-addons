@@ -169,6 +169,7 @@ public class TelldusCoreBridgeHandler extends BaseBridgeHandler
     private synchronized void setupListeners() {
         eventHandler = new TellstickEventHandler(deviceList);
         eventHandler.addListener(this);
+
     }
 
     public void onConnectionLost() {
@@ -277,4 +278,5 @@ public class TelldusCoreBridgeHandler extends BaseBridgeHandler
     public TelldusDeviceController getController() {
         return this.deviceController;
     }
+
 }

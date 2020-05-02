@@ -84,4 +84,5 @@ public class IntRSBridgeHandler extends SatelBridgeHandler {
 
         return configStatusMessages;
     }
+
 }

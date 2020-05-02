@@ -56,4 +56,5 @@ public final class KNXChannelTypes {
         }
         throw new IllegalArgumentException(channelTypeUID.getId() + " is not a valid value channel type ID");
     }
+
 }

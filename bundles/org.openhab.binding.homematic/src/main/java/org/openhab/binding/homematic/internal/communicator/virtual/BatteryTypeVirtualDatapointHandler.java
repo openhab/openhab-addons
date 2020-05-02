@@ -40,8 +40,7 @@ public class BatteryTypeVirtualDatapointHandler extends AbstractVirtualDatapoint
         try (InputStream stream = bundle.getResource("homematic/batteries.properties").openStream()) {
             batteries.load(stream);
         } catch (IllegalStateException | IOException e) {
-            logger.warn("The resource homematic/batteries.properties could not be loaded! Battery types not available",
-                    e);
+            logger.warn("The resource homematic/batteries.properties could not be loaded! Battery types not available", e);
         }
     }
 
@@ -57,4 +56,5 @@ public class BatteryTypeVirtualDatapointHandler extends AbstractVirtualDatapoint
             addDatapoint(device, 0, getName(), HmValueType.STRING, batteryType, true);
         }
     }
+
 }

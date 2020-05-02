@@ -37,4 +37,5 @@ public abstract class BaseOnOffCommand extends BaseLGSerialCommand {
     protected LGSerialResponse createResponse(int set, boolean success, String data) {
         return new OnOffResponse(set, success, data);
     }
+
 }

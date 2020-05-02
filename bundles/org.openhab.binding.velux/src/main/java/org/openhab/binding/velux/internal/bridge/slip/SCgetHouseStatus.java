@@ -180,4 +180,5 @@ class SCgetHouseStatus extends GetHouseStatus implements BridgeCommunicationProt
     public int getNtfTarget() {
         return ntfTarget;
     }
+
 }

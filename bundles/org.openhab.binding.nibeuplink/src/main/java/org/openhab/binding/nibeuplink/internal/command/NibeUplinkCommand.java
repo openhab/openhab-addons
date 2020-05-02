@@ -52,4 +52,5 @@ public interface NibeUplinkCommand extends SuccessListener, FailureListener, Con
      * @param listener the listener to be registered.
      */
     void setListener(StatusUpdateListener listener);
+
 }

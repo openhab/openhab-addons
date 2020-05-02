@@ -44,4 +44,5 @@ public class BuienradarParseException extends Exception {
             boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
+
 }

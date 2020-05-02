@@ -556,4 +556,5 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
             }
         }
     }
+
 }

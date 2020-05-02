@@ -87,4 +87,5 @@ public class RussoundHandlerFactory extends BaseThingHandlerFactory {
         bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>());
         discoveryService.activate();
     }
+
 }

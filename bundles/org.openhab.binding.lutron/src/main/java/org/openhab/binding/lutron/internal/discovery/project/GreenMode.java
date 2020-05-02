@@ -30,4 +30,5 @@ public class GreenMode {
     public Integer getIntegrationId() {
         return integrationId;
     }
+
 }

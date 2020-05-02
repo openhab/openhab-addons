@@ -138,9 +138,11 @@ public class DummyItemRegistry implements ItemRegistry {
 
     @Override
     public void addRegistryHook(RegistryHook<Item> hook) {
+
     }
 
     @Override
     public void removeRegistryHook(RegistryHook<Item> hook) {
+
     }
 }

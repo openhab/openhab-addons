@@ -217,4 +217,5 @@ public class FoobotDeviceHandler extends BaseThingHandler {
                 ? (FoobotAccountHandler) getBridge().getHandler()
                 : null;
     }
+
 }

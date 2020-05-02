@@ -58,6 +58,7 @@ public class SwitchHandler extends LutronHandler {
         } else if (feedback instanceof ZoneMapFeedback) {
             handleZoneMapFeedback((ZoneMapFeedback) feedback);
         }
+
     }
 
     private void handleZoneMapFeedback(ZoneMapFeedback feedback) {
@@ -79,4 +80,5 @@ public class SwitchHandler extends LutronHandler {
             updateState(LutronBindingConstants.CHANNEL_SWITCH, OnOffType.valueOf(feedback.getState().toString()));
         }
     }
+
 }

@@ -151,4 +151,5 @@ public class MQTTTopicDiscoveryServiceTest {
                 .forEach(s -> s.processMessage("topic", bytes));
         verify(listener).topicVanished(eq(thing.getUID()), eq(connection), eq("topic"));
     }
+
 }

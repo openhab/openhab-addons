@@ -49,4 +49,5 @@ public enum Severity {
         return Arrays.asList(Severity.values()).stream()
                 .filter(sev -> StringUtils.equalsIgnoreCase(input, sev.getText())).findAny().orElse(UNKNOWN);
     }
+
 }

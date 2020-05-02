@@ -36,4 +36,5 @@ public class NoiseDevice extends AbstractNumericValueDevice {
         DecimalType value = (DecimalType) item.getStateAs(DecimalType.class);
         addParam(new NumericValueParam(ParamType.NOISE_VALUE, getUnit(), value));
     }
+
 }

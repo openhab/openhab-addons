@@ -119,4 +119,5 @@ public class FroniusBridgeHandler extends BaseBridgeHandler {
             refreshJob = scheduler.scheduleWithFixedDelay(runnable, 0, delay, TimeUnit.SECONDS);
         }
     }
+
 }

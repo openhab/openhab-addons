@@ -65,4 +65,5 @@ public class WeatherUndergroundJsonData {
     public WeatherUndergroundJsonCurrent getCurrent() {
         return current_observation;
     }
+
 }

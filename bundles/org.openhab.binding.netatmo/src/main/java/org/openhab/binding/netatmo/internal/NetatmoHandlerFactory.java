@@ -170,4 +170,5 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     protected void unsetDynamicStateDescriptionProvider(NATherm1StateDescriptionProvider provider) {
         this.stateDescriptionProvider = null;
     }
+
 }

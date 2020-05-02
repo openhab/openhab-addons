@@ -23,4 +23,5 @@ public class ScreenMuteCommand extends BaseStringCommand {
     protected ScreenMuteCommand(int setId) {
         super('k', 'd', setId);
     }
+
 }

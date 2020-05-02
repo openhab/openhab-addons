@@ -24,4 +24,5 @@ public class SetControllerResponse extends Response {
     public String controllerId;
 
     public String message;
+
 }

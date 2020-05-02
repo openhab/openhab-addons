@@ -64,4 +64,5 @@ public abstract class AbstractSpec {
     public final String getDPT() {
         return dpt;
     }
+
 }

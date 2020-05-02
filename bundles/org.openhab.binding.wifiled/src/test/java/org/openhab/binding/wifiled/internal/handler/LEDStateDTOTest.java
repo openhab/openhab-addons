@@ -16,6 +16,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
+import org.openhab.binding.wifiled.internal.handler.LEDStateDTO;
 
 /**
  * Test for LEDStateDTO

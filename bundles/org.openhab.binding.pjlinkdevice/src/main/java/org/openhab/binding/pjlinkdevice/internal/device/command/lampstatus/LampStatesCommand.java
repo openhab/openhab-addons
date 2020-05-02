@@ -39,4 +39,5 @@ public class LampStatesCommand extends AbstractCommand<LampStatesRequest, LampSt
     protected LampStatesResponse parseResponse(String response) throws ResponseException {
         return new LampStatesResponse(response);
     }
+
 }

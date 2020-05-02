@@ -69,4 +69,5 @@ public class NoOpClient implements KNXClient {
     @Override
     public void respondToKNX(OutboundSpec responseSpec) throws KNXException {
     }
+
 }

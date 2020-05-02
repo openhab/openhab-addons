@@ -123,4 +123,5 @@ public class D2_05_00 extends _VLDMessage {
 
         return UnDefType.UNDEF;
     }
+
 }

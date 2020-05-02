@@ -101,4 +101,5 @@ public class BasicModbusWriteRegisterRequestBlueprint implements ModbusWriteRegi
                 .append("functionCode", getFunctionCode()).append("registers", registers).append("maxTries", maxTries)
                 .toString();
     }
+
 }

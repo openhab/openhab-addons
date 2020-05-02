@@ -288,4 +288,5 @@ public class SmartMeterHandler extends BaseThingHandler {
         }
         return currentState;
     }
+
 }

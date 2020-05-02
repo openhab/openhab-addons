@@ -90,4 +90,5 @@ public class StateInfoResponse extends Packet {
     public int[] expectedResponses() {
         return new int[] {};
     }
+
 }

@@ -61,4 +61,5 @@ public enum ZoneState implements StateType {
     public int getBytesCount(boolean extendedCmd) {
         return getPayloadLength(extendedCmd);
     }
+
 }

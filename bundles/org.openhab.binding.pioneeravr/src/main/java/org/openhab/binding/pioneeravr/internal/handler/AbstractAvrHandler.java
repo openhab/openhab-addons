@@ -359,4 +359,5 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
         }
         return zone;
     }
+
 }

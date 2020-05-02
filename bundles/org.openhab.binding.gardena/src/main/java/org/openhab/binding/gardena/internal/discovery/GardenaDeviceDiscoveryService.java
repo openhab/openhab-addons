@@ -173,4 +173,5 @@ public class GardenaDeviceDiscoveryService extends AbstractDiscoveryService
         ThingUID thingUID = UidUtils.generateThingUID(device, accountHandler.getThing());
         thingRemoved(thingUID);
     }
+
 }

@@ -41,4 +41,5 @@ public class ActionRegistry {
     public Action get(String action) {
         return actions.get(action);
     }
+
 }

@@ -275,4 +275,5 @@ public class NukiSmartLockHandler extends BaseThingHandler {
         logger.trace("handleApiServletUpdate({}, {})", channelUID, newState);
         updateState(channelUID, newState);
     }
+
 }

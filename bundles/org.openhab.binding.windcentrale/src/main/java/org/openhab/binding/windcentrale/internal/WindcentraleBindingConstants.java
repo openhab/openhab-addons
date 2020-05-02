@@ -49,4 +49,5 @@ public final class WindcentraleBindingConstants {
     public static final String PROPERTY_MILL_ID = "millId";
     public static final String PROPERTY_QTY_WINDDELEN = "wd";
     public static final String PROPERTY_REFRESH_INTERVAL = "refreshInterval";
+
 }

@@ -65,4 +65,5 @@ public class DwdWarningDataAccess {
 
         return StringUtils.EMPTY;
     }
+
 }

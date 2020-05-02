@@ -573,4 +573,5 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
     @Override
     public void onStatusChanged(boolean status) {
     }
+
 }

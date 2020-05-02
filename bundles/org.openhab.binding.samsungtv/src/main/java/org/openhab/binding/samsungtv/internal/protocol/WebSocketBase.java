@@ -117,4 +117,5 @@ class WebSocketBase extends WebSocketAdapter {
     public void onWebSocketText(@Nullable String str) {
         logger.trace("{}: onWebSocketText: {}", this.getClass().getSimpleName(), str);
     }
+
 }

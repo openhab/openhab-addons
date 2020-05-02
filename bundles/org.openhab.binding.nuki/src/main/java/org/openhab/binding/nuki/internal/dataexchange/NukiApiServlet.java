@@ -210,4 +210,5 @@ public class NukiApiServlet extends HttpServlet {
         response.setCharacterEncoding(CHARSET);
         response.setContentType(APPLICATION_JSON);
     }
+
 }

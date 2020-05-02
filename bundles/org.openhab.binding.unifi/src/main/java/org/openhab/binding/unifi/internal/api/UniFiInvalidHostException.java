@@ -32,4 +32,5 @@ public class UniFiInvalidHostException extends UniFiException {
     public UniFiInvalidHostException(Throwable cause) {
         super(cause);
     }
+
 }

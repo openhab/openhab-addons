@@ -133,4 +133,5 @@ public class HeosConstants {
     public static final String HEOS_UI_ALL = "All";
     public static final String HEOS_UI_ONE = "One";
     public static final String HEOS_UI_OFF = "Off";
+
 }

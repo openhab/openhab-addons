@@ -51,4 +51,5 @@ public class OnOffTypeConverter extends AbstractTypeConverter<OnOffType> {
     private boolean isInvert(HmDatapoint dp) {
         return DATAPOINT_NAME_SENSOR.equals(dp.getName()) || isStateInvertDatapoint(dp);
     }
+
 }

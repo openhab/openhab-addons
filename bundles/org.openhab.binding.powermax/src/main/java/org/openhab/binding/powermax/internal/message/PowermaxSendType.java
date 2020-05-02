@@ -137,4 +137,5 @@ public enum PowermaxSendType {
     public PowermaxReceiveType getExpectedResponseType() {
         return expectedResponseType;
     }
+
 }

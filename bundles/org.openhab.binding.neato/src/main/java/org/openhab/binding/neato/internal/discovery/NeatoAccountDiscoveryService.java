@@ -96,4 +96,5 @@ public class NeatoAccountDiscoveryService extends AbstractDiscoveryService {
         thingDiscovered(
                 DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID).withProperties(properties).build());
     }
+
 }

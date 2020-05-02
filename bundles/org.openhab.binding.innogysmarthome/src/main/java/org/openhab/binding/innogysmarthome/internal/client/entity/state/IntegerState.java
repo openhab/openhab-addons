@@ -32,4 +32,5 @@ public class IntegerState extends BaseState {
     public void setValue(Integer value) {
         this.value = value;
     }
+
 }

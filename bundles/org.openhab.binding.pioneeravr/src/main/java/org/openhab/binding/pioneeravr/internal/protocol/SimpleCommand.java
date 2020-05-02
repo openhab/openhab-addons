@@ -76,4 +76,5 @@ public class SimpleCommand implements AvrCommand {
     public int getZone() {
         return zone;
     }
+
 }

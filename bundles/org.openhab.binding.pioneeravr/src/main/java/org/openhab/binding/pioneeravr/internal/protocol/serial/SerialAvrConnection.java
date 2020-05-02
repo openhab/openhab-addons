@@ -98,4 +98,5 @@ public class SerialAvrConnection extends StreamAvrConnection {
     protected OutputStream getOutputStream() throws IOException {
         return serialPort.getOutputStream();
     }
+
 }

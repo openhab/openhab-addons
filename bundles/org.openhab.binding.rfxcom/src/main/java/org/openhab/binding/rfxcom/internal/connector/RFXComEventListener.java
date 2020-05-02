@@ -32,4 +32,5 @@ public interface RFXComEventListener {
      * @param error Error occurred.
      */
     void errorOccurred(String error);
+
 }

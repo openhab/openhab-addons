@@ -68,4 +68,5 @@ public interface ChannelHandler {
      * @param handler must not be <code>null</code>
      */
     void onDeviceReady(String channelId, LGWebOSHandler handler);
+
 }

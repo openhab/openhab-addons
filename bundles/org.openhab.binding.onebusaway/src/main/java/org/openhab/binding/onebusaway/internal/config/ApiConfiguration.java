@@ -58,4 +58,5 @@ public class ApiConfiguration {
         return new ToStringBuilder(this).append(API_CONFIG_API_KEY, this.getApiKey())
                 .append(API_CONFIG_API_SERVER, this.getApiServer()).toString();
     }
+
 }

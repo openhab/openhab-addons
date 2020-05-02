@@ -23,4 +23,5 @@ public class VolumeMuteCommand extends BaseOnOffCommand {
     protected VolumeMuteCommand(int setId) {
         super('k', 'e', setId);
     }
+
 }

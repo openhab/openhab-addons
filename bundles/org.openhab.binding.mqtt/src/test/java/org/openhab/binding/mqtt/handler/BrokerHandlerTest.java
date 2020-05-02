@@ -137,4 +137,5 @@ public class BrokerHandlerTest {
         verify(handler, times(3)).connectionStateChanged(any(), any());
         return true;
     }
+
 }

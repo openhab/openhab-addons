@@ -53,6 +53,7 @@ public class NibeHeatPumpCommandResult implements Future<NibeHeatPumpMessage> {
         } finally {
             lock.unlock();
         }
+
     }
 
     @Override

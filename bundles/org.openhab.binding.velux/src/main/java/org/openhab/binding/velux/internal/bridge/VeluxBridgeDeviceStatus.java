@@ -105,4 +105,5 @@ public class VeluxBridgeDeviceStatus {
         }
         return channel;
     }
+
 }

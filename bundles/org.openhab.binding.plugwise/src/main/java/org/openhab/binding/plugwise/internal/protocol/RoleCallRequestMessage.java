@@ -41,4 +41,5 @@ public class RoleCallRequestMessage extends Message {
     protected String payloadToHexString() {
         return String.format("%02X", nodeID);
     }
+
 }

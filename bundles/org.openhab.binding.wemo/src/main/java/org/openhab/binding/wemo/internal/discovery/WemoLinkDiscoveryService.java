@@ -288,4 +288,5 @@ public class WemoLinkDiscoveryService extends AbstractDiscoveryService implement
             startScan();
         }
     }
+
 }

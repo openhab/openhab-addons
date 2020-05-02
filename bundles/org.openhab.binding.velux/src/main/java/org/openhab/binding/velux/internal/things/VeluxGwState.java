@@ -171,4 +171,5 @@ public class VeluxGwState {
     public byte getSubState() {
         return (byte) this.gwSubState.getStateValue();
     }
+
 }

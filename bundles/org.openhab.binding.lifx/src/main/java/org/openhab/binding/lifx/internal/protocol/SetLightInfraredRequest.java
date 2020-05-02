@@ -67,4 +67,5 @@ public class SetLightInfraredRequest extends Packet {
     public int[] expectedResponses() {
         return new int[] { StateLightInfraredResponse.TYPE };
     }
+
 }

@@ -106,4 +106,5 @@ public class BlukiiDataDecoder {
         int i2 = b2 & 0xFF;
         return (i1 * 0x100) + i2;
     }
+
 }

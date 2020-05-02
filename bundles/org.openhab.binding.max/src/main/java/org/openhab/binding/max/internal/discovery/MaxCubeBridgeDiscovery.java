@@ -217,4 +217,5 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
             logger.debug("IO error during MAX! Cube discovery: {}", e.getMessage());
         }
     }
+
 }

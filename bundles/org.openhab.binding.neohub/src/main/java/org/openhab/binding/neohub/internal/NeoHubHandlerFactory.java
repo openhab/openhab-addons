@@ -122,4 +122,5 @@ public class NeoHubHandlerFactory extends BaseThingHandlerFactory {
             }
         }
     }
+
 }

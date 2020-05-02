@@ -34,9 +34,10 @@ import org.eclipse.smarthome.test.java.JavaTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.openhab.binding.dmx.internal.handler.SacnBridgeHandler;
 
 /**
- * Tests cases for {@link org.openhab.binding.dmx.internal.handler.SacnBridgeHandler}.
+ * Tests cases for {@link SacnBridgeHandler}.
  *
  * @author Jan N. Klug - Initial contribution
  */
@@ -101,4 +102,5 @@ public class SacnBridgeHandlerTest extends JavaTest {
         bridgeHandler.handleConfigurationUpdate(bridgeProperties);
         waitForAssert(() -> assertThat(bridgeHandler.getUniverseId(), is(TEST_UNIVERSE)));
     }
+
 }

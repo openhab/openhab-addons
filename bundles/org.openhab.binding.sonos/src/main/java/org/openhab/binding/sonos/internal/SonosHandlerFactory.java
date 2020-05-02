@@ -168,4 +168,5 @@ public class SonosHandlerFactory extends BaseThingHandlerFactory {
             return new ThingUID(thingTypeUID, udn);
         }
     }
+
 }

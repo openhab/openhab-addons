@@ -106,5 +106,7 @@ public class AllPlaySpeakerDiscoveryService extends AbstractDiscoveryService imp
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                 .withRepresentationProperty(AllPlayBindingConstants.DEVICE_ID).withLabel(speaker.getName()).build();
         thingDiscovered(discoveryResult);
+
     }
+
 }

@@ -148,4 +148,5 @@ class SCgetDeviceStatus extends GetDeviceStatus implements SlipBridgeCommunicati
         logger.trace("getState() returns {} ({}).", thisGwState, thisGwState.toDescription());
         return thisGwState;
     }
+
 }

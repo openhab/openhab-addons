@@ -157,4 +157,5 @@ public class Lib485BridgeHandler extends DmxBridgeHandler {
 
         updateConfiguration();
     }
+
 }

@@ -52,4 +52,5 @@ public class UniFiClientDeserializer implements JsonDeserializer<UniFiClient> {
         }
         return context.deserialize(json, UniFiWirelessClient.class);
     }
+
 }

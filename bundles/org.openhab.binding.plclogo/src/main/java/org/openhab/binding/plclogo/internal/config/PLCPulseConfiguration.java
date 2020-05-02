@@ -74,4 +74,5 @@ public class PLCPulseConfiguration extends PLCMemoryConfiguration {
     public void setPulseLength(Integer pulse) {
         this.pulse = pulse;
     }
+
 }

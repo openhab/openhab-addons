@@ -52,4 +52,5 @@ public class GetGroupRequest extends Packet {
     public int[] expectedResponses() {
         return new int[] { StateGroupResponse.TYPE };
     }
+
 }

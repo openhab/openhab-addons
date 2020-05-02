@@ -57,4 +57,5 @@ public class StatusScheduleResponse extends LocalScheduleResponse {
     public String status;
 
     public String statusIcon;
+
 }

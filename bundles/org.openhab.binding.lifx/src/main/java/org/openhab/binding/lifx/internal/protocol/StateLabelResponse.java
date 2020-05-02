@@ -65,4 +65,5 @@ public class StateLabelResponse extends Packet {
     public int[] expectedResponses() {
         return new int[] {};
     }
+
 }

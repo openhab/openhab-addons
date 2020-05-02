@@ -216,4 +216,5 @@ public class InverterModelBlock {
      * Vendor defined operating state or error code
      */
     public Optional<Integer> statusVendor;
+
 }

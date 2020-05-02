@@ -55,4 +55,5 @@ public class VeluxGwWLAN {
     public String getPassword() {
         return this.password;
     }
+
 }

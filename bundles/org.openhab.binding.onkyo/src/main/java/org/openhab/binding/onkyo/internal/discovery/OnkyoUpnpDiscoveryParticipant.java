@@ -146,4 +146,5 @@ public class OnkyoUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
         return StringUtils.isNotBlank(deviceModel) && Arrays.stream(OnkyoModel.values())
                 .anyMatch(model -> StringUtils.startsWithIgnoreCase(deviceModel, model.getId()));
     }
+
 }

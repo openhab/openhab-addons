@@ -119,4 +119,5 @@ public class DeviceHistoryHandler {
 
         return new HistoryList(resultItems);
     }
+
 }

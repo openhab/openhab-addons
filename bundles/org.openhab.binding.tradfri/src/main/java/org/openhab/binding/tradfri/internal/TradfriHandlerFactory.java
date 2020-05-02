@@ -66,4 +66,5 @@ public class TradfriHandlerFactory extends BaseThingHandlerFactory {
         }
         return null;
     }
+
 }

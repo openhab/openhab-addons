@@ -138,4 +138,5 @@ public class NeeoSystemInfo {
 
         return StringUtils.equals(hostname, ((NeeoSystemInfo) obj).hostname);
     }
+
 }

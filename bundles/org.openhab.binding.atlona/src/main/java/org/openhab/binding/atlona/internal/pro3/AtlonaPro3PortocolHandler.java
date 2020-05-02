@@ -1111,6 +1111,7 @@ class AtlonaPro3PortocolHandler {
             callback.statusChanged(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Exception occurred reading from Atlona: " + e);
         }
+
     }
 
     /**
@@ -1161,6 +1162,8 @@ class AtlonaPro3PortocolHandler {
                 responses.put(e);
             } catch (InterruptedException e1) {
             }
+
         }
+
     }
 }

@@ -35,4 +35,5 @@ public class PowerBufferRequestMessage extends Message {
     protected String payloadToHexString() {
         return String.format("%08X", (logAddress * 32 + 278528));
     }
+
 }

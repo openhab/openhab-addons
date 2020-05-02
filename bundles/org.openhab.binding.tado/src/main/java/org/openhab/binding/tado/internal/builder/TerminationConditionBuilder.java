@@ -57,7 +57,8 @@ public class TerminationConditionBuilder {
         return this;
     }
 
-    public OverlayTerminationCondition build(ZoneStateProvider zoneStateProvider) throws IOException, ApiException {
+    public OverlayTerminationCondition build(ZoneStateProvider zoneStateProvider)
+            throws IOException, ApiException {
         OverlayTerminationCondition terminationCondition = null;
 
         if (terminationType != null) {

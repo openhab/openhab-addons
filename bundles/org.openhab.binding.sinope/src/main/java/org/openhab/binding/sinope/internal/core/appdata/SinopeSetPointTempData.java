@@ -61,4 +61,5 @@ public class SinopeSetPointTempData extends SinopeAppData {
         bb.order(ByteOrder.LITTLE_ENDIAN);
         bb.putShort((short) newTemp);
     }
+
 }

@@ -187,4 +187,5 @@ public class PlugwiseCommunicationContext {
     public void setSerialPortManager(SerialPortManager serialPortManager) {
         this.serialPortManager = serialPortManager;
     }
+
 }

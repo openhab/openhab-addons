@@ -63,4 +63,5 @@ public class ColorCommand extends HyperionCommand {
     public String getOrigin() {
         return origin;
     }
+
 }

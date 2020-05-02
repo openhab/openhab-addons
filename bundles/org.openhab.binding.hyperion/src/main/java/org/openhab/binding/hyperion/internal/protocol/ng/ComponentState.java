@@ -37,4 +37,5 @@ public class ComponentState {
     public boolean getState() {
         return state;
     }
+
 }

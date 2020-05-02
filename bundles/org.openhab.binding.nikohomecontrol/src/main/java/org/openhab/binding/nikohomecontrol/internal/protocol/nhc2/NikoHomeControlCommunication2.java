@@ -567,6 +567,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                                 energyMeter.getId());
                     }
                 });
+
     }
 
     @Override

@@ -25,4 +25,5 @@ public class VitotronicBindingConfiguration {
     public Integer port;
     public String adapterId;
     public Integer refreshInterval;
+
 }

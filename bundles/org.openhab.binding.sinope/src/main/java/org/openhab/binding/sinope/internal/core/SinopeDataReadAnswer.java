@@ -43,4 +43,5 @@ public class SinopeDataReadAnswer extends SinopeDataAnswer {
     protected byte[] getCommand() {
         return new byte[] { 0x02, 0x41 };
     }
+
 }

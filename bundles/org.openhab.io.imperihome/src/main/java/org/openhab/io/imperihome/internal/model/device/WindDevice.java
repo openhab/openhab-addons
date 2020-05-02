@@ -70,4 +70,5 @@ public class WindDevice extends AbstractNumericValueDevice {
         DecimalType value = (DecimalType) item.getStateAs(DecimalType.class);
         addParam(new NumericValueParam(ParamType.SPEED, getUnit(), value));
     }
+
 }

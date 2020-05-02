@@ -71,4 +71,5 @@ public class InstallModeVirtualDatapoint extends AbstractVirtualDatapointHandler
         return dpDuration == null || dpDuration.getValue() == null || dpDuration.getType() != HmValueType.INTEGER ? 60
                 : ((Number) dpDuration.getValue()).intValue();
     }
+
 }

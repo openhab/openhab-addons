@@ -43,4 +43,5 @@ public class GenericPacket extends Packet {
     public int[] expectedResponses() {
         return new int[] {};
     }
+
 }

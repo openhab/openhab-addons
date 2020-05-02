@@ -23,4 +23,5 @@ public class MowerParkUntilFurtherNoticeCommand extends Command {
     public MowerParkUntilFurtherNoticeCommand() {
         super(COMMAND);
     }
+
 }

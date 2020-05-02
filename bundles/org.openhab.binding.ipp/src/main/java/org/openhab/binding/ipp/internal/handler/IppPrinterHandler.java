@@ -172,4 +172,5 @@ public class IppPrinterHandler extends BaseThingHandler implements DiscoveryList
             Collection<ThingTypeUID> thingTypeUIDs, ThingUID bridgeUID) {
         return Collections.emptyList();
     }
+
 }

@@ -32,10 +32,11 @@ import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.junit.Before;
 import org.junit.Test;
+import org.openhab.binding.dmx.internal.handler.TunableWhiteThingHandler;
 import org.openhab.binding.dmx.test.AbstractDmxThingTestParent;
 
 /**
- * Tests cases for {@link org.openhab.binding.dmx.internal.handler.TunableWhiteThingHandler}.
+ * Tests cases for {@link TunableWhiteThingHandler}.
  *
  * @author Jan N. Klug - Initial contribution
  */
@@ -226,4 +227,5 @@ public class TunableWhiteThingHandlerTest extends AbstractDmxThingTestParent {
                     state -> assertThat(((PercentType) state).doubleValue(), is(closeTo(75.0, 0.5))));
         });
     }
+
 }

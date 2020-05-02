@@ -23,4 +23,5 @@ public class DPMCommand extends BaseOnOffCommand {
     protected DPMCommand(int setId) {
         super('f', 'j', setId);
     }
+
 }

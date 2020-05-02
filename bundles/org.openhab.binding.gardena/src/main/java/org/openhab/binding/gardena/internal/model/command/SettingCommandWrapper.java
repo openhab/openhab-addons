@@ -33,4 +33,5 @@ public class SettingCommandWrapper {
     public SettingCommand getCommand() {
         return command;
     }
+
 }

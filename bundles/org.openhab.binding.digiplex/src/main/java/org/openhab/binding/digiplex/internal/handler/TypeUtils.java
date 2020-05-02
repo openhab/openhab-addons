@@ -27,4 +27,5 @@ public class TypeUtils {
     public static OpenClosedType openClosedFromBoolean(boolean value) {
         return value ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
     }
+
 }

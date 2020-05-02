@@ -87,4 +87,5 @@ public class MqttThingHandlerFactory extends BaseThingHandlerFactory implements 
     public @Nullable TransformationService getTransformationService(String type) {
         return TransformationHelper.getTransformationService(bundleContext, type);
     }
+
 }

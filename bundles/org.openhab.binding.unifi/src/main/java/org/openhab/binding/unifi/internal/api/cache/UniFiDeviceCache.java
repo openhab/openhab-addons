@@ -36,4 +36,5 @@ public class UniFiDeviceCache extends UniFiCache<UniFiDevice> {
         }
         return null;
     }
+
 }

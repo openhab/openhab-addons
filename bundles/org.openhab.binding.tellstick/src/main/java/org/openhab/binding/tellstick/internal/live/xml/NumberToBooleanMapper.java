@@ -30,4 +30,5 @@ public class NumberToBooleanMapper extends XmlAdapter<Integer, Boolean> {
     public Integer marshal(Boolean v) throws Exception {
         return v ? 1 : 0;
     }
+
 }

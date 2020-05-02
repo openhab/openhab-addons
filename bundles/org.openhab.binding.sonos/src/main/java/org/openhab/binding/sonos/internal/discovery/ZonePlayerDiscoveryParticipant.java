@@ -117,4 +117,5 @@ public class ZonePlayerDiscoveryParticipant implements UpnpDiscoveryParticipant 
     private String getSonosRoomName(RemoteDevice device) {
         return SonosXMLParser.getRoomName(device.getIdentity().getDescriptorURL().toString());
     }
+
 }

@@ -44,4 +44,5 @@ public class CoolMasterNetBindingConstants {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream.of(THING_TYPE_CONTROLLER, THING_TYPE_HVAC)
             .collect(Collectors.toSet());
+
 }

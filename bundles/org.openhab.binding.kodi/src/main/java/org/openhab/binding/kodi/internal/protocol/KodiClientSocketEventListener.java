@@ -26,4 +26,5 @@ public interface KodiClientSocketEventListener {
     void onConnectionClosed();
 
     void onConnectionOpened();
+
 }

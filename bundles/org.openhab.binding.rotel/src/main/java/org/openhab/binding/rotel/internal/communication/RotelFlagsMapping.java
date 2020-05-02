@@ -256,4 +256,5 @@ public class RotelFlagsMapping {
             flags[flagNumber - 1] &= ~(1 << bitNumber);
         }
     }
+
 }

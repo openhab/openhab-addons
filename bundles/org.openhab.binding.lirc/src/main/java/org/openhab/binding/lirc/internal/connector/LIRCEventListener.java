@@ -45,4 +45,5 @@ public interface LIRCEventListener {
      *            Error occured.
      */
     void errorOccured(String error);
+
 }

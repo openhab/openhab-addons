@@ -69,4 +69,5 @@ public class FreeboxResponse<T> {
     public T getResult() {
         return result;
     }
+
 }

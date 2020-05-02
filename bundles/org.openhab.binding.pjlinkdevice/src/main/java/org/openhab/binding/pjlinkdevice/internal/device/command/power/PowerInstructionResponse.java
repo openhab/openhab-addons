@@ -33,4 +33,5 @@ public class PowerInstructionResponse extends PrefixedResponse<AcknowledgeRespon
             throws ResponseException {
         return AcknowledgeResponseValue.getValueForCode(responseWithoutPrefix);
     }
+
 }

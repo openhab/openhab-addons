@@ -28,4 +28,5 @@ public interface AccountStatusListener {
      * @param status The new status of the account thing
      */
     public void accountStatusChanged(ThingStatus status);
+
 }

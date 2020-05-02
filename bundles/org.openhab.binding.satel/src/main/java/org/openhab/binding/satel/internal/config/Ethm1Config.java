@@ -51,4 +51,5 @@ public class Ethm1Config extends SatelBridgeConfig {
         final String encryptionKey = this.encryptionKey;
         return encryptionKey == null ? "" : encryptionKey;
     }
+
 }

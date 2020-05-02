@@ -35,4 +35,5 @@ public class Magnetometer {
     public String toString() {
         return "Magnetometer [x=" + x + ", y=" + y + ", z=" + z + "]";
     }
+
 }

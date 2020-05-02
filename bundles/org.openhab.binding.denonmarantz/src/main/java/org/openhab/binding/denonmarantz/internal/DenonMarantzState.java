@@ -261,6 +261,7 @@ public class DenonMarantzState {
                     .valueOf(volume.subtract(DenonMarantzBindingConstants.DB_OFFSET).toString());
             handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_ZONE3_VOLUME_DB, this.zone3VolumeDB);
         }
+
     }
 
     public void setZone3Mute(boolean mute) {
@@ -297,6 +298,7 @@ public class DenonMarantzState {
                     .valueOf(volume.subtract(DenonMarantzBindingConstants.DB_OFFSET).toString());
             handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_ZONE4_VOLUME_DB, this.zone4VolumeDB);
         }
+
     }
 
     public void setZone4Mute(boolean mute) {

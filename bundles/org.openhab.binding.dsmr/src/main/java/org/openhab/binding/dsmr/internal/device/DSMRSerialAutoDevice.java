@@ -279,4 +279,5 @@ public class DSMRSerialAutoDevice implements DSMRDevice, DSMREventListener {
         }
         halfTimeTimer = scheduler.schedule(this::switchBaudrate, baudrateSwitchTimeoutSeconds, TimeUnit.SECONDS);
     }
+
 }

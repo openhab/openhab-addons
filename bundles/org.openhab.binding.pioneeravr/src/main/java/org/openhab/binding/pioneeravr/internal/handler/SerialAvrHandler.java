@@ -34,4 +34,5 @@ public class SerialAvrHandler extends AbstractAvrHandler {
 
         return new SerialAvrConnection(serialPort);
     }
+
 }

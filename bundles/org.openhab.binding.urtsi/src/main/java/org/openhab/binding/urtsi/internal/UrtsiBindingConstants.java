@@ -41,4 +41,5 @@ public class UrtsiBindingConstants {
      * Rollershutter's position
      */
     public static final String POSITION = "position";
+
 }

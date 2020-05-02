@@ -92,6 +92,7 @@ public class MdnsBrainDiscovery extends AbstractBrainDiscovery {
                 considerService(event.getInfo());
             }
         }
+
     };
 
     /** The service context */

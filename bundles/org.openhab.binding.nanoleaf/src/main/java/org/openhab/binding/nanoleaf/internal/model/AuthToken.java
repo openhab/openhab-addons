@@ -35,4 +35,5 @@ public class AuthToken {
     public void setAuthToken(String authToken) {
         this.authToken = authToken;
     }
+
 }

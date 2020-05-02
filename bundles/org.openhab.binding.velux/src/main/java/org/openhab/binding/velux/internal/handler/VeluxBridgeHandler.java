@@ -475,6 +475,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         logger.trace("syncChannelsWithProducts(): resetting dirty flag.");
         bridgeParameters.actuators.getChannel().existingProducts.resetDirtyFlag();
         logger.trace("syncChannelsWithProducts() done.");
+
     }
 
     // Processing of openHAB events
@@ -702,4 +703,5 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                 new java.util.Date(thisBridge.lastSuccessfulCommunication()).toString());
         logger.trace("handleCommandScheduled({}) done.", Thread.currentThread());
     }
+
 }

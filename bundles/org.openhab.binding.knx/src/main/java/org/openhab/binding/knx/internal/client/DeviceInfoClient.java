@@ -36,4 +36,5 @@ public interface DeviceInfoClient {
             final int propertyId, final int start, final int elements, boolean authenticate, long timeout);
 
     public boolean isConnected();
+
 }

@@ -121,4 +121,5 @@ public class HueEmulationServiceOSGiTest extends JavaOSGiTest {
         }
         return result;
     }
+
 }

@@ -56,4 +56,5 @@ public class SetSwitchLevelCommand extends RadioRACommand {
 
         return args;
     }
+
 }

@@ -76,4 +76,5 @@ public interface TelldusBridgeHandler {
      * @param command
      */
     void handleCommand(ChannelUID channelUID, Command command);
+
 }

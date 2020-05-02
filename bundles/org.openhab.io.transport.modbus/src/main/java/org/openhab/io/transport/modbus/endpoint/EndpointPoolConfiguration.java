@@ -139,4 +139,5 @@ public class EndpointPoolConfiguration {
                 .append(connectMaxTries, rhs.connectMaxTries).append(reconnectAfterMillis, rhs.reconnectAfterMillis)
                 .append(connectTimeoutMillis, rhs.connectTimeoutMillis).isEquals();
     }
+
 }

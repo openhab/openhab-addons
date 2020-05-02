@@ -19,8 +19,7 @@ import org.openhab.binding.robonect.internal.RobonectClient;
  * The mode commands sets the mower into the corresponding mode. In addition to the mowers standard modes
  * (HOME, MAN, AUTO) the module supports following modes:
  * 
- * EOD (End Of Day): The mower is set into HOME mode until midnight. After midnight the module sets the mower in AUTO
- * mode
+ * EOD (End Of Day): The mower is set into HOME mode until midnight. After midnight the module sets the mower in AUTO mode
  * JOB: The JOB mode triggers a JOB and supports following additional parameter:
  * * remoteStart: where to start the job (STANDARD, REMOTE_1 or REMOTE_2)
  * * after: The mode to be set after the JOB is done. Allowed are all except JOB.
@@ -76,6 +75,7 @@ public class ModeCommand implements Command {
         RemoteStart(int code) {
             this.code = code;
         }
+
     }
 
     private Mode mode;
@@ -96,7 +96,6 @@ public class ModeCommand implements Command {
 
     /**
      * sets the desired remoteStart option.
-     * 
      * @param remoteStart - the remoteStart option.
      * @return - the command instance.
      */
@@ -107,7 +106,6 @@ public class ModeCommand implements Command {
 
     /**
      * set the mode after the job is done.
-     * 
      * @param afterMode - the desired mode after job execution.
      * @return - the command instance.
      */
@@ -118,7 +116,6 @@ public class ModeCommand implements Command {
 
     /**
      * The desired start time in the format HH:MM (H=Hour, M=Minute)
-     * 
      * @param startTime - the start time.
      * @return - the command instance.
      */
@@ -129,7 +126,6 @@ public class ModeCommand implements Command {
 
     /**
      * The desired end time in the format HH:MM (H=Hour, M=Minute)
-     * 
      * @param endTime - the end time.
      * @return - the command instance.
      */
@@ -140,7 +136,6 @@ public class ModeCommand implements Command {
 
     /**
      * Sets the duration in minutes.
-     * 
      * @param durationInMinutes - the duration in minutes.
      * @return - the command instance.
      */
@@ -152,8 +147,8 @@ public class ModeCommand implements Command {
     /**
      * {@inheritDoc}
      * 
-     * @param baseURL - will be passed by the {@link RobonectClient} in the form
-     *            http://xxx.xxx.xxx/json?
+     * @param baseURL - will be passed by the {@link RobonectClient} in the form 
+     *                http://xxx.xxx.xxx/json?
      * @return
      */
     @Override
@@ -161,30 +156,30 @@ public class ModeCommand implements Command {
         StringBuilder sb = new StringBuilder(baseURL);
         sb.append("?cmd=mode&mode=");
         sb.append(mode.cmd);
-        switch (mode) {
+        switch (mode){
             case EOD:
             case MANUAL:
             case AUTO:
             case HOME:
                 break;
             case JOB:
-                if (remoteStart != null) {
+                if(remoteStart != null){
                     sb.append("&remotestart=");
                     sb.append(remoteStart.code);
                 }
-                if (after != null) {
+                if(after != null){
                     sb.append("&after=");
                     sb.append(after.code);
                 }
-                if (start != null) {
+                if(start != null){
                     sb.append("&start=");
                     sb.append(start);
                 }
-                if (end != null) {
+                if(end != null){
                     sb.append("&end=");
                     sb.append(end);
                 }
-                if (duration != null) {
+                if(duration != null){
                     sb.append("&duration=");
                     sb.append(duration);
                 }
@@ -192,4 +187,5 @@ public class ModeCommand implements Command {
         }
         return sb.toString();
     }
+
 }

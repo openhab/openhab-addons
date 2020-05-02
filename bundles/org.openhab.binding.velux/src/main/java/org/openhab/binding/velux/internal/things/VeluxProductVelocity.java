@@ -92,4 +92,5 @@ public enum VeluxProductVelocity {
         }
         return sb.toString();
     }
+
 }

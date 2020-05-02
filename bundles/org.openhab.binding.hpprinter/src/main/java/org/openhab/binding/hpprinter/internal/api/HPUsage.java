@@ -216,4 +216,5 @@ public class HPUsage {
     public float getInkColorMarking() {
         return inkColorMarking;
     }
+
 }

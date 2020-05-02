@@ -73,4 +73,5 @@ public class HeadRequestArguments {
     public void setScope(String scope) {
         this.scope = scope;
     }
+
 }

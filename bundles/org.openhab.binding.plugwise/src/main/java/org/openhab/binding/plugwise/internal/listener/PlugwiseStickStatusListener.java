@@ -25,4 +25,5 @@ import org.openhab.binding.plugwise.internal.handler.PlugwiseStickHandler;
 public interface PlugwiseStickStatusListener {
 
     public void stickStatusChanged(ThingStatus status);
+
 }

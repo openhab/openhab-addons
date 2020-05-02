@@ -173,6 +173,7 @@ public class OneWireGPIOHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error reading GPIO bus file.");
             return null;
         }
+
     }
 
     private BigDecimal calculateValue(Integer intTemp) {

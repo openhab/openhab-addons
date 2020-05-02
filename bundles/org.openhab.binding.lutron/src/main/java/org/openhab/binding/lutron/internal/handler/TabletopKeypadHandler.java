@@ -61,4 +61,5 @@ public class TabletopKeypadHandler extends BaseKeypadHandler {
         super(thing);
         kp = new KeypadConfigTabletopSeetouch();
     }
+
 }

@@ -27,4 +27,5 @@ public abstract class ZoneMinderThingConfig extends ZoneMinderConfig {
     public String getConfigId() {
         return ZoneMinderConstants.THING_ZONEMINDER_MONITOR;
     }
+
 }

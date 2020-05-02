@@ -50,4 +50,5 @@ public class DecimalResponse implements LGSerialResponse {
     public boolean isSuccess() {
         return success;
     }
+
 }

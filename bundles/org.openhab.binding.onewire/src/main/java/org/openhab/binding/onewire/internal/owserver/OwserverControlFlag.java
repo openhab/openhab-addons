@@ -54,4 +54,5 @@ public enum OwserverControlFlag {
     public boolean isSet(int controlFlags) {
         return (this.getValue() & controlFlags) == this.getValue();
     }
+
 }

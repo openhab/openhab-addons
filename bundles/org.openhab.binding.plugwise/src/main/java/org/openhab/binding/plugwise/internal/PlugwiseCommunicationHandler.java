@@ -84,4 +84,5 @@ public class PlugwiseCommunicationHandler {
         context.closeSerialPort();
         initialized = false;
     }
+
 }

@@ -172,4 +172,5 @@ public class DenonMarantzTelnetClient implements Runnable {
             }
         }
     }
+
 }

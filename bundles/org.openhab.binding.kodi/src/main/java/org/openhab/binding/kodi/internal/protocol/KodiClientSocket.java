@@ -167,6 +167,7 @@ public class KodiClientSocket {
             logger.trace("Error occured: {}", error.getMessage());
             onClose(0, error.getMessage());
         }
+
     }
 
     private void sendMessage(String str) throws IOException {

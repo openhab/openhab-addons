@@ -83,5 +83,7 @@ public class RMEBindingConstants {
         public String channelID() {
             return this.id;
         }
+
     }
+
 }

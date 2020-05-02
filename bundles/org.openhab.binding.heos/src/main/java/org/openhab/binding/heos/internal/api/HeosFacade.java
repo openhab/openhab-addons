@@ -14,6 +14,7 @@ package org.openhab.binding.heos.internal.api;
 
 import java.net.URL;
 
+//import org.openhab.binding.heos.internal.resources.HeosConstants;
 import org.openhab.binding.heos.internal.resources.HeosEventListener;
 
 /**
@@ -107,7 +108,7 @@ public class HeosFacade {
     /**
      * Set the play mode of the player or group
      *
-     * @param pid The PID of the dedicated player or group
+     * @param pid  The PID of the dedicated player or group
      * @param mode The shuffle mode: Allowed commands: on; off
      */
     public void setShuffleMode(String pid, String mode) {
@@ -117,7 +118,7 @@ public class HeosFacade {
     /**
      * Sets the repeat mode of the player or group
      *
-     * @param pid The ID of the dedicated player or group
+     * @param pid  The ID of the dedicated player or group
      * @param mode The repeat mode. Allowed commands: on_all; on_one; off
      */
     public void setRepeatMode(String pid, String mode) {
@@ -250,7 +251,7 @@ public class HeosFacade {
     /**
      * Sets the connection parameter if the HOES system and connects to the system
      *
-     * @param ip The IP address of the HEOS player which is used as bridge
+     * @param ip   The IP address of the HEOS player which is used as bridge
      * @param port The port the system shall establish the connection
      */
     public void setHeosConnection(String ip, int port) {
@@ -269,7 +270,7 @@ public class HeosFacade {
     /**
      * Login in via the bridge to the HEOS account
      *
-     * @param name The username
+     * @param name     The username
      * @param password The password of the user
      */
     public void logIn(String name, String password) {
@@ -280,10 +281,10 @@ public class HeosFacade {
     /**
      * Plays a specific station on the HEOS player
      *
-     * @param pid The player ID
-     * @param sid The source ID where the media is located
-     * @param cid The container ID of the media
-     * @param mid The media ID of the media
+     * @param pid  The player ID
+     * @param sid  The source ID where the media is located
+     * @param cid  The container ID of the media
+     * @param mid  The media ID of the media
      * @param name Station name returned by 'browse' command.
      */
     public void playStation(String pid, String sid, String cid, String mid, String name) {
@@ -316,9 +317,9 @@ public class HeosFacade {
      * Plays a specified input source from another player on the selected player.
      * Input name as per specified in HEOS CLI Protocol
      *
-     * @param des_pid the PID where the source shall be played
+     * @param des_pid    the PID where the source shall be played
      * @param source_pid the PID where the source is located.
-     * @param input the input name
+     * @param input      the input name
      */
     public void playInputSource(String des_pid, String source_pid, String input) {
         controller.send(controller.command().playInputSource(des_pid, source_pid, input));

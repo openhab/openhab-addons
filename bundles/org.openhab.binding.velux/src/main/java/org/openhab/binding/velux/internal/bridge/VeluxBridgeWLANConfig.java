@@ -105,4 +105,5 @@ public class VeluxBridgeWLANConfig {
         }
         return channel;
     }
+
 }

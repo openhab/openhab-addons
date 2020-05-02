@@ -55,4 +55,5 @@ public class LIRCResponseException extends Exception {
     public LIRCResponseException(String message, Throwable cause) {
         super(message, cause);
     }
+
 }

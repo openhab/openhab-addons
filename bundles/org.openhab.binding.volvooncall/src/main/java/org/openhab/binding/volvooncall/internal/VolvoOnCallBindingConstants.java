@@ -118,4 +118,5 @@ public class VolvoOnCallBindingConstants {
 
     // Default value for undefined integers
     public static final int UNDEFINED = -1;
+
 }

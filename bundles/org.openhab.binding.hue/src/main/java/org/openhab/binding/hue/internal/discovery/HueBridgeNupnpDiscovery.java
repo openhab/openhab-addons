@@ -182,4 +182,5 @@ public class HueBridgeNupnpDiscovery extends AbstractDiscoveryService {
     protected String doGetRequest(String url) throws IOException {
         return HttpUtil.executeUrl("GET", url, REQUEST_TIMEOUT);
     }
+
 }

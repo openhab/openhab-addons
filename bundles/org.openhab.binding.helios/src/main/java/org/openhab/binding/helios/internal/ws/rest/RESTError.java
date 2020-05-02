@@ -25,4 +25,5 @@ public class RESTError {
 
     RESTError() {
     }
+
 }

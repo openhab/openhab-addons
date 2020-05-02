@@ -110,4 +110,5 @@ public class MqttBrokerConnectionEx extends MqttBrokerConnection {
     public @NonNull MqttConnectionState connectionState() {
         return connectionStateOverwrite;
     }
+
 }

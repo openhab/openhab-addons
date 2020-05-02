@@ -39,4 +39,5 @@ public final class DigestUtil {
     // Hidden constructor
     private DigestUtil() {
     }
+
 }

@@ -89,4 +89,5 @@ public class Eq3UdpResponse {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("deviceTypeId", deviceTypeId)
                 .append("serialNumber", serialNumber).toString();
     }
+
 }

@@ -52,4 +52,5 @@ public class SleepSetRequestMessage extends Message {
         String unknownHex = String.format("%06X", unknown);
         return wakeupDurationHex + sleepDurationHex + wakeupIntervalHex + unknownHex;
     }
+
 }

@@ -119,4 +119,5 @@ public abstract class PlugwiseDeviceTask {
         this.deviceType = deviceType;
         this.macAddress = macAddress;
     }
+
 }

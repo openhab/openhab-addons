@@ -36,4 +36,5 @@ public class DenonMarantzConnectorFactory {
             return new DenonMarantzHttpConnector(config, state, scheduler, httpClient);
         }
     }
+
 }

@@ -42,4 +42,5 @@ public interface HomematicChannelGroupTypeProvider extends ChannelGroupTypeProvi
      *         before
      */
     public ChannelGroupType getInternalChannelGroupType(ChannelGroupTypeUID channelGroupTypeUID);
+
 }

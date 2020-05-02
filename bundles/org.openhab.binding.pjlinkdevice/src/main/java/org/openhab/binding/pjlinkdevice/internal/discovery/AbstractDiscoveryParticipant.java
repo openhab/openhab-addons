@@ -128,4 +128,5 @@ public abstract class AbstractDiscoveryParticipant extends AbstractDiscoveryServ
     }
 
     protected abstract void collectAddressesToScan(Set<InetAddress> addressesToScan, InterfaceAddress i);
+
 }

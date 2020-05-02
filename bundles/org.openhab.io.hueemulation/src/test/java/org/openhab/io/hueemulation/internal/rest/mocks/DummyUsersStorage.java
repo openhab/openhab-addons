@@ -60,4 +60,5 @@ public class DummyUsersStorage implements Storage<HueUserAuthWithSecrets> {
     public Collection<@Nullable HueUserAuthWithSecrets> getValues() {
         return users.values();
     }
+
 }

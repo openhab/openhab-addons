@@ -58,6 +58,7 @@ public class RegisterArrayWrappingInputRegister implements ModbusRegisterArray {
             buffer.append("uint16=").append(toUnsignedShort()).append(", hex=");
             return appendHexString(buffer).append(')').toString();
         }
+
     }
 
     private InputRegister[] wrapped;
@@ -85,4 +86,5 @@ public class RegisterArrayWrappingInputRegister implements ModbusRegisterArray {
         StringBuffer buffer = new StringBuffer(wrapped.length * 2).append("RegisterArrayWrappingInputRegister(");
         return appendHexString(buffer).append(')').toString();
     }
+
 }

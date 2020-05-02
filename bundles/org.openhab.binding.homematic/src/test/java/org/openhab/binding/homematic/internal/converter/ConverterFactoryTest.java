@@ -42,4 +42,5 @@ public class ConverterFactoryTest {
         assertThat(ConverterFactory.createConverter("Number:Temperature"), instanceOf(QuantityTypeConverter.class));
         assertThat(ConverterFactory.createConverter("Number:Percent"), instanceOf(QuantityTypeConverter.class));
     }
+
 }

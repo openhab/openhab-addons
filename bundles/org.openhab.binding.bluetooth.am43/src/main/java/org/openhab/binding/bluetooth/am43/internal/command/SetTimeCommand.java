@@ -41,4 +41,5 @@ public class SetTimeCommand extends AM43Command {
         int dayOfWeek = instance.get(Calendar.DAY_OF_WEEK) - 1;
         return new byte[] { (byte) dayOfWeek, (byte) hour, (byte) minute, (byte) second };
     }
+
 }

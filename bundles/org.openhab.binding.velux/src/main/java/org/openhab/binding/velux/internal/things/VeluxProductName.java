@@ -45,4 +45,5 @@ public class VeluxProductName {
     public String toString() {
         return name;
     }
+
 }

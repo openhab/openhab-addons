@@ -117,6 +117,7 @@ public class ModbusManagerImpl implements ModbusManager {
         public void accept(AggregateStopWatch timer, T task, ModbusSlaveConnection connection)
                 throws ModbusException, IIOException, ModbusUnexpectedTransactionIdException,
                 ModbusUnexpectedResponseFunctionCodeException, ModbusUnexpectedResponseSizeException;
+
     }
 
     /**
@@ -367,6 +368,7 @@ public class ModbusManagerImpl implements ModbusManager {
                         Optional.ofNullable(e).map(ex -> ex.getClass().getSimpleName()).orElse(""),
                         Optional.ofNullable(e).map(ex -> ex.getMessage()).orElse("<null>"), e);
             }
+
         });
         connectionPool = genericKeyedObjectPool;
         this.connectionFactory = connectionFactory;
@@ -957,4 +959,5 @@ public class ModbusManagerImpl implements ModbusManager {
             pollMonitorLogger.trace("</POLL MONITOR>");
         }
     }
+
 }

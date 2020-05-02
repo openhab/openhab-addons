@@ -118,4 +118,5 @@ public class RdsHandlerFactory extends BaseThingHandlerFactory {
             }
         }
     }
+
 }

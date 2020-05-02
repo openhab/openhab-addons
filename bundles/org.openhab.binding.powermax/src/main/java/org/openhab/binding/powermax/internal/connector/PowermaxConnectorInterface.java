@@ -67,4 +67,5 @@ public interface PowermaxConnectorInterface {
      * @param listener the listener to be removed
      */
     public void removeEventListener(PowermaxMessageEventListener listener);
+
 }

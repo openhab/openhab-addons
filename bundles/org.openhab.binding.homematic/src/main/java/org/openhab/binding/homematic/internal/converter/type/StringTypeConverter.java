@@ -61,4 +61,5 @@ public class StringTypeConverter extends AbstractTypeConverter<StringType> {
             return new StringType(value);
         }
     }
+
 }

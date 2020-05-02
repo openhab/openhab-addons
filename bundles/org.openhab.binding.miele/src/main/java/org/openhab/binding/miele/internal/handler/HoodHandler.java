@@ -82,4 +82,5 @@ public class HoodHandler extends MieleApplianceHandler<HoodChannelSelector> {
                     channelID, command.toString());
         }
     }
+
 }

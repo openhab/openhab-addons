@@ -53,4 +53,5 @@ public class StateInvertInfo {
             return dpDeviceType.startsWith(deviceType);
         }
     }
+
 }

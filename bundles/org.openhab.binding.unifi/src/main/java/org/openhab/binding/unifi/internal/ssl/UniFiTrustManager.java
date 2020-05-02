@@ -73,4 +73,5 @@ public class UniFiTrustManager extends X509ExtendedTrustManager {
     public void checkServerTrusted(X509Certificate[] chain, String authType, SSLEngine engine)
             throws CertificateException {
     }
+
 }

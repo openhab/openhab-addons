@@ -408,4 +408,5 @@ public class DeviceConfig {
     public void setMeterFirmwareVersion(String meterFirmwareVersion) {
         this.meterFirmwareVersion = meterFirmwareVersion;
     }
+
 }

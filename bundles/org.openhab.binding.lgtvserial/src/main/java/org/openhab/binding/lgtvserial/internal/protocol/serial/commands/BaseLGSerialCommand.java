@@ -78,4 +78,5 @@ public abstract class BaseLGSerialCommand implements LGSerialCommand {
     }
 
     protected abstract String computeSerialDataFrom(Object data);
+
 }

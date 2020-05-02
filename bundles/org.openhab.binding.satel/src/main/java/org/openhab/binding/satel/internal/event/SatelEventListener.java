@@ -78,4 +78,5 @@ public interface SatelEventListener {
      */
     default void incomingEvent(ZoneTemperatureEvent event) {
     }
+
 }

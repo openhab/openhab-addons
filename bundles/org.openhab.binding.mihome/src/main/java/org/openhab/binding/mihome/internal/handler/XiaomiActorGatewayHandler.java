@@ -210,4 +210,5 @@ public class XiaomiActorGatewayHandler extends XiaomiActorBaseHandler {
     private void stopRingtone() {
         getXiaomiBridgeHandler().writeToBridge(new String[] { MID }, new Object[] { 10000 });
     }
+
 }

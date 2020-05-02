@@ -205,4 +205,5 @@ class JsonBridgeAPI implements BridgeAPI {
     public SetSceneVelocity setSceneVelocity() {
         return SETSCENEVELOCITY;
     }
+
 }

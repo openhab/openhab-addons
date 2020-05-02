@@ -426,4 +426,5 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
             getGateway().deleteDevice(address, reset, force, defer);
         });
     }
+
 }

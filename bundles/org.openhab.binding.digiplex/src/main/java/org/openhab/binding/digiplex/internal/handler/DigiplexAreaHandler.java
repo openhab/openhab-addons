@@ -149,6 +149,7 @@ public class DigiplexAreaHandler extends BaseThingHandler {
                 bridgeHandler.sendRequest(new AreaDisarmRequest(areaNo, command.substring(1)));
                 break;
         }
+
     }
 
     @SuppressWarnings("null")

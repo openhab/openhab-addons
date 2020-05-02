@@ -44,4 +44,5 @@ public enum DoorControl implements ControlType {
     public BitSet getControlledStates() {
         return stateBits;
     }
+
 }

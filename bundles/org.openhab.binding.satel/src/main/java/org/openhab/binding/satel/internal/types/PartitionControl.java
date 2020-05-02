@@ -54,4 +54,5 @@ public enum PartitionControl implements ControlType {
     public BitSet getControlledStates() {
         return stateBits;
     }
+
 }

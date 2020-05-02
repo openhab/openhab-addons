@@ -94,4 +94,5 @@ public class VolumeControlVolume extends BaseChannelHandler<Float> {
             }
         };
     }
+
 }

@@ -200,4 +200,5 @@ public class Adjustment {
     public void setYellow(List<Integer> yellow) {
         this.yellow = yellow;
     }
+
 }

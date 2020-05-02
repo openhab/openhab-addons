@@ -95,4 +95,5 @@ public class KNXBindingConstants {
     public static final String STOP_MOVE_GA = "stopMove";
     public static final String SWITCH_GA = "switch";
     public static final String UP_DOWN_GA = "upDown";
+
 }

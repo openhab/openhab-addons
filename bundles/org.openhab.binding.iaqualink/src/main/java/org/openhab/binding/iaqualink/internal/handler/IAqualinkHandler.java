@@ -551,4 +551,5 @@ public class IAqualinkHandler extends BaseThingHandler {
         Objects.requireNonNull(channelTypeUID);
         return channelTypeUID;
     }
+
 }

@@ -61,4 +61,5 @@ public class D2_01_12_NodON extends D2_01 {
             super.convertFromCommandImpl(channelId, channelTypeId, command, getCurrentStateFunc, config);
         }
     }
+
 }

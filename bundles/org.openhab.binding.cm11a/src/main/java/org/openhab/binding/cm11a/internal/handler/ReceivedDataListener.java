@@ -29,4 +29,5 @@ public interface ReceivedDataListener {
      * @param rd
      */
     void receivedX10Data(X10ReceivedData rd);
+
 }

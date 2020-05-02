@@ -89,4 +89,5 @@ public class SunHandler extends AstroThingHandler {
         sun = sunCalc.getSunInfo(Calendar.getInstance(), thingConfig.getLatitude(), thingConfig.getLongitude(),
                 thingConfig.getAltitude());
     }
+
 }

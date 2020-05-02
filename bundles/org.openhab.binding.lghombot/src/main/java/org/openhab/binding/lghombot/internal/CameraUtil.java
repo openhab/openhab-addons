@@ -80,4 +80,5 @@ public class CameraUtil {
             return UnDefType.UNDEF;
         }
     }
+
 }

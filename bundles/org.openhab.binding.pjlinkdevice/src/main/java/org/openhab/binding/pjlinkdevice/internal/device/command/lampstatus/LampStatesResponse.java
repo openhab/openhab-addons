@@ -74,4 +74,5 @@ public class LampStatesResponse extends PrefixedResponse<List<LampStatesResponse
         }
         return result;
     }
+
 }

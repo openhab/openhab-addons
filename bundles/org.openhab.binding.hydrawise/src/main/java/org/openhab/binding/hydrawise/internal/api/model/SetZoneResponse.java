@@ -22,4 +22,5 @@ public class SetZoneResponse extends Response {
     public String message;
 
     public String messageType;
+
 }

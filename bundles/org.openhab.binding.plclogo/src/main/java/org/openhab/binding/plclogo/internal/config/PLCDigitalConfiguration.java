@@ -48,4 +48,5 @@ public class PLCDigitalConfiguration extends PLCCommonConfiguration {
         boolean isInput = kind.equalsIgnoreCase(I_DIGITAL) || kind.equalsIgnoreCase(NI_DIGITAL);
         return isInput ? DIGITAL_INPUT_ITEM : DIGITAL_OUTPUT_ITEM;
     }
+
 }

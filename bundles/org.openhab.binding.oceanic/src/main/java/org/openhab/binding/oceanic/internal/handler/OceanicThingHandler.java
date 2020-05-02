@@ -166,4 +166,5 @@ public abstract class OceanicThingHandler extends BaseThingHandler {
     }
 
     protected abstract String requestResponse(String commandAsString);
+
 }
