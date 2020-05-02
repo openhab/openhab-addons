@@ -25,6 +25,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
+import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
@@ -46,11 +48,13 @@ import org.slf4j.LoggerFactory;
  * @author Ondrej Pecta - Initial contribution
  */
 @NonNullByDefault
-public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService {
+public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService implements ExtendedDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(SomfyTahomaItemDiscoveryService.class);
 
     private SomfyTahomaBridgeHandler bridge;
+
+    private @Nullable DiscoveryServiceCallback discoveryServiceCallback;
 
     private @Nullable ScheduledFuture<?> discoveryJob;
 
@@ -76,6 +80,11 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService {
     @Deactivate
     public void deactivate() {
         super.deactivate();
+    }
+
+    @Override
+    public void setDiscoveryServiceCallback(DiscoveryServiceCallback discoveryServiceCallback) {
+        this.discoveryServiceCallback = discoveryServiceCallback;
     }
 
     @Override
