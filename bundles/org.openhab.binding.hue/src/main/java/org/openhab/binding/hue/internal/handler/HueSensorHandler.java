@@ -93,9 +93,7 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
 
             if (bridgeHandler != null) {
                 if (bridgeStatus == ThingStatus.ONLINE) {
-                    FullSensor fullSensor = bridgeHandler.getSensorById(sensorId);
-                    lastFullSensor = fullSensor;
-                    initializeProperties(fullSensor);
+                    initializeProperties(bridgeHandler.getSensorById(sensorId));
                     updateStatus(ThingStatus.ONLINE);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
@@ -109,26 +107,16 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
         }
     }
 
-    private synchronized void initializeProperties(@Nullable FullHueObject fullSensor) {
-        if (!propertiesInitializedSuccessfully) {
-            if (fullSensor != null) {
-                Map<String, String> properties = editProperties();
-                String softwareVersion = fullSensor.getSoftwareVersion();
-                if (softwareVersion != null) {
-                    properties.put(PROPERTY_FIRMWARE_VERSION, softwareVersion);
-                }
-                String modelId = fullSensor.getNormalizedModelID();
-                if (modelId != null) {
-                    properties.put(PROPERTY_MODEL_ID, modelId);
-                }
-                properties.put(PROPERTY_VENDOR, fullSensor.getManufacturerName());
-                properties.put(PRODUCT_NAME, fullSensor.getProductName());
-                String uniqueID = fullSensor.getUniqueID();
-                if (uniqueID != null) {
-                    properties.put(UNIQUE_ID, uniqueID);
-                }
-                updateProperties(properties);
-                propertiesInitializedSuccessfully = true;
+    private synchronized void initializeProperties(@Nullable FullSensor fullSensor) {
+        if (!propertiesInitializedSuccessfully && fullSensor != null) {
+            Map<String, String> properties = editProperties();
+            String softwareVersion = fullSensor.getSoftwareVersion();
+            if (softwareVersion != null) {
+                properties.put(PROPERTY_FIRMWARE_VERSION, softwareVersion);
+            }
+            String modelId = fullSensor.getNormalizedModelID();
+            if (modelId != null) {
+                properties.put(PROPERTY_MODEL_ID, modelId);
             }
             properties.put(PROPERTY_VENDOR, fullSensor.getManufacturerName());
             properties.put(PRODUCT_NAME, fullSensor.getProductName());

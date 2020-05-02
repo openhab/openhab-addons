@@ -102,7 +102,6 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
     private @Nullable FullLight lastFullLight;
     private Long lastTimeCmd = 0L;
 
-    // TODO think those two can be refactored with lastFullLight
     private @Nullable Integer lastSentColorTemp;
     private @Nullable Integer lastSentBrightness;
 
@@ -166,28 +165,19 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
         }
     }
 
-    private synchronized void initializeProperties(@Nullable FullHueObject fullLight) {
-        if (!propertiesInitializedSuccessfully) {
-            if (fullLight != null) {
-                Map<String, String> properties = editProperties();
-                String softwareVersion = fullLight.getSoftwareVersion();
-                if (softwareVersion != null) {
-                    properties.put(PROPERTY_FIRMWARE_VERSION, softwareVersion);
-                }
-                String modelId = fullLight.getNormalizedModelID();
-                if (modelId != null) {
-                    properties.put(PROPERTY_MODEL_ID, modelId);
-                    String vendor = getVendor(modelId);
-                    if (vendor != null) {
-                        properties.put(PROPERTY_VENDOR, vendor);
-                    }
-                } else {
-                    properties.put(PROPERTY_VENDOR, fullLight.getManufacturerName());
-                }
-                properties.put(PRODUCT_NAME, fullLight.getProductName());
-                String uniqueID = fullLight.getUniqueID();
-                if (uniqueID != null) {
-                    properties.put(UNIQUE_ID, uniqueID);
+    private synchronized void initializeProperties(@Nullable FullLight fullLight) {
+        if (!propertiesInitializedSuccessfully && fullLight != null) {
+            Map<String, String> properties = editProperties();
+            String softwareVersion = fullLight.getSoftwareVersion();
+            if (softwareVersion != null) {
+                properties.put(PROPERTY_FIRMWARE_VERSION, softwareVersion);
+            }
+            String modelId = fullLight.getNormalizedModelID();
+            if (modelId != null) {
+                properties.put(PROPERTY_MODEL_ID, modelId);
+                String vendor = getVendor(modelId);
+                if (vendor != null) {
+                    properties.put(PROPERTY_VENDOR, vendor);
                 }
             } else {
                 properties.put(PROPERTY_VENDOR, fullLight.getManufacturerName());
@@ -362,9 +352,9 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
             if (tmpColorTemp != null) {
                 lastSentColorTemp = tmpColorTemp;
             }
-            hueBridge.updateLightState(light, lightState);
 
             lastTimeCmd = System.currentTimeMillis();
+            bridgeHandler.updateLightState(light, lightState);
         } else {
             logger.warn("Command sent to an unknown channel id: {}:{}", getThing().getUID(), channel);
         }
