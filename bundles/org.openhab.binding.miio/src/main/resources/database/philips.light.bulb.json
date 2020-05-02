@@ -3,6 +3,7 @@
 		"id": [
 			"philips.light.bulb",
 			"philips.light.downlight",
+			"philips.light.mono1",
 			"philips.light.virtual",
 			"philips.light.zysread",
 			"philips.light.zystrip"
@@ -26,7 +27,7 @@
 				"property": "bright",
 				"friendlyName": "Brightness",
 				"channel": "brightness",
-				"type": "Dimmer",
+				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [
@@ -40,7 +41,7 @@
 				"property": "cct",
 				"friendlyName": "Correlated Color Temperature",
 				"channel": "cct",
-				"type": "Dimmer",
+				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [
@@ -102,6 +103,20 @@
 					{
 						"command": "delay_off",
 						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "",
+				"friendlyName": "Toggle",
+				"channel": "toggle",
+				"type": "Switch",
+				"refresh": false,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "toggle",
+						"parameterType": "EMPTY"
 					}
 				]
 			}

@@ -22,7 +22,7 @@
 				"property": "bright",
 				"friendlyName": "Brightness",
 				"channel": "brightness",
-				"type": "Dimmer",
+				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [
@@ -36,7 +36,7 @@
 				"property": "cct",
 				"friendlyName": "Correlated Color Temperature",
 				"channel": "cct",
-				"type": "Dimmer",
+				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [

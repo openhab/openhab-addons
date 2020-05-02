@@ -22,7 +22,7 @@
 				"property": "bright",
 				"friendlyName": "Brightness",
 				"channel": "brightness",
-				"type": "Dimmer",
+				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [
