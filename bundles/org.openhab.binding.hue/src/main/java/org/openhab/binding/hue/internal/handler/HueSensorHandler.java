@@ -217,7 +217,7 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
                 return;
             }
 
-            FullSensor sensor = hueBridge.getSensorById(sensorId);
+            FullSensor sensor = lastFullSensor;
             if (sensor == null) {
                 logger.debug("hue sensor not known on bridge. Cannot handle command.");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -234,12 +234,6 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
     @Override
     public boolean onSensorStateChanged(@Nullable HueBridge bridge, FullSensor sensor) {
         logger.trace("onSensorStateChanged() was called");
-
-        // TODO Maybe this check is obsolete
-        if (!sensor.getId().equals(sensorId)) {
-            logger.debug("Received state change for another handler's sensor ({}). Will be ignored.", sensor.getId());
-            return false;
-        }
 
         final FullSensor lastSensor = lastFullSensor;
         if (lastSensor == null || !lastSensor.getState().equals(sensor.getState())) {
@@ -341,23 +335,17 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
 
     @Override
     public void onSensorRemoved(@Nullable HueBridge bridge, FullSensor sensor) {
-        if (sensor.getId().equals(sensorId)) { // TODO Maybe this check is obsolete
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.sensor-not-reachable");
-        }
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.sensor-not-reachable");
     }
 
     @Override
     public void onSensorGone(@Nullable HueBridge bridge, FullSensor sensor) {
-        if (sensor.getId().equals(sensorId)) {// TODO Maybe this check is obsolete
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "@text/offline.conf-error-wrong-sensor-id");
-        }
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "@text/offline.conf-error-wrong-sensor-id");
     }
 
     @Override
     public void onSensorAdded(@Nullable HueBridge bridge, FullSensor sensor) {
-        if (sensor.getId().equals(sensorId)) {// TODO Maybe this check is obsolete
-            onSensorStateChanged(bridge, sensor);
-        }
+        onSensorStateChanged(bridge, sensor);
     }
 
     @Override

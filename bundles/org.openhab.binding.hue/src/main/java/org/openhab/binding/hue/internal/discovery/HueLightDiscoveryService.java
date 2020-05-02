@@ -41,8 +41,6 @@ import org.openhab.binding.hue.internal.handler.GroupStatusListener;
 import org.openhab.binding.hue.internal.handler.HueBridgeHandler;
 import org.openhab.binding.hue.internal.handler.HueGroupHandler;
 import org.openhab.binding.hue.internal.handler.HueLightHandler;
-import org.openhab.binding.hue.internal.handler.LightStatusListener;
-import org.openhab.binding.hue.internal.handler.SensorStatusListener;
 import org.openhab.binding.hue.internal.handler.sensors.ClipHandler;
 import org.openhab.binding.hue.internal.handler.sensors.DimmerSwitchHandler;
 import org.openhab.binding.hue.internal.handler.sensors.LightLevelHandler;
@@ -129,11 +127,11 @@ public class HueLightDiscoveryService extends AbstractDiscoveryService
     public void startScan() {
         List<FullLight> lights = hueBridgeHandler.getFullLights();
         for (FullLight l : lights) {
-            onLightAddedInternal(l);
+            addLightDiscovery(l);
         }
         List<FullSensor> sensors = hueBridgeHandler.getFullSensors();
         for (FullSensor s : sensors) {
-            onSensorAddedInternal(s);
+            addSensorDiscovery(s);
         }
         List<FullGroup> groups = hueBridgeHandler.getFullGroups();
         for (FullGroup g : groups) {
@@ -149,12 +147,7 @@ public class HueLightDiscoveryService extends AbstractDiscoveryService
         removeOlderResults(getTimestampOfLastScan(), hueBridgeHandler.getThing().getUID());
     }
 
-    @Override
-    public void onLightAdded(@Nullable HueBridge bridge, FullLight light) {
-        onLightAddedInternal(light);
-    }
-
-    private void onLightAddedInternal(FullLight light) {
+    public void addLightDiscovery(FullLight light) {
         ThingUID thingUID = getThingUID(light);
         ThingTypeUID thingTypeUID = getThingTypeUID(light);
 
@@ -183,27 +176,12 @@ public class HueLightDiscoveryService extends AbstractDiscoveryService
         }
     }
 
-    @Override
-    public void onLightGone(@Nullable HueBridge bridge, FullLight light) {
-        onLightRemovedInternal(light);
-    }
-
-    @Override
-    public void onLightRemoved(@Nullable HueBridge bridge, FullLight light) {
-        onLightRemovedInternal(light);
-    }
-
-    private void onLightRemovedInternal(FullLight light) {
+    public void removeLightDiscovery(FullLight light) {
         ThingUID thingUID = getThingUID(light);
 
         if (thingUID != null) {
             thingRemoved(thingUID);
         }
-    }
-
-    @Override
-    public boolean onLightStateChanged(@Nullable HueBridge bridge, FullLight light) {
-        return false;
     }
 
     private @Nullable ThingUID getThingUID(FullHueObject hueObject) {
@@ -223,12 +201,7 @@ public class HueLightDiscoveryService extends AbstractDiscoveryService
         return thingTypeId != null ? new ThingTypeUID(BINDING_ID, thingTypeId) : null;
     }
 
-    @Override
-    public void onSensorAdded(@Nullable HueBridge bridge, FullSensor sensor) {
-        onSensorAddedInternal(sensor);
-    }
-
-    private void onSensorAddedInternal(FullSensor sensor) {
+    public void addSensorDiscovery(FullSensor sensor) {
         ThingUID thingUID = getThingUID(sensor);
         ThingTypeUID thingTypeUID = getThingTypeUID(sensor);
 

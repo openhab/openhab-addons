@@ -195,7 +195,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         protected void doConnectedRun() throws IOException, ApiException {
             Map<String, FullSensor> lastSensorStateCopy = new HashMap<>(lastSensorStates);
 
-            final SensorStatusListener discovery = discoveryListener;
+            final HueLightDiscoveryService discovery = discoveryListener;
 
             for (final FullSensor sensor : hueBridge.getSensors()) {
                 String sensorId = sensor.getId();
@@ -206,7 +206,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                     logger.debug("Hue sensor '{}' added.", sensorId);
 
                     if (discovery != null) {
-                        discovery.onSensorAdded(hueBridge, sensor);
+                        discovery.addSensorDiscovery(sensor);
                     }
 
                     lastSensorStates.put(sensorId, sensor);
@@ -232,7 +232,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                 }
 
                 if (discovery != null) {
-                    discovery.onSensorRemoved(hueBridge, sensor);
+                    discovery.removeSensorDiscovery(sensor);
                 }
             });
         }
@@ -250,7 +250,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                 lights = hueBridge.getFullConfig().getLights();
             }
 
-            final LightStatusListener discovery = discoveryListener;
+            final HueLightDiscoveryService discovery = discoveryListener;
 
             for (final FullLight fullLight : lights) {
                 final String lightId = fullLight.getId();
@@ -456,9 +456,9 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } else if (e instanceof EntityNotAvailableException) {
             logger.debug("Error while accessing light: {}", e.getMessage(), e);
-            final LightStatusListener discovery = discoveryListener;
+            final HueLightDiscoveryService discovery = discoveryListener;
             if (discovery != null) {
-                discovery.onLightGone(hueBridge, light);
+                discovery.removeLightDiscovery(light);
             }
 
             final LightStatusListener lightStatusListener = lightStatusListeners.get(light.getId());
@@ -478,9 +478,9 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } else if (e instanceof EntityNotAvailableException) {
             logger.debug("Error while accessing sensor: {}", e.getMessage(), e);
-            final SensorStatusListener discovery = discoveryListener;
+            final HueLightDiscoveryService discovery = discoveryListener;
             if (discovery != null) {
-                discovery.onSensorGone(hueBridge, sensor);
+                discovery.removeSensorDiscovery(sensor);
             }
 
             final SensorStatusListener sensorStatusListener = sensorStatusListeners.get(sensor.getId());
@@ -514,9 +514,9 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } else if (e instanceof EntityNotAvailableException) {
             logger.debug("Error while accessing sensor: {}", e.getMessage(), e);
-            final SensorStatusListener discovery = discoveryListener;
+            final HueLightDiscoveryService discovery = discoveryListener;
             if (discovery != null) {
-                discovery.onSensorGone(hueBridge, sensor);
+                discovery.removeSensorDiscovery(sensor);
             }
 
             final SensorStatusListener sensorStatusListener = sensorStatusListeners.get(sensor.getId());
