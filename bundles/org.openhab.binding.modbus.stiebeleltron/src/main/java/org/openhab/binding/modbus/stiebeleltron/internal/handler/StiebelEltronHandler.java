@@ -526,15 +526,15 @@ public class StiebelEltronHandler extends BaseThingHandler {
         SystemStateBlock block = systemstateBlockParser.parse(registers);
         boolean is_heating = (block.state & 16) != 0;
         updateState(channelUID(GROUP_SYSTEM_STATE, CHANNEL_IS_HEATING),
-        is_heating ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
+        is_heating ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
         updateState(channelUID(GROUP_SYSTEM_STATE, CHANNEL_IS_HEATING_WATER),
-                (block.state & 32) != 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
+                (block.state & 32) != 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
         updateState(channelUID(GROUP_SYSTEM_STATE, CHANNEL_IS_COOLING),
-                (block.state & 256) != 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
+                (block.state & 256) != 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
         updateState(channelUID(GROUP_SYSTEM_STATE, CHANNEL_IS_SUMMER),
-                (block.state & 128) != 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
+                (block.state & 128) != 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
         updateState(channelUID(GROUP_SYSTEM_STATE, CHANNEL_IS_PUMPING),
-                (block.state & 1) != 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
+                (block.state & 1) != 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
 
     }
 

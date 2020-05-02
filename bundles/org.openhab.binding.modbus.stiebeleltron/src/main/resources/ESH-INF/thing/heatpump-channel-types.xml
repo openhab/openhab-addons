@@ -103,6 +103,11 @@
 		<label>Power consumption for water today</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
+	<channel-type id="consumption_water_total-type">
+		<item-type>Number:Energy</item-type>
+		<label>Power consumption for water total</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>	
 	<channel-type id="is-heating-type">
 		<item-type>Contact</item-type>
 		<label>Currently heating</label>
