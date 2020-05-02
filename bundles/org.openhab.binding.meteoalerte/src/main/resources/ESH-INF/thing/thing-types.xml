@@ -6,7 +6,7 @@
 	<thing-type id="department">
 		<label>Alertes Département</label>
 		<description>
-			Provides various natural risks on a given department
+			Fournit les niveaux d'alerte météo pour un département.
 		</description>
 
 		<channels>
@@ -166,9 +166,9 @@
 				</options>
 				<limitToOptions>true</limitToOptions>
 			</parameter>
-			<parameter name="refresh" type="integer" min="1" required="true">
-				<label>Refresh Interval</label>
-				<description>Specifies the refresh interval in hours.</description>
+			<parameter name="refresh" type="integer" min="1" required="true" unit="h">
+				<label>Fréquence de rafraichissement</label>
+				<description>Période d'actualisation des données.</description>
 				<default>24</default>
 			</parameter>
 		</config-description>
@@ -195,15 +195,15 @@
 
 	<channel-type id="observation-time" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Observation Time</label>
-		<description>Observation date and time</description>
+		<label>Heure d'observation</label>
+		<description>Date et heure d'observation.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="condition-icon">
 		<item-type>Image</item-type>
 		<label>Icon</label>
-		<description>Icon representing the alert level.</description>
+		<description>Pictogramme associé au niveau d'alerte.</description>
 		<state readOnly="true" />
 	</channel-type>
 </thing:thing-descriptions>

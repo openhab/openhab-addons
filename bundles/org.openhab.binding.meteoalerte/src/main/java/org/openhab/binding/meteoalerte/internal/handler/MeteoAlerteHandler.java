@@ -44,6 +44,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.meteoalerte.internal.MeteoAlerteConfiguration;
 import org.openhab.binding.meteoalerte.internal.json.ApiResponse;
 import org.osgi.framework.FrameworkUtil;
@@ -128,9 +129,10 @@ public class MeteoAlerteHandler extends BaseThingHandler {
                 updateChannels(apiResponse);
             } catch (IOException e) {
                 logger.warn("Error opening connection to Meteo Alerte webservice : {}", e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
         } catch (MalformedURLException e) {
-            logger.error("Malformed URL in Météo Alerte request : {}", queryUrl);
+            logger.warn("Malformed URL in Météo Alerte request : {}", queryUrl);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         }
     }
@@ -199,7 +201,12 @@ public class MeteoAlerteHandler extends BaseThingHandler {
     public void updateAlertString(String channelId, String value) {
         if (!value.isEmpty() && isLinked(channelId)) {
             int level = ALERT_LEVELS.indexOf(value);
-            updateState(channelId, new StringType(Integer.toString(level)));
+            if (level != -1) {
+                updateState(channelId, new StringType(Integer.toString(level)));
+            } else {
+                updateState(channelId, UnDefType.UNDEF);
+                logger.warn("Value {} is not a valid alert level for channel {}", value, channelId);
+            }
         }
     }
 

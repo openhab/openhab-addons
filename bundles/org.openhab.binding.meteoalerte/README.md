@@ -1,5 +1,6 @@
 # Meteo Alerte Binding
 
+The Meteo Alerte binding gives alert level regarding major weather related risk factors.
 
 ## Supported Things
 
@@ -30,7 +31,7 @@ The Météo Alerte information that are retrieved is available as these channels
 
 | Channel ID            | Item Type | Description                                   |
 |-----------------------|-----------|-----------------------------------------------|
-| observationTime       | DateTime  | Date and time of alert creation               |
+| observation-time      | DateTime  | Date and time of alert creation               |
 | comment               | String    | General comments on alerts for the department |
 | vent                  | String    | Wind alert level (*)                          |
 | pluie-inondation      | String    | Rain alert level (*)                          |
@@ -41,6 +42,7 @@ The Météo Alerte information that are retrieved is available as these channels
 | grand-froid           | String    | Cold alert level (*)                          |
 | avalanches            | String    | Avalanche alert level (*)                     |
 | pluie-inondation-icon | Image     | Pictogram of the Rain alert level             |
+| vent-icon             | Image     | Pictogram of the Wind alert level             |
 | orage-icon            | Image     | Pictogram of Storm alert level                |
 | inondation-icon       | Image     | Pictogram of Flood alert level                |
 | neige-icon            | Image     | Pictogram of Snow alert level                 |
@@ -78,6 +80,7 @@ Group gMeteoAlert "Alertes Météo" <weather>
     String  MA_etat_vent                 "Vent [%s]"             <aqi>       (gMeteoAlert)   {channel="meteoalerte:department:yvelines:vent"}
     String  MA_etat_inondation           "Inondation [%s]"       <aqi>       (gMeteoAlert)   {channel="meteoalerte:department:yvelines:inondation"}
     String  MA_etat_orage                "Orage [%s]"            <aqi>       (gMeteoAlert)   {channel="meteoalerte:department:yvelines:orage"}
+    String  MA_etat_avalanche            "Avalanches [%s]"       <aqi>       (gMeteoAlert)   {channel="meteoalerte:department:yvelines:avalanches"}
     
     Image       MA_icon_canicule         "Canicule"              <aqi>       (gMeteoAlert)   {channel="meteoalerte:department:yvelines:canicule-icon"}
     Image       MA_icon_grand_froid      "Grand Froid"           <aqi>       (gMeteoAlert)   {channel="meteoalerte:department:yvelines:grand-froid-icon"}
@@ -86,6 +89,7 @@ Group gMeteoAlert "Alertes Météo" <weather>
     Image       MA_icon_vent             "Vent"                  <aqi>       (gMeteoAlert)   {channel="meteoalerte:department:yvelines:vent-icon"}
     Image       MA_icon_inondation       "Inondation"            <aqi>       (gMeteoAlert)   {channel="meteoalerte:department:yvelines:inondation-icon"}
     Image       MA_icon_orage            "Orage"                 <aqi>       (gMeteoAlert)   {channel="meteoalerte:department:yvelines:orage-icon"}
+    Image       MA_icon_avalanche        "Avalanche"             <aqi>       (gMeteoAlert)   {channel="meteoalerte:department:yvelines:avalanches-icon"}
     
     DateTime    MA_ObservationTS         "Timestamp [%1$tH:%1$tM]"   <time>  (gMeteoAlert)   {channel="meteoalerte:department:yvelines:observation-time"}
 
