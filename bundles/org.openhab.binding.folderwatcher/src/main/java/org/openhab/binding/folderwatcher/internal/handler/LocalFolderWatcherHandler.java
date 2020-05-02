@@ -38,7 +38,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.folderwatcher.internal.common.WatcherCommon;
-import org.openhab.binding.folderwatcher.internal.config.FolderLocalWatcherConfiguration;
+import org.openhab.binding.folderwatcher.internal.config.LocalFolderWatcherConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,8 +51,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class LocalFolderWatcherHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(LocalFolderWatcherHandler.class);
-    private @Nullable FolderLocalWatcherConfiguration config;
-    private @Nullable File currentLocalListingFile;
+    private LocalFolderWatcherConfiguration config = new LocalFolderWatcherConfiguration();
+    private File currentLocalListingFile = new File(ConfigConstants.getUserDataFolder() + File.separator
+            + "FolderWatcher" + File.separator + thing.getUID().getAsString().replace(':', '_') + ".data");
     private @Nullable ScheduledFuture<?> executionJob;
     private List<String> currentLocalListing = new ArrayList<>();
     private List<String> previousLocalListing = new ArrayList<>();
@@ -71,16 +72,13 @@ public class LocalFolderWatcherHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        config = getConfigAs(FolderLocalWatcherConfiguration.class);
+        config = getConfigAs(LocalFolderWatcherConfiguration.class);
         updateStatus(ThingStatus.UNKNOWN);
 
         if (!Files.isDirectory(Paths.get(config.localDir))) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Local directory is not valid");
             return;
         }
-
-        currentLocalListingFile = new File(ConfigConstants.getUserDataFolder() + File.separator + "FolderWatcher"
-                + File.separator + thing.getUID().getAsString().replace(':', '_') + ".data");
         try {
             previousLocalListing = WatcherCommon.initStorage(currentLocalListingFile);
         } catch (IOException e) {
@@ -108,39 +106,44 @@ public class LocalFolderWatcherHandler extends BaseThingHandler {
         }
     }
 
-    @SuppressWarnings("null")
     private void refreshFolderInformation() {
         final String rootDir = config.localDir;
-
         try {
             currentLocalListing.clear();
 
-            Files.walkFileTree(Paths.get(rootDir), new FileVisitor<Path>() {
+            Files.walkFileTree(Paths.get(rootDir), new FileVisitor<@Nullable Path>() {
                 @Override
-                public FileVisitResult preVisitDirectory(Path dir, @Nullable BasicFileAttributes attrs)
+                public FileVisitResult preVisitDirectory(@Nullable Path dir, @Nullable BasicFileAttributes attrs)
                         throws IOException {
-                    if (!dir.equals(Paths.get(rootDir)) && !config.listRecursiveLocal) {
-                        return FileVisitResult.SKIP_SUBTREE;
+                    if (dir != null) {
+                        if (!dir.equals(Paths.get(rootDir)) && !config.listRecursiveLocal) {
+                            return FileVisitResult.SKIP_SUBTREE;
+                        }
                     }
                     return FileVisitResult.CONTINUE;
                 }
 
                 @Override
-                public FileVisitResult visitFile(Path file, @Nullable BasicFileAttributes attrs) throws IOException {
-                    if (Files.isHidden(file) && !config.listHiddenLocal) {
-                        return FileVisitResult.CONTINUE;
+                public FileVisitResult visitFile(@Nullable Path file, @Nullable BasicFileAttributes attrs)
+                        throws IOException {
+                    if (file != null) {
+                        if (Files.isHidden(file) && !config.listHiddenLocal) {
+                            return FileVisitResult.CONTINUE;
+                        }
+                        currentLocalListing.add(file.toAbsolutePath().toString());
                     }
-                    currentLocalListing.add(file.toAbsolutePath().toString());
                     return FileVisitResult.CONTINUE;
                 }
 
                 @Override
-                public FileVisitResult visitFileFailed(Path file, @Nullable IOException exc) throws IOException {
+                public FileVisitResult visitFileFailed(@Nullable Path file, @Nullable IOException exc)
+                        throws IOException {
                     return FileVisitResult.CONTINUE;
                 }
 
                 @Override
-                public FileVisitResult postVisitDirectory(Path dir, @Nullable IOException exc) throws IOException {
+                public FileVisitResult postVisitDirectory(@Nullable Path dir, @Nullable IOException exc)
+                        throws IOException {
                     return FileVisitResult.CONTINUE;
                 }
             });
@@ -148,7 +151,8 @@ public class LocalFolderWatcherHandler extends BaseThingHandler {
             List<String> diffLocalListing = new ArrayList<>(currentLocalListing);
             diffLocalListing.removeAll(previousLocalListing);
             diffLocalListing.forEach(file -> triggerChannel(CHANNEL_NEWFILE, file));
-            if (!diffLocalListing.isEmpty() && currentLocalListingFile != null) {
+
+            if (!diffLocalListing.isEmpty()) {
                 WatcherCommon.saveNewListing(diffLocalListing, currentLocalListingFile);
             }
             previousLocalListing = new ArrayList<>(currentLocalListing);

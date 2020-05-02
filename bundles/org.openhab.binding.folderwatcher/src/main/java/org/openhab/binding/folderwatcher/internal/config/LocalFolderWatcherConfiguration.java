@@ -13,16 +13,15 @@
 package org.openhab.binding.folderwatcher.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link FolderLocalWatcherConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link LocalFolderWatcherConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Alexandr Salamatov - Initial contribution
  */
 @NonNullByDefault
-public class FolderLocalWatcherConfiguration {
-    public @Nullable String localDir;
+public class LocalFolderWatcherConfiguration {
+    public String localDir = new String();
     public boolean listHiddenLocal;
     public int pollIntervalLocal;
     public boolean listRecursiveLocal;

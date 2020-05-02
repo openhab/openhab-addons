@@ -13,24 +13,23 @@
 package org.openhab.binding.folderwatcher.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link FolderWatcherConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link FtpFolderWatcherConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Alexandr Salamatov - Initial contribution
  */
 @NonNullByDefault
-public class FolderWatcherConfiguration {
-    public @Nullable String ftpAddress;
+public class FtpFolderWatcherConfiguration {
+    public String ftpAddress = new String();
     public int ftpPort;
-    public @Nullable String ftpUsername;
-    public @Nullable String ftpPassword;
-    public @Nullable String ftpDir;
+    public String ftpUsername = new String();
+    public String ftpPassword = new String();
+    public String ftpDir = new String();
     public int pollInterval;
     public int connectionTimeout;
     public boolean listHidden;
     public int diffHours;
     public boolean listRecursiveFtp;
-    public @Nullable String secureMode;
+    public String secureMode = new String();
 }

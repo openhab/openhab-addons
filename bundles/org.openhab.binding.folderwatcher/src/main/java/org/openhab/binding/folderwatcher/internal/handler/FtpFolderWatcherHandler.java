@@ -20,7 +20,6 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -39,7 +38,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.folderwatcher.internal.common.WatcherCommon;
-import org.openhab.binding.folderwatcher.internal.config.FolderWatcherConfiguration;
+import org.openhab.binding.folderwatcher.internal.config.FtpFolderWatcherConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,10 +51,10 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class FtpFolderWatcherHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(FtpFolderWatcherHandler.class);
-    private @Nullable FolderWatcherConfiguration config;
+    private FtpFolderWatcherConfiguration config = new FtpFolderWatcherConfiguration();
     private @Nullable File currentFtpListingFile;
     private @Nullable ScheduledFuture<?> executionJob, initJob;
-    private @Nullable FTPClient ftp;
+    private FTPClient ftp = new FTPClient();
     private List<String> currentFtpListing = new ArrayList<>();
     private List<String> previousFtpListing = new ArrayList<>();
 
@@ -73,7 +72,8 @@ public class FtpFolderWatcherHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        config = getConfigAs(FolderWatcherConfiguration.class);
+        File currentFtpListingFile;
+        config = getConfigAs(FtpFolderWatcherConfiguration.class);
         updateStatus(ThingStatus.UNKNOWN);
         if (config.connectionTimeout <= 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -84,33 +84,33 @@ public class FtpFolderWatcherHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "FTP port can't be negative");
             return;
         }
-        if (config.ftpDir == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "FTP directory can't be empty");
-            return;
-        }
         if (config.pollInterval <= 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Polling interval can't be null or negative");
         }
-        final Set<String> ftpModes = Set.of("NONE", "IMPLICIT", "EXPLICIT");
-        if (!ftpModes.contains(config.secureMode)) {
+
+        if (!config.secureMode.matches("(?i)NONE|IMPLICIT|EXPLICIT")) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unsupported secure mode");
             return;
         }
         currentFtpListingFile = new File(ConfigConstants.getUserDataFolder() + File.separator + "FolderWatcher"
                 + File.separator + thing.getUID().getAsString().replace(':', '_') + ".data");
         try {
+            this.currentFtpListingFile = currentFtpListingFile;
             previousFtpListing = WatcherCommon.initStorage(currentFtpListingFile);
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             logger.debug("Can't write file {}, error message {}", currentFtpListingFile, e.getMessage());
             return;
         }
-        initJob = scheduler.scheduleWithFixedDelay(this::connectionKeepAlive, 0, config.pollInterval, TimeUnit.SECONDS);
+        this.initJob = scheduler.scheduleWithFixedDelay(this::connectionKeepAlive, 0, config.pollInterval,
+                TimeUnit.SECONDS);
     }
 
     @Override
     public void dispose() {
+        ScheduledFuture<?> executionJob = this.executionJob;
+        ScheduledFuture<?> initJob = this.initJob;
         if (executionJob != null) {
             executionJob.cancel(true);
         }
@@ -127,8 +127,8 @@ public class FtpFolderWatcherHandler extends BaseThingHandler {
         }
     }
 
-    private List<String> listDirectory(@Nullable FTPClient ftpClient, String parentDir, String currentDir,
-            boolean recursive) throws IOException {
+    private List<String> listDirectory(FTPClient ftpClient, String parentDir, String currentDir, boolean recursive)
+            throws IOException {
         Instant dateNow = Instant.now();
         List<String> dirList = new ArrayList<>();
         final String dirToList = parentDir + ((!currentDir.equals("")) ? ("/" + currentDir) : "");
@@ -159,7 +159,7 @@ public class FtpFolderWatcherHandler extends BaseThingHandler {
     }
 
     private void connectionKeepAlive() {
-        if (ftp == null || ftp.isConnected() == false) {
+        if (ftp.isConnected() == false) {
             if (config.secureMode.equals("NONE")) {
                 ftp = new FTPClient();
             } else {
@@ -213,10 +213,11 @@ public class FtpFolderWatcherHandler extends BaseThingHandler {
                     return;
                 }
                 updateStatus(ThingStatus.ONLINE);
+                ScheduledFuture<?> executionJob = this.executionJob;
                 if (executionJob != null) {
                     executionJob.cancel(true);
                 }
-                executionJob = scheduler.scheduleWithFixedDelay(this::refreshFTPFolderInformation, 0,
+                this.executionJob = scheduler.scheduleWithFixedDelay(this::refreshFTPFolderInformation, 0,
                         config.pollInterval, TimeUnit.SECONDS);
                 return;
             } catch (IOException e) {
@@ -228,7 +229,8 @@ public class FtpFolderWatcherHandler extends BaseThingHandler {
 
     private void refreshFTPFolderInformation() {
         String ftpRootDir = config.ftpDir;
-        if (ftp != null && ftp.isConnected()) {
+        final File currentFtpListingFile = this.currentFtpListingFile;
+        if (ftp.isConnected()) {
             ftp.enterLocalPassiveMode();
             try {
                 if (ftpRootDir.endsWith("/")) {
@@ -238,6 +240,7 @@ public class FtpFolderWatcherHandler extends BaseThingHandler {
                     ftpRootDir = "/" + ftpRootDir;
                 }
                 currentFtpListing.clear();
+
                 currentFtpListing.addAll(listDirectory(ftp, ftpRootDir, "", config.listRecursiveFtp));
                 List<String> diffFtpListing = new ArrayList<>(currentFtpListing);
                 diffFtpListing.removeAll(previousFtpListing);
