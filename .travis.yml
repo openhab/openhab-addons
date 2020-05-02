@@ -1,9 +1,11 @@
 sudo: required
-dist: bionic
+dist: xenial
 
 language: java
 
-jdk: openjdk11
+jdk:
+  - openjdk8
+  - openjdk11
 
 cache:
   directories:

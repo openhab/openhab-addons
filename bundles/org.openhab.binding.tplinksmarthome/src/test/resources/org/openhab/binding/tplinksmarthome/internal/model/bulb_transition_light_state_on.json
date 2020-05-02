@@ -1,0 +1,10 @@
+{
+	"smartlife.iot.smartbulb.lightingservice": {
+		"transition_light_state": {
+			"on_off": 1,
+			"ignore_default": 1,
+			"mode": "normal",
+			"transition_period": 10
+		}
+	}
+}

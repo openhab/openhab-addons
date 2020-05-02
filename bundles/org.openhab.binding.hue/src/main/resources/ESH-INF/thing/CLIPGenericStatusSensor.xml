@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="hue" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- CLIP Generic Status Sensor -->
+	<thing-type id="0840">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>CLIP Generic Status Sensor</label>
+		<description>A generic sensor object for IP sensor use.</description>
+
+		<channels>
+			<channel id="status" typeId="status" />
+			<channel id="last_updated" typeId="last_updated" />
+		</channels>
+
+		<representation-property>uniqueId</representation-property>
+
+		<config-description>
+			<parameter name="sensorId" type="text">
+				<label>Sensor ID</label>
+				<description>The identifier that is used within the hue bridge.</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="on" type="boolean">
+				<label>Sensor Status</label>
+				<description>Enables or disables the sensor.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>

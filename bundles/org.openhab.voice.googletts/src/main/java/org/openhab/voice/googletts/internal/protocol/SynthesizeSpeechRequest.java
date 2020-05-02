@@ -66,4 +66,5 @@ public class SynthesizeSpeechRequest {
     public void setVoice(VoiceSelectionParams voice) {
         this.voice = voice;
     }
+
 }

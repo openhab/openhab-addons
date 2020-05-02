@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="foobot"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Foobot Account -->
+	<bridge-type id="account">
+		<label>Foobot Account</label>
+		<description>Your Foobot account.</description>
+
+		<channels>
+			<channel id="apiKeyLimitRemaining" typeId="api-key-limit-remaining" />
+		</channels>
+
+		<config-description>
+			<parameter name="apiKey" type="text" required="true">
+				<context>password</context>
+				<label>API Key</label>
+				<description>You can request your API Key from https://api.foobot.io/apidoc/index.html</description>
+			</parameter>
+
+			<parameter name="username" type="text" required="true">
+				<label>Username</label>
+				<description>The e-mail address you use to login to your Foobot account</description>
+			</parameter>
+
+			<parameter name="refreshInterval" type="integer" min="5" unit="m">
+				<label>Refresh Interval</label>
+				<description>Specifies the refresh interval in minutes.</description>
+				<default>8</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<!-- Foobot Device -->
+	<thing-type id="device">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account" />
+		</supported-bridge-type-refs>
+
+		<label>Foobot</label>
+		<description>A Foobot device.</description>
+
+		<channels>
+			<channel id="time" typeId="time" />
+			<channel id="pm" typeId="pm" />
+			<channel id="temperature" typeId="temperature" />
+			<channel id="humidity" typeId="humidity" />
+			<channel id="co2" typeId="co2" />
+			<channel id="voc" typeId="voc" />
+			<channel id="gpi" typeId="gpi" />
+		</channels>
+
+		<representation-property>uuid</representation-property>
+
+		<config-description>
+			<parameter name="uuid" type="text" required="true">
+				<label>UUID</label>
+				<description>The device UUID</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="time">
+		<item-type>DateTime</item-type>
+		<label>Last Readout</label>
+		<description>The last time the sensor data was uploaded to Foobot</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="pm">
+		<item-type>Number:Density</item-type>
+		<label>Particulate Matter</label>
+		<description>Particulate Matter Level</description>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+	<channel-type id="humidity">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Humidity</label>
+		<description>Humidity Level</description>
+		<category>Humidity</category>
+		<state readOnly="true" pattern="%d %%" />
+	</channel-type>
+	<channel-type id="co2">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Carbon Dioxide</label>
+		<description>Carbon dioxide Level</description>
+		<category>CarbonDioxide</category>
+		<state readOnly="true" pattern="%d ppm" />
+	</channel-type>
+	<channel-type id="voc">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Volatile Compounds</label>
+		<description>Volatile Organic Compounds Level</description>
+		<state readOnly="true" pattern="%d ppb" />
+	</channel-type>
+	<channel-type id="gpi">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Pollution Index</label>
+		<description>Global Pollution Index Level</description>
+		<state readOnly="true" pattern="%.0f %%" />
+	</channel-type>
+	<channel-type id="api-key-limit-remaining" advanced="true">
+		<item-type>Number</item-type>
+		<label>Remaining Api Limit</label>
+		<description>The remaining number of calls that can be made to the api today</description>
+		<state readOnly="true" pattern="%d" />
+	</channel-type>
+
+</thing:thing-descriptions>

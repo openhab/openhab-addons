@@ -15,30 +15,24 @@ package org.openhab.voice.googletts.internal;
 import static org.openhab.voice.googletts.internal.GoogleTTSService.*;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.audio.AudioFormat;
-import org.openhab.core.audio.AudioStream;
-import org.openhab.core.audio.ByteArrayAudioStream;
-import org.openhab.core.auth.client.oauth2.OAuthFactory;
-import org.openhab.core.config.core.ConfigConstants;
-import org.openhab.core.config.core.ConfigurableService;
-import org.openhab.core.voice.TTSException;
-import org.openhab.core.voice.TTSService;
-import org.openhab.core.voice.Voice;
+import org.eclipse.smarthome.config.core.ConfigConstants;
+import org.eclipse.smarthome.config.core.ConfigurableService;
+import org.eclipse.smarthome.core.audio.AudioFormat;
+import org.eclipse.smarthome.core.audio.AudioStream;
+import org.eclipse.smarthome.core.audio.ByteArrayAudioStream;
+import org.eclipse.smarthome.core.voice.TTSException;
+import org.eclipse.smarthome.core.voice.TTSService;
+import org.eclipse.smarthome.core.voice.Voice;
 import org.openhab.voice.googletts.internal.protocol.AudioEncoding;
 import org.osgi.framework.Constants;
-import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
-import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,9 +74,7 @@ public class GoogleTTSService implements TTSService {
     /**
      * Configuration parameters
      */
-    private static final String PARAM_CLIENT_ID = "clientId";
-    private static final String PARAM_CLIEND_SECRET = "clientSecret";
-    static final String PARAM_AUTHCODE = "authcode";
+    private static final String PARAM_SERVICE_ACCOUNT_KEY = "serviceAccountKey";
     private static final String PARAM_PITCH = "pitch";
     private static final String PARAM_SPEAKING_RATE = "speakingRate";
     private static final String PARAM_VOLUME_GAIN_DB = "volumeGainDb";
@@ -101,23 +93,17 @@ public class GoogleTTSService implements TTSService {
     /**
      * Google Cloud TTS API implementation
      */
-    private @NonNullByDefault({}) GoogleCloudAPI apiImpl;
-    private final ConfigurationAdmin configAdmin;
-    private final OAuthFactory oAuthFactory;
+    private GoogleCloudAPI apiImpl;
 
     /**
      * All voices for all supported locales
      */
     private Set<Voice> allVoices = new HashSet<>();
 
-    private final GoogleTTSConfig config = new GoogleTTSConfig();
-
-    @Activate
-    public GoogleTTSService(final @Reference ConfigurationAdmin configAdmin,
-            final @Reference OAuthFactory oAuthFactory) {
-        this.configAdmin = configAdmin;
-        this.oAuthFactory = oAuthFactory;
-    }
+    /**
+     * Audio format.
+     */
+    private GoogleTTSConfig config = new GoogleTTSConfig();
 
     /**
      * DS activate, with access to ConfigAdmin
@@ -132,7 +118,7 @@ public class GoogleTTSService implements TTSService {
         }
         logger.info("Using cache folder {}", cacheFolder.getAbsolutePath());
 
-        apiImpl = new GoogleCloudAPI(configAdmin, oAuthFactory, cacheFolder);
+        apiImpl = new GoogleCloudAPI(cacheFolder);
         updateConfig(config);
     }
 
@@ -160,7 +146,7 @@ public class GoogleTTSService implements TTSService {
                 logger.trace("Audio format not supported: {}", format);
             }
         }
-        return Collections.unmodifiableSet(result);
+        return result;
     }
 
     /**
@@ -179,7 +165,7 @@ public class GoogleTTSService implements TTSService {
                 logger.trace("Google Cloud TTS voice: {}", voice.getLabel());
             }
         }
-        return Collections.unmodifiableSet(result);
+        return result;
     }
 
     /**
@@ -191,49 +177,41 @@ public class GoogleTTSService implements TTSService {
     private void updateConfig(Map<String, Object> newConfig) {
         logger.debug("Updating configuration");
         if (newConfig != null) {
-            // client id
-            String param = newConfig.containsKey(PARAM_CLIENT_ID) ? newConfig.get(PARAM_CLIENT_ID).toString() : null;
-            config.clientId = param;
+            // account key
+            String param = newConfig.containsKey(PARAM_SERVICE_ACCOUNT_KEY)
+                    ? newConfig.get(PARAM_SERVICE_ACCOUNT_KEY).toString()
+                    : null;
+            config.setServiceAccountKey(param);
             if (param == null) {
-                logger.warn("Missing client id configuration to access Google Cloud TTS API.");
+                logger.error("Missing service account key configuration to access Google Cloud TTS API.");
             }
-            // client secret
-            param = newConfig.containsKey(PARAM_CLIEND_SECRET) ? newConfig.get(PARAM_CLIEND_SECRET).toString() : null;
-            config.clientSecret = param;
-            if (param == null) {
-                logger.warn("Missing client secret configuration to access Google Cloud TTS API.");
-            }
-            // authcode
-            param = newConfig.containsKey(PARAM_AUTHCODE) ? newConfig.get(PARAM_AUTHCODE).toString() : null;
-            config.authcode = param;
 
             // pitch
             param = newConfig.containsKey(PARAM_PITCH) ? newConfig.get(PARAM_PITCH).toString() : null;
             if (param != null) {
-                config.pitch = Double.parseDouble(param);
+                config.setPitch(Double.parseDouble(param));
             }
 
             // speakingRate
             param = newConfig.containsKey(PARAM_SPEAKING_RATE) ? newConfig.get(PARAM_SPEAKING_RATE).toString() : null;
             if (param != null) {
-                config.speakingRate = Double.parseDouble(param);
+                config.setSpeakingRate(Double.parseDouble(param));
             }
 
             // volumeGainDb
             param = newConfig.containsKey(PARAM_VOLUME_GAIN_DB) ? newConfig.get(PARAM_VOLUME_GAIN_DB).toString() : null;
             if (param != null) {
-                config.volumeGainDb = Double.parseDouble(param);
+                config.setVolumeGainDb(Double.parseDouble(param));
             }
 
             // purgeCache
             param = newConfig.containsKey(PARAM_PURGE_CACHE) ? newConfig.get(PARAM_PURGE_CACHE).toString() : null;
             if (param != null) {
-                config.purgeCache = Boolean.parseBoolean(param);
+                config.setPurgeCache(Boolean.parseBoolean(param));
             }
             logger.trace("New configuration: {}", config.toString());
 
-            if (config.clientId != null && !config.clientId.isEmpty() && config.clientSecret != null
-                    && !config.clientSecret.isEmpty()) {
+            if (config.getServiceAccountKey() != null) {
                 apiImpl.setConfig(config);
                 if (apiImpl.isInitialized()) {
                     allVoices = initVoices();
@@ -241,7 +219,7 @@ public class GoogleTTSService implements TTSService {
                 }
             }
         } else {
-            logger.warn("Missing Google Cloud TTS configuration.");
+            logger.error("Missing Google Cloud TTS configuration.");
         }
     }
 
@@ -251,7 +229,7 @@ public class GoogleTTSService implements TTSService {
     }
 
     @Override
-    public String getLabel(@Nullable Locale locale) {
+    public String getLabel(Locale locale) {
         return SERVICE_NAME;
     }
 
@@ -271,7 +249,7 @@ public class GoogleTTSService implements TTSService {
      * @param format Google audio format.
      * @return Audio format object.
      */
-    private @Nullable AudioFormat getAudioFormat(String format) {
+    private AudioFormat getAudioFormat(String format) {
         Integer bitDepth = 16;
         Long frequency = 44100L;
 

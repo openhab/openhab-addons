@@ -2,12 +2,8 @@
 
 [ $# -lt 3 ] && { echo "Usage: $0 <BindingIdInCamelCase> <Author> <GitHub Username>"; exit 1; }
 
-<<<<<<< HEAD
 openHABCoreVersion=2.5.0
 openHABVersion=2.5.4-SNAPSHOT
-=======
-openHABVersion=3.0.0-SNAPSHOT
->>>>>>> fdaf61a557629afe95d43120e5fe9fc3cc7bd705
 
 camelcaseId=$1
 id=`echo $camelcaseId | tr '[:upper:]' '[:lower:]'`

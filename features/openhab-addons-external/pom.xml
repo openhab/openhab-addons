@@ -1,27 +1,14 @@
-<<<<<<< HEAD
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-=======
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
->>>>>>> fdaf61a557629afe95d43120e5fe9fc3cc7bd705
 
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.openhab.addons.features.karaf</groupId>
     <artifactId>org.openhab.addons.reactor.features.karaf</artifactId>
-<<<<<<< HEAD
     <version>2.5.4-SNAPSHOT</version>
   </parent>
 
   <artifactId>openhab-addons-external</artifactId>
-=======
-    <version>3.0.0-SNAPSHOT</version>
-  </parent>
-
-  <artifactId>org.openhab.addons.features.karaf.openhab-addons-external3</artifactId>
->>>>>>> fdaf61a557629afe95d43120e5fe9fc3cc7bd705
   <packaging>pom</packaging>
 
   <name>openHAB Add-ons :: Features :: Karaf :: Add-ons External</name>
@@ -42,26 +29,16 @@
             <configuration>
               <artifacts>
                 <artifact>
-<<<<<<< HEAD
                   <file>src/main/resources/conf/voicerss.cfg</file>
-=======
-                  <file>src/main/resources/conf/dynamodb.cfg</file>
                   <type>cfg</type>
-                  <classifier>dynamodb</classifier>
+                  <classifier>voicerss</classifier>
                 </artifact>
                 <artifact>
-                  <file>src/main/resources/conf/influxdb.cfg</file>
->>>>>>> fdaf61a557629afe95d43120e5fe9fc3cc7bd705
+                  <file>src/main/resources/conf/openhabcloud.cfg</file>
                   <type>cfg</type>
-                  <classifier>influxdb</classifier>
+                  <classifier>openhabcloud</classifier>
                 </artifact>
                 <artifact>
-                  <file>src/main/resources/conf/jdbc.cfg</file>
-                  <type>cfg</type>
-                  <classifier>jdbc</classifier>
-                </artifact>
-                <artifact>
-<<<<<<< HEAD
                   <file>src/main/resources/conf/exec.whitelist</file>
                   <type>cfg</type>
                   <classifier>exec.whitelist</classifier>
@@ -70,21 +47,11 @@
                   <file>src/main/resources/lib/libLeap.dylib</file>
                   <type>lib</type>
                   <classifier>libLeap</classifier>
-=======
-                  <file>src/main/resources/conf/jpa.cfg</file>
-                  <type>cfg</type>
-                  <classifier>jpa</classifier>
->>>>>>> fdaf61a557629afe95d43120e5fe9fc3cc7bd705
                 </artifact>
                 <artifact>
-                  <file>src/main/resources/conf/mapdb.cfg</file>
-                  <type>cfg</type>
-                  <classifier>mapdb</classifier>
-                </artifact>
-                <artifact>
-                  <file>src/main/resources/conf/rrd4j.cfg</file>
-                  <type>cfg</type>
-                  <classifier>rrd4j</classifier>
+                  <file>src/main/resources/lib/libLeapJava.dylib</file>
+                  <type>lib</type>
+                  <classifier>libLeapJava</classifier>
                 </artifact>
               </artifacts>
             </configuration>

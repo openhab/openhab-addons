@@ -1,17 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.openhab.addons</groupId>
     <artifactId>org.openhab.addons.reactor</artifactId>
-<<<<<<< HEAD
     <version>2.5.4-SNAPSHOT</version>
-=======
-    <version>3.0.0-SNAPSHOT</version>
->>>>>>> fdaf61a557629afe95d43120e5fe9fc3cc7bd705
   </parent>
 
   <groupId>org.openhab.addons.bundles</groupId>
@@ -21,7 +16,6 @@
   <name>openHAB Add-ons :: Bundles</name>
 
   <modules>
-<<<<<<< HEAD
     <!-- io -->
     <module>org.openhab.io.homekit</module>
     <module>org.openhab.io.hueemulation</module>
@@ -248,16 +242,12 @@
     <module>org.openhab.extensionservice.marketplace</module>
     <module>org.openhab.extensionservice.marketplace.automation</module>
     <!-- voice -->
-=======
-    <module>org.openhab.persistence.dynamodb</module>
-    <module>org.openhab.persistence.influxdb</module>
-    <module>org.openhab.persistence.jdbc</module>
-    <module>org.openhab.persistence.jpa</module>
-    <module>org.openhab.persistence.mapdb</module>
-    <module>org.openhab.persistence.mongodb</module>
-    <module>org.openhab.persistence.rrd4j</module>
->>>>>>> fdaf61a557629afe95d43120e5fe9fc3cc7bd705
     <module>org.openhab.voice.googletts</module>
+    <module>org.openhab.voice.mactts</module>
+    <module>org.openhab.voice.marytts</module>
+    <module>org.openhab.voice.picotts</module>
+    <module>org.openhab.voice.pollytts</module>
+    <module>org.openhab.voice.voicerss</module>
   </modules>
 
   <dependencies>
@@ -361,7 +351,7 @@
                   <descriptor>file:${project.build.directory}/feature/feature.xml</descriptor>
                 </descriptors>
                 <distribution>org.apache.karaf.features:framework</distribution>
-                <javase>${oh.java.version}</javase>
+                <javase>1.8</javase>
                 <framework>
                   <feature>framework</feature>
                 </framework>

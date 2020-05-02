@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="heos"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<!-- Thing Type -->
+	<bridge-type id="bridge">
+		<label>HEOS Bridge</label>
+		<description>The HEOS System Bridge</description>
+		<channels>
+			<channel typeId="reboot" id="Reboot"></channel>
+			<channel typeId="buildGroup" id="BuildGroup"></channel>
+		</channels>
+		<representation-property>Role</representation-property>
+		<config-description>
+			<parameter name="ipAddress" type="text">
+				<context>network-address</context>
+				<label>Network Address</label>
+				<description>Network address of the HEOS bridge.</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="username" type="text">
+				<label>Username</label>
+				<description>Username for login to the HEOS account.</description>
+				<required>false</required>
+			</parameter>
+			<parameter name="password" type="text">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password for login to the HEOS account</description>
+				<required>false</required>
+			</parameter>
+			<parameter name="heartbeat" type="integer" min="0" max="3600" unit="s">
+				<required>false</required>
+				<unitLabel>seconds</unitLabel>
+				<label>Heartbeat</label>
+				<description>The time in seconds for the HEOS Heartbeat (default = 60 s)</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>
+

@@ -37,4 +37,5 @@ public class ListVoicesResponse {
     public void setVoices(List<Voice> voices) {
         this.voices = voices;
     }
+
 }

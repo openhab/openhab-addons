@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dsmr"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="gj_v3_0" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="dsmrBridge" />
+		</supported-bridge-type-refs>
+
+		<label>GJ Meter (DSMR V3.0)</label>
+		<description>This is a Giga Joule meter that complies to the DSMR V3.0 specification.</description>
+
+		<channels>
+			<channel id="meter_device_type" typeId="deviceType" />
+			<channel id="meter_equipment_identifier" typeId="equipmentIdType" />
+			<channel id="gjmeter_value_v3" typeId="gjValueType" />
+			<channel id="meter_valve_switch_position" typeId="gjValvePositionType" />
+		</channels>
+		<config-description-ref uri="thing-type:dsmr:meterdescriptor" />
+	</thing-type>
+</thing:thing-descriptions>

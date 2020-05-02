@@ -12,47 +12,86 @@
  */
 package org.openhab.voice.googletts.internal;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-
 /**
  * Voice service implementation.
  *
  * @author Gabor Bicskei - Initial contribution
  */
-@NonNullByDefault
 class GoogleTTSConfig {
     /**
-     * Access to Google Cloud Platform
+     * JSON key to access Google service
      */
-    public @Nullable String clientId;
-    public @Nullable String clientSecret;
-    public @Nullable String authcode;
+    private String serviceAccountKey;
 
     /**
      * Pitch
      */
-    public Double pitch = 0d;
-
-    /**
-     * Volume Gain
-     */
-    public Double volumeGainDb = 0d;
+    private Double pitch = 0d;
 
     /**
      * Speaking Rate
      */
-    public Double speakingRate = 1d;
+    private Double speakingRate = 1d;
 
     /**
      * Purge cache after configuration changes.
      */
-    public Boolean purgeCache = Boolean.FALSE;
+    private Boolean purgeCache;
+
+    /**
+     * Volume gain
+     */
+    private Double volumeGainDb = 0d;
+
+    String getServiceAccountKey() {
+        return serviceAccountKey;
+    }
+
+    void setServiceAccountKey(String serviceAccountKey) {
+        this.serviceAccountKey = serviceAccountKey;
+    }
+
+    Double getPitch() {
+        return pitch;
+    }
+
+    void setPitch(Double pitch) {
+        this.pitch = pitch;
+    }
+
+    Double getSpeakingRate() {
+        return speakingRate;
+    }
+
+    void setSpeakingRate(Double speakingRate) {
+        this.speakingRate = speakingRate;
+    }
+
+    Double getVolumeGainDb() {
+        return volumeGainDb;
+    }
+
+    void setVolumeGainDb(Double volumeGainDb) {
+        this.volumeGainDb = volumeGainDb;
+    }
+
+    Boolean getPurgeCache() {
+        return purgeCache;
+    }
+
+    void setPurgeCache(Boolean purgeCache) {
+        this.purgeCache = purgeCache;
+    }
 
     @Override
     public String toString() {
-        return "GoogleTTSConfig{pitch=" + pitch + ", speakingRate=" + speakingRate + ", volumeGainDb=" + volumeGainDb
-                + ", purgeCache=" + purgeCache + '}';
+        return "GoogleTTSConfig{" +
+                "serviceAccountKey='" + serviceAccountKey + '\'' +
+                ", pitch=" + pitch +
+                ", speakingRate=" + speakingRate +
+                ", volumeGainDb=" + volumeGainDb +
+                ", purgeCache=" + purgeCache +
+                '}';
     }
 
     String toConfigString() {

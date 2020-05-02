@@ -1,21 +1,11 @@
-<<<<<<< HEAD
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-=======
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
->>>>>>> fdaf61a557629afe95d43120e5fe9fc3cc7bd705
 
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.openhab.addons.bom</groupId>
     <artifactId>org.openhab.addons.reactor.bom</artifactId>
-<<<<<<< HEAD
     <version>2.5.4-SNAPSHOT</version>
-=======
-    <version>3.0.0-SNAPSHOT</version>
->>>>>>> fdaf61a557629afe95d43120e5fe9fc3cc7bd705
   </parent>
 
   <artifactId>org.openhab.addons.bom.openhab-addons</artifactId>
@@ -26,31 +16,26 @@
   <dependencies>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
-<<<<<<< HEAD
       <artifactId>org.openhab.binding.adorne</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.airquality</artifactId>
-=======
-      <artifactId>org.openhab.persistence.dynamodb</artifactId>
->>>>>>> fdaf61a557629afe95d43120e5fe9fc3cc7bd705
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
-      <artifactId>org.openhab.persistence.influxdb</artifactId>
+      <artifactId>org.openhab.binding.airvisualnode</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
-      <artifactId>org.openhab.persistence.jdbc</artifactId>
+      <artifactId>org.openhab.binding.allplay</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
-<<<<<<< HEAD
       <artifactId>org.openhab.binding.amazondashbutton</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -1082,23 +1067,15 @@
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.io.webaudio</artifactId>
-=======
-      <artifactId>org.openhab.persistence.jpa</artifactId>
->>>>>>> fdaf61a557629afe95d43120e5fe9fc3cc7bd705
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
-<<<<<<< HEAD
       <artifactId>org.openhab.transform.bin2json</artifactId>
-=======
-      <artifactId>org.openhab.persistence.mapdb</artifactId>
->>>>>>> fdaf61a557629afe95d43120e5fe9fc3cc7bd705
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
-<<<<<<< HEAD
       <artifactId>org.openhab.transform.exec</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -1120,19 +1097,56 @@
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.transform.map</artifactId>
-=======
-      <artifactId>org.openhab.persistence.mongodb</artifactId>
->>>>>>> fdaf61a557629afe95d43120e5fe9fc3cc7bd705
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
-      <artifactId>org.openhab.persistence.rrd4j</artifactId>
+      <artifactId>org.openhab.transform.regex</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.transform.scale</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.transform.xpath</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.transform.xslt</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.voice.googletts</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.voice.mactts</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.voice.marytts</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.voice.picotts</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.voice.pollytts</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.voice.voicerss</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

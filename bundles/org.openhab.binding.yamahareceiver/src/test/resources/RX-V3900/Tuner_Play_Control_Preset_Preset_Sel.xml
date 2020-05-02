@@ -1,0 +1,9 @@
+<YAMAHA_AV rsp="GET" RC="0">
+    <Tuner>
+        <Play_Control>
+            <Preset>
+                <Preset_Sel>A1</Preset_Sel>
+            </Preset>
+        </Play_Control>
+    </Tuner>
+</YAMAHA_AV>

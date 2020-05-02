@@ -1,21 +1,11 @@
-<<<<<<< HEAD
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-=======
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
->>>>>>> fdaf61a557629afe95d43120e5fe9fc3cc7bd705
 
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.openhab.addons</groupId>
     <artifactId>org.openhab.addons.reactor</artifactId>
-<<<<<<< HEAD
     <version>2.5.4-SNAPSHOT</version>
-=======
-    <version>3.0.0-SNAPSHOT</version>
->>>>>>> fdaf61a557629afe95d43120e5fe9fc3cc7bd705
   </parent>
 
   <groupId>org.openhab.addons.itests</groupId>
@@ -25,7 +15,6 @@
   <name>openHAB Add-ons :: Integration Tests</name>
 
   <modules>
-<<<<<<< HEAD
     <module>org.openhab.binding.astro.tests</module>
     <module>org.openhab.binding.avmfritz.tests</module>
     <module>org.openhab.binding.feed.tests</module>
@@ -45,9 +34,6 @@
     <!-- disable itests for mqtt temporarily 
     <module>org.openhab.io.mqttembeddedbroker.tests</module>
     -->
-=======
-    <module>org.openhab.persistence.mapdb.tests</module>
->>>>>>> fdaf61a557629afe95d43120e5fe9fc3cc7bd705
   </modules>
 
   <dependencies>

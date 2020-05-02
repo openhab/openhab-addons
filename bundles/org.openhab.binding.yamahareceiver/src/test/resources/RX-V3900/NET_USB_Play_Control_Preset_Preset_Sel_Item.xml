@@ -1,0 +1,40 @@
+<YAMAHA_AV rsp="GET" RC="0">
+    <NET_USB>
+        <Play_Control>
+            <Preset>
+                <Preset_Sel_Item>
+                    <Item_1>
+                        <Param>B1</Param>
+                        <RW>W</RW>
+                        <Title>1 :NET RADIO</Title>
+                    </Item_1>
+                    <Item_2>
+                        <Param>B2</Param>
+                        <RW>W</RW>
+                        <Title>2 :NET RADIO</Title>
+                    </Item_2>
+                    <Item_3>
+                        <Param>B3</Param>
+                        <RW>W</RW>
+                        <Title>3 :NET RADIO</Title>
+                    </Item_3>
+                    <Item_4>
+                        <Param>B4</Param>
+                        <RW>W</RW>
+                        <Title>4 :NET RADIO</Title>
+                    </Item_4>
+                    <Item_5>
+                        <Param>B5</Param>
+                        <RW>W</RW>
+                        <Title>5 :NET RADIO</Title>
+                    </Item_5>
+                    <Item_6>
+                        <Param>B6</Param>
+                        <RW>W</RW>
+                        <Title>6 :NET RADIO</Title>
+                    </Item_6>
+                </Preset_Sel_Item>
+            </Preset>
+        </Play_Control>
+    </NET_USB>
+</YAMAHA_AV>

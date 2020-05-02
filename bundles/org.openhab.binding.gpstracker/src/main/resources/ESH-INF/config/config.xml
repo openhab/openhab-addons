@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+		xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+		https://openhab.org/schemas/config-description-1.0.0.xsd">
+	<config-description uri="thing-type:gpstracker:tracker">
+		<parameter name="trackerId" type="text" required="true">
+			<label>Tracker Id</label>
+			<description>Id configured in tracker application.</description>
+			<advanced>false</advanced>
+		</parameter>
+	</config-description>
+	<config-description uri="channel-type:gpstracker:distance">
+		<parameter name="regionName" type="text" required="true">
+			<label>Region Name</label>
+			<description>Region name payload for trigger channel event</description>
+			<advanced>false</advanced>
+			<limitToOptions>false</limitToOptions>
+		</parameter>
+		<parameter name="regionRadius" type="decimal" required="true" min="0">
+			<label>Region Radius</label>
+			<description>Region circle radius in m or yd</description>
+			<default>100</default>
+			<advanced>false</advanced>
+		</parameter>
+		<parameter name="regionCenterLocation" type="text" required="true">
+			<context>location</context>
+			<label>Region Center</label>
+			<description>Location of the region center</description>
+			<advanced>false</advanced>
+		</parameter>
+		<parameter name="accuracyThreshold" type="decimal" required="true" min="0">
+			<label>Accuracy Threshold</label>
+			<description>Location accuracy threshold in m or yd (0 to disable)</description>
+			<default>0</default>
+			<advanced>false</advanced>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>
