@@ -29,6 +29,11 @@ import org.eclipse.smarthome.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The {@link SomfyShadeHandler} is responsible for handling commands for shades
+ *
+ * @author Chris Johnson - Initial contribution
+ */
 @NonNullByDefault
 public class SomfyShadeHandler extends BaseThingHandler {
 

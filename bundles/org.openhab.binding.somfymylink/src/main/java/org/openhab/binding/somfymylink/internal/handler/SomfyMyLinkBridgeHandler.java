@@ -353,11 +353,11 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                         message += new String(readBuff, 0, readCount);
 
                         // try and parse the message
-                        logger.debug("Got response: " + message);
+                        logger.debug("Got response: {}", message);
 
                         try {
                             SomfyMyLinkResponseBase response = parseResponse(message, responseType);
-                            logger.debug("Got full message: " + message);
+                            logger.debug("Got full message: {}", message);
                             return response;
                         } catch (SomfyMyLinkException e) {
                             // trouble parsing the message, probably incomplete
@@ -379,14 +379,13 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
 
                 return null;
             } catch (SocketTimeoutException e) {
-                logger.info("Timeout sending command to mylink: " + command + "Message: " + e.getMessage());
+                logger.info("Timeout sending command to mylink: {} Message: {}", command, e.getMessage());
                 throw new SomfyMyLinkException("Timeout sending command to mylink", e);
             } catch (IOException e) {
-                logger.info("Problem sending command to mylink: " + command + "Message: " + e.getMessage());
+                logger.info("Problem sending command to mylink: {} Message: {}", command, e.getMessage());
                 throw new SomfyMyLinkException("Problem sending command to mylink", e);
             } catch (InterruptedException e) {
-                logger.debug("Interrupted while waiting after sending command to mylink: " + command + "Message: "
-                        + e.getMessage());
+                logger.debug("Interrupted while waiting after sending command to mylink: {} Message: {}", command, e.getMessage());
                 return null;
             }
         }
@@ -411,7 +410,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
             throw new SomfyMyLinkException("Config not setup correctly");
         }
 
-        logger.debug("Getting connection to mylink on:" + config.ipAddress + " Post: " + MYLINK_PORT);
+        logger.debug("Getting connection to mylink on: {}  Post: {}", config.ipAddress, MYLINK_PORT);
         String myLinkAddress = config.ipAddress;
         Socket socket = new Socket(myLinkAddress, MYLINK_PORT);
         socket.setSoTimeout(MYLINK_DEFAULT_TIMEOUT);

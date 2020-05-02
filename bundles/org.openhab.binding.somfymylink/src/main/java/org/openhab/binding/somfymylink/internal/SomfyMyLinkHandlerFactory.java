@@ -33,6 +33,9 @@ import org.openhab.binding.somfymylink.internal.handler.SomfyShadeHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
+/**
+ * @author Chris Johnson - Initial contribution
+ */
 @NonNullByDefault
 @Component(configurationPid = "binding.somfymylink", service = ThingHandlerFactory.class)
 public class SomfyMyLinkHandlerFactory extends BaseThingHandlerFactory {

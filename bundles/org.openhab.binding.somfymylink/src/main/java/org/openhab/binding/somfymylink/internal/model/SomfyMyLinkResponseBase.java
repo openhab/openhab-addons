@@ -15,6 +15,9 @@ package org.openhab.binding.somfymylink.internal.model;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
+/**
+ * @author Chris Johnson - Initial contribution
+ */
 @NonNullByDefault
 public class SomfyMyLinkResponseBase {
 

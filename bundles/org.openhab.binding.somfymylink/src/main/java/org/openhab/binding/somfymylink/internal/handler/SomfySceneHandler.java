@@ -25,6 +25,11 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 
+/**
+ * The {@link SomfySceneHandler} is responsible for handling commands for scenes
+ *
+ * @author Chris Johnson - Initial contribution
+ */
 @NonNullByDefault
 public class SomfySceneHandler extends BaseThingHandler {
 

@@ -39,6 +39,11 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The {@link SomfyMyLinkDeviceDiscoveryService} is responsible discovering things connected to the mylink.
+ *
+ * @author Chris Johnson - Initial contribution
+ */
 @NonNullByDefault
 public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService {
 

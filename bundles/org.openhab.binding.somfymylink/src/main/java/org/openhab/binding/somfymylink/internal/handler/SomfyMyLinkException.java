@@ -14,6 +14,11 @@ package org.openhab.binding.somfymylink.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+/**
+ * The {@link SomfyMyLinkException} is for throwing errors from the mylink binding
+ *
+ * @author Chris Johnson - Initial contribution
+ */
 @NonNullByDefault
 public class SomfyMyLinkException extends RuntimeException {
 
