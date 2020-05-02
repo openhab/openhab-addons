@@ -43,7 +43,6 @@ public class LGWebOSBindingConstants {
      */
     public static final String CONFIG_HOST = "host";
     public static final String CONFIG_KEY = "key";
-    public static final String CONFIG_MAC_ADDRESS = "macAddress";
 
     /*
      * Property names must match property names in

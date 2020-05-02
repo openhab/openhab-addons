@@ -35,7 +35,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSHandler;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSTVMouseSocket.ButtonType;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSTVSocket;
-import org.openhab.binding.lgwebos.internal.handler.LGWebOSTVSocket.State;
 import org.openhab.binding.lgwebos.internal.handler.command.ServiceSubscription;
 import org.openhab.binding.lgwebos.internal.handler.core.AppInfo;
 import org.openhab.binding.lgwebos.internal.handler.core.ResponseListener;
@@ -248,7 +247,7 @@ public class LGWebOSActions implements ThingActions {
         LGWebOSHandler lgWebOSHandler = getLGWebOSHandler();
         final LGWebOSTVSocket socket = lgWebOSHandler.getSocket();
 
-        if (socket.getState() != State.REGISTERED) {
+        if (!socket.isConnected()) {
             logger.warn("Device with ThingID {} is currently not connected.", lgWebOSHandler.getThing().getUID());
             return Optional.empty();
         }
