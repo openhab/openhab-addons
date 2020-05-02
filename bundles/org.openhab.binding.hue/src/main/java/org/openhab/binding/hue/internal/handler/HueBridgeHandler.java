@@ -745,6 +745,10 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     public boolean registerDiscoveryListener(HueLightDiscoveryService listener) {
         if (discoveryListener == null) {
             discoveryListener = listener;
+
+            getFullLights().forEach(listener::addLightDiscovery);
+            getFullSensors().forEach(listener::addSensorDiscovery);
+
             return true;
         }
 
