@@ -141,23 +141,34 @@ public class OpenGarageHandler extends BaseThingHandler {
         if (controllerVariables != null) {
             updateState(OpenGarageBindingConstants.CHANNEL_OG_DISTANCE,
                     new QuantityType<>(controllerVariables.dist, MetricPrefix.CENTI(SIUnits.METRE)));
-            if (controllerVariables.door == 0) {
-                updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS, OnOffType.OFF);
-                updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_SWITCH, OnOffType.OFF);
-                updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_ROLLERSHUTTER, UpDownType.DOWN);
-                updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_CONTACT, OpenClosedType.CLOSED);
-            } else if (controllerVariables.door == 1) {
-                updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS, OnOffType.ON);
-                updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_SWITCH, OnOffType.ON);
-                updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_ROLLERSHUTTER, UpDownType.UP);
-                updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_CONTACT, OpenClosedType.OPEN);
+            switch(controllerVariables.door){
+                case 0:
+                    updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS, OnOffType.OFF);
+                    updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_SWITCH, OnOffType.OFF);
+                    updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_ROLLERSHUTTER, UpDownType.DOWN);
+                    updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_CONTACT, OpenClosedType.CLOSED);
+                    break;
+                case 1:
+                    updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS, OnOffType.ON);
+                    updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_SWITCH, OnOffType.ON);
+                    updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_ROLLERSHUTTER, UpDownType.UP);
+                    updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_CONTACT, OpenClosedType.OPEN);
+                    break;
+                default:
+                    logger.warn("Received unknown door value: {}", controllerVariables.door);
             }
-            if (controllerVariables.vehicle == 0) {
-                updateState(OpenGarageBindingConstants.CHANNEL_OG_VEHICLE, new StringType("No vehicle detected"));
-            } else if (controllerVariables.vehicle == 1) {
-                updateState(OpenGarageBindingConstants.CHANNEL_OG_VEHICLE, new StringType("Vehicle detected"));
-            } else if (controllerVariables.vehicle == 2) {
-                updateState(OpenGarageBindingConstants.CHANNEL_OG_VEHICLE, new StringType("Vehicle Status Unknown"));
+            switch(controllerVariables.vehicle){
+                case 0:
+                    updateState(OpenGarageBindingConstants.CHANNEL_OG_VEHICLE, new StringType("No vehicle detected"));
+                    break;
+                case 1:
+                    updateState(OpenGarageBindingConstants.CHANNEL_OG_VEHICLE, new StringType("Vehicle detected"));
+                    break;
+                case 2:
+                    updateState(OpenGarageBindingConstants.CHANNEL_OG_VEHICLE, new StringType("Vehicle Status Unknown"));
+                    break;
+                default:
+                    logger.warn("Received unknown vehicle value: {}", controllerVariables.vehicle);
             }
         }
     }
