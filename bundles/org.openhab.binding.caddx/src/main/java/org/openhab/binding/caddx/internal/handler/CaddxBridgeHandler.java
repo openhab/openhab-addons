@@ -269,8 +269,9 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
                 break;
             case CaddxBindingConstants.PANEL_LOG_EVENT_REQUEST:
                 msg = new CaddxMessage(CaddxMessageType.Log_Event_Request, data);
+                break;
             default:
-                logger.trace("Unknown command {}", command);
+                logger.debug("Unknown command {}", command);
                 return false;
         }
 
