@@ -68,8 +68,9 @@ public class VitotronicDiscoveryService extends AbstractDiscoveryService {
         }
 
         if (thingUID != null) {
-            logger.trace("Adding new Discovery thingType: {} bridgeType: {}", thingUID.getThingTypeUID().getId(),
-                    bridgeUID.getThingTypeUID().getId());
+            logger.trace("Adding new Discovery thingType: {} bridgeType: {}", thingUID.getThingTypeId(),
+                    bridgeUID.getThingTypeId());
+
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
                     .withLabel(thingID).build();
             logger.trace("call register: {} label: {}", discoveryResult.getBindingId(), discoveryResult.getLabel());
