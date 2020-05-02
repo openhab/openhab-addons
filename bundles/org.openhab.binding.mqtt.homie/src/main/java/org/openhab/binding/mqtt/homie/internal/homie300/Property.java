@@ -41,7 +41,6 @@ import org.openhab.binding.mqtt.generic.mapping.AbstractMqttAttributeClass.Attri
 import org.openhab.binding.mqtt.generic.values.ColorValue;
 import org.openhab.binding.mqtt.generic.values.NumberValue;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
-import org.openhab.binding.mqtt.generic.values.PercentageValue;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.homie.generic.internal.MqttBindingConstants;
@@ -194,11 +193,8 @@ public class Property implements AttributeChanged {
                 if (step != null && !isDecimal && step.intValue() <= 0) {
                     step = new BigDecimal(1);
                 }
-                if (attributes.unit != null && attributes.unit.contains("%")) {
-                    value = new PercentageValue(min, max, step, null, null);
-                } else {
-                    value = new NumberValue(min, max, step, attributes.unit);
-                }
+
+                value = new NumberValue(min, max, step, attributes.unit);
                 break;
             case string_:
             case unknown:
