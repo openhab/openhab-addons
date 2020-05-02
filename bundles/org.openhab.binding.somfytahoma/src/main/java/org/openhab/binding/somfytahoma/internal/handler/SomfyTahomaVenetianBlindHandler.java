@@ -38,12 +38,15 @@ public class SomfyTahomaVenetianBlindHandler extends SomfyTahomaBaseThingHandler
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         super.handleCommand(channelUID, command);
-        if (!CONTROL.equals(channelUID.getId()) && !ORIENTATION.equals(channelUID.getId())) {
+        if (!CONTROL.equals(channelUID.getId()) && !ORIENTATION.equals(channelUID.getId()) && !CLOSURE_AND_ORIENTATION.equals(channelUID.getId())) {
             return;
         }
 
         if (command instanceof RefreshType) {
             return;
+        } else if (CLOSURE_AND_ORIENTATION.equals(channelUID.getId())) {
+            String param = "[" + command.toString() + "]";
+            sendCommand(COMMAND_SET_CLOSURE_ORIENTATION, param);
         } else {
             String cmd = getTahomaCommand(command.toString(), channelUID.getId());
             if (COMMAND_MY.equals(cmd)) {

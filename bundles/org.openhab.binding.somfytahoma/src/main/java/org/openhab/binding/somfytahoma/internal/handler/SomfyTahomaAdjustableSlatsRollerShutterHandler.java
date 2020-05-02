@@ -87,7 +87,10 @@ public class SomfyTahomaAdjustableSlatsRollerShutterHandler extends SomfyTahomaB
             if (OnOffType.ON.equals(command)) {
                 sendCommand(COMMAND_SET_ROCKERPOSITION);
             }
-        } else {
+        } else if (CLOSURE_AND_ORIENTATION.equals(channelUID.getId())) {
+            String param = "[" + command.toString() + "]";
+            sendCommand(COMMAND_SET_CLOSURE_ORIENTATION, param);
+        }else {
             String cmd = getTahomaCommand(command.toString(), channelUID.getId());
             if (COMMAND_SET_ROCKERPOSITION.equals(cmd)) {
                 String executionId = getCurrentExecutions();
