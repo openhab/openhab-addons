@@ -165,18 +165,18 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
     }
 
     public void handleCommand(String channel, Command command) {
+        HueClient bridgeHandler = getHueClient();
+        if (bridgeHandler == null) {
+            logger.warn("hue bridge handler not found. Cannot handle command without bridge.");
+            return;
+        }
+
         // updateSensorState
         final FullSensor sensor = lastFullSensor;
         if (sensor == null) {
             logger.debug("hue sensor not known on bridge. Cannot handle command.");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-wrong-sensor-id");
-            return;
-        }
-
-        HueClient bridgeHandler = getHueClient();
-        if (bridgeHandler == null) {
-            logger.warn("hue bridge handler not found. Cannot handle command without bridge.");
             return;
         }
 
