@@ -34,15 +34,9 @@ public class NeoHubReadDcbResponse {
 
     @SerializedName("CORF")
     private String degreesCorF;
-    @SerializedName("Firmware version")
-    private Integer firmwareVersion;
 
     public Unit<?> getTemperatureUnit() {
         return "F".equalsIgnoreCase(degreesCorF) ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS;
-    }
-
-    public String getFirmwareVersion() {
-        return firmwareVersion.toString();
     }
 
     /**

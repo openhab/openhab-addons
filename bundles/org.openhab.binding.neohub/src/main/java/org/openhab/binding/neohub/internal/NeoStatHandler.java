@@ -64,5 +64,7 @@ public class NeoStatHandler extends NeoBaseHandler {
         toOpenHabSendValueDebounced(CHAN_STAT_OUTPUT_STATE,
                 (deviceInfo.isHeating() || deviceInfo.isPreHeating() ? new StringType(VAL_HEATING)
                         : new StringType(VAL_OFF)));
+
+        toOpenHabSendValueDebounced(CHAN_BATTERY_LOW_ALARM, OnOffType.from(deviceInfo.isBatteryLow()));
     }
 }

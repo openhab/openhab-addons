@@ -170,7 +170,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
             return NeoHubReturnResult.SUCCEEDED;
         } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-            logger.warn("set value error \"{}\"", e.getMessage());
+            logger.warn(MSG_FMT_SET_VALUE_ERR, commandStr, e.getMessage());
             return NeoHubReturnResult.ERR_COMMUNICATION;
         }
     }
@@ -194,13 +194,13 @@ public class NeoHubHandler extends BaseBridgeHandler {
             NeoHubInfoResponse newInfoResponse = NeoHubInfoResponse.createInfoResponse(response);
 
             if (newInfoResponse == null) {
-                logger.warn(MSG_FMT_POLL_ERR, "failed to create INFO Response");
+                logger.warn(MSG_FMT_INFO_POLL_ERR, "failed to create INFO Response");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 return null;
             }
 
             if (newInfoResponse.getDevices() == null) {
-                logger.warn(MSG_FMT_POLL_ERR, "no devices found");
+                logger.warn(MSG_FMT_INFO_POLL_ERR, "no devices found");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 return null;
             }
@@ -211,7 +211,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
 
             return newInfoResponse;
         } catch (Exception e) {
-            logger.warn(MSG_FMT_POLL_ERR, e.getMessage());
+            logger.warn(MSG_FMT_INFO_POLL_ERR, e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             return null;
         }
@@ -231,13 +231,13 @@ public class NeoHubHandler extends BaseBridgeHandler {
             NeoHubReadDcbResponse dcbResponse = NeoHubReadDcbResponse.createReadDcbResponse(response);
 
             if (dcbResponse == null) {
-                logger.warn(MSG_FMT_POLL_ERR, "failed to create DCB Response");
+                logger.warn(MSG_FMT_DCB_POLL_ERR, "failed to create DCB Response");
                 return null;
             }
 
             return dcbResponse;
         } catch (Exception e) {
-            logger.warn(MSG_FMT_POLL_ERR, e.getMessage());
+            logger.warn(MSG_FMT_DCB_POLL_ERR, e.getMessage());
             return null;
         }
     }
