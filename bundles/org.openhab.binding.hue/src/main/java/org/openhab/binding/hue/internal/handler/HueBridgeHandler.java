@@ -531,19 +531,8 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
 
     private synchronized void onUpdate() {
         if (hueBridge != null) {
-            // start light and group polling only if a light handler or a group handler has been registered,
-            // otherwise stop polling
-            if (lightStatusListeners.isEmpty() && groupStatusListeners.isEmpty()) {
-                stopLightPolling();
-            } else {
-                startLightPolling();
-            }
-            // start sensor polling only if a sensor handler has been registered, otherwise stop polling
-            if (sensorStatusListeners.isEmpty()) {
-                stopSensorPolling();
-            } else {
-                startSensorPolling();
-            }
+            startLightPolling();
+            startSensorPolling();
         }
     }
 
@@ -687,8 +676,6 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     public boolean registerLightStatusListener(LightStatusListener lightStatusListener) {
         boolean result = lightStatusListeners.add(lightStatusListener);
         if (result && hueBridge != null) {
-            // start light and group polling only if a light handler has been registered
-            startLightPolling();
             // inform the listener initially about all lights and their states
             for (FullLight light : lastLightStates.values()) {
                 lightStatusListener.onLightAdded(hueBridge, light);
@@ -699,22 +686,13 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
 
     @Override
     public boolean unregisterLightStatusListener(LightStatusListener lightStatusListener) {
-        boolean result = lightStatusListeners.remove(lightStatusListener);
-        if (result) {
-            // stop the light and group polling
-            if (lightStatusListeners.isEmpty() && groupStatusListeners.isEmpty()) {
-                stopLightPolling();
-            }
-        }
-        return result;
+        return lightStatusListeners.remove(lightStatusListener);
     }
 
     @Override
     public boolean registerSensorStatusListener(SensorStatusListener sensorStatusListener) {
         boolean result = sensorStatusListeners.add(sensorStatusListener);
         if (result && hueBridge != null) {
-            // start sensor polling only if a sensor handler has been registered
-            startSensorPolling();
             // inform the listener initially about all sensors and their states
             for (FullSensor sensor : lastSensorStates.values()) {
                 sensorStatusListener.onSensorAdded(hueBridge, sensor);
@@ -725,22 +703,13 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
 
     @Override
     public boolean unregisterSensorStatusListener(SensorStatusListener sensorStatusListener) {
-        boolean result = sensorStatusListeners.remove(sensorStatusListener);
-        if (result) {
-            // stop sensor polling
-            if (sensorStatusListeners.isEmpty()) {
-                stopSensorPolling();
-            }
-        }
-        return result;
+        return sensorStatusListeners.remove(sensorStatusListener);
     }
 
     @Override
     public boolean registerGroupStatusListener(GroupStatusListener groupStatusListener) {
         boolean result = groupStatusListeners.add(groupStatusListener);
         if (result && hueBridge != null) {
-            // start light and group polling only if a group handler has been registered
-            startLightPolling();
             // inform the listener initially about all groups and their states
             for (FullGroup group : lastGroupStates.values()) {
                 groupStatusListener.onGroupAdded(hueBridge, group);
@@ -751,14 +720,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
 
     @Override
     public boolean unregisterGroupStatusListener(GroupStatusListener groupStatusListener) {
-        boolean result = groupStatusListeners.remove(groupStatusListener);
-        if (result) {
-            // stop the light and group polling
-            if (lightStatusListeners.isEmpty() && groupStatusListeners.isEmpty()) {
-                stopLightPolling();
-            }
-        }
-        return result;
+        return groupStatusListeners.remove(groupStatusListener);
     }
 
     @Override
