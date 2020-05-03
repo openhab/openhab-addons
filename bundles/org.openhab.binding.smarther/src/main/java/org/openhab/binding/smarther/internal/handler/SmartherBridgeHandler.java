@@ -16,6 +16,10 @@ import static org.openhab.binding.smarther.internal.SmartherBindingConstants.*;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.net.InetAddress;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -91,7 +96,7 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
     private @NonNullByDefault({}) SmartherBridgeConfiguration config;
 
     // Bridge local status
-    private @NonNullByDefault({}) ExpiringCache<List<Location>> locationCache;
+    private @NonNullByDefault({}) ExpiringCache<@NonNull List<Location>> locationCache;
     private @NonNullByDefault({}) BridgeStatus bridgeStatus;
 
     public SmartherBridgeHandler(Bridge bridge, OAuthFactory oAuthFactory, HttpClient httpClient) {
@@ -501,26 +506,33 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
             if (maybeLocation.isPresent()) {
                 Location location = maybeLocation.get();
                 if (!location.hasSubscription()) {
-                    // Call gateway to register plant subscription
-                    String subscriptionId = addSubscription(plantId, config.getNotificationUrl());
-                    logger.debug("Bridge[{}] Notification registered: [plantId={}, subscriptionId={}]", thing.getUID(),
-                            plantId, subscriptionId);
+                    // Validate notification Url (must be non-null and https)
+                    final String notificationUrl = config.getNotificationUrl();
+                    if (isValidNotificationUrl(notificationUrl)) {
+                        // Call gateway to register plant subscription
+                        String subscriptionId = addSubscription(plantId, config.getNotificationUrl());
+                        logger.debug("Bridge[{}] Notification registered: [plantId={}, subscriptionId={}]",
+                                thing.getUID(), plantId, subscriptionId);
 
-                    // Add the new subscription to notifications list
-                    List<String> notifications = config.addNotification(subscriptionId);
+                        // Add the new subscription to notifications list
+                        List<String> notifications = config.addNotification(subscriptionId);
 
-                    // Save the updated notifications list back to bridge config
-                    Configuration configuration = editConfiguration();
-                    configuration.put(PROPERTY_NOTIFICATIONS, notifications);
-                    updateConfiguration(configuration);
+                        // Save the updated notifications list back to bridge config
+                        Configuration configuration = editConfiguration();
+                        configuration.put(PROPERTY_NOTIFICATIONS, notifications);
+                        updateConfiguration(configuration);
 
-                    // Update the local locationCache with the added data
-                    locations.stream().forEach(l -> {
-                        if (l.getPlantId().equals(plantId)) {
-                            l.setSubscription(subscriptionId, config.getNotificationUrl());
-                        }
-                    });
-                    locationCache.putValue(locations);
+                        // Update the local locationCache with the added data
+                        locations.stream().forEach(l -> {
+                            if (l.getPlantId().equals(plantId)) {
+                                l.setSubscription(subscriptionId, config.getNotificationUrl());
+                            }
+                        });
+                        locationCache.putValue(locations);
+                    } else {
+                        logger.warn("Bridge[{}] Invalid notification Url [{}]: must be non-null, public https address",
+                                thing.getUID(), notificationUrl);
+                    }
                 }
             }
         }
@@ -586,6 +598,27 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
                     locationCache.putValue(locations);
                 }
             }
+        }
+    }
+
+    /**
+     * Check whether the passed string is a formally valid Notification Url (non-null, public https address).
+     *
+     * @param notificationUrl The string to be checked.
+     * @return true if the string is a valid Notification Url, false otherwise.
+     */
+    private boolean isValidNotificationUrl(String notificationUrl) {
+        try {
+            URI maybeValidUrl = new URI(notificationUrl);
+            if (HTTPS_SCHEMA.equals(maybeValidUrl.getScheme())) {
+                InetAddress address = InetAddress.getByName(maybeValidUrl.getHost());
+                if (!address.isLoopbackAddress() && !address.isSiteLocalAddress()) {
+                    return true;
+                }
+            }
+            return false;
+        } catch (URISyntaxException | UnknownHostException e) {
+            return false;
         }
     }
 

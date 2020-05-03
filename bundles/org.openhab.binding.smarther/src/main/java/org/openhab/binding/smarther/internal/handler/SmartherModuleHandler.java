@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import javax.measure.quantity.Temperature;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -77,13 +78,13 @@ public class SmartherModuleHandler extends BaseThingHandler {
     private final ChannelUID endDateChannelUID;
 
     // Field members assigned in initialize method
-    private @NonNullByDefault({}) ScheduledCompletableFuture<Void> jobFuture;
+    private @NonNullByDefault({}) ScheduledCompletableFuture<@NonNull Void> jobFuture;
     private @NonNullByDefault({}) Future<?> pollFuture;
     private @NonNullByDefault({}) SmartherBridgeHandler bridgeHandler;
     private @NonNullByDefault({}) SmartherModuleConfiguration config;
 
     // Chronothermostat local status
-    private @NonNullByDefault({}) ExpiringCache<List<Program>> programCache;
+    private @NonNullByDefault({}) ExpiringCache<@NonNull List<Program>> programCache;
     private @NonNullByDefault({}) Chronothermostat chronothermostat;
     private @NonNullByDefault({}) ModuleSettings moduleSettings;
 

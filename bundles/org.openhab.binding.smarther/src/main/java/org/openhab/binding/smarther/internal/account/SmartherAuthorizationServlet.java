@@ -118,7 +118,7 @@ public class SmartherAuthorizationServlet extends HttpServlet {
         final StringBuffer requestURL = req.getRequestURL();
 
         // Try to infer the real protocol from request headers
-        final String realProtocol = StringUtils.defaultIfBlank(req.getHeader(X_FORWARDED_PROTO), req.getProtocol());
+        final String realProtocol = StringUtils.defaultIfBlank(req.getHeader(X_FORWARDED_PROTO), req.getScheme());
 
         return requestURL.replace(0, requestURL.indexOf(":"), realProtocol).toString();
     }

@@ -30,21 +30,23 @@ Follow the instructions in the tutorial at https://developer.legrand.com/tutoria
 * Step 2 : Check scopes
 * Step 3 : Getting application details
 
-Usually, Step 3 is then completed by Legrand within 1-2 days and you'll receive an email containing your application's Client ID and Client Secret.
+When registering your new Legrand Application for openHAB Smarther Bridge you have to specify the allowed Reply URL, aka white-listed address. Here you have to specify the URL to the Bridge Authorization page on your server.
 
-When registering your new Legrand Application for openHAB Smarther Bridge you have to specify the allowed "Reply URL" aka white-listed address. Here you have to specify the URL to the Bridge Authorization Servlet on your server.
-
-For example if you run your openHAB server on http://openhabianpi:8080 you should set `http://openhabianpi:8080/smarther/connectsmarther` as the "Reply URL" required field in Step 1.
+For example if you run your openHAB server on http://openhabianpi:8080 you should set `http://openhabianpi:8080/smarther/connectsmarther` as the "First Reply URL" required field in Step 1. Other Reply URLs (second, third, etc.) you can leave them blank.
 
 This is **very important** since the authorize process with Legrand takes place using your client web browser and Legrand will have to know the right URL to your openHAB server for the authorization to be completed. When you have authorized with Legrand, this Redirect URI is where authorization tokens for your openHAB Smarther Brigde will be sent and they have to be received by the servlet on `/smarther/connectsmarther`.
+
+![Application 1](src/main/resources/images/application-1.png)
+
+On Step 2, please make sure to select both `comfort.read` and `comfort.write` scopes, as they're mandatory for the binding to work.
+
+![Application 2](src/main/resources/images/application-2.png)
+
+Usually, Step 3 is then completed by Legrand within 1-2 days and you'll receive an email containing your application's Client ID and Client Secret.
 
 ### Note on notifications
 
 If you want to later receive push notifications (device status) from Legrand for this application, you must have your openHAB server reacheable from a public IP/address and use the related public IP/address and public port when filling-in the "Reply URL" field in Step 1.
-
-### Note on Step 2
-
-Please make sure to select both `comfort.read` and `comfort.write` scopes, as they're mandatory for the binding to work.
 
 ## Configure the binding
 
@@ -54,7 +56,7 @@ Please make sure to select both `comfort.read` and `comfort.write` scopes, as th
 4. Go to your preferred openHAB admin UI and add a new Thing - select the **"Smarther Bridge"**. Choose new Id for the bridge, unless you like the generated one. Put in your _Primary Key_ (in _Subscription Key_ field), _Client ID_ and _Cliend Secret_ in their respective fields of the bridge configuration. Set _Use Notifications_ to `ON` if your openHAB server is reacheable from a public https URL (see [Note on notifications](#note-on-notifications)), set `OFF` otherwise. You can leave the _Bridge Status Refresh Period_ as is. Save the bridge.
 5. The bridge thing will stay in state _INITIALIZING_ and eventually go _OFFLINE_ - this is fine, as you now have to authorize this bridge with Legrand.
 6. Go to the authorization page of your server (see [Create an application](#create-an-application)) `http://<your openHAB address>:<your openHAB port>/smarther/connectsmarther`. Your newly added bridge should be listed there (along with the available locations).
-7. Press the _"Authorize Bridge"_ button. This will take you either to the login page of Legrand portal or directly to the authorization screen. Login and/or authorize the application. If the Reply URL is correct you will be returned and the entry should show your Bridge is authorized with your Client ID; if not, go back to your application configuration on Legrand portal and ensure you have the right Reply URL.
+7. Press the _"Authorize Bridge"_ button. This will take you either to the login page of Legrand portal or directly to the authorization screen. Login and/or authorize the application. If the Reply URL is correct you will be returned and the entry should show your Bridge is authorized with your Client ID; otherwise, go back to your application configuration on Legrand portal and ensure you have set the right Reply URL (see [Troubleshooting](#troubleshooting) below).
 8. The binding will be updated with a refresh token and go _ONLINE_. The refresh token is used to re-authorize the bridge with Legrand Smarther API whenever required.
 
 ![Tutorial 1](src/main/resources/images/tutorial-1.png)
@@ -89,6 +91,24 @@ The following configuration options are available on the Smarther Chronothermost
 | programsRefreshPeriod | This is the frequency the Smarther API gateway is called to refresh Programs list used in "automatic" mode (in hours)                              |           |
 | numberOfEndDays       | This is the number of days to be displayed in module settings, as options list for "End Date" field in "manual" mode                               |           |
 | statusRefreshPeriod   | This is the frequency of the polling requests to the Smarther API to update the module status and sensor data (in minutes)                         |           |
+
+## Troubleshooting
+
+When configuring the binding (see step 7 [here](#configure-the-binding)), you can receive the following error from Legrand portal:
+
+```
+{
+  "error": "invalid_request",
+  "error_description": "The reply url host xxxxx doesn't match with the ones configured on the application"
+}
+```
+
+This means you've either opened the `/smarther/connectsmarther` page from the wrong address or set the wrong "Reply URL" attribute in your application (see step 1 [here](#create-an-application)). Please remember these two strings must match for authentication process to work.
+
+To solve the issue, either:
+
+* Correct the address you're accessing the `/smarther/connectsmarther` page from, to match the "Reply URL" attribute registered in your application, or
+* Should you have specified a wrong "Reply URL" attribute in your application, go to the Legrand portal and correct it accordingly then resubmit the application for approval.
 
 ## Supported Things
 

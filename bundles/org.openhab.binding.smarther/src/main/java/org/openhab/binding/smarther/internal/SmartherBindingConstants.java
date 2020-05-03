@@ -35,6 +35,9 @@ public class SmartherBindingConstants {
     public static final String DATE_FORMAT = "dd/MM/yyyy";
     public static final String DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 
+    // Generic constants
+    public static final String HTTPS_SCHEMA = "https";
+
     // List of BTicino/Legrand API gateway related urls, information
     public static final String SMARTHER_ACCOUNT_URL = "https://partners-login.eliotbylegrand.com";
     public static final String SMARTHER_AUTHORIZE_URL = SMARTHER_ACCOUNT_URL + "/authorize";
