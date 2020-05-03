@@ -20,6 +20,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.openhab.binding.ecobee.internal.dto.thermostat.AlertDTO;
 import org.openhab.binding.ecobee.internal.dto.thermostat.EventDTO;
 import org.openhab.binding.ecobee.internal.dto.thermostat.HouseDetailsDTO;
@@ -375,6 +376,12 @@ public class EcobeeBindingConstants {
     public static final String CH_SENSOR_TYPE = "type";
     public static final String CH_SENSOR_CODE = "code";
     public static final String CH_SENSOR_IN_USE = "inUse";
+
+    // Channel Type UIDs for dynamically created sensor channels
+    public static final ChannelTypeUID CHANNELTYPEUID_TEMPERATURE = new ChannelTypeUID("ecobee:sensorTemperature");
+    public static final ChannelTypeUID CHANNELTYPEUID_HUMIDITY = new ChannelTypeUID("ecobee:sensorHumidity");
+    public static final ChannelTypeUID CHANNELTYPEUID_OCCUPANCY = new ChannelTypeUID("ecobee:sensorOccupancy");
+    public static final ChannelTypeUID CHANNELTYPEUID_GENERIC = new ChannelTypeUID("ecobee:sensorGeneric");
 
     public static final AlertDTO EMPTY_ALERT = new AlertDTO();
     public static final EventDTO EMPTY_EVENT = new EventDTO();
