@@ -13,12 +13,18 @@
 package org.openhab.io.homekit;
 
 import java.io.IOException;
+import java.util.List;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
+import io.github.hapjava.accessories.HomekitAccessory;
 
 /**
  * HomeKit integration API
  *
  * @author Andy Lintner - Initial contribution
  */
+@NonNullByDefault
 public interface Homekit {
 
     /**
@@ -37,4 +43,9 @@ public interface Homekit {
      * @param allow boolean indicating whether or not to allow unauthenticated requests
      */
     void allowUnauthenticatedRequests(boolean allow);
+
+    /**
+     * returns list of HomeKit accessories registered at bridge.
+     */
+    List<HomekitAccessory> getAccessories();
 }

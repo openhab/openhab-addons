@@ -12,42 +12,43 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.smarthome.core.items.ItemRegistry;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.items.RollershutterItem;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
+import org.openhab.io.homekit.internal.HomekitCharacteristicType;
+import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
-import io.github.hapjava.HomekitCharacteristicChangeCallback;
-import io.github.hapjava.accessories.BasicWindowCovering;
-import io.github.hapjava.accessories.properties.WindowCoveringPositionState;
+import io.github.hapjava.accessories.WindowCoveringAccessory;
+import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
+import io.github.hapjava.characteristics.impl.windowcovering.PositionStateEnum;
+import io.github.hapjava.services.impl.WindowCoveringService;
 
 /**
  *
  * @author epike - Initial contribution
  */
-public class HomekitWindowCoveringImpl extends AbstractHomekitAccessoryImpl<RollershutterItem>
-        implements BasicWindowCovering {
+public class HomekitWindowCoveringImpl extends AbstractHomekitAccessoryImpl implements WindowCoveringAccessory {
 
-    public HomekitWindowCoveringImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
-            HomekitAccessoryUpdater updater) {
-        super(taggedItem, itemRegistry, updater, RollershutterItem.class);
+    public HomekitWindowCoveringImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
+            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
+        super(taggedItem, mandatoryCharacteristics, updater, settings);
+        this.getServices().add(new WindowCoveringService(this));
     }
 
     @Override
     public CompletableFuture<Integer> getCurrentPosition() {
-        PercentType value = getItem().getStateAs(PercentType.class);
-        if (value == null) {
-            return CompletableFuture.completedFuture(null);
-        }
-        return CompletableFuture.completedFuture(100 - value.intValue());
+        PercentType value = getStateAs(HomekitCharacteristicType.CURRENT_POSITION, PercentType.class);
+        return CompletableFuture.completedFuture(value != null ? 100 - value.intValue() : 100);
     }
 
     @Override
-    public CompletableFuture<WindowCoveringPositionState> getPositionState() {
-        return CompletableFuture.completedFuture(WindowCoveringPositionState.STOPPED);
+    public CompletableFuture<PositionStateEnum> getPositionState() {
+        return CompletableFuture.completedFuture(PositionStateEnum.STOPPED);
     }
 
     @Override
@@ -57,13 +58,17 @@ public class HomekitWindowCoveringImpl extends AbstractHomekitAccessoryImpl<Roll
 
     @Override
     public CompletableFuture<Void> setTargetPosition(int value) throws Exception {
-        ((RollershutterItem) getItem()).send(new PercentType(100 - value));
+        final @Nullable RollershutterItem item = getItem(HomekitCharacteristicType.TARGET_POSITION,
+                RollershutterItem.class);
+        if (item != null) {
+            item.send(new PercentType(100 - value));
+        }
         return CompletableFuture.completedFuture(null);
     }
 
     @Override
     public void subscribeCurrentPosition(HomekitCharacteristicChangeCallback callback) {
-        getUpdater().subscribe(getItem(), callback);
+        subscribe(HomekitCharacteristicType.CURRENT_POSITION, callback);
     }
 
     @Override
@@ -73,12 +78,12 @@ public class HomekitWindowCoveringImpl extends AbstractHomekitAccessoryImpl<Roll
 
     @Override
     public void subscribeTargetPosition(HomekitCharacteristicChangeCallback callback) {
-        getUpdater().subscribe(getItem(), "targetPosition", callback);
+        subscribe(HomekitCharacteristicType.TARGET_POSITION, callback);
     }
 
     @Override
     public void unsubscribeCurrentPosition() {
-        getUpdater().unsubscribe(getItem());
+        unsubscribe(HomekitCharacteristicType.CURRENT_POSITION);
     }
 
     @Override
@@ -88,6 +93,6 @@ public class HomekitWindowCoveringImpl extends AbstractHomekitAccessoryImpl<Roll
 
     @Override
     public void unsubscribeTargetPosition() {
-        getUpdater().unsubscribe(getItem(), "targetPosition");
+        unsubscribe(HomekitCharacteristicType.CURRENT_POSITION);
     }
 }

@@ -12,72 +12,52 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.smarthome.core.items.GenericItem;
-import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
+import org.openhab.io.homekit.internal.HomekitCharacteristicType;
+import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
-import org.openhab.io.homekit.internal.battery.BatteryStatus;
 
-import io.github.hapjava.HomekitCharacteristicChangeCallback;
-import io.github.hapjava.accessories.BatteryStatusAccessory;
-import io.github.hapjava.accessories.ContactSensor;
-import io.github.hapjava.accessories.properties.ContactState;
+import io.github.hapjava.accessories.ContactSensorAccessory;
+import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
+import io.github.hapjava.characteristics.impl.contactsensor.ContactStateEnum;
+import io.github.hapjava.services.impl.ContactSensorService;
 
 /**
  *
- * @author Philipp Arndt - Initial contribution; Tim Harper - support for battery status
+ * @author Philipp Arndt - Initial contribution
  */
-public class HomekitContactSensorImpl extends AbstractHomekitAccessoryImpl<GenericItem>
-        implements ContactSensor, BatteryStatusAccessory {
-    private BatteryStatus batteryStatus;
-    private BooleanItemReader contactSensedReader;
+public class HomekitContactSensorImpl extends AbstractHomekitAccessoryImpl implements ContactSensorAccessory {
+    private final BooleanItemReader contactSensedReader;
 
-    public HomekitContactSensorImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
-            HomekitAccessoryUpdater updater, BatteryStatus batteryStatus) {
-        super(taggedItem, itemRegistry, updater, GenericItem.class);
-        this.contactSensedReader = new BooleanItemReader(taggedItem.getItem(), OnOffType.OFF, OpenClosedType.CLOSED);
-        this.batteryStatus = batteryStatus;
+    public HomekitContactSensorImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
+            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
+        super(taggedItem, mandatoryCharacteristics, updater, settings);
+        this.contactSensedReader = new BooleanItemReader(
+                getItem(HomekitCharacteristicType.CONTACT_SENSOR_STATE, GenericItem.class), OnOffType.ON,
+                OpenClosedType.OPEN);
+        getServices().add(new ContactSensorService(this));
     }
 
     @Override
-    public CompletableFuture<ContactState> getCurrentState() {
-        Boolean contactDetected = contactSensedReader.getValue();
-        if (contactDetected == null) {
-            // BUG - HAP-java does not currently handle null well here, so we'll default to not detected.
-            return CompletableFuture.completedFuture(ContactState.NOT_DETECTED);
-        } else if (contactDetected) {
-            return CompletableFuture.completedFuture(ContactState.DETECTED);
-        } else {
-            return CompletableFuture.completedFuture(ContactState.NOT_DETECTED);
-        }
+    public CompletableFuture<ContactStateEnum> getCurrentState() {
+        Boolean isOpen = contactSensedReader.getValue();
+        return CompletableFuture
+                .completedFuture((isOpen == Boolean.TRUE) ? ContactStateEnum.NOT_DETECTED : ContactStateEnum.DETECTED);
     }
 
     @Override
     public void subscribeContactState(HomekitCharacteristicChangeCallback callback) {
-        getUpdater().subscribe(getItem(), callback);
+        subscribe(HomekitCharacteristicType.CONTACT_SENSOR_STATE, callback);
     }
 
     @Override
     public void unsubscribeContactState() {
-        getUpdater().unsubscribe(getItem());
-    }
-
-    @Override
-    public CompletableFuture<Boolean> getLowBatteryState() {
-        return CompletableFuture.completedFuture(batteryStatus.isLow());
-    }
-
-    @Override
-    public void subscribeLowBatteryState(HomekitCharacteristicChangeCallback callback) {
-        batteryStatus.subscribe(getUpdater(), callback);
-    }
-
-    @Override
-    public void unsubscribeLowBatteryState() {
-        batteryStatus.unsubscribe(getUpdater());
+        unsubscribe(HomekitCharacteristicType.CONTACT_SENSOR_STATE);
     }
 }

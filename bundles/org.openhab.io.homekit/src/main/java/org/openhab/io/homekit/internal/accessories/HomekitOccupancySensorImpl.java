@@ -12,63 +12,52 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.smarthome.core.items.GenericItem;
-import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
+import org.openhab.io.homekit.internal.HomekitCharacteristicType;
+import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
-import org.openhab.io.homekit.internal.battery.BatteryStatus;
 
-import io.github.hapjava.HomekitCharacteristicChangeCallback;
-import io.github.hapjava.accessories.BatteryStatusAccessory;
-import io.github.hapjava.accessories.OccupancySensor;
+import io.github.hapjava.accessories.OccupancySensorAccessory;
+import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
+import io.github.hapjava.characteristics.impl.occupancysensor.OccupancyDetectedEnum;
+import io.github.hapjava.services.impl.OccupancySensorService;
 
 /**
  *
  * @author Tim Harper - Initial contribution
  */
-public class HomekitOccupancySensorImpl extends AbstractHomekitAccessoryImpl<GenericItem>
-        implements OccupancySensor, BatteryStatusAccessory {
-    private BatteryStatus batteryStatus;
-    private BooleanItemReader occupancySensedReader;
+public class HomekitOccupancySensorImpl extends AbstractHomekitAccessoryImpl implements OccupancySensorAccessory {
+    private final BooleanItemReader occupancySensedReader;
 
-    public HomekitOccupancySensorImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
-            HomekitAccessoryUpdater updater, BatteryStatus batteryStatus) {
-        super(taggedItem, itemRegistry, updater, GenericItem.class);
-        this.occupancySensedReader = new BooleanItemReader(taggedItem.getItem(), OnOffType.ON, OpenClosedType.OPEN);
-        this.batteryStatus = batteryStatus;
+    public HomekitOccupancySensorImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
+            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
+        super(taggedItem, mandatoryCharacteristics, updater, settings);
+        this.occupancySensedReader = new BooleanItemReader(
+                getItem(HomekitCharacteristicType.OCCUPANCY_DETECTED_STATE, GenericItem.class), OnOffType.ON,
+                OpenClosedType.OPEN);
+        getServices().add(new OccupancySensorService(this));
     }
 
     @Override
-    public CompletableFuture<Boolean> getOccupancyDetected() {
-        return CompletableFuture.completedFuture(occupancySensedReader.getValue());
+    public CompletableFuture<OccupancyDetectedEnum> getOccupancyDetected() {
+        return (this.occupancySensedReader.getValue() != null && this.occupancySensedReader.getValue())
+                ? CompletableFuture.completedFuture(OccupancyDetectedEnum.DETECTED)
+                : CompletableFuture.completedFuture(OccupancyDetectedEnum.NOT_DETECTED);
     }
 
     @Override
     public void subscribeOccupancyDetected(HomekitCharacteristicChangeCallback callback) {
-        getUpdater().subscribe(getItem(), callback);
+        subscribe(HomekitCharacteristicType.OCCUPANCY_DETECTED_STATE, callback);
     }
 
     @Override
     public void unsubscribeOccupancyDetected() {
-        getUpdater().unsubscribe(getItem());
-    }
-
-    @Override
-    public CompletableFuture<Boolean> getLowBatteryState() {
-        return CompletableFuture.completedFuture(batteryStatus.isLow());
-    }
-
-    @Override
-    public void subscribeLowBatteryState(HomekitCharacteristicChangeCallback callback) {
-        batteryStatus.subscribe(getUpdater(), callback);
-    }
-
-    @Override
-    public void unsubscribeLowBatteryState() {
-        batteryStatus.unsubscribe(getUpdater());
+        unsubscribe(HomekitCharacteristicType.OCCUPANCY_DETECTED_STATE);
     }
 }
