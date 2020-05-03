@@ -68,6 +68,7 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
     private @Nullable HueClient hueClient;
 
     private @Nullable ScheduledFuture<?> scheduledFuture;
+    private @Nullable FullGroup lastFullGroup;
 
     public HueGroupHandler(Thing thing) {
         super(thing);
@@ -336,13 +337,17 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
     }
 
     @Override
-    public void onGroupStateChanged(@Nullable HueBridge bridge, FullGroup group) {
+    public boolean onGroupStateChanged(@Nullable HueBridge bridge, FullGroup group) {
         logger.trace("onGroupStateChanged() was called for group {}", group.getId());
 
-        if (!group.getId().equals(groupId)) {
-            logger.trace("Received state change for another handler's group ({}). Will be ignored.", group.getId());
-            return;
+        final FullGroup lastState = lastFullGroup;
+        if (lastState == null || !lastState.getState().equals(group.getState())) {
+            lastFullGroup = group;
+        } else {
+            return true;
         }
+
+        logger.trace("New state for group {}", groupId);
 
         lastSentColorTemp = null;
         lastSentBrightness = null;
@@ -377,11 +382,7 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
 
         updateState(CHANNEL_SWITCH, state.isOn() ? OnOffType.ON : OnOffType.OFF);
 
-        StringType stringType = LightStateConverter.toAlertStringType(state);
-        if (!"NULL".equals(stringType.toString())) {
-            updateState(CHANNEL_ALERT, stringType);
-            scheduleAlertStateRestore(stringType);
-        }
+        return true;
     }
 
     @Override
@@ -468,5 +469,10 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
         }
 
         return delay;
+    }
+
+    @Override
+    public String getGroupId() {
+        return groupId;
     }
 }

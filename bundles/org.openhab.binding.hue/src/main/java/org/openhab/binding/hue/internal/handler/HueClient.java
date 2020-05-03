@@ -19,6 +19,7 @@ import org.openhab.binding.hue.internal.FullGroup;
 import org.openhab.binding.hue.internal.FullLight;
 import org.openhab.binding.hue.internal.FullSensor;
 import org.openhab.binding.hue.internal.StateUpdate;
+import org.openhab.binding.hue.internal.discovery.HueLightDiscoveryService;
 
 /**
  * Access to the Hue system for light handlers.
@@ -30,6 +31,10 @@ import org.openhab.binding.hue.internal.StateUpdate;
  */
 @NonNullByDefault
 public interface HueClient {
+
+    boolean registerDiscoveryListener(HueLightDiscoveryService listener);
+
+    boolean unregisterDiscoveryListener();
 
     /**
      * Register a light status listener.
@@ -109,18 +114,11 @@ public interface HueClient {
     /**
      * Updates the given light.
      *
+     * @param listener the light status listener to set bypass time
      * @param light the light to be updated
      * @param stateUpdate the state update
      */
-    void updateLightState(FullLight light, StateUpdate stateUpdate);
-
-    /**
-     * Updates the given light.
-     *
-     * @param light the light to be updated
-     * @param stateUpdate the state update
-     */
-    void updateLightState(LightStatusListener listener, FullLight light, StateUpdate stateUpdate);
+    void updateLightState(LightStatusListener listener, FullLight light, StateUpdate stateUpdate, long fadeTime);
 
     /**
      * Updates the given sensors config.

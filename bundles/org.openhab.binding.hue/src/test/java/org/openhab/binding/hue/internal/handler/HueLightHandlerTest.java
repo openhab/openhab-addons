@@ -371,6 +371,8 @@ public class HueLightHandlerTest {
         HueClient mockClient = mock(HueClient.class);
         when(mockClient.getLightById(any())).thenReturn(light);
 
+        long fadeTime = 400;
+
         HueLightHandler hueLightHandler = new HueLightHandler(mockThing) {
             @Override
             protected synchronized HueClient getHueClient() {
@@ -391,7 +393,7 @@ public class HueLightHandlerTest {
 
         ArgumentCaptor<StateUpdate> captorStateUpdate = ArgumentCaptor.forClass(StateUpdate.class);
         verify(mockClient).updateLightState(any(LightStatusListener.class), any(FullLight.class),
-                captorStateUpdate.capture());
+                captorStateUpdate.capture(), eq(fadeTime));
         assertJson(expectedReply, captorStateUpdate.getValue().toJson());
     }
 

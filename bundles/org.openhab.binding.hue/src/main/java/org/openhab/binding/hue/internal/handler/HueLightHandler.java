@@ -81,6 +81,8 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
             THING_TYPE_COLOR_TEMPERATURE_LIGHT, THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_EXTENDED_COLOR_LIGHT,
             THING_TYPE_ON_OFF_LIGHT, THING_TYPE_ON_OFF_PLUG, THING_TYPE_DIMMABLE_PLUG).collect(Collectors.toSet());
 
+    private static final long BYPASS_MIN_DURATION_BEFORE_CMD = 1500L;
+
     // @formatter:off
     private static final Map<String, List<String>> VENDOR_MODEL_MAP = Stream.of(
             new SimpleEntry<>("Philips",
@@ -94,15 +96,12 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
 
     private static final String OSRAM_PAR16_50_TW_MODEL_ID = "PAR16_50_TW";
 
-    private static final long BYPASS_MIN_DURATION_BEFORE_CMD = 2000L;
-    private static final long BYPASS_MIN_DURATION_AFTER_CMD = 250L;
-
     private final Logger logger = LoggerFactory.getLogger(HueLightHandler.class);
 
     private @NonNullByDefault({}) String lightId;
 
     private @Nullable FullLight lastFullLight;
-    private Long endBypassTime = 0L;
+    private long endBypassTime = 0L;
 
     private @Nullable Integer lastSentColorTemp;
     private @Nullable Integer lastSentBrightness;
@@ -350,26 +349,10 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
             if (tmpColorTemp != null) {
                 lastSentColorTemp = tmpColorTemp;
             }
-            bridgeHandler.updateLightState(this, light, lightState);
+            bridgeHandler.updateLightState(this, light, lightState, fadeTime);
         } else {
             logger.warn("Command sent to an unknown channel id: {}:{}", getThing().getUID(), channel);
         }
-    }
-
-    @Override
-    public void enablePollBypassBeforeCmd() {
-        endBypassTime = System.currentTimeMillis() + BYPASS_MIN_DURATION_BEFORE_CMD;
-    }
-
-    @Override
-    public void enablePollBypassAfterCmd(@Nullable Long fadeTime) {
-        endBypassTime = System.currentTimeMillis() + BYPASS_MIN_DURATION_AFTER_CMD
-                + ((fadeTime != null) ? fadeTime.longValue() : 0L);
-    }
-
-    @Override
-    public void disablePollBypass() {
-        endBypassTime = 0L;
     }
 
     /*
@@ -457,6 +440,21 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
     }
 
     @Override
+    public void setPollBypassBeforeCmd() {
+        endBypassTime = System.currentTimeMillis() + BYPASS_MIN_DURATION_BEFORE_CMD;
+    }
+
+    @Override
+    public void setPollBypassFadeTime(long fadeTime) {
+        endBypassTime = System.currentTimeMillis() + fadeTime;
+    }
+
+    @Override
+    public void unsetPollBypass() {
+        endBypassTime = 0L;
+    }
+
+    @Override
     public boolean onLightStateChanged(@Nullable HueBridge bridge, FullLight fullLight) {
         logger.trace("onLightStateChanged() was called");
 
@@ -465,8 +463,8 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
             return false;
         }
 
-        final FullLight lastLight = lastFullLight;
-        if (lastLight == null || !lastLight.getState().equals(fullLight.getState())) {
+        final FullLight lastState = lastFullLight;
+        if (lastState == null || !lastState.getState().equals(fullLight.getState())) {
             lastFullLight = fullLight;
         } else {
             return true;
@@ -525,25 +523,34 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
-        final FullLight light = lastFullLight;
-        if (light != null) {
-            onLightStateChanged(null, light);
+        HueClient handler = getHueClient();
+        if (handler != null) {
+            FullLight light = handler.getLightById(lightId);
+            if (light != null) {
+                onLightStateChanged(null, light);
+            }
         }
     }
 
     @Override
     public void onLightRemoved(@Nullable HueBridge bridge, FullLight light) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.light-removed");
+        if (light.getId().equals(lightId)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.light-removed");
+        }
     }
 
     @Override
     public void onLightGone(@Nullable HueBridge bridge, FullLight light) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "@text/offline.light-not-reachable");
+        if (light.getId().equals(lightId)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "@text/offline.light-not-reachable");
+        }
     }
 
     @Override
     public void onLightAdded(@Nullable HueBridge bridge, FullLight light) {
-        onLightStateChanged(bridge, light);
+        if (light.getId().equals(lightId)) {
+            onLightStateChanged(bridge, light);
+        }
     }
 
     /**
