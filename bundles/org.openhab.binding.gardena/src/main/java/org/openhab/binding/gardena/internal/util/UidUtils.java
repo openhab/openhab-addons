@@ -35,8 +35,8 @@ public class UidUtils {
      * Generates the ThingUID for the given device in the given account.
      */
     public static ThingUID generateThingUID(Device device, Bridge account) {
-        ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, device.getCategory());
-        return new ThingUID(thingTypeUID, account.getUID(), device.getId());
+        ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, device.deviceType);
+        return new ThingUID(thingTypeUID, account.getUID(), device.id);
     }
 
     /**
@@ -49,7 +49,7 @@ public class UidUtils {
             if (deviceId == null) {
                 deviceId = thing.getUID().getId();
             }
-            if (deviceId.equals(device.getId())) {
+            if (deviceId.equals(device.id)) {
                 thingUIDs.add(thing.getUID());
             }
         }

@@ -14,11 +14,14 @@ package org.openhab.binding.gardena.internal.exception;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
- * Exception if something happens in the communication to Gardena Smart Home.
+ * Exception if something happens in the communication to Gardena smart system.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class GardenaException extends IOException {
 
     private static final long serialVersionUID = 8568935118878542270L;

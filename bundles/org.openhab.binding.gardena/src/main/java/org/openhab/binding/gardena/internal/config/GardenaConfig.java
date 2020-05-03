@@ -16,26 +16,19 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * The main Gardena config class.
  *
  * @author Gerhard Riegler - Initial contribution
  */
 public class GardenaConfig {
-
-    private static final Integer DEFAULT_SESSION_TIMEOUT = 30;
     private static final Integer DEFAULT_CONNECTION_TIMEOUT = 10;
-    private static final Integer DEFAULT_REFRESH = 60;
 
-    @SerializedName("username")
     private String email;
     private String password;
+    private String apiKey;
 
-    private transient Integer sessionTimeout = DEFAULT_SESSION_TIMEOUT;
     private transient Integer connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
-    private transient Integer refresh = DEFAULT_REFRESH;
 
     public GardenaConfig() {
     }
@@ -46,87 +39,72 @@ public class GardenaConfig {
     }
 
     /**
-     * Returns the email to connect to Gardena Smart Home.
+     * Returns the email to connect to Gardena smart system.
      */
     public String getEmail() {
         return email;
     }
 
     /**
-     * Sets the email to connect to Gardena Smart Home.
+     * Sets the email to connect to Gardena smart system.
      */
     public void setEmail(String email) {
         this.email = email;
     }
 
     /**
-     * Returns the password to connect to Gardena Smart Home.
+     * Returns the password to connect to Gardena smart system.
      */
     public String getPassword() {
         return password;
     }
 
     /**
-     * Sets the password to connect to Gardena Smart Home.
+     * Sets the password to connect to Gardena smart system.
      */
     public void setPassword(String password) {
         this.password = password;
     }
 
     /**
-     * Returns the session timeout to Gardena Smart Home.
-     */
-    public int getSessionTimeout() {
-        return sessionTimeout;
-    }
-
-    /**
-     * Sets the session timeout to Gardena Smart Home.
-     */
-    public void setSessionTimeout(int sessionTimeout) {
-        this.sessionTimeout = sessionTimeout;
-    }
-
-    /**
-     * Returns the connection timeout to Gardena Smart Home.
+     * Returns the connection timeout to Gardena smart system.
      */
     public Integer getConnectionTimeout() {
         return connectionTimeout;
     }
 
     /**
-     * Sets the connection timeout to Gardena Smart Home.
+     * Sets the connection timeout to Gardena smart system.
      */
     public void setConnectionTimeout(Integer connectionTimeout) {
         this.connectionTimeout = connectionTimeout;
     }
 
     /**
-     * Returns the refresh interval to fetch new data from Gardena Smart Home.
+     * Returns the api key.
      */
-    public Integer getRefresh() {
-        return refresh;
+    public String getApiKey() {
+        return apiKey;
     }
 
     /**
-     * Returns the refresh interval to fetch new data from Gardena Smart Home.
+     * Sets the api key.
      */
-    public void setRefresh(Integer refresh) {
-        this.refresh = refresh;
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
     }
 
     /**
-     * Validate the config, if at least email and password is specified.
+     * Validate the config if email, password and apiKey is specified.
      */
     public boolean isValid() {
-        return StringUtils.isNotBlank(email) && StringUtils.isNotBlank(password);
+        return StringUtils.isNotBlank(email) && StringUtils.isNotBlank(password) && StringUtils.isNotBlank(apiKey);
     }
 
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("email", email)
                 .append("password", StringUtils.isBlank(password) ? "" : StringUtils.repeat("*", password.length()))
-                .append("sessionTimeout", sessionTimeout).append("connectionTimeout", connectionTimeout)
-                .append("refresh", refresh).toString();
+                .append("connectionTimeout", connectionTimeout).append("apiKey", apiKey).toString();
     }
 }
