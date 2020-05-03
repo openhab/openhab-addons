@@ -132,10 +132,8 @@ public class HomekitCharacteristicFactory {
     public static Characteristic createCharacteristic(HomekitCharacteristicType type, GenericItem item,
             HomekitAccessoryUpdater updater) throws HomekitException {
         logger.trace("createCharacteristic, type {} item {}", type, item);
-        if (type != null) {
-            if (optional.containsKey(type)) {
-                return optional.get(type).apply(item, updater);
-            }
+        if (optional.containsKey(type)) {
+            return optional.get(type).apply(item, updater);
         }
         logger.warn("Unsupported optional characteristic. Item type {}, characteristic type {}", item.getType(), type);
         throw new HomekitException("Unsupported optional characteristic. Characteristic type \"" + item.getType());
@@ -152,14 +150,13 @@ public class HomekitCharacteristicFactory {
         } else if (state instanceof OpenClosedType) {
             return CompletableFuture.completedFuture(state.equals(OpenClosedType.CLOSED) ? offEnum : onEnum);
         } else if (state instanceof DecimalType) {
-            return CompletableFuture
-                    .completedFuture(item.getStateAs(DecimalType.class).intValue() == 0 ? offEnum : onEnum);
+            return CompletableFuture.completedFuture(state.as(DecimalType.class).intValue() == 0 ? offEnum : onEnum);
         } else if (state instanceof UnDefType) {
             return CompletableFuture.completedFuture(defaultEnum);
         }
         logger.warn(
                 "Item state {} is not supported. Only OnOffType,OpenClosedType and Decimal (0/1) are supported. Ignore item {}",
-                state.getClass(), item.getName());
+                state, item.getName());
         return CompletableFuture.completedFuture(defaultEnum);
     }
 
@@ -175,31 +172,36 @@ public class HomekitCharacteristicFactory {
                 logger.warn("Enum value {} is not supported. Only following values are supported: {},{}", value,
                         offEnum, onEnum);
             }
-        } else if (item.getState() instanceof DecimalType) {
+        } else if (state instanceof DecimalType) {
             item.setState(new DecimalType(value.getCode()));
         } else {
-            logger.warn("Item state {} is not supported. Only OnOffType and DecimalType (0/1) are supported.",
-                    item.getState());
+            logger.warn("Item state {} is not supported. Only OnOffType and DecimalType (0/1) are supported.", state);
         }
     }
 
     public static Supplier<CompletableFuture<Integer>> getCompletedFutureInt(GenericItem item) {
-        if (item.getState() instanceof PercentType) {
-            return () -> CompletableFuture.completedFuture(item.getStateAs(PercentType.class).intValue());
-        }
-        if (item.getState() instanceof DecimalType) {
-            return () -> CompletableFuture.completedFuture(item.getStateAs(DecimalType.class).intValue());
-        }
-        if (item.getState() instanceof UnDefType)
-            return () -> CompletableFuture.completedFuture(0);
-        logger.warn("Item state {} is not supported for {}. Only PercentType and DecimalType (0/100) are supported.",
-                item.getState(), item.getName());
-        return () -> CompletableFuture.completedFuture(0);
+        return () -> {
+            int value = 0;
+            final State state = item.getState();
+            if (state instanceof PercentType) {
+                value = state.as(PercentType.class).intValue();
+            } else if (state instanceof DecimalType) {
+                value = state.as(DecimalType.class).intValue();
+            } else if (state instanceof UnDefType) {
+                logger.debug("Item state {} is UNDEF {}.", state, item.getName());
+            } else {
+                logger.warn(
+                        "Item state {} is not supported for {}. Only PercentType and DecimalType (0/100) are supported.",
+                        state, item.getName());
+            }
+            logger.trace(" Get Int for {} value {}", item.getLabel(), value);
+            return CompletableFuture.completedFuture(value);
+        };
     }
 
     public static Supplier<CompletableFuture<Double>> getCompletedFutureDouble(Item item) {
-        return () -> CompletableFuture
-                .completedFuture((item != null) ? item.getStateAs(DecimalType.class).doubleValue() : 0);
+        return () -> CompletableFuture.completedFuture(
+                item.getStateAs(DecimalType.class) != null ? item.getStateAs(DecimalType.class).doubleValue() : 0.0);
     }
 
     // create method for characteristic
@@ -233,8 +235,8 @@ public class HomekitCharacteristicFactory {
     private static ObstructionDetectedCharacteristic createObstructionDetectedCharacteristic(final GenericItem item,
             HomekitAccessoryUpdater updater) {
         return new ObstructionDetectedCharacteristic(
-                () -> CompletableFuture.completedFuture(((item != null)
-                        && (item.getState().equals(OnOffType.ON) || item.getState().equals(OpenClosedType.OPEN)))),
+                () -> CompletableFuture
+                        .completedFuture(item.getState() == OnOffType.ON || item.getState() == OpenClosedType.OPEN),
                 (callback) -> updater.subscribe(item, OBSTRUCTION_STATUS.getTag(), callback),
                 () -> updater.unsubscribe(item, OBSTRUCTION_STATUS.getTag()));
     }
@@ -242,15 +244,16 @@ public class HomekitCharacteristicFactory {
     private static StatusActiveCharacteristic createStatusActiveCharacteristic(final GenericItem item,
             HomekitAccessoryUpdater updater) {
         return new StatusActiveCharacteristic(
-                () -> CompletableFuture.completedFuture((item != null)
-                        && (item.getState().equals(OnOffType.ON) || item.getState().equals(OpenClosedType.OPEN))),
+                () -> CompletableFuture
+                        .completedFuture(item.getState() == OnOffType.ON || item.getState() == OpenClosedType.OPEN),
                 (callback) -> updater.subscribe(item, ACTIVE_STATUS.getTag(), callback),
                 () -> updater.unsubscribe(item, ACTIVE_STATUS.getTag()));
     }
 
     private static NameCharacteristic createNameCharacteristic(final GenericItem item,
             HomekitAccessoryUpdater updater) {
-        return new NameCharacteristic(() -> CompletableFuture.completedFuture(item.getState().toString()));
+        return new NameCharacteristic(
+                () -> CompletableFuture.completedFuture(item.getState() != null ? item.getState().toString() : ""));
     }
 
     private static HoldPositionCharacteristic createHoldPositionCharacteristic(final GenericItem item,
@@ -340,13 +343,11 @@ public class HomekitCharacteristicFactory {
             HomekitAccessoryUpdater updater) {
         return new BrightnessCharacteristic(() -> {
             int value = 0;
-            if (item != null) {
-                State state = item.getState();
-                if (state instanceof HSBType) {
-                    value = ((HSBType) state).getBrightness().intValue();
-                } else if (state instanceof PercentType) {
-                    value = ((PercentType) state).intValue();
-                }
+            State state = item.getState();
+            if (state instanceof HSBType) {
+                value = ((HSBType) state).getBrightness().intValue();
+            } else if (state instanceof PercentType) {
+                value = ((PercentType) state).intValue();
             }
             return CompletableFuture.completedFuture(value);
         }, (brightness) -> {
@@ -365,13 +366,11 @@ public class HomekitCharacteristicFactory {
             HomekitAccessoryUpdater updater) {
         return new SaturationCharacteristic(() -> {
             Double value = 0.0;
-            if (item != null) {
-                State state = item.getState();
-                if (state instanceof HSBType) {
-                    value = ((HSBType) state).getSaturation().doubleValue();
-                } else if (state instanceof PercentType) {
-                    value = ((PercentType) state).doubleValue();
-                }
+            State state = item.getState();
+            if (state instanceof HSBType) {
+                value = ((HSBType) state).getSaturation().doubleValue();
+            } else if (state instanceof PercentType) {
+                value = ((PercentType) state).doubleValue();
             }
             return CompletableFuture.completedFuture(value);
         }, (saturation) -> {
@@ -398,8 +397,9 @@ public class HomekitCharacteristicFactory {
     private static CurrentFanStateCharacteristic createCurrentFanStateCharacteristic(final GenericItem item,
             HomekitAccessoryUpdater updater) {
         return new CurrentFanStateCharacteristic(
-                () -> CompletableFuture
-                        .completedFuture(CurrentFanStateEnum.fromCode(item.getStateAs(DecimalType.class).intValue())),
+                () -> CompletableFuture.completedFuture(item.getStateAs(DecimalType.class) != null
+                        ? CurrentFanStateEnum.fromCode(item.getStateAs(DecimalType.class).intValue())
+                        : CurrentFanStateEnum.INACTIVE),
                 (callback) -> updater.subscribe(item, CURRENT_FAN_STATE.getTag(), callback),
                 () -> updater.unsubscribe(item, CURRENT_FAN_STATE.getTag()));
     }
@@ -407,8 +407,9 @@ public class HomekitCharacteristicFactory {
     private static TargetFanStateCharacteristic createTargetFanStateCharacteristic(final GenericItem item,
             HomekitAccessoryUpdater updater) {
         return new TargetFanStateCharacteristic(
-                () -> CompletableFuture
-                        .completedFuture(TargetFanStateEnum.fromCode(item.getStateAs(DecimalType.class).intValue())),
+                () -> CompletableFuture.completedFuture(item.getStateAs(DecimalType.class) != null
+                        ? TargetFanStateEnum.fromCode(item.getStateAs(DecimalType.class).intValue())
+                        : TargetFanStateEnum.AUTO),
                 (targetState) -> item.setState(new DecimalType(targetState.getCode())),
                 (callback) -> updater.subscribe(item, TARGET_FAN_STATE.getTag(), callback),
                 () -> updater.unsubscribe(item, TARGET_FAN_STATE.getTag()));
@@ -448,9 +449,10 @@ public class HomekitCharacteristicFactory {
 
     private static RotationSpeedCharacteristic createRotationSpeedCharacteristic(final GenericItem item,
             HomekitAccessoryUpdater updater) {
-        return new RotationSpeedCharacteristic(getCompletedFutureInt(item),
-                (speed) -> item.setState(new PercentType(speed)),
-                (callback) -> updater.subscribe(item, ROTATION_SPEED.getTag(), callback),
+        return new RotationSpeedCharacteristic(getCompletedFutureInt(item), (speed) -> {
+            logger.trace("set fan {} speed {}", item.getLabel(), speed);
+            item.setState(new PercentType(speed));
+        }, (callback) -> updater.subscribe(item, ROTATION_SPEED.getTag(), callback),
                 () -> updater.unsubscribe(item, ROTATION_SPEED.getTag()));
     }
 

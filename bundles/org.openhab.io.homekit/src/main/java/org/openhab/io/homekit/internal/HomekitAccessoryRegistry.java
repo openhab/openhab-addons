@@ -48,7 +48,9 @@ class HomekitAccessoryRegistry {
     public int makeNewConfigurationRevision() {
         configurationRevision = (configurationRevision + 1) % 65535;
         try {
-            bridge.setConfigurationIndex(configurationRevision);
+            if (bridge != null) {
+                bridge.setConfigurationIndex(configurationRevision);
+            }
         } catch (IOException e) {
             logger.warn("Could not update configuration revision number", e);
         }
@@ -58,7 +60,7 @@ class HomekitAccessoryRegistry {
     public synchronized void remove(String itemName) {
         if (createdAccessories.containsKey(itemName)) {
             HomekitAccessory accessory = createdAccessories.remove(itemName);
-            logger.trace("Removed accessory {} for taggedItem {}", accessory.getId(), itemName);
+            logger.trace("Removed accessory {} for taggedItem {}", accessory, itemName);
             if (bridge != null) {
                 bridge.removeAccessory(accessory);
             } else {

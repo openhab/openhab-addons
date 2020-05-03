@@ -12,6 +12,8 @@
  */
 package org.openhab.io.homekit.internal;
 
+import static org.openhab.io.homekit.internal.HomekitAccessoryType.DUMMY;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -51,7 +53,7 @@ public class HomekitTaggedItem {
         this.configuration = configuration;
         this.homekitAccessoryType = homekitAccessoryType;
         this.homekitCharacteristicType = HomekitCharacteristicType.EMPTY;
-        if (homekitAccessoryType != null) {
+        if (homekitAccessoryType != DUMMY) {
             this.id = calculateId(item);
         } else {
             this.id = 0;
@@ -70,10 +72,6 @@ public class HomekitTaggedItem {
             @Nullable Map<String, Object> configuration) {
         this(item, homekitAccessoryType, homekitCharacteristicType, configuration);
         this.parentGroupItem = parentGroup;
-    }
-
-    public boolean isTagged() {
-        return (homekitAccessoryType != null && id != 0) || homekitCharacteristicType != null;
     }
 
     public boolean isGroup() {
@@ -98,7 +96,7 @@ public class HomekitTaggedItem {
      * to isCharacteristic(). Primary devices must belong to a root accessory group.
      */
     public boolean isAccessory() {
-        return homekitAccessoryType != null;
+        return homekitAccessoryType != DUMMY;
     }
 
     /**

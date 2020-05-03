@@ -15,6 +15,7 @@ package org.openhab.io.homekit.internal.accessories;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -57,7 +58,7 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
     }
 
     protected Optional<HomekitTaggedItem> getCharacteristic(HomekitCharacteristicType type) {
-        return characteristics.stream().filter(c -> c.getCharacteristicType().equals(type)).findAny();
+        return characteristics.stream().filter(c -> c.getCharacteristicType() == type).findAny();
     }
 
     @Override
@@ -132,12 +133,14 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
 
     protected @Nullable <T extends State> T getStateAs(HomekitCharacteristicType characteristic, Class type) {
         final Optional<HomekitTaggedItem> taggedItem = getCharacteristic(characteristic);
-        if (taggedItem.isPresent() && taggedItem.get().getItem().getState() != null) {
-            return (T) taggedItem.get().getItem().getStateAs(type);
+        if (taggedItem.isPresent()) {
+            final State state = taggedItem.get().getItem().getStateAs(type);
+            if (state != null) {
+                return (T) state.as(type);
+            }
         }
         logger.warn("State for characteristic {} at accessory {} cannot be retrieved.", characteristic,
                 accessory.getId());
-
         return null;
     }
 
@@ -158,8 +161,9 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
     }
 
     protected <T> T getAccessoryConfiguration(String key, T defaultValue) {
-        if ((accessory.getConfiguration() != null) && (accessory.getConfiguration().get(key) != null)) {
-            return (T) accessory.getConfiguration().get(key);
+        final @Nullable Map<String, Object> configuration = accessory.getConfiguration();
+        if ((configuration != null) && (configuration.get(key) != null)) {
+            return (T) configuration.get(key);
         }
         return defaultValue;
     }
