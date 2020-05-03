@@ -605,13 +605,12 @@ public class HueBridge {
      * @throws UnauthorizedException thrown if the user no longer exists
      * @throws EntityNotAvailableException thrown if the specified group no longer exists
      */
-    public void setGroupState(Group group, StateUpdate update) throws IOException, ApiException {
+    public CompletableFuture<Result> setGroupState(Group group, StateUpdate update) {
         requireAuthentication();
 
         String body = update.toJson();
-        Result result = http.put(getRelativeURL("groups/" + enc(group.getId()) + "/action"), body);
-
-        handleErrors(result);
+        return http.putAsync(getRelativeURL("groups/" + enc(group.getId()) + "/action"), body, update.getMessageDelay(),
+                scheduler);
     }
 
     /**
