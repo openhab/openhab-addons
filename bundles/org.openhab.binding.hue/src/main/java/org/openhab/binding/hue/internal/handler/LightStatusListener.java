@@ -29,7 +29,7 @@ public interface LightStatusListener {
     /**
      * This method returns the light id of the listener
      * 
-     * @return lightId
+     * @return
      */
     String getLightId();
 
@@ -67,7 +67,15 @@ public interface LightStatusListener {
      */
     void onLightAdded(@Nullable HueBridge bridge, FullLight light);
 
+    /**
+     * The thing will block state updates for set time.
+     * 
+     * @param bypassTime
+     */
     void setPollBypass(long bypassTime);
 
+    /**
+     * Unblock state updates.
+     */
     void unsetPollBypass();
 }

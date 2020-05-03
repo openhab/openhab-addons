@@ -387,23 +387,17 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
 
     @Override
     public void onGroupAdded(@Nullable HueBridge bridge, FullGroup group) {
-        if (group.getId().equals(groupId)) {
-            onGroupStateChanged(bridge, group);
-        }
+        onGroupStateChanged(bridge, group);
     }
 
     @Override
     public void onGroupRemoved(@Nullable HueBridge bridge, FullGroup group) {
-        if (group.getId().equals(groupId)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.group-removed");
-        }
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.group-removed");
     }
 
     @Override
     public void onGroupGone(@Nullable HueBridge bridge, FullGroup group) {
-        if (group.getId().equals(groupId)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "@text/offline.group-removed");
-        }
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "@text/offline.group-removed");
     }
 
     /**
