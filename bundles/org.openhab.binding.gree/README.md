@@ -35,22 +35,24 @@ The following channels are supported for fans:
 | Channel Name  | Item Type | Description                                                                                       |
 |---------------|-----------|---------------------------------------------------------------------------------------------------|
 | power         | Switch    | Power on/off the Air Conditioner                                                                  |
-| mode          | Number    | Sets the operating mode of the Air Conditioner                                                    |
-|               |           | Mode: Auto: 0, Cool: 1, Dry: 2, Fan: 3, Heat: 4                                                   |
-|               |           | For more details see the Air Conditioner's operating manual.                                      |
-| turbo         | Switch    | Set on/off the Air Conditioner's Turbo mode.                                                      |
-|               |           | For more details see the Air Conditioner's operating manual.                                      |
-| light         | Switch    | Enable/disable the front display on the Air Conditioner if applicable to the Air Conditioner model|
+| mode          | String    | Sets the operating mode of the Air Conditioner                                                    |
+|               |           | Mode can be one of auto/cool/eco/dry/fan/turboheat or on/off                                      |||               |           | You could also send "0".."4", which will be send transparent to the device:                       |
+|               |           | those map to: "0"=Auto, "1"=Cool, "2"=Dry, "3"=Fan only, "4"=heat                                 | 
+|               |           | Check the Air Conditioner's operating manual for supported modes.                                 |
 | temperature   | Number    | Sets the desired room temperature                                                                 |
 | swingvertical | Number    | Sets the vertical swing action on the Air Conditioner                                             |
-|               |           | Full Swing: 1, Up: 2, MidUp: 3, Mid: 4, Mid Down: 5, Down : 6                                     |
-| windspeed     | Number    | Sets the fan speed on the Air conditioner Auto:0, Low:1, MidLow:2, Mid:3, MidHigh:4, High:5       |
-|               |           | The number of speeds depends on the Air Conditioner model.                                        |
-| air           | Switch    | Set on/off the Air Conditioner's Air function if applicable to the Air Conditioner model          |
+| air           | Switch    | Set on/off the Air Conditioner's Air function if applicable to the Air Conditioner model          |
 | dry           | Switch    | Set on/off the Air Conditioner's Dry function if applicable to the Air Conditioner model          |
-| health        | Switch    | Set on/off the Air Conditioner's Health function if applicable to the Air Conditioner model       |
-| powersave     | Switch    | Set on/off the Air Conditioner's Power Saving function if applicable to the Air Conditioner model |
+| health        | Switch    | Set on/off the Air Conditioner's Health function if applicable to the Air Conditioner model       |
+| powersave     | Switch    | Set on/off the Air Conditioner's Power Saving function if applicable to the Air Conditioner model |
+| turbo         | Switch    | Set on/off the Air Conditioner's Turbo mode.                                                      |
+| light         | Switch    | Enable/disable the front display on the Air Conditioner if applicable to the Air Conditioner model|
+|               |           | Full Swing: 1, Up: 2, MidUp: 3, Mid: 4, Mid Down: 5, Down : 6                                     |
+| windspeed     | Number    | Sets the fan speed on the Air conditioner Auto:0, Low:1, MidLow:2, Mid:3, MidHigh:4, High:5       |
+|               |           | The number of speeds depends on the Air Conditioner model.                                        |
 
+
+When changing the mode the air conditioner will be turned on (unless is off is selected).
 
 ## Full Example
 

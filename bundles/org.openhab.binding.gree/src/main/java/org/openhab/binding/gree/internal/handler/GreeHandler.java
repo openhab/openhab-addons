@@ -24,11 +24,13 @@ import java.util.concurrent.TimeUnit;
 
 import javax.measure.Unit;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -144,48 +146,14 @@ public class GreeHandler extends BaseThingHandler {
             }
 
             DatagramSocket socket = clientSocket.get();
+            logger.debug("Issue command {} to channe {}", command, channelUID.getIdWithoutGroup());
             try {
                 switch (channelUID.getIdWithoutGroup()) {
+                    case MODE_CHANNEL:
+                        handleModeCommand(command, socket);
+                        break;
                     case POWER_CHANNEL:
                         device.setDevicePower(socket, (OnOffType) command == OnOffType.ON ? 1 : 0);
-                        break;
-                    case MODE_CHANNEL:
-                        int mode = -1;
-                        if (command instanceof OnOffType) {
-                            device.setDevicePower(socket, (OnOffType) command == OnOffType.ON ? 1 : 0);
-                        } else if (command instanceof DecimalType) {
-                            mode = ((DecimalType) command).intValue();
-                        } else {
-                            String m = command.toString();
-                            switch (m) {
-                                case MODE_AUTO:
-                                    mode = GREE_MODE_AUTO;
-                                    break;
-                                case MODE_COOL:
-                                    mode = GREE_MODE_COOL;
-                                    break;
-                                case MODE_HEAT:
-                                    mode = GREE_MODE_HEAT;
-                                    break;
-                                case MODE_DRY:
-                                    mode = GREE_MODE_DRY;
-                                    break;
-                                case MODE_FAN:
-                                    mode = GREE_MODE_FAN;
-                                    break;
-                                case MODE_ON:
-                                case MODE_OFF:
-                                    device.setDevicePower(socket, m.equals(MODE_ON) ? 1 : 0);
-                                    break;
-                                default:
-                                    logger.debug("Invalid mode requested: {}", command);
-                                    break;
-                            }
-                            if (mode != -1) {
-                                device.SetDeviceMode(socket, mode);
-                                updateState(channelUID, new DecimalType(mode));
-                            }
-                        }
                         break;
                     case TURBO_CHANNEL:
                         device.setDeviceTurbo(socket, (OnOffType) command == OnOffType.ON ? 1 : 0);
@@ -224,6 +192,82 @@ public class GreeHandler extends BaseThingHandler {
         }
     }
 
+    private void handleModeCommand(Command command, DatagramSocket socket) throws GreeException {
+        int mode = -1;
+        String modeStr = "";
+        boolean isNumber = StringUtils.isNumeric(command.toString());
+        if (command instanceof DecimalType) {
+            // backward compatibility when channel was Number
+            mode = ((DecimalType) command).intValue();
+        } else if (command instanceof OnOffType) {
+            // Switch
+            logger.debug("Send Power-{}", command);
+            device.setDevicePower(socket, (OnOffType) command == OnOffType.ON ? 1 : 0);
+        } else /* String */ {
+            modeStr = command.toString().toLowerCase();
+            switch (modeStr) {
+                case MODE_AUTO:
+                    mode = GREE_MODE_AUTO;
+                    break;
+                case MODE_COOL:
+                    mode = GREE_MODE_COOL;
+                    break;
+                case MODE_HEAT:
+                    mode = GREE_MODE_HEAT;
+                    break;
+                case MODE_DRY:
+                    mode = GREE_MODE_DRY;
+                    break;
+                case MODE_FAN:
+                case MODE_FAN2:
+                    mode = GREE_MODE_FAN;
+                    break;
+                case MODE_ECO:
+                    // power saving will be set after the uinit was turned on
+                    mode = GREE_MODE_COOL;
+                    break;
+                case MODE_ON:
+                case MODE_OFF:
+                    device.setDevicePower(socket, modeStr.equals(MODE_ON) ? 1 : 0);
+                    break;
+                default:
+                    if (isNumber) {
+                        // Support selecting the mode by number, maybe specific models support
+                        // additional modes
+                        mode = Integer.parseInt(modeStr);
+                    } else {
+                        logger.debug("Invalid mode requested: {}", command);
+                    }
+                    break;
+            }
+            logger.debug("Mode {} mapped to {}", modeStr, mode);
+        }
+
+        if (mode != -1) {
+            // Turn on the unit if currently off
+            if (!isNumber && (device.getIntStatusVal("Pow") == 0)) {
+                logger.debug("Send Auto-ON for mode {}", mode);
+                device.setDevicePower(socket, 1);
+            }
+
+            // Select mode
+            logger.debug("Select mode {}", mode);
+            device.SetDeviceMode(socket, mode);
+
+            // Check for secondary action
+            switch (modeStr) {
+                case MODE_ECO:
+                    // Turn on power saving for eco mode
+                    logger.debug("Turn on Power-Saving");
+                    device.setDevicePwrSaving(socket, 1);
+                    break;
+                case MODE_TURBO:
+                    device.setDeviceTurbo(socket, 1);
+                    break;
+            }
+        }
+    }
+
     private boolean isMinimumRefreshTimeExceeded() {
         long currentTime = System.currentTimeMillis();
         long timeSinceLastRefresh = currentTime - lastRefreshTime;
@@ -255,9 +299,8 @@ public class GreeHandler extends BaseThingHandler {
                     // Update All Channels
                     List<Channel> channels = getThing().getChannels();
                     for (Channel channel : channels) {
-                        publishChannelIfLinked(channel.getUID());
+                        publishChannel(channel.getUID());
                     }
-
                 } catch (GreeException e) {
                     if (!e.isTimeout()) {
                         logger.debug("Unable to perform auto-update: {}", e.toString());
@@ -272,7 +315,7 @@ public class GreeHandler extends BaseThingHandler {
         logger.debug("Automatic refresh started ({} second interval)", config.refresh);
     }
 
-    private void publishChannelIfLinked(ChannelUID channelUID) throws GreeException {
+    private void publishChannel(ChannelUID channelUID) throws GreeException {
         try {
             String channelID = channelUID.getId();
             Optional<State> state = Optional.empty();
@@ -281,7 +324,7 @@ public class GreeHandler extends BaseThingHandler {
                     state = updateOnOff("Pow");
                     break;
                 case MODE_CHANNEL:
-                    state = updateNumber("Mod");
+                    state = updateMode();
                     break;
                 case TURBO_CHANNEL:
                     state = updateOnOff("Tur");
@@ -330,6 +373,40 @@ public class GreeHandler extends BaseThingHandler {
     private Optional<State> updateNumber(final String valueName) throws GreeException {
         if (device.hasStatusValChanged(valueName)) {
             return Optional.of(new DecimalType(device.getIntStatusVal(valueName)));
+        }
+        return Optional.empty();
+    }
+
+    private Optional<State> updateMode() throws GreeException {
+        if (device.hasStatusValChanged("Mod")) {
+            int mode = device.getIntStatusVal("Mod");
+            String modeStr = "";
+            switch (mode) {
+                case GREE_MODE_AUTO:
+                    modeStr = MODE_AUTO;
+                    break;
+                case GREE_MODE_COOL:
+                    boolean powerSave = device.getIntStatusVal("SvSt") == 1;
+                    modeStr = !powerSave ? MODE_COOL : MODE_ECO;
+                    break;
+                case GREE_MODE_DRY:
+                    modeStr = MODE_DRY;
+                    break;
+                case GREE_MODE_FAN:
+                    boolean turbo = device.getIntStatusVal("Tur") == 1;
+                    modeStr = !turbo ? MODE_FAN : MODE_TURBO;
+                    break;
+                case GREE_MODE_HEAT:
+                    modeStr = MODE_HEAT;
+                    break;
+                default:
+                    modeStr = String.valueOf(mode);
+
+            }
+            if (!modeStr.isEmpty()) {
+                logger.debug("Updading mode channel with {}/{}", mode, modeStr);
+                return Optional.of(new StringType(modeStr));
+            }
         }
         return Optional.empty();
     }

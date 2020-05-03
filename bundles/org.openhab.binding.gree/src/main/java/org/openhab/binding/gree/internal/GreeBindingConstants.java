@@ -56,8 +56,11 @@ public class GreeBindingConstants {
     public static final String MODE_AUTO = "auto";
     public static final String MODE_COOL = "cool";
     public static final String MODE_DRY = "dry";
-    public static final String MODE_FAN = "fan-only";
+    public static final String MODE_FAN = "fan";
+    public static final String MODE_FAN2 = "fan-only";
     public static final String MODE_HEAT = "heat";
+    public static final String MODE_ECO = "eco";
+    public static final String MODE_TURBO = "turbo";
     public static final String MODE_ON = "on";
     public static final String MODE_OFF = "off";
     public static final int GREE_MODE_AUTO = 0;

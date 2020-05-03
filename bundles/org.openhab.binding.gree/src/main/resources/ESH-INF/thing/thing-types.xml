@@ -45,11 +45,20 @@
 	</thing-type>
 
 	<channel-type id="mode">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>Mode</label>
-		<description>Sets the operating mode of the Air Conditioner: Auto: 0, Cool: 1, Dry: 2, Fan: 3, Heat: 4</description>
+		<description>Sets the operating mode of the Air Conditioner - one of auto/cool/dry/fan/heat/eco/turbo or 0/1/2/3/4 or on/off</description>
 		<state>
 			<options>
+				<option value="auto">Auto</option>
+				<option value="cool">Cool</option>
+				<option value="eco">Eco</option>
+				<option value="dry">Dry</option>
+				<option value="fan">Fan</option>
+				<option value="turbo">Turbo</option>
+				<option value="heat">Heat</option>
+				<option value="ont">ON</option>
+				<option value="off">OFF</option>
 				<option value="0">Auto</option>
 				<option value="1">Cool</option>
 				<option value="2">Dry</option>
