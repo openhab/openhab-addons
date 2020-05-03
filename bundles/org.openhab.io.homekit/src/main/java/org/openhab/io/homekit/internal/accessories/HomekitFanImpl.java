@@ -15,56 +15,53 @@ package org.openhab.io.homekit.internal.accessories;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.smarthome.core.items.GenericItem;
-import org.eclipse.smarthome.core.items.GroupItem;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.items.SwitchItem;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.types.State;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
-import io.github.hapjava.accessories.SwitchAccessory;
+import io.github.hapjava.accessories.FanAccessory;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
-import io.github.hapjava.services.impl.SwitchService;
+import io.github.hapjava.services.impl.FanService;
 
 /**
- * Implements Switch using an Item that provides an On/Off state.
+ * Implements Fan using an Item that provides an On/Off state
  *
- * @author Andy Lintner - Initial contribution
+ * @author Eugen Freiter - Initial contribution
  */
-public class HomekitSwitchImpl extends AbstractHomekitAccessoryImpl implements SwitchAccessory {
-
-    public HomekitSwitchImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
+class HomekitFanImpl extends AbstractHomekitAccessoryImpl implements FanAccessory {
+    public HomekitFanImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
-        getServices().add(new SwitchService(this));
+        this.getServices().add(new FanService(this));
     }
 
     @Override
-    public CompletableFuture<Boolean> getSwitchState() {
-        OnOffType state = getStateAs(HomekitCharacteristicType.ON_STATE, OnOffType.class);
+    public CompletableFuture<Boolean> isActive() {
+        final @Nullable State state = getStateAs(HomekitCharacteristicType.ACTIVE_STATUS, OnOffType.class);
         return CompletableFuture.completedFuture(state == OnOffType.ON);
     }
 
     @Override
-    public CompletableFuture<Void> setSwitchState(boolean state) {
-        GenericItem item = getItem(HomekitCharacteristicType.ON_STATE, GenericItem.class);
-        if (item instanceof SwitchItem) {
-            ((SwitchItem) item).send(OnOffType.from(state));
-        } else if (item instanceof GroupItem) {
-            ((GroupItem) item).send(OnOffType.from(state));
+    public CompletableFuture<Void> setActive(final boolean state) throws Exception {
+        final @Nullable SwitchItem item = getItem(HomekitCharacteristicType.ACTIVE_STATUS, SwitchItem.class);
+        if (item != null) {
+            item.send(OnOffType.from(state));
         }
         return CompletableFuture.completedFuture(null);
     }
 
     @Override
-    public void subscribeSwitchState(HomekitCharacteristicChangeCallback callback) {
-        subscribe(HomekitCharacteristicType.ON_STATE, callback);
+    public void subscribeActive(final HomekitCharacteristicChangeCallback callback) {
+        subscribe(HomekitCharacteristicType.ACTIVE_STATUS, callback);
     }
 
     @Override
-    public void unsubscribeSwitchState() {
-        unsubscribe(HomekitCharacteristicType.ON_STATE);
+    public void unsubscribeActive() {
+        unsubscribe(HomekitCharacteristicType.ACTIVE_STATUS);
     }
 }
