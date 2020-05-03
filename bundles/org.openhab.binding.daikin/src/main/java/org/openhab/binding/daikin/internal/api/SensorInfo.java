@@ -14,6 +14,7 @@ package org.openhab.binding.daikin.internal.api;
 
 import java.util.Map;
 import java.util.Optional;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,12 +24,13 @@ import org.slf4j.LoggerFactory;
  * @author Tim Waterhouse - Initial contribution
  *
  */
+@NonNullByDefault
 public class SensorInfo {
     private static final Logger logger = LoggerFactory.getLogger(SensorInfo.class);
 
-    public Optional<Double> indoortemp;
-    public Optional<Double> indoorhumidity;
-    public Optional<Double> outdoortemp;
+    public Optional<Double> indoortemp = Optional.empty();
+    public Optional<Double> indoorhumidity = Optional.empty();
+    public Optional<Double> outdoortemp = Optional.empty();
 
     private SensorInfo() {
     }

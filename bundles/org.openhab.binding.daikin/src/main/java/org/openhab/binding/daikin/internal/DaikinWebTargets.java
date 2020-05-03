@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -44,6 +46,7 @@ import org.slf4j.LoggerFactory;
  * @author Jimmy Tanagra - Add support for https and Daikin's uuid authentication
  *
  */
+@NonNullByDefault
 public class DaikinWebTargets {
     private static final int TIMEOUT_MS = 30000;
 
@@ -60,12 +63,12 @@ public class DaikinWebTargets {
     private String getAirbaseZoneInfoUri;
     private String setAirbaseZoneInfoUri;
 
-    private String uuid;
-    private final HttpClient httpClient;
+    private @Nullable String uuid;
+    private final @Nullable HttpClient httpClient;
 
     private Logger logger = LoggerFactory.getLogger(DaikinWebTargets.class);
 
-    public DaikinWebTargets(HttpClient httpClient, String host, Boolean secure, String uuid) {
+    public DaikinWebTargets(@Nullable HttpClient httpClient, @Nullable String host, @Nullable Boolean secure, @Nullable String uuid) {
         this.httpClient = httpClient;
         this.uuid = uuid;
 
@@ -145,16 +148,9 @@ public class DaikinWebTargets {
         return AirbaseZoneInfo.parse(response);
     }
 
-    public void setAirbaseZoneInfo(AirbaseZoneInfo zoneinfo, AirbaseModelInfo modelinfo)
-            throws DaikinCommunicationException {
-        long count = IntStream.range(0, zoneinfo.zone.length).filter(idx -> zoneinfo.zone[idx]).count()
-                + modelinfo.commonzone;
-        logger.debug("Number of open zones: \"{}\"", count);
-
+    public void setAirbaseZoneInfo(AirbaseZoneInfo zoneinfo) throws DaikinCommunicationException {
         Map<String, String> queryParams = zoneinfo.getParamString();
-        if (count >= 1) {
-            invoke(setAirbaseZoneInfoUri, queryParams);
-        }
+        invoke(setAirbaseZoneInfoUri, queryParams);
     }
 
     private String invoke(String uri) throws DaikinCommunicationException {

@@ -13,6 +13,7 @@
 package org.openhab.binding.daikin.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 
 /**
@@ -29,5 +30,5 @@ public interface DaikinHttpClientFactory {
      *
      * @return the shared Jetty http client
      */
-    HttpClient getHttpClient();
+    @Nullable HttpClient getHttpClient();
 }

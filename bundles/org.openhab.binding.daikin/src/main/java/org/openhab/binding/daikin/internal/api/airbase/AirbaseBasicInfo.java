@@ -14,7 +14,9 @@ package org.openhab.binding.daikin.internal.api.airbase;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.daikin.internal.api.InfoParser;
 
 import org.slf4j.Logger;
@@ -26,12 +28,13 @@ import org.slf4j.LoggerFactory;
  * @author Paul Smedley - Initial contribution
  *
  */
+@NonNullByDefault
 public class AirbaseBasicInfo {
     private static final Logger logger = LoggerFactory.getLogger(AirbaseBasicInfo.class);
 
-    public String mac;
-    public String ret;
-    public String ssid;
+    public String mac = "";
+    public String ret = "";
+    public String ssid = "";
 
     private AirbaseBasicInfo() {
     }
@@ -42,15 +45,17 @@ public class AirbaseBasicInfo {
         Map<String, String> responseMap = InfoParser.parse(response);
 
         AirbaseBasicInfo info = new AirbaseBasicInfo();
-        info.mac = responseMap.get("mac");
-        info.ret = responseMap.get("ret");
-        info.ssid = responseMap.get("ssid");
+        info.mac = Optional.ofNullable(responseMap.get("mac")).orElse("");
+        info.ret = Optional.ofNullable(responseMap.get("ret")).orElse("");
+        info.ssid = Optional.ofNullable(responseMap.get("ssid")).orElse("");
         return info;
     }
 
     public Map<String, String> getParamString() {
         Map<String, String> params = new HashMap<>();
-        params.put("ssid", ssid);
+        if (!"".equals(ssid)) {
+            params.put("ssid", ssid);
+        }
         return params;
     }
 }

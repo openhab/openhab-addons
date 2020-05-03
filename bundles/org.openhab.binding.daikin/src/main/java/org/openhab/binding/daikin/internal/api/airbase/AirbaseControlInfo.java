@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.daikin.internal.api.InfoParser;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseEnums.AirbaseFanMovement;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseEnums.AirbaseFanSpeed;
@@ -30,10 +31,11 @@ import org.slf4j.LoggerFactory;
  * @author Paul Smedley <paul@smedley.id.au> - Mods for Daikin Airbase Units
  *
  */
+@NonNullByDefault
 public class AirbaseControlInfo {
     private static final Logger LOGGER = LoggerFactory.getLogger(AirbaseControlInfo.class);
 
-    public String ret;
+    public String ret = "";
     public boolean power = false;
     public AirbaseMode mode = AirbaseMode.AUTO;
     /** Degrees in Celsius. */
@@ -52,7 +54,7 @@ public class AirbaseControlInfo {
         Map<String, String> responseMap = InfoParser.parse(response);
 
         AirbaseControlInfo info = new AirbaseControlInfo();
-        info.ret = responseMap.get("ret");
+        info.ret = Optional.ofNullable(responseMap.get("ret")).orElse("");
         info.power = "1".equals(responseMap.get("pow"));
         info.mode = Optional.ofNullable(responseMap.get("mode")).flatMap(value -> InfoParser.parseInt(value))
                 .map(value -> AirbaseMode.fromValue(value)).orElse(AirbaseMode.AUTO);

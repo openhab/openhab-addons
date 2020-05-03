@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.daikin.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Holds configuration data for a Daikin air conditioning unit.
  *
@@ -19,15 +22,16 @@ package org.openhab.binding.daikin.internal.config;
  * @author Jimmy Tanagra - Add secure, uuid
  *
  */
+@NonNullByDefault
 public class DaikinConfiguration {
     public static final String HOST = "host";
     public static final String SECURE = "secure";
     public static final String UUID = "uuid";
     public static final String KEY = "key";
 
-    public String host;
-    public Boolean secure;
-    public String uuid;
-    public String key;
+    public @Nullable String host;
+    public @Nullable Boolean secure;
+    public @Nullable String uuid;
+    public @Nullable String key;
     public long refresh;
 }

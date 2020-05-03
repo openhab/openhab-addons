@@ -14,9 +14,11 @@ package org.openhab.binding.daikin.internal.api.airbase;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,10 +30,11 @@ import org.openhab.binding.daikin.internal.api.InfoParser;
  * @author Paul Smedley - Initial contribution
  *
  */
+@NonNullByDefault
 public class AirbaseZoneInfo {
     private static final Logger LOGGER = LoggerFactory.getLogger(AirbaseZoneInfo.class);
 
-    public String zonenames;
+    public String zonenames = "";
     public boolean zone[] = new boolean[9];
 
     private AirbaseZoneInfo() {
@@ -43,8 +46,8 @@ public class AirbaseZoneInfo {
         Map<String, String> responseMap = InfoParser.parse(response);
 
         AirbaseZoneInfo info = new AirbaseZoneInfo();
-        info.zonenames = responseMap.get("zone_name");
-        String zoneinfo = responseMap.get("zone_onoff");
+        info.zonenames = Optional.ofNullable(responseMap.get("zone_name")).orElse("");
+        String zoneinfo = Optional.ofNullable(responseMap.get("zone_onoff")).orElse("");
 
         String[] Zones = zoneinfo.split("%3b");
 

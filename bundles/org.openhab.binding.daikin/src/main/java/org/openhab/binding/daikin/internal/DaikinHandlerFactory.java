@@ -39,7 +39,7 @@ import org.osgi.service.component.annotations.Reference;
 public class DaikinHandlerFactory extends BaseThingHandlerFactory {
 
     private final DaikinDynamicStateDescriptionProvider stateDescriptionProvider;
-    private final HttpClient httpClient;
+    private final @Nullable HttpClient httpClient;
 
     @Activate
     public DaikinHandlerFactory(@Reference DaikinDynamicStateDescriptionProvider stateDescriptionProvider, @Reference DaikinHttpClientFactory httpClientFactory) {

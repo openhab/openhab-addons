@@ -13,6 +13,7 @@
 package org.openhab.binding.daikin.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.osgi.service.component.annotations.Component;
@@ -38,7 +39,7 @@ public class DaikinHttpClientFactoryImpl implements DaikinHttpClientFactory {
 
     private final Logger logger = LoggerFactory.getLogger(DaikinHttpClientFactoryImpl.class);
 
-    private @NonNullByDefault({}) HttpClient httpClient;
+    private @Nullable HttpClient httpClient;
 
     @Deactivate
     protected void deactivate() {
@@ -54,7 +55,7 @@ public class DaikinHttpClientFactoryImpl implements DaikinHttpClientFactory {
     }
 
     @Override
-    public HttpClient getHttpClient() {
+    public @Nullable HttpClient getHttpClient() {
         initialize();
         return httpClient;
     }
@@ -66,7 +67,7 @@ public class DaikinHttpClientFactoryImpl implements DaikinHttpClientFactory {
                 httpClient.start();
                 logger.debug("Daikin http client started");
             } catch (Exception e) {
-                logger.error("Could not start Daikin http client", e);
+                logger.warn("Could not start Daikin http client", e);
                 httpClient = null;
             }
         }

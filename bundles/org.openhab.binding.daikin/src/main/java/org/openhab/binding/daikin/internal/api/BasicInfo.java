@@ -14,7 +14,10 @@ package org.openhab.binding.daikin.internal.api;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.daikin.internal.api.InfoParser;
 
 import org.slf4j.Logger;
@@ -26,12 +29,13 @@ import org.slf4j.LoggerFactory;
  * @author Jimy Tanagra - Initial contribution
  *
  */
+@NonNullByDefault
 public class BasicInfo {
     private static final Logger logger = LoggerFactory.getLogger(BasicInfo.class);
 
-    public String mac;
-    public String ret;
-    public String ssid;
+    public String mac = "";
+    public String ret = "";
+    public String ssid = "";
 
     private BasicInfo() {
     }
@@ -42,9 +46,9 @@ public class BasicInfo {
         Map<String, String> responseMap = InfoParser.parse(response);
 
         BasicInfo info = new BasicInfo();
-        info.mac = responseMap.get("mac");
-        info.ret = responseMap.get("ret");
-        info.ssid = responseMap.get("ssid");
+        info.mac = Optional.ofNullable(responseMap.get("mac")).orElse("");
+        info.ret = Optional.ofNullable(responseMap.get("ret")).orElse("");
+        info.ssid = Optional.ofNullable(responseMap.get("ssid")).orElse("");
         return info;
     }
 

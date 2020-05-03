@@ -58,7 +58,7 @@ import org.slf4j.LoggerFactory;
 public abstract class DaikinBaseHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(DaikinBaseHandler.class);
 
-    private final HttpClient httpClient;
+    private final @Nullable HttpClient httpClient;
 
     private long refreshInterval;
 
@@ -83,9 +83,9 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
     protected abstract boolean handleCommandInternal(ChannelUID channelUID, Command command)
             throws DaikinCommunicationException;
 
-    protected abstract void registerUuid(String key);
+    protected abstract void registerUuid(@Nullable String key);
 
-    public DaikinBaseHandler(Thing thing, DaikinDynamicStateDescriptionProvider stateDescriptionProvider, HttpClient httpClient) {
+    public DaikinBaseHandler(Thing thing, DaikinDynamicStateDescriptionProvider stateDescriptionProvider, @Nullable HttpClient httpClient) {
         super(thing);
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.httpClient = httpClient;

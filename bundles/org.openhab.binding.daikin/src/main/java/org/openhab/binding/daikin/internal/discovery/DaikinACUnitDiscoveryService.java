@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -57,15 +58,16 @@ import org.slf4j.LoggerFactory;
  *
  */
 @Component(service = DiscoveryService.class)
+@NonNullByDefault
 public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
     private static final String UDP_PACKET_CONTENTS = "DAIKIN_UDP/common/basic_info";
     private static final int REMOTE_UDP_PORT = 30050;
 
     private Logger logger = LoggerFactory.getLogger(DaikinACUnitDiscoveryService.class);
 
-    private HttpClient httpClient;
+    private @Nullable HttpClient httpClient;
     private final Runnable scanner;
-    private ScheduledFuture<?> backgroundFuture;
+    private @Nullable ScheduledFuture<?> backgroundFuture;
 
     public DaikinACUnitDiscoveryService() {
         super(Collections.singleton(DaikinBindingConstants.THING_TYPE_AC_UNIT), 600, true);
