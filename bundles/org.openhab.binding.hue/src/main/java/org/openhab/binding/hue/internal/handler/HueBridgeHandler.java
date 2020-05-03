@@ -86,6 +86,8 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
 
     private static final String DEVICE_TYPE = "EclipseSmartHome";
 
+    private static final long BYPASS_MIN_DURATION_BEFORE_CMD = 1500;
+
     private static enum StatusType {
         ADDED,
         REMOVED,
@@ -102,6 +104,8 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     private final List<LightStatusListener> lightStatusListeners = new CopyOnWriteArrayList<>();
     private final List<SensorStatusListener> sensorStatusListeners = new CopyOnWriteArrayList<>();
     private final List<GroupStatusListener> groupStatusListeners = new CopyOnWriteArrayList<>();
+
+    private final Map<String, Long> endBypassFrames = new ConcurrentHashMap<>();
 
     final ReentrantLock pollingLock = new ReentrantLock();
 
@@ -214,15 +218,18 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
 
             for (final FullLight fullLight : lights) {
                 final String lightId = fullLight.getId();
-                lastLightStates.put(lightId, fullLight);
                 if (lastLightStateCopy.containsKey(lightId)) {
                     final FullLight lastFullLight = lastLightStateCopy.remove(lightId);
                     final State lastFullLightState = lastFullLight.getState();
-                    if (!lastFullLightState.equals(fullLight.getState())) {
-                        logger.debug("Status update for Hue light '{}' detected.", lightId);
-                        notifyLightStatusListeners(fullLight, StatusType.CHANGED);
+                    if (!isPollBypassActive(lightId)) {
+                        lastLightStates.put(lightId, fullLight);
+                        if (!lastFullLightState.equals(fullLight.getState())) {
+                            logger.debug("Status update for Hue light '{}' detected.", lightId);
+                            notifyLightStatusListeners(fullLight, StatusType.CHANGED);
+                        }
                     }
                 } else {
+                    lastLightStates.put(lightId, fullLight);
                     logger.debug("Hue light '{}' added.", lightId);
                     notifyLightStatusListeners(fullLight, StatusType.ADDED);
                 }
@@ -329,17 +336,31 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         // not needed
     }
 
+    private void setPollBypass(String lightId, long duration) {
+        endBypassFrames.put(lightId, (duration <= 0L) ? 0L : System.currentTimeMillis() + duration);
+    }
+
+    private boolean isPollBypassActive(String lightId) {
+        Long endBypass = endBypassFrames.get(lightId);
+        return endBypass != null && System.currentTimeMillis() <= endBypass;
+    }
+
     @Override
-    public void updateLightState(FullLight light, StateUpdate stateUpdate) {
+    public void updateLightState(FullLight light, StateUpdate stateUpdate, long fadeTime) {
         if (hueBridge != null) {
+            final String lightId = light.getId();
+            setPollBypass(lightId, BYPASS_MIN_DURATION_BEFORE_CMD);
             hueBridge.setLightState(light, stateUpdate).thenAccept(result -> {
                 try {
                     hueBridge.handleErrors(result);
+                    setPollBypass(lightId, fadeTime);
                 } catch (Exception e) {
-                    handleStateUpdateException(light, stateUpdate, e);
+                    setPollBypass(lightId, 0L);
+                    handleStateUpdateException(light, stateUpdate, fadeTime, e);
                 }
             }).exceptionally(e -> {
-                handleStateUpdateException(light, stateUpdate, e);
+                setPollBypass(lightId, 0L);
+                handleStateUpdateException(light, stateUpdate, fadeTime, e);
                 return null;
             });
         } else {
@@ -383,12 +404,21 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         }
     }
 
+    private void setPollBypass(FullGroup group, long duration) {
+        for (String lightId : group.getLights()) {
+            setPollBypass(lightId, duration);
+        }
+    }
+
     @Override
-    public void updateGroupState(FullGroup group, StateUpdate stateUpdate) {
+    public void updateGroupState(FullGroup group, StateUpdate stateUpdate, long fadeTime) {
         if (hueBridge != null) {
+            setPollBypass(group, BYPASS_MIN_DURATION_BEFORE_CMD);
             try {
                 hueBridge.setGroupState(group, stateUpdate);
+                setPollBypass(group, fadeTime);
             } catch (IOException | ApiException e) {
+                setPollBypass(group, 0L);
                 handleStateUpdateException(group, stateUpdate, e);
             }
         } else {
@@ -396,15 +426,15 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         }
     }
 
-    private void handleStateUpdateException(FullLight light, StateUpdate stateUpdate, Throwable e) {
+    private void handleStateUpdateException(FullLight light, StateUpdate stateUpdate, long fadeTime, Throwable e) {
         if (e instanceof DeviceOffException) {
             if (stateUpdate.getColorTemperature() != null && stateUpdate.getBrightness() == null) {
                 // If there is only a change of the color temperature, we do not want the light
                 // to be turned on (i.e. change its brightness).
                 return;
             } else {
-                updateLightState(light, LightStateConverter.toOnOffLightState(OnOffType.ON));
-                updateLightState(light, stateUpdate);
+                updateLightState(light, LightStateConverter.toOnOffLightState(OnOffType.ON), fadeTime);
+                updateLightState(light, stateUpdate, fadeTime);
             }
         } else if (e instanceof IOException) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());

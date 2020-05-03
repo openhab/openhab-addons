@@ -336,7 +336,7 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
             if (tmpColorTemp != null) {
                 lastSentColorTemp = tmpColorTemp;
             }
-            bridgeHandler.updateLightState(light, lightState);
+            bridgeHandler.updateLightState(light, lightState, fadeTime);
         } else {
             logger.warn("Command sent to an unknown channel id: {}:{}", getThing().getUID(), channel);
         }

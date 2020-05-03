@@ -111,8 +111,9 @@ public interface HueClient {
      *
      * @param light the light to be updated
      * @param stateUpdate the state update
+     * @param fadeTime the transition time
      */
-    void updateLightState(FullLight light, StateUpdate stateUpdate);
+    void updateLightState(FullLight light, StateUpdate stateUpdate, long fadeTime);
 
     /**
      * Updates the given sensors config.
@@ -135,6 +136,7 @@ public interface HueClient {
      *
      * @param group the group to be updated
      * @param stateUpdate the state update
+     * @param fadeTime the transition time
      */
-    void updateGroupState(FullGroup group, StateUpdate stateUpdate);
+    void updateGroupState(FullGroup group, StateUpdate stateUpdate, long fadeTime);
 }
