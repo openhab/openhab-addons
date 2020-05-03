@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -157,96 +158,102 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
             return;
         }
 
-        StateUpdate groupState = null;
+        StateUpdate newState = null;
         switch (channel) {
             case CHANNEL_COLOR:
                 if (command instanceof HSBType) {
                     HSBType hsbCommand = (HSBType) command;
                     if (hsbCommand.getBrightness().intValue() == 0) {
-                        groupState = LightStateConverter.toOnOffLightState(OnOffType.OFF);
+                        newState = LightStateConverter.toOnOffLightState(OnOffType.OFF);
                     } else {
-                        groupState = LightStateConverter.toColorLightState(hsbCommand, group.getState());
-                        if (groupState != null) {
-                            groupState.setTransitionTime(fadeTime);
-                        }
+                        newState = LightStateConverter.toColorLightState(hsbCommand, group.getState());
+                        newState.setTransitionTime(fadeTime);
                     }
                 } else if (command instanceof PercentType) {
-                    groupState = LightStateConverter.toBrightnessLightState((PercentType) command);
-                    if (groupState != null) {
-                        groupState.setTransitionTime(fadeTime);
-                    }
+                    newState = LightStateConverter.toBrightnessLightState((PercentType) command);
+                    newState.setTransitionTime(fadeTime);
                 } else if (command instanceof OnOffType) {
-                    groupState = LightStateConverter.toOnOffLightState((OnOffType) command);
+                    newState = LightStateConverter.toOnOffLightState((OnOffType) command);
                 } else if (command instanceof IncreaseDecreaseType) {
-                    groupState = convertBrightnessChangeToStateUpdate((IncreaseDecreaseType) command, group);
-                    if (groupState != null) {
-                        groupState.setTransitionTime(fadeTime);
+                    newState = convertBrightnessChangeToStateUpdate((IncreaseDecreaseType) command, group);
+                    if (newState != null) {
+                        newState.setTransitionTime(fadeTime);
                     }
                 }
                 break;
             case CHANNEL_COLORTEMPERATURE:
                 if (command instanceof PercentType) {
-                    groupState = LightStateConverter.toColorTemperatureLightState((PercentType) command);
-                    if (groupState != null) {
-                        groupState.setTransitionTime(fadeTime);
-                    }
+                    newState = LightStateConverter.toColorTemperatureLightState((PercentType) command);
+                    newState.setTransitionTime(fadeTime);
                 } else if (command instanceof OnOffType) {
-                    groupState = LightStateConverter.toOnOffLightState((OnOffType) command);
+                    newState = LightStateConverter.toOnOffLightState((OnOffType) command);
                 } else if (command instanceof IncreaseDecreaseType) {
-                    groupState = convertColorTempChangeToStateUpdate((IncreaseDecreaseType) command, group);
-                    if (groupState != null) {
-                        groupState.setTransitionTime(fadeTime);
+                    newState = convertColorTempChangeToStateUpdate((IncreaseDecreaseType) command, group);
+                    if (newState != null) {
+                        newState.setTransitionTime(fadeTime);
                     }
                 }
                 break;
             case CHANNEL_BRIGHTNESS:
                 if (command instanceof PercentType) {
-                    groupState = LightStateConverter.toBrightnessLightState((PercentType) command);
-                    if (groupState != null) {
-                        groupState.setTransitionTime(fadeTime);
-                    }
+                    newState = LightStateConverter.toBrightnessLightState((PercentType) command);
+                    newState.setTransitionTime(fadeTime);
                 } else if (command instanceof OnOffType) {
-                    groupState = LightStateConverter.toOnOffLightState((OnOffType) command);
+                    newState = LightStateConverter.toOnOffLightState((OnOffType) command);
                 } else if (command instanceof IncreaseDecreaseType) {
-                    groupState = convertBrightnessChangeToStateUpdate((IncreaseDecreaseType) command, group);
-                    if (groupState != null) {
-                        groupState.setTransitionTime(fadeTime);
+                    newState = convertBrightnessChangeToStateUpdate((IncreaseDecreaseType) command, group);
+                    if (newState != null) {
+                        newState.setTransitionTime(fadeTime);
                     }
                 }
-                if (groupState != null && lastSentColorTemp != null) {
+                if (newState != null && lastSentColorTemp != null) {
                     // make sure that the light also has the latest color temp
                     // this might not have been yet set in the light, if it was off
-                    groupState.setColorTemperature(lastSentColorTemp);
-                    groupState.setTransitionTime(fadeTime);
+                    newState.setColorTemperature(lastSentColorTemp);
+                    newState.setTransitionTime(fadeTime);
                 }
                 break;
             case CHANNEL_SWITCH:
                 if (command instanceof OnOffType) {
-                    groupState = LightStateConverter.toOnOffLightState((OnOffType) command);
+                    newState = LightStateConverter.toOnOffLightState((OnOffType) command);
                 }
-                if (groupState != null && lastSentColorTemp != null) {
+                if (newState != null && lastSentColorTemp != null) {
                     // make sure that the light also has the latest color temp
                     // this might not have been yet set in the light, if it was off
-                    groupState.setColorTemperature(lastSentColorTemp);
-                    groupState.setTransitionTime(fadeTime);
+                    newState.setColorTemperature(lastSentColorTemp);
+                    newState.setTransitionTime(fadeTime);
+                }
+                break;
+            case CHANNEL_SCENE:
+                if (command instanceof StringType) {
+                    newState = new StateUpdate().setScene(command.toString());
                 }
                 break;
             default:
                 break;
         }
-        if (groupState != null) {
-            // Cache values which we have sent
-            Integer tmpBrightness = groupState.getBrightness();
-            if (tmpBrightness != null) {
-                lastSentBrightness = tmpBrightness;
-            }
-            Integer tmpColorTemp = groupState.getColorTemperature();
-            if (tmpColorTemp != null) {
-                lastSentColorTemp = tmpColorTemp;
-            }
-            bridgeHandler.updateGroupState(group, groupState);
+        if (newState != null) {
+            cacheNewState(newState);
+            bridgeHandler.updateGroupState(group, newState);
         } else {
             logger.debug("Command sent to an unknown channel id: {}:{}", getThing().getUID(), channel);
+        }
+    }
+
+    /**
+     * Caches the new state that is sent to the bridge. This is necessary in case the lights are off when the values are
+     * sent. In this case, the values are not yet set in the lights.
+     *
+     * @param newState the state to be cached
+     */
+    private void cacheNewState(StateUpdate newState) {
+        Integer tmpBrightness = newState.getBrightness();
+        if (tmpBrightness != null) {
+            lastSentBrightness = tmpBrightness;
+        }
+        Integer tmpColorTemp = newState.getColorTemperature();
+        if (tmpColorTemp != null) {
+            lastSentColorTemp = tmpColorTemp;
         }
     }
 
@@ -269,25 +276,24 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
     }
 
     private @Nullable StateUpdate convertBrightnessChangeToStateUpdate(IncreaseDecreaseType command, FullGroup group) {
-        StateUpdate stateUpdate = null;
-        Integer currentBrightness = getCurrentBrightness(group.getState());
-        if (currentBrightness != null) {
-            int newBrightness = LightStateConverter.toAdjustedBrightness(command, currentBrightness);
-            stateUpdate = createBrightnessStateUpdate(currentBrightness, newBrightness);
+        Integer currentBrightness = getCurrentBrightness(group);
+        if (currentBrightness == null) {
+            return null;
         }
-        return stateUpdate;
+        int newBrightness = LightStateConverter.toAdjustedBrightness(command, currentBrightness);
+        return createBrightnessStateUpdate(currentBrightness, newBrightness);
     }
 
-    private @Nullable Integer getCurrentBrightness(@Nullable State groupState) {
-        Integer brightness = lastSentBrightness;
-        if (brightness == null && groupState != null) {
-            if (!groupState.isOn()) {
-                brightness = 0;
-            } else {
-                brightness = groupState.getBrightness();
-            }
+    private @Nullable Integer getCurrentBrightness(FullGroup group) {
+        if (lastSentBrightness != null) {
+            return lastSentBrightness;
         }
-        return brightness;
+
+        State currentState = group.getState();
+        if (currentState == null) {
+            return null;
+        }
+        return currentState.isOn() ? currentState.getBrightness() : 0;
     }
 
     private StateUpdate createBrightnessStateUpdate(int currentBrightness, int newBrightness) {
