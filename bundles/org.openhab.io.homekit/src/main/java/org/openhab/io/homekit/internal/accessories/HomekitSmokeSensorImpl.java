@@ -12,73 +12,53 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.items.GenericItem;
-import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
+import org.openhab.io.homekit.internal.HomekitCharacteristicType;
+import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
-import org.openhab.io.homekit.internal.battery.BatteryStatus;
 
-import io.github.hapjava.HomekitCharacteristicChangeCallback;
-import io.github.hapjava.accessories.BatteryStatusAccessory;
-import io.github.hapjava.accessories.SmokeSensor;
-import io.github.hapjava.accessories.properties.SmokeDetectedState;
+import io.github.hapjava.accessories.SmokeSensorAccessory;
+import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
+import io.github.hapjava.characteristics.impl.smokesensor.SmokeDetectedStateEnum;
+import io.github.hapjava.services.impl.SmokeSensorService;
 
 /**
  *
  * @author Cody Cutrer - Initial contribution
  */
-public class HomekitSmokeSensorImpl extends AbstractHomekitAccessoryImpl<GenericItem>
-        implements SmokeSensor, BatteryStatusAccessory {
+public class HomekitSmokeSensorImpl extends AbstractHomekitAccessoryImpl implements SmokeSensorAccessory {
 
-    @NonNull
-    private BatteryStatus batteryStatus;
+    private final BooleanItemReader smokeDetectedReader;
 
-    private BooleanItemReader smokeDetectedReader;
-
-    public HomekitSmokeSensorImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
-            HomekitAccessoryUpdater updater, BatteryStatus batteryStatus) {
-        super(taggedItem, itemRegistry, updater, GenericItem.class);
-
-        this.smokeDetectedReader = new BooleanItemReader(taggedItem.getItem(), OnOffType.ON, OpenClosedType.OPEN);
-        this.batteryStatus = batteryStatus;
+    public HomekitSmokeSensorImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
+            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
+        super(taggedItem, mandatoryCharacteristics, updater, settings);
+        this.smokeDetectedReader = new BooleanItemReader(
+                getItem(HomekitCharacteristicType.SMOKE_DETECTED_STATE, GenericItem.class), OnOffType.ON,
+                OpenClosedType.OPEN);
+        this.getServices().add(new SmokeSensorService(this));
     }
 
     @Override
-    public CompletableFuture<SmokeDetectedState> getSmokeDetectedState() {
+    public CompletableFuture<SmokeDetectedStateEnum> getSmokeDetectedState() {
         Boolean state = this.smokeDetectedReader.getValue();
-        if (state == null) {
-            return CompletableFuture.completedFuture(null);
-        }
-        return CompletableFuture.completedFuture(state ? SmokeDetectedState.DETECTED : SmokeDetectedState.NOT_DETECTED);
+        return CompletableFuture.completedFuture(
+                (state != null && state) ? SmokeDetectedStateEnum.DETECTED : SmokeDetectedStateEnum.NOT_DETECTED);
     }
 
     @Override
     public void subscribeSmokeDetectedState(HomekitCharacteristicChangeCallback callback) {
-        getUpdater().subscribe(getItem(), callback);
+        subscribe(HomekitCharacteristicType.SMOKE_DETECTED_STATE, callback);
     }
 
     @Override
     public void unsubscribeSmokeDetectedState() {
-        getUpdater().unsubscribe(getItem());
-    }
-
-    @Override
-    public CompletableFuture<Boolean> getLowBatteryState() {
-        return CompletableFuture.completedFuture(batteryStatus.isLow());
-    }
-
-    @Override
-    public void subscribeLowBatteryState(HomekitCharacteristicChangeCallback callback) {
-        batteryStatus.subscribe(getUpdater(), callback);
-    }
-
-    @Override
-    public void unsubscribeLowBatteryState() {
-        batteryStatus.unsubscribe(getUpdater());
+        unsubscribe(HomekitCharacteristicType.SMOKE_DETECTED_STATE);
     }
 }
