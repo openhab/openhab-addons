@@ -81,8 +81,6 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
             THING_TYPE_COLOR_TEMPERATURE_LIGHT, THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_EXTENDED_COLOR_LIGHT,
             THING_TYPE_ON_OFF_LIGHT, THING_TYPE_ON_OFF_PLUG, THING_TYPE_DIMMABLE_PLUG).collect(Collectors.toSet());
 
-    private static final long BYPASS_MIN_DURATION_BEFORE_CMD = 1500L;
-
     // @formatter:off
     private static final Map<String, List<String>> VENDOR_MODEL_MAP = Stream.of(
             new SimpleEntry<>("Philips",
@@ -440,13 +438,8 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
     }
 
     @Override
-    public void setPollBypassBeforeCmd() {
-        endBypassTime = System.currentTimeMillis() + BYPASS_MIN_DURATION_BEFORE_CMD;
-    }
-
-    @Override
-    public void setPollBypassFadeTime(long fadeTime) {
-        endBypassTime = System.currentTimeMillis() + fadeTime;
+    public void setPollBypass(long bypassTime) {
+        endBypassTime = System.currentTimeMillis() + bypassTime;
     }
 
     @Override

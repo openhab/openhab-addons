@@ -83,6 +83,8 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
 
+    private static final long BYPASS_MIN_DURATION_BEFORE_CMD = 1500L;
+
     private static final String DEVICE_TYPE = "EclipseSmartHome";
 
     private final Logger logger = LoggerFactory.getLogger(HueBridgeHandler.class);
@@ -367,11 +369,11 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     public void updateLightState(LightStatusListener listener, FullLight light, StateUpdate stateUpdate,
             long fadeTime) {
         if (hueBridge != null) {
-            listener.setPollBypassBeforeCmd();
+            listener.setPollBypass(BYPASS_MIN_DURATION_BEFORE_CMD);
             hueBridge.setLightState(light, stateUpdate).thenAccept(result -> {
                 try {
                     hueBridge.handleErrors(result);
-                    listener.setPollBypassFadeTime(fadeTime);
+                    listener.setPollBypass(fadeTime);
                 } catch (Exception e) {
                     listener.unsetPollBypass();
                     handleStateUpdateException(listener, light, stateUpdate, fadeTime, e);
@@ -423,7 +425,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     }
 
     @Override
-    public void updateGroupState(FullGroup group, StateUpdate stateUpdate) {
+    public void updateGroupState(FullGroup group, StateUpdate stateUpdate, long fadeTime) {
         if (hueBridge != null) {
             hueBridge.setGroupState(group, stateUpdate).thenAccept(result -> {
                 try {
@@ -438,6 +440,25 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         } else {
             logger.debug("No bridge connected or selected. Cannot set group state.");
         }
+    }
+
+    private void setGroupPollBypass(FullGroup group, long bypassTime) {
+        group.getLights().forEach((lightId) -> {
+            final LightStatusListener listener = lightStatusListeners.get(lightId);
+            if (listener != null) {
+                listener.setPollBypass(bypassTime);
+            }
+        });
+    }
+
+    private void unsetGroupPollBypass(FullGroup group) {
+        group.getLights().forEach((lightId) -> {
+            final LightStatusListener listener = lightStatusListeners.get(lightId);
+            if (listener != null) {
+                listener.unsetPollBypass();
+                ;
+            }
+        });
     }
 
     private void handleStateUpdateException(LightStatusListener listener, FullLight light, StateUpdate stateUpdate,

@@ -67,9 +67,7 @@ public interface LightStatusListener {
      */
     void onLightAdded(@Nullable HueBridge bridge, FullLight light);
 
-    void setPollBypassBeforeCmd();
-
-    void setPollBypassFadeTime(long fadeTime);
+    void setPollBypass(long bypassTime);
 
     void unsetPollBypass();
 }

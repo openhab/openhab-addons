@@ -142,5 +142,5 @@ public interface HueClient {
      * @param group the group to be updated
      * @param stateUpdate the state update
      */
-    void updateGroupState(FullGroup group, StateUpdate stateUpdate);
+    void updateGroupState(FullGroup group, StateUpdate stateUpdate, long fadeTime);
 }

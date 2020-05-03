@@ -266,7 +266,7 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
             if (tmpColorTemp != null) {
                 lastSentColorTemp = tmpColorTemp;
             }
-            bridgeHandler.updateGroupState(group, groupState);
+            bridgeHandler.updateGroupState(group, groupState, fadeTime);
         } else {
             logger.debug("Command sent to an unknown channel id: {}:{}", getThing().getUID(), channel);
         }
