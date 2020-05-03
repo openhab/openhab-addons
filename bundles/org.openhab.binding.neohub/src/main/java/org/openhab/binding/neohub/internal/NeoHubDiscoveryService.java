@@ -113,7 +113,8 @@ public class NeoHubDiscoveryService extends AbstractDiscoveryService {
 
         bridgeUID = hub.getThing().getUID();
 
-        switch (deviceInfo.getDeviceType().intValue()) {
+        int deviceId = deviceInfo.getDeviceType().intValue();
+        switch (deviceId) {
             // device type 6 is a smart plug
             case 6: {
                 deviceType = DEVICE_ID_NEOPLUG;
@@ -132,7 +133,7 @@ public class NeoHubDiscoveryService extends AbstractDiscoveryService {
                 deviceTypeUID = THING_TYPE_NEOCONTACT;
                 break;
             }
-            // all other device types are assumed to thermostats
+            // all other device types are assumed to be thermostats
             default: {
                 deviceType = DEVICE_ID_NEOSTAT;
                 deviceTypeUID = THING_TYPE_NEOSTAT;
@@ -148,6 +149,6 @@ public class NeoHubDiscoveryService extends AbstractDiscoveryService {
 
         thingDiscovered(device);
 
-        logger.debug("discovered device={}, name={} ..", deviceType, deviceOpenHabId);
+        logger.debug("discovered device={}, type={}, name={} ..", deviceType, deviceId, deviceOpenHabId);
     }
 }
