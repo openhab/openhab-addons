@@ -41,7 +41,7 @@ import io.github.hapjava.services.Service;
  */
 abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
     private final Logger logger = LoggerFactory.getLogger(AbstractHomekitAccessoryImpl.class);
-    protected List<HomekitTaggedItem> characteristics;
+    private final List<HomekitTaggedItem> characteristics;
     private final HomekitTaggedItem accessory;
     private final HomekitAccessoryUpdater updater;
     private final HomekitSettings settings;

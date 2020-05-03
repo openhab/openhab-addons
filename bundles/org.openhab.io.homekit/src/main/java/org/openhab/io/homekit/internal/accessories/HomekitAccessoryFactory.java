@@ -156,22 +156,20 @@ public class HomekitAccessoryFactory {
      */
     public static HomekitAccessory create(HomekitTaggedItem taggedItem, MetadataRegistry metadataRegistry,
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws HomekitException {
-
-        logger.trace("Constructing {} of accessoryType {}", taggedItem.getName(), taggedItem.getAccessoryType());
+        final HomekitAccessoryType accessoryType = taggedItem.getAccessoryType();
+        logger.trace("Constructing {} of accessoryType {}", taggedItem.getName(), accessoryType);
         final List<HomekitTaggedItem> requiredCharacteristics = getMandatoryCharacteristics(taggedItem,
                 metadataRegistry);
-        if ((mandatoryCharacteristics.get(taggedItem.getAccessoryType()) != null) && (requiredCharacteristics
-                .size() < mandatoryCharacteristics.get(taggedItem.getAccessoryType()).length)) {
-            logger.warn("Accessory of type {} must have following characteristics {}. Found only {}",
-                    taggedItem.getAccessoryType(), mandatoryCharacteristics.get(taggedItem.getAccessoryType()),
-                    requiredCharacteristics);
+        if ((mandatoryCharacteristics.get(accessoryType) != null)
+                && (requiredCharacteristics.size() < mandatoryCharacteristics.get(accessoryType).length)) {
+            logger.warn("Accessory of type {} must have following characteristics {}. Found only {}", accessoryType,
+                    mandatoryCharacteristics.get(accessoryType), requiredCharacteristics);
             throw new HomekitException("Missing mandatory characteristics");
         }
         AbstractHomekitAccessoryImpl accessoryImpl = null;
 
         try {
-            final Class<? extends AbstractHomekitAccessoryImpl> accessoryImplClass = serviceImplMap
-                    .get(taggedItem.getAccessoryType());
+            final Class<? extends AbstractHomekitAccessoryImpl> accessoryImplClass = serviceImplMap.get(accessoryType);
             if (accessoryImplClass != null) {
                 accessoryImpl = accessoryImplClass
                         .getConstructor(HomekitTaggedItem.class, List.class, HomekitAccessoryUpdater.class,
@@ -180,15 +178,13 @@ public class HomekitAccessoryFactory {
                 addOptionalCharacteristics(accessoryImpl, metadataRegistry);
                 return accessoryImpl;
             } else {
-                logger.warn("Unsupported HomeKit type: {}", taggedItem.getAccessoryType());
-                throw new HomekitException("Unsupported HomeKit type: " + taggedItem.getAccessoryType());
+                logger.warn("Unsupported HomeKit type: {}", accessoryType);
+                throw new HomekitException("Unsupported HomeKit type: " + accessoryType);
             }
         } catch (NoSuchMethodException | IllegalAccessException | InstantiationException
                 | InvocationTargetException e) {
-            logger.warn("Cannot instantiate accessory implementation for accessory {}", taggedItem.getAccessoryType(),
-                    e);
-            throw new HomekitException(
-                    "Cannot instantiate accessory implementation for accessory " + taggedItem.getAccessoryType());
+            logger.warn("Cannot instantiate accessory implementation for accessory {}", accessoryType, e);
+            throw new HomekitException("Cannot instantiate accessory implementation for accessory " + accessoryType);
         }
     }
 

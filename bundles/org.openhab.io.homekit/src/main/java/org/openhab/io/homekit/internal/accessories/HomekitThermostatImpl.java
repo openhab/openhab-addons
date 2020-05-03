@@ -57,7 +57,8 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements Ther
 
     @Override
     public CompletableFuture<CurrentHeatingCoolingStateEnum> getCurrentState() {
-        String stringValue = getSettings().thermostatCurrentModeOff;
+        final HomekitSettings settings = getSettings();
+        String stringValue = settings.thermostatCurrentModeOff;
         final Optional<HomekitTaggedItem> characteristic = getCharacteristic(
                 HomekitCharacteristicType.CURRENT_HEATING_COOLING_STATE);
         if (characteristic.isPresent()) {
@@ -68,19 +69,19 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements Ther
 
         CurrentHeatingCoolingStateEnum mode;
 
-        if (stringValue.equalsIgnoreCase(getSettings().thermostatCurrentModeCooling)) {
+        if (stringValue.equalsIgnoreCase(settings.thermostatCurrentModeCooling)) {
             mode = CurrentHeatingCoolingStateEnum.COOL;
-        } else if (stringValue.equalsIgnoreCase(getSettings().thermostatCurrentModeHeating)) {
+        } else if (stringValue.equalsIgnoreCase(settings.thermostatCurrentModeHeating)) {
             mode = CurrentHeatingCoolingStateEnum.HEAT;
-        } else if (stringValue.equalsIgnoreCase(getSettings().thermostatCurrentModeOff)) {
+        } else if (stringValue.equalsIgnoreCase(settings.thermostatCurrentModeOff)) {
             mode = CurrentHeatingCoolingStateEnum.OFF;
         } else if (stringValue.equals("UNDEF") || stringValue.equals("NULL")) {
             logger.warn("Heating cooling target mode not available. Relaying value of OFF to Homekit");
             mode = CurrentHeatingCoolingStateEnum.OFF;
         } else {
             logger.warn("Unrecognized heatingCoolingCurrentMode: {}. Expected {}, {}, or {} strings in value.",
-                    stringValue, getSettings().thermostatCurrentModeCooling, getSettings().thermostatCurrentModeHeating,
-                    getSettings().thermostatCurrentModeOff);
+                    stringValue, settings.thermostatCurrentModeCooling, settings.thermostatCurrentModeHeating,
+                    settings.thermostatCurrentModeOff);
             mode = CurrentHeatingCoolingStateEnum.OFF;
         }
         return CompletableFuture.completedFuture(mode);
@@ -94,7 +95,8 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements Ther
 
     @Override
     public CompletableFuture<TargetHeatingCoolingStateEnum> getTargetState() {
-        String stringValue = getSettings().thermostatTargetModeOff;
+        final HomekitSettings settings = getSettings();
+        String stringValue = settings.thermostatTargetModeOff;
 
         final Optional<HomekitTaggedItem> characteristic = getCharacteristic(
                 HomekitCharacteristicType.TARGET_HEATING_COOLING_STATE);
@@ -105,21 +107,21 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements Ther
         }
         TargetHeatingCoolingStateEnum mode;
 
-        if (stringValue.equalsIgnoreCase(getSettings().thermostatTargetModeCool)) {
+        if (stringValue.equalsIgnoreCase(settings.thermostatTargetModeCool)) {
             mode = TargetHeatingCoolingStateEnum.COOL;
-        } else if (stringValue.equalsIgnoreCase(getSettings().thermostatTargetModeHeat)) {
+        } else if (stringValue.equalsIgnoreCase(settings.thermostatTargetModeHeat)) {
             mode = TargetHeatingCoolingStateEnum.HEAT;
-        } else if (stringValue.equalsIgnoreCase(getSettings().thermostatTargetModeAuto)) {
+        } else if (stringValue.equalsIgnoreCase(settings.thermostatTargetModeAuto)) {
             mode = TargetHeatingCoolingStateEnum.AUTO;
-        } else if (stringValue.equalsIgnoreCase(getSettings().thermostatTargetModeOff)) {
+        } else if (stringValue.equalsIgnoreCase(settings.thermostatTargetModeOff)) {
             mode = TargetHeatingCoolingStateEnum.OFF;
         } else if (stringValue.equals("UNDEF") || stringValue.equals("NULL")) {
             logger.warn("Heating cooling target mode not available. Relaying value of OFF to Homekit");
             mode = TargetHeatingCoolingStateEnum.OFF;
         } else {
             logger.warn("Unrecognized heating cooling target mode: {}. Expected {}, {}, {}, or {} strings in value.",
-                    stringValue, getSettings().thermostatTargetModeCool, getSettings().thermostatTargetModeHeat,
-                    getSettings().thermostatTargetModeAuto, getSettings().thermostatTargetModeOff);
+                    stringValue, settings.thermostatTargetModeCool, settings.thermostatTargetModeHeat,
+                    settings.thermostatTargetModeAuto, settings.thermostatTargetModeOff);
             mode = TargetHeatingCoolingStateEnum.OFF;
         }
         return CompletableFuture.completedFuture(mode);
@@ -145,22 +147,23 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements Ther
 
     @Override
     public void setTargetState(TargetHeatingCoolingStateEnum mode) {
+        final HomekitSettings settings = getSettings();
         String modeString = null;
         switch (mode) {
             case AUTO:
-                modeString = getSettings().thermostatTargetModeAuto;
+                modeString = settings.thermostatTargetModeAuto;
                 break;
 
             case COOL:
-                modeString = getSettings().thermostatTargetModeCool;
+                modeString = settings.thermostatTargetModeCool;
                 break;
 
             case HEAT:
-                modeString = getSettings().thermostatTargetModeHeat;
+                modeString = settings.thermostatTargetModeHeat;
                 break;
 
             case OFF:
-                modeString = getSettings().thermostatTargetModeOff;
+                modeString = settings.thermostatTargetModeOff;
                 break;
         }
         final Optional<HomekitTaggedItem> characteristic = getCharacteristic(
