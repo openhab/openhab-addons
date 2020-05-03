@@ -386,11 +386,16 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     @Override
     public void updateGroupState(FullGroup group, StateUpdate stateUpdate) {
         if (hueBridge != null) {
-            try {
-                hueBridge.setGroupState(group, stateUpdate);
-            } catch (IOException | ApiException e) {
+            hueBridge.setGroupState(group, stateUpdate).thenAccept(result -> {
+                try {
+                    hueBridge.handleErrors(result);
+                } catch (Exception e) {
+                    handleStateUpdateException(group, stateUpdate, e);
+                }
+            }).exceptionally(e -> {
                 handleStateUpdateException(group, stateUpdate, e);
-            }
+                return null;
+            });
         } else {
             logger.debug("No bridge connected or selected. Cannot set group state.");
         }
