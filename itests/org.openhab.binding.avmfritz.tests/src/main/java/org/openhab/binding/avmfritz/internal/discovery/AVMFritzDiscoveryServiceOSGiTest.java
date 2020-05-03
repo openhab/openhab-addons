@@ -55,7 +55,8 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
     @Before
     public void setUp() {
         super.setUp();
-        discovery = new AVMFritzDiscoveryService(bridgeHandler);
+        discovery = new AVMFritzDiscoveryService();
+        discovery.setThingHandler(bridgeHandler);
         listener = new DiscoveryListener() {
             @Override
             public void thingRemoved(DiscoveryService source, ThingUID thingUID) {
@@ -121,7 +122,7 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
         AVMFritzBaseModel device = devices.getDevicelist().get(0);
         assertNotNull(device);
 
-        discovery.onDeviceAddedInternal(device);
+        discovery.onDeviceAdded(device);
         assertNull(discoveryResult);
     }
 
@@ -149,7 +150,7 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
         AVMFritzBaseModel device = devices.getDevicelist().get(0);
         assertNotNull(device);
 
-        discovery.onDeviceAddedInternal(device);
+        discovery.onDeviceAdded(device);
         assertNotNull(discoveryResult);
 
         assertEquals(DiscoveryResultFlag.NEW, discoveryResult.getFlag());
@@ -199,7 +200,7 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
         AVMFritzBaseModel device = devices.getDevicelist().get(0);
         assertNotNull(device);
 
-        discovery.onDeviceAddedInternal(device);
+        discovery.onDeviceAdded(device);
         assertNotNull(discoveryResult);
 
         assertEquals(DiscoveryResultFlag.NEW, discoveryResult.getFlag());
@@ -249,7 +250,7 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
         AVMFritzBaseModel device = devices.getDevicelist().get(0);
         assertNotNull(device);
 
-        discovery.onDeviceAddedInternal(device);
+        discovery.onDeviceAdded(device);
         assertNotNull(discoveryResult);
 
         assertEquals(DiscoveryResultFlag.NEW, discoveryResult.getFlag());
@@ -302,7 +303,7 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
         AVMFritzBaseModel device = devices.getDevicelist().get(0);
         assertNotNull(device);
 
-        discovery.onDeviceAddedInternal(device);
+        discovery.onDeviceAdded(device);
         assertNotNull(discoveryResult);
 
         assertEquals(DiscoveryResultFlag.NEW, discoveryResult.getFlag());
@@ -355,7 +356,7 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
         AVMFritzBaseModel device = devices.getDevicelist().get(0);
         assertNotNull(device);
 
-        discovery.onDeviceAddedInternal(device);
+        discovery.onDeviceAdded(device);
         assertNotNull(discoveryResult);
 
         assertEquals(DiscoveryResultFlag.NEW, discoveryResult.getFlag());
@@ -408,7 +409,7 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
         AVMFritzBaseModel device = devices.getDevicelist().get(0);
         assertNotNull(device);
 
-        discovery.onDeviceAddedInternal(device);
+        discovery.onDeviceAdded(device);
         assertNotNull(discoveryResult);
 
         assertEquals(DiscoveryResultFlag.NEW, discoveryResult.getFlag());
@@ -454,7 +455,7 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
         AVMFritzBaseModel device = devices.getDevicelist().get(0);
         assertNotNull(device);
 
-        discovery.onDeviceAddedInternal(device);
+        discovery.onDeviceAdded(device);
         assertNotNull(discoveryResult);
 
         assertEquals(DiscoveryResultFlag.NEW, discoveryResult.getFlag());
@@ -489,7 +490,7 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
         AVMFritzBaseModel device = devices.getDevicelist().get(0);
         assertNotNull(device);
 
-        discovery.onDeviceAddedInternal(device);
+        discovery.onDeviceAdded(device);
         assertNull(discoveryResult);
     }
 
@@ -521,7 +522,7 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
         AVMFritzBaseModel device = devices.getDevicelist().get(0);
         assertNotNull(device);
 
-        discovery.onDeviceAddedInternal(device);
+        discovery.onDeviceAdded(device);
         assertNotNull(discoveryResult);
 
         assertEquals(DiscoveryResultFlag.NEW, discoveryResult.getFlag());
@@ -564,7 +565,7 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
         AVMFritzBaseModel device = devices.getDevicelist().get(0);
         assertNotNull(device);
 
-        discovery.onDeviceAddedInternal(device);
+        discovery.onDeviceAdded(device);
         assertNotNull(discoveryResult);
 
         assertEquals(DiscoveryResultFlag.NEW, discoveryResult.getFlag());
@@ -607,7 +608,7 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
         AVMFritzBaseModel device = devices.getDevicelist().get(0);
         assertNotNull(device);
 
-        discovery.onDeviceAddedInternal(device);
+        discovery.onDeviceAdded(device);
         assertNotNull(discoveryResult);
 
         assertEquals(DiscoveryResultFlag.NEW, discoveryResult.getFlag());
@@ -650,7 +651,7 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
         AVMFritzBaseModel device = devices.getDevicelist().get(0);
         assertNotNull(device);
 
-        discovery.onDeviceAddedInternal(device);
+        discovery.onDeviceAdded(device);
         assertNotNull(discoveryResult);
 
         assertEquals(DiscoveryResultFlag.NEW, discoveryResult.getFlag());
@@ -693,7 +694,7 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
         AVMFritzBaseModel device = devices.getDevicelist().get(0);
         assertNotNull(device);
 
-        discovery.onDeviceAddedInternal(device);
+        discovery.onDeviceAdded(device);
         assertNotNull(discoveryResult);
 
         assertEquals(DiscoveryResultFlag.NEW, discoveryResult.getFlag());
@@ -750,7 +751,7 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
         AVMFritzBaseModel device = devices.getDevicelist().get(0);
         assertNotNull(device);
 
-        discovery.onDeviceAddedInternal(device);
+        discovery.onDeviceAdded(device);
         assertNotNull(discoveryResult);
 
         assertEquals(DiscoveryResultFlag.NEW, discoveryResult.getFlag());
@@ -802,7 +803,7 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
         AVMFritzBaseModel device = devices.getDevicelist().get(0);
         assertNotNull(device);
 
-        discovery.onDeviceAddedInternal(device);
+        discovery.onDeviceAdded(device);
         assertNotNull(discoveryResult);
 
         assertEquals(DiscoveryResultFlag.NEW, discoveryResult.getFlag());
