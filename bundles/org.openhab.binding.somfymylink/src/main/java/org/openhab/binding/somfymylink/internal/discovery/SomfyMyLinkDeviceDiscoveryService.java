@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.ScanListener;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
@@ -50,8 +51,6 @@ public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService 
     private static final int DISCOVERY_REFRESH_SEC = 1800;
 
     private final Logger logger = LoggerFactory.getLogger(SomfyMyLinkDeviceDiscoveryService.class);
-
-    private @Nullable ScheduledFuture<?> scanTask;
 
     private SomfyMyLinkBridgeHandler mylinkHandler;
 
@@ -79,6 +78,7 @@ public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService 
     protected void startBackgroundDiscovery() {
         logger.debug("Starting Somfy My Link background discovery");
 
+        ScheduledFuture<?> discoveryJob = this.discoveryJob;
         if (discoveryJob == null || discoveryJob.isCancelled()) {
             discoveryJob = scheduler.scheduleWithFixedDelay(this::runDiscovery, 10, DISCOVERY_REFRESH_SEC,
                     TimeUnit.SECONDS);
@@ -88,7 +88,8 @@ public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService 
     @Override
     protected void stopBackgroundDiscovery() {
         logger.debug("Stopping Somfy MyLink background discovery");
-        if (discoveryJob != null && !discoveryJob.isCancelled()) {
+        ScheduledFuture<?> discoveryJob = this.discoveryJob;
+        if (discoveryJob != null) {
             discoveryJob.cancel(true);
             discoveryJob = null;
         }
@@ -102,22 +103,17 @@ public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService 
     private synchronized void runDiscovery() {
         logger.debug("Starting scanning for things...");
 
-        if (this.scanTask == null || this.scanTask.isDone()) {
-            this.scanTask = scheduler.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        discoverDevices();
-                    } catch (SomfyMyLinkException e) {
-                        logger.info("Error scanning for devices: {}", e.getMessage(), e);
-
-                        if (scanListener != null) {
-                            scanListener.onErrorOccurred(e);
-                        }
-                    }
+        scheduler.execute(() -> {
+            try {
+                discoverDevices();
+            } catch (SomfyMyLinkException e) {
+                logger.info("Error scanning for devices: {}", e.getMessage(), e);
+                ScanListener scanListener = this.scanListener;
+                if (scanListener != null) {
+                    scanListener.onErrorOccurred(e);
                 }
-            }, 0, TimeUnit.SECONDS);
-        }
+            }
+        });
     }
 
     private void discoverDevices() throws SomfyMyLinkException {
@@ -145,10 +141,8 @@ public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService 
             String id = scene.getTargetID();
             String label = "Somfy Scene " + scene.getName();
 
-            if (id != null) {
-                logger.info("Adding device {}", id);
-                notifySceneDiscovery(THING_TYPE_SCENE, id, label);
-            }
+            logger.info("Adding device {}", id);
+            notifySceneDiscovery(THING_TYPE_SCENE, id, label);
         }
     }
 

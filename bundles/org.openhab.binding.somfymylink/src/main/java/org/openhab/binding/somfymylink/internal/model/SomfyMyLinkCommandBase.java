@@ -12,25 +12,16 @@
  */
 package org.openhab.binding.somfymylink.internal.model;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author Chris Johnson - Initial contribution
  */
-@NonNullByDefault
-public class SomfyMyLinkShade {
+public class SomfyMyLinkCommandBase {
 
-    private @Nullable String targetID;
-
-    private @Nullable String name;
-
-    public @Nullable String getTargetID() {
-        String targetID = this.targetID;
-        return targetID != null ? targetID.replace('.', '-') : null;
+    public SomfyMyLinkCommandBase() {
+        this.id = ThreadLocalRandom.current().nextInt(1, 1000);
     }
-
-    public @Nullable String getName() {
-        return name;
-    }
+        
+    int id;
 }
