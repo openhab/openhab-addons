@@ -12,14 +12,12 @@
  */
 package org.openhab.binding.avmfritz.internal.config;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-
 /**
- * Bean holding configuration data according to bridge.xml
+ * Bean holding configuration data for FRITZ! Box.
  *
  * @author Robert Bausdorf - Initial contribution
  */
-public class AVMFritzConfiguration {
+public class AVMFritzBoxConfiguration {
 
     private String ipAddress;
     private Integer port;
@@ -98,9 +96,9 @@ public class AVMFritzConfiguration {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("IP", getIpAddress()).append("port", getPort())
-                .append("proto", getProtocol()).append("user", getUser())
-                .append("pollingInterval", getPollingInterval()).append("asyncTimeout", getAsyncTimeout())
-                .append("syncTimeout", getSyncTimeout()).toString();
+        return new StringBuilder().append("[IP=").append(getIpAddress()).append(",port=").append(getPort())
+                .append(",protocol=").append(getProtocol()).append(",user=").append(getUser())
+                .append(",pollingInterval=").append(getPollingInterval()).append(",asyncTimeout=")
+                .append(getAsyncTimeout()).append(",syncTimeout=").append(getSyncTimeout()).append("]").toString();
     }
 }

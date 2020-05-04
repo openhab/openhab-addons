@@ -49,7 +49,6 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService
         implements FritzAhaStatusListener, DiscoveryService, ThingHandlerService {
 
     private final Logger logger = LoggerFactory.getLogger(AVMFritzDiscoveryService.class);
-
     /**
      * Handler of the bridge of which devices have to be discovered.
      */
@@ -89,7 +88,7 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService
     @Override
     public void setThingHandler(@NonNullByDefault({}) ThingHandler handler) {
         if (handler instanceof AVMFritzBaseBridgeHandler) {
-            this.bridgeHandler = (AVMFritzBaseBridgeHandler) handler;
+            bridgeHandler = (AVMFritzBaseBridgeHandler) handler;
         }
     }
 
@@ -102,9 +101,26 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService
     public void onDeviceAdded(AVMFritzBaseModel device) {
         ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, bridgeHandler.getThingTypeId(device));
         if (getSupportedThingTypes().contains(thingTypeUID)) {
-            ThingUID bridgeUID = bridgeHandler.getThing().getUID();
-            ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, bridgeHandler.getThingName(device));
+            ThingUID thingUID = new ThingUID(thingTypeUID, bridgeHandler.getThing().getUID(),
+                    bridgeHandler.getThingName(device));
+            onDeviceAddedInternal(thingUID, device);
+        } else {
+            logger.debug("Discovered unsupported device: {}", device);
+        }
+    }
 
+    @Override
+    public void onDeviceUpdated(ThingUID thingUID, AVMFritzBaseModel device) {
+        onDeviceAddedInternal(thingUID, device);
+    }
+
+    @Override
+    public void onDeviceGone(ThingUID thingUID) {
+        // nothing to do
+    }
+
+    private void onDeviceAddedInternal(ThingUID thingUID, AVMFritzBaseModel device) {
+        if (device.getPresent() == 1) {
             Map<String, Object> properties = new HashMap<>();
             properties.put(CONFIG_AIN, device.getIdentifier());
             properties.put(PROPERTY_VENDOR, device.getManufacturer());
@@ -117,29 +133,12 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService
             }
 
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    .withRepresentationProperty(CONFIG_AIN).withBridge(bridgeUID).withLabel(device.getName()).build();
+                    .withRepresentationProperty(CONFIG_AIN).withBridge(bridgeHandler.getThing().getUID())
+                    .withLabel(device.getName()).build();
 
             thingDiscovered(discoveryResult);
         } else {
-            logger.debug("Discovered unsupported device: {}", device);
+            thingRemoved(thingUID);
         }
-    }
-
-    @Override
-    public void onDeviceUpdated(AVMFritzBaseModel device) {
-        onDeviceAdded(device);
-    }
-
-    @Override
-    public void onDeviceRemoved(AVMFritzBaseModel device) {
-        ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, bridgeHandler.getThingTypeId(device));
-        ThingUID thingUID = new ThingUID(thingTypeUID, bridgeHandler.getThing().getUID(),
-                bridgeHandler.getThingName(device));
-        onDeviceGone(thingUID);
-    }
-
-    @Override
-    public void onDeviceGone(ThingUID thingUID) {
-        thingRemoved(thingUID);
     }
 }

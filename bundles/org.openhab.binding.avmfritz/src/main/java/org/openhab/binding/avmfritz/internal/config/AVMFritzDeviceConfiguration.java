@@ -12,27 +12,21 @@
  */
 package org.openhab.binding.avmfritz.internal.config;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Channel configuration from openHAB.
+ * Bean holding configuration data for FRITZ! devices.
  *
  * @author Christoph Weitkamp - Initial contribution
  */
-public class AVMFritzTemperatureChannelConfig {
+@NonNullByDefault
+public class AVMFritzDeviceConfiguration {
 
-    private int offset;
-
-    public int getOffset() {
-        return offset;
-    }
-
-    public void setOffset(int offset) {
-        this.offset = offset;
-    }
+    public @Nullable String ain;
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("offset", getOffset()).toString();
+        return new StringBuilder().append("[identifier=").append(ain).append("]").toString();
     }
 }

@@ -20,10 +20,13 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -47,7 +50,7 @@ import org.openhab.binding.avmfritz.internal.ahamodel.AVMFritzBaseModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.GroupModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.templates.TemplateModel;
-import org.openhab.binding.avmfritz.internal.config.AVMFritzConfiguration;
+import org.openhab.binding.avmfritz.internal.config.AVMFritzBoxConfiguration;
 import org.openhab.binding.avmfritz.internal.discovery.AVMFritzDiscoveryService;
 import org.openhab.binding.avmfritz.internal.hardware.FritzAhaStatusListener;
 import org.openhab.binding.avmfritz.internal.hardware.FritzAhaWebInterface;
@@ -113,32 +116,23 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
         applyTemplateChannelUID = new ChannelUID(bridge.getUID(), CHANNEL_APPLY_TEMPLATE);
     }
 
-    /**
-     * Initializes the bridge.
-     */
     @Override
     public void initialize() {
-        logger.debug("About to initialize FRITZ!Box {}", BRIDGE_FRITZBOX);
-        AVMFritzConfiguration config = getConfigAs(AVMFritzConfiguration.class);
-
-        logger.debug("Discovered FRITZ!Box initialized: {}", config);
+        AVMFritzBoxConfiguration config = getConfigAs(AVMFritzBoxConfiguration.class);
 
         this.refreshInterval = config.getPollingInterval();
         this.connection = new FritzAhaWebInterface(config, this, httpClient);
         if (config.getPassword() != null) {
             stopPolling();
             startPolling();
+            updateStatus(ThingStatus.UNKNOWN);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "no password set");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No password set");
         }
     }
 
-    /**
-     * Disposes the bridge.
-     */
     @Override
     public void dispose() {
-        logger.debug("Handler disposed.");
         stopPolling();
     }
 
@@ -228,24 +222,18 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
      * @param deviceList list of devices
      */
     public void onDeviceListAdded(List<AVMFritzBaseModel> deviceList) {
+        Map<String, AVMFritzBaseModel> deviceIdentifierMap = deviceList.stream()
+                .collect(Collectors.toMap(it -> it.getIdentifier(), Function.identity()));
         getThing().getThings().stream().forEach(thing -> {
             AVMFritzBaseThingHandler handler = (AVMFritzBaseThingHandler) thing.getHandler();
             if (handler != null) {
-                Optional<AVMFritzBaseModel> optionalDevice = deviceList.stream()
-                        .filter(it -> it.getIdentifier().equals(handler.getIdentifier())).findFirst();
+                Optional<AVMFritzBaseModel> optionalDevice = Optional
+                        .ofNullable(deviceIdentifierMap.get(handler.getIdentifier()));
                 if (optionalDevice.isPresent()) {
                     AVMFritzBaseModel device = optionalDevice.get();
                     deviceList.remove(device);
-                    logger.debug("Update thing '{}' with device model: {}", thing.getUID(), device);
-                    if (device.getPresent() == 1) {
-                        handler.onDeviceUpdated(device);
-                        listeners.stream().forEach(listener -> listener.onDeviceUpdated(device));
-                    } else {
-                        handler.onDeviceRemoved(device);
-                        listeners.stream().forEach(listener -> listener.onDeviceRemoved(device));
-                    }
+                    listeners.stream().forEach(listener -> listener.onDeviceUpdated(thing.getUID(), device));
                 } else {
-                    handler.onDeviceGone(thing.getUID());
                     listeners.stream().forEach(listener -> listener.onDeviceGone(thing.getUID()));
                 }
             } else {
@@ -255,15 +243,6 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
         deviceList.forEach(device -> {
             listeners.stream().forEach(listener -> listener.onDeviceAdded(device));
         });
-    }
-
-    /**
-     * Provides the web interface object.
-     *
-     * @return The web interface object
-     */
-    public @Nullable FritzAhaWebInterface getWebInterface() {
-        return connection;
     }
 
     /**
@@ -329,20 +308,38 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
         logger.debug("Handle command '{}' for channel {}", command, channelId);
         if (command == RefreshType.REFRESH) {
             handleRefreshCommand();
+            return;
         }
         FritzAhaWebInterface fritzBox = getWebInterface();
         if (fritzBox == null) {
             logger.debug("Cannot handle command '{}' because connection is missing", command);
             return;
         }
-        if (CHANNEL_APPLY_TEMPLATE.equals(channelId)) {
-            if (command instanceof StringType) {
-                fritzBox.applyTemplate(command.toString());
-            }
-            updateState(CHANNEL_APPLY_TEMPLATE, UnDefType.UNDEF);
+        switch (channelId) {
+            case CHANNEL_APPLY_TEMPLATE:
+                if (command instanceof StringType) {
+                    fritzBox.applyTemplate(command.toString());
+                }
+                updateState(CHANNEL_APPLY_TEMPLATE, UnDefType.UNDEF);
+                break;
+            default:
+                logger.debug("Received unknown channel {}", channelId);
+                break;
         }
     }
 
+    /**
+     * Provides the web interface object.
+     *
+     * @return The web interface object
+     */
+    public @Nullable FritzAhaWebInterface getWebInterface() {
+        return connection;
+    }
+
+    /**
+     * Handles a refresh command.
+     */
     public void handleRefreshCommand() {
         scheduler.submit(this::poll);
     }

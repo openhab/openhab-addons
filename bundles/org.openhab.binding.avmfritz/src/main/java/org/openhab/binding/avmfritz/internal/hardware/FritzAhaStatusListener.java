@@ -34,16 +34,10 @@ public interface FritzAhaStatusListener {
     /**
      * This method is called whenever a device is updated.
      *
+     * @param thingUID the {@link ThingUID}
      * @param device the {@link AVMFritzBaseModel}
      */
-    void onDeviceUpdated(AVMFritzBaseModel device);
-
-    /**
-     * This method is called whenever a device is removed.
-     *
-     * @param device the {@link AVMFritzBaseModel}
-     */
-    void onDeviceRemoved(AVMFritzBaseModel device);
+    void onDeviceUpdated(ThingUID thingUID, AVMFritzBaseModel device);
 
     /**
      * This method is called whenever a device is gone.
