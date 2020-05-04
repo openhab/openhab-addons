@@ -157,7 +157,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
 
         if (connectorTask == null || connectorTask.isCancelled()) {
             connectorTask = scheduler.scheduleWithFixedDelay(() -> {
-                logger.debug("Checking RFXCOM transceiver connection, thing status = {}", thing.getStatus());
+                logger.trace("Checking RFXCOM transceiver connection, thing status = {}", thing.getStatus());
                 if (thing.getStatus() != ThingStatus.ONLINE) {
                     connect();
                 }
