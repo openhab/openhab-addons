@@ -368,9 +368,8 @@ public class RRMapDraw {
                 }
             }
         }
-        // Preferred fonts not available... do a lucky draw
-        Random r = new Random();
-        return fonts[r.nextInt(fonts.length)];
+        // Preferred fonts not available... just go with the first one
+        return fonts[0];
     }
 
     private @Nullable URL getImageUrl(String image) {
