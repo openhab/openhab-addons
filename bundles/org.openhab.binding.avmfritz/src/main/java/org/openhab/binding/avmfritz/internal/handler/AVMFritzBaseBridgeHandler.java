@@ -222,15 +222,15 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
      * @param deviceList list of devices
      */
     public void onDeviceListAdded(List<AVMFritzBaseModel> deviceList) {
-        Map<String, AVMFritzBaseModel> deviceIdentifierMap = deviceList.stream()
+        final Map<String, AVMFritzBaseModel> deviceIdentifierMap = deviceList.stream()
                 .collect(Collectors.toMap(it -> it.getIdentifier(), Function.identity()));
         getThing().getThings().stream().forEach(thing -> {
-            AVMFritzBaseThingHandler handler = (AVMFritzBaseThingHandler) thing.getHandler();
+            final AVMFritzBaseThingHandler handler = (AVMFritzBaseThingHandler) thing.getHandler();
             if (handler != null) {
-                Optional<AVMFritzBaseModel> optionalDevice = Optional
+                final Optional<AVMFritzBaseModel> optionalDevice = Optional
                         .ofNullable(deviceIdentifierMap.get(handler.getIdentifier()));
                 if (optionalDevice.isPresent()) {
-                    AVMFritzBaseModel device = optionalDevice.get();
+                    final AVMFritzBaseModel device = optionalDevice.get();
                     deviceList.remove(device);
                     listeners.stream().forEach(listener -> listener.onDeviceUpdated(thing.getUID(), device));
                 } else {

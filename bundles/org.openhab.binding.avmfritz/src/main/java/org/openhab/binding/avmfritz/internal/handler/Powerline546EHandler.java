@@ -100,12 +100,12 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler implements F
 
     @Override
     public void onDeviceListAdded(List<AVMFritzBaseModel> devicelist) {
-        String identifier = getIdentifier();
-        Predicate<AVMFritzBaseModel> predicate = identifier == null ? it -> thing.getUID().equals(getThingUID(it))
-                : it -> it.getIdentifier().equals(identifier);
-        Optional<AVMFritzBaseModel> optionalDevice = devicelist.stream().filter(predicate).findFirst();
+        final String identifier = getIdentifier();
+        final Predicate<AVMFritzBaseModel> predicate = identifier == null ? it -> thing.getUID().equals(getThingUID(it))
+                : it -> identifier.equals(it.getIdentifier());
+        final Optional<AVMFritzBaseModel> optionalDevice = devicelist.stream().filter(predicate).findFirst();
         if (optionalDevice.isPresent()) {
-            AVMFritzBaseModel device = optionalDevice.get();
+            final AVMFritzBaseModel device = optionalDevice.get();
             devicelist.remove(device);
             listeners.stream().forEach(listener -> listener.onDeviceUpdated(thing.getUID(), device));
         } else {
