@@ -38,7 +38,7 @@
  * holder.
  */
 
-package org.glassfish.jersey.client.authentication;
+package org.openhab.binding.lametrictime.api.authentication;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -80,15 +80,11 @@ class HttpAuthenticationFilter implements ClientRequestFilter, ClientResponseFil
         /**
          * Basic authentication.
          */
-        BASIC,
-        /**
-         * Digest authentication.
-         */
-        DIGEST
+        BASIC
     }
 
-    private static final String REQUEST_PROPERTY_FILTER_REUSED = "org.glassfish.jersey.client.authentication.HttpAuthenticationFilter.reused";
-    private static final String REQUEST_PROPERTY_OPERATION = "org.glassfish.jersey.client.authentication.HttpAuthenticationFilter.operation";
+    private static final String REQUEST_PROPERTY_FILTER_REUSED = "org.openhab.binding.lametrictime.api.authentication.HttpAuthenticationFilter.reused";
+    private static final String REQUEST_PROPERTY_OPERATION = "org.openhab.binding.lametrictime.api.authentication.HttpAuthenticationFilter.operation";
 
     /**
      * Encoding used for authentication calculations.
@@ -163,8 +159,6 @@ class HttpAuthenticationFilter implements ClientRequestFilter, ClientResponseFil
                 final String upperCaseAuth = authString.trim().toUpperCase();
                 if (upperCaseAuth.startsWith("BASIC")) {
                     result = Type.BASIC;
-                } else if (upperCaseAuth.startsWith("DIGEST")) {
-                    result = Type.DIGEST;
                 } else {
                     // unknown authentication -> this filter cannot authenticate with this method
                     return;
@@ -309,9 +303,6 @@ class HttpAuthenticationFilter implements ClientRequestFilter, ClientResponseFil
         } else if (type == Type.BASIC) {
             usernameKey = HttpAuthenticationFeature.HTTP_AUTHENTICATION_BASIC_USERNAME;
             passwordKey = HttpAuthenticationFeature.HTTP_AUTHENTICATION_BASIC_PASSWORD;
-        } else if (type == Type.DIGEST) {
-            usernameKey = HttpAuthenticationFeature.HTTP_AUTHENTICATION_DIGEST_USERNAME;
-            passwordKey = HttpAuthenticationFeature.HTTP_AUTHENTICATION_DIGEST_PASSWORD;
         }
 
         String userName = (String) request.getProperty(usernameKey);

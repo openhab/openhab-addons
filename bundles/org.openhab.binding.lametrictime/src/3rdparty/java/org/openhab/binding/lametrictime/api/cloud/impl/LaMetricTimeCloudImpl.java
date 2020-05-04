@@ -21,12 +21,12 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.MediaType;
 
-import org.glassfish.jersey.filter.LoggingFilter;
 import org.openhab.binding.lametrictime.api.cloud.CloudConfiguration;
 import org.openhab.binding.lametrictime.api.cloud.LaMetricTimeCloud;
 import org.openhab.binding.lametrictime.api.cloud.model.IconFilter;
 import org.openhab.binding.lametrictime.api.cloud.model.Icons;
 import org.openhab.binding.lametrictime.api.common.impl.AbstractClient;
+import org.openhab.binding.lametrictime.api.filter.LoggingFilter;
 import org.openhab.binding.lametrictime.internal.GsonProvider;
 
 public class LaMetricTimeCloudImpl extends AbstractClient implements LaMetricTimeCloud {

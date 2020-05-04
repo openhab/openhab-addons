@@ -33,10 +33,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
-import org.glassfish.jersey.filter.LoggingFilter;
+import org.openhab.binding.lametrictime.api.authentication.HttpAuthenticationFeature;
 import org.openhab.binding.lametrictime.api.cloud.impl.LaMetricTimeCloudImpl;
 import org.openhab.binding.lametrictime.api.common.impl.AbstractClient;
+import org.openhab.binding.lametrictime.api.filter.LoggingFilter;
 import org.openhab.binding.lametrictime.api.local.ApplicationActionException;
 import org.openhab.binding.lametrictime.api.local.ApplicationActivationException;
 import org.openhab.binding.lametrictime.api.local.ApplicationNotFoundException;
