@@ -51,17 +51,7 @@ import io.github.hapjava.characteristics.impl.common.StatusFaultCharacteristic;
 import io.github.hapjava.characteristics.impl.common.StatusFaultEnum;
 import io.github.hapjava.characteristics.impl.common.StatusTamperedCharacteristic;
 import io.github.hapjava.characteristics.impl.common.StatusTamperedEnum;
-import io.github.hapjava.characteristics.impl.fan.CurrentFanStateCharacteristic;
-import io.github.hapjava.characteristics.impl.fan.CurrentFanStateEnum;
-import io.github.hapjava.characteristics.impl.fan.LockPhysicalControlsCharacteristic;
-import io.github.hapjava.characteristics.impl.fan.LockPhysicalControlsEnum;
-import io.github.hapjava.characteristics.impl.fan.RotationDirectionCharacteristic;
-import io.github.hapjava.characteristics.impl.fan.RotationDirectionEnum;
-import io.github.hapjava.characteristics.impl.fan.RotationSpeedCharacteristic;
-import io.github.hapjava.characteristics.impl.fan.SwingModeCharacteristic;
-import io.github.hapjava.characteristics.impl.fan.SwingModeEnum;
-import io.github.hapjava.characteristics.impl.fan.TargetFanStateCharacteristic;
-import io.github.hapjava.characteristics.impl.fan.TargetFanStateEnum;
+import io.github.hapjava.characteristics.impl.fan.*;
 import io.github.hapjava.characteristics.impl.lightbulb.BrightnessCharacteristic;
 import io.github.hapjava.characteristics.impl.lightbulb.ColorTemperatureCharacteristic;
 import io.github.hapjava.characteristics.impl.lightbulb.HueCharacteristic;
@@ -80,6 +70,7 @@ import io.github.hapjava.characteristics.impl.windowcovering.TargetVerticalTiltA
  * @author Eugen Freiter - Initial contribution
  */
 @NonNullByDefault
+@SuppressWarnings("deprecation")
 public class HomekitCharacteristicFactory {
     private static final Logger logger = LoggerFactory.getLogger(HomekitCharacteristicFactory.class);
 
@@ -123,7 +114,7 @@ public class HomekitCharacteristicFactory {
 
     /**
      * create optional HomeKit characteristic
-     * 
+     *
      * @param type type of characteristic
      * @param item corresponding OH item
      * @param updater update to keep OH item and HomeKit characteristic in sync
@@ -142,6 +133,7 @@ public class HomekitCharacteristicFactory {
     // METHODS TO CREATE SINGLE CHARACTERISTIC FROM OH ITEM
 
     // supporting methods
+    @SuppressWarnings("null")
     private static <T extends CharacteristicEnum> CompletableFuture<T> getEnumFromItem(GenericItem item, T offEnum,
             T onEnum, T defaultEnum) {
         final State state = item.getState();
@@ -179,6 +171,7 @@ public class HomekitCharacteristicFactory {
         }
     }
 
+    @SuppressWarnings("null")
     public static Supplier<CompletableFuture<Integer>> getCompletedFutureInt(GenericItem item) {
         return () -> {
             int value = 0;
@@ -200,8 +193,10 @@ public class HomekitCharacteristicFactory {
     }
 
     public static Supplier<CompletableFuture<Double>> getCompletedFutureDouble(Item item) {
-        return () -> CompletableFuture.completedFuture(
-                item.getStateAs(DecimalType.class) != null ? item.getStateAs(DecimalType.class).doubleValue() : 0.0);
+        return () -> {
+            final DecimalType value = item.getStateAs(DecimalType.class);
+            return CompletableFuture.completedFuture(value != null ? value.doubleValue() : 0.0);
+        };
     }
 
     // create method for characteristic
@@ -252,8 +247,10 @@ public class HomekitCharacteristicFactory {
 
     private static NameCharacteristic createNameCharacteristic(final GenericItem item,
             HomekitAccessoryUpdater updater) {
-        return new NameCharacteristic(
-                () -> CompletableFuture.completedFuture(item.getState() != null ? item.getState().toString() : ""));
+        return new NameCharacteristic(() -> {
+            final State state = item.getState();
+            return CompletableFuture.completedFuture(state instanceof UnDefType ? "" : state.toString());
+        });
     }
 
     private static HoldPositionCharacteristic createHoldPositionCharacteristic(final GenericItem item,
@@ -322,11 +319,9 @@ public class HomekitCharacteristicFactory {
     private static HueCharacteristic createHueCharacteristic(final GenericItem item, HomekitAccessoryUpdater updater) {
         return new HueCharacteristic(() -> {
             Double value = 0.0;
-            if (item != null) {
-                State state = item.getState();
-                if (state instanceof HSBType) {
-                    value = ((HSBType) state).getHue().doubleValue();
-                }
+            State state = item.getState();
+            if (state instanceof HSBType) {
+                value = ((HSBType) state).getHue().doubleValue();
             }
             return CompletableFuture.completedFuture(value);
         }, (hue) -> {
@@ -396,21 +391,29 @@ public class HomekitCharacteristicFactory {
 
     private static CurrentFanStateCharacteristic createCurrentFanStateCharacteristic(final GenericItem item,
             HomekitAccessoryUpdater updater) {
-        return new CurrentFanStateCharacteristic(
-                () -> CompletableFuture.completedFuture(item.getStateAs(DecimalType.class) != null
-                        ? CurrentFanStateEnum.fromCode(item.getStateAs(DecimalType.class).intValue())
-                        : CurrentFanStateEnum.INACTIVE),
-                (callback) -> updater.subscribe(item, CURRENT_FAN_STATE.getTag(), callback),
+        return new CurrentFanStateCharacteristic(() -> {
+            final DecimalType value = item.getStateAs(DecimalType.class);
+            CurrentFanStateEnum currentFanStateEnum = value != null ? CurrentFanStateEnum.fromCode(value.intValue())
+                    : null;
+            if (currentFanStateEnum == null) {
+                currentFanStateEnum = CurrentFanStateEnum.INACTIVE;
+            }
+            return CompletableFuture.completedFuture(currentFanStateEnum);
+        }, (callback) -> updater.subscribe(item, CURRENT_FAN_STATE.getTag(), callback),
                 () -> updater.unsubscribe(item, CURRENT_FAN_STATE.getTag()));
     }
 
     private static TargetFanStateCharacteristic createTargetFanStateCharacteristic(final GenericItem item,
             HomekitAccessoryUpdater updater) {
-        return new TargetFanStateCharacteristic(
-                () -> CompletableFuture.completedFuture(item.getStateAs(DecimalType.class) != null
-                        ? TargetFanStateEnum.fromCode(item.getStateAs(DecimalType.class).intValue())
-                        : TargetFanStateEnum.AUTO),
-                (targetState) -> item.setState(new DecimalType(targetState.getCode())),
+        return new TargetFanStateCharacteristic(() -> {
+            final DecimalType value = item.getStateAs(DecimalType.class);
+            TargetFanStateEnum targetFanStateEnum = value != null ? TargetFanStateEnum.fromCode(value.intValue())
+                    : null;
+            if (targetFanStateEnum == null) {
+                targetFanStateEnum = TargetFanStateEnum.AUTO;
+            }
+            return CompletableFuture.completedFuture(targetFanStateEnum);
+        }, (targetState) -> item.setState(new DecimalType(targetState.getCode())),
                 (callback) -> updater.subscribe(item, TARGET_FAN_STATE.getTag(), callback),
                 () -> updater.unsubscribe(item, TARGET_FAN_STATE.getTag()));
     }
