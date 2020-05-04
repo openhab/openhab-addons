@@ -27,7 +27,7 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class Status {
+public class Status extends VocAnswer {
     public double averageFuelConsumption = UNDEFINED;
     public int averageSpeed = UNDEFINED;
     public int fuelAmount = UNDEFINED;

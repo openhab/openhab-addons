@@ -39,6 +39,7 @@ import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.volvooncall.internal.config.VolvoOnCallBridgeConfiguration;
 import org.openhab.binding.volvooncall.internal.dto.CustomerAccounts;
 import org.openhab.binding.volvooncall.internal.dto.PostResponse;
+import org.openhab.binding.volvooncall.internal.dto.VocAnswer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -119,14 +120,18 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    public <T> T getURL(Class<T> objectClass, String vin) throws IOException, JsonSyntaxException {
+    public <T extends VocAnswer> T getURL(Class<T> objectClass, String vin) throws IOException, JsonSyntaxException {
         String url = SERVICE_URL + "vehicles/" + vin + "/" + objectClass.getSimpleName().toLowerCase();
         return getURL(url, objectClass);
     }
 
-    public <T> T getURL(String url, Class<T> objectClass) throws IOException, JsonSyntaxException {
+    public <T extends VocAnswer> T getURL(String url, Class<T> objectClass) throws IOException, JsonSyntaxException {
         String jsonResponse = HttpUtil.executeUrl("GET", url, httpHeader, null, JSON_CONTENT_TYPE, REQUEST_TIMEOUT);
-        return gson.fromJson(jsonResponse, objectClass);
+        T response = gson.fromJson(jsonResponse, objectClass);
+        if (response.getErrorLabel() != null) {
+            logger.warn("Error calling VoC : {} : {}", response.getErrorLabel(), response.getErrorDescription());
+        }
+        return response;
     }
 
     public class ActionResultControler implements Runnable {
@@ -163,11 +168,11 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
         String jsonString = HttpUtil.executeUrl("POST", URL, httpHeader, inputStream, null, REQUEST_TIMEOUT);
         logger.debug("Post URL: {} Attributes {}", URL, httpHeader);
         PostResponse postResponse = gson.fromJson(jsonString, PostResponse.class);
-        if (postResponse.errorLabel == null) {
+        if (postResponse.getErrorLabel() == null) {
             pendingActions
                     .add(scheduler.schedule(new ActionResultControler(postResponse), 1000, TimeUnit.MILLISECONDS));
         } else {
-            logger.warn("URL {} returned {}", URL, postResponse.errorDescription);
+            logger.warn("URL {} returned {}", URL, postResponse.getErrorDescription());
         }
         pendingActions.removeIf(ScheduledFuture::isDone);
     }

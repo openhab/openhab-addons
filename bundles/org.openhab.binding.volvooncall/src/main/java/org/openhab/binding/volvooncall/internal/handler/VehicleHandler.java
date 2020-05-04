@@ -93,7 +93,7 @@ public class VehicleHandler extends BaseThingHandler {
 
     private Map<String, String> discoverAttributes(VolvoOnCallBridgeHandler bridgeHandler, String vin)
             throws JsonSyntaxException, IOException {
-        Attributes attributes = bridgeHandler.getURL(Attributes.class, vin);
+        Attributes attributes = bridgeHandler.getURL(vehicle.attributesURL, Attributes.class);
 
         Map<String, String> properties = new HashMap<>();
         properties.put(CAR_LOCATOR, attributes.carLocatorSupported.toString());
@@ -159,7 +159,7 @@ public class VehicleHandler extends BaseThingHandler {
         VolvoOnCallBridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler != null) {
             try {
-                vehicleStatus = bridgeHandler.getURL(Status.class, configuration.vin);
+                vehicleStatus = bridgeHandler.getURL(vehicle.statusURL, Status.class);
                 vehiclePosition = new VehiclePositionWrapper(bridgeHandler.getURL(Position.class, configuration.vin));
                 // Update all channels from the updated data
                 getThing().getChannels().stream().map(Channel::getUID)
@@ -241,12 +241,9 @@ public class VehicleHandler extends BaseThingHandler {
     private State getTripValue(String channelId, TripDetail tripDetails) {
         switch (channelId) {
             case TRIP_CONSUMPTION:
-                if (tripDetails.getFuelConsumption().isPresent()) {
-                    return new QuantityType<>(tripDetails.getFuelConsumption().get().floatValue() / 100,
-                            SmartHomeUnits.LITRE);
-                } else {
-                    return UnDefType.UNDEF;
-                }
+                return tripDetails.getFuelConsumption()
+                        .map(value -> (State) new QuantityType<>(value.floatValue() / 100, SmartHomeUnits.LITRE))
+                        .orElse(UnDefType.UNDEF);
             case TRIP_DISTANCE:
                 return new QuantityType<>((double) tripDetails.distance / 1000, KILO(SIUnits.METRE));
             case TRIP_START_TIME:
