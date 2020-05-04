@@ -86,6 +86,11 @@ public class HomekitAccessoryFactory {
             put(VALVE, new HomekitCharacteristicType[] { ACTIVE_STATUS, INUSE_STATUS });
             put(SECURITY_SYSTEM,
                     new HomekitCharacteristicType[] { SECURITY_SYSTEM_CURRENT_STATE, SECURITY_SYSTEM_TARGET_STATE });
+            put(OUTLET, new HomekitCharacteristicType[] { ON_STATE, INUSE_STATUS });
+            put(SPEAKER, new HomekitCharacteristicType[] { MUTE });
+            put(GARAGE_DOOR_OPENER,
+                    new HomekitCharacteristicType[] { CURRENT_DOOR_STATE, TARGET_DOOR_STATE, OBSTRUCTION_STATUS });
+
             // LEGACY
             put(BLINDS, new HomekitCharacteristicType[] { TARGET_POSITION, CURRENT_POSITION, POSITION_STATE });
             put(OLD_HUMIDITY_SENSOR, new HomekitCharacteristicType[] { RELATIVE_HUMIDITY });
@@ -114,11 +119,13 @@ public class HomekitAccessoryFactory {
             put(LOCK, HomekitLockImpl.class);
             put(VALVE, HomekitValveImpl.class);
             put(SECURITY_SYSTEM, HomekitSecuritySystemImpl.class);
+            put(OUTLET, HomekitOutletImpl.class);
+            put(SPEAKER, HomekitSpeakerImpl.class);
+            put(GARAGE_DOOR_OPENER, HomekitGarageDoorOpenerImpl.class);
             put(BLINDS, HomekitWindowCoveringImpl.class);
             put(OLD_HUMIDITY_SENSOR, HomekitHumiditySensorImpl.class);
             put(OLD_DIMMABLE_LIGHTBULB, HomekitLightbulbImpl.class);
             put(OLD_COLORFUL_LIGHTBULB, HomekitLightbulbImpl.class);
-
         }
     };
 
