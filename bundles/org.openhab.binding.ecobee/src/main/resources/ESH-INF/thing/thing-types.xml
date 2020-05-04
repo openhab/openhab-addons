@@ -1722,5 +1722,10 @@
 		<label>Sensor Occupancy</label>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
+	<channel-type id="sensorGeneric">
+		<item-type>String</item-type>
+		<label>Generic Sensor</label>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
 
 </thing:thing-descriptions>

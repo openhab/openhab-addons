@@ -20,6 +20,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.openhab.binding.ecobee.internal.dto.thermostat.AlertDTO;
 import org.openhab.binding.ecobee.internal.dto.thermostat.EventDTO;
 import org.openhab.binding.ecobee.internal.dto.thermostat.HouseDetailsDTO;
@@ -376,14 +377,20 @@ public class EcobeeBindingConstants {
     public static final String CH_SENSOR_CODE = "code";
     public static final String CH_SENSOR_IN_USE = "inUse";
 
+    // Channel Type UIDs for dynamically created sensor channels
+    public static final ChannelTypeUID CHANNELTYPEUID_TEMPERATURE = new ChannelTypeUID(BINDING_ID, "sensorTemperature");
+    public static final ChannelTypeUID CHANNELTYPEUID_HUMIDITY = new ChannelTypeUID(BINDING_ID, "sensorHumidity");
+    public static final ChannelTypeUID CHANNELTYPEUID_OCCUPANCY = new ChannelTypeUID(BINDING_ID, "sensorOccupancy");
+    public static final ChannelTypeUID CHANNELTYPEUID_GENERIC = new ChannelTypeUID(BINDING_ID, "sensorGeneric");
+
     public static final AlertDTO EMPTY_ALERT = new AlertDTO();
     public static final EventDTO EMPTY_EVENT = new EventDTO();
     public static final LocationDTO EMPTY_LOCATION = new LocationDTO();
     public static final HouseDetailsDTO EMPTY_HOUSEDETAILS = new HouseDetailsDTO();
     public static final ManagementDTO EMPTY_MANAGEMENT = new ManagementDTO();
     public static final TechnicianDTO EMPTY_TECHNICIAN = new TechnicianDTO();
-    public static final List<RemoteSensorDTO> EMPTY_SENSORS = Collections.<RemoteSensorDTO> emptyList();
-    public static final List<ThermostatDTO> EMPTY_THERMOSTATS = Collections.<ThermostatDTO> emptyList();
+    public static final List<RemoteSensorDTO> EMPTY_SENSORS = Collections.<RemoteSensorDTO>emptyList();
+    public static final List<ThermostatDTO> EMPTY_THERMOSTATS = Collections.<ThermostatDTO>emptyList();
 
     public static final String ECOBEE_BASE_URL = "https://api.ecobee.com/";
     public static final String ECOBEE_AUTHORIZE_URL = ECOBEE_BASE_URL + "authorize";
