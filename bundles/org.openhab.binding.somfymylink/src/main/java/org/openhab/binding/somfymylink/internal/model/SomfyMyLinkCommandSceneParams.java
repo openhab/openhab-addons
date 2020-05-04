@@ -18,10 +18,10 @@ package org.openhab.binding.somfymylink.internal.model;
  */
 public class SomfyMyLinkCommandSceneParams extends SomfyMyLinkCommandParamsBase {
 
+    public final int sceneId;
+
     public SomfyMyLinkCommandSceneParams(int sceneId, String auth) {
         super(auth);
         this.sceneId = sceneId;
     }
-
-    int sceneId;
 }

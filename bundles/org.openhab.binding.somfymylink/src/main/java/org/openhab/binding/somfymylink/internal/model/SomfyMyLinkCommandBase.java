@@ -19,9 +19,9 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class SomfyMyLinkCommandBase {
 
+    public final int id;
+        
     public SomfyMyLinkCommandBase() {
         this.id = ThreadLocalRandom.current().nextInt(1, 1000);
     }
-        
-    int id;
 }

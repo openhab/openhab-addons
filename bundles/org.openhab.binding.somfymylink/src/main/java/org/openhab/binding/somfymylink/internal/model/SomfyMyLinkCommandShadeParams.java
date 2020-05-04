@@ -18,10 +18,10 @@ package org.openhab.binding.somfymylink.internal.model;
  */
 public class SomfyMyLinkCommandShadeParams extends SomfyMyLinkCommandParamsBase {
     
+    public final String targetId;
+
     public SomfyMyLinkCommandShadeParams(String targetId, String auth) {
         super(auth);
         this.targetId = targetId.replace('-', '.');
     }
-
-    String targetId = "";
 }

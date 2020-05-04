@@ -18,9 +18,9 @@ package org.openhab.binding.somfymylink.internal.model;
  */
 public class SomfyMyLinkCommandParamsBase {
 
+    public final String auth;
+
     public SomfyMyLinkCommandParamsBase(String auth) {
         this.auth = auth;
     }
-
-    String auth;
 }

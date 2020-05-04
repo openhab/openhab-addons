@@ -18,12 +18,11 @@ package org.openhab.binding.somfymylink.internal.model;
  */
 public class SomfyMyLinkCommandSceneBase extends SomfyMyLinkCommandBase {
 
+    public final String method;
+    public final SomfyMyLinkCommandSceneParams params;
+
     public SomfyMyLinkCommandSceneBase(int sceneId, String method, String auth) {
         this.method = method;
         this.params = new SomfyMyLinkCommandSceneParams(sceneId, auth);
     }
-
-    String method;
-
-    SomfyMyLinkCommandSceneParams params;
 }
