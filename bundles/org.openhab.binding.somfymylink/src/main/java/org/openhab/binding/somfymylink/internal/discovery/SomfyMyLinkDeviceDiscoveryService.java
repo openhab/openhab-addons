@@ -129,21 +129,6 @@ public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService
         super.stopScan();
     }
 
-    public void waitForScanFinishing() {
-        if (scanTask != null) {
-            logger.debug("Waiting for finishing somfy mylink device discovery scan");
-            try {
-                scanTask.get();
-                logger.debug("Somfy mylink device discovery scan finished");
-            } catch (CancellationException ex) {
-                // ignore
-
-            } catch (Exception ex) {
-                logger.error("Error waiting for device discovery scan: {}", ex.getMessage(), ex);
-            }
-        }
-    }
-
     private synchronized void discoverDevices() {
         logger.debug("Starting scanning for things...");
 
