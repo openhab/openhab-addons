@@ -52,7 +52,7 @@ public class EnergenieHandler extends BaseThingHandler {
     /**
      * Use cache for refresh command to not update again when call is made within 4 seconds of previous call.
      */
-    private final ExpiringCache<Boolean> refreshCache = new ExpiringCache<>(Duration.ofSeconds(4), this::refreshState);
+    private final ExpiringCache<Boolean> refreshCache = new ExpiringCache<>(Duration.ofSeconds(5), this::refreshState);
     private final String statusOn;
 
     private @Nullable EnergenieSocket energenieSocket;
@@ -120,7 +120,7 @@ public class EnergenieHandler extends BaseThingHandler {
             energenieSocket = new EnergenieSocket(config.host, config.password);
 
             updateStatus(ThingStatus.UNKNOWN);
-            refreshJob = scheduler.scheduleWithFixedDelay(this::refreshState, 5, refreshInterval, TimeUnit.SECONDS);
+            refreshJob = scheduler.scheduleWithFixedDelay(this::refreshState, 6, refreshInterval, TimeUnit.SECONDS);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Can not access device , IP-Address or password not set");

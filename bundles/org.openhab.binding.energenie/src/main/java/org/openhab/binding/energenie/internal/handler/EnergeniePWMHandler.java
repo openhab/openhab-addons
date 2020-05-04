@@ -47,8 +47,6 @@ public class EnergeniePWMHandler extends BaseThingHandler {
 
     private static final int HTTP_TIMEOUT_MILLISECONDS = 6000;
 
-    private @Nullable EnergenieConfiguration config;
-
     private String host = "";
     private String password = "";
     private int refreshInterval;
@@ -69,8 +67,6 @@ public class EnergeniePWMHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         EnergenieConfiguration config = getConfigAs(EnergenieConfiguration.class);
-
-        this.config = config;
 
         if (!config.host.isEmpty() && !config.password.isEmpty()) {
             host = config.host;
