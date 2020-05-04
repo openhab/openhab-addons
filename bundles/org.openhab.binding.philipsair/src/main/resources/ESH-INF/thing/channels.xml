@@ -68,8 +68,8 @@
 	</channel-type>
 
 	<channel-type id="dtrs">
-		<item-type>Number</item-type>
-		<label>Timer left</label>
+		<item-type>Number:Time</item-type>
+		<label>Timer Left</label>
 		<description>Timer minutes lefts</description>
 		<state readOnly="true" pattern="%d" />
 	</channel-type>
@@ -100,7 +100,8 @@
 	</channel-type>
 	<channel-type id="err">
 		<item-type>String</item-type>
-		<label>Error message</label>
+		<label>Error Message</label>
+
 		<state readOnly="true" pattern="%s">
 			<options>
 				<option value="0">No error</option>
@@ -131,7 +132,7 @@
 	</channel-type>
 	<channel-type id="fltsts1">
 		<item-type>Number</item-type>
-		<label>HEPA filter</label>
+		<label>HEPA Filter</label>
 		<description>HEPA filter estimated lifetime</description>
 		<state readOnly="true" pattern="%d" />
 	</channel-type>
@@ -144,8 +145,9 @@
 	</channel-type>
 	<channel-type id="rhset">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Humidity setpoint</label>
+		<label>Humidity Setpoint</label>
 		<description>Humidity setpoint</description>
+		<category>Humidity</category>
 		<state readOnly="false" pattern="%.0f %unit%" min="40" max="70" step="10" />
 	</channel-type>
 	<channel-type id="temp">
@@ -168,7 +170,7 @@
 	</channel-type>
 	<channel-type id="wl">
 		<item-type>Number</item-type>
-		<label>Water level</label>
+		<label>Water Level</label>
 		<description>Water tank level</description>
 		<state readOnly="true" pattern="%d" />
 	</channel-type>

@@ -92,7 +92,7 @@ public class PhilipsAirUpnpDiscoveryParticipant implements UpnpDiscoveryParticip
                             + device.getDetails().getModelDetails().getModelNumber())
                     .withRepresentationProperty(PhilipsAirConfiguration.CONFIG_DEF_DEVICE_UUID).build();
 
-            logger.info("DiscoveryResult with uid {} label : {} ", result.getThingUID().getAsString(),
+            logger.debug("DiscoveryResult with uid {} label : {} ", result.getThingUID().getAsString(),
                     result.getLabel());
             return result;
         } else {
@@ -108,23 +108,24 @@ public class PhilipsAirUpnpDiscoveryParticipant implements UpnpDiscoveryParticip
 
         if (details == null || (modelDetails = details.getModelDetails()) == null
                 || !PhilipsAirBindingConstants.DISCOVERY_UPNP_MODEL
-                        .equalsIgnoreCase(modelName = modelDetails.getModelName())) {
+                        .equalsIgnoreCase(modelName = modelDetails.getModelName().toLowerCase())) {
             logger.trace("Device not recognized {}", device.toString());
             return null;
         }
 
+        String modelNumber = modelDetails.getModelNumber().toLowerCase();
         ThingTypeUID thingType = THING_TYPE_UNIVERSAL;
         if (PhilipsAirBindingConstants.SUPPORTED_MODEL_NUMBER_AC2889_10
-                .startsWith(modelDetails.getModelNumber().toLowerCase())) {
+                .startsWith(modelNumber)) {
             thingType = THING_TYPE_AC2889_10;
         } else if (PhilipsAirBindingConstants.SUPPORTED_MODEL_NUMBER_AC1214_10
-                .startsWith(modelDetails.getModelNumber().toLowerCase())) {
+                .startsWith(modelNumber)) {
             thingType = THING_TYPE_AC1214_10;
         } else if (PhilipsAirBindingConstants.SUPPORTED_MODEL_NUMBER_AC2729
-                .startsWith(modelDetails.getModelNumber().toLowerCase())) {
+                .startsWith(modelNumber)) {
             thingType = THING_TYPE_AC2729;
         } else if (PhilipsAirBindingConstants.SUPPORTED_MODEL_NUMBER_AC3829_10
-                .startsWith(modelDetails.getModelNumber().toLowerCase())) {
+                .startsWith(modelNumber)) {
             thingType = THING_TYPE_AC3829_10;
         } else {
             thingType = THING_TYPE_UNIVERSAL;

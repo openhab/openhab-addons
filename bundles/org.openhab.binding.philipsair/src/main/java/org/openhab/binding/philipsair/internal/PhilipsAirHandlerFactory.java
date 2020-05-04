@@ -58,13 +58,6 @@ public class PhilipsAirHandlerFactory extends BaseThingHandlerFactory {
         return null;
     }
 
-    @Override
-    protected synchronized void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof PhilipsAirHandler) {
-            super.removeHandler(thingHandler);
-        }
-    }
-
     @Reference
     void setHttpClientFactory(HttpClientFactory httpClientFactory) {
         this.httpClientFactory = httpClientFactory;

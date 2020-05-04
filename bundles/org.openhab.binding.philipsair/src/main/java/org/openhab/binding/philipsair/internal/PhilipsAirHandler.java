@@ -98,7 +98,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
     public @Nullable PhilipsAirPurifierData sendCommand(String parameter, Command command) {
         Object value = null;
         if (command instanceof OnOffType) {
-            if (parameter.equals(CL)) {
+            if (parameter.equals(CHILD_LOCK)) {
                 value = ((OnOffType) command) == OnOffType.ON ? true : false;
             } else {
                 value = ((OnOffType) command) == OnOffType.ON ? "1" : "0";
@@ -153,10 +153,11 @@ public class PhilipsAirHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        super.dispose();
         if (refreshJob != null) {
             refreshJob.cancel(true);
         }
+        	
+        super.dispose();
     }
 
     private void updateThing() {
@@ -185,39 +186,34 @@ public class PhilipsAirHandler extends BaseThingHandler {
     }
 
     protected boolean requestData(PhilipsAirAPIConnection connection) throws PhilipsAirAPIException {
-        try {
-            PhilipsAirPurifierDevice info = connection.getAirPurifierDevice(getAirPurifierConfig().getHost());
-            PhilipsAirPurifierData data = connection.getAirPurifierStatus(getAirPurifierConfig().getHost());
-            PhilipsAirPurifierFilters filters = null;
-            List<Channel> filterGroup = thing.getChannelsOfGroup(PhilipsAirBindingConstants.FILTERS);
-            if (filterGroup.stream().anyMatch(fg -> isLinked(fg.getUID()))) {
-                filters = connection.getAirPurifierFiltersStatus(getAirPurifierConfig().getHost());
-            }
-
-            if (data != null) {
-                currentData = data;
-            }
-
-            if (info != null) {
-                this.deviceInfo = info;
-                getAirPurifierConfig().setModelid(info.getModelid());
-                this.getConfig().put(PhilipsAirConfiguration.CONFIG_DEF_MODEL_ID, getAirPurifierConfig().getModelid());
-                this.getConfig().put(PhilipsAirConfiguration.CONFIG_KEY, getAirPurifierConfig().getKey());
-                ThingHandlerCallback callback = getCallback();
-                if (callback != null) {
-                    callback.configurationUpdated(thing);
-                }
-            }
-
-            if (filters != null) {
-                this.filters = filters;
-            }
-
-            return data != null || info != null || filters != null;
-        } catch (Exception exc) {
-            logger.error("An exception occured", exc);
-            throw exc;
+        PhilipsAirPurifierDevice info = connection.getAirPurifierDevice(getAirPurifierConfig().getHost());
+        PhilipsAirPurifierData data = connection.getAirPurifierStatus(getAirPurifierConfig().getHost());
+        PhilipsAirPurifierFilters filters = null;
+        List<Channel> filterGroup = thing.getChannelsOfGroup(PhilipsAirBindingConstants.FILTERS);
+        if (filterGroup.stream().anyMatch(fg -> isLinked(fg.getUID()))) {
+            filters = connection.getAirPurifierFiltersStatus(getAirPurifierConfig().getHost());
         }
+
+        if (data != null) {
+            currentData = data;
+        }
+
+        if (info != null) {
+            this.deviceInfo = info;
+            getAirPurifierConfig().setModelid(info.getModelId());
+            this.getConfig().put(PhilipsAirConfiguration.CONFIG_DEF_MODEL_ID, getAirPurifierConfig().getModelid());
+            this.getConfig().put(PhilipsAirConfiguration.CONFIG_KEY, getAirPurifierConfig().getKey());
+            ThingHandlerCallback callback = getCallback();
+            if (callback != null) {
+                callback.configurationUpdated(thing);
+            }
+        }
+
+        if (filters != null) {
+            this.filters = filters;
+        }
+
+        return data != null || info != null || filters != null;
     }
 
     private void updateChannels() {
@@ -276,50 +272,50 @@ public class PhilipsAirHandler extends BaseThingHandler {
 
         if (data != null) {
             switch (field) {
-                case AQIL:
+                case LED_LIGHT_BRIGHTNESS:
                     return data.getLightLevel();
-                case DDP:
+                case DISPLAYED_INDEX:
                     return Integer.toString(data.getDisplayIndex());
-                case UIL:
+                case BUTTONS_LIGHT:
                     return data.getButtons() == 0 ? OnOffType.OFF : OnOffType.ON;
                 case POWER:
                     return data.getPower() == 0 ? OnOffType.OFF : OnOffType.ON;
                 case PM25:
                     return new QuantityType<Density>(data.getPm25(), DENSITY_UNIT);
-                case OM:
+                case FAN_MODE:
                     return data.getFanSpeed();
-                case CL:
+                case CHILD_LOCK:
                     return data.getChildLock() ? OnOffType.ON : OnOffType.OFF;
-                case DT:
+                case AUTO_TIMEOFF:
                     return data.getTimer();
-                case DTRS:
+                case TIMER_COUNTDOWN:
                     return data.getTimerLeft();
                 case MODE:
                     return data.getMode();
-                case IAQL:
+                case ALLERGEN_INDEX:
                     return data.getAllergenLevel();
-                case AQIT:
+                case AIR_QUALITY_NOTIFICATION_THRESHOLD:
                     return data.getAqit();
-                case ERR:
+                case ERROR_CODE:
                     return String.valueOf(data.getErrorCode());
-                case RH:
+                case HUMIDITY:
                     return new QuantityType<Dimensionless>(
                             data.getHumidity() + getAirPurifierConfig().getHumidityOffset(), HUMIDITY_UNIT);
-                case RHSET:
+                case HUMIDITY_SETPOINT:
                     return data.getHumiditySetpoint();
-                case TEMP:
+                case TEMPERATURE:
                     return new QuantityType<>(data.getTemperature() + getAirPurifierConfig().getTemperatureOffset(),
                             TEMPERATURE_UNIT);
-                case FUNC:
+                case FUNCTION:
                     return data.getFunction();
-                case WL:
+                case WATER_LEVEL:
                     return data.getWaterLevel();
             }
 
             if (deviceInfo != null) {
                 switch (field) {
-                    case SWVERSION:
-                        deviceInfo.getSwversion();
+                    case SOFTWARE_VERSION:
+                        deviceInfo.getSoftwareVersion();
                 }
             }
 

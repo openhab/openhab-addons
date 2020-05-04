@@ -31,10 +31,10 @@ public class PhilipsAirPurifierDevice {
     private String type;
     @SerializedName("modelid")
     @Expose
-    private String modelid;
+    private String modelId;
     @SerializedName("swversion")
     @Expose
-    private String swversion;
+    private String softwareVersion;
 
     public String getName() {
         return name;
@@ -52,20 +52,20 @@ public class PhilipsAirPurifierDevice {
         this.type = type;
     }
 
-    public String getModelid() {
-        return modelid;
+    public String getModelId() {
+        return modelId;
     }
 
-    public void setModelid(String modelid) {
-        this.modelid = modelid;
+    public void setModelId(String modelId) {
+        this.modelId = modelId;
     }
 
-    public String getSwversion() {
-        return swversion;
+    public String getSoftwareVersion() {
+        return softwareVersion;
     }
 
-    public void setSwversion(String swversion) {
-        this.swversion = swversion;
+    public void setSoftwareVersion(String softwareVersion) {
+        this.softwareVersion = softwareVersion;
     }
 
 }

@@ -82,7 +82,7 @@ public class PhilipsAirBindingConstants {
     /**
      * Fan mode (s - silent, 1, 2, 3, t - turbo)
      */
-    public static final String OM = "om";
+    public static final String FAN_MODE = "om";
     /**
      * Auto mode : P - auto, B - bacteria, M - manual, A - allergen, S - sleep, N -
      * night
@@ -91,64 +91,64 @@ public class PhilipsAirBindingConstants {
     /**
      * Buttons light
      */
-    public static final String UIL = "uil";
+    public static final String BUTTONS_LIGHT = "uil";
     /**
      * Light birightness
      */
-    public static final String AQIL = "aqil";
+    public static final String LED_LIGHT_BRIGHTNESS = "aqil";
     /**
      * Index used to show air quality
      */
-    public static final String DDP = "ddp";
+    public static final String DISPLAYED_INDEX = "ddp";
     /**
      * Allergen index
      */
-    public static final String IAQL = "iaql";
+    public static final String ALLERGEN_INDEX = "iaql";
 
-    public static final String AQIT = "aqit";
+    public static final String AIR_QUALITY_NOTIFICATION_THRESHOLD = "aqit";
     /**
      * Child lock
      */
-    public static final String CL = "cl";
+    public static final String CHILD_LOCK = "cl";
     /**
      * Auto time-off
      */
-    public static final String DT = "dt";
+    public static final String AUTO_TIMEOFF = "dt";
     /**
      * Error code
      */
-    public static final String ERR = "err";
+    public static final String ERROR_CODE = "err";
     /**
      * Current minutes left to turn off
      */
-    public static final String DTRS = "dtrs";
+    public static final String TIMER_COUNTDOWN = "dtrs";
 
-    public static final String SWVERSION = "swversion";
+    public static final String SOFTWARE_VERSION = "swversion";
 
     /**
      * Current humidity
      */
-    public static final String RH = "rh";
+    public static final String HUMIDITY = "rh";
 
     /**
      * Humidity setpoint
      */
-    public static final String RHSET = "rhset";
+    public static final String HUMIDITY_SETPOINT = "rhset";
 
     /**
      * Current temperature
      */
-    public static final String TEMP = "temp";
+    public static final String TEMPERATURE = "temp";
 
     /**
      * 'P': 'Purification', 'PH': 'Purification & Humidification'
      */
-    public static final String FUNC = "func";
+    public static final String FUNCTION = "func";
 
     /**
      * water level
      */
-    public static final String WL = "wl";
+    public static final String WATER_LEVEL = "wl";
 
     /**
      * Pre-filter

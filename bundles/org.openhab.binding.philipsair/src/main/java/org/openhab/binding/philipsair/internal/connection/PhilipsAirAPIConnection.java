@@ -229,7 +229,7 @@ public class PhilipsAirAPIConnection {
             commandValue = "{\"" + parameter + "\":" + value + "}";
         }
 
-        logger.info("{}", commandValue.toString());
+        logger.info("{}", commandValue);
         commandValue = this.cipher.encrypt(commandValue.toString());
         if (commandValue == null || commandValue.isEmpty()) {
             return null;
