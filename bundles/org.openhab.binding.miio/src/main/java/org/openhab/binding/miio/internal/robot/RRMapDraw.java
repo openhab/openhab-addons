@@ -17,6 +17,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
 import java.awt.Polygon;
 import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
@@ -32,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
 
@@ -331,19 +333,43 @@ public class RRMapDraw {
         } catch (IOException e) {
             logger.debug("Error loading image ohlogo.png:: {}", e.getMessage());
         }
-        Font font = new Font("Helvetica", Font.BOLD, 14);
+        String fontName = getAvailableFont("Helvetica,Arial,Roboto,Verdana,Times,Serif,Dialog".split(","));
+        if (fontName == null) {
+            return; // no available fonts to draw text
+        }
+        Font font = new Font(fontName, Font.BOLD, 14);
         g2d.setFont(font);
         String message = "Openhab rocks your Xiaomi vacuum!";
         FontMetrics fontMetrics = g2d.getFontMetrics();
         int stringWidth = fontMetrics.stringWidth(message);
         if ((stringWidth + textPos) > rmfp.getImgWidth() * scale) {
-            font = new Font("Helvetica ", Font.BOLD,
+            font = new Font(fontName, Font.BOLD,
                     (int) Math.floor(14 * (rmfp.getImgWidth() * scale - textPos - offset * scale) / stringWidth));
             g2d.setFont(font);
         }
         int stringHeight = fontMetrics.getAscent();
         g2d.setPaint(Color.white);
         g2d.drawString(message, textPos, height - offset * scale - stringHeight / 2);
+    }
+
+    private @Nullable String getAvailableFont(String[] preferedFonts) {
+        final GraphicsEnvironment gEv = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        if (gEv == null) {
+            return null;
+        }
+        String[] fonts = gEv.getAvailableFontFamilyNames();
+        if (fonts.length == 0) {
+            return null;
+        }
+        for (int j = 0; j < preferedFonts.length; j++) {
+            for (int i = 0; i < fonts.length; i++) {
+                if (fonts[i].equalsIgnoreCase(preferedFonts[j])) {
+                    return preferedFonts[j];
+                }
+            }
+        }
+        // Preferred fonts not available... just go with the first one
+        return fonts[0];
     }
 
     private @Nullable URL getImageUrl(String image) {
