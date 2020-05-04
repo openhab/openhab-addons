@@ -103,7 +103,6 @@ public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService 
     private synchronized void runDiscovery() {
         logger.debug("Starting scanning for things...");
 
-        scheduler.execute(() -> {
             try {
                 discoverDevices();
             } catch (SomfyMyLinkException e) {
@@ -113,7 +112,6 @@ public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService 
                     scanListener.onErrorOccurred(e);
                 }
             }
-        });
     }
 
     private void discoverDevices() throws SomfyMyLinkException {
