@@ -20,7 +20,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -91,7 +90,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     private static final SomfyMyLinkShade[] EMPTY_SHADE_LIST = new SomfyMyLinkShade[0];
     private static final SomfyMyLinkScene[] EMPTY_SCENE_LIST = new SomfyMyLinkScene[0];
 
-    private @Nullable SomfyMyLinkConfiguration config;
+    private @Nullable SomfyMyLinkConfiguration config = new SomfyMyLinkConfiguration();
     private @Nullable ScheduledFuture<?> heartbeat;
     private @Nullable SomfyMyLinkStateDescriptionOptionsProvider stateDescriptionProvider;
     private @Nullable ExecutorService commandExecutor;
@@ -325,7 +324,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     }
 
     private <T extends SomfyMyLinkResponseBase> CompletableFuture<@Nullable T> sendCommandWithResponse(
-            SomfyMyLinkCommandBase command, Class<T> responseType) throws SomfyMyLinkException {
+            SomfyMyLinkCommandBase command, Class<T> responseType) {
         CompletableFuture<@Nullable T> future = new CompletableFuture<>();
         ExecutorService commandExecutor = this.commandExecutor;
         if (commandExecutor != null) {

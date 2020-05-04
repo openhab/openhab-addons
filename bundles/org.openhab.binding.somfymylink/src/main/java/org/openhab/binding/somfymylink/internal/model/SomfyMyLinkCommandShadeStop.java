@@ -13,9 +13,12 @@
 
 package org.openhab.binding.somfymylink.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Chris Johnson - Initial contribution
  */
+@NonNullByDefault
 public class SomfyMyLinkCommandShadeStop extends SomfyMyLinkCommandShadeBase {
 
     public SomfyMyLinkCommandShadeStop(String targetId, String auth) {

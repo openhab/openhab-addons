@@ -16,7 +16,6 @@ import static org.openhab.binding.somfymylink.internal.SomfyMyLinkBindingConstan
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CancellationException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;

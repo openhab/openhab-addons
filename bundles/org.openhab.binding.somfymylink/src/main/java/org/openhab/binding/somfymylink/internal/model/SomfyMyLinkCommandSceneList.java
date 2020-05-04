@@ -13,9 +13,12 @@
 
 package org.openhab.binding.somfymylink.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Chris Johnson - Initial contribution
  */
+@NonNullByDefault
 public class SomfyMyLinkCommandSceneList extends SomfyMyLinkCommandShadeBase {
     public SomfyMyLinkCommandSceneList(String auth) {
         super("*.*", "mylink.scene.list", auth);

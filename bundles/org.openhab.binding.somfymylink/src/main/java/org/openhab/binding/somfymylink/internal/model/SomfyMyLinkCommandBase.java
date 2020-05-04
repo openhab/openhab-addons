@@ -14,9 +14,12 @@ package org.openhab.binding.somfymylink.internal.model;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Chris Johnson - Initial contribution
  */
+@NonNullByDefault
 public class SomfyMyLinkCommandBase {
 
     public final int id;
