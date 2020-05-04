@@ -63,21 +63,21 @@
 		</config-description>
 	</thing-type>
 
-	<channel-type id="name">
+	<channel-type id="name" advanced="true">
 		<item-type>String</item-type>
 		<label>Thermostat Name</label>
 		<description>The name of the thermostat</description>
 		<state readOnly="true"/>
 	</channel-type>
 	
-	<channel-type id="model">
+	<channel-type id="model" advanced="true">
 		<item-type>String</item-type>
 		<label>Thermostat Model</label>
 		<description>The model number and firmware version of the thermostat</description>
 		<state readOnly="true"/>
 	</channel-type>
 	
-	<channel-type id="temp-temperature" advanced="true">
+	<channel-type id="temp-temperature">
 		<item-type>Number</item-type>
 		<label>Temperature</label>
 		<description>The current temperature reading of the thermostat</description>
@@ -85,7 +85,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="humidity" advanced="true">
+	<channel-type id="humidity">
 		<item-type>Number</item-type>
 		<label>Humidity</label>
 		<description>The current humidity reading of the thermostat</description>
@@ -113,7 +113,7 @@
 		<description>The current operating mode of the fan</description>
 	</channel-type>
 	
-	<channel-type id="program_mode">
+	<channel-type id="program_mode" advanced="true">
 		<item-type>Number</item-type>
 		<label>Program Mode</label>
 		<description>The program schedule that the thermostat is running</description>
@@ -128,7 +128,7 @@
 		</state>
 	</channel-type>
 	
-	<channel-type id="temp-sp" advanced="true">
+	<channel-type id="temp-sp">
 		<item-type>Number</item-type>
 		<label>Setpoint</label>
 		<description>The current temperature set point of the thermostat</description>
@@ -163,35 +163,35 @@
 		<state min="0" max="2" pattern="%d"/>
 	</channel-type>
 	
-	<channel-type id="t_day">
+	<channel-type id="t_day" advanced="true">
 		<item-type>Number</item-type>
 		<label>Day</label>
 		<description>The current day of the week reported by the thermostat</description>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
-	<channel-type id="t_hour">
+	<channel-type id="t_hour" advanced="true">
 		<item-type>Number</item-type>
 		<label>Hour</label>
 		<description>The current hour of the day reported by the thermostat</description>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 	
-	<channel-type id="t_minute">
+	<channel-type id="t_minute" advanced="true">
 		<item-type>Number</item-type>
 		<label>Minute</label>
 		<description>The current minute past the hour reported by the thermostat</description>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 	
-	<channel-type id="dt_stamp">
+	<channel-type id="dt_stamp" advanced="true">
 		<item-type>String</item-type>
 		<label>Thermostat Date</label>
 		<description>The current day of the week and time reported by the thermostat</description>
 		<state readOnly="true"/>
 	</channel-type>
 	
-	<channel-type id="last_update">
+	<channel-type id="last_update" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Last Updated</label>
 		<description>Last successful contact with thermostat</description>
@@ -227,7 +227,7 @@
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	
-	<channel-type id="json_cmd">
+	<channel-type id="json_cmd" advanced="true">
 		<item-type>String</item-type>
 		<label>JSON Command</label>
 		<description>Send a JSON string directly to the '/tstat' resource of the thermostat</description>
