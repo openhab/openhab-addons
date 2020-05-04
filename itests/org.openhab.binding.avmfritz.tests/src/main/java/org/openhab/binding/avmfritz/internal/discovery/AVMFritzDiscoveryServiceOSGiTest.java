@@ -60,6 +60,7 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
         listener = new DiscoveryListener() {
             @Override
             public void thingRemoved(DiscoveryService source, ThingUID thingUID) {
+                discoveryResult = null;
             }
 
             @Override
@@ -129,7 +130,7 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
     @Test
     public void validDECTRepeater100Result() throws JAXBException {
         //@formatter:off
-        String xml =
+        final String xml =
                 "<devicelist version=\"1\">" +
                     "<device identifier=\"08761 0954669\" id=\"20\" functionbitmask=\"1280\" fwversion=\"03.86\" manufacturer=\"AVM\" productname=\"FRITZ!DECT Repeater 100\">" +
                         "<present>1</present>" +
@@ -142,13 +143,14 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
                 "</devicelist>";
         //@formatter:on
 
-        Unmarshaller u = JAXBUtils.JAXBCONTEXT_DEVICES.createUnmarshaller();
+        final Unmarshaller u = JAXBUtils.JAXBCONTEXT_DEVICES.createUnmarshaller();
         DeviceListModel devices = (DeviceListModel) u.unmarshal(new StringReader(xml));
         assertNotNull(devices);
         assertEquals(1, devices.getDevicelist().size());
 
         AVMFritzBaseModel device = devices.getDevicelist().get(0);
         assertNotNull(device);
+        assertEquals(1, device.getPresent());
 
         discovery.onDeviceAdded(device);
         assertNotNull(discoveryResult);
@@ -163,6 +165,18 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
         assertEquals("087610954669", discoveryResult.getProperties().get(PROPERTY_SERIAL_NUMBER));
         assertEquals("03.86", discoveryResult.getProperties().get(PROPERTY_FIRMWARE_VERSION));
         assertEquals(CONFIG_AIN, discoveryResult.getRepresentationProperty());
+
+        final String deviceNotPresentXml = xml.replace("<present>1</present>", "<present>0</present>");
+        devices = (DeviceListModel) u.unmarshal(new StringReader(deviceNotPresentXml));
+        assertNotNull(devices);
+        assertEquals(1, devices.getDevicelist().size());
+
+        device = devices.getDevicelist().get(0);
+        assertNotNull(device);
+        assertEquals(0, device.getPresent());
+
+        discovery.onDeviceAdded(device);
+        assertNull(discoveryResult);
     }
 
     @Test
@@ -476,7 +490,7 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
         String xml =
                 "<devicelist version=\"1\">" +
                     "<device identifier=\"11934 0059578\" id=\"406\" functionbitmask=\"1\" fwversion=\"00.00\" manufacturer=\"0x0feb\" productname=\"HAN-FUN\">" +
-                        "<present>0</present>" +
+                        "<present>1</present>" +
                         "<name>HAN-FUN #2</name>" +
                     "</device>" +
                 "</devicelist>";
@@ -500,7 +514,7 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
         String xml =
                 "<devicelist version=\"1\">" +
                     "<device identifier=\"11934 0059578-1\" id=\"2000\" functionbitmask=\"8208\" fwversion=\"0.0\" manufacturer=\"0x0feb\" productname=\"HAN-FUN\">" +
-                        "<present>0</present>" +
+                        "<present>1</present>" +
                         "<name>HAN-FUN #2: Unit #2</name>" +
                         "<etsiunitinfo>" +
                             "<etsideviceid>406</etsideviceid>" +
@@ -543,7 +557,7 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
         String xml =
                 "<devicelist version=\"1\">" +
                     "<device identifier=\"11934 0059578-1\" id=\"2001\" functionbitmask=\"8208\" fwversion=\"0.0\" manufacturer=\"0x0feb\" productname=\"HAN-FUN\">" +
-                        "<present>0</present>" +
+                        "<present>1</present>" +
                         "<name>HAN-FUN #3: Unit #3</name>" +
                         "<etsiunitinfo>" +
                             "<etsideviceid>406</etsideviceid>" +
@@ -586,7 +600,7 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
         String xml =
                 "<devicelist version=\"1\">" +
                     "<device identifier=\"11934 0059578-1\" id=\"2002\" functionbitmask=\"8208\" fwversion=\"0.0\" manufacturer=\"0x0feb\" productname=\"HAN-FUN\">" +
-                        "<present>0</present>" +
+                        "<present>1</present>" +
                         "<name>HAN-FUN #3: Unit #3</name>" +
                         "<etsiunitinfo>" +
                             "<etsideviceid>408</etsideviceid>" +
@@ -672,7 +686,7 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
         String xml =
                 "<devicelist version=\"1\">" +
                     "<device identifier=\"11934 0059578-1\" id=\"2001\" functionbitmask=\"8200\" fwversion=\"0.0\" manufacturer=\"0x0feb\" productname=\"HAN-FUN\">" +
-                        "<present>0</present>" +
+                        "<present>1</present>" +
                         "<name>HAN-FUN #2: Unit #2</name>" +
                         "<etsiunitinfo>" +
                             "<etsideviceid>412</etsideviceid>" +
