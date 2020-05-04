@@ -55,7 +55,6 @@ public class FtpFolderWatcherHandler extends BaseThingHandler {
     private @Nullable File currentFtpListingFile;
     private @Nullable ScheduledFuture<?> executionJob, initJob;
     private FTPClient ftp = new FTPClient();
-    private List<String> currentFtpListing = new ArrayList<>();
     private List<String> previousFtpListing = new ArrayList<>();
 
     public FtpFolderWatcherHandler(Thing thing) {
@@ -150,8 +149,7 @@ public class FtpFolderWatcherHandler extends BaseThingHandler {
                 long diff = ChronoUnit.HOURS.between(file.getTimestamp().toInstant(), dateNow);
 
                 if (diff < config.diffHours) {
-                    file.setName(dirToList + "/" + currentFileName);
-                    dirList.add("ftp:/" + ftpClient.getRemoteAddress().toString() + file.getName());
+                    dirList.add("ftp:/" + ftpClient.getRemoteAddress().toString() + dirToList + "/" + currentFileName);
                 }
             }
         }
@@ -159,21 +157,17 @@ public class FtpFolderWatcherHandler extends BaseThingHandler {
     }
 
     private void connectionKeepAlive() {
-        if (ftp.isConnected() == false) {
-            if (config.secureMode.equals("NONE")) {
-                ftp = new FTPClient();
-            } else {
-                switch (config.secureMode) {
-                    case "NONE":
-                        ftp = new FTPClient();
-                        break;
-                    case "IMPLICIT":
-                        ftp = new FTPSClient(true);
-                        break;
-                    case "EXPLICIT":
-                        ftp = new FTPSClient(false);
-                        break;
-                }
+        if (!ftp.isConnected()) {
+            switch (config.secureMode) {
+                case "NONE":
+                    ftp = new FTPClient();
+                    break;
+                case "IMPLICIT":
+                    ftp = new FTPSClient(true);
+                    break;
+                case "EXPLICIT":
+                    ftp = new FTPSClient(false);
+                    break;
             }
 
             int reply = 0;
@@ -219,11 +213,9 @@ public class FtpFolderWatcherHandler extends BaseThingHandler {
                 }
                 this.executionJob = scheduler.scheduleWithFixedDelay(this::refreshFTPFolderInformation, 0,
                         config.pollInterval, TimeUnit.SECONDS);
-                return;
             } catch (IOException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
-            return;
         }
     }
 
@@ -239,7 +231,7 @@ public class FtpFolderWatcherHandler extends BaseThingHandler {
                 if (!ftpRootDir.startsWith("/")) {
                     ftpRootDir = "/" + ftpRootDir;
                 }
-                currentFtpListing.clear();
+                List<String> currentFtpListing = new ArrayList<>();
 
                 currentFtpListing.addAll(listDirectory(ftp, ftpRootDir, "", config.listRecursiveFtp));
                 List<String> diffFtpListing = new ArrayList<>(currentFtpListing);

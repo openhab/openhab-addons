@@ -55,7 +55,6 @@ public class LocalFolderWatcherHandler extends BaseThingHandler {
     private File currentLocalListingFile = new File(ConfigConstants.getUserDataFolder() + File.separator
             + "FolderWatcher" + File.separator + thing.getUID().getAsString().replace(':', '_') + ".data");
     private @Nullable ScheduledFuture<?> executionJob;
-    private List<String> currentLocalListing = new ArrayList<>();
     private List<String> previousLocalListing = new ArrayList<>();
 
     public LocalFolderWatcherHandler(Thing thing) {
@@ -109,7 +108,7 @@ public class LocalFolderWatcherHandler extends BaseThingHandler {
     private void refreshFolderInformation() {
         final String rootDir = config.localDir;
         try {
-            currentLocalListing.clear();
+            List<String> currentLocalListing = new ArrayList<>();
 
             Files.walkFileTree(Paths.get(rootDir), new FileVisitor<@Nullable Path>() {
                 @Override

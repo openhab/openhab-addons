@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class LocalFolderWatcherConfiguration {
-    public String localDir = new String();
+    public String localDir = "";
     public boolean listHiddenLocal;
     public int pollIntervalLocal;
     public boolean listRecursiveLocal;

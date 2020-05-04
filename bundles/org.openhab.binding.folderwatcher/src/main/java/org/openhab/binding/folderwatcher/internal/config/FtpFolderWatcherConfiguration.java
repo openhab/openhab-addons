@@ -21,15 +21,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class FtpFolderWatcherConfiguration {
-    public String ftpAddress = new String();
+    public String ftpAddress = "";
     public int ftpPort;
-    public String ftpUsername = new String();
-    public String ftpPassword = new String();
-    public String ftpDir = new String();
+    public String ftpUsername = "";
+    public String ftpPassword = "";
+    public String ftpDir = "";
     public int pollInterval;
     public int connectionTimeout;
     public boolean listHidden;
     public int diffHours;
     public boolean listRecursiveFtp;
-    public String secureMode = new String();
+    public String secureMode = "";
 }
