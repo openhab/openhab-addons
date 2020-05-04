@@ -66,9 +66,9 @@ public class MiIoDiscoveryParticipant implements MDNSDiscoveryParticipant {
             logger.trace("mDNS Could not identify Type / Device Id from '{}'", service.getName());
             return null;
         }
-        int did;
+        long did;
         try {
-            did = Integer.parseUnsignedInt(id[1]);
+            did = Long.parseUnsignedLong(id[1]);
         } catch (Exception e) {
             logger.trace("mDNS Could not identify Device ID from '{}'", id[1]);
             return null;
