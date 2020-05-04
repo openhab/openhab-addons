@@ -36,20 +36,21 @@ The following channels are supported for fans:
 |---------------|-----------|---------------------------------------------------------------------------------------------------|
 | power         | Switch    | Power on/off the Air Conditioner                                                                  |
 | mode          | String    | Sets the operating mode of the Air Conditioner                                                    |
-|               |           | Mode can be one of auto/cool/eco/dry/fan/turboheat or on/off                                      |||               |           | You could also send "0".."4", which will be send transparent to the device:                       |
+|               |           | Mode can be one of auto/cool/eco/dry/fan/turboheat or on/off                                      |
+|               |           | You could also send "0".."4", which will be send transparent to the device:                       |
 |               |           | those map to: "0"=Auto, "1"=Cool, "2"=Dry, "3"=Fan only, "4"=heat                                 | 
 |               |           | Check the Air Conditioner's operating manual for supported modes.                                 |
 | temperature   | Number    | Sets the desired room temperature                                                                 |
-| swingvertical | Number    | Sets the vertical swing action on the Air Conditioner                                             |
 | air           | Switch    | Set on/off the Air Conditioner's Air function if applicable to the Air Conditioner model          |
 | dry           | Switch    | Set on/off the Air Conditioner's Dry function if applicable to the Air Conditioner model          |
 | health        | Switch    | Set on/off the Air Conditioner's Health function if applicable to the Air Conditioner model       |
-| powersave     | Switch    | Set on/off the Air Conditioner's Power Saving function if applicable to the Air Conditioner model |
 | turbo         | Switch    | Set on/off the Air Conditioner's Turbo mode.                                                      |
-| light         | Switch    | Enable/disable the front display on the Air Conditioner if applicable to the Air Conditioner model|
-|               |           | Full Swing: 1, Up: 2, MidUp: 3, Mid: 4, Mid Down: 5, Down : 6                                     |
+| swingvertical | Number    | Sets the vertical swing action on the Air Conditioner                                             |
 | windspeed     | Number    | Sets the fan speed on the Air conditioner Auto:0, Low:1, MidLow:2, Mid:3, MidHigh:4, High:5       |
 |               |           | The number of speeds depends on the Air Conditioner model.                                        |
+| powersave     | Switch    | Set on/off the Air Conditioner's Power Saving function if applicable to the Air Conditioner model |
+| light         | Switch    | Enable/disable the front display on the Air Conditioner if applicable to the Air Conditioner model|
+|               |           | Full Swing: 1, Up: 2, MidUp: 3, Mid: 4, Mid Down: 5, Down : 6                                     |
 
 
 When changing the mode the air conditioner will be turned on (unless is off is selected).
@@ -88,8 +89,7 @@ This is an example of how to set up your sitemap.
 ```
 Frame label="Controls"
 {
-   Switch item=AirconPower label="Power" icon=switch
-   Switch item=AirconMode label="Mode" mappings=[0="Auto", 1="Cool", 2="Dry", 3="Fan", 4="Heat"]
+   Switch item=AirconMode label="Mode" mappings=["auto"="Auto", "cool"="Cool", "eco"="Eco", "dry"="Dry", "fan"="Fan", "turbo"="Turbo", "heat"="Heat", "on"="ON", "off"="OFF"]
    Setpoint item=AirconTemp label="Set temperature" icon=temperature minValue=16 maxValue=30 step=1
 }
 Frame label="Fan Speed"
@@ -118,40 +118,22 @@ This example shows who to make the GREE Air Conditioner controllable by Google H
 Items:
 
 ```
-Group Gree_Modechannel                 "Gree"        { ga="Thermostat" } // új Gree bindinggal
-// Gree Klíma
-    Switch   GreeAirConditioner_Powerchannel           "Aircon"                                        {channel="greeair:greeairthing:a1234561:powerchannel", ga="Switch"}
-    Number   GreeAirConditioner_Modechannel            "Aircon Mode"                                   {channel="greeair:greeairthing:a1234561:modechannel"}
-    String   GreeAirConditioner_Modechannel_GA         "Aircon Mode" (gGreeAirConditioner_Modechannel) {ga="thermostatMode" }
-    Switch   GreeAirConditioner_Turbochannel           "Turbo"                                         {channel="greeair:greeairthing:a1234561:turbochannel"}
-    Switch   GreeAirConditioner_Lightchannel           "Light"                                         {channel="greeair:greeairthing:a1234561:lightchannel"}
-    Number   GreeAirConditioner_Tempchannel            "Aircon Temperature"  (gGre
+Group Gree_Modechannel                 "Gree"        { ga="Thermostat" } // Gree bindinggal
+// GREE A/C
+    Switch   GreeAirConditioner_Power   "Aircon"              {channel="gree:airconditioner:a1234561:power", ga="Switch"}
+    Number   GreeAirConditioner_Mode    "Aircon Mode"         {channel="gree:airconditioner:a1234561:mode", ga="thermostatMode"}
+    Number   GreeAirConditioner_Temp    "Aircon Temperature"  {channel="gree:airconditioner:a1234561:temperature}
+    Switch   GreeAirConditioner_Lightl  "Light"               {channel="gree:airconditioner:a1234561:light"}
 ```
 
 Rule:
 ```
 rule "Translate Mode from GA 2"
 when
-        Item GreeMode_GA changed
+        Item GreeAirConditioner_Mode changed
 then        
-        if(GreeMode_GA.state == "off" ) {
-            sendCommand(GreePower,OFF)
-         }  else {
-            if(GreePower.state == OFF) {
-                sendCommand(GreePower,ON)
-            }
-            if(GreeMode_GA.state == "cool" ) {
-                sendCommand(GreeMode,1)
-             }
-            if(GreeMode_GA.state == "dry" ) {
-                sendCommand(GreeMode,2)
-             }
-            if(GreeMode_GA.state == "fan-only" ) {
-                sendCommand(GreeMode,3) 
-             }
-            if(GreeMode_GA.state == "heat" ) {
-                sendCommand(GreeMode,4)
-             }
-        }
+        if(GreeAirConditioner_Mode.state == "cool" ) {
+            logInfo("A/C", "Cooling has be turned on")
+         } 
 end
 ```
