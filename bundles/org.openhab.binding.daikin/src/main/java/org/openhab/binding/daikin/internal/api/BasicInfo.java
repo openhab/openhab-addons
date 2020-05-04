@@ -10,13 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.daikin.internal.api.airbase;
+package org.openhab.binding.daikin.internal.api;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.daikin.internal.api.InfoParser;
 
 import org.slf4j.Logger;
@@ -25,26 +26,26 @@ import org.slf4j.LoggerFactory;
 /**
  * Holds information from the basic_info call.
  *
- * @author Paul Smedley - Initial contribution
+ * @author Jimy Tanagra - Initial contribution
  *
  */
 @NonNullByDefault
-public class AirbaseBasicInfo {
-    private static final Logger logger = LoggerFactory.getLogger(AirbaseBasicInfo.class);
+public class BasicInfo {
+    private static final Logger logger = LoggerFactory.getLogger(BasicInfo.class);
 
     public String mac = "";
     public String ret = "";
     public String ssid = "";
 
-    private AirbaseBasicInfo() {
+    private BasicInfo() {
     }
 
-    public static AirbaseBasicInfo parse(String response) {
+    public static BasicInfo parse(String response) {
         logger.debug("Parsing string: \"{}\"", response);
 
         Map<String, String> responseMap = InfoParser.parse(response);
 
-        AirbaseBasicInfo info = new AirbaseBasicInfo();
+        BasicInfo info = new BasicInfo();
         info.mac = Optional.ofNullable(responseMap.get("mac")).orElse("");
         info.ret = Optional.ofNullable(responseMap.get("ret")).orElse("");
         info.ssid = Optional.ofNullable(responseMap.get("ssid")).orElse("");
@@ -53,9 +54,8 @@ public class AirbaseBasicInfo {
 
     public Map<String, String> getParamString() {
         Map<String, String> params = new HashMap<>();
-        if (!"".equals(ssid)) {
-            params.put("ssid", ssid);
-        }
+        params.put("ssid", ssid);
         return params;
     }
+
 }

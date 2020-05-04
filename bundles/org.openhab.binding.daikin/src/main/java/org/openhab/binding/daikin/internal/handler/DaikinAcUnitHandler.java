@@ -15,7 +15,9 @@ package org.openhab.binding.daikin.internal.handler;
 import java.io.IOException;
 import java.util.Optional;
 
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -33,6 +35,8 @@ import org.openhab.binding.daikin.internal.api.Enums.FanSpeed;
 import org.openhab.binding.daikin.internal.api.Enums.HomekitMode;
 import org.openhab.binding.daikin.internal.api.Enums.Mode;
 import org.openhab.binding.daikin.internal.api.SensorInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Handles communicating with a Daikin air conditioning unit.
@@ -43,8 +47,10 @@ import org.openhab.binding.daikin.internal.api.SensorInfo;
  */
 @NonNullByDefault
 public class DaikinAcUnitHandler extends DaikinBaseHandler {
-    public DaikinAcUnitHandler(Thing thing, DaikinDynamicStateDescriptionProvider stateDescriptionProvider) {
-        super(thing, stateDescriptionProvider);
+    private final Logger logger = LoggerFactory.getLogger(DaikinAcUnitHandler.class);
+
+    public DaikinAcUnitHandler(Thing thing, DaikinDynamicStateDescriptionProvider stateDescriptionProvider, @Nullable HttpClient httpClient) {
+        super(thing, stateDescriptionProvider, httpClient);
     }
 
     @Override
@@ -130,5 +136,18 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
         ControlInfo info = webTargets.getControlInfo();
         info.fanMovement = FanMovement.valueOf(fanDir);
         webTargets.setControlInfo(info);
+    }
+
+    @Override
+    protected void registerUuid(@Nullable String key) {
+        if (key == null) {
+            return;
+        }
+        try {
+            webTargets.registerUuid(key);
+        } catch (Exception e) {
+            // suppress exceptions
+            logger.debug("registerUuid({}) error: {}", key, e.getMessage());
+        }
     }
 }

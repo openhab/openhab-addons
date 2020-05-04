@@ -14,27 +14,24 @@ package org.openhab.binding.daikin.internal;
 
 import java.io.IOException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Exception for when an unexpected response is received from the Daikin controller.
+ * Exception for when a 403 Forbidden error is received from the Daikin controller.
  *
- * @author Tim Waterhouse <tim@timwaterhouse.com> - Initial contribution
+ * @author Jimmy Tanagra - Initial contribution
  *
  */
 @NonNullByDefault
-public class DaikinCommunicationException extends IOException {
-    private static final long serialVersionUID = 529232811860854017L;
-
-    public DaikinCommunicationException(String message) {
+public class DaikinCommunicationForbiddenException extends DaikinCommunicationException {
+    public DaikinCommunicationForbiddenException(String message) {
         super(message);
     }
 
-    public DaikinCommunicationException(Throwable ex) {
+    public DaikinCommunicationForbiddenException(Throwable ex) {
         super(ex);
     }
 
-    public DaikinCommunicationException(String message, Throwable cause) {
+    public DaikinCommunicationForbiddenException(String message, Throwable cause) {
         super(message, cause);
     }
 }

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.daikin.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +23,7 @@ import org.slf4j.LoggerFactory;
  * @author Tim Waterhouse <tim@timwaterhouse.com> - Initial contribution
  *
  */
+@NonNullByDefault
 public class Enums {
     public enum Mode {
         UNKNOWN(-1),
