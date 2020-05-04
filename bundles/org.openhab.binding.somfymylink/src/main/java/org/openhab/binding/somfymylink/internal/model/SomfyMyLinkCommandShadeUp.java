@@ -13,7 +13,7 @@
 
 package org.openhab.binding.somfymylink.internal.model;
 
- /**
+/**
  * @author Chris Johnson - Initial contribution
  */
 public class SomfyMyLinkCommandShadeUp extends SomfyMyLinkCommandShadeBase {

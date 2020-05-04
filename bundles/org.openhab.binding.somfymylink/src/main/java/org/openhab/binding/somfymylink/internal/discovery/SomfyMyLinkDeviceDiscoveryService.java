@@ -16,20 +16,24 @@ import static org.openhab.binding.somfymylink.internal.SomfyMyLinkBindingConstan
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.config.discovery.ScanListener;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.openhab.binding.somfymylink.internal.SomfyMyLinkHandlerFactory;
 import org.openhab.binding.somfymylink.internal.handler.SomfyMyLinkBridgeHandler;
 import org.openhab.binding.somfymylink.internal.handler.SomfyMyLinkException;
@@ -46,26 +50,36 @@ import org.slf4j.LoggerFactory;
  * @author Chris Johnson - Initial contribution
  */
 @NonNullByDefault
-public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService {
+public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService
+        implements DiscoveryService, ThingHandlerService {
 
-    private static final int DISCOVERY_REFRESH_SEC = 1800;
+    private static final int DISCOVERY_REFRESH_SEC = 900;
 
     private final Logger logger = LoggerFactory.getLogger(SomfyMyLinkDeviceDiscoveryService.class);
-
-    private SomfyMyLinkBridgeHandler mylinkHandler;
-
+    private @NonNullByDefault({}) SomfyMyLinkBridgeHandler mylinkHandler;
+    private @Nullable Future<?> scanTask;
     private @Nullable ScheduledFuture<?> discoveryJob;
 
-    public SomfyMyLinkDeviceDiscoveryService(SomfyMyLinkBridgeHandler mylinkHandler) throws IllegalArgumentException {
+    public SomfyMyLinkDeviceDiscoveryService() {
         super(SomfyMyLinkHandlerFactory.DISCOVERABLE_DEVICE_TYPES_UIDS, 10);
+    }
 
-        this.mylinkHandler = mylinkHandler;
+    @Override
+    public void setThingHandler(@Nullable ThingHandler handler) {
+        if (handler instanceof SomfyMyLinkBridgeHandler) {
+            this.mylinkHandler = (SomfyMyLinkBridgeHandler) handler;
+        }
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return mylinkHandler;
     }
 
     @Override
     @Activate
-    public void activate(@Nullable Map<@NonNull String, @Nullable Object> configProperties) {
-        super.activate(configProperties);
+    public void activate() {
+        super.activate(null);
     }
 
     @Override
@@ -80,14 +94,15 @@ public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService 
 
         ScheduledFuture<?> discoveryJob = this.discoveryJob;
         if (discoveryJob == null || discoveryJob.isCancelled()) {
-            discoveryJob = scheduler.scheduleWithFixedDelay(this::runDiscovery, 10, DISCOVERY_REFRESH_SEC,
-                    TimeUnit.SECONDS);
+            discoveryJob = scheduler.scheduleWithFixedDelay(this::discoverDevices, 10,
+                    DISCOVERY_REFRESH_SEC, TimeUnit.SECONDS);
         }
     }
 
     @Override
     protected void stopBackgroundDiscovery() {
         logger.debug("Stopping Somfy MyLink background discovery");
+
         ScheduledFuture<?> discoveryJob = this.discoveryJob;
         if (discoveryJob != null) {
             discoveryJob.cancel(true);
@@ -96,51 +111,76 @@ public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService 
     }
 
     @Override
-    protected void startScan() {
-        runDiscovery();
+    protected synchronized void startScan() {
+        Future<?> scanTask = this.scanTask;
+        if (scanTask == null || scanTask.isDone()) {
+            logger.debug("Starting somfy mylink discovery scan");
+            scanTask = scheduler.submit(this::discoverDevices);
+        }
     }
 
-    private synchronized void runDiscovery() {
+    @Override
+    public void stopScan() {
+        Future<?> scanTask = this.scanTask;
+        if (scanTask != null) {
+            logger.debug("Stopping somfy mylink discovery scan");
+            scanTask.cancel(true);
+        }
+        super.stopScan();
+    }
+
+    public void waitForScanFinishing() {
+        if (scanTask != null) {
+            logger.debug("Waiting for finishing somfy mylink device discovery scan");
+            try {
+                scanTask.get();
+                logger.debug("Somfy mylink device discovery scan finished");
+            } catch (CancellationException ex) {
+                // ignore
+
+            } catch (Exception ex) {
+                logger.error("Error waiting for device discovery scan: {}", ex.getMessage(), ex);
+            }
+        }
+    }
+
+    private synchronized void discoverDevices() {
         logger.debug("Starting scanning for things...");
 
-            try {
-                discoverDevices();
-            } catch (SomfyMyLinkException e) {
-                logger.info("Error scanning for devices: {}", e.getMessage(), e);
-                ScanListener scanListener = this.scanListener;
-                if (scanListener != null) {
-                    scanListener.onErrorOccurred(e);
-                }
-            }
-    }
-
-    private void discoverDevices() throws SomfyMyLinkException {
         if (this.mylinkHandler.getThing().getStatus() != ThingStatus.ONLINE) {
             logger.debug("Skipping device discover as bridge is {}", this.mylinkHandler.getThing().getStatus());
             return;
         }
 
-        // get the shade list
-        SomfyMyLinkShade[] shades = this.mylinkHandler.getShadeList();
+        try {
+            // get the shade list
+            SomfyMyLinkShade[] shades = this.mylinkHandler.getShadeList();
 
-        for (SomfyMyLinkShade shade : shades) {
-            String id = shade.getTargetID();
-            String label = "Somfy Shade " + shade.getName();
+            for (SomfyMyLinkShade shade : shades) {
+                String id = shade.getTargetID();
+                String label = "Somfy Shade " + shade.getName();
 
-            if (id != null) {
-                logger.info("Adding device {}", id);
-                notifyThingDiscovery(THING_TYPE_SHADE, id, label, TARGET_ID);
+                if (id != null) {
+                    logger.info("Adding device {}", id);
+                    notifyThingDiscovery(THING_TYPE_SHADE, id, label, TARGET_ID);
+                }
             }
-        }
 
-        SomfyMyLinkScene[] scenes = this.mylinkHandler.getSceneList();
+            SomfyMyLinkScene[] scenes = this.mylinkHandler.getSceneList();
 
-        for (SomfyMyLinkScene scene : scenes) {
-            String id = scene.getTargetID();
-            String label = "Somfy Scene " + scene.getName();
+            for (SomfyMyLinkScene scene : scenes) {
+                String id = scene.getTargetID();
+                String label = "Somfy Scene " + scene.getName();
 
-            logger.info("Adding device {}", id);
-            notifyThingDiscovery(THING_TYPE_SCENE, id, label, SCENE_ID);
+                logger.info("Adding device {}", id);
+                notifyThingDiscovery(THING_TYPE_SCENE, id, label, SCENE_ID);
+            }
+        } catch (SomfyMyLinkException e) {
+            logger.info("Error scanning for devices: {}", e.getMessage(), e);
+            ScanListener scanListener = this.scanListener;
+            if (scanListener != null) {
+                scanListener.onErrorOccurred(e);
+            }
         }
     }
 

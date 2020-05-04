@@ -17,7 +17,7 @@ package org.openhab.binding.somfymylink.internal.model;
  * @author Chris Johnson - Initial contribution
  */
 public class SomfyMyLinkCommandShadeParams extends SomfyMyLinkCommandParamsBase {
-    
+
     public final String targetId;
 
     public SomfyMyLinkCommandShadeParams(String targetId, String auth) {

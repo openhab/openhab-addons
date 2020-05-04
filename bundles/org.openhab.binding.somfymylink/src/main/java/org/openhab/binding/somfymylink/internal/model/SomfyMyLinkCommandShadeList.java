@@ -14,8 +14,8 @@
 package org.openhab.binding.somfymylink.internal.model;
 
 /**
-* @author Chris Johnson - Initial contribution
-*/
+ * @author Chris Johnson - Initial contribution
+ */
 public class SomfyMyLinkCommandShadeList extends SomfyMyLinkCommandShadeBase {
 
     public SomfyMyLinkCommandShadeList(String auth) {
