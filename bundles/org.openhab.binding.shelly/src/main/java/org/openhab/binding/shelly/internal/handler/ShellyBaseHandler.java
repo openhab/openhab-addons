@@ -258,7 +258,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             config.eventsSwitch = false;
             config.eventsButton = false;
             config.eventsPush = false;
-            config.eventsRoller = true; // so far missing with FW 1.6+CoIoT
             config.eventsSensorReport = false;
             api.setConfig(thingName, config);
         }
