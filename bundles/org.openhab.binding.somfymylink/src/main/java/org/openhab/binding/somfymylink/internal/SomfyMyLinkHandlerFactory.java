@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 @Component(configurationPid = "binding.somfymylink", service = ThingHandlerFactory.class)
 public class SomfyMyLinkHandlerFactory extends BaseThingHandlerFactory {
 
-    private final Logger logger = LoggerFactory.getLogger(SomfyMyLinkBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SomfyMyLinkHandlerFactory.class);
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
             Arrays.asList(THING_TYPE_MYLINK, THING_TYPE_SHADE, THING_TYPE_SCENE));
