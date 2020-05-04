@@ -157,7 +157,6 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
             storage.put(REVISION_CONFIG, "" + accessoryRegistry.makeNewConfigurationRevision());
             pendingUpdates.clear();
         }
-
     }
 
     @Override
