@@ -24,6 +24,8 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SomfySceneHandler} is responsible for handling commands for scenes
@@ -32,6 +34,8 @@ import org.eclipse.smarthome.core.types.Command;
  */
 @NonNullByDefault
 public class SomfySceneHandler extends BaseThingHandler {
+
+    private final Logger logger = LoggerFactory.getLogger(SomfySceneHandler.class);
 
     public SomfySceneHandler(Thing thing) {
         super(thing);
@@ -54,6 +58,7 @@ public class SomfySceneHandler extends BaseThingHandler {
                 }
             }
         } catch (SomfyMyLinkException e) {
+            logger.info("Error handling command: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }

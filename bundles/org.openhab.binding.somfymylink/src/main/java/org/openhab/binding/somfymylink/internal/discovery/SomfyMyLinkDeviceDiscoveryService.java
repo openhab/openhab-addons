@@ -106,7 +106,7 @@ public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService
         ScheduledFuture<?> discoveryJob = this.discoveryJob;
         if (discoveryJob != null) {
             discoveryJob.cancel(true);
-            discoveryJob = null;
+            this.discoveryJob = null;
         }
     }
 

@@ -89,6 +89,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     private static final int MYLINK_DEFAULT_TIMEOUT = 5000;
     private static final int CONNECTION_DELAY = 1000;
     private static final SomfyMyLinkShade[] EMPTY_SHADE_LIST = new SomfyMyLinkShade[0];
+    private static final SomfyMyLinkScene[] EMPTY_SCENE_LIST = new SomfyMyLinkScene[0];
 
     private @Nullable SomfyMyLinkConfiguration config;
     private @Nullable ScheduledFuture<?> heartbeat;
@@ -120,6 +121,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                 }
             }
         } catch (SomfyMyLinkException e) {
+            logger.info("Error handling command: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
@@ -183,17 +185,12 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                 throw new SomfyMyLinkException("Config not setup correctly");
             }
 
-            try {
-                SomfyMyLinkCommandShadePing command = new SomfyMyLinkCommandShadePing(config.systemId);
-                sendCommandWithResponse(command, SomfyMyLinkPingResponse.class).get();
-                updateStatus(ThingStatus.ONLINE);
-            } catch (InterruptedException e) {
-                throw new SomfyMyLinkException("Problem with heartbeat.", e);
-            } catch (ExecutionException e) {
-                throw new SomfyMyLinkException("Problem with heartbeat.", e);
-            }
-        } catch (SomfyMyLinkException e) {
-            logger.debug("Problem with mylink during heartbeat");
+            SomfyMyLinkCommandShadePing command = new SomfyMyLinkCommandShadePing(config.systemId);
+            sendCommandWithResponse(command, SomfyMyLinkPingResponse.class).get();
+            updateStatus(ThingStatus.ONLINE);
+
+        } catch (SomfyMyLinkException | InterruptedException | ExecutionException e) {
+            logger.warn("Problem with mylink during heartbeat: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
@@ -214,9 +211,8 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
             } else {
                 return EMPTY_SHADE_LIST;
             }
-        } catch (Exception e) {
-            logger.debug("Exception while getting shade list. Message: {}", e.getMessage());
-            return EMPTY_SHADE_LIST;
+        } catch (InterruptedException | ExecutionException e) {
+            throw new SomfyMyLinkException("Problem while getting shade list.", e);
         }
     }
 
@@ -246,13 +242,9 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
 
                 return response.getResult();
             } else {
-                return new SomfyMyLinkScene[0];
+                return EMPTY_SCENE_LIST;
             }
-        } catch (InterruptedException e) {
-            logger.debug("Exception while getting scene list. Message: {}", e.getMessage());
-            throw new SomfyMyLinkException("Problem getting scene list.", e);
-        } catch (ExecutionException e) {
-            logger.debug("Exception while getting scene list. Message: {}", e.getMessage());
+        } catch (InterruptedException | ExecutionException e) {
             throw new SomfyMyLinkException("Problem getting scene list.", e);
         }
     }
@@ -263,13 +255,8 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
             throw new SomfyMyLinkException("Config not setup correctly. System Id is not set.");
         }
 
-        try {
-            SomfyMyLinkCommandShadeUp cmd = new SomfyMyLinkCommandShadeUp(targetId, config.systemId);
-            sendCommand(cmd);
-        } catch (SomfyMyLinkException e) {
-            logger.info("Error commanding shade up: {}", e.getMessage());
-            throw new SomfyMyLinkException("Error commanding shade up", e);
-        }
+        SomfyMyLinkCommandShadeUp cmd = new SomfyMyLinkCommandShadeUp(targetId, config.systemId);
+        sendCommand(cmd);
     }
 
     public void commandShadeDown(String targetId) throws SomfyMyLinkException {
@@ -278,13 +265,8 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
             throw new SomfyMyLinkException("Config not setup correctly. System Id is not set.");
         }
 
-        try {
-            SomfyMyLinkCommandShadeDown cmd = new SomfyMyLinkCommandShadeDown(targetId, config.systemId);
-            sendCommand(cmd);
-        } catch (SomfyMyLinkException e) {
-            logger.info("Error commanding shade down: {}", e.getMessage());
-            throw new SomfyMyLinkException("Error commanding shade down", e);
-        }
+        SomfyMyLinkCommandShadeDown cmd = new SomfyMyLinkCommandShadeDown(targetId, config.systemId);
+        sendCommand(cmd);
     }
 
     public void commandShadeStop(String targetId) throws SomfyMyLinkException {
@@ -293,13 +275,8 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
             throw new SomfyMyLinkException("Config not setup correctly. System Id is not set.");
         }
 
-        try {
-            SomfyMyLinkCommandShadeStop cmd = new SomfyMyLinkCommandShadeStop(targetId, config.systemId);
-            sendCommand(cmd);
-        } catch (SomfyMyLinkException e) {
-            logger.info("Error commanding shade stop: {}", e.getMessage());
-            throw new SomfyMyLinkException("Error commanding shade stop", e);
-        }
+        SomfyMyLinkCommandShadeStop cmd = new SomfyMyLinkCommandShadeStop(targetId, config.systemId);
+        sendCommand(cmd);
     }
 
     public void commandScene(Integer sceneId) throws SomfyMyLinkException {
@@ -308,13 +285,8 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
             throw new SomfyMyLinkException("Config not setup correctly. System Id is not set.");
         }
 
-        try {
-            SomfyMyLinkCommandSceneSet cmd = new SomfyMyLinkCommandSceneSet(sceneId, config.systemId);
-            sendCommand(cmd);
-        } catch (SomfyMyLinkException e) {
-            logger.info("Error commanding scene run: {}", e.getMessage());
-            throw new SomfyMyLinkException("Error commanding scene run", e);
-        }
+        SomfyMyLinkCommandSceneSet cmd = new SomfyMyLinkCommandSceneSet(sceneId, config.systemId);
+        sendCommand(cmd);
     }
 
     private CompletableFuture<@Nullable Void> sendCommand(SomfyMyLinkCommandBase command) {
@@ -322,27 +294,26 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         ExecutorService commandExecutor = this.commandExecutor;
         if (commandExecutor != null) {
             commandExecutor.execute(() -> {
+                String json = gson.toJson(command);
                 try {
                     try (Socket socket = getConnection(); OutputStream out = socket.getOutputStream()) {
-                        String json = gson.toJson(command);
                         byte[] sendBuffer = json.getBytes(StandardCharsets.US_ASCII);
                         // send the command
                         logger.debug("Sending: {}", json);
                         out.write(sendBuffer);
                         out.flush();
                         logger.debug("Sent: {}", json);
+                        // give time for mylink to process
+                        Thread.sleep(CONNECTION_DELAY);
                     }
-                    // give time for mylink to process
-                    Thread.sleep(CONNECTION_DELAY);
                 } catch (SocketTimeoutException e) {
-                    logger.warn("Timeout sending command to mylink: {} Message: {}", command, e.getMessage());
-                    future.completeExceptionally(new SomfyMyLinkException("Timeout sending command to mylink", e));
+                    logger.warn("Timeout sending command to mylink: {} Message: {}", json, e.getMessage());
                 } catch (IOException e) {
-                    logger.warn("Problem sending command to mylink: {} Message: {}", command, e.getMessage());
-                    future.completeExceptionally(new SomfyMyLinkException("Problem sending command to mylink", e));
+                    logger.warn("Problem sending command to mylink: {} Message: {}", json, e.getMessage());
                 } catch (InterruptedException e) {
-                    logger.debug("Interrupted while waiting after sending command to mylink: {} Message: {}", command,
-                            e.getMessage());
+                    logger.warn("Interrupted while waiting after sending command to mylink: {} Message: {}", json, e.getMessage());
+                } catch (Exception e) {
+                    logger.warn("Unexpected exception while sending command to mylink: {} Message: {}", json, e.getMessage());
                 }
                 future.complete(null);
             });
@@ -359,12 +330,13 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         ExecutorService commandExecutor = this.commandExecutor;
         if (commandExecutor != null) {
             commandExecutor.submit(() -> {
+                String json = gson.toJson(command);
+
                 try {
                     try (Socket socket = getConnection();
                             OutputStream out = socket.getOutputStream();
                             BufferedReader in = new BufferedReader(
                                     new InputStreamReader(socket.getInputStream(), StandardCharsets.US_ASCII))) {
-                        String json = gson.toJson(command);
                         byte[] sendBuffer = json.getBytes(StandardCharsets.US_ASCII);
 
                         // send the command
@@ -408,15 +380,19 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
 
                     future.complete(null);
                 } catch (SocketTimeoutException e) {
-                    logger.info("Timeout sending command to mylink: {} Message: {}", command, e.getMessage());
+                    logger.warn("Timeout sending command to mylink: {} Message: {}", json, e.getMessage());
                     future.completeExceptionally(new SomfyMyLinkException("Timeout sending command to mylink", e));
                 } catch (IOException e) {
-                    logger.info("Problem sending command to mylink: {} Message: {}", command, e.getMessage());
+                    logger.warn("Problem sending command to mylink: {} Message: {}", json, e.getMessage());
                     future.completeExceptionally(new SomfyMyLinkException("Problem sending command to mylink", e));
                 } catch (InterruptedException e) {
-                    logger.debug("Interrupted while waiting after sending command to mylink: {} Message: {}", command,
+                    logger.warn("Interrupted while waiting after sending command to mylink: {} Message: {}", json,
                             e.getMessage());
                     future.complete(null);
+                } catch (Exception e) {
+                    logger.warn("Unexpected exception while sending command to mylink: {} Message: {}", json,
+                            e.getMessage());
+                    future.completeExceptionally(e);
                 }
             });
         } else {
@@ -438,7 +414,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         return gson.fromJson(jsonObj, responseType);
     }
 
-    private Socket getConnection() throws IOException {
+    private Socket getConnection() throws IOException, SomfyMyLinkException {
         SomfyMyLinkConfiguration config = this.config;
 
         if (config == null) {
@@ -451,8 +427,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
             Socket socket = new Socket(myLinkAddress, MYLINK_PORT);
             socket.setSoTimeout(MYLINK_DEFAULT_TIMEOUT);
             return socket;
-        } catch (UnknownHostException e) {
-            logger.debug("Couldn't contact host {}", config.ipAddress);
+        } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             throw e;
         }

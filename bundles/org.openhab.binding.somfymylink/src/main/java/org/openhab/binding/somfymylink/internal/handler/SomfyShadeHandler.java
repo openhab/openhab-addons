@@ -96,6 +96,7 @@ public class SomfyShadeHandler extends BaseThingHandler {
                 }
             }
         } catch (SomfyMyLinkException e) {
+            logger.info("Error handling command: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
