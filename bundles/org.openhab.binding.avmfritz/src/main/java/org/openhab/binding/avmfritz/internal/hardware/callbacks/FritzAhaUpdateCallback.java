@@ -39,10 +39,7 @@ public class FritzAhaUpdateCallback extends FritzAhaReauthCallback {
 
     private final Logger logger = LoggerFactory.getLogger(FritzAhaUpdateCallback.class);
 
-    /**
-     * Handler to update
-     */
-    private AVMFritzBaseBridgeHandler handler;
+    private final AVMFritzBaseBridgeHandler handler;
 
     /**
      * Constructor
@@ -64,7 +61,7 @@ public class FritzAhaUpdateCallback extends FritzAhaReauthCallback {
                 Unmarshaller u = JAXBUtils.JAXBCONTEXT_DEVICES.createUnmarshaller();
                 DeviceListModel model = (DeviceListModel) u.unmarshal(new StringReader(response));
                 if (model != null) {
-                    handler.addDeviceList(model.getDevicelist());
+                    handler.onDeviceListAdded(model.getDevicelist());
                 } else {
                     logger.debug("no model in response");
                 }

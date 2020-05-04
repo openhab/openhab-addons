@@ -30,7 +30,7 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.openhab.binding.avmfritz.internal.config.AVMFritzConfiguration;
+import org.openhab.binding.avmfritz.internal.config.AVMFritzBoxConfiguration;
 import org.openhab.binding.avmfritz.internal.handler.AVMFritzBaseBridgeHandler;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaApplyTemplateCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaCallback;
@@ -50,39 +50,37 @@ import org.slf4j.LoggerFactory;
  */
 public class FritzAhaWebInterface {
 
+    private static final String WEBSERVICE_PATH = "login_sid.lua";
+    /**
+     * RegEx Pattern to grab the session ID from a login XML response
+     */
+    private static final Pattern SID_PATTERN = Pattern.compile("<SID>([a-fA-F0-9]*)</SID>");
+    /**
+     * RegEx Pattern to grab the challenge from a login XML response
+     */
+    private static final Pattern CHALLENGE_PATTERN = Pattern.compile("<Challenge>(\\w*)</Challenge>");
+    /**
+     * RegEx Pattern to grab the access privilege for home automation functions from a login XML response
+     */
+    private static final Pattern ACCESS_PATTERN = Pattern.compile("<Name>HomeAuto</Name>\\s*?<Access>([0-9])</Access>");
+
     private final Logger logger = LoggerFactory.getLogger(FritzAhaWebInterface.class);
     /**
      * Configuration of the bridge from {@link AVMFritzBaseBridgeHandler}
      */
-    protected AVMFritzConfiguration config;
-    /**
-     * Current session ID
-     */
-    protected String sid;
-    /**
-     * Shared instance of HTTP client for asynchronous calls
-     */
-    protected HttpClient httpClient;
+    private final AVMFritzBoxConfiguration config;
     /**
      * Bridge thing handler for updating thing status
      */
-    protected AVMFritzBaseBridgeHandler handler;
-
-    private static final String WEBSERVICE_PATH = "login_sid.lua";
-    // Uses RegEx to handle bad FRITZ!Box XML
+    private final AVMFritzBaseBridgeHandler handler;
     /**
-     * RegEx Pattern to grab the session ID from a login XML response
+     * Shared instance of HTTP client for asynchronous calls
      */
-    protected static final Pattern SID_PATTERN = Pattern.compile("<SID>([a-fA-F0-9]*)</SID>");
+    private final HttpClient httpClient;
     /**
-     * RegEx Pattern to grab the challenge from a login XML response
+     * Current session ID
      */
-    protected static final Pattern CHALLENGE_PATTERN = Pattern.compile("<Challenge>(\\w*)</Challenge>");
-    /**
-     * RegEx Pattern to grab the access privilege for home automation functions from a login XML response
-     */
-    protected static final Pattern ACCESS_PATTERN = Pattern
-            .compile("<Name>HomeAuto</Name>\\s*?<Access>([0-9])</Access>");
+    private String sid;
 
     /**
      * This method authenticates with the FRITZ!OS Web Interface and updates the session ID accordingly
@@ -163,14 +161,6 @@ public class FritzAhaWebInterface {
         return !(sid == null);
     }
 
-    public AVMFritzConfiguration getConfig() {
-        return config;
-    }
-
-    public void setConfig(AVMFritzConfiguration config) {
-        this.config = config;
-    }
-
     /**
      * Creates the proper response to a given challenge based on the password stored
      *
@@ -199,7 +189,7 @@ public class FritzAhaWebInterface {
      *
      * @param config Bridge configuration
      */
-    public FritzAhaWebInterface(AVMFritzConfiguration config, AVMFritzBaseBridgeHandler handler,
+    public FritzAhaWebInterface(AVMFritzBoxConfiguration config, AVMFritzBaseBridgeHandler handler,
             HttpClient httpClient) {
         this.config = config;
         this.handler = handler;
