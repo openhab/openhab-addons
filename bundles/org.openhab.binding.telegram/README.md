@@ -68,6 +68,11 @@ telegram.thing (no proxy):
 Thing telegram:telegramBot:Telegram_Bot [ chatIds="< ID >", botToken="< TOKEN >" ]
 ```
 
+telegram.thing (multiple chat ids and markdown format):
+
+```
+Thing telegram:telegramBot:Telegram_Bot [ chatIds="< ID1 >","< ID2 >", botToken="< TOKEN >", parseMode ="Markdown" ]
+```
 
 telegram.thing (SOCKS5 proxy server is used): 
 
