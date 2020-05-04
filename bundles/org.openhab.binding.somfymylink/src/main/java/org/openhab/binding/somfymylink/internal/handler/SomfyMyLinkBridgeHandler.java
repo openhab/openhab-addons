@@ -146,8 +146,11 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                     .getBundleContext().registerService(DiscoveryService.class, this.discovery, null);
             this.discovery.activate(null);
 
-            // kick off the bridge connection process
-            this.scheduler.execute(this::connect);
+            // start the keepalive process
+            if (heartbeat == null) {
+                logger.debug("Starting heartbeat job every {} min", HEARTBEAT_MINUTES);
+                heartbeat = this.scheduler.scheduleWithFixedDelay(this::sendHeartbeat, 0, HEARTBEAT_MINUTES, TimeUnit.MINUTES);
+            }
         }
     }
 
@@ -165,62 +168,40 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         return true;
     }
 
-    private void connect() {
-        try {
-            SomfyMyLinkConfiguration config = this.config;
-
-            // start the keepalive process
-            ensureKeepAlive();
-
-            logger.debug("Connecting to mylink at {}", config.ipAddress);
-
-            // send a ping
-            sendPing();
-
-            logger.debug("Connected to mylink at {}", config.ipAddress);
-
-            updateStatus(ThingStatus.ONLINE);
-        } catch (SomfyMyLinkException e) {
-            logger.debug("Problem connecting to mylink, bridge OFFLINE");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        }
-    }
-
-    private void ensureKeepAlive() {
-        if (heartbeat == null) {
-            logger.debug("Starting keepalive job in {} min, every {} min", HEARTBEAT_MINUTES, HEARTBEAT_MINUTES);
-            heartbeat = this.scheduler.scheduleWithFixedDelay(this::sendKeepAlive, 1, 1, TimeUnit.MINUTES);
-        }
-    }
-
-    private void disconnect() {
-        logger.debug("Disconnecting from mylink");
+    private void cancelHeartbeat() {
+        logger.debug("Stopping heartbeat");
         ScheduledFuture<?> heartbeat = this.heartbeat;
 
         if (heartbeat != null) {
-            logger.debug("Cancelling keepalive job");
+            logger.debug("Cancelling heartbeat job");
             heartbeat.cancel(true);
             this.heartbeat = null;
         } else {
-            logger.debug("Keepalive was not active");
+            logger.debug("Heartbeat was not active");
         }
     }
 
-    private void sendKeepAlive() {
+    private void sendHeartbeat() {
         try {
-            logger.debug("Keep alive triggered");
+            logger.debug("Sending heartbeat");
+            
+            SomfyMyLinkConfiguration config = this.config;
+            if (config == null) {
+                throw new SomfyMyLinkException("Config not setup correctly");
+            }
 
-            if (getThing().getStatus() != ThingStatus.ONLINE) {
-                // try connecting
-                logger.debug("Bridge offline, trying to connect");
-                connect();
-            } else {
-                // send a ping
-                sendPing();
-                logger.debug("Keep alive succeeded");
+            try {
+                SomfyMyLinkCommandShadePing command = new SomfyMyLinkCommandShadePing(config.systemId);
+                sendCommandWithResponse(command, SomfyMyLinkPingResponse.class).get();
+                updateStatus(ThingStatus.ONLINE);
+            } 
+            catch (InterruptedException e) {
+                throw new SomfyMyLinkException("Problem with heartbeat.", e);
+            } catch (ExecutionException e) {
+                throw new SomfyMyLinkException("Problem with heartbeat.", e);
             }
         } catch (SomfyMyLinkException e) {
-            logger.debug("Problem pinging mylink during keepalive");
+            logger.debug("Problem with mylink during heartbeat");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
@@ -244,24 +225,6 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         catch (Exception e) {
             logger.debug("Exception while getting shade list. Message: {}", e.getMessage());
             return EMPTY_SHADE_LIST;
-        }
-    }
-
-    public void sendPing() throws SomfyMyLinkException {
-        SomfyMyLinkConfiguration config = this.config;
-        if (config == null || StringUtils.isEmpty(config.systemId)) {
-            throw new SomfyMyLinkException("Config not setup correctly. System Id is not set.");
-        }
-
-        SomfyMyLinkCommandShadePing command = new SomfyMyLinkCommandShadePing(config.systemId);
-
-        try {
-            sendCommandWithResponse(command, SomfyMyLinkPingResponse.class).get();
-        } 
-        catch (InterruptedException e) {
-            throw new SomfyMyLinkException("Problem pinging.", e);
-        } catch (ExecutionException e) {
-            throw new SomfyMyLinkException("Problem pinging.", e);
         }
     }
 
@@ -513,7 +476,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        disconnect();
+        cancelHeartbeat();
         dispose(commandExecutor);
         ServiceRegistration<DiscoveryService> discoveryServiceRegistration = this.discoveryServiceRegistration;
         if (discoveryServiceRegistration != null) {
