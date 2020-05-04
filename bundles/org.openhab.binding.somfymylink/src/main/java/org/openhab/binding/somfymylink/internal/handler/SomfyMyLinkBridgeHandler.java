@@ -157,8 +157,8 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
             return false;
         }
 
-        if (StringUtils.isEmpty(config.ipAddress)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "mylink address not specified");
+        if (StringUtils.isEmpty(config.ipAddress) || StringUtils.isEmpty(config.systemId)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "mylink address or system id not specified");
             return false;
         }
 
@@ -168,16 +168,6 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     private void connect() {
         try {
             SomfyMyLinkConfiguration config = this.config;
-
-            if (config == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "mylink config not specified");
-                return;
-            }
-
-            if (StringUtils.isEmpty(config.ipAddress) || StringUtils.isEmpty(config.systemId)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "mylink config not specified");
-                return;
-            }
 
             // start the keepalive process
             ensureKeepAlive();
@@ -210,7 +200,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         if (heartbeat != null) {
             logger.debug("Cancelling keepalive job");
             heartbeat.cancel(true);
-            heartbeat = null;
+            this.heartbeat = null;
         } else {
             logger.debug("Keepalive was not active");
         }
@@ -375,18 +365,14 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     }
 
     private CompletableFuture<@Nullable Void> sendCommand(SomfyMyLinkCommandBase command) {
-        String json = gson.toJson(command);
-        return sendCommand(json);
-    }
-
-    private CompletableFuture<@Nullable Void> sendCommand(String command) {
         CompletableFuture<@Nullable Void> future = new CompletableFuture<>();
         ExecutorService commandExecutor = this.commandExecutor;
         if (commandExecutor != null) {
             commandExecutor.execute(() -> {
                 try {
                     try (Socket socket = getConnection(); OutputStream out = socket.getOutputStream()) {
-                        byte[] sendBuffer = command.getBytes(StandardCharsets.US_ASCII);
+                        String json = gson.toJson(command);
+                        byte[] sendBuffer = json.getBytes(StandardCharsets.US_ASCII);
                         // send the command
                         logger.debug("Sending: {}", command);
                         out.write(sendBuffer);
@@ -407,19 +393,14 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                 }
                 future.complete(null);
             });
-            return future;
         } else {
             future.complete(null);
-            return future;
         }
+
+        return future;
     }
 
-    private <T extends SomfyMyLinkResponseBase> CompletableFuture<@Nullable T> sendCommandWithResponse(SomfyMyLinkCommandBase command, Class<T> responseType) {
-        String json = gson.toJson(command);
-        return sendCommandWithResponse(json, responseType);
-    }
-
-    private <T extends SomfyMyLinkResponseBase> CompletableFuture<@Nullable T> sendCommandWithResponse(String command, Class<T> responseType)
+    private <T extends SomfyMyLinkResponseBase> CompletableFuture<@Nullable T> sendCommandWithResponse(SomfyMyLinkCommandBase command, Class<T> responseType)
             throws SomfyMyLinkException {
         CompletableFuture<@Nullable T> future = new CompletableFuture<>();
         ExecutorService commandExecutor = this.commandExecutor;
@@ -430,7 +411,8 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                             OutputStream out = socket.getOutputStream();
                             BufferedReader in = new BufferedReader(
                                     new InputStreamReader(socket.getInputStream(), StandardCharsets.US_ASCII))) {
-                        byte[] sendBuffer = command.getBytes(StandardCharsets.US_ASCII);
+                        String json = gson.toJson(command);
+                        byte[] sendBuffer = json.getBytes(StandardCharsets.US_ASCII);
 
                         // send the command
                         logger.debug("Sending: {}", command);
@@ -484,11 +466,10 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                     future.complete(null);
                 }
             });
-            return future;
         } else {
             future.complete(null);
-            return future;
         }
+        return future;
     }
 
     private <T extends SomfyMyLinkResponseBase> T parseResponse(String message, Class<T> responseType) {
@@ -504,18 +485,24 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         return gson.fromJson(jsonObj, responseType);
     }
 
-    private Socket getConnection() throws UnknownHostException, IOException {
+    private Socket getConnection() throws IOException {
         SomfyMyLinkConfiguration config = this.config;
         
         if (config == null) {
             throw new SomfyMyLinkException("Config not setup correctly");
         }
 
-        logger.debug("Getting connection to mylink on: {}  Post: {}", config.ipAddress, MYLINK_PORT);
-        String myLinkAddress = config.ipAddress;
-        Socket socket = new Socket(myLinkAddress, MYLINK_PORT);
-        socket.setSoTimeout(MYLINK_DEFAULT_TIMEOUT);
-        return socket;
+        try {
+            logger.debug("Getting connection to mylink on: {}  Post: {}", config.ipAddress, MYLINK_PORT);
+            String myLinkAddress = config.ipAddress;
+            Socket socket = new Socket(myLinkAddress, MYLINK_PORT);
+            socket.setSoTimeout(MYLINK_DEFAULT_TIMEOUT);
+            return socket;
+        } catch (UnknownHostException e) {
+            logger.debug("Couldn't contact host {}", config.ipAddress);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            throw e;
+        }
     }
 
     @Override
@@ -526,19 +513,14 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        logger.debug("Dispose called on {}", SomfyMyLinkBridgeHandler.class);
         disconnect();
-
         dispose(commandExecutor);
-
         ServiceRegistration<DiscoveryService> discoveryServiceRegistration = this.discoveryServiceRegistration;
         if (discoveryServiceRegistration != null) {
             discovery.deactivate();
             discoveryServiceRegistration.unregister();
             discoveryServiceRegistration = null;
         }
-
-        logger.debug("Dispose finishing on {}", SomfyMyLinkBridgeHandler.class);
     }
 
     private static void dispose(@Nullable ExecutorService executor) {
