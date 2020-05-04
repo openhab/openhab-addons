@@ -14,6 +14,8 @@ package org.openhab.binding.neohub.internal;
 
 import static org.openhab.binding.neohub.internal.NeoHubBindingConstants.*;
 
+import javax.measure.Unit;
+
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
@@ -56,7 +58,7 @@ public class NeoPlugHandler extends NeoBaseHandler {
     }
 
     @Override
-    protected void toOpenHabSendChannelValues(NeoHubInfoResponse.DeviceInfo deviceInfo) {
+    protected void toOpenHabSendChannelValues(NeoHubInfoResponse.DeviceInfo deviceInfo, Unit<?> temperatureUnit) {
         toOpenHabSendValueDebounced(CHAN_PLUG_AUTO_MODE, OnOffType.from(!deviceInfo.stateManual()));
 
         toOpenHabSendValueDebounced(CHAN_PLUG_OUTPUT_STATE, OnOffType.from(deviceInfo.isTimerOn()));

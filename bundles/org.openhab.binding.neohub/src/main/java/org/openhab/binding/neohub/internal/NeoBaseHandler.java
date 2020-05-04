@@ -14,7 +14,8 @@ package org.openhab.binding.neohub.internal;
 
 import static org.openhab.binding.neohub.internal.NeoHubBindingConstants.*;
 
-import org.eclipse.jdt.annotation.NonNull;
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -100,15 +101,16 @@ public class NeoBaseHandler extends BaseThingHandler {
      * this method is called back by the NeoHub handler to inform this handler about
      * polling results from the hub handler
      */
-    public void toBaseSendPollResponse(@NonNull NeoHubInfoResponse infoResponse) {
-        NeoHubInfoResponse.DeviceInfo myInfo = infoResponse.getDeviceInfo(config.deviceNameInHub);
-        if (myInfo == null) {
+    public void toBaseSendPollResponse(NeoHubInfoResponse infoResponse, Unit<?> temperatureUnit) {
+        NeoHubInfoResponse.DeviceInfo deviceInfo = infoResponse.getDeviceInfo(config.deviceNameInHub);
+
+        if (deviceInfo == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             logger.warn(MSG_FMT_DEVICE_CONFIG, getThing().getLabel());
             return;
         }
 
-        if (myInfo.isOffline()) {
+        if (deviceInfo.isOffline()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             logger.debug(MSG_FMT_DEVICE_COMM, getThing().getLabel());
             return;
@@ -118,7 +120,7 @@ public class NeoBaseHandler extends BaseThingHandler {
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
         }
 
-        toOpenHabSendChannelValues(myInfo);
+        toOpenHabSendChannelValues(deviceInfo, temperatureUnit);
     }
 
     /*
@@ -217,7 +219,7 @@ public class NeoBaseHandler extends BaseThingHandler {
      * NOTE: descendant classes MUST override this method method by which the
      * handler informs openHAB about channel state changes
      */
-    protected void toOpenHabSendChannelValues(NeoHubInfoResponse.DeviceInfo deviceInfo) {
+    protected void toOpenHabSendChannelValues(NeoHubInfoResponse.DeviceInfo deviceInfo, Unit<?> temperatureUnit) {
     }
 
     protected OnOffType invert(OnOffType value) {

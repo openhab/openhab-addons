@@ -73,6 +73,10 @@
 				<description>The Thermostat is in the Present Occupancy Mode (Off=Absent, On=Present)</description>
 			</channel>
 
+			<channel id="batteryLowAlarm" typeId="system.low-battery">
+				<label>Battery Low Alarm</label>
+				<description>ON if the device has a low battery</description>
+			</channel>
 		</channels>
 
 		<properties>
@@ -120,7 +124,79 @@
 		<config-description>
 			<parameter name="deviceNameInHub" type="text" required="true">
 				<label>Device Name</label>
-				<description>Device Name that identifies the NeoPlugt device in the NeoHub and Heatmiser App</description>
+				<description>Device Name that identifies the NeoPlug device in the NeoHub and Heatmiser App</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<thing-type id="neocontact">
+
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="neohub"/>
+		</supported-bridge-type-refs>
+
+		<label>NeoContact</label>
+		<description>Heatmiser (wireless) Window or Door Contact</description>
+
+		<channels>
+			<channel id="contactState" typeId="contactState">
+				<label>Contact State</label>
+				<description>The state of the contact (Off, On), (Read-Only)</description>
+			</channel>
+
+			<channel id="batteryLowAlarm" typeId="system.low-battery">
+				<label>Battery Low Alarm</label>
+				<description>ON if the device has a low battery</description>
+			</channel>
+		</channels>
+
+		<properties>
+			<property name="vendor">Heatmiser</property>
+			<property name="modelId">NeoContact</property>
+		</properties>
+		<representation-property>deviceNameInHub</representation-property>
+
+		<config-description>
+			<parameter name="deviceNameInHub" type="text" required="true">
+				<label>Device Name</label>
+				<description>Device Name that identifies the Contact in the NeoHub and Heatmiser App</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<thing-type id="neotemperaturesensor">
+
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="neohub"/>
+		</supported-bridge-type-refs>
+
+		<label>NeoTemperatureSensor</label>
+		<description>Heatmiser (wireless) Temperature Sensor</description>
+
+		<channels>
+			<channel id="sensorTemperature" typeId="temperature">
+				<label>Temperature</label>
+				<description>Measured temperature value (Read-Only)</description>
+			</channel>
+
+			<channel id="batteryLowAlarm" typeId="system.low-battery">
+				<label>Battery Low Alarm</label>
+				<description>ON if the device has a low battery</description>
+			</channel>
+		</channels>
+
+		<properties>
+			<property name="vendor">Heatmiser</property>
+			<property name="modelId">NeoTemperatureSensor</property>
+		</properties>
+		<representation-property>deviceNameInHub</representation-property>
+
+		<config-description>
+			<parameter name="deviceNameInHub" type="text" required="true">
+				<label>Device Name</label>
+				<description>Device Name that identifies the Temperature Sensor in the NeoHub and Heatmiser App</description>
 			</parameter>
 		</config-description>
 
@@ -139,7 +215,7 @@
 		<label>Target Temperature</label>
 		<description>Target temperature setting</description>
 		<category>temperature</category>
-		<state readOnly="false" pattern="%.1f %unit%" min="5" max="30" step="1"/>
+		<state readOnly="false" pattern="%.1f %unit%" step="1"/>
 	</channel-type>
 
 	<channel-type id="thermostatOutputState">
@@ -170,6 +246,14 @@
 		<label>Plug Output State</label>
 		<description>The state of the Plug switch, Off or On</description>
 		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="contactState">
+		<item-type>Switch</item-type>
+		<label>Contact State</label>
+		<description>The state of the contact, Off or On</description>
+		<category>window</category>
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>
