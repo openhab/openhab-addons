@@ -129,7 +129,7 @@ public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService 
 
             if (id != null) {
                 logger.info("Adding device {}", id);
-                notifyShadeDiscovery(THING_TYPE_SHADE, id, label);
+                notifyThingDiscovery(THING_TYPE_SHADE, id, label, TARGET_ID);
             }
         }
 
@@ -140,46 +140,25 @@ public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService 
             String label = "Somfy Scene " + scene.getName();
 
             logger.info("Adding device {}", id);
-            notifySceneDiscovery(THING_TYPE_SCENE, id, label);
+            notifyThingDiscovery(THING_TYPE_SCENE, id, label, SCENE_ID);
         }
     }
 
-    private void notifyShadeDiscovery(ThingTypeUID thingTypeUID, String targetId, String label) {
-        if (StringUtils.isEmpty(targetId)) {
-            logger.info("Discovered {} with no integration ID", label);
+    private void notifyThingDiscovery(ThingTypeUID thingTypeUID, String id, String label, String idType) {
+        if (StringUtils.isEmpty(id)) {
+            logger.info("Discovered {} with no ID", label);
             return;
         }
 
         ThingUID bridgeUID = this.mylinkHandler.getThing().getUID();
-        ThingUID uid = new ThingUID(thingTypeUID, bridgeUID, targetId);
+        ThingUID uid = new ThingUID(thingTypeUID, bridgeUID, id);
 
         Map<String, Object> properties = new HashMap<>();
 
-        properties.put(TARGET_ID, targetId);
+        properties.put(idType, id);
 
         DiscoveryResult result = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withLabel(label)
-                .withProperties(properties).withRepresentationProperty(TARGET_ID).build();
-
-        thingDiscovered(result);
-
-        logger.debug("Discovered {}", uid);
-    }
-
-    private void notifySceneDiscovery(ThingTypeUID thingTypeUID, String sceneId, String label) {
-        if (StringUtils.isEmpty(sceneId)) {
-            logger.info("Discovered {} with no scene ID", label);
-            return;
-        }
-
-        ThingUID bridgeUID = this.mylinkHandler.getThing().getUID();
-        ThingUID uid = new ThingUID(thingTypeUID, bridgeUID, sceneId);
-
-        Map<String, Object> properties = new HashMap<>();
-
-        properties.put(SCENE_ID, sceneId);
-
-        DiscoveryResult result = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withLabel(label)
-                .withProperties(properties).withRepresentationProperty(SCENE_ID).build();
+                .withProperties(properties).withRepresentationProperty(idType).build();
 
         thingDiscovered(result);
 
