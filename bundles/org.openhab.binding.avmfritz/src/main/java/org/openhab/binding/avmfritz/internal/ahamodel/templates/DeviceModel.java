@@ -12,16 +12,17 @@
  */
 package org.openhab.binding.avmfritz.internal.ahamodel.templates;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
-
-import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * See {@link DeviceListModel}.
  *
  * @author Christoph Weitkamp - Initial contribution
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "device")
 public class DeviceModel {
 
@@ -34,6 +35,6 @@ public class DeviceModel {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("identifier", getIdentifier()).toString();
+        return new StringBuilder().append("[identifier=").append(identifier).append("]").toString();
     }
 }

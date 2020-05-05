@@ -12,20 +12,21 @@
  */
 package org.openhab.binding.avmfritz.internal.ahamodel.templates;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * See {@ TemplateModel}.
  *
  * @author Christoph Weitkamp - Initial contribution
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "applymask")
 public class ApplyMaskListModel {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).toString();
+        return new StringBuilder().append("[]").toString();
     }
 }
