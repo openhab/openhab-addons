@@ -10,31 +10,23 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.avmfritz.internal.ahamodel.templates;
+package org.openhab.binding.avmfritz.internal.dto.templates;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * See {@link DeviceListModel}.
+ * See {@ TemplateModel}.
  *
  * @author Christoph Weitkamp - Initial contribution
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "device")
-public class DeviceModel {
-
-    @XmlAttribute(name = "identifier")
-    private String identifier;
-
-    public String getIdentifier() {
-        return identifier != null ? identifier.replace(" ", "") : null;
-    }
+@XmlRootElement(name = "applymask")
+public class ApplyMaskListModel {
 
     @Override
     public String toString() {
-        return new StringBuilder().append("[identifier=").append(identifier).append("]").toString();
+        return new StringBuilder().append("[]").toString();
     }
 }

@@ -14,7 +14,7 @@ package org.openhab.binding.avmfritz.internal.hardware;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.avmfritz.internal.ahamodel.AVMFritzBaseModel;
+import org.openhab.binding.avmfritz.internal.dto.AVMFritzBaseModel;
 
 /**
  * The {@link FritzAhaStatusListener} is notified when a new device has been added, removed or its status has changed.

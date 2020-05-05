@@ -10,7 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.avmfritz.internal.ahamodel;
+package org.openhab.binding.avmfritz.internal.dto;
+
+import java.math.BigDecimal;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -23,22 +25,24 @@ import javax.xml.bind.annotation.XmlType;
  * @author Christoph Weitkamp - Initial contribution
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder = { "lastpressedtimestamp" })
-@XmlRootElement(name = "button")
-public class ButtonModel {
+@XmlType(propOrder = { "state" })
+@XmlRootElement(name = "alert")
+public class AlertModel {
+    public static final BigDecimal ON = BigDecimal.ONE;
+    public static final BigDecimal OFF = BigDecimal.ZERO;
 
-    private int lastpressedtimestamp;
+    private BigDecimal state;
 
-    public int getLastpressedtimestamp() {
-        return lastpressedtimestamp;
+    public BigDecimal getState() {
+        return state;
     }
 
-    public void setLastpressedtimestamp(int lastpressedtimestamp) {
-        this.lastpressedtimestamp = lastpressedtimestamp;
+    public void setState(BigDecimal state) {
+        this.state = state;
     }
 
     @Override
     public String toString() {
-        return new StringBuilder().append("[lastpressedtimestamp=").append(lastpressedtimestamp).append("]").toString();
+        return new StringBuilder().append("[state=").append(state).append("]").toString();
     }
 }

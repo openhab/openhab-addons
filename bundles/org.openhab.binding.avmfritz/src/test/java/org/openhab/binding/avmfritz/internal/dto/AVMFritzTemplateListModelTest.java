@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.avmfritz.internal.ahamodel;
+package org.openhab.binding.avmfritz.internal.dto;
 
 import static org.junit.Assert.*;
 
@@ -22,8 +22,8 @@ import javax.xml.bind.Unmarshaller;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openhab.binding.avmfritz.internal.ahamodel.templates.TemplateListModel;
-import org.openhab.binding.avmfritz.internal.ahamodel.templates.TemplateModel;
+import org.openhab.binding.avmfritz.internal.dto.templates.TemplateListModel;
+import org.openhab.binding.avmfritz.internal.dto.templates.TemplateModel;
 import org.openhab.binding.avmfritz.internal.util.JAXBUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

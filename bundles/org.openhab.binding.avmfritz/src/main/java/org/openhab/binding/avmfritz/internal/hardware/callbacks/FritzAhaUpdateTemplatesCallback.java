@@ -19,7 +19,7 @@ import java.io.StringReader;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import org.openhab.binding.avmfritz.internal.ahamodel.templates.TemplateListModel;
+import org.openhab.binding.avmfritz.internal.dto.templates.TemplateListModel;
 import org.openhab.binding.avmfritz.internal.handler.AVMFritzBaseBridgeHandler;
 import org.openhab.binding.avmfritz.internal.hardware.FritzAhaWebInterface;
 import org.openhab.binding.avmfritz.internal.util.JAXBUtils;
