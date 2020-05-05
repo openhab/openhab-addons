@@ -116,9 +116,8 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
     public String[] getVehiclesRelationsURL() {
         if (customerAccount != null) {
             return customerAccount.accountVehicleRelationsURL;
-        } else {
-            return new String[0];
         }
+        return new String[0];
     }
 
     public <T extends VocAnswer> T getURL(Class<T> objectClass, String vin) throws IOException, JsonSyntaxException {
@@ -147,7 +146,7 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
             switch (postResponse.status) {
                 case SUCCESSFULL:
                 case FAILED:
-                    logger.debug("Action status : {} for vehicle : {}.", postResponse.status.toString(),
+                    logger.info("Action status : {} for vehicle : {}.", postResponse.status.toString(),
                             postResponse.vehicleId);
                     getThing().getThings().stream().filter(VehicleHandler.class::isInstance)
                             .map(VehicleHandler.class::cast)
