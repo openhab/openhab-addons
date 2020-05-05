@@ -15,8 +15,8 @@ package org.openhab.binding.energenie.internal.handler;
 import static org.openhab.binding.energenie.internal.EnergenieBindingConstants.*;
 
 import java.io.Closeable;
+import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -60,9 +60,9 @@ class EnergenieSocket {
     public synchronized byte[] sendCommand(final byte[] ctrl) throws IOException {
         try (final TaskSocket taskSocket = authorize()) {
             final OutputStream output = taskSocket.socket.getOutputStream();
-            final InputStream input = taskSocket.socket.getInputStream();
+            final DataInputStream input = new DataInputStream(taskSocket.socket.getInputStream());
 
-            if (output == null || input == null) {
+            if (output == null) {
                 throw new IOException("No connection");
             } else {
                 if (logger.isTraceEnabled()) {
@@ -85,15 +85,14 @@ class EnergenieSocket {
     private TaskSocket authorize() throws IOException {
         final TaskSocket taskSocket = new TaskSocket();
         final OutputStream output = taskSocket.socket.getOutputStream();
-        final InputStream input = taskSocket.socket.getInputStream();
-
-        if (output == null || input == null) {
+        final DataInputStream input = new DataInputStream(taskSocket.socket.getInputStream());
+        if (output == null) {
             throw new IOException("No connection");
         }
         output.write(MESSAGE);
         output.flush();
         logger.trace("Start Condition '{}' send to EG", MESSAGE);
-        input.read(taskSocket.task);
+        input.readFully(taskSocket.task);
 
         if (logger.isTraceEnabled()) {
             logger.trace("EG responded with task (int) '{}' (hex) '{}'", taskSocket.task,
@@ -108,8 +107,8 @@ class EnergenieSocket {
         return taskSocket;
     }
 
-    private void readStatus(final InputStream input, final TaskSocket taskSocket) throws IOException {
-        input.read(taskSocket.statcryp);
+    private void readStatus(final DataInputStream input, final TaskSocket taskSocket) throws IOException {
+        input.readFully(taskSocket.statcryp);
         if (logger.isTraceEnabled()) {
             logger.trace("EG responded with statcryp (int) '{}' (hex) '{}'", taskSocket.statcryp,
                     HexUtils.bytesToHex(taskSocket.statcryp));
