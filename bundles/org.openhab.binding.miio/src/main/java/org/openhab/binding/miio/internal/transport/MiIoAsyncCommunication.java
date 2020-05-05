@@ -147,11 +147,8 @@ public class MiIoAsyncCommunication {
                     fullCommand.toString());
             concurrentLinkedQueue.add(sendCmd);
             if (logger.isDebugEnabled()) {
-                String tokenText = Utils.getHex(token); // Obfuscate part of the token to allow sharing of the logfiles
-                tokenText = ((tokenText.length() < 8) ? tokenText : tokenText.substring(0, 8))
-                        .concat((tokenText.length() > 24) ? tokenText.substring(8, 24).replaceAll(".", "X")
-                                : tokenText.substring(8).replaceAll(".", "X"))
-                        .concat(tokenText.substring(24));
+                // Obfuscate part of the token to allow sharing of the logfiles
+                String tokenText = Utils.obfuscateToken(Utils.getHex(token));
                 logger.debug("Command added to Queue {} -> {} (Device: {} token: {} Queue: {})", fullCommand.toString(),
                         ip, Utils.getHex(deviceId), tokenText, concurrentLinkedQueue.size());
             }
