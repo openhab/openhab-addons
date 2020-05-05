@@ -352,25 +352,16 @@ public class VehicleHandler extends BaseThingHandler {
         if (groupId != null) {
             switch (groupId) {
                 case GROUP_DOORS:
-                    if (status.getDoors().isPresent()) {
-                        return getDoorsValue(channelId, status.getDoors().get());
-                    }
-                    break;
+                    return status.getDoors().map(doors -> getDoorsValue(channelId, doors)).orElse(UnDefType.NULL);
                 case GROUP_WINDOWS:
-                    if (status.getWindows().isPresent()) {
-                        return getWindowsValue(channelId, status.getWindows().get());
-                    }
-                    break;
+                    return status.getWindows().map(windows -> getWindowsValue(channelId, windows))
+                            .orElse(UnDefType.NULL);
                 case GROUP_TYRES:
-                    if (status.getTyrePressure().isPresent()) {
-                        return getTyresValue(channelId, status.getTyrePressure().get());
-                    }
-                    break;
+                    return status.getTyrePressure().map(tyres -> getTyresValue(channelId, tyres))
+                            .orElse(UnDefType.NULL);
                 case GROUP_BATTERY:
-                    if (status.getHvBattery().isPresent()) {
-                        return getBatteryValue(channelId, status.getHvBattery().get());
-                    }
-                    break;
+                    return status.getHvBattery().map(batteries -> getBatteryValue(channelId, batteries))
+                            .orElse(UnDefType.NULL);
             }
         }
         switch (channelId) {
@@ -409,15 +400,9 @@ public class VehicleHandler extends BaseThingHandler {
             case LOCATION_TIMESTAMP:
                 return position.getTimestamp();
             case CAR_LOCKED:
-                if (status.getCarLocked().isPresent()) {
-                    return status.getCarLocked().get();
-                }
-                break;
+                return status.getCarLocked().map(State.class::cast).orElse(UnDefType.UNDEF);
             case ENGINE_RUNNING:
-                if (status.getEngineRunning().isPresent()) {
-                    return status.getEngineRunning().get();
-                }
-                break;
+                return status.getEngineRunning().map(State.class::cast).orElse(UnDefType.UNDEF);
             case BRAKE_FLUID_LEVEL:
                 return new StringType(status.brakeFluid);
             case WASHER_FLUID_LEVEL:
@@ -432,10 +417,7 @@ public class VehicleHandler extends BaseThingHandler {
                 return status.distanceToEmpty < 100 ? OnOffType.ON : OnOffType.OFF;
             case REMOTE_HEATER:
             case PRECLIMATIZATION:
-                if (status.getHeater().isPresent()) {
-                    return getHeaterValue(channelId, status.getHeater().get());
-                }
-                break;
+                return status.getHeater().map(heater -> getHeaterValue(channelId, heater)).orElse(UnDefType.NULL);
         }
         return UnDefType.NULL;
     }

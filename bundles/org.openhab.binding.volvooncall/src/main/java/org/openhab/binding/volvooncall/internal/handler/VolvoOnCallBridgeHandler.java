@@ -73,6 +73,7 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
         httpHeader.put("x-originator-type", "App");
         httpHeader.put("x-os-type", "Android");
         httpHeader.put("x-os-version", "22");
+        httpHeader.put("Accept", "*/*");
 
         gson = new GsonBuilder()
                 .registerTypeAdapter(ZonedDateTime.class,
