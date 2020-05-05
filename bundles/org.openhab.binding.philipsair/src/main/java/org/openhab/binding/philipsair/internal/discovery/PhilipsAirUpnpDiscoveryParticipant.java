@@ -103,12 +103,13 @@ public class PhilipsAirUpnpDiscoveryParticipant implements UpnpDiscoveryParticip
     @Override
     public @Nullable ThingUID getThingUID(RemoteDevice device) {
         DeviceDetails details = device.getDetails();
-        ModelDetails modelDetails = null;
-        String modelName = null;
+        ModelDetails modelDetails = details != null ? details.getModelDetails() : null;
+        String modelName = modelDetails != null ? modelDetails.getModelName().toLowerCase() : null;
 
-        if (details == null || (modelDetails = details.getModelDetails()) == null
+        if (details == null || modelDetails == null
                 || !PhilipsAirBindingConstants.DISCOVERY_UPNP_MODEL
-                        .equalsIgnoreCase(modelName = modelDetails.getModelName().toLowerCase())) {
+                        .equalsIgnoreCase(modelName)) {
+
             logger.trace("Device not recognized {}", device.toString());
             return null;
         }

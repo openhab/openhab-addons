@@ -199,8 +199,7 @@ public class PhilipsAirAPIConnection {
         }
     }
 
-    public String exchangeKeys() throws GeneralSecurityException, InterruptedException, TimeoutException,
-            ExecutionException, InvalidAlgorithmParameterException {
+    public String exchangeKeys() throws PhilipsAirAPIException, InterruptedException {
         if (this.cipher == null) {
             return null;
         }

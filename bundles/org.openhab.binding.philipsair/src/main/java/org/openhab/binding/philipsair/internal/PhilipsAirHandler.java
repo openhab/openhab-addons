@@ -86,11 +86,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
             updateData(connection);
         } else {
             logger.info("Sending {} as {}", channelUID.getId(), command.toString());
-            String field = channelUID.getId();
-            if (field.contains("#")) {
-                field = field.split("#")[1];
-            }
-            currentData = sendCommand(field, command);
+            currentData = sendCommand(channelUID.getIdWithoutGroup(), command);
             updateChannels();
         }
     }
@@ -99,7 +95,8 @@ public class PhilipsAirHandler extends BaseThingHandler {
         Object value = null;
         if (command instanceof OnOffType) {
             if (parameter.equals(CHILD_LOCK)) {
-                value = ((OnOffType) command) == OnOffType.ON ? true : false;
+                value = command == OnOffType.ON;
+
             } else {
                 value = ((OnOffType) command) == OnOffType.ON ? "1" : "0";
             }
@@ -238,7 +235,8 @@ public class PhilipsAirHandler extends BaseThingHandler {
                 return;
             }
 
-            State state = org.eclipse.smarthome.core.types.UnDefType.NULL;
+            State state = UnDefType.NULL;
+
             if (value instanceof OnOffType) {
                 state = (OnOffType) value;
             } else if (value instanceof QuantityType<?>) {
@@ -261,14 +259,10 @@ public class PhilipsAirHandler extends BaseThingHandler {
         super.updateState(channelUID, state);
     }
 
-    public @Nullable Object getValue(String channelId, @Nullable PhilipsAirPurifierData data,
+    public @Nullable Object getValue(ChannelUID channelUID, @Nullable PhilipsAirPurifierData data,
             @Nullable PhilipsAirPurifierDevice deviceInfo, @Nullable PhilipsAirPurifierFilters filters)
             throws Exception {
-        String[] fields = StringUtils.split(channelId, ":");
-        String field = fields[fields.length - 1];
-        if (field.contains("#")) {
-            field = field.split("#")[1];
-        }
+        String field = channelUID.getIdWithoutGroup();
 
         if (data != null) {
             switch (field) {
@@ -315,7 +309,8 @@ public class PhilipsAirHandler extends BaseThingHandler {
             if (deviceInfo != null) {
                 switch (field) {
                     case SOFTWARE_VERSION:
-                        deviceInfo.getSoftwareVersion();
+                        return deviceInfo.getSoftwareVersion();
+
                 }
             }
 
