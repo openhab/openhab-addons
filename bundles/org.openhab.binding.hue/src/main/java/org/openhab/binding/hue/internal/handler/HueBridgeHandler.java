@@ -427,13 +427,17 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     @Override
     public void updateGroupState(FullGroup group, StateUpdate stateUpdate, long fadeTime) {
         if (hueBridge != null) {
+            setGroupPollBypass(group, BYPASS_MIN_DURATION_BEFORE_CMD);
             hueBridge.setGroupState(group, stateUpdate).thenAccept(result -> {
                 try {
                     hueBridge.handleErrors(result);
+                    setGroupPollBypass(group, fadeTime);
                 } catch (Exception e) {
+                    unsetGroupPollBypass(group);
                     handleStateUpdateException(group, stateUpdate, e);
                 }
             }).exceptionally(e -> {
+                unsetGroupPollBypass(group);
                 handleStateUpdateException(group, stateUpdate, e);
                 return null;
             });
