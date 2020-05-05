@@ -22,15 +22,9 @@ import java.util.Optional;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Before;
 import org.junit.Test;
-import org.openhab.binding.avmfritz.internal.dto.AVMFritzBaseModel;
-import org.openhab.binding.avmfritz.internal.dto.DeviceListModel;
-import org.openhab.binding.avmfritz.internal.dto.DeviceModel;
-import org.openhab.binding.avmfritz.internal.dto.GroupModel;
-import org.openhab.binding.avmfritz.internal.dto.HeatingModel;
-import org.openhab.binding.avmfritz.internal.dto.PowerMeterModel;
-import org.openhab.binding.avmfritz.internal.dto.SwitchModel;
 import org.openhab.binding.avmfritz.internal.util.JAXBUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,11 +34,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author Christoph Weitkamp - Initial contribution
  */
+@NonNullByDefault
 public class AVMFritzDeviceListModelTest {
 
     private final Logger logger = LoggerFactory.getLogger(AVMFritzDeviceListModelTest.class);
 
-    private DeviceListModel devices;
+    private @NonNullByDefault({}) DeviceListModel devices;
 
     @Before
     public void setUp() {

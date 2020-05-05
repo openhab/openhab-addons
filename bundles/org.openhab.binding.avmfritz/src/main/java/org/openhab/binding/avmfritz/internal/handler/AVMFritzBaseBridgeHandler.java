@@ -120,14 +120,16 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         AVMFritzBoxConfiguration config = getConfigAs(AVMFritzBoxConfiguration.class);
 
-        this.refreshInterval = config.getPollingInterval();
+        this.refreshInterval = config.pollingInterval;
         this.connection = new FritzAhaWebInterface(config, this, httpClient);
-        if (config.getPassword() != null) {
+        String localPassword = config.password;
+        if (localPassword == null || localPassword.trim().isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No password set");
+        } else {
             stopPolling();
             startPolling();
+
             updateStatus(ThingStatus.UNKNOWN);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No password set");
         }
     }
 

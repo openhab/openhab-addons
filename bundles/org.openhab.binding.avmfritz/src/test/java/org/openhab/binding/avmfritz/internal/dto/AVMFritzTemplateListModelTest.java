@@ -20,6 +20,7 @@ import java.util.Optional;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Before;
 import org.junit.Test;
 import org.openhab.binding.avmfritz.internal.dto.templates.TemplateListModel;
@@ -33,11 +34,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author Christoph Weitkamp - Initial contribution
  */
+@NonNullByDefault
 public class AVMFritzTemplateListModelTest {
 
     private final Logger logger = LoggerFactory.getLogger(AVMFritzTemplateListModelTest.class);
 
-    private TemplateListModel templates;
+    private @NonNullByDefault({}) TemplateListModel templates;
 
     @Before
     public void setUp() {

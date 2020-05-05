@@ -16,14 +16,15 @@ import static org.junit.Assert.assertEquals;
 
 import java.math.BigDecimal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
-import org.openhab.binding.avmfritz.internal.dto.HeatingModel;
 
 /**
  * Tests for {@link HeatingModel} methods.
  *
  * @author Christoph Weitkamp - Initial contribution
  */
+@NonNullByDefault
 public class HeatingModelTest {
 
     private static final BigDecimal BIGDECIMAL_FOURTEEN = new BigDecimal("14.0");
