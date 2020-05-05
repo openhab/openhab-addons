@@ -18,6 +18,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.Reader;
+import java.io.Writer;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
@@ -205,6 +209,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         try {
             SomfyMyLinkShadesResponse response = sendCommandWithResponse(command, SomfyMyLinkShadesResponse.class)
                     .get();
+
             if (response != null) {
                 return response.getResult();
             } else {
@@ -295,13 +300,12 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
             commandExecutor.execute(() -> {
                 String json = gson.toJson(command);
                 try {
-                    try (Socket socket = getConnection(); OutputStream out = socket.getOutputStream()) {
-                        byte[] sendBuffer = json.getBytes(StandardCharsets.US_ASCII);
-                        // send the command
+                    try (Socket socket = getConnection(); Writer out = new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.US_ASCII)) {
                         logger.debug("Sending: {}", json);
-                        out.write(sendBuffer);
+                        out.write(json);
                         out.flush();
                         logger.debug("Sent: {}", json);
+
                         // give time for mylink to process
                         Thread.sleep(CONNECTION_DELAY);
                     }
@@ -310,9 +314,11 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                 } catch (IOException e) {
                     logger.warn("Problem sending command to mylink: {} Message: {}", json, e.getMessage());
                 } catch (InterruptedException e) {
-                    logger.warn("Interrupted while waiting after sending command to mylink: {} Message: {}", json, e.getMessage());
+                    logger.warn("Interrupted while waiting after sending command to mylink: {} Message: {}", json,
+                            e.getMessage());
                 } catch (Exception e) {
-                    logger.warn("Unexpected exception while sending command to mylink: {} Message: {}", json, e.getMessage());
+                    logger.warn("Unexpected exception while sending command to mylink: {} Message: {}", json,
+                            e.getMessage());
                 }
                 future.complete(null);
             });
@@ -332,52 +338,27 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                 String json = gson.toJson(command);
 
                 try {
-                    try (Socket socket = getConnection();
-                            OutputStream out = socket.getOutputStream();
-                            BufferedReader in = new BufferedReader(
-                                    new InputStreamReader(socket.getInputStream(), StandardCharsets.US_ASCII))) {
-                        byte[] sendBuffer = json.getBytes(StandardCharsets.US_ASCII);
+                    try (Socket socket = getConnection(); 
+                            Writer out = new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.US_ASCII);
+                            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.US_ASCII))) {
 
                         // send the command
                         logger.debug("Sending: {}", json);
-                        out.write(sendBuffer);
+                        out.write(json);
                         out.flush();
 
-                        // now read the reply
-                        long startTime = System.currentTimeMillis();
-                        long elapsedTime = 0L;
-                        char[] readBuff = new char[1024];
-                        int readCount;
-                        StringBuilder message = new StringBuilder();
-
-                        // while we are getting data ...
-                        while (((readCount = in.read(readBuff)) != -1)) {
-                            message.append(new String(readBuff, 0, readCount));
-
-                            // try and parse the message
-                            try {
-                                T response = parseResponse(message.toString(), responseType);
-                                logger.debug("Got full message: {}", message);
-                                future.complete(response);
-                                return;
-                            } catch (SomfyMyLinkException e) {
-                                // trouble parsing the message, probably incomplete
-                                // if its been over 1 min waiting for a correct and full response then abort
-                                elapsedTime = (new Date()).getTime() - startTime;
-                                if (elapsedTime >= 60000) {
-                                    future.completeExceptionally(
-                                            new SomfyMyLinkException("Timeout waiting for reply from mylink"));
-                                    return;
-                                }
-                                Thread.sleep(250); // pause for 250ms
-                            }
+                        // read the response
+                        try {
+                            T response = parseResponse(in, responseType);
+                            future.complete(response);
+                            Thread.sleep(CONNECTION_DELAY);
+                            return;
+                        } catch (SomfyMyLinkException e) {
+                            future.completeExceptionally(
+                                    new SomfyMyLinkException("Timeout waiting for reply from mylink"));
+                            return;
                         }
                     }
-
-                    // only if we didn't already get a response give time for mylink to process
-                    Thread.sleep(CONNECTION_DELAY);
-
-                    future.complete(null);
                 } catch (SocketTimeoutException e) {
                     logger.warn("Timeout sending command to mylink: {} Message: {}", json, e.getMessage());
                     future.completeExceptionally(new SomfyMyLinkException("Timeout sending command to mylink", e));
@@ -400,9 +381,11 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         return future;
     }
 
-    private <T extends SomfyMyLinkResponseBase> T parseResponse(String message, Class<T> responseType) {
+    private <T extends SomfyMyLinkResponseBase> T parseResponse(Reader reader, Class<T> responseType) {
         JsonParser parser = new JsonParser();
-        JsonObject jsonObj = parser.parse(message).getAsJsonObject();
+        JsonObject jsonObj = parser.parse(gson.newJsonReader(reader)).getAsJsonObject();
+
+        logger.debug("Got full message: {}", jsonObj.toString());
 
         if (jsonObj != null && jsonObj.has("error")) {
             SomfyMyLinkErrorResponse errorResponse = gson.fromJson(jsonObj, SomfyMyLinkErrorResponse.class);
