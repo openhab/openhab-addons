@@ -23,11 +23,13 @@ As a minimum, the IP address is needed:
 
 ## Channels
 
-| channel  | type   | description                                            |
-|----------|--------|--------------------------------------------------------|
-| distance | Number:Length | Distance reading from the OpenGarage controller (default in cm)       |
-| status   | Switch | Door status OFF = Closed, ON = Open                    |
-| vehicle  | String | Report vehicle presence from the OpenGarage controller |
+| channel              | type          | description                                            |
+|----------------------|---------------|--------------------------------------------------------|
+| distance             | Number:Length | Distance reading from the OpenGarage controller (default in cm)       |
+| status-switch        | Switch        | Door status (OFF = Closed, ON = Open)                  |
+| status-contact       | Contact       | Door status (Open or Closed)                           |
+| status-rollershutter | Rollershutter | Door status (DOWN = Closed, UP = Open)                 |
+| vehicle              | String        | Report vehicle presence from the OpenGarage controller |
 
 ## Full Example
 
@@ -41,6 +43,8 @@ opengarage.items:
 
 ```
 Switch OpenGarage_Status { channel="opengarage:opengarage:OpenGarage:status" }
+Contact OpenGarage_Status_Contact { channel="opengarage:opengarage:OpenGarage:status-contact" }
+Rollershutter OpenGarage_Status_Rollershutter { channel="opengarage:opengarage:OpenGarage:status-rollershutter" }
 Number:Length OpenGarage_Distance { channel="opengarage:opengarage:OpenGarage:setpoint" }
 String OpenGarage_Vehicle { channel="opengarage:opengarage:OpenGarage:vehicle" }
 ```
@@ -48,9 +52,11 @@ String OpenGarage_Vehicle { channel="opengarage:opengarage:OpenGarage:vehicle" }
 opengarage.sitemap:
 
 ```
-Switch item=OpenGarage_Status icon="garagedoorclosed" mappings=[ON=Open]  visibility=[OpenGarage_Status == CLOSED]
-Switch item=OpenGarage_Status icon="garagedooropen"   mappings=[OFF=Close] visibility=[OpenGarage_Status == OPEN]
+Switch item=OpenGarage_Status icon="garagedoorclosed" mappings=[ON=Open]  visibility=[OpenGarage_Status == OFF]
+Switch item=OpenGarage_Status icon="garagedooropen"   mappings=[OFF=Close] visibility=[OpenGarage_Status == ON]
 Switch item=OpenGarage_Status icon="garage" 
+Contact item=OpenGarage_Status_Contact icon="garage" 
+Rollershutter item=OpenGarage_Status_Rollershutter icon="garage" 
 Text item=OpenGarage_Distance label="OG distance"
 Text item=OpenGarage_Vehicle label="Vehicle Presence"
 ```

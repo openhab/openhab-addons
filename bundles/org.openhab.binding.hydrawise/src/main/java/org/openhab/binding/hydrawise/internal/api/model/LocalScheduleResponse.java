@@ -29,5 +29,4 @@ public class LocalScheduleResponse extends Response {
     public String name;
 
     public Integer time;
-
 }

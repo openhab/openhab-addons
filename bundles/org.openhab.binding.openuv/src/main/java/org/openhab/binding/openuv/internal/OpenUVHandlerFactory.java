@@ -75,5 +75,4 @@ public class OpenUVHandlerFactory extends BaseThingHandlerFactory {
         bridgeHandler.getDiscoveryServiceRegs().put(bridgeHandler.getThing().getUID(),
                 bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
-
 }

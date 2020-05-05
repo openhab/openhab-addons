@@ -39,7 +39,7 @@ public class RdsBindingConstants {
 
     public static final ThingTypeUID THING_TYPE_RDS = new ThingTypeUID(BINDING_ID, DEVICE_ID_STAT);
 
-// ==========================  URLs and HTTP stuff =========================
+    // ========================== URLs and HTTP stuff =========================
 
     private static final String API = "https://api.climatixic.com/";
 
@@ -178,10 +178,8 @@ public class RdsBindingConstants {
     protected static final String STATE_NEITHER = "Neither";
     protected static final String STATE_OFF = "Off";
 
-    public static final ChannelMap[] CHAN_MAP = { 
-            new ChannelMap(CHA_ROOM_TEMP, HIE_ROOM_TEMP),
-            new ChannelMap(CHA_ROOM_HUMIDITY, HIE_ROOM_HUMIDITY), 
-            new ChannelMap(CHA_OUTSIDE_TEMP, HIE_OUTSIDE_TEMP),
+    public static final ChannelMap[] CHAN_MAP = { new ChannelMap(CHA_ROOM_TEMP, HIE_ROOM_TEMP),
+            new ChannelMap(CHA_ROOM_HUMIDITY, HIE_ROOM_HUMIDITY), new ChannelMap(CHA_OUTSIDE_TEMP, HIE_OUTSIDE_TEMP),
             new ChannelMap(CHA_TARGET_TEMP, HIE_TARGET_TEMP),
             new ChannelMap(CHA_ROOM_AIR_QUALITY, HIE_ROOM_AIR_QUALITY),
             new ChannelMap(CHA_ENERGY_SAVINGS_LEVEL, HIE_ENERGY_SAVINGS_LEVEL),
@@ -217,7 +215,6 @@ public class RdsBindingConstants {
      * private static final String HIE_COMFORT_BUTTON = "CmfBtn";
      * 
      */
-
 }
 
 /**

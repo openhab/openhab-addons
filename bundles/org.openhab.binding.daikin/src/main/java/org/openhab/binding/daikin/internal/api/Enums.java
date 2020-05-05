@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.daikin.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +23,7 @@ import org.slf4j.LoggerFactory;
  * @author Tim Waterhouse <tim@timwaterhouse.com> - Initial contribution
  *
  */
+@NonNullByDefault
 public class Enums {
     public enum Mode {
         UNKNOWN(-1),
@@ -119,10 +122,10 @@ public class Enums {
     }
 
     public enum HomekitMode {
-        AUTO            ("auto"),
-        COOL            ("cool"),
-        HEAT            ("heat"),
-        OFF             ("off");
+        AUTO("auto"),
+        COOL("cool"),
+        HEAT("heat"),
+        OFF("off");
 
         private static final Logger LOGGER = LoggerFactory.getLogger(HomekitMode.class);
         private final String value;
@@ -135,5 +138,4 @@ public class Enums {
             return value;
         }
     }
-
 }

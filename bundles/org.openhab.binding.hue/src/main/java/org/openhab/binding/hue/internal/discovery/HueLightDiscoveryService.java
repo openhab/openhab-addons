@@ -32,20 +32,23 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.openhab.binding.hue.internal.FullGroup;
 import org.openhab.binding.hue.internal.FullHueObject;
 import org.openhab.binding.hue.internal.FullLight;
 import org.openhab.binding.hue.internal.FullSensor;
 import org.openhab.binding.hue.internal.HueBridge;
+import org.openhab.binding.hue.internal.handler.GroupStatusListener;
 import org.openhab.binding.hue.internal.handler.HueBridgeHandler;
+import org.openhab.binding.hue.internal.handler.HueGroupHandler;
 import org.openhab.binding.hue.internal.handler.HueLightHandler;
 import org.openhab.binding.hue.internal.handler.LightStatusListener;
 import org.openhab.binding.hue.internal.handler.SensorStatusListener;
+import org.openhab.binding.hue.internal.handler.sensors.ClipHandler;
 import org.openhab.binding.hue.internal.handler.sensors.DimmerSwitchHandler;
 import org.openhab.binding.hue.internal.handler.sensors.LightLevelHandler;
 import org.openhab.binding.hue.internal.handler.sensors.PresenceHandler;
 import org.openhab.binding.hue.internal.handler.sensors.TapSwitchHandler;
 import org.openhab.binding.hue.internal.handler.sensors.TemperatureHandler;
-import org.openhab.binding.hue.internal.handler.sensors.ClipHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,15 +64,16 @@ import org.slf4j.LoggerFactory;
  * @author Samuel Leisering - Added support for sensor API
  * @author Christoph Weitkamp - Added support for sensor API
  * @author Meng Yiqi - Added support for CLIP sensor
+ * @author Laurent Garnier - Added support for groups
  */
 @NonNullByDefault
 public class HueLightDiscoveryService extends AbstractDiscoveryService
-        implements LightStatusListener, SensorStatusListener {
+        implements LightStatusListener, SensorStatusListener, GroupStatusListener {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.unmodifiableSet(Stream
             .of(HueLightHandler.SUPPORTED_THING_TYPES.stream(), DimmerSwitchHandler.SUPPORTED_THING_TYPES.stream(),
                     TapSwitchHandler.SUPPORTED_THING_TYPES.stream(), PresenceHandler.SUPPORTED_THING_TYPES.stream(),
                     TemperatureHandler.SUPPORTED_THING_TYPES.stream(), LightLevelHandler.SUPPORTED_THING_TYPES.stream(),
-                    ClipHandler.SUPPORTED_THING_TYPES.stream())
+                    ClipHandler.SUPPORTED_THING_TYPES.stream(), HueGroupHandler.SUPPORTED_THING_TYPES.stream())
             .flatMap(i -> i).collect(Collectors.toSet()));
 
     private final Logger logger = LoggerFactory.getLogger(HueLightDiscoveryService.class);
@@ -105,6 +109,7 @@ public class HueLightDiscoveryService extends AbstractDiscoveryService
     public void activate() {
         hueBridgeHandler.registerLightStatusListener(this);
         hueBridgeHandler.registerSensorStatusListener(this);
+        hueBridgeHandler.registerGroupStatusListener(this);
     }
 
     @Override
@@ -112,7 +117,7 @@ public class HueLightDiscoveryService extends AbstractDiscoveryService
         removeOlderResults(new Date().getTime(), hueBridgeHandler.getThing().getUID());
         hueBridgeHandler.unregisterLightStatusListener(this);
         hueBridgeHandler.unregisterSensorStatusListener(this);
-
+        hueBridgeHandler.unregisterGroupStatusListener(this);
     }
 
     @Override
@@ -130,6 +135,10 @@ public class HueLightDiscoveryService extends AbstractDiscoveryService
         for (FullSensor s : sensors) {
             onSensorAddedInternal(s);
         }
+        List<FullGroup> groups = hueBridgeHandler.getFullGroups();
+        for (FullGroup g : groups) {
+            onGroupAddedInternal(g);
+        }
         // search for unpaired lights
         hueBridgeHandler.startSearch();
     }
@@ -137,7 +146,7 @@ public class HueLightDiscoveryService extends AbstractDiscoveryService
     @Override
     protected synchronized void stopScan() {
         super.stopScan();
-        removeOlderResults(getTimestampOfLastScan());
+        removeOlderResults(getTimestampOfLastScan(), hueBridgeHandler.getThing().getUID());
     }
 
     @Override
@@ -257,7 +266,7 @@ public class HueLightDiscoveryService extends AbstractDiscoveryService
         onSensorRemovedInternal(sensor);
     }
 
-    public void onSensorRemovedInternal(FullSensor sensor) {
+    private void onSensorRemovedInternal(FullSensor sensor) {
         ThingUID thingUID = getThingUID(sensor);
 
         if (thingUID != null) {
@@ -269,4 +278,52 @@ public class HueLightDiscoveryService extends AbstractDiscoveryService
     public void onSensorStateChanged(@Nullable HueBridge bridge, FullSensor sensor) {
         // nothing to do
     }
+
+    @Override
+    public void onGroupAdded(@Nullable HueBridge bridge, FullGroup group) {
+        onGroupAddedInternal(group);
+    }
+
+    private void onGroupAddedInternal(FullGroup group) {
+        // Ignore the Hue Entertainment Areas
+        if ("Entertainment".equalsIgnoreCase(group.getType())) {
+            return;
+        }
+
+        ThingUID bridgeUID = hueBridgeHandler.getThing().getUID();
+        ThingUID thingUID = new ThingUID(THING_TYPE_GROUP, bridgeUID, group.getId());
+
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(GROUP_ID, group.getId());
+
+        String name = String.format("%s (%s)", "0".equals(group.getId()) ? "All lights" : group.getName(),
+                group.getType());
+        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_GROUP)
+                .withProperties(properties).withBridge(bridgeUID).withRepresentationProperty(GROUP_ID).withLabel(name)
+                .build();
+
+        thingDiscovered(discoveryResult);
+    }
+
+    @Override
+    public void onGroupGone(@Nullable HueBridge bridge, FullGroup group) {
+        onGroupRemovedInternal(group);
+    }
+
+    @Override
+    public void onGroupRemoved(@Nullable HueBridge bridge, FullGroup group) {
+        onGroupRemovedInternal(group);
+    }
+
+    private void onGroupRemovedInternal(FullGroup group) {
+        ThingUID bridgeUID = hueBridgeHandler.getThing().getUID();
+        ThingUID thingUID = new ThingUID(THING_TYPE_GROUP, bridgeUID, group.getId());
+        thingRemoved(thingUID);
+    }
+
+    @Override
+    public void onGroupStateChanged(@Nullable HueBridge bridge, FullGroup group) {
+        // nothing to do
+    }
+
 }

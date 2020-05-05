@@ -238,5 +238,4 @@ public class FrontierSiliconRadio {
         final String params = "value=" + (muted ? "1" : "0");
         conn.doRequest(REQUEST_SET_MUTE, params);
     }
-
 }

@@ -13,7 +13,6 @@
 package org.openhab.binding.neohub.internal;
 
 import static org.openhab.binding.neohub.internal.NeoHubBindingConstants.*;
-import org.openhab.binding.neohub.internal.NeoHubInfoResponse.DeviceInfo;
 
 import java.util.Collections;
 import java.util.List;
@@ -29,7 +28,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-
+import org.openhab.binding.neohub.internal.NeoHubInfoResponse.DeviceInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,8 +45,9 @@ public class NeoHubDiscoveryService extends AbstractDiscoveryService {
     private ScheduledFuture<?> discoveryScheduler;
     private NeoHubHandler hub;
 
-    public static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_NEOSTAT, THING_TYPE_NEOPLUG).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Collections.unmodifiableSet(
+            Stream.of(THING_TYPE_NEOSTAT, THING_TYPE_NEOPLUG, THING_TYPE_NEOCONTACT, THING_TYPE_NEOTEMPERATURESENSOR)
+                    .collect(Collectors.toSet()));
 
     public NeoHubDiscoveryService(NeoHubHandler hub) {
         // note: background discovery is enabled in the super method
@@ -92,7 +92,7 @@ public class NeoHubDiscoveryService extends AbstractDiscoveryService {
 
     private void discoverDevices() {
         NeoHubInfoResponse infoResponse;
-        if ((infoResponse = hub.fromNeoHubFetchPollingResponse()) != null) {
+        if ((infoResponse = hub.fromNeoHubReadInfoResponse()) != null) {
             List<DeviceInfo> devices;
             if ((devices = infoResponse.getDevices()) != null) {
                 for (DeviceInfo device : devices) {
@@ -113,12 +113,31 @@ public class NeoHubDiscoveryService extends AbstractDiscoveryService {
 
         bridgeUID = hub.getThing().getUID();
 
-        if (deviceInfo.getDeviceType().intValue() == 6) {
-            deviceType = DEVICE_ID_NEOPLUG;
-            deviceTypeUID = THING_TYPE_NEOPLUG;
-        } else {
-            deviceType = DEVICE_ID_NEOSTAT;
-            deviceTypeUID = THING_TYPE_NEOSTAT;
+        int deviceId = deviceInfo.getDeviceType().intValue();
+        switch (deviceId) {
+            // device type 6 is a smart plug
+            case 6: {
+                deviceType = DEVICE_ID_NEOPLUG;
+                deviceTypeUID = THING_TYPE_NEOPLUG;
+                break;
+            }
+            // device type 14 is a (wireless) temperature sensor
+            case 14: {
+                deviceType = DEVICE_ID_NEOTEMPERATURESENSOR;
+                deviceTypeUID = THING_TYPE_NEOTEMPERATURESENSOR;
+                break;
+            }
+            // device type 5 is a (wireless) door/window contact
+            case 5: {
+                deviceType = DEVICE_ID_NEOCONTACT;
+                deviceTypeUID = THING_TYPE_NEOCONTACT;
+                break;
+            }
+            // all other device types are assumed to be thermostats
+            default: {
+                deviceType = DEVICE_ID_NEOSTAT;
+                deviceTypeUID = THING_TYPE_NEOSTAT;
+            }
         }
 
         deviceNeohubName = deviceInfo.getDeviceName();
@@ -130,7 +149,6 @@ public class NeoHubDiscoveryService extends AbstractDiscoveryService {
 
         thingDiscovered(device);
 
-        logger.debug("discovered device={}, name={} ..", deviceType, deviceOpenHabId);
+        logger.debug("discovered device={}, type={}, name={} ..", deviceType, deviceId, deviceOpenHabId);
     }
-
 }

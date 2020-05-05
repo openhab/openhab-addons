@@ -30,6 +30,7 @@ import org.openhab.binding.rfxcom.internal.handler.DeviceState;
  *
  * @author Peter Janson / Pål Edman - Initial contribution
  * @author Pauli Anttila - Migration to OH2
+ * @author Fabien Le Bars - Added support for Cherubini blinds
  */
 public class RFXComBlinds1Message extends RFXComBatteryDeviceMessage<RFXComBlinds1Message.SubType> {
 
@@ -47,7 +48,8 @@ public class RFXComBlinds1Message extends RFXComBatteryDeviceMessage<RFXComBlind
         T10(10), // Dolat DLM-1, Topstar
         T11(11), // ASP
         T12(12), // Confexx CNF24-2435
-        T13(13); // Screenline
+        T13(13), // Screenline
+        T18(18); // Cherubini
 
         private final int subType;
 

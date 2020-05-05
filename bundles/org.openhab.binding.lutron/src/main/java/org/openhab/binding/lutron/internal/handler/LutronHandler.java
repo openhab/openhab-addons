@@ -124,5 +124,4 @@ public abstract class LutronHandler extends BaseThingHandler {
     protected void queryGreenMode(Object... parameters) {
         sendCommand(new LutronCommand(LutronOperation.QUERY, LutronCommandType.MODE, getIntegrationId(), parameters));
     }
-
 }

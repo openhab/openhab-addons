@@ -36,5 +36,4 @@ public class PixometerAccountConfiguration {
      * Configured refresh rate
      */
     public int refresh;
-
 }

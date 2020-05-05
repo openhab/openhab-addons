@@ -31,7 +31,7 @@ public class F750 {
     private static final Map<Integer, VariableInformation> VARIABLE_INFO_F750 = Collections
             .unmodifiableMap(new HashMap<Integer, VariableInformation>() {
                 {
-                    // @formatter:off
+            // @formatter:off
                     put(32260, new VariableInformation(   1, NibeDataType.U8 , Type.SENSOR  , "NIBE Inverter 216-state"));
                     put(40004, new VariableInformation(  10, NibeDataType.S16, Type.SENSOR  , "BT1 Outdoor Temperature"));
                     put(40005, new VariableInformation(  10, NibeDataType.S16, Type.SENSOR  , "EP23-BT2 Supply temp S4"));

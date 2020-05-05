@@ -52,7 +52,6 @@ public abstract class NibeHeatPumpBaseMessage implements NibeHeatPumpMessage {
         public byte toByte() {
             return (byte) msgType;
         }
-
     }
 
     public byte[] rawMessage;
@@ -89,5 +88,4 @@ public abstract class NibeHeatPumpBaseMessage implements NibeHeatPumpMessage {
             return HexUtils.bytesToHex(rawMessage);
         }
     }
-
 }

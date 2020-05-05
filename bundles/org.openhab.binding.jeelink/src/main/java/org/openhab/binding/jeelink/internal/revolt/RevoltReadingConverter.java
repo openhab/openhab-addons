@@ -35,14 +35,14 @@ public class RevoltReadingConverter implements JeeLinkReadingConverter<RevoltRea
                 /*
                  * r4F1BE400513206875B312F25
                  */
-                String id = matcher.group(1);                         // 4F1B
-                
-                int voltage = toInt(matcher.group(2));                // 0xE4 = 228     => 228 V
-                float current = toInt(matcher.group(3)) / 100f;       // 0x0051 = 81    => 0,81 A
-                int frequency = toInt(matcher.group(4));              // 0x32 = 50      => 50 Hz
-                float power = toInt(matcher.group(5)) / 10f;          // 0x0687 = 1671  => 167,1 W
-                float powerFact = toInt(matcher.group(6)) / 100f;     // 0x5B = 91      => 0,91 VA
-                float consumption = toInt(matcher.group(7)) / 100f;   // 0x312F = 12591 => 125,91 Wh
+                String id = matcher.group(1); // 4F1B
+
+                int voltage = toInt(matcher.group(2)); // 0xE4 = 228 => 228 V
+                float current = toInt(matcher.group(3)) / 100f; // 0x0051 = 81 => 0,81 A
+                int frequency = toInt(matcher.group(4)); // 0x32 = 50 => 50 Hz
+                float power = toInt(matcher.group(5)) / 10f; // 0x0687 = 1671 => 167,1 W
+                float powerFact = toInt(matcher.group(6)) / 100f; // 0x5B = 91 => 0,91 VA
+                float consumption = toInt(matcher.group(7)) / 100f; // 0x312F = 12591 => 125,91 Wh
 
                 return new RevoltReading(id, voltage, current, frequency, power, powerFact, consumption);
             }
@@ -50,7 +50,7 @@ public class RevoltReadingConverter implements JeeLinkReadingConverter<RevoltRea
 
         return null;
     }
-    
+
     private int toInt(String hex) {
         Integer i = Integer.parseInt(hex, 16);
         return i.intValue();

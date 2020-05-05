@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -77,6 +78,7 @@ public class EcobeeApi implements AccessTokenRefreshListener {
     // These errors from the API will require an Ecobee authorization
     private static final int ECOBEE_TOKEN_EXPIRED = 14;
     private static final int ECOBEE_DEAUTHORIZED_TOKEN = 16;
+    private static final int TOKEN_EXPIRES_IN_BUFFER_SECONDS = 120;
 
     public static final Properties HTTP_HEADERS;
     static {
@@ -101,7 +103,7 @@ public class EcobeeApi implements AccessTokenRefreshListener {
     private @NonNullByDefault({}) OAuthClientService oAuthClientService;
     private @NonNullByDefault({}) EcobeeAuth ecobeeAuth;
 
-    private String accessToken = "";
+    private @Nullable AccessTokenResponse accessTokenResponse;
 
     public EcobeeApi(final EcobeeAccountBridgeHandler bridgeHandler, final String apiKey, final int apiTimeout,
             org.eclipse.smarthome.core.auth.client.oauth2.OAuthFactory oAuthFactory, HttpClient httpClient) {
@@ -145,10 +147,13 @@ public class EcobeeApi implements AccessTokenRefreshListener {
     private boolean isAuthorized() {
         boolean isAuthorized = false;
         try {
-            AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
-            if (accessTokenResponse != null) {
-                logger.trace("API: Got AccessTokenResponse from OAuth service: {}", accessTokenResponse);
-                accessToken = accessTokenResponse.getAccessToken();
+            AccessTokenResponse localAccessTokenResponse = oAuthClientService.getAccessTokenResponse();
+            if (localAccessTokenResponse != null) {
+                logger.trace("API: Got AccessTokenResponse from OAuth service: {}", localAccessTokenResponse);
+                if (localAccessTokenResponse.isExpired(LocalDateTime.now(), TOKEN_EXPIRES_IN_BUFFER_SECONDS)) {
+                    logger.debug("API: Token is expiring soon. Refresh it now");
+                    localAccessTokenResponse = oAuthClientService.refreshToken();
+                }
                 ecobeeAuth.setState(EcobeeAuthState.COMPLETE);
                 isAuthorized = true;
             } else {
@@ -157,6 +162,7 @@ public class EcobeeApi implements AccessTokenRefreshListener {
                     ecobeeAuth.setState(EcobeeAuthState.NEED_PIN);
                 }
             }
+            accessTokenResponse = localAccessTokenResponse;
             ecobeeAuth.doAuthorization();
         } catch (OAuthException | IOException | RuntimeException e) {
             logger.info("API: Got exception trying to get access token from OAuth service", e);
@@ -173,7 +179,6 @@ public class EcobeeApi implements AccessTokenRefreshListener {
 
     @Override
     public void onAccessTokenResponse(AccessTokenResponse accessTokenResponse) {
-        accessToken = accessTokenResponse.getAccessToken();
     }
 
     public @Nullable SummaryResponseDTO performThermostatSummaryQuery() {
@@ -257,6 +262,8 @@ public class EcobeeApi implements AccessTokenRefreshListener {
             logger.trace("API: Response took {} msec: {}", System.currentTimeMillis() - startTime, response);
         } catch (IOException e) {
             logIOException(e);
+        } catch (EcobeeAuthException e) {
+            logger.info("API: Unable to execute GET: {}", e.getMessage());
         }
         return response;
     }
@@ -276,6 +283,8 @@ public class EcobeeApi implements AccessTokenRefreshListener {
             }
         } catch (IOException e) {
             logIOException(e);
+        } catch (EcobeeAuthException e) {
+            logger.info("API: Unable to execute POST: {}", e.getMessage());
         }
         return false;
     }
@@ -306,21 +315,31 @@ public class EcobeeApi implements AccessTokenRefreshListener {
         } else if (response.status.code.intValue() != 0) {
             logger.info("API: Ecobee API returned unsuccessful status: code={}, message={}", response.status.code,
                     response.status.message);
-            // The following error indicate that the Ecobee PIN authorization
-            // process needs to be restarted
-            if (response.status.code == ECOBEE_TOKEN_EXPIRED || response.status.code == ECOBEE_DEAUTHORIZED_TOKEN) {
+            if (response.status.code == ECOBEE_DEAUTHORIZED_TOKEN) {
+                // Token has been deauthorized, so restart the authorization process from the beginning
+                logger.warn("API: Reset OAuth Client Service due to deauthorized token");
                 deleteOAuthClientService();
                 createOAuthClientService();
+            } else if (response.status.code == ECOBEE_TOKEN_EXPIRED) {
+                // Check isAuthorized again to see if we can get a valid token
+                logger.info("API: Unable to complete API call because token is expired");
+                if (!isAuthorized()) {
+                    logger.warn("API: isAuthorized was NOT successful on second try");
+                }
             }
             success = false;
         }
         return success;
     }
 
-    private Properties setHeaders() {
+    private Properties setHeaders() throws EcobeeAuthException {
+        AccessTokenResponse atr = accessTokenResponse;
+        if (atr == null) {
+            throw new EcobeeAuthException("Can not set auth header because access token is null");
+        }
         Properties headers = new Properties();
         headers.putAll(HTTP_HEADERS);
-        headers.put("Authorization", "Bearer " + accessToken);
+        headers.put("Authorization", "Bearer " + atr.getAccessToken());
         return headers;
     }
 }

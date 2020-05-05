@@ -129,5 +129,4 @@ public abstract class DmxOverEthernetHandler extends DmxBridgeHandler {
     public DmxOverEthernetHandler(Bridge sacnBridge) {
         super(sacnBridge);
     }
-
 }

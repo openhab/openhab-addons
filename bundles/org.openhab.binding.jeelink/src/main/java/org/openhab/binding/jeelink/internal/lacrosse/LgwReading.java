@@ -44,7 +44,7 @@ public class LgwReading implements Reading {
     public Integer getHumidity() {
         return humidity;
     }
-    
+
     public Integer getPressure() {
         return pressure;
     }
@@ -63,7 +63,7 @@ public class LgwReading implements Reading {
 
     @Override
     public String toString() {
-        return "sensorId=" + sensorId + ": temp=" + temp + (hasHumidity() ? ", hum=" + humidity : "") 
+        return "sensorId=" + sensorId + ": temp=" + temp + (hasHumidity() ? ", hum=" + humidity : "")
                 + (hasPressure() ? ", pressure=" + pressure : "");
     }
 }

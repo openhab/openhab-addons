@@ -230,7 +230,6 @@ public class ValueTests {
             v.update(new DecimalType(i));
             assertThat(v.getMQTTpublishValue(null), is("" + i));
         }
-
     }
 
     @Test

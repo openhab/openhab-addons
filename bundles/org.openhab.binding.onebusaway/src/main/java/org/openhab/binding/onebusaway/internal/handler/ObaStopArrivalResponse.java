@@ -55,6 +55,5 @@ public class ObaStopArrivalResponse {
             return (int) ((predicted ? predictedArrivalTime : scheduledArrivalTime)
                     - (other.predicted ? other.predictedArrivalTime : other.scheduledArrivalTime));
         }
-
     }
 }

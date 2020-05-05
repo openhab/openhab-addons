@@ -86,7 +86,7 @@ public class ZonePlayerDiscoveryParticipant implements UpnpDiscoveryParticipant 
                         modelName = "CONNECTAMP";
                         break;
                     case "One SL":
-                        modelName = "One";
+                        modelName = "OneSL";
                         break;
                     default:
                         break;
@@ -117,5 +117,4 @@ public class ZonePlayerDiscoveryParticipant implements UpnpDiscoveryParticipant 
     private String getSonosRoomName(RemoteDevice device) {
         return SonosXMLParser.getRoomName(device.getIdentity().getDescriptorURL().toString());
     }
-
 }

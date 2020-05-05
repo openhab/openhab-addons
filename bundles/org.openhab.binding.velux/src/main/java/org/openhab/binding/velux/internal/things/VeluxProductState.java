@@ -87,5 +87,4 @@ public class VeluxProductState {
     public String toString() {
         return String.format("State (%s, actuator %d, value %d)", this.productReference, this.actuator, this.state);
     }
-
 }

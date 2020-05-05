@@ -12,18 +12,19 @@
  */
 package org.openhab.binding.samsungtv.internal;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.util.Enumeration;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.io.net.exec.ExecUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,38 +32,67 @@ import org.slf4j.LoggerFactory;
  * Class with utility functions to support Wake On Lan (WOL)
  *
  * @author Arjan Mels - Initial contribution
+ * @author Laurent Garnier - Use improvements from the LG webOS binding
  *
  */
 @NonNullByDefault
 public class WakeOnLanUtility {
 
-    private static final Logger logger = LoggerFactory.getLogger(WakeOnLanUtility.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WakeOnLanUtility.class);
+    private static final Pattern MAC_REGEX = Pattern.compile("(([0-9a-fA-F]{2}[:-]){5}[0-9a-fA-F]{2})");
+    private static final int CMD_TIMEOUT_MS = 1000;
+
+    private static final String COMMAND;
+    static {
+        String os = System.getProperty("os.name").toLowerCase();
+        LOGGER.debug("os: {}", os);
+        if ((os.indexOf("win") >= 0)) {
+            COMMAND = "arp -a %s";
+        } else if ((os.indexOf("mac") >= 0)) {
+            COMMAND = "arp %s";
+        } else { // linux
+            if (checkIfLinuxCommandExists("arp")) {
+                COMMAND = "arp %s";
+            } else if (checkIfLinuxCommandExists("arping")) { // typically OH provided docker image
+                COMMAND = "arping -r -c 1 -C 1 %s";
+            } else {
+                COMMAND = "";
+            }
+        }
+    }
 
     /**
      * Get MAC address for host
-     * uses "arping" tool
      *
      * @param hostName Host Name (or IP address) of host to retrieve MAC address for
      * @return MAC address
      */
     public static @Nullable String getMACAddress(String hostName) {
-        try {
-            Process proc = Runtime.getRuntime().exec("arping -r -c 1 -C 1 " + hostName);
-            proc.waitFor();
-            BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-            String macAddress = stdInput.readLine();
-            if (macAddress != null) {
-                logger.info("MAC address of host {} is {}", hostName, macAddress);
-                return macAddress;
-            } else {
-                BufferedReader stdErr = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
-                String error = stdErr.readLine();
-                logger.warn("Cannot get MAC addres of host {}: {}", hostName, error);
-            }
-        } catch (IOException | InterruptedException e) {
-            logger.debug("Problem getting MAC address: {}", e.getMessage());
+        if (COMMAND.isEmpty()) {
+            LOGGER.debug("MAC address detection not possible. No command to identify MAC found.");
+            return null;
         }
-        return null;
+
+        String cmd = String.format(COMMAND, hostName);
+        String response = ExecUtil.executeCommandLineAndWaitResponse(cmd, CMD_TIMEOUT_MS);
+        Matcher matcher = MAC_REGEX.matcher(response);
+        String macAddress = null;
+
+        while (matcher.find()) {
+            String group = matcher.group();
+
+            if (group.length() == 17) {
+                macAddress = group;
+                break;
+            }
+        }
+
+        if (macAddress != null) {
+            LOGGER.debug("MAC address of host {} is {}", hostName, macAddress);
+        } else {
+            LOGGER.debug("Problem executing command {} to retrieve MAC address for {}: {}", cmd, hostName, response);
+        }
+        return macAddress;
     }
 
     /**
@@ -86,25 +116,23 @@ public class WakeOnLanUtility {
                         continue;
                     }
 
-                    try {
-                        DatagramPacket packet = new DatagramPacket(bytes, bytes.length, broadcast, 9);
-                        DatagramSocket socket = new DatagramSocket();
+                    DatagramPacket packet = new DatagramPacket(bytes, bytes.length, broadcast, 9);
+                    try (DatagramSocket socket = new DatagramSocket()) {
                         socket.send(packet);
-                        socket.close();
-                        logger.trace("Sent WOL packet to {} {}", broadcast, macAddress);
+                        LOGGER.trace("Sent WOL packet to {} {}", broadcast, macAddress);
                     } catch (IOException e) {
-                        logger.warn("Problem sending WOL packet to {} {}", broadcast, macAddress);
+                        LOGGER.warn("Problem sending WOL packet to {} {}", broadcast, macAddress);
                     }
                 }
             }
 
         } catch (IOException e) {
-            logger.warn("Problem with interface while sending WOL packet to {}", macAddress);
+            LOGGER.warn("Problem with interface while sending WOL packet to {}", macAddress);
         }
     }
 
     /**
-     * Create WOL UDP package: 6 bytes 0xff and then 6 times the 6 byte mac address repeated
+     * Create WOL UDP package: 6 bytes 0xff and then 16 times the 6 byte mac address repeated
      *
      * @param macStr String representation of teh MAC address (either with : or -)
      * @return byte array with the WOL package
@@ -133,6 +161,15 @@ public class WakeOnLanUtility {
         }
 
         return bytes;
+    }
+
+    private static boolean checkIfLinuxCommandExists(String cmd) {
+        try {
+            return 0 == Runtime.getRuntime().exec(String.format("which %s", cmd)).waitFor();
+        } catch (InterruptedException | IOException e) {
+            LOGGER.debug("Error trying to check if command {} exists: {}", cmd, e.getMessage());
+        }
+        return false;
     }
 
 }

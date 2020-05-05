@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="plugwise" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="plugwise"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="sense">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="stick" />
+			<bridge-type-ref id="stick"/>
 		</supported-bridge-type-refs>
 		<label>Plugwise Sense</label>
 		<description>A wireless temperature and humidity sensor</description>
 		<channels>
-			<channel id="humidity" typeId="humidity" />
-			<channel id="lastseen" typeId="lastseen" />
-			<channel id="temperature" typeId="temperature" />
-			<channel id="triggered" typeId="triggered" />
+			<channel id="humidity" typeId="humidity"/>
+			<channel id="lastseen" typeId="lastseen"/>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="triggered" typeId="triggered"/>
 		</channels>
 		<representation-property>macAddress</representation-property>
-		<config-description-ref uri="thing-type:plugwise:sense" />
+		<config-description-ref uri="thing-type:plugwise:sense"/>
 	</thing-type>
 
 </thing:thing-descriptions>

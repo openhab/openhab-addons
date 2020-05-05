@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="hue" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Generic thing for Groups/Rooms -->
+	<thing-type id="group">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>Hue Group</label>
+		<description>A group of lights or a room that could be switched on and off.</description>
+
+		<channels>
+			<channel id="switch" typeId="switch" />
+			<channel id="color_temperature" typeId="color_temperature" />
+			<channel id="brightness" typeId="brightness" />
+			<channel id="color" typeId="color" />
+		</channels>
+
+		<representation-property>groupId</representation-property>
+
+		<config-description>
+			<parameter name="groupId" type="text">
+				<label>Group ID</label>
+				<description>The group identifier identifies one certain hue group or room.</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="fadetime" type="integer" min="0" step="100" unit="ms">
+				<label>Fade Time</label>
+				<description>Fade time in milliseconds for changing values</description>
+				<default>400</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>

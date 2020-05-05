@@ -111,5 +111,4 @@ public class LeapMotionProfileFactory implements ProfileFactory, ProfileAdvisor,
             return null;
         }
     }
-
 }

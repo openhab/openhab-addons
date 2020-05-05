@@ -1,22 +1,12 @@
-# Modbus: SunSpec Bundle
+# SunSpec
 
-This bundle is an extension for the Modbus binding to support the SunSpec protocol.
+This extension adds support for the SunSpec protocol.
 
 SunSpec is a format for inverters and smart meters to communicate over the Modbus protocol.
 It defines how common parameters like AC/DC voltage and current, lifetime produced energy, device temperature etc can be read from the device.
 
 SunSpec is supported by several manufacturers like ABB, Fronius, LG, SMA, SolarEdge, Schneider Electric.
 For a list of certified products see this page: https://sunspec.org/sunspec-certified-products/
-
-# IMPORTANT: under merge
-
-** IMPORTANT: this version of this bundle is being merged into openHAB. This will be done in small steps - this means that not everything in this readme is supported at the moment **
-
-Currently supported features are:
-
-* basic values of single phase inverters without auto-discovery
-
- For the complete version of this bundle please contact me!
 
 
 ## Supported Things
@@ -34,50 +24,37 @@ Note, that the things will show up under the Modbus binding.
 | meter-wye-phase       | Wye connected three phase meters (ABCN)                               |
 | meter-delta-phase     | Delta connected three phase meters (ABC)                              |
 
+### Auto Discovery
 
-
-## Binding Configuration
-
-This bundle requires the openHAB 2 compatible Modbus binding to be installed.
-Please refer to the Modbus binding configuration.
-This addon does not require any additional configuration.
-
-## Thing Configuration
-
-You need first to set up either a TCP or a Serial Modbus bridge according to the Modbus documentation.
-Things in this bundle will use the selected bridge to connect to the device.
-
-The preferred way to add new things is by using the discovery feature.
-This way the bundle will automatically detect if the Modbus bridge supports the SunSpec protocol and if so what type of models are available.
-It will automatically detect the register addresses for each model.
-
-### Auto discovering things
-
-This bingind fully supports modbus auto discovery, that means all supported profiles should appear in the inbox once you connect your device.
+This extension fully supports modbus auto discovery.
+It automatically detects the register addresses for each model.
 
 Auto discovery is turned off by default in the modbus binding so you have to enable it manually.
 
-You can add `enableDiscovery=true` attribute to your bridge config, or you can enable it in the paper ui under the modbus tcp|serial slave thing.
+You can set the `enableDiscovery=true` parameter in your bridge.
 
-A typical bridge configuration would looke like this:
+A typical bridge configuration would look like this:
 
 ```
 Bridge modbus:tcp:bridge [ host="10.0.0.2", port=502, id=1, enableDiscovery=true ]
 ```
 
-### Adding things manually
+## Thing Configuration
 
-If you decide to add a thing manually then first you have to find out the start address of the model block and the length of it.
-While the length is usually fixed the address isn't.
+You need first to set up either a TCP or a Serial Modbus bridge according to the Modbus documentation.
+Things in this extension will use the selected bridge to connect to the device.
+
+For defining a thing textually, you have to find out the start address of the model block and the length of it.
+While the length is usually fixed, the address is not.
 Please refer to your device's vendor documentation how model blocks are laid for your equipment.
 
 The following parameters are valid for all thing types:
 
-| Parameter | Type    | Required | Default if ommitted | Description                             |
+| Parameter | Type    | Required | Default if omitted  | Description                             |
 |-----------|---------|----------|---------------------|-----------------------------------------|
 | address   | integer | yes      | N/A                 | Start address of the model block.       |
 | length    | integer | yes      | N/A                 | Length of the model block. Setting this too short could cause problems during parsing |
-| refresh   | integer | no       | 5                   | Poll inteval in seconds. Increase this if you encounter connection errors |
+| refresh   | integer | no       | 5                   | Poll interval in seconds. Increase this if you encounter connection errors |
 | maxTries  | integer | no       | 3                   | Number of retries when before giving up reading from this thing. |
 
 
@@ -86,7 +63,7 @@ The following parameters are valid for all thing types:
 Channels are grouped into channel groups.
 Different things support a subset of the following groups.
 
-### Device information group (deviceInformation)
+### Device Information Group (deviceInformation)
 
 This group contains general operational information about the device.
 
@@ -100,9 +77,9 @@ This group contains general operational information about the device.
 
 Supported by: all inverter things
 
-### AC summary group (acGeneral)
+### AC Summary Group (acGeneral)
 
-#### inverters
+#### Inverters
 
 This group contains summarized values for the AC side of the inverter.
 Even if the inverter supports multiple phases this group will appear only once.
@@ -120,7 +97,7 @@ Even if the inverter supports multiple phases this group will appear only once.
 Supported by: all inverter things
 
 
-#### meters
+#### Meters
 
 This group contains summarized values for the power meter over all phases.
 
@@ -146,9 +123,9 @@ This group contains summarized values for the power meter over all phases.
 Supported by: all meter things
 
 
-### AC phase specific group
+### AC Phase Specific Group
 
-#### inverters
+#### Inverters
 
 This group describes values for a single phase of the inverter.
 There can be a maximum of three of this group named:
@@ -167,7 +144,7 @@ acPhaseC: available only for inverter-three-phase type inverters.
 
 Supported by: all inverter things
 
-#### meters
+#### Meters
 
 This group holds values for a given line of the meter.
 There can be a maximum of three of this group named:
@@ -200,7 +177,7 @@ acPhaseC: available only for meter-wye-phase and meter-delta-phase meters type i
 
 Supported by: all meter things
 
-### DC general group
+### DC General Group
 
 This group contains summarized data for the DC side of the inverter.
 DC information is summarized even if the inverter has multiple strings.
@@ -216,27 +193,14 @@ Supported by: all inverter things
 
 ## Full Example
 
-To configure a SunSpec inverter you have to set up a Modbus bridge with the connection parameters.
-The Modbus binding supports both TCP and Serial connections please choose the one that's appropriate for you.
-Please enable discovery on the bridge.
-
-Textual configuration is optional, you can set up everything using PaperUI.
-After adding the Modbus bridge and enabling discovery a scan will be initiated and if the device supports SunSpec then the known models will be added to the inbox with correct address configuration.
-
 ### Thing Configuration
-
-The preferred way to add a SunSpec compatible Thing is through auto-discovery.
-Whoever if the auto-discovery would not work, advanced users could set up the thing through the config file.
-
-Please note that the nested bridge configuration does not work at the moment.
-Use the following flat format to set up the bridge and the inverter thing:
 
 ```
 Bridge modbus:tcp:bridge [ host="hostname|ip", port=502, id=1, enableDiscovery=true ]
 Thing modbus:inverter-single-phase:bridge:se4000h "SE4000h" (modbus:tcp:modbusbridge) [ address=40069, length=52, refresh=15 ]
 ```
 
-Note: make sure that refresh, port and id values are numerical, without quotes.
+Note: Make sure that refresh, port and id values are numerical, without quotes.
 
 ### Item Configuration
 
@@ -260,7 +224,7 @@ Number Inverter_AC1_A "AC Current Phase 1 [%0.2f A]" {channel="modbus:inverter-s
 
 ```
 
-## Vendor specific information
+## Vendor Specific Information
 
 ### SolarEdge
 
@@ -268,30 +232,3 @@ Newer models of SolarEdge inverters can be monitored over TCP, but you need to e
 Refer to the "Modbus over TCP Configuration" chapter in this documentation: https://www.solaredge.com/sites/default/files/sunspec-implementation-technical-note.pdf
 
 Modbus connection is limited to a single client at a time, so make sure no other clients are using the port.
-
-## For Developers
-
-SunSpec is a big specification with many different type of devices.
-If you own or have access to an appliance that is not supported at the moment then your help is welcome.
-
-If you want to extend the bundle yourself, you have to do the followings:
-
- - Define your thing type, channel types and channel groups according to openHAB development practices.
- You can look at the meter and inverter types to get ideas how you can avoid repeating the same configuration over and over.
- 
- - Extend the `AbstractSunSpecHandler` and implement the handlePolledData method.
- This method will be regularly called with the register data read from the appliance.
- The method should parse the data and update the channels with them.
-
- - The preferred way to parse the raw data is to write a parser for you model block type.
- Your class should implement the `SunspecParser` class and it is preferred to extend the `AbstractBaseParser` class.
- This base class has methods to accurately extract fields from the register array.
-
- - The parser should only retrieve the data from the register array and return them in a block descriptor class.
- Scaling and other higher level transformation should be done by the handler itself.
- 
- - To include your block type in auto discovery you have to add its id to the `SUPPORTED_THING_TYPES_UIDS` map in `SunSpecConstants`. This is enough for our discovery process to include your thing type in the results.
-
-
-If you have questions or need help don't hesitate to contact us over the OpenHAB community forums and github pages.
- 

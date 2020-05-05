@@ -12,6 +12,7 @@
  */
 package org.openhab.io.homekit.internal;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -23,8 +24,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.github.hapjava.HomekitAccessory;
-import io.github.hapjava.HomekitRoot;
+import io.github.hapjava.accessories.HomekitAccessory;
+import io.github.hapjava.server.impl.HomekitRoot;
 
 /**
  * Stores the created HomekitAccessories. GroupedAccessories are also held here
@@ -37,13 +38,29 @@ class HomekitAccessoryRegistry {
     private @Nullable HomekitRoot bridge;
     private final Map<String, HomekitAccessory> createdAccessories = new HashMap<>();
     private final Set<Integer> createdIds = new HashSet<>();
-
+    private int configurationRevision = 1;
     private final Logger logger = LoggerFactory.getLogger(HomekitAccessoryRegistry.class);
+
+    public void setConfigurationRevision(int revision) {
+        configurationRevision = revision;
+    }
+
+    public int makeNewConfigurationRevision() {
+        configurationRevision = (configurationRevision + 1) % 65535;
+        try {
+            if (bridge != null) {
+                bridge.setConfigurationIndex(configurationRevision);
+            }
+        } catch (IOException e) {
+            logger.warn("Could not update configuration revision number", e);
+        }
+        return configurationRevision;
+    }
 
     public synchronized void remove(String itemName) {
         if (createdAccessories.containsKey(itemName)) {
             HomekitAccessory accessory = createdAccessories.remove(itemName);
-            logger.debug("Removed accessory {} for taggedItem {}", accessory.getId(), itemName);
+            logger.trace("Removed accessory {} for taggedItem {}", accessory, itemName);
             if (bridge != null) {
                 bridge.removeAccessory(accessory);
             } else {
@@ -85,6 +102,10 @@ class HomekitAccessoryRegistry {
         if (bridge != null) {
             bridge.addAccessory(accessory);
         }
-        logger.debug("Added accessory {}", accessory.getId());
+        logger.trace("Added accessory {}", accessory.getId());
+    }
+
+    public Map<String, HomekitAccessory> getAllAccessories() {
+        return this.createdAccessories;
     }
 }

@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.chromecast.internal;
 
-import java.util.Objects;
-
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.audio.AudioFormat;
 import org.eclipse.smarthome.core.audio.AudioHTTPServer;
 import org.eclipse.smarthome.core.audio.AudioStream;
@@ -25,30 +25,36 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Handles the AudioSink portion of the Chromecast plugin. Note that we store volume in
+ * Handles the AudioSink portion of the Chromecast add-on.
  *
  * @author Jason Holmes - Initial contribution
  */
+@NonNullByDefault
 public class ChromecastAudioSink {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(ChromecastAudioSink.class);
+
+    private static final String MIME_TYPE_AUDIO_WAV = "audio/wav";
+    private static final String MIME_TYPE_AUDIO_MPEG = "audio/mpeg";
+
     private final ChromecastCommander commander;
     private final AudioHTTPServer audioHTTPServer;
-    private final String callbackUrl;
+    private final @Nullable String callbackUrl;
 
-    public ChromecastAudioSink(ChromecastCommander commander, AudioHTTPServer audioHTTPServer, String callbackUrl) {
+    public ChromecastAudioSink(ChromecastCommander commander, AudioHTTPServer audioHTTPServer,
+            @Nullable String callbackUrl) {
         this.commander = commander;
         this.audioHTTPServer = audioHTTPServer;
         this.callbackUrl = callbackUrl;
     }
 
-    public void process(AudioStream audioStream) throws UnsupportedAudioFormatException {
+    public void process(@Nullable AudioStream audioStream) throws UnsupportedAudioFormatException {
         if (audioStream == null) {
             // in case the audioStream is null, this should be interpreted as a request to end any currently playing
             // stream.
             logger.trace("Stop currently playing stream.");
             commander.handleStop(OnOffType.ON);
         } else {
-            String url;
+            final String url;
             if (audioStream instanceof URLAudioStream) {
                 // it is an external URL, the speaker can access it itself and play it.
                 URLAudioStream urlAudioStream = (URLAudioStream) audioStream;
@@ -68,11 +74,8 @@ public class ChromecastAudioSink {
                     return;
                 }
             }
-
-            String mimeType = Objects.equals(audioStream.getFormat().getCodec(), AudioFormat.CODEC_MP3) ? "audio/mpeg"
-                    : "audio/wav";
-
-            commander.playMedia("Notification", url, mimeType);
+            commander.playMedia("Notification", url,
+                    AudioFormat.MP3.isCompatible(audioStream.getFormat()) ? MIME_TYPE_AUDIO_MPEG : MIME_TYPE_AUDIO_WAV);
         }
     }
 }

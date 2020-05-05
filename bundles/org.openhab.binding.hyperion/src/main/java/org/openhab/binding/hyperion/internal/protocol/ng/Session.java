@@ -86,5 +86,4 @@ public class Session {
     public void setType(String type) {
         this.type = type;
     }
-
 }

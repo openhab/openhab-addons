@@ -1,11 +1,11 @@
 # Daikin Binding
 
 The Daikin binding allows you to control your Daikin air conditioning units with openHAB.
-In order to do so, your Daikin air conditioning unit must have a BRP072A42 or BRP15B61 WiFi adapter installed.
+In order to do so, your Daikin air conditioning unit must have a BRP072A42, BRP072C42 or BRP15B61 WiFi adapter installed.
 
 ## Supported Things
 
-Daikin air conditioning units with a BRP072A42 or BRP15B61 installed.
+Daikin air conditioning units with a BRP072A42, BRP072C42 or BRP15B61 installed.
 This may work with the older KRP series of wired adapters, but has not been tested with them.
 
 ## Discovery
@@ -13,15 +13,26 @@ This may work with the older KRP series of wired adapters, but has not been test
 This add-on will broadcast messages on your local network looking for Daikin air conditioning units and adding them to the queue of new items discovered.
 You can also manually add a new item if you know the IP address.
 
+### BRP072C42 adapter discovery
+
+A BRP072C42 adapter requires a registered UUID to authenticate. Upon discovery, a UUID will be generated but the adapter's key must be entered in the Thing configuration to complete the UUID registration.
+
 ## Thing Configuration
 
-* host - The hostname of the Daikin air conditioner. Typically you'd use an IP address such as `192.168.0.5` for this field.
-* refresh - The frequency with which to refresh information from the Daikin air conditioner specified in seconds. Defaults to 60 seconds.
+* `host` - The hostname of the Daikin air conditioner. Typically you'd use an IP address such as `192.168.0.5` for this field.
+* `refresh` - The frequency with which to refresh information from the Daikin air conditioner specified in seconds. Defaults to 60 seconds.
+
+### Additional Thing configurations for BRP072C42 adapter
+
+* `secure` - Must be set to true for BRP072C42 to access it through https.
+* `uuid` - A UUID used to access the BRP072C42 adapter. A handy UUID generator can be found at https://www.uuidgenerator.net/.
+* `key` - The 13-digit key from the Daikin adapter.
+
 
 ## Channels
 
 The temperature channels have a precision of one half degree Celsius.
-For the BRP072A42:
+For the BRP072A42 and BRP072C42:
 
 | Channel Name | Description |
 |--------------|---------------------------------------------------------------------------------------------|
@@ -31,7 +42,7 @@ For the BRP072A42:
 | outdoortemp  | The outdoor temperature as measured by the external part of the air conditioning system. May not be available when unit is off. |
 | humidity     | The indoor humidity as measured by the unit. This is not available on all units.            |
 | mode         | The mode set for the unit (AUTO, DEHUMIDIFIER, COLD, HEAT, FAN)                             |
-| homekit mode | A mode that is compatible with homekit/alexa/google home (off, auto, heat, cool)            |
+| homekitmode  | A mode that is compatible with homekit/alexa/google home (off, auto, heat, cool)            |
 | fanspeed     | The fan speed set for the unit (AUTO, SILENCE, LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5) |
 | fandir       | The fan blade direction (STOPPED, VERTICAL, HORIZONTAL, VERTICAL_AND_HORIZONTAL)            |
 
@@ -44,7 +55,7 @@ For the BRP15B61:
 | indoortemp      | The indoor temperature as measured by the unit.                                             |
 | outdoortemp     | The outdoor temperature as measured by the external part of the air conditioning system. May not be available when unit is off. |
 | mode            | The mode set for the unit (AUTO, DEHUMIDIFIER, COLD, HEAT, FAN)                             |
-| homekit mode    | A mode that is compatible with homekit/alexa/google home (off, auto, heat, cool)            | 
+| homekitmode     | A mode that is compatible with homekit/alexa/google home (off, auto, heat, cool)            | 
 | airbasefanspeed | The fan speed set for the unit (AUTO, AIRSIDE, LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5, AUTO_LEVEL_1, AUTO_LEVEL_2, AUTO_LEVEL_3, AUTO_LEVEL_4, AUTO_LEVEL_5)  |
 | zone1           | Turns zone 1 on/off for the air conditioning unit (if a zone controller is installed.)      |
 | zone2           | Turns zone 2 on/off for the air conditioning unit.                                          |
@@ -60,13 +71,19 @@ For the BRP15B61:
 daikin.things:
 
 ```
+// for BRP072A42
 daikin:ac_unit:living_room_ac [ host="192.168.0.5" ]
+// for BRP072C42
+daikin:ac_unit:living_room_ac [ host="192.168.0.5", secure=true, uuid="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", key="xxxxxxxxxxxxx" ]
+// for Airbase (BRP15B61)
 daikin:airbase_ac_unit:living_room_ac [ host="192.168.0.5" ]
 ```
+
 
 daikin.items:
 
 ```
+// for BRP072A42 or BRP072C42
 Switch DaikinACUnit_Power { channel="daikin:ac_unit:living_room_ac:power" }
 Number:Temperature DaikinACUnit_SetPoint { channel="daikin:ac_unit:living_room_ac:settemp" }
 String DaikinACUnit_Mode { channel="daikin:ac_unit:living_room_ac:mode" }
@@ -75,7 +92,16 @@ String DaikinACUnit_Fan { channel="daikin:ac_unit:living_room_ac:fanspeed" }
 String DaikinACUnit_Fan_Movement { channel="daikin:ac_unit:living_room_ac:fandir" }
 Number:Temperature DaikinACUnit_IndoorTemperature { channel="daikin:ac_unit:living_room_ac:indoortemp" }
 Number:Temperature DaikinACUnit_OutdoorTemperature { channel="daikin:ac_unit:living_room_ac:outdoortemp" }
-# Additional items for BRP1B61
+
+
+// for Airbase (BRP15B61)
+Switch DaikinACUnit_Power { channel="daikin:airbase_ac_unit:living_room_ac:power" }
+Number:Temperature DaikinACUnit_SetPoint { channel="daikin:airbase_ac_unit:living_room_ac:settemp" }
+String DaikinACUnit_Mode { channel="daikin:airbase_ac_unit:living_room_ac:mode" }
+String DaikinACUnit_HomekitMode { channel="daikin:airbase_ac_unit:living_room_ac:homekitmode" }
+String DaikinACUnit_Fan { channel="daikin:airbase_ac_unit:living_room_ac:fanspeed" }
+Number:Temperature DaikinACUnit_IndoorTemperature { channel="daikin:airbase_ac_unit:living_room_ac:indoortemp" }
+Number:Temperature DaikinACUnit_OutdoorTemperature { channel="daikin:airbase_ac_unit:living_room_ac:outdoortemp" }
 Switch DaikinACUnit_Zone1 { channel="daikin:airbase_ac_unit:living_room_ac:zone1" }
 Switch DaikinACUnit_Zone2 { channel="daikin:airbase_ac_unit:living_room_ac:zone2" }
 Switch DaikinACUnit_Zone3 { channel="daikin:airbase_ac_unit:living_room_ac:zone3" }
@@ -90,13 +116,22 @@ Switch DaikinACUnit_Zone8 { channel="daikin:airbase_ac_unit:living_room_ac:zone8
 daikin.sitemap:
 
 ```
+// for BRP072A42 or BRP072C42
 Switch item=DaikinACUnit_Power
 Setpoint item=DaikinACUnit_SetPoint visibility=[DaikinACUnit_Power==ON]
 Selection item=DaikinACUnit_Mode mappings=["AUTO"="Auto", "DEHUMIDIFIER"="Dehumidifier", "COLD"="Cold", "HEAT"="Heat", "FAN"="Fan"] visibility=[DaikinACUnit_Power==ON]
 Selection item=DaikinACUnit_Fan mappings=["AUTO"="Auto", "SILENCE"="Silence", "LEVEL_1"="Level 1", "LEVEL_2"="Level 2", "LEVEL_3"="Level 3", "LEVEL_4"="Level 4", "LEVEL_5"="Level 5"] visibility=[DaikinACUnit_Power==ON]
+Selection item=DaikinACUnit_Fan_Movement mappings=["STOPPED"="Stopped", "VERTICAL"="Vertical", "HORIZONTAL"="Horizontal", "VERTICAL_AND_HORIZONTAL"="Vertical and Horizontal"] visibility=[DaikinACUnit_Power==ON]
 Text item=DaikinACUnit_IndoorTemperature
 Text item=DaikinACUnit_OutdoorTemperature
-# Additional items for BRP15B61
+
+// for Airbase (BRP15B61)
+Switch item=DaikinACUnit_Power
+Setpoint item=DaikinACUnit_SetPoint visibility=[DaikinACUnit_Power==ON]
+Selection item=DaikinACUnit_Mode mappings=["AUTO"="Auto", "DEHUMIDIFIER"="Dehumidifier", "COLD"="Cold", "HEAT"="Heat", "FAN"="Fan"] visibility=[DaikinACUnit_Power==ON]
+Selection item=DaikinACUnit_Fan visibility=[DaikinACUnit_Power==ON]
+Text item=DaikinACUnit_IndoorTemperature
+Text item=DaikinACUnit_OutdoorTemperature
 Switch item=DaikinACUnit_Zone1 visibility=[DaikinACUnit_Power==ON]
 Switch item=DaikinACUnit_Zone2 visibility=[DaikinACUnit_Power==ON]
 Switch item=DaikinACUnit_Zone3 visibility=[DaikinACUnit_Power==ON]

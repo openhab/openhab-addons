@@ -5,49 +5,49 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<channel-type id="cases">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Total Cases</label>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="today_cases">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>New Cases</label>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="deaths">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Total Deaths</label>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="today_deaths">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>New Deaths</label>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="recovered">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Recovered</label>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="active">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Active</label>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="critical">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Critical</label>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="tests">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Tests</label>
 		<state readOnly="true"/>
 	</channel-type>
@@ -57,5 +57,5 @@
 		<label>Updated</label>
 		<state readOnly="true"/>
 	</channel-type>
-	
+
 </thing:thing-descriptions>

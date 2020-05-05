@@ -20,29 +20,30 @@ import org.openhab.binding.robonect.internal.RobonectClient;
  * @author Marco Meyer - Initial contribution
  */
 public class ErrorCommand implements Command {
-    
+
     private boolean reset = false;
 
     /**
      * has to be set to 'true' if the errors should be reset.
+     * 
      * @param reset - true if errors should be reset, false if the list of errors should be retrieved.
      * @return
      */
-    public ErrorCommand withReset(boolean reset){
+    public ErrorCommand withReset(boolean reset) {
         this.reset = reset;
         return this;
     }
 
     /**
-     * @param baseURL - will be passed by the {@link RobonectClient} in the form 
-     *                http://xxx.xxx.xxx/json?
+     * @param baseURL - will be passed by the {@link RobonectClient} in the form
+     *            http://xxx.xxx.xxx/json?
      * @return - the command for retrieving or resetting the error list.
      */
     @Override
     public String toCommandURL(String baseURL) {
-        if(reset){
+        if (reset) {
             return baseURL + "?cmd=error&reset";
-        }else {
+        } else {
             return baseURL + "?cmd=error";
         }
     }

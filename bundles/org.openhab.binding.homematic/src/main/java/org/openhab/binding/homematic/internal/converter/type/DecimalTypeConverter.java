@@ -51,5 +51,4 @@ public class DecimalTypeConverter extends AbstractTypeConverter<DecimalType> {
         }
         return new DecimalType(round(number.doubleValue()));
     }
-
 }

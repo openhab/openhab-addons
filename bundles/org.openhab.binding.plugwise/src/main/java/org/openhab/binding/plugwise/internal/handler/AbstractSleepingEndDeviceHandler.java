@@ -107,5 +107,4 @@ public abstract class AbstractSleepingEndDeviceHandler extends AbstractPlugwiseT
             updateStatus(OFFLINE, getThingStatusDetail());
         }
     }
-
 }

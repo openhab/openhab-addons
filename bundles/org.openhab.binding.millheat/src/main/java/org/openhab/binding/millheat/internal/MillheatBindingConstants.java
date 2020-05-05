@@ -59,5 +59,4 @@ public class MillheatBindingConstants {
             CHANNEL_TYPE_MASTER_SWITCH);
     public static final ChannelTypeUID CHANNEL_TYPE_TARGET_TEMPERATURE_HEATER_UID = new ChannelTypeUID(BINDING_ID,
             CHANNEL_TYPE_TARGET_TEMPERATURE_HEATER);
-
 }

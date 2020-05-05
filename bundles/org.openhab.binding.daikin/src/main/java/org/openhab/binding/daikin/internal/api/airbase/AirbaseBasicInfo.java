@@ -12,10 +12,13 @@
  */
 package org.openhab.binding.daikin.internal.api.airbase;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Optional;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.daikin.internal.api.InfoParser;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,34 +28,34 @@ import org.slf4j.LoggerFactory;
  * @author Paul Smedley - Initial contribution
  *
  */
+@NonNullByDefault
 public class AirbaseBasicInfo {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AirbaseBasicInfo.class);
+    private static final Logger logger = LoggerFactory.getLogger(AirbaseBasicInfo.class);
 
-    public String ssid;
+    public String mac = "";
+    public String ret = "";
+    public String ssid = "";
 
     private AirbaseBasicInfo() {
     }
 
     public static AirbaseBasicInfo parse(String response) {
-        LOGGER.debug("Parsing string: \"{}\"", response);
+        logger.debug("Parsing string: \"{}\"", response);
 
-        Map<String, String> responseMap = Arrays.asList(response.split(",")).stream().filter(kv -> kv.contains("="))
-                .map(kv -> {
-                    String[] keyValue = kv.split("=");
-                    String key = keyValue[0];
-                    String value = keyValue.length > 1 ? keyValue[1] : "";
-                    return new String[] { key, value };
-                }).collect(Collectors.toMap(x -> x[0], x -> x[1]));
+        Map<String, String> responseMap = InfoParser.parse(response);
 
         AirbaseBasicInfo info = new AirbaseBasicInfo();
-        info.ssid = responseMap.get("ssid");
+        info.mac = Optional.ofNullable(responseMap.get("mac")).orElse("");
+        info.ret = Optional.ofNullable(responseMap.get("ret")).orElse("");
+        info.ssid = Optional.ofNullable(responseMap.get("ssid")).orElse("");
         return info;
     }
 
     public Map<String, String> getParamString() {
         Map<String, String> params = new HashMap<>();
-        params.put("ssid", ssid);
+        if (!"".equals(ssid)) {
+            params.put("ssid", ssid);
+        }
         return params;
     }
-
 }

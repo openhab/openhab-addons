@@ -181,5 +181,4 @@ public class SacnPacket extends DmxOverEthernetPacket {
     public int getPacketLength() {
         return (126 + this.payloadSize);
     }
-
 }

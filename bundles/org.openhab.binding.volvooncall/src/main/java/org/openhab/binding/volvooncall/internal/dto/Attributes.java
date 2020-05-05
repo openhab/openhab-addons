@@ -75,5 +75,4 @@ public class Attributes {
      * private @Nullable List<String> sendPOIToVehicleVersionsSupported = null;
      * private @Nullable List<String> climatizationCalendarVersionsSupported = null;
      */
-
 }

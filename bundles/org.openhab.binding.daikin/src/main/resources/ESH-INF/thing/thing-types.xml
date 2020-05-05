@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="daikin" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="daikin"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -8,17 +9,18 @@
 		<description>Daikin AC Unit</description>
 
 		<channels>
-			<channel id="power" typeId="acunit-power" />
-			<channel id="settemp" typeId="acunit-settemp" />
-			<channel id="indoortemp" typeId="acunit-indoortemp" />
-			<channel id="outdoortemp" typeId="acunit-outdoortemp" />
-			<channel id="humidity" typeId="acunit-humidity" />
-			<channel id="mode" typeId="acunit-mode" />
-			<channel id="homekitmode" typeId="acunit-homekitmode" />
-			<channel id="fanspeed" typeId="acunit-fan" />
-			<channel id="fandir" typeId="acunit-fandir" />
+			<channel id="power" typeId="acunit-power"/>
+			<channel id="settemp" typeId="acunit-settemp"/>
+			<channel id="indoortemp" typeId="acunit-indoortemp"/>
+			<channel id="outdoortemp" typeId="acunit-outdoortemp"/>
+			<channel id="humidity" typeId="acunit-humidity"/>
+			<channel id="mode" typeId="acunit-mode"/>
+			<channel id="homekitmode" typeId="acunit-homekitmode"/>
+			<channel id="fanspeed" typeId="acunit-fan"/>
+			<channel id="fandir" typeId="acunit-fandir"/>
 		</channels>
 
+		<representation-property>host</representation-property>
 		<config-description-ref uri="thing-type:daikin:config" />
 	</thing-type>
 
@@ -27,24 +29,25 @@
 		<description>Daikin Airbase AC Unit</description>
 
 		<channels>
-			<channel id="power" typeId="acunit-power" />
-			<channel id="settemp" typeId="acunit-settemp" />
-			<channel id="indoortemp" typeId="acunit-indoortemp" />
-			<channel id="outdoortemp" typeId="acunit-outdoortemp" />
-			<channel id="mode" typeId="acunit-mode" />
-			<channel id="homekitmode" typeId="acunit-homekitmode" />
-			<channel id="airbasefanspeed" typeId="airbase-acunit-fan" />
-			<channel id="zone1" typeId="airbase-acunit-zone1" />
-			<channel id="zone2" typeId="airbase-acunit-zone2" />
-			<channel id="zone3" typeId="airbase-acunit-zone3" />
-			<channel id="zone4" typeId="airbase-acunit-zone4" />
-			<channel id="zone5" typeId="airbase-acunit-zone5" />
-			<channel id="zone6" typeId="airbase-acunit-zone6" />
-			<channel id="zone7" typeId="airbase-acunit-zone7" />
-			<channel id="zone8" typeId="airbase-acunit-zone8" />
+			<channel id="power" typeId="acunit-power"/>
+			<channel id="settemp" typeId="acunit-settemp"/>
+			<channel id="indoortemp" typeId="acunit-indoortemp"/>
+			<channel id="outdoortemp" typeId="acunit-outdoortemp"/>
+			<channel id="mode" typeId="acunit-mode"/>
+			<channel id="homekitmode" typeId="acunit-homekitmode"/>
+			<channel id="airbasefanspeed" typeId="airbase-acunit-fan"/>
+			<channel id="zone1" typeId="airbase-acunit-zone1"/>
+			<channel id="zone2" typeId="airbase-acunit-zone2"/>
+			<channel id="zone3" typeId="airbase-acunit-zone3"/>
+			<channel id="zone4" typeId="airbase-acunit-zone4"/>
+			<channel id="zone5" typeId="airbase-acunit-zone5"/>
+			<channel id="zone6" typeId="airbase-acunit-zone6"/>
+			<channel id="zone7" typeId="airbase-acunit-zone7"/>
+			<channel id="zone8" typeId="airbase-acunit-zone8"/>
 
 		</channels>
 
+		<representation-property>host</representation-property>
 		<config-description-ref uri="thing-type:daikin:config" />
 	</thing-type>
 
@@ -59,7 +62,7 @@
 		<label>Set Point</label>
 		<description>The set point temperature</description>
 		<category>Temperature</category>
-		<state pattern="%.1f %unit%" step="0.5" />
+		<state pattern="%.1f %unit%" step="0.5"/>
 	</channel-type>
 
 	<channel-type id="acunit-indoortemp">
@@ -67,7 +70,7 @@
 		<label>Indoor Temperature</label>
 		<description>The indoor temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" step="0.5" />
+		<state readOnly="true" pattern="%.1f %unit%" step="0.5"/>
 	</channel-type>
 
 	<channel-type id="acunit-outdoortemp">
@@ -75,14 +78,14 @@
 		<label>Outdoor Temperature</label>
 		<description>The outdoor temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" step="0.5" />
+		<state readOnly="true" pattern="%.1f %unit%" step="0.5"/>
 	</channel-type>
 
 	<channel-type id="acunit-humidity" advanced="true">
 		<item-type>Number</item-type>
 		<label>Indoor Humidity</label>
 		<description>The indoor humidity as measured by the A/C unit</description>
-		<state readOnly="true" pattern="%.0f%%" />
+		<state readOnly="true" pattern="%.0f%%"/>
 	</channel-type>
 
 	<channel-type id="acunit-mode">
@@ -130,7 +133,7 @@
 			</options>
 		</state>
 	</channel-type>
-	
+
 	<channel-type id="acunit-fandir">
 		<item-type>String</item-type>
 		<label>Fan Swing</label>

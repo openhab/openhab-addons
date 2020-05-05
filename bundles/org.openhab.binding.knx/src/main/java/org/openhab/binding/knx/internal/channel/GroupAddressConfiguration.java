@@ -49,5 +49,4 @@ public class GroupAddressConfiguration {
     public boolean isRead() {
         return read;
     }
-
 }

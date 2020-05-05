@@ -12,44 +12,52 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
+import java.math.BigDecimal;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.smarthome.core.items.ItemRegistry;
-import org.eclipse.smarthome.core.library.items.NumberItem;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
+import org.openhab.io.homekit.internal.HomekitCharacteristicType;
+import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
-import io.github.hapjava.HomekitCharacteristicChangeCallback;
-import io.github.hapjava.accessories.HumiditySensor;
+import io.github.hapjava.accessories.HumiditySensorAccessory;
+import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
+import io.github.hapjava.services.impl.HumiditySensorService;
 
 /**
  *
  * @author Andy Lintner - Initial contribution
  */
-public class HomekitHumiditySensorImpl extends AbstractHomekitAccessoryImpl<NumberItem> implements HumiditySensor {
+public class HomekitHumiditySensorImpl extends AbstractHomekitAccessoryImpl implements HumiditySensorAccessory {
+    private final static String CONFIG_MULTIPLICATOR = "homekitMultiplicator";
 
-    public HomekitHumiditySensorImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
-            HomekitAccessoryUpdater updater) {
-        super(taggedItem, itemRegistry, updater, NumberItem.class);
+    public HomekitHumiditySensorImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
+            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
+        super(taggedItem, mandatoryCharacteristics, updater, settings);
+        getServices().add(new HumiditySensorService(this));
     }
 
     @Override
     public CompletableFuture<Double> getCurrentRelativeHumidity() {
-        DecimalType state = getItem().getStateAs(DecimalType.class);
-        if (state == null) {
-            return CompletableFuture.completedFuture(null);
+        @Nullable
+        DecimalType state = getStateAs(HomekitCharacteristicType.RELATIVE_HUMIDITY, DecimalType.class);
+        if (state != null) {
+            BigDecimal multiplicator = getAccessoryConfiguration(CONFIG_MULTIPLICATOR, BigDecimal.valueOf(1.0));
+            return CompletableFuture.completedFuture((state.toBigDecimal().multiply(multiplicator)).doubleValue());
         }
-        return CompletableFuture.completedFuture(state.doubleValue());
+        return CompletableFuture.completedFuture(0.0);
     }
 
     @Override
     public void subscribeCurrentRelativeHumidity(HomekitCharacteristicChangeCallback callback) {
-        getUpdater().subscribe(getItem(), callback);
+        subscribe(HomekitCharacteristicType.RELATIVE_HUMIDITY, callback);
     }
 
     @Override
     public void unsubscribeCurrentRelativeHumidity() {
-        getUpdater().unsubscribe(getItem());
+        unsubscribe(HomekitCharacteristicType.RELATIVE_HUMIDITY);
     }
 }

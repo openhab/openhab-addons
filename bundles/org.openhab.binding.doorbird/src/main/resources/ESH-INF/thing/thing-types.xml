@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="doorbird" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="doorbird"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -11,25 +12,25 @@
 				<label>Doorbell</label>
 				<description>Trigger for doorbell press</description>
 			</channel>
-			<channel id="doorbellTimestamp" typeId="doorbellTimestamp" />
-			<channel id="doorbellImage" typeId="doorbellImage" />
-			<channel id="doorbellHistoryIndex" typeId="doorbellHistoryIndex" />
-			<channel id="doorbellHistoryTimestamp" typeId="doorbellHistoryTimestamp" />
-			<channel id="doorbellHistoryImage" typeId="doorbellHistoryImage" />
-			<channel id="doorbellMontage" typeId="doorbellMontage" />
-			<channel id="motion" typeId="system.motion" />
-			<channel id="motionTimestamp" typeId="motionTimestamp" />
-			<channel id="motionImage" typeId="motionImage" />
-			<channel id="motionHistoryIndex" typeId="motionHistoryIndex" />
-			<channel id="motionHistoryTimestamp" typeId="motionHistoryTimestamp" />
-			<channel id="motionHistoryImage" typeId="motionHistoryImage" />
-			<channel id="motionMontage" typeId="motionMontage" />
-			<channel id="light" typeId="light" />
-			<channel id="openDoor1" typeId="openDoor1" />
-			<channel id="image" typeId="image" />
-			<channel id="imageTimestamp" typeId="imageTimestamp" />
+			<channel id="doorbellTimestamp" typeId="doorbellTimestamp"/>
+			<channel id="doorbellImage" typeId="doorbellImage"/>
+			<channel id="doorbellHistoryIndex" typeId="doorbellHistoryIndex"/>
+			<channel id="doorbellHistoryTimestamp" typeId="doorbellHistoryTimestamp"/>
+			<channel id="doorbellHistoryImage" typeId="doorbellHistoryImage"/>
+			<channel id="doorbellMontage" typeId="doorbellMontage"/>
+			<channel id="motion" typeId="system.motion"/>
+			<channel id="motionTimestamp" typeId="motionTimestamp"/>
+			<channel id="motionImage" typeId="motionImage"/>
+			<channel id="motionHistoryIndex" typeId="motionHistoryIndex"/>
+			<channel id="motionHistoryTimestamp" typeId="motionHistoryTimestamp"/>
+			<channel id="motionHistoryImage" typeId="motionHistoryImage"/>
+			<channel id="motionMontage" typeId="motionMontage"/>
+			<channel id="light" typeId="light"/>
+			<channel id="openDoor1" typeId="openDoor1"/>
+			<channel id="image" typeId="image"/>
+			<channel id="imageTimestamp" typeId="imageTimestamp"/>
 		</channels>
-		<config-description-ref uri="thing-type:doorbird:config" />
+		<config-description-ref uri="thing-type:doorbird:config"/>
 	</thing-type>
 
 	<thing-type id="d210x">
@@ -40,37 +41,37 @@
 				<label>Doorbell</label>
 				<description>Trigger for doorbell press</description>
 			</channel>
-			<channel id="doorbellTimestamp" typeId="doorbellTimestamp" />
-			<channel id="doorbellImage" typeId="doorbellImage" />
-			<channel id="doorbellHistoryIndex" typeId="doorbellHistoryIndex" />
-			<channel id="doorbellHistoryTimestamp" typeId="doorbellHistoryTimestamp" />
-			<channel id="doorbellHistoryImage" typeId="doorbellHistoryImage" />
-			<channel id="doorbellMontage" typeId="doorbellMontage" />
-			<channel id="motion" typeId="system.motion" />
-			<channel id="motionTimestamp" typeId="motionTimestamp" />
-			<channel id="motionImage" typeId="motionImage" />
-			<channel id="motionHistoryIndex" typeId="motionHistoryIndex" />
-			<channel id="motionHistoryTimestamp" typeId="motionHistoryTimestamp" />
-			<channel id="motionHistoryImage" typeId="motionHistoryImage" />
-			<channel id="motionMontage" typeId="motionMontage" />
-			<channel id="light" typeId="light" />
-			<channel id="openDoor1" typeId="openDoor1" />
-			<channel id="openDoor2" typeId="openDoor2" />
-			<channel id="image" typeId="image" />
-			<channel id="imageTimestamp" typeId="imageTimestamp" />
+			<channel id="doorbellTimestamp" typeId="doorbellTimestamp"/>
+			<channel id="doorbellImage" typeId="doorbellImage"/>
+			<channel id="doorbellHistoryIndex" typeId="doorbellHistoryIndex"/>
+			<channel id="doorbellHistoryTimestamp" typeId="doorbellHistoryTimestamp"/>
+			<channel id="doorbellHistoryImage" typeId="doorbellHistoryImage"/>
+			<channel id="doorbellMontage" typeId="doorbellMontage"/>
+			<channel id="motion" typeId="system.motion"/>
+			<channel id="motionTimestamp" typeId="motionTimestamp"/>
+			<channel id="motionImage" typeId="motionImage"/>
+			<channel id="motionHistoryIndex" typeId="motionHistoryIndex"/>
+			<channel id="motionHistoryTimestamp" typeId="motionHistoryTimestamp"/>
+			<channel id="motionHistoryImage" typeId="motionHistoryImage"/>
+			<channel id="motionMontage" typeId="motionMontage"/>
+			<channel id="light" typeId="light"/>
+			<channel id="openDoor1" typeId="openDoor1"/>
+			<channel id="openDoor2" typeId="openDoor2"/>
+			<channel id="image" typeId="image"/>
+			<channel id="imageTimestamp" typeId="imageTimestamp"/>
 		</channels>
-		<config-description-ref uri="thing-type:doorbird:config" />
+		<config-description-ref uri="thing-type:doorbird:config"/>
 	</thing-type>
 
 	<thing-type id="a1081">
 		<label>Doorbird A1081 Controller</label>
 		<description>Doorbird model A1081 Controller</description>
 		<channels>
-			<channel id="openDoor1" typeId="openDoor1" />
-			<channel id="openDoor2" typeId="openDoor2" />
-			<channel id="openDoor3" typeId="openDoor3" />
+			<channel id="openDoor1" typeId="openDoor1"/>
+			<channel id="openDoor2" typeId="openDoor2"/>
+			<channel id="openDoor3" typeId="openDoor3"/>
 		</channels>
-		<config-description-ref uri="thing-type:controller:config" />
+		<config-description-ref uri="thing-type:controller:config"/>
 	</thing-type>
 
 	<channel-type id="doorbellTimestamp">

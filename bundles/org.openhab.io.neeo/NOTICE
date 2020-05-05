@@ -11,3 +11,9 @@ https://www.eclipse.org/legal/epl-2.0/.
 == Source Code
 
 https://github.com/openhab/openhab-addons
+
+== Third-party Content
+
+This binding includes a class from Jersey in the src/3rdparty/java folder.
+* License: CDDL License
+* Project: https://eclipse-ee4j.github.io/jersey/

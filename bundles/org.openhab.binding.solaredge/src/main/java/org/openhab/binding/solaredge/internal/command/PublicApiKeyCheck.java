@@ -51,5 +51,4 @@ public class PublicApiKeyCheck extends AbstractCommandCallback implements SolarE
     public void onComplete(Result result) {
         getListener().update(getCommunicationStatus());
     }
-
 }

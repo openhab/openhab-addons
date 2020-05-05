@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
 		https://openhab.org/schemas/config-description-1.0.0.xsd">
@@ -60,7 +61,7 @@
 			<advanced>true</advanced>
 		</parameter>
 
-		<parameter name="reconnectInterval" type="integer" required="true">
+		<parameter name="reconnectInterval" type="integer" unit="s" required="true">
 			<label>Reconnect Interval</label>
 			<description>The reconnection interval to Netatmo API (in s).</description>
 			<default>5400</default>
@@ -84,7 +85,7 @@
 			<required>true</required>
 		</parameter>
 
-		<parameter name="refreshInterval" type="integer" required="false">
+		<parameter name="refreshInterval" type="integer" unit="ms" required="false">
 			<label>Refresh Interval</label>
 			<description>The refresh interval to poll Netatmo API (in ms).</description>
 			<default>300000</default>
@@ -133,7 +134,7 @@
 			<description>UUID of the home</description>
 		</parameter>
 
-		<parameter name="refreshInterval" type="integer" required="false">
+		<parameter name="refreshInterval" type="integer" unit="ms" required="false">
 			<label>Refresh Interval</label>
 			<description>The refresh interval to poll Netatmo API (in ms).</description>
 			<default>300000</default>

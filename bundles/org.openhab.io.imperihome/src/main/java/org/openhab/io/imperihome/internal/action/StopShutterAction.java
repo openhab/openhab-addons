@@ -47,7 +47,8 @@ public class StopShutterAction extends Action {
         String modeDeviceName = device.getLinks().get("stopper");
         AbstractDevice modeDevice = deviceRegistry.getDevice(ItemProcessor.getDeviceId(modeDeviceName));
         if (modeDevice == null) {
-            logger.error("Couldn't resolve linked Stopper device '{}', make sure the Item has iss tags", modeDeviceName);
+            logger.error("Couldn't resolve linked Stopper device '{}', make sure the Item has iss tags",
+                    modeDeviceName);
             return;
         }
 
@@ -56,5 +57,4 @@ public class StopShutterAction extends Action {
         ItemCommandEvent event = ItemEventFactory.createCommandEvent(modeItem.getName(), OnOffType.ON, COMMAND_SOURCE);
         eventPublisher.post(event);
     }
-
 }

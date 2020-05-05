@@ -53,12 +53,12 @@ final class ThirdGenerationHttpHelper {
      * Helper function to execute a HTTP post request
      *
      * @param httpClient httpClient to use for communication
-     * @param url        IP or hostname or the device
-     * @param resource   web API resource to post to
+     * @param url IP or hostname or the device
+     * @param resource web API resource to post to
      * @param parameters the JSON content to post
      * @return the HTTP response for the created post request
-     * @throws ExecutionException   Error during the execution of the http request
-     * @throws TimeoutException     Connection timed out
+     * @throws ExecutionException Error during the execution of the http request
+     * @throws TimeoutException Connection timed out
      * @throws InterruptedException Connection interrupted
      */
     static ContentResponse executeHttpPost(HttpClient httpClient, String url, String resource, JsonObject parameters)
@@ -70,13 +70,13 @@ final class ThirdGenerationHttpHelper {
      * Helper function to execute a HTTP post request
      *
      * @param httpClient httpClient to use for communication
-     * @param url        IP or hostname or the device
-     * @param resource   web API resource to post to
-     * @param sessionId  optional session ID
+     * @param url IP or hostname or the device
+     * @param resource web API resource to post to
+     * @param sessionId optional session ID
      * @param parameters the JSON content to post
      * @return the HTTP response for the created post request
-     * @throws ExecutionException   Error during the execution of the http request
-     * @throws TimeoutException     Connection timed out
+     * @throws ExecutionException Error during the execution of the http request
+     * @throws TimeoutException Connection timed out
      * @throws InterruptedException Connection interrupted
      */
     static ContentResponse executeHttpPost(HttpClient httpClient, String url, String resource, JsonElement parameters,
@@ -96,11 +96,11 @@ final class ThirdGenerationHttpHelper {
      * Helper function to execute a HTTP get request
      *
      * @param httpClient httpClient to use for communication
-     * @param url        IP or hostname or the device
-     * @param resource   web API resource to get
+     * @param url IP or hostname or the device
+     * @param resource web API resource to get
      * @return the HTTP response for the created get request
-     * @throws ExecutionException   Error during the execution of the http request
-     * @throws TimeoutException     Connection timed out
+     * @throws ExecutionException Error during the execution of the http request
+     * @throws TimeoutException Connection timed out
      * @throws InterruptedException Connection interrupted
      */
     static ContentResponse executeHttpGet(HttpClient httpClient, String url, String resource)
@@ -112,14 +112,14 @@ final class ThirdGenerationHttpHelper {
      * Helper function to execute a HTTP get request
      *
      * @param httpClient httpClient to use for communication
-     * @param url        IP or hostname or the device
-     * @param resource   web API resource to get
-     * @param sessionId  optional session ID
+     * @param url IP or hostname or the device
+     * @param resource web API resource to get
+     * @param sessionId optional session ID
      * @return the HTTP response for the created get request
-     * @throws ExecutionException   Error during the execution of the http request
-     * @throws TimeoutException     Connection timed out
+     * @throws ExecutionException Error during the execution of the http request
+     * @throws TimeoutException Connection timed out
      * @throws InterruptedException Connection interrupted
-     * @throws Exception            thrown if there are communication problems
+     * @throws Exception thrown if there are communication problems
      */
     static ContentResponse executeHttpGet(HttpClient httpClient, String url, String resource,
             @Nullable String sessionId) throws InterruptedException, TimeoutException, ExecutionException {

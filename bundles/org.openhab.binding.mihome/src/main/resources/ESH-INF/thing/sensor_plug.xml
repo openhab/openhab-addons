@@ -6,16 +6,16 @@
 
 	<thing-type id="sensor_plug">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Xiaomi Mi Smart Socket Plug</label>
 		<description>Allows you to enable or disable the socket, read voltage, current and power consumption.</description>
 		<channels>
-			<channel id="power" typeId="power" />
-			<channel id="inUse" typeId="inUse" />
-			<channel id="loadPower" typeId="loadPower" />
-			<channel id="powerConsumed" typeId="powerConsumed" />
+			<channel id="power" typeId="power"/>
+			<channel id="inUse" typeId="inUse"/>
+			<channel id="loadPower" typeId="loadPower"/>
+			<channel id="powerConsumed" typeId="powerConsumed"/>
 		</channels>
-		<config-description-ref uri="thing-type:mihome:device" />
+		<config-description-ref uri="thing-type:mihome:device"/>
 	</thing-type>
 </thing:thing-descriptions>

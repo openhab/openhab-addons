@@ -47,5 +47,4 @@ public class ReadRequestSpecImpl extends AbstractSpec implements InboundSpec {
     public List<GroupAddress> getGroupAddresses() {
         return readAddresses;
     }
-
 }

@@ -143,7 +143,6 @@ public class ButtonDatapointTest extends JavaTest {
             if (dp.isPressDatapoint() && MiscUtils.isTrueValue(dp.getValue())) {
                 disableDatapoint(dp);
             }
-
         }
 
         private void disableDatapoint(HmDatapoint dp) {
@@ -155,7 +154,5 @@ public class ButtonDatapointTest extends JavaTest {
                 }
             }).start();
         }
-
     }
-
 }

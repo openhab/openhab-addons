@@ -209,5 +209,4 @@ public enum TumbleDryerChannelSelector implements ApplianceChannelSelector {
 
         return null;
     }
-
 }

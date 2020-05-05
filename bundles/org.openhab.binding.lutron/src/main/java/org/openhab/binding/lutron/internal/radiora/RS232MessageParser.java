@@ -61,5 +61,4 @@ public class RS232MessageParser {
 
         return arr[0];
     }
-
 }

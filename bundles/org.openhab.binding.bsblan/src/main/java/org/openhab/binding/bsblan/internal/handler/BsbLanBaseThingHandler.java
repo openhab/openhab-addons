@@ -23,10 +23,8 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-
-import org.openhab.binding.bsblan.internal.configuration.BsbLanBridgeConfiguration;
 import org.openhab.binding.bsblan.internal.api.BsbLanApiCaller;
-
+import org.openhab.binding.bsblan.internal.configuration.BsbLanBridgeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +72,7 @@ public abstract class BsbLanBaseThingHandler extends BaseThingHandler {
             }
             ThingHandler handler = bridge.getHandler();
             if (handler instanceof BsbLanBridgeHandler) {
-                this.bridgeHandler = (BsbLanBridgeHandler)handler;
+                this.bridgeHandler = (BsbLanBridgeHandler) handler;
             }
         }
         return this.bridgeHandler;

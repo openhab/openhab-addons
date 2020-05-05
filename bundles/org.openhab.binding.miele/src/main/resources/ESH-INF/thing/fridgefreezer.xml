@@ -1,29 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="miele" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="miele"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Fridge freezer -->
 	<thing-type id="fridgefreezer">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="xgw3000" />
+			<bridge-type-ref id="xgw3000"/>
 		</supported-bridge-type-refs>
 
 		<label>Fridge Freezer</label>
 		<description>This is a Miele@home compatible fridgefreezer</description>
 
 		<channels>
-			<channel id="state" typeId="state" />
-			<channel id="freezerstate" typeId="freezerstate" />
-			<channel id="fridgestate" typeId="fridgestate" />
-			<channel id="supercool" typeId="supercool" />
-			<channel id="superfreeze" typeId="superfreeze" />
-			<channel id="freezercurrent" typeId="freezercurrent" />
-			<channel id="freezertarget" typeId="freezertarget" />
-			<channel id="fridgecurrent" typeId="fridgecurrent" />
-			<channel id="fridgetarget" typeId="fridgetarget" />
-			<channel id="door" typeId="door" />
-			<channel id="start" typeId="switch" />
+			<channel id="state" typeId="state"/>
+			<channel id="freezerstate" typeId="freezerstate"/>
+			<channel id="fridgestate" typeId="fridgestate"/>
+			<channel id="supercool" typeId="supercool"/>
+			<channel id="superfreeze" typeId="superfreeze"/>
+			<channel id="freezercurrent" typeId="freezercurrent"/>
+			<channel id="freezertarget" typeId="freezertarget"/>
+			<channel id="fridgecurrent" typeId="fridgecurrent"/>
+			<channel id="fridgetarget" typeId="fridgetarget"/>
+			<channel id="door" typeId="door"/>
+			<channel id="start" typeId="switch"/>
 		</channels>
 
 		<config-description>

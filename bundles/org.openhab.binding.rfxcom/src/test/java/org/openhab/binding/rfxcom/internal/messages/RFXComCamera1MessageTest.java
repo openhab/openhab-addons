@@ -29,5 +29,4 @@ public class RFXComCamera1MessageTest {
     public void checkNotImplemented() throws Exception {
         RFXComMessageFactory.createMessage(PacketType.CAMERA1);
     }
-
 }
