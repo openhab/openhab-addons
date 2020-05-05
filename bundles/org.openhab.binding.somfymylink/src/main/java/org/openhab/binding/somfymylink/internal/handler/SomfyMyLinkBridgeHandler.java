@@ -354,8 +354,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                             Thread.sleep(CONNECTION_DELAY);
                             return;
                         } catch (SomfyMyLinkException e) {
-                            future.completeExceptionally(
-                                    new SomfyMyLinkException("Timeout waiting for reply from mylink"));
+                            future.completeExceptionally(e);
                             return;
                         }
                     }
