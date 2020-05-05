@@ -37,6 +37,7 @@ import org.openhab.binding.hue.internal.discovery.HueLightDiscoveryService;
 import org.openhab.binding.hue.internal.handler.HueBridgeHandler;
 import org.openhab.binding.hue.internal.handler.HueGroupHandler;
 import org.openhab.binding.hue.internal.handler.HueLightHandler;
+import org.openhab.binding.hue.internal.handler.HueStateDescriptionOptionProvider;
 import org.openhab.binding.hue.internal.handler.sensors.ClipHandler;
 import org.openhab.binding.hue.internal.handler.sensors.DimmerSwitchHandler;
 import org.openhab.binding.hue.internal.handler.sensors.LightLevelHandler;
@@ -45,6 +46,7 @@ import org.openhab.binding.hue.internal.handler.sensors.TapSwitchHandler;
 import org.openhab.binding.hue.internal.handler.sensors.TemperatureHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * {@link HueThingHandlerFactory} is a factory for {@link HueBridgeHandler}s.
@@ -68,6 +70,9 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
                     HueGroupHandler.SUPPORTED_THING_TYPES.stream()).flatMap(i -> i).collect(Collectors.toSet()));
 
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+
+    @NonNullByDefault({})
+    private HueStateDescriptionOptionProvider stateOptionProvider;
 
     @Override
     public @Nullable Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
@@ -136,7 +141,7 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (HueBridgeHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            HueBridgeHandler handler = new HueBridgeHandler((Bridge) thing);
+            HueBridgeHandler handler = new HueBridgeHandler((Bridge) thing, stateOptionProvider);
             registerLightDiscoveryService(handler);
             return handler;
         } else if (HueLightHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
@@ -181,5 +186,14 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
                 }
             }
         }
+    }
+
+    @Reference
+    protected void setHueStateDescriptionOptionProvider(HueStateDescriptionOptionProvider stateOptionProvider) {
+        this.stateOptionProvider = stateOptionProvider;
+    }
+
+    protected void unsetHueStateDescriptionOptionProvider(HueStateDescriptionOptionProvider stateOptionProvider) {
+        this.stateOptionProvider = null;
     }
 }
