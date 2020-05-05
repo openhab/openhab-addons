@@ -98,7 +98,8 @@ public class PhilipsAirHandler extends BaseThingHandler {
                 value = command == OnOffType.ON;
 
             } else {
-                value = ((OnOffType) command) == OnOffType.ON ? "1" : "0";
+                value = command == OnOffType.ON ? "1" : "0";
+
             }
         } else if (command instanceof DecimalType) {
             value = ((DecimalType) command).intValue();
