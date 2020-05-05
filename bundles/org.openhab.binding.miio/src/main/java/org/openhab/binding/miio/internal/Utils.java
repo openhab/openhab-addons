@@ -79,6 +79,17 @@ public final class Utils {
         return hex.toString();
     }
 
+    public static String obfuscateToken(String tokenString) {
+        if (tokenString.length() > 8) {
+            String tokenText = tokenString.substring(0, 8)
+                    .concat((tokenString.length() < 24) ? tokenString.substring(8).replaceAll(".", "X")
+                            : tokenString.substring(8, 24).replaceAll(".", "X").concat(tokenString.substring(24)));
+            return tokenText;
+        } else {
+            return tokenString;
+        }
+    }
+
     public static JsonObject convertFileToJSON(URL fileName) throws JsonIOException, JsonSyntaxException, IOException {
         JsonObject jsonObject = new JsonObject();
         JsonParser parser = new JsonParser();
