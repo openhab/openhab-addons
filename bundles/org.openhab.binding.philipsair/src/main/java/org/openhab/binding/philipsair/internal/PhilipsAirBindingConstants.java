@@ -93,9 +93,9 @@ public class PhilipsAirBindingConstants {
      */
     public static final String BUTTONS_LIGHT = "uil";
     /**
-     * Light birightness
+     * Light birightness level
      */
-    public static final String LED_LIGHT_BRIGHTNESS = "aqil";
+    public static final String LED_LIGHT_LEVEL = "aqil";
     /**
      * Index used to show air quality
      */

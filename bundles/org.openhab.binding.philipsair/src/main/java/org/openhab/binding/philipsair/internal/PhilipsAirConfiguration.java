@@ -61,28 +61,30 @@ public class PhilipsAirConfiguration {
         Validate.notNull(properties);
 
         for (Map.Entry<String, Object> e : properties.entrySet()) {
-            switch (e.getKey()) {
-                case CONFIG_KEY:
-                    setKey((String) e.getValue());
-                    break;
-                case CONFIG_HOST:
-                    setHost((String) e.getValue());
-                    break;
-                case CONFIG_DEF_REFRESH_INTERVAL:
-                    setRefreshInterval((Integer) e.getValue());
-                    break;
-                case CONFIG_DEF_DEVICE_UUID:
-                    setDeviceUUID((String) e.getValue());
-                    break;
-                case CONFIG_DEF_MODEL_ID:
-                    setModelid((String) e.getValue());
-                    break;
-                case CONFIG_DEF_HUMIDITY_OFFSET:
-                    setHumidityOffset((float) e.getValue());
-                    break;
-                case CONFIG_DEF_TEMPERATURE_OFFSET:
-                    setTemperatureOffset((float) e.getValue());
-                    break;
+            if (e.getKey() != null) {
+                switch (e.getKey()) {
+                    case CONFIG_KEY:
+                        setKey((String) e.getValue());
+                        break;
+                    case CONFIG_HOST:
+                        setHost((String) e.getValue());
+                        break;
+                    case CONFIG_DEF_REFRESH_INTERVAL:
+                        setRefreshInterval((Integer) e.getValue());
+                        break;
+                    case CONFIG_DEF_DEVICE_UUID:
+                        setDeviceUUID((String) e.getValue());
+                        break;
+                    case CONFIG_DEF_MODEL_ID:
+                        setModelid((String) e.getValue());
+                        break;
+                    case CONFIG_DEF_HUMIDITY_OFFSET:
+                        setHumidityOffset((float) e.getValue());
+                        break;
+                    case CONFIG_DEF_TEMPERATURE_OFFSET:
+                        setTemperatureOffset((float) e.getValue());
+                        break;
+                }
             }
 
         }

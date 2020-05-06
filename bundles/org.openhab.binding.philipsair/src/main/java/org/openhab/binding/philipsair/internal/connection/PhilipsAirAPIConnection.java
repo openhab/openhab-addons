@@ -13,7 +13,11 @@
 package org.openhab.binding.philipsair.internal.connection;
 
 import static org.eclipse.jetty.http.HttpMethod.PUT;
-import static org.eclipse.jetty.http.HttpStatus.*;
+import static org.eclipse.jetty.http.HttpStatus.BAD_REQUEST_400;
+import static org.eclipse.jetty.http.HttpStatus.NOT_FOUND_404;
+import static org.eclipse.jetty.http.HttpStatus.OK_200;
+import static org.eclipse.jetty.http.HttpStatus.TOO_MANY_REQUESTS_429;
+import static org.eclipse.jetty.http.HttpStatus.UNAUTHORIZED_401;
 
 import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
@@ -29,6 +33,7 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -37,9 +42,10 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.smarthome.core.cache.ExpiringCacheMap;
 import org.openhab.binding.philipsair.internal.PhilipsAirConfiguration;
-import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierData;
-import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDevice;
-import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierFilters;
+import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDataDTO;
+import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDeviceDTO;
+import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierFiltersDTO;
+import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierWritableDataDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,6 +59,8 @@ import com.google.gson.JsonSyntaxException;
  * @author Michał Boroński - Initial contribution
  *
  */
+
+@NonNullByDefault
 public class PhilipsAirAPIConnection {
     private final Logger logger = LoggerFactory.getLogger(PhilipsAirAPIConnection.class);
     private static final String BASE_UPNP_URL = "http://%HOST%/upnp/description.xml";
@@ -69,7 +77,9 @@ public class PhilipsAirAPIConnection {
 
     private final Gson gson = new Gson();
     private long cooldownTimer = 0;
-    private PhilipsAirCipher cipher;
+
+    @Nullable
+    private PhilipsAirCipher cipher = null;
 
     private PhilipsAirConfiguration config;
 
@@ -88,8 +98,8 @@ public class PhilipsAirAPIConnection {
             }
 
             this.cipher.initKey(config.getKey());
-        } catch (GeneralSecurityException | ExecutionException | TimeoutException | InterruptedException e) {
-            logger.error("An exception occured", e);
+        } catch (GeneralSecurityException | PhilipsAirAPIException | InterruptedException e) {
+            logger.warn("An exception occured", e);
             this.cipher = null;
         }
     }
@@ -99,9 +109,9 @@ public class PhilipsAirAPIConnection {
         return getResponseFromCache(buildURL(BASE_UPNP_URL, host));
     }
 
-    public synchronized @Nullable PhilipsAirPurifierData getAirPurifierStatus(String host)
+    public synchronized @Nullable PhilipsAirPurifierDataDTO getAirPurifierStatus(String host)
             throws JsonSyntaxException, PhilipsAirAPIException {
-        return gson.fromJson(getResponseFromCache(buildURL(STATUS_URL, host)), PhilipsAirPurifierData.class);
+        return gson.fromJson(getResponseFromCache(buildURL(STATUS_URL, host)), PhilipsAirPurifierDataDTO.class);
     }
 
     public synchronized @Nullable String getAirPurifierKey(String host)
@@ -114,9 +124,9 @@ public class PhilipsAirAPIConnection {
         return getResponseFromCache(buildURL(FIRMWARE_URL, host));
     }
 
-    public synchronized @Nullable PhilipsAirPurifierDevice getAirPurifierDevice(String host)
+    public synchronized @Nullable PhilipsAirPurifierDeviceDTO getAirPurifierDevice(String host)
             throws JsonSyntaxException, PhilipsAirAPIException {
-        return gson.fromJson(getResponseFromCache(buildURL(DEVICE_URL, host)), PhilipsAirPurifierDevice.class);
+        return gson.fromJson(getResponseFromCache(buildURL(DEVICE_URL, host)), PhilipsAirPurifierDeviceDTO.class);
     }
 
     public synchronized @Nullable String getAirPurifierUserinfo(String host)
@@ -124,9 +134,9 @@ public class PhilipsAirAPIConnection {
         return getResponseFromCache(buildURL(USERINFO_URL, host));
     }
 
-    public synchronized @Nullable PhilipsAirPurifierFilters getAirPurifierFiltersStatus(String host)
+    public synchronized @Nullable PhilipsAirPurifierFiltersDTO getAirPurifierFiltersStatus(String host)
             throws JsonSyntaxException, PhilipsAirAPIException {
-        return gson.fromJson(getResponseFromCache(buildURL(FILTERS_URL, host)), PhilipsAirPurifierFilters.class);
+        return gson.fromJson(getResponseFromCache(buildURL(FILTERS_URL, host)), PhilipsAirPurifierFiltersDTO.class);
     }
 
     private static String buildURL(String url, String host) {
@@ -137,10 +147,10 @@ public class PhilipsAirAPIConnection {
         return cache.putIfAbsentAndGet(url, () -> getResponse(url, HttpMethod.GET, null, true));
     }
 
-    private String getResponse(String url, HttpMethod method, String content, boolean decode) {
+    private String getResponse(String url, HttpMethod method, @Nullable String content, boolean decode) {
         try {
             if (decode && cipher == null) {
-                logger.error("Cipher not initialized");
+                logger.warn("Cipher not initialized");
                 config.setKey("");
                 initCipher();
             }
@@ -194,12 +204,12 @@ public class PhilipsAirAPIConnection {
             logger.debug("Exception occurred during execution: {}", e.getLocalizedMessage(), e);
             throw new PhilipsAirAPIException(e.getLocalizedMessage(), e.getCause());
         } catch (Exception e) {
-            logger.error("Unexpected exception occurred during execution: {}", e.getLocalizedMessage(), e);
+            logger.warn("Unexpected exception occurred during execution: {}", e.getLocalizedMessage(), e);
             throw new PhilipsAirAPIException(e.getLocalizedMessage(), e.getCause());
         }
     }
 
-    public String exchangeKeys() throws PhilipsAirAPIException, InterruptedException {
+    public @Nullable String exchangeKeys() throws PhilipsAirAPIException, InterruptedException {
         if (this.cipher == null) {
             return null;
         }
@@ -211,23 +221,24 @@ public class PhilipsAirAPIConnection {
         JsonObject encodedJson = gson.fromJson(encodedContent, JsonObject.class);
         String key = encodedJson.get("key").getAsString();
         String hellman = encodedJson.get("hellman").getAsString();
-        String aesKey = this.cipher.calculateKey(hellman, key);
+        String aesKey;
+        try {
+            aesKey = this.cipher.calculateKey(hellman, key);
+        } catch (GeneralSecurityException | TimeoutException | ExecutionException e) {
+            throw new PhilipsAirAPIException(e);
+        }
+
         config.setKey(aesKey);
         return aesKey;
     }
 
-    public PhilipsAirPurifierData sendCommand(String parameter, Object value)
+    public @Nullable PhilipsAirPurifierDataDTO sendCommand(String parameter, PhilipsAirPurifierWritableDataDTO value)
             throws IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException, InvalidKeyException,
             NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException {
-        String commandValue = null;
-        if (parameter.equals("om")) {
-            commandValue = "{\"om\":\"" + value + "\",\"mode\":\"M\"}";
-        } else if ((value instanceof String)) {
-            commandValue = "{\"" + parameter + "\":\"" + value + "\"}";
-        } else {
-            commandValue = "{\"" + parameter + "\":" + value + "}";
-        }
 
+        Gson gson = new Gson();
+
+        String commandValue = gson.toJson(value);
         logger.info("{}", commandValue);
         commandValue = this.cipher.encrypt(commandValue.toString());
         if (commandValue == null || commandValue.isEmpty()) {
@@ -236,6 +247,6 @@ public class PhilipsAirAPIConnection {
 
         String response = getResponse(buildURL(STATUS_URL, config.getHost()), PUT, commandValue.toString(), true);
         logger.info("{}", response);
-        return gson.fromJson(response, PhilipsAirPurifierData.class);
+        return gson.fromJson(response, PhilipsAirPurifierDataDTO.class);
     }
 }

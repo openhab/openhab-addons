@@ -12,7 +12,12 @@
  */
 package org.openhab.binding.philipsair.internal.discovery;
 
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.*;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.SUPPORTED_THING_TYPES_UIDS;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.THING_TYPE_AC1214_10;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.THING_TYPE_AC2729;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.THING_TYPE_AC2889_10;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.THING_TYPE_AC3829_10;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.THING_TYPE_UNIVERSAL;
 
 import java.util.Dictionary;
 import java.util.HashMap;
@@ -107,8 +112,7 @@ public class PhilipsAirUpnpDiscoveryParticipant implements UpnpDiscoveryParticip
         String modelName = modelDetails != null ? modelDetails.getModelName().toLowerCase() : null;
 
         if (details == null || modelDetails == null
-                || !PhilipsAirBindingConstants.DISCOVERY_UPNP_MODEL
-                        .equalsIgnoreCase(modelName)) {
+                || !PhilipsAirBindingConstants.DISCOVERY_UPNP_MODEL.equalsIgnoreCase(modelName)) {
 
             logger.trace("Device not recognized {}", device.toString());
             return null;
@@ -116,17 +120,13 @@ public class PhilipsAirUpnpDiscoveryParticipant implements UpnpDiscoveryParticip
 
         String modelNumber = modelDetails.getModelNumber().toLowerCase();
         ThingTypeUID thingType = THING_TYPE_UNIVERSAL;
-        if (PhilipsAirBindingConstants.SUPPORTED_MODEL_NUMBER_AC2889_10
-                .startsWith(modelNumber)) {
+        if (PhilipsAirBindingConstants.SUPPORTED_MODEL_NUMBER_AC2889_10.startsWith(modelNumber)) {
             thingType = THING_TYPE_AC2889_10;
-        } else if (PhilipsAirBindingConstants.SUPPORTED_MODEL_NUMBER_AC1214_10
-                .startsWith(modelNumber)) {
+        } else if (PhilipsAirBindingConstants.SUPPORTED_MODEL_NUMBER_AC1214_10.startsWith(modelNumber)) {
             thingType = THING_TYPE_AC1214_10;
-        } else if (PhilipsAirBindingConstants.SUPPORTED_MODEL_NUMBER_AC2729
-                .startsWith(modelNumber)) {
+        } else if (PhilipsAirBindingConstants.SUPPORTED_MODEL_NUMBER_AC2729.startsWith(modelNumber)) {
             thingType = THING_TYPE_AC2729;
-        } else if (PhilipsAirBindingConstants.SUPPORTED_MODEL_NUMBER_AC3829_10
-                .startsWith(modelNumber)) {
+        } else if (PhilipsAirBindingConstants.SUPPORTED_MODEL_NUMBER_AC3829_10.startsWith(modelNumber)) {
             thingType = THING_TYPE_AC3829_10;
         } else {
             thingType = THING_TYPE_UNIVERSAL;

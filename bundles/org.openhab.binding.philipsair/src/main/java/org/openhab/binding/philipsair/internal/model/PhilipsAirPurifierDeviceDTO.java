@@ -21,7 +21,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Michał Boroński - Initial contribution
  *
  */
-public class PhilipsAirPurifierDevice {
+public class PhilipsAirPurifierDeviceDTO {
 
     @SerializedName("name")
     @Expose

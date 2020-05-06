@@ -12,12 +12,17 @@
  */
 package org.openhab.binding.philipsair.internal;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.io.UnsupportedEncodingException;
@@ -68,6 +73,7 @@ import org.openhab.binding.philipsair.internal.connection.PhilipsAirCipher;
  *
  * @author michalboronski - Initial contribution
  */
+
 public class PhilipsAirHandlerTest extends JavaTest {
 
     private PhilipsAirHandler handler;

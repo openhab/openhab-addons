@@ -12,79 +12,59 @@
  */
 package org.openhab.binding.philipsair.internal.model;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.BiConsumer;
+
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Holds status of particular features of the Air Purifier thing
+ * Holds status of particular features of the Air Purifier thing that can be changed by the user via commands
  *
  * @author Michał Boroński - Initial contribution
  * @Nullable
  *
  */
-public class PhilipsAirPurifierData {
-    @SerializedName("om")
+public class PhilipsAirPurifierWritableDataDTO {
+
+    @SerializedName(PhilipsAirBindingConstants.FAN_MODE)
     @Expose
     private String fanSpeed;
-    @SerializedName("pwr")
+    @SerializedName(PhilipsAirBindingConstants.POWER)
     @Expose
-    private int power;
-    @SerializedName("cl")
+    private Integer power;
+    @SerializedName(PhilipsAirBindingConstants.CHILD_LOCK)
     @Expose
-    private boolean childLock;
-    @SerializedName("aqil")
+    private Boolean childLock;
+    @SerializedName(PhilipsAirBindingConstants.LED_LIGHT_LEVEL)
     @Expose
-    private int lightLevel;
-    @SerializedName("uil")
+    private Integer lightLevel;
+    @SerializedName(PhilipsAirBindingConstants.BUTTONS_LIGHT)
     @Expose
-    private int buttons;
-    @SerializedName("dt")
+    private Integer buttons;
+    @SerializedName(PhilipsAirBindingConstants.AUTO_TIMEOFF)
     @Expose
-    private int timer;
-    @SerializedName("dtrs")
-    @Expose
-    private int timerLeft;
-    @SerializedName("mode")
+    private Integer timer;
+    @SerializedName(PhilipsAirBindingConstants.MODE)
     @Expose
     private String mode;
-    @SerializedName("pm25")
+    @SerializedName(PhilipsAirBindingConstants.AIR_QUALITY_NOTIFICATION_THRESHOLD)
     @Expose
-    private int pm25;
-    @SerializedName("iaql")
+    private Integer aqit;
+    @SerializedName(PhilipsAirBindingConstants.DISPLAYED_INDEX)
     @Expose
-    private int allergenLevel;
-    @SerializedName("aqit")
+    private Integer displayIndex;
+    @SerializedName(PhilipsAirBindingConstants.HUMIDITY_SETPOINT)
     @Expose
-    private int aqit;
-    @SerializedName("ddp")
-    @Expose
-    private int displayIndex;
-    @SerializedName("err")
-    @Expose
-    private int errorCode;
-
-    @SerializedName("rh")
-    @Expose
-    private float humidity;
-
-    @SerializedName("rhset")
-    @Expose
-    private int humiditySetpoint;
-
-    @SerializedName("temp")
-    @Expose
-    private float temperature;
-
-    @SerializedName("func")
+    private Integer humiditySetpoint;
+    @SerializedName(PhilipsAirBindingConstants.FUNCTION)
     @Expose
     @Nullable
     private String function;
-
-    @SerializedName("wl")
-    @Expose
-    private int waterLevel;
 
     public String getFanSpeed() {
         return fanSpeed;
@@ -134,36 +114,12 @@ public class PhilipsAirPurifierData {
         this.timer = timer;
     }
 
-    public int getTimerLeft() {
-        return timerLeft;
-    }
-
-    public void setTimerLeft(int timerLeft) {
-        this.timerLeft = timerLeft;
-    }
-
     public String getMode() {
         return mode;
     }
 
     public void setMode(String mode) {
         this.mode = mode;
-    }
-
-    public int getPm25() {
-        return pm25;
-    }
-
-    public void setPm25(int pm25) {
-        this.pm25 = pm25;
-    }
-
-    public int getAllergenLevel() {
-        return allergenLevel;
-    }
-
-    public void setAllergenLevel(int allergenLevel) {
-        this.allergenLevel = allergenLevel;
     }
 
     public int getAqit() {
@@ -182,36 +138,12 @@ public class PhilipsAirPurifierData {
         this.displayIndex = displayIndex;
     }
 
-    public int getErrorCode() {
-        return errorCode;
-    }
-
-    public void setErrorCode(int errorCode) {
-        this.errorCode = errorCode;
-    }
-
-    public float getHumidity() {
-        return humidity;
-    }
-
-    public void setHumidity(float humidity) {
-        this.humidity = humidity;
-    }
-
     public int getHumiditySetpoint() {
         return humiditySetpoint;
     }
 
     public void setHumiditySetpoint(int humiditySetpoint) {
         this.humiditySetpoint = humiditySetpoint;
-    }
-
-    public float getTemperature() {
-        return temperature;
-    }
-
-    public void setTemperature(int temperature) {
-        this.temperature = temperature;
     }
 
     public String getFunction() {
@@ -222,11 +154,4 @@ public class PhilipsAirPurifierData {
         this.function = function;
     }
 
-    public int getWaterLevel() {
-        return waterLevel;
-    }
-
-    public void setWaterLevel(int waterLevel) {
-        this.waterLevel = waterLevel;
-    }
 }

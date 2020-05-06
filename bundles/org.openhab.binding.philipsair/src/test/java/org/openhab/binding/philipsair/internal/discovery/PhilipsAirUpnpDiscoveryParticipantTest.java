@@ -13,7 +13,8 @@
 package org.openhab.binding.philipsair.internal.discovery;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -40,6 +41,7 @@ import org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants;
  *
  * @author michalboronski - Initial contribution
  */
+
 public class PhilipsAirUpnpDiscoveryParticipantTest extends JavaTest {
 
     @Mock

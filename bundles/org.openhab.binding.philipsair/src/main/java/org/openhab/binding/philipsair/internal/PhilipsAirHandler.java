@@ -12,7 +12,32 @@
  */
 package org.openhab.binding.philipsair.internal;
 
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.*;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.AIR_QUALITY_NOTIFICATION_THRESHOLD;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.ALLERGEN_INDEX;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.AUTO_TIMEOFF;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.BUTTONS_LIGHT;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.CARBON_FILTER;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.CHILD_LOCK;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.DENSITY_UNIT;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.DISPLAYED_INDEX;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.ERROR_CODE;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.FAN_MODE;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.FUNCTION;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.HEPA_FILTER;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.HUMIDITY;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.HUMIDITY_SETPOINT;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.HUMIDITY_UNIT;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.LED_LIGHT_LEVEL;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.MODE;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.PM25;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.POWER;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.PRE_FILTER;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.SOFTWARE_VERSION;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.TEMPERATURE;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.TEMPERATURE_UNIT;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.TIMER_COUNTDOWN;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.WATER_LEVEL;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.WICKS_FILTER;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -28,7 +53,6 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.measure.quantity.Dimensionless;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -48,11 +72,13 @@ import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.philipsair.internal.connection.PhilipsAirAPIConnection;
 import org.openhab.binding.philipsair.internal.connection.PhilipsAirAPIException;
-import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierData;
-import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDevice;
-import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierFilters;
+import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDataDTO;
+import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDeviceDTO;
+import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierFiltersDTO;
+import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierWritableDataDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,10 +94,9 @@ public class PhilipsAirHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(PhilipsAirHandler.class);
     private @Nullable ScheduledFuture<?> refreshJob;
     private @NonNullByDefault({}) PhilipsAirAPIConnection connection;
-    // private @NonNullByDefault({}) PhilipsAirConfiguration config;
-    private @Nullable PhilipsAirPurifierData currentData;
-    private @Nullable PhilipsAirPurifierDevice deviceInfo;
-    private @Nullable PhilipsAirPurifierFilters filters;
+    private @Nullable PhilipsAirPurifierDataDTO currentData;
+    private @Nullable PhilipsAirPurifierDeviceDTO deviceInfo;
+    private @Nullable PhilipsAirPurifierFiltersDTO filters;
     private final HttpClient httpClient;
 
     public PhilipsAirHandler(Thing thing, HttpClient httpClient) {
@@ -86,38 +111,85 @@ public class PhilipsAirHandler extends BaseThingHandler {
             updateData(connection);
         } else {
             logger.info("Sending {} as {}", channelUID.getId(), command.toString());
-            currentData = sendCommand(channelUID.getIdWithoutGroup(), command);
+            PhilipsAirPurifierWritableDataDTO commandData = prepareCommandData(channelUID.getIdWithoutGroup(), command);
+            try {
+                currentData = connection.sendCommand(channelUID.getIdWithoutGroup(), commandData);
+            } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException
+                    | UnsupportedEncodingException | NoSuchAlgorithmException | NoSuchPaddingException
+                    | InvalidAlgorithmParameterException e) {
+                logger.debug("An exception occured", e);
+            }
+
             updateChannels();
         }
     }
 
-    public @Nullable PhilipsAirPurifierData sendCommand(String parameter, Command command) {
-        Object value = null;
+    private PhilipsAirPurifierWritableDataDTO prepareCommandData(String parameter, Command command) {
+        OnOffType onOffCommand = null;
+        DecimalType decimalCommand = null;
+        String stringCommand = null;
+
         if (command instanceof OnOffType) {
-            if (parameter.equals(CHILD_LOCK)) {
-                value = command == OnOffType.ON;
-
-            } else {
-                value = command == OnOffType.ON ? "1" : "0";
-
-            }
+            onOffCommand = (OnOffType) command;
         } else if (command instanceof DecimalType) {
-            value = ((DecimalType) command).intValue();
+            decimalCommand = (DecimalType) command;
         } else if (command instanceof StringType) {
-            value = command.toString();
+            stringCommand = command.toString();
         }
 
-        if (value != null) {
-            try {
-                return connection.sendCommand(parameter, value);
-            } catch (IllegalBlockSizeException | BadPaddingException | UnsupportedEncodingException
-                    | InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException
-                    | InvalidAlgorithmParameterException e) {
-                logger.error("An exception occured", e);
-            }
+        PhilipsAirPurifierWritableDataDTO data = new PhilipsAirPurifierWritableDataDTO();
+        switch (parameter) {
+            case LED_LIGHT_LEVEL:
+                if (decimalCommand != null) {
+                    data.setLightLevel(decimalCommand.intValue());
+                }
+                break;
+            case DISPLAYED_INDEX:
+                data.setDisplayIndex(Integer.valueOf(stringCommand));
+                break;
+            case BUTTONS_LIGHT:
+                if (onOffCommand != null && onOffCommand.as(DecimalType.class) != null) {
+                    data.setButtons(onOffCommand.as(DecimalType.class).intValue());
+                }
+                break;
+            case POWER:
+                if (onOffCommand != null && onOffCommand.as(DecimalType.class) != null) {
+                    data.setPower(onOffCommand.as(DecimalType.class).intValue());
+                }
+                break;
+            case FAN_MODE:
+                data.setFanSpeed(stringCommand);
+                data.setMode("M");
+                break;
+            case CHILD_LOCK:
+                if (onOffCommand != null && onOffCommand.as(DecimalType.class) != null) {
+                    data.setChildLock(command == OnOffType.ON);
+                }
+                break;
+            case AUTO_TIMEOFF:
+                if (decimalCommand != null) {
+                    data.setTimer(decimalCommand.intValue());
+                }
+                break;
+            case MODE:
+                data.setMode(stringCommand);
+                break;
+            case AIR_QUALITY_NOTIFICATION_THRESHOLD:
+                if (decimalCommand != null) {
+                    data.setAqit(decimalCommand.intValue());
+                }
+                break;
+            case HUMIDITY_SETPOINT:
+                if (decimalCommand != null) {
+                    data.setHumiditySetpoint(decimalCommand.intValue());
+                }
+                break;
+            case FUNCTION:
+                data.setFunction(stringCommand);
+                break;
         }
 
-        return null;
+        return data;
     }
 
     @Override
@@ -141,9 +213,9 @@ public class PhilipsAirHandler extends BaseThingHandler {
 
             connection = new PhilipsAirAPIConnection(config, httpClient);
             updateStatus(ThingStatus.UNKNOWN);
-            if (refreshJob == null || (refreshJob != null && refreshJob.isCancelled())) {
+            if (this.refreshJob == null || this.refreshJob.isCancelled()) {
                 logger.debug("Start refresh job at interval {} sec.", refreshInterval);
-                refreshJob = scheduler.scheduleWithFixedDelay(this::updateThing, INITIAL_DELAY_IN_SECONDS,
+                this.refreshJob = scheduler.scheduleWithFixedDelay(this::updateThing, INITIAL_DELAY_IN_SECONDS,
                         refreshInterval, TimeUnit.SECONDS);
             }
         }
@@ -154,7 +226,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
         if (refreshJob != null) {
             refreshJob.cancel(true);
         }
-        	
+
         super.dispose();
     }
 
@@ -184,9 +256,9 @@ public class PhilipsAirHandler extends BaseThingHandler {
     }
 
     protected boolean requestData(PhilipsAirAPIConnection connection) throws PhilipsAirAPIException {
-        PhilipsAirPurifierDevice info = connection.getAirPurifierDevice(getAirPurifierConfig().getHost());
-        PhilipsAirPurifierData data = connection.getAirPurifierStatus(getAirPurifierConfig().getHost());
-        PhilipsAirPurifierFilters filters = null;
+        PhilipsAirPurifierDeviceDTO info = connection.getAirPurifierDevice(getAirPurifierConfig().getHost());
+        PhilipsAirPurifierDataDTO data = connection.getAirPurifierStatus(getAirPurifierConfig().getHost());
+        PhilipsAirPurifierFiltersDTO filters = null;
         List<Channel> filterGroup = thing.getChannelsOfGroup(PhilipsAirBindingConstants.FILTERS);
         if (filterGroup.stream().anyMatch(fg -> isLinked(fg.getUID()))) {
             filters = connection.getAirPurifierFiltersStatus(getAirPurifierConfig().getHost());
@@ -225,12 +297,12 @@ public class PhilipsAirHandler extends BaseThingHandler {
         }
     }
 
-    protected void updateChannel(ChannelUID channelUID, @Nullable PhilipsAirPurifierData data,
-            @Nullable PhilipsAirPurifierDevice deviceInfo, @Nullable PhilipsAirPurifierFilters filters) {
+    protected void updateChannel(ChannelUID channelUID, @Nullable PhilipsAirPurifierDataDTO data,
+            @Nullable PhilipsAirPurifierDeviceDTO deviceInfo, @Nullable PhilipsAirPurifierFiltersDTO filters) {
         if (getCallback() != null && isLinked(channelUID)) {
             Object value;
             try {
-                value = getValue(channelUID.getAsString(), data, deviceInfo, filters);
+                value = getValue(channelUID, data, deviceInfo, filters);
             } catch (Exception e) {
                 logger.debug("AirPurifier doesn't provide {} measurement", channelUID.getAsString().toUpperCase());
                 return;
@@ -260,14 +332,13 @@ public class PhilipsAirHandler extends BaseThingHandler {
         super.updateState(channelUID, state);
     }
 
-    public @Nullable Object getValue(ChannelUID channelUID, @Nullable PhilipsAirPurifierData data,
-            @Nullable PhilipsAirPurifierDevice deviceInfo, @Nullable PhilipsAirPurifierFilters filters)
-            throws Exception {
+    public @Nullable Object getValue(ChannelUID channelUID, @Nullable PhilipsAirPurifierDataDTO data,
+            @Nullable PhilipsAirPurifierDeviceDTO deviceInfo, @Nullable PhilipsAirPurifierFiltersDTO filters) {
         String field = channelUID.getIdWithoutGroup();
 
         if (data != null) {
             switch (field) {
-                case LED_LIGHT_BRIGHTNESS:
+                case LED_LIGHT_LEVEL:
                     return data.getLightLevel();
                 case DISPLAYED_INDEX:
                     return Integer.toString(data.getDisplayIndex());

@@ -14,6 +14,7 @@ package org.openhab.binding.philipsair.internal.connection;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -61,6 +62,7 @@ public class PhilipsAirCipher {
     private Cipher cipher;
     private final BigInteger a;
     private final BigInteger aPow;
+    private static final Charset ASCII_CHARSET = Charset.forName("US-ASCII");
 
     public PhilipsAirCipher() throws GeneralSecurityException {
         // prepare numbers for key
@@ -79,7 +81,7 @@ public class PhilipsAirCipher {
             cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(HexUtils.hexToBytes(key), "AES"),
                     new IvParameterSpec(new byte[16]));
         } catch (GeneralSecurityException e) {
-            logger.error("An exception occured", e);
+            logger.warn("An exception occured", e);
             cipher = null;
             decipher = null;
             throw e;
@@ -127,7 +129,7 @@ public class PhilipsAirCipher {
         @SuppressWarnings("null")
         byte[] decoded = decipher.doFinal(Base64.getDecoder().decode(encodedContent));
         byte[] unpaded = Arrays.copyOfRange(decoded, 2, decoded.length);
-        return new String(unpaded);
+        return new String(unpaded, ASCII_CHARSET);
     }
 
     public @Nullable String encrypt(String data)

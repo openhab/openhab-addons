@@ -24,7 +24,7 @@ import com.google.gson.annotations.SerializedName;
  *
  */
 @NonNullByDefault
-public class PhilipsAirPurifierFilters {
+public class PhilipsAirPurifierFiltersDTO {
 
     @SerializedName("fltsts0")
     @Expose
