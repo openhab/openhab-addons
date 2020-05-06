@@ -50,7 +50,7 @@ public class ShellyBindingConstants {
     public static final String THING_TYPE_SHELLYDIMMER_STR = "shellydimmer";
     public static final String THING_TYPE_SHELLYBULB_STR = "shellybulb";
     public static final String THING_TYPE_SHELLYDUO_STR = "shellybulbduo";
-    public static final String THING_TYPE_SHELLYVINTAGE_STR = "shellybulbvintage";
+    public static final String THING_TYPE_SHELLYVINTAGE_STR = "shellyvintage";
     public static final String THING_TYPE_SHELLYRGBW2_PREFIX = "shellyrgbw2";
     public static final String THING_TYPE_SHELLYRGBW2_COLOR_STR = "shellyrgbw2-color";
     public static final String THING_TYPE_SHELLYRGBW2_WHITE_STR = "shellyrgbw2-white";
