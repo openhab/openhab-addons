@@ -245,34 +245,9 @@ public abstract class BaseBluetoothDevice extends BluetoothDevice {
         return false;
     }
 
-    /**
-     * Adds a device listener
-     *
-     * @param listener the {@link BluetoothDeviceListener} to add
-     */
     @Override
-    public void addListener(BluetoothDeviceListener listener) {
-        eventListeners.add(listener);
-    }
-
-    /**
-     * Removes a device listener
-     *
-     * @param listener the {@link BluetoothDeviceListener} to remove
-     */
-    @Override
-    public void removeListener(BluetoothDeviceListener listener) {
-        eventListeners.remove(listener);
-    }
-
-    /**
-     * Checks if this device has any listeners
-     *
-     * @return true if this device has listeners
-     */
-    @Override
-    public boolean hasListeners() {
-        return !eventListeners.isEmpty();
+    protected Collection<BluetoothDeviceListener> getListeners() {
+        return eventListeners;
     }
 
     /**
@@ -282,17 +257,6 @@ public abstract class BaseBluetoothDevice extends BluetoothDevice {
     @Override
     protected void dispose() {
 
-    }
-
-    /**
-     * Notify the listeners of an event
-     *
-     * @param event the {@link BluetoothEventType} of this event
-     * @param args an array of arguments to pass to the callback
-     */
-    @Override
-    protected void notifyListeners(BluetoothEventType event, Object... args) {
-        notifyListeners(eventListeners, event, args);
     }
 
     @Override

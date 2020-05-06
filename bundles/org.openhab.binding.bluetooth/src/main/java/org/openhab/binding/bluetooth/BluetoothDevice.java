@@ -87,6 +87,8 @@ public abstract class BluetoothDevice {
      */
     protected final BluetoothAddress address;
 
+    protected final transient ZonedDateTime createTime = ZonedDateTime.now();
+
     /**
      * Construct a Bluetooth device taking the Bluetooth address
      *
@@ -351,21 +353,27 @@ public abstract class BluetoothDevice {
      *
      * @param listener the {@link BluetoothDeviceListener} to add
      */
-    public abstract void addListener(BluetoothDeviceListener listener);
+    public final void addListener(BluetoothDeviceListener listener) {
+        getListeners().add(listener);
+    }
 
     /**
      * Removes a device listener
      *
      * @param listener the {@link BluetoothDeviceListener} to remove
      */
-    public abstract void removeListener(BluetoothDeviceListener listener);
+    public final void removeListener(BluetoothDeviceListener listener) {
+        getListeners().remove(listener);
+    }
 
     /**
      * Checks if this device has any listeners
      *
      * @return true if this device has listeners
      */
-    public abstract boolean hasListeners();
+    public final boolean hasListeners() {
+        return !getListeners().isEmpty();
+    }
 
     /**
      * Releases resources that this device is using.
@@ -373,17 +381,16 @@ public abstract class BluetoothDevice {
      */
     protected abstract void dispose();
 
+    protected abstract Collection<BluetoothDeviceListener> getListeners();
+
     /**
      * Notify the listeners of an event
      *
      * @param event the {@link BluetoothEventType} of this event
      * @param args an array of arguments to pass to the callback
      */
-    protected abstract void notifyListeners(BluetoothEventType event, Object... args);
-
-    protected void notifyListeners(Collection<BluetoothDeviceListener> eventListeners, BluetoothEventType event,
-            Object... args) {
-        for (BluetoothDeviceListener listener : eventListeners) {
+    protected final void notifyListeners(BluetoothEventType event, Object... args) {
+        for (BluetoothDeviceListener listener : getListeners()) {
             try {
                 switch (event) {
                     case SCAN_RECORD:

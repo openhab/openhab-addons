@@ -142,9 +142,13 @@ public abstract class AbstractBluetoothBridgeHandler<BD extends BluetoothDevice>
             return false;
         }
 
+        ZonedDateTime lastActiveTime = device.getLastSeenTime();
+        if (lastActiveTime == null) {
+            //we want any new device to at least live a certain amount of time so it has a chance to be discovered or listened to.
+            lastActiveTime = device.createTime;
+        }
         // we remove devices we haven't seen in a while
-        return ZonedDateTime.now().minusSeconds(config.inactiveDeviceCleanupThreshold)
-                .isAfter(device.getLastSeenTime());
+        return ZonedDateTime.now().minusSeconds(config.inactiveDeviceCleanupThreshold).isAfter(lastActiveTime);
     }
 
     @Override

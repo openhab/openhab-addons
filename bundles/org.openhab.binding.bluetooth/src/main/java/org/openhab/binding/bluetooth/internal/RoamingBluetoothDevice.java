@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.internal;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -59,18 +60,8 @@ public class RoamingBluetoothDevice extends DelegateBluetoothDevice {
     }
 
     @Override
-    public void addListener(BluetoothDeviceListener listener) {
-        eventListeners.add(listener);
-    }
-
-    @Override
-    public void removeListener(BluetoothDeviceListener listener) {
-        eventListeners.remove(listener);
-    }
-
-    @Override
-    protected void notifyListeners(BluetoothEventType event, Object... args) {
-        notifyListeners(eventListeners, event, args);
+    protected Collection<BluetoothDeviceListener> getListeners() {
+        return eventListeners;
     }
 
     @Override

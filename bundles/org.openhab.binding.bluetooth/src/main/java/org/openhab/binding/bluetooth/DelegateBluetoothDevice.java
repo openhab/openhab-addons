@@ -158,33 +158,9 @@ public abstract class DelegateBluetoothDevice extends BluetoothDevice {
     }
 
     @Override
-    public void addListener(BluetoothDeviceListener listener) {
+    protected Collection<BluetoothDeviceListener> getListeners() {
         BluetoothDevice delegate = getDelegate();
-        if (delegate != null) {
-            delegate.addListener(listener);
-        }
-    }
-
-    @Override
-    public void removeListener(BluetoothDeviceListener listener) {
-        BluetoothDevice delegate = getDelegate();
-        if (delegate != null) {
-            delegate.removeListener(listener);
-        }
-    }
-
-    @Override
-    public boolean hasListeners() {
-        BluetoothDevice delegate = getDelegate();
-        return delegate != null ? delegate.hasListeners() : false;
-    }
-
-    @Override
-    protected void notifyListeners(BluetoothEventType event, Object... args) {
-        BluetoothDevice delegate = getDelegate();
-        if (delegate != null) {
-            delegate.notifyListeners(event, args);
-        }
+        return delegate != null ? delegate.getListeners() : Collections.emptySet();
     }
 
     @Override
