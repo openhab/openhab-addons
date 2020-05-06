@@ -644,7 +644,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 config.deviceIp = saddr;
             }
         } catch (UnknownHostException e) {
-            logger.debug("{}: Unable to resole IP address", thingName, config.deviceIp);
+            logger.debug("{}: Unable to resolehostname {}", thingName, config.deviceIp);
         }
 
         config.localIp = localIP;
