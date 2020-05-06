@@ -22,6 +22,8 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class GatewayCommand {
+    private static final HashMap<String, @Nullable String> supportedCommands = getSupportedCommands();
+
     private String code;
     private String validationSet;
     private String message;
@@ -93,8 +95,6 @@ public class GatewayCommand {
         throw new IllegalArgumentException(
                 String.format("Unable to parse gateway command with code '%s' and message '%s'", code, message));
     }
-
-    private static final HashMap<String, @Nullable String> supportedCommands = getSupportedCommands();
 
     private static HashMap<String, @Nullable String> getSupportedCommands() {
         HashMap<String, @Nullable String> c = new HashMap<String, @Nullable String>();
