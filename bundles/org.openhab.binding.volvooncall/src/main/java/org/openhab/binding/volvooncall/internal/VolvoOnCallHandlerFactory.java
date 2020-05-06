@@ -33,6 +33,7 @@ import org.openhab.binding.volvooncall.internal.handler.VehicleHandler;
 import org.openhab.binding.volvooncall.internal.handler.VehicleStateDescriptionProvider;
 import org.openhab.binding.volvooncall.internal.handler.VolvoOnCallBridgeHandler;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -47,9 +48,14 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(configurationPid = "binding.volvooncall", service = ThingHandlerFactory.class)
 public class VolvoOnCallHandlerFactory extends BaseThingHandlerFactory {
-    private Logger logger = LoggerFactory.getLogger(VolvoOnCallHandlerFactory.class);
-    private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
-    private @NonNullByDefault({}) VehicleStateDescriptionProvider stateDescriptionProvider;
+    private final Logger logger = LoggerFactory.getLogger(VolvoOnCallHandlerFactory.class);
+    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    private final VehicleStateDescriptionProvider stateDescriptionProvider;
+
+    @Activate
+    public VolvoOnCallHandlerFactory(@Reference VehicleStateDescriptionProvider provider) {
+        this.stateDescriptionProvider = provider;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -59,16 +65,15 @@ public class VolvoOnCallHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        if (thingTypeUID.equals(APIBRIDGE_THING_TYPE)) {
+        if (APIBRIDGE_THING_TYPE.equals(thingTypeUID)) {
             VolvoOnCallBridgeHandler bridgeHandler = new VolvoOnCallBridgeHandler((Bridge) thing);
             registerDeviceDiscoveryService(bridgeHandler);
             return bridgeHandler;
-        } else if (thingTypeUID.equals(VEHICLE_THING_TYPE) && stateDescriptionProvider != null) {
+        } else if (VEHICLE_THING_TYPE.equals(thingTypeUID)) {
             return new VehicleHandler(thing, stateDescriptionProvider);
-        } else {
-            logger.warn("ThingHandler not found for {}", thing.getThingTypeUID());
-            return null;
         }
+        logger.warn("ThingHandler not found for {}", thing.getThingTypeUID());
+        return null;
     }
 
     @Override
@@ -92,14 +97,5 @@ public class VolvoOnCallHandlerFactory extends BaseThingHandlerFactory {
             serviceReg.unregister();
             discoveryServiceRegs.remove(thingUID);
         }
-    }
-
-    @Reference
-    protected void setDynamicStateDescriptionProvider(VehicleStateDescriptionProvider provider) {
-        this.stateDescriptionProvider = provider;
-    }
-
-    protected void unsetDynamicStateDescriptionProvider(VehicleStateDescriptionProvider provider) {
-        this.stateDescriptionProvider = null;
     }
 }

@@ -13,6 +13,8 @@
 package org.openhab.binding.volvooncall.internal.handler;
 
 import static org.eclipse.smarthome.core.library.unit.MetricPrefix.KILO;
+import static org.eclipse.smarthome.core.library.unit.SIUnits.*;
+import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.*;
 import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.*;
 
 import java.io.IOException;
@@ -33,8 +35,6 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.library.unit.SIUnits;
-import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -77,8 +77,7 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class VehicleHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
-
-    private @NonNullByDefault({}) Map<String, String> activeOptions;
+    private final Map<String, String> activeOptions = new HashMap<>();
     private @Nullable ScheduledFuture<?> refreshJob;
 
     private Vehicles vehicle = new Vehicles();
@@ -91,7 +90,7 @@ public class VehicleHandler extends BaseThingHandler {
         super(thing);
     }
 
-    private Map<String, String> discoverAttributes(VolvoOnCallBridgeHandler bridgeHandler, String vin)
+    private Map<String, String> discoverAttributes(VolvoOnCallBridgeHandler bridgeHandler)
             throws JsonSyntaxException, IOException {
         Attributes attributes = bridgeHandler.getURL(vehicle.attributesURL, Attributes.class);
 
@@ -123,12 +122,12 @@ public class VehicleHandler extends BaseThingHandler {
                 vehicle = bridgeHandler.getURL(SERVICE_URL + "vehicles/" + configuration.vin, Vehicles.class);
 
                 if (thing.getProperties().isEmpty()) {
-                    Map<String, String> properties = discoverAttributes(bridgeHandler, configuration.vin);
+                    Map<String, String> properties = discoverAttributes(bridgeHandler);
                     updateProperties(properties);
                 }
 
-                activeOptions = thing.getProperties().entrySet().stream().filter(p -> "true".equals(p.getValue()))
-                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                activeOptions.putAll(thing.getProperties().entrySet().stream().filter(p -> "true".equals(p.getValue()))
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
 
                 if (thing.getProperties().containsKey(LAST_TRIP_ID)) {
                     lastTripId = Integer.parseInt(thing.getProperties().get(LAST_TRIP_ID));
@@ -242,20 +241,20 @@ public class VehicleHandler extends BaseThingHandler {
         switch (channelId) {
             case TRIP_CONSUMPTION:
                 return tripDetails.getFuelConsumption()
-                        .map(value -> (State) new QuantityType<>(value.floatValue() / 100, SmartHomeUnits.LITRE))
+                        .map(value -> (State) new QuantityType<>(value.floatValue() / 100, LITRE))
                         .orElse(UnDefType.UNDEF);
             case TRIP_DISTANCE:
-                return new QuantityType<>((double) tripDetails.distance / 1000, KILO(SIUnits.METRE));
+                return new QuantityType<>((double) tripDetails.distance / 1000, KILO(METRE));
             case TRIP_START_TIME:
                 return tripDetails.getStartTime();
             case TRIP_END_TIME:
                 return tripDetails.getEndTime();
             case TRIP_DURATION:
-                return new QuantityType<>(tripDetails.getDurationInMinutes(), SmartHomeUnits.MINUTE);
+                return new QuantityType<>(tripDetails.getDurationInMinutes(), MINUTE);
             case TRIP_START_ODOMETER:
-                return new QuantityType<>((double) tripDetails.startOdometer / 1000, KILO(SIUnits.METRE));
+                return new QuantityType<>((double) tripDetails.startOdometer / 1000, KILO(METRE));
             case TRIP_STOP_ODOMETER:
-                return new QuantityType<>((double) tripDetails.endOdometer / 1000, KILO(SIUnits.METRE));
+                return new QuantityType<>((double) tripDetails.endOdometer / 1000, KILO(METRE));
             case TRIP_START_POSITION:
                 return tripDetails.getStartPosition();
             case TRIP_END_POSITION:
@@ -324,12 +323,11 @@ public class VehicleHandler extends BaseThingHandler {
     private State getBatteryValue(String channelId, HvBattery hvBattery) {
         switch (channelId) {
             case BATTERY_LEVEL:
-                return hvBattery.hvBatteryLevel != UNDEFINED
-                        ? new QuantityType<>(hvBattery.hvBatteryLevel, SmartHomeUnits.PERCENT)
+                return hvBattery.hvBatteryLevel != UNDEFINED ? new QuantityType<>(hvBattery.hvBatteryLevel, PERCENT)
                         : UnDefType.UNDEF;
             case BATTERY_DISTANCE_TO_EMPTY:
                 return hvBattery.distanceToHVBatteryEmpty != UNDEFINED
-                        ? new QuantityType<>(hvBattery.distanceToHVBatteryEmpty, KILO(SIUnits.METRE))
+                        ? new QuantityType<>(hvBattery.distanceToHVBatteryEmpty, KILO(METRE))
                         : UnDefType.UNDEF;
             case CHARGE_STATUS:
                 return hvBattery.hvBatteryChargeStatusDerived != null
@@ -337,7 +335,7 @@ public class VehicleHandler extends BaseThingHandler {
                         : UnDefType.UNDEF;
             case TIME_TO_BATTERY_FULLY_CHARGED:
                 return hvBattery.timeToHVBatteryFullyCharged != UNDEFINED
-                        ? new QuantityType<>(hvBattery.timeToHVBatteryFullyCharged, SmartHomeUnits.MINUTE)
+                        ? new QuantityType<>(hvBattery.timeToHVBatteryFullyCharged, MINUTE)
                         : UnDefType.UNDEF;
             case CHARGING_END:
                 return hvBattery.timeToHVBatteryFullyCharged != UNDEFINED && hvBattery.timeToHVBatteryFullyCharged > 0
@@ -366,27 +364,23 @@ public class VehicleHandler extends BaseThingHandler {
         }
         switch (channelId) {
             case ODOMETER:
-                return status.odometer != UNDEFINED
-                        ? new QuantityType<>((double) status.odometer / 1000, KILO(SIUnits.METRE))
+                return status.odometer != UNDEFINED ? new QuantityType<>((double) status.odometer / 1000, KILO(METRE))
                         : UnDefType.UNDEF;
             case TRIPMETER1:
                 return status.tripMeter1 != UNDEFINED
-                        ? new QuantityType<>((double) status.tripMeter1 / 1000, KILO(SIUnits.METRE))
+                        ? new QuantityType<>((double) status.tripMeter1 / 1000, KILO(METRE))
                         : UnDefType.UNDEF;
             case TRIPMETER2:
                 return status.tripMeter2 != UNDEFINED
-                        ? new QuantityType<>((double) status.tripMeter2 / 1000, KILO(SIUnits.METRE))
+                        ? new QuantityType<>((double) status.tripMeter2 / 1000, KILO(METRE))
                         : UnDefType.UNDEF;
             case DISTANCE_TO_EMPTY:
-                return status.distanceToEmpty != UNDEFINED
-                        ? new QuantityType<>(status.distanceToEmpty, KILO(SIUnits.METRE))
+                return status.distanceToEmpty != UNDEFINED ? new QuantityType<>(status.distanceToEmpty, KILO(METRE))
                         : UnDefType.UNDEF;
             case FUEL_AMOUNT:
-                return status.fuelAmount != UNDEFINED ? new QuantityType<>(status.fuelAmount, SmartHomeUnits.LITRE)
-                        : UnDefType.UNDEF;
+                return status.fuelAmount != UNDEFINED ? new QuantityType<>(status.fuelAmount, LITRE) : UnDefType.UNDEF;
             case FUEL_LEVEL:
-                return status.fuelAmountLevel != UNDEFINED
-                        ? new QuantityType<>(status.fuelAmountLevel, SmartHomeUnits.PERCENT)
+                return status.fuelAmountLevel != UNDEFINED ? new QuantityType<>(status.fuelAmountLevel, PERCENT)
                         : UnDefType.UNDEF;
             case FUEL_CONSUMPTION:
                 return status.averageFuelConsumption != UNDEFINED ? new DecimalType(status.averageFuelConsumption / 10)
@@ -408,8 +402,7 @@ public class VehicleHandler extends BaseThingHandler {
             case WASHER_FLUID_LEVEL:
                 return new StringType(status.washerFluidLevel);
             case AVERAGE_SPEED:
-                return status.averageSpeed != UNDEFINED
-                        ? new QuantityType<>(status.averageSpeed, SIUnits.KILOMETRE_PER_HOUR)
+                return status.averageSpeed != UNDEFINED ? new QuantityType<>(status.averageSpeed, KILOMETRE_PER_HOUR)
                         : UnDefType.UNDEF;
             case SERVICE_WARNING:
                 return new StringType(status.serviceWarningStatus);

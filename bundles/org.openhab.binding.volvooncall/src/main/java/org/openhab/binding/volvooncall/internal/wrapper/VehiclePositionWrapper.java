@@ -81,8 +81,8 @@ public class VehiclePositionWrapper {
     }
 
     public State getTimestamp() {
-        return position.map(pos -> pos.getTimestamp()
+        return position.flatMap(pos -> pos.getTimestamp())
                 .map(dt -> (State) new DateTimeType(dt.withZoneSameInstant(ZoneId.systemDefault())))
-                .orElse(UnDefType.NULL)).orElse(UnDefType.UNDEF);
+                .orElse(UnDefType.NULL);
     }
 }
