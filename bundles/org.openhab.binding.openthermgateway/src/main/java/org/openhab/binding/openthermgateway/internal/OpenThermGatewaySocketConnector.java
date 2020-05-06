@@ -155,11 +155,16 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
             return;
         }
 
+        long currentTime = System.currentTimeMillis();
+
         for (Entry<Long, GatewayCommand> timeAndCommand : pendingCommands.values()) {
-            if (System.currentTimeMillis() > timeAndCommand.getKey() + COMMAND_RESPONSE_TIME_MILLISECONDS) {
+            long responseTime = timeAndCommand.getKey() + COMMAND_RESPONSE_TIME_MILLISECONDS;
+            long timeoutTime = timeAndCommand.getKey() + COMMAND_TIMEOUT_MILLISECONDS;
+
+            if (currentTime > responseTime && currentTime < timeoutTime) {
                 logger.debug("Resending command: {}", timeAndCommand.getValue().toFullString());
                 sendCommand(timeAndCommand.getValue());
-            } else if (System.currentTimeMillis() > timeAndCommand.getKey() + COMMAND_TIMEOUT_MILLISECONDS) {
+            } else if (currentTime > timeoutTime) {
                 pendingCommands.remove(timeAndCommand.getValue().getCode());
             }
         }
