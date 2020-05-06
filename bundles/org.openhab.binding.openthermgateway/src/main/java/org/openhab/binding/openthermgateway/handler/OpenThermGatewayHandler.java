@@ -254,7 +254,7 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
         }
     }
 
-    private String getGatewayCodeFromChannel(String channel) throws IllegalArgumentException {
+    private @Nullable String getGatewayCodeFromChannel(String channel) throws IllegalArgumentException {
         switch (channel) {
             case OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_SETPOINT_TEMPORARY:
                 return GatewayCommandCode.TemperatureTemporary;
@@ -265,7 +265,7 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
             case OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_DHW_SETPOINT:
                 return GatewayCommandCode.SetpointWater;
             case OpenThermGatewayBindingConstants.CHANNEL_SEND_COMMAND:
-                return "";
+                return null;
             default:
                 throw new IllegalArgumentException(String.format("Unknown channel %s", channel));
         }

@@ -71,12 +71,12 @@ public class GatewayCommand {
         return false;
     }
 
-    public static GatewayCommand parse(String code, String message) throws IllegalArgumentException {
-        if (code.isEmpty() && message.length() > 2 && message.charAt(2) == '=') {
+    public static GatewayCommand parse(@Nullable String code, String message) throws IllegalArgumentException {
+        if ((code == null || code.isEmpty()) && message.length() > 2 && message.charAt(2) == '=') {
             return parse(message.substring(0, 2), message.substring(3));
         }
 
-        if (code.length() == 2) {
+        if (code != null && code.length() == 2) {
             String codeUpperCase = code.toUpperCase();
 
             if (supportedCommands.containsKey(codeUpperCase)) {
