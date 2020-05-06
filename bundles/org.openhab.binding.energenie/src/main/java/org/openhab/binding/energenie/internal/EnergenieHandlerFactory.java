@@ -49,11 +49,11 @@ public class EnergenieHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_PMSLAN.equals(thingTypeUID)) {
-            return new EnergenieHandler(thing, "EG_PROTO_V20");
+            return new EnergenieHandler(thing, EnergenieProtocolEnum.V20);
         } else if (THING_TYPE_PM2LAN.equals(thingTypeUID) || THING_TYPE_PMS2LAN.equals(thingTypeUID)) {
-            return new EnergenieHandler(thing, "EG_PROTO_V21");
+            return new EnergenieHandler(thing, EnergenieProtocolEnum.V21);
         } else if (THING_TYPE_PMSWLAN.equals(thingTypeUID)) {
-            return new EnergenieHandler(thing, "EG_PROTO_WLAN");
+            return new EnergenieHandler(thing, EnergenieProtocolEnum.WLAN);
         } else if (THING_TYPE_PWMLAN.equals(thingTypeUID)) {
             return new EnergeniePWMHandler(thing);
         }

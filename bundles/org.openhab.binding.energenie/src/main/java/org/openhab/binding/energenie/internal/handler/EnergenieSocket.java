@@ -131,10 +131,10 @@ class EnergenieSocket {
             uIntTask[i] = Byte.toUnsignedInt(task[i]);
         }
         final int solutionLoword = (((uIntTask[0] ^ key[2]) * key[0]) ^ (key[6] | (key[4] << 8)) ^ uIntTask[2]);
-        final byte loword[] = ByteBuffer.allocate(4).putInt(solutionLoword).array();
+        final byte[] loword = ByteBuffer.allocate(4).putInt(solutionLoword).array();
 
         final int solutionHiword = (((uIntTask[1] ^ key[3]) * key[1]) ^ (key[7] | (key[5] << 8)) ^ uIntTask[3]);
-        final byte hiword[] = ByteBuffer.allocate(4).putInt(solutionHiword).array();
+        final byte[] hiword = ByteBuffer.allocate(4).putInt(solutionHiword).array();
         final byte[] solution = new byte[SOLUTION_LEN];
 
         solution[0] = loword[3];
