@@ -12,8 +12,10 @@
  */
 package org.openhab.binding.bluetooth.internal;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -25,6 +27,7 @@ import org.openhab.binding.bluetooth.BluetoothCompletionStatus;
 import org.openhab.binding.bluetooth.BluetoothDescriptor;
 import org.openhab.binding.bluetooth.BluetoothDevice;
 import org.openhab.binding.bluetooth.BluetoothDeviceListener;
+import org.openhab.binding.bluetooth.DelegateBluetoothDevice;
 import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
 import org.openhab.binding.bluetooth.notification.BluetoothScanNotification;
 
@@ -35,11 +38,13 @@ import org.openhab.binding.bluetooth.notification.BluetoothScanNotification;
  * @author Connor Petty - Initial contribution
  */
 @NonNullByDefault
-public class RoamingBluetoothDevice extends BluetoothDevice {
+public class RoamingBluetoothDevice extends DelegateBluetoothDevice {
 
-    private Map<BluetoothDevice, Listener> devices = new ConcurrentHashMap<>();
+    private final Map<BluetoothDevice, Listener> devices = new ConcurrentHashMap<>();
 
-    private AtomicReference<@Nullable BluetoothDevice> currentDelegateRef = new AtomicReference<>();
+    private final List<BluetoothDeviceListener> eventListeners = new CopyOnWriteArrayList<>();
+
+    private final AtomicReference<@Nullable BluetoothDevice> currentDelegateRef = new AtomicReference<>();
 
     protected RoamingBluetoothDevice(RoamingBluetoothBridgeHandler roamingAdapter, BluetoothAddress address) {
         super(roamingAdapter, address);
@@ -54,72 +59,22 @@ public class RoamingBluetoothDevice extends BluetoothDevice {
     }
 
     @Override
-    public boolean connect() {
-        BluetoothDevice delegate = getDelegate();
-        return delegate != null ? delegate.connect() : false;
+    public void addListener(BluetoothDeviceListener listener) {
+        eventListeners.add(listener);
     }
 
     @Override
-    public boolean disconnect() {
-        BluetoothDevice delegate = getDelegate();
-        return delegate != null ? delegate.disconnect() : false;
+    public void removeListener(BluetoothDeviceListener listener) {
+        eventListeners.remove(listener);
     }
 
     @Override
-    public boolean enableNotifications(BluetoothCharacteristic characteristic) {
-        BluetoothDevice delegate = getDelegate();
-        return delegate != null ? delegate.enableNotifications(characteristic) : false;
+    protected void notifyListeners(BluetoothEventType event, Object... args) {
+        notifyListeners(eventListeners, event, args);
     }
 
     @Override
-    public boolean enableNotifications(BluetoothDescriptor descriptor) {
-        BluetoothDevice delegate = getDelegate();
-        return delegate != null ? delegate.enableNotifications(descriptor) : false;
-    }
-
-    @Override
-    public boolean disableNotifications(BluetoothCharacteristic characteristic) {
-        BluetoothDevice delegate = getDelegate();
-        return delegate != null ? delegate.disableNotifications(characteristic) : false;
-    }
-
-    @Override
-    public boolean disableNotifications(BluetoothDescriptor descriptor) {
-        BluetoothDevice delegate = getDelegate();
-        return delegate != null ? delegate.disableNotifications(descriptor) : false;
-    }
-
-    @Override
-    public boolean discoverServices() {
-        BluetoothDevice delegate = getDelegate();
-        return delegate != null ? delegate.discoverServices() : false;
-    }
-
-    @Override
-    public ConnectionState getConnectionState() {
-        BluetoothDevice delegate = getDelegate();
-        return delegate != null ? delegate.getConnectionState() : ConnectionState.DISCOVERED;
-    }
-
-    @Override
-    public @Nullable Integer getRssi() {
-        BluetoothDevice delegate = getDelegate();
-        return delegate != null ? delegate.getRssi() : null;
-    }
-
-    @Override
-    public boolean readCharacteristic(BluetoothCharacteristic characteristic) {
-        BluetoothDevice delegate = getDelegate();
-        return delegate != null && delegate.readCharacteristic(characteristic);
-    }
-
-    @Override
-    public boolean writeCharacteristic(BluetoothCharacteristic characteristic) {
-        BluetoothDevice delegate = getDelegate();
-        return delegate != null && delegate.writeCharacteristic(characteristic);
-    }
-
-    private @Nullable BluetoothDevice getDelegate() {
+    protected @Nullable BluetoothDevice getDelegate() {
         BluetoothDevice newDelegate = null;
         int newRssi = Integer.MIN_VALUE;
         for (BluetoothDevice device : devices.keySet()) {

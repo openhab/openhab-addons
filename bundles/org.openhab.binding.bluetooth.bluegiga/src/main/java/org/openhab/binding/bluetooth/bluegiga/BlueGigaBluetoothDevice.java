@@ -124,7 +124,7 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
         this.addressType = addressType;
 
         bgHandler.addEventListener(this);
-        updateLastActivityTime();
+        updateLastSeenTime();
     }
 
     @Override
@@ -277,7 +277,7 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
         }
 
         logger.trace("scanEvent: {}", event);
-        updateLastActivityTime();
+        updateLastSeenTime();
 
         // Set device properties
         rssi = event.getRssi();
@@ -401,7 +401,7 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
         }
 
         logger.trace("BlueGiga Group: {} svcs={}", this, supportedServices);
-        updateLastActivityTime();
+        updateLastSeenTime();
 
         BluetoothService service = new BluetoothService(event.getUuid(), true, event.getStart(), event.getEnd());
         addService(service);
@@ -414,7 +414,7 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
         }
 
         logger.trace("BlueGiga FindInfo: {} svcs={}", this, supportedServices);
-        updateLastActivityTime();
+        updateLastSeenTime();
 
         BluetoothCharacteristic characteristic = new BluetoothCharacteristic(event.getUuid(), event.getChrHandle());
 
@@ -440,7 +440,7 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
         }
 
         cancelTimer(procedureTimer);
-        updateLastActivityTime();
+        updateLastSeenTime();
 
         // The current procedure is now complete - move on...
         switch (procedureProgress) {
@@ -486,7 +486,7 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
         }
 
         cancelTimer(connectTimer);
-        updateLastActivityTime();
+        updateLastSeenTime();
 
         // If we're connected, then remember the connection handle
         if (event.getFlags().contains(ConnectionStatusFlag.CONNECTION_CONNECTED)) {
@@ -518,7 +518,7 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
             return;
         }
 
-        updateLastActivityTime();
+        updateLastSeenTime();
 
         BluetoothCharacteristic characteristic = getCharacteristicByHandle(event.getAttHandle());
         if (characteristic == null) {

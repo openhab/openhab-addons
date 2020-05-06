@@ -68,7 +68,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice {
      * This method should always be called directly after creating a new object instance.
      */
     public void initialize() {
-        updateLastActivityTime();
+        updateLastSeenTime();
     }
 
     /**
@@ -91,7 +91,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice {
         if (this.device == null) {
             return;
         }
-        updateLastActivityTime();
+        updateLastSeenTime();
 
         this.name = device.getName();
         this.rssi = (int) device.getRSSI();

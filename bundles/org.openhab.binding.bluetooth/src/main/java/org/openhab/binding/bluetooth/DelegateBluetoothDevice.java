@@ -14,6 +14,7 @@ package org.openhab.binding.bluetooth;
 
 import java.time.ZonedDateTime;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.UUID;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -32,136 +33,172 @@ public abstract class DelegateBluetoothDevice extends BluetoothDevice {
         super(adapter, address);
     }
 
-    protected abstract BluetoothDevice getDelegate();
+    protected abstract @Nullable BluetoothDevice getDelegate();
 
     @Override
-    public ZonedDateTime getLastSeenTime() {
-        return getDelegate().getLastSeenTime();
+    public @Nullable ZonedDateTime getLastSeenTime() {
+        BluetoothDevice delegate = getDelegate();
+        return delegate != null ? delegate.getLastSeenTime() : null;
     }
 
     @Override
     public void updateLastSeenTime() {
-        getDelegate().updateLastSeenTime();
+        BluetoothDevice delegate = getDelegate();
+        if (delegate != null) {
+            delegate.updateLastSeenTime();
+        }
     }
 
     @Override
     public @Nullable String getName() {
-        return getDelegate().getName();
+        BluetoothDevice delegate = getDelegate();
+        return delegate != null ? delegate.getName() : null;
     }
 
     @Override
     public @Nullable Integer getManufacturerId() {
-        return getDelegate().getManufacturerId();
+        BluetoothDevice delegate = getDelegate();
+        return delegate != null ? delegate.getManufacturerId() : null;
     }
 
     @Override
     public @Nullable Integer getRssi() {
-        return getDelegate().getRssi();
+        BluetoothDevice delegate = getDelegate();
+        return delegate != null ? delegate.getRssi() : null;
     }
 
     @Override
     public @Nullable Integer getTxPower() {
-        return getDelegate().getTxPower();
+        BluetoothDevice delegate = getDelegate();
+        return delegate != null ? delegate.getTxPower() : null;
     }
 
     @Override
     public @Nullable BluetoothService getServices(UUID uuid) {
-        return getDelegate().getServices(uuid);
+        BluetoothDevice delegate = getDelegate();
+        return delegate != null ? delegate.getServices(uuid) : null;
     }
 
     @Override
     public Collection<BluetoothService> getServices() {
-        return getDelegate().getServices();
+        BluetoothDevice delegate = getDelegate();
+        return delegate != null ? delegate.getServices() : Collections.emptySet();
     }
 
     @Override
     public boolean supportsService(UUID uuid) {
-        return getDelegate().supportsService(uuid);
+        BluetoothDevice delegate = getDelegate();
+        return delegate != null ? delegate.supportsService(uuid) : false;
     }
 
     @Override
     public ConnectionState getConnectionState() {
-        return getDelegate().getConnectionState();
+        BluetoothDevice delegate = getDelegate();
+        return delegate != null ? delegate.getConnectionState() : ConnectionState.DISCOVERED;
     }
 
     @Override
     public boolean connect() {
-        return getDelegate().connect();
+        BluetoothDevice delegate = getDelegate();
+        return delegate != null ? delegate.connect() : false;
     }
 
     @Override
     public boolean disconnect() {
-        return getDelegate().disconnect();
+        BluetoothDevice delegate = getDelegate();
+        return delegate != null ? delegate.disconnect() : false;
     }
 
     @Override
     public boolean discoverServices() {
-        return getDelegate().discoverServices();
+        BluetoothDevice delegate = getDelegate();
+        return delegate != null ? delegate.discoverServices() : false;
     }
 
     @Override
     public boolean readCharacteristic(BluetoothCharacteristic characteristic) {
-        return getDelegate().readCharacteristic(characteristic);
+        BluetoothDevice delegate = getDelegate();
+        return delegate != null && delegate.readCharacteristic(characteristic);
     }
 
     @Override
     public boolean writeCharacteristic(BluetoothCharacteristic characteristic) {
-        return getDelegate().writeCharacteristic(characteristic);
+        BluetoothDevice delegate = getDelegate();
+        return delegate != null && delegate.writeCharacteristic(characteristic);
     }
 
     @Override
     public boolean enableNotifications(BluetoothCharacteristic characteristic) {
-        return getDelegate().enableNotifications(characteristic);
+        BluetoothDevice delegate = getDelegate();
+        return delegate != null ? delegate.enableNotifications(characteristic) : false;
     }
 
     @Override
     public boolean disableNotifications(BluetoothCharacteristic characteristic) {
-        return getDelegate().disableNotifications(characteristic);
+        BluetoothDevice delegate = getDelegate();
+        return delegate != null ? delegate.disableNotifications(characteristic) : false;
     }
 
     @Override
     public boolean enableNotifications(BluetoothDescriptor descriptor) {
-        return getDelegate().enableNotifications(descriptor);
+        BluetoothDevice delegate = getDelegate();
+        return delegate != null ? delegate.enableNotifications(descriptor) : false;
     }
 
     @Override
     public boolean disableNotifications(BluetoothDescriptor descriptor) {
-        return getDelegate().disableNotifications(descriptor);
+        BluetoothDevice delegate = getDelegate();
+        return delegate != null ? delegate.disableNotifications(descriptor) : false;
     }
 
     @Override
     protected boolean addService(BluetoothService service) {
-        return getDelegate().addService(service);
+        BluetoothDevice delegate = getDelegate();
+        return delegate != null ? delegate.addService(service) : false;
     }
 
     @Override
     public void addListener(BluetoothDeviceListener listener) {
-        getDelegate().addListener(listener);
+        BluetoothDevice delegate = getDelegate();
+        if (delegate != null) {
+            delegate.addListener(listener);
+        }
     }
 
     @Override
     public void removeListener(BluetoothDeviceListener listener) {
-        getDelegate().removeListener(listener);
+        BluetoothDevice delegate = getDelegate();
+        if (delegate != null) {
+            delegate.removeListener(listener);
+        }
     }
 
     @Override
     public boolean hasListeners() {
-        return getDelegate().hasListeners();
+        BluetoothDevice delegate = getDelegate();
+        return delegate != null ? delegate.hasListeners() : false;
     }
 
     @Override
     protected void notifyListeners(BluetoothEventType event, Object... args) {
-        getDelegate().notifyListeners(event, args);
+        BluetoothDevice delegate = getDelegate();
+        if (delegate != null) {
+            delegate.notifyListeners(event, args);
+        }
     }
 
     @Override
     public @Nullable BluetoothCharacteristic getCharacteristic(UUID uuid) {
-        return getDelegate().getCharacteristic(uuid);
+        BluetoothDevice delegate = getDelegate();
+        return delegate != null ? delegate.getCharacteristic(uuid) : null;
     }
 
     @Override
     protected void dispose() {
-        getDelegate().dispose();
+        BluetoothDevice delegate = getDelegate();
+        if (delegate != null) {
+            delegate.dispose();
+        }
     }
 
 }

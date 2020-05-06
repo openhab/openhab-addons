@@ -144,7 +144,7 @@ public abstract class AbstractBluetoothBridgeHandler<BD extends BluetoothDevice>
 
         // we remove devices we haven't seen in a while
         return ZonedDateTime.now().minusSeconds(config.inactiveDeviceCleanupThreshold)
-                .isAfter(device.getLastActivityTime());
+                .isAfter(device.getLastSeenTime());
     }
 
     @Override

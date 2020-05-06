@@ -294,7 +294,6 @@ public class BluetoothDiscoveryServiceTest {
                         .argThat(arg -> arg.getThingTypeUID().equals(BluetoothBindingConstants.THING_TYPE_BEACON)));
     }
 
-    @SuppressWarnings("deprecation")
     @Test
     public void removeDefaultDeviceTest() {
         Mockito.doReturn(null).when(participant1).createResult(ArgumentMatchers.any());
@@ -316,7 +315,6 @@ public class BluetoothDiscoveryServiceTest {
                 ArgumentMatchers.argThat(arg -> arg.equals(result.getThingUID())));
     }
 
-    @SuppressWarnings("deprecation")
     @Test
     public void removeUpdatedDefaultDeviceTest() {
         Mockito.doReturn(null).when(participant1).createResult(ArgumentMatchers.any());
@@ -354,7 +352,6 @@ public class BluetoothDiscoveryServiceTest {
                         .argThat(arg -> arg.getThingTypeUID().equals(BluetoothBindingConstants.THING_TYPE_BEACON)));
     }
 
-    @SuppressWarnings("deprecation")
     @Test
     public void replaceOlderDiscoveryTest() {
         Mockito.doReturn(null).when(participant1).createResult(ArgumentMatchers.any());
@@ -486,8 +483,8 @@ public class BluetoothDiscoveryServiceTest {
         MockRoamingBluetoothAdapter roamingAdapter = new MockRoamingBluetoothAdapter();
         discoveryService.setRoamingBluetoothAdapter(roamingAdapter);
 
-        BluetoothAdapter mockAdapter1 = new MockBluetoothAdapter();
-        BluetoothDevice device = mockAdapter1.getDevice(TestUtils.randomAddress());
+        MockBluetoothAdapter mockAdapter1 = new MockBluetoothAdapter();
+        MockBluetoothDevice device = mockAdapter1.getDevice(TestUtils.randomAddress());
         discoveryService.deviceDiscovered(device);
         device.setName("dasf");
         discoveryService.deviceDiscovered(device);

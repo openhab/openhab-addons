@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.discovery;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.BluetoothCompanyIdentifiers;
@@ -42,7 +43,7 @@ public class BluetoothDiscoveryDevice extends DelegateBluetoothDevice {
     }
 
     @Override
-    protected BluetoothDevice getDelegate() {
+    protected @NonNull BluetoothDevice getDelegate() {
         return delegate;
     }
 
