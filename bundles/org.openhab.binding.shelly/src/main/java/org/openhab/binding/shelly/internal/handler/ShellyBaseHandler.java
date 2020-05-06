@@ -17,6 +17,8 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -630,6 +632,21 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         }
 
         config = getConfigAs(ShellyThingConfiguration.class);
+        if (config.deviceIp.isEmpty()) {
+            logger.info("{}: IP address for the device must not be empty", thingName); // may not set in .things file
+            return;
+        }
+        try {
+            InetAddress addr = InetAddress.getByName(config.deviceIp);
+            String saddr = addr.getHostAddress();
+            if (!config.deviceIp.equals(saddr)) {
+                logger.debug("{}: hostname {} resolved to IP address {}", thingName, config.deviceIp, saddr);
+                config.deviceIp = saddr;
+            }
+        } catch (UnknownHostException e) {
+            logger.debug("{}: Unable to resole IP address", thingName, config.deviceIp);
+        }
+
         config.localIp = localIP;
         config.localPort = localPort;
         if (config.userId.isEmpty() && !bindingConfig.defaultUserId.isEmpty()) {
@@ -643,6 +660,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         if (config.updateInterval < UPDATE_MIN_DELAY) {
             config.updateInterval = UPDATE_MIN_DELAY;
         }
+
         skipCount = config.updateInterval / UPDATE_STATUS_INTERVAL_SECONDS;
     }
 
