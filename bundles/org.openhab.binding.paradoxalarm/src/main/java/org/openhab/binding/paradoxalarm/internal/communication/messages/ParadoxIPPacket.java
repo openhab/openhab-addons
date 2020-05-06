@@ -149,6 +149,5 @@ public class ParadoxIPPacket implements IPPacket {
                 throw new ParadoxRuntimeException("Unable to create byte array stream.", e);
             }
         }
-
     }
 }

@@ -46,5 +46,4 @@ public class TestCreateCommandPayload {
             Assert.assertTrue(ParadoxUtil.getLowNibble(byteValue) == command.getCommand());
         }
     }
-
 }

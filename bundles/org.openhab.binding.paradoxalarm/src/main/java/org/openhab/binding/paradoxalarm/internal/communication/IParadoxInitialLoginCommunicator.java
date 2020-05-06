@@ -42,5 +42,4 @@ public interface IParadoxInitialLoginCommunicator extends IConnectionHandler {
     void setListeners(Collection<IDataUpdateListener> listeners);
 
     void updateListeners();
-
 }

@@ -56,5 +56,4 @@ public class PanelConfiguration extends EntityConfiguration {
     public void setPanelTime(LocalDateTime panelTime) {
         this.panelTime = panelTime;
     }
-
 }

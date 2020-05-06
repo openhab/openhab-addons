@@ -135,5 +135,4 @@ public class GenericCommunicator extends AbstractCommunicator implements IRespon
             logger.debug("Probably wrong sender in the request. Request type is not one of the supported methods.");
         }
     }
-
 }

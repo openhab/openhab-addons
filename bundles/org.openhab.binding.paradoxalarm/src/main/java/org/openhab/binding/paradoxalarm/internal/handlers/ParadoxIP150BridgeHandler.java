@@ -340,5 +340,4 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler
     public String toString() {
         return "ParadoxIP150BridgeHandler [" + getThing().getUID().getAsString() + "]";
     }
-
 }

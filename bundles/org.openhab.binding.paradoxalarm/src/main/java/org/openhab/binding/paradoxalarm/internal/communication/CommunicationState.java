@@ -323,7 +323,6 @@ public enum CommunicationState implements IResponseReceiver {
             }
             nextState().runPhase(communicator);
         }
-
     },
     ONLINE {
 

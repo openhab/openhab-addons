@@ -103,5 +103,4 @@ public class Main {
         port = new Integer(parser.getPort());
         logger.info("IP150 port: {}", port);
     }
-
 }

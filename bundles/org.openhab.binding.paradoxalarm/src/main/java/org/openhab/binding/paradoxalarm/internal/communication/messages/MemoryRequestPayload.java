@@ -83,5 +83,4 @@ public abstract class MemoryRequestPayload implements IPayload {
             logger.trace("Address: {}", String.format(format, address));
         }
     }
-
 }

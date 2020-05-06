@@ -304,5 +304,4 @@ public class EncryptionHandler {
             a[i] ^= rk[i];
         }
     }
-
 }

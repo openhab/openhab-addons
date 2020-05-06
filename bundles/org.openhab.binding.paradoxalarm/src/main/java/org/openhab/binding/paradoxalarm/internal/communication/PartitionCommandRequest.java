@@ -24,5 +24,4 @@ public class PartitionCommandRequest extends Request {
     public PartitionCommandRequest(RequestType type, IPPacket packet, IResponseReceiver receiver) {
         super(type, packet, receiver);
     }
-
 }

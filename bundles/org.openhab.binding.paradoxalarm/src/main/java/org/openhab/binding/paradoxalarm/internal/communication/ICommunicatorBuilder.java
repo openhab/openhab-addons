@@ -38,5 +38,4 @@ public interface ICommunicatorBuilder {
     ICommunicatorBuilder withEncryption(boolean useEncryption);
 
     IParadoxCommunicator build();
-
 }

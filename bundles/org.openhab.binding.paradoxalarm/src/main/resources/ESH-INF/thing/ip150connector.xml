@@ -9,8 +9,8 @@
 		<description>Paradox IP150 module connector</description>
 
 		<channels>
-			<channel id="communicationCommand" typeId="command" />
-			<channel id="communicationState" typeId="communicationState" />
+			<channel id="communicationCommand" typeId="command"/>
+			<channel id="communicationState" typeId="communicationState"/>
 		</channels>
 
 		<config-description>
@@ -78,6 +78,6 @@
 		<item-type>String</item-type>
 		<label>Bridge Communication State</label>
 		<description>Status of connection to Paradox system</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 </thing:thing-descriptions>
