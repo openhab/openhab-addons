@@ -63,6 +63,7 @@ The devices support the following channels:
 | radio#broadcastFreq        | Number    | R           | Current radio frequency                                                               | STR-1080                                               |
 | radio#broadcastStation     | Number    | RW          | Set or get current preset radio station                                               | STR-1080                                               |
 | radio#broadcastSeekStation | String    | W           | Seek for new broadcast station, forward search "fwdSeeking" and backward "bwdSeeking" | STR-1080                                               |
+| nightMode                  | Switch    | RW          | Set or get the Night Mode state                                                       | HT-ZF9                                                 |
 
 
 ## Full Example
