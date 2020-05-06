@@ -13,25 +13,11 @@
 package org.openhab.binding.paradoxalarm.internal.communication;
 
 /**
- * The {@link IConnectionHandler} is base communication interface which defines only the basic communication level.
+ * The {@link IResponseReceiver} Used to pass parsed responses from Paradox to original senders of the requests for
+ * further processing.
  *
  * @author Konstantin Polihronov - Initial contribution
  */
-public interface IConnectionHandler {
-
-    void close();
-
-    boolean isOnline();
-
-    void setOnline(boolean flag);
-
-    void submitRequest(IRequest request);
-
-    boolean isEncrypted();
-
-    /**
-     * @param stoListener This method sets a listener which is called in case of socket timeout occurrence.
-     */
-    void setStoListener(ISocketTimeOutListener stoListener);
-
+public interface IResponseReceiver {
+    void receiveResponse(IResponse response, IParadoxInitialLoginCommunicator communicator);
 }

@@ -18,7 +18,7 @@ package org.openhab.binding.paradoxalarm.internal.communication.messages;
  *
  * @author Konstantin Polihronov - Initial contribution
  */
-public interface IPPacketPayload {
+public interface IPayload {
 
     byte[] getBytes();
 }

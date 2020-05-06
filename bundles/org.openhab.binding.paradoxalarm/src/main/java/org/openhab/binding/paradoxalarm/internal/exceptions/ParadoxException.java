@@ -36,4 +36,5 @@ public class ParadoxException extends Exception {
     public ParadoxException(Throwable cause) {
         super(cause);
     }
+
 }

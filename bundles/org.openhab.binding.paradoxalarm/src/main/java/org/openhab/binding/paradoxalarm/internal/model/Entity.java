@@ -53,4 +53,5 @@ public abstract class Entity {
     public String toString() {
         return "Entity [id=" + id + ", label=" + label + "]";
     }
+
 }

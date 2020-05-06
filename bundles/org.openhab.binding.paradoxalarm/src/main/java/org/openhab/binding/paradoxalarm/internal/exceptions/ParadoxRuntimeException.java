@@ -42,4 +42,5 @@ public class ParadoxRuntimeException extends RuntimeException {
         this("This is a Paradox Binding wrapper of RuntimeException. For detailed error message, see the original exception. Short message: "
                 + cause.getMessage(), cause);
     }
+
 }

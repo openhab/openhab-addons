@@ -69,4 +69,5 @@ public class ParadoxInformation {
                 + applicationVersion + ", hardwareVersion=" + hardwareVersion + ", bootloaderVersion="
                 + bootloaderVersion + "]";
     }
+
 }

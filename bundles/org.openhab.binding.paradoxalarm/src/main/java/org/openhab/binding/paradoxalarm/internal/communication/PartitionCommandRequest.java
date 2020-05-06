@@ -12,26 +12,17 @@
  */
 package org.openhab.binding.paradoxalarm.internal.communication;
 
+import org.openhab.binding.paradoxalarm.internal.communication.messages.IPPacket;
+
 /**
- * The {@link IConnectionHandler} is base communication interface which defines only the basic communication level.
+ * The {@link PartitionCommandRequest} Request object for wrapping partition command.
  *
  * @author Konstantin Polihronov - Initial contribution
  */
-public interface IConnectionHandler {
+public class PartitionCommandRequest extends Request {
 
-    void close();
-
-    boolean isOnline();
-
-    void setOnline(boolean flag);
-
-    void submitRequest(IRequest request);
-
-    boolean isEncrypted();
-
-    /**
-     * @param stoListener This method sets a listener which is called in case of socket timeout occurrence.
-     */
-    void setStoListener(ISocketTimeOutListener stoListener);
+    public PartitionCommandRequest(RequestType type, IPPacket packet, IResponseReceiver receiver) {
+        super(type, packet, receiver);
+    }
 
 }

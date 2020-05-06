@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.paradoxalarm.internal.communication;
 
-import org.openhab.binding.paradoxalarm.internal.communication.messages.IPPacketPayload;
+import org.openhab.binding.paradoxalarm.internal.communication.messages.IPPacket;
 
 /**
  * The {@link IRequest} - interface definition for the request used in the communication.
@@ -21,7 +21,9 @@ import org.openhab.binding.paradoxalarm.internal.communication.messages.IPPacket
  */
 public interface IRequest {
 
-    IPPacketPayload getRequestPayload();
+    IResponseReceiver getResponseReceiver();
+
+    IPPacket getRequestPacket();
 
     void setTimeStamp();
 

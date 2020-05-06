@@ -20,7 +20,10 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.paradoxalarm.internal.communication.messages.PartitionCommand;
 import org.openhab.binding.paradoxalarm.internal.model.ParadoxPanel;
 import org.openhab.binding.paradoxalarm.internal.model.Partition;
 import org.slf4j.Logger;
@@ -41,9 +44,7 @@ public class ParadoxPartitionHandler extends EntityBaseHandler {
 
     @Override
     protected void updateEntity() {
-        int index = calculateEntityIndex();
-        List<Partition> partitions = ParadoxPanel.getInstance().getPartitions();
-        Partition partition = partitions.get(index);
+        Partition partition = getPartition();
         if (partition != null) {
             updateState(PARTITION_LABEL_CHANNEL_UID, new StringType(partition.getLabel()));
             updateState(PARTITION_STATE_CHANNEL_UID, new StringType(partition.getState().getMainState()));
@@ -77,11 +78,48 @@ public class ParadoxPartitionHandler extends EntityBaseHandler {
         }
     }
 
+    protected Partition getPartition() {
+        int index = calculateEntityIndex();
+        List<Partition> partitions = ParadoxPanel.getInstance().getPartitions();
+        if (partitions == null) {
+            logger.debug(
+                    "Partitions collection of Paradox Panel object is null. Probably not yet initialized. Skipping update.");
+            return null;
+        }
+        if (partitions.size() <= index) {
+            logger.debug("Attempted to access partition out of bounds of current partitions list. Index: {}, List: {}",
+                    index, partitions);
+            return null;
+        }
+
+        Partition partition = partitions.get(index);
+        return partition;
+    }
+
     private OpenClosedType booleanToContactState(boolean value) {
         return value ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
     }
 
     private OnOffType booleanToSwitchState(boolean value) {
         return value ? OnOffType.ON : OnOffType.OFF;
+    }
+
+    @Override
+    public void handleCommand(@NonNull ChannelUID channelUID, @NonNull Command command) {
+        if (command instanceof StringType) {
+            boolean isDisarmCommand = PartitionCommand.DISARM.name().equals(command.toString());
+            if (isDisarmCommand && !config.isDisarmEnabled()) {
+                logger.warn(
+                        "Received DISARM command but Disarm is not enabled. This is security relevant feature. Check documentation!");
+                return;
+            }
+
+            Partition partition = getPartition();
+            if (partition != null) {
+                partition.handleCommand(command.toString());
+            }
+        } else {
+            super.handleCommand(channelUID, command);
+        }
     }
 }

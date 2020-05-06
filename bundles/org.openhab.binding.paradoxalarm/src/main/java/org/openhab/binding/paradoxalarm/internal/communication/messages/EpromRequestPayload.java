@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Konstantin Polihronov - Initial contribution
  */
-public class EpromRequestPayload extends MemoryRequestPayload implements IPPacketPayload {
+public class EpromRequestPayload extends MemoryRequestPayload implements IPayload {
 
     private final Logger logger = LoggerFactory.getLogger(EpromRequestPayload.class);
 
@@ -46,4 +46,5 @@ public class EpromRequestPayload extends MemoryRequestPayload implements IPPacke
         logger.trace("ControlByte value: {}", controlByte);
         return controlByte;
     }
+
 }

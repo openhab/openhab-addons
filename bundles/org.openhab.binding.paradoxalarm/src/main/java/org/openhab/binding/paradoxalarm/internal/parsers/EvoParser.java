@@ -64,6 +64,7 @@ public class EvoParser extends AbstractParser {
 
     @Override
     public ZoneState calculateZoneState(int id, ZoneStateFlags zoneStateFlags) {
+
         int index = (id - 1) / 8;
         int bitNumber = id % 8 - 1;
 
@@ -78,4 +79,5 @@ public class EvoParser extends AbstractParser {
 
         return new ZoneState(isOpened, isTampered, hasLowBattery);
     }
+
 }

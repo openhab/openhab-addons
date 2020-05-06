@@ -22,16 +22,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link EpromRequestPayload} Abstract class which contains common logic used in RAM and EPROM payload generation
+ * The {@link MemoryRequestPayload} Abstract class which contains common logic used in RAM and EPROM payload generation
  * classes.
  *
  * @author Konstantin Polihronov - Initial contribution
  */
-public abstract class MemoryRequestPayload implements IPPacketPayload {
+public abstract class MemoryRequestPayload implements IPayload {
 
     private final Logger logger = LoggerFactory.getLogger(MemoryRequestPayload.class);
 
-    private static final short MESSAGE_START = (short) ((0x50 << 8) | 0x08);
+    private final static short MESSAGE_START = (short) ((0x50 << 8) | 0x08);
 
     private int address;
     private byte bytesToRead;
@@ -51,9 +51,7 @@ public abstract class MemoryRequestPayload implements IPPacketPayload {
 
     @Override
     public byte[] getBytes() {
-        try {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             outputStream.write(ParadoxUtil.shortToByteArray(MESSAGE_START));
             outputStream.write(calculateControlByte());
             outputStream.write((byte) 0x00);
@@ -85,4 +83,5 @@ public abstract class MemoryRequestPayload implements IPPacketPayload {
             logger.trace("Address: {}", String.format(format, address));
         }
     }
+
 }
