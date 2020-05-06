@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.items.GenericItem;
 import org.eclipse.smarthome.core.items.Item;
@@ -162,11 +163,11 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
     }
 
     @SuppressWarnings("unchecked")
-    protected <T> T getAccessoryConfiguration(String key, T defaultValue) {
+    protected <T> T getAccessoryConfiguration(String key, @NonNull T defaultValue) {
         final @Nullable Map<String, Object> configuration = accessory.getConfiguration();
         if (configuration != null) {
             Object value = configuration.get(key);
-            if (value != null && defaultValue != null && value.getClass().equals(defaultValue.getClass())) {
+            if (value != null && value.getClass().equals(defaultValue.getClass())) {
                 return (T) value;
             }
         }
