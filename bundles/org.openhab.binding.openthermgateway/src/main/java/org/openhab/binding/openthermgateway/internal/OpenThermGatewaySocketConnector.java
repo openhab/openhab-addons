@@ -19,9 +19,9 @@ import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.AbstractMap;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -53,7 +53,7 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
     private volatile boolean stopping;
     private boolean connected;
 
-    private Map<String, Entry<Long, GatewayCommand>> pendingCommands = new HashMap<>();
+    private Map<String, Entry<Long, GatewayCommand>> pendingCommands = new ConcurrentHashMap<>();
 
     public OpenThermGatewaySocketConnector(OpenThermGatewayCallback callback, String ipaddress, int port) {
         this.callback = callback;
@@ -161,7 +161,7 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
             long responseTime = timeAndCommand.getKey() + COMMAND_RESPONSE_TIME_MILLISECONDS;
             long timeoutTime = timeAndCommand.getKey() + COMMAND_TIMEOUT_MILLISECONDS;
 
-            if (currentTime > responseTime && currentTime < timeoutTime) {
+            if (currentTime > responseTime && currentTime <= timeoutTime) {
                 logger.debug("Resending command: {}", timeAndCommand.getValue().toFullString());
                 sendCommand(timeAndCommand.getValue());
             } else if (currentTime > timeoutTime) {
