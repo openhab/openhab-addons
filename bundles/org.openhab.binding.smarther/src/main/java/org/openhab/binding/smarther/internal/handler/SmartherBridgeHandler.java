@@ -30,7 +30,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -84,6 +83,8 @@ import org.slf4j.LoggerFactory;
 public class SmartherBridgeHandler extends BaseBridgeHandler
         implements SmartherAccountHandler, SmartherNotificationHandler, AccessTokenRefreshListener {
 
+    private static final long POLL_INITIAL_DELAY = 5;
+
     private final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private final OAuthFactory oAuthFactory;
@@ -96,7 +97,7 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
     private @NonNullByDefault({}) SmartherBridgeConfiguration config;
 
     // Bridge local status
-    private @NonNullByDefault({}) ExpiringCache<@NonNull List<Location>> locationCache;
+    private @NonNullByDefault({}) ExpiringCache<List<Location>> locationCache;
     private @NonNullByDefault({}) BridgeStatus bridgeStatus;
 
     public SmartherBridgeHandler(Bridge bridge, OAuthFactory oAuthFactory, HttpClient httpClient) {
@@ -251,10 +252,10 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
      */
     private void schedulePoll() {
         stopPoll(false);
-        // Schedule poll to start after 1 sec and run periodically based on status refresh period
-        pollFuture = scheduler.scheduleWithFixedDelay(this::poll, 1, config.getStatusRefreshPeriod() * 60,
-                TimeUnit.SECONDS);
-        logger.debug("Bridge[{}] Scheduled poll for 1 sec out, then every {} min", thing.getUID(),
+        // Schedule poll to start after POLL_INITIAL_DELAY sec and run periodically based on status refresh period
+        pollFuture = scheduler.scheduleWithFixedDelay(this::poll, POLL_INITIAL_DELAY,
+                config.getStatusRefreshPeriod() * 60, TimeUnit.SECONDS);
+        logger.debug("Bridge[{}] Scheduled poll for {} sec out, then every {} min", thing.getUID(), POLL_INITIAL_DELAY,
                 config.getStatusRefreshPeriod());
     }
 
@@ -288,16 +289,19 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
         } catch (SmartherAuthorizationException e) {
             logger.warn("Bridge[{}] Authorization error during polling: {}", thing.getUID(), e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            schedulePoll();
             return false;
         } catch (SmartherGatewayException e) {
             logger.warn("Bridge[{}] API Gateway error during polling: {}", thing.getUID(), e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            schedulePoll();
             return false;
         } catch (RuntimeException e) {
             // All other exceptions apart from Authorization and Gateway issues
             logger.warn("Bridge[{}] Unexpected error during polling, please report if this keeps occurring: ",
                     thing.getUID(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
+            schedulePoll();
             return false;
         }
     }

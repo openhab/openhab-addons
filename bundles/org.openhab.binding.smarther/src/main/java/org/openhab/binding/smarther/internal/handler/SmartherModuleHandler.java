@@ -23,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 import javax.measure.quantity.Temperature;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -69,6 +68,7 @@ import org.slf4j.LoggerFactory;
 public class SmartherModuleHandler extends BaseThingHandler {
 
     private static final String DAILY_MIDNIGHT = "1 0 0 * * ? *";
+    private static final long POLL_INITIAL_DELAY = 5;
 
     private final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -78,13 +78,13 @@ public class SmartherModuleHandler extends BaseThingHandler {
     private final ChannelUID endDateChannelUID;
 
     // Field members assigned in initialize method
-    private @NonNullByDefault({}) ScheduledCompletableFuture<@NonNull Void> jobFuture;
+    private @NonNullByDefault({}) ScheduledCompletableFuture<Void> jobFuture;
     private @NonNullByDefault({}) Future<?> pollFuture;
     private @NonNullByDefault({}) SmartherBridgeHandler bridgeHandler;
     private @NonNullByDefault({}) SmartherModuleConfiguration config;
 
     // Chronothermostat local status
-    private @NonNullByDefault({}) ExpiringCache<@NonNull List<Program>> programCache;
+    private @NonNullByDefault({}) ExpiringCache<List<Program>> programCache;
     private @NonNullByDefault({}) Chronothermostat chronothermostat;
     private @NonNullByDefault({}) ModuleSettings moduleSettings;
 
@@ -384,10 +384,10 @@ public class SmartherModuleHandler extends BaseThingHandler {
      */
     private void schedulePoll() {
         stopPoll(false);
-        // Schedule poll to start after 5 sec and run periodically based on status refresh period
-        pollFuture = scheduler.scheduleWithFixedDelay(this::poll, 5, config.getStatusRefreshPeriod() * 60,
-                TimeUnit.SECONDS);
-        logger.debug("Module[{}] Scheduled poll for 5 sec out, then every {} min", thing.getUID(),
+        // Schedule poll to start after POLL_INITIAL_DELAY sec and run periodically based on status refresh period
+        pollFuture = scheduler.scheduleWithFixedDelay(this::poll, POLL_INITIAL_DELAY,
+                config.getStatusRefreshPeriod() * 60, TimeUnit.SECONDS);
+        logger.debug("Module[{}] Scheduled poll for {} sec out, then every {} min", thing.getUID(), POLL_INITIAL_DELAY,
                 config.getStatusRefreshPeriod());
     }
 
@@ -446,16 +446,19 @@ public class SmartherModuleHandler extends BaseThingHandler {
         } catch (SmartherSubscriptionAlreadyExistsException e) {
             logger.debug("Module[{}] Subscription error during polling: {}", thing.getUID(), e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
+            schedulePoll();
             return false;
         } catch (SmartherGatewayException e) {
             logger.warn("Module[{}] API Gateway error during polling: {}", thing.getUID(), e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            schedulePoll();
             return false;
         } catch (RuntimeException e) {
             // All other exceptions apart from Subscription and Gateway issues
             logger.warn("Module[{}] Unexpected error during polling, please report if this keeps occurring: ",
                     thing.getUID(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
+            schedulePoll();
             return false;
         }
     }
