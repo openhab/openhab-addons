@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
@@ -23,7 +24,8 @@
 			<description>Enable/disable automatic discovery</description>
 			<default>true</default>
 		</parameter>
-		<parameter name="discoveryInterval" type="integer" min="60" required="false" unit="s" groupName="config-info">
+		<parameter name="discoveryInterval" type="integer" min="60" required="false" unit="s"
+			groupName="config-info">
 			<label>Monitor Discovery Interval</label>
 			<description>Specifies time in seconds in which the binding will attempt to discover monitors</description>
 			<default>300</default>

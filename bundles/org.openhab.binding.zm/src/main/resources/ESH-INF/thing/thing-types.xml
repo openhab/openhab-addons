@@ -22,25 +22,25 @@
 				<label>Video URL</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:zm:server" />
+		<config-description-ref uri="thing-type:zm:server"/>
 	</bridge-type>
 
 	<thing-type id="monitor">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="server" />
+			<bridge-type-ref id="server"/>
 		</supported-bridge-type-refs>
 
 		<label>Zoneminder Monitor</label>
 		<description>Represents a Zoneminder monitor</description>
 		<channels>
-			<channel id="id" typeId="id" />
-			<channel id="name" typeId="name" />
-			<channel id="image" typeId="image" />
-			<channel id="enable" typeId="enable" />
-			<channel id="function" typeId="function" />
-			<channel id="alarm" typeId="alarm" />
-			<channel id="state" typeId="state" />
-			<channel id="triggerAlarm" typeId="triggerAlarm" />
+			<channel id="id" typeId="id"/>
+			<channel id="name" typeId="name"/>
+			<channel id="image" typeId="image"/>
+			<channel id="enable" typeId="enable"/>
+			<channel id="function" typeId="function"/>
+			<channel id="alarm" typeId="alarm"/>
+			<channel id="state" typeId="state"/>
+			<channel id="triggerAlarm" typeId="triggerAlarm"/>
 			<channel id="hourEvents" typeId="events">
 				<label>Hour Events</label>
 			</channel>
@@ -62,17 +62,17 @@
 			<channel id="videoUrl" typeId="url">
 				<label>Video URL</label>
 			</channel>
-			<channel id="eventId" typeId="eventId" />
-			<channel id="eventName" typeId="eventName" />
-			<channel id="eventCause" typeId="eventCause" />
-			<channel id="eventNotes" typeId="eventNotes" />
-			<channel id="eventStart" typeId="eventStart" />
-			<channel id="eventEnd" typeId="eventEnd" />
-			<channel id="eventFrames" typeId="eventFrames" />
-			<channel id="eventAlarmFrames" typeId="eventAlarmFrames" />
-			<channel id="eventLength" typeId="eventLength" />
+			<channel id="eventId" typeId="eventId"/>
+			<channel id="eventName" typeId="eventName"/>
+			<channel id="eventCause" typeId="eventCause"/>
+			<channel id="eventNotes" typeId="eventNotes"/>
+			<channel id="eventStart" typeId="eventStart"/>
+			<channel id="eventEnd" typeId="eventEnd"/>
+			<channel id="eventFrames" typeId="eventFrames"/>
+			<channel id="eventAlarmFrames" typeId="eventAlarmFrames"/>
+			<channel id="eventLength" typeId="eventLength"/>
 		</channels>
-		<config-description-ref uri="thing-type:zm:monitor" />
+		<config-description-ref uri="thing-type:zm:monitor"/>
 	</thing-type>
 
 	<channel-type id="id">

@@ -15,21 +15,16 @@ package org.openhab.binding.zm.internal.dto;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VersionDTO} provides the software version and API version.
+ * The {@link AbstractResponseDTO} represents the common exception object included in
+ * all responses.
  *
  * @author Mark Hilbush - Initial contribution
  */
-public class VersionDTO extends AbstractResponseDTO {
+public abstract class AbstractResponseDTO {
 
     /**
-     * Zoneminder version (e.g. "1.34.2")
+     * Common exception object used to convey errors from the API
      */
-    @SerializedName("version")
-    public String version;
-
-    /**
-     * API version number (e.g. "2.0")
-     */
-    @SerializedName("apiversion")
-    public String apiVersion;
+    @SerializedName("exception")
+    public ExceptionDTO exception;
 }

@@ -22,17 +22,11 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Mark Hilbush - Initial contribution
  */
-public class MonitorsDTO {
+public class MonitorsDTO extends AbstractResponseDTO {
 
     /**
      * List of monitors
      */
     @SerializedName("monitors")
     public List<MonitorItemDTO> monitorItems;
-
-    /**
-     * Exception object used to convey API errors
-     */
-    @SerializedName("exception")
-    public ExceptionDTO exception;
 }

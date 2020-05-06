@@ -32,10 +32,4 @@ public class MonitorItemDTO {
      */
     @SerializedName("Monitor_Status")
     public MonitorStatusDTO monitorStatus;
-
-    /**
-     * Exception object used to convey API errors
-     */
-    @SerializedName("exception")
-    public ExceptionDTO exception;
 }

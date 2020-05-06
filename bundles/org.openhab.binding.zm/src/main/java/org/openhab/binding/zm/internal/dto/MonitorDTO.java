@@ -93,10 +93,4 @@ public class MonitorDTO {
      */
     @SerializedName("path")
     public String videoStreamPath;
-
-    /**
-     * Exception object used to convery API errors
-     */
-    @SerializedName("exception")
-    public ExceptionDTO exception;
 }

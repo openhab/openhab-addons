@@ -22,17 +22,11 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Mark Hilbush - Initial contribution
  */
-public class MonitorStateDTO {
+public class MonitorStateDTO extends AbstractResponseDTO {
 
     /**
      * The current state of the monitor (e.g. IDLE, ALERT, ALARM, etc.)
      */
     @SerializedName("status")
     public MonitorState state;
-
-    /**
-     * Exception object used to convey API er
-     */
-    @SerializedName("exception")
-    public ExceptionDTO exception;
 }

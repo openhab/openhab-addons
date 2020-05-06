@@ -123,8 +123,8 @@ public class Event {
         sb.append("id=").append(id);
         sb.append(", name=").append(name);
         sb.append(", cause=").append(cause);
-        // sb.append(", start=").append(start);
-        // sb.append(", end=").append(end);
+        sb.append(", start=").append(start.toString());
+        sb.append(", end=").append(end.toString());
         sb.append(", frames=").append(String.format("%d", frames));
         sb.append(", alarmFrames=").append(String.format("%d", alarmFrames));
         sb.append(", length=").append(String.format("%6.2", length));

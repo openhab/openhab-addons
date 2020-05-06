@@ -50,10 +50,4 @@ public class MonitorStatusDTO {
      */
     @SerializedName("CaptureFPS")
     public String captureFPS;
-
-    /**
-     * Exception object used to convey API errors
-     */
-    @SerializedName("exception")
-    public ExceptionDTO exception;
 }

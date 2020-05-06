@@ -21,7 +21,7 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Mark Hilbush - Initial contribution
  */
-public class AuthResponseDTO {
+public class AuthResponseDTO extends AbstractResponseDTO {
 
     /**
      * Access token to be used in all API calls
@@ -59,10 +59,4 @@ public class AuthResponseDTO {
      */
     @SerializedName("apiversion")
     public String apiVersion;
-
-    /**
-     * Exception object used to convey errors from the API
-     */
-    @SerializedName("exception")
-    public ExceptionDTO exception;
 }

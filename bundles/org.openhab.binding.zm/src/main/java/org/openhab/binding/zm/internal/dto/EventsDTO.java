@@ -22,7 +22,7 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Mark Hilbush - Initial contribution
  */
-public class EventsDTO {
+public class EventsDTO extends AbstractResponseDTO {
 
     /**
      * List of events matching the selection criteria
@@ -35,10 +35,4 @@ public class EventsDTO {
      */
     @SerializedName("pagination")
     public Object pagination;
-
-    /**
-     * Exception object used to convey errors from the API
-     */
-    @SerializedName("exception")
-    public ExceptionDTO exception;
 }

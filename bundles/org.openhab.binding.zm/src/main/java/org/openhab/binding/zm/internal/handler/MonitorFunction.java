@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link MonitorFunction} represents the valid states for a Zoneminder monitor.
+ * The {@link MonitorFunction} represents the valid functions for a Zoneminder monitor.
  *
  * @author Mark Hilbush - Initial contribution
  */
