@@ -200,7 +200,7 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
     private class DiscoveryCache {
 
         private final Map<BluetoothAdapter, SnapshotFuture> discoveryFutures = new HashMap<>();
-        private final Map<BluetoothAdapter, DiscoveryResult> roamingDiscoveryResults = new HashMap<>();
+        private final Map<BluetoothAdapter, @Nullable DiscoveryResult> roamingDiscoveryResults = new ConcurrentHashMap<>();
 
         private @Nullable BluetoothDeviceSnapshot latestSnapshot;
 
@@ -299,9 +299,7 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
                 return result;
             });
 
-            // copy the current snapshot
-            // BluetoothDiscoveryDevice snapshot = new BluetoothDiscoveryDevice(currentSnapshot);
-            // now save it for later
+            // now save this snapshot for later
             discoveryFutures.put(adapter, new SnapshotFuture(snapshot, future));
         }
 
@@ -312,9 +310,7 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
             roamingAdapter.ifPresent(roamingAdapter -> {
                 if (roamingAdapter.isDiscoveryEnabled()) {
                     DiscoveryResult roamingResult = copyWithNewBridge(result, roamingAdapter);
-                    synchronized (roamingDiscoveryResults) {
-                        roamingDiscoveryResults.put(adapter, roamingResult);
-                    }
+                    roamingDiscoveryResults.put(adapter, roamingResult);
                     thingDiscovered(roamingResult);
                 }
             });
@@ -322,12 +318,7 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
 
         private void retractDiscoveryResult(BluetoothAdapter adapter, DiscoveryResult result) {
             thingRemoved(createThingUIDWithBridge(result, adapter));
-            DiscoveryResult roamingResult = null;
-            synchronized (roamingDiscoveryResults) {
-                if (roamingDiscoveryResults.containsKey(adapter)) {
-                    roamingResult = roamingDiscoveryResults.remove(adapter);
-                }
-            }
+            DiscoveryResult roamingResult = roamingDiscoveryResults.remove(adapter);
             if (roamingResult != null) {
                 thingRemoved(roamingResult.getThingUID());
             }
