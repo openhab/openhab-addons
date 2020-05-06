@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="emby"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<!-- Sample Thing Type -->
+	<bridge-type id="controller">
+		<label>EMBY Server</label>
+		<description>This is the Bridge to an instance of an EMBY server you want to connect to.</description>
+		<config-description>
+			<parameter name="api" type="text" required="true">
+				<label>API Key</label>
+				<description>This is the API key generated from EMBY used for Authorization.</description>
+			</parameter>
+			<parameter name="buffer_size" type="integer">
+				<label>Web Socket Buffer Size</label>
+				<description>Here you can define a custom size for the websocket buffer size. Default is 100000</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="ipAddress" type="text" required="true">
+				<label>ipAddress</label>
+				<description>This is the ip address of the EMBY Server.</description>
+			</parameter>
+			<parameter name="port" type="text" required="true">
+				<label>Port</label>
+				<description>This is the port of the EMBY server.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" required="true">
+				<label>Refresh Parameter</label>
+				<description>This is the refresh interval in milliseconds that will be sent to the websocket.</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+	<thing-type id="device" extensible="generalCommand">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller" />
+		</supported-bridge-type-refs>
+		<label>EMBY Binding Device</label>
+		<description>This  is a player device which connects to an EMBY server to play files that you want to montior.</description>
+		<channels>
+			<channel id="control" typeId="control" />
+			<channel id="stop" typeId="stop" />
+			<channel id="title" typeId="title" />
+			<channel id="mute" typeId="mute" />
+			<channel id="showtitle" typeId="showtitle" />
+			<channel id="imageurl" typeId="imageurl" />
+			<channel id="currenttime" typeId="currenttime" />
+			<channel id="duration" typeId="duration" />
+			<channel id="mediatype" typeId="mediatype" />
+			<channel id="sendplay" typeId="sendplay" />
+		</channels>
+		<config-description>
+			<parameter name="deviceID" type="text" required="true">
+				<label>DeviceID</label>
+				<description>This is the deviceId you want to connect to to monitor.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<channel-type id="sendplay">
+		<item-type>String</item-type>
+		<label>Send Play</label>
+		<description>String to send a comma-delimited list of item id's that will be played by the client. The string should be in JSON format with all desired parameters from the EMBY API. https://github.com/MediaBrowser/Emby/wiki/Remote-control</description>
+		<state pattern="%s" />
+	</channel-type>
+	<channel-type id="title">
+		<item-type>String</item-type>
+		<label>Title</label>
+		<description>Title of the current song</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+	<channel-type id="showtitle">
+		<item-type>String</item-type>
+		<label>Show Title</label>
+		<description>Title of the current show</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+	<channel-type id="control">
+		<item-type>Player</item-type>
+		<label>Control</label>
+		<description>Control the Emby Player, e.g. start/stop/next/previous/ffward/rewind</description>
+		<category>Player</category>
+	</channel-type>
+	<channel-type id="stop">
+		<item-type>Switch</item-type>
+		<label>Stop</label>
+		<description>Stops the player. ON if the player is stopped.</description>
+	</channel-type>
+	<channel-type id="mute">
+		<item-type>Switch</item-type>
+		<label>Mute</label>
+		<description>Mute/unmute your device</description>
+	</channel-type>
+	<channel-type id="currenttime">
+		<item-type>Number:Time</item-type>
+		<label>Current Time</label>
+		<description>Current time of currently playing media</description>
+		<state readOnly="true" pattern="%d %unit%" />
+	</channel-type>
+	<channel-type id="duration">
+		<item-type>Number:Time</item-type>
+		<label>Duration</label>
+		<description>Length of currently playing media</description>
+		<state readOnly="true" pattern="%d %unit%" />
+	</channel-type>
+	<channel-type id="mediatype">
+		<item-type>String</item-type>
+		<label>Media Type</label>
+		<description>Media type of the current file</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+	<channel-type id="generalCommand">
+		<item-type>Switch</item-type>
+		<label>General Command</label>
+		<description>Send a general command</description>
+		<config-description>
+			<parameter name="generalCommand_CommandName" type="text">
+				<options>
+					<option value="MoveUp">Move Up</option>
+					<option value="MoveDown">Move Down</option>
+					<option value="MoveLeft">Move Left</option>
+					<option value="MoveRight">Move Right</option>
+					<option value="PageUp">Page Up</option>
+					<option value="PageDown">Page Down</option>
+					<option value="PreviousLetter">Previous Letter</option>
+					<option value="NextLetter">Next Letter</option>
+					<option value="ToggleOsdMenu">Toggle Osd Menu</option>
+					<option value="ToggleContextMenu">Toggle Context Menu</option>
+					<option value="ToggleMute">Toggle Mute</option>
+					<option value="Select">Select</option>
+					<option value="Back">Back</option>
+					<option value="TakeScreenshot">Take Screenshot</option>
+					<option value="GoHome">Go Home</option>
+					<option value="GoToSettings">Go To Settings</option>
+					<option value="VolumeUp">Volume Up</option>
+					<option value="VolumeDown">Volume Down</option>
+					<option value="ToggleFullscreen">Toggle Full Screen</option>
+					<option value="GoToSearch">Go To Search</option>
+				</options>
+			</parameter>
+		</config-description>
+	</channel-type>
+	<channel-type id="generalCommand_withArguments">
+		<item-type>String</item-type>
+		<label>General Command With Arguments</label>
+		<description>Send a general command that accepts arguments.  The argument should be sent as a string in json format. For example, SetVolume - {Volume:50}</description>
+		<config-description>
+			<parameter name="generalCommand_CommandName" type="text">
+				<options>
+					<option value="SetVolume">Set Volume</option>
+					<option value="SetAudioStreamIndex">Set Audio Stream Index</option>
+					<option value="SetSubtitleStreamIndex">Set Subtitle Stream Index</option>
+					<option value="DisplayContent">Display Content</option>
+					<option value="PlayTrailers">Play Trailers</option>
+				</options>
+			</parameter>
+		</config-description>
+	</channel-type>
+	<channel-type id="imageurl">
+		<item-type>String</item-type>
+		<label>image url</label>
+		<description>The url of the playing media</description>
+		<state readOnly="true" pattern="%s" />
+		<config-description>
+			<parameter name="imageurl_type" type="text">
+				<default>Primary</default>
+				<options>
+					<option value="Primary">Primary</option>
+					<option value="Art">Art</option>
+					<option value="Backdrop">Backdrop</option>
+					<option value="Banner">Banner</option>
+					<option value="Logo">Logo</option>
+					<option value="Thumb">Thumb</option>
+					<option value="Disc">Disc</option>
+					<option value="Box">Box</option>
+					<option value="Screenshot">Screenshot</option>
+					<option value="Menu">Menu</option>
+					<option value="Chapter">Chapter</option>
+				</options>
+			</parameter>
+			<parameter name="imageurl_maxHeight" type="text">
+				<label>Image Max Height</label>
+				<description>The maximum height of the image that will be retrieved.</description>
+			</parameter>
+			<parameter name="imageurl_maxWidth" type="text">
+				<label>Image Max Width</label>
+				<description>The maximum width of the image that will be retrieved.</description>
+			</parameter>
+			<parameter name="imageurl_PercentPlayed" type="boolean">
+				<label>Percent Played</label>
+			<description>When set to true (default) the image url will have the percent played indicator on the image.  Set to false to not display the percent played indicator</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+</thing:thing-descriptions>
+
