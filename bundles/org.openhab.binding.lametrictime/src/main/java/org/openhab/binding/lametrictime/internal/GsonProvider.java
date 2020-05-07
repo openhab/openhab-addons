@@ -29,10 +29,10 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
+import org.openhab.binding.lametrictime.api.common.impl.GsonGenerator;
 import org.osgi.service.component.annotations.Component;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 /**
  * JSON reader/writer for Jersey using GSON.
@@ -50,7 +50,7 @@ public class GsonProvider<T> implements MessageBodyReader<T>, MessageBodyWriter<
     private final Gson gson;
 
     public GsonProvider() {
-        gson = new GsonBuilder().create();
+        gson = GsonGenerator.create();
     }
 
     @Override
