@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="energenie"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="pm2lan">
+		<label>EG-PM2-LAN</label>
+		<description>Energenie programmable power strip with LAN interface</description>
+
+		<channels>
+			<channel id="socket1" typeId="socket1" />
+			<channel id="socket2" typeId="socket2" />
+			<channel id="socket3" typeId="socket3" />
+			<channel id="socket4" typeId="socket4" />
+		</channels>
+
+		<config-description-ref uri="thing-type:energenie:config" />
+
+	</thing-type>
+
+	<thing-type id="pmslan">
+		<label>EG-PMS-LAN</label>
+		<description>Energenie programmable power strip with LAN interface</description>
+
+		<channels>
+			<channel id="socket1" typeId="socket1" />
+			<channel id="socket2" typeId="socket2" />
+			<channel id="socket3" typeId="socket3" />
+			<channel id="socket4" typeId="socket4" />
+		</channels>
+
+		<config-description-ref uri="thing-type:energenie:config" />
+
+	</thing-type>
+
+	<thing-type id="pms2lan">
+		<label>EG-PMS2-LAN</label>
+		<description>Energenie programmable power strip with LAN interface</description>
+
+		<channels>
+			<channel id="socket1" typeId="socket1" />
+			<channel id="socket2" typeId="socket2" />
+			<channel id="socket3" typeId="socket3" />
+			<channel id="socket4" typeId="socket4" />
+		</channels>
+
+		<config-description-ref uri="thing-type:energenie:config" />
+
+	</thing-type>
+
+	<thing-type id="pmswlan">
+		<label>EG-PMS-WLAN</label>
+		<description>Energenie programmable power strip with WLAN interface</description>
+
+		<channels>
+			<channel id="socket1" typeId="socket1" />
+			<channel id="socket2" typeId="socket2" />
+			<channel id="socket3" typeId="socket3" />
+			<channel id="socket4" typeId="socket4" />
+		</channels>
+
+		<config-description-ref uri="thing-type:energenie:config" />
+
+	</thing-type>
+
+	<thing-type id="pwmlan">
+		<label>EGM-PWM-LAN</label>
+		<description>Energenie energy meter with LAN interface</description>
+
+		<channels>
+			<channel id="voltage" typeId="voltage" />
+			<channel id="current" typeId="current" />
+			<channel id="power" typeId="power" />
+			<channel id="energy" typeId="energy" />
+		</channels>
+
+		<config-description-ref uri="thing-type:energenie:config" />
+
+	</thing-type>
+
+	<channel-type id="socket1">
+		<item-type>Switch</item-type>
+		<label>Socket 1 State</label>
+		<description>Channel representing the state of socket 1</description>
+	</channel-type>
+
+	<channel-type id="socket2">
+		<item-type>Switch</item-type>
+		<label>Socket 2 State</label>
+		<description>Channel representing the state of socket 2</description>
+	</channel-type>
+
+	<channel-type id="socket3">
+		<item-type>Switch</item-type>
+		<label>Socket 3 State</label>
+		<description>Channel representing the state of socket 3</description>
+	</channel-type>
+
+	<channel-type id="socket4">
+		<item-type>Switch</item-type>
+		<label>Socket 4 State</label>
+		<description>Channel representing the state of socket 4</description>
+	</channel-type>
+
+	<channel-type id="voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage</label>
+		<description>Channel representing the voltage</description>
+		<state pattern="%.0f %unit%" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Current</label>
+		<description>Channel representing the current</description>
+		<state pattern="%.1f %unit%" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="power">
+		<item-type>Number:Power</item-type>
+		<label>Power</label>
+		<description>Channel representing the power consumption</description>
+		<state pattern="%.0f %unit%" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="energy">
+		<item-type>Number:Energy</item-type>
+		<label>Energy</label>
+		<description>Channel representing the energy consumption</description>
+		<state pattern="%.0f %unit%" readOnly="true" />
+	</channel-type>
+
+</thing:thing-descriptions>

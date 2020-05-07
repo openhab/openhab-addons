@@ -48,6 +48,7 @@
 /bundles/org.openhab.binding.dwdpollenflug/ @DerOetzi
 /bundles/org.openhab.binding.dwdunwetter/ @limdul79
 /bundles/org.openhab.binding.elerotransmitterstick/ @vbier
+/bundles/org.openhab.binding.energenie/ @hmerk
 /bundles/org.openhab.binding.enocean/ @fruggy83
 /bundles/org.openhab.binding.enturno/ @klocsson
 /bundles/org.openhab.binding.etherrain/ @dfad1469
