@@ -175,8 +175,7 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
             logger.trace("Received message: {}, (unknown)", message);
             return;
         } else {
-            logger.trace("Received message: {}, {} {} {}", message, msg.getID(), msg.getCode(),
-                    msg.getMessageType().toString());
+            logger.trace("Received message: {}, {} {} {}", message, msg.getID(), msg.getCode(), msg.getMessageType());
         }
 
         if (DataItemGroup.dataItemGroups.containsKey(msg.getID())) {
@@ -204,8 +203,8 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
                         break;
                 }
 
-                logger.trace("  Data: {} {} {} {}", dataItem.getID(), dataItem.getSubject(),
-                        dataItem.getDataType().toString(), state == null ? "" : state.toString());
+                logger.trace("  Data: {} {} {} {}", dataItem.getID(), dataItem.getSubject(), dataItem.getDataType(),
+                        state == null ? "" : state);
             }
         }
 
