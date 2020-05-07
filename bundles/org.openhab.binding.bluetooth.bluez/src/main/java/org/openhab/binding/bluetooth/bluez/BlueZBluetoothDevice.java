@@ -26,7 +26,7 @@ import org.openhab.binding.bluetooth.BluetoothCharacteristic;
 import org.openhab.binding.bluetooth.BluetoothCompletionStatus;
 import org.openhab.binding.bluetooth.BluetoothDescriptor;
 import org.openhab.binding.bluetooth.BluetoothService;
-import org.openhab.binding.bluetooth.bluez.handler.BlueZBridgeHandler;
+import org.openhab.binding.bluetooth.bluez.handler.BlueZAdapterService;
 import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
 import org.openhab.binding.bluetooth.notification.BluetoothScanNotification;
 import org.slf4j.Logger;
@@ -58,17 +58,9 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice {
      * @param address the Bluetooth address of the device
      * @param name the name of the device
      */
-    public BlueZBluetoothDevice(BlueZBridgeHandler adapter, BluetoothAddress address) {
+    public BlueZBluetoothDevice(BlueZAdapterService adapter, BluetoothAddress address) {
         super(adapter, address);
         logger.debug("Creating BlueZ device with address '{}'", address);
-    }
-
-    /**
-     * Initializes a newly created instance of this class.
-     * This method should always be called directly after creating a new object instance.
-     */
-    public void initialize() {
-        updateLastSeenTime();
     }
 
     /**

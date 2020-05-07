@@ -17,35 +17,39 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.thing.Bridge;
-import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
-import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.openhab.binding.bluetooth.BluetoothDevice.ConnectionState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This is a abstract superclass for BluetoothAdapter implementations. This class takes care of inactive device cleanup
- * as well as handling background and active discovery logic.
+ * The {@link AbstractBluetoothAdapterService} provides a base implementation of {@link BluetoothAdapter} that handles
+ * the tracking and cleanup of BluetoothDevice instances managed by this BluetoothAdapter.
  *
- * Subclasses will primarily be responsible for device discovery
- *
- * @author Connor Petty - Initial contribution from refactored code
+ * @author Connor Petty - Initial contribution
  */
-@Deprecated
 @NonNullByDefault
-public abstract class AbstractBluetoothBridgeHandler<BD extends BluetoothDevice> extends BaseBridgeHandler
-        implements BluetoothAdapter {
+public abstract class AbstractBluetoothAdapterService<BD extends BluetoothDevice>
+        implements BluetoothAdapter, ThingHandlerService {
 
-    private final Logger logger = LoggerFactory.getLogger(AbstractBluetoothBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(AbstractBluetoothAdapterService.class);
+
+    protected final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("bluetooth");
+
+    @NonNullByDefault({})
+    protected BridgeHandler handler;
 
     // Set of discovery listeners
     private final Set<BluetoothDiscoveryListener> discoveryListeners = new CopyOnWriteArraySet<>();
@@ -61,23 +65,38 @@ public abstract class AbstractBluetoothBridgeHandler<BD extends BluetoothDevice>
 
     private @Nullable ScheduledFuture<?> inactiveRemovalJob;
 
-    /**
-     * Constructor
-     *
-     * @param bridge the bridge definition for this handler
-     */
-    public AbstractBluetoothBridgeHandler(Bridge bridge) {
-        super(bridge);
+    @Override
+    public void setThingHandler(@Nullable ThingHandler handler) {
+        this.handler = (BridgeHandler) handler;
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return handler;
+    }
+
+    protected Bridge getBridge() {
+        return (Bridge) handler.getThing();
     }
 
     @Override
     public ThingUID getUID() {
-        return getThing().getUID();
+        return getBridge().getUID();
     }
 
     @Override
-    public void initialize() {
-        config = getConfigAs(BaseBluetoothBridgeHandlerConfiguration.class);
+    public void addDiscoveryListener(BluetoothDiscoveryListener listener) {
+        discoveryListeners.add(listener);
+    }
+
+    @Override
+    public void removeDiscoveryListener(@Nullable BluetoothDiscoveryListener listener) {
+        discoveryListeners.remove(listener);
+    }
+
+    @Override
+    public void activate() {
+        config = getBridge().getConfiguration().as(BaseBluetoothBridgeHandlerConfiguration.class);
 
         int intervalSecs = config.inactiveDeviceCleanupInterval;
         inactiveRemovalJob = scheduler.scheduleWithFixedDelay(this::removeInactiveDevices, intervalSecs, intervalSecs,
@@ -85,7 +104,7 @@ public abstract class AbstractBluetoothBridgeHandler<BD extends BluetoothDevice>
     }
 
     @Override
-    public void dispose() {
+    public void deactivate() {
         ScheduledFuture<?> inactiveRemovalJob = this.inactiveRemovalJob;
         if (inactiveRemovalJob != null) {
             inactiveRemovalJob.cancel(true);
@@ -97,10 +116,6 @@ public abstract class AbstractBluetoothBridgeHandler<BD extends BluetoothDevice>
                 removeDevice(device);
             }
         }
-    }
-
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
     private void removeInactiveDevices() {
@@ -133,19 +148,18 @@ public abstract class AbstractBluetoothBridgeHandler<BD extends BluetoothDevice>
             return false;
         }
 
+        ZonedDateTime lastActiveTime = device.getLastSeenTime();
+        if (lastActiveTime == null) {
+            // we want any new device to at least live a certain amount of time so it has a chance to be discovered or
+            // listened to.
+            lastActiveTime = device.createTime;
+        }
         // we remove devices we haven't seen in a while
-        return ZonedDateTime.now().minusSeconds(config.inactiveDeviceCleanupThreshold)
-                .isAfter(device.getLastSeenTime());
+        return ZonedDateTime.now().minusSeconds(config.inactiveDeviceCleanupThreshold).isAfter(lastActiveTime);
     }
 
-    @Override
-    public void addDiscoveryListener(BluetoothDiscoveryListener listener) {
-        discoveryListeners.add(listener);
-    }
-
-    @Override
-    public void removeDiscoveryListener(@Nullable BluetoothDiscoveryListener listener) {
-        discoveryListeners.remove(listener);
+    public boolean isActivelyScanning() {
+        return activeScanEnabled;
     }
 
     @Override
@@ -155,7 +169,7 @@ public abstract class AbstractBluetoothBridgeHandler<BD extends BluetoothDevice>
         refreshDiscoveredDevices();
     }
 
-    protected void refreshDiscoveredDevices() {
+    public void refreshDiscoveredDevices() {
         logger.debug("Refreshing Bluetooth device list...");
         synchronized (devices) {
             devices.values().forEach(this::deviceDiscovered);
@@ -172,34 +186,11 @@ public abstract class AbstractBluetoothBridgeHandler<BD extends BluetoothDevice>
     @Override
     public BD getDevice(BluetoothAddress address) {
         synchronized (devices) {
-            if (devices.containsKey(address)) {
-                return devices.get(address);
-            }
-            BD device = createDevice(address);
-            device.updateLastSeenTime();
-            devices.put(address, device);
-            return device;
+            return devices.computeIfAbsent(address, this::createDevice);
         }
     }
 
     protected abstract BD createDevice(BluetoothAddress address);
-
-    @Override
-    public boolean hasHandlerForDevice(BluetoothAddress address) {
-        String addrStr = address.toString();
-        /*
-         * This type of search is inefficient and won't scale as the number of bluetooth Thing children increases on
-         * this bridge. But implementing a more efficient search would require a bit more overhead.
-         * Luckily though, it is reasonable to assume that the number of Thing children will remain small.
-         */
-        for (Thing childThing : getThing().getThings()) {
-            Object childAddr = childThing.getConfiguration().get(BluetoothBindingConstants.CONFIGURATION_ADDRESS);
-            if (addrStr.equals(childAddr)) {
-                return childThing.getHandler() != null;
-            }
-        }
-        return false;
-    }
 
     public void deviceDiscovered(BluetoothDevice device) {
         if (hasHandlerForDevice(device.getAddress())) {
@@ -220,4 +211,22 @@ public abstract class AbstractBluetoothBridgeHandler<BD extends BluetoothDevice>
         Integer rssi = device.getRssi();
         return rssi != null && rssi != 0;
     }
+
+    @Override
+    public boolean hasHandlerForDevice(BluetoothAddress address) {
+        String addrStr = address.toString();
+        /*
+         * This type of search is inefficient and won't scale as the number of bluetooth Thing children increases on
+         * this bridge. But implementing a more efficient search would require a bit more overhead.
+         * Luckily though, it is reasonable to assume that the number of Thing children will remain small.
+         */
+        for (Thing childThing : getBridge().getThings()) {
+            Object childAddr = childThing.getConfiguration().get(BluetoothBindingConstants.CONFIGURATION_ADDRESS);
+            if (addrStr.equals(childAddr)) {
+                return childThing.getHandler() != null;
+            }
+        }
+        return false;
+    }
+
 }

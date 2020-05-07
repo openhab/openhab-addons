@@ -80,6 +80,8 @@ public abstract class BluetoothDevice {
      */
     protected final BluetoothAddress address;
 
+    transient final ZonedDateTime createTime = ZonedDateTime.now();
+
     /**
      * Construct a Bluetooth device taking the Bluetooth address
      *
@@ -96,7 +98,7 @@ public abstract class BluetoothDevice {
      *
      * @return The last time this device was active
      */
-    public abstract ZonedDateTime getLastSeenTime();
+    public abstract @Nullable ZonedDateTime getLastSeenTime();
 
     /**
      * Updates the last activity timestamp for this device.

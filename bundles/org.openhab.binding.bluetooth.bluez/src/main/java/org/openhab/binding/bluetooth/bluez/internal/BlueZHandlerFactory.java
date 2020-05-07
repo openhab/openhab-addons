@@ -14,7 +14,6 @@ package org.openhab.binding.bluetooth.bluez.internal;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 
@@ -22,11 +21,9 @@ import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.eclipse.smarthome.core.thing.UID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.bluetooth.BluetoothAdapter;
 import org.openhab.binding.bluetooth.bluez.BlueZAdapterConstants;
 import org.openhab.binding.bluetooth.bluez.handler.BlueZBridgeHandler;
 import org.osgi.framework.ServiceRegistration;
@@ -56,27 +53,10 @@ public class BlueZHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(BlueZAdapterConstants.THING_TYPE_BLUEZ)) {
-            BlueZBridgeHandler handler = new BlueZBridgeHandler((Bridge) thing);
-            registerBluetoothAdapter(handler);
-            return handler;
+            return new BlueZBridgeHandler((Bridge) thing);
         } else {
             return null;
         }
     }
 
-    private synchronized void registerBluetoothAdapter(BluetoothAdapter adapter) {
-        this.serviceRegs.put(adapter.getUID(),
-                bundleContext.registerService(BluetoothAdapter.class.getName(), adapter, new Hashtable<>()));
-    }
-
-    @Override
-    protected synchronized void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof BluetoothAdapter) {
-            UID uid = ((BluetoothAdapter) thingHandler).getUID();
-            ServiceRegistration<?> serviceReg = this.serviceRegs.remove(uid);
-            if (serviceReg != null) {
-                serviceReg.unregister();
-            }
-        }
-    }
 }

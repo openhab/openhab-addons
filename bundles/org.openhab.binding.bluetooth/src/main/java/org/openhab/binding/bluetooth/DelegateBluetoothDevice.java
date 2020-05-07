@@ -35,7 +35,7 @@ public abstract class DelegateBluetoothDevice extends BluetoothDevice {
     protected abstract BluetoothDevice getDelegate();
 
     @Override
-    public ZonedDateTime getLastSeenTime() {
+    public @Nullable ZonedDateTime getLastSeenTime() {
         return getDelegate().getLastSeenTime();
     }
 

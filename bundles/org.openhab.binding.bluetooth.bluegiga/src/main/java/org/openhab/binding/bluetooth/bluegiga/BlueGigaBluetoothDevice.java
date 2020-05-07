@@ -27,6 +27,7 @@ import org.openhab.binding.bluetooth.BluetoothCompletionStatus;
 import org.openhab.binding.bluetooth.BluetoothDescriptor;
 import org.openhab.binding.bluetooth.BluetoothDevice;
 import org.openhab.binding.bluetooth.BluetoothService;
+import org.openhab.binding.bluetooth.bluegiga.handler.BlueGigaAdapterService;
 import org.openhab.binding.bluetooth.bluegiga.handler.BlueGigaBridgeHandler;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaEventListener;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
@@ -114,17 +115,22 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
      * @param address the {@link BluetoothAddress} for this device
      * @param addressType the {@link BluetoothAddressType} of this device
      */
-    public BlueGigaBluetoothDevice(BlueGigaBridgeHandler bgHandler, BluetoothAddress address,
+    public BlueGigaBluetoothDevice(BlueGigaAdapterService adapterService, BluetoothAddress address,
             BluetoothAddressType addressType) {
-        super(bgHandler, address);
+        super(adapterService, address);
 
         logger.debug("Creating new BlueGiga device {}", address);
 
-        this.bgHandler = bgHandler;
+        this.bgHandler = adapterService.getHandler();
         this.addressType = addressType;
 
         bgHandler.addEventListener(this);
         updateLastSeenTime();
+    }
+
+    @Override
+    public BlueGigaAdapterService getAdapter() {
+        return (BlueGigaAdapterService) super.getAdapter();
     }
 
     @Override
@@ -367,7 +373,7 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
                     new BluetoothConnectionStatusNotification(ConnectionState.DISCOVERED));
 
             // Notify the bridge - for inbox notifications
-            bgHandler.deviceDiscovered(this);
+            getAdapter().deviceDiscovered(this);
         }
 
         // Notify listeners of all scan records - for RSSI, beacon processing (etc)

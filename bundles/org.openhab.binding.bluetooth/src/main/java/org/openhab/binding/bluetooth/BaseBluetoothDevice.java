@@ -97,7 +97,7 @@ public abstract class BaseBluetoothDevice extends BluetoothDevice {
      * @return The last time this device was active
      */
     @Override
-    public ZonedDateTime getLastSeenTime() {
+    public @Nullable ZonedDateTime getLastSeenTime() {
         return lastSeenTime;
     }
 

@@ -13,14 +13,17 @@
 package org.openhab.binding.bluetooth.bluez.handler;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.openhab.binding.bluetooth.AbstractBluetoothBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.bluez.BlueZBluetoothDevice;
 import org.slf4j.Logger;
@@ -39,9 +42,11 @@ import tinyb.BluetoothManager;
  * @author Connor Petty - Simplified device scan logic
  */
 @NonNullByDefault
-public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBluetoothDevice> {
+public class BlueZBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(BlueZBridgeHandler.class);
+
+    private Optional<BlueZAdapterService> adapterService;
 
     private @NonNullByDefault({}) tinyb.BluetoothAdapter adapter;
 
@@ -57,6 +62,11 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
      */
     public BlueZBridgeHandler(Bridge bridge) {
         super(bridge);
+        this.adapterService = Optional.empty();
+    }
+
+    public void setBluezAdapterService(BlueZAdapterService adapterService) {
+        this.adapterService = Optional.of(adapterService);
     }
 
     @Override
@@ -104,6 +114,10 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No adapter for this address found.");
     }
 
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+    }
+
     private void startDiscovery() {
         // we need to make sure the adapter is powered first
         if (!adapter.getPowered()) {
@@ -120,11 +134,13 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
             logger.debug("Refreshing Bluetooth device list...");
             List<tinyb.BluetoothDevice> tinybDevices = adapter.getDevices();
             logger.debug("Found {} Bluetooth devices.", tinybDevices.size());
-            for (tinyb.BluetoothDevice tinybDevice : tinybDevices) {
-                BlueZBluetoothDevice device = getDevice(new BluetoothAddress(tinybDevice.getAddress()));
-                device.updateTinybDevice(tinybDevice);
-                deviceDiscovered(device);
-            }
+            adapterService.ifPresent(adapter -> {
+                for (tinyb.BluetoothDevice tinybDevice : tinybDevices) {
+                    BlueZBluetoothDevice device = adapter.getDevice(new BluetoothAddress(tinybDevice.getAddress()));
+                    device.updateTinybDevice(tinybDevice);
+                    adapter.deviceDiscovered(device);
+                }
+            });
             // For whatever reason, bluez will sometimes turn off scanning. So we just make sure it keeps running.
             startDiscovery();
         } catch (BluetoothException ex) {
@@ -145,14 +161,8 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
         updateStatus(ThingStatus.ONLINE);
     }
 
-    @Override
     public BluetoothAddress getAddress() {
         return adapterAddress;
-    }
-
-    @Override
-    protected BlueZBluetoothDevice createDevice(BluetoothAddress address) {
-        return new BlueZBluetoothDevice(this, address);
     }
 
     @Override
@@ -166,4 +176,5 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
         }
         super.dispose();
     }
+
 }
