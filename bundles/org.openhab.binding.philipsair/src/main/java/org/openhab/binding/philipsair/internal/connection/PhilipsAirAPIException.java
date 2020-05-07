@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link PhilipsAirAPIException} is a communication exception for the
- * connections to Kaiterra API API.
+ * connections to Philips Air Purifier.
  *
  * @author Michał Boroński - Initial contribution
  */

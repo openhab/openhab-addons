@@ -72,9 +72,7 @@ public class PhilipsAirAPIConnection {
     private static final String FIRMWARE_URL = "http://%HOST%/di/v1/products/0/firmware";
 
     private final HttpClient httpClient;
-
     private final ExpiringCacheMap<String, String> cache;
-
     private final Gson gson = new Gson();
     private long cooldownTimer = 0;
 
@@ -216,7 +214,6 @@ public class PhilipsAirAPIConnection {
 
         String url = buildURL(KEY_URL, config.getHost());
         String data = "{\"diffie\":\"" + this.cipher.getApow() + "\"}";
-
         String encodedContent = getResponse(url, PUT, data, false);
         JsonObject encodedJson = gson.fromJson(encodedContent, JsonObject.class);
         String key = encodedJson.get("key").getAsString();
