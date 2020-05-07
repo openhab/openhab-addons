@@ -155,7 +155,7 @@ In order to determine which channels a device supports, you can look at the devi
 | keypadButtonF | Switch | Keypad Button F |
 | keypadButtonG | Switch | Keypad Button G |
 | keypadButtonH | Switch | Keypad Button H |
-| kWh | Number | Kilowatt Hour |
+| kWh | Number:Energy | Kilowatt Hour |
 | lastHeardFrom | DateTime | Last Heard From |
 | ledBrightness | Number | LED brightness |
 | ledOnOff | Switch | LED On/Off |
@@ -183,7 +183,7 @@ In order to determine which channels a device supports, you can look at the devi
 | temperature | Number:Temperature | Temperature |
 | topOutlet | Switch | Top Outlet |
 | update | Switch | Update |
-| watts | Number | Watts |
+| watts | Number:Power | Watts |
 
 
 ## Full Example
@@ -648,10 +648,10 @@ See the example below:
 **Items**
 
 ``` 
-    Number iMeterWatts   "iMeter [%d watts]"   { channel="insteon:device:home:AABBCC:watts" }
-    Number iMeterKwh     "iMeter [%.04f kwh]"  { channel="insteon:device:home:AABBCC:kwh" }
-    Switch iMeterUpdate  "iMeter Update"       { channel="insteon:device:home:AABBCC:update" }
-    Switch iMeterReset   "iMeter Reset"        { channel="insteon:device:home:AABBCC:reset" }
+    Number:Power  iMeterWatts   "iMeter [%d watts]"   { channel="insteon:device:home:AABBCC:watts" }
+    Number:Energy iMeterKwh     "iMeter [%.04f kWh]"  { channel="insteon:device:home:AABBCC:kWh" }
+    Switch        iMeterUpdate  "iMeter Update"       { channel="insteon:device:home:AABBCC:update" }
+    Switch        iMeterReset   "iMeter Reset"        { channel="insteon:device:home:AABBCC:reset" }
 ```
 
 ### Fan Controllers
