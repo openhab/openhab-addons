@@ -93,8 +93,8 @@ public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService
 
         ScheduledFuture<?> discoveryJob = this.discoveryJob;
         if (discoveryJob == null || discoveryJob.isCancelled()) {
-            discoveryJob = scheduler.scheduleWithFixedDelay(this::discoverDevices, 10,
-                    DISCOVERY_REFRESH_SEC, TimeUnit.SECONDS);
+            discoveryJob = scheduler.scheduleWithFixedDelay(this::discoverDevices, 10, DISCOVERY_REFRESH_SEC,
+                    TimeUnit.SECONDS);
         }
     }
 
@@ -129,10 +129,10 @@ public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService
     }
 
     private synchronized void discoverDevices() {
-        logger.debug("Starting scanning for things...");
+        logger.info("Scanning for things...");
 
         if (this.mylinkHandler.getThing().getStatus() != ThingStatus.ONLINE) {
-            logger.debug("Skipping device discover as bridge is {}", this.mylinkHandler.getThing().getStatus());
+            logger.info("Skipping device discover as bridge is {}", this.mylinkHandler.getThing().getStatus());
             return;
         }
 
@@ -145,7 +145,7 @@ public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService
                 String label = "Somfy Shade " + shade.getName();
 
                 if (id != null) {
-                    logger.info("Adding device {}", id);
+                    logger.debug("Adding device {}", id);
                     notifyThingDiscovery(THING_TYPE_SHADE, id, label, TARGET_ID);
                 }
             }
@@ -156,11 +156,11 @@ public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService
                 String id = scene.getTargetID();
                 String label = "Somfy Scene " + scene.getName();
 
-                logger.info("Adding device {}", id);
+                logger.debug("Adding device {}", id);
                 notifyThingDiscovery(THING_TYPE_SCENE, id, label, SCENE_ID);
             }
         } catch (SomfyMyLinkException e) {
-            logger.info("Error scanning for devices: {}", e.getMessage(), e);
+            logger.warn("Error scanning for devices: {}", e.getMessage(), e);
             ScanListener scanListener = this.scanListener;
             if (scanListener != null) {
                 scanListener.onErrorOccurred(e);

@@ -128,7 +128,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Initializing mylink");
+        logger.info("Initializing mylink");
         config = getThing().getConfiguration().as(SomfyMyLinkConfiguration.class);
 
         commandExecutor = Executors.newSingleThreadExecutor(new NamedThreadFactory(thing.getUID().getAsString(), true));
@@ -136,7 +136,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         if (validConfiguration(config)) {
             // start the keepalive process
             if (heartbeat == null) {
-                logger.debug("Starting heartbeat job every {} min", HEARTBEAT_MINUTES);
+                logger.info("Starting heartbeat job every {} min", HEARTBEAT_MINUTES);
                 heartbeat = this.scheduler.scheduleWithFixedDelay(this::sendHeartbeat, 0, HEARTBEAT_MINUTES,
                         TimeUnit.MINUTES);
             }
@@ -261,7 +261,8 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         if (commandExecutor != null) {
             commandExecutor.execute(() -> {
                 String json = gson.toJson(command);
-                try (Socket socket = getConnection(); Writer out = new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.US_ASCII)) {
+                try (Socket socket = getConnection();
+                        Writer out = new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.US_ASCII)) {
                     logger.debug("Sending: {}", json);
                     out.write(json);
                     out.flush();
@@ -297,9 +298,10 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
             commandExecutor.submit(() -> {
                 String json = gson.toJson(command);
 
-                try (Socket socket = getConnection(); 
+                try (Socket socket = getConnection();
                         Writer out = new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.US_ASCII);
-                        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.US_ASCII))) {
+                        BufferedReader in = new BufferedReader(
+                                new InputStreamReader(socket.getInputStream(), StandardCharsets.US_ASCII))) {
 
                     // send the command
                     logger.debug("Sending: {}", json);

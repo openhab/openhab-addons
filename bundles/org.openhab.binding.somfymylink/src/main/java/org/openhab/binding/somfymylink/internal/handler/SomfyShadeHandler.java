@@ -50,7 +50,7 @@ public class SomfyShadeHandler extends BaseThingHandler {
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        logger.debug("Bridge status changed to {} updating {}", bridgeStatusInfo.getStatus(), getThing().getLabel());
+        logger.info("Bridge status changed to {} updating {}", bridgeStatusInfo.getStatus(), getThing().getLabel());
 
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE
                 && getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE) {
@@ -96,7 +96,7 @@ public class SomfyShadeHandler extends BaseThingHandler {
                 }
             }
         } catch (SomfyMyLinkException e) {
-            logger.info("Error handling command: {}", e.getMessage());
+            logger.warn("Error handling command: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
