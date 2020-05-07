@@ -47,7 +47,7 @@ public class GardenaSmartWebSocket {
     private WebSocketSession session;
     private WebSocketClient webSocketClient;
     private boolean closing;
-    private Instant lastPong;
+    private Instant lastPong = Instant.now();
     private ScheduledExecutorService scheduler;
     private ScheduledFuture connectionTrackerFuture;
     private ByteBuffer pingPayload = ByteBuffer.wrap("ping".getBytes());
@@ -155,8 +155,7 @@ public class GardenaSmartWebSocket {
                 logger.trace("Sending ping");
                 session.getRemote().sendPing(pingPayload);
 
-                if (lastPong != null
-                        && Instant.now().getEpochSecond() - lastPong.getEpochSecond() > WEBSOCKET_IDLE_TIMEOUT) {
+                if (Instant.now().getEpochSecond() - lastPong.getEpochSecond() > WEBSOCKET_IDLE_TIMEOUT) {
                     session.close(1000, "Timeout manually closing dead connection");
                 }
             } catch (IOException ex) {
