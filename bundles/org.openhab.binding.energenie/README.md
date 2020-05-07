@@ -12,7 +12,6 @@ The Binding supports PM2-LAN, PMS-LAN, PMS2-LAN or PMS-WLAN power extenders as w
 Gembird energenie devices don't support autodiscovery.
 All Things need to be created manually either in PaperUI or within Things files.
 
-
 ## Binding Configuration
 
 The Binding does not need any specific configuration
@@ -45,7 +44,6 @@ PWM-LAN devices support the following channels
 | current  | Number:ElectricCurrent   | Channel for output current measurement   |
 | power    | Number:Power             | Channel for output power measurement     |
 | energy   | Number:Energy            | channel for output energy measurement    |
-
 
 ## Full Example
 

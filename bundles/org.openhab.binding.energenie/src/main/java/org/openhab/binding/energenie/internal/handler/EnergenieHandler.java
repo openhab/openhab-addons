@@ -120,7 +120,7 @@ public class EnergenieHandler extends BaseThingHandler {
         logger.debug("EnergenieHandler disposed.");
         final ScheduledFuture<?> refreshJob = this.refreshJob;
 
-        if (refreshJob != null && !refreshJob.isCancelled()) {
+        if (refreshJob != null) {
             refreshJob.cancel(true);
             this.refreshJob = null;
         }
