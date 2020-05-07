@@ -54,7 +54,8 @@ public class LanHost {
     }
 
     private Stream<LanHostL3Connectivity> getActiveConnections() {
-        return l3connectivities.stream().filter(c -> c.isActive());
+        return l3connectivities != null ? l3connectivities.stream().filter(c -> c.isActive())
+                : Stream.<LanHostL3Connectivity>empty();
     }
 
     public String getIpv4() {

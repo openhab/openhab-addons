@@ -24,11 +24,11 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.freebox.internal.api.model.AuthorizationStatus;
+import org.openhab.binding.freebox.internal.api.model.AuthorizationStatus.Status;
 import org.openhab.binding.freebox.internal.api.model.AuthorizeResult;
 import org.openhab.binding.freebox.internal.api.model.DiscoveryResponse;
 import org.openhab.binding.freebox.internal.api.model.LoginResult;
 import org.openhab.binding.freebox.internal.api.model.OpenSessionResult;
-import org.openhab.binding.freebox.internal.api.model.AuthorizationStatus.Status;
 import org.openhab.binding.freebox.internal.config.ServerConfiguration;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
@@ -176,13 +176,17 @@ public class ApiManager {
                 return fullResponse;
             } else {
                 T fullResponse = gson.fromJson(jsonResponse, (Class<T>) action.getResponseClass());
-                fullResponse.evaluate();
+                if (action.getResponseClass() != EmptyResponse.class) {
+                    fullResponse.evaluate();
+                }
                 return fullResponse.getResult();
             }
         } catch (FreeboxException e) {
-            if (e.isAuthRequired() && action.retriesLeft()) {
-                logger.debug("Authentication required: open a new session and retry the request");
-                openSession();
+            if (action.retriesLeft()) {
+                logger.debug("Retry the request");
+                if (e.isAuthRequired()) {
+                    openSession();
+                }
                 return execute(action);
             }
             throw e;
