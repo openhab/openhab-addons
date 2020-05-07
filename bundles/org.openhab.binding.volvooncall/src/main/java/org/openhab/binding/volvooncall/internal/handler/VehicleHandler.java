@@ -313,9 +313,8 @@ public class VehicleHandler extends BaseThingHandler {
     private State getHeaterValue(String channelId, Heater heater) {
         switch (channelId) {
             case REMOTE_HEATER:
-                return heater.status != null ? heater.status : UnDefType.UNDEF;
             case PRECLIMATIZATION:
-                return heater.status != null ? heater.status : UnDefType.UNDEF;
+                return heater.getStatus();
         }
         return UnDefType.NULL;
     }
