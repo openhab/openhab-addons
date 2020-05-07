@@ -137,7 +137,7 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
         if (connected) {
             logger.debug("Sending message: {}", msg);
             if (wrtr != null) {
-                wrtr.printf("%s\r\n", msg);
+                wrtr.print(msg + "\r\n");
                 wrtr.flush();
             }
         } else {
