@@ -19,13 +19,13 @@ import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.openhab.binding.sleepiq.api.model.Bed;
 import org.openhab.binding.sleepiq.internal.SleepIQBindingConstants;
 import org.openhab.binding.sleepiq.internal.config.SleepIQBedConfiguration;
 import org.openhab.binding.sleepiq.internal.handler.SleepIQCloudHandler;
 import org.openhab.binding.sleepiq.internal.handler.SleepIQDualBedHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.syphr.sleepiq.api.model.Bed;
 
 /**
  * The {@link SleepIQBedDiscoveryService} is responsible for processing the

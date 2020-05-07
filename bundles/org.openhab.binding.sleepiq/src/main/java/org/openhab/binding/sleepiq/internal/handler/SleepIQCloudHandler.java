@@ -36,18 +36,18 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.ConfigStatusBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.sleepiq.api.Configuration;
+import org.openhab.binding.sleepiq.api.LoginException;
+import org.openhab.binding.sleepiq.api.SleepIQ;
+import org.openhab.binding.sleepiq.api.UnauthorizedException;
+import org.openhab.binding.sleepiq.api.model.Bed;
+import org.openhab.binding.sleepiq.api.model.BedStatus;
+import org.openhab.binding.sleepiq.api.model.FamilyStatus;
 import org.openhab.binding.sleepiq.internal.SleepIQBindingConstants;
 import org.openhab.binding.sleepiq.internal.SleepIQConfigStatusMessage;
 import org.openhab.binding.sleepiq.internal.config.SleepIQCloudConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.syphr.sleepiq.api.Configuration;
-import org.syphr.sleepiq.api.LoginException;
-import org.syphr.sleepiq.api.SleepIQ;
-import org.syphr.sleepiq.api.UnauthorizedException;
-import org.syphr.sleepiq.api.model.Bed;
-import org.syphr.sleepiq.api.model.BedStatus;
-import org.syphr.sleepiq.api.model.FamilyStatus;
 
 /**
  * The {@link SleepIQCloudHandler} is responsible for handling commands, which are
