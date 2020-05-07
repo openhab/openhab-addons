@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.philipsair.internal.model;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.BiConsumer;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants;
