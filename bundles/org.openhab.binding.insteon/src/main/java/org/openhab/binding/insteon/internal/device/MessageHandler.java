@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.ImperialUnits;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.insteon.internal.device.DeviceFeatureListener.StateChangeType;
 import org.openhab.binding.insteon.internal.device.GroupMessageStateMachine.GroupMessage;
@@ -820,8 +821,10 @@ public abstract class MessageHandler {
                     }
 
                     logger.debug("{}:{} watts: {} kwh: {} ", nm(), f.getDevice().getAddress(), watts, kwh);
-                    feature.publish(new DecimalType(kwh), StateChangeType.CHANGED, "field", "kwh");
-                    feature.publish(new DecimalType(watts), StateChangeType.CHANGED, "field", "watts");
+                    feature.publish(new QuantityType<>(kwh, SmartHomeUnits.KILOWATT_HOUR), StateChangeType.CHANGED,
+                            "field", "kwh");
+                    feature.publish(new QuantityType<>(watts, SmartHomeUnits.WATT), StateChangeType.CHANGED, "field",
+                            "watts");
                 } catch (FieldException e) {
                     logger.warn("error parsing {}: ", msg, e);
                 }

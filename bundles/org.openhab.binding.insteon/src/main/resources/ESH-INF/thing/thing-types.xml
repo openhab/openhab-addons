@@ -321,7 +321,7 @@
 	</channel-type>
 
 	<channel-type id="kWh">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Kilowatt Hour</label>
 	</channel-type>
 
@@ -481,7 +481,7 @@
 	</channel-type>
 
 	<channel-type id="watts">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Watts</label>
 	</channel-type>
 
