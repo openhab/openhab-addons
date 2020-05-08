@@ -148,6 +148,12 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
     private List<SonosMusicService> musicServices;
 
+    private enum LineInType {
+        ANALOG,
+        DIGITAL,
+        ANY
+    }
+
     public ZonePlayerHandler(ThingRegistry thingRegistry, Thing thing, UpnpIOService upnpIOService, String opmlUrl,
             SonosStateDescriptionOptionProvider stateDescriptionProvider) {
         super(thing);
@@ -276,7 +282,13 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                     becomeStandAlonePlayer();
                     break;
                 case PUBLICADDRESS:
-                    publicAddress();
+                    publicAddress(LineInType.ANY);
+                    break;
+                case PUBLICANALOGADDRESS:
+                    publicAddress(LineInType.ANALOG);
+                    break;
+                case PUBLICDIGITALADDRESS:
+                    publicAddress(LineInType.DIGITAL);
                     break;
                 case RADIO:
                     playRadio(command);
@@ -488,9 +500,21 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                     updateChannel(SPEECHENHANCEMENT);
                     break;
                 case "LineInConnected":
+                    if (SonosBindingConstants.WITH_LINEIN_THING_TYPES_UIDS.contains(getThing().getThingTypeUID())) {
+                        updateChannel(LINEIN);
+                    }
+                    if (SonosBindingConstants.WITH_ANALOG_LINEIN_THING_TYPES_UIDS
+                            .contains(getThing().getThingTypeUID())) {
+                        updateChannel(ANALOGLINEIN);
+                    }
+                    break;
                 case "TOSLinkConnected":
                     if (SonosBindingConstants.WITH_LINEIN_THING_TYPES_UIDS.contains(getThing().getThingTypeUID())) {
                         updateChannel(LINEIN);
+                    }
+                    if (SonosBindingConstants.WITH_DIGITAL_LINEIN_THING_TYPES_UIDS
+                            .contains(getThing().getThingTypeUID())) {
+                        updateChannel(DIGITALLINEIN);
                     }
                     break;
                 case "AlarmRunning":
@@ -700,6 +724,16 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 if (stateMap.get("LineInConnected") != null) {
                     newState = stateMap.get("LineInConnected").equals("true") ? OnOffType.ON : OnOffType.OFF;
                 } else if (stateMap.get("TOSLinkConnected") != null) {
+                    newState = stateMap.get("TOSLinkConnected").equals("true") ? OnOffType.ON : OnOffType.OFF;
+                }
+                break;
+            case ANALOGLINEIN:
+                if (stateMap.get("LineInConnected") != null) {
+                    newState = stateMap.get("LineInConnected").equals("true") ? OnOffType.ON : OnOffType.OFF;
+                }
+                break;
+            case DIGITALLINEIN:
+                if (stateMap.get("TOSLinkConnected") != null) {
                     newState = stateMap.get("TOSLinkConnected").equals("true") ? OnOffType.ON : OnOffType.OFF;
                 }
                 break;
@@ -1883,17 +1917,26 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     public void playLineIn(Command command) {
         if (command != null && command instanceof StringType) {
             try {
+                LineInType lineInType = LineInType.ANY;
                 String remotePlayerName = command.toString();
+                if (remotePlayerName.toUpperCase().startsWith("ANALOG,")) {
+                    lineInType = LineInType.ANALOG;
+                    remotePlayerName = remotePlayerName.substring(7);
+                } else if (remotePlayerName.toUpperCase().startsWith("DIGITAL,")) {
+                    lineInType = LineInType.DIGITAL;
+                    remotePlayerName = remotePlayerName.substring(8);
+                }
                 ZonePlayerHandler coordinatorHandler = getCoordinatorHandler();
                 ZonePlayerHandler remoteHandler = getHandlerByName(remotePlayerName);
 
                 // check if player has a line-in connected
-                if (remoteHandler.isAnalogLineInConnected() || remoteHandler.isOpticalLineInConnected()) {
+                if ((lineInType != LineInType.DIGITAL && remoteHandler.isAnalogLineInConnected())
+                        || (lineInType != LineInType.ANALOG && remoteHandler.isOpticalLineInConnected())) {
                     // stop whatever is currently playing
                     coordinatorHandler.stop();
 
                     // set the URI
-                    if (remoteHandler.isAnalogLineInConnected()) {
+                    if (lineInType != LineInType.DIGITAL && remoteHandler.isAnalogLineInConnected()) {
                         coordinatorHandler.setCurrentURI(ANALOG_LINE_IN_URI + remoteHandler.getUDN(), "");
                     } else {
                         coordinatorHandler.setCurrentURI(OPTICAL_LINE_IN_URI + remoteHandler.getUDN() + SPDIF, "");
@@ -2184,9 +2227,10 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         }
     }
 
-    public boolean publicAddress() {
+    public boolean publicAddress(LineInType lineInType) {
         // check if sourcePlayer has a line-in connected
-        if (isAnalogLineInConnected() || isOpticalLineInConnected()) {
+        if ((lineInType != LineInType.DIGITAL && isAnalogLineInConnected())
+                || (lineInType != LineInType.ANALOG && isOpticalLineInConnected())) {
             // first remove this player from its own group if any
             becomeStandAlonePlayer();
 
@@ -2215,7 +2259,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 ZonePlayerHandler coordinator = getCoordinatorHandler();
                 // set the URI of the group to the line-in
                 SonosEntry entry = new SonosEntry("", "", "", "", "", "", "", ANALOG_LINE_IN_URI + getUDN());
-                if (isOpticalLineInConnected()) {
+                if (lineInType != LineInType.ANALOG && isOpticalLineInConnected()) {
                     entry = new SonosEntry("", "", "", "", "", "", "", OPTICAL_LINE_IN_URI + getUDN() + SPDIF);
                 }
                 coordinator.setCurrentURI(entry);
