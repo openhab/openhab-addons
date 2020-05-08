@@ -69,25 +69,25 @@ In the list below, you can find, how are channel group and channels id`s related
 **thing** `computer`
 
 *   **group** `memory`
-   * **channel** `available, total, used, availablePercent, usedPercent`
+    * **channel** `available, total, used, availablePercent, usedPercent`
 *   **group** `swap`
-   * **channel** `available, total, used, availablePercent, usedPercent`
+    * **channel** `available, total, used, availablePercent, usedPercent`
 *   **group** `storage` (deviceIndex)
-   * **channel** `available, total, used, availablePercent, usedPercent, name, description, type`
+    * **channel** `available, total, used, availablePercent, usedPercent, name, description, type`
 *   **group** `drive` (deviceIndex)
-   * **channel** `name, model, serial`
+    * **channel** `name, model, serial`
 *   **group** `display` (deviceIndex)
-   * **channel** `information`
+    * **channel** `information`
 *   **group** `battery` (deviceIndex)
-   * **channel** `name, remainingCapacity, remainingTime`
+    * **channel** `name, remainingCapacity, remainingTime`
 *   **group** `cpu`
-   * **channel** `name, description, load1, load5, load15, uptime`
+    * **channel** `name, description, load1, load5, load15, uptime`
 *   **group** `sensors`
-   * **channel** `cpuTemp, cpuVoltage, fanSpeed`
+    * **channel** `cpuTemp, cpuVoltage, fanSpeed`
 *   **group** `network` (deviceIndex)
-   * **channel** `ip, mac, networkDisplayName, networkName, packetsSent, packetsReceived, dataSent, dataReceived`
+    * **channel** `ip, mac, networkDisplayName, networkName, packetsSent, packetsReceived, dataSent, dataReceived`
 *   **group** `process` (pid)
-   * **channel** `load, used, name, threads, path`
+    * **channel** `load, used, name, threads, path`
 
 The groups marked with "(deviceIndex)" may have device index attached to the Channel Group.
 
