@@ -474,6 +474,7 @@ The binding emulates this by using the system time on every update.
 
 In white mode each RGBW2 channel is defined as DimmableLight.
 This means that the brightness channel has 2 functions
+
 - Sending ON/OFF (OnOffType) to power on/off the channel
 - Sending a Number to set the brightness (percentage 0..100)
 
