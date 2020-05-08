@@ -39,7 +39,7 @@ In both cases it creates a Discovery Result with thing type  **computer**.
 
 When [this issue](https://github.com/eclipse/smarthome/issues/1118) is resolved it will be possible to implement creation of dynamic channels (e.g. the binding will scan how much storage devices are present and create channel groups for them).
 At the moment this is not supported.
-
+ 
 ## Binding configuration
 
 No binding configuration required.
