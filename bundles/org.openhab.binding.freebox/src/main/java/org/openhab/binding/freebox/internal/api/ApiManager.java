@@ -181,23 +181,16 @@ public class ApiManager {
                 }
                 return fullResponse.getResult();
             }
-        } catch (FreeboxException e) {
+        } catch (FreeboxException | JsonSyntaxException | IOException e) {
             if (action.retriesLeft()) {
                 logger.debug("Retry the request");
-                if (e.isAuthRequired()) {
+                if (e instanceof FreeboxException && ((FreeboxException) e).isAuthRequired()) {
                     openSession();
                 }
                 return execute(action);
             }
-            throw e;
-        } catch (IOException e) {
             throw new FreeboxException(
-                    action.getMethod() + " request " + action.getUrl() + ": execution failed: " + e.getMessage(), e);
-        } catch (JsonSyntaxException e) {
-            throw new FreeboxException(
-                    action.getMethod() + " request " + action.getUrl() + ": response parsing failed: " + e.getMessage(),
-                    e);
+                    action.getMethod() + " request " + action.getUrl() + ": failed: " + e.getMessage(), e);
         }
     }
-
 }
