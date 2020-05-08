@@ -48,6 +48,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.volvooncall.internal.VolvoOnCallException;
 import org.openhab.binding.volvooncall.internal.action.VolvoOnCallActions;
 import org.openhab.binding.volvooncall.internal.config.VehicleConfiguration;
 import org.openhab.binding.volvooncall.internal.dto.Attributes;
@@ -91,7 +92,7 @@ public class VehicleHandler extends BaseThingHandler {
     }
 
     private Map<String, String> discoverAttributes(VolvoOnCallBridgeHandler bridgeHandler)
-            throws JsonSyntaxException, IOException {
+            throws JsonSyntaxException, IOException, VolvoOnCallException {
         Attributes attributes = bridgeHandler.getURL(vehicle.attributesURL, Attributes.class);
 
         Map<String, String> properties = new HashMap<>();
@@ -135,7 +136,7 @@ public class VehicleHandler extends BaseThingHandler {
 
                 updateStatus(ThingStatus.ONLINE);
                 startAutomaticRefresh(configuration.refresh);
-            } catch (JsonSyntaxException | IOException e) {
+            } catch (JsonSyntaxException | IOException | VolvoOnCallException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, e.getMessage());
             }
         }
@@ -170,7 +171,7 @@ public class VehicleHandler extends BaseThingHandler {
                             updateState(channelUID, state);
                         });
                 updateTrips(bridgeHandler);
-            } catch (JsonSyntaxException | IOException e) {
+            } catch (JsonSyntaxException | IOException | VolvoOnCallException e) {
                 logger.warn("Exception occurred during execution: {}", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 freeRefreshJob();
@@ -193,7 +194,8 @@ public class VehicleHandler extends BaseThingHandler {
         freeRefreshJob();
     }
 
-    private void updateTrips(VolvoOnCallBridgeHandler bridgeHandler) throws JsonSyntaxException, IOException {
+    private void updateTrips(VolvoOnCallBridgeHandler bridgeHandler)
+            throws JsonSyntaxException, IOException, VolvoOnCallException {
         // This seems to rewind 100 days by default, did not find any way to filter it
         Trips carTrips = bridgeHandler.getURL(Trips.class, configuration.vin);
         List<Trip> tripList = carTrips.trips;

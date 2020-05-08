@@ -36,6 +36,8 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
+import org.openhab.binding.volvooncall.internal.VolvoOnCallException;
+import org.openhab.binding.volvooncall.internal.VolvoOnCallException.ErrorType;
 import org.openhab.binding.volvooncall.internal.config.VolvoOnCallBridgeConfiguration;
 import org.openhab.binding.volvooncall.internal.dto.CustomerAccounts;
 import org.openhab.binding.volvooncall.internal.dto.PostResponse;
@@ -103,7 +105,7 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Incorrect username or password");
             }
-        } catch (IOException | JsonSyntaxException e) {
+        } catch (IOException | JsonSyntaxException | VolvoOnCallException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
@@ -120,16 +122,19 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
         return new String[0];
     }
 
-    public <T extends VocAnswer> T getURL(Class<T> objectClass, String vin) throws IOException, JsonSyntaxException {
+    public <T extends VocAnswer> T getURL(Class<T> objectClass, String vin)
+            throws IOException, JsonSyntaxException, VolvoOnCallException {
         String url = SERVICE_URL + "vehicles/" + vin + "/" + objectClass.getSimpleName().toLowerCase();
         return getURL(url, objectClass);
     }
 
-    public <T extends VocAnswer> T getURL(String url, Class<T> objectClass) throws IOException, JsonSyntaxException {
+    public <T extends VocAnswer> T getURL(String url, Class<T> objectClass)
+            throws IOException, JsonSyntaxException, VolvoOnCallException {
         String jsonResponse = HttpUtil.executeUrl("GET", url, httpHeader, null, JSON_CONTENT_TYPE, REQUEST_TIMEOUT);
         T response = gson.fromJson(jsonResponse, objectClass);
-        if (response.getErrorLabel() != null) {
-            logger.warn("Error calling VoC : {} : {}", response.getErrorLabel(), response.getErrorDescription());
+        String error = response.getErrorLabel();
+        if (error != null) {
+            throw new VolvoOnCallException(error, response.getErrorDescription());
         }
         return response;
     }
@@ -158,6 +163,10 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
                         scheduler.schedule(new ActionResultControler(postResponse), 1000, TimeUnit.MILLISECONDS);
                     } catch (JsonSyntaxException | IOException e) {
                         logger.warn("Error calling : {} : {}", postResponse.serviceURL, e.getMessage());
+                    } catch (VolvoOnCallException e) {
+                        if (e.getType() == ErrorType.SERVICE_UNAVAILABLE) {
+                            scheduler.schedule(new ActionResultControler(postResponse), 1000, TimeUnit.MILLISECONDS);
+                        }
                     }
             }
         }
