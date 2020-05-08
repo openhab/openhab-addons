@@ -173,14 +173,24 @@ public class VehicleHandler extends BaseThingHandler {
             } catch (JsonSyntaxException | IOException e) {
                 logger.warn("Exception occurred during execution: {}", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                ScheduledFuture<?> refreshJob = this.refreshJob;
-                if (refreshJob != null) {
-                    refreshJob.cancel(true);
-                    refreshJob = null;
-                }
+                freeRefreshJob();
                 startAutomaticRefresh(configuration.refresh);
             }
         }
+    }
+
+    private void freeRefreshJob() {
+        ScheduledFuture<?> refreshJob = this.refreshJob;
+        if (refreshJob != null) {
+            refreshJob.cancel(true);
+            this.refreshJob = null;
+        }
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        freeRefreshJob();
     }
 
     private void updateTrips(VolvoOnCallBridgeHandler bridgeHandler) throws JsonSyntaxException, IOException {
