@@ -33,9 +33,16 @@ public class HomekitSettings {
     public String thermostatTargetModeCool = "CoolOn";
     public String thermostatTargetModeAuto = "Auto";
     public String thermostatTargetModeOff = "Off";
-    public String thermostatCurrentModeHeating = "Heating";
-    public String thermostatCurrentModeCooling = "Cooling";
+    public String thermostatCurrentModeHeating = "HeatOn";
+    public String thermostatCurrentModeCooling = "CoolOn";
     public String thermostatCurrentModeOff = "Off";
+    public String doorCurrentStateOpen = "OPEN";
+    public String doorCurrentStateOpening = "OPENING";
+    public String doorCurrentStateClosed = "CLOSE";
+    public String doorCurrentStateClosing = "CLOSING";
+    public String doorCurrentStateStopped = "STOPPED";
+    public String doorTargetStateClosed = "CLOSED";
+    public String doorTargetStateOpen = "OPEN";
     public String networkInterface;
 
     @Deprecated

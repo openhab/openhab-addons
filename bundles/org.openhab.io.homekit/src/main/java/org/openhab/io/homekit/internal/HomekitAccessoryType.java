@@ -40,6 +40,9 @@ public enum HomekitAccessoryType {
     FAN("Fan"),
     LOCK("Lock"),
     SECURITY_SYSTEM("SecuritySystem"),
+    OUTLET("Outlet"),
+    SPEAKER("Speaker"),
+    GARAGE_DOOR_OPENER("GarageDoorOpener"),
     DUMMY("Dummy"),
     @Deprecated()
     BLINDS("Blinds"),
