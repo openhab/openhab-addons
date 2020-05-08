@@ -484,37 +484,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                                         toQuantityType(pos, SmartHomeUnits.PERCENT));
                                 break;
                             case "input":
-                                int idx = getSensorNumber("Input", sen.id);
-                                if (idx > 0) {
-                                    int r = idx - 1;
-                                    String iGroup = rGroup;
-                                    String iChannel = CHANNEL_INPUT;
-                                    if (profile.isRGBW2) {
-                                        // RGBW2 has only one input, not one per channel
-                                        iGroup = CHANNEL_GROUP_LIGHT_CONTROL;
-                                    } else if (profile.isDimmer || profile.isRoller) {
-                                        // Dimmer and Roller things have 2 inputs
-                                        iChannel = CHANNEL_INPUT + String.valueOf(idx);
-                                    } else {
-                                        // Device has 1 input per relay: 0=off, 1+2 depend on switch mode
-                                        iGroup = profile.numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL
-                                                : CHANNEL_GROUP_RELAY_CONTROL + idx;
-                                    }
-
-                                    if ((profile.settings.relays != null) && (r >= 0)
-                                            && (r < profile.settings.relays.size())) {
-                                        ShellySettingsRelay relay = profile.settings.relays.get(r);
-                                        if ((relay != null) && (s.value != 0)
-                                                && (relay.btnType.equalsIgnoreCase(SHELLY_BTNT_MOMENTARY)
-                                                        || relay.btnType.equalsIgnoreCase(SHELLY_BTNT_DETACHED))) {
-                                            updateChannel(updates, iGroup, CHANNEL_BUTTON_TRIGGER,
-                                                    getStringType(s.value == 1 ? CommonTriggerEvents.SHORT_PRESSED
-                                                            : CommonTriggerEvents.LONG_PRESSED));
-                                        }
-                                    }
-                                    updateChannel(updates, iGroup, iChannel,
-                                            s.value == 0 ? OnOffType.OFF : OnOffType.ON);
-                                }
+                                handleInput(sen, s, rGroup, updates);
                                 break;
                             case "flood":
                                 updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD,
@@ -604,6 +574,52 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         // Remeber serial, new packets with same serial will be ignored
         lastSerial = serial;
         lastPayload = payload;
+    }
+
+    private void handleInput(CoIotDescrSen sen, CoIotSensor s, String rGroup, Map<String, State> updates) {
+        final ShellyDeviceProfile profile = thingHandler.getProfile();
+        int idx = getSensorNumber("Input", sen.id);
+        if (idx > 0) {
+            int r = idx - 1;
+            String iGroup = rGroup;
+            String iChannel = CHANNEL_INPUT;
+            if (profile.isRGBW2) {
+                // RGBW2 has only one input, not one per channel
+                iGroup = CHANNEL_GROUP_LIGHT_CONTROL;
+            } else if (profile.isDimmer || profile.isRoller) {
+                // Dimmer and Roller things have 2 inputs
+                iChannel = CHANNEL_INPUT + String.valueOf(idx);
+            } else {
+                // Device has 1 input per relay: 0=off, 1+2 depend on switch mode
+                iGroup = profile.numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL : CHANNEL_GROUP_RELAY_CONTROL + idx;
+            }
+
+            if ((profile.settings.relays != null) && (r >= 0) && (r < profile.settings.relays.size())) {
+                ShellySettingsRelay relay = profile.settings.relays.get(r);
+                logger.trace("{}: Coap update for button (type {})", thingName, relay.btnType);
+                if ((s.value != 0) && (relay.btnType.equalsIgnoreCase(SHELLY_BTNT_MOMENTARY)
+                        || relay.btnType.equalsIgnoreCase(SHELLY_BTNT_MOM_ON_RELEASE)
+                        || relay.btnType.equalsIgnoreCase(SHELLY_BTNT_DETACHED))) {
+                    String trigger = "";
+                    switch (new Double(s.value).intValue()) {
+                        case 0:
+                            trigger = CommonTriggerEvents.RELEASED;
+                            break;
+                        case 1:
+                            trigger = CommonTriggerEvents.SHORT_PRESSED;
+                            break;
+                        case 2:
+                            trigger = CommonTriggerEvents.LONG_PRESSED;
+                            break;
+                    }
+                    if (!trigger.isEmpty()) {
+                        logger.debug("{}: Update button state with {}", thingName, trigger);
+                        thingHandler.triggerChannel(iGroup, CHANNEL_BUTTON_TRIGGER, trigger);
+                    }
+                }
+            }
+            updateChannel(updates, iGroup, iChannel, s.value == 0 ? OnOffType.OFF : OnOffType.ON);
+        }
     }
 
     /**
