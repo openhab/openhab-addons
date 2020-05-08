@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.emby.internal.protocol;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.emby.internal.model.EmbyPlayStateModel;
 
 /**
@@ -20,6 +21,7 @@ import org.openhab.binding.emby.internal.model.EmbyPlayStateModel;
  * @author Zachary Christiansen - Initial contribution
  *
  */
+@NonNullByDefault
 public interface EmbyClientSocketEventListener {
 
     void handleEvent(EmbyPlayStateModel playstate);

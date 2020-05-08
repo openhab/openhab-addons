@@ -17,10 +17,10 @@ package org.openhab.binding.emby.internal;
  *
  * @author Zachary Christiansen - Initial contribution
  */
+
 public class EmbyBridgeConfiguration {
 
     public String api;
-
     private String ipAddress;
     private Integer port;
     private Integer httpPort;
@@ -52,23 +52,6 @@ public class EmbyBridgeConfiguration {
         this.httpPort = httpPort;
     }
 
-    /*
-     * public String getHttpUser() {
-     * return httpUser;
-     * }
-     *
-     * public void setHttpUser(String httpUser) {
-     * this.httpUser = httpUser;
-     * }
-     *
-     * public String getHttpPassword() {
-     * return httpPassword;
-     * }
-     *
-     * public void setHttpPassword(String httpPassword) {
-     * this.httpPassword = httpPassword;
-     * }
-     */
     public Integer getRefreshInterval() {
         return refreshInterval;
     }

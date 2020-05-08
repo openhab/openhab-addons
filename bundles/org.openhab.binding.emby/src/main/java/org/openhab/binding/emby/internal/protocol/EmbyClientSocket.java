@@ -20,6 +20,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
@@ -46,6 +48,7 @@ import com.google.gson.reflect.TypeToken;
  * @author Zachary Christiansen - Initial contribution
  *
  */
+@NonNullByDefault
 public class EmbyClientSocket {
 
     private final Logger logger = LoggerFactory.getLogger(EmbyClientSocket.class);
@@ -53,27 +56,27 @@ public class EmbyClientSocket {
     private final ScheduledExecutorService scheduler;
     private static final int REQUEST_TIMEOUT_MS = 60000;
 
-    private CountDownLatch commandLatch = null;
-    private JsonObject commandResponse = null;
+    private @Nullable CountDownLatch commandLatch = null;
+    private @Nullable JsonObject commandResponse = null;
 
     private boolean connected = false;
 
     private final JsonParser parser = new JsonParser();
     private final Gson mapper = new Gson();
-    private URI uri;
-    private Session session;
+    private @Nullable URI uri;
+    private @Nullable Session session;
     private WebSocketClient client;
     private int bufferSize;
 
     private final EmbyClientSocketEventListener eventHandler;
 
-    public EmbyClientSocket(EmbyClientSocketEventListener eventHandler, URI uri, ScheduledExecutorService scheduler,
-            int buffersize) {
-        this.eventHandler = eventHandler;
-        this.uri = uri;
+    public EmbyClientSocket(EmbyClientSocketEventListener setEventHandler, @Nullable URI setUri,
+            ScheduledExecutorService setScheduler, int setBufferSize) {
+        eventHandler = setEventHandler;
+        uri = setUri;
         client = new WebSocketClient();
-        this.scheduler = scheduler;
-        this.bufferSize = buffersize;
+        scheduler = setScheduler;
+        bufferSize = setBufferSize;
     }
 
     /**
@@ -125,6 +128,7 @@ public class EmbyClientSocket {
     }
 
     @WebSocket
+    @NonNullByDefault
     public class EmbyWebSocketListener {
         @OnWebSocketConnect
         public void onConnect(Session wssession) {
@@ -194,18 +198,18 @@ public class EmbyClientSocket {
         }
     }
 
-    public JsonElement callMethod(String methodName) {
+    public @Nullable JsonElement callMethod(String methodName) {
         return callMethod(methodName, null);
     }
 
-    public JsonElement callMethodString(String methodName, String dataParams) {
+    public @Nullable JsonElement callMethodString(String methodName, String dataParams) {
         JsonObject payloadObject = new JsonObject();
         payloadObject.addProperty("MessageType", methodName);
         payloadObject.addProperty("Data", dataParams);
         return callMethod(payloadObject);
     }
 
-    public JsonElement callMethod(String methodName, JsonObject params) {
+    public @Nullable JsonElement callMethod(String methodName, @Nullable JsonObject params) {
         JsonObject payloadObject = new JsonObject();
         // payloadObject.addProperty("jsonrpc", "2.0");
         // payloadObject.addProperty("id", nextMessageId);
@@ -216,7 +220,7 @@ public class EmbyClientSocket {
         return callMethod(payloadObject);
     }
 
-    public synchronized JsonElement callMethod(JsonObject payloadObject) {
+    public synchronized @Nullable JsonElement callMethod(JsonObject payloadObject) {
         try {
             String message = mapper.toJson(payloadObject);
             commandLatch = new CountDownLatch(1);

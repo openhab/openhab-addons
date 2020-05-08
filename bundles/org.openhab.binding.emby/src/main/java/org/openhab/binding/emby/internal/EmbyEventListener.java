@@ -14,6 +14,7 @@ package org.openhab.binding.emby.internal;
 
 import java.util.EventListener;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.emby.internal.model.EmbyPlayStateModel;
 import org.openhab.binding.emby.internal.protocol.EmbyConnection;
 
@@ -23,6 +24,7 @@ import org.openhab.binding.emby.internal.protocol.EmbyConnection;
  *
  * @author Zachary Christiansen - Initial Contribution
  */
+@NonNullByDefault
 public interface EmbyEventListener extends EventListener {
     public enum EmbyState {
         PLAY,

@@ -48,22 +48,22 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 /**
- * The {@EmbyDiscoveryService} handles the bridge discovery which find emby servers on the network
+ * The {@EmbyBridgeDiscoveryService} handles the bridge discovery which find emby servers on the network
  *
  * @author Zachary Christiansen - Initial contribution
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.emby")
-public class EmbyDiscoveryService extends AbstractDiscoveryService {
+@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.embybridge")
+public class EmbyBridgeDiscoveryService extends AbstractDiscoveryService {
 
     private static final String REQUEST_MSG = "who is EmbyServer?";
     private static final int REQUEST_PORT = 7359;
 
-    private final Logger logger = LoggerFactory.getLogger(EmbyDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(EmbyBridgeDiscoveryService.class);
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .singleton(THING_TYPE_EMBY_CONTROLLER);
 
-    public EmbyDiscoveryService() {
+    public EmbyBridgeDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, 30, false);
     }
 
@@ -172,7 +172,7 @@ public class EmbyDiscoveryService extends AbstractDiscoveryService {
         }
     }
 
-    public void addEMBYServer(String hostAddress, int embyPort, String DeviceID, String Name) {
+    public void addEMBYServer(String hostAddress, int embyPort, @Nullable String DeviceID, String Name) {
         logger.debug("creating discovery result with address: {}:{}, for server {}", hostAddress,
                 Integer.toString(embyPort), Name);
         ThingUID thingUID = getThingUID(DeviceID);
@@ -193,7 +193,7 @@ public class EmbyDiscoveryService extends AbstractDiscoveryService {
         }
     }
 
-    private @Nullable ThingUID getThingUID(String DeviceID) {
+    private @Nullable ThingUID getThingUID(@Nullable String DeviceID) {
         ThingTypeUID thingTypeUID = THING_TYPE_EMBY_CONTROLLER;
         if (DeviceID != null) {
             return new ThingUID(thingTypeUID, DeviceID);

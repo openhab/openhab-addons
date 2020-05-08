@@ -18,6 +18,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +29,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Zachary Christiansen - Initial contribution
  */
+@NonNullByDefault
 public class EmbyHTTPUtils {
     private final Logger logger = LoggerFactory.getLogger(EmbyHTTPUtils.class);
     private int requestTimeout;
@@ -74,7 +77,8 @@ public class EmbyHTTPUtils {
      * @param payload the json payload you want to send as part of the request
      * @param retry the number of retries before throwing the IOexpcetion back to the handler
      */
-    public synchronized String doPost(String urlAddress, String payload, int retryCount) throws EmbyHttpRetryExceeded {
+    public synchronized @Nullable String doPost(String urlAddress, String payload, int retryCount)
+            throws EmbyHttpRetryExceeded {
         String response = null;
         int x = 0;
         Boolean loop = true;

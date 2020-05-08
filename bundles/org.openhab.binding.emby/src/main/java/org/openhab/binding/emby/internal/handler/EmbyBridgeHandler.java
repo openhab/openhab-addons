@@ -17,13 +17,14 @@ import static org.openhab.binding.emby.internal.EmbyBindingConstants.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.emby.internal.EmbyBridgeConfiguration;
 import org.openhab.binding.emby.internal.EmbyBridgeListener;
 import org.openhab.binding.emby.internal.discovery.EmbyClientDiscoveryService;
 import org.openhab.binding.emby.internal.model.EmbyPlayStateModel;
@@ -39,25 +40,23 @@ import org.slf4j.LoggerFactory;
  *
  * @author Zachary Christiansen - Initial contribution
  */
-
+@NonNullByDefault
 public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeListener {
 
     private final Logger logger = LoggerFactory.getLogger(EmbyBridgeHandler.class);
 
-    private EmbyBridgeConfiguration config;
     private volatile EmbyConnection connection; // volatile because accessed from multiple threads
-    private ScheduledFuture<?> connectionCheckerFuture;
-    private String callbackIpAddress = null;
-    private EmbyClientDiscoveryService clientDiscoverySerivce;
+    private @Nullable ScheduledFuture<?> connectionCheckerFuture;
+    private @Nullable String callbackIpAddress = null;
+    private @Nullable EmbyClientDiscoveryService clientDiscoverySerivce;
     private EmbyHTTPUtils httputils;
 
-    public EmbyBridgeHandler(Bridge bridge, String hostAddress, String port) {
+    public EmbyBridgeHandler(Bridge bridge, @Nullable String hostAddress, @Nullable String port) {
         super(bridge);
-        connection = new EmbyConnection(this);
         callbackIpAddress = hostAddress + ":" + port;
         logger.debug("The callback ip address is: {}", callbackIpAddress);
-
         httputils = new EmbyHTTPUtils(30, (String) this.getConfig().get(API_KEY), getServerAddress());
+        connection = new EmbyConnection(this);
     }
 
     public void sendCommand(String commandURL, String payload) {
@@ -95,7 +94,6 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
 
     @Override
     public void initialize() {
-        config = getConfigAs(EmbyBridgeConfiguration.class);
         updateStatus(ThingStatus.UNKNOWN);
         // Example for background initialization:
         scheduler.execute(() -> {

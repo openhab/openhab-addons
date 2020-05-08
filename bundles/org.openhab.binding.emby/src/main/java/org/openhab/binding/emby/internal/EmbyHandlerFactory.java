@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.net.HttpServiceUtil;
@@ -50,16 +51,17 @@ import org.slf4j.LoggerFactory;
  *
  * @author Zachary Christiansen - Initial contribution
  */
+@NonNullByDefault
 @Component(configurationPid = "binding.emby", service = ThingHandlerFactory.class)
 public class EmbyHandlerFactory extends BaseThingHandlerFactory {
 
     private Logger logger = LoggerFactory.getLogger(EmbyHandlerFactory.class);
 
-    private NetworkAddressService networkAddressService;
+    private @NonNullByDefault({}) NetworkAddressService networkAddressService;
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_EMBY_CONTROLLER, THING_TYPE_EMBY_DEVICE).collect(Collectors.toSet()));
-    private String callbackUrl = null;
+    private @Nullable String callbackUrl = null;
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     @Override
@@ -81,7 +83,7 @@ public class EmbyHandlerFactory extends BaseThingHandlerFactory {
         return null;
     }
 
-    private String createCallbackUrl() {
+    private @Nullable String createCallbackUrl() {
         if (callbackUrl != null) {
             return callbackUrl;
         } else {
@@ -94,7 +96,7 @@ public class EmbyHandlerFactory extends BaseThingHandlerFactory {
         }
     }
 
-    private String createCallbackPort() {
+    private @Nullable String createCallbackPort() {
         // we do not use SSL as it can cause certificate validation issues.
         final int port = HttpServiceUtil.getHttpServicePort(bundleContext);
         if (port == -1) {

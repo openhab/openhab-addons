@@ -20,5 +20,17 @@ package org.openhab.binding.emby.internal;
 public class EmbyDeviceConfiguration {
 
     public String deviceID;
+    public String imageMaxWidth;
+    public String imageMaxHeight;
+    public Boolean imagePercentPlayed;
+    public String imageImageType;
+
+    public EmbyDeviceConfiguration(String setDeviceID) {
+        deviceID = setDeviceID;
+        imageMaxWidth = null;
+        imageMaxHeight = null;
+        imagePercentPlayed = null;
+        imageImageType = null;
+    }
 
 }

@@ -18,16 +18,15 @@ import static org.openhab.binding.emby.internal.EmbyBindingConstants.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.measure.Unit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
-import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.core.library.types.RewindFastforwardType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
@@ -53,16 +52,18 @@ import org.slf4j.LoggerFactory;
  *
  * @author Zachary Christiansen - Initial contribution
  */
-
+@NonNullByDefault
 public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventListener {
 
     private final Logger logger = LoggerFactory.getLogger(EmbyDeviceHandler.class);
 
     private EmbyDeviceConfiguration config;
-    private EmbyPlayStateModel currentPlayState = null;
+    private @Nullable EmbyPlayStateModel currentPlayState = null;
+    private @Nullable EmbyBridgeHandler bridgeHandler;
 
     public EmbyDeviceHandler(Thing thing) {
         super(thing);
+        config = validateConfiguration();
     }
 
     @Override
@@ -70,72 +71,105 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
         // if we are in an active playstate then processs the command
         Channel channel = this.thing.getChannel(channelUID.getId());
         String commandName;
-        if (!(this.currentPlayState == null)) {
-            EmbyBridgeHandler handler = (EmbyBridgeHandler) this.getBridge().getHandler();
-            switch (channelUID.getId()) {
-                case CHANNEL_CONTROL:
-                    if (command instanceof PlayPauseType) {
-                        // if we are unpause
-                        if (PlayPauseType.PLAY.equals(command)) {
-                            handler.sendCommand(CONTROL_SESSION + currentPlayState.getId() + CONTROL_PLAY);
-                            // send the pause command
+        if (!(bridgeHandler == null)) {
+            EmbyBridgeHandler handler = bridgeHandler;
+            if (!(currentPlayState == null)) {
+                String currentPlayStateID = currentPlayState.getId();
+                switch (channelUID.getId()) {
+                    case CHANNEL_CONTROL:
+                        if (command instanceof PlayPauseType) {
+                            // if we are unpause
+                            if (PlayPauseType.PLAY.equals(command)) {
+                                handler.sendCommand(CONTROL_SESSION + currentPlayStateID + CONTROL_PLAY);
+                                // send the pause command
+                            } else {
+                                handler.sendCommand(CONTROL_SESSION + currentPlayStateID + CONTROL_PAUSE);
+                            }
                         } else {
-                            handler.sendCommand(CONTROL_SESSION + currentPlayState.getId() + CONTROL_PAUSE);
+                            logger.debug("The channel {} receceived a command {}, this command not supported",
+                                    channelUID.getAsString(), command.toString());
                         }
-                    } else {
-                        logger.debug("The channel {} receceived a command {}, this command not supported",
-                                channelUID.getAsString(), command.toString());
-                    }
-                    break;
-                case CHANNEL_MUTE:
-                    if (OnOffType.ON.equals(command)) {
-                        handler.sendCommand(CONTROL_SESSION + currentPlayState.getId() + CONTROL_MUTE);
-                    } else {
-                        handler.sendCommand(CONTROL_SESSION + currentPlayState.getId() + CONTROL_UNMUTE);
-                    }
-                    break;
-                case CHANNEL_STOP:
-                    if (OnOffType.ON.equals(command)) {
-                        handler.sendCommand(CONTROL_SESSION + currentPlayState.getId() + CONTROL_STOP);
-                    }
-                    break;
+                        break;
+                    case CHANNEL_MUTE:
+                        if (OnOffType.ON.equals(command)) {
+                            handler.sendCommand(CONTROL_SESSION + currentPlayStateID + CONTROL_MUTE);
+                        } else {
+                            handler.sendCommand(CONTROL_SESSION + currentPlayStateID + CONTROL_UNMUTE);
+                        }
+                        break;
+                    case CHANNEL_STOP:
+                        if (OnOffType.ON.equals(command)) {
+                            handler.sendCommand(CONTROL_SESSION + currentPlayStateID + CONTROL_STOP);
+                        }
+                        break;
 
-                case CHANNEL_SENDPLAYCOMMAND:
-                    logger.debug("Sending the following payload: {} for device: {}", command.toString(),
-                            currentPlayState.getId());
-                    handler.sendCommand(CONTROL_SESSION + currentPlayState.getId() + CONTROL_SENDPLAY,
-                            command.toString());
-                    break;
+                    case CHANNEL_SENDPLAYCOMMAND:
+                        logger.debug("Sending the following payload: {} for device: {}", command.toString(),
+                                currentPlayStateID);
+                        handler.sendCommand(CONTROL_SESSION + currentPlayStateID + CONTROL_SENDPLAY,
+                                command.toString());
+                        break;
 
-                case CHANNEL_GENERALCOMMAND:
-                    commandName = channel.getConfiguration().get(CHANNEL_GENERALCOMMAND_NAME).toString();
-                    logger.debug("Sending the following command {} for device: {}", commandName,
-                            currentPlayState.getId());
-                    if (OnOffType.ON.equals(command)) {
-                        handler.sendCommand(
-                                CONTROL_SESSION + currentPlayState.getId() + CONTROL_GENERALCOMMAND + commandName);
-                    }
-                    break;
-                case CHANNEL_GENERALCOMMANDWITHARGS:
-                    commandName = channel.getConfiguration().get(CHANNEL_GENERALCOMMAND_NAME).toString();
-                    logger.debug("Sending the following command {} for device: {}", commandName,
-                            currentPlayState.getId());
-                    handler.sendCommand(
-                            CONTROL_SESSION + currentPlayState.getId() + CONTROL_GENERALCOMMAND + commandName,
-                            "Arguments:" + command + "}");
-                    break;
+                    case CHANNEL_GENERALCOMMAND:
+                        commandName = channel.getConfiguration().get(CHANNEL_GENERALCOMMAND_NAME).toString();
+                        logger.debug("Sending the following command {} for device: {}", commandName,
+                                currentPlayStateID);
+                        if (OnOffType.ON.equals(command)) {
+                            handler.sendCommand(
+                                    CONTROL_SESSION + currentPlayStateID + CONTROL_GENERALCOMMAND + commandName);
+                        }
+                        break;
+                    case CHANNEL_GENERALCOMMANDWITHARGS:
+                        commandName = channel.getConfiguration().get(CHANNEL_GENERALCOMMAND_NAME).toString();
+                        logger.debug("Sending the following command {} for device: {}", commandName,
+                                currentPlayStateID);
+                        handler.sendCommand(CONTROL_SESSION + currentPlayStateID + CONTROL_GENERALCOMMAND + commandName,
+                                "Arguments:" + command + "}");
+                        break;
+                }
             }
+        } else {
+            updateStatus(OFFLINE, CONFIGURATION_ERROR,
+                    "Unable to handle command, You must choose a Emby Server for this Device.");
         }
+    }
+
+    private EmbyDeviceConfiguration validateConfiguration() {
+        EmbyDeviceConfiguration embyDeviceConfig = new EmbyDeviceConfiguration(
+                this.thing.getConfiguration().get(DEVICE_ID).toString());
+        Configuration testConfig = this.thing.getChannel(CHANNEL_IMAGEURL).getConfiguration();
+        if (!(testConfig.get(CHANNEL_IMAGEURL_MAXWIDTH) == null)) {
+            embyDeviceConfig.imageMaxWidth = testConfig.get(CHANNEL_IMAGEURL_MAXWIDTH).toString();
+        }
+        if (!(testConfig.get(CHANNEL_IMAGEURL_MAXHEIGHT) == null)) {
+            embyDeviceConfig.imageMaxHeight = testConfig.get(CHANNEL_IMAGEURL_MAXHEIGHT).toString();
+        }
+        String testPercentPlayed = "true";
+        if (!(testConfig.get(CHANNEL_IMAGEURL_PERCENTPLAYED) == null)) {
+            testPercentPlayed = testConfig.get(CHANNEL_IMAGEURL_PERCENTPLAYED).toString();
+        }
+
+        embyDeviceConfig.imageImageType = testConfig.get(CHANNEL_IMAGEURL_TYPE).toString();
+
+        if ((testPercentPlayed.equals("true"))) {
+            embyDeviceConfig.imagePercentPlayed = true;
+        } else {
+            embyDeviceConfig.imagePercentPlayed = false;
+        }
+
+        return embyDeviceConfig;
+
     }
 
     @Override
     public void initialize() {
         logger.debug("Initializing emby device: {}", this.getThing().getLabel());
-        config = getConfigAs(EmbyDeviceConfiguration.class);
+        config = validateConfiguration();
         updateStatus(ThingStatus.UNKNOWN);
         Bridge bridge = getBridge();
         if (bridge == null || bridge.getHandler() == null || !(bridge.getHandler() instanceof EmbyBridgeHandler)) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR, "You must choose a Emby Server for this Device.");
+            updateStatus(OFFLINE, CONFIGURATION_ERROR,
+                    "Can't initialize thing, You must choose a Emby Server for this Device.");
             return;
         }
 
@@ -144,6 +178,7 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
             return;
         }
         updateStatus(ThingStatus.ONLINE);
+        bridgeHandler = (EmbyBridgeHandler) bridge.getHandler();
     }
 
     @Override
@@ -228,7 +263,7 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
     /**
      * Wrap the given String in a new {@link StringType} or returns {@link UnDefType#UNDEF} if the String is empty.
      */
-    private State createStringState(String string) {
+    private State createStringState(@Nullable String string) {
         if (string == null || string.isEmpty()) {
             return UnDefType.UNDEF;
         } else {
@@ -236,36 +271,12 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
         }
     }
 
-    /**
-     * Wrap the given list of Strings in a new {@link StringType} or returns {@link UnDefType#UNDEF} if the list of
-     * Strings is empty.
-     */
-    private State createStringListState(List<String> list) {
-        if (list == null || list.isEmpty()) {
-            return UnDefType.UNDEF;
-        } else {
-            return createStringState(list.stream().collect(Collectors.joining(", ")));
-        }
-    }
-
-    /**
-     * Wrap the given RawType and return it as {@link State} or return {@link UnDefType#UNDEF} if the RawType is null.
-     */
-    private State createImageState(RawType image) {
-        if (image == null) {
-            return UnDefType.UNDEF;
-        } else {
-            return image;
-        }
-    }
-
-    private State createQuantityState(Number value, Unit<?> unit) {
+    private State createQuantityState(@Nullable Number value, Unit<?> unit) {
         return (value == null) ? UnDefType.UNDEF : new QuantityType<>(value, unit);
     }
 
     private void updateState(EmbyState state) {
         updatePlayerState(state);
-
         // if this is a Stop then clear everything else
         if (state == EmbyState.STOP) {
             updateTitle("");
@@ -276,7 +287,6 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
             this.currentPlayState = null;
             updateCurrentTime(-1);
         }
-
     }
 
     @Override
@@ -286,44 +296,9 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
             this.currentPlayState = playstate;
             logger.debug("the deviceId for: {} matches the deviceId of the thing so we will update stringUrl",
                     playstate.getDeviceName());
-            Configuration config = this.thing.getChannel(CHANNEL_IMAGEURL).getConfiguration();
-            String maxWidth = null;
-            String maxHeight = null;
-            Boolean percentPlayed = null;
-
-            // String maxWidth = config.get(CHANNEL_IMAGEURL_MAXWIDTH).toString();
-            // String maxHeight = config.get(CHANNEL_IMAGEURL_MAXHEIGHT).toString();
-            // Boolean percentPlayed = (Boolean) config.get(CHANNEL_IMAGEURL_PERCENTPLAYED);
-            // if (percentPlayed == null) {
-            // percentPlayed = true;
-            // }
-
             try {
-                maxWidth = this.thing.getChannel(CHANNEL_IMAGEURL).getConfiguration().get(CHANNEL_IMAGEURL_MAXWIDTH)
-                        .toString();
-            } catch (NullPointerException e) {
-                logger.debug("The maxWidth was not set so we keep value as null");
-            }
-
-            try {
-                maxHeight = this.thing.getChannel(CHANNEL_IMAGEURL).getConfiguration().get(CHANNEL_IMAGEURL_MAXHEIGHT)
-                        .toString();
-            } catch (NullPointerException e) {
-                logger.debug("The maxHeight was not set so we keep value as null");
-            }
-            try {
-                percentPlayed = (Boolean) this.thing.getChannel(CHANNEL_IMAGEURL).getConfiguration()
-                        .get(CHANNEL_IMAGEURL_PERCENTPLAYED);
-                if (percentPlayed == null) {
-                    percentPlayed = true;
-                }
-            } catch (NullPointerException e) {
-                logger.debug("The Percent Played setting was not set so we keep value as true");
-            }
-
-            try {
-                URI imageURI = playstate.getPrimaryImageURL(hostname, embyport,
-                        config.get(CHANNEL_IMAGEURL_TYPE).toString(), maxWidth, maxHeight, percentPlayed);
+                URI imageURI = playstate.getPrimaryImageURL(hostname, embyport, config.imageImageType,
+                        config.imageMaxWidth, config.imageMaxHeight, config.imagePercentPlayed);
                 if (imageURI.getHost().equals("NotPlaying")) {
                     updateState(EmbyState.END);
                     updateState(EmbyState.STOP);

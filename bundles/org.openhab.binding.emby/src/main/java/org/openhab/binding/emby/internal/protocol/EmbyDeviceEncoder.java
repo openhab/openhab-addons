@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.emby.internal.protocol;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * EmbyClientSocket implements the low level communication to Emby through
@@ -22,9 +21,8 @@ import org.slf4j.LoggerFactory;
  * @author Zachary Christiansen - Initial contribution
  *
  */
+@NonNullByDefault
 public class EmbyDeviceEncoder {
-
-    private final Logger logger = LoggerFactory.getLogger(EmbyDeviceEncoder.class);
 
     public String encodeDeviceID(String deviceID) {
         return deviceID.replaceAll("[^A-Za-z0-9]", "UYHJKU");

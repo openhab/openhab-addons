@@ -16,6 +16,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.ScheduledExecutorService;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.emby.internal.EmbyBridgeListener;
 import org.openhab.binding.emby.internal.model.EmbyPlayStateModel;
 import org.slf4j.Logger;
@@ -26,7 +28,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Zachary Christiansen - Initial contribution
  */
-
+@NonNullByDefault
 public class EmbyConnection implements EmbyClientSocketEventListener {
 
     private final Logger logger = LoggerFactory.getLogger(EmbyConnection.class);
@@ -34,14 +36,14 @@ public class EmbyConnection implements EmbyClientSocketEventListener {
     private int refreshRate;
     private String hostname;
     private int embyport;
-    private URI wsUri;
-    private EmbyClientSocket socket;
+    private @Nullable URI wsUri;
+    private @Nullable EmbyClientSocket socket;
 
     private final EmbyBridgeListener listener;
 
     public EmbyConnection(EmbyBridgeListener listener) {
         this.listener = listener;
-
+        this.hostname = "";
     }
 
     @Override
@@ -56,19 +58,19 @@ public class EmbyConnection implements EmbyClientSocketEventListener {
         socket.callMethodString("SessionsStart", "0," + Integer.toString(this.refreshRate));
     }
 
-    public synchronized void connect(String hostname, int port, String apiKey, ScheduledExecutorService scheduler,
+    public synchronized void connect(String setHostName, int port, String apiKey, ScheduledExecutorService scheduler,
             int refreshRate, int bufferSize) {
-        this.hostname = hostname;
+        this.hostname = setHostName;
         this.embyport = port;
         this.refreshRate = refreshRate;
         try {
             close();
 
-            wsUri = new URI("ws", null, hostname, port, null, "api_key=" + apiKey, null);
+            wsUri = new URI("ws", null, hostname, embyport, null, "api_key=" + apiKey, null);
             socket = new EmbyClientSocket(this, wsUri, scheduler, bufferSize);
             checkConnection();
         } catch (URISyntaxException e) {
-            logger.error("exception during constructing URI host={}, port={}", hostname, port, e);
+            logger.error("exception during constructing URI host={}, port={}", hostname, embyport, e);
         }
     }
 

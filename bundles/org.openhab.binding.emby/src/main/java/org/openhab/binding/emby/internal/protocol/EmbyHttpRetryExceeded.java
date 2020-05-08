@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.emby.internal.protocol;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Custom exception class to be thrown when number of retries is exceeded.
  *
  * @author Zachary Christiansen - Initial contribution
  */
 @SuppressWarnings("serial")
+@NonNullByDefault
 public class EmbyHttpRetryExceeded extends Exception {
     public EmbyHttpRetryExceeded(String message, Throwable cause) {
         super(message, cause);

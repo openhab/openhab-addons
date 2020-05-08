@@ -19,17 +19,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.emby.internal.handler.EmbyBridgeHandler;
 import org.openhab.binding.emby.internal.model.EmbyPlayStateModel;
 import org.openhab.binding.emby.internal.protocol.EmbyDeviceEncoder;
-import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,17 +39,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author Zachary Christiansen - Initial contribution
  */
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.emby")
+@NonNullByDefault
+// @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.embyclient")
 public class EmbyClientDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(EmbyClientDiscoveryService.class);
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_EMBY_DEVICE);
-
     private final EmbyBridgeHandler embyBridgeHandler;
-
-    public EmbyClientDiscoveryService() {
-        super(SUPPORTED_THING_TYPES_UIDS, 10, false);
-        this.embyBridgeHandler = null;
-    }
 
     public EmbyClientDiscoveryService(EmbyBridgeHandler embyBridgeHandler) {
         super(SUPPORTED_THING_TYPES_UIDS, 10, true);
