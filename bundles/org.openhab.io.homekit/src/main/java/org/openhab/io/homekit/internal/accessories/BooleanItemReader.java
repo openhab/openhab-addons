@@ -12,6 +12,7 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
+import org.eclipse.smarthome.core.items.GroupItem;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.library.items.ContactItem;
 import org.eclipse.smarthome.core.library.items.StringItem;
@@ -62,6 +63,14 @@ public class BooleanItemReader {
             return state.toString().equalsIgnoreCase("Open") || state.toString().equalsIgnoreCase("Opened");
         } else {
             return null;
+        }
+    }
+
+    void setValue(Boolean value) {
+        if (item instanceof SwitchItem) {
+            ((SwitchItem) item).send(OnOffType.from(value));
+        } else if (item instanceof GroupItem) {
+            ((GroupItem) item).send(OnOffType.from(value));
         }
     }
 }
