@@ -153,8 +153,10 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
             logger.trace(" add items {}", name);
             getItemOptional(name).ifPresent(this::createRootAccessories);
         }
-        pendingUpdates.clear();
-        storage.put(REVISION_CONFIG, "" + accessoryRegistry.makeNewConfigurationRevision());
+        if (!pendingUpdates.isEmpty()) {
+            storage.put(REVISION_CONFIG, "" + accessoryRegistry.makeNewConfigurationRevision());
+            pendingUpdates.clear();
+        }
     }
 
     @Override
