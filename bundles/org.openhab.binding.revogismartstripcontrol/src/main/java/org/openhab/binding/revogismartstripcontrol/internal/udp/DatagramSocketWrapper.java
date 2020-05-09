@@ -12,15 +12,15 @@
  */
 package org.openhab.binding.revogismartstripcontrol.internal.udp;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.SocketException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.SocketException;
 
 /**
  * The {@link DatagramSocketWrapper} wraps Java's DatagramSocket for better testing
@@ -52,7 +52,7 @@ public class DatagramSocketWrapper {
         if (datagramSocket != null && !datagramSocket.isClosed()) {
             datagramSocket.send(datagramPacket);
         } else {
-            logger.warn("Datagram Socket closed or not initialized");
+            throw new SocketException("Datagram Socket closed or not initialized");
         }
     }
 
@@ -60,7 +60,7 @@ public class DatagramSocketWrapper {
         if (datagramSocket != null && !datagramSocket.isClosed()) {
             datagramSocket.receive(datagramPacket);
         } else {
-            logger.warn("Datagram Socket closed or not initialized");
+            throw new SocketException("Datagram Socket closed or not initialized");
         }
     }
 }

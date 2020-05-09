@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.revogismartstripcontrol.internal.udp;
 
-import static java.util.stream.Collectors.toList;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -30,9 +32,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static java.util.stream.Collectors.toList;
 
 /**
  * The {@link UdpSenderService} is responsible for sending and receiving udp packets
@@ -105,7 +105,7 @@ public class UdpSenderService {
             DatagramPacket answer = new DatagramPacket(receivedBuf, receivedBuf.length);
             try {
                 datagramSocketWrapper.receiveAnswer(answer);
-            } catch (SocketTimeoutException e) {
+            } catch (SocketTimeoutException|SocketException e) {
                 timeoutCounter++;
                 logger.info("Socket receive time no. {}", timeoutCounter);
                 try {
@@ -117,7 +117,7 @@ public class UdpSenderService {
                 continue;
             }
 
-            if (answer.getLength() > 0) {
+            if (answer.getAddress() != null && answer.getLength() > 0) {
                 list.add(new UdpResponse(new String(answer.getData(), 0, answer.getLength()),
                         answer.getAddress().getHostAddress()));
             }
