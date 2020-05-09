@@ -105,7 +105,7 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Incorrect username or password");
             }
-        } catch (IOException | JsonSyntaxException | VolvoOnCallException e) {
+        } catch (JsonSyntaxException | VolvoOnCallException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
@@ -122,21 +122,23 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
         return new String[0];
     }
 
-    public <T extends VocAnswer> T getURL(Class<T> objectClass, String vin)
-            throws IOException, JsonSyntaxException, VolvoOnCallException {
+    public <T extends VocAnswer> T getURL(Class<T> objectClass, String vin) throws VolvoOnCallException {
         String url = SERVICE_URL + "vehicles/" + vin + "/" + objectClass.getSimpleName().toLowerCase();
         return getURL(url, objectClass);
     }
 
-    public <T extends VocAnswer> T getURL(String url, Class<T> objectClass)
-            throws IOException, JsonSyntaxException, VolvoOnCallException {
-        String jsonResponse = HttpUtil.executeUrl("GET", url, httpHeader, null, JSON_CONTENT_TYPE, REQUEST_TIMEOUT);
-        T response = gson.fromJson(jsonResponse, objectClass);
-        String error = response.getErrorLabel();
-        if (error != null) {
-            throw new VolvoOnCallException(error, response.getErrorDescription());
+    public <T extends VocAnswer> T getURL(String url, Class<T> objectClass) throws VolvoOnCallException {
+        try {
+            String jsonResponse = HttpUtil.executeUrl("GET", url, httpHeader, null, JSON_CONTENT_TYPE, REQUEST_TIMEOUT);
+            T response = gson.fromJson(jsonResponse, objectClass);
+            String error = response.getErrorLabel();
+            if (error != null) {
+                throw new VolvoOnCallException(error, response.getErrorDescription());
+            }
+            return response;
+        } catch (JsonSyntaxException | IOException e) {
+            throw new VolvoOnCallException(e);
         }
-        return response;
     }
 
     public class ActionResultControler implements Runnable {
@@ -161,8 +163,6 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
                     try {
                         postResponse = getURL(postResponse.serviceURL, PostResponse.class);
                         scheduler.schedule(new ActionResultControler(postResponse), 1000, TimeUnit.MILLISECONDS);
-                    } catch (JsonSyntaxException | IOException e) {
-                        logger.warn("Error calling : {} : {}", postResponse.serviceURL, e.getMessage());
                     } catch (VolvoOnCallException e) {
                         if (e.getType() == ErrorType.SERVICE_UNAVAILABLE) {
                             scheduler.schedule(new ActionResultControler(postResponse), 1000, TimeUnit.MILLISECONDS);
@@ -172,18 +172,23 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    void postURL(String URL, @Nullable String body) throws IOException, JsonSyntaxException {
+    void postURL(String URL, @Nullable String body) throws VolvoOnCallException {
         InputStream inputStream = body != null ? new ByteArrayInputStream(body.getBytes(StandardCharsets.UTF_8)) : null;
-        String jsonString = HttpUtil.executeUrl("POST", URL, httpHeader, inputStream, null, REQUEST_TIMEOUT);
-        logger.debug("Post URL: {} Attributes {}", URL, httpHeader);
-        PostResponse postResponse = gson.fromJson(jsonString, PostResponse.class);
-        if (postResponse.getErrorLabel() == null) {
-            pendingActions
-                    .add(scheduler.schedule(new ActionResultControler(postResponse), 1000, TimeUnit.MILLISECONDS));
-        } else {
-            logger.warn("URL {} returned {}", URL, postResponse.getErrorDescription());
+        try {
+            String jsonString = HttpUtil.executeUrl("POST", URL, httpHeader, inputStream, null, REQUEST_TIMEOUT);
+            logger.debug("Post URL: {} Attributes {}", URL, httpHeader);
+            PostResponse postResponse = gson.fromJson(jsonString, PostResponse.class);
+            String error = postResponse.getErrorLabel();
+            if (error == null) {
+                pendingActions
+                        .add(scheduler.schedule(new ActionResultControler(postResponse), 1000, TimeUnit.MILLISECONDS));
+            } else {
+                throw new VolvoOnCallException(error, postResponse.getErrorDescription());
+            }
+            pendingActions.removeIf(ScheduledFuture::isDone);
+        } catch (JsonSyntaxException | IOException e) {
+            throw new VolvoOnCallException(e);
         }
-        pendingActions.removeIf(ScheduledFuture::isDone);
     }
 
     @Override

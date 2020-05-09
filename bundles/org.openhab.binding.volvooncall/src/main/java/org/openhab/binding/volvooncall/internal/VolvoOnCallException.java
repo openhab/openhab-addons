@@ -12,10 +12,14 @@
  */
 package org.openhab.binding.volvooncall.internal;
 
+import java.io.IOException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonSyntaxException;
 
 /**
  * Exception for errors when using the VolvoOnCall API
@@ -29,7 +33,9 @@ public class VolvoOnCallException extends Exception {
 
     public static enum ErrorType {
         UNKNOWN,
-        SERVICE_UNAVAILABLE;
+        SERVICE_UNAVAILABLE,
+        IOEXCEPTION,
+        JSON_SYNTAX;
     }
 
     private final ErrorType cause;
@@ -41,6 +47,18 @@ public class VolvoOnCallException extends Exception {
         } else {
             cause = ErrorType.UNKNOWN;
             logger.warn("Unhandled VoC error : {} : {}", label, description);
+        }
+    }
+
+    public VolvoOnCallException(Exception e) {
+        super(e);
+        if (e instanceof IOException) {
+            cause = ErrorType.IOEXCEPTION;
+        } else if (e instanceof JsonSyntaxException) {
+            cause = ErrorType.JSON_SYNTAX;
+        } else {
+            cause = ErrorType.UNKNOWN;
+            logger.warn("Unhandled VoC error : {}", e.getMessage());
         }
     }
 

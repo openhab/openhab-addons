@@ -171,7 +171,7 @@ public class VehicleHandler extends BaseThingHandler {
                             updateState(channelUID, state);
                         });
                 updateTrips(bridgeHandler);
-            } catch (JsonSyntaxException | IOException | VolvoOnCallException e) {
+            } catch (VolvoOnCallException e) {
                 logger.warn("Exception occurred during execution: {}", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 freeRefreshJob();
@@ -190,12 +190,11 @@ public class VehicleHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        super.dispose();
         freeRefreshJob();
+        super.dispose();
     }
 
-    private void updateTrips(VolvoOnCallBridgeHandler bridgeHandler)
-            throws JsonSyntaxException, IOException, VolvoOnCallException {
+    private void updateTrips(VolvoOnCallBridgeHandler bridgeHandler) throws VolvoOnCallException {
         // This seems to rewind 100 days by default, did not find any way to filter it
         Trips carTrips = bridgeHandler.getURL(Trips.class, configuration.vin);
         List<Trip> tripList = carTrips.trips;
@@ -444,7 +443,7 @@ public class VehicleHandler extends BaseThingHandler {
 
             try {
                 bridgeHandler.postURL(url.toString(), vehiclePosition.getPositionAsJSon());
-            } catch (JsonSyntaxException | IOException e) {
+            } catch (VolvoOnCallException e) {
                 logger.warn("Exception occurred during execution: {}", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
@@ -463,7 +462,7 @@ public class VehicleHandler extends BaseThingHandler {
                         address.append("/");
                         address.append(action);
                         bridgeHandler.postURL(address.toString(), "{}");
-                    } catch (JsonSyntaxException | IOException e) {
+                    } catch (VolvoOnCallException e) {
                         logger.warn("Exception occurred during execution: {}", e.getMessage(), e);
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                     }
@@ -490,7 +489,7 @@ public class VehicleHandler extends BaseThingHandler {
                         String address = SERVICE_URL + "vehicles/" + configuration.vin + "/preclimatization/" + command;
                         bridgeHandler.postURL(address, start ? "{}" : null);
                     }
-                } catch (JsonSyntaxException | IOException e) {
+                } catch (VolvoOnCallException e) {
                     logger.warn("Exception occurred during execution: {}", e.getMessage(), e);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
@@ -525,7 +524,7 @@ public class VehicleHandler extends BaseThingHandler {
 
                 try {
                     bridgeHandler.postURL(url, json);
-                } catch (JsonSyntaxException | IOException e) {
+                } catch (VolvoOnCallException e) {
                     logger.warn("Exception occurred during execution: {}", e.getMessage(), e);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
