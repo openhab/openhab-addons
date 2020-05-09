@@ -74,14 +74,14 @@
 		<description>Thing for an shutter module (JRM).</description>
 
 		<channels>
-			<channel id="00" typeId="jrm-channel" />
-			<channel id="01" typeId="jrm-channel" />
-			<channel id="02" typeId="jrm-channel" />
-			<channel id="03" typeId="jrm-channel" />
-			<channel id="00" typeId="jrmTime-channel" />
-			<channel id="01" typeId="jrmTime-channel" />
-			<channel id="02" typeId="jrmTime-channel" />
-			<channel id="03" typeId="jrmTime-channel" />
+			<channel id="00" typeId="jrm-channel"/>
+			<channel id="01" typeId="jrm-channel"/>
+			<channel id="02" typeId="jrm-channel"/>
+			<channel id="03" typeId="jrm-channel"/>
+			<channel id="00" typeId="jrmTime-channel"/>
+			<channel id="01" typeId="jrmTime-channel"/>
+			<channel id="02" typeId="jrmTime-channel"/>
+			<channel id="03" typeId="jrmTime-channel"/>
 		</channels>
 
 		<config-description>
@@ -119,15 +119,15 @@
 
 	<thing-type id="DIM">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>PHC DIM</label>
 		<description>Thing for a dimmer module (DM).</description>
 
 		<channels>
-			<channel id="00" typeId="dim-channel" />
-			<channel id="01" typeId="dim-channel" />
+			<channel id="00" typeId="dim-channel"/>
+			<channel id="01" typeId="dim-channel"/>
 		</channels>
 
 		<config-description>

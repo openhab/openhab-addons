@@ -51,7 +51,7 @@ public class PHCHandler extends BaseThingHandler {
     private String moduleAddress; // like DIP switches
     private byte module;
     private final short[] times = new short[4];
-    private final Map<String, State> channelState = new HashMap<String, State>();
+    private final Map<String, State> channelState = new HashMap<>();
     private PHCBridgeHandler bridgeHandler;
 
     public PHCHandler(Thing thing) {

@@ -58,5 +58,4 @@ public class PHCHelper {
 
         return bin.toString();
     }
-
 }

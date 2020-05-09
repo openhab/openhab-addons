@@ -66,7 +66,7 @@
 		<item-type>Number</item-type>
 		<label>JRM-time Channel</label>
 		<description>The Time in seconds for an JRM channel.</description>
-		<state min="1" max="65535" />
+		<state min="1" max="65535"/>
 	</channel-type>
 
 	<channel-type id="dim-channel">

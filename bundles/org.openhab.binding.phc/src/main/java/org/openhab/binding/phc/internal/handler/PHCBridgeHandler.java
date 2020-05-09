@@ -71,10 +71,10 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
     private @Nullable SerialPort commPort;
     private final SerialPortManager serialPortManager;
 
-    private final Map<Byte, Boolean> toggleMap = new HashMap<Byte, Boolean>();
+    private final Map<Byte, Boolean> toggleMap = new HashMap<>();
     private final InternalBuffer buffer = new InternalBuffer();
-    private final BlockingQueue<QueueObject> receiveQueue = new LinkedBlockingQueue<QueueObject>();
-    private final BlockingQueue<QueueObject> sendQueue = new LinkedBlockingQueue<QueueObject>();
+    private final BlockingQueue<QueueObject> receiveQueue = new LinkedBlockingQueue<>();
+    private final BlockingQueue<QueueObject> sendQueue = new LinkedBlockingQueue<>();
     private final ScheduledThreadPoolExecutor threadPoolExecutor = new ScheduledThreadPoolExecutor(3);
 
     private final byte emLedOutputState[] = new byte[32];

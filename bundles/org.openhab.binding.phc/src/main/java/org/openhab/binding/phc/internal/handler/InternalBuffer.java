@@ -16,7 +16,6 @@ import java.util.Arrays;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-
 /**
  * Buffer for received messages
  *
@@ -25,7 +24,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 class InternalBuffer {
     private static final int MAX_SIZE = 512;
 
-    private final BlockingQueue<byte[]> byteQueue = new LinkedBlockingQueue<byte[]>();
+    private final BlockingQueue<byte[]> byteQueue = new LinkedBlockingQueue<>();
     private byte[] buffer;
     private int bufferIndex = 0;
     private int size;
