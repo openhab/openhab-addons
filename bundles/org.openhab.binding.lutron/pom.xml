@@ -14,4 +14,8 @@
 
   <name>openHAB Add-ons :: Bundles :: Lutron Binding</name>
 
+  <properties>
+    <bnd.importpackage>gnu.io;version="[3.12,6)"</bnd.importpackage>
+  </properties>
+
 </project>
