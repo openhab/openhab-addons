@@ -17,6 +17,8 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +32,7 @@ import com.amazonaws.regions.Regions;
  *
  * @author Sami Salonen - Initial contribution
  */
+@NonNullByDefault
 public class DynamoDBConfig {
     public static final String DEFAULT_TABLE_PREFIX = "openhab-";
     public static final boolean DEFAULT_CREATE_TABLE_ON_DEMAND = true;
@@ -54,16 +57,10 @@ public class DynamoDBConfig {
      * @param config persistence service configuration
      * @return DynamoDB configuration. Returns null in case of configuration errors
      */
-    public static DynamoDBConfig fromConfig(Map<String, Object> config) {
-        if (config == null || config.isEmpty()) {
-            LOGGER.error("Configuration not provided! At least AWS region and credentials must be provided.");
-            return null;
-        }
-
+    public static @Nullable DynamoDBConfig fromConfig(Map<String, Object> config) {
         try {
             String regionName = (String) config.get("region");
-            if (isBlank(regionName)) {
-                invalidRegionLogHelp(regionName);
+            if (regionName == null) {
                 return null;
             }
             final Regions region;

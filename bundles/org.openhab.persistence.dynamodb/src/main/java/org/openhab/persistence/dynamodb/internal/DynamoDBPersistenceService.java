@@ -484,7 +484,7 @@ public class DynamoDBPersistenceService extends AbstractBufferedPersistenceServi
     public Iterable<HistoricItem> query(FilterCriteria filter) {
         logger.debug("got a query");
         if (!isProperlyConfigured) {
-            logger.warn("Configuration for dynamodb not yet loaded or broken. Not storing item.");
+            logger.debug("Configuration for dynamodb not yet loaded or broken. Not storing item.");
             return Collections.emptyList();
         }
         if (!ensureClient()) {
