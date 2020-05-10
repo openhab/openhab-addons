@@ -21,6 +21,7 @@ This Binding integrated Shelly devices.
 | shellyrgbw2        | Shelly RGB Controller                                  | SHRGBW2   |
 | shellybulb         | Shelly Bulb in Color or White Mode                     | SHBLB-1   |
 | shellybulbduo      | Shelly Duo (White Mode)                                | SHBDUO-1  |
+| shellyvintage      | Shelly Vintage (White Mode)                            | SHVIN-1   |
 | shellyht           | Shelly Sensor (temp+humidity)                          | SHHT-1    |
 | shellyflood        | Shelly Flood Sensor                                    | SHWT-1    |
 | shellysmoke        | Shelly Smoke Sensor                                    |           |
@@ -406,8 +407,7 @@ The Dimmer should be calibrated using the Shelly App.
 
 |Group     |Channel      |Type     |read-only|Description                                                            |
 |----------|-------------|---------|---------|-----------------------------------------------------------------------|
-|control   |power        |Switch   |r/w      |Switch light ON/OFF                                                    |
-|          |autoOn       |Number   |r/w      |Sets a  timer to turn the device ON after every OFF; in sec            |
+|control   |autoOn       |Number   |r/w      |Sets a  timer to turn the device ON after every OFF; in sec            |
 |          |autoOff      |Number   |r/w      |Sets a  timer to turn the device OFF after every ON: in sec            |
 |          |timerActive  |Switch   |yes      |ON: An auto-on/off timer is active                                     |
 |white     |             |         |         |Color settings: only valid in WHITE mode                               |
@@ -420,6 +420,23 @@ The Dimmer should be calibrated using the Shelly App.
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
 |          |timestamp    |String   |yes      |Timestamp of the last measurement                                                |
  
+#### Shelly Vintage (thing-type: shellyvintage)
+
+|Group     |Channel      |Type     |read-only|Description                                                            |
+|----------|-------------|---------|---------|-----------------------------------------------------------------------|
+|control   |autoOn       |Number   |r/w      |Sets a  timer to turn the device ON after every OFF; in sec            |
+|          |autoOff      |Number   |r/w      |Sets a  timer to turn the device OFF after every ON: in sec            |
+|          |timerActive  |Switch   |yes      |ON: An auto-on/off timer is active                                     |
+|white     |             |         |         |Color settings: only valid in WHITE mode                               |
+|          |brightness   |Dimmer   |         |Brightness: 0..100% or 0..100                                          |
+|meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
+|          |lastPower1   |Number   |yes      |Energy consumption in Watts for a round minute, 1 minute  ago                    |
+|          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                    |
+|          |lastPower3   |Number   |yes      |Energy consumption in Watts for a round minute, 3 minutes ago                    |
+|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
+|          |timestamp    |String   |yes      |Timestamp of the last measurement                                                |
+ 
+
  ## Shelly RGBW2 in Color Mode (thing-type: shellyrgbw2-color)
 
 |Group     |Channel      |Type     |read-only|Desciption                                                             |
