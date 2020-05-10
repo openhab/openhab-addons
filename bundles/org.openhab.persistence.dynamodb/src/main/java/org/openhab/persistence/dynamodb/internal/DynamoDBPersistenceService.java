@@ -32,6 +32,7 @@ import java.util.function.Function;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.common.NamedThreadFactory;
+import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
@@ -43,9 +44,9 @@ import org.openhab.core.persistence.QueryablePersistenceService;
 import org.openhab.core.persistence.strategy.PersistenceStrategy;
 import org.openhab.core.types.State;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -83,7 +84,11 @@ import com.amazonaws.services.dynamodbv2.model.WriteRequest;
  */
 @NonNullByDefault
 @Component(service = { PersistenceService.class,
-        QueryablePersistenceService.class }, configurationPid = "org.openhab.dynamodb", configurationPolicy = ConfigurationPolicy.REQUIRE)
+        QueryablePersistenceService.class }, configurationPid = "org.openhab.dynamodb", property = {
+                Constants.SERVICE_PID + "=org.openhab.dynamodb",
+                ConfigurableService.SERVICE_PROPERTY_DESCRIPTION_URI + "=persistence:dynamodb",
+                ConfigurableService.SERVICE_PROPERTY_LABEL + "=DynamoDB Persistence Service",
+                ConfigurableService.SERVICE_PROPERTY_CATEGORY + "=persistence" })
 public class DynamoDBPersistenceService extends AbstractBufferedPersistenceService<DynamoDBItem<?>>
         implements QueryablePersistenceService {
 
