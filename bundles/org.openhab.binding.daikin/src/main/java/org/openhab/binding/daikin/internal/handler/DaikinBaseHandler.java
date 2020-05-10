@@ -13,6 +13,7 @@
 package org.openhab.binding.daikin.internal.handler;
 
 import java.io.IOException;
+import java.lang.IllegalArgumentException;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -131,6 +132,8 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
             }
             logger.debug("Received command ({}) of wrong type for thing '{}' on channel {}", command,
                     thing.getUID().getAsString(), channelUID.getId());
+        } catch (IllegalArgumentException ex) {
+            logger.warn("Illegal argument for channel {}: {}. {}", channelUID.getId(), command.toString(), ex.getMessage());
         } catch (DaikinCommunicationException ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
         }
