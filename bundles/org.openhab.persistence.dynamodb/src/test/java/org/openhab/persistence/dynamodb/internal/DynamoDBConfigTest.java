@@ -97,11 +97,6 @@ public class DynamoDBConfigTest {
     }
 
     @Test
-    public void testNullConfiguration() throws Exception {
-        assertNull(DynamoDBConfig.fromConfig(null));
-    }
-
-    @Test
     public void testEmptyConfiguration() throws Exception {
         assertNull(DynamoDBConfig.fromConfig(mapFrom()));
     }
