@@ -91,7 +91,8 @@ public class SqueezeBoxPlayerDiscoveryParticipant extends AbstractDiscoveryServi
             logger.debug("player added {} : {} ", player.getMacAddress(), player.getName());
 
             Map<String, Object> properties = new HashMap<>(1);
-            properties.put("mac", player.getMacAddress());
+            String representationPropertyName = "mac";
+            properties.put(representationPropertyName, player.getMacAddress());
 
             // Added other properties
             properties.put("modelId", player.getModel());
@@ -100,7 +101,8 @@ public class SqueezeBoxPlayerDiscoveryParticipant extends AbstractDiscoveryServi
             properties.put("ip", player.getIpAddr());
 
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    .withBridge(bridgeUID).withLabel(player.getName()).build();
+                    .withRepresentationProperty(representationPropertyName).withBridge(bridgeUID)
+                    .withLabel(player.getName()).build();
 
             thingDiscovered(discoveryResult);
         }
