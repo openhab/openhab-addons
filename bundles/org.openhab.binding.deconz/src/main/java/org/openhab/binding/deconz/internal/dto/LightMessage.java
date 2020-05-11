@@ -14,17 +14,20 @@ package org.openhab.binding.deconz.internal.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.deconz.internal.types.LightType;
 
 /**
  * The REST interface and websocket connection are using the same fields.
  * The REST data contains more descriptive info like the manufacturer and name.
  *
- * @author David Graeff - Initial contribution
+ * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
-public class SensorMessage extends DeconzRestMessage {
-    public String type = "";
+public class LightMessage extends DeconzRestMessage {
+    public @Nullable Boolean hascolor;
+    public @Nullable Integer ctmax;
+    public @Nullable Integer ctmin;
+    public @Nullable LightType type;
 
-    public @Nullable SensorConfig config;
-    public @Nullable SensorState state;
+    public @Nullable LightState state;
 }

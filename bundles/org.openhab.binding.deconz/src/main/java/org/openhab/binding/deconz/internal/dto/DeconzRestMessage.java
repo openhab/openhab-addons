@@ -13,18 +13,30 @@
 package org.openhab.binding.deconz.internal.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The REST interface and websocket connection are using the same fields.
  * The REST data contains more descriptive info like the manufacturer and name.
  *
- * @author David Graeff - Initial contribution
+ * @author Jan N. Klug- Initial contribution
  */
 @NonNullByDefault
-public class SensorMessage extends DeconzRestMessage {
-    public String type = "";
+public class DeconzRestMessage {
+    // For websocket change events
+    public String e = ""; // "changed"
+    public String r = ""; // "sensors"
+    public String t = ""; // "event"
+    public String id = ""; // "3"
 
-    public @Nullable SensorConfig config;
-    public @Nullable SensorState state;
+    // for rest API
+    public String manufacturername = "";
+    public String modelid = "";
+    public String name = "";
+    public String swversion = "";
+
+    /** the API endpoint **/
+    public String ep = "";
+
+    // websocket and rest api
+    public String uniqueid = ""; // "00:0b:57:ff:fe:94:6b:dd-01-1000"
 }

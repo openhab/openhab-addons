@@ -16,15 +16,24 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The REST interface and websocket connection are using the same fields.
- * The REST data contains more descriptive info like the manufacturer and name.
+ * The {@link LightConfig} holds a light configuration.
  *
- * @author David Graeff - Initial contribution
+ * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
-public class SensorMessage extends DeconzRestMessage {
-    public String type = "";
+public class LightConfig {
+    public boolean hascolor = false;
+    public @Nullable Integer ctmin;
+    public @Nullable Integer ctmax;
 
-    public @Nullable SensorConfig config;
-    public @Nullable SensorState state;
+    public LightConfig() {
+    }
+
+    public LightConfig(LightMessage lightMessage) {
+        if (lightMessage.hascolor != null) {
+            this.hascolor = lightMessage.hascolor;
+        }
+        this.ctmin = lightMessage.ctmin;
+        this.ctmax = lightMessage.ctmax;
+    }
 }

@@ -12,8 +12,10 @@
  */
 package org.openhab.binding.deconz.internal.handler;
 
-import static org.eclipse.smarthome.core.library.unit.MetricPrefix.*;
-import static org.eclipse.smarthome.core.library.unit.SIUnits.*;
+import static org.eclipse.smarthome.core.library.unit.MetricPrefix.HECTO;
+import static org.eclipse.smarthome.core.library.unit.MetricPrefix.MILLI;
+import static org.eclipse.smarthome.core.library.unit.SIUnits.CELSIUS;
+import static org.eclipse.smarthome.core.library.unit.SIUnits.PASCAL;
 import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.*;
 import static org.openhab.binding.deconz.internal.BindingConstants.*;
 
@@ -24,12 +26,16 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -46,18 +52,20 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
 import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.deconz.internal.dto.DeconzRestMessage;
 import org.openhab.binding.deconz.internal.dto.SensorConfig;
 import org.openhab.binding.deconz.internal.dto.SensorMessage;
 import org.openhab.binding.deconz.internal.dto.SensorState;
 import org.openhab.binding.deconz.internal.netutils.AsyncHttpClient;
 import org.openhab.binding.deconz.internal.netutils.WebSocketConnection;
-import org.openhab.binding.deconz.internal.netutils.WebSocketValueUpdateListener;
+import org.openhab.binding.deconz.internal.netutils.WebSocketMessageListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,22 +86,32 @@ import com.google.gson.Gson;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class SensorThingHandler extends BaseThingHandler implements WebSocketValueUpdateListener {
+public class SensorThingHandler extends BaseThingHandler implements WebSocketMessageListener {
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections
+            .unmodifiableSet(Stream.of(THING_TYPE_PRESENCE_SENSOR, THING_TYPE_DAYLIGHT_SENSOR, THING_TYPE_POWER_SENSOR,
+                    THING_TYPE_CONSUMPTION_SENSOR, THING_TYPE_LIGHT_SENSOR, THING_TYPE_TEMPERATURE_SENSOR,
+                    THING_TYPE_HUMIDITY_SENSOR, THING_TYPE_PRESSURE_SENSOR, THING_TYPE_SWITCH,
+                    THING_TYPE_OPENCLOSE_SENSOR, THING_TYPE_WATERLEAKAGE_SENSOR, THING_TYPE_FIRE_SENSOR,
+                    THING_TYPE_ALARM_SENSOR, THING_TYPE_VIBRATION_SENSOR).collect(Collectors.toSet()));
 
     private static final List<String> CONFIG_CHANNELS = Arrays.asList(CHANNEL_BATTERY_LEVEL, CHANNEL_BATTERY_LOW,
             CHANNEL_TEMPERATURE);
 
     private final Logger logger = LoggerFactory.getLogger(SensorThingHandler.class);
-    private SensorThingConfig config = new SensorThingConfig();
+    private ThingConfig config = new ThingConfig();
     private DeconzBridgeConfig bridgeConfig = new DeconzBridgeConfig();
     private final Gson gson;
     private @Nullable ScheduledFuture<?> scheduledFuture;
     private @Nullable WebSocketConnection connection;
     private @Nullable AsyncHttpClient http;
-    /** The sensor state. Contains all possible fields for all supported sensors and switches */
+    /**
+     * The sensor state. Contains all possible fields for all supported sensors and switches
+     */
     private SensorConfig sensorConfig = new SensorConfig();
     private SensorState sensorState = new SensorState();
-    /** Prevent a dispose/init cycle while this flag is set. Use for property updates */
+    /**
+     * Prevent a dispose/init cycle while this flag is set. Use for property updates
+     */
     private boolean ignoreConfigurationUpdate;
 
     public SensorThingHandler(Thing thing, Gson gson) {
@@ -150,7 +168,7 @@ public class SensorThingHandler extends BaseThingHandler implements WebSocketVal
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             WebSocketConnection webSocketConnection = connection;
             if (webSocketConnection != null) {
-                webSocketConnection.unregisterValueListener(config.id);
+                webSocketConnection.unregisterSensorListener(config.id);
             }
             return;
         }
@@ -179,7 +197,7 @@ public class SensorThingHandler extends BaseThingHandler implements WebSocketVal
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING);
 
         // Real-time data
-        webSocketConnection.registerValueListener(config.id, this);
+        webSocketConnection.registerSensorListener(config.id, this);
 
         requestState();
     }
@@ -316,14 +334,14 @@ public class SensorThingHandler extends BaseThingHandler implements WebSocketVal
         stopTimer();
         WebSocketConnection webSocketConnection = connection;
         if (webSocketConnection != null) {
-            webSocketConnection.unregisterValueListener(config.id);
+            webSocketConnection.unregisterSensorListener(config.id);
         }
         super.dispose();
     }
 
     @Override
     public void initialize() {
-        config = getConfigAs(SensorThingConfig.class);
+        config = getConfigAs(ThingConfig.class);
 
         Bridge bridge = getBridge();
         if (bridge != null) {
@@ -502,10 +520,19 @@ public class SensorThingHandler extends BaseThingHandler implements WebSocketVal
     }
 
     @Override
-    public void websocketConfigUpdate(String sensorID, SensorConfig newConfig) {
-        sensorConfig = newConfig;
-
-        updateChannels(newConfig);
+    public void messageReceived(String sensorID, DeconzRestMessage message) {
+        if (message instanceof SensorMessage) {
+            SensorMessage sensorMessage = (SensorMessage) message;
+            SensorConfig sensorConfig = sensorMessage.config;
+            if (sensorConfig != null) {
+                this.sensorConfig = sensorConfig;
+                updateChannels(sensorConfig);
+            }
+            SensorState sensorState = sensorMessage.state;
+            if (sensorState != null) {
+                updateChannels(sensorState, false);
+            }
+        }
     }
 
     private void updateChannels(SensorConfig newConfig) {
@@ -513,11 +540,6 @@ public class SensorThingHandler extends BaseThingHandler implements WebSocketVal
                 .filter(channelUID -> CONFIG_CHANNELS.contains(channelUID.getId())).forEach((channelUID) -> {
                     valueUpdated(channelUID, newConfig);
                 });
-    }
-
-    @Override
-    public void websocketStateUpdate(String sensorID, SensorState newState) {
-        updateChannels(newState, false);
     }
 
     private void updateChannels(SensorState newState, boolean initializing) {

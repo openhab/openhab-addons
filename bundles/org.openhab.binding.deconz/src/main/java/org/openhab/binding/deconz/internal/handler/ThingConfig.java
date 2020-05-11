@@ -15,11 +15,11 @@ package org.openhab.binding.deconz.internal.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link SensorThingConfig} class holds the configuration properties of a sensor Thing.
+ * The {@link ThingConfig} class holds the configuration properties of a sensor Thing.
  *
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class SensorThingConfig {
+public class ThingConfig {
     public String id = "";
 }

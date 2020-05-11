@@ -10,21 +10,24 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.deconz.internal.dto;
+package org.openhab.binding.deconz.internal.netutils;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.deconz.internal.dto.DeconzRestMessage;
 
 /**
- * The REST interface and websocket connection are using the same fields.
- * The REST data contains more descriptive info like the manufacturer and name.
+ * Informs about received messages
  *
- * @author David Graeff - Initial contribution
+ * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
-public class SensorMessage extends DeconzRestMessage {
-    public String type = "";
+public interface WebSocketMessageListener {
+    /**
+     * A new message was received
+     *
+     * @param sensorID The sensor ID (API endpoint)
+     * @param message The received message
+     */
 
-    public @Nullable SensorConfig config;
-    public @Nullable SensorState state;
+    void messageReceived(String sensorID, DeconzRestMessage message);
 }

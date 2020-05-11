@@ -18,6 +18,7 @@ import java.net.SocketTimeoutException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ScheduledFuture;
@@ -31,6 +32,7 @@ import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
@@ -58,6 +60,8 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketConnectionListener {
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(BRIDGE_TYPE);
+
     private final Logger logger = LoggerFactory.getLogger(DeconzBridgeHandler.class);
     private @Nullable ThingDiscoveryService thingDiscoveryService;
     private final WebSocketConnection websocket;
@@ -116,8 +120,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
     private void parseAPIKeyResponse(AsyncHttpClient.Result r) {
         if (r.getResponseCode() == 403) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                    "Allow authentification for 3rd party apps. Trying again in " + String.valueOf(POLL_FREQUENCY_SEC)
-                            + " seconds");
+                    "Allow authentification for 3rd party apps. Trying again in " + POLL_FREQUENCY_SEC + " seconds");
             stopTimer();
             scheduledFuture = scheduler.schedule(() -> requestApiKey(), POLL_FREQUENCY_SEC, TimeUnit.SECONDS);
         } else if (r.getResponseCode() == 200) {
@@ -172,7 +175,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
         }).whenComplete((value, error) -> {
             if (thingDiscoveryService != null) {
                 // Hand over sensors to discovery service
-                thingDiscoveryService.stateRequestFinished(value != null ? value.sensors : null);
+                thingDiscoveryService.stateRequestFinished(value);
             }
         }).thenAccept(fullState -> {
             if (fullState == null) {
@@ -223,13 +226,12 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
         stopTimer();
         scheduledFuture = scheduler.schedule(this::startWebsocket, POLL_FREQUENCY_SEC, TimeUnit.SECONDS);
 
-        websocket.start(config.getHostWithoutPort() + ":" + String.valueOf(websocketPort));
+        websocket.start(config.getHostWithoutPort() + ":" + websocketPort);
     }
 
     /**
      * Perform a request to the REST API for generating an API key.
      *
-     * @param r The response
      */
     private CompletableFuture<?> requestApiKey() {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Requesting API Key");
