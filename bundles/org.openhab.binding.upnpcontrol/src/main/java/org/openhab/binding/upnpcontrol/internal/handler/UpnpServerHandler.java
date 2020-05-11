@@ -32,6 +32,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.StateDescription;
+import org.eclipse.smarthome.core.types.StateDescriptionFragmentBuilder;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
@@ -301,7 +302,8 @@ public class UpnpServerHandler extends UpnpHandler {
     }
 
     private void updateStateDescription(ChannelUID channelUID, List<StateOption> stateOptionList) {
-        StateDescription stateDescription = new StateDescription(null, null, null, null, false, stateOptionList);
+        StateDescription stateDescription = StateDescriptionFragmentBuilder.create().withReadOnly(false)
+                .withOptions(stateOptionList).build().toStateDescription();
         upnpStateDescriptionProvider.setDescription(channelUID, stateDescription);
     }
 

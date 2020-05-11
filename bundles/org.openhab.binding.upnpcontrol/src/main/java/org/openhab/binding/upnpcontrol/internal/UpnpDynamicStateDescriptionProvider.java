@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.type.DynamicStateDescriptionProvider;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,16 +31,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author Mark Herwege - Initial contribution
  */
-@Component(service = { DynamicStateDescriptionProvider.class,
-        UpnpDynamicStateDescriptionProvider.class }, immediate = true)
+@Component(service = { DynamicStateDescriptionProvider.class, UpnpDynamicStateDescriptionProvider.class })
 @NonNullByDefault
 public class UpnpDynamicStateDescriptionProvider implements DynamicStateDescriptionProvider {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    private Map<ChannelUID, StateDescription> descriptions = new ConcurrentHashMap<>();
+    private Map<ChannelUID, @Nullable StateDescription> descriptions = new ConcurrentHashMap<>();
 
-    public void setDescription(ChannelUID channelUID, StateDescription description) {
+    public void setDescription(ChannelUID channelUID, @Nullable StateDescription description) {
         logger.debug("Adding state description for channel {}", channelUID);
         descriptions.put(channelUID, description);
     }
@@ -54,5 +54,10 @@ public class UpnpDynamicStateDescriptionProvider implements DynamicStateDescript
             @Nullable StateDescription originalStateDescription, @Nullable Locale locale) {
         StateDescription description = descriptions.get(channel.getUID());
         return description;
+    }
+
+    @Deactivate
+    public void deactivate() {
+        descriptions.clear();
     }
 }
