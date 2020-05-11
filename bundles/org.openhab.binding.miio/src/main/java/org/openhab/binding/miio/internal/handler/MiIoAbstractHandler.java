@@ -297,6 +297,8 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
                     miioCom.registerListener(this);
                     this.miioCom = miioCom;
                     return miioCom;
+                } else {
+                    miioCom.close();
                 }
             } else {
                 logger.debug("No device ID defined. Retrieving Mi device ID");
@@ -317,6 +319,8 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
                     miioCom.registerListener(this);
                     this.miioCom = miioCom;
                     return miioCom;
+                } else {
+                    miioCom.close();
                 }
             }
             logger.debug("Ping response from device {} at {} FAILED", configuration.deviceId, configuration.host);
