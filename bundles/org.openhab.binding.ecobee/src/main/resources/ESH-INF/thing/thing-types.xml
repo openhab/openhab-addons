@@ -86,6 +86,7 @@
 				<label>Version</label>
 			</channel-group>
 		</channel-groups>
+		<representation-property>thermostatId</representation-property>
 		<config-description-ref uri="thing-type:ecobee:thermostat"/>
 	</bridge-type>
 
@@ -1676,6 +1677,7 @@
 			<channel id="code" typeId="sensorCode"/>
 			<channel id="inUse" typeId="sensorInUse"/>
 		</channels>
+		<representation-property>sensorId</representation-property>
 		<config-description-ref uri="thing-type:ecobee:sensor"/>
 	</thing-type>
 

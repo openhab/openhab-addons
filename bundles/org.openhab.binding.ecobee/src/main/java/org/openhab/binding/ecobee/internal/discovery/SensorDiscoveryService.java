@@ -117,7 +117,8 @@ public class SensorDiscoveryService extends AbstractDiscoveryService implements 
     private DiscoveryResult createDiscoveryResult(ThingUID sensorUID, ThingUID bridgeUID, RemoteSensorDTO sensor) {
         Map<String, Object> properties = new HashMap<>(2);
         properties.put(CONFIG_SENSOR_ID, sensor.id);
-        return DiscoveryResultBuilder.create(sensorUID).withProperties(properties).withRepresentationProperty(sensor.id)
-                .withBridge(bridgeUID).withLabel(buildLabel(sensor.name)).build();
+        return DiscoveryResultBuilder.create(sensorUID).withProperties(properties)
+                .withRepresentationProperty(CONFIG_SENSOR_ID).withBridge(bridgeUID).withLabel(buildLabel(sensor.name))
+                .build();
     }
 }
