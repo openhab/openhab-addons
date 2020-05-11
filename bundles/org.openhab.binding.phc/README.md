@@ -21,8 +21,8 @@ The binding was tested with QinHeng Electronics HL-340 USB-Serial adapter (RS485
 | Up Board/ubilinux(Jessie)| HL-340        | not reliable |
 |                          | FTDI          | good         |
 
-If there are many modules on one bridge, the initialization can take a few minutes. If it not work you can plug in the modules one after the other.
-After initialization sometimes you have to switch two times or the reaction is a bit slowly but after you used a channel it works fine.
+If there are many modules on one bridge, the initialization can take a few minutes. If it does not work you can plug in the modules one after the other.
+Sometimes after initialization, you might have to switch two times or the reaction could be a bit slow, but after you used a channel it should all work fine.
  
 For all devices running with Linux that use the ch341 driver (HL-340), the new version (ch34x) is needed.
 A guide how to install this can be found here: [CH340/341 UART Driver for Raspberry Pi](https://github.com/aperepel/raspberrypi-ch340-driver).  
