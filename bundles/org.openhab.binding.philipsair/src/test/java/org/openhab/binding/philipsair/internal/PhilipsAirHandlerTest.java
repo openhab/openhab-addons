@@ -15,6 +15,8 @@ package org.openhab.binding.philipsair.internal;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -64,6 +66,9 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.openhab.binding.philipsair.internal.connection.PhilipsAirCipher;
+import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierWritableDataDTO;
+
+import com.google.gson.Gson;
 
 /**
  * Test cases for {@link PhilipsAirHandler}. The tests provide mocks for
@@ -126,6 +131,7 @@ public class PhilipsAirHandlerTest extends JavaTest {
     private static Configuration config = new Configuration();
 
     private static final String FAKE_KEY = "1F09722BE668AF0B8DC78051B70E4F76";
+    private final static Gson gson = new Gson();
 
     @BeforeClass
     public static void initClass() throws GeneralSecurityException, UnsupportedEncodingException {
@@ -189,7 +195,6 @@ public class PhilipsAirHandlerTest extends JavaTest {
 
         handler = new PhilipsAirHandler(thing, httpClient);
         when(request.send()).thenReturn(response);
-
     }
 
     @Test
@@ -518,5 +523,30 @@ public class PhilipsAirHandlerTest extends JavaTest {
         ChannelUID channelUIDpwr = new ChannelUID("philipsair:ac2889_10:1:cl");
         Channel channel = ChannelBuilder.create(channelUIDpwr, "Switch").build();
         sendCommandTemplate(channel, OnOffType.ON, OnOffType.OFF, OnOffType.ON, content2, content12);
+    }
+
+    @Test
+    public void testPrepareCommands() throws UnsupportedEncodingException, GeneralSecurityException,
+            InterruptedException, TimeoutException, ExecutionException {
+        // testing not obvious (non intuitive types) command conversions
+        PhilipsAirPurifierWritableDataDTO commandDto = handler.prepareCommandData("ddp", StringType.valueOf("0"));
+        assertNotNull(commandDto);
+        assertEquals("{\"ddp\":\"0\"}", gson.toJson(commandDto));
+
+        commandDto = handler.prepareCommandData("uil", OnOffType.ON);
+        assertNotNull(commandDto);
+        assertEquals("{\"uil\":\"1\"}", gson.toJson(commandDto));
+
+        commandDto = handler.prepareCommandData("pwr", OnOffType.ON);
+        assertNotNull(commandDto);
+        assertEquals("{\"pwr\":\"1\"}", gson.toJson(commandDto));
+
+        commandDto = handler.prepareCommandData("aqil", DecimalType.valueOf("25"));
+        assertNotNull(commandDto);
+        assertEquals("{\"aqil\":25}", gson.toJson(commandDto));
+
+        commandDto = handler.prepareCommandData("cl", OnOffType.ON);
+        assertNotNull(commandDto);
+        assertEquals("{\"cl\":true}", gson.toJson(commandDto));
     }
 }

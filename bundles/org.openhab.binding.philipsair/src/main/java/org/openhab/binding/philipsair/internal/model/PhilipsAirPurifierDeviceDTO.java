@@ -67,5 +67,4 @@ public class PhilipsAirPurifierDeviceDTO {
     public void setSoftwareVersion(String softwareVersion) {
         this.softwareVersion = softwareVersion;
     }
-
 }

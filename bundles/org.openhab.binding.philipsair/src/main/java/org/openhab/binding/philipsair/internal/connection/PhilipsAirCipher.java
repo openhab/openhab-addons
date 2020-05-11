@@ -14,7 +14,7 @@ package org.openhab.binding.philipsair.internal.connection;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -49,13 +49,10 @@ public class PhilipsAirCipher {
     private static final String AA = "AA";
 
     private final Logger logger = LoggerFactory.getLogger(PhilipsAirCipher.class);
-
-    private static final BigInteger G = new BigInteger(
-            "A4D1CBD5C3FD34126765A442EFB99905F8104DD258AC507FD6406CFF14266D31266FEA1E5C41564B777E690F5504F213160217B4B01B886A5E91547F9E2749F4D7FBD7D3B9A92EE1909D0D2263F80A76A6A24C087A091F531DBF0A0169B6A28AD662A4D18E73AFA32D779D5918D08BC8858F4DCEF97C2A24855E6EEB22B3B2E5",
-            16);
-    private static final BigInteger P = new BigInteger(
-            "B10B8F96A080E01DDE92DE5EAE5D54EC52C99FBCFB06A3C69A6A9DCA52D23B616073E28675A23D189838EF1E2EE652C013ECB4AEA906112324975C3CD49B83BFACCBDD7D90C4BD7098488E9C219A73724EFFD6FAE5644738FAA31A4FF55BCCC0A151AF5F0DC8B4BD45BF37DF365C1A65E68CFDA76D4DA708DF1FB2BC2E4A4371",
-            16);
+    private static final BigInteger G = new BigInteger(Base64.getDecoder().decode(
+            "AKTRy9XD/TQSZ2WkQu+5mQX4EE3SWKxQf9ZAbP8UJm0xJm/qHlxBVkt3fmkPVQTyExYCF7SwG4hqXpFUf54nSfTX+9fTuaku4ZCdDSJj+Ap2pqJMCHoJH1MdvwoBabaiitZipNGOc6+jLXedWRjQi8iFj03O+XwqJIVebusis7Ll"));
+    private static final BigInteger P = new BigInteger(Base64.getDecoder().decode(
+            "ALELj5aggOAd3pLeXq5dVOxSyZ+8+wajxppqncpS0jthYHPihnWiPRiYOO8eLuZSwBPstK6pBhEjJJdcPNSbg7+sy919kMS9cJhIjpwhmnNyTv/W+uVkRzj6oxpP9VvMwKFRr18NyLS9Rb833zZcGmXmjP2nbU2nCN8fsrwuSkNx"));
     private static final Random RAND = new Random();
 
     @Nullable
@@ -64,11 +61,13 @@ public class PhilipsAirCipher {
     private Cipher cipher;
     private final BigInteger a;
     private final BigInteger aPow;
-    private static final Charset ASCII_CHARSET = Charset.forName("US-ASCII");
 
     public PhilipsAirCipher() throws GeneralSecurityException {
-        // prepare numbers for key
-        a = randomForBitsNonZero(256, RAND);
+        this(randomForBitsNonZero(256));
+    }
+
+    public PhilipsAirCipher(BigInteger randomSeed) throws GeneralSecurityException {
+        a = randomSeed;
         aPow = G.modPow(a, P);
     }
 
@@ -94,10 +93,10 @@ public class PhilipsAirCipher {
         return aPow.toString(16);
     }
 
-    private static BigInteger randomForBitsNonZero(int numBits, Random r) {
-        BigInteger candidate = new BigInteger(numBits, r);
+    private static BigInteger randomForBitsNonZero(int numBits) {
+        BigInteger candidate = new BigInteger(numBits, RAND);
         while (candidate.equals(BigInteger.ZERO)) {
-            candidate = new BigInteger(numBits, r);
+            candidate = new BigInteger(numBits, RAND);
         }
         return candidate;
     }
@@ -131,7 +130,7 @@ public class PhilipsAirCipher {
         @SuppressWarnings("null")
         byte[] decoded = decipher.doFinal(Base64.getDecoder().decode(encodedContent));
         byte[] unpaded = Arrays.copyOfRange(decoded, 2, decoded.length);
-        return new String(unpaded, ASCII_CHARSET);
+        return new String(unpaded, StandardCharsets.US_ASCII);
     }
 
     public @Nullable String encrypt(String data)
@@ -143,8 +142,7 @@ public class PhilipsAirCipher {
 
         String encodedData = AA + data;
         @SuppressWarnings("null")
-        byte[] encryptedBytes = cipher.doFinal(encodedData.getBytes("ascii"));
+        byte[] encryptedBytes = cipher.doFinal(encodedData.getBytes(StandardCharsets.US_ASCII));
         return Base64.getEncoder().encodeToString(encryptedBytes);
     }
-
 }

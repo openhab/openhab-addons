@@ -73,5 +73,4 @@ public class PhilipsAirPurifierFiltersDTO {
     public void setWickFilter(int wickFilter) {
         this.wickFilter = wickFilter;
     }
-
 }

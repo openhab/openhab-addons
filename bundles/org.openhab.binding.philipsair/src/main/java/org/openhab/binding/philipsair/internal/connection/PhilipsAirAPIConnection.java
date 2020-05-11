@@ -168,6 +168,7 @@ public class PhilipsAirAPIConnection {
             ContentResponse contentResponse = request.timeout(config.getRefreshInterval(), TimeUnit.SECONDS).send();
             int httpStatus = contentResponse.getStatus();
             String finalcontent = contentResponse.getContentAsString();
+            logger.trace("Philips Air Purifier device encrypted response: '{}'", finalcontent);
             if (decode) {
                 try {
                     finalcontent = this.cipher.decrypt(finalcontent);
@@ -197,13 +198,13 @@ public class PhilipsAirAPIConnection {
         } catch (ExecutionException e) {
             String errorMessage = e.getLocalizedMessage();
             logger.trace("Exception occurred during execution: {}", errorMessage, e);
-            throw new PhilipsAirAPIException(errorMessage, e.getCause());
+            throw new PhilipsAirAPIException(errorMessage, e);
         } catch (InterruptedException | TimeoutException e) {
             logger.debug("Exception occurred during execution: {}", e.getLocalizedMessage(), e);
-            throw new PhilipsAirAPIException(e.getLocalizedMessage(), e.getCause());
+            throw new PhilipsAirAPIException(e.getLocalizedMessage(), e);
         } catch (Exception e) {
             logger.warn("Unexpected exception occurred during execution: {}", e.getLocalizedMessage(), e);
-            throw new PhilipsAirAPIException(e.getLocalizedMessage(), e.getCause());
+            throw new PhilipsAirAPIException(e.getLocalizedMessage(), e);
         }
     }
 
@@ -233,17 +234,15 @@ public class PhilipsAirAPIConnection {
             throws IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException, InvalidKeyException,
             NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException {
 
-        Gson gson = new Gson();
-
         String commandValue = gson.toJson(value);
-        logger.info("{}", commandValue);
+        logger.debug("{}", commandValue);
         commandValue = this.cipher.encrypt(commandValue.toString());
         if (commandValue == null || commandValue.isEmpty()) {
             return null;
         }
 
         String response = getResponse(buildURL(STATUS_URL, config.getHost()), PUT, commandValue.toString(), true);
-        logger.info("{}", response);
+        logger.debug("{}", response);
         return gson.fromJson(response, PhilipsAirPurifierDataDTO.class);
     }
 }

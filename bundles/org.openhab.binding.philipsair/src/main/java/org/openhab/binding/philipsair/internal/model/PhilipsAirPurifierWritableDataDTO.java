@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.philipsair.internal.model;
 
-
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants;
 
@@ -33,7 +32,7 @@ public class PhilipsAirPurifierWritableDataDTO {
     private String fanSpeed;
     @SerializedName(PhilipsAirBindingConstants.POWER)
     @Expose
-    private Integer power;
+    private String power;
     @SerializedName(PhilipsAirBindingConstants.CHILD_LOCK)
     @Expose
     private Boolean childLock;
@@ -42,7 +41,7 @@ public class PhilipsAirPurifierWritableDataDTO {
     private Integer lightLevel;
     @SerializedName(PhilipsAirBindingConstants.BUTTONS_LIGHT)
     @Expose
-    private Integer buttons;
+    private String buttons;
     @SerializedName(PhilipsAirBindingConstants.AUTO_TIMEOFF)
     @Expose
     private Integer timer;
@@ -54,7 +53,7 @@ public class PhilipsAirPurifierWritableDataDTO {
     private Integer aqit;
     @SerializedName(PhilipsAirBindingConstants.DISPLAYED_INDEX)
     @Expose
-    private Integer displayIndex;
+    private String displayIndex;
     @SerializedName(PhilipsAirBindingConstants.HUMIDITY_SETPOINT)
     @Expose
     private Integer humiditySetpoint;
@@ -71,11 +70,11 @@ public class PhilipsAirPurifierWritableDataDTO {
         this.fanSpeed = fanSpeed;
     }
 
-    public int getPower() {
+    public String getPower() {
         return power;
     }
 
-    public void setPower(int pwr) {
+    public void setPower(String pwr) {
         this.power = pwr;
     }
 
@@ -95,11 +94,11 @@ public class PhilipsAirPurifierWritableDataDTO {
         this.lightLevel = lightLevel;
     }
 
-    public int getButtons() {
+    public String getButtons() {
         return buttons;
     }
 
-    public void setButtons(int buttons) {
+    public void setButtons(String buttons) {
         this.buttons = buttons;
     }
 
@@ -127,11 +126,11 @@ public class PhilipsAirPurifierWritableDataDTO {
         this.aqit = aqit;
     }
 
-    public int getDisplayIndex() {
+    public String getDisplayIndex() {
         return displayIndex;
     }
 
-    public void setDisplayIndex(int displayIndex) {
+    public void setDisplayIndex(String displayIndex) {
         this.displayIndex = displayIndex;
     }
 
@@ -150,5 +149,4 @@ public class PhilipsAirPurifierWritableDataDTO {
     public void setFunction(String function) {
         this.function = function;
     }
-
 }
