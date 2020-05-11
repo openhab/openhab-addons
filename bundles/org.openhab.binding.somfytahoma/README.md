@@ -116,7 +116,7 @@ Please see the example below.
 | myfox alarm                                                                   |   myfox_alarm_command   | used for sending commands to Somfy Myfox alarm device                                                                       |
 
 
-REMARKS:
+### Remarks
 
 All things which have a RSSI (relative received signal) state, expose a channel "rssi".
 
@@ -128,19 +128,13 @@ When a roller shutter-like thing receives STOP command, there are two possible b
 If you want to set the MY position of a roller shutter and you don't care the possible movement, try sending the MOVE command (OH2 does not know MY, so it stands for "move to MY position")
 
 ```
-sendCommand(CONTROL_CHANNEL, MOVE)
-```
-or
-```
 CONTROL_CHANNEL.sendCommand(MOVE)
 ```
+
 Blinds and adjustable slats roller shutters can control their closure and orientation by sending a comma separated string consisting of closure (0-100) and orientation (0-100) to the "closure_orientaion" channel.
+
 ```
-sendCommand(CLOSURE_ORIENTATION_CHANNEL, “50,50”)
-``` 
-or
-```
-CLOSURE_ORIENTATION_CHANNEL.sendCommand(“50,50”)
+CLOSURE_ORIENTATION_CHANNEL.sendCommand("50,50")
 ```
 
 ## Full Example
