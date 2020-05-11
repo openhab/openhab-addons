@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.items.GenericItem;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.library.items.ColorItem;
+import org.eclipse.smarthome.core.library.items.DimmerItem;
 import org.eclipse.smarthome.core.library.items.NumberItem;
 import org.eclipse.smarthome.core.library.items.SwitchItem;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -369,9 +370,11 @@ public class HomekitCharacteristicFactory {
             if (item instanceof ColorItem) {
                 ((ColorItem) item).send(new HSBType(((HSBType) state).getHue(), ((HSBType) state).getSaturation(),
                         new PercentType(brightness)));
+            } else if (item instanceof DimmerItem) {
+                ((DimmerItem) item).send(new PercentType(brightness));
             } else {
-                logger.warn("Item type {} is not supported for {}. Only Color type is supported.", item.getType(),
-                        item.getName());
+                logger.warn("Item type {} is not supported for {}. Only ColorItem and DimmerIterm are supported.",
+                        item.getType(), item.getName());
             }
         }, (callback) -> updater.subscribe(item, BRIGHTNESS.getTag(), callback),
                 () -> updater.unsubscribe(item, BRIGHTNESS.getTag()));
