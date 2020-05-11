@@ -112,7 +112,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
                     "IP address required. Configure IP address");
             return;
         }
-        if (configuration.token == null || !tokenCheckPass(configuration.token)) {
+        if (!tokenCheckPass(configuration.token)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Token required. Configure token");
             return;
         }
@@ -135,7 +135,10 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         updateStatus(ThingStatus.OFFLINE);
     }
 
-    private boolean tokenCheckPass(String tokenSting) {
+    private boolean tokenCheckPass(@Nullable String tokenSting) {
+        if (tokenSting == null) {
+            return false;
+        }
         switch (tokenSting.length()) {
             case 16:
                 token = tokenSting.getBytes();
@@ -293,8 +296,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         @Nullable
         String deviceId = configuration.deviceId;
         try {
-            if (deviceId != null && deviceId.length() == 8 && configuration.token != null
-                    && tokenCheckPass(configuration.token)) {
+            if (deviceId != null && deviceId.length() == 8 && tokenCheckPass(configuration.token)) {
                 logger.debug("Ping Mi device {} at {}", deviceId, configuration.host);
                 final MiIoAsyncCommunication miioCom = new MiIoAsyncCommunication(configuration.host, token,
                         Utils.hexStringToByteArray(deviceId), lastId, configuration.timeout);
