@@ -66,6 +66,7 @@ import org.openhab.binding.modbus.internal.handler.ModbusPollerThingHandler;
 import org.openhab.binding.modbus.internal.handler.ModbusPollerThingHandlerImpl;
 import org.openhab.binding.modbus.internal.handler.ModbusTcpThingHandler;
 import org.openhab.io.transport.modbus.AsyncModbusReadResult;
+import org.openhab.io.transport.modbus.AsyncModbusWriteResult;
 import org.openhab.io.transport.modbus.BasicModbusRegister;
 import org.openhab.io.transport.modbus.BasicModbusRegisterArray;
 import org.openhab.io.transport.modbus.BitArray;
@@ -483,7 +484,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
                     return successFC.getFunctionCode();
                 }
             };
-            dataHandler.onWriteResponse(Mockito.mock(ModbusWriteRequestBlueprint.class), resp);
+            dataHandler.handle(new AsyncModbusWriteResult(Mockito.mock(ModbusWriteRequestBlueprint.class), resp));
         }
         return dataHandler;
     }

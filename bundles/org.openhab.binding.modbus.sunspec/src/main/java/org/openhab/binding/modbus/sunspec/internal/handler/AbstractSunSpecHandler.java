@@ -39,7 +39,7 @@ import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
 import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
 import org.openhab.binding.modbus.sunspec.internal.SunSpecConfiguration;
 import org.openhab.binding.modbus.sunspec.internal.dto.ModelBlock;
-import org.openhab.io.transport.modbus.BasicModbusReadRequestBlueprint;
+import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.BasicPollTaskImpl;
 import org.openhab.io.transport.modbus.ModbusManager;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
@@ -337,7 +337,7 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
 
         logger.debug("Setting up regular polling");
 
-        BasicModbusReadRequestBlueprint request = new BasicModbusReadRequestBlueprint(getSlaveId(),
+        ModbusReadRequestBlueprint request = new ModbusReadRequestBlueprint(getSlaveId(),
                 ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, mainBlock.address, mainBlock.length, myconfig.maxTries);
 
         pollTask = new BasicPollTaskImpl(myendpoint, request, result -> {

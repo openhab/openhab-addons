@@ -37,7 +37,7 @@ import org.openhab.binding.modbus.internal.AtomicStampedValue;
 import org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal;
 import org.openhab.binding.modbus.internal.config.ModbusPollerConfiguration;
 import org.openhab.io.transport.modbus.AsyncModbusReadResult;
-import org.openhab.io.transport.modbus.BasicModbusReadRequestBlueprint;
+import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.BasicPollTaskImpl;
 import org.openhab.io.transport.modbus.ModbusManager;
 import org.openhab.io.transport.modbus.ModbusReadCallback;
@@ -137,7 +137,7 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
      * @author Sami Salonen
      *
      */
-    private static class ModbusPollerReadRequest extends BasicModbusReadRequestBlueprint {
+    private static class ModbusPollerReadRequest extends ModbusReadRequestBlueprint {
 
         private static ModbusReadFunctionCode getFunctionCode(@Nullable String type) {
             if (!ModbusBindingConstantsInternal.READ_FUNCTION_CODES.containsKey(type)) {
@@ -286,7 +286,7 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
             return;
         }
 
-        BasicModbusReadRequestBlueprint request = new ModbusPollerReadRequest(config, slaveEndpointThingHandler);
+        ModbusReadRequestBlueprint request = new ModbusPollerReadRequest(config, slaveEndpointThingHandler);
         @NonNull
         PollTask task = new BasicPollTaskImpl(endpoint, request, callbackDelegator);
         pollTask = task;

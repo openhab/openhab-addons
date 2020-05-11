@@ -33,7 +33,7 @@ import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
 import org.openhab.binding.modbus.sunspec.internal.dto.CommonModelBlock;
 import org.openhab.binding.modbus.sunspec.internal.dto.ModelBlock;
 import org.openhab.binding.modbus.sunspec.internal.parser.CommonModelParser;
-import org.openhab.io.transport.modbus.BasicModbusReadRequestBlueprint;
+import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.BasicPollTaskImpl;
 import org.openhab.io.transport.modbus.ModbusBitUtilities;
 import org.openhab.io.transport.modbus.ModbusConstants.ValueType;
@@ -156,7 +156,7 @@ public class SunspecDiscoveryProcess {
         baseAddress = possibleAddresses.poll();
         logger.trace("Beginning scan for SunSpec device at address {}", baseAddress);
 
-        BasicModbusReadRequestBlueprint request = new BasicModbusReadRequestBlueprint(slaveId,
+        ModbusReadRequestBlueprint request = new ModbusReadRequestBlueprint(slaveId,
                 ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, baseAddress, // Start address
                 SUNSPEC_ID_SIZE, // number or words to return
                 maxTries);
@@ -200,7 +200,7 @@ public class SunspecDiscoveryProcess {
      */
     private void lookForModelBlock() {
 
-        BasicModbusReadRequestBlueprint request = new BasicModbusReadRequestBlueprint(slaveId,
+        ModbusReadRequestBlueprint request = new ModbusReadRequestBlueprint(slaveId,
                 ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, baseAddress, // Start address
                 MODEL_HEADER_SIZE, // number or words to return
                 maxTries);
@@ -262,7 +262,7 @@ public class SunspecDiscoveryProcess {
      * @param block
      */
     private void readCommonBlock(ModelBlock block) {
-        BasicModbusReadRequestBlueprint request = new BasicModbusReadRequestBlueprint(slaveId,
+        ModbusReadRequestBlueprint request = new ModbusReadRequestBlueprint(slaveId,
                 ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, block.address, // Start address
                 block.length, // number or words to return
                 maxTries);

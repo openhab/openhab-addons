@@ -26,8 +26,8 @@ import java.util.stream.Stream;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 import org.openhab.io.transport.modbus.BasicBitArray;
-import org.openhab.io.transport.modbus.BasicModbusReadRequestBlueprint;
-import org.openhab.io.transport.modbus.BasicModbusWriteCoilRequestBlueprint;
+import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
+import org.openhab.io.transport.modbus.ModbusWriteCoilRequestBlueprint;
 import org.openhab.io.transport.modbus.BasicPollTaskImpl;
 import org.openhab.io.transport.modbus.BasicWriteTask;
 import org.openhab.io.transport.modbus.BitArray;
@@ -126,7 +126,7 @@ public class SmokeTest extends IntegrationTestSupport {
         AtomicInteger errorCount = new AtomicInteger();
         CountDownLatch callbackCalled = new CountDownLatch(1);
         AtomicReference<Exception> lastError = new AtomicReference<>();
-        BasicPollTaskImpl task = new BasicPollTaskImpl(endpoint, new BasicModbusReadRequestBlueprint(SLAVE_UNIT_ID,
+        BasicPollTaskImpl task = new BasicPollTaskImpl(endpoint, new ModbusReadRequestBlueprint(SLAVE_UNIT_ID,
                 ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 0, 5, 1), result -> {
                     callbackCalled.countDown();
                     if (result.getRegisters() != null) {
@@ -162,7 +162,7 @@ public class SmokeTest extends IntegrationTestSupport {
         AtomicInteger errorCount = new AtomicInteger();
         CountDownLatch callbackCalled = new CountDownLatch(1);
         AtomicReference<Exception> lastError = new AtomicReference<>();
-        BasicPollTaskImpl task = new BasicPollTaskImpl(endpoint, new BasicModbusReadRequestBlueprint(SLAVE_UNIT_ID,
+        BasicPollTaskImpl task = new BasicPollTaskImpl(endpoint, new ModbusReadRequestBlueprint(SLAVE_UNIT_ID,
                 ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 0, 5, 1), result -> {
                     callbackCalled.countDown();
                     if (result.getRegisters() != null) {
@@ -195,7 +195,7 @@ public class SmokeTest extends IntegrationTestSupport {
         AtomicInteger errorCount = new AtomicInteger();
         CountDownLatch callbackCalled = new CountDownLatch(1);
         AtomicReference<Exception> lastError = new AtomicReference<>();
-        BasicPollTaskImpl task = new BasicPollTaskImpl(endpoint, new BasicModbusReadRequestBlueprint(SLAVE_UNIT_ID,
+        BasicPollTaskImpl task = new BasicPollTaskImpl(endpoint, new ModbusReadRequestBlueprint(SLAVE_UNIT_ID,
                 ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 0, 5, 1), result -> {
                     callbackCalled.countDown();
                     if (result.getRegisters() != null) {
@@ -227,7 +227,7 @@ public class SmokeTest extends IntegrationTestSupport {
         final int offset = 1;
 
         BasicPollTaskImpl task = new BasicPollTaskImpl(endpoint,
-                new BasicModbusReadRequestBlueprint(SLAVE_UNIT_ID, functionCode, offset, count, 1), result -> {
+                new ModbusReadRequestBlueprint(SLAVE_UNIT_ID, functionCode, offset, count, 1), result -> {
                     callbackCalled.countDown();
                     if (result.getBits() != null) {
                         lastData.set(result.getBits());
@@ -318,7 +318,7 @@ public class SmokeTest extends IntegrationTestSupport {
         CountDownLatch callbackCalled = new CountDownLatch(1);
         AtomicReference<Object> lastData = new AtomicReference<>();
 
-        BasicPollTaskImpl task = new BasicPollTaskImpl(endpoint, new BasicModbusReadRequestBlueprint(SLAVE_UNIT_ID,
+        BasicPollTaskImpl task = new BasicPollTaskImpl(endpoint, new ModbusReadRequestBlueprint(SLAVE_UNIT_ID,
                 ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 1, 15, 1), result -> {
                     callbackCalled.countDown();
                     if (result.getRegisters() != null) {
@@ -348,7 +348,7 @@ public class SmokeTest extends IntegrationTestSupport {
         CountDownLatch callbackCalled = new CountDownLatch(1);
         AtomicReference<Object> lastData = new AtomicReference<>();
 
-        BasicPollTaskImpl task = new BasicPollTaskImpl(endpoint, new BasicModbusReadRequestBlueprint(SLAVE_UNIT_ID,
+        BasicPollTaskImpl task = new BasicPollTaskImpl(endpoint, new ModbusReadRequestBlueprint(SLAVE_UNIT_ID,
                 ModbusReadFunctionCode.READ_INPUT_REGISTERS, 1, 15, 1), result -> {
                     callbackCalled.countDown();
                     if (result.getRegisters() != null) {
@@ -380,7 +380,7 @@ public class SmokeTest extends IntegrationTestSupport {
 
         BitArray bits = new BasicBitArray(true, true, false, false, true, true);
         BasicWriteTask task = new BasicWriteTask(endpoint,
-                new BasicModbusWriteCoilRequestBlueprint(SLAVE_UNIT_ID, 3, bits, true, 1), result -> {
+                new ModbusWriteCoilRequestBlueprint(SLAVE_UNIT_ID, 3, bits, true, 1), result -> {
                     if (result.hasError()) {
                         unexpectedCount.incrementAndGet();
                     } else {
@@ -422,7 +422,7 @@ public class SmokeTest extends IntegrationTestSupport {
 
         BitArray bits = new BasicBitArray(500);
         BasicWriteTask task = new BasicWriteTask(endpoint,
-                new BasicModbusWriteCoilRequestBlueprint(SLAVE_UNIT_ID, 3, bits, true, 1), result -> {
+                new ModbusWriteCoilRequestBlueprint(SLAVE_UNIT_ID, 3, bits, true, 1), result -> {
                     if (result.hasError()) {
                         lastError.set(result.getCause());
                         callbackCalled.countDown();
@@ -461,7 +461,7 @@ public class SmokeTest extends IntegrationTestSupport {
 
         BitArray bits = new BasicBitArray(true);
         BasicWriteTask task = new BasicWriteTask(endpoint,
-                new BasicModbusWriteCoilRequestBlueprint(SLAVE_UNIT_ID, 3, bits, false, 1), result -> {
+                new ModbusWriteCoilRequestBlueprint(SLAVE_UNIT_ID, 3, bits, false, 1), result -> {
                     if (result.hasError()) {
                         unexpectedCount.incrementAndGet();
                         callbackCalled.countDown();
@@ -502,7 +502,7 @@ public class SmokeTest extends IntegrationTestSupport {
 
         BitArray bits = new BasicBitArray(true);
         BasicWriteTask task = new BasicWriteTask(endpoint,
-                new BasicModbusWriteCoilRequestBlueprint(SLAVE_UNIT_ID, 300, bits, false, 1), result -> {
+                new ModbusWriteCoilRequestBlueprint(SLAVE_UNIT_ID, 300, bits, false, 1), result -> {
                     if (result.hasError()) {
                         lastError.set(result.getCause());
                         callbackCalled.countDown();
@@ -541,7 +541,7 @@ public class SmokeTest extends IntegrationTestSupport {
         AtomicInteger dataReceived = new AtomicInteger();
 
         BasicPollTaskImpl task = new BasicPollTaskImpl(endpoint,
-                new BasicModbusReadRequestBlueprint(SLAVE_UNIT_ID, ModbusReadFunctionCode.READ_COILS, 1, 15, 1),
+                new ModbusReadRequestBlueprint(SLAVE_UNIT_ID, ModbusReadFunctionCode.READ_COILS, 1, 15, 1),
                 result -> {
                     callbackCalled.countDown();
                     if (result.getBits() != null) {
@@ -582,7 +582,7 @@ public class SmokeTest extends IntegrationTestSupport {
         CountDownLatch callbackCalled = new CountDownLatch(5);
         AtomicInteger dataReceived = new AtomicInteger();
 
-        BasicPollTaskImpl task = new BasicPollTaskImpl(endpoint, new BasicModbusReadRequestBlueprint(SLAVE_UNIT_ID,
+        BasicPollTaskImpl task = new BasicPollTaskImpl(endpoint, new ModbusReadRequestBlueprint(SLAVE_UNIT_ID,
                 ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 1, 15, 1), result -> {
                     callbackCalled.countDown();
                     if (result.getRegisters() != null) {
@@ -616,7 +616,7 @@ public class SmokeTest extends IntegrationTestSupport {
         CountDownLatch callbackCalled = new CountDownLatch(5);
         AtomicInteger dataReceived = new AtomicInteger();
 
-        BasicPollTaskImpl task = new BasicPollTaskImpl(endpoint, new BasicModbusReadRequestBlueprint(SLAVE_UNIT_ID,
+        BasicPollTaskImpl task = new BasicPollTaskImpl(endpoint, new ModbusReadRequestBlueprint(SLAVE_UNIT_ID,
                 ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 1, 15, 1), result -> {
                     callbackCalled.countDown();
                     if (result.getRegisters() != null) {
@@ -676,7 +676,7 @@ public class SmokeTest extends IntegrationTestSupport {
         CountDownLatch callbackCalled = new CountDownLatch(3);
         AtomicInteger expectedReceived = new AtomicInteger();
 
-        BasicPollTaskImpl task = new BasicPollTaskImpl(endpoint, new BasicModbusReadRequestBlueprint(SLAVE_UNIT_ID,
+        BasicPollTaskImpl task = new BasicPollTaskImpl(endpoint, new ModbusReadRequestBlueprint(SLAVE_UNIT_ID,
                 ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 1, 15, 1), result -> {
                     callbackCalled.countDown();
                     if (result.getRegisters() != null) {
@@ -772,9 +772,9 @@ public class SmokeTest extends IntegrationTestSupport {
     @Test
     public void testGetRegisteredRegularPolls() {
         ModbusSlaveEndpoint endpoint = getEndpoint();
-        BasicPollTaskImpl task = new BasicPollTaskImpl(endpoint, new BasicModbusReadRequestBlueprint(SLAVE_UNIT_ID,
+        BasicPollTaskImpl task = new BasicPollTaskImpl(endpoint, new ModbusReadRequestBlueprint(SLAVE_UNIT_ID,
                 ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 1, 15, 1), null);
-        BasicPollTaskImpl task2 = new BasicPollTaskImpl(endpoint, new BasicModbusReadRequestBlueprint(SLAVE_UNIT_ID,
+        BasicPollTaskImpl task2 = new BasicPollTaskImpl(endpoint, new ModbusReadRequestBlueprint(SLAVE_UNIT_ID,
                 ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 1, 16, 2), null);
 
         modbusManager.registerRegularPoll(task, 50, 0);

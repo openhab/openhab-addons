@@ -40,14 +40,14 @@ public class BasicPollTaskImpl implements PollTask {
     }
 
     private ModbusSlaveEndpoint endpoint;
-    private BasicModbusReadRequestBlueprint request;
+    private ModbusReadRequestBlueprint request;
     private @Nullable ModbusReadCallback callback;
 
-    public BasicPollTaskImpl(ModbusSlaveEndpoint endpoint, BasicModbusReadRequestBlueprint request) {
+    public BasicPollTaskImpl(ModbusSlaveEndpoint endpoint, ModbusReadRequestBlueprint request) {
         this(endpoint, request, null);
     }
 
-    public BasicPollTaskImpl(ModbusSlaveEndpoint endpoint, BasicModbusReadRequestBlueprint request,
+    public BasicPollTaskImpl(ModbusSlaveEndpoint endpoint, ModbusReadRequestBlueprint request,
             @Nullable ModbusReadCallback callback) {
         this.endpoint = endpoint;
         this.request = request;

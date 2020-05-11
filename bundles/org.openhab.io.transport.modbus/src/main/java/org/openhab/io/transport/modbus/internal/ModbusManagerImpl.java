@@ -42,7 +42,6 @@ import org.openhab.io.transport.modbus.ModbusManager;
 import org.openhab.io.transport.modbus.ModbusManagerListener;
 import org.openhab.io.transport.modbus.ModbusReadCallback;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
-import org.openhab.io.transport.modbus.ModbusRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusWriteCallback;
 import org.openhab.io.transport.modbus.ModbusWriteRequestBlueprint;
 import org.openhab.io.transport.modbus.PollTask;
@@ -449,7 +448,7 @@ public class ModbusManagerImpl implements ModbusManager {
      *         connection cannot be established
      * @throws PollTaskUnregistered
      */
-    private <R extends ModbusRequestBlueprint, C extends ModbusCallback, T extends TaskWithEndpoint<R, C>> Optional<ModbusSlaveConnection> getConnection(
+    private <R, C extends ModbusCallback, T extends TaskWithEndpoint<R, C>> Optional<ModbusSlaveConnection> getConnection(
             AggregateStopWatch timer, boolean oneOffTask, @NonNull T task) throws PollTaskUnregistered {
         KeyedObjectPool<ModbusSlaveEndpoint, ModbusSlaveConnection> connectionPool = this.connectionPool;
         if (connectionPool == null) {
@@ -464,7 +463,7 @@ public class ModbusManagerImpl implements ModbusManager {
         ModbusCallback callback = task.getCallback();
         ModbusSlaveEndpoint endpoint = task.getEndpoint();
 
-        ModbusRequestBlueprint request = task.getRequest();
+        R request = task.getRequest();
         Optional<ModbusSlaveConnection> connection = timer.connection.timeSupplier(() -> borrowConnection(endpoint));
         logger.trace("Executing task {} (oneOff={})! Connection received in {} ms [operation ID {}]", task, oneOffTask,
                 System.currentTimeMillis() - connectionBorrowStart, operationId);
@@ -484,7 +483,7 @@ public class ModbusManagerImpl implements ModbusManager {
         return connection;
     }
 
-    private <R> void invokeCallbackWithError(ModbusRequestBlueprint request, ModbusCallback callback, Exception error) {
+    private <R> void invokeCallbackWithError(R request, ModbusCallback callback, Exception error) {
         try {
             logger.trace("Calling write response callback {} for request {}. Error was {} {}", callback, request,
                     error.getClass().getName(), error.getMessage());
@@ -538,8 +537,8 @@ public class ModbusManagerImpl implements ModbusManager {
      * @param oneOffTask
      * @param operation
      */
-    private <R extends ModbusRequestBlueprint, C extends ModbusCallback, T extends TaskWithEndpoint<R, C>> void executeOperation(
-            @NonNull T task, boolean oneOffTask, ModbusOperation<T> operation) {
+    private <R, C extends ModbusCallback, T extends TaskWithEndpoint<R, C>> void executeOperation(@NonNull T task,
+            boolean oneOffTask, ModbusOperation<T> operation) {
         AggregateStopWatch timer = new AggregateStopWatch();
         timer.total.resume();
         String operationId = timer.operationId;

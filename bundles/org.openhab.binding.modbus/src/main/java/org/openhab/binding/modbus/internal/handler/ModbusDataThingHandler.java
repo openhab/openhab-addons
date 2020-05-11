@@ -62,8 +62,8 @@ import org.openhab.binding.modbus.internal.Transformation;
 import org.openhab.binding.modbus.internal.config.ModbusDataConfiguration;
 import org.openhab.io.transport.modbus.AsyncModbusReadResult;
 import org.openhab.io.transport.modbus.AsyncModbusWriteResult;
-import org.openhab.io.transport.modbus.BasicModbusWriteCoilRequestBlueprint;
-import org.openhab.io.transport.modbus.BasicModbusWriteRegisterRequestBlueprint;
+import org.openhab.io.transport.modbus.ModbusWriteCoilRequestBlueprint;
+import org.openhab.io.transport.modbus.ModbusWriteRegisterRequestBlueprint;
 import org.openhab.io.transport.modbus.BasicWriteTask;
 import org.openhab.io.transport.modbus.BitArray;
 import org.openhab.io.transport.modbus.ModbusBitUtilities;
@@ -289,7 +289,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 return null;
             }
             boolean data = commandAsBoolean.get();
-            request = new BasicModbusWriteCoilRequestBlueprint(slaveId, writeStart, data, writeMultiple,
+            request = new ModbusWriteCoilRequestBlueprint(slaveId, writeStart, data, writeMultiple,
                     config.getWriteMaxTries());
         } else if (writeType.equals(WRITE_TYPE_HOLDING)) {
             ValueType writeValueType = this.writeValueType;
@@ -301,7 +301,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
             }
             ModbusRegisterArray data = ModbusBitUtilities.commandToRegisters(transformedCommand, writeValueType);
             writeMultiple = writeMultiple || data.size() > 1;
-            request = new BasicModbusWriteRegisterRequestBlueprint(slaveId, writeStart, data, writeMultiple,
+            request = new ModbusWriteRegisterRequestBlueprint(slaveId, writeStart, data, writeMultiple,
                     config.getWriteMaxTries());
         } else {
             // Should not happen! This method is not called in case configuration errors and writeType is validated

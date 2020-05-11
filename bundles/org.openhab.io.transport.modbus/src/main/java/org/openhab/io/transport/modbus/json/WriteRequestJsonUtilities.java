@@ -23,8 +23,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.transport.modbus.BasicBitArray;
 import org.openhab.io.transport.modbus.BasicModbusRegister;
 import org.openhab.io.transport.modbus.BasicModbusRegisterArray;
-import org.openhab.io.transport.modbus.BasicModbusWriteCoilRequestBlueprint;
-import org.openhab.io.transport.modbus.BasicModbusWriteRegisterRequestBlueprint;
+import org.openhab.io.transport.modbus.ModbusWriteCoilRequestBlueprint;
+import org.openhab.io.transport.modbus.ModbusWriteRegisterRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusRegister;
 import org.openhab.io.transport.modbus.ModbusWriteFunctionCode;
 import org.openhab.io.transport.modbus.ModbusWriteRequestBlueprint;
@@ -183,7 +183,7 @@ public final class WriteRequestJsonUtilities {
                 for (int i = 0; i < valuesElem.size(); i++) {
                     bits.setBit(i, valuesElem.get(i).getAsInt() != 0);
                 }
-                return new BasicModbusWriteCoilRequestBlueprint(unitId, address, bits, !writeSingle.get(), maxTries);
+                return new ModbusWriteCoilRequestBlueprint(unitId, address, bits, !writeSingle.get(), maxTries);
             case WRITE_SINGLE_REGISTER:
                 writeSingle.set(true);
                 if (valuesElem.size() != 1) {
@@ -199,7 +199,7 @@ public final class WriteRequestJsonUtilities {
                 for (int i = 0; i < valuesElem.size(); i++) {
                     registers[i] = new BasicModbusRegister(valuesElem.get(i).getAsInt());
                 }
-                return new BasicModbusWriteRegisterRequestBlueprint(unitId, address,
+                return new ModbusWriteRegisterRequestBlueprint(unitId, address,
                         new BasicModbusRegisterArray(registers), !writeSingle.get(), maxTries);
             }
             default:
