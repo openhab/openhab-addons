@@ -107,8 +107,8 @@ public class MiIoDiscoveryParticipant implements MDNSDiscoveryParticipant {
             String label = "Xiaomi Mi Device " + id + " (" + Long.parseUnsignedLong(id, 16) + ") " + service.getName();
             properties.put(PROPERTY_HOST_IP, inetAddress);
             properties.put(PROPERTY_DID, id);
-            result = DiscoveryResultBuilder.create(uid).withProperties(properties).withRepresentationProperty(id)
-                    .withLabel(label).build();
+            result = DiscoveryResultBuilder.create(uid).withProperties(properties)
+                    .withRepresentationProperty(PROPERTY_DID).withLabel(label).build();
             logger.debug("Mi IO mDNS Discovery found {} with address '{}:{}' name '{}'", uid, inetAddress,
                     service.getPort(), label);
         }
