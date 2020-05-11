@@ -22,7 +22,7 @@ Discovery needs to be run manually as this is a brute force method of finding de
 OpenSprinkler using the HTTP interface
 
 ```
-Bridge opensprinkler:http:http [hostname="127.0.0.1", port=80, pasword="opendoor", refresh=60] {
+Bridge opensprinkler:http:http [hostname="127.0.0.1", port=80, password="opendoor", refresh=60] {
     Thing station 01 [stationIndex=1]
 }
 ```
