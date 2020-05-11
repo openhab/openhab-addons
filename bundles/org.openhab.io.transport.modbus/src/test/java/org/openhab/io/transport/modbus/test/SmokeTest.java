@@ -35,8 +35,6 @@ import org.openhab.io.transport.modbus.ModbusManagerListener;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.io.transport.modbus.ModbusResponse;
-import org.openhab.io.transport.modbus.ModbusWriteCallback;
-import org.openhab.io.transport.modbus.ModbusWriteRequestBlueprint;
 import org.openhab.io.transport.modbus.endpoint.EndpointPoolConfiguration;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 import org.openhab.io.transport.modbus.endpoint.ModbusTCPSlaveEndpoint;
@@ -382,16 +380,11 @@ public class SmokeTest extends IntegrationTestSupport {
 
         BitArray bits = new BasicBitArray(true, true, false, false, true, true);
         BasicWriteTask task = new BasicWriteTask(endpoint,
-                new BasicModbusWriteCoilRequestBlueprint(SLAVE_UNIT_ID, 3, bits, true, 1), new ModbusWriteCallback() {
-
-                    @Override
-                    public void onWriteResponse(ModbusWriteRequestBlueprint request, ModbusResponse response) {
-                        lastData.set(response);
-                    }
-
-                    @Override
-                    public void onError(ModbusWriteRequestBlueprint request, Exception error) {
+                new BasicModbusWriteCoilRequestBlueprint(SLAVE_UNIT_ID, 3, bits, true, 1), result -> {
+                    if (result.hasError()) {
                         unexpectedCount.incrementAndGet();
+                    } else {
+                        lastData.set(result.getResponse());
                     }
                 });
         modbusManager.submitOneTimeWrite(task);
@@ -429,17 +422,12 @@ public class SmokeTest extends IntegrationTestSupport {
 
         BitArray bits = new BasicBitArray(500);
         BasicWriteTask task = new BasicWriteTask(endpoint,
-                new BasicModbusWriteCoilRequestBlueprint(SLAVE_UNIT_ID, 3, bits, true, 1), new ModbusWriteCallback() {
-
-                    @Override
-                    public void onWriteResponse(ModbusWriteRequestBlueprint request, ModbusResponse response) {
-                        unexpectedCount.incrementAndGet();
+                new BasicModbusWriteCoilRequestBlueprint(SLAVE_UNIT_ID, 3, bits, true, 1), result -> {
+                    if (result.hasError()) {
+                        lastError.set(result.getCause());
                         callbackCalled.countDown();
-                    }
-
-                    @Override
-                    public void onError(ModbusWriteRequestBlueprint request, Exception error) {
-                        lastError.set(error);
+                    } else {
+                        unexpectedCount.incrementAndGet();
                         callbackCalled.countDown();
                     }
                 });
@@ -473,20 +461,16 @@ public class SmokeTest extends IntegrationTestSupport {
 
         BitArray bits = new BasicBitArray(true);
         BasicWriteTask task = new BasicWriteTask(endpoint,
-                new BasicModbusWriteCoilRequestBlueprint(SLAVE_UNIT_ID, 3, bits, false, 1), new ModbusWriteCallback() {
-
-                    @Override
-                    public void onWriteResponse(ModbusWriteRequestBlueprint request, ModbusResponse response) {
-                        lastData.set(response);
-                        callbackCalled.countDown();
-                    }
-
-                    @Override
-                    public void onError(ModbusWriteRequestBlueprint request, Exception error) {
+                new BasicModbusWriteCoilRequestBlueprint(SLAVE_UNIT_ID, 3, bits, false, 1), result -> {
+                    if (result.hasError()) {
                         unexpectedCount.incrementAndGet();
+                        callbackCalled.countDown();
+                    } else {
+                        lastData.set(result.getResponse());
                         callbackCalled.countDown();
                     }
                 });
+
         modbusManager.submitOneTimeWrite(task);
         callbackCalled.await(5, TimeUnit.SECONDS);
 
@@ -518,18 +502,12 @@ public class SmokeTest extends IntegrationTestSupport {
 
         BitArray bits = new BasicBitArray(true);
         BasicWriteTask task = new BasicWriteTask(endpoint,
-                new BasicModbusWriteCoilRequestBlueprint(SLAVE_UNIT_ID, 300, bits, false, 1),
-                new ModbusWriteCallback() {
-
-                    @Override
-                    public void onWriteResponse(ModbusWriteRequestBlueprint request, ModbusResponse response) {
-                        unexpectedCount.incrementAndGet();
+                new BasicModbusWriteCoilRequestBlueprint(SLAVE_UNIT_ID, 300, bits, false, 1), result -> {
+                    if (result.hasError()) {
+                        lastError.set(result.getCause());
                         callbackCalled.countDown();
-                    }
-
-                    @Override
-                    public void onError(ModbusWriteRequestBlueprint request, Exception error) {
-                        lastError.set(error);
+                    } else {
+                        unexpectedCount.incrementAndGet();
                         callbackCalled.countDown();
                     }
                 });

@@ -61,6 +61,7 @@ import org.openhab.binding.modbus.internal.ModbusConfigurationException;
 import org.openhab.binding.modbus.internal.Transformation;
 import org.openhab.binding.modbus.internal.config.ModbusDataConfiguration;
 import org.openhab.io.transport.modbus.AsyncModbusReadResult;
+import org.openhab.io.transport.modbus.AsyncModbusWriteResult;
 import org.openhab.io.transport.modbus.BasicModbusWriteCoilRequestBlueprint;
 import org.openhab.io.transport.modbus.BasicModbusWriteRegisterRequestBlueprint;
 import org.openhab.io.transport.modbus.BasicWriteTask;
@@ -669,6 +670,19 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         }
     }
 
+    @Override
+    public synchronized void handle(AsyncModbusWriteResult result) {
+        if (result.hasError()) {
+            Exception error = result.getCause();
+            assert error != null;
+            onError(result.getRequest(), error);
+        } else if (result.getResponse() != null) {
+            ModbusResponse response = result.getResponse();
+            assert response != null;
+            onWriteResponse(result.getRequest(), response);
+        }
+    }
+
     private synchronized void onRegisters(ModbusReadRequestBlueprint request, ModbusRegisterArray registers) {
         if (hasConfigurationError()) {
             return;
@@ -760,8 +774,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         }
     }
 
-    @Override
-    public synchronized void onError(ModbusWriteRequestBlueprint request, Exception error) {
+    private synchronized void onError(ModbusWriteRequestBlueprint request, Exception error) {
         if (hasConfigurationError()) {
             return;
         } else if (!isWriteEnabled) {
@@ -797,8 +810,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         }
     }
 
-    @Override
-    public synchronized void onWriteResponse(ModbusWriteRequestBlueprint request, ModbusResponse response) {
+    private synchronized void onWriteResponse(ModbusWriteRequestBlueprint request, ModbusResponse response) {
         if (hasConfigurationError()) {
             return;
         } else if (!isWriteEnabled) {

@@ -36,6 +36,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.openhab.io.transport.modbus.AsyncModbusReadResult;
+import org.openhab.io.transport.modbus.AsyncModbusWriteResult;
 import org.openhab.io.transport.modbus.ModbusCallback;
 import org.openhab.io.transport.modbus.ModbusManager;
 import org.openhab.io.transport.modbus.ModbusManagerListener;
@@ -491,7 +492,8 @@ public class ModbusManagerImpl implements ModbusManager {
                 ((ModbusReadCallback) callback)
                         .handle(new AsyncModbusReadResult((ModbusReadRequestBlueprint) request, error));
             } else if (request instanceof ModbusWriteRequestBlueprint) {
-                ((ModbusWriteCallback) callback).onError((ModbusWriteRequestBlueprint) request, error);
+                ((ModbusWriteCallback) callback)
+                        .handle(new AsyncModbusWriteResult((ModbusWriteRequestBlueprint) request, error));
             } else {
                 throw new IllegalStateException(String.format("Request %s or callback %s is of wrong type.",
                         request.getClass().getName(), callback.getClass().getName()));
@@ -507,7 +509,7 @@ public class ModbusManagerImpl implements ModbusManager {
         try {
             logger.trace("Calling write response callback {} for request {}. Response was {}", callback, request,
                     response);
-            callback.onWriteResponse(request, response);
+            callback.handle(new AsyncModbusWriteResult(request, response));
         } finally {
             logger.trace("Called write response callback {} for request {}. Response was {}", callback, request,
                     response);
