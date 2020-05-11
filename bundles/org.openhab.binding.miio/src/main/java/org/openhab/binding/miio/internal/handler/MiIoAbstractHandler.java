@@ -107,7 +107,12 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
                 getThing().getThingTypeUID());
         final MiIoBindingConfiguration configuration = getConfigAs(MiIoBindingConfiguration.class);
         this.configuration = configuration;
-        if (!tokenCheckPass(configuration.token)) {
+        if (configuration.host == null || configuration.host.isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "IP address required. Configure IP address");
+            return;
+        }
+        if (configuration.token == null || !tokenCheckPass(configuration.token)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Token required. Configure token");
             return;
         }
@@ -282,10 +287,14 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             return miioCom;
         }
         final MiIoBindingConfiguration configuration = getConfigAs(MiIoBindingConfiguration.class);
+        if (configuration.host == null || configuration.host.isEmpty()) {
+            return null;
+        }
         @Nullable
         String deviceId = configuration.deviceId;
         try {
-            if (deviceId != null && deviceId.length() == 8 && tokenCheckPass(configuration.token)) {
+            if (deviceId != null && deviceId.length() == 8 && configuration.token != null
+                    && tokenCheckPass(configuration.token)) {
                 logger.debug("Ping Mi device {} at {}", deviceId, configuration.host);
                 final MiIoAsyncCommunication miioCom = new MiIoAsyncCommunication(configuration.host, token,
                         Utils.hexStringToByteArray(deviceId), lastId, configuration.timeout);
