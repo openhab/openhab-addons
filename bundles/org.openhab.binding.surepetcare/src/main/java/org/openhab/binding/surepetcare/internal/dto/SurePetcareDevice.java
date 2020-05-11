@@ -48,9 +48,9 @@ public class SurePetcareDevice extends SurePetcareBaseObject {
         }
     }
 
-    public Integer parentDeviceId;
+    public Long parentDeviceId;
     public Integer productId;
-    public Integer householdId;
+    public Long householdId;
     public String name;
     public String serialNumber;
     public String macAddress;
@@ -95,7 +95,7 @@ public class SurePetcareDevice extends SurePetcareBaseObject {
         super.assign(newdev);
         this.parentDeviceId = newdev.parentDeviceId;
         this.productId = newdev.productId;
-        this.householdId = newdev.productId;
+        this.householdId = newdev.householdId;
         this.name = newdev.name;
         this.serialNumber = newdev.serialNumber;
         this.macAddress = newdev.macAddress;

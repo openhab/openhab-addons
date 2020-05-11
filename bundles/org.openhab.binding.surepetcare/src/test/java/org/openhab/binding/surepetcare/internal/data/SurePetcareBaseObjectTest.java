@@ -29,10 +29,10 @@ public class SurePetcareBaseObjectTest {
 
     @Test
     public void testNotNullFromJson() {
-        String testResponse = "{\"id\":33421,\"version\":\"MA==\",\"created_at\":\"2019-09-18T16:09:30+00:00\",\"updated_at\":\"2019-09-18T16:09:30+00:00\"}";
+        String testResponse = "{\"id\":2491083182,\"version\":\"MA==\",\"created_at\":\"2019-09-18T16:09:30+00:00\",\"updated_at\":\"2019-09-18T16:09:30+00:00\"}";
         SurePetcareBaseObject response = SurePetcareConstants.GSON.fromJson(testResponse, SurePetcareBaseObject.class);
 
-        assertEquals(Integer.valueOf(33421), response.id);
+        assertEquals(Long.valueOf(2491083182L), response.id);
         assertEquals("MA==", response.version);
         assertNotNull(response.createdAt);
         assertNotNull(response.updatedAt);
@@ -43,7 +43,7 @@ public class SurePetcareBaseObjectTest {
         String testResponse = "{\"id\":33421}";
         SurePetcareBaseObject response = SurePetcareConstants.GSON.fromJson(testResponse, SurePetcareBaseObject.class);
 
-        assertEquals(Integer.valueOf(33421), response.id);
+        assertEquals(Long.valueOf(33421), response.id);
         assertEquals("", response.version);
         assertNotNull(response.createdAt);
         assertNotNull(response.updatedAt);

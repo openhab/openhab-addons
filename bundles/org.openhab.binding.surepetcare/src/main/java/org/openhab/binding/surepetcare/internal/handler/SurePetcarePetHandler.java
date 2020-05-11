@@ -182,7 +182,7 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
                 } else if (pet.status.activity.userId != null) {
                     SurePetcareHousehold household = petcareAPI.getHousehold(pet.householdId.toString());
                     if (household != null) {
-                        Integer userId = pet.status.activity.userId;
+                        Long userId = pet.status.activity.userId;
                         household.householdUsers.stream().map(user -> user.user)
                                 .filter(user -> userId.equals(user.userId))
                                 .forEach(user -> updateState(PET_CHANNEL_LOCATION_CHANGED_THROUGH,

@@ -37,7 +37,7 @@ public class SurePetcareHousehold extends SurePetcareBaseObject {
     public class HouseholdUsers {
         public class User {
             @SerializedName("id")
-            public Integer userId;
+            public Long userId;
             @SerializedName("name")
             public String userName;
         }

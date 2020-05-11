@@ -28,11 +28,11 @@ import com.google.gson.annotations.SerializedName;
 public class SurePetcarePetActivity {
 
     @SerializedName("tag_id")
-    public Integer tagId;
+    public Long tagId;
     @SerializedName("device_id")
-    public Integer deviceId;
+    public Long deviceId;
     @SerializedName("user_id")
-    public Integer userId;
+    public Long userId;
     @SerializedName("where")
     public Integer where;
     @SerializedName("since")

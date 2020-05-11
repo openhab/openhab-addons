@@ -75,11 +75,11 @@ public class SurePetcarePet extends SurePetcareBaseObject {
     public Date dateOfBirth;
     public BigDecimal weight;
     public String comments;
-    public Integer householdId;
+    public Long householdId;
     public Integer breedId;
-    public Integer photoId;
+    public Long photoId;
     public Integer speciesId;
-    public Integer tagId;
+    public Long tagId;
     public SurePetcarePhoto photo;
 
     @SerializedName("status")

@@ -38,8 +38,8 @@ public class SurePetcarePetLocationTest {
         String testReponse = "{\"tag_id\":60126,\"device_id\":376236,\"where\":2,\"since\":\"2019-09-11T13:09:07+00:00\"}";
         SurePetcarePetActivity response = SurePetcareConstants.GSON.fromJson(testReponse, SurePetcarePetActivity.class);
 
-        assertEquals(Integer.valueOf(60126), response.tagId);
-        assertEquals(Integer.valueOf(376236), response.deviceId);
+        assertEquals(Long.valueOf(60126), response.tagId);
+        assertEquals(Long.valueOf(376236), response.deviceId);
         assertEquals(Integer.valueOf(2), response.where);
         Date sinceDate;
         synchronized (simpleDateFormat) {

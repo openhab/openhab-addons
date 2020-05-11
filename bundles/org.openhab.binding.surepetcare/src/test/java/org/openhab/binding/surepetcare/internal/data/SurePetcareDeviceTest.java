@@ -34,9 +34,9 @@ public class SurePetcareDeviceTest {
         String testResponse = "{\"id\":296464,\"product_id\":1,\"household_id\":48712,\"name\":\"Home Hub\",\"serial_number\":\"H008-0296432\",\"mac_address\":\"00000491630A0D64\",\"version\":\"NjA=\",\"created_at\":\"2019-04-18T14:45:11+00:00\",\"updated_at\":\"2019-09-30T12:31:52+00:00\",\"control\":{\"led_mode\":4,\"pairing_mode\":0},\"status\":{\"led_mode\":4,\"pairing_mode\":0,\"version\":{\"device\":{\"hardware\":3,\"firmware\":1.772}},\"online\":true}}";
         SurePetcareDevice response = SurePetcareConstants.GSON.fromJson(testResponse, SurePetcareDevice.class);
 
-        assertEquals(Integer.valueOf(296464), response.id);
+        assertEquals(Long.valueOf(296464L), response.id);
         assertEquals(Integer.valueOf(1), response.productId);
-        assertEquals(Integer.valueOf(48712), response.householdId);
+        assertEquals(Long.valueOf(48712), response.householdId);
         assertEquals("Home Hub", response.name);
         assertEquals("H008-0296432", response.serialNumber);
         assertEquals("00000491630A0D64", response.macAddress);
@@ -54,9 +54,9 @@ public class SurePetcareDeviceTest {
         String testResponse = "{\"id\":101797,\"product_id\":1,\"household_id\":21005,\"name\":\"Home Hub\",\"serial_number\":\"H005-0101321\",\"mac_address\":\"0000801F1341F1C7\",\"version\":\"NzAzNg==\",\"created_at\":\"2018-05-18T11:11:59+00:00\",\"updated_at\":\"2020-05-01T07:51:32+00:00\",\"control\":{\"led_mode\":4,\"pairing_mode\":0},\"status\":{\"led_mode\":4,\"pairing_mode\":0,\"version\":{\"device\":{\"hardware\":3,\"firmware\":2.43}},\"online\":true}}";
         SurePetcareDevice response = SurePetcareConstants.GSON.fromJson(testResponse, SurePetcareDevice.class);
 
-        assertEquals(Integer.valueOf(101797), response.id);
+        assertEquals(Long.valueOf(101797), response.id);
         assertEquals(Integer.valueOf(1), response.productId);
-        assertEquals(Integer.valueOf(21005), response.householdId);
+        assertEquals(Long.valueOf(21005), response.householdId);
         assertEquals("Home Hub", response.name);
         assertEquals("H005-0101321", response.serialNumber);
         assertEquals("0000801F1341F1C7", response.macAddress);
@@ -75,9 +75,9 @@ public class SurePetcareDeviceTest {
         SurePetcareDevice response = SurePetcareConstants.GSON.fromJson(testResponse, SurePetcareDevice.class);
         response.getThingProperties();
 
-        assertEquals(Integer.valueOf(318966), response.id);
+        assertEquals(Long.valueOf(318966), response.id);
         assertEquals(Integer.valueOf(6), response.productId);
-        assertEquals(Integer.valueOf(48712), response.householdId);
+        assertEquals(Long.valueOf(48712), response.householdId);
         assertEquals("Back Door Cat Flap", response.name);
         assertEquals("N005-0089709", response.serialNumber);
         assertEquals("6D5E01CFF9D5B370", response.macAddress);
@@ -93,9 +93,9 @@ public class SurePetcareDeviceTest {
         SurePetcareDevice response = SurePetcareConstants.GSON.fromJson(testResponse, SurePetcareDevice.class);
         response.getThingProperties();
 
-        assertEquals(Integer.valueOf(318966), response.id);
+        assertEquals(Long.valueOf(318966), response.id);
         assertEquals(Integer.valueOf(3), response.productId);
-        assertEquals(Integer.valueOf(48712), response.householdId);
+        assertEquals(Long.valueOf(48712), response.householdId);
         assertEquals("Back Door Cat Flap", response.name);
         assertNull("Serial Number", response.serialNumber);
         assertEquals("6D5E01CFF9D5B370", response.macAddress);

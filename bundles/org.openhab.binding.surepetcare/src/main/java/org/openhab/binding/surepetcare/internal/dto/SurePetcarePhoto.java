@@ -30,5 +30,5 @@ public class SurePetcarePhoto extends SurePetcareBaseObject {
     // }
 
     public String location;
-    public Integer uploadingUserId;
+    public Long uploadingUserId;
 }
