@@ -13,6 +13,7 @@
 package org.openhab.binding.daikin.internal.handler;
 
 import java.io.IOException;
+import java.lang.IllegalArgumentException;
 import java.util.Optional;
 
 import org.eclipse.jetty.client.HttpClient;
@@ -120,21 +121,42 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
 
     @Override
     protected void changeMode(String mode) throws DaikinCommunicationException {
+        Mode newMode;
+        try {
+            newMode = Mode.valueOf(mode);
+        } catch (IllegalArgumentException ex) {
+            logger.warn("Invalid mode: {}. Valid values: {}", mode, Mode.values());
+            return;
+        }
         ControlInfo info = webTargets.getControlInfo();
-        info.mode = Mode.valueOf(mode);
+        info.mode = newMode;
         webTargets.setControlInfo(info);
     }
 
     @Override
     protected void changeFanSpeed(String fanSpeed) throws DaikinCommunicationException {
+        FanSpeed newSpeed;
+        try {
+            newSpeed = FanSpeed.valueOf(fanSpeed);
+        } catch (IllegalArgumentException ex) {
+            logger.warn("Invalid fan speed: {}. Valid values: {}", fanSpeed, FanSpeed.values());
+            return;
+        }
         ControlInfo info = webTargets.getControlInfo();
-        info.fanSpeed = FanSpeed.valueOf(fanSpeed);
+        info.fanSpeed = newSpeed;
         webTargets.setControlInfo(info);
     }
 
     protected void changeFanDir(String fanDir) throws DaikinCommunicationException {
+        FanMovement newMovement;
+        try {
+            newMovement = FanMovement.valueOf(fanDir);
+        } catch (IllegalArgumentException ex) {
+            logger.warn("Invalid fan direction: {}. Valid values: {}", fanDir, FanMovement.values());
+            return;
+        }
         ControlInfo info = webTargets.getControlInfo();
-        info.fanMovement = FanMovement.valueOf(fanDir);
+        info.fanMovement = newMovement;
         webTargets.setControlInfo(info);
     }
 
