@@ -19,6 +19,7 @@ import java.net.ConnectException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.jeelink.internal.JeeLinkHandler;
 import org.openhab.binding.jeelink.internal.config.JeeLinkConfig;
 import org.slf4j.Logger;
@@ -103,11 +104,11 @@ public abstract class AbstractJeeLinkConnection implements JeeLinkConnection {
     }
 
     public static JeeLinkConnection createFor(JeeLinkConfig config, ScheduledExecutorService scheduler,
-            JeeLinkHandler h) throws ConnectException {
+            JeeLinkHandler h, SerialPortManager serialPortManager) throws ConnectException {
         JeeLinkConnection connection;
 
         if (config.serialPort != null && config.baudRate != null) {
-            connection = new JeeLinkSerialConnection(config.serialPort, config.baudRate, h);
+            connection = new JeeLinkSerialConnection(config.serialPort, config.baudRate, h, serialPortManager);
         } else if (config.ipAddress != null && config.port != null) {
             connection = new JeeLinkTcpConnection(config.ipAddress + ":" + config.port, scheduler, h);
         } else {

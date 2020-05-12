@@ -29,6 +29,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.jeelink.internal.config.JeeLinkConfig;
 import org.openhab.binding.jeelink.internal.connection.AbstractJeeLinkConnection;
 import org.openhab.binding.jeelink.internal.connection.ConnectionListener;
@@ -44,11 +45,12 @@ import org.slf4j.LoggerFactory;
 public class JeeLinkHandler extends BaseBridgeHandler implements BridgeHandler, ConnectionListener {
     private final Logger logger = LoggerFactory.getLogger(JeeLinkHandler.class);
 
-    private JeeLinkConnection connection;
-    private List<JeeLinkReadingConverter<?>> converters = new ArrayList<>();
-    private Map<String, JeeLinkReadingConverter<?>> sensorTypeConvertersMap = new HashMap<>();
-    private Map<Class<?>, Set<ReadingHandler<? extends Reading>>> readingClassHandlerMap = new HashMap<>();
+    private final List<JeeLinkReadingConverter<?>> converters = new ArrayList<>();
+    private final Map<String, JeeLinkReadingConverter<?>> sensorTypeConvertersMap = new HashMap<>();
+    private final Map<Class<?>, Set<ReadingHandler<? extends Reading>>> readingClassHandlerMap = new HashMap<>();
+    private final SerialPortManager serialPortManager;
 
+    private JeeLinkConnection connection;
     private AtomicBoolean connectionInitialized = new AtomicBoolean(false);
     private ScheduledFuture<?> connectJob;
     private ScheduledFuture<?> initJob;
@@ -56,8 +58,9 @@ public class JeeLinkHandler extends BaseBridgeHandler implements BridgeHandler, 
     private long lastReadingTime;
     private ScheduledFuture<?> monitorJob;
 
-    public JeeLinkHandler(Bridge bridge) {
+    public JeeLinkHandler(Bridge bridge, SerialPortManager serialPortManager) {
         super(bridge);
+        this.serialPortManager = serialPortManager;
     }
 
     @Override
@@ -65,7 +68,7 @@ public class JeeLinkHandler extends BaseBridgeHandler implements BridgeHandler, 
         JeeLinkConfig cfg = getConfig().as(JeeLinkConfig.class);
 
         try {
-            connection = AbstractJeeLinkConnection.createFor(cfg, scheduler, this);
+            connection = AbstractJeeLinkConnection.createFor(cfg, scheduler, this, serialPortManager);
             connection.openConnection();
         } catch (java.net.ConnectException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
