@@ -12,13 +12,16 @@
  */
 package org.openhab.binding.volvooncall.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link VehicleConfiguration} is the class used to match the
  * Vehicle thing configuration.
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@NonNullByDefault
 public class VehicleConfiguration {
-    public String vin;
-    public Integer refresh;
+    public String vin = "";
+    public Integer refresh = 5;
 }
