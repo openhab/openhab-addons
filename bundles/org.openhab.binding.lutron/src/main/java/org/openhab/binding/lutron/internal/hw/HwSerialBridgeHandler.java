@@ -100,9 +100,7 @@ public class HwSerialBridgeHandler extends BaseBridgeHandler implements SerialPo
     }
 
     private void openConnection() {
-        SerialPortIdentifier portIdentifier;
-
-        portIdentifier = serialPortManager.getIdentifier(serialPortName);
+        SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(serialPortName);
         if (portIdentifier == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Invalid port: " + serialPortName);
             return;

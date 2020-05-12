@@ -53,9 +53,7 @@ public class RS232Connection implements RadioRAConnection, SerialPortEventListen
 
     @Override
     public void open(String portName, int baud) throws RadioRAConnectionException {
-        SerialPortIdentifier portIdentifier;
-
-        portIdentifier = serialPortManager.getIdentifier(portName);
+        SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(portName);
         if (portIdentifier == null) {
             throw new RadioRAConnectionException(String.format("Port not found", portName));
         }
