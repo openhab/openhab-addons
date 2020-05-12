@@ -16,7 +16,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.TooManyListenersException;
-import java.util.stream.Stream;
 
 import org.eclipse.smarthome.io.transport.serial.PortInUseException;
 import org.eclipse.smarthome.io.transport.serial.SerialPort;
@@ -55,12 +54,6 @@ public class RS232Connection implements RadioRAConnection, SerialPortEventListen
     @Override
     public void open(String portName, int baud) throws RadioRAConnectionException {
         SerialPortIdentifier portIdentifier;
-
-        // Exit if no identifiers exist to work around possible library bug. May not be needed in 3.0.
-        Stream<SerialPortIdentifier> serialPortIdentifiers = serialPortManager.getIdentifiers();
-        if (!serialPortIdentifiers.findAny().isPresent()) {
-            throw new RadioRAConnectionException(String.format("No serial ports found", portName));
-        }
 
         portIdentifier = serialPortManager.getIdentifier(portName);
         if (portIdentifier == null) {

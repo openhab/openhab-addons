@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.TooManyListenersException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -102,13 +101,6 @@ public class HwSerialBridgeHandler extends BaseBridgeHandler implements SerialPo
 
     private void openConnection() {
         SerialPortIdentifier portIdentifier;
-
-        // Exit if no identifiers exist to work around possible library bug. May not be needed in 3.0.
-        Stream<SerialPortIdentifier> serialPortIdentifiers = serialPortManager.getIdentifiers();
-        if (!serialPortIdentifiers.findAny().isPresent()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No serial ports found");
-            return;
-        }
 
         portIdentifier = serialPortManager.getIdentifier(serialPortName);
         if (portIdentifier == null) {
