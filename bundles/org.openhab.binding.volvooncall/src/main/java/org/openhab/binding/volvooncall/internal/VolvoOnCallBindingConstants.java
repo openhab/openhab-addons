@@ -44,6 +44,12 @@ public class VolvoOnCallBindingConstants {
     public static final ThingTypeUID APIBRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, "vocapi");
     public static final ThingTypeUID VEHICLE_THING_TYPE = new ThingTypeUID(BINDING_ID, "vehicle");
 
+    // List of Channel groups
+    public static final String GROUP_DOORS = "doors";
+    public static final String GROUP_WINDOWS = "windows";
+    public static final String GROUP_TYRES = "tyrePressure";
+    public static final String GROUP_BATTERY = "battery";
+
     // List of Channel id's
     public static final String TAILGATE = "tailgate";
     public static final String REAR_RIGHT = "rearRight";

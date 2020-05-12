@@ -20,12 +20,12 @@ import java.util.List;
  *
  * @author Gaël L'hopital - Initial contribution
  */
-public class Attributes {
+public class Attributes extends VocAnswer {
     public String vehicleType;
     public String registrationNumber;
     public Boolean carLocatorSupported;
     public Boolean honkAndBlinkSupported;
-    public List<String> honkAndBlinkVersionsSupported = null;
+    public List<String> honkAndBlinkVersionsSupported;
     public Boolean remoteHeaterSupported;
     public Boolean unlockSupported;
     public Boolean lockSupported;
