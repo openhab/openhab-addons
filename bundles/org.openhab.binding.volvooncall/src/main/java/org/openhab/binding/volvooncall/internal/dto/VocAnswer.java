@@ -15,25 +15,23 @@ package org.openhab.binding.volvooncall.internal.dto;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
- * The {@link CustomerAccounts} is responsible for storing
- * informations returned by customerAccount rest answer
+ * The {@link VocAnswer} is the base class for all Voc API requests
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class CustomerAccounts extends VocAnswer {
-    @SerializedName("accountVehicleRelations")
-    public @NonNullByDefault({}) String[] accountVehicleRelationsURL;
-    public @Nullable String username;
+public abstract class VocAnswer {
 
-    /*
-     * Currently unused in the binding, maybe interesting in the future
-     * private String firstName;
-     * private String lastName;
-     * private String accountId;
-     * private String account;
-     */
+    private @Nullable String errorLabel;
+    private @Nullable String errorDescription;
+
+    public @Nullable String getErrorLabel() {
+        return errorLabel;
+    }
+
+    public @Nullable String getErrorDescription() {
+        return errorDescription;
+    }
+
 }
