@@ -332,4 +332,10 @@
 		<description>State of the radio part of the Somfy sensor</description>
 		<state readOnly="true"/>
 	</channel-type>
+
+	<channel-type id="closure_orientation">
+		<item-type>String</item-type>
+		<label>Set Closure And Orientation</label>
+		<description>A channel for setting closure and orientation of the blind</description>
+	</channel-type>
 </thing:thing-descriptions>
