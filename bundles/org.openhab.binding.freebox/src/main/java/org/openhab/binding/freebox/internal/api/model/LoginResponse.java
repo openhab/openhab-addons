@@ -26,8 +26,8 @@ public class LoginResponse extends FreeboxResponse<LoginResult> {
     @Override
     public void evaluate() throws FreeboxException {
         super.evaluate();
-        if (getResult().getChallenge().isEmpty()) {
-            throw new FreeboxException("No challenge in response", this);
+        if (!getResult().isLoggedIn() && getResult().getChallenge().isEmpty()) {
+            throw new FreeboxException("Login failed", this);
         }
     }
 }

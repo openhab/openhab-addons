@@ -55,9 +55,7 @@ public class FreeboxResponse<T> {
     private T result;
 
     public void evaluate() throws FreeboxException {
-        if (result == null) {
-            throw new FreeboxException("Missing result data in API response");
-        } else if (!isSuccess()) {
+        if (!isSuccess()) {
             throw new FreeboxException(this);
         }
     }

@@ -19,9 +19,11 @@ import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Properties;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.freebox.internal.api.model.AuthorizationStatus;
 import org.openhab.binding.freebox.internal.api.model.AuthorizationStatus.Status;
@@ -49,11 +51,13 @@ import com.google.gson.JsonSyntaxException;
 public class ApiManager {
     private final Logger logger = LoggerFactory.getLogger(ApiManager.class);
     private static final int HTTP_CALL_DEFAULT_TIMEOUT_MS = (int) TimeUnit.SECONDS.toMillis(10);
+    private static final String THREADPOOL_NAME = "freeboxApiManager";
     private static final String APP_ID = FrameworkUtil.getBundle(ApiManager.class).getSymbolicName();
     private static final String AUTH_HEADER = "X-Fbx-App-Auth";
     private static final String HTTP_CALL_CONTENT_TYPE = "application/json; charset=utf-8";
 
     private final Properties headers = new Properties();
+    private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(THREADPOOL_NAME);
     private final Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .create();
 
@@ -159,22 +163,27 @@ public class ApiManager {
     @SuppressWarnings("unchecked")
     public <T extends FreeboxResponse<F>, F> F execute(APIAction action) throws FreeboxException {
         String payload = action.getPayload() != null ? gson.toJson(action.getPayload()) : null;
+        String url = baseAddress + action.getUrl();
+        String jsonResponse = "";
         try {
             InputStream stream = payload != null ? new ByteArrayInputStream(payload.getBytes(StandardCharsets.UTF_8))
                     : null;
 
             logger.debug("executeUrl {} {} ", action.getMethod(), action.getUrl());
-            String jsonResponse = HttpUtil.executeUrl(action.getMethod(), baseAddress + action.getUrl(), headers,
-                    stream, HTTP_CALL_CONTENT_TYPE, HTTP_CALL_DEFAULT_TIMEOUT_MS);
+            jsonResponse = HttpUtil.executeUrl(action.getMethod(), url, headers, stream, HTTP_CALL_CONTENT_TYPE,
+                    HTTP_CALL_DEFAULT_TIMEOUT_MS);
 
             if (stream != null) {
                 stream.close();
                 stream = null;
             }
+
             if (action instanceof APIRequests.checkAPI) {
                 F fullResponse = gson.fromJson(jsonResponse, (Class<F>) action.getResponseClass());
                 return fullResponse;
             } else {
+                EmptyResponse partialResponse = gson.fromJson(jsonResponse, EmptyResponse.class);
+                partialResponse.evaluate();
                 T fullResponse = gson.fromJson(jsonResponse, (Class<T>) action.getResponseClass());
                 if (action.getResponseClass() != EmptyResponse.class) {
                     fullResponse.evaluate();
@@ -182,15 +191,15 @@ public class ApiManager {
                 return fullResponse.getResult();
             }
         } catch (FreeboxException | JsonSyntaxException | IOException e) {
+            if (e instanceof FreeboxException && ((FreeboxException) e).isAuthRequired()) {
+                openSession();
+            }
             if (action.retriesLeft()) {
                 logger.debug("Retry the request");
-                if (e instanceof FreeboxException && ((FreeboxException) e).isAuthRequired()) {
-                    openSession();
-                }
                 return execute(action);
             }
-            throw new FreeboxException(
-                    action.getMethod() + " request " + action.getUrl() + ": failed: " + e.getMessage(), e);
+            throw new FreeboxException(action.getMethod() + " request " + action.getUrl() + ": failed:" + e.getMessage()
+                    + "||url :" + url + "||response : " + jsonResponse, e);
         }
     }
 }
