@@ -17,7 +17,6 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -70,14 +69,6 @@ public class SerialBridgeHandler extends ADBridgeHandler {
 
         if (config.bitrate > 0) {
             serialPortSpeed = config.bitrate;
-        }
-
-        // Exit if no identifiers exist to work around possible library bug. May not be needed in 3.0.
-        Stream<SerialPortIdentifier> serialPortIdentifiers = serialPortManager.getIdentifiers();
-        if (!serialPortIdentifiers.findAny().isPresent()) {
-            logger.debug("No serial communication ports found. Cannot connect to [{}]", config.serialPort);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No serial ports found");
-            return;
         }
 
         portIdentifier = serialPortManager.getIdentifier(config.serialPort);
