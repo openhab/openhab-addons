@@ -98,6 +98,9 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     private static final String STATE_PAUSED_PLAYBACK = "PAUSED_PLAYBACK";
     private static final String STATE_STOPPED = "STOPPED";
 
+    private static final String LINEINCONNECTED = "LineInConnected";
+    private static final String TOSLINEINCONNECTED = "TOSLinkConnected";
+
     private static final Collection<String> SERVICE_SUBSCRIPTIONS = Arrays.asList("DeviceProperties", "AVTransport",
             "ZoneGroupTopology", "GroupManagement", "RenderingControl", "AudioIn", "HTControl", "ContentDirectory");
     protected static final int SUBSCRIPTION_DURATION = 1800;
@@ -499,7 +502,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 case "DialogLevel":
                     updateChannel(SPEECHENHANCEMENT);
                     break;
-                case "LineInConnected":
+                case LINEINCONNECTED:
                     if (SonosBindingConstants.WITH_LINEIN_THING_TYPES_UIDS.contains(getThing().getThingTypeUID())) {
                         updateChannel(LINEIN);
                     }
@@ -508,7 +511,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                         updateChannel(ANALOGLINEIN);
                     }
                     break;
-                case "TOSLinkConnected":
+                case TOSLINEINCONNECTED:
                     if (SonosBindingConstants.WITH_LINEIN_THING_TYPES_UIDS.contains(getThing().getThingTypeUID())) {
                         updateChannel(LINEIN);
                     }
@@ -721,20 +724,20 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 }
                 break;
             case LINEIN:
-                if (stateMap.get("LineInConnected") != null) {
-                    newState = stateMap.get("LineInConnected").equals("true") ? OnOffType.ON : OnOffType.OFF;
-                } else if (stateMap.get("TOSLinkConnected") != null) {
-                    newState = stateMap.get("TOSLinkConnected").equals("true") ? OnOffType.ON : OnOffType.OFF;
+                if (stateMap.get(LINEINCONNECTED) != null) {
+                    newState = stateMap.get(LINEINCONNECTED).equals("true") ? OnOffType.ON : OnOffType.OFF;
+                } else if (stateMap.get(TOSLINEINCONNECTED) != null) {
+                    newState = stateMap.get(TOSLINEINCONNECTED).equals("true") ? OnOffType.ON : OnOffType.OFF;
                 }
                 break;
             case ANALOGLINEIN:
-                if (stateMap.get("LineInConnected") != null) {
-                    newState = stateMap.get("LineInConnected").equals("true") ? OnOffType.ON : OnOffType.OFF;
+                if (stateMap.get(LINEINCONNECTED) != null) {
+                    newState = stateMap.get(LINEINCONNECTED).equals("true") ? OnOffType.ON : OnOffType.OFF;
                 }
                 break;
             case DIGITALLINEIN:
-                if (stateMap.get("TOSLinkConnected") != null) {
-                    newState = stateMap.get("TOSLinkConnected").equals("true") ? OnOffType.ON : OnOffType.OFF;
+                if (stateMap.get(TOSLINEINCONNECTED) != null) {
+                    newState = stateMap.get(TOSLINEINCONNECTED).equals("true") ? OnOffType.ON : OnOffType.OFF;
                 }
                 break;
             case ALARMRUNNING:
@@ -2198,12 +2201,11 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     public Boolean isAnalogLineInConnected() {
-        return ((stateMap.get("LineInConnected") != null) && stateMap.get("LineInConnected").equals("true")) ? true
-                : false;
+        return ((stateMap.get(LINEINCONNECTED) != null) && stateMap.get(LINEINCONNECTED).equals("true")) ? true : false;
     }
 
     public Boolean isOpticalLineInConnected() {
-        return ((stateMap.get("TOSLinkConnected") != null) && stateMap.get("TOSLinkConnected").equals("true")) ? true
+        return ((stateMap.get(TOSLINEINCONNECTED) != null) && stateMap.get(TOSLINEINCONNECTED).equals("true")) ? true
                 : false;
     }
 
