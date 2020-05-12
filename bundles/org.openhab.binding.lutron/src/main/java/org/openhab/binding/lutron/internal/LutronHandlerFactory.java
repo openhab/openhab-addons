@@ -33,6 +33,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.lutron.internal.discovery.LutronDeviceDiscoveryService;
 import org.openhab.binding.lutron.internal.grxprg.GrafikEyeHandler;
 import org.openhab.binding.lutron.internal.grxprg.PrgBridgeHandler;
@@ -65,6 +66,7 @@ import org.openhab.binding.lutron.internal.radiora.RadioRAConstants;
 import org.openhab.binding.lutron.internal.radiora.handler.PhantomButtonHandler;
 import org.openhab.binding.lutron.internal.radiora.handler.RS232Handler;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -103,8 +105,16 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(LutronHandlerFactory.class);
 
+    private final SerialPortManager serialPortManager;
+
     private @NonNullByDefault({}) HttpClient httpClient;
     // shared instance obtained from HttpClientFactory service and passed to device discovery service
+
+    @Activate
+    public LutronHandlerFactory(final @Reference SerialPortManager serialPortManager) {
+        // Obtain the serial port manager service using an OSGi reference
+        this.serialPortManager = serialPortManager;
+    }
 
     @Reference
     protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
@@ -180,7 +190,7 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
         } else if (thingTypeUID.equals(PrgConstants.THING_TYPE_GRAFIKEYE)) {
             return new GrafikEyeHandler(thing);
         } else if (thingTypeUID.equals(RadioRAConstants.THING_TYPE_RS232)) {
-            return new RS232Handler((Bridge) thing);
+            return new RS232Handler((Bridge) thing, serialPortManager);
         } else if (thingTypeUID.equals(RadioRAConstants.THING_TYPE_DIMMER)) {
             return new org.openhab.binding.lutron.internal.radiora.handler.DimmerHandler(thing);
         } else if (thingTypeUID.equals(RadioRAConstants.THING_TYPE_SWITCH)) {
@@ -188,7 +198,7 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
         } else if (thingTypeUID.equals(RadioRAConstants.THING_TYPE_PHANTOM)) {
             return new PhantomButtonHandler(thing);
         } else if (thingTypeUID.equals(HwConstants.THING_TYPE_HWSERIALBRIDGE)) {
-            return new HwSerialBridgeHandler((Bridge) thing);
+            return new HwSerialBridgeHandler((Bridge) thing, serialPortManager);
         } else if (thingTypeUID.equals(HwConstants.THING_TYPE_HWDIMMER)) {
             return new HwDimmerHandler(thing);
         }
