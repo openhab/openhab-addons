@@ -106,16 +106,16 @@ public class DynamoDBQueryUtils {
         final Condition timeCondition;
         if (!hasBegin && !hasEnd) {
             timeCondition = null;
-        } else if (!hasBegin && hasEnd) {
-            timeCondition = new Condition().withComparisonOperator(ComparisonOperator.LE).withAttributeValueList(
-                    new AttributeValue().withS(AbstractDynamoDBItem.DATEFORMATTER.format(filter.getEndDate())));
         } else if (hasBegin && !hasEnd) {
             timeCondition = new Condition().withComparisonOperator(ComparisonOperator.GE).withAttributeValueList(
-                    new AttributeValue().withS(AbstractDynamoDBItem.DATEFORMATTER.format(filter.getBeginDate())));
+                    new AttributeValue().withS(filter.getBeginDateZoned().format(AbstractDynamoDBItem.DATEFORMATTER)));
+        } else if (!hasBegin && hasEnd) {
+            timeCondition = new Condition().withComparisonOperator(ComparisonOperator.LE).withAttributeValueList(
+                    new AttributeValue().withS(filter.getEndDateZoned().format(AbstractDynamoDBItem.DATEFORMATTER)));
         } else {
             timeCondition = new Condition().withComparisonOperator(ComparisonOperator.BETWEEN).withAttributeValueList(
-                    new AttributeValue().withS(AbstractDynamoDBItem.DATEFORMATTER.format(filter.getBeginDate())),
-                    new AttributeValue().withS(AbstractDynamoDBItem.DATEFORMATTER.format(filter.getEndDate())));
+                    new AttributeValue().withS(filter.getBeginDateZoned().format(AbstractDynamoDBItem.DATEFORMATTER)),
+                    new AttributeValue().withS(filter.getEndDateZoned().format(AbstractDynamoDBItem.DATEFORMATTER)));
         }
         return timeCondition;
     }

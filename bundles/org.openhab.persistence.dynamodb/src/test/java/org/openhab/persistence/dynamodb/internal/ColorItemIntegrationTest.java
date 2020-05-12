@@ -13,7 +13,7 @@
 package org.openhab.persistence.dynamodb.internal;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -52,15 +52,15 @@ public class ColorItemIntegrationTest extends AbstractTwoItemIntegrationTest {
     public static void storeData() throws InterruptedException {
         ColorItem item = (ColorItem) ITEMS.get(NAME);
         item.setState(STATE1);
-        beforeStore = new Date();
+        beforeStore = ZonedDateTime.now();
         Thread.sleep(10);
         service.store(item);
-        afterStore1 = new Date();
+        afterStore1 = ZonedDateTime.now();
         Thread.sleep(10);
         item.setState(STATE2);
         service.store(item);
         Thread.sleep(10);
-        afterStore2 = new Date();
+        afterStore2 = ZonedDateTime.now();
 
         LOGGER.info("Created item between {} and {}", AbstractDynamoDBItem.DATEFORMATTER.format(beforeStore),
                 AbstractDynamoDBItem.DATEFORMATTER.format(afterStore1));

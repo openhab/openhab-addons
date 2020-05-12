@@ -14,7 +14,7 @@ package org.openhab.persistence.dynamodb.internal;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Date;
+import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -32,24 +32,24 @@ import org.openhab.core.types.State;
 public class CallItemIntegrationTest extends AbstractTwoItemIntegrationTest {
 
     private static final String NAME = "call";
-    // values are encoded as dest##orig, ordering goes wrt strings
-    private static final StringListType STATE1 = new StringListType("orig1", "dest1");
-    private static final StringListType STATE2 = new StringListType("orig1", "dest3");
-    private static final StringListType STATE_BETWEEN = new StringListType("orig2", "dest2");
+    // values are encoded as part1,part2 - ordering goes wrt strings
+    private static final StringListType STATE1 = new StringListType("part1", "foo");
+    private static final StringListType STATE2 = new StringListType("part3", "bar");
+    private static final StringListType STATE_BETWEEN = new StringListType("part2", "zzz");
 
     @BeforeClass
     public static void storeData() throws InterruptedException {
         CallItem item = (CallItem) ITEMS.get(NAME);
         item.setState(STATE1);
-        beforeStore = new Date();
+        beforeStore = ZonedDateTime.now();
         Thread.sleep(10);
         service.store(item);
-        afterStore1 = new Date();
+        afterStore1 = ZonedDateTime.now();
         Thread.sleep(10);
         item.setState(STATE2);
         service.store(item);
         Thread.sleep(10);
-        afterStore2 = new Date();
+        afterStore2 = ZonedDateTime.now();
 
         LOGGER.info("Created item between {} and {}", AbstractDynamoDBItem.DATEFORMATTER.format(beforeStore),
                 AbstractDynamoDBItem.DATEFORMATTER.format(afterStore1));

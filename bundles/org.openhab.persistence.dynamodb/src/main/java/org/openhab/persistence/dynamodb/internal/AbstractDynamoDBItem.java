@@ -14,13 +14,13 @@ package org.openhab.persistence.dynamodb.internal;
 
 import java.math.BigDecimal;
 import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TimeZone;
 
 import org.openhab.core.items.Item;
 import org.openhab.core.library.items.CallItem;
@@ -58,11 +58,8 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
 
-    public static final SimpleDateFormat DATEFORMATTER = new SimpleDateFormat(DATE_FORMAT);
-
-    static {
-        DATEFORMATTER.setTimeZone(TimeZone.getTimeZone("UTC"));
-    }
+    public static final DateTimeFormatter DATEFORMATTER = DateTimeFormatter.ofPattern(DATE_FORMAT)
+            .withZone(ZoneId.of("UTC"));
 
     private static final String UNDEFINED_PLACEHOLDER = "<org.openhab.core.types.UnDefType.UNDEF>";
 
@@ -117,15 +114,10 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
             return new DynamoDBBigDecimalItem(name,
                     ((UpDownType) state) == UpDownType.UP ? BigDecimal.ONE : BigDecimal.ZERO, time);
         } else if (state instanceof DateTimeType) {
-            synchronized (DATEFORMATTER) {
-                return new DynamoDBStringItem(name,
-                        DATEFORMATTER.format(((DateTimeType) state).getCalendar().getTime()), time);
-            }
+            return new DynamoDBStringItem(name, ((DateTimeType) state).getZonedDateTime().format(DATEFORMATTER), time);
         } else if (state instanceof UnDefType) {
             return new DynamoDBStringItem(name, UNDEFINED_PLACEHOLDER, time);
         } else if (state instanceof StringListType) {
-            // StringListType.format method instead of toString since that matches the format expected by the String
-            // constructor
             return new DynamoDBStringItem(name, state.toFullString(), time);
         } else {
             // HSBType, PointType and StringType
@@ -145,17 +137,17 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
                 } else if (item instanceof LocationItem) {
                     state[0] = new PointType(dynamoStringItem.getState());
                 } else if (item instanceof DateTimeItem) {
-                    Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
                     try {
-                        synchronized (DATEFORMATTER) {
-                            cal.setTime(DATEFORMATTER.parse(dynamoStringItem.getState()));
-                        }
-                    } catch (ParseException e) {
+                        // Parse ZoneDateTime from string. DATEFORMATTER assumes UTC in case it is not clear
+                        // from the string (should be).
+                        // We convert to default/local timezone for user convenience (e.g. display)
+                        state[0] = new DateTimeType(ZonedDateTime.parse(dynamoStringItem.getState(), DATEFORMATTER)
+                                .withZoneSameInstant(ZoneId.systemDefault()));
+                    } catch (DateTimeParseException e) {
                         logger.warn("Failed to parse {} as date. Outputting UNDEF instead",
                                 dynamoStringItem.getState());
                         state[0] = UnDefType.UNDEF;
                     }
-                    state[0] = new DateTimeType(cal);
                 } else if (dynamoStringItem.getState().equals(UNDEFINED_PLACEHOLDER)) {
                     state[0] = UnDefType.UNDEF;
                 } else if (item instanceof CallItem) {
