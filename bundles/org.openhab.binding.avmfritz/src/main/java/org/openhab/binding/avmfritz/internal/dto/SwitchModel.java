@@ -10,16 +10,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.avmfritz.internal.ahamodel;
+package org.openhab.binding.avmfritz.internal.dto;
 
 import static org.openhab.binding.avmfritz.internal.BindingConstants.*;
 
 import java.math.BigDecimal;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-
-import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * See {@link DeviceListModel}.
@@ -28,8 +28,9 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * @author Christoph Weitkamp - Added new channels `locked`, `mode` and `radiator_mode`
  *
  */
-@XmlRootElement(name = "switch")
+@XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(propOrder = { "state", "mode", "lock", "devicelock" })
+@XmlRootElement(name = "switch")
 public class SwitchModel {
     public static final BigDecimal ON = BigDecimal.ONE;
     public static final BigDecimal OFF = BigDecimal.ZERO;
@@ -79,7 +80,7 @@ public class SwitchModel {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("state", getState()).append("mode", getMode()).append("lock", getLock())
-                .append("devicelock", getDevicelock()).toString();
+        return new StringBuilder().append("[state=").append(state).append(",mode=").append(getMode()).append(",lock=")
+                .append(lock).append(",devicelock=").append(devicelock).append("]").toString();
     }
 }

@@ -10,14 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.avmfritz.internal.ahamodel;
+package org.openhab.binding.avmfritz.internal.dto;
 
 import java.math.BigDecimal;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-
-import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * See {@link DeviceListModel}.
@@ -25,8 +25,9 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * @author Robert Bausdorf - Initial contribution
  * @author Christoph Weitkamp - Refactoring of temperature conversion from celsius to FRITZ!Box values
  */
-@XmlRootElement(name = "temperature")
+@XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(propOrder = { "celsius", "offset" })
+@XmlRootElement(name = "temperature")
 public class TemperatureModel {
     public static final BigDecimal TEMP_FACTOR = new BigDecimal("0.1");
 
@@ -51,6 +52,7 @@ public class TemperatureModel {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("celsius", getCelsius()).append("offset", getOffset()).toString();
+        return new StringBuilder().append("[celsius=").append(getCelsius()).append(",offset=").append(getOffset())
+                .append("]").toString();
     }
 }

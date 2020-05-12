@@ -10,19 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.avmfritz.internal.ahamodel.templates;
+package org.openhab.binding.avmfritz.internal.dto.templates;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
-
-import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * See {@link TemplateListModel}.
  *
  * @author Christoph Weitkamp - Initial contribution
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "template")
 public class TemplateModel {
 
@@ -69,8 +70,9 @@ public class TemplateModel {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("identifier", getIdentifier()).append("id", getTemplateId())
-                .append("functionbitmask", functionbitmask).append("applymask", applymask).append("name", getName())
-                .append("devices", getDeviceList()).append("applymasks", getApplyMaskList()).toString();
+        return new StringBuilder().append("[identifier=").append(identifier).append(",id=").append(templateId)
+                .append(",functionbitmask=").append(functionbitmask).append(",applymask=").append(applymask)
+                .append(",name=").append(name).append(",devices=").append(deviceList).append(",applymasks=")
+                .append(applyMaskList).append("]").toString();
     }
 }

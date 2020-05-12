@@ -13,7 +13,7 @@
 package org.openhab.binding.avmfritz.internal.handler;
 
 import static org.openhab.binding.avmfritz.internal.BindingConstants.*;
-import static org.openhab.binding.avmfritz.internal.ahamodel.HeatingModel.*;
+import static org.openhab.binding.avmfritz.internal.dto.HeatingModel.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -51,12 +51,12 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.avmfritz.internal.ahamodel.AVMFritzBaseModel;
-import org.openhab.binding.avmfritz.internal.ahamodel.AlertModel;
-import org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel;
-import org.openhab.binding.avmfritz.internal.ahamodel.GroupModel;
-import org.openhab.binding.avmfritz.internal.ahamodel.SwitchModel;
 import org.openhab.binding.avmfritz.internal.config.AVMFritzDeviceConfiguration;
+import org.openhab.binding.avmfritz.internal.dto.AVMFritzBaseModel;
+import org.openhab.binding.avmfritz.internal.dto.AlertModel;
+import org.openhab.binding.avmfritz.internal.dto.DeviceModel;
+import org.openhab.binding.avmfritz.internal.dto.GroupModel;
+import org.openhab.binding.avmfritz.internal.dto.SwitchModel;
 import org.openhab.binding.avmfritz.internal.hardware.FritzAhaStatusListener;
 import org.openhab.binding.avmfritz.internal.hardware.FritzAhaWebInterface;
 import org.slf4j.Logger;
@@ -92,31 +92,13 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
     @Override
     public void initialize() {
         config = getConfigAs(AVMFritzDeviceConfiguration.class);
+
         String newIdentifier = config.ain;
         if (newIdentifier == null || newIdentifier.trim().isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "The 'ain' parameter must be configured.");
         } else {
-            Bridge bridge = getBridge();
-            if (bridge != null) {
-                BridgeHandler handler = bridge.getHandler();
-                if (handler instanceof AVMFritzBaseBridgeHandler) {
-                    ((AVMFritzBaseBridgeHandler) handler).registerStatusListener(this);
-                }
-            }
-
             updateStatus(ThingStatus.UNKNOWN);
-        }
-    }
-
-    @Override
-    public void dispose() {
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            BridgeHandler handler = bridge.getHandler();
-            if (handler instanceof AVMFritzBaseBridgeHandler) {
-                ((AVMFritzBaseBridgeHandler) handler).unregisterStatusListener(this);
-            }
         }
     }
 
@@ -138,13 +120,6 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
 
             updateProperties(device);
 
-            if (device instanceof DeviceModel && device.isTempSensor()
-                    && ((DeviceModel) device).getTemperature() != null) {
-                updateThingChannelState(CHANNEL_TEMPERATURE,
-                        new QuantityType<>(((DeviceModel) device).getTemperature().getCelsius(), SIUnits.CELSIUS));
-                updateThingChannelConfiguration(CHANNEL_TEMPERATURE, CONFIG_CHANNEL_TEMP_OFFSET,
-                        ((DeviceModel) device).getTemperature().getOffset());
-            }
             if (device.isPowermeter() && device.getPowermeter() != null) {
                 updateThingChannelState(CHANNEL_ENERGY,
                         new QuantityType<>(device.getPowermeter().getEnergy(), SmartHomeUnits.WATT_HOUR));
@@ -213,26 +188,34 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                             BATTERY_ON.equals(device.getHkr().getBatterylow()) ? OnOffType.ON : OnOffType.OFF);
                 }
             }
-            if (device instanceof DeviceModel && device.isAlarmSensor() && ((DeviceModel) device).getAlert() != null) {
-                updateThingChannelState(CHANNEL_CONTACT_STATE,
-                        AlertModel.ON.equals(((DeviceModel) device).getAlert().getState()) ? OpenClosedType.OPEN
-                                : OpenClosedType.CLOSED);
-            }
-            if (device instanceof DeviceModel && device.isButton() && ((DeviceModel) device).getButton() != null) {
-                if (((DeviceModel) device).getButton().getLastpressedtimestamp() == 0) {
-                    updateThingChannelState(CHANNEL_LAST_CHANGE, UnDefType.UNDEF);
-                } else {
-                    ZoneId zoneId = ZoneId.systemDefault();
-                    ZonedDateTime timestamp = ZonedDateTime.ofInstant(
-                            Instant.ofEpochSecond(((DeviceModel) device).getButton().getLastpressedtimestamp()),
-                            zoneId);
-                    Instant then = timestamp.toInstant();
-                    ZonedDateTime now = ZonedDateTime.now(zoneId);
-                    Instant someSecondsEarlier = now.minusSeconds(15).toInstant();
-                    if (then.isAfter(someSecondsEarlier) && then.isBefore(now.toInstant())) {
-                        triggerThingChannel(CHANNEL_PRESS, CommonTriggerEvents.PRESSED);
+            if (device instanceof DeviceModel) {
+                DeviceModel deviceModel = (DeviceModel) device;
+                if (deviceModel.isTempSensor() && deviceModel.getTemperature() != null) {
+                    updateThingChannelState(CHANNEL_TEMPERATURE,
+                            new QuantityType<>(deviceModel.getTemperature().getCelsius(), SIUnits.CELSIUS));
+                    updateThingChannelConfiguration(CHANNEL_TEMPERATURE, CONFIG_CHANNEL_TEMP_OFFSET,
+                            deviceModel.getTemperature().getOffset());
+                }
+                if (deviceModel.isAlarmSensor() && deviceModel.getAlert() != null) {
+                    updateThingChannelState(CHANNEL_CONTACT_STATE,
+                            AlertModel.ON.equals(deviceModel.getAlert().getState()) ? OpenClosedType.OPEN
+                                    : OpenClosedType.CLOSED);
+                }
+                if (deviceModel.isButton() && deviceModel.getButton() != null) {
+                    if (deviceModel.getButton().getLastpressedtimestamp() == 0) {
+                        updateThingChannelState(CHANNEL_LAST_CHANGE, UnDefType.UNDEF);
+                    } else {
+                        ZoneId zoneId = ZoneId.systemDefault();
+                        ZonedDateTime timestamp = ZonedDateTime.ofInstant(
+                                Instant.ofEpochSecond(deviceModel.getButton().getLastpressedtimestamp()), zoneId);
+                        Instant then = timestamp.toInstant();
+                        ZonedDateTime now = ZonedDateTime.now(zoneId);
+                        Instant someSecondsEarlier = now.minusSeconds(15).toInstant();
+                        if (then.isAfter(someSecondsEarlier) && then.isBefore(now.toInstant())) {
+                            triggerThingChannel(CHANNEL_PRESS, CommonTriggerEvents.PRESSED);
+                        }
+                        updateThingChannelState(CHANNEL_LAST_CHANGE, new DateTimeType(timestamp));
                     }
-                    updateThingChannelState(CHANNEL_LAST_CHANGE, new DateTimeType(timestamp));
                 }
             }
         }
@@ -246,9 +229,12 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
     private void updateProperties(AVMFritzBaseModel device) {
         Map<String, String> editProperties = editProperties();
         editProperties.put(Thing.PROPERTY_FIRMWARE_VERSION, device.getFirmwareVersion());
-        if (device instanceof GroupModel && ((GroupModel) device).getGroupinfo() != null) {
-            editProperties.put(PROPERTY_MASTER, ((GroupModel) device).getGroupinfo().getMasterdeviceid());
-            editProperties.put(PROPERTY_MEMBERS, ((GroupModel) device).getGroupinfo().getMembers());
+        if (device instanceof GroupModel) {
+            GroupModel groupModel = (GroupModel) device;
+            if (groupModel.getGroupinfo() != null) {
+                editProperties.put(PROPERTY_MASTER, groupModel.getGroupinfo().getMasterdeviceid());
+                editProperties.put(PROPERTY_MEMBERS, groupModel.getGroupinfo().getMembers());
+            }
         }
         updateProperties(editProperties);
     }

@@ -10,22 +10,23 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.avmfritz.internal.ahamodel;
+package org.openhab.binding.avmfritz.internal.dto;
 
 import java.math.BigDecimal;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-
-import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * See {@link DeviceListModel}.
  *
  * @author Christoph Weitkamp - Initial contribution
  */
-@XmlRootElement(name = "alert")
+@XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(propOrder = { "state" })
+@XmlRootElement(name = "alert")
 public class AlertModel {
     public static final BigDecimal ON = BigDecimal.ONE;
     public static final BigDecimal OFF = BigDecimal.ZERO;
@@ -42,6 +43,6 @@ public class AlertModel {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("state", getState()).toString();
+        return new StringBuilder().append("[state=").append(state).append("]").toString();
     }
 }
