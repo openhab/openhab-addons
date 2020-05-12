@@ -19,9 +19,10 @@ import java.io.StringReader;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.openhab.binding.avmfritz.internal.ahamodel.DeviceListModel;
+import org.openhab.binding.avmfritz.internal.dto.DeviceListModel;
 import org.openhab.binding.avmfritz.internal.handler.AVMFritzBaseBridgeHandler;
 import org.openhab.binding.avmfritz.internal.hardware.FritzAhaWebInterface;
 import org.openhab.binding.avmfritz.internal.util.JAXBUtils;
@@ -35,9 +36,12 @@ import org.slf4j.LoggerFactory;
  * @author Robert Bausdorf - Initial contribution
  * @author Christoph Weitkamp - Added support for groups
  */
+@NonNullByDefault
 public class FritzAhaUpdateCallback extends FritzAhaReauthCallback {
 
     private final Logger logger = LoggerFactory.getLogger(FritzAhaUpdateCallback.class);
+
+    private static final String WEBSERVICE_COMMAND = "switchcmd=getdevicelistinfos";
 
     private final AVMFritzBaseBridgeHandler handler;
 
@@ -48,7 +52,7 @@ public class FritzAhaUpdateCallback extends FritzAhaReauthCallback {
      * @param handler Bridge handler that will update things.
      */
     public FritzAhaUpdateCallback(FritzAhaWebInterface webIface, AVMFritzBaseBridgeHandler handler) {
-        super(WEBSERVICE_PATH, "switchcmd=getdevicelistinfos", webIface, GET, 1);
+        super(WEBSERVICE_PATH, WEBSERVICE_COMMAND, webIface, GET, 1);
         this.handler = handler;
     }
 
@@ -58,8 +62,8 @@ public class FritzAhaUpdateCallback extends FritzAhaReauthCallback {
         logger.trace("Received State response {}", response);
         if (isValidRequest()) {
             try {
-                Unmarshaller u = JAXBUtils.JAXBCONTEXT_DEVICES.createUnmarshaller();
-                DeviceListModel model = (DeviceListModel) u.unmarshal(new StringReader(response));
+                Unmarshaller unmarshaller = JAXBUtils.JAXBCONTEXT_DEVICES.createUnmarshaller();
+                DeviceListModel model = (DeviceListModel) unmarshaller.unmarshal(new StringReader(response));
                 if (model != null) {
                     handler.onDeviceListAdded(model.getDevicelist());
                 } else {

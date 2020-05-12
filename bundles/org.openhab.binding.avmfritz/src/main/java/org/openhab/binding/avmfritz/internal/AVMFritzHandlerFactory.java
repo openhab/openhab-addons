@@ -73,12 +73,12 @@ public class AVMFritzHandlerFactory extends BaseThingHandlerFactory {
             return new BoxHandler((Bridge) thing, httpClient, stateDescriptionProvider);
         } else if (PL546E_STANDALONE_THING_TYPE.equals(thingTypeUID)) {
             return new Powerline546EHandler((Bridge) thing, httpClient, stateDescriptionProvider);
-        } else if (SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thing.getThingTypeUID())) {
+        } else if (SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new DeviceHandler(thing);
         } else if (SUPPORTED_GROUP_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new GroupHandler(thing);
         } else {
-            logger.error("ThingHandler not found for {}", thing.getThingTypeUID());
+            logger.error("ThingHandler not found for {}", thingTypeUID);
         }
         return null;
     }

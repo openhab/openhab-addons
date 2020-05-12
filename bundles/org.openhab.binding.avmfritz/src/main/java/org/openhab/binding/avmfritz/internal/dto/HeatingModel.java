@@ -10,17 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.avmfritz.internal.ahamodel;
+package org.openhab.binding.avmfritz.internal.dto;
 
 import static org.openhab.binding.avmfritz.internal.BindingConstants.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-
-import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * See {@link DeviceListModel}.
@@ -29,9 +29,10 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet DECT
  * @author Christoph Weitkamp - Added channel 'battery_level'
  */
-@XmlRootElement(name = "hkr")
+@XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(propOrder = { "tist", "tsoll", "absenk", "komfort", "lock", "devicelock", "errorcode", "batterylow",
         "windowopenactiv", "battery", "nextchange", "summeractive", "holidayactive" })
+@XmlRootElement(name = "hkr")
 public class HeatingModel {
     public static final BigDecimal TEMP_FACTOR = new BigDecimal("0.5");
     public static final BigDecimal BIG_DECIMAL_TWO = new BigDecimal("2.0");
@@ -195,12 +196,12 @@ public class HeatingModel {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("tist", getTist()).append("tsoll", getTsoll())
-                .append("absenk", getAbsenk()).append("komfort", getKomfort()).append("lock", getLock())
-                .append("devicelock", getDevicelock()).append("errorcode", getErrorcode())
-                .append("batterylow", getBatterylow()).append("windowopenactiv", getWindowopenactiv())
-                .append("battery", getBattery()).append("nextchange", getNextchange())
-                .append("summeractive", getSummeractive()).append("holidayactive", getHolidayactive()).toString();
+        return new StringBuilder().append("[tist=").append(tist).append(",tsoll=").append(tsoll).append(",absenk=")
+                .append(absenk).append(",komfort=").append(komfort).append(",lock=").append(lock).append(",devicelock=")
+                .append(devicelock).append(",errorcode=").append(errorcode).append(",batterylow=").append(batterylow)
+                .append(",windowopenactiv=").append(windowopenactiv).append(",battery=").append(battery)
+                .append(",nextchange=").append(nextchange).append(",summeractive=").append(summeractive)
+                .append(",holidayactive=").append(holidayactive).append("]").toString();
     }
 
     /**
@@ -253,6 +254,7 @@ public class HeatingModel {
         return TEMP_FACTOR.multiply(divisor);
     }
 
+    @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(propOrder = { "endperiod", "tchange" })
     public static class NextChangeModel {
         private int endperiod;
@@ -276,8 +278,8 @@ public class HeatingModel {
 
         @Override
         public String toString() {
-            return new ToStringBuilder(this).append("endperiod", getEndperiod()).append("tchange", getTchange())
-                    .toString();
+            return new StringBuilder().append("[endperiod=").append(endperiod).append(",tchange=").append(tchange)
+                    .append("]").toString();
         }
     }
 }

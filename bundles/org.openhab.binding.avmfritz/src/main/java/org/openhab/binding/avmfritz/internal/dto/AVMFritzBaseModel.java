@@ -10,12 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.avmfritz.internal.ahamodel;
+package org.openhab.binding.avmfritz.internal.dto;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-
-import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * See {@link DeviceListModel}.
@@ -182,15 +180,15 @@ public abstract class AVMFritzBaseModel {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("ain", getIdentifier()).append("bitmask", bitmask)
-                .append("isHANFUNDevice", isHANFUNDevice()).append("isButton", isButton())
-                .append("isAlarmSensor", isAlarmSensor()).append("isSwitchableOutlet", isSwitchableOutlet())
-                .append("isTempSensor", isTempSensor()).append("isPowermeter", isPowermeter())
-                .append("isDectRepeater", isDectRepeater()).append("isHeatingThermostat", isHeatingThermostat())
-                .append("isMicrophone", isMicrophone()).append("isHANFUNUnit", isHANFUNUnit())
-                .append("id", getDeviceId()).append("manufacturer", getManufacturer())
-                .append("productname", getProductName()).append("fwversion", getFirmwareVersion())
-                .append("present", getPresent()).append("name", getName()).append(getSwitch()).append(getPowermeter())
-                .append(getHkr()).toString();
+        return new StringBuilder().append("[ain=").append(ident).append(",bitmask=").append(bitmask)
+                .append(",isHANFUNDevice=").append(isHANFUNDevice()).append(",isButton=").append(isButton())
+                .append(",isAlarmSensor=").append(isAlarmSensor()).append(",isSwitchableOutlet=")
+                .append(isSwitchableOutlet()).append(",isTempSensor=").append(isTempSensor()).append(",isPowermeter=")
+                .append(isPowermeter()).append(",isDectRepeater=").append(isDectRepeater())
+                .append(",isHeatingThermostat=").append(isHeatingThermostat()).append(",isMicrophone=")
+                .append(isMicrophone()).append(",isHANFUNUnit=").append(isHANFUNUnit()).append(",id=").append(deviceId)
+                .append(",manufacturer=").append(deviceManufacturer).append(",productname=").append(productName)
+                .append(",fwversion=").append(firmwareVersion).append(",present=").append(present).append(",name=")
+                .append(name).append(getSwitch()).append(getPowermeter()).append(getHkr()).append("]").toString();
     }
 }

@@ -10,17 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.avmfritz.internal.ahamodel;
+package org.openhab.binding.avmfritz.internal.dto;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
-
-import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * See {@link AVMFritzBaseModel}.
  *
  * @author Christoph Weitkamp - Initial contribution
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "group")
 public class GroupModel extends AVMFritzBaseModel {
 
@@ -36,9 +37,10 @@ public class GroupModel extends AVMFritzBaseModel {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append(super.toString()).append(getGroupinfo()).toString();
+        return new StringBuilder().append(super.toString()).append(groupinfo).toString();
     }
 
+    @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(propOrder = { "masterdeviceid", "members" })
     public static class GroupInfoModel {
         private String masterdeviceid;
@@ -62,8 +64,8 @@ public class GroupModel extends AVMFritzBaseModel {
 
         @Override
         public String toString() {
-            return new ToStringBuilder(this).append("masterdeviceid", getMasterdeviceid())
-                    .append("members", getMembers()).toString();
+            return new StringBuilder().append("[masterdeviceid=").append(masterdeviceid).append(",members=")
+                    .append(members).append("]").toString();
         }
     }
 }

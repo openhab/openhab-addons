@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.avmfritz.internal.ahamodel;
+package org.openhab.binding.avmfritz.internal.dto;
 
 import static org.junit.Assert.*;
 import static org.openhab.binding.avmfritz.internal.BindingConstants.*;
@@ -22,6 +22,7 @@ import java.util.Optional;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Before;
 import org.junit.Test;
 import org.openhab.binding.avmfritz.internal.util.JAXBUtils;
@@ -33,11 +34,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author Christoph Weitkamp - Initial contribution
  */
+@NonNullByDefault
 public class AVMFritzDeviceListModelTest {
 
     private final Logger logger = LoggerFactory.getLogger(AVMFritzDeviceListModelTest.class);
 
-    private DeviceListModel devices;
+    private @NonNullByDefault({}) DeviceListModel devices;
 
     @Before
     public void setUp() {
