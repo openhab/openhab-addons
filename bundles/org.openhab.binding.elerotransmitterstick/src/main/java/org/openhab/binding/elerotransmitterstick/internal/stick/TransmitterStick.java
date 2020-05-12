@@ -28,6 +28,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.elerotransmitterstick.internal.config.EleroTransmitterStickConfig;
 import org.openhab.binding.elerotransmitterstick.internal.handler.StatusListener;
 import org.slf4j.Logger;
@@ -42,15 +43,18 @@ public class TransmitterStick {
     private final StickListener listener;
 
     private EleroTransmitterStickConfig config;
+    private SerialPortManager serialPortManager;
     private CommandWorker worker;
 
     public TransmitterStick(StickListener l) {
         listener = l;
     }
 
-    public synchronized void initialize(EleroTransmitterStickConfig stickConfig, ScheduledExecutorService scheduler) {
+    public synchronized void initialize(EleroTransmitterStickConfig stickConfig, ScheduledExecutorService scheduler,
+            SerialPortManager serialPortManager) {
         logger.debug("Initializing Transmitter Stick...");
         config = stickConfig;
+        this.serialPortManager = serialPortManager;
         worker = new CommandWorker();
         scheduler.schedule(worker, 0, TimeUnit.MILLISECONDS);
         logger.debug("Transmitter Stick initialized, worker running.");
@@ -206,7 +210,7 @@ public class TransmitterStick {
         };
 
         CommandWorker() {
-            connection = new SerialConnection(config.portName);
+            connection = new SerialConnection(config.portName, serialPortManager);
             updateInterval = config.updateInterval;
         }
 
