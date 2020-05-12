@@ -10,14 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.avmfritz.internal.ahamodel;
+package org.openhab.binding.avmfritz.internal.dto;
 
 import java.math.BigDecimal;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-
-import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * See {@link DeviceListModel}.
@@ -25,8 +25,9 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * @author Robert Bausdorf - Initial contribution
  * @author Christoph Weitkamp - Added channel 'voltage'
  */
-@XmlRootElement(name = "powermeter")
+@XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(propOrder = { "voltage", "power", "energy" })
+@XmlRootElement(name = "powermeter")
 public class PowerMeterModel {
     public static final BigDecimal VOLTAGE_FACTOR = new BigDecimal("0.001");
     public static final BigDecimal POWER_FACTOR = new BigDecimal("0.001");
@@ -61,7 +62,7 @@ public class PowerMeterModel {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("voltage", getVoltage()).append("power", this.getPower())
-                .append("energy", this.getEnergy()).toString();
+        return new StringBuilder().append("[voltage=").append(getVoltage()).append(",power=").append(getPower())
+                .append(",energy=").append(getEnergy()).append("]").toString();
     }
 }

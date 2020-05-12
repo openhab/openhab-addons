@@ -19,6 +19,7 @@ import static org.openhab.binding.avmfritz.internal.BindingConstants.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -39,19 +40,19 @@ import org.openhab.binding.avmfritz.internal.AVMFritzDynamicStateDescriptionProv
  *
  * @author Christoph Weitkamp - Initial contribution
  */
+@NonNullByDefault
 public abstract class AVMFritzThingHandlerOSGiTest extends JavaOSGiTest {
 
-    private static HttpClient httpClient;
+    private static HttpClient httpClient = new HttpClient();
 
     private VolatileStorageService volatileStorageService = new VolatileStorageService();
-    private ManagedThingProvider managedThingProvider;
+    private @NonNullByDefault({}) ManagedThingProvider managedThingProvider;
 
-    protected Bridge bridge;
-    protected BoxHandler bridgeHandler;
+    protected @NonNullByDefault({}) Bridge bridge;
+    protected @NonNullByDefault({}) BoxHandler bridgeHandler;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        httpClient = new HttpClient();
         httpClient.start();
     }
 

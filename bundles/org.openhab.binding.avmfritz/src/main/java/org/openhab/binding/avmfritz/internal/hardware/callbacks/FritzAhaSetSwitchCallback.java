@@ -14,6 +14,7 @@ package org.openhab.binding.avmfritz.internal.hardware.callbacks;
 
 import static org.eclipse.jetty.http.HttpMethod.GET;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.avmfritz.internal.hardware.FritzAhaWebInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,12 +24,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author Robert Bausdorf - Initial contribution
  */
+@NonNullByDefault
 public class FritzAhaSetSwitchCallback extends FritzAhaReauthCallback {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-    /**
-     * Item to update
-     */
-    private String itemName;
+
+    private final Logger logger = LoggerFactory.getLogger(FritzAhaSetSwitchCallback.class);
+
+    private final String ain;
 
     /**
      * Constructor
@@ -38,16 +39,16 @@ public class FritzAhaSetSwitchCallback extends FritzAhaReauthCallback {
      * @param switchOn true - switch on, false - switch off
      */
     public FritzAhaSetSwitchCallback(FritzAhaWebInterface webIface, String ain, boolean switchOn) {
-        super(WEBSERVICE_PATH, "ain=" + ain + "&switchcmd=" + (switchOn ? "setswitchon" : "setswitchoff"), webIface,
+        super(WEBSERVICE_PATH, "switchcmd=" + (switchOn ? "setswitchon" : "setswitchoff") + "&ain=" + ain, webIface,
                 GET, 1);
-        itemName = ain;
+        this.ain = ain;
     }
 
     @Override
     public void execute(int status, String response) {
         super.execute(status, response);
         if (isValidRequest()) {
-            logger.debug("Received State response {} for item {}", response, itemName);
+            logger.debug("Received response '{}' for item '{}'", response, ain);
         }
     }
 }

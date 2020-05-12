@@ -13,7 +13,7 @@
 package org.openhab.binding.avmfritz.internal.handler;
 
 import static org.openhab.binding.avmfritz.internal.BindingConstants.*;
-import static org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel.ETSUnitInfoModel.*;
+import static org.openhab.binding.avmfritz.internal.dto.DeviceModel.ETSUnitInfoModel.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,11 +34,13 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -46,12 +48,12 @@ import org.eclipse.smarthome.core.types.StateOption;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.avmfritz.internal.AVMFritzDynamicStateDescriptionProvider;
 import org.openhab.binding.avmfritz.internal.BindingConstants;
-import org.openhab.binding.avmfritz.internal.ahamodel.AVMFritzBaseModel;
-import org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel;
-import org.openhab.binding.avmfritz.internal.ahamodel.GroupModel;
-import org.openhab.binding.avmfritz.internal.ahamodel.templates.TemplateModel;
 import org.openhab.binding.avmfritz.internal.config.AVMFritzBoxConfiguration;
 import org.openhab.binding.avmfritz.internal.discovery.AVMFritzDiscoveryService;
+import org.openhab.binding.avmfritz.internal.dto.AVMFritzBaseModel;
+import org.openhab.binding.avmfritz.internal.dto.DeviceModel;
+import org.openhab.binding.avmfritz.internal.dto.GroupModel;
+import org.openhab.binding.avmfritz.internal.dto.templates.TemplateModel;
 import org.openhab.binding.avmfritz.internal.hardware.FritzAhaStatusListener;
 import org.openhab.binding.avmfritz.internal.hardware.FritzAhaWebInterface;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaApplyTemplateCallback;
@@ -118,22 +120,53 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
+        boolean configValid = true;
+
         AVMFritzBoxConfiguration config = getConfigAs(AVMFritzBoxConfiguration.class);
 
-        this.refreshInterval = config.getPollingInterval();
-        this.connection = new FritzAhaWebInterface(config, this, httpClient);
-        if (config.getPassword() != null) {
+        String localIpAddress = config.ipAddress;
+        if (localIpAddress == null || localIpAddress.trim().isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "The 'ipAddress' parameter must be configured.");
+            configValid = false;
+        }
+        String localPassword = config.password;
+        if (localPassword == null || localPassword.trim().isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No password set.");
+            configValid = false;
+        }
+        refreshInterval = config.pollingInterval;
+        if (refreshInterval < 5) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "The 'pollingInterval' parameter must be greater then at least 5 seconds.");
+            configValid = false;
+        }
+
+        if (configValid) {
+            this.connection = new FritzAhaWebInterface(config, this, httpClient);
+
             stopPolling();
             startPolling();
-            updateStatus(ThingStatus.UNKNOWN);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No password set");
         }
     }
 
     @Override
     public void dispose() {
         stopPolling();
+    }
+
+    @Override
+    public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
+        if (childHandler instanceof FritzAhaStatusListener) {
+            registerStatusListener((FritzAhaStatusListener) childHandler);
+        }
+    }
+
+    @Override
+    public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
+        if (childHandler instanceof FritzAhaStatusListener) {
+            unregisterStatusListener((FritzAhaStatusListener) childHandler);
+        }
     }
 
     @Override
@@ -224,24 +257,24 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     public void onDeviceListAdded(List<AVMFritzBaseModel> deviceList) {
         final Map<String, AVMFritzBaseModel> deviceIdentifierMap = deviceList.stream()
                 .collect(Collectors.toMap(it -> it.getIdentifier(), Function.identity()));
-        getThing().getThings().stream().forEach(thing -> {
-            final AVMFritzBaseThingHandler handler = (AVMFritzBaseThingHandler) thing.getHandler();
-            if (handler != null) {
+        getThing().getThings().forEach(childThing -> {
+            final AVMFritzBaseThingHandler childHandler = (AVMFritzBaseThingHandler) childThing.getHandler();
+            if (childHandler != null) {
                 final Optional<AVMFritzBaseModel> optionalDevice = Optional
-                        .ofNullable(deviceIdentifierMap.get(handler.getIdentifier()));
+                        .ofNullable(deviceIdentifierMap.get(childHandler.getIdentifier()));
                 if (optionalDevice.isPresent()) {
                     final AVMFritzBaseModel device = optionalDevice.get();
                     deviceList.remove(device);
-                    listeners.stream().forEach(listener -> listener.onDeviceUpdated(thing.getUID(), device));
+                    listeners.forEach(listener -> listener.onDeviceUpdated(childThing.getUID(), device));
                 } else {
-                    listeners.stream().forEach(listener -> listener.onDeviceGone(thing.getUID()));
+                    listeners.forEach(listener -> listener.onDeviceGone(childThing.getUID()));
                 }
             } else {
-                logger.debug("Handler missing for thing '{}'", thing.getUID());
+                logger.debug("Handler missing for thing '{}'", childThing.getUID());
             }
         });
         deviceList.forEach(device -> {
-            listeners.stream().forEach(listener -> listener.onDeviceAdded(device));
+            listeners.forEach(listener -> listener.onDeviceAdded(device));
         });
     }
 

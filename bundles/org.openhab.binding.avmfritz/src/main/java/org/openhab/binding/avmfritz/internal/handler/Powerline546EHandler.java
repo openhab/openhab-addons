@@ -45,10 +45,10 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.avmfritz.internal.AVMFritzDynamicStateDescriptionProvider;
 import org.openhab.binding.avmfritz.internal.BindingConstants;
-import org.openhab.binding.avmfritz.internal.ahamodel.AVMFritzBaseModel;
-import org.openhab.binding.avmfritz.internal.ahamodel.SwitchModel;
 import org.openhab.binding.avmfritz.internal.config.AVMFritzBoxConfiguration;
 import org.openhab.binding.avmfritz.internal.config.AVMFritzDeviceConfiguration;
+import org.openhab.binding.avmfritz.internal.dto.AVMFritzBaseModel;
+import org.openhab.binding.avmfritz.internal.dto.SwitchModel;
 import org.openhab.binding.avmfritz.internal.hardware.FritzAhaStatusListener;
 import org.openhab.binding.avmfritz.internal.hardware.FritzAhaWebInterface;
 import org.slf4j.Logger;
@@ -228,7 +228,7 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler implements F
     @Override
     public @Nullable ThingUID getThingUID(AVMFritzBaseModel device) {
         ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, getThingTypeId(device).concat("_Solo"));
-        String ipAddress = getConfigAs(AVMFritzBoxConfiguration.class).getIpAddress();
+        String ipAddress = getConfigAs(AVMFritzBoxConfiguration.class).ipAddress;
 
         if (PL546E_STANDALONE_THING_TYPE.equals(thingTypeUID)) {
             String thingName = "fritz.powerline".equals(ipAddress) ? ipAddress

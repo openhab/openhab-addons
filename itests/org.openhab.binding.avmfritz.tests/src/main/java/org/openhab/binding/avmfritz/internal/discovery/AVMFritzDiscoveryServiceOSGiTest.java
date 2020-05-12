@@ -23,6 +23,8 @@ import java.util.Collections;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryListener;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultFlag;
@@ -32,8 +34,8 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openhab.binding.avmfritz.internal.ahamodel.AVMFritzBaseModel;
-import org.openhab.binding.avmfritz.internal.ahamodel.DeviceListModel;
+import org.openhab.binding.avmfritz.internal.dto.AVMFritzBaseModel;
+import org.openhab.binding.avmfritz.internal.dto.DeviceListModel;
 import org.openhab.binding.avmfritz.internal.handler.AVMFritzThingHandlerOSGiTest;
 import org.openhab.binding.avmfritz.internal.util.JAXBUtils;
 
@@ -42,14 +44,31 @@ import org.openhab.binding.avmfritz.internal.util.JAXBUtils;
  *
  * @author Christoph Weitkamp - Initial contribution
  */
+@NonNullByDefault
 public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTest {
 
     private static final ThingUID BRIGE_THING_ID = new ThingUID("avmfritz:fritzbox:1");
 
-    private DiscoveryListener listener;
-    private DiscoveryResult discoveryResult;
+    private @Nullable DiscoveryResult discoveryResult;
+    private @NonNullByDefault({}) AVMFritzDiscoveryService discovery;
 
-    private AVMFritzDiscoveryService discovery;
+    private final DiscoveryListener listener = new DiscoveryListener() {
+        @Override
+        public void thingRemoved(DiscoveryService source, ThingUID thingUID) {
+            discoveryResult = null;
+        }
+
+        @Override
+        public void thingDiscovered(DiscoveryService source, DiscoveryResult result) {
+            discoveryResult = result;
+        }
+
+        @Override
+        public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
+                @Nullable Collection<ThingTypeUID> thingTypeUIDs, @Nullable ThingUID bridgeUID) {
+            return Collections.emptyList();
+        }
+    };
 
     @Override
     @Before
@@ -57,23 +76,6 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
         super.setUp();
         discovery = new AVMFritzDiscoveryService();
         discovery.setThingHandler(bridgeHandler);
-        listener = new DiscoveryListener() {
-            @Override
-            public void thingRemoved(DiscoveryService source, ThingUID thingUID) {
-                discoveryResult = null;
-            }
-
-            @Override
-            public void thingDiscovered(DiscoveryService source, DiscoveryResult result) {
-                discoveryResult = result;
-            }
-
-            @Override
-            public Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
-                    Collection<ThingTypeUID> thingTypeUIDs, ThingUID bridgeUID) {
-                return Collections.emptyList();
-            }
-        };
         discovery.addDiscoveryListener(listener);
     }
 

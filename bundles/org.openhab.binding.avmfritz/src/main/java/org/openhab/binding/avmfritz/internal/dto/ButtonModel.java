@@ -10,20 +10,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.avmfritz.internal.ahamodel;
+package org.openhab.binding.avmfritz.internal.dto;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-
-import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * See {@link DeviceListModel}.
  *
  * @author Christoph Weitkamp - Initial contribution
  */
-@XmlRootElement(name = "button")
+@XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(propOrder = { "lastpressedtimestamp" })
+@XmlRootElement(name = "button")
 public class ButtonModel {
 
     private int lastpressedtimestamp;
@@ -38,6 +39,6 @@ public class ButtonModel {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("lastpressedtimestamp", getLastpressedtimestamp()).toString();
+        return new StringBuilder().append("[lastpressedtimestamp=").append(lastpressedtimestamp).append("]").toString();
     }
 }

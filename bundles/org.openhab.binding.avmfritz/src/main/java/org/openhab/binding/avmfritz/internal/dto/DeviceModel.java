@@ -10,11 +10,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.avmfritz.internal.ahamodel;
+package org.openhab.binding.avmfritz.internal.dto;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
-
-import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * See {@link AVMFritzBaseModel}.
@@ -22,6 +22,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * @author Robert Bausdorf - Initial contribution
  * @author Christoph Weitkamp - Added support for groups
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "device")
 public class DeviceModel extends AVMFritzBaseModel {
 
@@ -64,10 +65,11 @@ public class DeviceModel extends AVMFritzBaseModel {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append(super.toString()).append(getTemperature()).append(getAlert())
-                .append(getButton()).append(getEtsiunitinfo()).toString();
+        return new StringBuilder().append(super.toString()).append(temperature).append(alert).append(button)
+                .append(etsiunitinfo).toString();
     }
 
+    @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(propOrder = { "etsideviceid", "unittype", "interfaces" })
     public static class ETSUnitInfoModel {
         public static final String HAN_FUN_UNITTYPE_SIMPLE_BUTTON = "273";
@@ -114,8 +116,8 @@ public class DeviceModel extends AVMFritzBaseModel {
 
         @Override
         public String toString() {
-            return new ToStringBuilder(this).append("etsideviceid", getEtsideviceid()).append("unittype", getUnittype())
-                    .append("interfaces", getInterfaces()).toString();
+            return new StringBuilder().append("[etsideviceid=").append(etsideviceid).append(",unittype=")
+                    .append(unittype).append(",interfaces=").append(interfaces).append("]").toString();
         }
     }
 }

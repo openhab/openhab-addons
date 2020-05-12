@@ -10,15 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.avmfritz.internal.ahamodel;
+package org.openhab.binding.avmfritz.internal.dto;
 
 import java.util.Collections;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * This JAXB model class maps the XML response to an <b>getdevicelistinfos</b>
@@ -76,14 +79,20 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Robert Bausdorf - Initial contribution
  * @author Christoph Weitkamp - Added support for groups
  */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType
 @XmlRootElement(name = "devicelist")
 public class DeviceListModel {
 
     @XmlAttribute(name = "version")
     private String apiVersion;
 
-    @XmlElements({ @XmlElement(name = "device", type = DeviceModel.class),
-            @XmlElement(name = "group", type = GroupModel.class) })
+    //@formatter:off
+    @XmlElements({
+        @XmlElement(name = "device", type = DeviceModel.class),
+        @XmlElement(name = "group", type = GroupModel.class)
+    })
+    //@formatter:on
     private List<AVMFritzBaseModel> devices;
 
     public List<AVMFritzBaseModel> getDevicelist() {
@@ -98,6 +107,12 @@ public class DeviceListModel {
     }
 
     public String getXmlApiVersion() {
-        return this.apiVersion;
+        return apiVersion;
+    }
+
+    @Override
+    public String toString() {
+        return new StringBuilder().append("[devices=").append(devices).append(",version=").append(apiVersion)
+                .append("]").toString();
     }
 }
