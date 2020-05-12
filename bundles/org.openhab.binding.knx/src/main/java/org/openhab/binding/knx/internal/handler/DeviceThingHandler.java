@@ -98,9 +98,9 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
 
     @Override
     public void dispose() {
-        super.dispose();
         cancelChannelFutures();
         freeGroupAdresses();
+        super.dispose();
     }
 
     private void cancelChannelFutures() {
