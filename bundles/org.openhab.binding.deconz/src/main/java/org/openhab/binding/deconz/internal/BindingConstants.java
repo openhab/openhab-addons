@@ -48,12 +48,14 @@ public class BindingConstants {
     public static final ThingTypeUID THING_TYPE_VIBRATION_SENSOR = new ThingTypeUID(BINDING_ID, "vibrationsensor");
 
     // lights
+    public static final ThingTypeUID THING_TYPE_ONOFF_LIGHT = new ThingTypeUID(BINDING_ID, "onofflight");
     public static final ThingTypeUID THING_TYPE_DIMMABLE_LIGHT = new ThingTypeUID(BINDING_ID, "dimmablelight");
     public static final ThingTypeUID THING_TYPE_COLOR_TEMPERATURE_LIGHT = new ThingTypeUID(BINDING_ID,
             "colortemperaturelight");
     public static final ThingTypeUID THING_TYPE_COLOR_LIGHT = new ThingTypeUID(BINDING_ID, "colorlight");
     public static final ThingTypeUID THING_TYPE_EXTENDED_COLOR_LIGHT = new ThingTypeUID(BINDING_ID,
             "extendedcolorlight");
+    public static final ThingTypeUID THING_TYPE_WINDOW_COVERING = new ThingTypeUID(BINDING_ID, "windowcovering");
 
     // List of all Channel ids
     public static final String CHANNEL_PRESENCE = "presence";
@@ -84,9 +86,11 @@ public class BindingConstants {
     public static final String CHANNEL_BATTERY_LEVEL = "battery_level";
     public static final String CHANNEL_BATTERY_LOW = "battery_low";
 
+    public static final String CHANNEL_SWITCH = "switch";
     public static final String CHANNEL_BRIGHTNESS = "brightness";
     public static final String CHANNEL_COLOR_TEMPERATURE = "color_temperature";
     public static final String CHANNEL_COLOR = "color";
+    public static final String CHANNEL_POSITION = "position";
 
     // Thing configuration
     public static final String CONFIG_HOST = "host";

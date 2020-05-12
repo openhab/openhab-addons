@@ -116,6 +116,10 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
         }
 
         switch (lightType) {
+            case ON_OFF_LIGHT:
+            case ON_OFF_PLUGIN_UNIT:
+                thingTypeUID = THING_TYPE_ONOFF_LIGHT;
+                break;
             case DIMMABLE_LIGHT:
             case DIMMABLE_PLUGIN_UNIT:
                 thingTypeUID = THING_TYPE_DIMMABLE_LIGHT;
@@ -128,6 +132,9 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
                 break;
             case EXTENDED_COLOR_LIGHT:
                 thingTypeUID = THING_TYPE_EXTENDED_COLOR_LIGHT;
+                break;
+            case WINDOW_COVERING_DEVICE:
+                thingTypeUID = THING_TYPE_WINDOW_COVERING;
                 break;
             default:
                 logger.warn(

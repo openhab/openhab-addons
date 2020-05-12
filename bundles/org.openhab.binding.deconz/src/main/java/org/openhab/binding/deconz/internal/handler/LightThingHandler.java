@@ -24,12 +24,15 @@ import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.google.gson.Gson;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.StopMoveType;
+import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -50,26 +53,24 @@ import org.openhab.binding.deconz.internal.netutils.WebSocketMessageListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-
 /**
- * This sensor Thing doesn't establish any connections, that is done by the bridge Thing.
+ * This light thing doesn't establish any connections, that is done by the bridge Thing.
  *
  * It waits for the bridge to come online, grab the websocket connection and bridge configuration
  * and registers to the websocket connection as a listener.
  *
- * A REST API call is made to get the initial sensor state.
+ * A REST API call is made to get the initial light/rollershutter state.
  *
- * Every sensor and switch is supported by this Thing, because a unified state is kept
+ * Every light and rollershutter is supported by this Thing, because a unified state is kept
  * in {@link #lightState}. Every field that got received by the REST API for this specific
  * sensor is published to the framework.
  *
- * @author David Graeff - Initial contribution
+ * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
 public class LightThingHandler extends BaseThingHandler implements WebSocketMessageListener {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Stream.of(THING_TYPE_COLOR_TEMPERATURE_LIGHT,
-            THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_COLOR_LIGHT, THING_TYPE_EXTENDED_COLOR_LIGHT)
+            THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_COLOR_LIGHT, THING_TYPE_EXTENDED_COLOR_LIGHT, THING_TYPE_WINDOW_COVERING)
             .collect(Collectors.toSet());
     private final Logger logger = LoggerFactory.getLogger(LightThingHandler.class);
     private ThingConfig config = new ThingConfig();
@@ -83,6 +84,7 @@ public class LightThingHandler extends BaseThingHandler implements WebSocketMess
      */
     private LightConfig lightConfig = new LightConfig();
     private LightState lightState = new LightState();
+    private @Nullable Boolean lastCommand = null;
 
     public LightThingHandler(Thing thing, Gson gson) {
         super(thing);
@@ -99,10 +101,17 @@ public class LightThingHandler extends BaseThingHandler implements WebSocketMess
         LightState newlightState = new LightState();
 
         switch (channelUID.getId()) {
+            case CHANNEL_SWITCH:
+                if (command instanceof OnOffType) {
+                    newlightState.on = (command == OnOffType.ON);
+                } else {
+                    return;
+                }
+                break;
             case CHANNEL_BRIGHTNESS:
             case CHANNEL_COLOR:
                 if (command instanceof OnOffType) {
-                    newlightState.on = command == OnOffType.ON;
+                    newlightState.on = (command == OnOffType.ON);
                 } else if (command instanceof PercentType) {
                     newlightState.bri = (int) (((PercentType) command).doubleValue() * 2.55);
                 } else if (command instanceof DecimalType) {
@@ -126,6 +135,7 @@ public class LightThingHandler extends BaseThingHandler implements WebSocketMess
                         default:
                             return;
                     }
+                } else {
                     return;
                 }
 
@@ -138,6 +148,21 @@ public class LightThingHandler extends BaseThingHandler implements WebSocketMess
                 if (command instanceof DecimalType) {
                     newlightState.colormode = "ct";
                     newlightState.ct = scaleColorTemperature(((DecimalType) command).doubleValue());
+                } else {
+                    return;
+                }
+                break;
+            case CHANNEL_POSITION:
+                if (command instanceof UpDownType) {
+                    newlightState.on = (command == UpDownType.DOWN);
+                    lastCommand = newlightState.on;
+                } else if (command == StopMoveType.STOP && lastCommand != null && lightState.on != lastCommand) {
+                    newlightState.on = lastCommand;
+                    lastCommand = null;
+                } else if (command instanceof PercentType) {
+                    newlightState.bri = (int) (((PercentType) command).doubleValue() * 2.55);
+                } else {
+                    return;
                 }
                 break;
             default:
@@ -156,7 +181,7 @@ public class LightThingHandler extends BaseThingHandler implements WebSocketMess
         logger.debug("about so send {} to light {}", json, config.id);
 
         asyncHttpClient.put(url, json, bridgeConfig.timeout).thenAccept(v -> {
-            logger.debug("code={}, body={}", v.getResponseCode(), v.getBody());
+            logger.trace("code={}, body={}", v.getResponseCode(), v.getBody());
         }).exceptionally(e -> {
             logger.debug("exception:", e);
             return null;
@@ -288,6 +313,11 @@ public class LightThingHandler extends BaseThingHandler implements WebSocketMess
     public void valueUpdated(String channelId, LightState newState) {
         logger.debug("{} received {}", thing.getUID(), newState);
         switch (channelId) {
+            case CHANNEL_SWITCH:
+                if (newState.on != null) {
+                    updateState(channelId, OnOffType.from(newState.on));
+                }
+                break;
             case CHANNEL_BRIGHTNESS:
                 if (newState.bri != null && newState.on != null && newState.on == true) {
                     BigDecimal brightness = new BigDecimal(newState.bri / 2.55);
@@ -301,6 +331,11 @@ public class LightThingHandler extends BaseThingHandler implements WebSocketMess
                     updateState(channelId, new DecimalType(scaleColorTemperature(newState.ct)));
                 }
                 break;
+            case CHANNEL_POSITION:
+                if (newState.bri != null) {
+                    BigDecimal position = new BigDecimal(newState.bri / 2.55);
+                    updateState(channelId, new PercentType(position));
+                }
             default:
         }
     }

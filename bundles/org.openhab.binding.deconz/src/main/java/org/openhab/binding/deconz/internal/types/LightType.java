@@ -27,6 +27,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public enum LightType {
+    ON_OFF_LIGHT("On/Off light"),
+    ON_OFF_PLUGIN_UNIT("On/Off plug-in unit"),
     EXTENDED_COLOR_LIGHT("Extended color light"),
     COLOR_DIMMABLE_LIGHT("Color dimmable light"),
     COLOR_TEMPERATURE_LIGHT("Color temperature light"),
