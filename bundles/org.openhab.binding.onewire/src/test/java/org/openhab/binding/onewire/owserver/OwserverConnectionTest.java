@@ -12,10 +12,8 @@
  */
 package org.openhab.binding.onewire.owserver;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.timeout;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.io.IOException;
@@ -154,8 +152,8 @@ public class OwserverConnectionTest extends JavaTest {
 
             presence = owserverConnection.checkPresence("notpresent");
             assertEquals(OnOffType.OFF, presence);
-        } catch (OwException e) {
-            Assert.fail("caught unexpected OwException");
+        } catch (Exception e) {
+            Assert.fail("caught unexpected Exception");
         }
     }
 

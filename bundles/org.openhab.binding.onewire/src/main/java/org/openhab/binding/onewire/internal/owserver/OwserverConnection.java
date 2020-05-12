@@ -37,7 +37,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link OwserverConnection} defines the protocol for connections to owservers
+ * The {@link OwserverConnection} defines the protocol for connections to owservers.
+ *
+ *
+ * Data is requested by using one of the read / write methods. In case of errors, an {@link OwException}
+ * is thrown. All other exceptions are caught and handled.
+ *
+ * The data request methods follow a general pattern:
+ * * build the appropriate {@link OwserverPacket} for the request
+ * * call {@link #request(OwserverPacket)} to ask for the data, which then
+ * * uses {@link #write(OwserverPacket)} to get the request to the server and
+ * * uses {@link #read(boolean)} to get the result
+ *
+ *
+ * Hereby, the resulting packet is examined on an appropriate return code (!= -1) and whether the
+ * expected payload is attached. If not, an {@link OwException} is raised.
+ *
  *
  * @author Jan N. Klug - Initial contribution
  */
@@ -59,6 +74,7 @@ public class OwserverConnection {
     private @Nullable DataInputStream owserverInputStream = null;
     private @Nullable DataOutputStream owserverOutputStream = null;
     private OwserverConnectionState owserverConnectionState = OwserverConnectionState.STOPPED;
+    private boolean tryingConnectionRecovery = false;
 
     // reset to 0 after successful request
     private int connectionErrorCounter = 0;
@@ -95,16 +111,24 @@ public class OwserverConnection {
      * start the owserver connection
      */
     public void start() {
+        logger.debug("Trying to (re)start OW server connection - previous state: {}",
+                owserverConnectionState.toString());
         connectionErrorCounter = 0;
-        owserverConnectionState = OwserverConnectionState.CLOSED;
+        tryingConnectionRecovery = true;
+        // owserverConnectionState = OwserverConnectionState.CLOSED;
         boolean success = false;
         do {
             success = open();
-        } while (!success && owserverConnectionState != OwserverConnectionState.FAILED);
+            if (success && owserverConnectionState != OwserverConnectionState.FAILED) {
+                tryingConnectionRecovery = false;
+            }
+        } while (!success && (owserverConnectionState != OwserverConnectionState.FAILED || tryingConnectionRecovery));
     }
 
     /**
      * stop the owserver connection
+     *
+     * and report new {@link OwserverConnectionState} to {@link #thingHandlerCallback}.
      */
     public void stop() {
         close();
@@ -122,11 +146,11 @@ public class OwserverConnection {
         OwserverPacket returnPacket = request(requestPacket);
 
         if ((returnPacket.getReturnCode() != -1) && returnPacket.hasPayload()) {
-            connectionErrorCounter = 0;
+            // connectionErrorCounter = 0; -> done by request method!!
             return Arrays.stream(returnPacket.getPayloadString().split(",")).map(this::stringToSensorId)
                     .filter(Objects::nonNull).collect(Collectors.toList());
         } else {
-            throw new OwException("invalid of empty packet");
+            throw new OwException("invalid of empty packet when requesting directory");
         }
     }
 
@@ -141,11 +165,12 @@ public class OwserverConnection {
     /**
      * check sensor presence
      *
+     * Errors are caught and interpreted as sensor not present.
+     *
      * @param path full owfs path to sensor
      * @return OnOffType, ON=present, OFF=not present
-     * @throws OwException
      */
-    public State checkPresence(String path) throws OwException {
+    public State checkPresence(String path) {
         State returnValue = OnOffType.OFF;
         try {
             OwserverPacket requestPacket;
@@ -182,7 +207,7 @@ public class OwserverConnection {
                 throw new OwException("could not parse '" + returnPacket.getPayloadString().trim() + "' to a number");
             }
         } else {
-            throw new OwException("invalid or empty packet");
+            throw new OwException("invalid or empty packet when requesting decimal type");
         }
 
         return returnState;
@@ -203,7 +228,7 @@ public class OwserverConnection {
             Arrays.stream(returnPacket.getPayloadString().split(","))
                     .forEach(v -> returnList.add(DecimalType.valueOf(v.trim())));
         } else {
-            throw new OwException("invalid or empty packet");
+            throw new OwException("invalid or empty packet when requesting decimal type array");
         }
 
         return returnList;
@@ -223,7 +248,7 @@ public class OwserverConnection {
         if ((returnPacket.getReturnCode() != -1) && returnPacket.hasPayload()) {
             return returnPacket.getPayloadString().trim();
         } else {
-            throw new OwException("invalid or empty packet");
+            throw new OwException("invalid or empty packet when requesting string type");
         }
     }
 
@@ -240,7 +265,7 @@ public class OwserverConnection {
         if ((returnPacket.getReturnCode() != -1) && returnPacket.hasPayload()) {
             return returnPacket.getPayload();
         } else {
-            throw new OwException("invalid or empty packet");
+            throw new OwException("invalid or empty packet when requesting pages");
         }
     }
 
@@ -255,6 +280,7 @@ public class OwserverConnection {
         OwserverPacket requestPacket = new OwserverPacket(OwserverMessageType.WRITE, path);
         requestPacket.appendPayload(String.valueOf(value));
 
+        // request method throws an OwException in case of issues...
         OwserverPacket returnPacket = request(requestPacket);
 
         logger.trace("wrote: {}, got: {} ", requestPacket, returnPacket);
@@ -269,12 +295,16 @@ public class OwserverConnection {
      */
     private OwserverPacket request(OwserverPacket requestPacket) throws OwException {
         OwserverPacket returnPacket = new OwserverPacket(OwserverPacketType.RETURN);
+
         // answer to value write is always empty
         boolean payloadExpected = requestPacket.getMessageType() != OwserverMessageType.WRITE;
+
         try {
+            // write request - error may be thrown
             write(requestPacket);
+
+            // try to read data as long as we don't get any feedback and no error is thrown...
             do {
-                logger.trace("fetching owserver data ...");
                 if (requestPacket.getMessageType() == OwserverMessageType.PRESENT
                         || requestPacket.getMessageType() == OwserverMessageType.NOP) {
                     returnPacket = read(true);
@@ -282,6 +312,7 @@ public class OwserverConnection {
                     returnPacket = read(false);
                 }
             } while (returnPacket.isPingPacket() || !(returnPacket.hasPayload() == payloadExpected));
+
         } catch (OwException e) {
             logger.debug("failed requesting {}->{} [{}]", requestPacket, returnPacket, e.getMessage());
             throw e;
@@ -292,6 +323,7 @@ public class OwserverConnection {
             close();
         }
 
+        // Success! Reset error counter.
         connectionErrorCounter = 0;
         return returnPacket;
     }
@@ -299,11 +331,14 @@ public class OwserverConnection {
     /**
      * open/reopen the connection to the owserver
      *
+     * In case of issues, the connection is close using {@link #closeOnError()} and false is returned.
+     * If the {@link #owserverConnectionState} is in STOPPED or FAILED, the method directly returns false.
+     *
      * @return true if open
      */
     private boolean open() {
         try {
-            if (owserverConnectionState == OwserverConnectionState.CLOSED) {
+            if (owserverConnectionState == OwserverConnectionState.CLOSED || tryingConnectionRecovery) {
                 // open socket & set timeout to 3000ms
                 final Socket owserverSocket = new Socket(owserverAddress, owserverPort);
                 owserverSocket.setSoTimeout(3000);
@@ -315,7 +350,7 @@ public class OwserverConnection {
                 owserverConnectionState = OwserverConnectionState.OPENED;
                 thingHandlerCallback.reportConnectionState(owserverConnectionState);
 
-                logger.debug("opened OwServerConnection to {}:{}", owserverAddress, owserverPort);
+                logger.debug("OW connection state: opened to {}:{}", owserverAddress, owserverPort);
                 return true;
             } else if (owserverConnectionState == OwserverConnectionState.OPENED) {
                 // socket already open, clear input buffer
@@ -341,13 +376,25 @@ public class OwserverConnection {
     }
 
     /**
-     * close the connection to the owserver instance
+     * Calls {@link #close(boolean)} with reportConnectionState = true.
      */
     private void close() {
+        this.close(true);
+    }
+
+    /**
+     * close the connection to the owserver instance.
+     * issues during closing are ignored.
+     *
+     * @param reportConnectionState - report the CLOSED state to
+     */
+    private void close(boolean reportConnectionState) {
         final Socket owserverSocket = this.owserverSocket;
         if (owserverSocket != null) {
             try {
                 owserverSocket.close();
+                owserverConnectionState = OwserverConnectionState.CLOSED;
+                logger.debug("closed connection");
             } catch (IOException e) {
                 owserverConnectionState = OwserverConnectionState.FAILED;
                 logger.warn("could not close connection: {}", e.getMessage());
@@ -358,10 +405,9 @@ public class OwserverConnection {
         this.owserverInputStream = null;
         this.owserverOutputStream = null;
 
-        logger.debug("closed connection");
-        owserverConnectionState = OwserverConnectionState.CLOSED;
-
-        thingHandlerCallback.reportConnectionState(owserverConnectionState);
+        if (reportConnectionState) {
+            thingHandlerCallback.reportConnectionState(owserverConnectionState);
+        }
     }
 
     /**
@@ -379,18 +425,28 @@ public class OwserverConnection {
 
     /**
      * close the connection to the owserver instance after an error occured
+     * if {@link #CONNECTION_MAX_RETRY} is exceeded, the {@link #owserverConnectionState} is set to FAILED
+     * and reported to the {@link #thingHandlerCallback}.
      */
     private void closeOnError() {
         connectionErrorCounter++;
-        close();
+        close(false);
         if (connectionErrorCounter > CONNECTION_MAX_RETRY) {
+            logger.debug("OW connection state: set to failed as max retries exceeded.");
             owserverConnectionState = OwserverConnectionState.FAILED;
+            tryingConnectionRecovery = false;
+            thingHandlerCallback.reportConnectionState(owserverConnectionState);
+        } else if (!tryingConnectionRecovery) {
+            // as close did not report connections state and we are not trying to recover ...
             thingHandlerCallback.reportConnectionState(owserverConnectionState);
         }
     }
 
     /**
      * write to the owserver
+     *
+     * In case of issues, the connection is closed using {@link #closeOnError()} and an
+     * {@link OwException} is thrown.
      *
      * @param requestPacket data to write
      * @throws OwException
@@ -406,8 +462,10 @@ public class OwserverConnection {
                 } else {
                     logger.debug("output stream not available on write");
                     closeOnError();
+                    throw new OwException("I/O Error: output stream not available on write");
                 }
             } else {
+                // was not opened
                 throw new OwException("I/O error: could not open connection to send request packet");
             }
         } catch (IOException e) {
@@ -420,41 +478,55 @@ public class OwserverConnection {
     /**
      * read from owserver
      *
+     * In case of errors (which may also be due to an erroneous path), the connection is checked and potentially closed
+     * using {@link #checkConnection()}.
+     *
+     * If
+     *
+     * @param noTimeoutException retry in case of read time outs instead of exiting with an {@link OwException}.
      * @return the read packet
      * @throws OwException
      */
     private OwserverPacket read(boolean noTimeoutException) throws OwException {
         OwserverPacket returnPacket = new OwserverPacket(OwserverPacketType.RETURN);
-        try {
-            final DataInputStream owserverInputStream = this.owserverInputStream;
-            if (owserverInputStream != null) {
-                DataInputStream inputStream = owserverInputStream;
+        final DataInputStream owserverInputStream = this.owserverInputStream;
+
+        if (owserverInputStream != null) {
+            DataInputStream inputStream = owserverInputStream;
+            try {
                 returnPacket = new OwserverPacket(inputStream, OwserverPacketType.RETURN);
-                logger.trace("read: {}", returnPacket);
-            } else {
-                logger.debug("input stream not available on read");
-                closeOnError();
-            }
-        } catch (EOFException e) {
-            // nothing to read
-            logger.error("EOFException: {}", e.getMessage());
-            returnPacket.setPayload("error");
-            returnPacket.setReturnCode(-1);
-        } catch (OwException e) {
-            checkConnection();
-            throw e;
-        } catch (IOException e) {
-            if (e.getMessage().equals("Read timed out") && noTimeoutException) {
-                logger.trace("timeout - setting error code to -1");
-                returnPacket.setPayload("timeout");
-                returnPacket.setReturnCode(-1);
-            } else {
+
+            } catch (EOFException e) {
+                // Read suddenly ended ....
+                logger.warn("EOFException: exception while reading packet - {}", e.getMessage());
                 checkConnection();
-                throw new OwException("I/O error: exception while reading packet - " + e.getMessage());
+                throw new OwException("EOFException: exception while reading packet - " + e.getMessage());
+            } catch (OwException e) {
+                // Some other issue
+                checkConnection();
+                throw e;
+            } catch (IOException e) {
+                // Read time out
+                if (e.getMessage().equals("Read timed out") && noTimeoutException) {
+                    logger.trace("timeout - setting error code to -1");
+                    // will lead to re-try reading in request method!!!
+                    returnPacket.setPayload("timeout");
+                    returnPacket.setReturnCode(-1);
+
+                } else {
+                    // Other I/O issue
+                    checkConnection();
+                    throw new OwException("I/O error: exception while reading packet - " + e.getMessage());
+                }
             }
+            logger.trace("read: {}", returnPacket);
+
+        } else {
+            logger.debug("input stream not available on read");
+            closeOnError();
+            throw new OwException("I/O Error: input stream not available on read");
         }
 
         return returnPacket;
     }
-
 }
