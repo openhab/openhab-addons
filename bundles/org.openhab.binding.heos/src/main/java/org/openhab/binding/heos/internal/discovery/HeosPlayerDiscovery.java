@@ -150,7 +150,7 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService implements Heo
         Map<Integer, Player> removedPlayerMap = bridge.getRemovedPlayers();
         for (Player player : removedPlayerMap.values()) {
             // The same as above!
-            ThingUID uid = new ThingUID(THING_TYPE_PLAYER, "" + player.playerId);
+            ThingUID uid = new ThingUID(THING_TYPE_PLAYER, String.valueOf(player.playerId));
             logger.debug("Removed HEOS Player: {} ", uid);
             thingRemoved(uid);
         }
