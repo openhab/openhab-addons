@@ -15,6 +15,7 @@
   <name>openHAB Add-ons :: Bundles :: IO :: Modbus Transport</name>
 
   <properties>
+    <bnd.importpackage>gnu.io;version="[3.12,6)"</bnd.importpackage>
     <dep.noembedding>commons-pool2</dep.noembedding>
   </properties>
 
