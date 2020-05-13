@@ -26,9 +26,12 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.jeelink.internal.discovery.SensorDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +44,13 @@ import org.slf4j.LoggerFactory;
 public class JeeLinkHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(JeeLinkHandlerFactory.class);
 
-    private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    private final SerialPortManager serialPortManager;
+
+    @Activate
+    public JeeLinkHandlerFactory(final @Reference SerialPortManager serialPortManager) {
+        this.serialPortManager = serialPortManager;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUid) {
@@ -57,7 +66,7 @@ public class JeeLinkHandlerFactory extends BaseThingHandlerFactory {
                 || thingTypeUid.equals(LGW_TCP_STICK_THING_TYPE) || thingTypeUid.equals(LGW_USB_STICK_THING_TYPE)) {
             logger.debug("creating JeeLinkHandler for thing {}...", thing.getUID().getId());
 
-            handler = new JeeLinkHandler((Bridge) thing);
+            handler = new JeeLinkHandler((Bridge) thing, serialPortManager);
             registerSensorDiscoveryService((JeeLinkHandler) handler);
         } else {
             handler = SensorDefinition.createHandler(thingTypeUid, thing);
