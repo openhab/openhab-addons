@@ -46,7 +46,7 @@
 	</channel-type>
 	<channel-type id="ddp">
 		<item-type>String</item-type>
-		<label>Displayed index</label>
+		<label>Displayed Index</label>
 		<description>Display PM2.5 index or Allergen Index</description>
 		<state readOnly="false" pattern="%s">
 			<options>
@@ -57,13 +57,15 @@
 	</channel-type>
 	<channel-type id="aqil">
 		<item-type>Number</item-type>
-		<label>LED light level</label>
+		<label>LED Light Level</label>
+
 		<description>Level 100, 75, 50, 25, 0</description>
 		<state pattern="%d" min="0" max="100" step="25"/>
 	</channel-type>
 	<channel-type id="cl">
 		<item-type>Switch</item-type>
-		<label>Child lock</label>
+		<label>Child Lock</label>
+
 		<description>Child lock enabled/disabled</description>
 	</channel-type>
 

@@ -76,8 +76,7 @@ public class PhilipsAirAPIConnection {
     private final Gson gson = new Gson();
     private long cooldownTimer = 0;
 
-    @Nullable
-    private PhilipsAirCipher cipher = null;
+    private @Nullable PhilipsAirCipher cipher = null;
 
     private PhilipsAirConfiguration config;
 

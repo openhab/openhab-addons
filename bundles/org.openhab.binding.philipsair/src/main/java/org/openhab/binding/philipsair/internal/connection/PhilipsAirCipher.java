@@ -55,10 +55,8 @@ public class PhilipsAirCipher {
             "ALELj5aggOAd3pLeXq5dVOxSyZ+8+wajxppqncpS0jthYHPihnWiPRiYOO8eLuZSwBPstK6pBhEjJJdcPNSbg7+sy919kMS9cJhIjpwhmnNyTv/W+uVkRzj6oxpP9VvMwKFRr18NyLS9Rb833zZcGmXmjP2nbU2nCN8fsrwuSkNx"));
     private static final Random RAND = new Random();
 
-    @Nullable
-    private Cipher decipher;
-    @Nullable
-    private Cipher cipher;
+    private @Nullable Cipher decipher;
+    private @Nullable Cipher cipher;
     private final BigInteger a;
     private final BigInteger aPow;
 
