@@ -45,21 +45,19 @@ public class HeosSendCommand {
         if (clazz == null) {
             return null;
         } else if (send) {
-            for (String s : client.readLine()) {
-                result = parser.parseResponse(s, clazz);
-            }
-
-            if (result == null) {
+            List<String> lines = client.readLine();
+            if (lines.isEmpty()) {
                 throw new IOException("No valid input was received");
             }
+            result = parser.parseResponse(lines.get(lines.size() - 1), clazz);
 
             while (!result.isFinished() && attempt < 3) {
                 attempt++;
                 logger.trace("Retrying \"{}\" (attempt {})", command, attempt);
-                List<String> readResultList = client.readLine(15000);
+                lines = client.readLine(15000);
 
-                for (String s : readResultList) {
-                    result = parser.parseResponse(s, clazz);
+                if (!lines.isEmpty()) {
+                    result = parser.parseResponse(lines.get(lines.size() - 1), clazz);
                 }
             }
 

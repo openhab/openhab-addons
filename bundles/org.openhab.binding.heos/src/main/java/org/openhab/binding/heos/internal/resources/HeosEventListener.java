@@ -34,7 +34,7 @@ public interface HeosEventListener extends EventListener {
 
     void playerStateChangeEvent(HeosEventObject eventObject);
 
-    <T> void playerStateChangeEvent(HeosResponseObject<T> responseObject) throws HeosFunctionalException;
+    void playerStateChangeEvent(HeosResponseObject<?> responseObject) throws HeosFunctionalException;
 
     void playerMediaChangeEvent(String pid, Media media);
 

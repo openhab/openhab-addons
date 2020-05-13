@@ -105,14 +105,14 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
         if (command instanceof RefreshType) {
             return;
         }
-        Channel channel = this.getThing().getChannel(channelUID.getId());
+        @Nullable Channel channel = this.getThing().getChannel(channelUID.getId());
         if (channel == null) {
             logger.debug("No valid channel found");
             return;
         }
 
-        ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
-        HeosChannelHandler channelHandler = channelHandlerFactory.getChannelHandler(channelUID, this, channelTypeUID);
+        @Nullable ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
+        @Nullable HeosChannelHandler channelHandler = channelHandlerFactory.getChannelHandler(channelUID, this, channelTypeUID);
         if (channelHandler != null) {
             try {
                 channelHandler.handleBridgeCommand(command, thing.getUID());
@@ -137,7 +137,7 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
     }
 
     private void delayedInitialize() {
-        HeosFacade connection = null;
+        @Nullable HeosFacade connection = null;
         try {
             logger.debug("Running scheduledStartUp job");
 
@@ -149,8 +149,8 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
             // gets all available player and groups to ensure that the system knows
             // about the conjunction between the groupMemberHash and the GID
             triggerPlayerDiscovery();
-            String username = configuration.username;
-            String password = configuration.password;
+            @Nullable String username = configuration.username;
+            @Nullable String password = configuration.password;
             if (username != null && !"".equals(username) && password != null && !"".equals(password)) {
                 login(connection, username, password);
             } else {
@@ -191,7 +191,7 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
             return;
         }
 
-        HeosError error = response.getError();
+        @Nullable HeosError error = response.getError();
         logger.debug("Failed to login: {}", error);
         updateStatus(ONLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                 error != null ? error.code.toString() : "Failed to login, no error was returned.");
@@ -203,7 +203,7 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
 
         terminateStartupSequence();
 
-        HeosFacade localApiConnection = apiConnection;
+        @Nullable HeosFacade localApiConnection = apiConnection;
         if (localApiConnection == null) {
             logger.debug("Not disposing bridge because of missing apiConnection");
             return;
@@ -217,7 +217,7 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
     }
 
     private void terminateStartupSequence() {
-        ScheduledFuture<?> localStartupFuture = startupFuture;
+        @Nullable ScheduledFuture<?> localStartupFuture = startupFuture;
         if (localStartupFuture != null && !localStartupFuture.isCancelled()) {
             localStartupFuture.cancel(true);
         }
@@ -291,7 +291,7 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
         try {
             String channelIdentifier = "";
             String pid = "";
-            ThingHandler handler = childThing.getHandler();
+            @Nullable ThingHandler handler = childThing.getHandler();
             if (handler instanceof HeosPlayerHandler) {
                 channelIdentifier = "P" + childThing.getUID().getId();
                 pid = ((HeosPlayerHandler) handler).getId();
@@ -304,7 +304,7 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
                 }
             }
             Map<String, String> properties = new HashMap<>();
-            String playerName = childThing.getLabel();
+            @Nullable String playerName = childThing.getLabel();
             playerName = playerName == null ? pid : playerName;
             ChannelUID channelUID = new ChannelUID(getThing().getUID(), channelIdentifier);
             properties.put(PROP_NAME, playerName);
@@ -336,7 +336,7 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
     }
 
     @Override
-    public <T> void playerStateChangeEvent(HeosResponseObject<T> responseObject) {
+    public void playerStateChangeEvent(HeosResponseObject<?> responseObject) {
         // do nothing
     }
 
@@ -378,6 +378,7 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
         try {
             return getApiConnection().getNewPlayers();
         } catch (IOException | ReadException e) {
+            logger.debug("Failed fetching new players", e);
             return null;
         }
     }
@@ -386,6 +387,7 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
         try {
             return getApiConnection().getRemovedPlayers();
         } catch (HeosNotConnectedException e) {
+            logger.debug("Failed fetching removed players", e);
             return Collections.emptyMap();
         }
     }
@@ -394,6 +396,7 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
         try {
             return getApiConnection().getNewGroups();
         } catch (IOException | ReadException e) {
+            logger.debug("Failed fetching new groups", e);
             return null;
         }
     }
@@ -402,6 +405,7 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
         try {
             return getApiConnection().getRemovedGroups();
         } catch (HeosNotConnectedException e) {
+            logger.debug("Failed fetching removed groups", e);
             return Collections.emptyMap();
         }
     }
@@ -446,12 +450,12 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
     }
 
     public boolean isBridgeConnected() {
-        HeosFacade connection = apiConnection;
+        @Nullable HeosFacade connection = apiConnection;
         return connection != null && connection.isConnected();
     }
 
     public HeosFacade getApiConnection() throws HeosNotConnectedException {
-        HeosFacade localApiConnection = apiConnection;
+        @Nullable HeosFacade localApiConnection = apiConnection;
         if (localApiConnection != null) {
             return localApiConnection;
         } else {

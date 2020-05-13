@@ -99,7 +99,7 @@ public class HeosAudioSink implements AudioSink {
                     } else if (AudioFormat.AAC.isCompatible(audioFormat)) {
                         handler.playURL(url + FileAudioStream.AAC_EXTENSION);
                     } else {
-                        throw new UnsupportedAudioFormatException("HEOS only supports MP3 or WAV.", audioFormat);
+                        throw new UnsupportedAudioFormatException("HEOS only supports MP3, WAV and AAC.", audioFormat);
                     }
                 } else {
                     logger.warn("We do not have any callback url, so HEOS cannot play the audio stream!");

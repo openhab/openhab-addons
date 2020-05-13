@@ -63,7 +63,7 @@ public class HeosDynamicStateDescriptionProvider extends BaseDynamicStateDescrip
 
     private Optional<StateOption> getStateOption(Function<BrowseResult, @Nullable String> function,
             BrowseResult browseResult) {
-        String identifier = function.apply(browseResult);
+        @Nullable String identifier = function.apply(browseResult);
         if (identifier != null) {
             return Optional.of(new StateOption(identifier, browseResult.name));
         } else {

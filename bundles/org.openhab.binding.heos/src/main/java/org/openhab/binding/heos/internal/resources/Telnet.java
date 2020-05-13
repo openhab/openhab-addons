@@ -48,7 +48,7 @@ public class Telnet {
     // Has to be initialized because value is used later with readResult.concat() function
     private String readResult = "";
     private String readLineResult;
-    private List<String> readResultList = new ArrayList<>(5);
+    private final List<String> readResultList = new ArrayList<>();
 
     private InetAddress address;
     private DataOutputStream outStream;
@@ -153,7 +153,6 @@ public class Telnet {
             while (i != -1) {
                 i = bufferedStream.available();
                 byte[] buffer = new byte[i];
-                // TODO this could block for ever?
                 bufferedStream.read(buffer);
                 String str = new String(buffer, StandardCharsets.UTF_8);
                 i = concatReadLineResult(str);

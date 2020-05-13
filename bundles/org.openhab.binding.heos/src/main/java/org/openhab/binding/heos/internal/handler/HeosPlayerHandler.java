@@ -144,7 +144,7 @@ public class HeosPlayerHandler extends HeosThingBaseHandler {
     }
 
     @Override
-    public <T> void playerStateChangeEvent(HeosResponseObject<T> responseObject) throws HeosFunctionalException {
+    public void playerStateChangeEvent(HeosResponseObject<?> responseObject) throws HeosFunctionalException {
         if (!pid.equals(responseObject.getAttribute(PLAYER_ID))) {
             return;
         }
@@ -184,7 +184,7 @@ public class HeosPlayerHandler extends HeosThingBaseHandler {
         prop.put(Thing.PROPERTY_FIRMWARE_VERSION, player.version);
         prop.put(PROP_NETWORK, player.network);
         prop.put(PROP_IP, player.ip);
-        String serialNumber = player.serial;
+        @Nullable String serialNumber = player.serial;
         if (serialNumber != null) {
             prop.put(Thing.PROPERTY_SERIAL_NUMBER, serialNumber);
         }

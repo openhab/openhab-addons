@@ -60,8 +60,8 @@ public abstract class HeosObject {
         return attributes.get(attributeName.getLabel());
     }
 
-    public boolean hasAttribute(HeosCommunicationAttribute signedIn) {
-        return attributes.containsKey(signedIn.getLabel());
+    public boolean hasAttribute(HeosCommunicationAttribute attribute) {
+        return attributes.containsKey(attribute.getLabel());
     }
 
     @Override

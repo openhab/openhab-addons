@@ -60,7 +60,6 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
 
     private boolean blockInitialization;
     private @Nullable ScheduledFuture<?> scheduledStartupFeature;
-    private @Nullable ScheduledFuture<?> scheduledFutureDynamicStates;
 
     public HeosGroupHandler(Thing thing, HeosDynamicStateDescriptionProvider heosDynamicStateDescriptionProvider) {
         super(thing, heosDynamicStateDescriptionProvider);
@@ -121,10 +120,6 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
         if (localStartupFuture != null && !localStartupFuture.isCancelled()) {
             localStartupFuture.cancel(true);
         }
-        @Nullable ScheduledFuture<?> localDynamicStatesFuture = scheduledFutureDynamicStates;
-        if (localDynamicStatesFuture != null && !localDynamicStatesFuture.isCancelled()) {
-            localDynamicStatesFuture.cancel(true);
-        }
         super.dispose();
     }
 
@@ -179,7 +174,7 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
     }
 
     @Override
-    public <T> void playerStateChangeEvent(HeosResponseObject<T> responseObject) throws HeosFunctionalException {
+    public void playerStateChangeEvent(HeosResponseObject<?> responseObject) throws HeosFunctionalException {
         if (ThingStatus.UNINITIALIZED == getThing().getStatus()) {
             logger.debug("Can't Handle Event. Group {} not initialized. Status is: {}", getConfig().get(PROP_NAME),
                     getThing().getStatus());
@@ -251,8 +246,7 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
             }
 
             if (bridgeHandler.isLoggedIn()) {
-                scheduledFutureDynamicStates = scheduler.schedule(this::handleDynamicStatesSignedIn, 0,
-                        TimeUnit.SECONDS);
+                handleDynamicStatesSignedIn();
             }
 
             bridgeHandler.addGroupHandlerInformation(this);
