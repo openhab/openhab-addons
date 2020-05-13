@@ -12,33 +12,33 @@
  */
 package org.openhab.binding.opengarage.internal;
 
+import java.io.IOException;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.types.StopMoveType;
+import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.types.UpDownType;
+import org.eclipse.smarthome.core.library.unit.MetricPrefix;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.OpenClosedType;
-import org.eclipse.smarthome.core.library.types.StopMoveType;
-import org.eclipse.smarthome.core.library.types.UpDownType;
-import org.eclipse.smarthome.core.library.types.QuantityType;
-import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.library.unit.SIUnits;
-import org.eclipse.smarthome.core.library.unit.MetricPrefix;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.openhab.binding.opengarage.internal.OpenGarageWebTargets;
 import org.openhab.binding.opengarage.internal.api.ControllerVariables;
 import org.openhab.binding.opengarage.internal.api.Enums.OpenGarageCommand;
-import org.openhab.binding.opengarage.internal.OpenGarageConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 /**
  * The {@link OpenGarageHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -62,24 +62,24 @@ public class OpenGarageHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
-                logger.debug("Received command {} for thing '{}' on channel {}", command, thing.getUID().getAsString(),
+            logger.debug("Received command {} for thing '{}' on channel {}", command, thing.getUID().getAsString(),
                     channelUID.getId());
-                switch (channelUID.getId()) {
-                    case OpenGarageBindingConstants.CHANNEL_OG_STATUS:
-                    case OpenGarageBindingConstants.CHANNEL_OG_STATUS_SWITCH:
-                    case OpenGarageBindingConstants.CHANNEL_OG_STATUS_ROLLERSHUTTER:
-                        if (command.equals(OnOffType.ON) || command.equals(UpDownType.UP)) {
-                            changeStatus(OpenGarageCommand.OPEN);
-                            return;
-                        } else if (command.equals(OnOffType.OFF) || command.equals(UpDownType.DOWN)) {
-                            changeStatus(OpenGarageCommand.CLOSE);
-                            return;
-                        } else if (command.equals(StopMoveType.STOP) || command.equals(StopMoveType.MOVE)) {
-                            changeStatus(OpenGarageCommand.CLICK);
-                            return;
-                        } 
-                        break;
-                    default:
+            switch (channelUID.getId()) {
+                case OpenGarageBindingConstants.CHANNEL_OG_STATUS:
+                case OpenGarageBindingConstants.CHANNEL_OG_STATUS_SWITCH:
+                case OpenGarageBindingConstants.CHANNEL_OG_STATUS_ROLLERSHUTTER:
+                    if (command.equals(OnOffType.ON) || command.equals(UpDownType.UP)) {
+                        changeStatus(OpenGarageCommand.OPEN);
+                        return;
+                    } else if (command.equals(OnOffType.OFF) || command.equals(UpDownType.DOWN)) {
+                        changeStatus(OpenGarageCommand.CLOSE);
+                        return;
+                    } else if (command.equals(StopMoveType.STOP) || command.equals(StopMoveType.MOVE)) {
+                        changeStatus(OpenGarageCommand.CLICK);
+                        return;
+                    }
+                    break;
+                default:
             }
         } catch (OpenGarageCommunicationException ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
@@ -141,7 +141,7 @@ public class OpenGarageHandler extends BaseThingHandler {
         if (controllerVariables != null) {
             updateState(OpenGarageBindingConstants.CHANNEL_OG_DISTANCE,
                     new QuantityType<>(controllerVariables.dist, MetricPrefix.CENTI(SIUnits.METRE)));
-            switch(controllerVariables.door){
+            switch (controllerVariables.door) {
                 case 0:
                     updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS, OnOffType.OFF);
                     updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_SWITCH, OnOffType.OFF);
@@ -157,7 +157,7 @@ public class OpenGarageHandler extends BaseThingHandler {
                 default:
                     logger.warn("Received unknown door value: {}", controllerVariables.door);
             }
-            switch(controllerVariables.vehicle){
+            switch (controllerVariables.vehicle) {
                 case 0:
                     updateState(OpenGarageBindingConstants.CHANNEL_OG_VEHICLE, new StringType("No vehicle detected"));
                     break;
@@ -165,11 +165,14 @@ public class OpenGarageHandler extends BaseThingHandler {
                     updateState(OpenGarageBindingConstants.CHANNEL_OG_VEHICLE, new StringType("Vehicle detected"));
                     break;
                 case 2:
-                    updateState(OpenGarageBindingConstants.CHANNEL_OG_VEHICLE, new StringType("Vehicle Status Unknown"));
+                    updateState(OpenGarageBindingConstants.CHANNEL_OG_VEHICLE,
+                            new StringType("Vehicle status unknown"));
                     break;
                 default:
                     logger.warn("Received unknown vehicle value: {}", controllerVariables.vehicle);
             }
+            updateState(OpenGarageBindingConstants.CHANNEL_OG_VEHICLE_STATUS,
+                    new DecimalType(controllerVariables.vehicle));
         }
     }
 
