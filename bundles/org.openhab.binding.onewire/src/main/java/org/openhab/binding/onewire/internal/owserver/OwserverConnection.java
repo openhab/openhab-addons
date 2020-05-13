@@ -39,7 +39,6 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link OwserverConnection} defines the protocol for connections to owservers.
  *
- *
  * Data is requested by using one of the read / write methods. In case of errors, an {@link OwException}
  * is thrown. All other exceptions are caught and handled.
  *
@@ -49,10 +48,8 @@ import org.slf4j.LoggerFactory;
  * * uses {@link #write(OwserverPacket)} to get the request to the server and
  * * uses {@link #read(boolean)} to get the result
  *
- *
  * Hereby, the resulting packet is examined on an appropriate return code (!= -1) and whether the
  * expected payload is attached. If not, an {@link OwException} is raised.
- *
  *
  * @author Jan N. Klug - Initial contribution
  */
@@ -115,7 +112,6 @@ public class OwserverConnection {
                 owserverConnectionState.toString());
         connectionErrorCounter = 0;
         tryingConnectionRecovery = true;
-        // owserverConnectionState = OwserverConnectionState.CLOSED;
         boolean success = false;
         do {
             success = open();
@@ -146,7 +142,6 @@ public class OwserverConnection {
         OwserverPacket returnPacket = request(requestPacket);
 
         if ((returnPacket.getReturnCode() != -1) && returnPacket.hasPayload()) {
-            // connectionErrorCounter = 0; -> done by request method!!
             return Arrays.stream(returnPacket.getPayloadString().split(",")).map(this::stringToSensorId)
                     .filter(Objects::nonNull).collect(Collectors.toList());
         } else {
@@ -490,12 +485,10 @@ public class OwserverConnection {
     private OwserverPacket read(boolean noTimeoutException) throws OwException {
         OwserverPacket returnPacket = new OwserverPacket(OwserverPacketType.RETURN);
         final DataInputStream owserverInputStream = this.owserverInputStream;
-
         if (owserverInputStream != null) {
             DataInputStream inputStream = owserverInputStream;
             try {
                 returnPacket = new OwserverPacket(inputStream, OwserverPacketType.RETURN);
-
             } catch (EOFException e) {
                 // Read suddenly ended ....
                 logger.warn("EOFException: exception while reading packet - {}", e.getMessage());
@@ -512,7 +505,6 @@ public class OwserverConnection {
                     // will lead to re-try reading in request method!!!
                     returnPacket.setPayload("timeout");
                     returnPacket.setReturnCode(-1);
-
                 } else {
                     // Other I/O issue
                     checkConnection();
@@ -520,7 +512,6 @@ public class OwserverConnection {
                 }
             }
             logger.trace("read: {}", returnPacket);
-
         } else {
             logger.debug("input stream not available on read");
             closeOnError();
