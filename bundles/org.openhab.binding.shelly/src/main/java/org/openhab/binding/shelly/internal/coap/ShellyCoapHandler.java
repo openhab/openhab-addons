@@ -571,7 +571,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
             }
         }
 
-        // Remeber serial, new packets with same serial will be ignored
+        // Remember serial, new packets with same serial will be ignored
         lastSerial = serial;
         lastPayload = payload;
     }
