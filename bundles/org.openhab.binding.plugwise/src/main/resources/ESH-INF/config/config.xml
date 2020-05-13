@@ -8,8 +8,8 @@
 		<parameter name="serialPort" type="text" required="true">
 			<label>Serial Port</label>
 			<context>serial-port</context>
+			<limitToOptions>false</limitToOptions>
 			<description>The serial port of the Stick, e.g. "/dev/ttyUSB0" for Linux or "COM1" for Windows</description>
-			<default>/dev/ttyUSB0</default>
 		</parameter>
 		<parameter name="messageWaitTime" type="integer" min="0" max="500" step="50">
 			<label>Message Wait Time</label>
