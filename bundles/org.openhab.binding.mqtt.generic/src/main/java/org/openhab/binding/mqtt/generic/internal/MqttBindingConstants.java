@@ -41,4 +41,5 @@ public class MqttBindingConstants {
     public static final String LOCATION = "location";
     public static final String DATETIME = "datetime";
     public static final String ROLLERSHUTTER = "rollershutter";
+    public static final String TRIGGER = "trigger";
 }
