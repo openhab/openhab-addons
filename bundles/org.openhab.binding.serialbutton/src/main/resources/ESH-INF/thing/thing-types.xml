@@ -16,6 +16,7 @@
 			<parameter name="port" type="text">
 				<label>Serial Port</label>
 				<context>serial-port</context>
+				<limitToOptions>false</limitToOptions>
 				<required>true</required>
 				<description>The serial port that the button is connected to</description>
 			</parameter>
