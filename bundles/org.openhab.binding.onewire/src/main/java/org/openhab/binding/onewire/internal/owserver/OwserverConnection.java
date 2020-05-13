@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
  *
  *
  * Hereby, the resulting packet is examined on an appropriate return code (!= -1) and whether the
- * expected payload is attached. If not, an {@link OwException} is raised.
+ * expected payload is attached. If not, an {@link OwException} is thrown.
  *
  *
  * @author Jan N. Klug - Initial contribution
@@ -126,9 +126,7 @@ public class OwserverConnection {
     }
 
     /**
-     * stop the owserver connection
-     *
-     * and report new {@link OwserverConnectionState} to {@link #thingHandlerCallback}.
+     * stop the owserver connection and report new {@link OwserverConnectionState} to {@link #thingHandlerCallback}.
      */
     public void stop() {
         close();
@@ -331,7 +329,7 @@ public class OwserverConnection {
     /**
      * open/reopen the connection to the owserver
      *
-     * In case of issues, the connection is close using {@link #closeOnError()} and false is returned.
+     * In case of issues, the connection is closed using {@link #closeOnError()} and false is returned.
      * If the {@link #owserverConnectionState} is in STOPPED or FAILED, the method directly returns false.
      *
      * @return true if open
@@ -376,7 +374,7 @@ public class OwserverConnection {
     }
 
     /**
-     * Calls {@link #close(boolean)} with reportConnectionState = true.
+     * close connection and report connection state to callback
      */
     private void close() {
         this.close(true);
@@ -384,9 +382,8 @@ public class OwserverConnection {
 
     /**
      * close the connection to the owserver instance.
-     * issues during closing are ignored.
      *
-     * @param reportConnectionState - report the CLOSED state to
+     * @param reportConnectionState  true, if connection state shall be reported to callback
      */
     private void close(boolean reportConnectionState) {
         final Socket owserverSocket = this.owserverSocket;
@@ -480,8 +477,6 @@ public class OwserverConnection {
      *
      * In case of errors (which may also be due to an erroneous path), the connection is checked and potentially closed
      * using {@link #checkConnection()}.
-     *
-     * If
      *
      * @param noTimeoutException retry in case of read time outs instead of exiting with an {@link OwException}.
      * @return the read packet
