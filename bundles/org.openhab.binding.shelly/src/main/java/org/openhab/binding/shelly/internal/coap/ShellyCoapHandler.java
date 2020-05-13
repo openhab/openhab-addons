@@ -549,16 +549,16 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         }
 
         if (!updates.isEmpty()) {
+            if (profile.hasBattery || thingHandler.autoCoIoT) {
+                // CoAP is currently lacking the lastUpdate info, so we use host timestamp
+                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_LAST_UPDATE, getTimestamp());
+            }
             int updated = 0;
             for (Map.Entry<String, State> u : updates.entrySet()) {
                 updated += thingHandler.updateChannel(u.getKey(), u.getValue(), false) ? 1 : 0;
             }
             if (updated > 0) {
                 logger.debug("{}: {} channels updated from CoIoT status", thingName, updated);
-            }
-            if (profile.hasBattery || thingHandler.autoCoIoT) {
-                // CoAP is currently lacking the lastUpdate info, so we use host timestamp
-                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_LAST_UPDATE, getTimestamp());
             }
 
             // Old firmware release are lacking various status values, which are not updated using CoIoT.
@@ -571,7 +571,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
             }
         }
 
-        // Remeber serial, new packets with same serial will be ignored
+        // Remember serial, new packets with same serial will be ignored
         lastSerial = serial;
         lastPayload = payload;
     }
