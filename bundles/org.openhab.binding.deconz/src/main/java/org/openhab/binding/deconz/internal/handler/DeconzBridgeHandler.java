@@ -72,6 +72,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
     private int websocketPort = 0;
     /** Prevent a dispose/init cycle while this flag is set. Use for property updates */
     private boolean ignoreConfigurationUpdate;
+    private boolean websocketReconnect = false;
 
     /** The poll frequency for the API Key verification */
     private static final int POLL_FREQUENCY_SEC = 10;
@@ -106,7 +107,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
      */
     private void stopTimer() {
         ScheduledFuture<?> future = scheduledFuture;
-        if (future != null && !future.isCancelled()) {
+        if (future != null) {
             future.cancel(true);
             scheduledFuture = null;
         }
@@ -206,6 +207,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
 
             // Use requested websocket port if no specific port is given
             websocketPort = config.port == 0 ? fullState.config.websocketport : config.port;
+            websocketReconnect = true;
             startWebsocket();
         }).exceptionally(e -> {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
@@ -258,6 +260,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
 
     @Override
     public void dispose() {
+        websocketReconnect = false;
         stopTimer();
         websocket.close();
     }
@@ -271,7 +274,9 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
         }
         stopTimer();
         // Wait for POLL_FREQUENCY_SEC after a connection error before trying again
-        scheduledFuture = scheduler.schedule(this::startWebsocket, POLL_FREQUENCY_SEC, TimeUnit.SECONDS);
+        if (websocketReconnect) {
+            scheduledFuture = scheduler.schedule(this::startWebsocket, POLL_FREQUENCY_SEC, TimeUnit.SECONDS);
+        }
     }
 
     @Override
@@ -283,7 +288,9 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
     @Override
     public void connectionLost(String reason) {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
-        startWebsocket();
+        if (websocketReconnect) {
+            startWebsocket();
+        }
     }
 
     /**

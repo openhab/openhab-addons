@@ -14,7 +14,6 @@ package org.openhab.binding.deconz.internal.discovery;
 
 import static org.openhab.binding.deconz.internal.BindingConstants.*;
 
-import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -35,6 +34,8 @@ import org.openhab.binding.deconz.internal.dto.BridgeFullState;
 import org.openhab.binding.deconz.internal.dto.LightMessage;
 import org.openhab.binding.deconz.internal.dto.SensorMessage;
 import org.openhab.binding.deconz.internal.handler.DeconzBridgeHandler;
+import org.openhab.binding.deconz.internal.handler.LightThingHandler;
+import org.openhab.binding.deconz.internal.handler.SensorThingHandler;
 import org.openhab.binding.deconz.internal.types.LightType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,13 +48,9 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ThingDiscoveryService extends AbstractDiscoveryService implements DiscoveryService, ThingHandlerService {
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_PRESENCE_SENSOR, THING_TYPE_DAYLIGHT_SENSOR, THING_TYPE_POWER_SENSOR,
-                    THING_TYPE_CONSUMPTION_SENSOR, THING_TYPE_LIGHT_SENSOR, THING_TYPE_TEMPERATURE_SENSOR,
-                    THING_TYPE_HUMIDITY_SENSOR, THING_TYPE_PRESSURE_SENSOR, THING_TYPE_SWITCH,
-                    THING_TYPE_OPENCLOSE_SENSOR, THING_TYPE_WATERLEAKAGE_SENSOR, THING_TYPE_FIRE_SENSOR,
-                    THING_TYPE_ALARM_SENSOR, THING_TYPE_VIBRATION_SENSOR).collect(Collectors.toSet()));
-
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
+            .of(LightThingHandler.SUPPORTED_THING_TYPE_UIDS, SensorThingHandler.SUPPORTED_THING_TYPES)
+            .flatMap(Set::stream).collect(Collectors.toSet());
     private final Logger logger = LoggerFactory.getLogger(ThingDiscoveryService.class);
 
     private @Nullable DeconzBridgeHandler handler;
@@ -191,6 +188,8 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
             thingTypeUID = THING_TYPE_ALARM_SENSOR; // ZHAAlarm
         } else if (sensor.type.contains("ZHAVibration")) {
             thingTypeUID = THING_TYPE_VIBRATION_SENSOR; // ZHAVibration
+        } else if (sensor.type.contains("ZHABattery")) {
+            thingTypeUID = THING_TYPE_BATTERY_SENSOR; // ZHABattery
         } else {
             logger.debug("Unknown type {}", sensor.type);
             return;

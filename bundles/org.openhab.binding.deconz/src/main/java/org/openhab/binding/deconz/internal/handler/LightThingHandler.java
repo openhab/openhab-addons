@@ -24,7 +24,6 @@ import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.google.gson.Gson;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -44,7 +43,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.deconz.internal.dto.DeconzRestMessage;
-import org.openhab.binding.deconz.internal.dto.LightConfig;
 import org.openhab.binding.deconz.internal.dto.LightMessage;
 import org.openhab.binding.deconz.internal.dto.LightState;
 import org.openhab.binding.deconz.internal.netutils.AsyncHttpClient;
@@ -52,6 +50,8 @@ import org.openhab.binding.deconz.internal.netutils.WebSocketConnection;
 import org.openhab.binding.deconz.internal.netutils.WebSocketMessageListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
 
 /**
  * This light thing doesn't establish any connections, that is done by the bridge Thing.
@@ -69,8 +69,9 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class LightThingHandler extends BaseThingHandler implements WebSocketMessageListener {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Stream.of(THING_TYPE_COLOR_TEMPERATURE_LIGHT,
-            THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_COLOR_LIGHT, THING_TYPE_EXTENDED_COLOR_LIGHT, THING_TYPE_WINDOW_COVERING)
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Stream
+            .of(THING_TYPE_COLOR_TEMPERATURE_LIGHT, THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_COLOR_LIGHT,
+                    THING_TYPE_EXTENDED_COLOR_LIGHT, THING_TYPE_WINDOW_COVERING)
             .collect(Collectors.toSet());
     private final Logger logger = LoggerFactory.getLogger(LightThingHandler.class);
     private ThingConfig config = new ThingConfig();
@@ -82,7 +83,6 @@ public class LightThingHandler extends BaseThingHandler implements WebSocketMess
     /**
      * The light state. Contains all possible fields for all supported lights
      */
-    private LightConfig lightConfig = new LightConfig();
     private LightState lightState = new LightState();
     private @Nullable Boolean lastCommand = null;
 
@@ -112,10 +112,6 @@ public class LightThingHandler extends BaseThingHandler implements WebSocketMess
             case CHANNEL_COLOR:
                 if (command instanceof OnOffType) {
                     newlightState.on = (command == OnOffType.ON);
-                } else if (command instanceof PercentType) {
-                    newlightState.bri = (int) (((PercentType) command).doubleValue() * 2.55);
-                } else if (command instanceof DecimalType) {
-                    newlightState.bri = ((DecimalType) command).intValue();
                 } else if (command instanceof HSBType) {
                     HSBType hsbCommand = (HSBType) command;
                     switch (lightState.colormode) {
@@ -135,6 +131,10 @@ public class LightThingHandler extends BaseThingHandler implements WebSocketMess
                         default:
                             return;
                     }
+                } else if (command instanceof PercentType) {
+                    newlightState.bri = (int) (((PercentType) command).doubleValue() * 2.55);
+                } else if (command instanceof DecimalType) {
+                    newlightState.bri = ((DecimalType) command).intValue();
                 } else {
                     return;
                 }
@@ -280,12 +280,6 @@ public class LightThingHandler extends BaseThingHandler implements WebSocketMess
                 return;
             }
 
-            lightConfig = new LightConfig(newState);
-            LightState lightState = newState.state;
-            if (lightState != null) {
-                updateChannels(lightState);
-            }
-
             updateStatus(ThingStatus.ONLINE);
         });
     }
@@ -319,7 +313,7 @@ public class LightThingHandler extends BaseThingHandler implements WebSocketMess
                 }
                 break;
             case CHANNEL_BRIGHTNESS:
-                if (newState.bri != null && newState.on != null && newState.on == true) {
+                if (newState.bri != null && newState.on != null && newState.on) {
                     BigDecimal brightness = new BigDecimal(newState.bri / 2.55);
                     updateState(channelId, new PercentType(brightness));
                 } else {
@@ -352,11 +346,6 @@ public class LightThingHandler extends BaseThingHandler implements WebSocketMess
     public void messageReceived(String sensorID, DeconzRestMessage message) {
         if (message instanceof LightMessage) {
             LightMessage lightMessage = (LightMessage) message;
-
-            if (lightMessage.hascolor != null) { // property "hascolor" is always present for config
-                this.lightConfig = new LightConfig(lightMessage);
-            }
-
             LightState lightState = lightMessage.state;
             if (lightState != null) {
                 updateChannels(lightState);

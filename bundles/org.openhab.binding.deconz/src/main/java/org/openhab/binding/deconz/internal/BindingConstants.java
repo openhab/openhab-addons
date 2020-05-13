@@ -46,6 +46,7 @@ public class BindingConstants {
     public static final ThingTypeUID THING_TYPE_FIRE_SENSOR = new ThingTypeUID(BINDING_ID, "firesensor");
     public static final ThingTypeUID THING_TYPE_ALARM_SENSOR = new ThingTypeUID(BINDING_ID, "alarmsensor");
     public static final ThingTypeUID THING_TYPE_VIBRATION_SENSOR = new ThingTypeUID(BINDING_ID, "vibrationsensor");
+    public static final ThingTypeUID THING_TYPE_BATTERY_SENSOR = new ThingTypeUID(BINDING_ID, "batterysensor");
 
     // lights
     public static final ThingTypeUID THING_TYPE_ONOFF_LIGHT = new ThingTypeUID(BINDING_ID, "onofflight");

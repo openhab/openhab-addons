@@ -87,12 +87,13 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class SensorThingHandler extends BaseThingHandler implements WebSocketMessageListener {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_PRESENCE_SENSOR, THING_TYPE_DAYLIGHT_SENSOR, THING_TYPE_POWER_SENSOR,
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.unmodifiableSet(Stream
+            .of(THING_TYPE_PRESENCE_SENSOR, THING_TYPE_DAYLIGHT_SENSOR, THING_TYPE_POWER_SENSOR,
                     THING_TYPE_CONSUMPTION_SENSOR, THING_TYPE_LIGHT_SENSOR, THING_TYPE_TEMPERATURE_SENSOR,
                     THING_TYPE_HUMIDITY_SENSOR, THING_TYPE_PRESSURE_SENSOR, THING_TYPE_SWITCH,
                     THING_TYPE_OPENCLOSE_SENSOR, THING_TYPE_WATERLEAKAGE_SENSOR, THING_TYPE_FIRE_SENSOR,
-                    THING_TYPE_ALARM_SENSOR, THING_TYPE_VIBRATION_SENSOR).collect(Collectors.toSet()));
+                    THING_TYPE_ALARM_SENSOR, THING_TYPE_VIBRATION_SENSOR, THING_TYPE_BATTERY_SENSOR)
+            .collect(Collectors.toSet()));
 
     private static final List<String> CONFIG_CHANNELS = Arrays.asList(CHANNEL_BATTERY_LEVEL, CHANNEL_BATTERY_LOW,
             CHANNEL_TEMPERATURE);
@@ -190,8 +191,7 @@ public class SensorThingHandler extends BaseThingHandler implements WebSocketMes
 
         final WebSocketConnection webSocketConnection = bridgeHandler.getWebsocketConnection();
         this.connection = webSocketConnection;
-        final AsyncHttpClient asyncHttpClient = bridgeHandler.getHttp();
-        this.http = asyncHttpClient;
+        this.http = bridgeHandler.getHttp();
         this.bridgeConfig = bridgeHandler.getBridgeConfig();
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING);
@@ -377,6 +377,7 @@ public class SensorThingHandler extends BaseThingHandler implements WebSocketMes
         Integer gesture = newState.gesture;
         String lastUpdated = newState.lastupdated;
         Integer status = newState.status;
+        Integer batteryLevel = newState.battery;
         Boolean presence = newState.presence;
         Boolean open = newState.open;
         Float power = newState.power;
@@ -399,7 +400,7 @@ public class SensorThingHandler extends BaseThingHandler implements WebSocketMes
                     } else if (daylight != null) { // if its not dark, it might be between darkness and daylight
                         if (daylight) {
                             updateState(channelUID, new StringType("Daylight"));
-                        } else if (!daylight) {
+                        } else {
                             updateState(channelUID, new StringType("Sunset"));
                         }
                     } else { // if no daylight value is known, we assume !dark means daylight
@@ -508,6 +509,11 @@ public class SensorThingHandler extends BaseThingHandler implements WebSocketMes
                     triggerChannel(channelUID, String.valueOf(gesture));
                 }
                 break;
+            case CHANNEL_BATTERY_LEVEL:
+                if (batteryLevel != null) {
+                    updateState(channelUID, new DecimalType(batteryLevel.longValue()));
+                }
+                break;
             case CHANNEL_LAST_UPDATED:
                 if (lastUpdated != null && !"none".equals(lastUpdated)) {
                     updateState(channelUID,
@@ -536,17 +542,14 @@ public class SensorThingHandler extends BaseThingHandler implements WebSocketMes
     }
 
     private void updateChannels(SensorConfig newConfig) {
-        thing.getChannels().stream().map(channel -> channel.getUID())
-                .filter(channelUID -> CONFIG_CHANNELS.contains(channelUID.getId())).forEach((channelUID) -> {
-                    valueUpdated(channelUID, newConfig);
-                });
+        thing.getChannels().stream().map(Channel::getUID)
+                .filter(channelUID -> CONFIG_CHANNELS.contains(channelUID.getId()))
+                .forEach((channelUID) -> valueUpdated(channelUID, newConfig));
     }
 
     private void updateChannels(SensorState newState, boolean initializing) {
         sensorState = newState;
 
-        for (Channel channel : thing.getChannels()) {
-            valueUpdated(channel.getUID(), newState, initializing);
-        }
+        thing.getChannels().forEach(channel -> valueUpdated(channel.getUID(), newState, initializing));
     }
 }

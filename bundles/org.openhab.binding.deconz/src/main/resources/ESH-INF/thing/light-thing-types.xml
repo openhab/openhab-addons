@@ -97,7 +97,6 @@
 		<config-description-ref uri="thing-type:deconz:sensor"/>
 	</thing-type>
 
-
 	<channel-type id="position">
 		<item-type>Rollershutter</item-type>
 		<label>Position</label>

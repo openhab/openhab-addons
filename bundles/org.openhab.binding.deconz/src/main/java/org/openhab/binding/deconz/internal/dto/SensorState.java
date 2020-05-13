@@ -58,6 +58,8 @@ public class SensorState {
     public @Nullable Boolean presence;
     /** Power sensors provide this value in Watts. */
     public @Nullable Float power;
+    /** Batttery sensors provide this value */
+    public @Nullable Integer battery;
     /** Consumption sensors provide this value in Watts/hour. */
     public @Nullable Float consumption;
     /** Power sensors provide this value in Volt. */
