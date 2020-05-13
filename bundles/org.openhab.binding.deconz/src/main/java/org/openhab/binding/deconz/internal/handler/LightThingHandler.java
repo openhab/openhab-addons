@@ -84,7 +84,6 @@ public class LightThingHandler extends BaseThingHandler implements WebSocketMess
      * The light state. Contains all possible fields for all supported lights
      */
     private LightState lightState = new LightState();
-    private @Nullable Boolean lastCommand = null;
 
     public LightThingHandler(Thing thing, Gson gson) {
         super(thing);
@@ -139,8 +138,8 @@ public class LightThingHandler extends BaseThingHandler implements WebSocketMess
                     return;
                 }
 
-                // send on/off state together with brightness if not already set
-                if (newlightState.bri != null && (newlightState.bri > 0) != lightState.on) {
+                // send on/off state together with brightness if not already set or unknown
+                if (lightState.on == null || (newlightState.bri != null && (newlightState.bri > 0) != lightState.on)) {
                     newlightState.on = (newlightState.bri > 0);
                 }
                 break;
@@ -155,10 +154,13 @@ public class LightThingHandler extends BaseThingHandler implements WebSocketMess
             case CHANNEL_POSITION:
                 if (command instanceof UpDownType) {
                     newlightState.on = (command == UpDownType.DOWN);
-                    lastCommand = newlightState.on;
-                } else if (command == StopMoveType.STOP && lastCommand != null && lightState.on != lastCommand) {
-                    newlightState.on = lastCommand;
-                    lastCommand = null;
+                } else if (command == StopMoveType.STOP) {
+                    if (lightState.on && lightState.bri <= 254) { // going down or currently stop (254 because of
+                                                                  // rounding error)
+                        newlightState.on = true;
+                    } else if (!lightState.on && lightState.bri > 0) { // going up or currently stopped
+                        newlightState.on = false;
+                    }
                 } else if (command instanceof PercentType) {
                     newlightState.bri = (int) (((PercentType) command).doubleValue() * 2.55);
                 } else {
@@ -174,18 +176,17 @@ public class LightThingHandler extends BaseThingHandler implements WebSocketMess
         if (asyncHttpClient == null) {
             return;
         }
-        String url = url(bridgeConfig.host, bridgeConfig.httpPort, bridgeConfig.apikey, "lights", config.id);
-        url += "/state";
+        String url = buildUrl(bridgeConfig.host, bridgeConfig.httpPort, bridgeConfig.apikey, "lights", config.id, "state");
 
         String json = gson.toJson(newlightState);
-        logger.debug("about so send {} to light {}", json, config.id);
+        logger.trace("Sending {} to light {}", json, config.id);
 
-        asyncHttpClient.put(url, json, bridgeConfig.timeout).thenAccept(v -> {
-            logger.trace("code={}, body={}", v.getResponseCode(), v.getBody());
-        }).exceptionally(e -> {
-            logger.debug("exception:", e);
-            return null;
-        });
+        asyncHttpClient.put(url, json, bridgeConfig.timeout)
+                .thenAccept(v -> logger.trace("Result code={}, body={}", v.getResponseCode(), v.getBody()))
+                .exceptionally(e -> {
+                    logger.debug("exception:", e);
+                    return null;
+                });
     }
 
     /**
@@ -261,7 +262,7 @@ public class LightThingHandler extends BaseThingHandler implements WebSocketMess
         if (asyncHttpClient == null) {
             return;
         }
-        String url = url(bridgeConfig.host, bridgeConfig.httpPort, bridgeConfig.apikey, "lights", config.id);
+        String url = buildUrl(bridgeConfig.host, bridgeConfig.httpPort, bridgeConfig.apikey, "lights", config.id);
         // Get initial data
         asyncHttpClient.get(url, bridgeConfig.timeout).thenApply(this::parseStateResponse).exceptionally(e -> {
             if (e instanceof SocketTimeoutException || e instanceof TimeoutException

@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The REST interface and websocket connection are using the same fields.
  * The REST data contains more descriptive info like the manufacturer and name.
  *
- * @author Jan N. Klug- Initial contribution
+ * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
 public class DeconzRestMessage {

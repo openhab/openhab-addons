@@ -210,7 +210,7 @@ public class SensorThingHandler extends BaseThingHandler implements WebSocketMes
         if (asyncHttpClient == null) {
             return;
         }
-        String url = url(bridgeConfig.host, bridgeConfig.httpPort, bridgeConfig.apikey, "sensors", config.id);
+        String url = buildUrl(bridgeConfig.host, bridgeConfig.httpPort, bridgeConfig.apikey, "sensors", config.id);
         // Get initial data
         asyncHttpClient.get(url, bridgeConfig.timeout).thenApply(this::parseStateResponse).exceptionally(e -> {
             if (e instanceof SocketTimeoutException || e instanceof TimeoutException

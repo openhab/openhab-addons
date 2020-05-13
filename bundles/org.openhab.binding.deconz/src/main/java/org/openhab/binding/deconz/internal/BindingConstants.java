@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.deconz.internal;
 
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -100,23 +103,15 @@ public class BindingConstants {
 
     public static final String UNIQUE_ID = "uid";
 
-    public static String url(String host, int port, @Nullable String apikey, @Nullable String endpointType,
-            @Nullable String endpointID) {
+    public static String buildUrl(String host, int port, String... urlParts) {
         StringBuilder url = new StringBuilder();
         url.append("http://");
         url.append(host).append(":").append(port);
         url.append("/api/");
-        if (apikey != null) {
-            url.append(apikey);
+        if (urlParts.length > 0) {
+            url.append(Stream.of(urlParts).collect(Collectors.joining("/")));
         }
-        if (endpointType != null) {
-            url.append("/");
-            url.append(endpointType);
-            url.append("/");
-        }
-        if (endpointID != null) {
-            url.append(endpointID);
-        }
+
         return url.toString();
     }
 }
