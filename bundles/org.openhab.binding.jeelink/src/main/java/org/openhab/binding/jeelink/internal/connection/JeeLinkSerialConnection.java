@@ -23,7 +23,6 @@ import org.eclipse.smarthome.io.transport.serial.SerialPort;
 import org.eclipse.smarthome.io.transport.serial.SerialPortEvent;
 import org.eclipse.smarthome.io.transport.serial.SerialPortEventListener;
 import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
-import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,16 +37,16 @@ public class JeeLinkSerialConnection extends AbstractJeeLinkConnection {
 
     private final int baudRate;
     private SerialPort serialPort;
-    private final SerialPortManager serialPortManager;
+    private final SerialPortIdentifier serialPortIdentifier;
     private boolean open;
 
-    public JeeLinkSerialConnection(String portName, int baudRate, ConnectionListener l,
-            SerialPortManager serialPortManager) {
-        super(portName, l);
+    public JeeLinkSerialConnection(SerialPortIdentifier serialPortIdentifier, int baudRate,
+            ConnectionListener listener) {
+        super(serialPortIdentifier.getName(), listener);
 
-        logger.debug("Creating serial connection for port {} with baud rate {}...", portName, baudRate);
+        logger.debug("Creating serial connection for port {} with baud rate {}...", port, baudRate);
         this.baudRate = baudRate;
-        this.serialPortManager = serialPortManager;
+        this.serialPortIdentifier = serialPortIdentifier;
     }
 
     @Override
@@ -69,14 +68,7 @@ public class JeeLinkSerialConnection extends AbstractJeeLinkConnection {
         try {
             if (!open) {
                 logger.debug("Opening serial connection to port {} with baud rate {}...", port, baudRate);
-
-                SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(port);
-                if (portIdentifier == null) {
-                    notifyAbort("Port not found: " + port);
-                    return;
-                }
-
-                serialPort = portIdentifier.open("openhab", 3000);
+                serialPort = serialPortIdentifier.open("openhab", 3000);
                 open = true;
 
                 serialPort.setSerialPortParams(baudRate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
