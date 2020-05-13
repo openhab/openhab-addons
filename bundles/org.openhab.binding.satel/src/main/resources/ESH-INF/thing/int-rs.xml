@@ -13,6 +13,7 @@
 				<label>Serial Port</label>
 				<description>Serial port connected to the module.</description>
 				<context>serial-port</context>
+				<limitToOptions>false</limitToOptions>
 			</parameter>
 			<parameter name="timeout" type="integer" unit="ms">
 				<label>Timeout</label>
