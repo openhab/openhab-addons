@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.philipsair.internal;
 
+import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
+import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_MODEL_ID;
+import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_VENDOR;
 import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.AIR_QUALITY_NOTIFICATION_THRESHOLD;
 import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.ALLERGEN_INDEX;
 import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.AUTO_TIMEOFF;
@@ -45,6 +48,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -114,7 +118,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
             logger.debug("Refreshing {}", channelUID);
             updateData(connection);
         } else {
-            logger.info("Sending {} as {}", channelUID.getId(), command.toString());
+            logger.debug("Sending {} as {}", channelUID.getId(), command.toString());
             PhilipsAirPurifierWritableDataDTO commandData = prepareCommandData(channelUID.getIdWithoutGroup(), command);
             try {
                 currentData = connection.sendCommand(channelUID.getIdWithoutGroup(), commandData);
@@ -268,23 +272,28 @@ public class PhilipsAirHandler extends BaseThingHandler {
             return false;
         }
 
-        PhilipsAirPurifierDeviceDTO info = connection.getAirPurifierDevice(getAirPurifierConfig().getHost());
-        PhilipsAirPurifierDataDTO data = connection.getAirPurifierStatus(getAirPurifierConfig().getHost());
+        String host = getAirPurifierConfig().getHost();
+        PhilipsAirPurifierDeviceDTO deviceInfo = connection.getAirPurifierDevice(host);
+        PhilipsAirPurifierDataDTO data = connection.getAirPurifierStatus(host);
         PhilipsAirPurifierFiltersDTO filters = null;
         List<Channel> filterGroup = thing.getChannelsOfGroup(PhilipsAirBindingConstants.FILTERS);
         if (filterGroup.stream().anyMatch(fg -> isLinked(fg.getUID()))) {
-            filters = connection.getAirPurifierFiltersStatus(getAirPurifierConfig().getHost());
+            filters = connection.getAirPurifierFiltersStatus(host);
         }
 
         if (data != null) {
             currentData = data;
         }
 
-        if (info != null) {
-            this.deviceInfo = info;
-            getAirPurifierConfig().setModelid(info.getModelId());
-            this.getConfig().put(PhilipsAirConfiguration.CONFIG_DEF_MODEL_ID, getAirPurifierConfig().getModelid());
-            this.getConfig().put(PhilipsAirConfiguration.CONFIG_KEY, getAirPurifierConfig().getKey());
+        if (deviceInfo != null) {
+            this.deviceInfo = deviceInfo;
+            getAirPurifierConfig().setModelid(deviceInfo.getModelId());
+            this.getConfig().put(PhilipsAirConfiguration.CONFIG_DEF_MODEL_ID, deviceInfo.getModelId()); // TODO : change
+                                                                                                        // to
+                                                                                                        // properties?
+            this.getConfig().put(PhilipsAirConfiguration.CONFIG_KEY, connection.getConfig().getKey());
+            Map<String, String> properties = fillDeviceProperties(deviceInfo, editProperties());
+            updateProperties(properties);
             ThingHandlerCallback callback = getCallback();
             if (callback != null) {
                 callback.configurationUpdated(thing);
@@ -295,7 +304,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
             this.filters = filters;
         }
 
-        return data != null || info != null || filters != null;
+        return data != null || deviceInfo != null || filters != null;
     }
 
     private void updateChannels() {
@@ -417,5 +426,17 @@ public class PhilipsAirHandler extends BaseThingHandler {
 
     public PhilipsAirConfiguration getAirPurifierConfig() {
         return getConfigAs(PhilipsAirConfiguration.class);
+    }
+
+    private static Map<String, String> fillDeviceProperties(PhilipsAirPurifierDeviceDTO device,
+            Map<String, String> properties) {
+        properties.put(PROPERTY_VENDOR, PhilipsAirBindingConstants.VENDOR);
+        if (device != null) {
+            properties.put(PROPERTY_MODEL_ID, device.getModelId());
+            properties.put(PROPERTY_FIRMWARE_VERSION, device.getSoftwareVersion());
+            properties.put(PhilipsAirBindingConstants.PROPERTY_NAME, device.getName());
+        }
+
+        return properties;
     }
 }

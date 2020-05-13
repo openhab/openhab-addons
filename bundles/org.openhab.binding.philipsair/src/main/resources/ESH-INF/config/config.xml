@@ -24,10 +24,6 @@
 			<label>Refresh interval</label>
 			<description>Refresh rate (in seconds)</description>
 		</parameter>
-		<parameter name="modelid" type="text" required="false">
-			<label>Model name</label>
-			<description>Name of Air Purifier model</description>
-		</parameter>
 		<parameter name="humidityOffset" type="decimal" required="false" min="-100" max="100">
 			<label>Humidity Offset</label>
 			<description>Humidity sensor readings offset used for correction</description>

@@ -37,6 +37,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 public class PhilipsAirBindingConstants {
 
     private static final String BINDING_ID = "philipsair";
+    public static final String VENDOR = "Philips";
 
     public static final String SUPPORTED_MODEL_UNIVERSAL = "universal";
     public static final String SUPPORTED_MODEL_NUMBER_AC2889_10 = "ac2889_10";
@@ -66,6 +67,11 @@ public class PhilipsAirBindingConstants {
     public static final Unit<Temperature> TEMPERATURE_UNIT = SIUnits.CELSIUS;
     public static final Unit<Dimensionless> HUMIDITY_UNIT = SmartHomeUnits.PERCENT;
     public static final Unit<Density> DENSITY_UNIT = SmartHomeUnits.MICROGRAM_PER_CUBICMETRE;
+
+    // Thing Configuration Properties
+    public static final String PROPERTY_DEV_TYPE = "deviceType";
+    public static final String PROPERTY_MANUFACTURER = "manufacturer";
+    public static final String PROPERTY_NAME = "name";
 
     // List of all Channel groups
     public static final String FILTERS = "filters";

@@ -42,7 +42,7 @@
 		<item-type>Switch</item-type>
 		<label>Buttons</label>
 		<description>Buttons light</description>
-		<state pattern="%s"/>
+		<state pattern="%s" />
 	</channel-type>
 	<channel-type id="ddp">
 		<item-type>String</item-type>
@@ -60,7 +60,7 @@
 		<label>LED Light Level</label>
 
 		<description>Level 100, 75, 50, 25, 0</description>
-		<state pattern="%d" min="0" max="100" step="25"/>
+		<state pattern="%d" min="0" max="100" step="25" />
 	</channel-type>
 	<channel-type id="cl">
 		<item-type>Switch</item-type>
@@ -73,32 +73,32 @@
 		<item-type>Number:Time</item-type>
 		<label>Timer Left</label>
 		<description>Timer minutes lefts</description>
-		<state readOnly="true" pattern="%d"/>
+		<state readOnly="true" pattern="%d" />
 	</channel-type>
 	<channel-type id="dt">
 		<item-type>Number</item-type>
 		<label>Timer</label>
 		<description>Timer in hours (0-5)</description>
-		<state min="0" max="5" pattern="%d" step="1"/>
+		<state min="0" max="5" pattern="%d" step="1" />
 	</channel-type>
 
 	<channel-type id="pm25">
 		<item-type>Number:Density</item-type>
 		<label>PM2.5</label>
 		<description>PM 2.5 particles pollution level</description>
-		<state readOnly="true" pattern="%d" min="0" max="5000"/>
+		<state readOnly="true" pattern="%d" min="0" max="5000" />
 	</channel-type>
 	<channel-type id="iaql">
 		<item-type>Number</item-type>
 		<label>IAQL</label>
 		<description>Allergen index</description>
-		<state readOnly="true" pattern="%d"/>
+		<state readOnly="true" pattern="%d" />
 	</channel-type>
 	<channel-type id="aqit">
 		<item-type>Number</item-type>
 		<label>AQIT</label>
 		<description>AQI</description>
-		<state readOnly="true" pattern="%d"/>
+		<state readOnly="true" pattern="%d" />
 	</channel-type>
 	<channel-type id="err">
 		<item-type>String</item-type>
@@ -118,46 +118,46 @@
 		<item-type>Number</item-type>
 		<label>Pre-filter</label>
 		<description>Estimated time to perform a manual clean up of the Pre-filter</description>
-		<state readOnly="true" pattern="%d"/>
+		<state readOnly="true" pattern="%d" />
 	</channel-type>
 	<channel-type id="wicksts">
 		<item-type>Number</item-type>
 		<label>Wick</label>
 		<description>Wick filter estimated lifetime</description>
-		<state readOnly="true" pattern="%d"/>
+		<state readOnly="true" pattern="%d" />
 	</channel-type>
 	<channel-type id="fltsts2">
 		<item-type>Number</item-type>
 		<label>Carbon</label>
 		<description>Active carbon filter estimated lifetime</description>
-		<state readOnly="true" pattern="%d"/>
+		<state readOnly="true" pattern="%d" />
 	</channel-type>
 	<channel-type id="fltsts1">
 		<item-type>Number</item-type>
 		<label>HEPA Filter</label>
 		<description>HEPA filter estimated lifetime</description>
-		<state readOnly="true" pattern="%d"/>
+		<state readOnly="true" pattern="%d" />
 	</channel-type>
 	<channel-type id="rh">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Current humidity</description>
 		<category>Humidity</category>
-		<state readOnly="true" pattern="%.1f %unit%" min="0" max="100"/>
+		<state readOnly="true" pattern="%.1f %unit%" min="0" max="100" />
 	</channel-type>
 	<channel-type id="rhset">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity Setpoint</label>
 		<description>Humidity setpoint</description>
 		<category>Humidity</category>
-		<state readOnly="false" pattern="%.0f %unit%" min="40" max="70" step="10"/>
+		<state readOnly="false" pattern="%.0f %unit%" min="40" max="70" step="10" />
 	</channel-type>
 	<channel-type id="temp">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Current temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 	<channel-type id="func">
 		<item-type>String</item-type>
@@ -174,14 +174,6 @@
 		<item-type>Number</item-type>
 		<label>Water Level</label>
 		<description>Water tank level</description>
-		<state readOnly="true" pattern="%d"/>
+		<state readOnly="true" pattern="%d" />
 	</channel-type>
-
-	<channel-type id="swversion" advanced="true">
-		<item-type>String</item-type>
-		<label>Firmware Version</label>
-		<description>Firmware Version of the thing</description>
-		<state readOnly="true"/>
-	</channel-type>
-
 </thing:thing-descriptions>

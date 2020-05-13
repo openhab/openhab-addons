@@ -103,45 +103,46 @@ public class PhilipsAirAPIConnection {
 
     public synchronized @Nullable String getAirPurifierInfo(String host)
             throws JsonSyntaxException, PhilipsAirAPIException {
-        return getResponseFromCache(buildURL(BASE_UPNP_URL, host));
+        return getResponseFromCache(buildURL(BASE_UPNP_URL, host), false);
     }
 
     public synchronized @Nullable PhilipsAirPurifierDataDTO getAirPurifierStatus(String host)
             throws JsonSyntaxException, PhilipsAirAPIException {
-        return gson.fromJson(getResponseFromCache(buildURL(STATUS_URL, host)), PhilipsAirPurifierDataDTO.class);
+        return gson.fromJson(getResponseFromCache(buildURL(STATUS_URL, host), true), PhilipsAirPurifierDataDTO.class);
     }
 
     public synchronized @Nullable String getAirPurifierKey(String host)
             throws JsonSyntaxException, PhilipsAirAPIException {
-        return getResponseFromCache(buildURL(KEY_URL, host));
+        return getResponseFromCache(buildURL(KEY_URL, host), true);
     }
 
     public synchronized @Nullable String getAirPurifierFirmware(String host)
             throws JsonSyntaxException, PhilipsAirAPIException {
-        return getResponseFromCache(buildURL(FIRMWARE_URL, host));
+        return getResponseFromCache(buildURL(FIRMWARE_URL, host), true);
     }
 
     public synchronized @Nullable PhilipsAirPurifierDeviceDTO getAirPurifierDevice(String host)
             throws JsonSyntaxException, PhilipsAirAPIException {
-        return gson.fromJson(getResponseFromCache(buildURL(DEVICE_URL, host)), PhilipsAirPurifierDeviceDTO.class);
+        return gson.fromJson(getResponseFromCache(buildURL(DEVICE_URL, host), true), PhilipsAirPurifierDeviceDTO.class);
     }
 
     public synchronized @Nullable String getAirPurifierUserinfo(String host)
             throws JsonSyntaxException, PhilipsAirAPIException {
-        return getResponseFromCache(buildURL(USERINFO_URL, host));
+        return getResponseFromCache(buildURL(USERINFO_URL, host), true);
     }
 
     public synchronized @Nullable PhilipsAirPurifierFiltersDTO getAirPurifierFiltersStatus(String host)
             throws JsonSyntaxException, PhilipsAirAPIException {
-        return gson.fromJson(getResponseFromCache(buildURL(FILTERS_URL, host)), PhilipsAirPurifierFiltersDTO.class);
+        return gson.fromJson(getResponseFromCache(buildURL(FILTERS_URL, host), true),
+                PhilipsAirPurifierFiltersDTO.class);
     }
 
     private static String buildURL(String url, String host) {
         return url.replaceFirst("%HOST%", host);
     }
 
-    private @Nullable String getResponseFromCache(String url) {
-        return cache.putIfAbsentAndGet(url, () -> getResponse(url, HttpMethod.GET, null, true));
+    private @Nullable String getResponseFromCache(String url, boolean decrypt) {
+        return cache.putIfAbsentAndGet(url, () -> getResponse(url, HttpMethod.GET, null, decrypt));
     }
 
     private String getResponse(String url, HttpMethod method, @Nullable String content, boolean decode) {
@@ -243,5 +244,9 @@ public class PhilipsAirAPIConnection {
         String response = getResponse(buildURL(STATUS_URL, config.getHost()), PUT, commandValue.toString(), true);
         logger.debug("{}", response);
         return gson.fromJson(response, PhilipsAirPurifierDataDTO.class);
+    }
+
+    public PhilipsAirConfiguration getConfig() {
+        return this.config;
     }
 }

@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.philipsair.internal.discovery;
 
+import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_MAC_ADDRESS;
+import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_MODEL_ID;
+import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_VENDOR;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.PROPERTY_DEV_TYPE;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.PROPERTY_MANUFACTURER;
 import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.SUPPORTED_THING_TYPES_UIDS;
 import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.THING_TYPE_AC1214_10;
 import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.THING_TYPE_AC2729;
@@ -34,6 +39,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.jupnp.model.meta.DeviceDetails;
 import org.jupnp.model.meta.ModelDetails;
 import org.jupnp.model.meta.RemoteDevice;
+import org.jupnp.model.meta.RemoteDeviceIdentity;
 import org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants;
 import org.openhab.binding.philipsair.internal.PhilipsAirConfiguration;
 import org.osgi.service.component.ComponentContext;
@@ -88,13 +94,34 @@ public class PhilipsAirUpnpDiscoveryParticipant implements UpnpDiscoveryParticip
         if (uid != null) {
             logger.trace("Creating with uid {}", uid.getAsString());
             Map<String, Object> properties = new HashMap<>();
-            properties.put(PhilipsAirConfiguration.CONFIG_HOST, device.getIdentity().getDescriptorURL().getHost());
-            properties.put(PhilipsAirConfiguration.CONFIG_DEF_DEVICE_UUID,
-                    device.getIdentity().getUdn().getIdentifierString());
+            RemoteDeviceIdentity identity = device.getIdentity();
+            if (identity != null) {
+                addProperty(properties, PhilipsAirConfiguration.CONFIG_HOST, identity.getDescriptorURL().getHost());
+                String idString = identity.getUdn().getIdentifierString();
+                if (idString != null) {
+                    addProperty(properties, PhilipsAirConfiguration.CONFIG_DEF_DEVICE_UUID, idString);
+                    int macIndex = idString.lastIndexOf('-');
+                    if (macIndex > 0) {
+                        addProperty(properties, PROPERTY_MAC_ADDRESS,
+                                idString.substring(idString.lastIndexOf('-') + 1));
+                    }
+                }
+            }
 
-            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                    .withLabel("Philips " + device.getDetails().getModelDetails().getModelName() + " "
-                            + device.getDetails().getModelDetails().getModelNumber())
+            DeviceDetails details = device.getDetails();
+            String label = "Philips AirPurifier";
+            if (details != null) {
+                addProperty(properties, PROPERTY_MANUFACTURER, details.getManufacturerDetails().getManufacturer());
+                ModelDetails modelDetails = device.getDetails().getModelDetails();
+                if (modelDetails != null) {
+                    addProperty(properties, PROPERTY_VENDOR, PhilipsAirBindingConstants.VENDOR);
+                    addProperty(properties, PROPERTY_MODEL_ID, modelDetails.getModelNumber());
+                    addProperty(properties, PROPERTY_DEV_TYPE, modelDetails.getModelName());
+                    label = String.format("Philips %s %s", modelDetails.getModelName(), modelDetails.getModelNumber());
+                }
+            }
+
+            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label)
                     .withRepresentationProperty(PhilipsAirConfiguration.CONFIG_DEF_DEVICE_UUID).build();
 
             logger.debug("DiscoveryResult with uid {} label : {} ", result.getThingUID().getAsString(),
@@ -134,5 +161,9 @@ public class PhilipsAirUpnpDiscoveryParticipant implements UpnpDiscoveryParticip
 
         logger.debug("Attempt to create Philips Air things {} {}", modelName, modelDetails.getModelNumber());
         return new ThingUID(thingType, device.getIdentity().getUdn().getIdentifierString());
+    }
+
+    private static void addProperty(Map<String, Object> properties, String key, @Nullable String value) {
+        properties.put(key, value != null ? value : "");
     }
 }
