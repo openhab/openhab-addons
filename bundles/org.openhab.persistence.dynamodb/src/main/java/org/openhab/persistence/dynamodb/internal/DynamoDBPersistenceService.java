@@ -436,9 +436,8 @@ public class DynamoDBPersistenceService extends AbstractBufferedPersistenceServi
         List<FailedBatch> failed = mapper.batchSave(batch);
         for (FailedBatch failedBatch : failed) {
             if (failedBatch.getException() instanceof ResourceNotFoundException) {
-                // Table did not exist. Try writing everything again.
+                // Table did not exist. Try again after creating table
                 retryFlushAfterCreatingTable(mapper, batch, failedBatch);
-                break;
             } else {
                 logger.debug("Batch failed with {}. Retrying next with exponential back-off",
                         failedBatch.getException().getMessage());
