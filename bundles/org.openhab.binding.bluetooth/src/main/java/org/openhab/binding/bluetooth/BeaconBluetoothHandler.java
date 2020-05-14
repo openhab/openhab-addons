@@ -55,6 +55,8 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
 
     protected final ReentrantLock deviceLock;
 
+    private @Nullable ZonedDateTime lastActivityTime;
+
     public BeaconBluetoothHandler(Thing thing) {
         super(thing);
         deviceLock = new ReentrantLock();
@@ -155,13 +157,11 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
      * Updates the LastActivityTime channel
      */
     protected void updateLastActivityTime() {
-        if (device != null) {
-            ZonedDateTime activityTime = device.getLastSeenTime();
-            if (activityTime != null) {
-                updateState(BluetoothBindingConstants.CHANNEL_TYPE_LAST_ACTIVITY_TIME, new DateTimeType(activityTime));
-            } else {
-                updateState(BluetoothBindingConstants.CHANNEL_TYPE_LAST_ACTIVITY_TIME, UnDefType.NULL);
-            }
+        ZonedDateTime activityTime = this.lastActivityTime;
+        if (activityTime != null) {
+            updateState(BluetoothBindingConstants.CHANNEL_TYPE_LAST_ACTIVITY_TIME, new DateTimeType(activityTime));
+        } else {
+            updateState(BluetoothBindingConstants.CHANNEL_TYPE_LAST_ACTIVITY_TIME, UnDefType.NULL);
         }
     }
 
@@ -199,6 +199,7 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
     }
 
     private void onActivity() {
+        this.lastActivityTime = ZonedDateTime.now();
         updateLastActivityTime();
     }
 

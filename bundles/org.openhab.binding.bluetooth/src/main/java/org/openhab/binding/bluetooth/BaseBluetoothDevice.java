@@ -93,7 +93,6 @@ public abstract class BaseBluetoothDevice extends BluetoothDevice {
      *
      * @return The last time this device was active
      */
-    @Override
     public @Nullable ZonedDateTime getLastSeenTime() {
         return lastSeenTime;
     }
@@ -103,7 +102,6 @@ public abstract class BaseBluetoothDevice extends BluetoothDevice {
      * Should be called whenever activity occurs on this device.
      *
      */
-    @Override
     public void updateLastSeenTime() {
         lastSeenTime = ZonedDateTime.now();
     }
@@ -257,6 +255,21 @@ public abstract class BaseBluetoothDevice extends BluetoothDevice {
     @Override
     protected void dispose() {
 
+    }
+
+    @Override
+    protected void notifyListeners(BluetoothEventType event, Object... args) {
+        switch (event) {
+            case SCAN_RECORD:
+            case CHARACTERISTIC_UPDATED:
+            case DESCRIPTOR_UPDATED:
+            case SERVICES_DISCOVERED:
+                updateLastSeenTime();
+                break;
+            default:
+                break;
+        }
+        super.notifyListeners(event, args);
     }
 
     @Override

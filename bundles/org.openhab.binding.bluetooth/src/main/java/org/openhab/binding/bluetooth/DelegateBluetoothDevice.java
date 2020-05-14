@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.bluetooth;
 
-import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.UUID;
@@ -34,20 +33,6 @@ public abstract class DelegateBluetoothDevice extends BluetoothDevice {
     }
 
     protected abstract @Nullable BluetoothDevice getDelegate();
-
-    @Override
-    public @Nullable ZonedDateTime getLastSeenTime() {
-        BluetoothDevice delegate = getDelegate();
-        return delegate != null ? delegate.getLastSeenTime() : null;
-    }
-
-    @Override
-    protected void updateLastSeenTime() {
-        BluetoothDevice delegate = getDelegate();
-        if (delegate != null) {
-            delegate.updateLastSeenTime();
-        }
-    }
 
     @Override
     public @Nullable String getName() {
