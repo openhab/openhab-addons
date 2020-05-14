@@ -149,13 +149,13 @@ public class Telnet {
         long timeZero = System.currentTimeMillis();
         if (client.isConnected()) {
             readLineResult = "";
-            int i = 1;
-            while (i != -1) {
-                i = bufferedStream.available();
-                byte[] buffer = new byte[i];
+            boolean done = false;
+            while (!done) {
+                int available = bufferedStream.available();
+                byte[] buffer = new byte[available];
                 bufferedStream.read(buffer);
                 String str = new String(buffer, StandardCharsets.UTF_8);
-                i = concatReadLineResult(str);
+                done = concatReadLineResult(str);
                 if (System.currentTimeMillis() - timeZero >= timeOut) {
                     throw new ReadException();
                 }
@@ -173,7 +173,7 @@ public class Telnet {
      * End of line is detected. Each element of the list
      * should be a JSON Element
      */
-    private synchronized int concatReadLineResult(String value) {
+    private synchronized boolean concatReadLineResult(String value) {
         readLineResult = readLineResult.concat(value);
         if (readLineResult.endsWith("\r\n")) {
             readLineResult = readLineResult.trim();
@@ -184,9 +184,9 @@ public class Telnet {
                 readLineResult = readLineResult.trim();
             }
             readResultList.add(readLineResult);
-            return -1;
+            return true;
         }
-        return 0;
+        return false;
     }
 
     /**
