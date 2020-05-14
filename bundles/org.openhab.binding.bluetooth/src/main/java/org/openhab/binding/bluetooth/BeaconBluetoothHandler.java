@@ -199,7 +199,6 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
     }
 
     private void onActivity() {
-        device.updateLastSeenTime();
         updateLastActivityTime();
     }
 

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.internal;
 
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +48,11 @@ public class RoamingBluetoothDevice extends DelegateBluetoothDevice {
 
     private final AtomicReference<@Nullable BluetoothDevice> currentDelegateRef = new AtomicReference<>();
 
+    /**
+     * Last time when activity occurred on this device.
+     */
+    protected @Nullable ZonedDateTime lastSeenTime = null;
+
     protected RoamingBluetoothDevice(RoamingBluetoothBridgeHandler roamingAdapter, BluetoothAddress address) {
         super(roamingAdapter, address);
     }
@@ -65,13 +71,27 @@ public class RoamingBluetoothDevice extends DelegateBluetoothDevice {
     }
 
     @Override
+    public @Nullable ZonedDateTime getLastSeenTime() {
+        if (lastSeenTime == null) {
+            lastSeenTime = super.getLastSeenTime();
+        }
+        return lastSeenTime;
+    }
+
+    @Override
+    protected void updateLastSeenTime() {
+        lastSeenTime = ZonedDateTime.now();
+    }
+
+    @Override
     protected @Nullable BluetoothDevice getDelegate() {
         BluetoothDevice newDelegate = null;
         int newRssi = Integer.MIN_VALUE;
         for (BluetoothDevice device : devices.keySet()) {
             ConnectionState state = device.getConnectionState();
             if (state == ConnectionState.CONNECTING || state == ConnectionState.CONNECTED) {
-                return device;
+                newDelegate = device;
+                break;
             }
             Integer rssi = device.getRssi();
             if (rssi != null && (newDelegate == null || rssi > newRssi)) {

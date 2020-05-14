@@ -42,7 +42,7 @@ public abstract class DelegateBluetoothDevice extends BluetoothDevice {
     }
 
     @Override
-    public void updateLastSeenTime() {
+    protected void updateLastSeenTime() {
         BluetoothDevice delegate = getDelegate();
         if (delegate != null) {
             delegate.updateLastSeenTime();

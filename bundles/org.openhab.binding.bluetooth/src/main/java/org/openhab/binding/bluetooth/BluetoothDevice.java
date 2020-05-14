@@ -112,7 +112,7 @@ public abstract class BluetoothDevice {
      * Should be called whenever activity occurs on this device.
      *
      */
-    public abstract void updateLastSeenTime();
+    protected abstract void updateLastSeenTime();
 
     /**
      * Returns the name of the Bluetooth device.
@@ -390,6 +390,16 @@ public abstract class BluetoothDevice {
      * @param args an array of arguments to pass to the callback
      */
     protected final void notifyListeners(BluetoothEventType event, Object... args) {
+        switch (event) {
+            case SCAN_RECORD:
+            case CHARACTERISTIC_UPDATED:
+            case DESCRIPTOR_UPDATED:
+            case SERVICES_DISCOVERED:
+                updateLastSeenTime();
+                break;
+            default:
+                break;
+        }
         for (BluetoothDeviceListener listener : getListeners()) {
             try {
                 switch (event) {
