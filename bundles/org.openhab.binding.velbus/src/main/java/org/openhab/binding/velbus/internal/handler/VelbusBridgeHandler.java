@@ -153,6 +153,7 @@ public class VelbusBridgeHandler extends BaseBridgeHandler implements SerialPort
     @Override
     public void dispose() {
         if (serialPort != null) {
+            serialPort.removeEventListener();
             serialPort.close();
             serialPort = null;
         }
