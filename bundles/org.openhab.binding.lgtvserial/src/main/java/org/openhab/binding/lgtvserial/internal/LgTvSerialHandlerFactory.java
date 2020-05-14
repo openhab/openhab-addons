@@ -26,9 +26,12 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.lgtvserial.internal.handler.LgTvSerialHandler;
 import org.openhab.binding.lgtvserial.internal.protocol.serial.SerialCommunicatorFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link LgTvSerialHandlerFactory} is responsible for creating things and thing
@@ -48,6 +51,13 @@ public class LgTvSerialHandlerFactory extends BaseThingHandlerFactory {
                     THING_TYPE_LGTV_LK_SERIES, THING_TYPE_LGTV_M6503C, THING_TYPE_LGTV_PW_SERIES)
             .collect(Collectors.toSet()));
 
+    private final SerialPortManager serialPortManager;
+
+    @Activate
+    public LgTvSerialHandlerFactory(final @Reference SerialPortManager serialPortManager) {
+        this.serialPortManager = serialPortManager;
+    }
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -58,7 +68,7 @@ public class LgTvSerialHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (supportsThingType(thingTypeUID)) {
-            return new LgTvSerialHandler(thing, FACTORY);
+            return new LgTvSerialHandler(thing, FACTORY, serialPortManager);
         }
 
         return null;
