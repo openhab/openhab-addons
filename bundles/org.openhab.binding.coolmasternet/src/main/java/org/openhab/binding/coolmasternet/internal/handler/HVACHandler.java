@@ -20,7 +20,6 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -162,9 +161,11 @@ public class HVACHandler extends BaseThingHandler {
                             final QuantityType<?> value = new QuantityType<>(temp, controller.getUnit());
                             updateState(SET_TEMP, value);
                         }
-                    } else if (command instanceof DecimalType) {
-                        final DecimalType temp = (DecimalType) command;
-                        controller.sendCommand(String.format("temp %s %s", uid, temp));
+                    } else if (command instanceof QuantityType) {
+                        final QuantityType<?> temp = (QuantityType) command;
+                        final QuantityType<?> converted = temp.toUnit(controller.getUnit());
+                        final String formatted = converted.format("%.1f");
+                        controller.sendCommand(String.format("temp %s %s", uid, formatted));
                     }
                     break;
                 case MODE:
