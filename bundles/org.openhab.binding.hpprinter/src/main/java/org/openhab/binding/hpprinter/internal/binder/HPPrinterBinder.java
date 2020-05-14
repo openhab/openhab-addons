@@ -36,6 +36,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
+import org.openhab.binding.hpprinter.internal.HPPrinterBindingConstants;
 import org.openhab.binding.hpprinter.internal.HPPrinterConfiguration;
 import org.openhab.binding.hpprinter.internal.api.HPProperties;
 import org.openhab.binding.hpprinter.internal.api.HPServerResult;
@@ -116,7 +117,7 @@ public class HPPrinterBinder {
 
             if (data.hasCumulativeMarking()) {
                 channels.add(ChannelBuilder
-                        .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_BLACK_MARKING), CoreItemFactory.NUMBER)
+                        .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_BLACK_MARKING), HPPrinterBindingConstants.CHAN_TYPE_CUMLMARK)
                         .withLabel("Black Marking Used").withDescription("The amount of Black Marking used")
                         .withType(new ChannelTypeUID("hpprinter:cumlMarkingUsed")).build());
             }
@@ -126,13 +127,13 @@ public class HPPrinterBinder {
                     if (data.hasCumulativeMarking()) {
                         channels.add(ChannelBuilder
                                 .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_COLOR_MARKING),
-                                        CoreItemFactory.NUMBER)
+                                HPPrinterBindingConstants.CHAN_TYPE_CUMLMARK)
                                 .withLabel("Colour Marking Used").withDescription("The amount of Colour Marking used")
                                 .withType(new ChannelTypeUID("hpprinter:cumlMarkingUsed")).build());
                     }
 
                     channels.add(ChannelBuilder
-                            .create(new ChannelUID(thingUid, CGROUP_INK, CHANNEL_COLOR_LEVEL), CoreItemFactory.NUMBER)
+                            .create(new ChannelUID(thingUid, CGROUP_INK, CHANNEL_COLOR_LEVEL), HPPrinterBindingConstants.CHAN_TYPE_INK)
                             .withLabel("Color Level").withDescription("Shows the amount of Colour Ink/Toner remaining")
                             .withType(new ChannelTypeUID("hpprinter:inkLevel")).build());
 
@@ -155,36 +156,36 @@ public class HPPrinterBinder {
                     if (data.hasCumulativeMarking()) {
                         channels.add(ChannelBuilder
                                 .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_CYAN_MARKING),
-                                        CoreItemFactory.NUMBER)
+                                HPPrinterBindingConstants.CHAN_TYPE_CUMLMARK)
                                 .withLabel("Cyan Marking Used").withDescription("The amount of Cyan Marking used")
                                 .withType(new ChannelTypeUID("hpprinter:cumlMarkingUsed")).build());
 
                         channels.add(ChannelBuilder
                                 .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_MAGENTA_MARKING),
-                                        CoreItemFactory.NUMBER)
+                                HPPrinterBindingConstants.CHAN_TYPE_CUMLMARK)
                                 .withLabel("Magenta Marking Used").withDescription("The amount of Magenta Marking used")
                                 .withType(new ChannelTypeUID("hpprinter:cumlMarkingUsed")).build());
 
                         channels.add(ChannelBuilder
                                 .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_YELLOW_MARKING),
-                                        CoreItemFactory.NUMBER)
+                                HPPrinterBindingConstants.CHAN_TYPE_CUMLMARK)
                                 .withLabel("Yellow Marking Used").withDescription("The amount of Yellow Marking used")
                                 .withType(new ChannelTypeUID("hpprinter:cumlMarkingUsed")).build());
                     }
 
                     channels.add(ChannelBuilder
-                            .create(new ChannelUID(thingUid, CGROUP_INK, CHANNEL_CYAN_LEVEL), CoreItemFactory.NUMBER)
+                            .create(new ChannelUID(thingUid, CGROUP_INK, CHANNEL_CYAN_LEVEL), HPPrinterBindingConstants.CHAN_TYPE_INK)
                             .withLabel("Cyan Level").withDescription("Shows the amount of Cyan Ink/Toner remaining")
                             .withType(new ChannelTypeUID("hpprinter:inkLevel")).build());
 
                     channels.add(ChannelBuilder
-                            .create(new ChannelUID(thingUid, CGROUP_INK, CHANNEL_MAGENTA_LEVEL), CoreItemFactory.NUMBER)
+                            .create(new ChannelUID(thingUid, CGROUP_INK, CHANNEL_MAGENTA_LEVEL), HPPrinterBindingConstants.CHAN_TYPE_INK)
                             .withLabel("Magenta Level")
                             .withDescription("Shows the amount of Magenta Ink/Toner remaining")
                             .withType(new ChannelTypeUID("hpprinter:inkLevel")).build());
 
                     channels.add(ChannelBuilder
-                            .create(new ChannelUID(thingUid, CGROUP_INK, CHANNEL_YELLOW_LEVEL), CoreItemFactory.NUMBER)
+                            .create(new ChannelUID(thingUid, CGROUP_INK, CHANNEL_YELLOW_LEVEL), HPPrinterBindingConstants.CHAN_TYPE_INK)
                             .withLabel("Yellow Level").withDescription("Shows the amount of Yellow Ink/Toner remaining")
                             .withType(new ChannelTypeUID("hpprinter:inkLevel")).build());
 
