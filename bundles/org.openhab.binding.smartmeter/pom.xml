@@ -14,10 +14,6 @@
 
   <name>openHAB Add-ons :: Bundles :: Smartmeter Binding</name>
 
-  <properties>
-    <bnd.importpackage>gnu.io;version="[3.12,6)"</bnd.importpackage>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>io.reactivex.rxjava2</groupId>
