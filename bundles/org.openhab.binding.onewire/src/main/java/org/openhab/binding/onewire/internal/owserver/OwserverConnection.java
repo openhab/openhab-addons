@@ -378,7 +378,7 @@ public class OwserverConnection {
     /**
      * close the connection to the owserver instance.
      *
-     * @param reportConnectionState  true, if connection state shall be reported to callback
+     * @param reportConnectionState true, if connection state shall be reported to callback
      */
     private void close(boolean reportConnectionState) {
         final Socket owserverSocket = this.owserverSocket;
@@ -416,9 +416,9 @@ public class OwserverConnection {
     }
 
     /**
-     * close the connection to the owserver instance after an error occured
-     * if {@link #CONNECTION_MAX_RETRY} is exceeded, the {@link #owserverConnectionState} is set to FAILED
-     * and reported to the {@link #thingHandlerCallback}.
+     * close the connection to the owserver instance after an error occured.
+     * if {@link #CONNECTION_MAX_RETRY} is exceeded, {@link #owserverConnectionState} is set to FAILED
+     * and state is reported to callback.
      */
     private void closeOnError() {
         connectionErrorCounter++;

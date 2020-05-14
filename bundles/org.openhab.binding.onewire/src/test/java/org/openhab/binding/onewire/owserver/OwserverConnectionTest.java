@@ -146,15 +146,11 @@ public class OwserverConnectionTest extends JavaTest {
             return;
         }
         owserverConnection.start();
-        try {
-            State presence = owserverConnection.checkPresence("present");
-            assertEquals(OnOffType.ON, presence);
+        State presence = owserverConnection.checkPresence("present");
+        assertEquals(OnOffType.ON, presence);
 
-            presence = owserverConnection.checkPresence("notpresent");
-            assertEquals(OnOffType.OFF, presence);
-        } catch (Exception e) {
-            Assert.fail("caught unexpected Exception");
-        }
+        presence = owserverConnection.checkPresence("notpresent");
+        assertEquals(OnOffType.OFF, presence);
     }
 
     @Test
