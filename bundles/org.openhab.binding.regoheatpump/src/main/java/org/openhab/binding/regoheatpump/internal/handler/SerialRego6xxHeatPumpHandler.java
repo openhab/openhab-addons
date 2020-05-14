@@ -13,6 +13,10 @@
 package org.openhab.binding.regoheatpump.internal.handler;
 
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.regoheatpump.internal.RegoHeatPumpBindingConstants;
 import org.openhab.binding.regoheatpump.internal.protocol.RegoConnection;
 import org.openhab.binding.regoheatpump.internal.protocol.SerialRegoConnection;
@@ -24,13 +28,28 @@ import org.openhab.binding.regoheatpump.internal.protocol.SerialRegoConnection;
  * @author Boris Krivonog - Initial contribution
  */
 public class SerialRego6xxHeatPumpHandler extends Rego6xxHeatPumpHandler {
-    public SerialRego6xxHeatPumpHandler(Thing thing) {
+    private final SerialPortManager serialPortManager;
+    private SerialPortIdentifier serialPortIdentifier;
+
+    public SerialRego6xxHeatPumpHandler(Thing thing, SerialPortManager serialPortManager) {
         super(thing);
+        this.serialPortManager = serialPortManager;
+    }
+
+    @Override
+    public void initialize() {
+        String portName = (String) getConfig().get(RegoHeatPumpBindingConstants.PORT_NAME);
+        serialPortIdentifier = serialPortManager.getIdentifier(portName);
+        if (serialPortIdentifier == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Serial port does not exist: " + portName);
+        } else {
+            super.initialize();
+        }
     }
 
     @Override
     protected RegoConnection createConnection() {
-        String portName = (String) getConfig().get(RegoHeatPumpBindingConstants.PORT_NAME);
-        return new SerialRegoConnection(portName, 19200);
+        return new SerialRegoConnection(serialPortIdentifier, 19200);
     }
 }

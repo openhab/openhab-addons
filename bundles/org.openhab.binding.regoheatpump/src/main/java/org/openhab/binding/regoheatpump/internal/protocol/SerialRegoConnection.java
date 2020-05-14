@@ -16,10 +16,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import gnu.io.NRSerialPort;
+import org.eclipse.smarthome.io.transport.serial.PortInUseException;
+import org.eclipse.smarthome.io.transport.serial.SerialPort;
+import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
+import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
 
 /**
  * The {@link SerialRegoConnection} is responsible for creating serial connections to clients.
@@ -27,40 +27,40 @@ import gnu.io.NRSerialPort;
  * @author Boris Krivonog - Initial contribution
  */
 public class SerialRegoConnection implements RegoConnection {
-    private final Logger logger = LoggerFactory.getLogger(SerialRegoConnection.class);
     private final int baudRate;
     private final String portName;
-    private NRSerialPort serialPort;
+    private SerialPort serialPort;
+    private final SerialPortIdentifier serialPortIdentifier;
 
-    public SerialRegoConnection(String portName, int baudRate) {
-        this.portName = portName;
+    public SerialRegoConnection(SerialPortIdentifier serialPortIdentifier, int baudRate) {
+        this.serialPortIdentifier = serialPortIdentifier;
+        this.portName = serialPortIdentifier.getName();
         this.baudRate = baudRate;
     }
 
     @Override
     public void connect() throws IOException {
-        if (isPortNameExist(portName)) {
-            serialPort = new NRSerialPort(portName, baudRate);
-            if (!serialPort.connect()) {
-                throw new IOException("Failed to connect on port " + portName);
-            }
-
-            logger.debug("Connected to {}", portName);
-        } else {
-            throw new IOException("Serial port with name " + portName + " does not exist. Available port names: "
-                    + NRSerialPort.getAvailableSerialPorts());
+        try {
+            serialPort = serialPortIdentifier.open(SerialRegoConnection.class.getCanonicalName(), 2000);
+            serialPort.enableReceiveTimeout(100);
+            serialPort.setSerialPortParams(baudRate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
+                    SerialPort.PARITY_NONE);
+        } catch (PortInUseException e) {
+            throw new IOException("Serial port already used: " + portName, e);
+        } catch (UnsupportedCommOperationException e) {
+            throw new IOException("Unsupported operation on '" + portName + "': " + e.getMessage(), e);
         }
     }
 
     @Override
     public boolean isConnected() {
-        return serialPort != null && serialPort.isConnected();
+        return serialPort != null;
     }
 
     @Override
     public void close() {
         if (serialPort != null) {
-            serialPort.disconnect();
+            serialPort.close();
             serialPort = null;
         }
     }
@@ -73,9 +73,5 @@ public class SerialRegoConnection implements RegoConnection {
     @Override
     public InputStream inputStream() throws IOException {
         return serialPort.getInputStream();
-    }
-
-    private boolean isPortNameExist(String portName) {
-        return NRSerialPort.getAvailableSerialPorts().contains(portName);
     }
 }
