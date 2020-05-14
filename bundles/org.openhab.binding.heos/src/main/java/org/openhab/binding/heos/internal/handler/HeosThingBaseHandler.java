@@ -24,7 +24,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import javax.measure.quantity.Time;
@@ -71,8 +71,8 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
     private String notificationVolume = "0";
 
     private int failureCount;
-    private @Nullable ScheduledFuture<?> scheduleQueueFetchFuture;
-    private @Nullable ScheduledFuture<?> handleDynamicStatesFuture;
+    private @Nullable Future<?> scheduleQueueFetchFuture;
+    private @Nullable Future<?> handleDynamicStatesFuture;
 
     HeosThingBaseHandler(Thing thing, HeosDynamicStateDescriptionProvider heosDynamicStateDescriptionProvider) {
         super(thing);
@@ -106,7 +106,7 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
             scheduleQueueFetchFuture = scheduler.schedule(this::fetchQueueFromPlayer, 30, TimeUnit.SECONDS);
 
             if (localBridgeHandler.isLoggedIn()) {
-                handleDynamicStatesSignedIn();
+                scheduleImmediatelyHandleDynamicStatesSignedIn();
             }
         } catch (HeosNotConnectedException e) {
             updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
@@ -160,11 +160,11 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
     public void bridgeChangeEvent(String event, boolean success, Object command) {
         logger.debug("BridgeChangeEvent: {}", command);
         if (HeosEvent.USER_CHANGED == command) {
-            handleDynamicStatesFuture = scheduler.schedule(this::handleDynamicStatesSignedIn, 0, TimeUnit.SECONDS);
+            handleDynamicStatesSignedIn();
         }
 
         if (EVENT_TYPE_EVENT.equals(event)) {
-            if (HeosEvent.GROUPS_CHANGED.equals(command)) {
+            if (HeosEvent.GROUPS_CHANGED == command) {
                 fetchQueueFromPlayer();
             } else if (CONNECTION_RESTORED.equals(command)) {
                 try {
@@ -174,6 +174,15 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
                 }
             }
         }
+    }
+
+    void scheduleImmediatelyHandleDynamicStatesSignedIn() {
+        @Nullable Future<?> existingJob = handleDynamicStatesFuture;
+        if (existingJob != null && !existingJob.isCancelled()) {
+            existingJob.cancel(true);
+        }
+
+        handleDynamicStatesFuture = scheduler.submit(this::handleDynamicStatesSignedIn);
     }
 
     void handleDynamicStatesSignedIn() {
@@ -210,12 +219,12 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
             logger.trace("No connection available while trying to unregister");
         }
 
-        ScheduledFuture<?> localeScheduleQueueFetchFuture = this.scheduleQueueFetchFuture;
+        @Nullable Future<?> localeScheduleQueueFetchFuture = this.scheduleQueueFetchFuture;
         if (localeScheduleQueueFetchFuture != null && !localeScheduleQueueFetchFuture.isCancelled()) {
             localeScheduleQueueFetchFuture.cancel(true);
         }
 
-        ScheduledFuture<?> handleDynamicStatesFuture = this.handleDynamicStatesFuture;
+        @Nullable Future<?> handleDynamicStatesFuture = this.handleDynamicStatesFuture;
         if (handleDynamicStatesFuture != null && !handleDynamicStatesFuture.isCancelled()) {
             handleDynamicStatesFuture.cancel(true);
         }
@@ -244,7 +253,7 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
      * to register itself via {@link HeosFacade} via the method:
      * {@link HeosFacade#registerForChangeEvents(HeosEventListener)}
      *
-     * @param eventObject
+     * @param eventObject containing information about the even which was sent to us by the HEOS device
      */
     protected void handleThingStateUpdate(HeosEventObject eventObject) {
         @Nullable HeosEvent command = eventObject.command;
@@ -421,9 +430,9 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
     }
 
     private void fetchQueueFromPlayer() {
-        ScheduledFuture<?> existingJob = scheduleQueueFetchFuture;
+        @Nullable Future<?> existingJob = scheduleQueueFetchFuture;
         if (existingJob != null && !existingJob.isCancelled()) {
-            existingJob.cancel(true);
+            existingJob.cancel(false);
         }
 
         try {

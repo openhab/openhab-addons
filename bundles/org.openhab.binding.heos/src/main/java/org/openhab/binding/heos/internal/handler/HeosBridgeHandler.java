@@ -74,13 +74,14 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
 
     private static final int HEOS_PORT = 1255;
 
-    private List<HeosPlayerDiscoveryListener> playerDiscoveryList = new CopyOnWriteArrayList<>();
-    private List<String[]> selectedPlayerList = new CopyOnWriteArrayList<>();
-    private HeosChannelManager channelManager = new HeosChannelManager(this);
-    private HeosChannelHandlerFactory channelHandlerFactory;
+    private final List<HeosPlayerDiscoveryListener> playerDiscoveryList = new CopyOnWriteArrayList<>();
+    private final HeosChannelManager channelManager = new HeosChannelManager(this);
+    private final HeosChannelHandlerFactory channelHandlerFactory;
 
-    private Map<String, HeosGroupHandler> groupHandlerMap = new ConcurrentHashMap<>();
-    private Map<String, String> hashToGidMap = new ConcurrentHashMap<>();
+    private final Map<String, HeosGroupHandler> groupHandlerMap = new ConcurrentHashMap<>();
+    private final Map<String, String> hashToGidMap = new ConcurrentHashMap<>();
+
+    private List<String[]> selectedPlayerList = new CopyOnWriteArrayList<>();
 
     private @Nullable ScheduledFuture<?> startupFuture;
 
