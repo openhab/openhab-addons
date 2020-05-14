@@ -16,12 +16,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.TooManyListenersException;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -31,17 +28,18 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.io.transport.serial.PortInUseException;
+import org.eclipse.smarthome.io.transport.serial.SerialPort;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEvent;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEventListener;
+import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
+import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
 import org.openhab.binding.urtsi.internal.config.RtsDeviceConfig;
 import org.openhab.binding.urtsi.internal.config.UrtsiDeviceConfig;
 import org.openhab.binding.urtsi.internal.mapping.UrtsiChannelMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import gnu.io.CommPortIdentifier;
-import gnu.io.NoSuchPortException;
-import gnu.io.SerialPort;
-import gnu.io.SerialPortEvent;
-import gnu.io.SerialPortEventListener;
 
 /**
  * The {@link UrtsiDeviceHandler} is responsible for handling commands, which are
@@ -53,8 +51,6 @@ public class UrtsiDeviceHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(UrtsiDeviceHandler.class);
 
-    private static final String GNU_IO_RXTX_SERIAL_PORTS = "gnu.io.rxtx.SerialPorts";
-
     private static final int BAUD = 9600;
     private static final int DATABITS = SerialPort.DATABITS_8;
     private static final int STOPBIT = SerialPort.STOPBITS_1;
@@ -65,13 +61,15 @@ public class UrtsiDeviceHandler extends BaseBridgeHandler {
 
     private long lastCommandTime;
 
-    private CommPortIdentifier portId;
+    private SerialPortIdentifier portId;
     private SerialPort serialPort;
+    private final SerialPortManager serialPortManager;
     private OutputStream outputStream;
     private InputStream inputStream;
 
-    public UrtsiDeviceHandler(Bridge bridge) {
+    public UrtsiDeviceHandler(Bridge bridge, SerialPortManager serialPortManager) {
         super(bridge);
+        this.serialPortManager = serialPortManager;
     }
 
     @Override
@@ -162,33 +160,12 @@ public class UrtsiDeviceHandler extends BaseBridgeHandler {
                 Thread.sleep(100);
             }
             return !listenerResult.isEmpty();
-        } catch (Exception e) {
+        } catch (IOException | TooManyListenersException | InterruptedException e) {
             logger.error("Error writing '{}' to serial port {}: {}", msg, portId.getName(), e.getMessage());
         } finally {
             serialPort.removeEventListener();
         }
         return false;
-    }
-
-    /**
-     * Registers the given port as system property {@value #GNU_IO_RXTX_SERIAL_PORTS}. The method is capable of
-     * extending the system property, if any other ports are already registered.
-     *
-     * @param port the port to be registered
-     */
-    private void initSerialPort(String port) {
-        String serialPortsProperty = System.getProperty(GNU_IO_RXTX_SERIAL_PORTS);
-        Set<String> serialPorts = null;
-
-        if (serialPortsProperty != null) {
-            serialPorts = Stream.of(serialPortsProperty.split(":")).collect(Collectors.toSet());
-        } else {
-            serialPorts = new HashSet<>();
-        }
-        if (serialPorts.add(port)) {
-            logger.debug("Added {} to the {} system property.", port, GNU_IO_RXTX_SERIAL_PORTS);
-            System.setProperty(GNU_IO_RXTX_SERIAL_PORTS, serialPorts.stream().collect(Collectors.joining(":")));
-        }
     }
 
     @Override
@@ -197,35 +174,31 @@ public class UrtsiDeviceHandler extends BaseBridgeHandler {
         UrtsiDeviceConfig urtsiDeviceConfig = getConfigAs(UrtsiDeviceConfig.class);
         commandInterval = urtsiDeviceConfig.commandInterval;
         String port = urtsiDeviceConfig.port;
-        initSerialPort(port);
+
+        portId = serialPortManager.getIdentifier(port);
+
+        if (portId == null) {
+            String availablePorts = serialPortManager.getIdentifiers().map(id -> id.getName())
+                    .collect(Collectors.joining(System.lineSeparator()));
+            String description = String.format("Serial port '%s' could not be found. Available ports are:%n%s", port,
+                    availablePorts);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, description);
+            return;
+        }
+
         try {
-            portId = CommPortIdentifier.getPortIdentifier(port);
-            // initialize serial port
             serialPort = portId.open("openHAB", 2000);
-            // set port parameters
             serialPort.setSerialPortParams(BAUD, DATABITS, STOPBIT, PARITY);
             inputStream = serialPort.getInputStream();
             outputStream = serialPort.getOutputStream();
             updateStatus(ThingStatus.ONLINE);
-        } catch (NoSuchPortException e) {
-            // enumerate the port identifiers in the exception to be helpful
-            final StringBuilder sb = new StringBuilder();
-            @SuppressWarnings("unchecked")
-            Enumeration<CommPortIdentifier> portList = CommPortIdentifier.getPortIdentifiers();
-            while (portList.hasMoreElements()) {
-                final CommPortIdentifier id = portList.nextElement();
-                if (id.getPortType() == CommPortIdentifier.PORT_SERIAL) {
-                    sb.append(id.getName() + "\n");
-                }
-            }
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error: " + e.getMessage());
+        } catch (PortInUseException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Port already used: " + port);
+        } catch (UnsupportedCommOperationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Serial port '" + port + "' could not be found. Available ports are:\n" + sb.toString());
-        } catch (Exception e) {
-            if (logger.isErrorEnabled()) {
-                logger.error("An error occurred while initializing the Urtsi II connection.", e);
-            }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "An error occurred while initializing the Urtsi II connection: " + e.getMessage());
+                    "Unsupported operation on port '" + port + "': " + e.getMessage());
         }
     }
 
