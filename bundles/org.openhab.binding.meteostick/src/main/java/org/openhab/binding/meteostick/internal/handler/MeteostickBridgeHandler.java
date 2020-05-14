@@ -37,17 +37,15 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.io.transport.serial.PortInUseException;
+import org.eclipse.smarthome.io.transport.serial.SerialPort;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEvent;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEventListener;
+import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
+import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import gnu.io.CommPort;
-import gnu.io.CommPortIdentifier;
-import gnu.io.NoSuchPortException;
-import gnu.io.PortInUseException;
-import gnu.io.SerialPort;
-import gnu.io.SerialPortEvent;
-import gnu.io.SerialPortEventListener;
-import gnu.io.UnsupportedCommOperationException;
 
 /**
  * The {@link MeteostickBridgeHandler} is responsible for handling commands, which are
@@ -63,6 +61,7 @@ public class MeteostickBridgeHandler extends BaseBridgeHandler {
     private static final int RECEIVE_TIMEOUT = 3000;
 
     private SerialPort serialPort;
+    private final SerialPortManager serialPortManager;
     private ReceiveThread receiveThread;
 
     private ScheduledFuture<?> offlineTimerJob;
@@ -74,8 +73,9 @@ public class MeteostickBridgeHandler extends BaseBridgeHandler {
 
     private ConcurrentMap<Integer, MeteostickEventListener> eventListeners = new ConcurrentHashMap<>();
 
-    public MeteostickBridgeHandler(Bridge thing) {
+    public MeteostickBridgeHandler(Bridge thing, SerialPortManager serialPortManager) {
         super(thing);
+        this.serialPortManager = serialPortManager;
     }
 
     @Override
@@ -146,13 +146,18 @@ public class MeteostickBridgeHandler extends BaseBridgeHandler {
      * @throws SerialInterfaceException when a connection error occurs.
      */
     private boolean connectPort(final String serialPortName) {
-        logger.info("MeteoStick Connecting to serial port {}", serialPortName);
+        logger.debug("MeteoStick Connecting to serial port {}", serialPortName);
+
+        SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(serialPortName);
+        if (portIdentifier == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                    "Serial Error: Port " + serialPortName + " does not exist");
+            return false;
+        }
 
         boolean success = false;
         try {
-            CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(serialPortName);
-            CommPort commPort = portIdentifier.open("org.openhab.binding.meteostick", 2000);
-            serialPort = (SerialPort) commPort;
+            serialPort = portIdentifier.open("org.openhab.binding.meteostick", 2000);
             serialPort.setSerialPortParams(115200, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
                     SerialPort.PARITY_NONE);
             serialPort.enableReceiveThreshold(1);
@@ -166,12 +171,9 @@ public class MeteostickBridgeHandler extends BaseBridgeHandler {
             serialPort.addEventListener(this.receiveThread);
             serialPort.notifyOnDataAvailable(true);
 
-            logger.info("Serial port is initialized");
+            logger.debug("Serial port is initialized");
 
             success = true;
-        } catch (NoSuchPortException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Serial Error: Port " + serialPortName + " does not exist");
         } catch (PortInUseException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Serial Error: Port " + serialPortName + " in use");
@@ -203,7 +205,7 @@ public class MeteostickBridgeHandler extends BaseBridgeHandler {
             this.serialPort.close();
             this.serialPort = null;
         }
-        logger.info("Disconnected from serial port");
+        logger.debug("Disconnected from serial port");
     }
 
     private void sendToMeteostick(String string) {
