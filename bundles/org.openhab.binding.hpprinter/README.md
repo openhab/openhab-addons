@@ -1,4 +1,4 @@
-# HPPrinter Binding
+# HP Printer Binding
 
 Get HP Printer statistics from an _Embedded Web Server_ over Network.
 
@@ -19,7 +19,7 @@ The available settings are:
 | Usage Refresh Interval (seconds)  | usageInterval   | number  |          | 30      |
 | Status Refresh Interval (seconds) | statusInterval  | number  |          | 4       |
 
-An example configuration is below:
+### Sample Configuration
 
 ```
 Thing hpprinter:printer:djprinter "Printer" @ "Office" [ ipAddress="192.168.1.1", usageInterval="30", statusInterval="4" ]
@@ -48,3 +48,26 @@ Thing hpprinter:printer:djprinter "Printer" @ "Office" [ ipAddress="192.168.1.1"
 | Front Panel Cancel Count                   | fpCount              | Number    | yes     |
 
 > The `colorLevel` is used on Printers that have only a single colour cartridge instead of separate Cyan, Magenta and Yellow cartridges.
+
+### Sample Items
+
+```
+String PrinterStatus "Status" { channel="pprinter:printer:djprinter:status#status" }
+Number PrinterTotalPages "Total Pages" { channel="hpprinter:printer:djprinter:usage#totalCount" }
+
+Number PrinterBlackMarkingUsed "Black Marking Used" { channel="hpprinter:printer:djprinter:usage#blackMarker" }
+Number PrinterCyanMarkingUsed "Cyan Marking Used" { channel="hpprinter:printer:djprinter:usage#cyanMarker" }
+Number PrinterMagentaMarkingUsed "Magenta Marking Used" { channel="hpprinter:printer:djprinter:usage#magentaMarker" }
+Number PrinterYellowMarkingUsed "Yellow Marking Used" { channel="hpprinter:printer:djprinter:usage#yellowMarker" }
+
+Number:Dimensionless PrinterBlackLevel "Black Level" { channel="hpprinter:printer:djprinter:ink#blackLevel" }
+Number PrinterCyanLevel "Cyan Level" { channel="hpprinter:printer:djprinter:ink#cyanLevel" }
+Number PrinterMagentaLevel "Magenta Level" { channel="hpprinter:printer:djprinter:ink#magentaLevel" }
+Number PrinterYellowLevel "Yellow Level" { channel="hpprinter:printer:djprinter:ink#yellowLevel" }
+
+Number PrinterTotalColourPages "Total Colour Pages" { channel="hpprinter:printer:djprinter:usage#totalColorCount" }
+Number PrinterTotalMonochromePages "Total Monochrome Pages" { channel="hpprinter:printer:djprinter:usage#totalMonochromeCount" }
+Number PrinterJamEvents "Jam Events" { channel="hpprinter:printer:djprinter:usage#jamEvents" }
+Number PrinterMispickEvents "Mispick Events" { channel="hpprinter:printer:djprinter:usage#mispickEvents" }
+Number PrinterSubscriptionCount "Subscription Count" { channel="hpprinter:printer:djprinter:usage#subsciptionCount" }
+```
