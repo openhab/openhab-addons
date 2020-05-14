@@ -176,7 +176,8 @@ public class LightThingHandler extends BaseThingHandler implements WebSocketMess
         if (asyncHttpClient == null) {
             return;
         }
-        String url = buildUrl(bridgeConfig.host, bridgeConfig.httpPort, bridgeConfig.apikey, "lights", config.id, "state");
+        String url = buildUrl(bridgeConfig.host, bridgeConfig.httpPort, bridgeConfig.apikey, "lights", config.id,
+                "state");
 
         String json = gson.toJson(newlightState);
         logger.trace("Sending {} to light {}", json, config.id);
