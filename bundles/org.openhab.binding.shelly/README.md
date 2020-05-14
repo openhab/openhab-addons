@@ -429,16 +429,17 @@ The Dimmer should be calibrated using the Shelly App.
 |          |autoOn       |Number   |r/w      |Sets a  timer to turn the device ON after every OFF command; in seconds|
 |          |autoOff      |Number   |r/w      |Sets a  timer to turn the device OFF after every ON command; in seconds|
 |          |timerActive  |Switch   |yes      |ON: An auto-on/off timer is active                                     |
-|light     |color        |Color    |r/w      |Color picker (HSBType)                                                 |
-|          |fullColor    |String   |r/w      |Set Red / Green / Blue / Yellow / White mode and switch mode           | 
+|color     |             |         |         |Color settings: only valid in COLOR mode                               |
+|          |hsb          |HSB      |r/w      |Represents the color picker (HSBType), control r/g/b, bight not white  |
+|          |full         |String   |r/w      |Set Red / Green / Blue / Yellow / White mode and switch mode           |
 |          |             |         |r/w      |Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b,w" | 
 |          |red          |Dimmer   |r/w      |Red brightness: 0..100% or 0..255 (control only the red channel)       |
 |          |green        |Dimmer   |r/w      |Green brightness: 0..100% or 0..255 (control only the red channel)     |
 |          |blue         |Dimmer   |r/w      |Blue brightness: 0..100% or 0..255 (control only the red channel)      |
 |          |white        |Dimmer   |r/w      |White brightness: 0..100% or 0..255 (control only the red channel)     |
 |          |gain         |Dimmer   |r/w      |Gain setting: 0..100%     or 0..100                                    |
-|          |effect       |Number   |r/w      |Select a special effect                                                | 
-|          |             |         |         |  0=No effect, 1=Meteor Shows, 2=Gradual Change, 3=Flash               |
+|          |effect       |Number   |r/w      |Puts the light into effect mode: 0..3)                                 |
+|          |             |         |         |  0=No effect, 1=Meteor Shower, 2=Gradual Change, 3=Flash              |
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                     |
 
 ### Shelly RGBW2 in White Mode (thing-type: shellyrgbw2-white)
