@@ -13,25 +13,34 @@
 package org.openhab.binding.bluetooth;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
+
+import javax.measure.quantity.Power;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
+import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.bluetooth.BluetoothDevice.ConnectionState;
+import org.openhab.binding.bluetooth.internal.RoamingBluetoothAdapter;
 import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
 import org.openhab.binding.bluetooth.notification.BluetoothScanNotification;
 
@@ -94,7 +103,29 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
             deviceLock.unlock();
         }
 
+        ThingBuilder builder = editThing();
+        for (Channel channel : createDynamicChannels()) {
+            // we only want to add each channel, not replace all of them
+            builder.withChannel(channel);
+        }
+        updateThing(builder.build());
+
         updateStatus(ThingStatus.UNKNOWN);
+    }
+
+    private Channel buildChannel(String channelType, String itemType) {
+        return ChannelBuilder.create(new ChannelUID(getThing().getUID(), channelType), itemType).build();
+    }
+
+    protected List<Channel> createDynamicChannels() {
+        List<Channel> channels = new ArrayList<>();
+        channels.add(buildChannel(BluetoothBindingConstants.CHANNEL_TYPE_RSSI, "Number:Power"));
+        channels.add(buildChannel(BluetoothBindingConstants.CHANNEL_TYPE_LAST_ACTIVITY_TIME, "DateTime"));
+        if (adapter instanceof RoamingBluetoothAdapter) {
+            channels.add(buildChannel(BluetoothBindingConstants.CHANNEL_TYPE_ADAPTER, "String"));
+            channels.add(buildChannel(BluetoothBindingConstants.CHANNEL_TYPE_ADAPTER_LOCATION, "String"));
+        }
+        return channels;
     }
 
     @Override
@@ -129,9 +160,6 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
                     break;
             }
         }
-        if (command == RefreshType.REFRESH && channelUID.getId().equals(BluetoothBindingConstants.CHANNEL_TYPE_RSSI)) {
-            updateRSSI();
-        }
     }
 
     /**
@@ -145,7 +173,8 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
 
     private void updateRSSI(@Nullable Integer rssi) {
         if (rssi != null && rssi != 0) {
-            updateState(BluetoothBindingConstants.CHANNEL_TYPE_RSSI, new DecimalType(rssi));
+            QuantityType<Power> quantity = new QuantityType<>(rssi, SmartHomeUnits.DECIBEL_MILLIWATTS);
+            updateState(BluetoothBindingConstants.CHANNEL_TYPE_RSSI, quantity);
             updateStatusBasedOnRssi(true);
         } else {
             updateState(BluetoothBindingConstants.CHANNEL_TYPE_RSSI, UnDefType.NULL);
@@ -166,14 +195,14 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
     }
 
     protected void updateAdapter() {
-        if (device != null) {
+        if (device != null && adapter instanceof RoamingBluetoothAdapter) {
             BluetoothAdapter adapter = device.getAdapter();
             updateState(BluetoothBindingConstants.CHANNEL_TYPE_ADAPTER, new StringType(adapter.getUID().getId()));
         }
     }
 
     protected void updateAdapterLocation() {
-        if (device != null) {
+        if (device != null && adapter instanceof RoamingBluetoothAdapter) {
             BluetoothAdapter adapter = device.getAdapter();
             String location = adapter.getLocation();
             if (location != null || StringUtils.isBlank(location)) {

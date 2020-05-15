@@ -15,8 +15,6 @@
 		<description>Indoor air quality monitor with radon detection</description>
 
 		<channels>
-			<channel id="rssi" typeId="rssi"/>
-
 			<channel id="humidity" typeId="airthings_humidity"/>
 			<channel id="temperature" typeId="airthings_temperature"/>
 			<channel id="pressure" typeId="airthings_pressure"/>

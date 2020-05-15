@@ -30,12 +30,6 @@
 
 		<label>Bluetooth Device</label>
 		<description>A generic Bluetooth device in beacon-mode</description>
-		<channels>
-			<channel id="rssi" typeId="rssi"/>
-			<channel id="lastActivityTime" typeId="last-activity"/>
-			<channel id="adapterUID" typeId="adapter-uid"/>
-			<channel id="adapterLocation" typeId="adapter-location"/>
-		</channels>
 
 		<config-description>
 			<parameter name="address" type="text">
@@ -54,12 +48,6 @@
 
 		<label>Connected Bluetooth Device</label>
 		<description>A generic Bluetooth device in connected-mode</description>
-		<channels>
-			<channel id="rssi" typeId="rssi"/>
-			<channel id="lastActivityTime" typeId="last-activity"/>
-			<channel id="adapterUID" typeId="adapter-uid"/>
-			<channel id="adapterLocation" typeId="adapter-location"/>
-		</channels>
 
 		<config-description>
 			<parameter name="address" type="text">
