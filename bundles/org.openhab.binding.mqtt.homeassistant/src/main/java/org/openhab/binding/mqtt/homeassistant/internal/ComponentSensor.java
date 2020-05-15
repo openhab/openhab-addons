@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -27,6 +30,7 @@ import org.openhab.binding.mqtt.generic.values.Value;
 @NonNullByDefault
 public class ComponentSensor extends AbstractComponent<ComponentSensor.ChannelConfiguration> {
     public static final String sensorChannelID = "sensor"; // Randomly chosen channel "ID"
+    private static final List<String> triggerObjectIDs = Arrays.asList(new String[] { "click", "action" });
 
     /**
      * Configuration class for MQTT component
@@ -61,8 +65,12 @@ public class ComponentSensor extends AbstractComponent<ComponentSensor.ChannelCo
             value = new TextValue();
         }
 
+        String objectId = componentConfiguration.getHaID().objectID;
+
+        boolean trigger = triggerObjectIDs.contains(objectId);
+
         buildChannel(sensorChannelID, value, channelConfiguration.name, componentConfiguration.getUpdateListener())//
                 .stateTopic(channelConfiguration.state_topic, channelConfiguration.value_template)//
-                .build();
+                .trigger(trigger).build();
     }
 }
