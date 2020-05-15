@@ -56,13 +56,13 @@ public class FritzAhaContentExchange extends BufferingResponseListener
 
     @Override
     public void onFailure(@NonNullByDefault({}) Response response, @NonNullByDefault({}) Throwable failure) {
-        logger.debug("response failed: {}", failure.getLocalizedMessage());
+        logger.debug("response failed: {}", failure.getLocalizedMessage(), failure);
     }
 
     @Override
     public void onComplete(@NonNullByDefault({}) Result result) {
-        String body = getContentAsString();
-        logger.debug("response complete: {}", body);
-        callback.execute(result.getResponse().getStatus(), body);
+        String content = getContentAsString();
+        logger.debug("response complete: {}", content);
+        callback.execute(result.getResponse().getStatus(), content);
     }
 }
