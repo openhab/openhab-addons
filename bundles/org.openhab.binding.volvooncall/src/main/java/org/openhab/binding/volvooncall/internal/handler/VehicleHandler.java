@@ -405,6 +405,8 @@ public class VehicleHandler extends BaseThingHandler {
                 return new StringType(status.serviceWarningStatus);
             case FUEL_ALERT:
                 return status.distanceToEmpty < 100 ? OnOffType.ON : OnOffType.OFF;
+            case BULB_FAILURE:
+                return status.aFailedBulb() ? OnOffType.ON : OnOffType.OFF;
             case REMOTE_HEATER:
             case PRECLIMATIZATION:
                 return status.getHeater().map(heater -> getHeaterValue(channelId, heater)).orElse(UnDefType.NULL);
