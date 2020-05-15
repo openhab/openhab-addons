@@ -146,113 +146,114 @@ The following channels will be translated to local language based on the languag
 ### Thing Example
 
 ```
-Bridge weathercompany:account:bridge [ apiKey="734982347982374" ] {
-    Thing weathercompany:weather-forecast:forecast "Local Forecast" @ "Home" [locationType="postalCode",postalCode="10001:US",language="en-US",refreshInterval=30]
-    Thing weathercompany:weather-forecast:chitown "Chicago Forecast" @ "Ohare Airport" [apiKey="734982347982374",locationType="iataCode",iataCode="ORD",language="en-US",refreshInterval=30]
-    Thing weathercompany:weather-forecast:miami "Miami Weather" @ "South Beach" [locationType="postalCode",postalCode="33139:US",language="es-US",refreshInterval=30]
-    Thing weathercompany:weather-observations:observations "Local Observations" @ "Home" [pwsStationId="KFLMIAMI208",refreshInterval=30]
-    Thing weathercompany:weather-observations:patagonia "Torres del Paine Weather" @ "Patagonia" [pwsStationId="IPUNTAAR4",refreshInterval=30]
+Bridge weathercompany:account:myaccount [ apiKey="0123456789" ] {
+    Thing weather-forecast myweather "My Forecast" @ "Home" [locationType="postalCode",postalCode="10001:US",language="en-US",refreshInterval=30]
+    Thing weather-observations myobservations "My Observations" @ "Home" [pwsStationId="KFLMIAMI208",refreshInterval=30]
+    Thing weather-forecast chitown "Chicago Forecast" @ "Ohare Airport" [apiKey="734982347982374",locationType="iataCode",iataCode="ORD",language="en-US",refreshInterval=30]
+    Thing weather-forecast miami "Miami Weather"  @ "South Beach" [locationType="postalCode",postalCode="33139:US",language="es-US",refreshInterval=30]
+    Thing weather-observations patagonia "Torres del Paine Weather" @ "Patagonia" [pwsStationId="IPUNTAAR4",refreshInterval=30]
 }
+
 ```
 
 ### Items Example
 
 ```
 // PWS Current Observations
-Number:Temperature WC_PWS_Temperature "Temperature [%.1f %unit%]" <temperature> { channel="weathercompany:weather-observations:observations:currentTemperature" }
-Number:Temperature WC_PWS_TemperatureDewPoint "Dew Point Temperature [%.1f %unit%]" <temperature> { channel="weathercompany:weather-observations:observations:currentTemperatureDewPoint" }
-Number:Temperature WC_PWS_TemperatureHeatIndex "Heat Index Temperature [%.1f %unit%]" <temperature> { channel="weathercompany:weather-observations:observations:currentTemperatureHeatIndex" }
-Number:Temperature WC_PWS_TemperatureWindChill "Wind Chill Temperature [%.1f %unit%]" <temperature> { channel="weathercompany:weather-observations:observations:currentTemperatureWindChill" }
-Number:Dimensionless WC_PWS_RelativeHumidity "Relative Humidity [%.1f %unit%]" <humidity> { channel="weathercompany:weather-observations:observations:currentHumidity" }
-Number:Pressure WC_PWS_Pressure "Pressure [%.2f %unit%]" <pressure> { channel="weathercompany:weather-observations:observations:currentPressure" }
+Number:Temperature WC_PWS_Temperature "Temperature [%.1f %unit%]" <temperature> { channel="weathercompany:weather-observations:myaccount:myobservations:currentTemperature" }
+Number:Temperature WC_PWS_TemperatureDewPoint "Dew Point Temperature [%.1f %unit%]" <temperature> { channel="weathercompany:weather-observations:myaccount:myobservations:currentTemperatureDewPoint" }
+Number:Temperature WC_PWS_TemperatureHeatIndex "Heat Index Temperature [%.1f %unit%]" <temperature> { channel="weathercompany:weather-observations:myaccount:myobservations:currentTemperatureHeatIndex" }
+Number:Temperature WC_PWS_TemperatureWindChill "Wind Chill Temperature [%.1f %unit%]" <temperature> { channel="weathercompany:weather-observations:myaccount:myobservations:currentTemperatureWindChill" }
+Number:Dimensionless WC_PWS_RelativeHumidity "Relative Humidity [%.1f %unit%]" <humidity> { channel="weathercompany:weather-observations:myaccount:myobservations:currentHumidity" }
+Number:Pressure WC_PWS_Pressure "Pressure [%.2f %unit%]" <pressure> { channel="weathercompany:weather-observations:myaccount:myobservations:currentPressure" }
 // Use this for SI units
-Number:Speed WC_PWS_PrecipitationRate "Precipitation Rate [%.1f mm/h]" <rain> { channel="weathercompany:weather-observations:observations:currentPrecipitationRate" }
+//Number:Speed WC_PWS_PrecipitationRate "Precipitation Rate [%.1f mm/h]" <rain> { channel="weathercompany:weather-observations:myaccount:myobservations:currentPrecipitationRate" }
 // Use this for Imperial units
-//Number:Speed WC_PWS_PrecipitationRate "Precipitation Rate [%.2f in/h]" <rain> { channel="weathercompany:weather-observations:observations:currentPrecipitationRate" }
-Number:Length WC_PWS_PrecipitationTotal "Precipitation Total [%.1f %unit%]" <rain> { channel="weathercompany:weather-observations:observations:currentPrecipitationTotal" }
-Number:Intensity WC_PWS_SolarRadiation "Solar Radiation [%.1f %unit%]" <sun> { channel="weathercompany:weather-observations:observations:currentSolarRadiation" }
-Number WC_PWS_UV "UV Index [%.0f]" <sun> { channel="weathercompany:weather-observations:observations:currentUv" }
-Number:Angle WC_PWS_WindDirection "Wind Direction [%.0f %unit%]" <wind> { channel="weathercompany:weather-observations:observations:currentWindDirection" }
-Number:Speed WC_PWS_WindSpeed "Wind Speed [%.1f %unit%]" <wind> { channel="weathercompany:weather-observations:observations:currentWindSpeed" }
-Number:Speed WC_PWS_WindSpeedGust "Wind Speed Gust [%.1f %unit%]" <wind> { channel="weathercompany:weather-observations:observations:currentWindSpeedGust" }
-String WC_PWS_Country "Country [%s]" <none> { channel="weathercompany:weather-observations:observations:country" }
-Location WC_PWS_Location "Lat/Lon [%2$s°N, %3$s°W]" <none> { channel="weathercompany:weather-observations:observations:location" }
-Number:Length WC_PWS_Elevation "Elevation [%.1f %unit%]" <none> { channel="weathercompany:weather-observations:observations:elevation" }
-String WC_PWS_Neighborhood "Neighborhood [%s]" <none> { channel="weathercompany:weather-observations:observations:neighborhood" }
-DateTime WC_PWS_ObservationTimeLocal "Observation Time [%1$tA, %1$tm/%1$td/%1$tY %1$tl:%1$tM %1$tp]" <time> { channel="weathercompany:weather-observations:observations:observationTimeLocal" }
-Number WC_PWS_QcStatus "QC Status [%.0f %unit%]" <none> { channel="weathercompany:weather-observations:observations:qcStatus" }
-String WC_PWS_SoftwareType "Software Type [%s]" <none> { channel="weathercompany:weather-observations:observations:softwareType" }
-String WC_PWS_StationId "Station Id [%s]" <none> { channel="weathercompany:weather-observations:observations:stationId" }
+Number:Speed WC_PWS_PrecipitationRate "Precipitation Rate [%.2f in/h]" <rain> { channel="weathercompany:weather-observations:myaccount:myobservations:currentPrecipitationRate" }
+Number:Length WC_PWS_PrecipitationTotal "Precipitation Total [%.1f %unit%]" <rain> { channel="weathercompany:weather-observations:myaccount:myobservations:currentPrecipitationTotal" }
+Number:Intensity WC_PWS_SolarRadiation "Solar Radiation [%.1f %unit%]" <sun> { channel="weathercompany:weather-observations:myaccount:myobservations:currentSolarRadiation" }
+Number WC_PWS_UV "UV Index [%.0f]" <sun> { channel="weathercompany:weather-observations:myaccount:myobservations:currentUv" }
+Number:Angle WC_PWS_WindDirection "Wind Direction [%.0f %unit%]" <wind> { channel="weathercompany:weather-observations:myaccount:myobservations:currentWindDirection" }
+Number:Speed WC_PWS_WindSpeed "Wind Speed [%.0f %unit%]" <wind> { channel="weathercompany:weather-observations:myaccount:myobservations:currentWindSpeed" }
+Number:Speed WC_PWS_WindSpeedGust "Wind Speed Gust [%.0f %unit%]" <wind> { channel="weathercompany:weather-observations:myaccount:myobservations:currentWindSpeedGust" }
+String WC_PWS_Country "Country [%s]" <none> { channel="weathercompany:weather-observations:myaccount:myobservations:country" }
+Location WC_PWS_Location "Lat/Lon [%s]" <none> { channel="weathercompany:weather-observations:myaccount:myobservations:location" }
+Number:Length WC_PWS_Elevation "Elevation [%.0f %unit%]" <none> { channel="weathercompany:weather-observations:myaccount:myobservations:elevation" }
+String WC_PWS_Neighborhood "Neighborhood [%s]" <none> { channel="weathercompany:weather-observations:myaccount:myobservations:neighborhood" }
+DateTime WC_PWS_ObservationTimeLocal "Observation Time [%1$tA, %1$tm/%1$td/%1$tY %1$tl:%1$tM %1$tp]" <time> { channel="weathercompany:weather-observations:myaccount:myobservations:observationTimeLocal" }
+Number WC_PWS_QcStatus "QC Status [%.0f %unit%]" <none> { channel="weathercompany:weather-observations:myaccount:myobservations:qcStatus" }
+String WC_PWS_SoftwareType "Software Type [%s]" <none> { channel="weathercompany:weather-observations:myaccount:myobservations:softwareType" }
+String WC_PWS_StationId "Station Id [%s]" <none> { channel="weathercompany:weather-observations:myaccount:myobservations:stationId" }
 
 // Day 0 - Today
-String WC_Day0_DayOfWeek "Day of Week [%s]" <time> { channel="weathercompany:weather-forecast:forecast:forecastDay0#dayOfWeek" }
-DateTime WC_Day0_ValidTimeLocal "Valid At [%1$tA, %1$tm/%1$td/%1$tY]" <time> { channel="weathercompany:weather-forecast:forecast:forecastDay0#validTimeLocal" }
-DateTime WC_Day0_ExpirationTimeLocal "Expires At [%1$tA, %1$tm/%1$td/%1$tY %1$tl:%1$tM %1$tp]" <time> { channel="weathercompany:weather-forecast:forecast:forecastDay0#expirationTimeLocal" }
-String WC_Day0_Narrative "Narrative [%s]" <sun_clouds> { channel="weathercompany:weather-forecast:forecast:forecastDay0#narrative" }
-Number:Temperature WC_Day0_TemperatureMin "Low Temperature [%.1f %unit%]" <temperature> { channel="weathercompany:weather-forecast:forecast:forecastDay0#temperatureMin" }
-Number:Temperature WC_Day0_TemperatureMax "High Temperature [%.1f %unit%]" <temperature> { channel="weathercompany:weather-forecast:forecast:forecastDay0#temperatureMax" }
-Number:Length WC_Day0_PrecipitationRain "Forecasted Rainfall Amount [%.2f %unit%]" <rain> { channel="weathercompany:weather-forecast:forecast:forecastDay0#precipitationRain" }
-Number:Length WC_Day0_PrecipitationSnow "Forecasted Snowfall Amount [%.2f %unit%]" <snow> { channel="weathercompany:weather-forecast:forecast:forecastDay0#precipitationSnow" }
+String WC_Day0_DayOfWeek "Day of Week [%s]" <time> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0#dayOfWeek" }
+DateTime WC_Day0_ValidTimeLocal "Valid At [%1$tA, %1$tm/%1$td/%1$tY]" <time> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0#validTimeLocal" }
+DateTime WC_Day0_ExpirationTimeLocal "Expires At [%1$tA, %1$tm/%1$td/%1$tY %1$tl:%1$tM %1$tp]" <time> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0#expirationTimeLocal" }
+String WC_Day0_Narrative "Narrative [%s]" <sun_clouds> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0#narrative" }
+Number:Temperature WC_Day0_TemperatureMin "Low Temperature [%.1f %unit%]" <temperature> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0#temperatureMin" }
+Number:Temperature WC_Day0_TemperatureMax "High Temperature [%.1f %unit%]" <temperature> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0#temperatureMax" }
+Number:Length WC_Day0_PrecipitationRain "Forecasted Rainfall Amount [%.2f %unit%]" <rain> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0#precipitationRain" }
+Number:Length WC_Day0_PrecipitationSnow "Forecasted Snowfall Amount [%.2f %unit%]" <snow> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0#precipitationSnow" }
 
 // Day 0 Day
-String WC_Day0_Day_DaypartName "Daypart Name [%s]" <time> { channel="weathercompany:weather-forecast:forecast:forecastDay0Day#daypartName" }
-String WC_Day0_Day_DayOrNight "Day or Night [%s]" <time> { channel="weathercompany:weather-forecast:forecast:forecastDay0Day#dayOrNight" }
-String WC_Day0_Day_Narrative "Narrative [%s]" <sun_clouds> { channel="weathercompany:weather-forecast:forecast:forecastDay0Day#narrative" }
-String WC_Day0_Day_WxPhraseShort "Wx Phrase Short [%s]" <sun_clouds> { channel="weathercompany:weather-forecast:forecast:forecastDay0Day#wxPhraseShort" }
-String WC_Day0_Day_WxPhraseLong "Wx Phrase Long [%s]" <sun_clouds> { channel="weathercompany:weather-forecast:forecast:forecastDay0Day#wxPhraseLong" }
-String WC_Day0_Day_QualifierPhrase "Qualifier Phrase [%s]" <sun_clouds> { channel="weathercompany:weather-forecast:forecast:forecastDay0Day#qualifierPhrase" }
-String WC_Day0_Day_QualifierCode "Qualifier Code [%s]" <sun_clouds> { channel="weathercompany:weather-forecast:forecast:forecastDay0Day#qualifierCode" }
-Number:Temperature WC_Day0_Day_Temperature "Temperature [%.1f %unit%]" <temperature> { channel="weathercompany:weather-forecast:forecast:forecastDay0Day#temperature" }
-Number:Temperature WC_Day0_Day_TemperatureHeatIndex "Temperature Heat Index [%.1f %unit%]" <temperature> { channel="weathercompany:weather-forecast:forecast:forecastDay0Day#temperatureHeatIndex" }
-Number:Temperature WC_Day0_Day_TemperatureWindChill "Temperature Wind Chill [%.1f %unit%]" <temperature> { channel="weathercompany:weather-forecast:forecast:forecastDay0Day#temperatureWindChill" }
-Number:Dimensionless WC_Day0_Day_RelativeHumidity "Relative Humidity [%.0f %unit%]" <humidity> { channel="weathercompany:weather-forecast:forecast:forecastDay0Day#relativeHumidity" }
-Number:Dimensionless WC_Day0_Day_CloudCover "Cloud Cover [%.0f %unit%]" <sun_clouds> { channel="weathercompany:weather-forecast:forecast:forecastDay0Day#cloudCover" }
-Number:Speed WC_Day0_Day_WindSpeed "Wind Speed [%.0f %unit%]" <wind> { channel="weathercompany:weather-forecast:forecast:forecastDay0Day#windSpeed" }
-Number:Angle WC_Day0_Day_WindDirection "Wind Direction [%.0f %unit%]" <wind> { channel="weathercompany:weather-forecast:forecast:forecastDay0Day#windDirection" }
-String WC_Day0_Day_WindDirectionCardinal "Wind Direction Cardinal [%s]" <wind> { channel="weathercompany:weather-forecast:forecast:forecastDay0Day#windDirectionCardinal" }
-String WC_Day0_Day_WindPhrase "Wind Phrase [%s]" <wind> { channel="weathercompany:weather-forecast:forecast:forecastDay0Day#windPhrase" }
-Number:Dimensionless WC_Day0_Day_PrecipitationChance "Precipitation Chance [%.0f %unit%]" <rain> { channel="weathercompany:weather-forecast:forecast:forecastDay0Day#precipitationChance" }
-String WC_Day0_Day_PrecipitationType "Precipitation Type [%s]" <rain> { channel="weathercompany:weather-forecast:forecast:forecastDay0Day#precipitationType" }
-Number:Length WC_Day0_Day_PrecipitationRain "Precipitation Rain [%.2f %unit%]" <rain> { channel="weathercompany:weather-forecast:forecast:forecastDay0Day#precipitationRain" }
-Number:Length WC_Day0_Day_PrecipitationSnow "Precipitation Snow [%.2f %unit%]" <snow> { channel="weathercompany:weather-forecast:forecast:forecastDay0Day#precipitationSnow" }
-String WC_Day0_Day_SnowRange "Snow Range [%s]" <snow> { channel="weathercompany:weather-forecast:forecast:forecastDay0Day#snowRange" }
-String WC_Day0_Day_ThunderCategory "Thunder Category [%s]" <c_thunder> { channel="weathercompany:weather-forecast:forecast:forecastDay0Day#thunderCategory" }
-Number WC_Day0_Day_ThunderIndex "Thunder Index [%.0f %unit%]" <c_thunder> { channel="weathercompany:weather-forecast:forecast:forecastDay0Day#thunderIndex" }
-String WC_Day0_Day_UVDescription "UV Description [%s]" <sun> { channel="weathercompany:weather-forecast:forecast:forecastDay0Day#uvDescription" }
-Number WC_Day0_Day_UVIndex "UV Index [%.0f %unit%]" <sun> { channel="weathercompany:weather-forecast:forecast:forecastDay0Day#uvIndex" }
-Number WC_Day0_Day_IconCode "Icon Code [%.0f %unit%]" { channel="weathercompany:weather-forecast:forecast:forecastDay0Day#iconCode" }
-Number WC_Day0_Day_IconCodeExtend "Icon Code Extend [%.0f %unit%]" { channel="weathercompany:weather-forecast:forecast:forecastDay0Day#iconCodeExtend" }
-Image WC_Day0_Day_IconImage "Icon Image [%s]" { channel="weathercompany:weather-forecast:forecast:forecastDay0Day#iconImage" }
+String WC_Day0_Day_DaypartName "Daypart Name [%s]" <time> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Day#daypartName" }
+String WC_Day0_Day_DayOrNight "Day or Night [%s]" <time> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Day#dayOrNight" }
+String WC_Day0_Day_Narrative "Narrative [%s]" <sun_clouds> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Day#narrative" }
+String WC_Day0_Day_WxPhraseShort "Wx Phrase Short [%s]" <sun_clouds> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Day#wxPhraseShort" }
+String WC_Day0_Day_WxPhraseLong "Wx Phrase Long [%s]" <sun_clouds> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Day#wxPhraseLong" }
+String WC_Day0_Day_QualifierPhrase "Qualifier Phrase [%s]" <sun_clouds> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Day#qualifierPhrase" }
+String WC_Day0_Day_QualifierCode "Qualifier Code [%s]" <sun_clouds> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Day#qualifierCode" }
+Number:Temperature WC_Day0_Day_Temperature "Temperature [%.1f %unit%]" <temperature> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Day#temperature" }
+Number:Temperature WC_Day0_Day_TemperatureHeatIndex "Temperature Heat Index [%.1f %unit%]" <temperature> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Day#temperatureHeatIndex" }
+Number:Temperature WC_Day0_Day_TemperatureWindChill "Temperature Wind Chill [%.1f %unit%]" <temperature> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Day#temperatureWindChill" }
+Number:Dimensionless WC_Day0_Day_RelativeHumidity "Relative Humidity [%.0f %unit%]" <humidity> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Day#relativeHumidity" }
+Number:Dimensionless WC_Day0_Day_CloudCover "Cloud Cover [%.0f %unit%]" <sun_clouds> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Day#cloudCover" }
+Number:Speed WC_Day0_Day_WindSpeed "Wind Speed [%.0f %unit%]" <wind> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Day#windSpeed" }
+Number:Angle WC_Day0_Day_WindDirection "Wind Direction [%.0f %unit%]" <wind> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Day#windDirection" }
+String WC_Day0_Day_WindDirectionCardinal "Wind Direction Cardinal [%s]" <wind> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Day#windDirectionCardinal" }
+String WC_Day0_Day_WindPhrase "Wind Phrase [%s]" <wind> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Day#windPhrase" }
+Number:Dimensionless WC_Day0_Day_PrecipitationChance "Precipitation Chance [%.0f %unit%]" <rain> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Day#precipitationChance" }
+String WC_Day0_Day_PrecipitationType "Precipitation Type [%s]" <rain> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Day#precipitationType" }
+Number:Length WC_Day0_Day_PrecipitationRain "Precipitation Rain [%.2f %unit%]" <rain> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Day#precipitationRain" }
+Number:Length WC_Day0_Day_PrecipitationSnow "Precipitation Snow [%.2f %unit%]" <snow> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Day#precipitationSnow" }
+String WC_Day0_Day_SnowRange "Snow Range [%s]" <snow> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Day#snowRange" }
+String WC_Day0_Day_ThunderCategory "Thunder Category [%s]" <c_thunder> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Day#thunderCategory" }
+Number WC_Day0_Day_ThunderIndex "Thunder Index [%.0f %unit%]" <c_thunder> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Day#thunderIndex" }
+String WC_Day0_Day_UVDescription "UV Description [%s]" <sun> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Day#uvDescription" }
+Number WC_Day0_Day_UVIndex "UV Index [%.0f %unit%]" <sun> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Day#uvIndex" }
+Number WC_Day0_Day_IconCode "Icon Code [%.0f %unit%]" { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Day#iconCode" }
+Number WC_Day0_Day_IconCodeExtend "Icon Code Extend [%.0f %unit%]" { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Day#iconCodeExtend" }
+Image WC_Day0_Day_IconImage "Icon Image [%s]" { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Day#iconImage" }
 
 // Day 0 Night
-String WC_Day0_Night_DaypartName "Daypart Name [%s]" <time> { channel="weathercompany:weather-forecast:forecast:forecastDay0Night#daypartName" }
-String WC_Day0_Night_DayOrNight "Day or Night [%s]" <time> { channel="weathercompany:weather-forecast:forecast:forecastDay0Night#dayOrNight" }
-String WC_Day0_Night_Narrative "Narrative [%s]" <sun_clouds> { channel="weathercompany:weather-forecast:forecast:forecastDay0Night#narrative" }
-String WC_Day0_Night_WxPhraseShort "Wx Phrase Short [%s]" <sun_clouds> { channel="weathercompany:weather-forecast:forecast:forecastDay0Night#wxPhraseShort" }
-String WC_Day0_Night_WxPhraseLong "Wx Phrase Long [%s]" <sun_clouds> { channel="weathercompany:weather-forecast:forecast:forecastDay0Night#wxPhraseLong" }
-String WC_Day0_Night_QualifierPhrase "Qualifier Phrase [%s]" <sun_clouds> { channel="weathercompany:weather-forecast:forecast:forecastDay0Night#qualifierPhrase" }
-String WC_Day0_Night_QualifierCode "Qualifier Code [%s]" <sun_clouds> { channel="weathercompany:weather-forecast:forecast:forecastDay0Night#qualifierCode" }
-Number:Temperature WC_Day0_Night_Temperature "Temperature [%.1f %unit%]" <temperature> { channel="weathercompany:weather-forecast:forecast:forecastDay0Night#temperature" }
-Number:Temperature WC_Day0_Night_TemperatureHeatIndex "Temperature Heat Index [%.1f %unit%]" <temperature> { channel="weathercompany:weather-forecast:forecast:forecastDay0Night#temperatureHeatIndex" }
-Number:Temperature WC_Day0_Night_TemperatureWindChill "Temperature Wind Chill [%.1f %unit%]" <temperature> { channel="weathercompany:weather-forecast:forecast:forecastDay0Night#temperatureWindChill" }
-Number:Dimensionless WC_Day0_Night_RelativeHumidity "Relative Humidity [%.0f %unit%]" <humidity> { channel="weathercompany:weather-forecast:forecast:forecastDay0Night#relativeHumidity" }
-Number:Dimensionless WC_Day0_Night_CloudCover "Cloud Cover [%.0f %unit%]" <sun_clouds> { channel="weathercompany:weather-forecast:forecast:forecastDay0Night#cloudCover" }
-Number:Speed WC_Day0_Night_WindSpeed "Wind Speed [%.0f %unit%]" <wind> { channel="weathercompany:weather-forecast:forecast:forecastDay0Night#windSpeed" }
-Number:Angle WC_Day0_Night_WindDirection "Wind Direction [%.0f %unit%]" <wind> { channel="weathercompany:weather-forecast:forecast:forecastDay0Night#windDirection" }
-String WC_Day0_Night_WindDirectionCardinal "Wind Direction Cardinal [%s]" <wind> { channel="weathercompany:weather-forecast:forecast:forecastDay0Night#windDirectionCardinal" }
-String WC_Day0_Night_WindPhrase "Wind Phrase [%s]" <wind> { channel="weathercompany:weather-forecast:forecast:forecastDay0Night#windPhrase" }
-Number:Dimensionless WC_Day0_Night_PrecipitationChance "Precipitation Chance [%.0f %unit%]" <rain> { channel="weathercompany:weather-forecast:forecast:forecastDay0Night#precipitationChance" }
-String WC_Day0_Night_PrecipitationType "Precipitation Type [%s]" <rain> { channel="weathercompany:weather-forecast:forecast:forecastDay0Night#precipitationType" }
-Number:Length WC_Day0_Night_PrecipitationRain "Precipitation Rain [%.2f %unit%]" <rain> { channel="weathercompany:weather-forecast:forecast:forecastDay0Night#precipitationRain" }
-Number:Length WC_Day0_Night_PrecipitationSnow "Precipitation Snow [%.2f %unit%]" <snow> { channel="weathercompany:weather-forecast:forecast:forecastDay0Night#precipitationSnow" }
-String WC_Day0_Night_SnowRange "Snow Range [%s]" <snow> { channel="weathercompany:weather-forecast:forecast:forecastDay0Night#snowRange" }
-String WC_Day0_Night_ThunderCategory "Thunder Category [%s]" <c_thunder> { channel="weathercompany:weather-forecast:forecast:forecastDay0Night#thunderCategory" }
-Number WC_Day0_Night_ThunderIndex "Thunder Index [%.0f %unit%]" <c_thunder> { channel="weathercompany:weather-forecast:forecast:forecastDay0Night#thunderIndex" }
-String WC_Day0_Night_UVDescription "UV Description [%s]" <sun> { channel="weathercompany:weather-forecast:forecast:forecastDay0Night#uvDescription" }
-Number WC_Day0_Night_UVIndex "UV Index [%.0f %unit%]" <sun> { channel="weathercompany:weather-forecast:forecast:forecastDay0Night#uvIndex" }
-Number WC_Day0_Night_IconCode "Icon Code [%.0f %unit%]" { channel="weathercompany:weather-forecast:forecast:forecastDay0Night#iconCode" }
-Number WC_Day0_Night_IconCodeExtend "Icon Code Extend [%.0f %unit%]" { channel="weathercompany:weather-forecast:forecast:forecastDay0Night#iconCodeExtend" }
-Image WC_Day0_Night_IconImage "Icon Image [%s]" { channel="weathercompany:weather-forecast:forecast:forecastDay0Night#iconImage" }
+String WC_Day0_Night_DaypartName "Daypart Name [%s]" <time> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Night#daypartName" }
+String WC_Day0_Night_DayOrNight "Day or Night [%s]" <time> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Night#dayOrNight" }
+String WC_Day0_Night_Narrative "Narrative [%s]" <sun_clouds> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Night#narrative" }
+String WC_Day0_Night_WxPhraseShort "Wx Phrase Short [%s]" <sun_clouds> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Night#wxPhraseShort" }
+String WC_Day0_Night_WxPhraseLong "Wx Phrase Long [%s]" <sun_clouds> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Night#wxPhraseLong" }
+String WC_Day0_Night_QualifierPhrase "Qualifier Phrase [%s]" <sun_clouds> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Night#qualifierPhrase" }
+String WC_Day0_Night_QualifierCode "Qualifier Code [%s]" <sun_clouds> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Night#qualifierCode" }
+Number:Temperature WC_Day0_Night_Temperature "Temperature [%.1f %unit%]" <temperature> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Night#temperature" }
+Number:Temperature WC_Day0_Night_TemperatureHeatIndex "Temperature Heat Index [%.1f %unit%]" <temperature> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Night#temperatureHeatIndex" }
+Number:Temperature WC_Day0_Night_TemperatureWindChill "Temperature Wind Chill [%.1f %unit%]" <temperature> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Night#temperatureWindChill" }
+Number:Dimensionless WC_Day0_Night_RelativeHumidity "Relative Humidity [%.0f %unit%]" <humidity> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Night#relativeHumidity" }
+Number:Dimensionless WC_Day0_Night_CloudCover "Cloud Cover [%.0f %unit%]" <sun_clouds> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Night#cloudCover" }
+Number:Speed WC_Day0_Night_WindSpeed "Wind Speed [%.0f %unit%]" <wind> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Night#windSpeed" }
+Number:Angle WC_Day0_Night_WindDirection "Wind Direction [%.0f %unit%]" <wind> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Night#windDirection" }
+String WC_Day0_Night_WindDirectionCardinal "Wind Direction Cardinal [%s]" <wind> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Night#windDirectionCardinal" }
+String WC_Day0_Night_WindPhrase "Wind Phrase [%s]" <wind> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Night#windPhrase" }
+Number:Dimensionless WC_Day0_Night_PrecipitationChance "Precipitation Chance [%.0f %unit%]" <rain> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Night#precipitationChance" }
+String WC_Day0_Night_PrecipitationType "Precipitation Type [%s]" <rain> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Night#precipitationType" }
+Number:Length WC_Day0_Night_PrecipitationRain "Precipitation Rain [%.2f %unit%]" <rain> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Night#precipitationRain" }
+Number:Length WC_Day0_Night_PrecipitationSnow "Precipitation Snow [%.2f %unit%]" <snow> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Night#precipitationSnow" }
+String WC_Day0_Night_SnowRange "Snow Range [%s]" <snow> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Night#snowRange" }
+String WC_Day0_Night_ThunderCategory "Thunder Category [%s]" <c_thunder> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Night#thunderCategory" }
+Number WC_Day0_Night_ThunderIndex "Thunder Index [%.0f %unit%]" <c_thunder> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Night#thunderIndex" }
+String WC_Day0_Night_UVDescription "UV Description [%s]" <sun> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Night#uvDescription" }
+Number WC_Day0_Night_UVIndex "UV Index [%.0f %unit%]" <sun> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Night#uvIndex" }
+Number WC_Day0_Night_IconCode "Icon Code [%.0f %unit%]" { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Night#iconCode" }
+Number WC_Day0_Night_IconCodeExtend "Icon Code Extend [%.0f %unit%]" { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Night#iconCodeExtend" }
+Image WC_Day0_Night_IconImage "Icon Image [%s]" { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Night#iconImage" }
 ```
 
 ### Sitemap Example
