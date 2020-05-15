@@ -29,11 +29,6 @@ public interface GardenaSmartEventListener {
     public void onDeviceUpdated(Device device);
 
     /**
-     * Called when a new device has been detected.
-     */
-    public void onNewDevice(Device device);
-
-    /**
      * Called when the connection is lost to Gardena smart system.
      */
     public void onConnectionLost();
