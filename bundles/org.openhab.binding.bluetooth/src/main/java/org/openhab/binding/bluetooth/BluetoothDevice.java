@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.bluetooth;
 
-import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -86,8 +85,6 @@ public abstract class BluetoothDevice {
      * Devices Bluetooth address
      */
     protected final BluetoothAddress address;
-
-    protected final transient ZonedDateTime createTime = ZonedDateTime.now();
 
     /**
      * Construct a Bluetooth device taking the Bluetooth address

@@ -68,6 +68,8 @@ public abstract class BaseBluetoothDevice extends BluetoothDevice {
      */
     protected @Nullable Integer txPower = null;
 
+    protected final transient ZonedDateTime createTime = ZonedDateTime.now();
+
     /**
      * Last time when activity occurred on this device.
      */
