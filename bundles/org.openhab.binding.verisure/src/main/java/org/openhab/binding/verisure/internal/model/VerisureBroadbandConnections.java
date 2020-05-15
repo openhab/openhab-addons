@@ -116,10 +116,14 @@ public class VerisureBroadbandConnections extends VerisureBaseThing {
 
     public static class Data {
 
-        private Installation installation = new Installation();
+        private @Nullable Installation installation = null;
 
-        public Installation getInstallation() {
+        public @Nullable Installation getInstallation() {
             return installation;
+        }
+
+        public void setInstallation(Installation installation) {
+            this.installation = installation;
         }
 
         @Override
@@ -143,7 +147,6 @@ public class VerisureBroadbandConnections extends VerisureBaseThing {
             Data rhs = ((Data) other);
             return new EqualsBuilder().append(installation, rhs.installation).isEquals();
         }
-
     }
 
     public static class Installation {

@@ -43,11 +43,11 @@ import org.openhab.binding.verisure.internal.model.VerisureMiceDetection.Mouse;
  *
  */
 @NonNullByDefault
-public class VerisureMiceDetectionHandler extends VerisureThingHandler<VerisureMiceDetection> {
+public class VerisureMiceDetectionThingHandler extends VerisureThingHandler<VerisureMiceDetection> {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_MICE_DETECTION);
 
-    public VerisureMiceDetectionHandler(Thing thing) {
+    public VerisureMiceDetectionThingHandler(Thing thing) {
         super(thing);
     }
 

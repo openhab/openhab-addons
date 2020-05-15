@@ -277,43 +277,5 @@ public class VerisureClimates extends VerisureBaseThing {
             return new EqualsBuilder().append(gui, rhs.gui).append(area, rhs.area).append(typename, rhs.typename)
                     .append(deviceLabel, rhs.deviceLabel).isEquals();
         }
-
-    }
-
-    public static class Gui {
-
-        private @Nullable String label;
-        @SerializedName("__typename")
-        private @Nullable String typename;
-
-        public @Nullable String getLabel() {
-            return label;
-        }
-
-        public @Nullable String getTypename() {
-            return typename;
-        }
-
-        @Override
-        public String toString() {
-            return new ToStringBuilder(this).append("label", label).append("typename", typename).toString();
-        }
-
-        @Override
-        public int hashCode() {
-            return new HashCodeBuilder().append(typename).append(label).toHashCode();
-        }
-
-        @Override
-        public boolean equals(@Nullable Object other) {
-            if (other == this) {
-                return true;
-            }
-            if (!(other instanceof Gui)) {
-                return false;
-            }
-            Gui rhs = ((Gui) other);
-            return new EqualsBuilder().append(typename, rhs.typename).append(label, rhs.label).isEquals();
-        }
     }
 }

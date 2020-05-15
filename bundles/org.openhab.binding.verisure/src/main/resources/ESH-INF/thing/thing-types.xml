@@ -373,6 +373,36 @@
 		</config-description>
 	</thing-type>
 
+	<thing-type id="eventLog">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>Verisure Event Log</label>
+		<description>Contents of the Verisure event log.</description>
+
+		<channels>
+			<channel id="lastEventLocation" typeId="location" />
+			<channel id="lastEventDeviceId" typeId="lastEventDeviceId" />
+			<channel id="lastEventDeviceType" typeId="lastEventDeviceType" />
+			<channel id="lastEventType" typeId="lastEventType" />
+			<channel id="lastEventCategory" typeId="lastEventCategory" />
+			<channel id="lastEventTime" typeId="timestamp" />
+			<channel id="lastEventUserName" typeId="lastEventUserName" />
+			<channel id="eventLog" typeId="eventLog" />
+		</channels>
+
+		<properties>
+			<property name="vendor">Verisure</property>
+		</properties>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device Id</label>
+				<description>Unique Id.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
 
 	<channel-type id="status">
 		<item-type>String</item-type>
@@ -597,6 +627,48 @@
 		<label>Duration Last 24 Hours</label>
 		<description>Duration last 24 hours.</description>
 		<state readOnly="true" pattern="%d s" />
+	</channel-type>
+
+	<channel-type id="lastEventType">
+		<item-type>String</item-type>
+		<label>Last Event Type</label>
+		<description>The last event's type in the event log.</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="lastEventCategory">
+		<item-type>String</item-type>
+		<label>Last Event Category</label>
+		<description>The last event's category in the event log.</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="lastEventDeviceId">
+		<item-type>String</item-type>
+		<label>Last Event Device Id</label>
+		<description>The last event's device id in the event log.</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="lastEventDeviceType">
+		<item-type>String</item-type>
+		<label>Last Event Device Type</label>
+		<description>The last event's device type in the event log.</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="lastEventUserName">
+		<item-type>String</item-type>
+		<label>Last Event User Name</label>
+		<description>The last event's user name in the event log.</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="eventLog">
+		<item-type>String</item-type>
+		<label>Verisure Event Log</label>
+		<description>Verisure event log as a JSON array.</description>
+		<state readOnly="true" pattern="%s" />
 	</channel-type>
 
 </thing:thing-descriptions>

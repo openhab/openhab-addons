@@ -46,6 +46,7 @@ import org.openhab.binding.verisure.internal.model.VerisureAlarms;
 import org.openhab.binding.verisure.internal.model.VerisureBroadbandConnections;
 import org.openhab.binding.verisure.internal.model.VerisureClimates;
 import org.openhab.binding.verisure.internal.model.VerisureDoorWindows;
+import org.openhab.binding.verisure.internal.model.VerisureEventLog;
 import org.openhab.binding.verisure.internal.model.VerisureInstallations;
 import org.openhab.binding.verisure.internal.model.VerisureInstallations.Owainstallation;
 import org.openhab.binding.verisure.internal.model.VerisureMiceDetection;
@@ -524,18 +525,16 @@ public class VerisureSession {
                 updateUserPresenceStatus(VerisureUserPresences.class, installation);
                 updateSmartPlugStatus(VerisureSmartPlugs.class, installation);
                 updateBroadbandConnectionStatus(VerisureBroadbandConnections.class, installation);
+                updateEventLogStatus(VerisureEventLog.class, installation);
             } else {
                 logger.warn("Failed to set session cookie and auth login, HTTP result code: {}", httpResultCode);
             }
         });
     }
 
-    private String createOperationJSON(String operation, BigDecimal installationId, String query) {
+    private String createOperationJSON(String operation, Variables variables, String query) {
         ArrayList<Operation> list = new ArrayList<>();
         Operation operationJSON = new Operation();
-        Variables variables = new Variables();
-
-        variables.setGiid(installationId.toString());
         operationJSON.setOperationName(operation);
         operationJSON.setVariables(variables);
         operationJSON.setQuery(query);
@@ -549,10 +548,12 @@ public class VerisureSession {
         BigDecimal installationId = installation.getInstallationId();
         String url = START_GRAPHQL;
         String operation = "ArmState";
+        Variables variables = new Variables();
+        variables.setGiid(installationId.toString());
         String query = "query " + operation
                 + "($giid: String!) {\n  installation(giid: $giid) {\n armState {\n type\n statusType\n date\n name\n changedVia\n allowedForFirstLine\n allowed\n errorCodes {\n value\n message\n __typename\n}\n __typename\n}\n __typename\n}\n}\n";
 
-        String queryQLAlarmStatus = createOperationJSON(operation, installationId, query);
+        String queryQLAlarmStatus = createOperationJSON(operation, variables, query);
         logger.debug("Quering API for alarm status!");
 
         VerisureThing thing = postJSONVerisureAPI(url, queryQLAlarmStatus, jsonClass);
@@ -575,8 +576,9 @@ public class VerisureSession {
         String operation = "DoorLock";
         String query = "query " + operation
                 + "($giid: String!) {\n  installation(giid: $giid) {\n doorlocks {\n device {\n deviceLabel\n area\n __typename\n}\n currentLockState\n eventTime\n secureModeActive\n motorJam\n userString\n method\n __typename\n}\n __typename\n}\n}\n";
-
-        String queryQLSmartLock = createOperationJSON(operation, installationId, query);
+        Variables variables = new Variables();
+        variables.setGiid(installationId.toString());
+        String queryQLSmartLock = createOperationJSON(operation, variables, query);
         logger.debug("Quering API for smart lock status");
 
         VerisureSmartLocks thing = (VerisureSmartLocks) postJSONVerisureAPI(url, queryQLSmartLock, jsonClass);
@@ -617,9 +619,11 @@ public class VerisureSession {
         BigDecimal installationId = installation.getInstallationId();
         String url = START_GRAPHQL;
         String operation = "SmartPlug";
+        Variables variables = new Variables();
+        variables.setGiid(installationId.toString());
         String query = "query " + operation
                 + "($giid: String!) {\n  installation(giid: $giid) {\n smartplugs {\n device {\n deviceLabel\n area\n gui {\n support\n label\n __typename\n}\n __typename\n}\n currentState\n icon\n isHazardous\n __typename\n}\n __typename\n}\n}\n";
-        String queryQLSmartPlug = createOperationJSON(operation, installationId, query);
+        String queryQLSmartPlug = createOperationJSON(operation, variables, query);
         logger.debug("Quering API for smart plug status");
 
         VerisureSmartPlugs thing = (VerisureSmartPlugs) postJSONVerisureAPI(url, queryQLSmartPlug, jsonClass);
@@ -653,11 +657,13 @@ public class VerisureSession {
             VerisureInstallation installation) {
         BigDecimal installationId = installation.getInstallationId();
         String url = START_GRAPHQL;
+        Variables variables = new Variables();
+        variables.setGiid(installationId.toString());
         String operation = "Climate";
         String query = "query " + operation
                 + "($giid: String!) {\n installation(giid: $giid) {\n climates {\n device {\n deviceLabel\n area\n gui {\n label\n __typename\n }\n __typename\n }\n humidityEnabled\n humidityTimestamp\n humidityValue\n temperatureTimestamp\n temperatureValue\n __typename\n }\n __typename\n}\n}\n";
 
-        String queryQLClimates = createOperationJSON(operation, installationId, query);
+        String queryQLClimates = createOperationJSON(operation, variables, query);
         logger.debug("Quering API for climate status");
 
         VerisureClimates thing = (VerisureClimates) postJSONVerisureAPI(url, queryQLClimates, jsonClass);
@@ -710,10 +716,12 @@ public class VerisureSession {
         BigDecimal installationId = installation.getInstallationId();
         String url = START_GRAPHQL;
         String operation = "DoorWindow";
+        Variables variables = new Variables();
+        variables.setGiid(installationId.toString());
         String query = "query " + operation
                 + "($giid: String!) {\n installation(giid: $giid) {\n doorWindows {\n device {\n deviceLabel\n area\n __typename\n }\n type\n state\n wired\n reportTime\n __typename\n }\n __typename\n}\n}\n";
 
-        String queryQLDoorWindow = createOperationJSON(operation, installationId, query);
+        String queryQLDoorWindow = createOperationJSON(operation, variables, query);
         logger.debug("Quering API for door&window status");
 
         VerisureDoorWindows thing = (VerisureDoorWindows) postJSONVerisureAPI(url, queryQLDoorWindow, jsonClass);
@@ -748,10 +756,12 @@ public class VerisureSession {
         BigDecimal installationId = inst.getInstallationId();
         String url = START_GRAPHQL;
         String operation = "Broadband";
+        Variables variables = new Variables();
+        variables.setGiid(installationId.toString());
         String query = "query " + operation
                 + "($giid: String!) {\n installation(giid: $giid) {\n broadband {\n testDate\n isBroadbandConnected\n __typename\n }\n __typename\n}\n}\n";
 
-        String queryQLBroadbandConnection = createOperationJSON(operation, installationId, query);
+        String queryQLBroadbandConnection = createOperationJSON(operation, variables, query);
         logger.debug("Quering API for broadband connection status");
 
         VerisureThing thing = postJSONVerisureAPI(url, queryQLBroadbandConnection, jsonClass);
@@ -762,7 +772,7 @@ public class VerisureSession {
             String deviceId = "bc" + installationId.toString();
             notifyListenersIfChanged(thing, inst, deviceId);
         } else {
-            logger.debug("Failed to update BroadbandConnection, thing i null!");
+            logger.debug("Failed to update BroadbandConnection, thing is null!");
         }
     }
 
@@ -771,10 +781,12 @@ public class VerisureSession {
         BigDecimal installationId = installation.getInstallationId();
         String url = START_GRAPHQL;
         String operation = "userTrackings";
+        Variables variables = new Variables();
+        variables.setGiid(installationId.toString());
         String query = "query " + operation
                 + "($giid: String!) {\ninstallation(giid: $giid) {\n userTrackings {\n isCallingUser\n webAccount\n status\n xbnContactId\n currentLocationName\n deviceId\n name\n currentLocationTimestamp\n deviceName\n currentLocationId\n __typename\n}\n __typename\n}\n}\n";
 
-        String queryQLUserPresence = createOperationJSON(operation, installationId, query);
+        String queryQLUserPresence = createOperationJSON(operation, variables, query);
         logger.debug("Quering API for user presence status");
 
         VerisureUserPresences thing = (VerisureUserPresences) postJSONVerisureAPI(url, queryQLUserPresence, jsonClass);
@@ -809,10 +821,12 @@ public class VerisureSession {
         BigDecimal installationId = installation.getInstallationId();
         String url = START_GRAPHQL;
         String operation = "Mouse";
+        Variables variables = new Variables();
+        variables.setGiid(installationId.toString());
         String query = "query " + operation
                 + "($giid: String!) {\n installation(giid: $giid) {\n mice {\n device {\n deviceLabel\n area\n gui {\n support\n __typename\n}\n __typename\n}\n type\n detections {\n count\n gatewayTime\n nodeTime\n duration\n __typename\n}\n __typename\n}\n __typename\n}\n}\n";
 
-        String queryQLMiceDetection = createOperationJSON(operation, installationId, query);
+        String queryQLMiceDetection = createOperationJSON(operation, variables, query);
         logger.debug("Quering API for mice detection status");
 
         VerisureMiceDetection thing = (VerisureMiceDetection) postJSONVerisureAPI(url, queryQLMiceDetection, jsonClass);
@@ -840,6 +854,39 @@ public class VerisureSession {
             });
         } else {
             logger.debug("Failed to update Mice Detection Status, thing is null!");
+        }
+    }
+
+    private synchronized void updateEventLogStatus(Class<? extends VerisureThing> jsonClass,
+            VerisureInstallation installation) {
+        BigDecimal installationId = installation.getInstallationId();
+        String url = START_GRAPHQL;
+        String operation = "EventLog";
+        int offset = 0;
+        int numberOfEvents = 15;
+        List<String> eventCategories = new ArrayList<>(Arrays.asList("INTRUSION", "FIRE", "SOS", "WATER", "ANIMAL",
+                "TECHNICAL", "WARNING", "ARM", "DISARM", "LOCK", "UNLOCK", "PICTURE", "CLIMATE", "CAMERA_SETTINGS"));
+        Variables variables = new Variables();
+        variables.setGiid(installationId.toString());
+        variables.setHideNotifications(true);
+        variables.setOffset(offset);
+        variables.setPagesize(numberOfEvents);
+        variables.setEventCategories(eventCategories);
+        String query = "query " + operation
+                + "($giid: String!, $offset: Int!, $pagesize: Int!, $eventCategories: [String], $fromDate: String, $toDate: String, $eventContactIds: [String]) {\n installation(giid: $giid) {\n eventLog(offset: $offset, pagesize: $pagesize, eventCategories: $eventCategories, eventContactIds: $eventContactIds, fromDate: $fromDate, toDate: $toDate) {\n moreDataAvailable\n pagedList {\n device {\n deviceLabel\n area\n gui {\n label\n __typename\n }\n __typename\n }\n gatewayArea\n eventType\n eventCategory\n eventSource\n eventId\n eventTime\n userName\n armState\n userType\n climateValue\n sensorType\n eventCount\n  __typename\n }\n __typename\n }\n __typename\n }\n}\n";
+
+        String queryQLEventLog = createOperationJSON(operation, variables, query);
+        logger.debug("Quering API for event log status");
+
+        VerisureEventLog thing = (VerisureEventLog) postJSONVerisureAPI(url, queryQLEventLog, jsonClass);
+        logger.debug("REST Response ({})", thing);
+
+        if (thing != null) {
+            // Set unique deviceID
+            String deviceId = "el" + installationId.toString();
+            notifyListenersIfChanged(thing, installation, deviceId);
+        } else {
+            logger.debug("Failed to update EventLogStatus, thing is null!");
         }
     }
 
@@ -898,13 +945,38 @@ public class VerisureSession {
         }
     }
 
-    private static class Variables {
+    public static class Variables {
 
         @SuppressWarnings("unused")
+        private @Nullable Boolean hideNotifications = null;
+        @SuppressWarnings("unused")
+        private @Nullable Integer offset = null;
+        @SuppressWarnings("unused")
+        private @Nullable Integer pagesize = null;
+        @SuppressWarnings("unused")
+        private @Nullable List<String> eventCategories = null;
+        @SuppressWarnings("unused")
         private @Nullable String giid;
+
+        public void setHideNotifications(boolean hideNotifications) {
+            this.hideNotifications = hideNotifications;
+        }
+
+        public void setOffset(Integer offset) {
+            this.offset = offset;
+        }
+
+        public void setPagesize(Integer pagesize) {
+            this.pagesize = pagesize;
+        }
+
+        public void setEventCategories(List<String> eventCategories) {
+            this.eventCategories = eventCategories;
+        }
 
         public void setGiid(String giid) {
             this.giid = giid;
         }
     }
+
 }

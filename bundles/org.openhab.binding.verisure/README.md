@@ -25,6 +25,7 @@ This binding supports the following thing types:
 - User Presence Status
 - Broadband Connection Status
 - Mice Detection Status (incl. climate)
+- Event Log
 
 
 ## Binding Configuration
@@ -299,6 +300,30 @@ To enable DEBUG logging for the binding, login to Karaf console and enter:
 | installationName| String    | This channel reports the installation name.                                         |
 | installationId  | Number    | This channel reports the installation ID.                                           |
 
+### Verisure Event Log
+
+#### Configuration Options
+
+*   `deviceId` - Device Id
+    *  Since Event Log lacks a Verisure ID, the following naming convention is used for Event Log on site id 123456789: 'el123456789'. Installation ID can be found using DEBUG log settings.
+    
+
+#### Channels
+
+([eventLog]) supports the following channels:
+
+| Channel Type ID     | Item Type | Description                                                             | 
+|---------------------|-----------|-------------------------------------------------------------------------|                                                                                                                                          
+| lastEventLocation   | String    | This channel reports location for last event in event log.              |
+| lastEventDeviceId   | String    | This channel reports device ID for last event in event log.             |
+| lastEventDeviceType | String    | This channel reports device type for last event in event log.           |
+| lastEventType       | String    | This channel reports type for last event in event log.                  |
+| lastEventCategory   | String    | This channel reports category for last event in event log.              |  
+| lastEventTime       | DateTime  | This channel reports time for last event in event log.                  |
+| lastEventUserName   | String    | This channel reports user name for last event in event log.             |
+| eventLog            | String    | This channel reports the last 15 events from event log in a JSON array. |
+
+
 ## Example
 
 ### Things-file
@@ -312,6 +337,7 @@ Bridge verisure:bridge:myverisure "Verisure Bridge" [username="x@y.com", passwor
      Thing smartPlug     JannesSmartPlug     "Verisure SmartPlug"              [ deviceId="3D7GMANV" ]
      Thing waterDetector JannesWaterDetector "Verisure Water Detector"         [ deviceId="3WETQRH5" ] 
      Thing userPresence  JannesUserPresence  "Verisure User Presence"          [ deviceId="uptestgmailcom123456789" ]
+     Thing eventLog      JannesEventLog      "Verisure Event Log"              [ deviceId="el123456789" ]
 }
 ````
 
@@ -340,6 +366,9 @@ String DoorWindowStatus                "Door Window Status"      {channel="veris
 String UserName                        "User Name"               {channel="verisure:userPresence:myverisure:JannesUserPresence:userName"}
 String UserLocationEmail               "User Location Email"     {channel="verisure:userPresence:myverisure:JannesUserPresence:webAccount"}
 String UserLocationName                "User Location Name"      {channel="verisure:userPresence:myverisure:JannesUserPresence:userLocationStatus"}
+
+// EventLog
+String EventLog                        "Event Log JSON array"    {channel="verisure:eventLog:myverisure:JannesEventLog:eventLog"}
 
 String UserNameGlava                   "User Name Glava"               {channel="verisure:userPresence:myverisure:userpresencetestgmailcom123456789:userName"}
 String UserLocationEmailGlava          "User Location Email Glava"     {channel="verisure:userPresence:myverisure:userpresencetestgmailcom123456789:webAccount"}

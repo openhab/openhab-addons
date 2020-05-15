@@ -41,6 +41,7 @@ public class VerisureBindingConstants {
             "broadbandConnection");
     public static final ThingTypeUID THING_TYPE_NIGHT_CONTROL = new ThingTypeUID(BINDING_ID, "nightControl");
     public static final ThingTypeUID THING_TYPE_MICE_DETECTION = new ThingTypeUID(BINDING_ID, "miceDetection");
+    public static final ThingTypeUID THING_TYPE_EVENT_LOG = new ThingTypeUID(BINDING_ID, "eventLog");
 
     // List of all Channel ids
     public static final String CHANNEL_NUMERIC_STATUS = "numericStatus";
@@ -74,6 +75,14 @@ public class VerisureBindingConstants {
     public static final String CHANNEL_COUNT_LAST_24_HOURS = "countLast24Hours";
     public static final String CHANNEL_DURATION_LATEST_DETECTION = "durationLatestDetection";
     public static final String CHANNEL_DURATION_LAST_24_HOURS = "durationLast24Hours";
+    public static final String CHANNEL_LAST_EVENT_LOCATION = "lastEventLocation";
+    public static final String CHANNEL_LAST_EVENT_DEVICE_ID = "lastEventDeviceId";
+    public static final String CHANNEL_LAST_EVENT_DEVICE_TYPE = "lastEventDeviceType";
+    public static final String CHANNEL_LAST_EVENT_TYPE = "lastEventType";
+    public static final String CHANNEL_LAST_EVENT_CATEGORY = "lastEventCategory";
+    public static final String CHANNEL_LAST_EVENT_TIME = "lastEventTime";
+    public static final String CHANNEL_LAST_EVENT_USER_NAME = "lastEventUserName";
+    public static final String CHANNEL_EVENT_LOG = "eventLog";
 
     // REST URI constants
     public static final String USERNAME = "username";
