@@ -61,9 +61,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.openhab.binding.modbus.handler.ModbusPollerThingHandler;
 import org.openhab.binding.modbus.internal.handler.ModbusDataThingHandler;
-import org.openhab.binding.modbus.internal.handler.ModbusPollerThingHandler;
-import org.openhab.binding.modbus.internal.handler.ModbusPollerThingHandlerImpl;
 import org.openhab.binding.modbus.internal.handler.ModbusTcpThingHandler;
 import org.openhab.io.transport.modbus.AsyncModbusReadResult;
 import org.openhab.io.transport.modbus.AsyncModbusWriteResult;
@@ -145,13 +144,15 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         poller = builder.build();
         poller.setStatusInfo(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, ""));
 
-        ModbusPollerThingHandlerImpl mockHandler = Mockito.mock(ModbusPollerThingHandlerImpl.class);
-        doReturn(task).when(mockHandler).getPollTask();
+        ModbusPollerThingHandler mockHandler = Mockito.mock(ModbusPollerThingHandler.class);
+        doReturn(task.getEndpoint()).when(mockHandler).getEndpoint();
+        doReturn(task.getRequest()).when(mockHandler).getRequest();
         Supplier<ModbusManager> managerRef = () -> mockedModbusManager;
         doReturn(managerRef).when(mockHandler).getManagerRef();
         poller.setHandler(mockHandler);
         assertSame(poller.getHandler(), mockHandler);
-        assertSame(((ModbusPollerThingHandlerImpl) poller.getHandler()).getPollTask(), task);
+        assertSame(((ModbusPollerThingHandler) poller.getHandler()).getEndpoint(), task.getEndpoint());
+        assertSame(((ModbusPollerThingHandler) poller.getHandler()).getRequest(), task.getRequest());
 
         addThing(poller);
         return poller;
@@ -789,7 +790,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
                 builder -> builder.withConfiguration(dataConfig), bundleContext);
         assertThat(dataHandler.getThing().getStatus(), is(equalTo(ThingStatus.ONLINE)));
 
-        verify(mockedModbusManager, never()).submitOneTimePoll(task);
+        verify(mockedModbusManager, never()).submitOneTimePoll(endpoint, request, null);
         // Reset initial REFRESH commands to data thing channels from the Core
         reset(poller.getHandler());
         dataHandler.handleCommand(Mockito.mock(ChannelUID.class), RefreshType.REFRESH);

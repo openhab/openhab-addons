@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.io.transport.modbus;
+package org.openhab.io.transport.modbus.internal;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -18,6 +18,9 @@ import org.apache.commons.lang.builder.StandardToStringStyle;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.io.transport.modbus.ModbusReadCallback;
+import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
+import org.openhab.io.transport.modbus.PollTask;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 
 /**

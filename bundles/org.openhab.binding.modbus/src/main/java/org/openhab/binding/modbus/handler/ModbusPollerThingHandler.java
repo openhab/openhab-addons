@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.modbus.internal.handler;
+package org.openhab.binding.modbus.handler;
 
 import java.util.Arrays;
 import java.util.List;
@@ -19,7 +19,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Supplier;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -31,14 +30,11 @@ import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
-import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
 import org.openhab.binding.modbus.internal.AtomicStampedValue;
 import org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal;
 import org.openhab.binding.modbus.internal.config.ModbusPollerConfiguration;
+import org.openhab.binding.modbus.internal.handler.ModbusDataThingHandler;
 import org.openhab.io.transport.modbus.AsyncModbusReadResult;
-import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
-import org.openhab.io.transport.modbus.BasicPollTaskImpl;
 import org.openhab.io.transport.modbus.ModbusManager;
 import org.openhab.io.transport.modbus.ModbusReadCallback;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
@@ -49,13 +45,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ModbusPollerThingHandlerImpl} is responsible for polling Modbus slaves. Errors and data is delegated to
+ * The {@link ModbusPollerThingHandler} is responsible for polling Modbus slaves. Errors and data is delegated to
  * child thing handlers inheriting from {@link ModbusReadCallback} -- in practice: {@link ModbusDataThingHandler}.
  *
  * @author Sami Salonen - Initial contribution
  */
 @NonNullByDefault
-public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements ModbusPollerThingHandler {
+public class ModbusPollerThingHandler extends BaseBridgeHandler {
 
     /**
      * {@link ModbusReadCallback} that delegates all tasks forward.
@@ -158,19 +154,21 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
         }
     }
 
-    private final Logger logger = LoggerFactory.getLogger(ModbusPollerThingHandlerImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(ModbusPollerThingHandler.class);
 
     @NonNullByDefault({})
     private ModbusPollerConfiguration config;
     private long cacheMillis;
     private volatile @Nullable PollTask pollTask;
+    private volatile @Nullable ModbusSlaveEndpoint endpoint;
+    private volatile @Nullable ModbusReadRequestBlueprint request;
     private Supplier<ModbusManager> managerRef;
     private volatile boolean disposed;
     private volatile List<ModbusReadCallback> childCallbacks = new CopyOnWriteArrayList<>();
 
     private ReadCallbackDelegator callbackDelegator = new ReadCallbackDelegator();
 
-    public ModbusPollerThingHandlerImpl(Bridge bridge, Supplier<ModbusManager> managerRef) {
+    public ModbusPollerThingHandler(Bridge bridge, Supplier<ModbusManager> managerRef) {
         super(bridge);
         this.managerRef = managerRef;
     }
@@ -245,14 +243,17 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
      */
     public synchronized void unregisterPollTask() {
         logger.trace("unregisterPollTask()");
-        if (pollTask == null || config == null) {
+        if (config == null) {
             return;
         }
-        logger.debug("Unregistering polling from ModbusManager");
-        @NonNull
-        PollTask task = (@NonNull PollTask) pollTask;
-        managerRef.get().unregisterRegularPoll(task);
-        pollTask = null;
+        PollTask localPollTask = this.pollTask;
+        if (localPollTask != null) {
+            logger.debug("Unregistering polling from ModbusManager");
+            managerRef.get().unregisterRegularPoll(localPollTask);
+        }
+        this.pollTask = null;
+        request = null;
+        endpoint = null;
         updateStatus(ThingStatus.OFFLINE);
     }
 
@@ -278,25 +279,26 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
             logger.debug("No bridge handler available -- aborting init for {}", this);
             return;
         }
-        ModbusSlaveEndpoint endpoint = slaveEndpointThingHandler.asSlaveEndpoint();
-        if (endpoint == null) {
+        ModbusSlaveEndpoint localEndpoint = slaveEndpointThingHandler.asSlaveEndpoint();
+        this.endpoint = localEndpoint;
+        if (localEndpoint == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, String.format(
                     "Bridge '%s' not completely initialized", Optional.ofNullable(getBridge()).map(b -> b.getLabel())));
             logger.debug("Bridge not initialized fully (no endpoint) -- aborting init for {}", this);
             return;
         }
 
-        ModbusReadRequestBlueprint request = new ModbusPollerReadRequest(config, slaveEndpointThingHandler);
-        @NonNull
-        PollTask task = new BasicPollTaskImpl(endpoint, request, callbackDelegator);
-        pollTask = task;
+        ModbusReadRequestBlueprint localRequest = new ModbusPollerReadRequest(config, slaveEndpointThingHandler);
+        this.request = localRequest;
 
         if (config.getRefresh() <= 0L) {
             logger.debug("Not registering polling with ModbusManager since refresh disabled");
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Not polling");
         } else {
             logger.debug("Registering polling with ModbusManager");
-            managerRef.get().registerRegularPoll(task, config.getRefresh(), 0);
+            pollTask = managerRef.get().registerRegularPoll(localEndpoint, localRequest, config.getRefresh(), 0,
+                    callbackDelegator);
+            assert pollTask != null;
             updateStatus(ThingStatus.ONLINE);
         }
     }
@@ -329,14 +331,35 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
         }
     }
 
-    @Override
+    /**
+     * Get {@link ModbusManager} supplier
+     *
+     * @return supplier of ModbusManger
+     */
     public Supplier<ModbusManager> getManagerRef() {
         return managerRef;
     }
 
-    @Override
-    public @Nullable PollTask getPollTask() {
-        return pollTask;
+    /**
+     * Return {@link ModbusReadRequestBlueprint} represented by this thing.
+     *
+     * Note that request might be <code>null</code> in case initialization is not complete.
+     *
+     * @return modbus request represented by this poller
+     */
+    public @Nullable ModbusReadRequestBlueprint getRequest() {
+        return request;
+    }
+
+    /**
+     * Return {@link ModbusSlaveEndpoint} associated with this thing
+     *
+     * Note that endpoint might be <code>null</code> in case initialization is not complete.
+     *
+     * @return endpoint associated with this poller
+     */
+    public @Nullable ModbusSlaveEndpoint getEndpoint() {
+        return endpoint;
     }
 
     /**
@@ -344,10 +367,9 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
      *
      * If data or error was just recently received (i.e. cache is fresh), return the cached response.
      */
-    @Override
     public void refresh() {
-        PollTask pollTask = this.pollTask;
-        if (pollTask == null) {
+        ModbusReadRequestBlueprint localRequest = this.request;
+        if (localRequest == null) {
             return;
         }
 
@@ -362,7 +384,10 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
             // cache expired, poll new data
             logger.debug("Poller {} received refresh() but the cache is not applicable. Polling new data",
                     getThing().getUID());
-            managerRef.get().submitOneTimePoll(pollTask);
+            ModbusSlaveEndpoint localEndpoint = endpoint;
+            if (localEndpoint != null) {
+                managerRef.get().submitOneTimePoll(localEndpoint, localRequest, callbackDelegator);
+            }
         }
     }
 }

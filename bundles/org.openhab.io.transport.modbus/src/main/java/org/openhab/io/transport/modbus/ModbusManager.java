@@ -12,7 +12,6 @@
  */
 package org.openhab.io.transport.modbus;
 
-import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -32,19 +31,29 @@ public interface ModbusManager {
      * Submit one-time poll task. The method returns immediately, and the execution of the poll task will happen in
      * background.
      *
-     * @param task
+     * @param endpoint modbus endpoint to poll
+     * @param request request to send
+     * @param callback callback to call with errors and data
      * @return future representing the polled task
      */
-    public ScheduledFuture<?> submitOneTimePoll(PollTask task);
+    public ScheduledFuture<?> submitOneTimePoll(ModbusSlaveEndpoint endpoint, ModbusReadRequestBlueprint request,
+            @Nullable ModbusReadCallback callback);
 
     /**
      * Register regularly polled task. The method returns immediately, and the execution of the poll task will happen in
      * the background.
      *
-     * @param task
-     * @return
+     * One can register only one regular poll task for triplet of (endpoint, request, callback).
+     *
+     * @param endpoint modbus endpoint to poll
+     * @param request request to send
+     * @param pollPeriodMillis poll interval, in milliseconds
+     * @param initialDelayMillis initial delay before starting polling, in milliseconds
+     * @param callback callback to call with errors and data
+     * @return poll task representing the regular poll
      */
-    public void registerRegularPoll(PollTask task, long pollPeriodMillis, long initialDelayMillis);
+    public PollTask registerRegularPoll(ModbusSlaveEndpoint endpoint, ModbusReadRequestBlueprint request,
+            long pollPeriodMillis, long initialDelayMillis, @Nullable ModbusReadCallback callback);
 
     /**
      * Unregister regularly polled task
@@ -97,10 +106,4 @@ public interface ModbusManager {
      */
     public void removeListener(ModbusManagerListener listener);
 
-    /**
-     * Get registered regular polls
-     *
-     * @return set of registered regular polls
-     */
-    public Set<PollTask> getRegisteredRegularPolls();
 }

@@ -33,13 +33,11 @@ import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
 import org.openhab.binding.modbus.sunspec.internal.dto.CommonModelBlock;
 import org.openhab.binding.modbus.sunspec.internal.dto.ModelBlock;
 import org.openhab.binding.modbus.sunspec.internal.parser.CommonModelParser;
-import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
-import org.openhab.io.transport.modbus.BasicPollTaskImpl;
 import org.openhab.io.transport.modbus.ModbusBitUtilities;
 import org.openhab.io.transport.modbus.ModbusConstants.ValueType;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
+import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
-import org.openhab.io.transport.modbus.PollTask;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 import org.openhab.io.transport.modbus.exception.ModbusSlaveErrorResponseException;
 import org.slf4j.Logger;
@@ -161,7 +159,7 @@ public class SunspecDiscoveryProcess {
                 SUNSPEC_ID_SIZE, // number or words to return
                 maxTries);
 
-        PollTask task = new BasicPollTaskImpl(endpoint, request, result -> {
+        handler.getManagerRef().get().submitOneTimePoll(endpoint, request, result -> {
             if (result.hasError()) {
                 Exception error = (@NonNull Exception) result.getCause();
                 handleError(error);
@@ -170,8 +168,6 @@ public class SunspecDiscoveryProcess {
                 headerReceived(registers);
             }
         });
-
-        handler.getManagerRef().get().submitOneTimePoll(task);
     }
 
     /**
@@ -205,7 +201,7 @@ public class SunspecDiscoveryProcess {
                 MODEL_HEADER_SIZE, // number or words to return
                 maxTries);
 
-        PollTask task = new BasicPollTaskImpl(endpoint, request, result -> {
+        handler.getManagerRef().get().submitOneTimePoll(endpoint, request, result -> {
             if (result.hasError()) {
                 Exception error = (@NonNull Exception) result.getCause();
                 handleError(error);
@@ -214,8 +210,6 @@ public class SunspecDiscoveryProcess {
                 modelBlockReceived(registers);
             }
         });
-
-        handler.getManagerRef().get().submitOneTimePoll(task);
     }
 
     /**
@@ -267,7 +261,7 @@ public class SunspecDiscoveryProcess {
                 block.length, // number or words to return
                 maxTries);
 
-        PollTask task = new BasicPollTaskImpl(endpoint, request, result -> {
+        handler.getManagerRef().get().submitOneTimePoll(endpoint, request, result -> {
             if (result.hasError()) {
                 Exception error = (@NonNull Exception) result.getCause();
                 handleError(error);
@@ -276,8 +270,6 @@ public class SunspecDiscoveryProcess {
                 parseCommonBlock(registers);
             }
         });
-
-        handler.getManagerRef().get().submitOneTimePoll(task);
     }
 
     /**

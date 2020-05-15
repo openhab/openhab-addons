@@ -25,8 +25,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.openhab.binding.modbus.handler.ModbusPollerThingHandler;
 import org.openhab.binding.modbus.internal.handler.ModbusDataThingHandler;
-import org.openhab.binding.modbus.internal.handler.ModbusPollerThingHandlerImpl;
 import org.openhab.binding.modbus.internal.handler.ModbusSerialThingHandler;
 import org.openhab.binding.modbus.internal.handler.ModbusTcpThingHandler;
 import org.openhab.io.transport.modbus.ModbusManager;
@@ -74,7 +74,7 @@ public class ModbusHandlerFactory extends BaseThingHandlerFactory {
             return new ModbusSerialThingHandler((Bridge) thing, () -> manager);
         } else if (thingTypeUID.equals(THING_TYPE_MODBUS_POLLER)) {
             logger.debug("createHandler Modbus poller");
-            return new ModbusPollerThingHandlerImpl((Bridge) thing, () -> manager);
+            return new ModbusPollerThingHandler((Bridge) thing, () -> manager);
         } else if (thingTypeUID.equals(THING_TYPE_MODBUS_DATA)) {
             logger.debug("createHandler data");
             return new ModbusDataThingHandler(thing);

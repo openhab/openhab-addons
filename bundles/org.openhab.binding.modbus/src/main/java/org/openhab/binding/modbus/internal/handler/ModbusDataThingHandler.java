@@ -56,14 +56,13 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
 import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
+import org.openhab.binding.modbus.handler.ModbusPollerThingHandler;
 import org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal;
 import org.openhab.binding.modbus.internal.ModbusConfigurationException;
 import org.openhab.binding.modbus.internal.Transformation;
 import org.openhab.binding.modbus.internal.config.ModbusDataConfiguration;
 import org.openhab.io.transport.modbus.AsyncModbusReadResult;
 import org.openhab.io.transport.modbus.AsyncModbusWriteResult;
-import org.openhab.io.transport.modbus.ModbusWriteCoilRequestBlueprint;
-import org.openhab.io.transport.modbus.ModbusWriteRegisterRequestBlueprint;
 import org.openhab.io.transport.modbus.BasicWriteTask;
 import org.openhab.io.transport.modbus.BitArray;
 import org.openhab.io.transport.modbus.ModbusBitUtilities;
@@ -76,8 +75,9 @@ import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.io.transport.modbus.ModbusResponse;
 import org.openhab.io.transport.modbus.ModbusWriteCallback;
+import org.openhab.io.transport.modbus.ModbusWriteCoilRequestBlueprint;
+import org.openhab.io.transport.modbus.ModbusWriteRegisterRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusWriteRequestBlueprint;
-import org.openhab.io.transport.modbus.PollTask;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 import org.openhab.io.transport.modbus.exception.ModbusConnectionException;
 import org.openhab.io.transport.modbus.exception.ModbusTransportException;
@@ -140,10 +140,11 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
     private volatile @Nullable Integer writeStart;
     private volatile int pollStart;
     private volatile int slaveId;
+    private volatile @Nullable ModbusReadFunctionCode functionCode;
+    private volatile @Nullable ModbusReadRequestBlueprint readRequest;
     private volatile long updateUnchangedValuesEveryMillis;
     private volatile @Nullable ModbusSlaveEndpoint slaveEndpoint;
     private volatile @Nullable ModbusManager manager;
-    private volatile @Nullable PollTask pollTask;
     private volatile boolean isWriteEnabled;
     private volatile boolean isReadEnabled;
     private volatile boolean writeParametersHavingTransformationOnly;
@@ -364,22 +365,26 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 slaveEndpoint = endpointHandler.asSlaveEndpoint();
                 manager = endpointHandler.getManagerRef().get();
                 childOfEndpoint = true;
-                pollTask = null;
+                functionCode = null;
+                readRequest = null;
             } else {
-                pollerHandler = (ModbusPollerThingHandler) bridgeHandler;
-                PollTask pollTask = pollerHandler.getPollTask();
-                this.pollTask = pollTask;
-                if (pollTask == null) {
-                    logger.debug("Poller {} '{}' has no poll task -- configuration is changing?", bridge.getUID(),
+                ModbusPollerThingHandler localPollerHandler = (ModbusPollerThingHandler) bridgeHandler;
+                pollerHandler = localPollerHandler;
+                ModbusReadRequestBlueprint localReadRequest = localPollerHandler.getRequest();
+                ModbusSlaveEndpoint localEndpoint = localPollerHandler.getEndpoint();
+                if (localReadRequest == null) {
+                    logger.debug("Poller {} '{}' has no read request -- configuration is changing?", bridge.getUID(),
                             bridge.getLabel());
                     updateStatusIfChanged(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                             String.format("Poller %s '%s' has no poll task", bridge.getUID(), bridge.getLabel()));
                     return;
                 }
-                slaveId = pollTask.getRequest().getUnitID();
-                slaveEndpoint = pollTask.getEndpoint();
-                manager = pollerHandler.getManagerRef().get();
-                pollStart = pollTask.getRequest().getReference();
+                readRequest = localReadRequest;
+                slaveId = localReadRequest.getUnitID();
+                slaveEndpoint = localEndpoint;
+                functionCode = localReadRequest.getFunctionCode();
+                manager = localPollerHandler.getManagerRef().get();
+                pollStart = localReadRequest.getReference();
                 childOfEndpoint = false;
             }
             validateAndParseReadParameters();
@@ -410,7 +415,8 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         slaveId = 0;
         slaveEndpoint = null;
         manager = null;
-        pollTask = null;
+        functionCode = null;
+        readRequest = null;
         isWriteEnabled = false;
         isReadEnabled = false;
         writeParametersHavingTransformationOnly = false;
@@ -445,14 +451,13 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
     private void validateAndParseReadParameters() throws ModbusConfigurationException {
         ModbusDataConfiguration config = this.config;
         Objects.requireNonNull(config);
-        @SuppressWarnings("null")
-        ModbusReadFunctionCode functionCode = pollTask == null ? null : pollTask.getRequest().getFunctionCode();
+        ModbusReadFunctionCode functionCode = this.functionCode;
         boolean readingDiscreteOrCoil = functionCode == ModbusReadFunctionCode.READ_COILS
                 || functionCode == ModbusReadFunctionCode.READ_INPUT_DISCRETES;
         boolean readStartMissing = StringUtils.isBlank(config.getReadStart());
         boolean readValueTypeMissing = StringUtils.isBlank(config.getReadValueType());
 
-        if (childOfEndpoint && pollTask == null) {
+        if (childOfEndpoint && readRequest == null) {
             if (!readStartMissing || !readValueTypeMissing) {
                 String errmsg = String.format(
                         "Thing %s readStart=%s, and readValueType=%s were specified even though the data thing is child of endpoint (that is, write-only)!",
@@ -510,8 +515,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
             }
         }
         readTransformation = new Transformation(config.getReadTransform());
-
-        validateReadIndex(pollTask);
+        validateReadIndex();
     }
 
     private void validateAndParseWriteParameters() throws ModbusConfigurationException {
@@ -585,14 +589,18 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         }
     }
 
-    private void validateReadIndex(@Nullable PollTask pollTask) throws ModbusConfigurationException {
-        if (!readIndex.isPresent() || pollTask == null) {
+    private void validateReadIndex() throws ModbusConfigurationException {
+        @Nullable
+        ModbusReadRequestBlueprint readRequest = this.readRequest;
+        ValueType readValueType = this.readValueType;
+        if (!readIndex.isPresent() || readRequest == null) {
             return;
         }
+        assert readValueType != null;
         // bits represented by the value type, e.g. int32 -> 32
         int valueTypeBitCount = readValueType.getBits();
         int dataElementBits;
-        switch (pollTask.getRequest().getFunctionCode()) {
+        switch (readRequest.getFunctionCode()) {
             case READ_INPUT_REGISTERS:
             case READ_MULTIPLE_REGISTERS:
                 dataElementBits = 16;
@@ -602,7 +610,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 dataElementBits = 1;
                 break;
             default:
-                throw new IllegalStateException(pollTask.getRequest().getFunctionCode().toString());
+                throw new IllegalStateException(readRequest.getFunctionCode().toString());
         }
 
         boolean bitQuery = dataElementBits == 1;
@@ -625,8 +633,8 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         }
 
         // Determine bit positions polled, both start and end inclusive
-        int pollStartBitIndex = pollTask.getRequest().getReference() * dataElementBits;
-        int pollEndBitIndex = pollStartBitIndex + pollTask.getRequest().getDataLength() * dataElementBits;
+        int pollStartBitIndex = readRequest.getReference() * dataElementBits;
+        int pollEndBitIndex = pollStartBitIndex + readRequest.getDataLength() * dataElementBits;
 
         // Determine bit positions read, both start and end inclusive
         int readStartBitIndex = readIndex.get() * dataElementBits + readSubIndex.orElse(0) * valueTypeBitCount;

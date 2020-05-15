@@ -20,21 +20,19 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 import org.openhab.io.transport.modbus.BasicBitArray;
-import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
-import org.openhab.io.transport.modbus.ModbusWriteCoilRequestBlueprint;
-import org.openhab.io.transport.modbus.BasicPollTaskImpl;
 import org.openhab.io.transport.modbus.BasicWriteTask;
 import org.openhab.io.transport.modbus.BitArray;
 import org.openhab.io.transport.modbus.ModbusManagerListener;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
+import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.io.transport.modbus.ModbusResponse;
+import org.openhab.io.transport.modbus.ModbusWriteCoilRequestBlueprint;
+import org.openhab.io.transport.modbus.PollTask;
 import org.openhab.io.transport.modbus.endpoint.EndpointPoolConfiguration;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 import org.openhab.io.transport.modbus.endpoint.ModbusTCPSlaveEndpoint;
@@ -126,8 +124,9 @@ public class SmokeTest extends IntegrationTestSupport {
         AtomicInteger errorCount = new AtomicInteger();
         CountDownLatch callbackCalled = new CountDownLatch(1);
         AtomicReference<Exception> lastError = new AtomicReference<>();
-        BasicPollTaskImpl task = new BasicPollTaskImpl(endpoint, new ModbusReadRequestBlueprint(SLAVE_UNIT_ID,
-                ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 0, 5, 1), result -> {
+        modbusManager.submitOneTimePoll(endpoint,
+                new ModbusReadRequestBlueprint(SLAVE_UNIT_ID, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 0, 5, 1),
+                result -> {
                     callbackCalled.countDown();
                     if (result.getRegisters() != null) {
                         assert !result.hasError();
@@ -137,7 +136,6 @@ public class SmokeTest extends IntegrationTestSupport {
                         lastError.set(result.getCause());
                     }
                 });
-        modbusManager.submitOneTimePoll(task);
         callbackCalled.await(5, TimeUnit.SECONDS);
         assertThat(okCount.get(), is(equalTo(0)));
         assertThat(errorCount.get(), is(equalTo(1)));
@@ -162,18 +160,19 @@ public class SmokeTest extends IntegrationTestSupport {
         AtomicInteger errorCount = new AtomicInteger();
         CountDownLatch callbackCalled = new CountDownLatch(1);
         AtomicReference<Exception> lastError = new AtomicReference<>();
-        BasicPollTaskImpl task = new BasicPollTaskImpl(endpoint, new ModbusReadRequestBlueprint(SLAVE_UNIT_ID,
-                ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 0, 5, 1), result -> {
+        modbusManager.submitOneTimePoll(endpoint,
+                new ModbusReadRequestBlueprint(SLAVE_UNIT_ID, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 0, 5, 1),
+                result -> {
                     callbackCalled.countDown();
                     if (result.getRegisters() != null) {
                         assert !result.hasError();
                         okCount.incrementAndGet();
                     } else {
+                        assert result.hasError();
                         errorCount.incrementAndGet();
                         lastError.set(result.getCause());
                     }
                 });
-        modbusManager.submitOneTimePoll(task);
         callbackCalled.await(5, TimeUnit.SECONDS);
         assertThat(okCount.get(), is(equalTo(0)));
         assertThat(errorCount.get(), is(equalTo(1)));
@@ -195,18 +194,19 @@ public class SmokeTest extends IntegrationTestSupport {
         AtomicInteger errorCount = new AtomicInteger();
         CountDownLatch callbackCalled = new CountDownLatch(1);
         AtomicReference<Exception> lastError = new AtomicReference<>();
-        BasicPollTaskImpl task = new BasicPollTaskImpl(endpoint, new ModbusReadRequestBlueprint(SLAVE_UNIT_ID,
-                ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 0, 5, 1), result -> {
+        modbusManager.submitOneTimePoll(endpoint,
+                new ModbusReadRequestBlueprint(SLAVE_UNIT_ID, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 0, 5, 1),
+                result -> {
                     callbackCalled.countDown();
                     if (result.getRegisters() != null) {
                         assert !result.hasError();
                         okCount.incrementAndGet();
                     } else {
+                        assert result.hasError();
                         errorCount.incrementAndGet();
                         lastError.set(result.getCause());
                     }
                 });
-        modbusManager.submitOneTimePoll(task);
         callbackCalled.await(15, TimeUnit.SECONDS);
         assertThat(okCount.get(), is(equalTo(0)));
         assertThat(lastError.toString(), errorCount.get(), is(equalTo(1)));
@@ -226,7 +226,7 @@ public class SmokeTest extends IntegrationTestSupport {
 
         final int offset = 1;
 
-        BasicPollTaskImpl task = new BasicPollTaskImpl(endpoint,
+        modbusManager.submitOneTimePoll(endpoint,
                 new ModbusReadRequestBlueprint(SLAVE_UNIT_ID, functionCode, offset, count, 1), result -> {
                     callbackCalled.countDown();
                     if (result.getBits() != null) {
@@ -235,7 +235,6 @@ public class SmokeTest extends IntegrationTestSupport {
                         unexpectedCount.incrementAndGet();
                     }
                 });
-        modbusManager.submitOneTimePoll(task);
         callbackCalled.await(5, TimeUnit.SECONDS);
         assertThat(unexpectedCount.get(), is(equalTo(0)));
         BitArray bits = (BitArray) lastData.get();
@@ -318,8 +317,9 @@ public class SmokeTest extends IntegrationTestSupport {
         CountDownLatch callbackCalled = new CountDownLatch(1);
         AtomicReference<Object> lastData = new AtomicReference<>();
 
-        BasicPollTaskImpl task = new BasicPollTaskImpl(endpoint, new ModbusReadRequestBlueprint(SLAVE_UNIT_ID,
-                ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 1, 15, 1), result -> {
+        modbusManager.submitOneTimePoll(endpoint,
+                new ModbusReadRequestBlueprint(SLAVE_UNIT_ID, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 1, 15, 1),
+                result -> {
                     callbackCalled.countDown();
                     if (result.getRegisters() != null) {
                         lastData.set(result.getRegisters());
@@ -327,7 +327,6 @@ public class SmokeTest extends IntegrationTestSupport {
                         unexpectedCount.incrementAndGet();
                     }
                 });
-        modbusManager.submitOneTimePoll(task);
         callbackCalled.await(5, TimeUnit.SECONDS);
         assertThat(unexpectedCount.get(), is(equalTo(0)));
         ModbusRegisterArray registers = (ModbusRegisterArray) lastData.get();
@@ -348,8 +347,9 @@ public class SmokeTest extends IntegrationTestSupport {
         CountDownLatch callbackCalled = new CountDownLatch(1);
         AtomicReference<Object> lastData = new AtomicReference<>();
 
-        BasicPollTaskImpl task = new BasicPollTaskImpl(endpoint, new ModbusReadRequestBlueprint(SLAVE_UNIT_ID,
-                ModbusReadFunctionCode.READ_INPUT_REGISTERS, 1, 15, 1), result -> {
+        modbusManager.submitOneTimePoll(endpoint,
+                new ModbusReadRequestBlueprint(SLAVE_UNIT_ID, ModbusReadFunctionCode.READ_INPUT_REGISTERS, 1, 15, 1),
+                result -> {
                     callbackCalled.countDown();
                     if (result.getRegisters() != null) {
                         lastData.set(result.getRegisters());
@@ -357,7 +357,6 @@ public class SmokeTest extends IntegrationTestSupport {
                         unexpectedCount.incrementAndGet();
                     }
                 });
-        modbusManager.submitOneTimePoll(task);
         callbackCalled.await(5, TimeUnit.SECONDS);
         assertThat(unexpectedCount.get(), is(equalTo(0)));
         ModbusRegisterArray registers = (ModbusRegisterArray) lastData.get();
@@ -540,8 +539,9 @@ public class SmokeTest extends IntegrationTestSupport {
         CountDownLatch callbackCalled = new CountDownLatch(5);
         AtomicInteger dataReceived = new AtomicInteger();
 
-        BasicPollTaskImpl task = new BasicPollTaskImpl(endpoint,
-                new ModbusReadRequestBlueprint(SLAVE_UNIT_ID, ModbusReadFunctionCode.READ_COILS, 1, 15, 1),
+        long start = System.currentTimeMillis();
+        modbusManager.registerRegularPoll(endpoint,
+                new ModbusReadRequestBlueprint(SLAVE_UNIT_ID, ModbusReadFunctionCode.READ_COILS, 1, 15, 1), 150, 0,
                 result -> {
                     callbackCalled.countDown();
                     if (result.getBits() != null) {
@@ -559,8 +559,6 @@ public class SmokeTest extends IntegrationTestSupport {
                         unexpectedCount.incrementAndGet();
                     }
                 });
-        long start = System.currentTimeMillis();
-        modbusManager.registerRegularPoll(task, 150, 0);
         callbackCalled.await(5, TimeUnit.SECONDS);
         long end = System.currentTimeMillis();
         assertPollDetails(unexpectedCount, dataReceived, start, end, 145, 500);
@@ -582,8 +580,10 @@ public class SmokeTest extends IntegrationTestSupport {
         CountDownLatch callbackCalled = new CountDownLatch(5);
         AtomicInteger dataReceived = new AtomicInteger();
 
-        BasicPollTaskImpl task = new BasicPollTaskImpl(endpoint, new ModbusReadRequestBlueprint(SLAVE_UNIT_ID,
-                ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 1, 15, 1), result -> {
+        long start = System.currentTimeMillis();
+        modbusManager.registerRegularPoll(endpoint,
+                new ModbusReadRequestBlueprint(SLAVE_UNIT_ID, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 1, 15, 1),
+                150, 0, result -> {
                     callbackCalled.countDown();
                     if (result.getRegisters() != null) {
                         dataReceived.incrementAndGet();
@@ -599,9 +599,6 @@ public class SmokeTest extends IntegrationTestSupport {
                         unexpectedCount.incrementAndGet();
                     }
                 });
-
-        long start = System.currentTimeMillis();
-        modbusManager.registerRegularPoll(task, 150, 0);
         callbackCalled.await(5, TimeUnit.SECONDS);
         long end = System.currentTimeMillis();
         assertPollDetails(unexpectedCount, dataReceived, start, end, 145, 500);
@@ -616,8 +613,10 @@ public class SmokeTest extends IntegrationTestSupport {
         CountDownLatch callbackCalled = new CountDownLatch(5);
         AtomicInteger dataReceived = new AtomicInteger();
 
-        BasicPollTaskImpl task = new BasicPollTaskImpl(endpoint, new ModbusReadRequestBlueprint(SLAVE_UNIT_ID,
-                ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 1, 15, 1), result -> {
+        long start = System.currentTimeMillis();
+        PollTask task = modbusManager.registerRegularPoll(endpoint,
+                new ModbusReadRequestBlueprint(SLAVE_UNIT_ID, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 1, 15, 1),
+                150, 0, result -> {
                     callbackCalled.countDown();
                     if (result.getRegisters() != null) {
                         dataReceived.incrementAndGet();
@@ -633,8 +632,6 @@ public class SmokeTest extends IntegrationTestSupport {
                         unexpectedCount.incrementAndGet();
                     }
                 });
-        long start = System.currentTimeMillis();
-        modbusManager.registerRegularPoll(task, 150, 0);
         callbackCalled.await(5, TimeUnit.SECONDS);
         modbusManager.unregisterRegularPoll(task);
         long end = System.currentTimeMillis();
@@ -676,8 +673,10 @@ public class SmokeTest extends IntegrationTestSupport {
         CountDownLatch callbackCalled = new CountDownLatch(3);
         AtomicInteger expectedReceived = new AtomicInteger();
 
-        BasicPollTaskImpl task = new BasicPollTaskImpl(endpoint, new ModbusReadRequestBlueprint(SLAVE_UNIT_ID,
-                ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 1, 15, 1), result -> {
+        long start = System.currentTimeMillis();
+        PollTask task = modbusManager.registerRegularPoll(endpoint,
+                new ModbusReadRequestBlueprint(SLAVE_UNIT_ID, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 1, 15, 1),
+                200, 0, result -> {
                     callbackCalled.countDown();
                     if (result.getRegisters() != null) {
                         expectedReceived.incrementAndGet();
@@ -696,8 +695,6 @@ public class SmokeTest extends IntegrationTestSupport {
                         unexpectedCount.incrementAndGet();
                     }
                 });
-        long start = System.currentTimeMillis();
-        modbusManager.registerRegularPoll(task, 200, 0);
         callbackCalled.await(5, TimeUnit.SECONDS);
         modbusManager.unregisterRegularPoll(task);
         long end = System.currentTimeMillis();
@@ -772,17 +769,11 @@ public class SmokeTest extends IntegrationTestSupport {
     @Test
     public void testGetRegisteredRegularPolls() {
         ModbusSlaveEndpoint endpoint = getEndpoint();
-        BasicPollTaskImpl task = new BasicPollTaskImpl(endpoint, new ModbusReadRequestBlueprint(SLAVE_UNIT_ID,
-                ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 1, 15, 1), null);
-        BasicPollTaskImpl task2 = new BasicPollTaskImpl(endpoint, new ModbusReadRequestBlueprint(SLAVE_UNIT_ID,
-                ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 1, 16, 2), null);
-
-        modbusManager.registerRegularPoll(task, 50, 0);
-        modbusManager.registerRegularPoll(task2, 50, 0);
-        assertThat(modbusManager.getRegisteredRegularPolls(),
-                is(equalTo(Stream.of(task, task2).collect(Collectors.toSet()))));
-        modbusManager.unregisterRegularPoll(task);
-        assertThat(modbusManager.getRegisteredRegularPolls(),
-                is(equalTo(Stream.of(task2).collect(Collectors.toSet()))));
+        PollTask task = modbusManager.registerRegularPoll(endpoint,
+                new ModbusReadRequestBlueprint(SLAVE_UNIT_ID, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 1, 15, 1),
+                50, 0, null);
+        PollTask task2 = modbusManager.registerRegularPoll(endpoint,
+                new ModbusReadRequestBlueprint(SLAVE_UNIT_ID, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 1, 16, 2),
+                50, 0, null);
     }
 }

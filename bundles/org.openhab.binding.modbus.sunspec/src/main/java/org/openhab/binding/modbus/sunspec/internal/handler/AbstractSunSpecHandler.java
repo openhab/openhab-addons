@@ -39,10 +39,9 @@ import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
 import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
 import org.openhab.binding.modbus.sunspec.internal.SunSpecConfiguration;
 import org.openhab.binding.modbus.sunspec.internal.dto.ModelBlock;
-import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
-import org.openhab.io.transport.modbus.BasicPollTaskImpl;
 import org.openhab.io.transport.modbus.ModbusManager;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
+import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.io.transport.modbus.PollTask;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
@@ -340,7 +339,8 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
         ModbusReadRequestBlueprint request = new ModbusReadRequestBlueprint(getSlaveId(),
                 ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, mainBlock.address, mainBlock.length, myconfig.maxTries);
 
-        pollTask = new BasicPollTaskImpl(myendpoint, request, result -> {
+        long refreshMillis = myconfig.getRefreshMillis();
+        pollTask = managerRef.registerRegularPoll(myendpoint, request, refreshMillis, 1000, result -> {
             if (result.hasError()) {
                 Exception error = (@NonNull Exception) result.getCause();
                 handleError(error);
@@ -352,13 +352,6 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
                 }
             }
         });
-
-        long refreshMillis = myconfig.getRefreshMillis();
-        @Nullable
-        PollTask task = pollTask;
-        if (task != null) {
-            managerRef.registerRegularPoll(task, refreshMillis, 1000);
-        }
     }
 
     /**

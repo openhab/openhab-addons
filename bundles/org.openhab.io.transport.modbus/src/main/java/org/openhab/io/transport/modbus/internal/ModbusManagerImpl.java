@@ -740,10 +740,12 @@ public class ModbusManagerImpl implements ModbusManager {
     }
 
     @Override
-    public ScheduledFuture<?> submitOneTimePoll(PollTask task) {
+    public ScheduledFuture<?> submitOneTimePoll(ModbusSlaveEndpoint endpoint, ModbusReadRequestBlueprint request,
+            @Nullable ModbusReadCallback callback) {
         ScheduledExecutorService executor = scheduledThreadPoolExecutor;
         Objects.requireNonNull(executor, "Not activated!");
         long scheduleTime = System.currentTimeMillis();
+        BasicPollTaskImpl task = new BasicPollTaskImpl(endpoint, request, callback);
         logger.debug("Scheduling one-off poll task {}", task);
         ScheduledFuture<?> future = executor.schedule(() -> {
             long millisInThreadPoolWaiting = System.currentTimeMillis() - scheduleTime;
@@ -755,10 +757,12 @@ public class ModbusManagerImpl implements ModbusManager {
     }
 
     @Override
-    public void registerRegularPoll(@NonNull PollTask task, long pollPeriodMillis, long initialDelayMillis) {
+    public PollTask registerRegularPoll(ModbusSlaveEndpoint endpoint, ModbusReadRequestBlueprint request,
+            long pollPeriodMillis, long initialDelayMillis, @Nullable ModbusReadCallback callback) {
         synchronized (this) {
             ScheduledExecutorService executor = scheduledThreadPoolExecutor;
             Objects.requireNonNull(executor, "Not activated!");
+            BasicPollTaskImpl task = new BasicPollTaskImpl(endpoint, request, callback);
             logger.trace("Registering poll task {} with period {} using initial delay {}", task, pollPeriodMillis,
                     initialDelayMillis);
             if (scheduledPollTasks.containsKey(task)) {
@@ -788,6 +792,7 @@ public class ModbusManagerImpl implements ModbusManager {
             scheduledPollTasks.put(task, future);
             logger.trace("Registered poll task {} with period {} using initial delay {}", task, pollPeriodMillis,
                     initialDelayMillis);
+            return task;
         }
     }
 
@@ -874,8 +879,7 @@ public class ModbusManagerImpl implements ModbusManager {
         listeners.remove(listener);
     }
 
-    @Override
-    public Set<@NonNull PollTask> getRegisteredRegularPolls() {
+    private Set<@NonNull PollTask> getRegisteredRegularPolls() {
         return this.scheduledPollTasks.keySet();
     }
 
