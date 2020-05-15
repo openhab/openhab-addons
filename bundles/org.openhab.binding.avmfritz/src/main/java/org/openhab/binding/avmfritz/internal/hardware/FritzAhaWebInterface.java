@@ -241,10 +241,10 @@ public class FritzAhaWebInterface {
             ContentResponse contentResponse = httpClient.newRequest(url)
                     .timeout(config.syncTimeout, TimeUnit.MILLISECONDS).method(GET).send();
             String content = contentResponse.getContentAsString();
-            logger.debug("Response complete: {}", content);
+            logger.debug("GET response complete: {}", content);
             return content;
         } catch (ExecutionException | InterruptedException | TimeoutException e) {
-            logger.debug("Failed to GET url '{}': {}", url, e.getLocalizedMessage(), e);
+            logger.debug("response failed: {}", e.getLocalizedMessage(), e);
             return null;
         }
     }
@@ -262,8 +262,7 @@ public class FritzAhaWebInterface {
         }
         FritzAhaContentExchange getExchange = new FritzAhaContentExchange(callback);
         httpClient.newRequest(getURL(path, addSID(args))).method(GET).onResponseSuccess(getExchange)
-                .onResponseFailure(getExchange) // .onComplete(getExchange)
-                .send(getExchange);
+                .onResponseFailure(getExchange).send(getExchange);
         return getExchange;
     }
 
@@ -284,7 +283,7 @@ public class FritzAhaWebInterface {
         }
         FritzAhaContentExchange postExchange = new FritzAhaContentExchange(callback);
         httpClient.newRequest(getURL(path)).timeout(config.asyncTimeout, TimeUnit.MILLISECONDS).method(POST)
-                .onResponseSuccess(postExchange).onResponseFailure(postExchange) // .onComplete(postExchange)
+                .onResponseSuccess(postExchange).onResponseFailure(postExchange)
                 .content(new StringContentProvider(addSID(args), StandardCharsets.UTF_8)).send(postExchange);
         return postExchange;
     }

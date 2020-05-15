@@ -350,15 +350,19 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
         }
         switch (channelId) {
             case CHANNEL_APPLY_TEMPLATE:
-                if (command instanceof StringType) {
-                    fritzBox.applyTemplate(command.toString());
-                }
-                updateState(CHANNEL_APPLY_TEMPLATE, UnDefType.UNDEF);
+                applyTemplate(command, fritzBox);
                 break;
             default:
                 logger.debug("Received unknown channel {}", channelId);
                 break;
         }
+    }
+
+    protected void applyTemplate(Command command, FritzAhaWebInterface fritzBox) {
+        if (command instanceof StringType) {
+            fritzBox.applyTemplate(command.toString());
+        }
+        updateState(CHANNEL_APPLY_TEMPLATE, UnDefType.UNDEF);
     }
 
     /**
