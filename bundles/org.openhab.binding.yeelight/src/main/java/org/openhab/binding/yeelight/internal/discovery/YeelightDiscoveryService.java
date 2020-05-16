@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
  * The {@link YeelightDiscoveryService} is responsible for search and discovery of new devices.
  *
  * @author Coaster Li - Initial contribution
+ * @author Nikita Pogudalov - Added thing Ceiling 3
  */
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.yeelight")
 public class YeelightDiscoveryService extends AbstractDiscoveryService implements DeviceListener {
@@ -86,8 +87,9 @@ public class YeelightDiscoveryService extends AbstractDiscoveryService implement
         switch (device.getDeviceType()) {
             case ceiling:
             case ceiling1:
-            case ceiling3:
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_CEILING, device.getDeviceId());
+            case ceiling3:
+                return new ThingUID(YeelightBindingConstants.THING_TYPE_CEILING3, device.getDeviceId());
             case ceiling4:
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_CEILING4, device.getDeviceId());
             case color:
