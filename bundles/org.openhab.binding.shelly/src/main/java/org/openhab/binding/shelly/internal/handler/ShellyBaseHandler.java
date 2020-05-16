@@ -521,9 +521,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 if (type.equals(EVENT_TYPE_RELAY)) {
                     group = profile.numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL : CHANNEL_GROUP_RELAY_CONTROL + rindex;
                     int i = Integer.parseInt(deviceIndex);
-                    logger.debug("{}: deviceIndex={}", thingName, i);
                     if ((profile.settings.relays != null) && (i >= 0) && (i < profile.settings.relays.size())) {
-                        logger.debug("{}: get relay info[{}", thingName, i);
                         ShellySettingsRelay relay = profile.settings.relays.get(i);
                         if ((relay != null) && (relay.btnType.equalsIgnoreCase(SHELLY_BTNT_MOMENTARY)
                                 || relay.btnType.equalsIgnoreCase(SHELLY_BTNT_DETACHED))) {
