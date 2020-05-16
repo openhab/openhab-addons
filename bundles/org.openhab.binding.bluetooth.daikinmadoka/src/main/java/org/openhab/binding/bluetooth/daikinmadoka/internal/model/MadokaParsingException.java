@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Benjamin Lafois
  *
  */
+@SuppressWarnings("serial")
 @NonNullByDefault
 public class MadokaParsingException extends Exception {
 

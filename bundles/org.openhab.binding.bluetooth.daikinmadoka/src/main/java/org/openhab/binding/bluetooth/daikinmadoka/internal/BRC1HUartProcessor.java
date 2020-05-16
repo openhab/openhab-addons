@@ -13,14 +13,11 @@
 package org.openhab.binding.bluetooth.daikinmadoka.internal;
 
 import java.io.ByteArrayOutputStream;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.ResponseListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -39,8 +36,6 @@ public class BRC1HUartProcessor {
      * In the unlikely event of messages arrive in wrong order, this comparator will sort the queue
      */
     private Comparator<byte[]> chunkSorter = (byte[] m1, byte[] m2) -> m1[0] - m2[0];
-
-    private final Logger logger = LoggerFactory.getLogger(BRC1HUartProcessor.class);
 
     private ConcurrentSkipListSet<byte[]> uartMessages = new ConcurrentSkipListSet<>(chunkSorter);
 
@@ -93,11 +88,8 @@ public class BRC1HUartProcessor {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
             for (byte[] msg : uartMessages) {
-                try {
-                    bos.write(Arrays.copyOfRange(msg, 1, msg.length));
-                } catch (Exception e) {
-                    // should never happen.
-                    logger.info("An unexpected error occured while re-assembling message chunks", e);
+                if (msg.length > 1) {
+                    bos.write(msg, 1, msg.length);
                 }
             }
 

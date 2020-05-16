@@ -63,13 +63,14 @@ public class MadokaValue {
 
     public long getComputedValue() {
         if (rawValue != null) {
+            byte[] v = rawValue;
             switch (size) {
                 case 1:
-                    return rawValue[0];
+                    return v[0];
                 case 2:
-                    return ByteBuffer.wrap(rawValue, 0, 2).getShort();
+                    return ByteBuffer.wrap(v, 0, 2).getShort();
                 case 4:
-                    return ByteBuffer.wrap(rawValue, 0, 4).getInt();
+                    return ByteBuffer.wrap(v, 0, 4).getInt();
                 default:
                     // unsupported
                     break;

@@ -44,7 +44,7 @@ public abstract class BRC1HCommand {
 
     private final Condition stateCondition = stateLock.newCondition();
 
-    public abstract boolean handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm)
+    public abstract void handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm)
             throws MadokaParsingException;
 
     /**

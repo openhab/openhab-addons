@@ -39,21 +39,21 @@ public class GetPowerstateCommand extends BRC1HCommand {
     }
 
     @Override
-    public boolean handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm)
+    public void handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm)
             throws MadokaParsingException {
-        try {
-            powerState = Integer.valueOf(mm.getValues().get(0x20).getRawValue()[0]) == 1;
+        byte[] powerStateValue = mm.getValues().get(0x20).getRawValue();
 
-            logger.debug("PowerState: {}", powerState);
-
-            setState(State.SUCCEEDED);
-            executor.execute(() -> listener.receivedResponse(this));
-
-            return true;
-        } catch (Exception e) {
+        if (powerStateValue == null || powerStateValue.length != 1) {
             setState(State.FAILED);
-            throw new MadokaParsingException(e);
+            throw new MadokaParsingException("Incorrect value for PowerState");
         }
+
+        powerState = Integer.valueOf(powerStateValue[0]) == 1;
+
+        logger.debug("PowerState: {}", powerState);
+
+        setState(State.SUCCEEDED);
+        executor.execute(() -> listener.receivedResponse(this));
     }
 
     @Override

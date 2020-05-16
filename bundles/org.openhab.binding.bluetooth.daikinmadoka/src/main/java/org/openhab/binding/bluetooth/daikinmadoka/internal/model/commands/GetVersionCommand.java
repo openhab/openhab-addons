@@ -18,8 +18,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaParsingException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -29,7 +27,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class GetVersionCommand extends BRC1HCommand {
 
-    private final Logger logger = LoggerFactory.getLogger(GetVersionCommand.class);
     private @Nullable String remoteControllerVersion;
     private @Nullable String communicationControllerVersion;
 
@@ -39,31 +36,30 @@ public class GetVersionCommand extends BRC1HCommand {
     }
 
     @Override
-    public boolean handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm)
+    public void handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm)
             throws MadokaParsingException {
-        try {
-            // In this method, we intentionally do not check for null values in mv45 and mv46. In case of null pointer
-            // access, it will be catched by the global exception and be reported as a Parsing Reponse exception.
-            byte[] mv45 = mm.getValues().get(0x45).getRawValue();
-            int remoteControllerMajor = mv45[0];
-            int remoteControllerMinor = mv45[1];
-            int remoteControllerRevision = mv45[2];
-            this.remoteControllerVersion = remoteControllerMajor + "." + remoteControllerMinor + "."
-                    + remoteControllerRevision;
+        // In this method, we intentionally do not check for null values in mv45 and mv46. In case of null pointer
+        // access, it will be catched by the global exception and be reported as a Parsing Reponse exception.
+        byte[] mv45 = mm.getValues().get(0x45).getRawValue();
+        byte[] mv46 = mm.getValues().get(0x46).getRawValue();
 
-            byte[] mv46 = mm.getValues().get(0x46).getRawValue();
-            int commControllerMajor = mv46[0];
-            int commControllerMinor = mv46[1];
-            this.communicationControllerVersion = commControllerMajor + "." + commControllerMinor;
-
-            setState(State.SUCCEEDED);
-            executor.execute(() -> listener.receivedResponse(this));
-
-            return true;
-        } catch (Exception e) {
+        if (mv45 == null || mv45.length != 3 || mv46 == null || mv46.length != 2) {
             setState(State.FAILED);
-            throw new MadokaParsingException(e);
+            throw new MadokaParsingException("Incorrect version value");
         }
+
+        int remoteControllerMajor = mv45[0];
+        int remoteControllerMinor = mv45[1];
+        int remoteControllerRevision = mv45[2];
+        this.remoteControllerVersion = remoteControllerMajor + "." + remoteControllerMinor + "."
+                + remoteControllerRevision;
+
+        int commControllerMajor = mv46[0];
+        int commControllerMinor = mv46[1];
+        this.communicationControllerVersion = commControllerMajor + "." + commControllerMinor;
+
+        setState(State.SUCCEEDED);
+        executor.execute(() -> listener.receivedResponse(this));
     }
 
     @Override

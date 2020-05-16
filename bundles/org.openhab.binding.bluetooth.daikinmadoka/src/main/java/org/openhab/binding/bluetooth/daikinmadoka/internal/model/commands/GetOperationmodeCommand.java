@@ -40,21 +40,20 @@ public class GetOperationmodeCommand extends BRC1HCommand {
     }
 
     @Override
-    public boolean handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm)
+    public void handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm)
             throws MadokaParsingException {
-        try {
-            operationMode = OperationMode.valueOf(mm.getValues().get(0x20).getRawValue()[0]);
-
-            logger.debug("operationMode: {}", operationMode);
-
-            setState(State.SUCCEEDED);
-            executor.execute(() -> listener.receivedResponse(this));
-
-            return true;
-        } catch (Exception e) {
+        byte[] bOperationMode = mm.getValues().get(0x20).getRawValue();
+        if (bOperationMode == null) {
             setState(State.FAILED);
-            throw new MadokaParsingException(e);
+            throw new MadokaParsingException("Incorrect operation mode");
         }
+
+        operationMode = OperationMode.valueOf(bOperationMode[0]);
+
+        logger.debug("operationMode: {}", operationMode);
+
+        setState(State.SUCCEEDED);
+        executor.execute(() -> listener.receivedResponse(this));
     }
 
     @Override

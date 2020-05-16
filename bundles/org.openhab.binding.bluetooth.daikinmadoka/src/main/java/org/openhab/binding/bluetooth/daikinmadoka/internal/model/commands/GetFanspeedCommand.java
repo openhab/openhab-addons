@@ -41,23 +41,26 @@ public class GetFanspeedCommand extends BRC1HCommand {
     }
 
     @Override
-    public boolean handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm)
+    public void handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm)
             throws MadokaParsingException {
-        try {
-            this.coolingFanSpeed = FanSpeed.valueOf(mm.getValues().get(0x20).getRawValue()[0]);
-            this.heatingFanSpeed = FanSpeed.valueOf(mm.getValues().get(0x21).getRawValue()[0]);
 
-            logger.debug("coolingFanSpeed: {}", coolingFanSpeed);
-            logger.debug("heatingFanSpeed: {}", heatingFanSpeed);
+        byte[] valueCoolingFanSpeed = mm.getValues().get(0x20).getRawValue();
+        byte[] valueHeatingFanSpeed = mm.getValues().get(0x21).getRawValue();
 
-            setState(State.SUCCEEDED);
-            executor.execute(() -> listener.receivedResponse(this));
-
-            return true;
-        } catch (Exception e) {
+        if (valueCoolingFanSpeed == null || valueHeatingFanSpeed == null) {
             setState(State.FAILED);
-            throw new MadokaParsingException(e);
+            throw new MadokaParsingException("Incorrect cooling or heating fan speed value");
         }
+
+        this.coolingFanSpeed = FanSpeed.valueOf(valueCoolingFanSpeed[0]);
+        this.heatingFanSpeed = FanSpeed.valueOf(valueHeatingFanSpeed[0]);
+
+        logger.debug("coolingFanSpeed: {}", coolingFanSpeed);
+        logger.debug("heatingFanSpeed: {}", heatingFanSpeed);
+
+        setState(State.SUCCEEDED);
+        executor.execute(() -> listener.receivedResponse(this));
+
     }
 
     @Override

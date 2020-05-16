@@ -41,7 +41,7 @@ public class GetSetpointCommand extends BRC1HCommand {
     }
 
     @Override
-    public boolean handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm)
+    public void handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm)
             throws MadokaParsingException {
         try {
             Integer iHeatingSetpoint = (int) (mm.getValues().get(0x21).getComputedValue() / 128.);
@@ -55,8 +55,6 @@ public class GetSetpointCommand extends BRC1HCommand {
 
             setState(State.SUCCEEDED);
             executor.execute(() -> listener.receivedResponse(this));
-
-            return true;
         } catch (Exception e) {
             setState(State.FAILED);
             throw new MadokaParsingException(e);

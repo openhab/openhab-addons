@@ -59,7 +59,7 @@ public class SetSetpointCommand extends BRC1HCommand {
     }
 
     @Override
-    public boolean handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm) {
+    public void handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm) {
         if (logger.isDebugEnabled() && mm.getRawMessage() != null) {
             byte @NonNull [] msg = (byte @NonNull []) mm.getRawMessage();
             logger.debug("Got response for {} : {}", this.getClass().getSimpleName(), HexUtils.bytesToHex(msg));
@@ -67,8 +67,6 @@ public class SetSetpointCommand extends BRC1HCommand {
 
         setState(State.SUCCEEDED);
         executor.execute(() -> listener.receivedResponse(this));
-
-        return true;
     }
 
     @Override

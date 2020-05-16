@@ -97,10 +97,10 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
 
         // Load Configuration
         config = getConfigAs(DaikinMadokaConfiguration.class);
+        DaikinMadokaConfiguration c = config;
 
-        logger.debug("[{}] Parameter value [refreshInterval]: {}", super.thing.getUID().getId(),
-                config.refreshInterval);
-        logger.debug("[{}] Parameter value [commandTimeout]: {}", super.thing.getUID().getId(), config.commandTimeout);
+        logger.debug("[{}] Parameter value [refreshInterval]: {}", super.thing.getUID().getId(), c.refreshInterval);
+        logger.debug("[{}] Parameter value [commandTimeout]: {}", super.thing.getUID().getId(), c.commandTimeout);
 
         if (getBridge() == null) {
             logger.debug("[{}] Bridge is null. Exiting.", super.thing.getUID().getId());
@@ -121,7 +121,7 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
             submitCommand(new GetPowerstateCommand()); // always keep the "GetPowerState" aftern the "GetOperationMode"
             submitCommand(new GetSetpointCommand());
             submitCommand(new GetFanspeedCommand());
-        }, 10, this.config.refreshInterval, TimeUnit.SECONDS);
+        }, 10, c.refreshInterval, TimeUnit.SECONDS);
 
     }
 
@@ -183,7 +183,7 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
         switch (channelUID.getId()) {
             case DaikinMadokaBindingConstants.CHANNEL_ID_SETPOINT:
                 try {
-                    QuantityType setpoint = (QuantityType) command;
+                    QuantityType<?> setpoint = (QuantityType<?>) command;
                     DecimalType dt = new DecimalType(setpoint.intValue());
                     submitCommand(new SetSetpointCommand(dt, dt));
                 } catch (Exception e) {
@@ -295,13 +295,6 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
             currentCommand = command;
             uartProcessor.abandon();
 
-            if (command.getRequest() == null) {
-                logger.debug("Unable to send command {} to device {}: Request NULL.",
-                        command.getClass().getSimpleName(), device.getAddress());
-                command.setState(BRC1HCommand.State.FAILED);
-                return;
-            }
-
             if (device == null || device.getConnectionState() != ConnectionState.CONNECTED) {
                 logger.debug("Unable to send command {} to device {}: not connected",
                         command.getClass().getSimpleName(), address);
@@ -337,10 +330,12 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
             command.setState(BRC1HCommand.State.ENQUEUED);
             device.writeCharacteristic(charWrite);
 
-            if (!command.awaitStateChange(this.config.commandTimeout, TimeUnit.MILLISECONDS,
-                    BRC1HCommand.State.SUCCEEDED, BRC1HCommand.State.FAILED)) {
-                logger.debug("Command {} to device {} timed out", command, device.getAddress());
-                command.setState(BRC1HCommand.State.FAILED);
+            if (this.config != null) {
+                if (!command.awaitStateChange(this.config.commandTimeout, TimeUnit.MILLISECONDS,
+                        BRC1HCommand.State.SUCCEEDED, BRC1HCommand.State.FAILED)) {
+                    logger.debug("Command {} to device {} timed out", command, device.getAddress());
+                    command.setState(BRC1HCommand.State.FAILED);
+                }
             }
 
         } catch (Exception e) {
@@ -403,10 +398,7 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
             }
         } else {
             try {
-                if ((!command.handleResponse(scheduler, this, MadokaMessage.parse(response)))) {
-                    logger.debug("Command {} could not handle response {}", command.getClass().getSimpleName(),
-                            HexUtils.bytesToHex(response));
-                }
+                command.handleResponse(scheduler, this, MadokaMessage.parse(response));
             } catch (MadokaParsingException e) {
                 logger.debug("Response message could not be parsed correctly ({}): {}",
                         command.getClass().getSimpleName(), HexUtils.bytesToHex(response));
@@ -443,13 +435,14 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
         }
 
         // We need the current operation mode to determine which Fan Speed we use (cooling or heating)
-        if (this.madokaSettings.getOperationMode() == null) {
+        OperationMode operationMode = this.madokaSettings.getOperationMode();
+        if (operationMode == null) {
             return;
         }
 
-        FanSpeed fs = null;
+        FanSpeed fs;
 
-        switch (this.madokaSettings.getOperationMode()) {
+        switch (operationMode) {
             case AUTO:
                 // TODO confirm it works in all conditions
                 logger.debug("In AutoMode, CoolingFanSpeed = {}, HeatingFanSpeed = {}", command.getCoolingFanSpeed(),
@@ -464,6 +457,10 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
                 break;
             default:
                 return;
+        }
+
+        if (fs == null) {
+            return;
         }
 
         // No need to re-set if it is the same value
@@ -484,13 +481,14 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
         }
 
         // We need the current operation mode to determine which Fan Speed we use (cooling or heating)
-        if (this.madokaSettings.getOperationMode() == null) {
+        OperationMode operationMode = this.madokaSettings.getOperationMode();
+        if (operationMode == null) {
             return;
         }
 
-        DecimalType sp = null;
+        DecimalType sp;
 
-        switch (this.madokaSettings.getOperationMode()) {
+        switch (operationMode) {
             case AUTO:
                 // TODO confirm it works in all conditions
                 logger.debug("In AutoMode, CoolingSetpoint = {}, HeatingSetpoint = {}", command.getCoolingSetpoint(),
@@ -505,6 +503,10 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
                 break;
             default:
                 return;
+        }
+
+        if (sp == null) {
+            return;
         }
 
         // No need to re-set if it is the same value
@@ -530,7 +532,7 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
 
         OperationMode newMode = command.getOperationMode();
         // If the mode has not changed - no need to refresh everything
-        if (newMode.equals(this.madokaSettings.getOperationMode())) {
+        if (newMode == null || newMode.equals(this.madokaSettings.getOperationMode())) {
             return;
         }
 
@@ -649,11 +651,13 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
 
         if (command.getPowerState() == OnOffType.ON) {
             // Depending on the state
-            if (madokaSettings.getOperationMode() == null) {
+
+            OperationMode operationMode = madokaSettings.getOperationMode();
+            if (operationMode == null) {
                 return;
             }
 
-            switch (madokaSettings.getOperationMode()) {
+            switch (operationMode) {
                 case AUTO:
                     updateStateIfLinked(
                             new ChannelUID(getThing().getUID(),
@@ -688,11 +692,12 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
     public void receivedResponse(SetSetpointCommand command) {
 
         // The update depends on the mode - so if not set - skip
-        if (this.madokaSettings.getOperationMode() == null) {
+        OperationMode operationMode = this.madokaSettings.getOperationMode();
+        if (operationMode == null) {
             return;
         }
 
-        switch (this.madokaSettings.getOperationMode()) {
+        switch (operationMode) {
             case HEAT:
                 this.madokaSettings.setSetpoint(command.getHeatingSetpoint());
                 break;
@@ -731,26 +736,31 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
     public void receivedResponse(SetFanspeedCommand command) {
 
         // The update depends on the mode - so if not set - skip
-        if (this.madokaSettings.getOperationMode() == null) {
+        OperationMode operationMode = this.madokaSettings.getOperationMode();
+        if (operationMode == null) {
             return;
         }
 
-        switch (this.madokaSettings.getOperationMode()) {
+        FanSpeed fanSpeed;
+        switch (operationMode) {
             case HEAT:
-                this.madokaSettings.setFanspeed(command.getHeatingFanSpeed());
+                fanSpeed = command.getHeatingFanSpeed();
+                this.madokaSettings.setFanspeed(fanSpeed);
                 break;
             case COOL:
-                this.madokaSettings.setFanspeed(command.getCoolingFanSpeed());
+                fanSpeed = command.getCoolingFanSpeed();
+                this.madokaSettings.setFanspeed(fanSpeed);
                 break;
             case AUTO:
-                // TODO
+                fanSpeed = command.getCoolingFanSpeed(); // Arbitrary cooling or heating... They are the same!
+                this.madokaSettings.setFanspeed(fanSpeed);
                 break;
             default:
                 return;
         }
 
         updateStateIfLinked(new ChannelUID(getThing().getUID(), DaikinMadokaBindingConstants.CHANNEL_ID_FAN_SPEED),
-                new DecimalType(madokaSettings.getFanspeed().value()));
+                new DecimalType(fanSpeed.value()));
     }
 
     private void updateStateIfLinked(ChannelUID channelUID, State state) {

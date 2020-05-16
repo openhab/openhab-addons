@@ -41,39 +41,40 @@ public class GetIndoorOutoorTemperatures extends BRC1HCommand {
     }
 
     @Override
-    public boolean handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm)
+    public void handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm)
             throws MadokaParsingException {
-        try {
-            Integer iIndoorTemperature = Integer.valueOf(mm.getValues().get(0x40).getRawValue()[0]);
-            Integer iOutdoorTemperature = Integer.valueOf(mm.getValues().get(0x41).getRawValue()[0]);
+        byte[] bIndoorTemperature = mm.getValues().get(0x40).getRawValue();
+        byte[] bOutdoorTemperature = mm.getValues().get(0x41).getRawValue();
 
-            if (iOutdoorTemperature == -1) {
-                iOutdoorTemperature = null;
-            } else {
-                if (iOutdoorTemperature < 0) {
-                    iOutdoorTemperature = ((iOutdoorTemperature + 256) - 128) * -1;
-                }
-            }
-
-            if (iIndoorTemperature != null) {
-                indoorTemperature = new DecimalType(iIndoorTemperature);
-            }
-
-            if (iOutdoorTemperature != null) {
-                outdoorTemperature = new DecimalType(iOutdoorTemperature);
-            }
-
-            logger.debug("Indoor Temp: {}", indoorTemperature);
-            logger.debug("Outdoor Temp: {}", outdoorTemperature);
-
-            setState(State.SUCCEEDED);
-            executor.execute(() -> listener.receivedResponse(this));
-
-            return true;
-        } catch (Exception e) {
+        if (bIndoorTemperature == null || bOutdoorTemperature == null) {
             setState(State.FAILED);
-            throw new MadokaParsingException(e);
+            throw new MadokaParsingException("Incorrect indoor or outdoor temperature");
         }
+
+        Integer iIndoorTemperature = Integer.valueOf(bIndoorTemperature[0]);
+        Integer iOutdoorTemperature = Integer.valueOf(bOutdoorTemperature[0]);
+
+        if (iOutdoorTemperature == -1) {
+            iOutdoorTemperature = null;
+        } else {
+            if (iOutdoorTemperature < 0) {
+                iOutdoorTemperature = ((iOutdoorTemperature + 256) - 128) * -1;
+            }
+        }
+
+        if (iIndoorTemperature != null) {
+            indoorTemperature = new DecimalType(iIndoorTemperature);
+        }
+
+        if (iOutdoorTemperature != null) {
+            outdoorTemperature = new DecimalType(iOutdoorTemperature);
+        }
+
+        logger.debug("Indoor Temp: {}", indoorTemperature);
+        logger.debug("Outdoor Temp: {}", outdoorTemperature);
+
+        setState(State.SUCCEEDED);
+        executor.execute(() -> listener.receivedResponse(this));
     }
 
     public @Nullable DecimalType getIndoorTemperature() {
