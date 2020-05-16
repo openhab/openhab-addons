@@ -95,6 +95,20 @@ This list has been compiled mostly through trial and error. Your mileage may var
 
 A sample HABPanel remote control widget can be found [in this github repository.](https://github.com/bbrodt/openhab2-misc)
 
+## Console Commands
+
+The binding provides two specific commands you can use in the console.
+Enter the command `lgwebos` to get the usage.
+
+```
+openhab> smarthome:lgwebos
+Usage: smarthome:lgwebos <thingUID> applications - list applications
+Usage: smarthome:lgwebos <thingUID> channels - list channels
+```
+
+The command `applications` reports in the console the list of all applications with their id and name.
+The command `channels` reports in the console the list of all channels with their number and name.
+
 ## Example
 
 demo.things:

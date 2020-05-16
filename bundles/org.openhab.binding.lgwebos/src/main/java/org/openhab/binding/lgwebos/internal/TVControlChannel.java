@@ -123,4 +123,16 @@ public class TVControlChannel extends BaseChannelHandler<ChannelInfo> {
             }
         };
     }
+
+    public List<String> reportChannels(ThingUID thingUID) {
+        List<String> report = new ArrayList<>();
+        List<ChannelInfo> channels = channelListCache.get(thingUID);
+        if (channels != null) {
+            for (ChannelInfo channel : channels) {
+                String name = channel.getName() == null ? "" : channel.getName();
+                report.add(channel.getId() + " : " + channel.getChannelNumber() + " - " + name);
+            }
+        }
+        return report;
+    }
 }
