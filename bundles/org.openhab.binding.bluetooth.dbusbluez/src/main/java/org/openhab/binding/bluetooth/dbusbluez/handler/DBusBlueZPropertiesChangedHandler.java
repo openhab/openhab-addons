@@ -154,7 +154,7 @@ public class DBusBlueZPropertiesChangedHandler extends AbstractPropertiesChanged
 
         for (Map.Entry<UInt16, Variant> entry : dbm.entrySet()) {
             byte[] bytes = (byte[]) entry.getValue().getValue();
-            eventData.put(Short.valueOf(entry.getKey().shortValue()), bytes);
+            eventData.put(entry.getKey().shortValue(), bytes);
         }
 
         BluetoothAddress addr = DBusBlueZUtils.dbusPathToMac(dbusPath);

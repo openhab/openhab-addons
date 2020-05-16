@@ -23,7 +23,7 @@ import org.openhab.binding.bluetooth.BluetoothAddress;
 @NonNullByDefault
 public class DBusBlueZEvent {
 
-    public enum EVENT_TYPE {
+    public enum EventType {
         RSSI_UPDATE,
         CHARACTERISTIC_NOTIFY,
         MANUFACTURER_DATA,
@@ -33,15 +33,15 @@ public class DBusBlueZEvent {
         SERVICES_RESOLVED,
     }
 
-    private EVENT_TYPE eventType;
+    private EventType eventType;
     private BluetoothAddress device;
 
-    public DBusBlueZEvent(EVENT_TYPE eventType, BluetoothAddress device) {
+    public DBusBlueZEvent(EventType eventType, BluetoothAddress device) {
         this.eventType = eventType;
         this.device = device;
     }
 
-    public EVENT_TYPE getEventType() {
+    public EventType getEventType() {
         return eventType;
     }
 

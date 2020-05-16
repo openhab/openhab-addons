@@ -27,7 +27,7 @@ public class TXPowerEvent extends DBusBlueZEvent {
     private short txPower;
 
     public TXPowerEvent(BluetoothAddress address, short txpower) {
-        super(EVENT_TYPE.TXPOWER, address);
+        super(EventType.TXPOWER, address);
         this.txPower = txpower;
     }
 

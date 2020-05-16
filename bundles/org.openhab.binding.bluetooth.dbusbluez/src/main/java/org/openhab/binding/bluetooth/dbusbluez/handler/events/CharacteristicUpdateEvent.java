@@ -28,7 +28,7 @@ public class CharacteristicUpdateEvent extends DBusBlueZEvent {
     private byte[] data;
 
     public CharacteristicUpdateEvent(BluetoothAddress address, String dbusPath, byte[] data) {
-        super(EVENT_TYPE.CHARACTERISTIC_NOTIFY, address);
+        super(EventType.CHARACTERISTIC_NOTIFY, address);
         this.dbusPath = dbusPath;
         this.data = data;
     }

@@ -27,7 +27,7 @@ public class NameEvent extends DBusBlueZEvent {
     private String name;
 
     public NameEvent(BluetoothAddress address, String name) {
-        super(EVENT_TYPE.NAME, address);
+        super(EventType.NAME, address);
         this.name = name;
     }
 

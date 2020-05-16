@@ -27,7 +27,7 @@ public class ConnectedEvent extends DBusBlueZEvent {
     private boolean connected;
 
     public ConnectedEvent(BluetoothAddress address, boolean connected) {
-        super(EVENT_TYPE.CONNECTED, address);
+        super(EventType.CONNECTED, address);
         this.connected = connected;
     }
 

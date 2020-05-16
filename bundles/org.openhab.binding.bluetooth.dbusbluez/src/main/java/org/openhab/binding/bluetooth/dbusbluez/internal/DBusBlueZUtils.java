@@ -39,22 +39,20 @@ public class DBusBlueZUtils {
         }
     }
 
+    /**
+     * Returns BluetoothAddress object from a DBus path
+     * 
+     * @param dbusPath
+     * @return
+     */
     public static @Nullable BluetoothAddress dbusPathToMac(String dbusPath) {
-
-        // /org/bluez/hci0/dev_00_CC_3F_B2_7E_60
-        // /org/bluez/hci0/dev_A4_34_D9_ED_D3_74/service0026/char0027
-        try {
-            Pattern p = Pattern.compile("/org/bluez/([^/]+)/dev_([^/]+).*");
-            Matcher m = p.matcher(dbusPath);
-            if (!m.matches()) {
-                return null;
-            } else {
-                String s = m.group(2).replace("_", ":");
-                return new BluetoothAddress(s);
-            }
-
-        } catch (Exception e) {
+        Pattern p = Pattern.compile("/org/bluez/([^/]+)/dev_([^/]+).*");
+        Matcher m = p.matcher(dbusPath);
+        if (!m.matches()) {
             return null;
+        } else {
+            String s = m.group(2).replace("_", ":");
+            return new BluetoothAddress(s);
         }
     }
 

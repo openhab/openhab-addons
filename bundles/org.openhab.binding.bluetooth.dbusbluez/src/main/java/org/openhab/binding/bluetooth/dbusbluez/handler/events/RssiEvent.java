@@ -27,7 +27,7 @@ public class RssiEvent extends DBusBlueZEvent {
     private short rssi;
 
     public RssiEvent(BluetoothAddress address, short rssi) {
-        super(EVENT_TYPE.RSSI_UPDATE, address);
+        super(EventType.RSSI_UPDATE, address);
         this.rssi = rssi;
     }
 

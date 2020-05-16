@@ -27,7 +27,7 @@ public class ServicesResolvedEvent extends DBusBlueZEvent {
     private boolean resolved;
 
     public ServicesResolvedEvent(BluetoothAddress address, boolean resolved) {
-        super(EVENT_TYPE.SERVICES_RESOLVED, address);
+        super(EventType.SERVICES_RESOLVED, address);
         this.resolved = resolved;
     }
 

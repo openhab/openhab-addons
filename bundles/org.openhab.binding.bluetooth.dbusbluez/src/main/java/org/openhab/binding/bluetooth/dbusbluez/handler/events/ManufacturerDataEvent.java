@@ -29,7 +29,7 @@ public class ManufacturerDataEvent extends DBusBlueZEvent {
     private Map<Short, byte[]> data;
 
     public ManufacturerDataEvent(BluetoothAddress address, Map<Short, byte[]> data) {
-        super(EVENT_TYPE.MANUFACTURER_DATA, address);
+        super(EventType.MANUFACTURER_DATA, address);
         this.data = data;
     }
 
