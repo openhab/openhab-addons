@@ -401,4 +401,12 @@ public class LGWebOSHandler extends BaseThingHandler
             }
         }
     }
+
+    public List<String> reportApplications() {
+        return appLauncher.reportApplications(getThing().getUID());
+    }
+
+    public List<String> reportChannels() {
+        return ((TVControlChannel) channelHandlers.get(CHANNEL_CHANNEL)).reportChannels(getThing().getUID());
+    }
 }
