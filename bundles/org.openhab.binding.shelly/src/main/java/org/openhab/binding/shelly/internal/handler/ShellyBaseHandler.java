@@ -521,10 +521,12 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 if (type.equals(EVENT_TYPE_RELAY)) {
                     group = profile.numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL : CHANNEL_GROUP_RELAY_CONTROL + rindex;
                     int i = Integer.parseInt(deviceIndex);
-                    if ((i >= 0) && (i <= profile.settings.relays.size())) {
+                    if ((profile.settings.relays != null) && (i >= 0) && (i < profile.settings.relays.size())) {
                         ShellySettingsRelay relay = profile.settings.relays.get(i);
-                        if ((relay != null) && (relay.btnType.equalsIgnoreCase(SHELLY_BTNT_MOMENTARY)
-                                || relay.btnType.equalsIgnoreCase(SHELLY_BTNT_DETACHED))) {
+                        String btnType = getString(relay.btnType);
+                        if (btnType.equalsIgnoreCase(SHELLY_BTNT_MOMENTARY)
+                                || btnType.equalsIgnoreCase(SHELLY_BTNT_MOM_ON_RELEASE)
+                                || btnType.equalsIgnoreCase(SHELLY_BTNT_DETACHED)) {
                             isButton = true;
                         }
                     }
