@@ -14,6 +14,7 @@ package org.openhab.binding.volvooncall.internal.dto;
 
 import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.UNDEFINED;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -47,6 +48,7 @@ public class Status extends VocAnswer {
     private @Nullable HvBattery hvBattery;
     private @Nullable Heater heater;
     public String serviceWarningStatus = "";
+    private @NonNullByDefault({}) List<Object> bulbFailures;
 
     public Optional<WindowsStatus> getWindows() {
         WindowsStatus windows = this.windows;
@@ -104,6 +106,10 @@ public class Status extends VocAnswer {
         return Optional.empty();
     }
 
+    public boolean aFailedBulb() {
+        return bulbFailures.size() > 0;
+    }
+
     /*
      * Currently not used in the binding, maybe interesting for the future
      *
@@ -112,7 +118,6 @@ public class Status extends VocAnswer {
      * private ZonedDateTime averageFuelConsumptionTimestamp;
      * private ZonedDateTime averageSpeedTimestamp;
      * private ZonedDateTime brakeFluidTimestamp;
-     * private List<String> bulbFailures = null;
      * private ZonedDateTime bulbFailuresTimestamp;
      * private ZonedDateTime carLockedTimestamp;
      * private ZonedDateTime distanceToEmptyTimestamp;
