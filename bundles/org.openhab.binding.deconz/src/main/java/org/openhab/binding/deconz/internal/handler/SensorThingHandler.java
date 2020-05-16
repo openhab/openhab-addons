@@ -59,6 +59,7 @@ import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.deconz.internal.dto.DeconzRestMessage;
 import org.openhab.binding.deconz.internal.dto.SensorConfig;
 import org.openhab.binding.deconz.internal.dto.SensorMessage;
@@ -92,7 +93,7 @@ public class SensorThingHandler extends BaseThingHandler implements WebSocketMes
                     THING_TYPE_CONSUMPTION_SENSOR, THING_TYPE_LIGHT_SENSOR, THING_TYPE_TEMPERATURE_SENSOR,
                     THING_TYPE_HUMIDITY_SENSOR, THING_TYPE_PRESSURE_SENSOR, THING_TYPE_SWITCH,
                     THING_TYPE_OPENCLOSE_SENSOR, THING_TYPE_WATERLEAKAGE_SENSOR, THING_TYPE_FIRE_SENSOR,
-                    THING_TYPE_ALARM_SENSOR, THING_TYPE_VIBRATION_SENSOR, THING_TYPE_BATTERY_SENSOR)
+                    THING_TYPE_ALARM_SENSOR, THING_TYPE_VIBRATION_SENSOR, THING_TYPE_BATTERY_SENSOR, THING_TYPE_CARBONMONOXIDE_SENSOR)
             .collect(Collectors.toSet()));
 
     private static final List<String> CONFIG_CHANNELS = Arrays.asList(CHANNEL_BATTERY_LEVEL, CHANNEL_BATTERY_LOW,
@@ -389,6 +390,7 @@ public class SensorThingHandler extends BaseThingHandler implements WebSocketMes
         Float temperature = newState.temperature;
         Float humidity = newState.humidity;
         Integer pressure = newState.pressure;
+        Boolean carbonmonoxide = newState.carbonmonoxide;
 
         switch (channelUID.getId()) {
             case CHANNEL_LIGHT:
@@ -488,6 +490,9 @@ public class SensorThingHandler extends BaseThingHandler implements WebSocketMes
                 break;
             case CHANNEL_VIBRATION:
                 updateState(channelUID, Boolean.TRUE.equals(newState.vibration) ? OnOffType.ON : OnOffType.OFF);
+                break;
+            case CHANNEL_CARBONMONOXIDE:
+                updateState(channelUID, carbonmonoxide != null  ? OnOffType.from(carbonmonoxide) : UnDefType.UNDEF);
                 break;
             case CHANNEL_BUTTON:
                 if (buttonevent != null) {

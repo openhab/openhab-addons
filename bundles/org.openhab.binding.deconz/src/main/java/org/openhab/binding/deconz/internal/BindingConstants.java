@@ -49,6 +49,7 @@ public class BindingConstants {
     public static final ThingTypeUID THING_TYPE_ALARM_SENSOR = new ThingTypeUID(BINDING_ID, "alarmsensor");
     public static final ThingTypeUID THING_TYPE_VIBRATION_SENSOR = new ThingTypeUID(BINDING_ID, "vibrationsensor");
     public static final ThingTypeUID THING_TYPE_BATTERY_SENSOR = new ThingTypeUID(BINDING_ID, "batterysensor");
+    public static final ThingTypeUID THING_TYPE_CARBONMONOXIDE_SENSOR = new ThingTypeUID(BINDING_ID, "carbonmonoxidesensor");
 
     // lights
     public static final ThingTypeUID THING_TYPE_ONOFF_LIGHT = new ThingTypeUID(BINDING_ID, "onofflight");
@@ -88,6 +89,7 @@ public class BindingConstants {
     public static final String CHANNEL_VIBRATION = "vibration";
     public static final String CHANNEL_BATTERY_LEVEL = "battery_level";
     public static final String CHANNEL_BATTERY_LOW = "battery_low";
+    public static final String CHANNEL_CARBONMONOXIDE = "carbonmonoxide";
 
     public static final String CHANNEL_SWITCH = "switch";
     public static final String CHANNEL_BRIGHTNESS = "brightness";
