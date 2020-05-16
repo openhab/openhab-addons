@@ -132,7 +132,7 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
     }
 
     /**
-     * Starts a websocket for each location.
+     * Starts the websockets for each location.
      */
     private void startWebsockets() throws Exception {
         for (LocationDataItem location : locationsResponse.data) {
@@ -315,7 +315,18 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
         if (device == null && !(dataItem instanceof LocationDataItem)) {
             device = new Device(deviceId);
             allDevicesById.put(device.id, device);
+
+            if (initialized) {
+                scheduler.schedule(() -> {
+                    Device newDevice = allDevicesById.get(deviceId);
+                    newDevice.evaluateDeviceType();
+                    if (newDevice.deviceType != null) {
+                        eventListener.onNewDevice(newDevice);
+                    }
+                }, 3, TimeUnit.SECONDS);
+            }
         }
+
         if (device != null) {
             device.setDataItem(dataItem);
         }

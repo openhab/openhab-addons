@@ -159,6 +159,14 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
     }
 
     @Override
+    public void onNewDevice(Device device) {
+        if (discoveryService != null) {
+            discoveryService.deviceDiscovered(device);
+        }
+        onDeviceUpdated(device);
+    }
+
+    @Override
     public void onConnectionLost() {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection lost");
     }
