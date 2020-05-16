@@ -65,8 +65,7 @@ public class DataResponseTransformer {
                 logger.warn("Channel not found: {}", channelId);
             } else {
                 ChannelTypeUID typeUID = channel.getChannelTypeUID();
-                String type = typeUID == null ? null : typeUID.getId();
-                type = type == null ? "null" : type;
+                String type = typeUID == null ? "null" : typeUID.getId();
 
                 switch (type) {
                     case CHANNEL_TYPE_TEMPERATURE:
@@ -130,7 +129,7 @@ public class DataResponseTransformer {
                         break;
                     default:
                         logger.warn("could not handle unknown type {}, channel {}, value {}", type,
-                                channel.getUID().getAsString(), value);
+                                channel.getUID(), value);
                 }
             }
         }
@@ -142,13 +141,13 @@ public class DataResponseTransformer {
         State val = factor == UNSCALED ? new QuantityType<>(value, unit) : new QuantityType<>(value * factor, unit);
         targetMap.put(channel, val);
         logger.debug("Channel {} transformed to QuantityType ({}*{} {}) -> {}", channel.getUID().getId(), value, factor,
-                unit.toString(), val.toString());
+                unit, val);
     }
 
     private final void putOnOffType(Map<Channel, State> targetMap, Channel channel, long value) {
         State val = ChannelUtil.mapValue(channel, value);
         targetMap.put(channel, val);
-        logger.debug("Channel {} transformed to OnOffType ({}) -> {}", channel.getUID().getId(), value, val.toString());
+        logger.debug("Channel {} transformed to OnOffType ({}) -> {}", channel.getUID().getId(), value, val);
     }
 
     private final void putDecimalType(Map<Channel, State> targetMap, Channel channel, long value, double factor) {
@@ -156,7 +155,7 @@ public class DataResponseTransformer {
         State val = factor == UNSCALED ? new DecimalType(value) : new DecimalType(value * factor);
         targetMap.put(channel, val);
         logger.debug("Channel {} transformed to DecimalType ({}*{}) -> {}", channel.getUID().getId(), value, factor,
-                val.toString());
+                val);
     }
 
 }
