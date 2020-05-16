@@ -50,6 +50,7 @@
 			<channel id="brakeFluidLevel" typeId="brakeFluidLevel"/>
 			<channel id="washerFluidLevel" typeId="washerFluidLevel"/>
 			<channel id="serviceWarningStatus" typeId="serviceWarningStatus"/>
+			<channel id="bulbFailure" typeId="bulbFailure"/>
 		</channels>
 	</channel-group-type>
 
@@ -322,6 +323,13 @@
 		<item-type>Switch</item-type>
 		<label>Remote Heater</label>
 		<description>(De)Activates remote heater</description>
+	</channel-type>
+	
+	<channel-type id="bulbFailure">
+		<item-type>Switch</item-type>
+		<label>Bulb Failure</label>
+		<description>At least on bulb is reported as dead</description>
+		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="brakeFluidLevel">

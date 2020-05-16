@@ -130,6 +130,8 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
     public <T extends VocAnswer> T getURL(String url, Class<T> objectClass) throws VolvoOnCallException {
         try {
             String jsonResponse = HttpUtil.executeUrl("GET", url, httpHeader, null, JSON_CONTENT_TYPE, REQUEST_TIMEOUT);
+            logger.debug("Request for : {}", url);
+            logger.debug("Received : {}", jsonResponse);
             T response = gson.fromJson(jsonResponse, objectClass);
             String error = response.getErrorLabel();
             if (error != null) {

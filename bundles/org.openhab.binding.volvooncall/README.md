@@ -83,6 +83,7 @@ Following channels are currently available:
 | other#brakeFluidLevel                         | String               | Brake fluid level                                | Normal / Low / VeryLow                                                 |
 | other#washerFluidLevel                        | String               | Washer fluid level                               | Normal / Low / VeryLow                                                 |
 | other#serviceWarning                          | String               | Warning if service is needed                     |                                                 |
+| other#bulbFailure                             | Switch               | ON if at least one bulb is reported as failed    |                                                 |
 | battery#batteryLevel                          | Number:Dimensionless | Battery level                                    | Only for Plugin hybrid / Twin Engine models     |
 | battery#batteryDistanceToEmpty                | Number:Length        | Distance until battery is empty                  | Only for Plugin hybrid / Twin Engine models     |
 | battery#chargeStatus                          | String               | Charging status                                  | Only for Plugin hybrid / Twin Engine models     |

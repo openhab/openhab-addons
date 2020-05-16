@@ -357,21 +357,6 @@ public class VehicleHandler extends BaseThingHandler {
     }
 
     private State getValue(@Nullable String groupId, String channelId, Status status, VehiclePositionWrapper position) {
-        if (groupId != null) {
-            switch (groupId) {
-                case GROUP_DOORS:
-                    return status.getDoors().map(doors -> getDoorsValue(channelId, doors)).orElse(UnDefType.NULL);
-                case GROUP_WINDOWS:
-                    return status.getWindows().map(windows -> getWindowsValue(channelId, windows))
-                            .orElse(UnDefType.NULL);
-                case GROUP_TYRES:
-                    return status.getTyrePressure().map(tyres -> getTyresValue(channelId, tyres))
-                            .orElse(UnDefType.NULL);
-                case GROUP_BATTERY:
-                    return status.getHvBattery().map(batteries -> getBatteryValue(channelId, batteries))
-                            .orElse(UnDefType.NULL);
-            }
-        }
         switch (channelId) {
             case ODOMETER:
                 return status.odometer != UNDEFINED ? new QuantityType<>((double) status.odometer / 1000, KILO(METRE))
@@ -404,6 +389,8 @@ public class VehicleHandler extends BaseThingHandler {
             case LOCATION_TIMESTAMP:
                 return position.getTimestamp();
             case CAR_LOCKED:
+                // Warning : carLocked is in the Doors group but is part of general status informations.
+                // Did not change it to avoid breaking change for users
                 return status.getCarLocked().map(State.class::cast).orElse(UnDefType.UNDEF);
             case ENGINE_RUNNING:
                 return status.getEngineRunning().map(State.class::cast).orElse(UnDefType.UNDEF);
@@ -418,9 +405,26 @@ public class VehicleHandler extends BaseThingHandler {
                 return new StringType(status.serviceWarningStatus);
             case FUEL_ALERT:
                 return status.distanceToEmpty < 100 ? OnOffType.ON : OnOffType.OFF;
+            case BULB_FAILURE:
+                return status.aFailedBulb() ? OnOffType.ON : OnOffType.OFF;
             case REMOTE_HEATER:
             case PRECLIMATIZATION:
                 return status.getHeater().map(heater -> getHeaterValue(channelId, heater)).orElse(UnDefType.NULL);
+        }
+        if (groupId != null) {
+            switch (groupId) {
+                case GROUP_DOORS:
+                    return status.getDoors().map(doors -> getDoorsValue(channelId, doors)).orElse(UnDefType.NULL);
+                case GROUP_WINDOWS:
+                    return status.getWindows().map(windows -> getWindowsValue(channelId, windows))
+                            .orElse(UnDefType.NULL);
+                case GROUP_TYRES:
+                    return status.getTyrePressure().map(tyres -> getTyresValue(channelId, tyres))
+                            .orElse(UnDefType.NULL);
+                case GROUP_BATTERY:
+                    return status.getHvBattery().map(batteries -> getBatteryValue(channelId, batteries))
+                            .orElse(UnDefType.NULL);
+            }
         }
         return UnDefType.NULL;
     }
