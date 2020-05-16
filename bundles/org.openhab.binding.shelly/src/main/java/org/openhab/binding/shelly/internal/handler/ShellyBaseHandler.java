@@ -523,8 +523,10 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                     int i = Integer.parseInt(deviceIndex);
                     if ((profile.settings.relays != null) && (i >= 0) && (i < profile.settings.relays.size())) {
                         ShellySettingsRelay relay = profile.settings.relays.get(i);
-                        if ((relay != null) && (relay.btnType.equalsIgnoreCase(SHELLY_BTNT_MOMENTARY)
-                                || relay.btnType.equalsIgnoreCase(SHELLY_BTNT_DETACHED))) {
+                        String btnType = getString(relay.btnType);
+                        if (btnType.equalsIgnoreCase(SHELLY_BTNT_MOMENTARY)
+                                || btnType.equalsIgnoreCase(SHELLY_BTNT_MOM_ON_RELEASE)
+                                || btnType.equalsIgnoreCase(SHELLY_BTNT_DETACHED)) {
                             isButton = true;
                         }
                     }
