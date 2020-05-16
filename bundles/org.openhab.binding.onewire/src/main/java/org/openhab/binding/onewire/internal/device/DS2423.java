@@ -23,6 +23,8 @@ import org.openhab.binding.onewire.internal.SensorId;
 import org.openhab.binding.onewire.internal.handler.OwBaseThingHandler;
 import org.openhab.binding.onewire.internal.handler.OwserverBridgeHandler;
 import org.openhab.binding.onewire.internal.owserver.OwserverDeviceParameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link DS2423} class defines an DS2423 device
@@ -31,6 +33,7 @@ import org.openhab.binding.onewire.internal.owserver.OwserverDeviceParameter;
  */
 @NonNullByDefault
 public class DS2423 extends AbstractOwDevice {
+    private final Logger logger = LoggerFactory.getLogger(DS2423.class);
     private final OwserverDeviceParameter counterParameter = new OwserverDeviceParameter("/counters.ALL");
 
     public DS2423(SensorId sensorId, OwBaseThingHandler callback) {
@@ -45,6 +48,7 @@ public class DS2423 extends AbstractOwDevice {
     @Override
     public void refresh(OwserverBridgeHandler bridgeHandler, Boolean forcedRefresh) throws OwException {
         if (isConfigured) {
+            logger.trace("refresh of sensor {} started", sensorId);
             List<State> states = bridgeHandler.readDecimalTypeArray(sensorId, counterParameter);
 
             if (states.size() != 2) {
