@@ -88,6 +88,7 @@ public class VolvoOnCallBindingConstants {
     public static final String CHARGE_STATUS = "chargeStatus";
     public static final String TIME_TO_BATTERY_FULLY_CHARGED = "timeToHVBatteryFullyCharged";
     public static final String CHARGING_END = "chargingEnd";
+    public static final String BULB_FAILURE = "bulbFailure";
 
     // Last Trip Channel Id's
     public static final String LAST_TRIP_GROUP = "lasttrip";
