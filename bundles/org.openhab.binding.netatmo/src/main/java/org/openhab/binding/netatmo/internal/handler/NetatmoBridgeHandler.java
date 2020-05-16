@@ -207,6 +207,8 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
         if (configuration.readWelcome) {
             scopes.add("read_camera");
             scopes.add("access_camera");
+            scopes.add("read_presence");
+            scopes.add("access_presence");
             scopes.add("write_camera");
         }
 
