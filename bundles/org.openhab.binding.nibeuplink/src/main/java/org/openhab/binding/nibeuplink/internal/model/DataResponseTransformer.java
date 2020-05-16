@@ -110,6 +110,7 @@ public class DataResponseTransformer {
                         break;
                     case CHANNEL_TYPE_NUMBER_SCALE100:
                         putDecimalType(result, channel, value, DIV_100);
+                        break;
                     case CHANNEL_TYPE_NUMBER_SCALE10:
                     case CHANNEL_TYPE_DEGREE_MINUTES_RW:
                     case CHANNEL_TYPE_STOP_HEATING_RW:
