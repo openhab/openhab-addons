@@ -97,20 +97,6 @@ public abstract class BluetoothDevice {
         this.adapter = adapter;
     }
 
-    // /**
-    // * Returns the last time this device was active
-    // *
-    // * @return The last time this device was active
-    // */
-    // public abstract @Nullable ZonedDateTime getLastSeenTime();
-    //
-    // /**
-    // * Updates the last activity timestamp for this device.
-    // * Should be called whenever activity occurs on this device.
-    // *
-    // */
-    // protected abstract void updateLastSeenTime();
-
     /**
      * Returns the name of the Bluetooth device.
      *
