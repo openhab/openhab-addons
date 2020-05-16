@@ -71,7 +71,7 @@ import com.google.gson.Gson;
 public class LightThingHandler extends BaseThingHandler implements WebSocketMessageListener {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Stream
             .of(THING_TYPE_COLOR_TEMPERATURE_LIGHT, THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_COLOR_LIGHT,
-                    THING_TYPE_EXTENDED_COLOR_LIGHT, THING_TYPE_WINDOW_COVERING)
+                    THING_TYPE_EXTENDED_COLOR_LIGHT, THING_TYPE_ONOFF_LIGHT, THING_TYPE_WINDOW_COVERING)
             .collect(Collectors.toSet());
     private final Logger logger = LoggerFactory.getLogger(LightThingHandler.class);
     private ThingConfig config = new ThingConfig();

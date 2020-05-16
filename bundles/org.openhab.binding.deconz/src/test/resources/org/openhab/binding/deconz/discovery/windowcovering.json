@@ -1,0 +1,16 @@
+{
+  "etag": "09757d7ce4413e159522742f722b44a0",
+  "hascolor": false,
+  "manufacturername": "IKEA of Sweden",
+  "modelid": "FYRTUR block-out roller blind",
+  "name": "Window covering device 6",
+  "state": {
+    "alert": "none",
+    "bri": 255,
+    "on": true,
+    "reachable": true
+  },
+  "swversion": "2.2.009",
+  "type": "Window covering device",
+  "uniqueid": "68:0a:e2:ff:fe:6e:95:af-01"
+}
