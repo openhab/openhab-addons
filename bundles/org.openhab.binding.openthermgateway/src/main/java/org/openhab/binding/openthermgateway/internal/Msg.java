@@ -13,6 +13,9 @@
 package org.openhab.binding.openthermgateway.internal;
 
 /**
+ * The {@link Msg} flag is used to indicate whether the message is sent for Reading, Writing
+ * or both, based on the OpenTherm specification.
+ * 
  * @author Arjen Korevaar - Initial contribution
  */
 public enum Msg {

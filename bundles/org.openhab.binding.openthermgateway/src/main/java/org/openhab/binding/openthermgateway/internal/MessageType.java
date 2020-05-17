@@ -13,6 +13,9 @@
 package org.openhab.binding.openthermgateway.internal;
 
 /**
+ * The {@link MessageType} indicates the type of message received by the OpenTherm Gateway, based
+ * on the OpenTherm specification.
+ * 
  * @author Arjen Korevaar - Initial contribution
  */
 public enum MessageType {

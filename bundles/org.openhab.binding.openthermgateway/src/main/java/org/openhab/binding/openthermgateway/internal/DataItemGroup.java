@@ -19,6 +19,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 
 /**
+ * The {@link DataItemGroup} represents a list of all possible DataItem messages within the OpenTherm specification.
+ * 
  * @author Arjen Korevaar - Initial contribution
  */
 @NonNullByDefault

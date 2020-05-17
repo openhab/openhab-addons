@@ -13,6 +13,8 @@
 package org.openhab.binding.openthermgateway.internal;
 
 /**
+ * The {@link ByteType} enum specifies whether the upper, lower or both bytes are used
+ * 
  * @author Arjen Korevaar - Initial contribution
  */
 public enum ByteType {

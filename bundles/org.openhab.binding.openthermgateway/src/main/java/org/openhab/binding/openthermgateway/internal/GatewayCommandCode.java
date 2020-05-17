@@ -15,6 +15,8 @@ package org.openhab.binding.openthermgateway.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * The {@link GatewayCommandCode} provides a set of supported OpenTherm Gateway commands.
+ * 
  * @author Arjen Korevaar - Initial contribution
  */
 @NonNullByDefault

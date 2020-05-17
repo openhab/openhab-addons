@@ -18,6 +18,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
+ * The {@link DataItem} holds the internal OpenTherm message and meta data.
+ * 
  * @author Arjen Korevaar - Initial contribution
  */
 @NonNullByDefault

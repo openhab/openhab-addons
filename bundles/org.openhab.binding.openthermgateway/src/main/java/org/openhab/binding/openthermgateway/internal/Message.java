@@ -18,6 +18,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
+ * The {@link Message} represent a single message received from the OpenTherm Gateway.
+ * 
  * @author Arjen Korevaar - Initial contribution
  */
 @NonNullByDefault

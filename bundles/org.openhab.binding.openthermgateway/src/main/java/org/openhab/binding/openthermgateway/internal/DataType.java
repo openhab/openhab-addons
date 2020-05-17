@@ -13,6 +13,8 @@
 package org.openhab.binding.openthermgateway.internal;
 
 /**
+ * The {@link DataType} enum indicates the type of data from a DataItem.
+ * 
  * @author Arjen Korevaar - Initial contribution
  */
 public enum DataType {

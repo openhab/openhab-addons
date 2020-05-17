@@ -15,6 +15,9 @@ package org.openhab.binding.openthermgateway.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * The {@link OpenThermGatewayConnector} interface is used to allow multiple types of connectors
+ * to be implemented and used to connect to the OpenTherm Gateway.
+ * 
  * @author Arjen Korevaar - Initial contribution
  */
 @NonNullByDefault

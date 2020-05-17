@@ -15,6 +15,9 @@ package org.openhab.binding.openthermgateway.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * The {@link OpenThermGatewayCallback} is used as a callback interface by a connector to signal status
+ * and relay incoming messages to be processed by the binding.
+ * 
  * @author Arjen Korevaar - Initial contribution
  */
 @NonNullByDefault
