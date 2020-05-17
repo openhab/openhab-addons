@@ -16,6 +16,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 import static org.junit.Assume.assumeFalse;
 
+import java.util.BitSet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -23,7 +24,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
-import org.openhab.io.transport.modbus.BasicBitArray;
 import org.openhab.io.transport.modbus.BasicWriteTask;
 import org.openhab.io.transport.modbus.BitArray;
 import org.openhab.io.transport.modbus.ModbusManagerListener;
@@ -39,7 +39,6 @@ import org.openhab.io.transport.modbus.endpoint.ModbusTCPSlaveEndpoint;
 import org.openhab.io.transport.modbus.exception.ModbusConnectionException;
 import org.openhab.io.transport.modbus.exception.ModbusSlaveErrorResponseException;
 import org.openhab.io.transport.modbus.exception.ModbusSlaveIOException;
-import org.openhab.io.transport.modbus.internal.BitArrayWrappingBitVector;
 import org.slf4j.LoggerFactory;
 
 import net.wimpi.modbus.msg.ModbusRequest;
@@ -48,6 +47,7 @@ import net.wimpi.modbus.msg.WriteMultipleCoilsRequest;
 import net.wimpi.modbus.procimg.SimpleDigitalIn;
 import net.wimpi.modbus.procimg.SimpleDigitalOut;
 import net.wimpi.modbus.procimg.SimpleRegister;
+import net.wimpi.modbus.util.BitVector;
 
 /**
  * @author Sami Salonen - Initial contribution
@@ -377,7 +377,7 @@ public class SmokeTest extends IntegrationTestSupport {
         AtomicInteger unexpectedCount = new AtomicInteger();
         AtomicReference<Object> lastData = new AtomicReference<>();
 
-        BitArray bits = new BasicBitArray(true, true, false, false, true, true);
+        BitArray bits = new BitArray(true, true, false, false, true, true);
         BasicWriteTask task = new BasicWriteTask(endpoint,
                 new ModbusWriteCoilRequestBlueprint(SLAVE_UNIT_ID, 3, bits, true, 1), result -> {
                     if (result.hasError()) {
@@ -399,8 +399,9 @@ public class SmokeTest extends IntegrationTestSupport {
             assertThat(request.getFunctionCode(), is(equalTo(15)));
             assertThat(((WriteMultipleCoilsRequest) request).getReference(), is(equalTo(3)));
             assertThat(((WriteMultipleCoilsRequest) request).getBitCount(), is(equalTo(bits.size())));
-            assertThat(new BitArrayWrappingBitVector(((WriteMultipleCoilsRequest) request).getCoils(), bits.size()),
-                    is(equalTo(bits)));
+            BitVector writeRequestCoils = ((WriteMultipleCoilsRequest) request).getCoils();
+            BitArray writtenBits = new BitArray(BitSet.valueOf(writeRequestCoils.getBytes()), bits.size());
+            assertThat(writtenBits, is(equalTo(bits)));
         }, 6000, 10);
         LoggerFactory.getLogger(this.getClass()).error("ENDINGMULTIPLE");
     }
@@ -419,7 +420,7 @@ public class SmokeTest extends IntegrationTestSupport {
         CountDownLatch callbackCalled = new CountDownLatch(1);
         AtomicReference<Exception> lastError = new AtomicReference<>();
 
-        BitArray bits = new BasicBitArray(500);
+        BitArray bits = new BitArray(500);
         BasicWriteTask task = new BasicWriteTask(endpoint,
                 new ModbusWriteCoilRequestBlueprint(SLAVE_UNIT_ID, 3, bits, true, 1), result -> {
                     if (result.hasError()) {
@@ -441,8 +442,9 @@ public class SmokeTest extends IntegrationTestSupport {
         assertThat(request.getFunctionCode(), is(equalTo(15)));
         assertThat(((WriteMultipleCoilsRequest) request).getReference(), is(equalTo(3)));
         assertThat(((WriteMultipleCoilsRequest) request).getBitCount(), is(equalTo(bits.size())));
-        assertThat(new BitArrayWrappingBitVector(((WriteMultipleCoilsRequest) request).getCoils(), bits.size()),
-                is(equalTo(bits)));
+        BitVector writeRequestCoils = ((WriteMultipleCoilsRequest) request).getCoils();
+        BitArray writtenBits = new BitArray(BitSet.valueOf(writeRequestCoils.getBytes()), bits.size());
+        assertThat(writtenBits, is(equalTo(bits)));
     }
 
     /**
@@ -458,7 +460,7 @@ public class SmokeTest extends IntegrationTestSupport {
         CountDownLatch callbackCalled = new CountDownLatch(1);
         AtomicReference<Object> lastData = new AtomicReference<>();
 
-        BitArray bits = new BasicBitArray(true);
+        BitArray bits = new BitArray(true);
         BasicWriteTask task = new BasicWriteTask(endpoint,
                 new ModbusWriteCoilRequestBlueprint(SLAVE_UNIT_ID, 3, bits, false, 1), result -> {
                     if (result.hasError()) {
@@ -499,7 +501,7 @@ public class SmokeTest extends IntegrationTestSupport {
         CountDownLatch callbackCalled = new CountDownLatch(1);
         AtomicReference<Exception> lastError = new AtomicReference<>();
 
-        BitArray bits = new BasicBitArray(true);
+        BitArray bits = new BitArray(true);
         BasicWriteTask task = new BasicWriteTask(endpoint,
                 new ModbusWriteCoilRequestBlueprint(SLAVE_UNIT_ID, 300, bits, false, 1), result -> {
                     if (result.hasError()) {

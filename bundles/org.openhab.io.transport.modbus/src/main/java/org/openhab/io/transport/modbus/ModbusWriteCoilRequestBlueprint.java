@@ -31,25 +31,6 @@ public class ModbusWriteCoilRequestBlueprint extends ModbusWriteRequestBlueprint
         toStringStyle.setUseShortClassName(true);
     }
 
-    /**
-     * Implementation of {@link BitArray} with single bit as data
-     *
-     * @author Sami Salonen - Initial contribution
-     *
-     */
-    private static class SingleBitArray extends BasicBitArray {
-
-        public SingleBitArray(boolean bit) {
-            super(bit);
-        }
-
-        @Override
-        public String toString() {
-            return "SingleBitArray(bit=" + toBinaryString() + ")";
-        }
-
-    }
-
     private int slaveId;
     private int reference;
     private BitArray bits;
@@ -68,7 +49,7 @@ public class ModbusWriteCoilRequestBlueprint extends ModbusWriteRequestBlueprint
      */
     public ModbusWriteCoilRequestBlueprint(int slaveId, int reference, boolean data, boolean writeMultiple,
             int maxTries) {
-        this(slaveId, reference, new SingleBitArray(data), writeMultiple, maxTries);
+        this(slaveId, reference, new BitArray(data), writeMultiple, maxTries);
     }
 
     /**

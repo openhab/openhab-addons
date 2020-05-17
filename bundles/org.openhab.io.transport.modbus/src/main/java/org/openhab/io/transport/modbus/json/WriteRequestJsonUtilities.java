@@ -20,13 +20,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.commons.lang.NotImplementedException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.io.transport.modbus.BasicBitArray;
 import org.openhab.io.transport.modbus.BasicModbusRegister;
 import org.openhab.io.transport.modbus.BasicModbusRegisterArray;
-import org.openhab.io.transport.modbus.ModbusWriteCoilRequestBlueprint;
-import org.openhab.io.transport.modbus.ModbusWriteRegisterRequestBlueprint;
+import org.openhab.io.transport.modbus.BitArray;
 import org.openhab.io.transport.modbus.ModbusRegister;
+import org.openhab.io.transport.modbus.ModbusWriteCoilRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusWriteFunctionCode;
+import org.openhab.io.transport.modbus.ModbusWriteRegisterRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusWriteRequestBlueprint;
 
 import com.google.gson.JsonArray;
@@ -179,7 +179,7 @@ public final class WriteRequestJsonUtilities {
                 if (valuesElem.size() == 0) {
                     throw new IllegalArgumentException("Must provide at least one coil");
                 }
-                BasicBitArray bits = new BasicBitArray(valuesElem.size());
+                BitArray bits = new BitArray(valuesElem.size());
                 for (int i = 0; i < valuesElem.size(); i++) {
                     bits.setBit(i, valuesElem.get(i).getAsInt() != 0);
                 }
@@ -199,8 +199,8 @@ public final class WriteRequestJsonUtilities {
                 for (int i = 0; i < valuesElem.size(); i++) {
                     registers[i] = new BasicModbusRegister(valuesElem.get(i).getAsInt());
                 }
-                return new ModbusWriteRegisterRequestBlueprint(unitId, address,
-                        new BasicModbusRegisterArray(registers), !writeSingle.get(), maxTries);
+                return new ModbusWriteRegisterRequestBlueprint(unitId, address, new BasicModbusRegisterArray(registers),
+                        !writeSingle.get(), maxTries);
             }
             default:
                 throw new IllegalArgumentException("Unknown function code");

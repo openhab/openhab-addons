@@ -76,6 +76,14 @@ public class ModbusLibraryWrapper {
         return LoggerFactory.getLogger(ModbusLibraryWrapper.class);
     }
 
+    private static BitArray bitArrayFromBitVector(BitVector bitVector, int count) {
+        boolean[] bits = new boolean[count];
+        for (int i = 0; i < count; i++) {
+            bits[i] = bitVector.getBit(i);
+        }
+        return new BitArray(bits);
+    }
+
     /**
      * Convert the general request to Modbus library request object
      *
@@ -305,11 +313,11 @@ public class ModbusLibraryWrapper {
             if (request.getFunctionCode() == ModbusReadFunctionCode.READ_COILS) {
                 BitVector bits = ((ReadCoilsResponse) response).getCoils();
                 callback.handle(new AsyncModbusReadResult(request,
-                        new BitArrayWrappingBitVector(bits, Math.min(dataItemsInResponse, request.getDataLength()))));
+                        bitArrayFromBitVector(bits, Math.min(dataItemsInResponse, request.getDataLength()))));
             } else if (request.getFunctionCode() == ModbusReadFunctionCode.READ_INPUT_DISCRETES) {
                 BitVector bits = ((ReadInputDiscretesResponse) response).getDiscretes();
                 callback.handle(new AsyncModbusReadResult(request,
-                        new BitArrayWrappingBitVector(bits, Math.min(dataItemsInResponse, request.getDataLength()))));
+                        bitArrayFromBitVector(bits, Math.min(dataItemsInResponse, request.getDataLength()))));
             } else if (request.getFunctionCode() == ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS) {
                 callback.handle(new AsyncModbusReadResult(request, new RegisterArrayWrappingInputRegister(
                         ((ReadMultipleRegistersResponse) response).getRegisters())));
