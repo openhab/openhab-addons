@@ -638,7 +638,7 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
 
     /**
      * Calculate the 16 bit crc of the message.
-     * 
+     *
      * @param module
      * @param sizeToggle
      * @param cmd
@@ -684,7 +684,7 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
      */
     private void handleIncomingCommand(byte moduleAddress, int channel, OnOffType onOff) {
         ThingUID uid = PHCHelper.getThingUIDreverse(PHCBindingConstants.THING_TYPE_EM, moduleAddress);
-        Thing thing = getThingByUID(uid);
+        Thing thing = getThing().getThing(uid);
         String channelId = "em#" + StringUtils.leftPad(Integer.toString(channel), 2, '0');
 
         if (thing != null && thing.getHandler() != null) {

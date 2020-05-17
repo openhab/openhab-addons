@@ -65,7 +65,7 @@ public class ThingConfiguration {
      */
     public static boolean exists(BaseBridgeHandler bridge, ChannelUID channelUID, String configName) {
         ThingUID channelTUID = channelUID.getThingUID();
-        Thing thingOfChannel = bridge.getThingByUID(channelTUID);
+        Thing thingOfChannel = bridge.getThing().getThing(channelTUID);
         boolean exists = false;
         if (thingOfChannel == null) {
             LOGGER.debug("exists(): Channel {} does not belong to a thing.", channelUID);
@@ -92,7 +92,7 @@ public class ThingConfiguration {
      */
     public static Object getValue(BaseBridgeHandler bridge, ChannelUID channelUID, String configName) {
         ThingUID channelTUID = channelUID.getThingUID();
-        Thing thingOfChannel = bridge.getThingByUID(channelTUID);
+        Thing thingOfChannel = bridge.getThing().getThing(channelTUID);
         if (thingOfChannel == null) {
             LOGGER.warn("getValue(): Channel {} does not belong to a thing.", channelUID);
             return true;

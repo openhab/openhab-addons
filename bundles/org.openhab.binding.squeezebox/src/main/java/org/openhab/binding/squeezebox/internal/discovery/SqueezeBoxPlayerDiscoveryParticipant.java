@@ -109,7 +109,7 @@ public class SqueezeBoxPlayerDiscoveryParticipant extends AbstractDiscoveryServi
     }
 
     private boolean playerThingExists(ThingUID newThingUID) {
-        return squeezeBoxServerHandler.getThingByUID(newThingUID) != null ? true : false;
+        return squeezeBoxServerHandler.getThing().getThing(newThingUID) != null ? true : false;
     }
 
     /**
