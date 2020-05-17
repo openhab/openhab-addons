@@ -15,6 +15,7 @@ package org.openhab.binding.verisure.internal.handler;
 import static org.openhab.binding.verisure.internal.VerisureBindingConstants.*;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -26,8 +27,8 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.verisure.internal.model.VerisureDoorWindows;
-import org.openhab.binding.verisure.internal.model.VerisureDoorWindows.DoorWindow;
+import org.openhab.binding.verisure.internal.dto.VerisureDoorWindowsDTO;
+import org.openhab.binding.verisure.internal.dto.VerisureDoorWindowsDTO.DoorWindow;
 
 /**
  * Handler for the Smart Lock Device thing type that Verisure provides.
@@ -36,7 +37,7 @@ import org.openhab.binding.verisure.internal.model.VerisureDoorWindows.DoorWindo
  *
  */
 @NonNullByDefault
-public class VerisureDoorWindowThingHandler extends VerisureThingHandler<VerisureDoorWindows> {
+public class VerisureDoorWindowThingHandler extends VerisureThingHandler<VerisureDoorWindowsDTO> {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_DOORWINDOW);
 
@@ -45,29 +46,34 @@ public class VerisureDoorWindowThingHandler extends VerisureThingHandler<Verisur
     }
 
     @Override
-    public Class<VerisureDoorWindows> getVerisureThingClass() {
-        return VerisureDoorWindows.class;
+    public Class<VerisureDoorWindowsDTO> getVerisureThingClass() {
+        return VerisureDoorWindowsDTO.class;
     }
 
     @Override
-    public synchronized void update(VerisureDoorWindows thing) {
+    public synchronized void update(VerisureDoorWindowsDTO thing) {
         logger.debug("update on thing: {}", thing);
         updateStatus(ThingStatus.ONLINE);
         updateDoorWindowState(thing);
     }
 
-    private void updateDoorWindowState(VerisureDoorWindows doorWindowJSON) {
-        DoorWindow doorWindow = doorWindowJSON.getData().getInstallation().getDoorWindows().get(0);
+    private void updateDoorWindowState(VerisureDoorWindowsDTO doorWindowJSON) {
+        List<DoorWindow> doorWindowList = doorWindowJSON.getData().getInstallation().getDoorWindows();
+        if (!doorWindowList.isEmpty()) {
+            DoorWindow doorWindow = doorWindowList.get(0);
 
-        getThing().getChannels().stream().map(Channel::getUID)
-                .filter(channelUID -> isLinked(channelUID) && !channelUID.getId().equals("timestamp"))
-                .forEach(channelUID -> {
-                    State state = getValue(channelUID.getId(), doorWindow);
-                    updateState(channelUID, state);
+            getThing().getChannels().stream().map(Channel::getUID)
+                    .filter(channelUID -> isLinked(channelUID) && !channelUID.getId().equals("timestamp"))
+                    .forEach(channelUID -> {
+                        State state = getValue(channelUID.getId(), doorWindow);
+                        updateState(channelUID, state);
 
-                });
-        updateTimeStamp(doorWindow.getReportTime());
-        super.update(doorWindowJSON);
+                    });
+            updateTimeStamp(doorWindow.getReportTime());
+            super.update(doorWindowJSON);
+        } else {
+            logger.debug("DoorWindow list is empty!");
+        }
     }
 
     public State getValue(String channelId, DoorWindow doorWindow) {

@@ -42,19 +42,21 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.openhab.binding.verisure.internal.model.VerisureAlarms;
-import org.openhab.binding.verisure.internal.model.VerisureBroadbandConnections;
-import org.openhab.binding.verisure.internal.model.VerisureClimates;
-import org.openhab.binding.verisure.internal.model.VerisureDoorWindows;
-import org.openhab.binding.verisure.internal.model.VerisureEventLog;
-import org.openhab.binding.verisure.internal.model.VerisureInstallations;
-import org.openhab.binding.verisure.internal.model.VerisureInstallations.Owainstallation;
-import org.openhab.binding.verisure.internal.model.VerisureMiceDetection;
-import org.openhab.binding.verisure.internal.model.VerisureSmartLock;
-import org.openhab.binding.verisure.internal.model.VerisureSmartLocks;
-import org.openhab.binding.verisure.internal.model.VerisureSmartPlugs;
-import org.openhab.binding.verisure.internal.model.VerisureThing;
-import org.openhab.binding.verisure.internal.model.VerisureUserPresences;
+import org.openhab.binding.verisure.internal.dto.VerisureAlarmsDTO;
+import org.openhab.binding.verisure.internal.dto.VerisureBroadbandConnectionsDTO;
+import org.openhab.binding.verisure.internal.dto.VerisureClimatesDTO;
+import org.openhab.binding.verisure.internal.dto.VerisureDoorWindowsDTO;
+import org.openhab.binding.verisure.internal.dto.VerisureEventLogDTO;
+import org.openhab.binding.verisure.internal.dto.VerisureGatewayDTO;
+import org.openhab.binding.verisure.internal.dto.VerisureGatewayDTO.CommunicationState;
+import org.openhab.binding.verisure.internal.dto.VerisureInstallationsDTO;
+import org.openhab.binding.verisure.internal.dto.VerisureInstallationsDTO.Owainstallation;
+import org.openhab.binding.verisure.internal.dto.VerisureMiceDetectionDTO;
+import org.openhab.binding.verisure.internal.dto.VerisureSmartLockDTO;
+import org.openhab.binding.verisure.internal.dto.VerisureSmartLocksDTO;
+import org.openhab.binding.verisure.internal.dto.VerisureSmartPlugsDTO;
+import org.openhab.binding.verisure.internal.dto.VerisureThingDTO;
+import org.openhab.binding.verisure.internal.dto.VerisureUserPresencesDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,10 +73,10 @@ import com.google.gson.Gson;
 public class VerisureSession {
 
     @NonNullByDefault({})
-    private final Map<String, VerisureThing> verisureThings = new ConcurrentHashMap<>();
+    private final Map<String, VerisureThingDTO> verisureThings = new ConcurrentHashMap<>();
     private final Logger logger = LoggerFactory.getLogger(VerisureSession.class);
     private final Gson gson = new Gson();
-    private final List<DeviceStatusListener<VerisureThing>> deviceStatusListeners = new CopyOnWriteArrayList<>();
+    private final List<DeviceStatusListener<VerisureThingDTO>> deviceStatusListeners = new CopyOnWriteArrayList<>();
     private final Map<BigDecimal, VerisureInstallation> verisureInstallations = new ConcurrentHashMap<>();
     private static final List<String> APISERVERLIST = Arrays.asList("https://m-api01.verisure.com",
             "https://m-api02.verisure.com");
@@ -135,27 +137,28 @@ public class VerisureSession {
         }
     }
 
-    public boolean unregisterDeviceStatusListener(DeviceStatusListener<? extends VerisureThing> deviceStatusListener) {
+    public boolean unregisterDeviceStatusListener(
+            DeviceStatusListener<? extends VerisureThingDTO> deviceStatusListener) {
         logger.debug("unregisterDeviceStatusListener for listener {}", deviceStatusListener);
         return deviceStatusListeners.remove(deviceStatusListener);
     }
 
     @SuppressWarnings("unchecked")
-    public boolean registerDeviceStatusListener(DeviceStatusListener<? extends VerisureThing> deviceStatusListener) {
+    public boolean registerDeviceStatusListener(DeviceStatusListener<? extends VerisureThingDTO> deviceStatusListener) {
         logger.debug("registerDeviceStatusListener for listener {}", deviceStatusListener);
-        return deviceStatusListeners.add((DeviceStatusListener<VerisureThing>) deviceStatusListener);
+        return deviceStatusListeners.add((DeviceStatusListener<VerisureThingDTO>) deviceStatusListener);
     }
 
     @SuppressWarnings({ "unchecked", "null" })
-    public <T extends VerisureThing> @Nullable T getVerisureThing(String deviceId, Class<T> thingType) {
-        VerisureThing thing = verisureThings.get(deviceId);
+    public <T extends VerisureThingDTO> @Nullable T getVerisureThing(String deviceId, Class<T> thingType) {
+        VerisureThingDTO thing = verisureThings.get(deviceId);
         if (thing != null && thingType.isInstance(thing)) {
             return (T) thing;
         }
         return null;
     }
 
-    public Collection<VerisureThing> getVerisureThings() {
+    public Collection<VerisureThingDTO> getVerisureThings() {
         return verisureThings.values();
     }
 
@@ -419,8 +422,8 @@ public class VerisureSession {
             String queryQLAccountInstallations = "[{\"operationName\":\"AccountInstallations\",\"variables\":{\"email\":\""
                     + userName
                     + "\"},\"query\":\"query AccountInstallations($email: String!) {\\n  account(email: $email) {\\n    owainstallations {\\n      giid\\n      alias\\n      type\\n      subsidiary\\n      dealerId\\n      __typename\\n    }\\n    __typename\\n  }\\n}\\n\"}]";
-            Class<VerisureInstallations> jsonClass = VerisureInstallations.class;
-            VerisureInstallations installations = postJSONVerisureAPI(url, queryQLAccountInstallations, jsonClass);
+            Class<VerisureInstallationsDTO> jsonClass = VerisureInstallationsDTO.class;
+            VerisureInstallationsDTO installations = postJSONVerisureAPI(url, queryQLAccountInstallations, jsonClass);
 
             if (installations == null) {
                 logger.debug("Failed to get installations");
@@ -488,7 +491,7 @@ public class VerisureSession {
         }
     }
 
-    private <T extends VerisureThing> void notifyListeners(T thing) {
+    private <T extends VerisureThingDTO> void notifyListeners(T thing) {
         deviceStatusListeners.stream().forEach(listener -> {
             if (listener.getVerisureThingClass().equals(thing.getClass())) {
                 listener.onDeviceStateChanged(thing);
@@ -496,10 +499,10 @@ public class VerisureSession {
         });
     }
 
-    private void notifyListenersIfChanged(VerisureThing thing, VerisureInstallation installation, String deviceId) {
+    private void notifyListenersIfChanged(VerisureThingDTO thing, VerisureInstallation installation, String deviceId) {
         String normalizedDeviceId = deviceId.replaceAll("[^a-zA-Z0-9]+", "");
         thing.setDeviceId(normalizedDeviceId);
-        VerisureThing oldObj = verisureThings.get(normalizedDeviceId);
+        VerisureThingDTO oldObj = verisureThings.get(normalizedDeviceId);
         logger.trace("Old thing: {}", oldObj);
         logger.trace("Updated thing: {}", thing);
         if (oldObj == null || !oldObj.equals(thing)) {
@@ -517,24 +520,25 @@ public class VerisureSession {
             configureInstallationInstance(installation.getInstallationId());
             int httpResultCode = setSessionCookieAuthLogin();
             if (httpResultCode == HttpStatus.OK_200) {
-                updateAlarmStatus(VerisureAlarms.class, installation);
-                updateSmartLockStatus(VerisureSmartLocks.class, installation);
-                updateMiceDetectionStatus(VerisureMiceDetection.class, installation);
-                updateClimateStatus(VerisureClimates.class, installation);
-                updateDoorWindowStatus(VerisureDoorWindows.class, installation);
-                updateUserPresenceStatus(VerisureUserPresences.class, installation);
-                updateSmartPlugStatus(VerisureSmartPlugs.class, installation);
-                updateBroadbandConnectionStatus(VerisureBroadbandConnections.class, installation);
-                updateEventLogStatus(VerisureEventLog.class, installation);
+                updateAlarmStatus(VerisureAlarmsDTO.class, installation);
+                updateSmartLockStatus(VerisureSmartLocksDTO.class, installation);
+                updateMiceDetectionStatus(VerisureMiceDetectionDTO.class, installation);
+                updateClimateStatus(VerisureClimatesDTO.class, installation);
+                updateDoorWindowStatus(VerisureDoorWindowsDTO.class, installation);
+                updateUserPresenceStatus(VerisureUserPresencesDTO.class, installation);
+                updateSmartPlugStatus(VerisureSmartPlugsDTO.class, installation);
+                updateBroadbandConnectionStatus(VerisureBroadbandConnectionsDTO.class, installation);
+                updateEventLogStatus(VerisureEventLogDTO.class, installation);
+                updateGatewayStatus(VerisureGatewayDTO.class, installation);
             } else {
                 logger.warn("Failed to set session cookie and auth login, HTTP result code: {}", httpResultCode);
             }
         });
     }
 
-    private String createOperationJSON(String operation, Variables variables, String query) {
-        ArrayList<Operation> list = new ArrayList<>();
-        Operation operationJSON = new Operation();
+    private String createOperationJSON(String operation, VariablesDTO variables, String query) {
+        ArrayList<OperationDTO> list = new ArrayList<>();
+        OperationDTO operationJSON = new OperationDTO();
         operationJSON.setOperationName(operation);
         operationJSON.setVariables(variables);
         operationJSON.setQuery(query);
@@ -543,12 +547,12 @@ public class VerisureSession {
         return gson.toJson(list);
     }
 
-    private synchronized void updateAlarmStatus(Class<? extends VerisureThing> jsonClass,
+    private synchronized void updateAlarmStatus(Class<? extends VerisureThingDTO> jsonClass,
             VerisureInstallation installation) {
         BigDecimal installationId = installation.getInstallationId();
         String url = START_GRAPHQL;
         String operation = "ArmState";
-        Variables variables = new Variables();
+        VariablesDTO variables = new VariablesDTO();
         variables.setGiid(installationId.toString());
         String query = "query " + operation
                 + "($giid: String!) {\n  installation(giid: $giid) {\n armState {\n type\n statusType\n date\n name\n changedVia\n allowedForFirstLine\n allowed\n errorCodes {\n value\n message\n __typename\n}\n __typename\n}\n __typename\n}\n}\n";
@@ -556,7 +560,7 @@ public class VerisureSession {
         String queryQLAlarmStatus = createOperationJSON(operation, variables, query);
         logger.debug("Quering API for alarm status!");
 
-        VerisureThing thing = postJSONVerisureAPI(url, queryQLAlarmStatus, jsonClass);
+        VerisureThingDTO thing = postJSONVerisureAPI(url, queryQLAlarmStatus, jsonClass);
         logger.debug("REST Response ({})", thing);
 
         if (thing != null) {
@@ -569,30 +573,30 @@ public class VerisureSession {
         }
     }
 
-    private synchronized void updateSmartLockStatus(Class<? extends VerisureThing> jsonClass,
+    private synchronized void updateSmartLockStatus(Class<? extends VerisureThingDTO> jsonClass,
             VerisureInstallation installation) {
         BigDecimal installationId = installation.getInstallationId();
         String url = START_GRAPHQL;
         String operation = "DoorLock";
         String query = "query " + operation
                 + "($giid: String!) {\n  installation(giid: $giid) {\n doorlocks {\n device {\n deviceLabel\n area\n __typename\n}\n currentLockState\n eventTime\n secureModeActive\n motorJam\n userString\n method\n __typename\n}\n __typename\n}\n}\n";
-        Variables variables = new Variables();
+        VariablesDTO variables = new VariablesDTO();
         variables.setGiid(installationId.toString());
         String queryQLSmartLock = createOperationJSON(operation, variables, query);
         logger.debug("Quering API for smart lock status");
 
-        VerisureSmartLocks thing = (VerisureSmartLocks) postJSONVerisureAPI(url, queryQLSmartLock, jsonClass);
+        VerisureSmartLocksDTO thing = (VerisureSmartLocksDTO) postJSONVerisureAPI(url, queryQLSmartLock, jsonClass);
         logger.debug("REST Response ({})", thing);
 
         if (thing != null) {
-            List<VerisureSmartLocks.Doorlock> doorLockList = thing.getData().getInstallation().getDoorlocks();
+            List<VerisureSmartLocksDTO.Doorlock> doorLockList = thing.getData().getInstallation().getDoorlocks();
             doorLockList.forEach(doorLock -> {
-                VerisureSmartLocks slThing = new VerisureSmartLocks();
-                VerisureSmartLocks.Installation inst = new VerisureSmartLocks.Installation();
-                List<VerisureSmartLocks.Doorlock> list = new ArrayList<>();
+                VerisureSmartLocksDTO slThing = new VerisureSmartLocksDTO();
+                VerisureSmartLocksDTO.Installation inst = new VerisureSmartLocksDTO.Installation();
+                List<VerisureSmartLocksDTO.Doorlock> list = new ArrayList<>();
                 list.add(doorLock);
                 inst.setDoorlocks(list);
-                VerisureSmartLocks.Data data = new VerisureSmartLocks.Data();
+                VerisureSmartLocksDTO.Data data = new VerisureSmartLocksDTO.Data();
                 data.setInstallation(inst);
                 slThing.setData(data);
                 // Set unique deviceID
@@ -602,8 +606,8 @@ public class VerisureSession {
                     slThing.setLocation(doorLock.getDevice().getArea());
                     slThing.setDeviceId(deviceId);
                     // Fetch more info from old endpoint
-                    VerisureSmartLock smartLockThing = getJSONVerisureAPI(SMARTLOCK_PATH + slThing.getDeviceId(),
-                            VerisureSmartLock.class);
+                    VerisureSmartLockDTO smartLockThing = getJSONVerisureAPI(SMARTLOCK_PATH + slThing.getDeviceId(),
+                            VerisureSmartLockDTO.class);
                     logger.debug("REST Response ({})", smartLockThing);
                     slThing.setSmartLockJSON(smartLockThing);
                     notifyListenersIfChanged(slThing, installation, deviceId);
@@ -614,30 +618,30 @@ public class VerisureSession {
         }
     }
 
-    private synchronized void updateSmartPlugStatus(Class<? extends VerisureThing> jsonClass,
+    private synchronized void updateSmartPlugStatus(Class<? extends VerisureThingDTO> jsonClass,
             VerisureInstallation installation) {
         BigDecimal installationId = installation.getInstallationId();
         String url = START_GRAPHQL;
         String operation = "SmartPlug";
-        Variables variables = new Variables();
+        VariablesDTO variables = new VariablesDTO();
         variables.setGiid(installationId.toString());
         String query = "query " + operation
                 + "($giid: String!) {\n  installation(giid: $giid) {\n smartplugs {\n device {\n deviceLabel\n area\n gui {\n support\n label\n __typename\n}\n __typename\n}\n currentState\n icon\n isHazardous\n __typename\n}\n __typename\n}\n}\n";
         String queryQLSmartPlug = createOperationJSON(operation, variables, query);
         logger.debug("Quering API for smart plug status");
 
-        VerisureSmartPlugs thing = (VerisureSmartPlugs) postJSONVerisureAPI(url, queryQLSmartPlug, jsonClass);
+        VerisureSmartPlugsDTO thing = (VerisureSmartPlugsDTO) postJSONVerisureAPI(url, queryQLSmartPlug, jsonClass);
         logger.debug("REST Response ({})", thing);
 
         if (thing != null) {
-            List<VerisureSmartPlugs.Smartplug> smartPlugList = thing.getData().getInstallation().getSmartplugs();
+            List<VerisureSmartPlugsDTO.Smartplug> smartPlugList = thing.getData().getInstallation().getSmartplugs();
             smartPlugList.forEach(smartPlug -> {
-                VerisureSmartPlugs spThing = new VerisureSmartPlugs();
-                VerisureSmartPlugs.Installation inst = new VerisureSmartPlugs.Installation();
-                List<VerisureSmartPlugs.Smartplug> list = new ArrayList<>();
+                VerisureSmartPlugsDTO spThing = new VerisureSmartPlugsDTO();
+                VerisureSmartPlugsDTO.Installation inst = new VerisureSmartPlugsDTO.Installation();
+                List<VerisureSmartPlugsDTO.Smartplug> list = new ArrayList<>();
                 list.add(smartPlug);
                 inst.setSmartplugs(list);
-                VerisureSmartPlugs.Data data = new VerisureSmartPlugs.Data();
+                VerisureSmartPlugsDTO.Data data = new VerisureSmartPlugsDTO.Data();
                 data.setInstallation(inst);
                 spThing.setData(data);
                 // Set unique deviceID
@@ -653,11 +657,11 @@ public class VerisureSession {
         }
     }
 
-    private synchronized void updateClimateStatus(Class<? extends VerisureThing> jsonClass,
+    private synchronized void updateClimateStatus(Class<? extends VerisureThingDTO> jsonClass,
             VerisureInstallation installation) {
         BigDecimal installationId = installation.getInstallationId();
         String url = START_GRAPHQL;
-        Variables variables = new Variables();
+        VariablesDTO variables = new VariablesDTO();
         variables.setGiid(installationId.toString());
         String operation = "Climate";
         String query = "query " + operation
@@ -666,11 +670,11 @@ public class VerisureSession {
         String queryQLClimates = createOperationJSON(operation, variables, query);
         logger.debug("Quering API for climate status");
 
-        VerisureClimates thing = (VerisureClimates) postJSONVerisureAPI(url, queryQLClimates, jsonClass);
+        VerisureClimatesDTO thing = (VerisureClimatesDTO) postJSONVerisureAPI(url, queryQLClimates, jsonClass);
         logger.debug("REST Response ({})", thing);
 
         if (thing != null) {
-            List<VerisureClimates.Climate> climateList = thing.getData().getInstallation().getClimates();
+            List<VerisureClimatesDTO.Climate> climateList = thing.getData().getInstallation().getClimates();
             climateList.forEach(climate -> {
                 // If thing is Mouse detection device, then skip it, but fetch temperature from it
                 String type = climate.getDevice().getGui().getLabel();
@@ -679,9 +683,9 @@ public class VerisureSession {
                     String deviceId = climate.getDevice().getDeviceLabel();
                     if (deviceId != null) {
                         deviceId = deviceId.replaceAll("[^a-zA-Z0-9]+", "");
-                        VerisureThing mouseThing = verisureThings.get(deviceId);
-                        if (mouseThing != null && mouseThing instanceof VerisureMiceDetection) {
-                            VerisureMiceDetection miceDetectorThing = (VerisureMiceDetection) mouseThing;
+                        VerisureThingDTO mouseThing = verisureThings.get(deviceId);
+                        if (mouseThing != null && mouseThing instanceof VerisureMiceDetectionDTO) {
+                            VerisureMiceDetectionDTO miceDetectorThing = (VerisureMiceDetectionDTO) mouseThing;
                             miceDetectorThing.setTemperatureValue(climate.getTemperatureValue());
                             miceDetectorThing.setTemperatureTime(climate.getTemperatureTimestamp());
                             notifyListeners(miceDetectorThing);
@@ -690,12 +694,12 @@ public class VerisureSession {
                     }
                     return;
                 }
-                VerisureClimates cThing = new VerisureClimates();
-                VerisureClimates.Installation inst = new VerisureClimates.Installation();
-                List<VerisureClimates.Climate> list = new ArrayList<>();
+                VerisureClimatesDTO cThing = new VerisureClimatesDTO();
+                VerisureClimatesDTO.Installation inst = new VerisureClimatesDTO.Installation();
+                List<VerisureClimatesDTO.Climate> list = new ArrayList<>();
                 list.add(climate);
                 inst.setClimates(list);
-                VerisureClimates.Data data = new VerisureClimates.Data();
+                VerisureClimatesDTO.Data data = new VerisureClimatesDTO.Data();
                 data.setInstallation(inst);
                 cThing.setData(data);
                 // Set unique deviceID
@@ -711,12 +715,12 @@ public class VerisureSession {
         }
     }
 
-    private synchronized void updateDoorWindowStatus(Class<? extends VerisureThing> jsonClass,
+    private synchronized void updateDoorWindowStatus(Class<? extends VerisureThingDTO> jsonClass,
             VerisureInstallation installation) {
         BigDecimal installationId = installation.getInstallationId();
         String url = START_GRAPHQL;
         String operation = "DoorWindow";
-        Variables variables = new Variables();
+        VariablesDTO variables = new VariablesDTO();
         variables.setGiid(installationId.toString());
         String query = "query " + operation
                 + "($giid: String!) {\n installation(giid: $giid) {\n doorWindows {\n device {\n deviceLabel\n area\n __typename\n }\n type\n state\n wired\n reportTime\n __typename\n }\n __typename\n}\n}\n";
@@ -724,18 +728,18 @@ public class VerisureSession {
         String queryQLDoorWindow = createOperationJSON(operation, variables, query);
         logger.debug("Quering API for door&window status");
 
-        VerisureDoorWindows thing = (VerisureDoorWindows) postJSONVerisureAPI(url, queryQLDoorWindow, jsonClass);
+        VerisureDoorWindowsDTO thing = (VerisureDoorWindowsDTO) postJSONVerisureAPI(url, queryQLDoorWindow, jsonClass);
         logger.debug("REST Response ({})", thing);
 
         if (thing != null) {
-            List<VerisureDoorWindows.DoorWindow> doorWindowList = thing.getData().getInstallation().getDoorWindows();
+            List<VerisureDoorWindowsDTO.DoorWindow> doorWindowList = thing.getData().getInstallation().getDoorWindows();
             doorWindowList.forEach(doorWindow -> {
-                VerisureDoorWindows dThing = new VerisureDoorWindows();
-                VerisureDoorWindows.Installation inst = new VerisureDoorWindows.Installation();
-                List<VerisureDoorWindows.DoorWindow> list = new ArrayList<>();
+                VerisureDoorWindowsDTO dThing = new VerisureDoorWindowsDTO();
+                VerisureDoorWindowsDTO.Installation inst = new VerisureDoorWindowsDTO.Installation();
+                List<VerisureDoorWindowsDTO.DoorWindow> list = new ArrayList<>();
                 list.add(doorWindow);
                 inst.setDoorWindows(list);
-                VerisureDoorWindows.Data data = new VerisureDoorWindows.Data();
+                VerisureDoorWindowsDTO.Data data = new VerisureDoorWindowsDTO.Data();
                 data.setInstallation(inst);
                 dThing.setData(data);
                 // Set unique deviceID
@@ -751,12 +755,12 @@ public class VerisureSession {
         }
     }
 
-    private synchronized void updateBroadbandConnectionStatus(Class<? extends VerisureThing> jsonClass,
+    private synchronized void updateBroadbandConnectionStatus(Class<? extends VerisureThingDTO> jsonClass,
             VerisureInstallation inst) {
         BigDecimal installationId = inst.getInstallationId();
         String url = START_GRAPHQL;
         String operation = "Broadband";
-        Variables variables = new Variables();
+        VariablesDTO variables = new VariablesDTO();
         variables.setGiid(installationId.toString());
         String query = "query " + operation
                 + "($giid: String!) {\n installation(giid: $giid) {\n broadband {\n testDate\n isBroadbandConnected\n __typename\n }\n __typename\n}\n}\n";
@@ -764,7 +768,7 @@ public class VerisureSession {
         String queryQLBroadbandConnection = createOperationJSON(operation, variables, query);
         logger.debug("Quering API for broadband connection status");
 
-        VerisureThing thing = postJSONVerisureAPI(url, queryQLBroadbandConnection, jsonClass);
+        VerisureThingDTO thing = postJSONVerisureAPI(url, queryQLBroadbandConnection, jsonClass);
         logger.debug("REST Response ({})", thing);
 
         if (thing != null) {
@@ -776,12 +780,12 @@ public class VerisureSession {
         }
     }
 
-    private synchronized void updateUserPresenceStatus(Class<? extends VerisureThing> jsonClass,
+    private synchronized void updateUserPresenceStatus(Class<? extends VerisureThingDTO> jsonClass,
             VerisureInstallation installation) {
         BigDecimal installationId = installation.getInstallationId();
         String url = START_GRAPHQL;
         String operation = "userTrackings";
-        Variables variables = new Variables();
+        VariablesDTO variables = new VariablesDTO();
         variables.setGiid(installationId.toString());
         String query = "query " + operation
                 + "($giid: String!) {\ninstallation(giid: $giid) {\n userTrackings {\n isCallingUser\n webAccount\n status\n xbnContactId\n currentLocationName\n deviceId\n name\n currentLocationTimestamp\n deviceName\n currentLocationId\n __typename\n}\n __typename\n}\n}\n";
@@ -789,21 +793,22 @@ public class VerisureSession {
         String queryQLUserPresence = createOperationJSON(operation, variables, query);
         logger.debug("Quering API for user presence status");
 
-        VerisureUserPresences thing = (VerisureUserPresences) postJSONVerisureAPI(url, queryQLUserPresence, jsonClass);
+        VerisureUserPresencesDTO thing = (VerisureUserPresencesDTO) postJSONVerisureAPI(url, queryQLUserPresence,
+                jsonClass);
         logger.debug("REST Response ({})", thing);
 
         if (thing != null) {
-            List<VerisureUserPresences.UserTracking> userTrackingList = thing.getData().getInstallation()
+            List<VerisureUserPresencesDTO.UserTracking> userTrackingList = thing.getData().getInstallation()
                     .getUserTrackings();
             userTrackingList.forEach(userTracking -> {
                 String localUserTrackingStatus = userTracking.getStatus();
                 if (localUserTrackingStatus != null && localUserTrackingStatus.equals("ACTIVE")) {
-                    VerisureUserPresences upThing = new VerisureUserPresences();
-                    VerisureUserPresences.Installation inst = new VerisureUserPresences.Installation();
-                    List<VerisureUserPresences.UserTracking> list = new ArrayList<>();
+                    VerisureUserPresencesDTO upThing = new VerisureUserPresencesDTO();
+                    VerisureUserPresencesDTO.Installation inst = new VerisureUserPresencesDTO.Installation();
+                    List<VerisureUserPresencesDTO.UserTracking> list = new ArrayList<>();
                     list.add(userTracking);
                     inst.setUserTrackings(list);
-                    VerisureUserPresences.Data data = new VerisureUserPresences.Data();
+                    VerisureUserPresencesDTO.Data data = new VerisureUserPresencesDTO.Data();
                     data.setInstallation(inst);
                     upThing.setData(data);
                     // Set unique deviceID
@@ -816,12 +821,12 @@ public class VerisureSession {
         }
     }
 
-    private synchronized void updateMiceDetectionStatus(Class<? extends VerisureThing> jsonClass,
+    private synchronized void updateMiceDetectionStatus(Class<? extends VerisureThingDTO> jsonClass,
             VerisureInstallation installation) {
         BigDecimal installationId = installation.getInstallationId();
         String url = START_GRAPHQL;
         String operation = "Mouse";
-        Variables variables = new Variables();
+        VariablesDTO variables = new VariablesDTO();
         variables.setGiid(installationId.toString());
         String query = "query " + operation
                 + "($giid: String!) {\n installation(giid: $giid) {\n mice {\n device {\n deviceLabel\n area\n gui {\n support\n __typename\n}\n __typename\n}\n type\n detections {\n count\n gatewayTime\n nodeTime\n duration\n __typename\n}\n __typename\n}\n __typename\n}\n}\n";
@@ -829,18 +834,19 @@ public class VerisureSession {
         String queryQLMiceDetection = createOperationJSON(operation, variables, query);
         logger.debug("Quering API for mice detection status");
 
-        VerisureMiceDetection thing = (VerisureMiceDetection) postJSONVerisureAPI(url, queryQLMiceDetection, jsonClass);
+        VerisureMiceDetectionDTO thing = (VerisureMiceDetectionDTO) postJSONVerisureAPI(url, queryQLMiceDetection,
+                jsonClass);
         logger.debug("REST Response ({})", thing);
 
         if (thing != null) {
-            List<VerisureMiceDetection.Mouse> miceList = thing.getData().getInstallation().getMice();
+            List<VerisureMiceDetectionDTO.Mouse> miceList = thing.getData().getInstallation().getMice();
             miceList.forEach(mouse -> {
-                VerisureMiceDetection miceThing = new VerisureMiceDetection();
-                VerisureMiceDetection.Installation inst = new VerisureMiceDetection.Installation();
-                List<VerisureMiceDetection.Mouse> list = new ArrayList<>();
+                VerisureMiceDetectionDTO miceThing = new VerisureMiceDetectionDTO();
+                VerisureMiceDetectionDTO.Installation inst = new VerisureMiceDetectionDTO.Installation();
+                List<VerisureMiceDetectionDTO.Mouse> list = new ArrayList<>();
                 list.add(mouse);
                 inst.setMice(list);
-                VerisureMiceDetection.Data data = new VerisureMiceDetection.Data();
+                VerisureMiceDetectionDTO.Data data = new VerisureMiceDetectionDTO.Data();
                 data.setInstallation(inst);
                 miceThing.setData(data);
                 // Set unique deviceID
@@ -857,7 +863,7 @@ public class VerisureSession {
         }
     }
 
-    private synchronized void updateEventLogStatus(Class<? extends VerisureThing> jsonClass,
+    private synchronized void updateEventLogStatus(Class<? extends VerisureThingDTO> jsonClass,
             VerisureInstallation installation) {
         BigDecimal installationId = installation.getInstallationId();
         String url = START_GRAPHQL;
@@ -866,7 +872,7 @@ public class VerisureSession {
         int numberOfEvents = 15;
         List<String> eventCategories = new ArrayList<>(Arrays.asList("INTRUSION", "FIRE", "SOS", "WATER", "ANIMAL",
                 "TECHNICAL", "WARNING", "ARM", "DISARM", "LOCK", "UNLOCK", "PICTURE", "CLIMATE", "CAMERA_SETTINGS"));
-        Variables variables = new Variables();
+        VariablesDTO variables = new VariablesDTO();
         variables.setGiid(installationId.toString());
         variables.setHideNotifications(true);
         variables.setOffset(offset);
@@ -878,13 +884,44 @@ public class VerisureSession {
         String queryQLEventLog = createOperationJSON(operation, variables, query);
         logger.debug("Quering API for event log status");
 
-        VerisureEventLog thing = (VerisureEventLog) postJSONVerisureAPI(url, queryQLEventLog, jsonClass);
+        VerisureEventLogDTO thing = (VerisureEventLogDTO) postJSONVerisureAPI(url, queryQLEventLog, jsonClass);
         logger.debug("REST Response ({})", thing);
 
         if (thing != null) {
             // Set unique deviceID
             String deviceId = "el" + installationId.toString();
             notifyListenersIfChanged(thing, installation, deviceId);
+        } else {
+            logger.debug("Failed to update EventLogStatus, thing is null!");
+        }
+    }
+
+    private synchronized void updateGatewayStatus(Class<? extends VerisureThingDTO> jsonClass,
+            VerisureInstallation installation) {
+        BigDecimal installationId = installation.getInstallationId();
+        String url = START_GRAPHQL;
+        String operation = "communicationState";
+        VariablesDTO variables = new VariablesDTO();
+        variables.setGiid(installationId.toString());
+
+        String query = "query " + operation
+                + "($giid: String!) {\n installation(giid: $giid) {\n communicationState {\n hardwareCarrierType\n result\n mediaType\n device {\n deviceLabel\n area\n gui {\n label\n __typename\n }\n __typename\n }\n testDate\n __typename\n }\n __typename\n }\n}";
+
+        String queryQLEventLog = createOperationJSON(operation, variables, query);
+        logger.debug("Quering API for gateway status");
+
+        VerisureGatewayDTO thing = (VerisureGatewayDTO) postJSONVerisureAPI(url, queryQLEventLog, jsonClass);
+        logger.debug("REST Response ({})", thing);
+
+        if (thing != null) {
+            // Set unique deviceID
+            List<CommunicationState> communicationStateList = thing.getData().getInstallation().getCommunicationState();
+            if (!communicationStateList.isEmpty()) {
+                String deviceId = communicationStateList.get(0).getDevice().getDeviceLabel();
+                if (deviceId != null) {
+                    notifyListenersIfChanged(thing, installation, deviceId);
+                }
+            }
         } else {
             logger.debug("Failed to update EventLogStatus, thing is null!");
         }
@@ -923,12 +960,12 @@ public class VerisureSession {
         }
     }
 
-    private static class Operation {
+    private static class OperationDTO {
 
         @SuppressWarnings("unused")
         private @Nullable String operationName;
         @SuppressWarnings("unused")
-        private Variables variables = new Variables();
+        private VariablesDTO variables = new VariablesDTO();
         @SuppressWarnings("unused")
         private @Nullable String query;
 
@@ -936,7 +973,7 @@ public class VerisureSession {
             this.operationName = operationName;
         }
 
-        public void setVariables(Variables variables) {
+        public void setVariables(VariablesDTO variables) {
             this.variables = variables;
         }
 
@@ -945,7 +982,7 @@ public class VerisureSession {
         }
     }
 
-    public static class Variables {
+    public static class VariablesDTO {
 
         @SuppressWarnings("unused")
         private @Nullable Boolean hideNotifications = null;
@@ -978,5 +1015,4 @@ public class VerisureSession {
             this.giid = giid;
         }
     }
-
 }

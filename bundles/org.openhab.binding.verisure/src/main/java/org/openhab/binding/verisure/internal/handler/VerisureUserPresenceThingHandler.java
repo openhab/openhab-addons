@@ -15,6 +15,7 @@ package org.openhab.binding.verisure.internal.handler;
 import static org.openhab.binding.verisure.internal.VerisureBindingConstants.*;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -25,8 +26,8 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.verisure.internal.model.VerisureUserPresences;
-import org.openhab.binding.verisure.internal.model.VerisureUserPresences.UserTracking;
+import org.openhab.binding.verisure.internal.dto.VerisureUserPresencesDTO;
+import org.openhab.binding.verisure.internal.dto.VerisureUserPresencesDTO.UserTracking;
 
 /**
  * Handler for the User Presence Device thing type that Verisure provides.
@@ -35,7 +36,7 @@ import org.openhab.binding.verisure.internal.model.VerisureUserPresences.UserTra
  *
  */
 @NonNullByDefault
-public class VerisureUserPresenceThingHandler extends VerisureThingHandler<VerisureUserPresences> {
+public class VerisureUserPresenceThingHandler extends VerisureThingHandler<VerisureUserPresencesDTO> {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_USERPRESENCE);
 
@@ -44,27 +45,32 @@ public class VerisureUserPresenceThingHandler extends VerisureThingHandler<Veris
     }
 
     @Override
-    public Class<VerisureUserPresences> getVerisureThingClass() {
-        return VerisureUserPresences.class;
+    public Class<VerisureUserPresencesDTO> getVerisureThingClass() {
+        return VerisureUserPresencesDTO.class;
     }
 
     @Override
-    public synchronized void update(VerisureUserPresences thing) {
+    public synchronized void update(VerisureUserPresencesDTO thing) {
         logger.debug("update on thing: {}", thing);
         updateStatus(ThingStatus.ONLINE);
         updateUserPresenceState(thing);
     }
 
-    private void updateUserPresenceState(VerisureUserPresences userPresenceJSON) {
-        UserTracking userTracking = userPresenceJSON.getData().getInstallation().getUserTrackings().get(0);
-        getThing().getChannels().stream().map(Channel::getUID)
-                .filter(channelUID -> isLinked(channelUID) && !channelUID.getId().equals("timestamp"))
-                .forEach(channelUID -> {
-                    State state = getValue(channelUID.getId(), userTracking);
-                    updateState(channelUID, state);
-                });
-        updateTimeStamp(userTracking.getCurrentLocationTimestamp());
-        super.update(userPresenceJSON);
+    private void updateUserPresenceState(VerisureUserPresencesDTO userPresenceJSON) {
+        List<UserTracking> userTrackingList = userPresenceJSON.getData().getInstallation().getUserTrackings();
+        if (!userTrackingList.isEmpty()) {
+            UserTracking userTracking = userTrackingList.get(0);
+            getThing().getChannels().stream().map(Channel::getUID)
+                    .filter(channelUID -> isLinked(channelUID) && !channelUID.getId().equals("timestamp"))
+                    .forEach(channelUID -> {
+                        State state = getValue(channelUID.getId(), userTracking);
+                        updateState(channelUID, state);
+                    });
+            updateTimeStamp(userTracking.getCurrentLocationTimestamp());
+            super.update(userPresenceJSON);
+        } else {
+            logger.debug("UserTrackingList is empty!");
+        }
     }
 
     public State getValue(String channelId, UserTracking userTracking) {

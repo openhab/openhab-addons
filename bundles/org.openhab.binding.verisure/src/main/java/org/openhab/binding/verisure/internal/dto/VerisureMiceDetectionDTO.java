@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.verisure.internal.model;
+package org.openhab.binding.verisure.internal.dto;
 
 import static org.openhab.binding.verisure.internal.VerisureBindingConstants.THING_TYPE_MICE_DETECTION;
 
@@ -33,7 +33,7 @@ import com.google.gson.annotations.SerializedName;
  *
  */
 @NonNullByDefault
-public class VerisureMiceDetection extends VerisureBaseThing {
+public class VerisureMiceDetectionDTO extends VerisureBaseThingDTO {
 
     public static final int UNDEFINED = -1;
     private Data data = new Data();
@@ -85,10 +85,10 @@ public class VerisureMiceDetection extends VerisureBaseThing {
         if (other == this) {
             return true;
         }
-        if (!(other instanceof VerisureMiceDetection)) {
+        if (!(other instanceof VerisureMiceDetectionDTO)) {
             return false;
         }
-        VerisureMiceDetection rhs = ((VerisureMiceDetection) other);
+        VerisureMiceDetectionDTO rhs = ((VerisureMiceDetectionDTO) other);
         return new EqualsBuilder().append(data, rhs.data).append(temperatureValue, rhs.temperatureValue)
                 .append(temperatureTimestamp, rhs.temperatureTimestamp).isEquals();
     }

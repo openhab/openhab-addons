@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.verisure.internal.model;
+package org.openhab.binding.verisure.internal.dto;
 
 import static org.openhab.binding.verisure.internal.VerisureBindingConstants.THING_TYPE_EVENT_LOG;
 
@@ -33,7 +33,7 @@ import com.google.gson.annotations.SerializedName;
  *
  */
 @NonNullByDefault
-public class VerisureEventLog extends VerisureBaseThing {
+public class VerisureEventLogDTO extends VerisureBaseThingDTO {
 
     private Data data = new Data();
 
@@ -65,10 +65,10 @@ public class VerisureEventLog extends VerisureBaseThing {
         if (other == this) {
             return true;
         }
-        if (!(other instanceof VerisureEventLog)) {
+        if (!(other instanceof VerisureEventLogDTO)) {
             return false;
         }
-        VerisureEventLog rhs = ((VerisureEventLog) other);
+        VerisureEventLogDTO rhs = ((VerisureEventLogDTO) other);
         return new EqualsBuilder().append(data, rhs.data).isEquals();
     }
 

@@ -26,6 +26,7 @@ This binding supports the following thing types:
 - Broadband Connection Status
 - Mice Detection Status (incl. climate)
 - Event Log
+- Gateway
 
 
 ## Binding Configuration
@@ -126,7 +127,7 @@ To enable DEBUG logging for the binding, login to Karaf console and enter:
 #### Configuration Options
 
 *   `deviceId` - Device Id
-    *   Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages)
+    *   Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages or on the sensor itself)
 
 #### Channels
 
@@ -145,7 +146,7 @@ To enable DEBUG logging for the binding, login to Karaf console and enter:
 #### Configuration Options
 
 *   `deviceId` - Device Id
-    *   Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App)
+    *   Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or on the sensor itself)
 
 #### Channels
 
@@ -166,7 +167,7 @@ To enable DEBUG logging for the binding, login to Karaf console and enter:
 #### Configuration Options
 
 *   `deviceId` - Device Id
-    *   Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages)
+    *   Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages or on the sensor itself)
 
 #### Channels
 
@@ -185,7 +186,7 @@ To enable DEBUG logging for the binding, login to Karaf console and enter:
 #### Configuration Options
 
 *   `deviceId` - Device Id
-    *   Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages)
+    *   Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages or on the sensor itself)
 
 #### Channels
 
@@ -204,7 +205,7 @@ To enable DEBUG logging for the binding, login to Karaf console and enter:
 #### Configuration Options
 
 *   `deviceId` - Device Id
-    *   Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages)
+    *   Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages or on the sensor itself)
 
 #### Channels
 
@@ -223,7 +224,7 @@ To enable DEBUG logging for the binding, login to Karaf console and enter:
 #### Configuration Options
 
 *   `deviceId` - Device Id
-    *   Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages)
+    *   Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages or on the sensor itself)
 
 #### Channels
 
@@ -281,7 +282,7 @@ To enable DEBUG logging for the binding, login to Karaf console and enter:
 #### Configuration Options
 
 *   `deviceId` - Device Id
-    *  Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages)
+    *  Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages or on the sensor itself)
 
 #### Channels
 
@@ -323,6 +324,31 @@ To enable DEBUG logging for the binding, login to Karaf console and enter:
 | lastEventUserName   | String    | This channel reports user name for last event in event log.             |
 | eventLog            | String    | This channel reports the last 15 events from event log in a JSON array. |
 
+### Verisure Gateway
+
+#### Configuration Options
+
+*    `deviceId` - Device Id
+    *  Sensor Id. Example 3B4C35FT (Note: Verisure ID, found in the Verisure App or My Pages or on the Gateway itself)
+
+#### Channels
+
+([gateway]) supports the following channels:
+
+| Channel Type ID     | Item Type | Description                                                          | 
+|---------------------|-----------|----------------------------------------------------------------------|                                                                                                                                          
+| model               | String    | This channel reports gateway model.                                  |
+| location            | String    | This channel reports gateway location.                               |
+| statusGSMOverUDP    | String    | This channel reports communication status for GSM over UDP.          |
+| testTimeGSMOverUDP  | DateTime  | This channel reports last communication test time for GSM over UDP.  |
+| statusGSMOverSMS    | String    | This channel reports communication status for GSM over SMS.          |
+| testTimeGSMOverSMS  | DateTime  | This channel reports last communication test time for GSM over SMS.  |
+| statusGPRSOverUDP   | String    | This channel reports communication status for GPRS over UDP.         |
+| testTimeGPRSOverUDP | DateTime  | This channel reports last communication test time for GPRS over UDP. |
+| statusETHOverUDP    | String    | This channel reports communication status for ETH over UDP.          |
+| testTimeETHOverUDP  | DateTime  | This channel reports last communication test time for ETH over UDP.  |
+
+
 
 ## Example
 
@@ -338,12 +364,17 @@ Bridge verisure:bridge:myverisure "Verisure Bridge" [username="x@y.com", passwor
      Thing waterDetector JannesWaterDetector "Verisure Water Detector"         [ deviceId="3WETQRH5" ] 
      Thing userPresence  JannesUserPresence  "Verisure User Presence"          [ deviceId="uptestgmailcom123456789" ]
      Thing eventLog      JannesEventLog      "Verisure Event Log"              [ deviceId="el123456789" ]
+     Thing gateway       JannesGateway       "Verisure Gateway"                [ deviceId="3AFG5673" ]
 }
 ````
 
 ### Items-file
 
 ````
+Group gVerisureMiceDetection
+Group gVerisureEventLog
+Group gVerisureGateway
+
 // SmartLock and Alarm
 Switch   SmartLock                     "Verisure SmartLock"  <lock>   [ "Switchable" ]  {channel="verisure:smartLock:myverisure:JannesSmartLock:smartLockStatus"}
 Switch   AutoLock                      "AutoLock"            <lock>   [ "Switchable" ]  {channel="verisure:smartLock:myverisure:JannesSmartLock:autoRelock"}
@@ -366,13 +397,31 @@ String DoorWindowStatus                "Door Window Status"      {channel="veris
 String UserName                        "User Name"               {channel="verisure:userPresence:myverisure:JannesUserPresence:userName"}
 String UserLocationEmail               "User Location Email"     {channel="verisure:userPresence:myverisure:JannesUserPresence:webAccount"}
 String UserLocationName                "User Location Name"      {channel="verisure:userPresence:myverisure:JannesUserPresence:userLocationStatus"}
-
-// EventLog
-String EventLog                        "Event Log JSON array"    {channel="verisure:eventLog:myverisure:JannesEventLog:eventLog"}
-
 String UserNameGlava                   "User Name Glava"               {channel="verisure:userPresence:myverisure:userpresencetestgmailcom123456789:userName"}
 String UserLocationEmailGlava          "User Location Email Glava"     {channel="verisure:userPresence:myverisure:userpresencetestgmailcom123456789:webAccount"}
 String UserLocationNameGlava           "User Location Name Glava"      {channel="verisure:userPresence:myverisure:userpresencetestgmailcom1123456789:userLocationStatus"}
+
+// EventLog
+String LastEventLocation                "Last Event Location"     (gVerisureEventLog) {channel="verisure:eventLog:myverisure:JannesEventLog:lastEventLocation"}
+String LastEventDeviceId                "Last Event Device ID"    (gVerisureEventLog) {channel="verisure:eventLog:myverisure:JannesEventLog:lastEventDeviceId"}
+String LastEventDeviceType              "Last Event Device Type"  (gVerisureEventLog) {channel="verisure:eventLog:myverisure:JannesEventLog:lastEventDeviceType"}
+String LastEventType                    "Last Event Type"         (gVerisureEventLog) {channel="verisure:eventLog:myverisure:JannesEventLog:lastEventType"}
+String LastEventCategory                "Last Event Category"     (gVerisureEventLog) {channel="verisure:eventLog:myverisure:JannesEventLog:lastEventCategory"}
+DateTime LastEventTime                  "Last Event Time [%1$tY-%1$tm-%1$td %1$tR]"    (gVerisureEventLog) {channel="verisure:eventLog:myverisure:JannesEventLog:lastEventTime"}
+String LastEventUserName                "Last Event User Name"    (gVerisureEventLog) {channel="verisure:eventLog:myverisure:JannesEventLog:lastEventUserName"}
+String EventLog                         "Event Log"               {channel="verisure:eventLog:myverisure:JannesEventLog:eventLog"}
+
+// Gateway
+String VerisureGatewayModel              "Gateway Model"                   (gVerisureGateway) {channel="verisure:gateway:myverisure:JannesGateway:model"}
+String VerisureGatewayLocation           "Gateway Location"                (gVerisureGateway) {channel="verisure:gateway:myverisure:JannesGateway:location"}
+String VerisureGWStatusGSMOverUDP        "Gateway Status GSMOverUDP"       (gVerisureGateway) {channel="verisure:gateway:myverisure:JannesGateway:statusGSMOverUDP"}
+DateTime VerisureGWTestTimeGSMOverUDP    "Gateway Test Time GSMOverUDP"    (gVerisureGateway) {channel="verisure:gateway:myverisure:JannesGateway:testTimeGSMOverUDP"}
+String VerisureGWStatusGSMOverSMS        "Gateway Status GSMOverSMS"       (gVerisureGateway)  {channel="verisure:gateway:myverisure:JannesGateway:statusGSMOverSMS"} 
+DateTime VerisureGWTestTimeGSMOverSMS    "Gateway Test Time GSMOverSMS"    (gVerisureGateway) {channel="verisure:gateway:myverisure:JannesGateway:testTimeGSMOverSMS"}
+String VerisureGWStatusGPRSOverUDP       "Gateway Status GPRSOverUDP"      (gVerisureGateway) {channel="verisure:gateway:myverisure:JannesGateway:statusGPRSOverUDP"}
+DateTime VerisureGWTestTimeGPRSOverUDP   "Gateway Test Time GPRSOverUDP"   (gVerisureGateway) {channel="verisure:gateway:myverisure:JannesGateway:testTimeGPRSOverUDP"}
+String VerisureGWStatusETHOverUDP        "Gateway Status ETHOverUDP"       (gVerisureGateway) {channel="verisure:gateway:myverisure:JannesGateway:statusETHOverUDP"}
+DateTime VerisureGWTestTimeETHOverUDP    "Gateway Test Time ETHOverUDP"    (gVerisureGateway) {channel="verisure:gateway:myverisure:JannesGateway:testTimeETHOverUDP"}
 
 // Broadband Connection
 String CurrentBBStatus                 "Broadband Connection Status"       {channel="verisure:broadbandConnection:myverisure:bc123456789:connected"}
@@ -435,7 +484,7 @@ String MouseDetectionLocation           "Mouse Detection Location"      (gVerisu
 		}
 	}
 
-	Frame label="Broadband Connection" {
+     Frame label="Broadband Connection" {
 		Text label="Broadband Connection" icon="attic" {
 			Frame label="Broadband Connection Champinjonvägen" {
 				Text item=CurrentBBStatus label="Broadband Connection Status [%s]"
@@ -443,8 +492,16 @@ String MouseDetectionLocation           "Mouse Detection Location"      (gVerisu
 		}
 	}
 	
-	Frame label="Mice Detection" {
+    Frame label="Mice Detection" {
             Group item=gVerisureMiceDetection label="Verisure Mice Detection"
+    }
+    
+    Frame label="Event Log" {
+            Group item=gVerisureEventLog label="Verisure Event Log"
+    }
+    
+    Frame label="Gateway" {
+            Group item=gVerisureGateway label="Verisure Gateway"
     }
     
 ````

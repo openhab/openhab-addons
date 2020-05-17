@@ -23,7 +23,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.openhab.binding.verisure.internal.model.VerisureBroadbandConnections;
+import org.openhab.binding.verisure.internal.dto.VerisureBroadbandConnectionsDTO;
 
 /**
  * Handler for the Broadband COnnection thing type that Verisure provides.
@@ -32,7 +32,7 @@ import org.openhab.binding.verisure.internal.model.VerisureBroadbandConnections;
  *
  */
 @NonNullByDefault
-public class VerisureBroadbandConnectionThingHandler extends VerisureThingHandler<VerisureBroadbandConnections> {
+public class VerisureBroadbandConnectionThingHandler extends VerisureThingHandler<VerisureBroadbandConnectionsDTO> {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections
             .singleton(THING_TYPE_BROADBAND_CONNECTION);
@@ -42,23 +42,26 @@ public class VerisureBroadbandConnectionThingHandler extends VerisureThingHandle
     }
 
     @Override
-    public Class<VerisureBroadbandConnections> getVerisureThingClass() {
-        return VerisureBroadbandConnections.class;
+    public Class<VerisureBroadbandConnectionsDTO> getVerisureThingClass() {
+        return VerisureBroadbandConnectionsDTO.class;
     }
 
     @Override
-    public synchronized void update(VerisureBroadbandConnections thing) {
+    public synchronized void update(VerisureBroadbandConnectionsDTO thing) {
         logger.debug("update on thing: {}", thing);
         updateStatus(ThingStatus.ONLINE);
         updateBroadbandConnection(thing);
     }
 
-    private void updateBroadbandConnection(VerisureBroadbandConnections vbcJSON) {
-        updateTimeStamp(vbcJSON.getData().getInstallation().getBroadband().getTestDate());
-        ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_CONNECTED);
-        boolean broadbandConnected = vbcJSON.getData().getInstallation().getBroadband().isBroadbandConnected();
-        updateState(cuid, OnOffType.from(broadbandConnected));
-        super.update(vbcJSON);
+    private void updateBroadbandConnection(VerisureBroadbandConnectionsDTO vbcJSON) {
+        String testDate = vbcJSON.getData().getInstallation().getBroadband().getTestDate();
+        if (testDate != null) {
+            updateTimeStamp(testDate);
+            ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_CONNECTED);
+            boolean broadbandConnected = vbcJSON.getData().getInstallation().getBroadband().isBroadbandConnected();
+            updateState(cuid, OnOffType.from(broadbandConnected));
+            super.update(vbcJSON);
+        }
     }
 
 }

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.verisure.internal.model;
+package org.openhab.binding.verisure.internal.dto;
 
 import static org.openhab.binding.verisure.internal.VerisureBindingConstants.THING_TYPE_ALARM;
 
@@ -33,7 +33,7 @@ import com.google.gson.annotations.SerializedName;
  *
  */
 @NonNullByDefault
-public class VerisureAlarms extends VerisureBaseThing {
+public class VerisureAlarmsDTO extends VerisureBaseThingDTO {
 
     private Data data = new Data();
 
@@ -65,10 +65,10 @@ public class VerisureAlarms extends VerisureBaseThing {
         if (other == this) {
             return true;
         }
-        if (!(other instanceof VerisureAlarms)) {
+        if (!(other instanceof VerisureAlarmsDTO)) {
             return false;
         }
-        VerisureAlarms rhs = ((VerisureAlarms) other);
+        VerisureAlarmsDTO rhs = ((VerisureAlarmsDTO) other);
         return new EqualsBuilder().append(data, rhs.data).isEquals();
     }
 

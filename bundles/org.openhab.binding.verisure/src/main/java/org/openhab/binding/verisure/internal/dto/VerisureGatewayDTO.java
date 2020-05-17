@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.verisure.internal.model;
+package org.openhab.binding.verisure.internal.dto;
 
-import static org.openhab.binding.verisure.internal.VerisureBindingConstants.THING_TYPE_DOORWINDOW;
+import static org.openhab.binding.verisure.internal.VerisureBindingConstants.THING_TYPE_GATEWAY;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,16 +24,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
- * The door and window devices of the Verisure System.
+ * The gateway in the Verisure System.
  *
  * @author Jan Gustafsson - Initial contribution
  *
  */
 @NonNullByDefault
-public class VerisureDoorWindows extends VerisureBaseThing {
+public class VerisureGatewayDTO extends VerisureBaseThingDTO {
 
     private Data data = new Data();
 
@@ -41,13 +39,9 @@ public class VerisureDoorWindows extends VerisureBaseThing {
         return data;
     }
 
-    public void setData(Data data) {
-        this.data = data;
-    }
-
     @Override
     public ThingTypeUID getThingTypeUID() {
-        return THING_TYPE_DOORWINDOW;
+        return THING_TYPE_GATEWAY;
     }
 
     @Override
@@ -65,23 +59,19 @@ public class VerisureDoorWindows extends VerisureBaseThing {
         if (other == this) {
             return true;
         }
-        if (!(other instanceof VerisureDoorWindows)) {
+        if (!(other instanceof VerisureGatewayDTO)) {
             return false;
         }
-        VerisureDoorWindows rhs = ((VerisureDoorWindows) other);
+        VerisureGatewayDTO rhs = ((VerisureGatewayDTO) other);
         return new EqualsBuilder().append(data, rhs.data).isEquals();
     }
 
-    public static class Data {
+    public class Data {
 
         private Installation installation = new Installation();
 
         public Installation getInstallation() {
             return installation;
-        }
-
-        public void setInstallation(Installation installation) {
-            this.installation = installation;
         }
 
         @Override
@@ -107,18 +97,13 @@ public class VerisureDoorWindows extends VerisureBaseThing {
         }
     }
 
-    public static class Installation {
+    public class Installation {
 
-        private List<DoorWindow> doorWindows = new ArrayList<>();
-        @SerializedName("__typename")
+        private List<CommunicationState> communicationState = new ArrayList<>();
         private @Nullable String typename;
 
-        public List<DoorWindow> getDoorWindows() {
-            return doorWindows;
-        }
-
-        public void setDoorWindows(List<DoorWindow> doorWindows) {
-            this.doorWindows = doorWindows;
+        public List<CommunicationState> getCommunicationState() {
+            return communicationState;
         }
 
         public @Nullable String getTypename() {
@@ -127,12 +112,13 @@ public class VerisureDoorWindows extends VerisureBaseThing {
 
         @Override
         public String toString() {
-            return new ToStringBuilder(this).append("doorWindows", doorWindows).append("typename", typename).toString();
+            return new ToStringBuilder(this).append("communicationState", communicationState)
+                    .append("typename", typename).toString();
         }
 
         @Override
         public int hashCode() {
-            return new HashCodeBuilder().append(typename).append(doorWindows).toHashCode();
+            return new HashCodeBuilder().append(communicationState).append(typename).toHashCode();
         }
 
         @Override
@@ -144,38 +130,38 @@ public class VerisureDoorWindows extends VerisureBaseThing {
                 return false;
             }
             Installation rhs = ((Installation) other);
-            return new EqualsBuilder().append(typename, rhs.typename).append(doorWindows, rhs.doorWindows).isEquals();
+            return new EqualsBuilder().append(communicationState, rhs.communicationState).append(typename, rhs.typename)
+                    .isEquals();
         }
     }
 
-    public static class DoorWindow {
+    public class CommunicationState {
 
+        private @Nullable String hardwareCarrierType;
+        private @Nullable String result;
+        private @Nullable String mediaType;
         private Device device = new Device();
-        private @Nullable String type;
-        private @Nullable String state;
-        private boolean wired;
-        private @Nullable String reportTime;
-        @SerializedName("__typename")
+        private @Nullable String testDate;
         private @Nullable String typename;
+
+        public @Nullable String getHardwareCarrierType() {
+            return hardwareCarrierType;
+        }
+
+        public @Nullable String getResult() {
+            return result;
+        }
+
+        public @Nullable String getMediaType() {
+            return mediaType;
+        }
 
         public Device getDevice() {
             return device;
         }
 
-        public @Nullable String getType() {
-            return type;
-        }
-
-        public @Nullable String getState() {
-            return state;
-        }
-
-        public boolean getWired() {
-            return wired;
-        }
-
-        public @Nullable String getReportTime() {
-            return reportTime;
+        public @Nullable String getTestDate() {
+            return testDate;
         }
 
         public @Nullable String getTypename() {
@@ -184,14 +170,15 @@ public class VerisureDoorWindows extends VerisureBaseThing {
 
         @Override
         public String toString() {
-            return new ToStringBuilder(this).append("device", device).append("type", type).append("state", state)
-                    .append("wired", wired).append("reportTime", reportTime).append("typename", typename).toString();
+            return new ToStringBuilder(this).append("hardwareCarrierType", hardwareCarrierType).append("result", result)
+                    .append("mediaType", mediaType).append("device", device).append("testDate", testDate)
+                    .append("typename", typename).toString();
         }
 
         @Override
         public int hashCode() {
-            return new HashCodeBuilder().append(reportTime).append(typename).append(state).append(device).append(wired)
-                    .append(type).toHashCode();
+            return new HashCodeBuilder().append(result).append(hardwareCarrierType).append(mediaType).append(device)
+                    .append(testDate).append(typename).toHashCode();
         }
 
         @Override
@@ -199,13 +186,13 @@ public class VerisureDoorWindows extends VerisureBaseThing {
             if (other == this) {
                 return true;
             }
-            if (!(other instanceof DoorWindow)) {
+            if (!(other instanceof CommunicationState)) {
                 return false;
             }
-            DoorWindow rhs = ((DoorWindow) other);
-            return new EqualsBuilder().append(reportTime, rhs.reportTime).append(typename, rhs.typename)
-                    .append(state, rhs.state).append(device, rhs.device).append(wired, rhs.wired).append(type, rhs.type)
-                    .isEquals();
+            CommunicationState rhs = ((CommunicationState) other);
+            return new EqualsBuilder().append(result, rhs.result).append(hardwareCarrierType, rhs.hardwareCarrierType)
+                    .append(mediaType, rhs.mediaType).append(device, rhs.device).append(testDate, rhs.testDate)
+                    .append(typename, rhs.typename).isEquals();
         }
     }
 }

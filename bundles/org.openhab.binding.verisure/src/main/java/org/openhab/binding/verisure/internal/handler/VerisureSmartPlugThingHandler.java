@@ -17,6 +17,7 @@ import static org.openhab.binding.verisure.internal.VerisureBindingConstants.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -34,8 +35,8 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.verisure.internal.VerisureSession;
-import org.openhab.binding.verisure.internal.model.VerisureSmartPlugs;
-import org.openhab.binding.verisure.internal.model.VerisureSmartPlugs.Smartplug;
+import org.openhab.binding.verisure.internal.dto.VerisureSmartPlugsDTO;
+import org.openhab.binding.verisure.internal.dto.VerisureSmartPlugsDTO.Smartplug;
 
 /**
  * Handler for the Smart Plug Device thing type that Verisure provides.
@@ -44,7 +45,7 @@ import org.openhab.binding.verisure.internal.model.VerisureSmartPlugs.Smartplug;
  *
  */
 @NonNullByDefault
-public class VerisureSmartPlugThingHandler extends VerisureThingHandler<VerisureSmartPlugs> {
+public class VerisureSmartPlugThingHandler extends VerisureThingHandler<VerisureSmartPlugsDTO> {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_SMARTPLUG);
 
@@ -71,7 +72,7 @@ public class VerisureSmartPlugThingHandler extends VerisureThingHandler<Verisure
         String deviceId = config.getDeviceId();
         VerisureSession session = getSession();
         if (session != null) {
-            VerisureSmartPlugs smartPlug = session.getVerisureThing(deviceId, getVerisureThingClass());
+            VerisureSmartPlugsDTO smartPlug = session.getVerisureThing(deviceId, getVerisureThingClass());
             if (smartPlug != null) {
                 BigDecimal installationId = smartPlug.getSiteId();
                 String url = START_GRAPHQL;
@@ -88,9 +89,9 @@ public class VerisureSmartPlugThingHandler extends VerisureThingHandler<Verisure
                     return;
                 }
                 String query = "mutation UpdateState($giid: String!, $deviceLabel: String!, $state: Boolean!) {\n SmartPlugSetState(giid: $giid, input: [{deviceLabel: $deviceLabel, state: $state}])\n}\n";
-                ArrayList<SmartPlug> list = new ArrayList<>();
-                SmartPlug smartPlugJSON = new SmartPlug();
-                Variables variables = new Variables();
+                ArrayList<SmartPlugDTO> list = new ArrayList<>();
+                SmartPlugDTO smartPlugJSON = new SmartPlugDTO();
+                VariablesDTO variables = new VariablesDTO();
 
                 variables.setDeviceLabel(deviceId);
                 variables.setGiid(installationId.toString());
@@ -114,28 +115,33 @@ public class VerisureSmartPlugThingHandler extends VerisureThingHandler<Verisure
     }
 
     @Override
-    public Class<VerisureSmartPlugs> getVerisureThingClass() {
-        return VerisureSmartPlugs.class;
+    public Class<VerisureSmartPlugsDTO> getVerisureThingClass() {
+        return VerisureSmartPlugsDTO.class;
     }
 
     @Override
-    public synchronized void update(VerisureSmartPlugs thing) {
+    public synchronized void update(VerisureSmartPlugsDTO thing) {
         logger.debug("update on thing: {}", thing);
         updateStatus(ThingStatus.ONLINE);
         updateSmartPlugState(thing);
     }
 
-    private void updateSmartPlugState(VerisureSmartPlugs smartPlugJSON) {
-        Smartplug smartplug = smartPlugJSON.getData().getInstallation().getSmartplugs().get(0);
-        String smartPlugStatus = smartplug.getCurrentState();
-        if (smartPlugStatus != null) {
-            getThing().getChannels().stream().map(Channel::getUID)
-                    .filter(channelUID -> isLinked(channelUID) && !channelUID.getId().equals("timestamp"))
-                    .forEach(channelUID -> {
-                        State state = getValue(channelUID.getId(), smartplug, smartPlugStatus);
-                        updateState(channelUID, state);
-                    });
-            super.update(smartPlugJSON);
+    private void updateSmartPlugState(VerisureSmartPlugsDTO smartPlugJSON) {
+        List<Smartplug> smartPlugList = smartPlugJSON.getData().getInstallation().getSmartplugs();
+        if (!smartPlugList.isEmpty()) {
+            Smartplug smartplug = smartPlugList.get(0);
+            String smartPlugStatus = smartplug.getCurrentState();
+            if (smartPlugStatus != null) {
+                getThing().getChannels().stream().map(Channel::getUID)
+                        .filter(channelUID -> isLinked(channelUID) && !channelUID.getId().equals("timestamp"))
+                        .forEach(channelUID -> {
+                            State state = getValue(channelUID.getId(), smartplug, smartPlugStatus);
+                            updateState(channelUID, state);
+                        });
+                super.update(smartPlugJSON);
+            }
+        } else {
+            logger.debug("SmartPlugList is empty!");
         }
     }
 
@@ -161,12 +167,12 @@ public class VerisureSmartPlugThingHandler extends VerisureThingHandler<Verisure
         return UnDefType.UNDEF;
     }
 
-    private static class SmartPlug {
+    private static class SmartPlugDTO {
 
         @SuppressWarnings("unused")
         private @Nullable String operationName;
         @SuppressWarnings("unused")
-        private Variables variables = new Variables();
+        private VariablesDTO variables = new VariablesDTO();
         @SuppressWarnings("unused")
         private @Nullable String query;
 
@@ -174,7 +180,7 @@ public class VerisureSmartPlugThingHandler extends VerisureThingHandler<Verisure
             this.operationName = operationName;
         }
 
-        public void setVariables(Variables variables) {
+        public void setVariables(VariablesDTO variables) {
             this.variables = variables;
         }
 
@@ -183,7 +189,7 @@ public class VerisureSmartPlugThingHandler extends VerisureThingHandler<Verisure
         }
     }
 
-    private static class Variables {
+    private static class VariablesDTO {
 
         @SuppressWarnings("unused")
         private @Nullable String giid;

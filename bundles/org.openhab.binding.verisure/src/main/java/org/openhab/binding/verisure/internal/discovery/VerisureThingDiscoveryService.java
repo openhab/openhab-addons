@@ -28,8 +28,8 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.openhab.binding.verisure.internal.VerisureHandlerFactory;
 import org.openhab.binding.verisure.internal.VerisureSession;
 import org.openhab.binding.verisure.internal.VerisureThingConfiguration;
+import org.openhab.binding.verisure.internal.dto.VerisureThingDTO;
 import org.openhab.binding.verisure.internal.handler.VerisureBridgeHandler;
-import org.openhab.binding.verisure.internal.model.VerisureThing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +61,7 @@ public class VerisureThingDiscoveryService extends AbstractDiscoveryService
         if (verisureBridgeHandler != null) {
             VerisureSession session = verisureBridgeHandler.getSession();
             if (session != null) {
-                Collection<VerisureThing> verisureThings = session.getVerisureThings();
+                Collection<VerisureThingDTO> verisureThings = session.getVerisureThings();
                 verisureThings.stream().forEach(thing -> {
                     logger.debug("Discovered thing: {}", thing);
                     onThingAddedInternal(thing);
@@ -70,7 +70,7 @@ public class VerisureThingDiscoveryService extends AbstractDiscoveryService
         }
     }
 
-    private void onThingAddedInternal(VerisureThing thing) {
+    private void onThingAddedInternal(VerisureThingDTO thing) {
         logger.debug("VerisureThingDiscoveryService:OnThingAddedInternal");
         ThingUID thingUID = getThingUID(thing);
         String deviceId = thing.getDeviceId();
@@ -95,7 +95,7 @@ public class VerisureThingDiscoveryService extends AbstractDiscoveryService
 
     }
 
-    private @Nullable ThingUID getThingUID(VerisureThing thing) {
+    private @Nullable ThingUID getThingUID(VerisureThingDTO thing) {
         ThingUID thingUID = null;
         if (verisureBridgeHandler != null) {
             String deviceId = thing.getDeviceId();

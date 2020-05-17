@@ -31,6 +31,7 @@ import org.openhab.binding.verisure.internal.handler.VerisureBroadbandConnection
 import org.openhab.binding.verisure.internal.handler.VerisureClimateDeviceThingHandler;
 import org.openhab.binding.verisure.internal.handler.VerisureDoorWindowThingHandler;
 import org.openhab.binding.verisure.internal.handler.VerisureEventLogThingHandler;
+import org.openhab.binding.verisure.internal.handler.VerisureGatewayThingHandler;
 import org.openhab.binding.verisure.internal.handler.VerisureMiceDetectionThingHandler;
 import org.openhab.binding.verisure.internal.handler.VerisureSmartLockThingHandler;
 import org.openhab.binding.verisure.internal.handler.VerisureSmartPlugThingHandler;
@@ -64,6 +65,7 @@ public class VerisureHandlerFactory extends BaseThingHandlerFactory {
         SUPPORTED_THING_TYPES.addAll(VerisureUserPresenceThingHandler.SUPPORTED_THING_TYPES);
         SUPPORTED_THING_TYPES.addAll(VerisureMiceDetectionThingHandler.SUPPORTED_THING_TYPES);
         SUPPORTED_THING_TYPES.addAll(VerisureEventLogThingHandler.SUPPORTED_THING_TYPES);
+        SUPPORTED_THING_TYPES.addAll(VerisureGatewayThingHandler.SUPPORTED_THING_TYPES);
     }
 
     private final Logger logger = LoggerFactory.getLogger(VerisureHandlerFactory.class);
@@ -108,11 +110,14 @@ public class VerisureHandlerFactory extends BaseThingHandlerFactory {
             logger.debug("Create VerisureUserPresenceThingHandler {}", thing.getThingTypeUID());
             thingHandler = new VerisureUserPresenceThingHandler(thing);
         } else if (VerisureMiceDetectionThingHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            logger.debug("Create VerisureMiceDetectionHandler {}", thing.getThingTypeUID());
+            logger.debug("Create VerisureMiceDetectionThingHandler {}", thing.getThingTypeUID());
             thingHandler = new VerisureMiceDetectionThingHandler(thing);
         } else if (VerisureEventLogThingHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             logger.debug("Create VerisureEventLogThingHandler {}", thing.getThingTypeUID());
             thingHandler = new VerisureEventLogThingHandler(thing);
+        } else if (VerisureGatewayThingHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
+            logger.debug("Create VerisureGatewayThingHandler {}", thing.getThingTypeUID());
+            thingHandler = new VerisureGatewayThingHandler(thing);
         } else {
             logger.debug("Not possible to create thing handler for thing {}", thing);
             thingHandler = null;

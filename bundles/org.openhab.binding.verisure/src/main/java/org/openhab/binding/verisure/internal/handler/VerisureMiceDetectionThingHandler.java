@@ -15,6 +15,7 @@ package org.openhab.binding.verisure.internal.handler;
 import static org.openhab.binding.verisure.internal.VerisureBindingConstants.*;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import javax.measure.quantity.Temperature;
@@ -32,9 +33,9 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.verisure.internal.model.VerisureMiceDetection;
-import org.openhab.binding.verisure.internal.model.VerisureMiceDetection.Detection;
-import org.openhab.binding.verisure.internal.model.VerisureMiceDetection.Mouse;
+import org.openhab.binding.verisure.internal.dto.VerisureMiceDetectionDTO;
+import org.openhab.binding.verisure.internal.dto.VerisureMiceDetectionDTO.Detection;
+import org.openhab.binding.verisure.internal.dto.VerisureMiceDetectionDTO.Mouse;
 
 /**
  * Handler for the Mice Detection thing type that Verisure provides.
@@ -43,7 +44,7 @@ import org.openhab.binding.verisure.internal.model.VerisureMiceDetection.Mouse;
  *
  */
 @NonNullByDefault
-public class VerisureMiceDetectionThingHandler extends VerisureThingHandler<VerisureMiceDetection> {
+public class VerisureMiceDetectionThingHandler extends VerisureThingHandler<VerisureMiceDetectionDTO> {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_MICE_DETECTION);
 
@@ -52,33 +53,38 @@ public class VerisureMiceDetectionThingHandler extends VerisureThingHandler<Veri
     }
 
     @Override
-    public Class<VerisureMiceDetection> getVerisureThingClass() {
-        return VerisureMiceDetection.class;
+    public Class<VerisureMiceDetectionDTO> getVerisureThingClass() {
+        return VerisureMiceDetectionDTO.class;
     }
 
     @Override
-    public synchronized void update(VerisureMiceDetection thing) {
+    public synchronized void update(VerisureMiceDetectionDTO thing) {
         logger.debug("update on thing: {}", thing);
         updateStatus(ThingStatus.ONLINE);
         updateMiceDetectionState(thing);
     }
 
-    private void updateMiceDetectionState(VerisureMiceDetection miceDetectionJSON) {
-        Mouse mouse = miceDetectionJSON.getData().getInstallation().getMice().get(0);
-        getThing().getChannels().stream().map(Channel::getUID).filter(channelUID -> isLinked(channelUID)
-                && !channelUID.getId().equals("timestamp") && !channelUID.getId().equals("temperatureTimestamp"))
-                .forEach(channelUID -> {
-                    State state = getValue(channelUID.getId(), miceDetectionJSON, mouse);
-                    updateState(channelUID, state);
-                });
-        if (mouse.getDetections().size() != 0) {
-            updateTimeStamp(mouse.getDetections().get(0).getNodeTime());
+    private void updateMiceDetectionState(VerisureMiceDetectionDTO miceDetectionJSON) {
+        List<Mouse> miceList = miceDetectionJSON.getData().getInstallation().getMice();
+        if (!miceList.isEmpty()) {
+            Mouse mouse = miceList.get(0);
+            getThing().getChannels().stream().map(Channel::getUID).filter(channelUID -> isLinked(channelUID)
+                    && !channelUID.getId().equals("timestamp") && !channelUID.getId().equals("temperatureTimestamp"))
+                    .forEach(channelUID -> {
+                        State state = getValue(channelUID.getId(), miceDetectionJSON, mouse);
+                        updateState(channelUID, state);
+                    });
+            if (mouse.getDetections().size() != 0) {
+                updateTimeStamp(mouse.getDetections().get(0).getNodeTime());
+            }
+            updateTimeStamp(miceDetectionJSON.getTemperatureTime(), CHANNEL_TEMPERATURE_TIMESTAMP);
+            super.update(miceDetectionJSON);
+        } else {
+            logger.debug("MiceList is empty!");
         }
-        updateTimeStamp(miceDetectionJSON.getTemperatureTime(), CHANNEL_TEMPERATURE_TIMESTAMP);
-        super.update(miceDetectionJSON);
     }
 
-    public State getValue(String channelId, VerisureMiceDetection miceDetectionJSON, Mouse mouse) {
+    public State getValue(String channelId, VerisureMiceDetectionDTO miceDetectionJSON, Mouse mouse) {
         switch (channelId) {
             case CHANNEL_COUNT_LATEST_DETECTION:
                 if (mouse.getDetections().size() == 0) {
@@ -110,7 +116,7 @@ public class VerisureMiceDetectionThingHandler extends VerisureThingHandler<Veri
                 return location != null ? new StringType(location) : UnDefType.NULL;
             case CHANNEL_TEMPERATURE:
                 double temperature = miceDetectionJSON.getTemperatureValue();
-                return temperature != VerisureMiceDetection.UNDEFINED
+                return temperature != VerisureMiceDetectionDTO.UNDEFINED
                         ? new QuantityType<Temperature>(temperature, SIUnits.CELSIUS)
                         : UnDefType.UNDEF;
         }

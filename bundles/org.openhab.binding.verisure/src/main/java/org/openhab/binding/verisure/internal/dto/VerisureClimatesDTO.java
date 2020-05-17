@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.verisure.internal.model;
+package org.openhab.binding.verisure.internal.dto;
 
 import static org.openhab.binding.verisure.internal.VerisureBindingConstants.*;
 
@@ -33,7 +33,7 @@ import com.google.gson.annotations.SerializedName;
  *
  */
 @NonNullByDefault
-public class VerisureClimates extends VerisureBaseThing {
+public class VerisureClimatesDTO extends VerisureBaseThingDTO {
 
     private Data data = new Data();
 
@@ -76,10 +76,10 @@ public class VerisureClimates extends VerisureBaseThing {
         if (other == this) {
             return true;
         }
-        if (!(other instanceof VerisureClimates)) {
+        if (!(other instanceof VerisureClimatesDTO)) {
             return false;
         }
-        VerisureClimates rhs = ((VerisureClimates) other);
+        VerisureClimatesDTO rhs = ((VerisureClimatesDTO) other);
         return new EqualsBuilder().append(data, rhs.data).isEquals();
     }
 

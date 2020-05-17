@@ -25,8 +25,8 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.verisure.internal.model.VerisureEventLog;
-import org.openhab.binding.verisure.internal.model.VerisureEventLog.EventLog;
+import org.openhab.binding.verisure.internal.dto.VerisureEventLogDTO;
+import org.openhab.binding.verisure.internal.dto.VerisureEventLogDTO.EventLog;
 
 /**
  * Handler for the Event Log thing type that Verisure provides.
@@ -35,7 +35,7 @@ import org.openhab.binding.verisure.internal.model.VerisureEventLog.EventLog;
  *
  */
 @NonNullByDefault
-public class VerisureEventLogThingHandler extends VerisureThingHandler<VerisureEventLog> {
+public class VerisureEventLogThingHandler extends VerisureThingHandler<VerisureEventLogDTO> {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_EVENT_LOG);
 
@@ -44,18 +44,18 @@ public class VerisureEventLogThingHandler extends VerisureThingHandler<VerisureE
     }
 
     @Override
-    public Class<VerisureEventLog> getVerisureThingClass() {
-        return VerisureEventLog.class;
+    public Class<VerisureEventLogDTO> getVerisureThingClass() {
+        return VerisureEventLogDTO.class;
     }
 
     @Override
-    public synchronized void update(VerisureEventLog thing) {
+    public synchronized void update(VerisureEventLogDTO thing) {
         logger.debug("update on thing: {}", thing);
         updateStatus(ThingStatus.ONLINE);
         updateEventLogState(thing);
     }
 
-    private void updateEventLogState(VerisureEventLog eventLogJSON) {
+    private void updateEventLogState(VerisureEventLogDTO eventLogJSON) {
         EventLog eventLog = eventLogJSON.getData().getInstallation().getEventLog();
         if (eventLog.getPagedList().size() > 0) {
             getThing().getChannels().stream().map(Channel::getUID)
@@ -74,7 +74,7 @@ public class VerisureEventLogThingHandler extends VerisureThingHandler<VerisureE
         super.update(eventLogJSON);
     }
 
-    public State getValue(String channelId, VerisureEventLog verisureEventLog, EventLog eventLog) {
+    public State getValue(String channelId, VerisureEventLogDTO verisureEventLog, EventLog eventLog) {
         switch (channelId) {
             case CHANNEL_LAST_EVENT_LOCATION:
                 String lastEventLocation = eventLog.getPagedList().get(0).getDevice().getArea();

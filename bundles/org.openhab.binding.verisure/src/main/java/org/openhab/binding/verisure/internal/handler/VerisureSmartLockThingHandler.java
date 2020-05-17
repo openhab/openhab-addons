@@ -35,10 +35,10 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.verisure.internal.VerisureSession;
-import org.openhab.binding.verisure.internal.model.VerisureSmartLock;
-import org.openhab.binding.verisure.internal.model.VerisureSmartLock.DoorLockVolumeSettings;
-import org.openhab.binding.verisure.internal.model.VerisureSmartLocks;
-import org.openhab.binding.verisure.internal.model.VerisureSmartLocks.Doorlock;
+import org.openhab.binding.verisure.internal.dto.VerisureSmartLockDTO;
+import org.openhab.binding.verisure.internal.dto.VerisureSmartLockDTO.DoorLockVolumeSettings;
+import org.openhab.binding.verisure.internal.dto.VerisureSmartLocksDTO;
+import org.openhab.binding.verisure.internal.dto.VerisureSmartLocksDTO.Doorlock;
 
 /**
  * Handler for the Smart Lock Device thing type that Verisure provides.
@@ -47,7 +47,7 @@ import org.openhab.binding.verisure.internal.model.VerisureSmartLocks.Doorlock;
  *
  */
 @NonNullByDefault
-public class VerisureSmartLockThingHandler extends VerisureThingHandler<VerisureSmartLocks> {
+public class VerisureSmartLockThingHandler extends VerisureThingHandler<VerisureSmartLocksDTO> {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_SMARTLOCK);
 
@@ -82,7 +82,7 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler<Verisure
         String deviceId = config.getDeviceId();
         VerisureSession session = getSession();
         if (session != null) {
-            VerisureSmartLocks smartLock = session.getVerisureThing(deviceId, getVerisureThingClass());
+            VerisureSmartLocksDTO smartLock = session.getVerisureThing(deviceId, getVerisureThingClass());
             if (smartLock != null) {
                 BigDecimal installationId = smartLock.getSiteId();
                 String pinCode = session.getPinCode(installationId);
@@ -98,10 +98,10 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler<Verisure
                         return;
                     }
 
-                    ArrayList<SmartLock> list = new ArrayList<>();
-                    SmartLock smartLockJSON = new SmartLock();
-                    Variables variables = new Variables();
-                    Input input = new Input();
+                    ArrayList<SmartLockDTO> list = new ArrayList<>();
+                    SmartLockDTO smartLockJSON = new SmartLockDTO();
+                    VariablesDTO variables = new VariablesDTO();
+                    InputDTO input = new InputDTO();
 
                     variables.setDeviceLabel(deviceId);
                     variables.setGiid(installationId.toString());
@@ -149,7 +149,7 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler<Verisure
         String deviceId = config.getDeviceId();
         VerisureSession session = getSession();
         if (session != null) {
-            VerisureSmartLocks smartLock = session.getVerisureThing(deviceId, getVerisureThingClass());
+            VerisureSmartLocksDTO smartLock = session.getVerisureThing(deviceId, getVerisureThingClass());
             if (smartLock != null) {
                 BigDecimal installationId = smartLock.getSiteId();
                 String csrf = session.getCsrfToken(installationId);
@@ -181,9 +181,9 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler<Verisure
         String deviceId = config.getDeviceId();
         VerisureSession session = getSession();
         if (session != null) {
-            VerisureSmartLocks smartLocks = session.getVerisureThing(deviceId, getVerisureThingClass());
+            VerisureSmartLocksDTO smartLocks = session.getVerisureThing(deviceId, getVerisureThingClass());
             if (smartLocks != null) {
-                VerisureSmartLock smartLock = smartLocks.getSmartLockJSON();
+                VerisureSmartLockDTO smartLock = smartLocks.getSmartLockJSON();
                 if (smartLock != null) {
                     DoorLockVolumeSettings volumeSettings = smartLock.getDoorLockVolumeSettings();
                     String volume;
@@ -231,37 +231,42 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler<Verisure
     }
 
     @Override
-    public Class<VerisureSmartLocks> getVerisureThingClass() {
-        return VerisureSmartLocks.class;
+    public Class<VerisureSmartLocksDTO> getVerisureThingClass() {
+        return VerisureSmartLocksDTO.class;
     }
 
     @Override
-    public synchronized void update(VerisureSmartLocks thing) {
+    public synchronized void update(VerisureSmartLocksDTO thing) {
         logger.debug("update on thing: {}", thing);
         updateStatus(ThingStatus.ONLINE);
         updateSmartLockState(thing);
     }
 
-    private void updateSmartLockState(VerisureSmartLocks smartLocksJSON) {
-        Doorlock doorlock = smartLocksJSON.getData().getInstallation().getDoorlocks().get(0);
-        String smartLockStatus = doorlock.getCurrentLockState();
-        VerisureSmartLock smartLockJSON = smartLocksJSON.getSmartLockJSON();
-        if (smartLockStatus != null) {
-            getThing().getChannels().stream().map(Channel::getUID)
-                    .filter(channelUID -> isLinked(channelUID) && !channelUID.getId().equals("timestamp"))
-                    .forEach(channelUID -> {
-                        State state = getValue(channelUID.getId(), doorlock, smartLockStatus, smartLockJSON);
-                        updateState(channelUID, state);
-                    });
-            super.update(smartLocksJSON);
-            updateTimeStamp(doorlock.getEventTime());
+    private void updateSmartLockState(VerisureSmartLocksDTO smartLocksJSON) {
+        List<Doorlock> doorLockList = smartLocksJSON.getData().getInstallation().getDoorlocks();
+        if (!doorLockList.isEmpty()) {
+            Doorlock doorlock = doorLockList.get(0);
+            String smartLockStatus = doorlock.getCurrentLockState();
+            VerisureSmartLockDTO smartLockJSON = smartLocksJSON.getSmartLockJSON();
+            if (smartLockStatus != null) {
+                getThing().getChannels().stream().map(Channel::getUID)
+                        .filter(channelUID -> isLinked(channelUID) && !channelUID.getId().equals("timestamp"))
+                        .forEach(channelUID -> {
+                            State state = getValue(channelUID.getId(), doorlock, smartLockStatus, smartLockJSON);
+                            updateState(channelUID, state);
+                        });
+                super.update(smartLocksJSON);
+                updateTimeStamp(doorlock.getEventTime());
+            } else {
+                logger.debug("Smart lock status {} or smartLockJSON {} is null!", smartLockStatus, smartLockJSON);
+            }
         } else {
-            logger.debug("Smart lock status {} or smartLockJSON {} is null!", smartLockStatus, smartLockJSON);
+            logger.debug("DoorLock list is empty!");
         }
     }
 
     public State getValue(String channelId, Doorlock doorlock, String smartLockStatus,
-            @Nullable VerisureSmartLock smartLockJSON) {
+            @Nullable VerisureSmartLockDTO smartLockJSON) {
         switch (channelId) {
             case CHANNEL_SMARTLOCK_STATUS:
                 if ("LOCKED".equals(smartLockStatus)) {
@@ -307,12 +312,12 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler<Verisure
         return UnDefType.UNDEF;
     }
 
-    private static class SmartLock {
+    private static class SmartLockDTO {
 
         @SuppressWarnings("unused")
         private @Nullable String operationName;
         @SuppressWarnings("unused")
-        private Variables variables = new Variables();
+        private VariablesDTO variables = new VariablesDTO();
         @SuppressWarnings("unused")
         private @Nullable String query;
 
@@ -320,7 +325,7 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler<Verisure
             this.operationName = operationName;
         }
 
-        public void setVariables(Variables variables) {
+        public void setVariables(VariablesDTO variables) {
             this.variables = variables;
         }
 
@@ -329,14 +334,14 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler<Verisure
         }
     }
 
-    private static class Variables {
+    private static class VariablesDTO {
 
         @SuppressWarnings("unused")
         private @Nullable String giid;
         @SuppressWarnings("unused")
         private @Nullable String deviceLabel;
         @SuppressWarnings("unused")
-        private Input input = new Input();
+        private InputDTO input = new InputDTO();
 
         public void setGiid(String giid) {
             this.giid = giid;
@@ -346,12 +351,12 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler<Verisure
             this.deviceLabel = deviceLabel;
         }
 
-        public void setInput(Input input) {
+        public void setInput(InputDTO input) {
             this.input = input;
         }
     }
 
-    private static class Input {
+    private static class InputDTO {
 
         @SuppressWarnings("unused")
         private @Nullable String code;

@@ -35,7 +35,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.verisure.internal.DeviceStatusListener;
 import org.openhab.binding.verisure.internal.VerisureSession;
 import org.openhab.binding.verisure.internal.VerisureThingConfiguration;
-import org.openhab.binding.verisure.internal.model.VerisureThing;
+import org.openhab.binding.verisure.internal.dto.VerisureThingDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +49,7 @@ import com.google.gson.Gson;
  *
  */
 @NonNullByDefault
-public abstract class VerisureThingHandler<T extends VerisureThing> extends BaseThingHandler
+public abstract class VerisureThingHandler<T extends VerisureThingDTO> extends BaseThingHandler
         implements DeviceStatusListener<T> {
 
     protected final Logger logger = LoggerFactory.getLogger(VerisureThingHandler.class);
@@ -180,15 +180,14 @@ public abstract class VerisureThingHandler<T extends VerisureThing> extends Base
         updateTimeStamp(lastUpdatedTimeStamp, CHANNEL_TIMESTAMP);
     }
 
-    protected void updateTimeStamp(@Nullable String lastUpdatedTimeStamp, String channel) {
+    protected void updateTimeStamp(@Nullable String lastUpdatedTimeStamp, ChannelUID cuid) {
         if (lastUpdatedTimeStamp != null) {
             try {
-                logger.debug("Parsing date {} for channel {}", lastUpdatedTimeStamp, channel);
+                logger.debug("Parsing date {} for channel {}", lastUpdatedTimeStamp, cuid);
                 ZonedDateTime zdt = ZonedDateTime.parse(lastUpdatedTimeStamp);
                 ZonedDateTime zdtLocal = zdt.withZoneSameInstant(ZoneId.systemDefault());
 
                 logger.trace("Parsing datetime successful. Using date. {}", new DateTimeType(zdtLocal));
-                ChannelUID cuid = new ChannelUID(getThing().getUID(), channel);
                 updateState(cuid, new DateTimeType(zdtLocal));
             } catch (IllegalArgumentException e) {
                 logger.warn("Parsing date failed: {}.", e.getMessage(), e);
@@ -196,6 +195,11 @@ public abstract class VerisureThingHandler<T extends VerisureThing> extends Base
         } else {
             logger.debug("Timestamp is null!");
         }
+    }
+
+    protected void updateTimeStamp(@Nullable String lastUpdatedTimeStamp, String channel) {
+        ChannelUID cuid = new ChannelUID(getThing().getUID(), channel);
+        updateTimeStamp(lastUpdatedTimeStamp, cuid);
     }
 
     protected @Nullable VerisureSession getSession() {

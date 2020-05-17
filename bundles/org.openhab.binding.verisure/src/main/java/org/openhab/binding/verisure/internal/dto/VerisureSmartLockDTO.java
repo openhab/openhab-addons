@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.verisure.internal.model;
+package org.openhab.binding.verisure.internal.dto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  */
 @NonNullByDefault
-public class VerisureSmartLock {
+public class VerisureSmartLockDTO {
 
     private boolean autoRelockEnabled;
     private @Nullable String deviceLabel;
@@ -156,10 +156,10 @@ public class VerisureSmartLock {
         if (!super.equals(obj)) {
             return false;
         }
-        if (!(obj instanceof VerisureSmartLock)) {
+        if (!(obj instanceof VerisureSmartLockDTO)) {
             return false;
         }
-        VerisureSmartLock other = (VerisureSmartLock) obj;
+        VerisureSmartLockDTO other = (VerisureSmartLockDTO) obj;
         String localDeviceLabel = deviceLabel;
         if (localDeviceLabel == null) {
             if (other.deviceLabel != null) {

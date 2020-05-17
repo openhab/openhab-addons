@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.verisure.internal.model;
+package org.openhab.binding.verisure.internal.dto;
 
 import static org.openhab.binding.verisure.internal.VerisureBindingConstants.THING_TYPE_USERPRESENCE;
 
@@ -33,7 +33,7 @@ import com.google.gson.annotations.SerializedName;
  *
  */
 @NonNullByDefault
-public class VerisureUserPresences extends VerisureBaseThing {
+public class VerisureUserPresencesDTO extends VerisureBaseThingDTO {
 
     private Data data = new Data();
 
@@ -66,10 +66,10 @@ public class VerisureUserPresences extends VerisureBaseThing {
             return true;
         }
 
-        if (!(other instanceof VerisureUserPresences)) {
+        if (!(other instanceof VerisureUserPresencesDTO)) {
             return false;
         }
-        VerisureUserPresences rhs = ((VerisureUserPresences) other);
+        VerisureUserPresencesDTO rhs = ((VerisureUserPresencesDTO) other);
         return new EqualsBuilder().append(data, rhs.data).isEquals();
     }
 

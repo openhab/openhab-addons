@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.verisure.internal.model;
+package org.openhab.binding.verisure.internal.dto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +30,7 @@ import com.google.gson.annotations.SerializedName;
  *
  */
 @NonNullByDefault
-public class VerisureInstallations extends VerisureBaseThing {
+public class VerisureInstallationsDTO extends VerisureBaseThingDTO {
 
     private Data data = new Data();
 
@@ -56,7 +56,7 @@ public class VerisureInstallations extends VerisureBaseThing {
         if (!(other instanceof Data)) {
             return false;
         }
-        VerisureInstallations rhs = ((VerisureInstallations) other);
+        VerisureInstallationsDTO rhs = ((VerisureInstallationsDTO) other);
         return new EqualsBuilder().append(data, rhs.data).isEquals();
     }
 

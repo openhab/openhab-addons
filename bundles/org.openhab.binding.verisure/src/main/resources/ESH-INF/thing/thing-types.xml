@@ -404,6 +404,39 @@
 		</config-description>
 	</thing-type>
 
+	<thing-type id="gateway">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>Verisure Gateway</label>
+		<description>Communication status for the Verisure Gateway.</description>
+
+		<channels>
+			<channel id="statusGSMOverUDP" typeId="communicationTestResult" />
+			<channel id="testTimeGSMOverUDP" typeId="timestamp" />
+			<channel id="statusGSMOverSMS" typeId="communicationTestResult" />
+			<channel id="testTimeGSMOverSMS" typeId="timestamp" />
+			<channel id="statusGPRSOverUDP" typeId="communicationTestResult" />
+			<channel id="testTimeGPRSOverUDP" typeId="timestamp" />
+			<channel id="statusETHOverUDP" typeId="communicationTestResult" />
+			<channel id="testTimeETHOverUDP" typeId="timestamp" />
+			<channel id="location" typeId="location" />
+			<channel id="model" typeId="model" />
+		</channels>
+
+		<properties>
+			<property name="vendor">Verisure</property>
+		</properties>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device Id</label>
+				<description>Unique Id.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
 	<channel-type id="status">
 		<item-type>String</item-type>
 		<label>Current Status</label>
@@ -668,6 +701,20 @@
 		<item-type>String</item-type>
 		<label>Verisure Event Log</label>
 		<description>Verisure event log as a JSON array.</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="communicationTestResult">
+		<item-type>String</item-type>
+		<label>Verisure GW Communication Test Result</label>
+		<description>Verisure Gateway communication test result.</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="model">
+		<item-type>String</item-type>
+		<label>Verisure GW Model</label>
+		<description>Verisure Gateway model.</description>
 		<state readOnly="true" pattern="%s" />
 	</channel-type>
 

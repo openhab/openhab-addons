@@ -42,6 +42,7 @@ public class VerisureBindingConstants {
     public static final ThingTypeUID THING_TYPE_NIGHT_CONTROL = new ThingTypeUID(BINDING_ID, "nightControl");
     public static final ThingTypeUID THING_TYPE_MICE_DETECTION = new ThingTypeUID(BINDING_ID, "miceDetection");
     public static final ThingTypeUID THING_TYPE_EVENT_LOG = new ThingTypeUID(BINDING_ID, "eventLog");
+    public static final ThingTypeUID THING_TYPE_GATEWAY = new ThingTypeUID(BINDING_ID, "gateway");
 
     // List of all Channel ids
     public static final String CHANNEL_NUMERIC_STATUS = "numericStatus";
@@ -83,6 +84,15 @@ public class VerisureBindingConstants {
     public static final String CHANNEL_LAST_EVENT_TIME = "lastEventTime";
     public static final String CHANNEL_LAST_EVENT_USER_NAME = "lastEventUserName";
     public static final String CHANNEL_EVENT_LOG = "eventLog";
+    public static final String CHANNEL_STATUS_GSM_OVER_UDP = "statusGSMOverUDP";
+    public static final String CHANNEL_STATUS_GSM_OVER_SMS = "statusGSMOverSMS";
+    public static final String CHANNEL_STATUS_GPRS_OVER_UDP = "statusGPRSOverUDP";
+    public static final String CHANNEL_STATUS_ETH_OVER_UDP = "statusETHOverUDP";
+    public static final String CHANNEL_TEST_TIME_GSM_OVER_UDP = "testTimeGSMOverUDP";
+    public static final String CHANNEL_TEST_TIME_GSM_OVER_SMS = "testTimeGSMOverSMS";
+    public static final String CHANNEL_TEST_TIME_GPRS_OVER_UDP = "testTimeGPRSOverUDP";
+    public static final String CHANNEL_TEST_TIME_ETH_OVER_UDP = "testTimeETHOverUDP";
+    public static final String CHANNEL_GATEWAY_MODEL = "model";
 
     // REST URI constants
     public static final String USERNAME = "username";

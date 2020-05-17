@@ -31,7 +31,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.verisure.internal.model.VerisureClimates;
+import org.openhab.binding.verisure.internal.dto.VerisureClimatesDTO;
 
 /**
  * Handler for all Climate Device thing types that Verisure provides.
@@ -40,7 +40,7 @@ import org.openhab.binding.verisure.internal.model.VerisureClimates;
  *
  */
 @NonNullByDefault
-public class VerisureClimateDeviceThingHandler extends VerisureThingHandler<VerisureClimates> {
+public class VerisureClimateDeviceThingHandler extends VerisureThingHandler<VerisureClimatesDTO> {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<ThingTypeUID>();
     static {
@@ -55,29 +55,32 @@ public class VerisureClimateDeviceThingHandler extends VerisureThingHandler<Veri
     }
 
     @Override
-    public Class<VerisureClimates> getVerisureThingClass() {
-        return VerisureClimates.class;
+    public Class<VerisureClimatesDTO> getVerisureThingClass() {
+        return VerisureClimatesDTO.class;
     }
 
     @Override
-    public synchronized void update(VerisureClimates thing) {
+    public synchronized void update(VerisureClimatesDTO thing) {
         logger.debug("update on thing: {}", thing);
         updateStatus(ThingStatus.ONLINE);
         updateClimateDeviceState(thing);
     }
 
-    private void updateClimateDeviceState(VerisureClimates climateJSON) {
+    private void updateClimateDeviceState(VerisureClimatesDTO climateJSON) {
         getThing().getChannels().stream().map(Channel::getUID)
                 .filter(channelUID -> isLinked(channelUID) && !channelUID.getId().equals("timestamp"))
                 .forEach(channelUID -> {
                     State state = getValue(channelUID.getId(), climateJSON);
                     updateState(channelUID, state);
                 });
-        updateTimeStamp(climateJSON.getData().getInstallation().getClimates().get(0).getTemperatureTimestamp());
+        String timeStamp = climateJSON.getData().getInstallation().getClimates().get(0).getTemperatureTimestamp();
+        if (timeStamp != null) {
+            updateTimeStamp(timeStamp);
+        }
         super.update(climateJSON);
     }
 
-    public State getValue(String channelId, VerisureClimates climateJSON) {
+    public State getValue(String channelId, VerisureClimatesDTO climateJSON) {
         switch (channelId) {
             case CHANNEL_TEMPERATURE:
                 double temperature = climateJSON.getData().getInstallation().getClimates().get(0).getTemperatureValue();

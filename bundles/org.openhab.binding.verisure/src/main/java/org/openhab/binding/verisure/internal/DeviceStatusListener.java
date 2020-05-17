@@ -13,7 +13,7 @@
 package org.openhab.binding.verisure.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.verisure.internal.model.VerisureThing;
+import org.openhab.binding.verisure.internal.dto.VerisureThingDTO;
 
 /**
  * The {@link DeviceStatusListener} is notified when a device status has changed
@@ -24,7 +24,7 @@ import org.openhab.binding.verisure.internal.model.VerisureThing;
  *
  */
 @NonNullByDefault
-public interface DeviceStatusListener<T extends VerisureThing> {
+public interface DeviceStatusListener<T extends VerisureThingDTO> {
 
     /**
      * This method is called whenever the state of the given device has changed.

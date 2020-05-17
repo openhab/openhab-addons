@@ -44,7 +44,7 @@ import org.openhab.binding.verisure.internal.DeviceStatusListener;
 import org.openhab.binding.verisure.internal.VerisureBridgeConfiguration;
 import org.openhab.binding.verisure.internal.VerisureSession;
 import org.openhab.binding.verisure.internal.discovery.VerisureThingDiscoveryService;
-import org.openhab.binding.verisure.internal.model.VerisureThing;
+import org.openhab.binding.verisure.internal.dto.VerisureThingDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -172,7 +172,7 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    public <T extends VerisureThing> boolean registerObjectStatusListener(
+    public <T extends VerisureThingDTO> boolean registerObjectStatusListener(
             DeviceStatusListener<T> deviceStatusListener) {
         VerisureSession mySession = session;
         if (mySession != null) {
@@ -182,7 +182,7 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
         return false;
     }
 
-    public <T extends VerisureThing> boolean unregisterObjectStatusListener(
+    public <T extends VerisureThingDTO> boolean unregisterObjectStatusListener(
             DeviceStatusListener<T> deviceStatusListener) {
         VerisureSession mySession = session;
         if (mySession != null) {

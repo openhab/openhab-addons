@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.verisure.internal.model;
+package org.openhab.binding.verisure.internal.dto;
 
 import java.math.BigDecimal;
 
@@ -26,7 +26,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  */
 @NonNullByDefault
-public interface VerisureThing {
+public interface VerisureThingDTO {
 
     String getDeviceId();
 

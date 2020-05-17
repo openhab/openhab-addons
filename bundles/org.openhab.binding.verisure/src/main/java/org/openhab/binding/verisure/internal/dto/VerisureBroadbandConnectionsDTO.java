@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.verisure.internal.model;
+package org.openhab.binding.verisure.internal.dto;
 
 import static org.openhab.binding.verisure.internal.VerisureBindingConstants.THING_TYPE_BROADBAND_CONNECTION;
 
@@ -30,7 +30,7 @@ import com.google.gson.annotations.SerializedName;
  *
  */
 @NonNullByDefault
-public class VerisureBroadbandConnections extends VerisureBaseThing {
+public class VerisureBroadbandConnectionsDTO extends VerisureBaseThingDTO {
 
     private Data data = new Data();
 
@@ -58,10 +58,10 @@ public class VerisureBroadbandConnections extends VerisureBaseThing {
         if (other == this) {
             return true;
         }
-        if (!(other instanceof VerisureBroadbandConnections)) {
+        if (!(other instanceof VerisureBroadbandConnectionsDTO)) {
             return false;
         }
-        VerisureBroadbandConnections rhs = ((VerisureBroadbandConnections) other);
+        VerisureBroadbandConnectionsDTO rhs = ((VerisureBroadbandConnectionsDTO) other);
         return new EqualsBuilder().append(data, rhs.data).isEquals();
     }
 
@@ -116,14 +116,10 @@ public class VerisureBroadbandConnections extends VerisureBaseThing {
 
     public static class Data {
 
-        private @Nullable Installation installation = null;
+        private Installation installation = new Installation();
 
-        public @Nullable Installation getInstallation() {
+        public Installation getInstallation() {
             return installation;
-        }
-
-        public void setInstallation(Installation installation) {
-            this.installation = installation;
         }
 
         @Override

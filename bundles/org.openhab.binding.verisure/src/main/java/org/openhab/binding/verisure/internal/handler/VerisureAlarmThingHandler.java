@@ -33,8 +33,8 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.verisure.internal.VerisureSession;
-import org.openhab.binding.verisure.internal.model.VerisureAlarms;
-import org.openhab.binding.verisure.internal.model.VerisureAlarms.ArmState;
+import org.openhab.binding.verisure.internal.dto.VerisureAlarmsDTO;
+import org.openhab.binding.verisure.internal.dto.VerisureAlarmsDTO.ArmState;
 
 /**
  * Handler for the Alarm Device thing type that Verisure provides.
@@ -43,7 +43,7 @@ import org.openhab.binding.verisure.internal.model.VerisureAlarms.ArmState;
  *
  */
 @NonNullByDefault
-public class VerisureAlarmThingHandler extends VerisureThingHandler<VerisureAlarms> {
+public class VerisureAlarmThingHandler extends VerisureThingHandler<VerisureAlarmsDTO> {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_ALARM);
 
@@ -70,7 +70,7 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler<VerisureAlar
         String deviceId = config.getDeviceId();
         VerisureSession session = getSession();
         if (session != null) {
-            VerisureAlarms alarm = session.getVerisureThing(deviceId, getVerisureThingClass());
+            VerisureAlarmsDTO alarm = session.getVerisureThing(deviceId, getVerisureThingClass());
             if (alarm != null) {
                 BigDecimal installationId = alarm.getSiteId();
                 String pinCode = session.getPinCode(installationId);
@@ -97,9 +97,9 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler<VerisureAlar
                             return;
                     }
 
-                    ArrayList<Alarm> list = new ArrayList<>();
-                    Alarm alarmJSON = new Alarm();
-                    Variables variables = new Variables();
+                    ArrayList<AlarmDTO> list = new ArrayList<>();
+                    AlarmDTO alarmJSON = new AlarmDTO();
+                    VariablesDTO variables = new VariablesDTO();
 
                     variables.setCode(pinCode);
                     variables.setGiid(installationId.toString());
@@ -128,18 +128,18 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler<VerisureAlar
     }
 
     @Override
-    public Class<VerisureAlarms> getVerisureThingClass() {
-        return VerisureAlarms.class;
+    public Class<VerisureAlarmsDTO> getVerisureThingClass() {
+        return VerisureAlarmsDTO.class;
     }
 
     @Override
-    public synchronized void update(VerisureAlarms thing) {
+    public synchronized void update(VerisureAlarmsDTO thing) {
         logger.debug("update on thing: {}", thing);
         updateStatus(ThingStatus.ONLINE);
         updateAlarmState(thing);
     }
 
-    private void updateAlarmState(VerisureAlarms alarmsJSON) {
+    private void updateAlarmState(VerisureAlarmsDTO alarmsJSON) {
         ArmState armState = alarmsJSON.getData().getInstallation().getArmState();
         String alarmStatus = armState.getStatusType();
         if (alarmStatus != null) {
@@ -168,12 +168,12 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler<VerisureAlar
         return UnDefType.UNDEF;
     }
 
-    private static class Alarm {
+    private static class AlarmDTO {
 
         @SuppressWarnings("unused")
         private @Nullable String operationName;
         @SuppressWarnings("unused")
-        private Variables variables = new Variables();
+        private VariablesDTO variables = new VariablesDTO();
         @SuppressWarnings("unused")
         private @Nullable String query;
 
@@ -181,7 +181,7 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler<VerisureAlar
             this.operationName = operationName;
         }
 
-        public void setVariables(Variables variables) {
+        public void setVariables(VariablesDTO variables) {
             this.variables = variables;
         }
 
@@ -190,7 +190,7 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler<VerisureAlar
         }
     }
 
-    private static class Variables {
+    private static class VariablesDTO {
 
         @SuppressWarnings("unused")
         private @Nullable String giid;

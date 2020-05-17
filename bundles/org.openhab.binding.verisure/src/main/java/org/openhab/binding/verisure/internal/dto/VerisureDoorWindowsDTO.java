@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.verisure.internal.model;
+package org.openhab.binding.verisure.internal.dto;
 
-import static org.openhab.binding.verisure.internal.VerisureBindingConstants.THING_TYPE_SMARTPLUG;
+import static org.openhab.binding.verisure.internal.VerisureBindingConstants.THING_TYPE_DOORWINDOW;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,13 +27,13 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The smart plugs of the Verisure System.
+ * The door and window devices of the Verisure System.
  *
  * @author Jan Gustafsson - Initial contribution
  *
  */
 @NonNullByDefault
-public class VerisureSmartPlugs extends VerisureBaseThing {
+public class VerisureDoorWindowsDTO extends VerisureBaseThingDTO {
 
     private Data data = new Data();
 
@@ -47,7 +47,7 @@ public class VerisureSmartPlugs extends VerisureBaseThing {
 
     @Override
     public ThingTypeUID getThingTypeUID() {
-        return THING_TYPE_SMARTPLUG;
+        return THING_TYPE_DOORWINDOW;
     }
 
     @Override
@@ -65,10 +65,10 @@ public class VerisureSmartPlugs extends VerisureBaseThing {
         if (other == this) {
             return true;
         }
-        if (!(other instanceof VerisureSmartPlugs)) {
+        if (!(other instanceof VerisureDoorWindowsDTO)) {
             return false;
         }
-        VerisureSmartPlugs rhs = ((VerisureSmartPlugs) other);
+        VerisureDoorWindowsDTO rhs = ((VerisureDoorWindowsDTO) other);
         return new EqualsBuilder().append(data, rhs.data).isEquals();
     }
 
@@ -109,17 +109,16 @@ public class VerisureSmartPlugs extends VerisureBaseThing {
 
     public static class Installation {
 
-        private List<Smartplug> smartplugs = new ArrayList<>();
-
+        private List<DoorWindow> doorWindows = new ArrayList<>();
         @SerializedName("__typename")
         private @Nullable String typename;
 
-        public List<Smartplug> getSmartplugs() {
-            return smartplugs;
+        public List<DoorWindow> getDoorWindows() {
+            return doorWindows;
         }
 
-        public void setSmartplugs(List<Smartplug> smartplugs) {
-            this.smartplugs = smartplugs;
+        public void setDoorWindows(List<DoorWindow> doorWindows) {
+            this.doorWindows = doorWindows;
         }
 
         public @Nullable String getTypename() {
@@ -128,12 +127,12 @@ public class VerisureSmartPlugs extends VerisureBaseThing {
 
         @Override
         public String toString() {
-            return new ToStringBuilder(this).append("smartplugs", smartplugs).append("typename", typename).toString();
+            return new ToStringBuilder(this).append("doorWindows", doorWindows).append("typename", typename).toString();
         }
 
         @Override
         public int hashCode() {
-            return new HashCodeBuilder().append(typename).append(smartplugs).toHashCode();
+            return new HashCodeBuilder().append(typename).append(doorWindows).toHashCode();
         }
 
         @Override
@@ -145,16 +144,17 @@ public class VerisureSmartPlugs extends VerisureBaseThing {
                 return false;
             }
             Installation rhs = ((Installation) other);
-            return new EqualsBuilder().append(typename, rhs.typename).append(smartplugs, rhs.smartplugs).isEquals();
+            return new EqualsBuilder().append(typename, rhs.typename).append(doorWindows, rhs.doorWindows).isEquals();
         }
     }
 
-    public static class Smartplug {
+    public static class DoorWindow {
 
         private Device device = new Device();
-        private @Nullable String currentState;
-        private @Nullable String icon;
-        private boolean isHazardous;
+        private @Nullable String type;
+        private @Nullable String state;
+        private boolean wired;
+        private @Nullable String reportTime;
         @SerializedName("__typename")
         private @Nullable String typename;
 
@@ -162,16 +162,20 @@ public class VerisureSmartPlugs extends VerisureBaseThing {
             return device;
         }
 
-        public @Nullable String getCurrentState() {
-            return currentState;
+        public @Nullable String getType() {
+            return type;
         }
 
-        public @Nullable String getIcon() {
-            return icon;
+        public @Nullable String getState() {
+            return state;
         }
 
-        public boolean isHazardous() {
-            return isHazardous;
+        public boolean getWired() {
+            return wired;
+        }
+
+        public @Nullable String getReportTime() {
+            return reportTime;
         }
 
         public @Nullable String getTypename() {
@@ -180,14 +184,14 @@ public class VerisureSmartPlugs extends VerisureBaseThing {
 
         @Override
         public String toString() {
-            return new ToStringBuilder(this).append("device", device).append("currentState", currentState)
-                    .append("icon", icon).append("isHazardous", isHazardous).append("typename", typename).toString();
+            return new ToStringBuilder(this).append("device", device).append("type", type).append("state", state)
+                    .append("wired", wired).append("reportTime", reportTime).append("typename", typename).toString();
         }
 
         @Override
         public int hashCode() {
-            return new HashCodeBuilder().append(icon).append(typename).append(currentState).append(device)
-                    .append(isHazardous).toHashCode();
+            return new HashCodeBuilder().append(reportTime).append(typename).append(state).append(device).append(wired)
+                    .append(type).toHashCode();
         }
 
         @Override
@@ -195,13 +199,13 @@ public class VerisureSmartPlugs extends VerisureBaseThing {
             if (other == this) {
                 return true;
             }
-            if (!(other instanceof Smartplug)) {
+            if (!(other instanceof DoorWindow)) {
                 return false;
             }
-            Smartplug rhs = ((Smartplug) other);
-            return new EqualsBuilder().append(icon, rhs.icon).append(typename, rhs.typename)
-                    .append(currentState, rhs.currentState).append(device, rhs.device)
-                    .append(isHazardous, rhs.isHazardous).isEquals();
+            DoorWindow rhs = ((DoorWindow) other);
+            return new EqualsBuilder().append(reportTime, rhs.reportTime).append(typename, rhs.typename)
+                    .append(state, rhs.state).append(device, rhs.device).append(wired, rhs.wired).append(type, rhs.type)
+                    .isEquals();
         }
     }
 }
