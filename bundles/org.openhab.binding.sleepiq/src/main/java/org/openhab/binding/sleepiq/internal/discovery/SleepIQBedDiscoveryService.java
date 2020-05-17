@@ -72,7 +72,7 @@ public class SleepIQBedDiscoveryService extends AbstractDiscoveryService {
                     bed.getMacAddress());
 
             // thing already exists
-            if (cloudHandler.getThingByUID(thingUID) != null) {
+            if (cloudHandler.getThing().getThing(thingUID) != null) {
                 continue;
             }
 
