@@ -30,7 +30,7 @@ import org.openhab.binding.mqtt.generic.values.Value;
 @NonNullByDefault
 public class ComponentSensor extends AbstractComponent<ComponentSensor.ChannelConfiguration> {
     public static final String sensorChannelID = "sensor"; // Randomly chosen channel "ID"
-    private static final List<String> triggerObjectIDs = Arrays.asList(new String[] { "click", "action" });
+    private static final List<String> triggerIcons = Arrays.asList("mdi:toggle", "mdi:gesture");
 
     /**
      * Configuration class for MQTT component
@@ -65,9 +65,12 @@ public class ComponentSensor extends AbstractComponent<ComponentSensor.ChannelCo
             value = new TextValue();
         }
 
-        String objectId = componentConfiguration.getHaID().objectID;
+        String icon = channelConfiguration.icon;
 
-        boolean trigger = triggerObjectIDs.contains(objectId);
+        boolean trigger = false;
+        if (!icon.isEmpty()) {
+            trigger = triggerIcons.stream().anyMatch(triggerIcon -> icon.startsWith(triggerIcon));
+        }
 
         buildChannel(sensorChannelID, value, channelConfiguration.name, componentConfiguration.getUpdateListener())//
                 .stateTopic(channelConfiguration.state_topic, channelConfiguration.value_template)//
