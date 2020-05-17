@@ -2,19 +2,16 @@
 
 The Zigbee binding currently does not support the Dresden Elektronik Raspbee and Conbee Zigbee dongles.
 The manufacturer provides a companion app called deCONZ together with the mentioned hardware.
-deCONZ offers a documented real-time channel that this binding makes use of to bring support for all paired Zigbee sensors and switches.
-
-deCONZ also acts as a HUE bridge.
-This binding is meant to be used together with the HUE binding which makes the lights and plugs available.
+deCONZ offers a documented real-time channel that this binding makes use of to bring support for all paired Zigbee devices.
 
 ## Supported Things
 
 There is one bridge (`deconz`) that manages the connection to the deCONZ software instance.
-These things are supported:
+These sensors are supported:
 
 | Device type                       | Resource Type                     | Thing type           |
 |-----------------------------------|-----------------------------------|----------------------|
-| Presence Sensor                   | ZHAPresence, CLIPPrensence        | `presencesensor`     |
+| Presence Sensor                   | ZHAPresence, CLIPPresence         | `presencesensor`     |
 | Power Sensor                      | ZHAPower, CLIPPower               | `powersensor`        |
 | Consumption Sensor                | ZHAConsumption                    | `consumptionsensor`  |
 | Switch                            | ZHASwitch                         | `switch`             |
@@ -22,12 +19,24 @@ These things are supported:
 | Temperature Sensor                | ZHATemperature                    | `temperaturesensor`  |
 | Humidity Sensor                   | ZHAHumidity                       | `humiditysensor`     |
 | Pressure Sensor                   | ZHAPressure                       | `pressuresensor`     |
-| Open/Close Sensor                 | ZHAOpenClose                      | `openclosesensor`    |
+| Open/Close Sensor                 | ZHAOpenClose                      | `oenclosesensor`    |
 | Water Leakage Sensor              | ZHAWater                          | `waterleakagesensor` |
 | Alarm Sensor                      | ZHAAlarm                          | `alarmsensor`        |
 | Fire Sensor                       | ZHAFire                           | `firesensor`         |
 | Vibration Sensor                  | ZHAVibration                      | `vibrationsensor`    |
 | deCONZ Artificial Daylight Sensor | deCONZ specific: simulated sensor | `daylightsensor`     |
+| Carbon-Monoxide Sensor            | ZHACarbonmonoxide                 | `carbonmonoxide`     |
+
+
+Additionally lights and window coverings (blinds) are supported:
+
+| Device type                          | Resource Type                          | Thing type           |
+|--------------------------------------|----------------------------------------|----------------------|
+| Dimmable Light                       | Dimmable light, Dimmable plug-in unit  | `dimmablelight`      |
+| On/Off Light                         | On/Off light, On/Off plug-in unit      | `onofflight`         |
+| Color Light (w/o temperature)        | Color dimmable light                   | `colorlight`         |
+| Extended Color Light (w/temperature) | Extended color light                   | `extendedcolorlight` |
+| Blind / Window Covering              | Window covering device                 | `windowcovering`     |
 
 ## Discovery
 
