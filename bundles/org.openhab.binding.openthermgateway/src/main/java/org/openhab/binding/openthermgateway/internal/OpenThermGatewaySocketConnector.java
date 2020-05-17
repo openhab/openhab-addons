@@ -162,7 +162,7 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
             long timeoutTime = timeAndCommand.getKey() + COMMAND_TIMEOUT_MILLISECONDS;
 
             if (currentTime > responseTime && currentTime <= timeoutTime) {
-                logger.debug("Resending command: {}", timeAndCommand.getValue().toFullString());
+                logger.debug("Resending command: {}", timeAndCommand.getValue());
                 sendCommand(timeAndCommand.getValue());
             } else if (currentTime > timeoutTime) {
                 pendingCommands.remove(timeAndCommand.getValue().getCode());

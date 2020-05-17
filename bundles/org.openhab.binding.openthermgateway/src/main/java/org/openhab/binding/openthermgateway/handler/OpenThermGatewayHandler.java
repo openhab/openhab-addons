@@ -182,7 +182,7 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
                 }
 
                 if (state != null) {
-                    logger.debug("Received update for channel '{}': {}", channelId, state.toFullString());
+                    logger.debug("Received update for channel '{}': {}", channelId, state);
                     updateState(channelId, state);
                 }
             }
