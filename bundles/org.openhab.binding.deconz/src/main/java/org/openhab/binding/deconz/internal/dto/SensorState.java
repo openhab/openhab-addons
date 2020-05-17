@@ -74,4 +74,15 @@ public class SensorState {
     public @Nullable Integer gesture;
     /** deCONZ sends a last update string with every event. */
     public @Nullable String lastupdated;
+
+    @Override
+    public String toString() {
+        return "SensorState{" + "dark=" + dark + ", daylight=" + daylight + ", lightlevel=" + lightlevel + ", lux="
+                + lux + ", temperature=" + temperature + ", humidity=" + humidity + ", open=" + open + ", fire=" + fire
+                + ", water=" + water + ", alarm=" + alarm + ", tampered=" + tampered + ", vibration=" + vibration
+                + ", carbonmonoxide=" + carbonmonoxide + ", pressure=" + pressure + ", presence=" + presence
+                + ", power=" + power + ", battery=" + battery + ", consumption=" + consumption + ", voltage=" + voltage
+                + ", current=" + current + ", status=" + status + ", buttonevent=" + buttonevent + ", gesture="
+                + gesture + ", lastupdated='" + lastupdated + '\'' + '}';
+    }
 }

@@ -106,7 +106,6 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
      * Stops the API request or websocket reconnect timer
      */
     private void stopTimer() {
-        @Nullable
         ScheduledFuture<?> future = scheduledFuture;
         if (future != null) {
             future.cancel(true);
@@ -175,7 +174,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
             }
             return null;
         }).whenComplete((value, error) -> {
-            final @Nullable ThingDiscoveryService thingDiscoveryService = this.thingDiscoveryService;
+            final ThingDiscoveryService thingDiscoveryService = this.thingDiscoveryService;
             if (thingDiscoveryService != null) {
                 // Hand over sensors to discovery service
                 thingDiscoveryService.stateRequestFinished(value);

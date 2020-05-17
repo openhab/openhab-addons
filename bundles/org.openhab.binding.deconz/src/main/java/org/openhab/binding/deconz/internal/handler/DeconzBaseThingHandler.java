@@ -133,25 +133,34 @@ public abstract class DeconzBaseThingHandler<T extends DeconzBaseMessage> extend
     protected abstract void processStateResponse(@Nullable T stateResponse);
 
     /**
+     *  call requestState(type) in this method only
+     */
+    protected abstract void requestState();
+
+    /**
      * Perform a request to the REST API for retrieving the full light state with all data and configuration.
      */
-    public void requestState() {
+    protected void requestState(String type) {
         AsyncHttpClient asyncHttpClient = http;
         if (asyncHttpClient == null) {
             return;
         }
-        String url = buildUrl(bridgeConfig.host, bridgeConfig.httpPort, bridgeConfig.apikey, "lights", config.id);
+
+
+        String url = buildUrl(bridgeConfig.host, bridgeConfig.httpPort, bridgeConfig.apikey, type, config.id);
+        logger.trace("Requesting URL for initial data: {}", url);
+
         // Get initial data
         asyncHttpClient.get(url, bridgeConfig.timeout).thenApply(this::parseStateResponse).exceptionally(e -> {
             if (e instanceof SocketTimeoutException || e instanceof TimeoutException
                     || e instanceof CompletionException) {
-                logger.debug("Get new state failed", e);
+                logger.debug("Get new state failed: ", e);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
 
             stopTimer();
-            scheduledFuture = scheduler.schedule(this::requestState, 10, TimeUnit.SECONDS);
+            scheduledFuture = scheduler.schedule((Runnable) this::requestState, 10, TimeUnit.SECONDS);
 
             return null;
         }).thenAccept(this::processStateResponse);

@@ -76,7 +76,6 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
 
     @Override
     protected void registerListener() {
-        @Nullable
         WebSocketConnection conn = connection;
         if (conn != null) {
             conn.registerLightListener(config.id, this);
@@ -85,11 +84,15 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
 
     @Override
     protected void unregisterListener() {
-        @Nullable
         WebSocketConnection conn = connection;
         if (conn != null) {
             conn.unregisterLightListener(config.id);
         }
+    }
+
+    @Override
+    protected void requestState() {
+        requestState("lights");
     }
 
     @Override
@@ -100,9 +103,7 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
         }
 
         LightState newLightState = new LightState();
-        @Nullable
         Boolean currentOn = lightState.on;
-        @Nullable
         Integer currentBri = lightState.bri;
 
         switch (channelUID.getId()) {
@@ -120,7 +121,6 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                 } else if (command instanceof HSBType) {
                     HSBType hsbCommand = (HSBType) command;
 
-                    @Nullable
                     String colormode = lightState.colormode;
                     if (colormode == null) {
                         // default color mode to hsb
@@ -153,7 +153,6 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                 }
 
                 // send on/off state together with brightness if not already set or unknown
-                @Nullable
                 Integer newBri = newLightState.bri;
                 if ((newBri != null) && ((currentOn == null) || ((newBri > 0) != currentOn))) {
                     newLightState.on = (newBri > 0);
@@ -189,7 +188,6 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                 return;
         }
 
-        @Nullable
         AsyncHttpClient asyncHttpClient = http;
         if (asyncHttpClient == null) {
             return;
@@ -203,7 +201,7 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
         asyncHttpClient.put(url, json, bridgeConfig.timeout)
                 .thenAccept(v -> logger.trace("Result code={}, body={}", v.getResponseCode(), v.getBody()))
                 .exceptionally(e -> {
-                    logger.debug("exception:", e);
+                    logger.debug("Sending command {} to channel {} failed:", command, channelUID, e);
                     return null;
                 });
     }
@@ -215,7 +213,7 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
         } else if (r.getResponseCode() == 200) {
             return gson.fromJson(r.getBody(), LightMessage.class);
         } else {
-            throw new IllegalStateException("Unknown status code for full state request");
+            throw new IllegalStateException("Unknown status code " + r.getResponseCode() + " for full state request");
         }
     }
 
@@ -228,17 +226,11 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
     }
 
     public void valueUpdated(String channelId, LightState newState) {
-        logger.debug("{} received {}", thing.getUID(), newState);
-        @Nullable
         Integer bri = newState.bri;
-        @Nullable
         Integer ct = newState.ct;
-        @Nullable
         Boolean on = newState.on;
         Double @Nullable [] xy = newState.xy;
-        @Nullable
         Integer hue = newState.hue;
-        @Nullable
         Integer sat = newState.sat;
 
         switch (channelId) {
@@ -294,7 +286,6 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
     public void messageReceived(String sensorID, DeconzBaseMessage message) {
         if (message instanceof LightMessage) {
             LightMessage lightMessage = (LightMessage) message;
-            @Nullable
             LightState lightState = lightMessage.state;
             if (lightState != null) {
                 updateChannels(lightState);
@@ -303,6 +294,7 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
     }
 
     private void updateChannels(LightState newState) {
+        logger.trace("{} received {}", thing.getUID(), newState);
         lightState = newState;
         thing.getChannels().stream().map(c -> c.getUID().getId()).forEach(c -> valueUpdated(c, newState));
     }

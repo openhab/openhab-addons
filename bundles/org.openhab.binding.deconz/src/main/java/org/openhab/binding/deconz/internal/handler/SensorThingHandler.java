@@ -59,6 +59,8 @@ import org.openhab.binding.deconz.internal.dto.SensorMessage;
 import org.openhab.binding.deconz.internal.dto.SensorState;
 import org.openhab.binding.deconz.internal.netutils.AsyncHttpClient;
 import org.openhab.binding.deconz.internal.netutils.WebSocketConnection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
@@ -89,6 +91,7 @@ public class SensorThingHandler extends DeconzBaseThingHandler<SensorMessage> {
     private static final List<String> CONFIG_CHANNELS = Arrays.asList(CHANNEL_BATTERY_LEVEL, CHANNEL_BATTERY_LOW,
             CHANNEL_TEMPERATURE);
 
+    private final Logger logger = LoggerFactory.getLogger(SensorThingHandler.class);
     /**
      * The sensor state. Contains all possible fields for all supported sensors and switches
      */
@@ -104,8 +107,12 @@ public class SensorThingHandler extends DeconzBaseThingHandler<SensorMessage> {
     }
 
     @Override
+    protected void requestState() {
+        requestState("sensors");
+    }
+
+    @Override
     protected void registerListener() {
-        @Nullable
         WebSocketConnection conn = connection;
         if (conn != null) {
             conn.registerSensorListener(config.id, this);
@@ -114,7 +121,6 @@ public class SensorThingHandler extends DeconzBaseThingHandler<SensorMessage> {
 
     @Override
     protected void unregisterListener() {
-        @Nullable
         WebSocketConnection conn = connection;
         if (conn != null) {
             conn.unregisterSensorListener(config.id);
@@ -145,7 +151,7 @@ public class SensorThingHandler extends DeconzBaseThingHandler<SensorMessage> {
         } else if (r.getResponseCode() == 200) {
             return gson.fromJson(r.getBody(), SensorMessage.class);
         } else {
-            throw new IllegalStateException("Unknown status code for full state request");
+            throw new IllegalStateException("Unknown status code " + r.getResponseCode() + " for full state request");
         }
     }
 
@@ -154,10 +160,8 @@ public class SensorThingHandler extends DeconzBaseThingHandler<SensorMessage> {
         if (stateResponse == null) {
             return;
         }
-        @Nullable
         SensorConfig newSensorConfig = stateResponse.config;
         sensorConfig = newSensorConfig != null ? newSensorConfig : new SensorConfig();
-        @Nullable
         SensorState newSensorState = stateResponse.state;
         sensorState = newSensorState != null ? newSensorState : new SensorState();
 
@@ -230,7 +234,6 @@ public class SensorThingHandler extends DeconzBaseThingHandler<SensorMessage> {
     }
 
     private void createChannel(String channelId, ChannelKind kind) {
-        @Nullable
         ThingHandlerCallback callback = getCallback();
         if (callback != null) {
             ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
@@ -252,9 +255,7 @@ public class SensorThingHandler extends DeconzBaseThingHandler<SensorMessage> {
     }
 
     public void valueUpdated(ChannelUID channelUID, SensorConfig newConfig) {
-        @Nullable
         Integer batteryLevel = newConfig.battery;
-        @Nullable
         Float temperature = newConfig.temperature;
 
         switch (channelUID.getId()) {
@@ -279,10 +280,8 @@ public class SensorThingHandler extends DeconzBaseThingHandler<SensorMessage> {
     public void valueUpdated(String channelID, SensorState newState, boolean initializing) {
         switch (channelID) {
             case CHANNEL_LIGHT:
-                @Nullable
                 Boolean dark = newState.dark;
                 if (dark != null) {
-                    @Nullable
                     Boolean daylight = newState.daylight;
                     if (dark) { // if it's dark, it's dark ;)
                         updateState(channelID, new StringType("Dark"));
@@ -337,7 +336,6 @@ public class SensorThingHandler extends DeconzBaseThingHandler<SensorMessage> {
                 updateDecimalTypeChannel(channelID, newState.status);
                 break;
             case CHANNEL_OPENCLOSE:
-                @Nullable
                 Boolean open = newState.open;
                 if (open != null) {
                     updateState(channelID, open ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
@@ -365,7 +363,6 @@ public class SensorThingHandler extends DeconzBaseThingHandler<SensorMessage> {
                 updateDecimalTypeChannel(channelID, newState.buttonevent);
                 break;
             case CHANNEL_BUTTONEVENT:
-                @Nullable
                 Integer buttonevent = newState.buttonevent;
                 if (buttonevent != null && !initializing) {
                     triggerChannel(channelID, String.valueOf(buttonevent));
@@ -375,7 +372,6 @@ public class SensorThingHandler extends DeconzBaseThingHandler<SensorMessage> {
                 updateDecimalTypeChannel(channelID, newState.gesture);
                 break;
             case CHANNEL_GESTUREEVENT:
-                @Nullable
                 Integer gesture = newState.gesture;
                 if (gesture != null && !initializing) {
                     triggerChannel(channelID, String.valueOf(gesture));
@@ -385,7 +381,6 @@ public class SensorThingHandler extends DeconzBaseThingHandler<SensorMessage> {
                 updateDecimalTypeChannel(channelID, newState.battery);
                 break;
             case CHANNEL_LAST_UPDATED:
-                @Nullable
                 String lastUpdated = newState.lastupdated;
                 if (lastUpdated != null && !"none".equals(lastUpdated)) {
                     updateState(channelID,
@@ -401,13 +396,11 @@ public class SensorThingHandler extends DeconzBaseThingHandler<SensorMessage> {
     public void messageReceived(String sensorID, DeconzBaseMessage message) {
         if (message instanceof SensorMessage) {
             SensorMessage sensorMessage = (SensorMessage) message;
-            @Nullable
             SensorConfig sensorConfig = sensorMessage.config;
             if (sensorConfig != null) {
                 this.sensorConfig = sensorConfig;
                 updateChannels(sensorConfig);
             }
-            @Nullable
             SensorState sensorState = sensorMessage.state;
             if (sensorState != null) {
                 updateChannels(sensorState, false);
@@ -422,6 +415,7 @@ public class SensorThingHandler extends DeconzBaseThingHandler<SensorMessage> {
     }
 
     private void updateChannels(SensorState newState, boolean initializing) {
+        logger.trace("{} received {}", thing.getUID(), newState);
         sensorState = newState;
         thing.getChannels().forEach(channel -> valueUpdated(channel.getUID().getId(), newState, initializing));
     }
