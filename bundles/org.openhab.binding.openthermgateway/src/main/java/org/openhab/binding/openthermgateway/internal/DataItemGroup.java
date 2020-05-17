@@ -13,6 +13,7 @@
 package org.openhab.binding.openthermgateway.internal;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
@@ -23,10 +24,10 @@ import org.eclipse.smarthome.core.library.unit.SIUnits;
 @NonNullByDefault
 public class DataItemGroup {
 
-    public static final HashMap<Integer, DataItem[]> dataItemGroups = createDataItemGroups();
+    public static final Map<Integer, DataItem[]> dataItemGroups = createDataItemGroups();
 
-    private static HashMap<Integer, DataItem[]> createDataItemGroups() {
-        HashMap<Integer, DataItem[]> g = new HashMap<Integer, DataItem[]>();
+    private static Map<Integer, DataItem[]> createDataItemGroups() {
+        HashMap<Integer, DataItem[]> g = new HashMap<>();
 
         g.put(0, new DataItem[] { new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 0, "ch_enable"),
                 new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 1, "dhw_enable"),

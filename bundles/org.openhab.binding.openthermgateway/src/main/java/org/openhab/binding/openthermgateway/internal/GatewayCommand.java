@@ -13,6 +13,7 @@
 package org.openhab.binding.openthermgateway.internal;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -22,7 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class GatewayCommand {
-    private static final HashMap<String, @Nullable String> supportedCommands = getSupportedCommands();
+    private static final Map<String, @Nullable String> supportedCommands = getSupportedCommands();
 
     private String code;
     private String validationSet;
@@ -96,8 +97,8 @@ public class GatewayCommand {
                 String.format("Unable to parse gateway command with code '%s' and message '%s'", code, message));
     }
 
-    private static HashMap<String, @Nullable String> getSupportedCommands() {
-        HashMap<String, @Nullable String> c = new HashMap<String, @Nullable String>();
+    private static Map<String, @Nullable String> getSupportedCommands() {
+        Map<String, @Nullable String> c = new HashMap<>();
 
         c.put(GatewayCommandCode.TemperatureTemporary, null);
         c.put(GatewayCommandCode.TemperatureConstant, null);
