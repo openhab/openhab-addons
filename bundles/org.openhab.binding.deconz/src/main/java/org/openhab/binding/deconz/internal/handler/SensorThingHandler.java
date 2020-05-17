@@ -32,6 +32,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
@@ -51,8 +53,7 @@ import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.deconz.internal.dto.DeconzRestMessage;
+import org.openhab.binding.deconz.internal.dto.DeconzBaseMessage;
 import org.openhab.binding.deconz.internal.dto.SensorConfig;
 import org.openhab.binding.deconz.internal.dto.SensorMessage;
 import org.openhab.binding.deconz.internal.dto.SensorState;
@@ -104,7 +105,8 @@ public class SensorThingHandler extends DeconzBaseThingHandler<SensorMessage> {
 
     @Override
     protected void registerListener() {
-        @Nullable WebSocketConnection conn = connection;
+        @Nullable
+        WebSocketConnection conn = connection;
         if (conn != null) {
             conn.registerSensorListener(config.id, this);
         }
@@ -112,7 +114,8 @@ public class SensorThingHandler extends DeconzBaseThingHandler<SensorMessage> {
 
     @Override
     protected void unregisterListener() {
-        @Nullable WebSocketConnection conn = connection;
+        @Nullable
+        WebSocketConnection conn = connection;
         if (conn != null) {
             conn.unregisterSensorListener(config.id);
         }
@@ -125,7 +128,7 @@ public class SensorThingHandler extends DeconzBaseThingHandler<SensorMessage> {
         }
 
         sensorState.buttonevent = null;
-        valueUpdated(channelUID, sensorState, false);
+        valueUpdated(channelUID.getId(), sensorState, false);
     }
 
     @Override
@@ -151,9 +154,11 @@ public class SensorThingHandler extends DeconzBaseThingHandler<SensorMessage> {
         if (stateResponse == null) {
             return;
         }
-        @Nullable SensorConfig newSensorConfig = stateResponse.config;
+        @Nullable
+        SensorConfig newSensorConfig = stateResponse.config;
         sensorConfig = newSensorConfig != null ? newSensorConfig : new SensorConfig();
-        @Nullable SensorState newSensorState = stateResponse.state;
+        @Nullable
+        SensorState newSensorState = stateResponse.state;
         sensorState = newSensorState != null ? newSensorState : new SensorState();
 
         // Add some information about the sensor
@@ -225,7 +230,8 @@ public class SensorThingHandler extends DeconzBaseThingHandler<SensorMessage> {
     }
 
     private void createChannel(String channelId, ChannelKind kind) {
-        @Nullable ThingHandlerCallback callback = getCallback();
+        @Nullable
+        ThingHandlerCallback callback = getCallback();
         if (callback != null) {
             ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
             ChannelTypeUID channelTypeUID;
@@ -246,8 +252,10 @@ public class SensorThingHandler extends DeconzBaseThingHandler<SensorMessage> {
     }
 
     public void valueUpdated(ChannelUID channelUID, SensorConfig newConfig) {
-        @Nullable Integer batteryLevel = newConfig.battery;
-        @Nullable Float temperature = newConfig.temperature;
+        @Nullable
+        Integer batteryLevel = newConfig.battery;
+        @Nullable
+        Float temperature = newConfig.temperature;
 
         switch (channelUID.getId()) {
             case CHANNEL_BATTERY_LEVEL:
@@ -268,155 +276,119 @@ public class SensorThingHandler extends DeconzBaseThingHandler<SensorMessage> {
         }
     }
 
-    public void valueUpdated(ChannelUID channelUID, SensorState newState, boolean initializing) {
-        @Nullable Integer buttonevent = newState.buttonevent;
-        @Nullable Integer gesture = newState.gesture;
-        @Nullable String lastUpdated = newState.lastupdated;
-        @Nullable Integer status = newState.status;
-        @Nullable Integer batteryLevel = newState.battery;
-        @Nullable Boolean presence = newState.presence;
-        @Nullable Boolean open = newState.open;
-        @Nullable Float power = newState.power;
-        @Nullable Float consumption = newState.consumption;
-        @Nullable Float voltage = newState.voltage;
-        @Nullable Float current = newState.current;
-        @Nullable Integer lux = newState.lux;
-        @Nullable Integer lightlevel = newState.lightlevel;
-        @Nullable Float temperature = newState.temperature;
-        @Nullable Float humidity = newState.humidity;
-        @Nullable Integer pressure = newState.pressure;
-        @Nullable Boolean carbonmonoxide = newState.carbonmonoxide;
-
-        switch (channelUID.getId()) {
+    public void valueUpdated(String channelID, SensorState newState, boolean initializing) {
+        switch (channelID) {
             case CHANNEL_LIGHT:
-                @Nullable Boolean dark = newState.dark;
+                @Nullable
+                Boolean dark = newState.dark;
                 if (dark != null) {
-                    @Nullable Boolean daylight = newState.daylight;
+                    @Nullable
+                    Boolean daylight = newState.daylight;
                     if (dark) { // if it's dark, it's dark ;)
-                        updateState(channelUID, new StringType("Dark"));
+                        updateState(channelID, new StringType("Dark"));
                     } else if (daylight != null) { // if its not dark, it might be between darkness and daylight
                         if (daylight) {
-                            updateState(channelUID, new StringType("Daylight"));
+                            updateState(channelID, new StringType("Daylight"));
                         } else {
-                            updateState(channelUID, new StringType("Sunset"));
+                            updateState(channelID, new StringType("Sunset"));
                         }
                     } else { // if no daylight value is known, we assume !dark means daylight
-                        updateState(channelUID, new StringType("Daylight"));
+                        updateState(channelID, new StringType("Daylight"));
                     }
                 }
                 break;
             case CHANNEL_POWER:
-                if (power != null) {
-                    updateState(channelUID, new QuantityType<>(power, WATT));
-                }
+                updateQuantityTypeChannel(channelID, newState.power, WATT);
                 break;
             case CHANNEL_CONSUMPTION:
-                if (consumption != null) {
-                    updateState(channelUID, new QuantityType<>(consumption, WATT_HOUR));
-                }
+                updateQuantityTypeChannel(channelID, newState.consumption, WATT_HOUR);
                 break;
             case CHANNEL_VOLTAGE:
-                if (voltage != null) {
-                    updateState(channelUID, new QuantityType<>(voltage, VOLT));
-                }
+                updateQuantityTypeChannel(channelID, newState.voltage, VOLT);
                 break;
             case CHANNEL_CURRENT:
-                if (current != null) {
-                    updateState(channelUID, new QuantityType<>(current, MILLI(AMPERE)));
-                }
+                updateQuantityTypeChannel(channelID, newState.current, MILLI(AMPERE));
                 break;
             case CHANNEL_LIGHT_LUX:
-                if (lux != null) {
-                    updateState(channelUID, new QuantityType<>(lux, LUX));
-                }
+                updateQuantityTypeChannel(channelID, newState.lux, LUX);
                 break;
             case CHANNEL_LIGHT_LEVEL:
-                if (lightlevel != null) {
-                    updateState(channelUID, new DecimalType(lightlevel));
-                }
+                updateDecimalTypeChannel(channelID, newState.lightlevel);
                 break;
             case CHANNEL_DARK:
-                updateState(channelUID, Boolean.TRUE.equals(newState.dark) ? OnOffType.ON : OnOffType.OFF);
+                updateSwitchChannel(channelID, newState.dark);
                 break;
             case CHANNEL_DAYLIGHT:
-                updateState(channelUID, Boolean.TRUE.equals(newState.daylight) ? OnOffType.ON : OnOffType.OFF);
+                updateSwitchChannel(channelID, newState.daylight);
                 break;
             case CHANNEL_TEMPERATURE:
-                if (temperature != null) {
-                    updateState(channelUID, new QuantityType<>(temperature / 100, CELSIUS));
-                }
+                updateQuantityTypeChannel(channelID, newState.temperature, CELSIUS, 1.0 / 100);
                 break;
             case CHANNEL_HUMIDITY:
-                if (humidity != null) {
-                    updateState(channelUID, new QuantityType<>(humidity / 100, PERCENT));
-                }
+                updateQuantityTypeChannel(channelID, newState.humidity, PERCENT, 1.0 / 100);
                 break;
             case CHANNEL_PRESSURE:
-                if (pressure != null) {
-                    updateState(channelUID, new QuantityType<>(pressure, HECTO(PASCAL)));
-                }
+                updateQuantityTypeChannel(channelID, newState.pressure, HECTO(PASCAL));
                 break;
             case CHANNEL_PRESENCE:
-                if (presence != null) {
-                    updateState(channelUID, OnOffType.from(presence));
-                }
+                updateSwitchChannel(channelID, newState.presence);
                 break;
             case CHANNEL_VALUE:
-                if (status != null) {
-                    updateState(channelUID, new DecimalType(status));
-                }
+                updateDecimalTypeChannel(channelID, newState.status);
                 break;
             case CHANNEL_OPENCLOSE:
+                @Nullable
+                Boolean open = newState.open;
                 if (open != null) {
-                    updateState(channelUID, open ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+                    updateState(channelID, open ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
                 }
                 break;
             case CHANNEL_WATERLEAKAGE:
-                updateState(channelUID, Boolean.TRUE.equals(newState.water) ? OnOffType.ON : OnOffType.OFF);
+                updateSwitchChannel(channelID, newState.water);
                 break;
             case CHANNEL_FIRE:
-                updateState(channelUID, Boolean.TRUE.equals(newState.fire) ? OnOffType.ON : OnOffType.OFF);
+                updateSwitchChannel(channelID, newState.fire);
                 break;
             case CHANNEL_ALARM:
-                updateState(channelUID, Boolean.TRUE.equals(newState.alarm) ? OnOffType.ON : OnOffType.OFF);
+                updateSwitchChannel(channelID, newState.alarm);
                 break;
             case CHANNEL_TAMPERED:
-                updateState(channelUID, Boolean.TRUE.equals(newState.tampered) ? OnOffType.ON : OnOffType.OFF);
+                updateSwitchChannel(channelID, newState.tampered);
                 break;
             case CHANNEL_VIBRATION:
-                updateState(channelUID, Boolean.TRUE.equals(newState.vibration) ? OnOffType.ON : OnOffType.OFF);
+                updateSwitchChannel(channelID, newState.vibration);
                 break;
             case CHANNEL_CARBONMONOXIDE:
-                updateState(channelUID, carbonmonoxide != null ? OnOffType.from(carbonmonoxide) : UnDefType.UNDEF);
+                updateSwitchChannel(channelID, newState.carbonmonoxide);
                 break;
             case CHANNEL_BUTTON:
-                if (buttonevent != null) {
-                    updateState(channelUID, new DecimalType(buttonevent));
-                }
+                updateDecimalTypeChannel(channelID, newState.buttonevent);
                 break;
             case CHANNEL_BUTTONEVENT:
+                @Nullable
+                Integer buttonevent = newState.buttonevent;
                 if (buttonevent != null && !initializing) {
-                    triggerChannel(channelUID, String.valueOf(buttonevent));
+                    triggerChannel(channelID, String.valueOf(buttonevent));
                 }
                 break;
             case CHANNEL_GESTURE:
-                if (gesture != null) {
-                    updateState(channelUID, new DecimalType(gesture));
-                }
+                updateDecimalTypeChannel(channelID, newState.gesture);
                 break;
             case CHANNEL_GESTUREEVENT:
+                @Nullable
+                Integer gesture = newState.gesture;
                 if (gesture != null && !initializing) {
-                    triggerChannel(channelUID, String.valueOf(gesture));
+                    triggerChannel(channelID, String.valueOf(gesture));
                 }
                 break;
             case CHANNEL_BATTERY_LEVEL:
-                if (batteryLevel != null) {
-                    updateState(channelUID, new DecimalType(batteryLevel.longValue()));
-                }
+                updateDecimalTypeChannel(channelID, newState.battery);
                 break;
             case CHANNEL_LAST_UPDATED:
+                @Nullable
+                String lastUpdated = newState.lastupdated;
                 if (lastUpdated != null && !"none".equals(lastUpdated)) {
-                    updateState(channelUID,
+                    updateState(channelID,
                             new DateTimeType(ZonedDateTime.ofInstant(
                                     LocalDateTime.parse(lastUpdated, DateTimeFormatter.ISO_LOCAL_DATE_TIME),
                                     ZoneOffset.UTC, ZoneId.systemDefault())));
@@ -426,15 +398,17 @@ public class SensorThingHandler extends DeconzBaseThingHandler<SensorMessage> {
     }
 
     @Override
-    public void messageReceived(String sensorID, DeconzRestMessage message) {
+    public void messageReceived(String sensorID, DeconzBaseMessage message) {
         if (message instanceof SensorMessage) {
             SensorMessage sensorMessage = (SensorMessage) message;
-            @Nullable SensorConfig sensorConfig = sensorMessage.config;
+            @Nullable
+            SensorConfig sensorConfig = sensorMessage.config;
             if (sensorConfig != null) {
                 this.sensorConfig = sensorConfig;
                 updateChannels(sensorConfig);
             }
-            @Nullable SensorState sensorState = sensorMessage.state;
+            @Nullable
+            SensorState sensorState = sensorMessage.state;
             if (sensorState != null) {
                 updateChannels(sensorState, false);
             }
@@ -449,6 +423,31 @@ public class SensorThingHandler extends DeconzBaseThingHandler<SensorMessage> {
 
     private void updateChannels(SensorState newState, boolean initializing) {
         sensorState = newState;
-        thing.getChannels().forEach(channel -> valueUpdated(channel.getUID(), newState, initializing));
+        thing.getChannels().forEach(channel -> valueUpdated(channel.getUID().getId(), newState, initializing));
+    }
+
+    private void updateSwitchChannel(String channelID, @Nullable Boolean value) {
+        if (value == null) {
+            return;
+        }
+        updateState(channelID, OnOffType.from(value));
+    }
+
+    private void updateDecimalTypeChannel(String channelID, @Nullable Number value) {
+        if (value == null) {
+            return;
+        }
+        updateState(channelID, new DecimalType(value.longValue()));
+    }
+
+    private void updateQuantityTypeChannel(String channelID, @Nullable Number value, Unit<?> unit) {
+        updateQuantityTypeChannel(channelID, value, unit, 1.0);
+    }
+
+    private void updateQuantityTypeChannel(String channelID, @Nullable Number value, Unit<?> unit, double scaling) {
+        if (value == null) {
+            return;
+        }
+        updateState(channelID, new QuantityType<>(value.doubleValue() * scaling, unit));
     }
 }

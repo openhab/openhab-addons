@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class SensorMessage extends DeconzRestMessage {
+public class SensorMessage extends DeconzBaseMessage {
     public String type = "";
 
     public @Nullable SensorConfig config;

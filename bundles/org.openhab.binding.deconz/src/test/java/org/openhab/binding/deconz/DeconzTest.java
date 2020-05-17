@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.deconz.discovery;
+package org.openhab.binding.deconz;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.discovery.DiscoveryListener;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingUID;
@@ -42,17 +43,18 @@ import com.google.gson.GsonBuilder;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class DeconzTest {
-    private Gson gson;
+    private @NonNullByDefault({}) Gson gson;
 
     @Mock
-    private DiscoveryListener discoveryListener;
+    private @NonNullByDefault({}) DiscoveryListener discoveryListener;
 
     @Mock
-    private DeconzBridgeHandler bridgeHandler;
+    private @NonNullByDefault({}) DeconzBridgeHandler bridgeHandler;
 
     @Mock
-    private Bridge bridge;
+    private @NonNullByDefault({}) Bridge bridge;
 
     @Before
     public void initialize() {

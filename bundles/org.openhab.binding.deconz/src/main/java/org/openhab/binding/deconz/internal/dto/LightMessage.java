@@ -23,7 +23,7 @@ import org.openhab.binding.deconz.internal.types.LightType;
  * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
-public class LightMessage extends DeconzRestMessage {
+public class LightMessage extends DeconzBaseMessage {
     public @Nullable Boolean hascolor;
     public @Nullable Integer ctmax;
     public @Nullable Integer ctmin;

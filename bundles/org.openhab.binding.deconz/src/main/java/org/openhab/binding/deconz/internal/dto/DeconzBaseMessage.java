@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
-public class DeconzRestMessage {
+public class DeconzBaseMessage {
     // For websocket change events
     public String e = ""; // "changed"
     public String r = ""; // "sensors"

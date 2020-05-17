@@ -28,7 +28,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
-import org.openhab.binding.deconz.internal.dto.DeconzRestMessage;
+import org.openhab.binding.deconz.internal.dto.DeconzBaseMessage;
 import org.openhab.binding.deconz.internal.netutils.AsyncHttpClient;
 import org.openhab.binding.deconz.internal.netutils.WebSocketConnection;
 import org.openhab.binding.deconz.internal.netutils.WebSocketMessageListener;
@@ -49,7 +49,7 @@ import com.google.gson.Gson;
  * @author Jan N. Klug - Refactored to abstract class
  */
 @NonNullByDefault
-public abstract class DeconzBaseThingHandler<T extends DeconzRestMessage> extends BaseThingHandler
+public abstract class DeconzBaseThingHandler<T extends DeconzBaseMessage> extends BaseThingHandler
         implements WebSocketMessageListener {
     private final Logger logger = LoggerFactory.getLogger(DeconzBaseThingHandler.class);
     protected ThingConfig config = new ThingConfig();
@@ -117,6 +117,7 @@ public abstract class DeconzBaseThingHandler<T extends DeconzRestMessage> extend
         // Real-time data
         registerListener();
 
+        // get initial values
         requestState();
     }
 

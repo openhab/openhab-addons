@@ -19,7 +19,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.google.gson.Gson;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -34,13 +33,15 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.deconz.internal.dto.DeconzRestMessage;
+import org.openhab.binding.deconz.internal.dto.DeconzBaseMessage;
 import org.openhab.binding.deconz.internal.dto.LightMessage;
 import org.openhab.binding.deconz.internal.dto.LightState;
 import org.openhab.binding.deconz.internal.netutils.AsyncHttpClient;
 import org.openhab.binding.deconz.internal.netutils.WebSocketConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
 
 /**
  * This light thing doesn't establish any connections, that is done by the bridge Thing.
@@ -75,7 +76,8 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
 
     @Override
     protected void registerListener() {
-        @Nullable WebSocketConnection conn = connection;
+        @Nullable
+        WebSocketConnection conn = connection;
         if (conn != null) {
             conn.registerLightListener(config.id, this);
         }
@@ -83,7 +85,8 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
 
     @Override
     protected void unregisterListener() {
-        @Nullable WebSocketConnection conn = connection;
+        @Nullable
+        WebSocketConnection conn = connection;
         if (conn != null) {
             conn.unregisterLightListener(config.id);
         }
@@ -97,8 +100,10 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
         }
 
         LightState newLightState = new LightState();
-        @Nullable Boolean currentOn = lightState.on;
-        @Nullable Integer currentBri = lightState.bri;
+        @Nullable
+        Boolean currentOn = lightState.on;
+        @Nullable
+        Integer currentBri = lightState.bri;
 
         switch (channelUID.getId()) {
             case CHANNEL_SWITCH:
@@ -115,7 +120,8 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                 } else if (command instanceof HSBType) {
                     HSBType hsbCommand = (HSBType) command;
 
-                    @Nullable String colormode = lightState.colormode;
+                    @Nullable
+                    String colormode = lightState.colormode;
                     if (colormode == null) {
                         // default color mode to hsb
                         colormode = "hs";
@@ -147,7 +153,8 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                 }
 
                 // send on/off state together with brightness if not already set or unknown
-                @Nullable Integer newBri = newLightState.bri;
+                @Nullable
+                Integer newBri = newLightState.bri;
                 if ((newBri != null) && ((currentOn == null) || ((newBri > 0) != currentOn))) {
                     newLightState.on = (newBri > 0);
                 }
@@ -182,7 +189,8 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                 return;
         }
 
-        @Nullable AsyncHttpClient asyncHttpClient = http;
+        @Nullable
+        AsyncHttpClient asyncHttpClient = http;
         if (asyncHttpClient == null) {
             return;
         }
@@ -221,12 +229,17 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
 
     public void valueUpdated(String channelId, LightState newState) {
         logger.debug("{} received {}", thing.getUID(), newState);
-        @Nullable Integer bri = newState.bri;
-        @Nullable Integer ct = newState.ct;
-        @Nullable Boolean on = newState.on;
+        @Nullable
+        Integer bri = newState.bri;
+        @Nullable
+        Integer ct = newState.ct;
+        @Nullable
+        Boolean on = newState.on;
         Double @Nullable [] xy = newState.xy;
-        @Nullable Integer hue = newState.hue;
-        @Nullable Integer sat = newState.sat;
+        @Nullable
+        Integer hue = newState.hue;
+        @Nullable
+        Integer sat = newState.sat;
 
         switch (channelId) {
             case CHANNEL_SWITCH:
@@ -241,9 +254,10 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                     }
                 } else if ("hs".equals(newState.colormode)) {
                     if (hue != null && sat != null && bri != null) {
-                        updateState(channelId, new HSBType(new DecimalType(hue / 65535 * 360),
-                                new PercentType(new BigDecimal(sat / 2.55)),
-                                new PercentType(new BigDecimal(bri / 2.55))));
+                        updateState(channelId,
+                                new HSBType(new DecimalType(hue / 65535 * 360),
+                                        new PercentType(new BigDecimal(sat / 2.55)),
+                                        new PercentType(new BigDecimal(bri / 2.55))));
 
                     }
                 }
@@ -277,10 +291,11 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
     }
 
     @Override
-    public void messageReceived(String sensorID, DeconzRestMessage message) {
+    public void messageReceived(String sensorID, DeconzBaseMessage message) {
         if (message instanceof LightMessage) {
             LightMessage lightMessage = (LightMessage) message;
-            @Nullable LightState lightState = lightMessage.state;
+            @Nullable
+            LightState lightState = lightMessage.state;
             if (lightState != null) {
                 updateChannels(lightState);
             }

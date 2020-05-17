@@ -13,7 +13,7 @@
 package org.openhab.binding.deconz.internal.netutils;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.deconz.internal.dto.DeconzRestMessage;
+import org.openhab.binding.deconz.internal.dto.DeconzBaseMessage;
 
 /**
  * Informs about received messages
@@ -29,5 +29,5 @@ public interface WebSocketMessageListener {
      * @param message The received message
      */
 
-    void messageReceived(String sensorID, DeconzRestMessage message);
+    void messageReceived(String sensorID, DeconzBaseMessage message);
 }

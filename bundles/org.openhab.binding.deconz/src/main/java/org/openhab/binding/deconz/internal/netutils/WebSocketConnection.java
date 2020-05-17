@@ -24,7 +24,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
-import org.openhab.binding.deconz.internal.dto.DeconzRestMessage;
+import org.openhab.binding.deconz.internal.dto.DeconzBaseMessage;
 import org.openhab.binding.deconz.internal.dto.LightMessage;
 import org.openhab.binding.deconz.internal.dto.SensorMessage;
 import org.slf4j.Logger;
@@ -110,7 +110,7 @@ public class WebSocketConnection {
     @SuppressWarnings("null")
     @OnWebSocketMessage
     public void onMessage(String message) {
-        DeconzRestMessage changedMessage = gson.fromJson(message, DeconzRestMessage.class);
+        DeconzBaseMessage changedMessage = gson.fromJson(message, DeconzBaseMessage.class);
         switch (changedMessage.r) {
             case "sensors":
                 WebSocketMessageListener listener = sensorListener.get(changedMessage.id);

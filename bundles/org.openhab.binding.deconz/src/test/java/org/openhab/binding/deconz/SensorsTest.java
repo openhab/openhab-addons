@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.deconz.discovery;
+package org.openhab.binding.deconz;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -18,6 +18,7 @@ import static org.openhab.binding.deconz.internal.BindingConstants.THING_TYPE_CA
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -43,11 +44,12 @@ import com.google.gson.GsonBuilder;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class SensorsTest {
-    private Gson gson;
+    private @NonNullByDefault({}) Gson gson;
 
     @Mock
-    private ThingHandlerCallback thingHandlerCallback;
+    private @NonNullByDefault({}) ThingHandlerCallback thingHandlerCallback;
 
     @Before
     public void initialize() {

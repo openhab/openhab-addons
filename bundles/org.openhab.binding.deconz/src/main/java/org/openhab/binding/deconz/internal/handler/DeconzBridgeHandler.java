@@ -106,7 +106,8 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
      * Stops the API request or websocket reconnect timer
      */
     private void stopTimer() {
-        @Nullable ScheduledFuture<?> future = scheduledFuture;
+        @Nullable
+        ScheduledFuture<?> future = scheduledFuture;
         if (future != null) {
             future.cancel(true);
             scheduledFuture = null;
