@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.commons.lang.NotImplementedException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.io.transport.modbus.BasicModbusRegister;
+import org.openhab.io.transport.modbus.ModbusRegister;
 import org.openhab.io.transport.modbus.BasicModbusRegisterArray;
 import org.openhab.io.transport.modbus.BitArray;
 import org.openhab.io.transport.modbus.ModbusRegister;
@@ -197,7 +197,7 @@ public final class WriteRequestJsonUtilities {
                     throw new IllegalArgumentException("Must provide at least one register");
                 }
                 for (int i = 0; i < valuesElem.size(); i++) {
-                    registers[i] = new BasicModbusRegister(valuesElem.get(i).getAsInt());
+                    registers[i] = new ModbusRegister(valuesElem.get(i).getAsInt());
                 }
                 return new ModbusWriteRegisterRequestBlueprint(unitId, address, new BasicModbusRegisterArray(registers),
                         !writeSingle.get(), maxTries);

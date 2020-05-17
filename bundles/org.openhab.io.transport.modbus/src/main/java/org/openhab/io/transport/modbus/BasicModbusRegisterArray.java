@@ -33,7 +33,7 @@ public class BasicModbusRegisterArray implements ModbusRegisterArray {
     public static ModbusRegister[] registersFromValues(int... registerValues) {
         ModbusRegister[] registers = new ModbusRegister[registerValues.length];
         for (int i = 0; i < registerValues.length; i++) {
-            registers[i] = new BasicModbusRegister(registerValues[i]);
+            registers[i] = new ModbusRegister(registerValues[i]);
         }
         return registers;
     }

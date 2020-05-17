@@ -65,7 +65,7 @@ import org.openhab.binding.modbus.internal.handler.ModbusDataThingHandler;
 import org.openhab.binding.modbus.internal.handler.ModbusTcpThingHandler;
 import org.openhab.io.transport.modbus.AsyncModbusReadResult;
 import org.openhab.io.transport.modbus.AsyncModbusWriteResult;
-import org.openhab.io.transport.modbus.BasicModbusRegister;
+import org.openhab.io.transport.modbus.ModbusRegister;
 import org.openhab.io.transport.modbus.BasicModbusRegisterArray;
 import org.openhab.io.transport.modbus.BitArray;
 import org.openhab.io.transport.modbus.ModbusConstants;
@@ -498,7 +498,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
     public void testOnRegistersInt16StaticTransformation() {
         ModbusDataThingHandler dataHandler = testReadHandlingGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 "0", "-3", ModbusConstants.ValueType.INT16, null, new BasicModbusRegisterArray(
-                        new ModbusRegister[] { new BasicModbusRegister((byte) 0xff, (byte) 0xfd) }),
+                        new ModbusRegister[] { new ModbusRegister((byte) 0xff, (byte) 0xfd) }),
                 null);
 
         assertSingleStateUpdate(dataHandler, CHANNEL_LAST_READ_SUCCESS, is(notNullValue(State.class)));
@@ -521,7 +521,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         ModbusDataThingHandler dataHandler = testReadHandlingGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 "0", "MULTIPLY(10)", ModbusConstants.ValueType.INT16, null,
                 new BasicModbusRegisterArray(
-                        new ModbusRegister[] { new BasicModbusRegister((byte) 0xff, (byte) 0xfd) }),
+                        new ModbusRegister[] { new ModbusRegister((byte) 0xff, (byte) 0xfd) }),
                 null, bundleContext);
 
         assertSingleStateUpdate(dataHandler, CHANNEL_LAST_READ_SUCCESS, is(notNullValue(State.class)));
@@ -544,8 +544,8 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         ModbusDataThingHandler dataHandler = testReadHandlingGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 "0", "default", ModbusConstants.ValueType.FLOAT32, null, new BasicModbusRegisterArray(
                         // equivalent of floating point NaN
-                        new ModbusRegister[] { new BasicModbusRegister((byte) 0x7f, (byte) 0xc0),
-                                new BasicModbusRegister((byte) 0x00, (byte) 0x00) }),
+                        new ModbusRegister[] { new ModbusRegister((byte) 0x7f, (byte) 0xc0),
+                                new ModbusRegister((byte) 0x00, (byte) 0x00) }),
                 null, bundleContext);
 
         assertSingleStateUpdate(dataHandler, CHANNEL_LAST_READ_SUCCESS, is(notNullValue(State.class)));
@@ -572,7 +572,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         ModbusDataThingHandler dataHandler = testReadHandlingGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 "0", "ONOFF(10)", ModbusConstants.ValueType.INT16, null,
                 new BasicModbusRegisterArray(
-                        new ModbusRegister[] { new BasicModbusRegister((byte) 0xff, (byte) 0xfd) }),
+                        new ModbusRegister[] { new ModbusRegister((byte) 0xff, (byte) 0xfd) }),
                 null, bundleContext);
 
         assertSingleStateUpdate(dataHandler, CHANNEL_LAST_READ_SUCCESS, is(notNullValue(State.class)));
