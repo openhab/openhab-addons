@@ -86,7 +86,25 @@ public class LightsTest {
 
 
     @Test
-    public void windowCovveringUpdateTest() throws IOException {
+    public void dimmableLightUpdateTest() throws IOException {
+        LightMessage lightMessage = DeconzTest.getObjectFromJson("dimmable.json", LightMessage.class, gson);
+        Assert.assertNotNull(lightMessage);
+
+        ThingUID thingUID = new ThingUID("deconz", "light");
+        ChannelUID channelUID_bri = new ChannelUID(thingUID, CHANNEL_BRIGHTNESS);
+
+        Thing light = ThingBuilder.create(THING_TYPE_DIMMABLE_LIGHT, thingUID)
+                .withChannel(ChannelBuilder.create(channelUID_bri, "Dimmer").build())
+                .build();
+        LightThingHandler lightThingHandler = new LightThingHandler(light, gson);
+        lightThingHandler.setCallback(thingHandlerCallback);
+
+        lightThingHandler.messageReceived("", lightMessage);
+        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUID_bri), eq(new PercentType("37.64705882352941301860482781194150447845458984375")));
+    }
+
+    @Test
+    public void windowCoveringUpdateTest() throws IOException {
         LightMessage lightMessage = DeconzTest.getObjectFromJson("windowcovering.json", LightMessage.class, gson);
         Assert.assertNotNull(lightMessage);
 
