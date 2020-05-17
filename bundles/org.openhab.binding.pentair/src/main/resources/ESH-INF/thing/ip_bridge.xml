@@ -12,6 +12,7 @@
 				<label>IP Address</label>
 				<description>The IP address to connect to.</description>
 				<context>network-address</context>
+				<default>127.0.0.1</default>
 			</parameter>
 
 			<parameter name="port" type="integer" required="false">
@@ -24,6 +25,12 @@
 				<label>Pentair ID</label>
 				<description>The ID to use to send commands on the Pentair bus (default: 34)</description>
 				<default>34</default>
+			</parameter>
+
+			<parameter name="discovery" type="boolean">
+				<label>Enable Discovery</label>
+				<description>Enable automatic discovery of devices</description>
+				<default>true</default>
 			</parameter>
 		</config-description>
 	</bridge-type>

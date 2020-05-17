@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.pentair.internal.config;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Configuration parameters for IP Bridge
@@ -20,17 +20,14 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * @author Jeff James - initial contribution
  *
  */
+@NonNullByDefault
 public class PentairIPBridgeConfig {
     /** IP address of destination */
-    public String address;
+    public String address = "";
     /** Port of destination */
-    public Integer port;
-
+    public Integer port = 10000;
     /** ID to use when sending commands on the Pentair RS485 bus. */
-    public Integer id;
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this).append("address", address).append("port", port).append("id", id).toString();
-    }
+    public Integer id = 34;
+    /** enable automatic discovery */
+    public boolean discovery = false;
 }

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.pentair.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Pentair Intellichlor specialation of a PentairPacket. Includes public variables for many of the reverse engineered
  * packet content. Note, Intellichlor packet is of a different format and all helper functions in the base PentairPacket
@@ -25,6 +27,7 @@ package org.openhab.binding.pentair.internal;
  * @author Jeff James - initial contribution
  *
  */
+@NonNullByDefault
 public class PentairPacketIntellichlor extends PentairPacket { // 29 byte packet format
     protected static final int CMD = 3; // not sure what this is, needs to be 11 for SALT_OUTPUT or SALINITY to be valid
 

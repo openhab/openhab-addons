@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.pentair.internal.handler;
 
-import static org.openhab.binding.pentair.internal.PentairBindingConstants.INTELLIFLO_THING_TYPE;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -21,7 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -30,6 +32,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.pentair.internal.PentairDiscoveryService;
 import org.openhab.binding.pentair.internal.PentairPacket;
 import org.openhab.binding.pentair.internal.PentairPacketIntellichlor;
 import org.slf4j.Logger;
@@ -46,23 +49,39 @@ import org.slf4j.LoggerFactory;
  * @author Jeff James - Initial contribution
  *
  */
+@NonNullByDefault
 public abstract class PentairBaseBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(PentairBaseBridgeHandler.class);
 
     /** input stream - subclass needs to assign in connect function */
-    protected BufferedInputStream reader;
+    protected @Nullable BufferedInputStream reader;
     /** output stream - subclass needs to assing in connect function */
-    protected BufferedOutputStream writer;
+
+    protected @Nullable BufferedOutputStream writer;
     /** thread for parser - subclass needs to create/assign connect */
-    protected Thread thread;
+    protected @Nullable Thread thread;
     /** parser object - subclass needs to create/assign during connect */
-    protected Parser parser;
-    /** polling job for pump status */
-    protected ScheduledFuture<?> pollingjob;
+    protected @Nullable Parser parser;
+    /** polling job for reconnecting */
+    protected @Nullable ScheduledFuture<?> pollingjob;
     /** ID to use when sending commands on Pentair bus - subclass needs to assign based on configuration parameter */
     protected int id;
     /** array to keep track of IDs seen on the Pentair bus that do not correlate to a configured Thing object */
     protected ArrayList<Integer> unregistered = new ArrayList<>();
+
+    protected ConnectState connectstate = ConnectState.INIT;
+
+    private ReentrantLock lock = new ReentrantLock();
+    private Condition waitAck = lock.newCondition();
+    private int ackResponse = -1;
+
+    protected boolean discovery = false;
+
+    protected @Nullable PentairDiscoveryService discoveryService;
+
+    public void setDiscoveryService(PentairDiscoveryService discoveryService) {
+        this.discoveryService = discoveryService;
+    }
 
     /**
      * Gets pentair bus id
@@ -73,11 +92,19 @@ public abstract class PentairBaseBridgeHandler extends BaseBridgeHandler {
         return id;
     }
 
+    protected enum ConnectState {
+        CONNECTING,
+        DISCONNECTED,
+        CONNECTED,
+        INIT,
+        CONFIGERROR
+    };
+
     private enum ParserState {
         WAIT_SOC,
         CMD_PENTAIR,
         CMD_INTELLICHLOR
-    }
+    };
 
     /**
      * Constructor
@@ -86,6 +113,7 @@ public abstract class PentairBaseBridgeHandler extends BaseBridgeHandler {
      */
     PentairBaseBridgeHandler(Bridge bridge) {
         super(bridge);
+        connectstate = ConnectState.INIT;
     }
 
     @Override
@@ -99,35 +127,81 @@ public abstract class PentairBaseBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("initializing Pentair Bridge handler.");
 
-        connect();
+        _connect();
 
-        pollingjob = scheduler.scheduleWithFixedDelay(new PumpStatus(), 10, 120, TimeUnit.SECONDS);
+        return;
     }
 
     @Override
     public void dispose() {
         logger.debug("Handler disposed.");
-        pollingjob.cancel(true);
-        disconnect();
+
+        _disconnect();
+
+        if (pollingjob != null) {
+            pollingjob.cancel(true);
+        }
     }
 
     /**
      * Abstract method for creating connection. Must be implemented in subclass.
+     * Return 0 if all goes well.
+     *
+     * @throws Exception
      */
-    protected abstract void connect();
+    protected abstract int connect();
+
+    private int _connect() {
+        if (connectstate != ConnectState.DISCONNECTED && connectstate != ConnectState.INIT) {
+            logger.debug("_connect() without ConnectState == DISCONNECTED or INIT: {}", connectstate);
+        }
+
+        connectstate = ConnectState.CONNECTING;
+
+        if (connect() != 0) {
+            connectstate = ConnectState.CONFIGERROR;
+
+            return -1;
+        }
+
+        connectstate = ConnectState.CONNECTED;
+
+        if (pollingjob == null) {
+            pollingjob = scheduler.scheduleWithFixedDelay(new ReconnectIO(), 60, 30, TimeUnit.SECONDS);
+        }
+
+        return 0;
+    }
 
     /**
      * Abstract method for disconnect. Must be implemented in subclass
      */
     protected abstract void disconnect();
 
+    private void _disconnect() {
+        disconnect();
+
+        connectstate = ConnectState.DISCONNECTED;
+    }
+
+    // Job to pull to try and reconnect upon being disconnected. Note this should only be started on an initial
+    class ReconnectIO implements Runnable {
+        @Override
+        public void run() {
+            logger.debug("ReconnectIO:run");
+            if (connectstate == ConnectState.DISCONNECTED) {
+                _connect();
+            }
+        }
+    }
+
     /**
      * Helper function to find a Thing assigned to this bridge with a specific pentair bus id.
      *
-     * @param id Pentiar bus id
+     * @param id Pentair bus id
      * @return Thing object. null if id is not found.
      */
-    public Thing findThing(int id) {
+    public @Nullable Thing findThing(int id) {
         List<Thing> things = getThing().getThings();
 
         for (Thing t : things) {
@@ -199,40 +273,6 @@ public abstract class PentairBaseBridgeHandler extends BaseBridgeHandler {
         }
 
         return i;
-    }
-
-    /**
-     * Job to send pump query status packages to all Intelliflo Pump things in order to see the status.
-     * Note: From the internet is seems some FW versions of EasyTouch controllers send this automatically and this the
-     * pump status packets can just be snooped, however my controller version does not do this. No harm in sending.
-     *
-     * @author Jeff James
-     *
-     */
-    class PumpStatus implements Runnable {
-        @Override
-        public void run() {
-            List<Thing> things = getThing().getThings();
-
-            // FF 00 FF A5 00 60 10 07 00 01 1C
-            byte[] packet = { (byte) 0xA5, (byte) 0x00, (byte) 0x00, (byte) id, (byte) 0x07, (byte) 0x00 };
-
-            PentairPacket p = new PentairPacket(packet);
-
-            for (Thing t : things) {
-                if (!t.getThingTypeUID().equals(INTELLIFLO_THING_TYPE)) {
-                    continue;
-                }
-
-                p.setDest(((PentairIntelliFloHandler) t.getHandler()).id);
-                writePacket(p);
-                try {
-                    Thread.sleep(300); // make sure each pump has time to respond
-                } catch (InterruptedException e) {
-                    break;
-                }
-            }
-        }
     }
 
     /**
@@ -321,15 +361,30 @@ public abstract class PentairBaseBridgeHandler extends BaseBridgeHandler {
 
                             thing = findThing(p.getSource());
                             if (thing == null) {
-                                if ((p.getSource() >> 8) == 0x02) { // control panels are 0x3*, don't treat as an
-                                                                    // unregistered device
-                                    logger.trace("Command from control panel device ({}): {}", p.getSource(), p);
+                                byte source = (byte) p.getSource();
+                                if ((source >> 4) == 0x02) { // control panels are 0x2*, don't treat as an
+                                                             // unregistered device
+                                    logger.debug("Command from control panel device ({}): {}", p.getSource(), p);
                                 } else if (!unregistered.contains(p.getSource())) { // if not yet seen, print out log
                                                                                     // message once
+                                    if ((source >> 4) == 0x01) { // controller
+                                        if (PentairControllerHandler.onlineController == null) { // only register one
+                                                                                                 // controller
+                                            if (discovery) {
+                                                discoveryService.notifyDiscoveredController(source);
+                                            }
+                                        }
+                                    } else if ((source >> 4) == 0x06) {
+                                        if (discovery) {
+                                            discoveryService.notifyDiscoverdIntelliflo(source);
+                                        }
+                                    }
+
                                     logger.info("Command from unregistered device ({}): {}", p.getSource(), p);
                                     unregistered.add(p.getSource());
+
                                 } else {
-                                    logger.trace("Command from unregistered device ({}): {}", p.getSource(), p);
+                                    logger.debug("Command from unregistered device ({}): {}", p.getSource(), p);
                                 }
                                 break;
                             }
@@ -340,9 +395,10 @@ public abstract class PentairBaseBridgeHandler extends BaseBridgeHandler {
                                 break;
                             }
 
-                            logger.trace("Received pentair command: {}", p);
+                            logger.debug("Received pentair command: {}", p);
 
                             thinghandler.processPacketFrom(p);
+                            ackResponse(p.getAction());
 
                             break;
                         case CMD_INTELLICHLOR:
@@ -390,6 +446,9 @@ public abstract class PentairBaseBridgeHandler extends BaseBridgeHandler {
 
                             if (thing == null) {
                                 if (!unregistered.contains(0)) { // if not yet seen, print out log message
+                                    if (discovery) {
+                                        discoveryService.notifyDiscoveredIntellichlor(0);
+                                    }
                                     logger.info("Command from unregistered Intelliflow: {}", pic);
                                     unregistered.add(0);
                                 } else {
@@ -411,11 +470,14 @@ public abstract class PentairBaseBridgeHandler extends BaseBridgeHandler {
                     }
                 }
             } catch (IOException e) {
-                logger.trace("I/O error while reading from stream: {}", e.getMessage());
-                disconnect();
+                logger.debug("I/O error while reading from stream: {}", e.getMessage());
+                _disconnect();
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             } catch (EOBException e) {
+                logger.debug("EOB Exception: {}", e.getMessage());
                 // EOB Exception is used to exit the parser loop if full message is not in buffer.
+            } catch (Exception e) {
+                logger.debug("Exception: {}", e.getMessage());
             }
 
             logger.debug("msg reader thread exited");
@@ -428,10 +490,29 @@ public abstract class PentairBaseBridgeHandler extends BaseBridgeHandler {
      * @param p {@link PentairPacket} to write
      */
     public void writePacket(PentairPacket p) {
+        writePacket(p, -1, 0);
+    }
+
+    /**
+     * Method to acknowledge an ack or response packet has been sent
+     *
+     * @param response is the command that was seen as a return. This is validate against that this was the response
+     *            before signally a return.
+     * @param retries is the number of retries if an ack is not seen before timeout
+     * @return true if writePacket was successful and if required saw a response
+     */
+    public boolean writePacket(PentairPacket p, int response, int retries) {
+        boolean bReturn = true;
+
         try { // FF 00 FF A5 00 60 10 07 00 01 1C
             byte[] preamble = { (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0x00, (byte) 0xFF };
             byte[] buf = new byte[5 + p.getLength() + 8]; // 5 is preamble, 8 is 6 bytes for header and 2 for checksum
+            int nRetries = retries;
 
+            if (writer == null) {
+                logger.debug("writePacket: writer = null");
+                return false;
+            }
             p.setSource(id);
 
             System.arraycopy(preamble, 0, buf, 0, 5);
@@ -441,13 +522,56 @@ public abstract class PentairBaseBridgeHandler extends BaseBridgeHandler {
             buf[p.getLength() + 11] = (byte) ((checksum >> 8) & 0xFF);
             buf[p.getLength() + 12] = (byte) (checksum & 0xFF);
 
-            logger.debug("Writing packet: {}", PentairPacket.bytesToHex(buf));
+            lock.lock();
+            ackResponse = response;
 
-            writer.write(buf, 0, 5 + p.getLength() + 8);
-            writer.flush();
+            do {
+                logger.debug("Writing packet: {}", PentairPacket.bytesToHex(buf));
+
+                writer.write(buf, 0, 5 + p.getLength() + 8);
+                writer.flush();
+
+                if (response != -1) {
+                    logger.trace("writePacket: wait for ack (response: {}, retries: {})", response, nRetries);
+                    bReturn = waitAck.await(1000, TimeUnit.MILLISECONDS); // bReturn will be false if timeout
+                    nRetries--;
+                }
+            } while ((bReturn != true) && (nRetries >= 0));
         } catch (IOException e) {
-            logger.trace("I/O error while writing stream", e);
+            logger.debug("I/O error while writing stream: {}", e.getMessage());
+            _disconnect();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        } catch (InterruptedException e) {
+            logger.debug("writePacket: InterruptedException: {}", e.getMessage());
+        } catch (Exception e) {
+            logger.debug("writePacket: Exception: {}", e.getMessage());
+        } finally {
+            lock.unlock();
+        }
+
+        if (!bReturn) {
+            logger.debug("writePacket: timeout");
+        }
+        return bReturn;
+    }
+
+    /**
+     * Method to acknowledge an ack or response packet has been sent
+     *
+     * @param cmdresponse is the command that was seen as a return. This is validate against that this was the response
+     *            before signally a return.
+     */
+    public void ackResponse(int response) {
+        if (response != ackResponse) {
+            return;
+        }
+
+        try {
+            lock.lock();
+            waitAck.signalAll();
+            lock.unlock();
+        } catch (Exception e) {
+            logger.debug("Exception: {}", e.getMessage());
         }
     }
 }

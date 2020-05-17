@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.pentair.internal.config;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Configuration parameters for Serial Bridge
@@ -20,14 +20,12 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * @author Jeff James - initial contribution
  *
  */
+@NonNullByDefault
 public class PentairSerialBridgeConfig {
     /** path or name of serial port, usually /dev/ttyUSB0 format for linux/mac, COM1 for windows */
-    public String serialPort;
+    public String serialPort = "";
     /** ID to use when sending commands on the Pentair RS485 bus. */
-    public Integer id;
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this).append("serialPort", serialPort).append("id", id).toString();
-    }
+    public Integer id = 34;
+    /** Enable automotic discovery */
+    public boolean discovery = false;
 }

@@ -14,10 +14,14 @@ package org.openhab.binding.pentair.internal.handler;
 
 import static org.openhab.binding.pentair.internal.PentairBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.pentair.internal.PentairBindingConstants;
@@ -34,8 +38,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jeff James - Initial contribution
  */
+@NonNullByDefault
 public class PentairIntelliChlorHandler extends PentairBaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(PentairIntelliChlorHandler.class);
+    private boolean waitStatusForOnline = false;
 
     protected PentairPacketIntellichlor pic3cur = new PentairPacketIntellichlor();
     protected PentairPacketIntellichlor pic4cur = new PentairPacketIntellichlor();
@@ -50,18 +56,43 @@ public class PentairIntelliChlorHandler extends PentairBaseThingHandler {
 
         id = 0; // Intellichlor doesn't have ID
 
-        updateStatus(ThingStatus.ONLINE);
+        goOnline();
     }
 
     @Override
     public void dispose() {
         logger.debug("Thing {} disposed.", getThing().getUID());
+
+        goOffline(ThingStatusDetail.NONE);
+    }
+
+    public void goOnline() {
+        logger.debug("Thing {} goOnline.", getThing().getUID());
+
+        waitStatusForOnline = true;
+    }
+
+    public void goOffline(ThingStatusDetail detail) {
+        logger.debug("Thing {} goOffline.", getThing().getUID());
+
+        updateStatus(ThingStatus.OFFLINE, detail);
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        logger.trace("PentairIntelliChlorHandler: bridgeStatusChanged");
+
+        if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
+            goOffline(ThingStatusDetail.BRIDGE_OFFLINE);
+        } else if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
+            goOnline();
+        }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            logger.debug("IntelliChlor received refresh command");
+            logger.trace("IntelliChlor received refresh command");
             updateChannel(channelUID.getId(), null);
         }
     }
@@ -69,6 +100,11 @@ public class PentairIntelliChlorHandler extends PentairBaseThingHandler {
     @Override
     public void processPacketFrom(PentairPacket p) {
         PentairPacketIntellichlor pic = (PentairPacketIntellichlor) p;
+
+        if (waitStatusForOnline) {
+            updateStatus(ThingStatus.ONLINE);
+            waitStatusForOnline = false;
+        }
 
         switch (pic.getLength()) {
             case 3:
@@ -105,7 +141,7 @@ public class PentairIntelliChlorHandler extends PentairBaseThingHandler {
      * @param channel name of channel to be updated, corresponds to channel name in {@link PentairBindingConstants}
      * @param p Packet representing the former state. If null, no compare is done and state is updated.
      */
-    public void updateChannel(String channel, PentairPacket p) {
+    public void updateChannel(String channel, @Nullable PentairPacket p) {
         PentairPacketIntellichlor pic = (PentairPacketIntellichlor) p;
 
         switch (channel) {

@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
@@ -31,10 +33,14 @@ import org.slf4j.LoggerFactory;
  * @author Jeff James - Initial contribution
  *
  */
+@NonNullByDefault
 public class PentairIPBridgeHandler extends PentairBaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(PentairIPBridgeHandler.class);
 
+    public PentairIPBridgeConfig config = new PentairIPBridgeConfig();
+
     /** Socket object for connection */
+    @Nullable
     protected Socket socket;
 
     public PentairIPBridgeHandler(Bridge bridge) {
@@ -42,39 +48,53 @@ public class PentairIPBridgeHandler extends PentairBaseBridgeHandler {
     }
 
     @Override
-    protected synchronized void connect() {
-        PentairIPBridgeConfig configuration = getConfigAs(PentairIPBridgeConfig.class);
+    protected synchronized int connect() {
+        logger.debug("PenatiarIPBridgeHander: connect");
 
-        id = configuration.id;
+        config = getConfigAs(PentairIPBridgeConfig.class);
+
+        this.id = config.id;
+        this.discovery = config.discovery;
 
         try {
-            socket = new Socket(configuration.address, configuration.port);
+            Socket socket = new Socket(config.address, config.port);
+            this.socket = socket;
+
             reader = new BufferedInputStream(socket.getInputStream());
             writer = new BufferedOutputStream(socket.getOutputStream());
-            logger.info("Pentair IPBridge connected to {}:{}", configuration.address, configuration.port);
+
+            logger.info("Pentair IPBridge connected to {}:{}", config.address, config.port);
         } catch (UnknownHostException e) {
-            String msg = String.format("unknown host name: %s", configuration.address);
+            String msg = String.format("unknown host name: %s", config.address);
+            logger.debug("{}", msg);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
-            return;
+            return -1;
         } catch (IOException e) {
-            String msg = String.format("cannot open connection to %s", configuration.address);
+            String msg = String.format("cannot open connection to %s", config.address);
+            logger.debug("{}", msg);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
-            return;
+            return -2;
         }
 
         parser = new Parser();
-        thread = new Thread(parser);
+        Thread thread = new Thread(parser);
+        this.thread = thread;
         thread.start();
 
         if (socket != null && reader != null && writer != null) {
             updateStatus(ThingStatus.ONLINE);
         } else {
+            logger.debug("connect: socket, reader or writer is null");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unable to connect");
         }
+
+        return 0;
     }
 
+    @SuppressWarnings("null")
     @Override
     protected synchronized void disconnect() {
+        logger.debug("PentairIPBridgeHandler: disconnect");
         updateStatus(ThingStatus.OFFLINE);
 
         if (thread != null) {
@@ -92,6 +112,7 @@ public class PentairIPBridgeHandler extends PentairBaseBridgeHandler {
             try {
                 reader.close();
             } catch (IOException e) {
+                logger.debug("disconnect: IOException");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error in closing reader");
             }
             reader = null;
@@ -101,6 +122,7 @@ public class PentairIPBridgeHandler extends PentairBaseBridgeHandler {
             try {
                 writer.close();
             } catch (IOException e) {
+                logger.debug("disconnect: IOException");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error in closing writer");
             }
             writer = null;

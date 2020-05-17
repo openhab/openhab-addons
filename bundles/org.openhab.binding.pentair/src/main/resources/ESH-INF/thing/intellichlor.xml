@@ -6,8 +6,8 @@
 
 	<thing-type id="intellichlor">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="ip_bridge"/>
-			<bridge-type-ref id="pentair_serial_bridge"/>
+			<bridge-type-ref id="ip_bridge" />
+			<bridge-type-ref id="serial_bridge" />
 		</supported-bridge-type-refs>
 
 		<label>Intellichlor IC40</label>

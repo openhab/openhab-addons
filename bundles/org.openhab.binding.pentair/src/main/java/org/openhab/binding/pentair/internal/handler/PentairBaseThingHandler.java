@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.pentair.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.openhab.binding.pentair.internal.PentairPacket;
@@ -22,7 +24,9 @@ import org.openhab.binding.pentair.internal.PentairPacket;
  * @author Jeff James - Initial contribution
  *
  */
+@NonNullByDefault
 public abstract class PentairBaseThingHandler extends BaseThingHandler {
+
     /** ID of Thing on Pentair bus */
     protected int id;
 
@@ -39,8 +43,39 @@ public abstract class PentairBaseThingHandler extends BaseThingHandler {
         return id;
     }
 
+    public void writePacket(byte[] packet) {
+        writePacket(packet, -1, 0);
+    }
+
+    public boolean writePacket(byte[] packet, int response, int retries) {
+        PentairPacket p = new PentairPacket(packet);
+
+        return writePacket(p, response, retries);
+    }
+
+    public boolean writePacket(PentairPacket p, int response, int retries) {
+        Bridge bridge = this.getBridge();
+        if (bridge == null) {
+            return false;
+        }
+
+        PentairBaseBridgeHandler bbh = (PentairBaseBridgeHandler) bridge.getHandler();
+        if (bbh == null) {
+            return false;
+        }
+
+        return bbh.writePacket(p, response, retries);
+    }
+
+    public void delay300() {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+        }
+    }
+
     /**
-     * Abstract function to be implemented by Thing to dispose/parse a received packet
+     * Abstract function to be implemented by Thing to parse a received packet
      *
      * @param p
      */

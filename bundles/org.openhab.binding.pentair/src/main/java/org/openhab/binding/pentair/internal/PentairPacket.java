@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.pentair.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Generic class for the standard pentair package protocol. Includes helpers to generate checksum and extract key bytes
  * from packet.
@@ -19,6 +21,7 @@ package org.openhab.binding.pentair.internal;
  * @author Jeff James - initial contribution
  *
  */
+@NonNullByDefault
 public class PentairPacket {
     protected static final char[] HEXARRAY = "0123456789ABCDEF".toCharArray();
 
@@ -93,7 +96,7 @@ public class PentairPacket {
      * @return action byte of packet
      */
     public int getAction() {
-        return buf[ACTION];
+        return buf[ACTION] & 0xFF; // need to convert to unsigned value
     }
 
     /**
@@ -139,6 +142,39 @@ public class PentairPacket {
      */
     public void setDest(int dest) {
         buf[DEST] = (byte) dest;
+    }
+
+    /**
+     * Gets the preamble byte of packet
+     */
+    public int getPreambleByte() {
+        return buf[1] & 0xFF;
+    }
+
+    /**
+     * Gets a particular byte of packet
+     *
+     * @param number of byte in packet
+     */
+    public int getByte(int num) {
+        int num2;
+
+        num2 = STARTOFDATA + num;
+        if (num2 > buf.length) {
+            return -1;
+        }
+        return buf[num2] & 0xFF;
+    }
+
+    public void setByte(int num, byte b) {
+        int num2;
+
+        num2 = STARTOFDATA + num;
+        if (num2 > buf.length) {
+            return;
+        }
+
+        buf[num2] = b;
     }
 
     /**
@@ -188,16 +224,6 @@ public class PentairPacket {
     @Override
     public String toString() {
         return bytesToHex(buf, getLength() + 6);
-    }
-
-    /**
-     * Used to extract a specific byte from the packet
-     *
-     * @param n number of byte (0 based)
-     * @return byte of packet
-     */
-    public int getByte(int n) {
-        return buf[n];
     }
 
     /**
