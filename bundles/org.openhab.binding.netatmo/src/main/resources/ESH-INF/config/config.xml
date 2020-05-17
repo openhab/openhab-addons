@@ -142,7 +142,7 @@
 		</parameter>
 	</config-description>
 
-	<config-description uri="thing-type:netatmo:nawelcomecamera">
+	<config-description uri="thing-type:netatmo:camera">
 		<parameter name="id" type="text" pattern="([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})">
 			<label>Camera ID</label>
 			<description>Camera MAC Address</description>
