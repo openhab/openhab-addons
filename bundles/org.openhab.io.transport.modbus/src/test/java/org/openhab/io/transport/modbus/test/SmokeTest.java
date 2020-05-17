@@ -24,7 +24,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
-import org.openhab.io.transport.modbus.BasicWriteTask;
 import org.openhab.io.transport.modbus.BitArray;
 import org.openhab.io.transport.modbus.ModbusManagerListener;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
@@ -378,15 +377,14 @@ public class SmokeTest extends IntegrationTestSupport {
         AtomicReference<Object> lastData = new AtomicReference<>();
 
         BitArray bits = new BitArray(true, true, false, false, true, true);
-        BasicWriteTask task = new BasicWriteTask(endpoint,
-                new ModbusWriteCoilRequestBlueprint(SLAVE_UNIT_ID, 3, bits, true, 1), result -> {
+        modbusManager.submitOneTimeWrite(endpoint, new ModbusWriteCoilRequestBlueprint(SLAVE_UNIT_ID, 3, bits, true, 1),
+                result -> {
                     if (result.hasError()) {
                         unexpectedCount.incrementAndGet();
                     } else {
                         lastData.set(result.getResponse());
                     }
                 });
-        modbusManager.submitOneTimeWrite(task);
         waitForAssert(() -> {
             assertThat(unexpectedCount.get(), is(equalTo(0)));
             assertThat(lastData.get(), is(notNullValue()));
@@ -421,8 +419,8 @@ public class SmokeTest extends IntegrationTestSupport {
         AtomicReference<Exception> lastError = new AtomicReference<>();
 
         BitArray bits = new BitArray(500);
-        BasicWriteTask task = new BasicWriteTask(endpoint,
-                new ModbusWriteCoilRequestBlueprint(SLAVE_UNIT_ID, 3, bits, true, 1), result -> {
+        modbusManager.submitOneTimeWrite(endpoint, new ModbusWriteCoilRequestBlueprint(SLAVE_UNIT_ID, 3, bits, true, 1),
+                result -> {
                     if (result.hasError()) {
                         lastError.set(result.getCause());
                         callbackCalled.countDown();
@@ -431,7 +429,6 @@ public class SmokeTest extends IntegrationTestSupport {
                         callbackCalled.countDown();
                     }
                 });
-        modbusManager.submitOneTimeWrite(task);
         callbackCalled.await(5, TimeUnit.SECONDS);
 
         assertThat(unexpectedCount.get(), is(equalTo(0)));
@@ -461,7 +458,7 @@ public class SmokeTest extends IntegrationTestSupport {
         AtomicReference<Object> lastData = new AtomicReference<>();
 
         BitArray bits = new BitArray(true);
-        BasicWriteTask task = new BasicWriteTask(endpoint,
+        modbusManager.submitOneTimeWrite(endpoint,
                 new ModbusWriteCoilRequestBlueprint(SLAVE_UNIT_ID, 3, bits, false, 1), result -> {
                     if (result.hasError()) {
                         unexpectedCount.incrementAndGet();
@@ -471,8 +468,6 @@ public class SmokeTest extends IntegrationTestSupport {
                         callbackCalled.countDown();
                     }
                 });
-
-        modbusManager.submitOneTimeWrite(task);
         callbackCalled.await(5, TimeUnit.SECONDS);
 
         assertThat(unexpectedCount.get(), is(equalTo(0)));
@@ -502,7 +497,7 @@ public class SmokeTest extends IntegrationTestSupport {
         AtomicReference<Exception> lastError = new AtomicReference<>();
 
         BitArray bits = new BitArray(true);
-        BasicWriteTask task = new BasicWriteTask(endpoint,
+        modbusManager.submitOneTimeWrite(endpoint,
                 new ModbusWriteCoilRequestBlueprint(SLAVE_UNIT_ID, 300, bits, false, 1), result -> {
                     if (result.hasError()) {
                         lastError.set(result.getCause());
@@ -512,7 +507,6 @@ public class SmokeTest extends IntegrationTestSupport {
                         callbackCalled.countDown();
                     }
                 });
-        modbusManager.submitOneTimeWrite(task);
         callbackCalled.await(5, TimeUnit.SECONDS);
 
         assertThat(unexpectedCount.get(), is(equalTo(0)));

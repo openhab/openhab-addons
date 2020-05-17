@@ -839,9 +839,11 @@ public class ModbusManagerImpl implements ModbusManager {
     }
 
     @Override
-    public ScheduledFuture<?> submitOneTimeWrite(WriteTask task) {
+    public ScheduledFuture<?> submitOneTimeWrite(ModbusSlaveEndpoint endpoint, ModbusWriteRequestBlueprint request,
+            ModbusWriteCallback callback) {
         ScheduledExecutorService scheduledThreadPoolExecutor = this.scheduledThreadPoolExecutor;
         Objects.requireNonNull(scheduledThreadPoolExecutor, "Not activated!");
+        WriteTask task = new BasicWriteTask(endpoint, request, callback);
         long scheduleTime = System.currentTimeMillis();
         logger.debug("Scheduling one-off write task {}", task);
         ScheduledFuture<?> future = scheduledThreadPoolExecutor.schedule(() -> {

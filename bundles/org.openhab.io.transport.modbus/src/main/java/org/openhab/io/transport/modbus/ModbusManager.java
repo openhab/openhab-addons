@@ -68,10 +68,13 @@ public interface ModbusManager {
      * Submit one-time write task. The method returns immediately, and the execution of the task will happen in
      * background.
      *
-     * @param task
+     * @param endpoint modbus endpoint to poll
+     * @param request request to write
+     * @param callback callback to call with errors and response
      * @return future representing the task
      */
-    public ScheduledFuture<?> submitOneTimeWrite(WriteTask task);
+    public ScheduledFuture<?> submitOneTimeWrite(ModbusSlaveEndpoint endpoint, ModbusWriteRequestBlueprint request,
+            ModbusWriteCallback callback);
 
     /**
      * Configure general connection settings with a given endpoint
