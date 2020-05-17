@@ -68,13 +68,13 @@ public class ModbusHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(THING_TYPE_MODBUS_TCP)) {
             logger.debug("createHandler Modbus tcp");
-            return new ModbusTcpThingHandler((Bridge) thing, () -> manager);
+            return new ModbusTcpThingHandler((Bridge) thing, manager);
         } else if (thingTypeUID.equals(THING_TYPE_MODBUS_SERIAL)) {
             logger.debug("createHandler Modbus serial");
-            return new ModbusSerialThingHandler((Bridge) thing, () -> manager);
+            return new ModbusSerialThingHandler((Bridge) thing, manager);
         } else if (thingTypeUID.equals(THING_TYPE_MODBUS_POLLER)) {
             logger.debug("createHandler Modbus poller");
-            return new ModbusPollerThingHandler((Bridge) thing, () -> manager);
+            return new ModbusPollerThingHandler((Bridge) thing, manager);
         } else if (thingTypeUID.equals(THING_TYPE_MODBUS_DATA)) {
             logger.debug("createHandler data");
             return new ModbusDataThingHandler(thing);

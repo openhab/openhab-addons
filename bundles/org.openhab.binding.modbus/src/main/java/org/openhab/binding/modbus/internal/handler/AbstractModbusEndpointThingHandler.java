@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.modbus.internal.handler;
 
-import java.util.function.Supplier;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -47,14 +45,14 @@ public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEn
     protected volatile C config;
     @Nullable
     protected volatile E endpoint;
-    protected Supplier<ModbusManager> managerRef;
+    protected ModbusManager modbusManager;
     @Nullable
     protected volatile EndpointPoolConfiguration poolConfiguration;
     private final Logger logger = LoggerFactory.getLogger(AbstractModbusEndpointThingHandler.class);
 
-    public AbstractModbusEndpointThingHandler(Bridge bridge, Supplier<ModbusManager> managerRef) {
+    public AbstractModbusEndpointThingHandler(Bridge bridge, ModbusManager modbusManager) {
         super(bridge);
-        this.managerRef = managerRef;
+        this.modbusManager = modbusManager;
     }
 
     @Override
@@ -77,8 +75,8 @@ public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEn
                 if (endpoint == null) {
                     throw new IllegalArgumentException("endpoint null after configuration!");
                 }
-                managerRef.get().addListener(this);
-                managerRef.get().setEndpointPoolConfiguration(endpoint, poolConfiguration);
+                modbusManager.addListener(this);
+                modbusManager.setEndpointPoolConfiguration(endpoint, poolConfiguration);
                 updateStatus(ThingStatus.ONLINE);
             } catch (ModbusConfigurationException e) {
                 logger.debug("Exception during initialization", e);
@@ -92,7 +90,7 @@ public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEn
 
     @Override
     public void dispose() {
-        managerRef.get().removeListener(this);
+        modbusManager.removeListener(this);
     }
 
     @Override
@@ -101,8 +99,8 @@ public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEn
     }
 
     @Override
-    public Supplier<ModbusManager> getManagerRef() {
-        return managerRef;
+    public ModbusManager getModbusManager() {
+        return modbusManager;
     }
 
     @Override

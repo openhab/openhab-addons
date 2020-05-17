@@ -15,7 +15,6 @@ package org.openhab.binding.modbus.internal.handler;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -38,8 +37,8 @@ import org.openhab.io.transport.modbus.endpoint.ModbusTCPSlaveEndpoint;
 public class ModbusTcpThingHandler
         extends AbstractModbusEndpointThingHandler<ModbusTCPSlaveEndpoint, ModbusTcpConfiguration> {
 
-    public ModbusTcpThingHandler(Bridge bridge, Supplier<ModbusManager> managerRef) {
-        super(bridge, managerRef);
+    public ModbusTcpThingHandler(Bridge bridge, ModbusManager manager) {
+        super(bridge, manager);
     }
 
     @Override

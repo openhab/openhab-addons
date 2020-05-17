@@ -38,8 +38,8 @@ import org.openhab.io.transport.modbus.endpoint.ModbusSerialSlaveEndpoint;
 public class ModbusSerialThingHandler
         extends AbstractModbusEndpointThingHandler<ModbusSerialSlaveEndpoint, ModbusSerialConfiguration> {
 
-    public ModbusSerialThingHandler(Bridge bridge, Supplier<ModbusManager> managerRef) {
-        super(bridge, managerRef);
+    public ModbusSerialThingHandler(Bridge bridge, ModbusManager manager) {
+        super(bridge, manager);
     }
 
     @Override

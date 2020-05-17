@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.modbus.handler;
 
-import java.util.function.Supplier;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.common.registry.Identifiable;
@@ -48,11 +46,11 @@ public interface ModbusEndpointThingHandler extends Identifiable<ThingUID> {
     public int getSlaveId() throws EndpointNotInitializedException;
 
     /**
-     * Get {@link ModbusManager} supplier
+     * Get {@link ModbusManager}
      *
      * @return reference to ModbusManager
      */
-    public Supplier<ModbusManager> getManagerRef();
+    public ModbusManager getModbusManager();
 
     /**
      * Return true if auto discovery is enabled for this endpoint

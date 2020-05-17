@@ -16,7 +16,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Supplier;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -162,15 +161,15 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
     private volatile @Nullable PollTask pollTask;
     private volatile @Nullable ModbusSlaveEndpoint endpoint;
     private volatile @Nullable ModbusReadRequestBlueprint request;
-    private Supplier<ModbusManager> managerRef;
+    private ModbusManager modbusManager;
     private volatile boolean disposed;
     private volatile List<ModbusReadCallback> childCallbacks = new CopyOnWriteArrayList<>();
 
     private ReadCallbackDelegator callbackDelegator = new ReadCallbackDelegator();
 
-    public ModbusPollerThingHandler(Bridge bridge, Supplier<ModbusManager> managerRef) {
+    public ModbusPollerThingHandler(Bridge bridge, ModbusManager modbusManager) {
         super(bridge);
-        this.managerRef = managerRef;
+        this.modbusManager = modbusManager;
     }
 
     @Override
@@ -249,7 +248,7 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
         PollTask localPollTask = this.pollTask;
         if (localPollTask != null) {
             logger.debug("Unregistering polling from ModbusManager");
-            managerRef.get().unregisterRegularPoll(localPollTask);
+            modbusManager.unregisterRegularPoll(localPollTask);
         }
         this.pollTask = null;
         request = null;
@@ -296,7 +295,7 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Not polling");
         } else {
             logger.debug("Registering polling with ModbusManager");
-            pollTask = managerRef.get().registerRegularPoll(localEndpoint, localRequest, config.getRefresh(), 0,
+            pollTask = modbusManager.registerRegularPoll(localEndpoint, localRequest, config.getRefresh(), 0,
                     callbackDelegator);
             assert pollTask != null;
             updateStatus(ThingStatus.ONLINE);
@@ -332,12 +331,12 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Get {@link ModbusManager} supplier
+     * Get {@link ModbusManager}
      *
-     * @return supplier of ModbusManger
+     * @return ModbusManger instance
      */
-    public Supplier<ModbusManager> getManagerRef() {
-        return managerRef;
+    public ModbusManager getModbusManager() {
+        return modbusManager;
     }
 
     /**
@@ -386,7 +385,7 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
                     getThing().getUID());
             ModbusSlaveEndpoint localEndpoint = endpoint;
             if (localEndpoint != null) {
-                managerRef.get().submitOneTimePoll(localEndpoint, localRequest, callbackDelegator);
+                modbusManager.submitOneTimePoll(localEndpoint, localRequest, callbackDelegator);
             }
         }
     }

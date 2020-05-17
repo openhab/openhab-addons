@@ -159,7 +159,7 @@ public class SunspecDiscoveryProcess {
                 SUNSPEC_ID_SIZE, // number or words to return
                 maxTries);
 
-        handler.getManagerRef().get().submitOneTimePoll(endpoint, request, result -> {
+        handler.getModbusManager().submitOneTimePoll(endpoint, request, result -> {
             if (result.hasError()) {
                 Exception error = (@NonNull Exception) result.getCause();
                 handleError(error);
@@ -201,7 +201,7 @@ public class SunspecDiscoveryProcess {
                 MODEL_HEADER_SIZE, // number or words to return
                 maxTries);
 
-        handler.getManagerRef().get().submitOneTimePoll(endpoint, request, result -> {
+        handler.getModbusManager().submitOneTimePoll(endpoint, request, result -> {
             if (result.hasError()) {
                 Exception error = (@NonNull Exception) result.getCause();
                 handleError(error);
@@ -261,7 +261,7 @@ public class SunspecDiscoveryProcess {
                 block.length, // number or words to return
                 maxTries);
 
-        handler.getManagerRef().get().submitOneTimePoll(endpoint, request, result -> {
+        handler.getModbusManager().submitOneTimePoll(endpoint, request, result -> {
             if (result.hasError()) {
                 Exception error = (@NonNull Exception) result.getCause();
                 handleError(error);

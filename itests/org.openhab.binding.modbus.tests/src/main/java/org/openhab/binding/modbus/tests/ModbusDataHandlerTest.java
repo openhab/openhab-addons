@@ -27,7 +27,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.core.Configuration;
@@ -71,7 +70,6 @@ import org.openhab.io.transport.modbus.BasicModbusRegisterArray;
 import org.openhab.io.transport.modbus.BitArray;
 import org.openhab.io.transport.modbus.ModbusConstants;
 import org.openhab.io.transport.modbus.ModbusConstants.ValueType;
-import org.openhab.io.transport.modbus.ModbusManager;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusRegister;
@@ -147,8 +145,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         ModbusPollerThingHandler mockHandler = Mockito.mock(ModbusPollerThingHandler.class);
         doReturn(task.getEndpoint()).when(mockHandler).getEndpoint();
         doReturn(task.getRequest()).when(mockHandler).getRequest();
-        Supplier<ModbusManager> managerRef = () -> mockedModbusManager;
-        doReturn(managerRef).when(mockHandler).getManagerRef();
+        doReturn(mockedModbusManager).when(mockHandler).getModbusManager();
         poller.setHandler(mockHandler);
         assertSame(poller.getHandler(), mockHandler);
         assertSame(((ModbusPollerThingHandler) poller.getHandler()).getEndpoint(), task.getEndpoint());
@@ -164,8 +161,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         ModbusTcpThingHandler tcpThingHandler = Mockito.mock(ModbusTcpThingHandler.class);
         tcpBridge.setStatusInfo(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, ""));
         tcpBridge.setHandler(tcpThingHandler);
-        Supplier<ModbusManager> managerRef = () -> mockedModbusManager;
-        doReturn(managerRef).when(tcpThingHandler).getManagerRef();
+        doReturn(mockedModbusManager).when(tcpThingHandler).getModbusManager();
         doReturn(0).when(tcpThingHandler).getSlaveId();
         doReturn(endpoint).when(tcpThingHandler).asSlaveEndpoint();
         tcpThingHandler.initialize();

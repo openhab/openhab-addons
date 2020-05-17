@@ -144,7 +144,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
     private volatile @Nullable ModbusReadRequestBlueprint readRequest;
     private volatile long updateUnchangedValuesEveryMillis;
     private volatile @Nullable ModbusSlaveEndpoint slaveEndpoint;
-    private volatile @Nullable ModbusManager manager;
+    private volatile @Nullable ModbusManager modbusManager;
     private volatile boolean isWriteEnabled;
     private volatile boolean isReadEnabled;
     private volatile boolean writeParametersHavingTransformationOnly;
@@ -168,7 +168,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         logger.trace("Thing {} '{}' received command '{}' to channel '{}'", getThing().getUID(), getThing().getLabel(),
                 command, channelUID);
         ModbusDataConfiguration config = this.config;
-        ModbusManager manager = this.manager;
+        ModbusManager manager = this.modbusManager;
         if (config == null || manager == null) {
             return;
         }
@@ -317,7 +317,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
 
     private void processJsonTransform(Command command, String transformOutput) {
         ModbusSlaveEndpoint slaveEndpoint = this.slaveEndpoint;
-        ModbusManager manager = this.manager;
+        ModbusManager manager = this.modbusManager;
         if (slaveEndpoint == null || manager == null) {
             return;
         }
@@ -363,7 +363,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 ModbusEndpointThingHandler endpointHandler = (ModbusEndpointThingHandler) bridgeHandler;
                 slaveId = endpointHandler.getSlaveId();
                 slaveEndpoint = endpointHandler.asSlaveEndpoint();
-                manager = endpointHandler.getManagerRef().get();
+                modbusManager = endpointHandler.getModbusManager();
                 childOfEndpoint = true;
                 functionCode = null;
                 readRequest = null;
@@ -383,7 +383,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 slaveId = localReadRequest.getUnitID();
                 slaveEndpoint = localEndpoint;
                 functionCode = localReadRequest.getFunctionCode();
-                manager = localPollerHandler.getManagerRef().get();
+                modbusManager = localPollerHandler.getModbusManager();
                 pollStart = localReadRequest.getReference();
                 childOfEndpoint = false;
             }
@@ -414,7 +414,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         pollStart = 0;
         slaveId = 0;
         slaveEndpoint = null;
-        manager = null;
+        modbusManager = null;
         functionCode = null;
         readRequest = null;
         isWriteEnabled = false;
