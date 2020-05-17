@@ -5,6 +5,7 @@ The Netatmo binding integrates the following Netatmo products:
 - *Personal Weather Station*. Reports temperature, humidity, air pressure, carbon dioxide concentration in the air, as well as the ambient noise level.
 - *Thermostat*. Reports ambient temperature, allow to check target temperature, consult and change furnace heating status.
 - *Welcome Camera*. Reports last event and persons at home, consult picture and video from event/camera.
+- *Presence Camera*. Consult picture and video from camera. The last event is also available, but without content yet, this will get enhanced later.
 
 See http://www.netatmo.com/ for details on their product.
 
@@ -469,7 +470,7 @@ All these channels except Sp_Temperature, SetpointMode and Planning are read onl
 All these channels are read only.
 
 
-### Welcome Camera
+### Welcome and Presence Camera
 
 **Supported channels for the Camera thing:**
 
