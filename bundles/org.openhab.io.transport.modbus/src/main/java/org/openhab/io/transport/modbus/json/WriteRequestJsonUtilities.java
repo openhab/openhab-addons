@@ -21,7 +21,7 @@ import org.apache.commons.lang.NotImplementedException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.transport.modbus.ModbusRegister;
-import org.openhab.io.transport.modbus.BasicModbusRegisterArray;
+import org.openhab.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.io.transport.modbus.BitArray;
 import org.openhab.io.transport.modbus.ModbusRegister;
 import org.openhab.io.transport.modbus.ModbusWriteCoilRequestBlueprint;
@@ -199,7 +199,7 @@ public final class WriteRequestJsonUtilities {
                 for (int i = 0; i < valuesElem.size(); i++) {
                     registers[i] = new ModbusRegister(valuesElem.get(i).getAsInt());
                 }
-                return new ModbusWriteRegisterRequestBlueprint(unitId, address, new BasicModbusRegisterArray(registers),
+                return new ModbusWriteRegisterRequestBlueprint(unitId, address, new ModbusRegisterArray(registers),
                         !writeSingle.get(), maxTries);
             }
             default:

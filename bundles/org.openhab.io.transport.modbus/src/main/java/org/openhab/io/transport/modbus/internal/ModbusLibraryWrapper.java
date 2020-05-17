@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.io.transport.modbus.AsyncModbusReadResult;
 import org.openhab.io.transport.modbus.ModbusRegister;
-import org.openhab.io.transport.modbus.BasicModbusRegisterArray;
+import org.openhab.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.io.transport.modbus.BitArray;
 import org.openhab.io.transport.modbus.ModbusReadCallback;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
@@ -92,7 +92,7 @@ public class ModbusLibraryWrapper {
         for (int i = 0; i < inputRegisters.length; i++) {
             registers[i] = new ModbusRegister(inputRegisters[i].getValue());
         }
-        return new BasicModbusRegisterArray(registers);
+        return new ModbusRegisterArray(registers);
     }
 
     /**

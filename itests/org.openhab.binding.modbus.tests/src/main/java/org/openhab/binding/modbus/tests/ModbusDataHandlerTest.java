@@ -66,7 +66,7 @@ import org.openhab.binding.modbus.internal.handler.ModbusTcpThingHandler;
 import org.openhab.io.transport.modbus.AsyncModbusReadResult;
 import org.openhab.io.transport.modbus.AsyncModbusWriteResult;
 import org.openhab.io.transport.modbus.ModbusRegister;
-import org.openhab.io.transport.modbus.BasicModbusRegisterArray;
+import org.openhab.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.io.transport.modbus.BitArray;
 import org.openhab.io.transport.modbus.ModbusConstants;
 import org.openhab.io.transport.modbus.ModbusConstants.ValueType;
@@ -497,7 +497,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
     @Test
     public void testOnRegistersInt16StaticTransformation() {
         ModbusDataThingHandler dataHandler = testReadHandlingGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
-                "0", "-3", ModbusConstants.ValueType.INT16, null, new BasicModbusRegisterArray(
+                "0", "-3", ModbusConstants.ValueType.INT16, null, new ModbusRegisterArray(
                         new ModbusRegister[] { new ModbusRegister((byte) 0xff, (byte) 0xfd) }),
                 null);
 
@@ -520,7 +520,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         mockTransformation("MULTIPLY", new MultiplyTransformation());
         ModbusDataThingHandler dataHandler = testReadHandlingGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 "0", "MULTIPLY(10)", ModbusConstants.ValueType.INT16, null,
-                new BasicModbusRegisterArray(
+                new ModbusRegisterArray(
                         new ModbusRegister[] { new ModbusRegister((byte) 0xff, (byte) 0xfd) }),
                 null, bundleContext);
 
@@ -542,7 +542,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
     @Test
     public void testOnRegistersNaNFloatInRegisters() throws InvalidSyntaxException {
         ModbusDataThingHandler dataHandler = testReadHandlingGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
-                "0", "default", ModbusConstants.ValueType.FLOAT32, null, new BasicModbusRegisterArray(
+                "0", "default", ModbusConstants.ValueType.FLOAT32, null, new ModbusRegisterArray(
                         // equivalent of floating point NaN
                         new ModbusRegister[] { new ModbusRegister((byte) 0x7f, (byte) 0xc0),
                                 new ModbusRegister((byte) 0x00, (byte) 0x00) }),
@@ -571,7 +571,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         });
         ModbusDataThingHandler dataHandler = testReadHandlingGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 "0", "ONOFF(10)", ModbusConstants.ValueType.INT16, null,
-                new BasicModbusRegisterArray(
+                new ModbusRegisterArray(
                         new ModbusRegister[] { new ModbusRegister((byte) 0xff, (byte) 0xfd) }),
                 null, bundleContext);
 
