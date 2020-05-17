@@ -70,7 +70,7 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
     public void initialize() {
         logger.debug("Initializing OpenTherm Gateway handler for uid '{}'", getThing().getUID());
 
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Initializing");
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Initializing");
 
         config = getConfigAs(OpenThermGatewayConfiguration.class);
 
@@ -114,7 +114,7 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
     @Override
     public void connecting() {
         connecting = true;
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Connecting");
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Connecting");
     }
 
     @Override
