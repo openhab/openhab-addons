@@ -133,6 +133,8 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
 
         connecting = false;
 
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Disconnected");
+
         // retry connection if disconnect is not explicitly requested
         if (conf != null && !explicitDisconnect && conf.connectionRetryInterval > 0) {
             scheduler.schedule(() -> {
@@ -145,8 +147,6 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
 
     @Override
     public void receiveMessage(Message message) {
-        updateStatus(ThingStatus.ONLINE);
-
         if (DataItemGroup.dataItemGroups.containsKey(message.getID())) {
             DataItem[] dataItems = DataItemGroup.dataItemGroups.get(message.getID());
 
