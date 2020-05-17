@@ -14,6 +14,7 @@ package org.openhab.binding.heos.internal.handler;
 
 import static org.eclipse.smarthome.core.thing.ThingStatus.*;
 import static org.openhab.binding.heos.internal.HeosBindingConstants.*;
+import static org.openhab.binding.heos.internal.handler.FutureUtil.cancel;
 import static org.openhab.binding.heos.internal.json.dto.HeosCommandGroup.GROUP;
 import static org.openhab.binding.heos.internal.json.dto.HeosCommandGroup.PLAYER;
 import static org.openhab.binding.heos.internal.json.dto.HeosCommunicationAttribute.*;
@@ -103,7 +104,8 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
 
         try {
             getApiConnection().registerForChangeEvents(this);
-            scheduleQueueFetchFuture = scheduler.schedule(this::fetchQueueFromPlayer, 30, TimeUnit.SECONDS);
+            cancel(scheduleQueueFetchFuture);
+            scheduleQueueFetchFuture = scheduler.submit(this::fetchQueueFromPlayer);
 
             if (localBridgeHandler.isLoggedIn()) {
                 scheduleImmediatelyHandleDynamicStatesSignedIn();
@@ -177,11 +179,7 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
     }
 
     void scheduleImmediatelyHandleDynamicStatesSignedIn() {
-        @Nullable Future<?> existingJob = handleDynamicStatesFuture;
-        if (existingJob != null && !existingJob.isCancelled()) {
-            existingJob.cancel(true);
-        }
-
+        cancel(handleDynamicStatesFuture);
         handleDynamicStatesFuture = scheduler.submit(this::handleDynamicStatesSignedIn);
     }
 
@@ -191,6 +189,7 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
             heosDynamicStateDescriptionProvider.setPlaylists(playlistsChannelUID, getApiConnection().getPlaylists());
         } catch (IOException | ReadException e) {
             logger.debug("Failed to set favorites / playlists, rescheduling", e);
+            cancel(handleDynamicStatesFuture, false);
             handleDynamicStatesFuture = scheduler.schedule(this::handleDynamicStatesSignedIn, 30, TimeUnit.SECONDS);
         }
     }
@@ -219,15 +218,8 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
             logger.trace("No connection available while trying to unregister");
         }
 
-        @Nullable Future<?> localeScheduleQueueFetchFuture = this.scheduleQueueFetchFuture;
-        if (localeScheduleQueueFetchFuture != null && !localeScheduleQueueFetchFuture.isCancelled()) {
-            localeScheduleQueueFetchFuture.cancel(true);
-        }
-
-        @Nullable Future<?> handleDynamicStatesFuture = this.handleDynamicStatesFuture;
-        if (handleDynamicStatesFuture != null && !handleDynamicStatesFuture.isCancelled()) {
-            handleDynamicStatesFuture.cancel(true);
-        }
+        cancel(scheduleQueueFetchFuture);
+        cancel(handleDynamicStatesFuture);
     }
 
     /**
@@ -429,12 +421,7 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
         }
     }
 
-    private void fetchQueueFromPlayer() {
-        @Nullable Future<?> existingJob = scheduleQueueFetchFuture;
-        if (existingJob != null && !existingJob.isCancelled()) {
-            existingJob.cancel(false);
-        }
-
+    private synchronized void fetchQueueFromPlayer() {
         try {
             List<Media> queue = getApiConnection().getQueue(getId());
             heosDynamicStateDescriptionProvider.setQueue(queueChannelUID, queue);
@@ -444,6 +431,7 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
         } catch (IOException | ReadException e) {
             logger.debug("Failed to set queue, rescheduling", e);
         }
+        cancel(scheduleQueueFetchFuture, false);
         scheduleQueueFetchFuture = scheduler.schedule(this::fetchQueueFromPlayer, 30, TimeUnit.SECONDS);
     }
 

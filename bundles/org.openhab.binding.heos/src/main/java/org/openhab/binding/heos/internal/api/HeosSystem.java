@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.heos.internal.api;
 
+import static org.openhab.binding.heos.internal.handler.FutureUtil.cancel;
+
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.HashMap;
@@ -144,23 +146,16 @@ public class HeosSystem {
 
     void closeConnection() {
         logger.debug("Shutting down HEOS Heart Beat");
-        ScheduledFuture<?> job = keepAliveJob;
-        if (job != null && !job.isCancelled()) {
-            job.cancel(true);
-        }
-        cancelReconnectJob();
+        cancel(keepAliveJob);
+        cancel(this.reconnectJob, false);
 
         eventLine.getReadResultListener().removePropertyChangeListener(eventProcessor);
         eventSendCommand.stopInputListener(HeosCommands.registerChangeEventOff());
         eventSendCommand.disconnect();
         sendCommand.disconnect();
-        singleThreadExecutor.shutdownNow();
-    }
-
-    private void cancelReconnectJob() {
-        ScheduledFuture<?> localReconnectJob = HeosSystem.this.reconnectJob;
-        if (localReconnectJob != null && !localReconnectJob.isCancelled()) {
-            localReconnectJob.cancel(false);
+        @Nullable ExecutorService executor = this.singleThreadExecutor;
+        if (executor != null && executor.isShutdown()) {
+            executor.shutdownNow();
         }
     }
 
@@ -185,7 +180,7 @@ public class HeosSystem {
         playerMapNew.clear();
 
         HeosResponseObject<Player[]> response = send(HeosCommands.getPlayers(), Player[].class);
-        Player[] players = response.payload;
+        @Nullable Player[] players = response.payload;
         if (players == null) {
             throw new IOException("Received no valid payload");
         }
@@ -303,6 +298,7 @@ public class HeosSystem {
                 // getting lost between last Heart Beat but Bridge is online again and not
                 // detected by isHostReachable()
             } catch (ReadException | IOException e) {
+                logger.debug("Failed at {}", System.currentTimeMillis(), e);
                 logger.debug("Failure during HEOS Heart Beat command with message: {}", e.getMessage());
             }
             restartConnection();
@@ -320,6 +316,7 @@ public class HeosSystem {
             closeConnection();
             method.accept(null);
 
+            cancel(HeosSystem.this.reconnectJob, false);
             reconnectJob = scheduler.scheduleWithFixedDelay(this::reconnect, 1, 5, TimeUnit.SECONDS);
         }
 
@@ -329,7 +326,7 @@ public class HeosSystem {
                 return;
             }
 
-            cancelReconnectJob();
+            cancel(HeosSystem.this.reconnectJob, false);
             logger.debug("Reconnecting to Bridge");
             scheduler.schedule(eventController::systemReachable, 15, TimeUnit.SECONDS);
         }

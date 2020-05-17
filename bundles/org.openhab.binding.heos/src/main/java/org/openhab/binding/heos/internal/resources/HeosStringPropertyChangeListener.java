@@ -31,7 +31,6 @@ public class HeosStringPropertyChangeListener {
     private final Logger logger = LoggerFactory.getLogger(HeosStringPropertyChangeListener.class);
 
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
-    private @Nullable String value;
 
     public void addPropertyChangeListener(PropertyChangeListener propertyChangeListener) {
         pcs.addPropertyChangeListener(propertyChangeListener);
@@ -41,12 +40,7 @@ public class HeosStringPropertyChangeListener {
         pcs.removePropertyChangeListener(listener);
     }
 
-    public @Nullable String getValue() {
-        return value;
-    }
-
     public void setValue(String newValue) {
-        value = newValue;
         logger.debug("Firing property change: {} {}", newValue, Thread.currentThread());
         pcs.firePropertyChange("value", null, newValue);
     }

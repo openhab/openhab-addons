@@ -13,12 +13,13 @@
 package org.openhab.binding.heos.internal.handler;
 
 import static org.openhab.binding.heos.internal.HeosBindingConstants.*;
+import static org.openhab.binding.heos.internal.handler.FutureUtil.cancel;
 import static org.openhab.binding.heos.internal.json.dto.HeosEvent.PLAYER_VOLUME_CHANGED;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -59,7 +60,7 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
     private @Nullable String gid;
 
     private boolean blockInitialization;
-    private @Nullable ScheduledFuture<?> scheduledStartupFeature;
+    private @Nullable Future<?> scheduledStartupFuture;
 
     public HeosGroupHandler(Thing thing, HeosDynamicStateDescriptionProvider heosDynamicStateDescriptionProvider) {
         super(thing, heosDynamicStateDescriptionProvider);
@@ -116,10 +117,7 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
 
     @Override
     public void dispose() {
-        @Nullable ScheduledFuture<?> localStartupFuture = scheduledStartupFeature;
-        if (localStartupFuture != null && !localStartupFuture.isCancelled()) {
-            localStartupFuture.cancel(true);
-        }
+        cancel(scheduledStartupFuture);
         super.dispose();
     }
 
@@ -236,50 +234,53 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
     }
 
     private void scheduledStartUp() {
-        scheduledStartupFeature = scheduler.schedule(() -> {
-            @Nullable HeosBridgeHandler bridgeHandler = this.bridgeHandler;
+        cancel(scheduledStartupFuture);
+        scheduledStartupFuture = scheduler.submit(this::delayedInitialize);
+    }
 
-            if (bridgeHandler == null) {
-                logger.debug("Bridge handler not found, rescheduling");
-                scheduledStartUp();
-                return;
-            }
+    private void delayedInitialize() {
+        @Nullable HeosBridgeHandler bridgeHandler = this.bridgeHandler;
 
-            if (bridgeHandler.isLoggedIn()) {
-                handleDynamicStatesSignedIn();
-            }
+        if (bridgeHandler == null) {
+            logger.debug("Bridge handler not found, rescheduling");
+            scheduledStartUp();
+            return;
+        }
 
-            bridgeHandler.addGroupHandlerInformation(this);
-            // Checks if there is a group online with the same group member hash.
-            // If not setting the group offline.
-            @Nullable String groupId = bridgeHandler.getActualGID(HeosGroup.calculateGroupMemberHash(configuration.members));
-            if (groupId == null) {
-                blockInitialization = false;
-                setStatusOffline();
-            } else {
-                try {
-                    refreshPlayState(groupId);
+        if (bridgeHandler.isLoggedIn()) {
+            handleDynamicStatesSignedIn();
+        }
 
-                    HeosResponseObject<Group> response = getApiConnection().getGroupInfo(groupId);
-                    @Nullable
-                    Group group = response.payload;
-                    if (group == null) {
-                        throw new IllegalStateException("Invalid group response received");
-                    }
+        bridgeHandler.addGroupHandlerInformation(this);
+        // Checks if there is a group online with the same group member hash.
+        // If not setting the group offline.
+        @Nullable String groupId = bridgeHandler.getActualGID(HeosGroup.calculateGroupMemberHash(configuration.members));
+        if (groupId == null) {
+            blockInitialization = false;
+            setStatusOffline();
+        } else {
+            try {
+                refreshPlayState(groupId);
 
-                    getApiConnection().addHeosGroupToOldGroupMap(HeosGroup.calculateGroupMemberHash(group), group);
-
-                    gid = groupId;
-                    updateConfiguration(groupId, group);
-                    updateStatus(ThingStatus.ONLINE);
-                    updateState(CH_ID_UNGROUP, OnOffType.ON);
-                    blockInitialization = false;
-                } catch (IOException | ReadException | IllegalStateException e) {
-                    logger.debug("Failed initializing, will retry", e);
-                    scheduledStartUp();
+                HeosResponseObject<Group> response = getApiConnection().getGroupInfo(groupId);
+                @Nullable Group group = response.payload;
+                if (group == null) {
+                    throw new IllegalStateException("Invalid group response received");
                 }
+
+                getApiConnection().addHeosGroupToOldGroupMap(HeosGroup.calculateGroupMemberHash(group), group);
+
+                gid = groupId;
+                updateConfiguration(groupId, group);
+                updateStatus(ThingStatus.ONLINE);
+                updateState(CH_ID_UNGROUP, OnOffType.ON);
+                blockInitialization = false;
+            } catch (IOException | ReadException | IllegalStateException e) {
+                logger.debug("Failed initializing, will retry", e);
+                cancel(scheduledStartupFuture, false);
+                scheduledStartupFuture = scheduler.schedule(this::delayedInitialize, 30, TimeUnit.SECONDS);
             }
-        }, 3, TimeUnit.SECONDS);
+        }
     }
 
     @Override

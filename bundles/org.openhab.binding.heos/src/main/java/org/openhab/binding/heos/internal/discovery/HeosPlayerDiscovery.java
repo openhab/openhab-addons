@@ -13,6 +13,7 @@
 package org.openhab.binding.heos.internal.discovery;
 
 import static org.openhab.binding.heos.internal.HeosBindingConstants.*;
+import static org.openhab.binding.heos.internal.handler.FutureUtil.cancel;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -167,11 +168,8 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService implements Heo
 
     @Override
     protected void stopBackgroundDiscovery() {
-        ScheduledFuture<?> runningScanningJob = this.scanningJob;
         logger.debug("Stop HEOS Player background discovery");
-        if (runningScanningJob != null && !runningScanningJob.isCancelled()) {
-            runningScanningJob.cancel(true);
-        }
+        cancel(scanningJob);
     }
 
     @Override

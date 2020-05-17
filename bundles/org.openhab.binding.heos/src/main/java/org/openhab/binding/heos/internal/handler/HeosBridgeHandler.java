@@ -14,12 +14,13 @@ package org.openhab.binding.heos.internal.handler;
 
 import static org.eclipse.smarthome.core.thing.ThingStatus.*;
 import static org.openhab.binding.heos.internal.HeosBindingConstants.*;
+import static org.openhab.binding.heos.internal.handler.FutureUtil.cancel;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -83,7 +84,8 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
 
     private List<String[]> selectedPlayerList = new CopyOnWriteArrayList<>();
 
-    private @Nullable ScheduledFuture<?> startupFuture;
+    private @Nullable Future<?> startupFuture;
+    private @Nullable Future<?> childHandlerInitializedFuture;
 
     private final HeosSystem heosSystem;
     private @Nullable HeosFacade apiConnection;
@@ -134,7 +136,8 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
     @Override
     public synchronized void initialize() {
         configuration = thing.getConfiguration().as(BridgeConfiguration.class);
-        startupFuture = scheduler.schedule(this::delayedInitialize, 5, TimeUnit.SECONDS);
+        cancel(startupFuture);
+        startupFuture = scheduler.submit(this::delayedInitialize);
     }
 
     private void delayedInitialize() {
@@ -164,6 +167,7 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
                 connection.closeConnection();
             }
             updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Errors occurred: " + e.getMessage());
+            cancel(startupFuture, false);
             startupFuture = scheduler.schedule(this::delayedInitialize, 30, TimeUnit.SECONDS);
         }
     }
@@ -202,7 +206,8 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
     public void dispose() {
         bridgeHandlerDisposalOngoing = true; // Flag to prevent the handler from being updated during disposal
 
-        terminateStartupSequence();
+        cancel(startupFuture);
+        cancel(childHandlerInitializedFuture);
 
         @Nullable HeosFacade localApiConnection = apiConnection;
         if (localApiConnection == null) {
@@ -215,13 +220,6 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
 
         logger.debug("Dispose bridge '{}'", thing.getProperties().get(PROP_NAME));
         localApiConnection.closeConnection();
-    }
-
-    private void terminateStartupSequence() {
-        @Nullable ScheduledFuture<?> localStartupFuture = startupFuture;
-        if (localStartupFuture != null && !localStartupFuture.isCancelled()) {
-            localStartupFuture.cancel(true);
-        }
     }
 
     /**
@@ -247,7 +245,8 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
 
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
-        scheduler.schedule(() -> addPlayerChannel(childThing, null), 5, TimeUnit.SECONDS);
+        cancel(childHandlerInitializedFuture);
+        childHandlerInitializedFuture = scheduler.submit(() -> addPlayerChannel(childThing, null));
     }
 
     void resetPlayerList(ChannelUID channelUID) {

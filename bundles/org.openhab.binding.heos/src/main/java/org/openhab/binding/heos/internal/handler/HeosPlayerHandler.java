@@ -13,12 +13,13 @@
 package org.openhab.binding.heos.internal.handler;
 
 import static org.openhab.binding.heos.internal.HeosBindingConstants.*;
+import static org.openhab.binding.heos.internal.handler.FutureUtil.cancel;
 import static org.openhab.binding.heos.internal.json.dto.HeosCommunicationAttribute.PLAYER_ID;
 import static org.openhab.binding.heos.internal.json.dto.HeosEvent.GROUP_VOLUME_CHANGED;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -52,7 +53,7 @@ public class HeosPlayerHandler extends HeosThingBaseHandler {
     private final Logger logger = LoggerFactory.getLogger(HeosPlayerHandler.class);
 
     private @NonNullByDefault({}) String pid;
-    private @Nullable ScheduledFuture<?> scheduledFuture;
+    private @Nullable Future<?> scheduledFuture;
 
     public HeosPlayerHandler(Thing thing, HeosDynamicStateDescriptionProvider heosDynamicStateDescriptionProvider) {
         super(thing, heosDynamicStateDescriptionProvider);
@@ -60,7 +61,7 @@ public class HeosPlayerHandler extends HeosThingBaseHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        HeosChannelHandler channelHandler = getHeosChannelHandler(channelUID);
+        @Nullable HeosChannelHandler channelHandler = getHeosChannelHandler(channelUID);
         if (channelHandler != null) {
             try {
                 channelHandler.handlePlayerCommand(command, getId(), thing.getUID());
@@ -78,28 +79,28 @@ public class HeosPlayerHandler extends HeosThingBaseHandler {
         PlayerConfiguration configuration = thing.getConfiguration().as(PlayerConfiguration.class);
         pid = configuration.pid;
 
-        delayedInitialize();
+        cancel(scheduledFuture);
+        scheduledFuture = scheduler.submit(this::delayedInitialize);
     }
 
     private void delayedInitialize() {
-        scheduledFuture = scheduler.schedule(() -> {
-            try {
-                refreshPlayState(pid);
+        try {
+            refreshPlayState(pid);
 
-                handleThingStateUpdate(getApiConnection().getPlayerInfo(pid));
+            handleThingStateUpdate(getApiConnection().getPlayerInfo(pid));
 
-                updateStatus(ThingStatus.ONLINE);
-            } catch (HeosFunctionalException e) {
-                if (e.getCode() == HeosErrorCode.INVALID_ID) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, e.getCode().toString());
-                } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getCode().toString());
-                }
-            } catch (IOException | ReadException e) {
-                logger.debug("Failed to initialize, will try again", e);
-                delayedInitialize();
+            updateStatus(ThingStatus.ONLINE);
+        } catch (HeosFunctionalException e) {
+            if (e.getCode() == HeosErrorCode.INVALID_ID) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, e.getCode().toString());
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getCode().toString());
             }
-        }, 3, TimeUnit.SECONDS);
+        } catch (IOException | ReadException e) {
+            logger.debug("Failed to initialize, will try again", e);
+            cancel(scheduledFuture, false);
+            scheduledFuture = scheduler.schedule(this::delayedInitialize, 3, TimeUnit.SECONDS);
+        }
     }
 
     @Override
@@ -112,11 +113,7 @@ public class HeosPlayerHandler extends HeosThingBaseHandler {
 
     @Override
     public void dispose() {
-        ScheduledFuture<?> localStartupFuture = scheduledFuture;
-        if (localStartupFuture != null && !localStartupFuture.isCancelled()) {
-            localStartupFuture.cancel(true);
-        }
-
+        cancel(scheduledFuture);
         super.dispose();
     }
 
@@ -135,7 +132,7 @@ public class HeosPlayerHandler extends HeosThingBaseHandler {
             return;
         }
 
-        if (GROUP_VOLUME_CHANGED.equals(eventObject.command)) {
+        if (GROUP_VOLUME_CHANGED == eventObject.command) {
             logger.debug("Ignoring group-volume changes for players");
             return;
         }

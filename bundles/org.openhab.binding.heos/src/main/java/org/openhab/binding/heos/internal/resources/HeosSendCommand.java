@@ -38,7 +38,7 @@ public class HeosSendCommand {
     }
 
     public <T> HeosResponseObject<T> send(String command, Class<T> clazz) throws IOException, ReadException {
-        HeosResponseObject<T> result = null;
+        HeosResponseObject<T> result;
         int attempt = 0;
 
         boolean send = client.send(command);
