@@ -111,10 +111,6 @@ public class WebSocketConnection {
     @OnWebSocketMessage
     public void onMessage(String message) {
         DeconzRestMessage changedMessage = gson.fromJson(message, DeconzRestMessage.class);
-        if (changedMessage.r == null) {
-            return;
-        }
-
         switch (changedMessage.r) {
             case "sensors":
                 WebSocketMessageListener listener = sensorListener.get(changedMessage.id);

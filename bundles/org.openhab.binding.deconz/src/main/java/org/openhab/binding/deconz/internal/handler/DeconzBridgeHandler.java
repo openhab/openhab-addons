@@ -106,7 +106,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
      * Stops the API request or websocket reconnect timer
      */
     private void stopTimer() {
-        ScheduledFuture<?> future = scheduledFuture;
+        @Nullable ScheduledFuture<?> future = scheduledFuture;
         if (future != null) {
             future.cancel(true);
             scheduledFuture = null;
@@ -174,6 +174,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
             }
             return null;
         }).whenComplete((value, error) -> {
+            final @Nullable ThingDiscoveryService thingDiscoveryService = this.thingDiscoveryService;
             if (thingDiscoveryService != null) {
                 // Hand over sensors to discovery service
                 thingDiscoveryService.stateRequestFinished(value);
@@ -210,7 +211,11 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
             websocketReconnect = true;
             startWebsocket();
         }).exceptionally(e -> {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
+            if (e != null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE);
+            }
             logger.warn("Full state parsing failed", e);
             return null;
         });

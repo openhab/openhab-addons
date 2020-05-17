@@ -15,15 +15,11 @@ package org.openhab.binding.deconz.internal.handler;
 import static org.openhab.binding.deconz.internal.BindingConstants.*;
 
 import java.math.BigDecimal;
-import java.net.SocketTimeoutException;
 import java.util.Set;
-import java.util.concurrent.CompletionException;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.google.gson.Gson;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -32,14 +28,10 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
-import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.deconz.internal.dto.DeconzRestMessage;
@@ -47,11 +39,8 @@ import org.openhab.binding.deconz.internal.dto.LightMessage;
 import org.openhab.binding.deconz.internal.dto.LightState;
 import org.openhab.binding.deconz.internal.netutils.AsyncHttpClient;
 import org.openhab.binding.deconz.internal.netutils.WebSocketConnection;
-import org.openhab.binding.deconz.internal.netutils.WebSocketMessageListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
 
 /**
  * This light thing doesn't establish any connections, that is done by the bridge Thing.
@@ -68,26 +57,36 @@ import com.google.gson.Gson;
  * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
-public class LightThingHandler extends BaseThingHandler implements WebSocketMessageListener {
+public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Stream
             .of(THING_TYPE_COLOR_TEMPERATURE_LIGHT, THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_COLOR_LIGHT,
                     THING_TYPE_EXTENDED_COLOR_LIGHT, THING_TYPE_ONOFF_LIGHT, THING_TYPE_WINDOW_COVERING)
             .collect(Collectors.toSet());
     private final Logger logger = LoggerFactory.getLogger(LightThingHandler.class);
-    private ThingConfig config = new ThingConfig();
-    private DeconzBridgeConfig bridgeConfig = new DeconzBridgeConfig();
-    private final Gson gson;
-    private @Nullable ScheduledFuture<?> scheduledFuture;
-    private @Nullable WebSocketConnection connection;
-    private @Nullable AsyncHttpClient http;
+
     /**
      * The light state. Contains all possible fields for all supported lights
      */
     private LightState lightState = new LightState();
 
     public LightThingHandler(Thing thing, Gson gson) {
-        super(thing);
-        this.gson = gson;
+        super(thing, gson);
+    }
+
+    @Override
+    protected void registerListener() {
+        @Nullable WebSocketConnection conn = connection;
+        if (conn != null) {
+            conn.registerLightListener(config.id, this);
+        }
+    }
+
+    @Override
+    protected void unregisterListener() {
+        @Nullable WebSocketConnection conn = connection;
+        if (conn != null) {
+            conn.unregisterLightListener(config.id);
+        }
     }
 
     @Override
@@ -97,12 +96,14 @@ public class LightThingHandler extends BaseThingHandler implements WebSocketMess
             return;
         }
 
-        LightState newlightState = new LightState();
+        LightState newLightState = new LightState();
+        @Nullable Boolean currentOn = lightState.on;
+        @Nullable Integer currentBri = lightState.bri;
 
         switch (channelUID.getId()) {
             case CHANNEL_SWITCH:
                 if (command instanceof OnOffType) {
-                    newlightState.on = (command == OnOffType.ON);
+                    newLightState.on = (command == OnOffType.ON);
                 } else {
                     return;
                 }
@@ -110,59 +111,68 @@ public class LightThingHandler extends BaseThingHandler implements WebSocketMess
             case CHANNEL_BRIGHTNESS:
             case CHANNEL_COLOR:
                 if (command instanceof OnOffType) {
-                    newlightState.on = (command == OnOffType.ON);
+                    newLightState.on = (command == OnOffType.ON);
                 } else if (command instanceof HSBType) {
                     HSBType hsbCommand = (HSBType) command;
-                    switch (lightState.colormode) {
+
+                    @Nullable String colormode = lightState.colormode;
+                    if (colormode == null) {
+                        // default color mode to hsb
+                        colormode = "hs";
+                    }
+
+                    switch (colormode) {
                         case "xy":
                             PercentType[] xy = hsbCommand.toXY();
-                            if (xy.length != 2) {
+                            if (xy.length < 2) {
                                 logger.warn("Failed to convert {} to xy-values", command);
                             }
-                            newlightState.xy = new Double[] { xy[0].doubleValue() / 100.0,
+                            newLightState.xy = new Double[] { xy[0].doubleValue() / 100.0,
                                     xy[1].doubleValue() / 100.0 };
                             break;
                         case "hs":
-                            newlightState.bri = (int) (hsbCommand.getBrightness().doubleValue() * 2.55);
-                            newlightState.hue = (int) (hsbCommand.getHue().doubleValue() * (65535 / 360));
-                            newlightState.sat = (int) (hsbCommand.getSaturation().doubleValue() * 2.55);
+                            newLightState.bri = (int) (hsbCommand.getBrightness().doubleValue() * 2.55);
+                            newLightState.hue = (int) (hsbCommand.getHue().doubleValue() * (65535 / 360));
+                            newLightState.sat = (int) (hsbCommand.getSaturation().doubleValue() * 2.55);
                             break;
                         default:
                             return;
                     }
                 } else if (command instanceof PercentType) {
-                    newlightState.bri = (int) (((PercentType) command).doubleValue() * 2.55);
+                    newLightState.bri = (int) (((PercentType) command).doubleValue() * 2.55);
                 } else if (command instanceof DecimalType) {
-                    newlightState.bri = ((DecimalType) command).intValue();
+                    newLightState.bri = ((DecimalType) command).intValue();
                 } else {
                     return;
                 }
 
                 // send on/off state together with brightness if not already set or unknown
-                if (lightState.on == null || (newlightState.bri != null && (newlightState.bri > 0) != lightState.on)) {
-                    newlightState.on = (newlightState.bri > 0);
+                @Nullable Integer newBri = newLightState.bri;
+                if ((newBri != null) && ((currentOn == null) || ((newBri > 0) != currentOn))) {
+                    newLightState.on = (newBri > 0);
                 }
                 break;
             case CHANNEL_COLOR_TEMPERATURE:
                 if (command instanceof DecimalType) {
-                    newlightState.colormode = "ct";
-                    newlightState.ct = scaleColorTemperature(((DecimalType) command).doubleValue());
+                    newLightState.colormode = "ct";
+                    newLightState.ct = scaleColorTemperature(((DecimalType) command).doubleValue());
                 } else {
                     return;
                 }
                 break;
             case CHANNEL_POSITION:
                 if (command instanceof UpDownType) {
-                    newlightState.on = (command == UpDownType.DOWN);
+                    newLightState.on = (command == UpDownType.DOWN);
                 } else if (command == StopMoveType.STOP) {
-                    if (lightState.on && lightState.bri <= 254) { // going down or currently stop (254 because of
-                                                                  // rounding error)
-                        newlightState.on = true;
-                    } else if (!lightState.on && lightState.bri > 0) { // going up or currently stopped
-                        newlightState.on = false;
+                    if (currentOn != null && currentOn && currentBri != null && currentBri <= 254) {
+                        // going down or currently stop (254 because of rounding error)
+                        newLightState.on = true;
+                    } else if (currentOn != null && !currentOn && currentBri != null && currentBri > 0) {
+                        // going up or currently stopped
+                        newLightState.on = false;
                     }
                 } else if (command instanceof PercentType) {
-                    newlightState.bri = (int) (((PercentType) command).doubleValue() * 2.55);
+                    newLightState.bri = (int) (((PercentType) command).doubleValue() * 2.55);
                 } else {
                     return;
                 }
@@ -172,14 +182,14 @@ public class LightThingHandler extends BaseThingHandler implements WebSocketMess
                 return;
         }
 
-        AsyncHttpClient asyncHttpClient = http;
+        @Nullable AsyncHttpClient asyncHttpClient = http;
         if (asyncHttpClient == null) {
             return;
         }
         String url = buildUrl(bridgeConfig.host, bridgeConfig.httpPort, bridgeConfig.apikey, "lights", config.id,
                 "state");
 
-        String json = gson.toJson(newlightState);
+        String json = gson.toJson(newLightState);
         logger.trace("Sending {} to light {}", json, config.id);
 
         asyncHttpClient.put(url, json, bridgeConfig.timeout)
@@ -190,18 +200,8 @@ public class LightThingHandler extends BaseThingHandler implements WebSocketMess
                 });
     }
 
-    /**
-     * Stops the API request
-     */
-    private void stopTimer() {
-        ScheduledFuture<?> future = scheduledFuture;
-        if (future != null) {
-            future.cancel(true);
-            scheduledFuture = null;
-        }
-    }
-
-    private @Nullable LightMessage parseStateResponse(AsyncHttpClient.Result r) {
+    @Override
+    protected @Nullable LightMessage parseStateResponse(AsyncHttpClient.Result r) {
         if (r.getResponseCode() == 403) {
             return null;
         } else if (r.getResponseCode() == 200) {
@@ -212,125 +212,57 @@ public class LightThingHandler extends BaseThingHandler implements WebSocketMess
     }
 
     @Override
-    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        if (config.id.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "ID not set");
+    protected void processStateResponse(@Nullable LightMessage stateResponse) {
+        if (stateResponse == null) {
             return;
         }
-
-        if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-            WebSocketConnection webSocketConnection = connection;
-            if (webSocketConnection != null) {
-                webSocketConnection.unregisterLightListener(config.id);
-            }
-            return;
-        }
-
-        if (bridgeStatusInfo.getStatus() != ThingStatus.ONLINE) {
-            return;
-        }
-
-        Bridge bridge = getBridge();
-        if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-            return;
-        }
-        DeconzBridgeHandler bridgeHandler = (DeconzBridgeHandler) bridge.getHandler();
-        if (bridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-            return;
-        }
-
-        final WebSocketConnection webSocketConnection = bridgeHandler.getWebsocketConnection();
-        this.connection = webSocketConnection;
-        this.http = bridgeHandler.getHttp();
-        this.bridgeConfig = bridgeHandler.getBridgeConfig();
-
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING);
-
-        // Real-time data
-        webSocketConnection.registerLightListener(config.id, this);
-
-        requestState();
-    }
-
-    /**
-     * Perform a request to the REST API for retrieving the full light state with all data and configuration.
-     */
-    public void requestState() {
-        AsyncHttpClient asyncHttpClient = http;
-        if (asyncHttpClient == null) {
-            return;
-        }
-        String url = buildUrl(bridgeConfig.host, bridgeConfig.httpPort, bridgeConfig.apikey, "lights", config.id);
-        // Get initial data
-        asyncHttpClient.get(url, bridgeConfig.timeout).thenApply(this::parseStateResponse).exceptionally(e -> {
-            if (e instanceof SocketTimeoutException || e instanceof TimeoutException
-                    || e instanceof CompletionException) {
-                logger.debug("Get new state failed", e);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            }
-
-            stopTimer();
-            scheduledFuture = scheduler.schedule(this::requestState, 10, TimeUnit.SECONDS);
-
-            return null;
-        }).thenAccept(newState -> {
-            if (newState == null) {
-                return;
-            }
-
-            updateStatus(ThingStatus.ONLINE);
-        });
-    }
-
-    @Override
-    public void dispose() {
-        stopTimer();
-        WebSocketConnection webSocketConnection = connection;
-        if (webSocketConnection != null) {
-            webSocketConnection.unregisterLightListener(config.id);
-        }
-        super.dispose();
-    }
-
-    @Override
-    public void initialize() {
-        config = getConfigAs(ThingConfig.class);
-
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            bridgeStatusChanged(bridge.getStatusInfo());
-        }
+        updateStatus(ThingStatus.ONLINE);
     }
 
     public void valueUpdated(String channelId, LightState newState) {
         logger.debug("{} received {}", thing.getUID(), newState);
+        @Nullable Integer bri = newState.bri;
+        @Nullable Integer ct = newState.ct;
+        @Nullable Boolean on = newState.on;
+        Double @Nullable [] xy = newState.xy;
+        @Nullable Integer hue = newState.hue;
+        @Nullable Integer sat = newState.sat;
+
         switch (channelId) {
             case CHANNEL_SWITCH:
-                if (newState.on != null) {
-                    updateState(channelId, OnOffType.from(newState.on));
+                if (on != null) {
+                    updateState(channelId, OnOffType.from(on));
+                }
+                break;
+            case CHANNEL_COLOR:
+                if ("xy".equals(newState.colormode)) {
+                    if (xy != null && xy.length == 2) {
+                        updateState(channelId, HSBType.fromXY(xy[0].floatValue(), xy[1].floatValue()));
+                    }
+                } else if ("hs".equals(newState.colormode)) {
+                    if (hue != null && sat != null && bri != null) {
+                        updateState(channelId, new HSBType(new DecimalType(hue / 65535 * 360),
+                                new PercentType(new BigDecimal(sat / 2.55)),
+                                new PercentType(new BigDecimal(bri / 2.55))));
+
+                    }
                 }
                 break;
             case CHANNEL_BRIGHTNESS:
-                if (newState.bri != null && newState.on != null && newState.on) {
-                    BigDecimal brightness = new BigDecimal(newState.bri / 2.55);
-                    updateState(channelId, new PercentType(brightness));
+                if (bri != null && on != null && on) {
+                    updateState(channelId, new PercentType(new BigDecimal(bri / 2.55)));
                 } else {
                     updateState(channelId, OnOffType.OFF);
                 }
                 break;
             case CHANNEL_COLOR_TEMPERATURE:
-                if (newState.ct != null) {
-                    updateState(channelId, new DecimalType(scaleColorTemperature(newState.ct)));
+                if (ct != null) {
+                    updateState(channelId, new DecimalType(scaleColorTemperature(ct)));
                 }
                 break;
             case CHANNEL_POSITION:
-                if (newState.bri != null) {
-                    BigDecimal position = new BigDecimal(newState.bri / 2.55);
-                    updateState(channelId, new PercentType(position));
+                if (bri != null) {
+                    updateState(channelId, new PercentType(new BigDecimal(bri / 2.55)));
                 }
             default:
         }
@@ -348,7 +280,7 @@ public class LightThingHandler extends BaseThingHandler implements WebSocketMess
     public void messageReceived(String sensorID, DeconzRestMessage message) {
         if (message instanceof LightMessage) {
             LightMessage lightMessage = (LightMessage) message;
-            LightState lightState = lightMessage.state;
+            @Nullable LightState lightState = lightMessage.state;
             if (lightState != null) {
                 updateChannels(lightState);
             }

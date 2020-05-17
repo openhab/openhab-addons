@@ -19,14 +19,10 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.smarthome.config.discovery.DiscoveryListener;
 import org.eclipse.smarthome.core.thing.Bridge;
-import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,6 +33,9 @@ import org.openhab.binding.deconz.internal.dto.BridgeFullState;
 import org.openhab.binding.deconz.internal.handler.DeconzBridgeHandler;
 import org.openhab.binding.deconz.internal.types.LightType;
 import org.openhab.binding.deconz.internal.types.LightTypeDeserializer;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * This class provides tests for deconz binding

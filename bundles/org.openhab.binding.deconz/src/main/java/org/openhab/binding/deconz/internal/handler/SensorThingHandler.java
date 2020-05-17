@@ -19,7 +19,6 @@ import static org.eclipse.smarthome.core.library.unit.SIUnits.PASCAL;
 import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.*;
 import static org.openhab.binding.deconz.internal.BindingConstants.*;
 
-import java.net.SocketTimeoutException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -30,10 +29,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CompletionException;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -45,15 +40,12 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
 import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
@@ -66,9 +58,6 @@ import org.openhab.binding.deconz.internal.dto.SensorMessage;
 import org.openhab.binding.deconz.internal.dto.SensorState;
 import org.openhab.binding.deconz.internal.netutils.AsyncHttpClient;
 import org.openhab.binding.deconz.internal.netutils.WebSocketConnection;
-import org.openhab.binding.deconz.internal.netutils.WebSocketMessageListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
@@ -87,25 +76,18 @@ import com.google.gson.Gson;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class SensorThingHandler extends BaseThingHandler implements WebSocketMessageListener {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.unmodifiableSet(Stream
-            .of(THING_TYPE_PRESENCE_SENSOR, THING_TYPE_DAYLIGHT_SENSOR, THING_TYPE_POWER_SENSOR,
+public class SensorThingHandler extends DeconzBaseThingHandler<SensorMessage> {
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections
+            .unmodifiableSet(Stream.of(THING_TYPE_PRESENCE_SENSOR, THING_TYPE_DAYLIGHT_SENSOR, THING_TYPE_POWER_SENSOR,
                     THING_TYPE_CONSUMPTION_SENSOR, THING_TYPE_LIGHT_SENSOR, THING_TYPE_TEMPERATURE_SENSOR,
                     THING_TYPE_HUMIDITY_SENSOR, THING_TYPE_PRESSURE_SENSOR, THING_TYPE_SWITCH,
                     THING_TYPE_OPENCLOSE_SENSOR, THING_TYPE_WATERLEAKAGE_SENSOR, THING_TYPE_FIRE_SENSOR,
-                    THING_TYPE_ALARM_SENSOR, THING_TYPE_VIBRATION_SENSOR, THING_TYPE_BATTERY_SENSOR, THING_TYPE_CARBONMONOXIDE_SENSOR)
-            .collect(Collectors.toSet()));
+                    THING_TYPE_ALARM_SENSOR, THING_TYPE_VIBRATION_SENSOR, THING_TYPE_BATTERY_SENSOR,
+                    THING_TYPE_CARBONMONOXIDE_SENSOR).collect(Collectors.toSet()));
 
     private static final List<String> CONFIG_CHANNELS = Arrays.asList(CHANNEL_BATTERY_LEVEL, CHANNEL_BATTERY_LOW,
             CHANNEL_TEMPERATURE);
 
-    private final Logger logger = LoggerFactory.getLogger(SensorThingHandler.class);
-    private ThingConfig config = new ThingConfig();
-    private DeconzBridgeConfig bridgeConfig = new DeconzBridgeConfig();
-    private final Gson gson;
-    private @Nullable ScheduledFuture<?> scheduledFuture;
-    private @Nullable WebSocketConnection connection;
-    private @Nullable AsyncHttpClient http;
     /**
      * The sensor state. Contains all possible fields for all supported sensors and switches
      */
@@ -117,8 +99,23 @@ public class SensorThingHandler extends BaseThingHandler implements WebSocketMes
     private boolean ignoreConfigurationUpdate;
 
     public SensorThingHandler(Thing thing, Gson gson) {
-        super(thing);
-        this.gson = gson;
+        super(thing, gson);
+    }
+
+    @Override
+    protected void registerListener() {
+        @Nullable WebSocketConnection conn = connection;
+        if (conn != null) {
+            conn.registerSensorListener(config.id, this);
+        }
+    }
+
+    @Override
+    protected void unregisterListener() {
+        @Nullable WebSocketConnection conn = connection;
+        if (conn != null) {
+            conn.unregisterSensorListener(config.id);
+        }
     }
 
     @Override
@@ -138,18 +135,8 @@ public class SensorThingHandler extends BaseThingHandler implements WebSocketMes
         }
     }
 
-    /**
-     * Stops the API request
-     */
-    private void stopTimer() {
-        ScheduledFuture<?> future = scheduledFuture;
-        if (future != null && !future.isCancelled()) {
-            future.cancel(true);
-            scheduledFuture = null;
-        }
-    }
-
-    private @Nullable SensorMessage parseStateResponse(AsyncHttpClient.Result r) {
+    @Override
+    protected @Nullable SensorMessage parseStateResponse(AsyncHttpClient.Result r) {
         if (r.getResponseCode() == 403) {
             return null;
         } else if (r.getResponseCode() == 200) {
@@ -160,155 +147,85 @@ public class SensorThingHandler extends BaseThingHandler implements WebSocketMes
     }
 
     @Override
-    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        if (config.id.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "ID not set");
+    protected void processStateResponse(@Nullable SensorMessage stateResponse) {
+        if (stateResponse == null) {
+            return;
+        }
+        @Nullable SensorConfig newSensorConfig = stateResponse.config;
+        sensorConfig = newSensorConfig != null ? newSensorConfig : new SensorConfig();
+        @Nullable SensorState newSensorState = stateResponse.state;
+        sensorState = newSensorState != null ? newSensorState : new SensorState();
+
+        // Add some information about the sensor
+        if (!sensorConfig.reachable) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Not reachable");
             return;
         }
 
-        if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-            WebSocketConnection webSocketConnection = connection;
-            if (webSocketConnection != null) {
-                webSocketConnection.unregisterSensorListener(config.id);
-            }
+        if (!sensorConfig.on) {
+            updateStatus(ThingStatus.OFFLINE);
             return;
         }
 
-        if (bridgeStatusInfo.getStatus() != ThingStatus.ONLINE) {
-            return;
+        Map<String, String> editProperties = editProperties();
+        editProperties.put(Thing.PROPERTY_FIRMWARE_VERSION, stateResponse.swversion);
+        editProperties.put(Thing.PROPERTY_MODEL_ID, stateResponse.modelid);
+        editProperties.put(UNIQUE_ID, stateResponse.uniqueid);
+        ignoreConfigurationUpdate = true;
+        updateProperties(editProperties);
+
+        // Some sensors support optional channels
+        // (see https://github.com/dresden-elektronik/deconz-rest-plugin/wiki/Supported-Devices#sensors)
+        // any battery-powered sensor
+        if (sensorConfig.battery != null) {
+            createChannel(CHANNEL_BATTERY_LEVEL, ChannelKind.STATE);
+            createChannel(CHANNEL_BATTERY_LOW, ChannelKind.STATE);
         }
 
-        Bridge bridge = getBridge();
-        if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-            return;
-        }
-        DeconzBridgeHandler bridgeHandler = (DeconzBridgeHandler) bridge.getHandler();
-        if (bridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-            return;
+        // some Xiaomi sensors
+        if (sensorConfig.temperature != null) {
+            createChannel(CHANNEL_TEMPERATURE, ChannelKind.STATE);
         }
 
-        final WebSocketConnection webSocketConnection = bridgeHandler.getWebsocketConnection();
-        this.connection = webSocketConnection;
-        this.http = bridgeHandler.getHttp();
-        this.bridgeConfig = bridgeHandler.getBridgeConfig();
+        // ZHAPresence - e.g. IKEA TRÅDFRI motion sensor
+        if (sensorState.dark != null) {
+            createChannel(CHANNEL_DARK, ChannelKind.STATE);
+        }
 
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING);
+        // ZHAConsumption - e.g Bitron 902010/25 or Heiman SmartPlug
+        if (sensorState.power != null) {
+            createChannel(CHANNEL_POWER, ChannelKind.STATE);
+        }
 
-        // Real-time data
-        webSocketConnection.registerSensorListener(config.id, this);
+        // ZHAPower - e.g. Heiman SmartPlug
+        if (sensorState.voltage != null) {
+            createChannel(CHANNEL_VOLTAGE, ChannelKind.STATE);
+        }
+        if (sensorState.current != null) {
+            createChannel(CHANNEL_CURRENT, ChannelKind.STATE);
+        }
 
-        requestState();
+        // IAS Zone sensor - e.g. Heiman HS1MS motion sensor
+        if (sensorState.tampered != null) {
+            createChannel(CHANNEL_TAMPERED, ChannelKind.STATE);
+        }
+
+        // e.g. Aqara Cube
+        if (sensorState.gesture != null) {
+            createChannel(CHANNEL_GESTURE, ChannelKind.STATE);
+            createChannel(CHANNEL_GESTUREEVENT, ChannelKind.TRIGGER);
+        }
+        ignoreConfigurationUpdate = false;
+
+        // Initial data
+        updateChannels(sensorConfig);
+        updateChannels(sensorState, true);
+
+        updateStatus(ThingStatus.ONLINE);
     }
 
-    /**
-     * Perform a request to the REST API for retrieving the full sensor state with all data and configuration.
-     */
-    public void requestState() {
-        AsyncHttpClient asyncHttpClient = http;
-        if (asyncHttpClient == null) {
-            return;
-        }
-        String url = buildUrl(bridgeConfig.host, bridgeConfig.httpPort, bridgeConfig.apikey, "sensors", config.id);
-        // Get initial data
-        asyncHttpClient.get(url, bridgeConfig.timeout).thenApply(this::parseStateResponse).exceptionally(e -> {
-            if (e instanceof SocketTimeoutException || e instanceof TimeoutException
-                    || e instanceof CompletionException) {
-                logger.debug("Get new state failed", e);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            }
-
-            stopTimer();
-            scheduledFuture = scheduler.schedule(this::requestState, 10, TimeUnit.SECONDS);
-
-            return null;
-        }).thenAccept(newState -> {
-            if (newState == null) {
-                return;
-            }
-            SensorConfig newSensorConfig = newState.config;
-            sensorConfig = newSensorConfig != null ? newSensorConfig : new SensorConfig();
-            SensorState newSensorState = newState.state;
-            sensorState = newSensorState != null ? newSensorState : new SensorState();
-
-            // Add some information about the sensor
-            if (!sensorConfig.reachable) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Not reachable");
-                return;
-            }
-
-            if (!sensorConfig.on) {
-                updateStatus(ThingStatus.OFFLINE);
-                return;
-            }
-
-            Map<String, String> editProperties = editProperties();
-            editProperties.put(Thing.PROPERTY_FIRMWARE_VERSION, newState.swversion);
-            editProperties.put(Thing.PROPERTY_MODEL_ID, newState.modelid);
-            editProperties.put(UNIQUE_ID, newState.uniqueid);
-            ignoreConfigurationUpdate = true;
-            updateProperties(editProperties);
-
-            // Some sensors support optional channels
-            // (see https://github.com/dresden-elektronik/deconz-rest-plugin/wiki/Supported-Devices#sensors)
-            // any battery-powered sensor
-            if (sensorConfig.battery != null) {
-                createChannel(CHANNEL_BATTERY_LEVEL);
-                createChannel(CHANNEL_BATTERY_LOW);
-            }
-
-            // some Xiaomi sensors
-            if (sensorConfig.temperature != null) {
-                createChannel(CHANNEL_TEMPERATURE);
-            }
-
-            // ZHAPresence - e.g. IKEA TRÅDFRI motion sensor
-            if (sensorState.dark != null) {
-                createChannel(CHANNEL_DARK);
-            }
-
-            // ZHAConsumption - e.g Bitron 902010/25 or Heiman SmartPlug
-            if (sensorState.power != null) {
-                createChannel(CHANNEL_POWER);
-            }
-
-            // ZHAPower - e.g. Heiman SmartPlug
-            if (sensorState.voltage != null) {
-                createChannel(CHANNEL_VOLTAGE);
-            }
-            if (sensorState.current != null) {
-                createChannel(CHANNEL_CURRENT);
-            }
-
-            // IAS Zone sensor - e.g. Heiman HS1MS motion sensor
-            if (sensorState.tampered != null) {
-                createChannel(CHANNEL_TAMPERED);
-            }
-
-            // e.g. Aqara Cube
-            if (newState.state.gesture != null) {
-                createChannel(CHANNEL_GESTURE);
-                createChannel(CHANNEL_GESTUREEVENT, ChannelKind.TRIGGER);
-            }
-            ignoreConfigurationUpdate = false;
-
-            // Initial data
-            updateChannels(sensorConfig);
-            updateChannels(sensorState, true);
-
-            updateStatus(ThingStatus.ONLINE);
-        });
-    }
-
-    private @Nullable Channel createChannel(String channelId) {
-        return createChannel(channelId, ChannelKind.STATE);
-    }
-
-    private @Nullable Channel createChannel(String channelId, ChannelKind kind) {
-        ThingHandlerCallback callback = getCallback();
+    private void createChannel(String channelId, ChannelKind kind) {
+        @Nullable ThingHandlerCallback callback = getCallback();
         if (callback != null) {
             ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
             ChannelTypeUID channelTypeUID;
@@ -325,34 +242,12 @@ public class SensorThingHandler extends BaseThingHandler implements WebSocketMes
             }
             Channel channel = callback.createChannelBuilder(channelUID, channelTypeUID).withKind(kind).build();
             updateThing(editThing().withoutChannel(channelUID).withChannel(channel).build());
-            return channel;
-        }
-        return null;
-    }
-
-    @Override
-    public void dispose() {
-        stopTimer();
-        WebSocketConnection webSocketConnection = connection;
-        if (webSocketConnection != null) {
-            webSocketConnection.unregisterSensorListener(config.id);
-        }
-        super.dispose();
-    }
-
-    @Override
-    public void initialize() {
-        config = getConfigAs(ThingConfig.class);
-
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            bridgeStatusChanged(bridge.getStatusInfo());
         }
     }
 
     public void valueUpdated(ChannelUID channelUID, SensorConfig newConfig) {
-        Integer batteryLevel = newConfig.battery;
-        Float temperature = newConfig.temperature;
+        @Nullable Integer batteryLevel = newConfig.battery;
+        @Nullable Float temperature = newConfig.temperature;
 
         switch (channelUID.getId()) {
             case CHANNEL_BATTERY_LEVEL:
@@ -374,29 +269,29 @@ public class SensorThingHandler extends BaseThingHandler implements WebSocketMes
     }
 
     public void valueUpdated(ChannelUID channelUID, SensorState newState, boolean initializing) {
-        Integer buttonevent = newState.buttonevent;
-        Integer gesture = newState.gesture;
-        String lastUpdated = newState.lastupdated;
-        Integer status = newState.status;
-        Integer batteryLevel = newState.battery;
-        Boolean presence = newState.presence;
-        Boolean open = newState.open;
-        Float power = newState.power;
-        Float consumption = newState.consumption;
-        Float voltage = newState.voltage;
-        Float current = newState.current;
-        Integer lux = newState.lux;
-        Integer lightlevel = newState.lightlevel;
-        Float temperature = newState.temperature;
-        Float humidity = newState.humidity;
-        Integer pressure = newState.pressure;
-        Boolean carbonmonoxide = newState.carbonmonoxide;
+        @Nullable Integer buttonevent = newState.buttonevent;
+        @Nullable Integer gesture = newState.gesture;
+        @Nullable String lastUpdated = newState.lastupdated;
+        @Nullable Integer status = newState.status;
+        @Nullable Integer batteryLevel = newState.battery;
+        @Nullable Boolean presence = newState.presence;
+        @Nullable Boolean open = newState.open;
+        @Nullable Float power = newState.power;
+        @Nullable Float consumption = newState.consumption;
+        @Nullable Float voltage = newState.voltage;
+        @Nullable Float current = newState.current;
+        @Nullable Integer lux = newState.lux;
+        @Nullable Integer lightlevel = newState.lightlevel;
+        @Nullable Float temperature = newState.temperature;
+        @Nullable Float humidity = newState.humidity;
+        @Nullable Integer pressure = newState.pressure;
+        @Nullable Boolean carbonmonoxide = newState.carbonmonoxide;
 
         switch (channelUID.getId()) {
             case CHANNEL_LIGHT:
-                Boolean dark = newState.dark;
+                @Nullable Boolean dark = newState.dark;
                 if (dark != null) {
-                    Boolean daylight = newState.daylight;
+                    @Nullable Boolean daylight = newState.daylight;
                     if (dark) { // if it's dark, it's dark ;)
                         updateState(channelUID, new StringType("Dark"));
                     } else if (daylight != null) { // if its not dark, it might be between darkness and daylight
@@ -492,7 +387,7 @@ public class SensorThingHandler extends BaseThingHandler implements WebSocketMes
                 updateState(channelUID, Boolean.TRUE.equals(newState.vibration) ? OnOffType.ON : OnOffType.OFF);
                 break;
             case CHANNEL_CARBONMONOXIDE:
-                updateState(channelUID, carbonmonoxide != null  ? OnOffType.from(carbonmonoxide) : UnDefType.UNDEF);
+                updateState(channelUID, carbonmonoxide != null ? OnOffType.from(carbonmonoxide) : UnDefType.UNDEF);
                 break;
             case CHANNEL_BUTTON:
                 if (buttonevent != null) {
@@ -534,12 +429,12 @@ public class SensorThingHandler extends BaseThingHandler implements WebSocketMes
     public void messageReceived(String sensorID, DeconzRestMessage message) {
         if (message instanceof SensorMessage) {
             SensorMessage sensorMessage = (SensorMessage) message;
-            SensorConfig sensorConfig = sensorMessage.config;
+            @Nullable SensorConfig sensorConfig = sensorMessage.config;
             if (sensorConfig != null) {
                 this.sensorConfig = sensorConfig;
                 updateChannels(sensorConfig);
             }
-            SensorState sensorState = sensorMessage.state;
+            @Nullable SensorState sensorState = sensorMessage.state;
             if (sensorState != null) {
                 updateChannels(sensorState, false);
             }
@@ -554,7 +449,6 @@ public class SensorThingHandler extends BaseThingHandler implements WebSocketMes
 
     private void updateChannels(SensorState newState, boolean initializing) {
         sensorState = newState;
-
         thing.getChannels().forEach(channel -> valueUpdated(channel.getUID(), newState, initializing));
     }
 }

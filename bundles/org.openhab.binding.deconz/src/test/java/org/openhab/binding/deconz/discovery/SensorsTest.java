@@ -18,8 +18,6 @@ import static org.openhab.binding.deconz.internal.BindingConstants.THING_TYPE_CA
 
 import java.io.IOException;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -36,6 +34,9 @@ import org.openhab.binding.deconz.internal.dto.SensorMessage;
 import org.openhab.binding.deconz.internal.handler.SensorThingHandler;
 import org.openhab.binding.deconz.internal.types.LightType;
 import org.openhab.binding.deconz.internal.types.LightTypeDeserializer;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * This class provides tests for deconz sensors
