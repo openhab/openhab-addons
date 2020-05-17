@@ -122,12 +122,10 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
             submitCommand(new GetSetpointCommand());
             submitCommand(new GetFanspeedCommand());
         }, 10, c.refreshInterval, TimeUnit.SECONDS);
-
     }
 
     @Override
     public void dispose() {
-
         logger.debug("[{}] dispose()", super.thing.getUID().getId());
 
         dispose(refreshJob);
@@ -246,13 +244,11 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
                         default:
                             break;
                     }
-
                 } catch (Exception e) {
                     logger.info("Error while setting mode through HomeKIt received Mode");
                 }
             default:
                 break;
-
         }
 
     }
@@ -277,7 +273,6 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
         }
 
         this.uartProcessor.chunkReceived(characteristic.getByteValue());
-
     }
 
     private void submitCommand(BRC1HCommand command) {
@@ -355,11 +350,9 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
     @Override
     public void onCharacteristicWriteComplete(BluetoothCharacteristic characteristic,
             BluetoothCompletionStatus status) {
-
         super.onCharacteristicWriteComplete(characteristic, status);
 
         byte[] request = characteristic.getByteValue();
-
         BRC1HCommand command = currentCommand;
 
         if (command != null) {
@@ -380,7 +373,6 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
                 logger.debug("No command found that matches request {}", HexUtils.bytesToHex(request));
             }
         }
-
     }
 
     /**
@@ -411,25 +403,20 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
         String commCtrlVers = command.getCommunicationControllerVersion();
         if (commCtrlVers != null) {
             this.madokaSettings.setCommunicationControllerVersion(commCtrlVers);
-            updateStateIfLinked(
-                    new ChannelUID(getThing().getUID(),
-                            DaikinMadokaBindingConstants.CHANNEL_ID_COMMUNICATION_CONTROLLER_VERSION),
+            updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_COMMUNICATION_CONTROLLER_VERSION,
                     new StringType(commCtrlVers));
         }
 
         String remoteCtrlVers = command.getRemoteControllerVersion();
         if (remoteCtrlVers != null) {
             this.madokaSettings.setRemoteControllerVersion(remoteCtrlVers);
-            updateStateIfLinked(
-                    new ChannelUID(getThing().getUID(),
-                            DaikinMadokaBindingConstants.CHANNEL_ID_REMOTE_CONTROLLER_VERSION),
+            updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_REMOTE_CONTROLLER_VERSION,
                     new StringType(remoteCtrlVers));
         }
     }
 
     @Override
     public void receivedResponse(GetFanspeedCommand command) {
-
         if (command.getCoolingFanSpeed() == null || command.getHeatingFanSpeed() == null) {
             return;
         }
@@ -469,9 +456,7 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
         }
 
         this.madokaSettings.setFanspeed(fs);
-        updateStateIfLinked(new ChannelUID(getThing().getUID(), DaikinMadokaBindingConstants.CHANNEL_ID_FAN_SPEED),
-                new DecimalType(fs.value()));
-
+        updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_FAN_SPEED, new DecimalType(fs.value()));
     }
 
     @Override
@@ -518,10 +503,8 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
 
         DecimalType dt = this.madokaSettings.getSetpoint();
         if (dt != null) {
-            updateStateIfLinked(new ChannelUID(getThing().getUID(), DaikinMadokaBindingConstants.CHANNEL_ID_SETPOINT),
-                    dt);
+            updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_SETPOINT, dt);
         }
-
     }
 
     @Override
@@ -538,21 +521,16 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
 
         this.madokaSettings.setOperationMode(newMode);
 
-        updateStateIfLinked(new ChannelUID(getThing().getUID(), DaikinMadokaBindingConstants.CHANNEL_ID_OPERATION_MODE),
-                new StringType(newMode.name()));
+        updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_OPERATION_MODE, new StringType(newMode.name()));
 
         // For HomeKit channel, we need to map it to HomeKit supported strings
         switch (newMode) {
             case COOL:
-                updateStateIfLinked(
-                        new ChannelUID(getThing().getUID(),
-                                DaikinMadokaBindingConstants.CHANNEL_ID_HOMEKIT_CURRENT_HEATING_COOLING_MODE),
+                updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_HOMEKIT_CURRENT_HEATING_COOLING_MODE,
                         new StringType("Cooling"));
                 break;
             case HEAT:
-                updateStateIfLinked(
-                        new ChannelUID(getThing().getUID(),
-                                DaikinMadokaBindingConstants.CHANNEL_ID_HOMEKIT_CURRENT_HEATING_COOLING_MODE),
+                updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_HOMEKIT_CURRENT_HEATING_COOLING_MODE,
                         new StringType("Heating"));
                 break;
             default:
@@ -576,12 +554,9 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
             }
             this.madokaSettings.setHomekitTargetMode(newHomekitTargetStatus);
 
-            updateStateIfLinked(
-                    new ChannelUID(getThing().getUID(),
-                            DaikinMadokaBindingConstants.CHANNEL_ID_HOMEKIT_TARGET_HEATING_COOLING_MODE),
+            updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_HOMEKIT_TARGET_HEATING_COOLING_MODE,
                     new StringType(newHomekitTargetStatus));
         }
-
     }
 
     @Override
@@ -598,20 +573,14 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
 
         this.madokaSettings.setOnOffState(oot);
 
-        updateStateIfLinked(new ChannelUID(getThing().getUID(), DaikinMadokaBindingConstants.CHANNEL_ID_ONOFF_STATUS),
-                oot);
+        updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_ONOFF_STATUS, oot);
 
         if (oot.equals(OnOffType.OFF)) {
-            updateStateIfLinked(
-                    new ChannelUID(getThing().getUID(),
-                            DaikinMadokaBindingConstants.CHANNEL_ID_HOMEKIT_CURRENT_HEATING_COOLING_MODE),
+            updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_HOMEKIT_CURRENT_HEATING_COOLING_MODE,
                     new StringType("Off"));
-            updateStateIfLinked(
-                    new ChannelUID(getThing().getUID(),
-                            DaikinMadokaBindingConstants.CHANNEL_ID_HOMEKIT_TARGET_HEATING_COOLING_MODE),
+            updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_HOMEKIT_TARGET_HEATING_COOLING_MODE,
                     new StringType("Off"));
         }
-
     }
 
     @Override
@@ -621,31 +590,22 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
         if (newIndoorTemp != null) {
             if (!newIndoorTemp.equals(this.madokaSettings.getIndoorTemperature())) {
                 this.madokaSettings.setIndoorTemperature(newIndoorTemp);
-                updateStateIfLinked(
-                        new ChannelUID(getThing().getUID(), DaikinMadokaBindingConstants.CHANNEL_ID_INDOOR_TEMPERATURE),
-                        newIndoorTemp);
+                updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_INDOOR_TEMPERATURE, newIndoorTemp);
             }
         }
 
         DecimalType newOutdoorTemp = command.getOutdoorTemperature();
         if (newOutdoorTemp == null) {
-            updateStateIfLinked(
-                    new ChannelUID(getThing().getUID(), DaikinMadokaBindingConstants.CHANNEL_ID_OUTDOOR_TEMPERATURE),
-                    UnDefType.UNDEF);
+            updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_OUTDOOR_TEMPERATURE, UnDefType.UNDEF);
         } else if (!newOutdoorTemp.equals(this.madokaSettings.getOutdoorTemperature())) {
             this.madokaSettings.setOutdoorTemperature(newOutdoorTemp);
-            updateStateIfLinked(
-                    new ChannelUID(getThing().getUID(), DaikinMadokaBindingConstants.CHANNEL_ID_OUTDOOR_TEMPERATURE),
-                    newOutdoorTemp);
+            updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_OUTDOOR_TEMPERATURE, newOutdoorTemp);
         }
-
     }
 
     @Override
     public void receivedResponse(SetPowerstateCommand command) {
-
-        updateStateIfLinked(new ChannelUID(getThing().getUID(), DaikinMadokaBindingConstants.CHANNEL_ID_ONOFF_STATUS),
-                command.getPowerState());
+        updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_ONOFF_STATUS, command.getPowerState());
 
         madokaSettings.setOnOffState(command.getPowerState());
 
@@ -659,38 +619,28 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
 
             switch (operationMode) {
                 case AUTO:
-                    updateStateIfLinked(
-                            new ChannelUID(getThing().getUID(),
-                                    DaikinMadokaBindingConstants.CHANNEL_ID_HOMEKIT_CURRENT_HEATING_COOLING_MODE),
+                    updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_HOMEKIT_CURRENT_HEATING_COOLING_MODE,
                             new StringType("Auto"));
                     break;
                 case HEAT:
-                    updateStateIfLinked(
-                            new ChannelUID(getThing().getUID(),
-                                    DaikinMadokaBindingConstants.CHANNEL_ID_HOMEKIT_CURRENT_HEATING_COOLING_MODE),
+                    updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_HOMEKIT_CURRENT_HEATING_COOLING_MODE,
                             new StringType("Heating"));
                     break;
                 case COOL:
-                    updateStateIfLinked(
-                            new ChannelUID(getThing().getUID(),
-                                    DaikinMadokaBindingConstants.CHANNEL_ID_HOMEKIT_CURRENT_HEATING_COOLING_MODE),
+                    updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_HOMEKIT_CURRENT_HEATING_COOLING_MODE,
                             new StringType("Cooling"));
                     break;
                 default: // Other Modes are not [yet] supported
                     break;
             }
         } else {
-            updateStateIfLinked(
-                    new ChannelUID(getThing().getUID(),
-                            DaikinMadokaBindingConstants.CHANNEL_ID_HOMEKIT_CURRENT_HEATING_COOLING_MODE),
+            updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_HOMEKIT_CURRENT_HEATING_COOLING_MODE,
                     new StringType("Off"));
-
         }
     }
 
     @Override
     public void receivedResponse(SetSetpointCommand command) {
-
         // The update depends on the mode - so if not set - skip
         OperationMode operationMode = this.madokaSettings.getOperationMode();
         if (operationMode == null) {
@@ -714,8 +664,7 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
 
         DecimalType dt = madokaSettings.getSetpoint();
         if (dt != null) {
-            updateStateIfLinked(new ChannelUID(getThing().getUID(), DaikinMadokaBindingConstants.CHANNEL_ID_SETPOINT),
-                    dt);
+            updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_SETPOINT, dt);
         }
     }
 
@@ -725,7 +674,7 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
     @Override
     public void receivedResponse(SetOperationmodeCommand command) {
         this.madokaSettings.setOperationMode(command.getOperationMode());
-        updateStateIfLinked(new ChannelUID(getThing().getUID(), DaikinMadokaBindingConstants.CHANNEL_ID_OPERATION_MODE),
+        updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_OPERATION_MODE,
                 new StringType(command.getOperationMode().toString()));
     }
 
@@ -734,7 +683,6 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
      */
     @Override
     public void receivedResponse(SetFanspeedCommand command) {
-
         // The update depends on the mode - so if not set - skip
         OperationMode operationMode = this.madokaSettings.getOperationMode();
         if (operationMode == null) {
@@ -759,11 +707,11 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
                 return;
         }
 
-        updateStateIfLinked(new ChannelUID(getThing().getUID(), DaikinMadokaBindingConstants.CHANNEL_ID_FAN_SPEED),
-                new DecimalType(fanSpeed.value()));
+        updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_FAN_SPEED, new DecimalType(fanSpeed.value()));
     }
 
-    private void updateStateIfLinked(ChannelUID channelUID, State state) {
+    private void updateStateIfLinked(String channelId, State state) {
+        ChannelUID channelUID = new ChannelUID(getThing().getUID(), channelId);
         if (isLinked(channelUID)) {
             updateState(channelUID, state);
         }

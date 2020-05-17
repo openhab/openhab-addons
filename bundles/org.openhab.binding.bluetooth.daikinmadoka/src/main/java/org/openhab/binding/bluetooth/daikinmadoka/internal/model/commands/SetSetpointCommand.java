@@ -15,7 +15,6 @@ package org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands;
 import java.nio.ByteBuffer;
 import java.util.concurrent.Executor;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.util.HexUtils;
@@ -49,19 +48,17 @@ public class SetSetpointCommand extends BRC1HCommand {
         byte[] coolingSetpointBytes = ByteBuffer.allocate(2).putShort((short) (128. * coolingSetpoint.shortValue()))
                 .array();
 
-        MadokaValue mvHeatingSetpoint = new MadokaValue(0x21, 2,
-                new byte[] { heatingSetpointBytes[0], heatingSetpointBytes[1] });
+        MadokaValue mvHeatingSetpoint = new MadokaValue(0x21, 2, heatingSetpointBytes);
 
-        MadokaValue mvCoolingSetpoint = new MadokaValue(0x20, 2,
-                new byte[] { coolingSetpointBytes[0], coolingSetpointBytes[1] });
+        MadokaValue mvCoolingSetpoint = new MadokaValue(0x20, 2, coolingSetpointBytes);
 
         return MadokaMessage.createRequest(this, mvCoolingSetpoint, mvHeatingSetpoint);
     }
 
     @Override
     public void handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm) {
-        if (logger.isDebugEnabled() && mm.getRawMessage() != null) {
-            byte @NonNull [] msg = (byte @NonNull []) mm.getRawMessage();
+        byte[] msg = mm.getRawMessage();
+        if (logger.isDebugEnabled() && msg != null) {
             logger.debug("Got response for {} : {}", this.getClass().getSimpleName(), HexUtils.bytesToHex(msg));
         }
 

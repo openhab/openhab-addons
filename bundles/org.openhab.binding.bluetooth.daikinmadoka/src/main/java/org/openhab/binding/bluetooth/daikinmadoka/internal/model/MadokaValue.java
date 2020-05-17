@@ -62,8 +62,8 @@ public class MadokaValue {
     }
 
     public long getComputedValue() {
-        if (rawValue != null) {
-            byte[] v = rawValue;
+        byte[] v = rawValue;
+        if (v != null) {
             switch (size) {
                 case 1:
                     return v[0];

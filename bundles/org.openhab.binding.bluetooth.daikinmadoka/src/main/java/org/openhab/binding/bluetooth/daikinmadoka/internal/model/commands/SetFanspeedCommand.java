@@ -14,7 +14,6 @@ package org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands;
 
 import java.util.concurrent.Executor;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
@@ -51,8 +50,8 @@ public class SetFanspeedCommand extends BRC1HCommand {
 
     @Override
     public void handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm) {
-        if (logger.isDebugEnabled() && mm.getRawMessage() != null) {
-            byte @NonNull [] msg = (byte @NonNull []) mm.getRawMessage();
+        byte[] msg = mm.getRawMessage();
+        if (logger.isDebugEnabled() && msg != null) {
             logger.debug("Got response for {} : {}", this.getClass().getSimpleName(), HexUtils.bytesToHex(msg));
         }
 
