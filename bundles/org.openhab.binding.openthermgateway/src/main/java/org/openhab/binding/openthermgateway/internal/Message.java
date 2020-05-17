@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.openthermgateway.internal;
 
+import java.util.regex.Pattern;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -20,6 +22,9 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class Message {
+
+    private static final Pattern messagePattern = Pattern.compile("[TBRA]{1}[A-F0-9]{8}");
+
     /*
      * The code field is not part of OpenTherm specification, but added by OpenTherm Gateway.
      * It can be any of the following:
@@ -30,7 +35,6 @@ public class Message {
      * A: Response returned to the thermostat
      * E: Parity or stop bit error
      */
-
     private String code;
     private MessageType messageType;
     private int id;
@@ -144,9 +148,9 @@ public class Message {
         this.data = data;
     }
 
-    public static @Nullable Message parse(String message) {
-        if (message.matches("[TBRA]{1}[A-F0-9]{8}")) {
 
+    public static @Nullable Message parse(String message) {
+        if (messagePattern.matcher(message).matches()) {
             // For now, only parse TBRA codes
             String code = message.substring(0, 1);
             MessageType messageType = getMessageType(message.substring(1, 3));
