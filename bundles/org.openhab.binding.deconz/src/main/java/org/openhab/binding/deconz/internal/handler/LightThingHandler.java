@@ -222,6 +222,12 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
         if (stateResponse == null) {
             return;
         }
+
+        LightState newState = stateResponse.state;
+        if (newState != null) {
+            updateChannels(newState);
+        }
+
         updateStatus(ThingStatus.ONLINE);
     }
 

@@ -1,13 +1,15 @@
 {
   "e": "changed",
-  "id": "6",
+  "id": "3",
   "r": "lights",
   "state": {
     "alert": null,
-    "bri": 102,
+    "bri": 51,
+    "colormode": "ct",
+    "ct": 455,
     "on": true,
     "reachable": true
   },
   "t": "event",
-  "uniqueid": "68:0a:e2:ff:fe:6e:95:af-01"
+  "uniqueid": "00:0b:57:ff:fe:eb:2f:84-01"
 }
