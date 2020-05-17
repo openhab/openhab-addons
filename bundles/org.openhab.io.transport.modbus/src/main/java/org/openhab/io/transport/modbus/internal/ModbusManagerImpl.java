@@ -745,7 +745,7 @@ public class ModbusManagerImpl implements ModbusManager {
         ScheduledExecutorService executor = scheduledThreadPoolExecutor;
         Objects.requireNonNull(executor, "Not activated!");
         long scheduleTime = System.currentTimeMillis();
-        BasicPollTaskImpl task = new BasicPollTaskImpl(endpoint, request, callback);
+        BasicPollTask task = new BasicPollTask(endpoint, request, callback);
         logger.debug("Scheduling one-off poll task {}", task);
         ScheduledFuture<?> future = executor.schedule(() -> {
             long millisInThreadPoolWaiting = System.currentTimeMillis() - scheduleTime;
@@ -762,7 +762,7 @@ public class ModbusManagerImpl implements ModbusManager {
         synchronized (this) {
             ScheduledExecutorService executor = scheduledThreadPoolExecutor;
             Objects.requireNonNull(executor, "Not activated!");
-            BasicPollTaskImpl task = new BasicPollTaskImpl(endpoint, request, callback);
+            BasicPollTask task = new BasicPollTask(endpoint, request, callback);
             logger.trace("Registering poll task {} with period {} using initial delay {}", task, pollPeriodMillis,
                     initialDelayMillis);
             if (scheduledPollTasks.containsKey(task)) {
