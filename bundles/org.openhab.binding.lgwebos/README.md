@@ -101,7 +101,7 @@ The binding provides two specific commands you can use in the console.
 Enter the command `lgwebos` to get the usage.
 
 ```
-openhab> smarthome:lgwebos
+openhab> lgwebos
 Usage: smarthome:lgwebos <thingUID> applications - list applications
 Usage: smarthome:lgwebos <thingUID> channels - list channels
 ```
