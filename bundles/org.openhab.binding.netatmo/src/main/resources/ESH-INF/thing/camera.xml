@@ -24,7 +24,7 @@
 		</channels>
 
 		<representation-property>id</representation-property>
-		<config-description-ref uri="thing-type:netatmo:nawelcomecamera"/>
+		<config-description-ref uri="thing-type:netatmo:camera"/>
 	</thing-type>
 
 	<thing-type id="NOC">
@@ -47,7 +47,7 @@
 		</channels>
 
 		<representation-property>id</representation-property>
-		<config-description-ref uri="thing-type:netatmo:nawelcomecamera" />
+		<config-description-ref uri="thing-type:netatmo:camera" />
 	</thing-type>
 
 
