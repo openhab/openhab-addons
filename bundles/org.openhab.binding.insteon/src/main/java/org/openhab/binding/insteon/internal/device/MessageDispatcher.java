@@ -56,10 +56,9 @@ public abstract class MessageDispatcher {
      * Generic handling of incoming ALL LINK messages
      *
      * @param msg the message received
-     * @param port the port on which the message was received
      * @return true if the message was handled by this function
      */
-    protected boolean handleAllLinkMessage(Msg msg, String port) {
+    protected boolean handleAllLinkMessage(Msg msg) {
         if (!msg.isAllLink()) {
             return false;
         }
@@ -88,7 +87,7 @@ public abstract class MessageDispatcher {
                 if (h.matchesGroup(group) && h.matches(msg)) {
                     logger.debug("{}:{}->{} cmd1:{} group {}/{}", feature.getDevice().getAddress(), feature.getName(),
                             h.getClass().getSimpleName(), Utils.getHexByte(cmd1), group, h.getGroup());
-                    h.handleMessage(group, cmd1, msg, feature, port);
+                    h.handleMessage(group, cmd1, msg, feature);
                 } else {
                     logger.debug("message ignored because matches group: {} matches filter: {}", h.matchesGroup(group),
                             h.matches(msg));
@@ -118,11 +117,10 @@ public abstract class MessageDispatcher {
      * Dispatches message
      *
      * @param msg Message to dispatch
-     * @param port Insteon device ('/dev/usb') from which the message came
      * @return true if this message was found to be a reply to a direct message,
      *         and was claimed by one of the handlers
      */
-    public abstract boolean dispatch(Msg msg, String port);
+    public abstract boolean dispatch(Msg msg);
 
     //
     //
@@ -137,7 +135,7 @@ public abstract class MessageDispatcher {
         }
 
         @Override
-        public boolean dispatch(Msg msg, String port) {
+        public boolean dispatch(Msg msg) {
             byte cmd = 0x00;
             byte cmd1 = 0x00;
             boolean isConsumed = false;
@@ -154,7 +152,7 @@ public abstract class MessageDispatcher {
                 // in response to a direct status query message
                 return false;
             }
-            if (handleAllLinkMessage(msg, port)) {
+            if (handleAllLinkMessage(msg)) {
                 return false;
             }
             if (msg.isAckOfDirect()) {
@@ -184,7 +182,7 @@ public abstract class MessageDispatcher {
                         logger.debug("{}:{}->{} DIRECT", feature.getDevice().getAddress(), feature.getName(),
                                 h.getClass().getSimpleName());
                     }
-                    h.handleMessage(-1, cmd1, msg, feature, port);
+                    h.handleMessage(-1, cmd1, msg, feature);
                 }
             }
             if (isConsumed) {
@@ -203,7 +201,7 @@ public abstract class MessageDispatcher {
         }
 
         @Override
-        public boolean dispatch(Msg msg, String port) {
+        public boolean dispatch(Msg msg) {
             byte cmd = 0x00;
             byte cmd1 = 0x00;
             boolean isConsumed = false;
@@ -220,7 +218,7 @@ public abstract class MessageDispatcher {
                 // in response to a direct status query message
                 return false;
             }
-            if (handleAllLinkMessage(msg, port)) {
+            if (handleAllLinkMessage(msg)) {
                 return false;
             }
             if (msg.isAckOfDirect()) {
@@ -251,7 +249,7 @@ public abstract class MessageDispatcher {
                             logger.debug("{}:{}->{} DIRECT", f.getDevice().getAddress(), f.getName(),
                                     h.getClass().getSimpleName());
                         }
-                        h.handleMessage(-1, cmd1, msg, f, port);
+                        h.handleMessage(-1, cmd1, msg, f);
                     }
 
                 }
@@ -272,13 +270,13 @@ public abstract class MessageDispatcher {
         }
 
         @Override
-        public boolean dispatch(Msg msg, String port) {
+        public boolean dispatch(Msg msg) {
             if (msg.isAllLinkCleanupAckOrNack()) {
                 // Had cases when a KeypadLinc would send an ALL_LINK_CLEANUP_ACK
                 // in response to a direct status query message
                 return false;
             }
-            if (handleAllLinkMessage(msg, port)) {
+            if (handleAllLinkMessage(msg)) {
                 return false;
             }
             if (msg.isAckOfDirect()) {
@@ -299,10 +297,10 @@ public abstract class MessageDispatcher {
         }
 
         @Override
-        public boolean dispatch(Msg msg, String port) {
+        public boolean dispatch(Msg msg) {
             byte cmd1 = 0x00;
             try {
-                if (handleAllLinkMessage(msg, port)) {
+                if (handleAllLinkMessage(msg)) {
                     return false;
                 }
                 if (msg.isAllLinkCleanupAckOrNack()) {
@@ -324,7 +322,7 @@ public abstract class MessageDispatcher {
             if (h.matches(msg)) {
                 logger.trace("{}:{}->{} {}", feature.getDevice().getAddress(), feature.getName(),
                         h.getClass().getSimpleName(), msg);
-                h.handleMessage(-1, cmd1, msg, feature, port);
+                h.handleMessage(-1, cmd1, msg, feature);
             }
             return isConsumed;
         }
@@ -337,7 +335,7 @@ public abstract class MessageDispatcher {
         }
 
         @Override
-        public boolean dispatch(Msg msg, String port) {
+        public boolean dispatch(Msg msg) {
             try {
                 byte rawX10 = msg.getByte("rawX10");
                 int cmd = (rawX10 & 0x0f);
@@ -348,7 +346,7 @@ public abstract class MessageDispatcher {
                 logger.debug("{}:{}->{} {}", feature.getDevice().getAddress(), feature.getName(),
                         h.getClass().getSimpleName(), msg);
                 if (h.matches(msg)) {
-                    h.handleMessage(-1, (byte) cmd, msg, feature, port);
+                    h.handleMessage(-1, (byte) cmd, msg, feature);
                 }
             } catch (FieldException e) {
                 logger.warn("error parsing {}: ", msg, e);
@@ -364,12 +362,12 @@ public abstract class MessageDispatcher {
         }
 
         @Override
-        public boolean dispatch(Msg msg, String port) {
+        public boolean dispatch(Msg msg) {
             MessageHandler h = feature.getDefaultMsgHandler();
             if (h.matches(msg)) {
                 logger.trace("{}:{}->{} {}", feature.getDevice().getAddress(), feature.getName(),
                         h.getClass().getSimpleName(), msg);
-                h.handleMessage(-1, (byte) 0x01, msg, feature, port);
+                h.handleMessage(-1, (byte) 0x01, msg, feature);
             }
             return false;
         }
@@ -385,7 +383,7 @@ public abstract class MessageDispatcher {
         }
 
         @Override
-        public boolean dispatch(Msg msg, String port) {
+        public boolean dispatch(Msg msg) {
             return false;
         }
     }
