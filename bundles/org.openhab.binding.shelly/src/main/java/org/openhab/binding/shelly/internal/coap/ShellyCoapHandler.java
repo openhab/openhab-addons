@@ -343,6 +343,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         ShellyDeviceProfile profile = thingHandler.getProfile();
         Map<String, State> updates = new TreeMap<String, State>();
         logger.debug("{}: {} CoAP sensor updates received", thingName, sensorUpdates.size());
+        thingHandler.restartWatchdog(); // every CoAP message restarts the watchdog
         for (int i = 0; i < sensorUpdates.size(); i++) {
             try {
                 CoIotSensor s = sensorUpdates.get(i);

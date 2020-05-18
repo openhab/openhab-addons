@@ -65,6 +65,7 @@ public class ShellyComponents {
             thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ITEMP,
                     toQuantityType(getDouble(status.temperature), DIGITS_NONE, SIUnits.CELSIUS));
         }
+        thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_UPDATE, getOnOff(status.hasUpdate));
 
         return false; // device status never triggers update
     }
@@ -254,11 +255,12 @@ public class ShellyComponents {
         ShellyDeviceProfile profile = thingHandler.getProfile();
 
         boolean updated = false;
-        if (profile.isSensor || profile.hasBattery) {
+        if (profile.isSensor || profile.hasBattery || profile.isSense) {
             thingHandler.logger.debug("{}: Updating sensor", thingHandler.thingName);
             ShellyStatusSensor sdata = thingHandler.api.getSensorStatus();
 
             if (!thingHandler.areChannelsCreated()) {
+                thingHandler.logger.trace("{}: Create missing sensor channel(s)", thingHandler.thingName);
                 thingHandler.updateChannelDefinitions(
                         ShellyChannelDefinitionsDTO.createSensorChannels(thingHandler.getThing(), sdata));
             }
@@ -327,6 +329,7 @@ public class ShellyComponents {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_SMOKE,
                         getOnOff(sdata.smoke));
             }
+
             if (sdata.bat != null) { // no update for Sense
                 thingHandler.logger.trace("{}: Updating battery", thingHandler.thingName);
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LEVEL,

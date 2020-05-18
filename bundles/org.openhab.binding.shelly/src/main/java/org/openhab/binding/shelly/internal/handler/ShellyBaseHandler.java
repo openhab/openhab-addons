@@ -26,6 +26,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.StopWatch;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -90,6 +91,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     private long lastUptime = 0;
     private long lastAlarmTs = 0;
     private long lastTimeoutErros = -1;
+    private final StopWatch watchdog = new StopWatch();
 
     private @Nullable ScheduledFuture<?> statusJob;
     public int scheduledUpdates = 0;
@@ -212,7 +214,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         // Setup CoAP listener to we get the CoAP message, which triggers initialization even the thing could not be
         // fully initialized here. In this case the CoAP messages triggers auto-initialization (like the Action URL does
         // when enabled)
-        if (config.eventsCoIoT && profile.isSensor) {
+        if (config.eventsCoIoT && (profile.isSensor && !profile.isSense)) {
             coap.start(thingName, config);
         }
 
@@ -311,6 +313,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                     break;
             }
 
+            restartWatchdog();
             if (update && !autoCoIoT) {
                 requestUpdates(1, false);
             }
@@ -372,6 +375,9 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 // All channels must be created after the first cycle
                 channelsCreated = true;
 
+                // Restart watchdog when status update was successful (no exception)
+                restartWatchdog();
+
                 if (scheduledUpdates <= 1) {
                     fillDeviceStatus(status, updated);
                 }
@@ -381,10 +387,18 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             // sleep mode. Once the next update is successful the device goes back online
             String status = "";
             ShellyApiResult res = e.getApiResult();
-            if (e.isTimeout()) {
-                logger.debug("{}: Ignore API Timeout, retry later", thingName);
-                // next release will implement a watchdog here
-                // status = "offline.status-error-timeout";
+            if (isWatchdogStarted()) {
+                if (!isWatchdogExpired()) {
+                    logger.debug("{}: Ignore API Timeout, retry later", thingName);
+                } else if (profile.hasBattery) {
+                    logger.debug("{}: Ignore API Timeout for battery powered device", thingName);
+                } else {
+                    logger.debug("{}: Watchdog expired ({}/{} {}sec, period={})", thingName, watchdog.getStartTime(),
+                            now(), watchdog.getTime(), profile.updatePeriod);
+                    if (isThingOnline()) {
+                        status = "offline.status-error-watchdog";
+                    }
+                }
             } else if (res.isHttpAccessUnauthorized()) {
                 status = "offline.conf-error-access-denied";
             } else if (e.IsJSONException()) {
@@ -423,6 +437,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     public void setThingOnline() {
         if (!isThingOnline()) {
             updateStatus(ThingStatus.ONLINE);
+            restartWatchdog();
 
             // request 3 updates in a row (during the first 2+3*3 sec)
             requestUpdates(!profile.hasBattery ? 3 : 1, channelsCreated == false);
@@ -433,7 +448,28 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         if (!isThingOffline()) {
             logger.info("{}: Thing goes OFFLINE: {}", thingName, messages.get(messageKey));
             updateStatus(ThingStatus.OFFLINE, detail, "@text/" + messageKey);
+            watchdog.stop();
             channelsCreated = false; // check for new channels after devices gets re-initialized (e.g. new
+        }
+    }
+
+    synchronized public void restartWatchdog() {
+        watchdog.reset();
+        watchdog.start();
+    }
+
+    private boolean isWatchdogExpired() {
+        return watchdog.getTime() > profile.updatePeriod;
+    }
+
+    private boolean isWatchdogStarted() {
+        try {
+            if (isThingOnline()) {
+                watchdog.getStartTime();
+            }
+            return true;
+        } catch (IllegalStateException e) {
+            return false;
         }
     }
 
@@ -613,6 +649,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             }
 
             // request update on next interval (2x for non-battery devices)
+            restartWatchdog();
             requestUpdates(scheduledUpdates >= 2 ? 0 : !profile.hasBattery ? 2 : 1, true);
             return true;
         }
