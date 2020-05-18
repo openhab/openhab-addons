@@ -53,7 +53,7 @@ import io.github.hapjava.services.impl.ValveService;
 public class HomekitValveImpl extends AbstractHomekitAccessoryImpl implements ValveAccessory {
     private final Logger logger = LoggerFactory.getLogger(HomekitValveImpl.class);
     private static final String CONFIG_VALVE_TYPE = "homekitValveType";
-    private static final String CONFIG_DEFAULT_DURATION = "homekitDefaultDuration";
+    public static final String CONFIG_DEFAULT_DURATION = "homekitDefaultDuration";
     private static final String CONFIG_TIMER = "homekitTimer";
 
     private static final Map<String, ValveTypeEnum> CONFIG_VALVE_TYPE_MAPPING = new HashMap<String, ValveTypeEnum>() {
@@ -86,6 +86,7 @@ public class HomekitValveImpl extends AbstractHomekitAccessoryImpl implements Va
     }
 
     private void addRemainingDurationCharacteristic(HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
+        logger.trace("addRemainingDurationCharacteristic for {}", taggedItem);
         ((ValveService) getPrimaryService()).addOptionalCharacteristic(new RemainingDurationCharacteristic(() -> {
             int remainingTime = 0;
             ScheduledFuture<?> future = valveTimer;
@@ -111,14 +112,12 @@ public class HomekitValveImpl extends AbstractHomekitAccessoryImpl implements Va
         if (durationState != null) {
             duration = durationState.intValue();
         }
-        if (duration == 0) {
-            duration = getAccessoryConfiguration(CONFIG_DEFAULT_DURATION, 0);
-        }
         return duration;
     }
 
     private void startTimer() {
         int duration = getDuration();
+        logger.trace("start timer for duration {}", duration);
         if (duration > 0) {
             ScheduledFuture<?> future = valveTimer;
             if (future != null && !future.isDone()) {
@@ -172,6 +171,7 @@ public class HomekitValveImpl extends AbstractHomekitAccessoryImpl implements Va
     }
 
     private void switchOffValve() {
+        logger.trace("switch off valve");
         SwitchItem item = getItem(HomekitCharacteristicType.ACTIVE_STATUS, SwitchItem.class);
         if (item != null) {
             item.send(OnOffType.OFF);
