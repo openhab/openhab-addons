@@ -89,7 +89,7 @@ Bridge deconz:deconz:homeserver [ host="192.168.0.10", apikey="ABCDEFGHIJ" ]
 
 ## Channels
 
-The devices support some of the following channels:
+The sensor devices support some of the following channels:
 
 | Channel Type ID | Item Type                | Access Mode | Description                                                                               | Thing types                                  |
 |-----------------|--------------------------|:-----------:|-------------------------------------------------------------------------------------------|----------------------------------------------|
@@ -118,10 +118,21 @@ The devices support some of the following channels:
 | value           | Number                   |      R      | Sun position: `130` = dawn; `140` = sunrise; `190` = sunset; `210` = dusk                 | daylightsensor                               |
 | battery_level   | Number                   |      R      | Battery level (in %)                                                                      | any battery-powered sensor                   |
 | battery_low     | Switch                   |      R      | Battery level low: `ON`; `OFF`                                                            | any battery-powered sensor                   |
+| carbonmonoxide  | Switch                   |      R      | `ON` = carbon monoxide detected                                                           | carbonmonoxide                               |
 
 **NOTE:** Beside other non mandatory channels, the `battery_level` and `battery_low` channels will be added to the Thing during runtime if the sensor is battery-powered.
 The specification of your sensor depends on the deCONZ capabilities.
 Have a detailed look for [supported devices](https://github.com/dresden-elektronik/deconz-rest-plugin/wiki/Supported-Devices).
+
+Other devices support
+
+| Channel Type ID   | Item Type                | Access Mode | Description                           | Thing types                                   |
+|-------------------|--------------------------|:-----------:|---------------------------------------|-----------------------------------------------|
+| brightness        | Dimmer                   |     R/W     | Brightness of the light               | `dimmablelight`                               |                                 
+| switch            | Switch                   |     R/W     | State of a ON/OFF device              | `onofflight`                                  |
+| color             | Color                    |     R/W     | Color of an multi-color light         | `colorlight`, `extendedcolorlight`            |
+| color_temperature | Number                   |     R/W     | `0`->`100` represents cold -> warm    | `colortemperaturelight`, `extendedcolorlight` |
+| position          | Rollershutter            |     R/W     | Position of the blind                 | `windowcovering`                              |
 
 ### Trigger Channels
 
@@ -162,6 +173,7 @@ Bridge deconz:deconz:homeserver [ host="192.168.0.10", apikey="ABCDEFGHIJ" ] {
     switch              livingroom-hue-tap      "Livingroom Hue Tap"        [ id="6" ]
     waterleakagesensor  basement-water-leakage  "Basement Water Leakage"    [ id="7" ]
     alarmsensor         basement-alarm          "Basement Alarm Sensor"     [ id="8" ]
+    dimmablelight       livingroom-ceiling      "Livingroom Ceiling"        [ id="1" ]
 }
 ```
 
@@ -175,6 +187,7 @@ Number:Pressure         Livingroom_Pressure     "Pressure Livingroom [%.1f hPa]"
 Contact                 Livingroom_Window       "Window Livingroom [%s]"            <door>          { channel="deconz:openclosesensor:homeserver:livingroom-window:open" }
 Switch                  Basement_Water_Leakage  "Basement Water Leakage [%s]"                       { channel="deconz:waterleakagesensor:homeserver:basement-water-leakage:waterleakage" }
 Switch                  Basement_Alarm          "Basement Alarm Triggered [%s]"                     { channel="deconz:alarmsensor:homeserver:basement-alarm:alarm" }
+Dimmer                  Livingroom_Ceiling      "Livingroom Ceiling [%d]"           <light>         { channel="deconz:dimmablelight:homeserver:livingroom-ceiling:brightness" }                 
 ```
 
 ### Events
