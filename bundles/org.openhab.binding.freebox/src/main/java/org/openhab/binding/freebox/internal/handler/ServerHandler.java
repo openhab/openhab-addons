@@ -364,6 +364,8 @@ public abstract class ServerHandler extends BaseBridgeHandler {
     public void reboot() {
         try {
             apiManager.execute(new APIRequests.Reboot());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE);
+            scheduler.schedule(this::initialize, 2, TimeUnit.MINUTES);
         } catch (FreeboxException e) {
             logger.debug("Thing {}: error rebooting server", getThing().getUID());
         }
