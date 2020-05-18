@@ -259,20 +259,19 @@ A full list of supported accessory types can be found in the table *below*.
 
 ### Legacy tags
 
-Following tags are still supported but could be removed in the future releases. please consider to replace them by the tags 
+Following tags are still supported but could be removed in the future releases. Please consider replacing them with the new style.
 
-| Old          | New |                                                                                                                                                                                                                                       |
-|--------------|-----------------------|
-| homekit:HeatingCoolingMode        |   CurrentHeatingCoolingMode               |  
-| homekit:TargetHeatingCoolingMode  |   TargetHeatingCoolingMode                    |  
-| homekit:CurrentHeatingCoolingMode |   CurrentHeatingCoolingMode                    |  
-| homekit:TargetTemperature         |     TargetTemperature                  |  
-| homekit:BatteryLowStatus          |   BatteryLowStatus                    |  
-| homekit:BatteryLevel              |  mapping to BatteryLowStatus              |  
-| CurrentHumidity  |  RelativeHumidity                     |  
-| Blinds  | WindowCovering                      |  
-| DimmableLighting |  Lighting with characteristic Brightness                     |  
-| ColorfulLighting  | Lighting with characteristic Brightness and Hue                      |  
+|          Old (tag style)         |               New (metadata style)              |
+|:--------------------------------:|:-----------------------------------------------:|
+| homekit:HeatingCoolingMode       | CurrentHeatingCoolingMode                       |
+| homekit:TargetHeatingCoolingMode | TargetHeatingCoolingMode                        |
+| homekit:TargetTemperature        | TargetTemperature                               |
+| homekit:BatteryLowStatus         | BatteryLowStatus                                |
+| homekit:BatteryLevel             | mapping to BatteryLowStatus                     |
+| CurrentHumidity                  | RelativeHumidity                                |
+| Blinds                           | WindowCovering                                  |
+| DimmableLighting                 | Lighting with characteristic Brightness         |
+| ColorfulLighting                 | Lighting with characteristic Brightness and Hue |
 
 
 ### Examples
