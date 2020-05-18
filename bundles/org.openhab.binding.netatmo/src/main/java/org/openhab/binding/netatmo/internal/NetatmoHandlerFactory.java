@@ -61,9 +61,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.netatmo")
 public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
-    private Logger logger = LoggerFactory.getLogger(NetatmoHandlerFactory.class);
-    private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
-    private Map<ThingUID, ServiceRegistration<?>> webHookServiceRegs = new HashMap<>();
+    private final Logger logger = LoggerFactory.getLogger(NetatmoHandlerFactory.class);
+    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    private final Map<ThingUID, ServiceRegistration<?>> webHookServiceRegs = new HashMap<>();
     private final HttpService httpService;
     private final NATherm1StateDescriptionProvider stateDescriptionProvider;
 
