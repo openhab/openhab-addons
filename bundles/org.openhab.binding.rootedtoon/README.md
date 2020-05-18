@@ -26,13 +26,52 @@ The "Rooted Toon" thing has two configuration parameters:
 
 ## Channels
 
-Here are some of the main channels of interest. To see all the channels, don't forget to click the "SHOW MORE" button in the Paper UI.
+| Channel                 | Type                 | Description                                                      |
+|-------------------------|----------------------|------------------------------------------------------------------|
+| Temperature             | Number:Temperature   | The measured room temperature in degrees Celcius                 |
+| Setpoint                | Number               | The desired room temperature in degrees Celcius                  |
+| SetpointMode            | Number               | What programmable mode is active (Comfort, Active, Sleep, Away)  |
+| GasMeterReading         | Number               | Gas meter reading                                                |
+| GasConsumption          | Number               | Gas flow in l/h                                                  |
+| PowerMeterReading       | Number               | Power consumed meter reading in Wh                               |
+| PowerMeterReadingLow    | Number               | Power consumed meter reading in Wh (low)                         |
+| PowerMeterFlow          | Number               | Power consumed flow in W                                         |
+| PowerMeterFlowLow       | Number               | Power consumed flow in W (low)                                   |
+| PowerProducedReading    | Number               | Power produced meter reading in Wh                               |
+| PowerProducedReadingLow | Number               | Power produced meter reading in Wh (low)                         |
+| PowerProducedFlow       | Number               | Power produced flow in W                                         |
+| PowerProducedFlowLow    | Number               | Power produced flow in W (low)                                   |
+| SolarPowerReading       | Number               | Solar power meter reading in Wh                                  |
+| SolarPowerFlow          | Number               | Solar power flow in W                                            |
+| ProgramEnabled          | Switch               | Whether the program is enabled                                   |
+| PowerConsumption        | Number               | Current power consumption, low and high rate combined            |
+| ModulationLevel         | Number               | Current burner modulation level                                  |
+| Heating                 | Switch               | Whether the heating is on                                        |
+| Tapwater                | Switch               | Whether the hot tapwater is on                                   |
+| Preheat                 | Switch               | Whether the boiler is preheating                                 |
+| NextSetpoint            | Number               | Numerical representation of the next Setpoint in the program     |
+| NextSetpointTime        | DateTime             | The moment when the next Setpoint will become active             |
+| BoilerSetpoint          | Number               |   |
 
 
-| channel           | type     | description                                                      |
-|-------------------|----------|------------------------------------------------------------------|
-| Temperature       | Number   | The measured room temperature in degrees Celcius                 |
-| Setpoint          | Number   | The desired room temperature in degrees Celcius                  |
-| SetpointMode      | Number   | What programmable mode is active (Comfort, Active, Sleep, Away)  |
-| PowerConsumption  | Number   | Current power consumption, low and high rate combined            |
-| NextSetpointTime  | DateTime | The moment when the next Setpoint will become active             |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+NextSetpointTime

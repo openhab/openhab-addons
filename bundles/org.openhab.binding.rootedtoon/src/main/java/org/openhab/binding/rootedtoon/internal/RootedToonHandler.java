@@ -85,12 +85,10 @@ public class RootedToonHandler extends BaseThingHandler implements ToonClientEve
             updateRealtimeUsageInfo();
         } else {
 
-            if (this.client == null) {
-                logger.error("Handling command without a client. Either not initialized or disposed.");
+            if (client == null) {
+                logger.warn("Handling command without a client. Either not initialized or disposed.");
                 return;
             }
-
-            ToonClient client = this.client;
 
             try {
                 OnOffType wantedValue;
@@ -149,7 +147,7 @@ public class RootedToonHandler extends BaseThingHandler implements ToonClientEve
             if (thingReachable) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Can not access device");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Cannot access device");
             }
         });
 
@@ -183,7 +181,7 @@ public class RootedToonHandler extends BaseThingHandler implements ToonClientEve
         try {
             this.client.requestThermostatInfo();
         } catch (ToonConnectionException e) {
-            this.logger.error("Error while updating thermostat info", e);
+            this.logger.warn("Error while updating thermostat info", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
@@ -192,13 +190,14 @@ public class RootedToonHandler extends BaseThingHandler implements ToonClientEve
         try {
             this.client.requestRealtimeUsageInfo();
         } catch (ToonConnectionException e) {
-            this.logger.error("Error while updating realtime usage info", e);
+            this.logger.warn("Error while updating realtime usage info", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
     @Override
     public void newPowerUsageInfo(PowerUsageInfo powerInfo) {
+        logger.trace("Method newPowerUsageInfo not implemented");
     }
 
     @Override
@@ -238,8 +237,6 @@ public class RootedToonHandler extends BaseThingHandler implements ToonClientEve
                 updateChannel("Preheat", OnOffType.ON);
                 return;
         }
-        // I have no idea why this was here
-        // updateStatus(ThingStatus.OFFLINE);
     }
 
     @Override

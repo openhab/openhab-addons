@@ -120,7 +120,7 @@
 	<channel-type id="setpointMode">
 		<item-type>Number</item-type>
 		<label>Setpoint Mode</label>
-		<description>Chosen setpoint mode (Comfort, Active, Sleep, Away)</description>
+		<description>Chosen setpoint mode</description>
 		<category>heating</category>
 		<state readOnly="false">
 			<options>

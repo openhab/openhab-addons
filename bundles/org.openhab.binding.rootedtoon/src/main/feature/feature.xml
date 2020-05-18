@@ -4,6 +4,6 @@
 
     <feature name="openhab-binding-rootedtoon" description="RootedToon Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.rootedtoon/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.rootedtoon/${ohc.version}</bundle>
     </feature>
 </features>
