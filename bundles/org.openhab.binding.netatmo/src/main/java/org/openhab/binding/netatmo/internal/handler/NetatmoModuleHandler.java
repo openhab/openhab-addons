@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
@@ -47,8 +48,11 @@ public class NetatmoModuleHandler<MODULE> extends AbstractNetatmoThingHandler {
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
+    protected void initializeThing(ThingHandler bridgeHandler, ThingStatus bridgeStatus) {
+        super.initializeThing(bridgeHandler, bridgeStatus);
+        if (bridgeHandler == null || bridgeStatus != ThingStatus.ONLINE) {
+            return;
+        }
         refreshJob = scheduler.schedule(() -> {
             requestParentRefresh();
         }, 5, TimeUnit.SECONDS);

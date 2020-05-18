@@ -37,7 +37,9 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -81,15 +83,44 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        config = getThing().getConfiguration();
+        logger.debug("initializing handler for thing {}", getThing().getUID());
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            initializeThing(null, null);
+        } else {
+            initializeThing(bridge.getHandler(), bridge.getStatus());
+        }
+    }
 
-        radioHelper = thing.getProperties().containsKey(PROPERTY_SIGNAL_LEVELS)
-                ? Optional.of(new RadioHelper(thing.getProperties().get(PROPERTY_SIGNAL_LEVELS)))
-                : Optional.empty();
-        batteryHelper = thing.getProperties().containsKey(PROPERTY_BATTERY_LEVELS)
-                ? Optional.of(new BatteryHelper(thing.getProperties().get(PROPERTY_BATTERY_LEVELS)))
-                : Optional.empty();
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Pending parent object initialization");
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        logger.debug("bridgeStatusChanged {}", bridgeStatusInfo);
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            initializeThing(null, bridgeStatusInfo.getStatus());
+        } else {
+            initializeThing(bridge.getHandler(), bridgeStatusInfo.getStatus());
+        }
+    }
+
+    protected void initializeThing(ThingHandler bridgeHandler, ThingStatus bridgeStatus) {
+        if (bridgeHandler != null && bridgeStatus != null) {
+            if (bridgeStatus == ThingStatus.ONLINE) {
+                config = getThing().getConfiguration();
+
+                radioHelper = thing.getProperties().containsKey(PROPERTY_SIGNAL_LEVELS)
+                        ? Optional.of(new RadioHelper(thing.getProperties().get(PROPERTY_SIGNAL_LEVELS)))
+                        : Optional.empty();
+                batteryHelper = thing.getProperties().containsKey(PROPERTY_BATTERY_LEVELS)
+                        ? Optional.of(new BatteryHelper(thing.getProperties().get(PROPERTY_BATTERY_LEVELS)))
+                        : Optional.empty();
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Pending parent object initialization");
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            }
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+        }
     }
 
     protected State getNAThingProperty(String channelId) {
