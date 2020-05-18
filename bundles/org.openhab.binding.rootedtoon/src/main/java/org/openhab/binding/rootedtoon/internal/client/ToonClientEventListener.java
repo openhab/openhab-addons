@@ -19,7 +19,7 @@ import org.openhab.binding.rootedtoon.internal.client.model.RealtimeUsageInfo;
 import org.openhab.binding.rootedtoon.internal.client.model.ThermostatInfo;
 
 /**
- *
+ * Helper interface to subscribe to change events
  * @author daanmeijer - Initial Contribution
  *
  */
