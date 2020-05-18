@@ -80,12 +80,12 @@
 	</channel-type>
 	<channel-type id="production_water_today-type">
 		<item-type>Number:Energy</item-type>
-		<label>Water quantity today</label>
+		<label>Water heat quantity today</label>
 		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 	<channel-type id="production_water_total-type">
 		<item-type>Number:Energy</item-type>
-		<label>Water quantity total</label>
+		<label>Water heat quantity total</label>
 		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 

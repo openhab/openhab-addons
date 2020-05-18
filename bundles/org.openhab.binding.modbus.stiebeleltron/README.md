@@ -1,56 +1,207 @@
-# Modbus.StiebelEltron Binding
+# Stiebel Eltron ISG Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+This extension adds support for the Stiebel Eltron modbus protocol.
 
-_If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+A Internet Service Gateway (ISG) with an installed modbus extension is required in order to run this binding. In case the modbus extension is not yet installed on the ISG, the ISG Updater Tool for the update can be found here: https://www.stiebel-eltron.de/de/home/produkte-loesungen/erneuerbare_energien/regelung_energiemanagement/internet_servicegateway/isg_web/downloads.html
+
+
+
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
+This bundle adds the following thing types to the Modbus binding.
+Note, that the things will show up under the Modbus binding.
+
+| Thing                    | Description                                        |
+| ------------------------ | -------------------------------------------------- |
+| Stiebel Eltron ISG | A stiebel eltron heat pump connected through a ISG |
 
 ## Discovery
 
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
+This extension does not support autodiscovery. The things need to be added manually.
 
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
+A typical bridge configuration would look like this:
 
 ```
-# Configuration for the Philips Hue Binding
-#
-# Default secret key for the pairing of the Philips Hue Bridge.
-# It has to be between 10-40 (alphanumeric) characters
-# This may be changed by the user for security reasons.
-secret=openHABSecret
+Bridge modbus:tcp:bridge [ host="10.0.0.2", port=502, id=1 ]
 ```
 
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/ESH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
+You need first to set up either a TCP Modbus bridge according to the Modbus documentation.
+Things in this extension will use the selected bridge to connect to the device.
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
+The following parameters are valid for all thing types:
+
+| Parameter | Type    | Required | Default if omitted | Description                                                                |
+| --------- | ------- | -------- | ------------------ | -------------------------------------------------------------------------- |
+| refresh   | integer | no       | 5                  | Poll interval in seconds. Increase this if you encounter connection errors |
+| maxTries  | integer | no       | 3                  | Number of retries when before giving up reading from this thing.           |
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+Channels are grouped into channel groups.
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
+### System State Group
 
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| control  | Switch | This is the control channel  |
+This group contains general operational information about the heat pump.
+
+| Channel ID       | Item Type | Read only | Description                                                   |
+| ---------------- | --------- | --------- | ------------------------------------------------------------- |
+| is-heating       | Contact   | true      | OPEN in case the heat pump is currently in heating mode       |
+| is-heating-water | Contact   | true      | OPEN in case the heat pump is currently in heating water mode |
+| is-cooling       | Contact   | true      | OPEN in case the heat pump is currently in cooling mode       |
+| is-pumping       | Contact   | true      | OPEN in case the heat pump is currently in pumping mode       |
+| is-summer        | Contact   | true      | OPEN in case the heat pump is currently in summer mode        |
+
+### System Parameters Group 
+
+This group contains system paramters of the heat pump.
+
+| Channel ID                  | Item Type          | Read only | Description                                 |
+| --------------------------- | ------------------ | --------- | ------------------------------------------- |
+| operation-mode              | Number             | false     | The current operation mode of the heat pump |
+| comfort-temperature-heating | Number:Temperature | false     | The current heating comfort temperature     |
+| eco-temperature-heating     | Number:Temperature | false     | The current heating eco temperature         |
+| comfort-temperature-water   | Number:Temperature | false     | The current water comfort temperature       |
+| eco-temperature-water       | Number:Temperature | false     | The current water eco temperature           |
+
+### System Information Group 
+
+This group contains general operational information about the device.
+
+| Channel ID                 | Item Type            | Description                                           |
+| -------------------------- | -------------------- | ----------------------------------------------------- |
+| fek-temperature            | Number:Temperature   | The current temperature measured by the FEK           |
+| fek-temperature-setpoint   | Number:Temperature   | The current set point of the FEK temperature          |
+| fek-humidity               | Number:Dimensionless | The current humidity measured by the FEK              |
+| fek-dewpoint               | Number:Temperature   | The current dew point temperature measured by the FEK |
+| outdoor-temperature        | Number:Temperature   | The current outdoor temperature                       |
+| hk1-temperature            | Number:Temperature   | The current temperature of the HK1                    |
+| hk1-temperature-setpoint   | Number:Temperature   | The current temperature set point of the HK1          |
+| supply-temperature         | Number:Temperature   | The current supply temperature                        |
+| return-temperature         | Number:Temperature   | The current return measured                           |
+| source-temperature         | Number:Temperature   | The current sourcetemperature                         |
+| water-temperature          | Number:Temperature   | The current water temperature                         |
+| water-temperature-setpoint | Number:Temperature   | The current water temperature set point               |
+
+### Energy Information Group 
+
+This group contains about the energy consumption and delivery of the heat pump.
+
+| Channel ID              | Item Type     | Read only | Description                                      |
+| ----------------------- | ------------- | --------- | ------------------------------------------------ |
+| production_heat_today   | Number:Energy | true      | The heat quantity delivered today                |
+| production_heat_total   | Number:Energy | true      | The heat quantity delivered in total             |
+| production_water_today  | Number:Energy | true      | The water heat quantity delivered today          |
+| production_water_total  | Number:Energy | true      | The water heat quantity delivered in total       |
+| consumption_heat_today  | Number:Energy | true      | The power consumption for heating today          |
+| consumption_heat_total  | Number:Energy | true      | The power consumption for heating in total       |
+| consumption_water_today | Number:Energy | true      | The power consumption for water heating today    |
+| consumption_water_total | Number:Energy | true      | The power consumption for water heating in total |
+
+
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
+### Thing Configuration
 
-## Any custom content here!
+```
+Bridge modbus:tcp:bridge [ host="hostname|ip", port=502, id=1]
+Thing modbus:heatpump:stiebelEltron "StiebelEltron" (modbus:tcp:modbusbridge) [ ]
+```
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+
+### Item Configuration
+
+```
+Number:Temperature stiebel_eltron_temperature_ffk            "Temperature FFK [%.1f °C]" <temperature>    { channel="modbus:heatpump:stiebelEltron:systemInformation#fek-temperature" }
+Number:Temperature stiebel_eltron_setpoint_ffk            "Set point FFK [%.1f °C]" <temperature>    { channel="modbus:heatpump:stiebelEltron:systemInformation#fek-temperature-setpoint" }
+Number:Dimensionless stiebel_eltron_humidity_ffk            "Humidity FFK [%.1f %%]" <humidity>   { channel="modbus:heatpump:stiebelEltron:systemInformation#fek-humidity" }
+Number:Temperature stiebel_eltron_dewpoint_ffk            "Dew point FFK [%.1f °C]" <temperature>    { channel="modbus:heatpump:stiebelEltron:systemInformation#fek-dewpoint" }
+
+Number:Temperature stiebel_eltron_outdoor_temp            "Outdoor temperature [%.1f °C]"    { channel="modbus:heatpump:stiebelEltron:systemInformation#outdoor-temperature" }
+Number:Temperature stiebel_eltron_temp_hk1                "Temperature HK1 [%.1f °C]"    { channel="modbus:heatpump:stiebelEltron:systemInformation#hk1-temperature" }
+Number:Temperature stiebel_eltron_setpoint_hk1            "Set point HK1 [%.1f °C]"    { channel="modbus:heatpump:stiebelEltron:systemInformation#hk1-temperature-setpoint" }
+Number:Temperature stiebel_eltron_temp_water                "Water temperature  [%.1f °C]"    { channel="modbus:heatpump:stiebelEltron:systemInformation#water-temperature" }
+Number:Temperature stiebel_eltron_setpoint_water            "Water setpoint [%.1f °C]"    { channel="modbus:heatpump:stiebelEltron:systemInformation#water-temperature-setpoint" }
+Number:Temperature stiebel_eltron_source_temp            "Source temperature [%.1f °C]"    { channel="modbus:heatpump:stiebelEltron:systemInformation#source-temperature" }
+Number:Temperature stiebel_eltron_vorlauf_temp            "Supply tempertature [%.1f °C]"    { channel="modbus:heatpump:stiebelEltron:systemInformation#supply-temperature" }
+Number:Temperature stiebel_eltron_ruecklauf_temp            "Return temperature  [%.1f °C]"    { channel="modbus:heatpump:stiebelEltron:systemInformation#return-temperature" }
+
+Number stiebel_eltron_heating_comfort_temp              "Heating Comfort Temperature [%.1f °C]"    { channel="modbus:heatpump:stiebelEltron:systemParameter#comfort-temperature-heating" }
+Number stiebel_eltron_heating_eco_temp              "Heating Eco Temperature [%.1f °C]"    { channel="modbus:heatpump:stiebelEltron:systemParameter#eco-temperature-heating" }
+Number stiebel_eltron_water_comfort_temp              "Water Comfort Temperature [%.1f °C]"    { channel="modbus:heatpump:stiebelEltron:systemParameter#comfort-temperature-water" }
+Number stiebel_eltron_water_eco_temp              "Water Eco Temperature [%.1f °C]"    { channel="modbus:heatpump:stiebelEltron:systemParameter#eco-temperature-water" }
+Number stiebel_eltron_operation_mode           "Operation Mode"   { channel="modbus:heatpump:stiebelEltron:systemParameter#operation-mode" }
+
+Contact stiebel_eltron_mode_pump               "Pump [%d]"   { channel="modbus:heatpump:stiebelEltron:systemState#is-pumping" }
+Contact stiebel_eltron_mode_heating             "Heating [%d]"   { channel="modbus:heatpump:stiebelEltron:systemState#is-heating" }
+Contact stiebel_eltron_mode_water              "Heating Water [%d]"   { channel="modbus:heatpump:stiebelEltron:systemState#is-heating-water" }
+Contact stiebel_eltron_mode_cooling             "Cooling [%d]"   { channel="modbus:heatpump:stiebelEltron:systemState#is-cooling" }
+Contact stiebel_eltron_mode_summer             "Summer Mode [%d]"   { channel="modbus:heatpump:stiebelEltron:systemState#is-summer" }
+
+
+Number:Energy stiebel_eltron_production_heat_today            "Heat quantity today [%.0f kWh]"    { channel="modbus:heatpump:stiebelEltron:energyInformation#production_heat_today" }
+Number:Energy stiebel_eltron_production_heat_total            "Heat quantity total  [%.3f MWh]"   {channel="modbus:heatpump:stiebelEltron:energyInformation#production_heat_total"}
+Number:Energy stiebel_eltron_production_water_today            "Water heat quantity today  [%.0f kWh]"    { channel="modbus:heatpump:stiebelEltron:energyInformation#production_water_today" }
+Number:Energy stiebel_eltron_production_water_total            "Water heat quantity total  [%.3f MWh]"   {channel="modbus:heatpump:stiebelEltron:energyInformation#production_water_total"}
+Number:Energy stiebel_eltron_consumption_heat_total             "Heating power consumption total [%.3f MWh]"  {channel="modbus:heatpump:stiebelEltron:energyInformation#consumption_heat_total"}
+Number:Energy stiebel_eltron_consumption_heat_today            "Heating power consumption today [%.0f kWh]"    { channel="modbus:heatpump:stiebelEltron:energyInformation#consumption_heat_today" }
+Number:Energy stiebel_eltron_consumption_water_today            "Water heating power consumption today  [%.0f kWh]"    { channel="modbus:heatpump:stiebelEltron:energyInformation#consumption_water_today" }
+Number:Energy stiebel_eltron_consumption_water_total            "Water heating power consumption total [%.3f MWh]"   {channel="modbus:heatpump:stiebelEltron:energyInformation#consumption_water_total"}
+
+
+```
+
+### Sitemap Configuration
+
+```
+        Text label="Heat pumpt" icon="temperature" {
+			Frame label="Optation Mode" {
+				Default item=stiebel_eltron_mode_pump 
+				Default item=stiebel_eltron_mode_heating
+				Default item=stiebel_eltron_mode_water 
+				Default item=stiebel_eltron_mode_cooling 
+				Default item=stiebel_eltron_mode_summer
+			}
+			Frame label= "State" {
+				Default item=stiebel_eltron_operation_mode icon="settings"
+				Default item=stiebel_eltron_outdoor_temp  icon="temperature"
+				Default item=stiebel_eltron_temp_hk1  icon="temperature"
+				Default item=stiebel_eltron_setpoint_hk1  icon="temperature"
+				Default item=stiebel_eltron_vorlauf_temp  icon="temperature"
+				Default item=stiebel_eltron_ruecklauf_temp  icon="temperature"
+				Default item=stiebel_eltron_temp_water  icon="temperature"
+				Default item=stiebel_eltron_setpoint_water icon="temperature"
+				Default item=stiebel_eltron_temperature_ffk  icon="temperature"
+				Default item=stiebel_eltron_setpoint_ffk icon="temperature"
+				Default item=stiebel_eltron_humidity_ffk icon="humidity"
+				Default item=stiebel_eltron_dewpoint_ffk icon="temperature"
+				Default item=stiebel_eltron_source_temp icon="temperature"
+			}
+			Frame label="Paramters" {
+				Setpoint item=stiebel_eltron_heating_comfort_temp icon="temperature" step=1 minValue=5 maxValue=30
+				Setpoint item=stiebel_eltron_heating_eco_temp icon="temperature" step=1 minValue=5 maxValue=30
+				Setpoint item=stiebel_eltron_water_comfort_temp icon="temperature" step=1 minValue=10 maxValue=60
+				Setpoint item=stiebel_eltron_water_eco_temp icon="temperature" step=1 minValue=10 maxValue=60
+			}
+			Frame label="Energy consumption" {
+				Default item=stiebel_eltron_consumption_heat_today icon="energy"
+				Default item=stiebel_eltron_consumption_heat_total icon="energy"
+				Default item=stiebel_eltron_consumption_water_today icon="energy"
+				Default item=stiebel_eltron_consumption_water_total icon="energy"
+			}
+			Frame label="Heat quantity" {
+				Default item=stiebel_eltron_production_heat_today icon="radiator"
+				Default item=stiebel_eltron_production_heat_total icon="radiator"
+				Default item=stiebel_eltron_production_water_today icon="water"
+				Default item=stiebel_eltron_production_water_total icon="water"
+			}
+
+		}
+
+```
+
+
