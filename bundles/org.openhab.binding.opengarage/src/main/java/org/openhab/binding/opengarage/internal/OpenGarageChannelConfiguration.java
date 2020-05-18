@@ -12,12 +12,14 @@
  */
 package org.openhab.binding.opengarage.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The OpenGarageChannelConfiguration class contains fields mapping thing configuration parameters.
  *
  * @author Dan Cunningham - Initial contribution
  */
-
+@NonNullByDefault
 public class OpenGarageChannelConfiguration {
-    boolean invert = false;
+    public boolean invert = false;
 }
