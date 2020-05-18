@@ -105,7 +105,7 @@ public class ModemDBBuilder implements MsgListener, Runnable {
      * {@inheritDoc}
      */
     @Override
-    public void msg(Msg msg, String fromPort) {
+    public void msg(Msg msg) {
         if (msg.isPureNack()) {
             return;
         }

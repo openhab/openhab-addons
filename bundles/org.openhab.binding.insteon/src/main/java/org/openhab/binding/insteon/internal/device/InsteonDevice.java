@@ -59,7 +59,6 @@ public class InsteonDevice {
     private static final int TIME_BETWEEN_POLL_MESSAGES = 1500;
 
     private InsteonAddress address = new InsteonAddress();
-    private ArrayList<String> ports = new ArrayList<>();
     private long pollInterval = -1L; // in milliseconds
     private @Nullable Driver driver = null;
     private HashMap<String, @Nullable DeviceFeature> features = new HashMap<>();
@@ -106,10 +105,6 @@ public class InsteonDevice {
         return driver;
     }
 
-    public boolean hasValidPorts() {
-        return (!ports.isEmpty());
-    }
-
     public long getPollInterval() {
         return pollInterval;
     }
@@ -144,13 +139,6 @@ public class InsteonDevice {
 
     public long getPollOverDueTime() {
         return (lastTimePolled - lastMsgReceived);
-    }
-
-    public String getPort() throws IOException {
-        if (ports.isEmpty()) {
-            throw new IOException("no ports configured for instrument " + getAddress());
-        }
-        return (ports.iterator().next());
     }
 
     public boolean hasAnyListeners() {
@@ -205,20 +193,6 @@ public class InsteonDevice {
     public @Nullable DeviceFeature getFeatureQueried() {
         synchronized (mrequestQueue) {
             return (featureQueried);
-        }
-    };
-
-    /**
-     * Add a port. Currently only a single port is being used.
-     *
-     * @param p the port to add
-     */
-    public void addPort(@Nullable String p) {
-        if (p == null) {
-            return;
-        }
-        if (!ports.contains(p)) {
-            ports.add(p);
         }
     }
 
@@ -301,11 +275,9 @@ public class InsteonDevice {
     /**
      * Handle incoming message for this device by forwarding
      * it to all features that this device supports
-     *
-     * @param fromPort port from which the message come in
      * @param msg the incoming message
      */
-    public void handleMessage(String fromPort, Msg msg) {
+    public void handleMessage(Msg msg) {
         synchronized (lastMsgReceived) {
             lastMsgReceived = System.currentTimeMillis();
         }
@@ -315,7 +287,7 @@ public class InsteonDevice {
             for (DeviceFeature f : features.values()) {
                 if (!f.isStatusFeature()) {
                     logger.debug("----- applying message to feature: {}", f.getName());
-                    if (f.handleMessage(msg, fromPort)) {
+                    if (f.handleMessage(msg)) {
                         // handled a reply to a query,
                         // mark it as processed
                         logger.trace("handled reply of direct: {}", f);
@@ -328,7 +300,7 @@ public class InsteonDevice {
             // e.g. when the device was last updated
             for (DeviceFeature f : features.values()) {
                 if (f.isStatusFeature()) {
-                    f.handleMessage(msg, fromPort);
+                    f.handleMessage(msg);
                 }
             }
         }
@@ -528,7 +500,7 @@ public class InsteonDevice {
     }
 
     private void writeMessage(Msg m) throws IOException {
-        driver.writeMessage(getPort(), m);
+        driver.writeMessage(m);
     }
 
     private void instantiateFeatures(@Nullable DeviceType dt) {

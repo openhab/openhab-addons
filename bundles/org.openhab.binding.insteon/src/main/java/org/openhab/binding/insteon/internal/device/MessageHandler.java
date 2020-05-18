@@ -75,9 +75,8 @@ public abstract class MessageHandler {
      * @param cmd1 the insteon cmd1 field
      * @param msg the received insteon message
      * @param feature the DeviceFeature to which this message handler is attached
-     * @param fromPort the device (/dev/ttyUSB0) from which the message has been received
      */
-    public abstract void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature feature, String fromPort);
+    public abstract void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature feature);
 
     /**
      * Method to send an extended insteon message for querying a device
@@ -348,7 +347,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             logger.debug("{} ignoring unimpl message with cmd1:{}", nm(), Utils.getHexByte(cmd1));
         }
     }
@@ -360,7 +359,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             logger.trace("{} ignore msg {}: {}", nm(), Utils.getHexByte(cmd1), msg);
         }
     }
@@ -372,7 +371,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             if (!isMybutton(msg, f)) {
                 return;
             }
@@ -402,7 +401,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             if (isMybutton(msg, f)) {
                 String mode = getStringParameter("mode", "REGULAR");
                 logger.debug("{}: device {} was turned off {}.", nm(), f.getDevice().getAddress(), mode);
@@ -418,7 +417,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             if (isMybutton(msg, f)) {
                 String mode = getStringParameter("mode", "REGULAR");
                 logger.debug("{}: device {} was switched on {}.", nm(), f.getDevice().getAddress(), mode);
@@ -436,7 +435,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             if (isMybutton(msg, f)) {
                 String mode = getStringParameter("mode", "REGULAR");
                 logger.debug("{}: device {} was switched off {}.", nm(), f.getDevice().getAddress(), mode);
@@ -471,7 +470,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             if (cmd1 == onCmd) {
                 int level = getLevel(msg);
                 logger.debug("{}: device {} was switched on using ramp to level {}.", nm(), f.getDevice().getAddress(),
@@ -519,7 +518,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             try {
                 InsteonAddress a = f.getDevice().getAddress();
                 int cmd2 = msg.getByte("command2") & 0xff;
@@ -587,7 +586,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             InsteonDevice dev = f.getDevice();
             try {
                 int cmd2 = msg.getByte("command2") & 0xff;
@@ -630,7 +629,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             Msg m = f.makePollMsg();
             if (m != null) {
                 f.getDevice().enqueueMessage(m, f);
@@ -652,7 +651,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             try {
                 int cmd2 = msg.getByte("command2") & 0xff;
                 int upDown = (cmd2 == 0) ? 0 : 2;
@@ -679,7 +678,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             logger.debug("{}: dev {} manual state change: {}", nm(), f.getDevice().getAddress(), 0);
             feature.publish(new DecimalType(1), StateChangeType.ALWAYS);
         }
@@ -692,7 +691,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             InsteonDevice dev = f.getDevice();
             if (!msg.isExtended()) {
                 logger.warn("{} device {} expected extended msg as info reply, got {}", nm(), dev.getAddress(), msg);
@@ -728,7 +727,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             InsteonDevice dev = f.getDevice();
             if (!msg.isExtended()) {
                 logger.trace("{} device {} ignoring non-extended msg {}", nm(), dev.getAddress(), msg);
@@ -763,7 +762,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             InsteonDevice dev = f.getDevice();
             if (!msg.isExtended()) {
                 logger.trace("{} device {} ignoring non-extended msg {}", nm(), dev.getAddress(), msg);
@@ -799,7 +798,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             if (msg.isExtended()) {
                 try {
                     // see iMeter developer notes 2423A1dev-072013-en.pdf
@@ -839,7 +838,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             InsteonDevice dev = f.getDevice();
             logger.debug("{}: power meter {} was reset", nm(), dev.getAddress());
 
@@ -858,7 +857,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1a, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1a, Msg msg, DeviceFeature f) {
             feature.publish(new DateTimeType(), StateChangeType.ALWAYS);
         }
     }
@@ -870,7 +869,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1a, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1a, Msg msg, DeviceFeature f) {
             byte cmd = 0x00;
             byte cmd2 = 0x00;
             try {
@@ -895,7 +894,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             feature.publish(OpenClosedType.CLOSED, StateChangeType.ALWAYS);
         }
     }
@@ -907,7 +906,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             feature.publish(OpenClosedType.OPEN, StateChangeType.ALWAYS);
         }
     }
@@ -919,7 +918,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             try {
                 byte cmd2 = msg.getByte("command2");
                 switch (cmd1) {
@@ -960,7 +959,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             feature.publish(OpenClosedType.CLOSED, StateChangeType.ALWAYS);
             sendExtendedQuery(f, (byte) 0x2e, (byte) 00);
         }
@@ -973,7 +972,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             feature.publish(OpenClosedType.OPEN, StateChangeType.ALWAYS);
             sendExtendedQuery(f, (byte) 0x2e, (byte) 00);
         }
@@ -994,7 +993,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             feature.getDevice().doPoll(2000); // 2000 ms delay
         }
     }
@@ -1009,7 +1008,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             try {
                 // first do the bit manipulations to focus on the right area
                 int mask = getIntParameter("mask", 0xFFFF);
@@ -1180,7 +1179,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             InsteonAddress a = f.getDevice().getAddress();
             logger.debug("{}: set X10 device {} to ON", nm(), a);
             feature.publish(OnOffType.ON, StateChangeType.ALWAYS);
@@ -1194,7 +1193,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             InsteonAddress a = f.getDevice().getAddress();
             logger.debug("{}: set X10 device {} to OFF", nm(), a);
             feature.publish(OnOffType.OFF, StateChangeType.ALWAYS);
@@ -1208,7 +1207,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             InsteonAddress a = f.getDevice().getAddress();
             logger.debug("{}: ignoring brighten message for device {}", nm(), a);
         }
@@ -1221,7 +1220,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             InsteonAddress a = f.getDevice().getAddress();
             logger.debug("{}: ignoring dim message for device {}", nm(), a);
         }
@@ -1234,7 +1233,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             InsteonAddress a = f.getDevice().getAddress();
             logger.debug("{}: set X10 device {} to OPEN", nm(), a);
             feature.publish(OpenClosedType.OPEN, StateChangeType.ALWAYS);
@@ -1248,7 +1247,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             InsteonAddress a = f.getDevice().getAddress();
             logger.debug("{}: set X10 device {} to CLOSED", nm(), a);
             feature.publish(OpenClosedType.CLOSED, StateChangeType.ALWAYS);
