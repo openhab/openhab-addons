@@ -99,6 +99,14 @@ The binding has the following configuration options:
 |----------------|------------------------------------------------------------------|---------|------------------------------------------------|
 | defaultUserId  |Default user id for HTTP authentication when not set in the Thing |    no   |admin                                           |
 | defaultPassword|Default password for HTTP authentication when not set in the Thing|    no   |admin                                           |
+| autoCoIoT      |Auto-enable CoIoT events when firmware 1.6+ü is enabled           |    no   |true                                            |
+
+The binding defaults to CoIoT events when firmware 1.6 or newer is detected.
+This provides near-realtime updates when status values have changed.
+This mode also overrules event settings in the thing configuration.
+Disabling this feature allows granular control, which event types will be used.
+This is also required when the Shelly devices are not located on the same IP subnet (e.g. using a VPN).
+In this case autoCoIoT should be disabled, CoIoT events will not work, because the underlying CoAP protocol is based on Multicast IP, which usually doesn't passes a VPN or routed network.
 
 ## Thing Configuration
 
@@ -123,7 +131,7 @@ The binding has the following configuration options:
 - channels `input` and `input1`/`input2` get only updated with firmware 1.5.6+.
 - channel button: Short push and long push events require firmware version 1.5.6+.
 - Use the channel `rollerpos` only if you need the inverted roller position, otherwise use the `control` channel with item type `Number`
-- The different devices have different types of power meters, i.e. different sets of channels.
+- The different devices have different types of power meters, which are mapped in different sets of channels.
 
 Every device has a channel group `device` with the following channels:
 
@@ -137,8 +145,10 @@ Every device has a channel group `device` with the following channels:
 |          |accumulatedWatts   |Number  |yes      |Accumulated power in W of the device (including all meters)                      |
 |          |accumulatedTotal   |Number  |yes      |Accumulated total power in kw/h of the device (including all meters)             |
 |          |accumulatedReturned|Number  |yes      |Accumulated returned power in kw/h of the device (including all meters)          |
+|          |updateAvailable    |Switch  |yes      |ON: A firmwareupdate is available (use Shelly App to perform update)             |
 
 The accumulated channels are only available for devices with more than 1 meter. accumulatedReturned only for the EM and EM3.
+
 
 ### Events / Alarms
 

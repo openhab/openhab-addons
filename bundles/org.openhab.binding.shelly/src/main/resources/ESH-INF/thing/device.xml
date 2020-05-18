@@ -8,9 +8,10 @@
 		<label>Device Status</label>
 		<description>Information about the device status</description>
 		<channels>
-			<channel id="alarm" typeId="alarmTrigger"/>
-			<channel id="wifiSignal" typeId="system.signal-strength"/>
-			<channel id="uptime" typeId="uptime"/>
+			<channel id="alarm" typeId="alarmTrigger" />
+			<channel id="wifiSignal" typeId="system.signal-strength" />
+			<channel id="uptime" typeId="uptime" />
+			<channel id="updateAvailable" typeId="updateAvailable" />
 		</channels>
 	</channel-group-type>
 
@@ -54,6 +55,13 @@
 		<label>Uptime</label>
 		<description>Number of seconds since the device was powered up</description>
 		<state readOnly="true" pattern="%d %unit%">
+		</state>
+	</channel-type>
+	<channel-type id="updateAvailable" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Update available</label>
+		<description>ON: A firmware update is available (use Shelly App to perform update)</description>
+		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="deviceTemp" advanced="true">

@@ -83,6 +83,8 @@ public class ShellyChannelDefinitionsDTO {
                 .add(new ShellyChannel(m, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCURETURNED, "meterAccuReturned",
                         ITEM_TYPE_POWER))
                 .add(new ShellyChannel(m, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_CHARGER, "charger", ITEM_TYPE_SWITCH))
+                .add(new ShellyChannel(m, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_UPDATE, "updateAvailable",
+                        ITEM_TYPE_SWITCH))
 
                 // RGBW2
                 .add(new ShellyChannel(m, CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_INPUT, "inputState", ITEM_TYPE_SWITCH))
@@ -167,7 +169,7 @@ public class ShellyChannelDefinitionsDTO {
         addChannel(thing, add, accuChannel, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUTOTAL);
         addChannel(thing, add, accuChannel && (status.emeters != null), CHANNEL_GROUP_DEV_STATUS,
                 CHANNEL_DEVST_ACCURETURNED);
-
+        addChannel(thing, add, true, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_UPDATE);
         return add;
     }
 
@@ -243,12 +245,10 @@ public class ShellyChannelDefinitionsDTO {
                 CHANNEL_SENSOR_ILLUM);
         addChannel(thing, newChannels, sdata.contact != null && sdata.contact.state != null, CHANNEL_GROUP_SENSOR,
                 CHANNEL_SENSOR_STATE);
-        addChannel(thing, newChannels, sdata.motion != null && sdata.contact.state != null, CHANNEL_GROUP_SENSOR,
-                CHANNEL_SENSOR_MOTION);
+        addChannel(thing, newChannels, sdata.motion != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION);
         addChannel(thing, newChannels, sdata.charger != null, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_CHARGER);
         addChannel(thing, newChannels, sdata.sensorError != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ERROR);
         addChannel(thing, newChannels, sdata.actReasons != null, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_WAKEUP);
-        addChannel(thing, newChannels, true, CHANNEL_GROUP_SENSOR, CHANNEL_LAST_UPDATE);
 
         // Battery
         if (sdata.bat != null) {
@@ -256,6 +256,8 @@ public class ShellyChannelDefinitionsDTO {
             addChannel(thing, newChannels, sdata.bat.value != null, CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LOW);
             addChannel(thing, newChannels, sdata.bat.voltage != null, CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_VOLT);
         }
+
+        addChannel(thing, newChannels, true, CHANNEL_GROUP_SENSOR, CHANNEL_LAST_UPDATE);
         return newChannels;
     }
 
