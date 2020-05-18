@@ -29,7 +29,6 @@ import org.osgi.service.component.annotations.Component;
  * The {@link YeelightHandlerFactory} is responsible for returning supported things and handlers for the devices.
  *
  * @author Coaster Li - Initial contribution
- * @author Nikita Pogudalov - Added Ceiling 3 support
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.yeelight")
 public class YeelightHandlerFactory extends BaseThingHandlerFactory {
@@ -63,10 +62,8 @@ public class YeelightHandlerFactory extends BaseThingHandlerFactory {
         } else if (thingTypeUID.equals(THING_TYPE_STRIPE)) {
             return new YeelightStripeHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_CEILING) || thingTypeUID.equals(THING_TYPE_CEILING1)
-                || thingTypeUID.equals(THING_TYPE_DESKLAMP)) {
+                || thingTypeUID.equals(THING_TYPE_CEILING3) || thingTypeUID.equals(THING_TYPE_DESKLAMP)) {
             return new YeelightCeilingHandler(thing);
-        } else if (thingTypeUID.equals(THING_TYPE_CEILING3)) {
-            return new YeelightCeilingWithNightHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_CEILING4)) {
             return new YeelightCeilingWithAmbientHandler(thing);
         } else {

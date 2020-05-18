@@ -14,18 +14,21 @@ package org.openhab.binding.yeelight.internal.handler;
 
 import static org.openhab.binding.yeelight.internal.YeelightBindingConstants.*;
 
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.yeelight.internal.YeelightBindingConstants;
 import org.openhab.binding.yeelight.internal.lib.device.DeviceStatus;
+import org.openhab.binding.yeelight.internal.lib.enums.ActiveMode;
 
 /**
  * The {@link YeelightCeilingHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Coaster Li - Initial contribution
+ * @author Nikita Pogudalov - Added Night Light Channel
  */
 public class YeelightCeilingHandler extends YeelightHandlerBase {
 
@@ -48,5 +51,8 @@ public class YeelightCeilingHandler extends YeelightHandlerBase {
             updateState(YeelightBindingConstants.CHANNEL_COLOR_TEMPERATURE,
                     new PercentType((status.getCt() - COLOR_TEMPERATURE_MINIMUM) / COLOR_TEMPERATURE_STEP));
         }
+
+        updateState(YeelightBindingConstants.CHANNEL_NIGHTLIGHT,
+                (status.getActiveMode() == ActiveMode.MOONLIGHT_MODE) ? OnOffType.ON : OnOffType.OFF);
     }
 }
