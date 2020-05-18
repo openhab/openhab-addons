@@ -72,6 +72,11 @@ public enum MowerStatus {
     SLEEPING(17),
 
     /**
+     * Mower waits for door to open
+     */
+    DOORDELAY(18),
+    
+    /**
      * unknown status. If the module return any not listed code here it will result in this state in the binding.
      */
     UNKNOWN(99);
