@@ -30,7 +30,7 @@ import static org.openhab.binding.yeelight.internal.YeelightBindingConstants.COL
  *
  * @author Pogudalov Nikita - Initial contribution
  */
-public class YeelightCeilingWithNightHandler extends YeelightHandlerBase {
+public class YeelightCeilingWithNightHandler extends YeelightCeilingHandler {
 
     public YeelightCeilingWithNightHandler(Thing thing) {
         super(thing);
