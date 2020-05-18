@@ -12,10 +12,13 @@
  */
 package org.openhab.binding.hue.internal.handler;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.FullGroup;
 import org.openhab.binding.hue.internal.HueBridge;
+import org.openhab.binding.hue.internal.Scene;
 
 /**
  * The {@link GroupStatusListener} is notified when a group status has changed or a group has been removed or added.
@@ -57,4 +60,12 @@ public interface GroupStatusListener {
      * @param group The added group
      */
     void onGroupAdded(@Nullable HueBridge bridge, FullGroup group);
+
+    /**
+     * This method is called whenever the list of available scenes is updated.
+     *
+     * @param bridge The bridge on which all scenes is stored
+     * @param updatedScenes available scenes
+     */
+    void onScenesUpdated(@Nullable HueBridge bridge, List<Scene> scenes);
 }

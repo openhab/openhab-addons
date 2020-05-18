@@ -37,6 +37,7 @@ import org.openhab.binding.hue.internal.FullHueObject;
 import org.openhab.binding.hue.internal.FullLight;
 import org.openhab.binding.hue.internal.FullSensor;
 import org.openhab.binding.hue.internal.HueBridge;
+import org.openhab.binding.hue.internal.Scene;
 import org.openhab.binding.hue.internal.handler.GroupStatusListener;
 import org.openhab.binding.hue.internal.handler.HueBridgeHandler;
 import org.openhab.binding.hue.internal.handler.HueGroupHandler;
@@ -323,6 +324,11 @@ public class HueLightDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void onGroupStateChanged(@Nullable HueBridge bridge, FullGroup group) {
+        // nothing to do
+    }
+
+    @Override
+    public void onScenesUpdated(@Nullable HueBridge bridge, List<Scene> scenes) {
         // nothing to do
     }
 

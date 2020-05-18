@@ -56,6 +56,7 @@ import org.openhab.binding.hue.internal.FullLight;
 import org.openhab.binding.hue.internal.FullSensor;
 import org.openhab.binding.hue.internal.HueBridge;
 import org.openhab.binding.hue.internal.HueConfigStatusMessage;
+import org.openhab.binding.hue.internal.Scene;
 import org.openhab.binding.hue.internal.State;
 import org.openhab.binding.hue.internal.StateUpdate;
 import org.openhab.binding.hue.internal.config.HueBridgeConfig;
@@ -98,7 +99,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     }
 
     private final Logger logger = LoggerFactory.getLogger(HueBridgeHandler.class);
-    private final @NonNullByDefault({}) HueStateDescriptionOptionProvider stateDescriptionOptionProvider;
+    private final HueStateDescriptionOptionProvider stateDescriptionOptionProvider;
 
     private final Map<String, FullLight> lastLightStates = new ConcurrentHashMap<>();
     private final Map<String, FullSensor> lastSensorStates = new ConcurrentHashMap<>();
@@ -322,9 +323,17 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     private final Runnable scenePollingRunnable = new PollingRunnable() {
         @Override
         protected void doConnectedRun() throws IOException, ApiException {
-            Map<String, String> groupNames = lastGroupStates.entrySet().parallelStream()
+            List<Scene> scenes = hueBridge.getScenes();
+            logger.trace("Scenes detected: {}", scenes);
+
+            setBridgeSceneChannelStateOptions(scenes, lastGroupStates);
+            notifyGroupSceneUpdate(scenes);
+        }
+
+        private void setBridgeSceneChannelStateOptions(List<Scene> scenes, Map<String, FullGroup> groups) {
+            Map<String, String> groupNames = groups.entrySet().parallelStream()
                     .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getName()));
-            List<StateOption> stateOptions = hueBridge.getScenes().parallelStream()//
+            List<StateOption> stateOptions = scenes.parallelStream()//
                     .map(scene -> scene.toStateOption(groupNames))//
                     .collect(Collectors.toList());
             stateDescriptionOptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_SCENE),
@@ -932,6 +941,10 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                 logger.debug("An exception occurred while calling the Group Listeners", e);
             }
         }
+    }
+
+    private void notifyGroupSceneUpdate(List<Scene> scenes) {
+        groupStatusListeners.forEach(l -> l.onScenesUpdated(hueBridge, scenes));
     }
 
     @Override

@@ -232,9 +232,7 @@ The bridge itself supports a channel to activate scenes:
 | --------------- | --------- | ----------- |
 | scene             | String             | This channel activates the scene with the given ID String. | 
 
-The scenes are identified by an ID String that is assigned by the Hue bridge. These must be aquired directly from [Hue REST API](https://developers.meethue.com/develop/hue-api/).
-
-This channel can then be used in the sitemap, for example as a switch or selection.
+The scenes are identified by an ID String that is assigned by the Hue bridge.
 
 ## Rule Actions
 

@@ -39,6 +39,24 @@ public class Scene {
     private String groupId;
     private boolean recycle;
 
+    /**
+     * Default constructor for GSon.
+     */
+    public Scene() {
+        super();
+    }
+
+    /**
+     * Test constructor
+     */
+    Scene(String id, String name, String groupId, List<String> lightIds, boolean recycle) {
+        this.id = id;
+        this.name = name;
+        this.groupId = groupId;
+        this.lightIds = lightIds;
+        this.recycle = recycle;
+    }
+
     @NonNull
     public String getId() {
         return id;
@@ -89,15 +107,52 @@ public class Scene {
         return recycle;
     }
 
+    /**
+     * Creates a {@link StateOption} to display this scene, including the group that it belongs to.
+     * <p>
+     * The display name is built with the following pattern:
+     * <ol>
+     * <li>Human readable name of the scene if set. Otherwise, the ID is displayed</li>
+     * <li>Group for which the scene is defined</li>
+     * </ol>
+     */
     public StateOption toStateOption(Map<String, String> groupNames) {
         StringBuilder stateOptionLabel = new StringBuilder(name);
         if (groupId != null && groupNames.containsKey(groupId)) {
             stateOptionLabel.append(" (").append(groupNames.get(groupId)).append(")");
         }
-        if (!id.contentEquals(name)) {
-            stateOptionLabel.append(" [").append(id).append("]");
-        }
 
         return new StateOption(id, stateOptionLabel.toString());
+    }
+
+    /**
+     * Creates a {@link StateOption} to display this scene.
+     */
+    public StateOption toStateOption() {
+        return new StateOption(id, name);
+    }
+
+    /**
+     * Returns whether the scene is applicable to the given group.
+     * <p>
+     * According to the hue API, a scene is applicable to a group if either
+     * <ol>
+     * <li>The scene is defined for the group</li>
+     * <li>All lights of the scene also belong to the group</li>
+     * </ol>
+     */
+    public boolean isApplicableTo(FullGroup group) {
+        if (getGroupId() == null) {
+            return getLightIds().parallelStream()//
+                    .allMatch(id -> group.getLights().contains(id));
+        } else {
+            return group.getId().contentEquals(getGroupId());
+        }
+    }
+
+    @Override
+    public String toString() {
+        return String.format("{Scene name: %s; id: %s; lightIds: %s; groupId: %s; recycle: %s}", name, id, lightIds,
+                groupId, recycle);
     }
 }

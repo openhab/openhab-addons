@@ -34,6 +34,17 @@ public class FullGroup extends Group {
     private State state; // Will not be set by hue API
 
     FullGroup() {
+        super();
+    }
+
+    /**
+     * Test constructor
+     */
+    FullGroup(String id, String name, String type, State action, List<String> lights, State state) {
+        super(id, name, type);
+        this.action = action;
+        this.lights = lights;
+        this.state = state;
     }
 
     /**

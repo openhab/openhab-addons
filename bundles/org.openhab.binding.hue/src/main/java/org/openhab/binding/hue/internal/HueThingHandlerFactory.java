@@ -159,7 +159,7 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
         } else if (ClipHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             return new ClipHandler(thing);
         } else if (HueGroupHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            return new HueGroupHandler(thing);
+            return new HueGroupHandler(thing, stateOptionProvider);
         } else {
             return null;
         }

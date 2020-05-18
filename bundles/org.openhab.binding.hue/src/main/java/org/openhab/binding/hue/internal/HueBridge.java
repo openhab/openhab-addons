@@ -22,6 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -113,6 +114,17 @@ public class HueBridge {
             throws IOException, ApiException {
         this(ip, port, protocol, scheduler);
         authenticate(username);
+    }
+
+    /**
+     * Test constructor
+     */
+    HueBridge(String ip, String baseUrl, String username, ScheduledExecutorService scheduler, HttpClient http) {
+        this.ip = ip;
+        this.baseUrl = baseUrl;
+        this.username = username;
+        this.scheduler = scheduler;
+        this.http = http;
     }
 
     /**
@@ -870,6 +882,7 @@ public class HueBridge {
                     return e.getValue();
                 })//
                 .filter(scene -> !scene.isRecycle())//
+                .sorted(Comparator.comparing(Scene::getGroupId))//
                 .collect(Collectors.toList());
     }
 

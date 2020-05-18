@@ -16,7 +16,9 @@ import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -35,9 +37,11 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.StateOption;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.hue.internal.FullGroup;
 import org.openhab.binding.hue.internal.HueBridge;
+import org.openhab.binding.hue.internal.Scene;
 import org.openhab.binding.hue.internal.State;
 import org.openhab.binding.hue.internal.State.ColorMode;
 import org.openhab.binding.hue.internal.StateUpdate;
@@ -55,6 +59,7 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_GROUP);
 
     private final Logger logger = LoggerFactory.getLogger(HueGroupHandler.class);
+    private final HueStateDescriptionOptionProvider stateDescriptionOptionProvider;
 
     private @NonNullByDefault({}) String groupId;
 
@@ -65,8 +70,9 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
 
     private @Nullable HueClient hueClient;
 
-    public HueGroupHandler(Thing thing) {
+    public HueGroupHandler(Thing thing, HueStateDescriptionOptionProvider stateDescriptionOptionProvider) {
         super(thing);
+        this.stateDescriptionOptionProvider = stateDescriptionOptionProvider;
     }
 
     @Override
@@ -382,5 +388,18 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
         if (group.getId().equals(groupId)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "@text/offline.group-removed");
         }
+    }
+
+    /**
+     * Sets the state options for applicable scenes.
+     */
+    @Override
+    public void onScenesUpdated(@Nullable HueBridge bridge, List<Scene> updatedScenes) {
+        List<StateOption> stateOptions = updatedScenes.parallelStream()//
+                .filter(scene -> scene.isApplicableTo(getHueClient().getGroupById(groupId)))//
+                .map(Scene::toStateOption)//
+                .collect(Collectors.toList());
+        stateDescriptionOptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_SCENE),
+                stateOptions);
     }
 }
