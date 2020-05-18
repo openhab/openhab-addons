@@ -18,11 +18,8 @@ import static org.openhab.binding.deconz.internal.BindingConstants.*;
 
 import java.io.IOException;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -36,11 +33,12 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.openhab.binding.deconz.internal.dto.LightMessage;
-import org.openhab.binding.deconz.internal.dto.SensorMessage;
 import org.openhab.binding.deconz.internal.handler.LightThingHandler;
-import org.openhab.binding.deconz.internal.handler.SensorThingHandler;
 import org.openhab.binding.deconz.internal.types.LightType;
 import org.openhab.binding.deconz.internal.types.LightTypeDeserializer;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * This class provides tests for deconz lights
@@ -74,16 +72,14 @@ public class LightsTest {
 
         Thing light = ThingBuilder.create(THING_TYPE_COLOR_TEMPERATURE_LIGHT, thingUID)
                 .withChannel(ChannelBuilder.create(channelUID_bri, "Dimmer").build())
-                .withChannel(ChannelBuilder.create(channelUID_ct, "Number").build())
-                .build();
+                .withChannel(ChannelBuilder.create(channelUID_ct, "Number").build()).build();
         LightThingHandler lightThingHandler = new LightThingHandler(light, gson);
         lightThingHandler.setCallback(thingHandlerCallback);
 
         lightThingHandler.messageReceived("", lightMessage);
-        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUID_bri), eq(new PercentType("20")));
+        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUID_bri), eq(new PercentType("21")));
         Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUID_ct), eq(new DecimalType("87.03170028818444")));
     }
-
 
     @Test
     public void dimmableLightUpdateTest() throws IOException {
@@ -94,13 +90,12 @@ public class LightsTest {
         ChannelUID channelUID_bri = new ChannelUID(thingUID, CHANNEL_BRIGHTNESS);
 
         Thing light = ThingBuilder.create(THING_TYPE_DIMMABLE_LIGHT, thingUID)
-                .withChannel(ChannelBuilder.create(channelUID_bri, "Dimmer").build())
-                .build();
+                .withChannel(ChannelBuilder.create(channelUID_bri, "Dimmer").build()).build();
         LightThingHandler lightThingHandler = new LightThingHandler(light, gson);
         lightThingHandler.setCallback(thingHandlerCallback);
 
         lightThingHandler.messageReceived("", lightMessage);
-        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUID_bri), eq(new PercentType("37.64705882352941301860482781194150447845458984375")));
+        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUID_bri), eq(new PercentType("38")));
     }
 
     @Test
@@ -112,12 +107,11 @@ public class LightsTest {
         ChannelUID channelUID_pos = new ChannelUID(thingUID, CHANNEL_POSITION);
 
         Thing light = ThingBuilder.create(THING_TYPE_WINDOW_COVERING, thingUID)
-                .withChannel(ChannelBuilder.create(channelUID_pos, "Rollershutter").build())
-                .build();
+                .withChannel(ChannelBuilder.create(channelUID_pos, "Rollershutter").build()).build();
         LightThingHandler lightThingHandler = new LightThingHandler(light, gson);
         lightThingHandler.setCallback(thingHandlerCallback);
 
         lightThingHandler.messageReceived("", lightMessage);
-        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUID_pos), eq(new PercentType("40")));
+        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUID_pos), eq(new PercentType("41")));
     }
 }

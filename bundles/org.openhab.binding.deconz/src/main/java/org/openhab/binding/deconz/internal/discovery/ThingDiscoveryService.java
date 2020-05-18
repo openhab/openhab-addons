@@ -133,6 +133,9 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
             case WINDOW_COVERING_DEVICE:
                 thingTypeUID = THING_TYPE_WINDOW_COVERING;
                 break;
+            case CONFIGURATION_TOOL:
+                // ignore configuration tool device
+                return;
             default:
                 logger.warn(
                         "Found light: {} ({}), type {} but no thing type defined for that type. This should be reported.",

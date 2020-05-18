@@ -133,7 +133,7 @@ public abstract class DeconzBaseThingHandler<T extends DeconzBaseMessage> extend
     protected abstract void processStateResponse(@Nullable T stateResponse);
 
     /**
-     *  call requestState(type) in this method only
+     * call requestState(type) in this method only
      */
     protected abstract void requestState();
 
@@ -145,7 +145,6 @@ public abstract class DeconzBaseThingHandler<T extends DeconzBaseMessage> extend
         if (asyncHttpClient == null) {
             return;
         }
-
 
         String url = buildUrl(bridgeConfig.host, bridgeConfig.httpPort, bridgeConfig.apikey, type, config.id);
         logger.trace("Requesting URL for initial data: {}", url);
