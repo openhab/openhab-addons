@@ -35,6 +35,7 @@ import org.eclipse.smarthome.core.library.types.PointType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelGroupUID;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -44,6 +45,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeUID;
@@ -82,26 +84,44 @@ public abstract class AbstractOpenWeatherMapHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        OpenWeatherMapLocationConfiguration config = getConfigAs(OpenWeatherMapLocationConfiguration.class);
-
-        boolean configValid = true;
-        if (StringUtils.trimToNull(config.getLocation()) == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-missing-location");
-            configValid = false;
+        logger.debug("initializing handler for thing {}", getThing().getUID());
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            initializeThing(null, null);
+        } else {
+            initializeThing(bridge.getHandler(), bridge.getStatus());
         }
+    }
 
-        try {
-            location = new PointType(config.getLocation());
-        } catch (IllegalArgumentException e) {
-            location = null;
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-parsing-location");
-            configValid = false;
-        }
+    protected void initializeThing(@Nullable ThingHandler bridgeHandler, @Nullable ThingStatus bridgeStatus) {
+        if (bridgeHandler != null && bridgeStatus != null) {
+            if (bridgeStatus == ThingStatus.ONLINE) {
+                OpenWeatherMapLocationConfiguration config = getConfigAs(OpenWeatherMapLocationConfiguration.class);
 
-        if (configValid) {
-            updateStatus(ThingStatus.UNKNOWN);
+                boolean configValid = true;
+                if (StringUtils.trimToNull(config.getLocation()) == null) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "@text/offline.conf-error-missing-location");
+                    configValid = false;
+                }
+
+                try {
+                    location = new PointType(config.getLocation());
+                } catch (IllegalArgumentException e) {
+                    location = null;
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "@text/offline.conf-error-parsing-location");
+                    configValid = false;
+                }
+
+                if (configValid) {
+                    updateStatus(ThingStatus.UNKNOWN);
+                }
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            }
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
 
@@ -116,12 +136,12 @@ public abstract class AbstractOpenWeatherMapHandler extends BaseThingHandler {
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        if (ThingStatus.ONLINE.equals(bridgeStatusInfo.getStatus())
-                && ThingStatusDetail.BRIDGE_OFFLINE.equals(getThing().getStatusInfo().getStatusDetail())) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
-        } else if (ThingStatus.OFFLINE.equals(bridgeStatusInfo.getStatus())
-                && !ThingStatus.OFFLINE.equals(getThing().getStatus())) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        logger.debug("bridgeStatusChanged {}", bridgeStatusInfo);
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            initializeThing(null, bridgeStatusInfo.getStatus());
+        } else {
+            initializeThing(bridge.getHandler(), bridgeStatusInfo.getStatus());
         }
     }
 
