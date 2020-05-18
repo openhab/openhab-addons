@@ -1,6 +1,6 @@
 # RootedToon Binding
 
-This binding is meant to connect your OpenHAB installation to a rooted Toon. It currently supports:
+This binding is meant to connect your openHAB installation to a rooted Toon. It currently supports:
  * changing the setpoint (target temperature)
  * changing the program mode
  * enabling/disabling the program mode
@@ -8,20 +8,20 @@ This binding is meant to connect your OpenHAB installation to a rooted Toon. It 
  * reading boiler state/settings
  * reading smart power meter readings (electricity usage, electricity generation from e.g. solar, gas usage)
 
-You can find how to root your Toon here: https://www.youtube.com/watch?v=0ojFe4Q7vDs
+You can find how to root your Toon [here](https://www.youtube.com/watch?v=0ojFe4Q7vDs).
 
 ## Supported Things
 
-Currently only thoroughly tested with my own Toon, as well as lightly tested by some forum users on [this topic](https://community.openhab.org/t/rooted-locally-accessible-toon/65958).
+Currently lightly tested by some forum users on [this topic](https://community.openhab.org/t/rooted-locally-accessible-toon/65958). It should work with the rooted version of Toon, having the web interface available.
 
 ## Discovery
 
-Unfortunately, autodiscovery does not work. You'll have to enter the Toon address manually.
+Autodiscovery is not supported.
 
 ## Thing Configuration
 
 The "Rooted Toon" thing has two configuration parameters: 
- * the url to access the Toon (preferrably on your local network, for security reasons), in the form of `http://ip.of.your.toon`
+ * the url to access the Toon (preferably on your local network, for security reasons), in the form of `http://ip.of.your.toon` (or using a hostname of course).
  * the interval between updates, which defaults to 8 seconds (recommended, as Toon refreshes its data every 8 seconds)
 
 ## Channels
