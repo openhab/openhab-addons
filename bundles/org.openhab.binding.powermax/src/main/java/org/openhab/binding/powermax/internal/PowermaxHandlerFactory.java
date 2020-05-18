@@ -34,6 +34,7 @@ import org.openhab.binding.powermax.internal.discovery.PowermaxDiscoveryService;
 import org.openhab.binding.powermax.internal.handler.PowermaxBridgeHandler;
 import org.openhab.binding.powermax.internal.handler.PowermaxThingHandler;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -49,15 +50,11 @@ public class PowermaxHandlerFactory extends BaseThingHandlerFactory {
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
-    private @NonNullByDefault({}) SerialPortManager serialPortManager;
+    private final SerialPortManager serialPortManager;
 
-    @Reference
-    protected void setSerialPortManager(final SerialPortManager serialPortManager) {
+    @Activate
+    public PowermaxHandlerFactory(final @Reference SerialPortManager serialPortManager) {
         this.serialPortManager = serialPortManager;
-    }
-
-    protected void unsetSerialPortManager(final SerialPortManager serialPortManager) {
-        this.serialPortManager = null;
     }
 
     @Override
