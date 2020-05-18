@@ -21,6 +21,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.i18n.LocaleProvider;
 import org.eclipse.smarthome.core.i18n.LocationProvider;
@@ -36,6 +38,7 @@ import org.openhab.binding.weatherunderground.internal.discovery.WeatherUndergro
 import org.openhab.binding.weatherunderground.internal.handler.WeatherUndergroundBridgeHandler;
 import org.openhab.binding.weatherunderground.internal.handler.WeatherUndergroundHandler;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -47,45 +50,27 @@ import org.osgi.service.component.annotations.Reference;
  * @author Theo Giovanna - Added a bridge for the API key
  * @author Laurent Garnier - Registration of the discovery service updated
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.weatherunderground")
 public class WeatherUndergroundHandlerFactory extends BaseThingHandlerFactory {
-
-    private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
-
-    private LocaleProvider localeProvider;
-    private LocationProvider locationProvider;
-    private UnitProvider unitProvider;
-
-    @Reference
-    protected void setLocaleProvider(final LocaleProvider localeProvider) {
-        this.localeProvider = localeProvider;
-    }
-
-    protected void unsetLocaleProvider(final LocaleProvider localeProvider) {
-        this.localeProvider = null;
-    }
-
-    @Reference
-    public void setLocationProvider(LocationProvider locationProvider) {
-        this.locationProvider = locationProvider;
-    }
-
-    public void unsetLocationProvider(LocationProvider locationProvider) {
-        this.locationProvider = null;
-    }
-
-    @Reference
-    protected void setUnitProvider(final UnitProvider unitProvider) {
-        this.unitProvider = unitProvider;
-    }
-
-    protected void unsetUnitProvider(final UnitProvider unitProvider) {
-        this.unitProvider = null;
-    }
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
             .of(BRIDGE_THING_TYPES_UIDS, WeatherUndergroundBindingConstants.SUPPORTED_THING_TYPES_UIDS)
             .flatMap(x -> x.stream()).collect(Collectors.toSet());
+
+    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+
+    private final LocaleProvider localeProvider;
+    private final LocationProvider locationProvider;
+    private final UnitProvider unitProvider;
+
+    @Activate
+    public WeatherUndergroundHandlerFactory(final @Reference LocaleProvider localeProvider,
+            final @Reference LocationProvider locationProvider, final @Reference UnitProvider unitProvider) {
+        this.localeProvider = localeProvider;
+        this.locationProvider = locationProvider;
+        this.unitProvider = unitProvider;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -93,7 +78,7 @@ public class WeatherUndergroundHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_WEATHER)) {
