@@ -14,6 +14,7 @@ package org.openhab.io.homekit.internal;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import org.eclipse.smarthome.core.storage.StorageService;
 import org.eclipse.smarthome.io.console.Console;
@@ -33,6 +34,8 @@ import org.slf4j.LoggerFactory;
 @Component(service = ConsoleCommandExtension.class)
 public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
     private static final String SUBCMD_CLEAR_PAIRINGS = "clearPairings";
+    private static final String SUBCMD_LIST_ACCESSORIES = "listAccessories";
+    private static final String SUBCMD_PRINT_ACCESSORY = "printAccessory";
     private static final String SUBCMD_ALLOW_UNAUTHENTICATED = "allowUnauthenticated";
 
     private final Logger logger = LoggerFactory.getLogger(HomekitCommandExtension.class);
@@ -60,7 +63,17 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
                         console.println("true/false is required as an argument");
                     }
                     break;
-
+                case SUBCMD_LIST_ACCESSORIES:
+                    listAccessories(console);
+                    break;
+                case SUBCMD_PRINT_ACCESSORY:
+                    if (args.length > 1) {
+                        Integer id = Integer.valueOf(args[1]);
+                        printAccessory(id, console);
+                    } else {
+                        console.println("accessory id is required as an argument");
+                    }
+                    break;
                 default:
                     console.println("Unknown command '" + subCommand + "'");
                     printUsage(console);
@@ -71,10 +84,11 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
 
     @Override
     public List<String> getUsages() {
-        return Arrays.asList(
-                new String[] { buildCommandUsage(SUBCMD_CLEAR_PAIRINGS, "removes all pairings with HomeKit clients"),
-                        buildCommandUsage(SUBCMD_ALLOW_UNAUTHENTICATED + " <boolean>",
-                                "enables or disables unauthenticated access to facilitate debugging") });
+        return Arrays.asList(buildCommandUsage(SUBCMD_LIST_ACCESSORIES, "list all HomeKit accessories"),
+                buildCommandUsage(SUBCMD_PRINT_ACCESSORY + " <accessory id>", "print accessorty details"),
+                buildCommandUsage(SUBCMD_CLEAR_PAIRINGS, "removes all pairings with HomeKit clients"),
+                buildCommandUsage(SUBCMD_ALLOW_UNAUTHENTICATED + " <boolean>",
+                        "enables or disables unauthenticated access to facilitate debugging"));
     }
 
     @Reference
@@ -110,4 +124,33 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
         console.println((allow ? "Enabled " : "Disabled ") + "unauthenticated HomeKit access");
     }
 
+    private void listAccessories(Console console) {
+        homekit.getAccessories().stream().forEach(v -> {
+            try {
+                console.println(v.getId() + " " + v.getName().get());
+            } catch (InterruptedException | ExecutionException e) {
+                logger.warn("Cannot list accessories", e);
+            }
+        });
+    }
+
+    private void printAccessory(Integer accessory_id, Console console) {
+        homekit.getAccessories().forEach(v -> {
+            try {
+                if (v.getId() == accessory_id) {
+                    console.println(v.getId() + " " + v.getName().get());
+                    console.println("Services:");
+                    v.getServices().forEach(s -> {
+                        console.println("    Service Type: " + s.getType());
+                        console.println("    Characteristics: ");
+                        s.getCharacteristics().forEach(c -> {
+                            console.println("      : " + c.getClass());
+                        });
+                    });
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                logger.warn("Cannot print accessory", e);
+            }
+        });
+    }
 }

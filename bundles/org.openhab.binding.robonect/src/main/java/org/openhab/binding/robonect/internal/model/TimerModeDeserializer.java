@@ -25,13 +25,11 @@ import com.google.gson.JsonParseException;
  * @author Marco Meyer - Initial contribution
  */
 public class TimerModeDeserializer implements JsonDeserializer<Timer.TimerMode> {
-    
 
     @Override
     public Timer.TimerMode deserialize(JsonElement jsonElement, Type type,
-                                       JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+            JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         int code = jsonElement.getAsInt();
         return Timer.TimerMode.fromCode(code);
     }
-} 
-
+}

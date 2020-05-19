@@ -55,7 +55,6 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.glassfish.jersey.client.ClientProperties;
 import org.openhab.binding.tesla.internal.TeslaBindingConstants;
 import org.openhab.binding.tesla.internal.TeslaBindingConstants.EventKeys;
 import org.openhab.binding.tesla.internal.TeslaChannelSelectorProxy;
@@ -86,6 +85,11 @@ import com.google.gson.JsonParser;
  * @author Kai Kreuzer - Refactored to use separate account handler and improved configuration options
  */
 public class TeslaVehicleHandler extends BaseThingHandler {
+
+    // TODO: Those constants are Jersey specific - once we move away from Jersey,
+    // this must be changed to https://stackoverflow.com/a/49736022 (assuming we have a JAX-RS 2.1 implementation).
+    public static final String READ_TIMEOUT = "jersey.config.client.readTimeout";
+    public static final String CONNECT_TIMEOUT = "jersey.config.client.connectTimeout";
 
     private static final int EVENT_STREAM_CONNECT_TIMEOUT = 3000;
     private static final int EVENT_STREAM_READ_TIMEOUT = 200000;
@@ -987,9 +991,8 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                 if (!isEstablished) {
                     eventBufferedReader = null;
 
-                    eventClient = ClientBuilder.newClient()
-                            .property(ClientProperties.CONNECT_TIMEOUT, EVENT_STREAM_CONNECT_TIMEOUT)
-                            .property(ClientProperties.READ_TIMEOUT, EVENT_STREAM_READ_TIMEOUT)
+                    eventClient = ClientBuilder.newClient().property(CONNECT_TIMEOUT, EVENT_STREAM_CONNECT_TIMEOUT)
+                            .property(READ_TIMEOUT, EVENT_STREAM_READ_TIMEOUT)
                             .register(new Authenticator((String) getConfig().get(CONFIG_USERNAME), vehicle.tokens[0]));
                     eventTarget = eventClient.target(URI_EVENT).path(vehicle.vehicle_id + "/").queryParam("values",
                             StringUtils.join(EventKeys.values(), ',', 1, EventKeys.values().length));
@@ -1145,5 +1148,4 @@ public class TeslaVehicleHandler extends BaseThingHandler {
             }
         }
     };
-
 }

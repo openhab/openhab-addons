@@ -296,5 +296,4 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
                     command, channelUID);
         }
     }
-
 }

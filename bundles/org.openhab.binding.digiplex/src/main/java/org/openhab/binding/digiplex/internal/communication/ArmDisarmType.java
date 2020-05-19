@@ -40,5 +40,4 @@ public enum ArmDisarmType {
         return Arrays.stream(ArmDisarmType.values()).filter(type -> type.indicator.equals(indicator)).findFirst()
                 .orElse(UNKNOWN);
     }
-
 }

@@ -107,6 +107,11 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
                 getThing().getThingTypeUID());
         final MiIoBindingConfiguration configuration = getConfigAs(MiIoBindingConfiguration.class);
         this.configuration = configuration;
+        if (configuration.host == null || configuration.host.isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "IP address required. Configure IP address");
+            return;
+        }
         if (!tokenCheckPass(configuration.token)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Token required. Configure token");
             return;
@@ -130,7 +135,10 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         updateStatus(ThingStatus.OFFLINE);
     }
 
-    private boolean tokenCheckPass(String tokenSting) {
+    private boolean tokenCheckPass(@Nullable String tokenSting) {
+        if (tokenSting == null) {
+            return false;
+        }
         switch (tokenSting.length()) {
             case 16:
                 token = tokenSting.getBytes();
@@ -282,6 +290,9 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             return miioCom;
         }
         final MiIoBindingConfiguration configuration = getConfigAs(MiIoBindingConfiguration.class);
+        if (configuration.host == null || configuration.host.isEmpty()) {
+            return null;
+        }
         @Nullable
         String deviceId = configuration.deviceId;
         try {
@@ -297,6 +308,8 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
                     miioCom.registerListener(this);
                     this.miioCom = miioCom;
                     return miioCom;
+                } else {
+                    miioCom.close();
                 }
             } else {
                 logger.debug("No device ID defined. Retrieving Mi device ID");
@@ -317,6 +330,8 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
                     miioCom.registerListener(this);
                     this.miioCom = miioCom;
                     return miioCom;
+                } else {
+                    miioCom.close();
                 }
             }
             logger.debug("Ping response from device {} at {} FAILED", configuration.deviceId, configuration.host);
@@ -474,5 +489,4 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             logger.debug("Error while handing message {}", response.getResponse(), e);
         }
     }
-
 }

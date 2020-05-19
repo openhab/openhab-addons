@@ -51,5 +51,4 @@ public class PrivateApiTokenCheck extends AbstractCommandCallback implements Sol
     public void onComplete(Result result) {
         getListener().update(getCommunicationStatus());
     }
-
 }

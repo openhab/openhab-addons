@@ -56,6 +56,7 @@ public class VolvoOnCallActions implements ThingActions {
     @RuleAction(label = "Volvo On Call : Close", description = "Closes the car")
     public void closeCarCommand() {
         logger.debug("closeCarCommand called");
+        VehicleHandler handler = this.handler;
         if (handler != null) {
             handler.actionClose();
         } else {
@@ -74,6 +75,7 @@ public class VolvoOnCallActions implements ThingActions {
     @RuleAction(label = "Volvo On Call : Open", description = "Opens the car")
     public void openCarCommand() {
         logger.debug("openCarCommand called");
+        VehicleHandler handler = this.handler;
         if (handler != null) {
             handler.actionOpen();
         } else {
@@ -92,6 +94,7 @@ public class VolvoOnCallActions implements ThingActions {
     @RuleAction(label = "Volvo On Call : Start Engine", description = "Starts the engine")
     public void engineStartCommand(@ActionInput(name = "runtime", label = "Runtime") @Nullable Integer runtime) {
         logger.debug("engineStartCommand called");
+        VehicleHandler handler = this.handler;
         if (handler != null) {
             handler.actionStart(runtime != null ? runtime : 5);
         } else {
@@ -110,6 +113,7 @@ public class VolvoOnCallActions implements ThingActions {
     @RuleAction(label = "Volvo On Call : Heater Start", description = "Starts car heater")
     public void heaterStartCommand() {
         logger.debug("heaterStartCommand called");
+        VehicleHandler handler = this.handler;
         if (handler != null) {
             handler.actionHeater(true);
         } else {
@@ -128,6 +132,7 @@ public class VolvoOnCallActions implements ThingActions {
     @RuleAction(label = "Volvo On Call : Preclimatization Start", description = "Starts car heater")
     public void preclimatizationStartCommand() {
         logger.debug("preclimatizationStartCommand called");
+        VehicleHandler handler = this.handler;
         if (handler != null) {
             handler.actionPreclimatization(true);
         } else {
@@ -146,6 +151,7 @@ public class VolvoOnCallActions implements ThingActions {
     @RuleAction(label = "Volvo On Call : Heater Stop", description = "Stops car heater")
     public void heaterStopCommand() {
         logger.debug("heaterStopCommand called");
+        VehicleHandler handler = this.handler;
         if (handler != null) {
             handler.actionHeater(false);
         } else {
@@ -164,6 +170,7 @@ public class VolvoOnCallActions implements ThingActions {
     @RuleAction(label = "Volvo On Call : Preclimatization Stop", description = "Stops car heater")
     public void preclimatizationStopCommand() {
         logger.debug("preclimatizationStopCommand called");
+        VehicleHandler handler = this.handler;
         if (handler != null) {
             handler.actionPreclimatization(false);
         } else {
@@ -183,6 +190,7 @@ public class VolvoOnCallActions implements ThingActions {
     public void honkBlinkCommand(@ActionInput(name = "honk", label = "Honk") Boolean honk,
             @ActionInput(name = "blink", label = "Blink") Boolean blink) {
         logger.debug("honkBlinkCommand called");
+        VehicleHandler handler = this.handler;
         if (handler != null) {
             handler.actionHonkBlink(honk, blink);
         } else {

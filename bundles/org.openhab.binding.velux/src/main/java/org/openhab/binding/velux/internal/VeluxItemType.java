@@ -495,5 +495,4 @@ public enum VeluxItemType {
         }
         return false;
     }
-
 }

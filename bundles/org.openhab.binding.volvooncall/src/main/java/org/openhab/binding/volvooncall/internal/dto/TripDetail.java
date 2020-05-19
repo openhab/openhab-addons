@@ -12,9 +12,12 @@
  */
 package org.openhab.binding.volvooncall.internal.dto;
 
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.UNDEFINED;
+
 import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -31,12 +34,12 @@ import org.eclipse.smarthome.core.types.UnDefType;
  */
 @NonNullByDefault
 public class TripDetail {
-    public @Nullable Integer fuelConsumption;
-    public @Nullable Integer electricalConsumption;
-    public @Nullable Integer electricalRegeneration;
-    public int distance;
-    public int startOdometer;
-    public int endOdometer;
+    private @Nullable Integer fuelConsumption;
+    private @Nullable Integer electricalConsumption;
+    private @Nullable Integer electricalRegeneration;
+    public int distance = UNDEFINED;
+    public int startOdometer = UNDEFINED;
+    public int endOdometer = UNDEFINED;
     private @Nullable ZonedDateTime endTime;
     private @Nullable ZonedDateTime startTime;
     private @NonNullByDefault({}) PositionData startPosition;
@@ -50,9 +53,8 @@ public class TripDetail {
     private State getPositionAsState(PositionData details) {
         if (details.latitude != null && details.longitude != null) {
             return new PointType(details.latitude + "," + details.longitude);
-        } else {
-            return UnDefType.NULL;
         }
+        return UnDefType.NULL;
     }
 
     public State getStartTime() {
@@ -73,6 +75,30 @@ public class TripDetail {
 
     public long getDurationInMinutes() {
         return Duration.between(startTime, endTime).toMinutes();
+    }
+
+    public Optional<Integer> getFuelConsumption() {
+        Integer fuelConsumption = this.fuelConsumption;
+        if (fuelConsumption != null) {
+            return Optional.of(fuelConsumption);
+        }
+        return Optional.empty();
+    }
+
+    public Optional<Integer> getElectricalConsumption() {
+        Integer electricalConsumption = this.electricalConsumption;
+        if (electricalConsumption != null) {
+            return Optional.of(electricalConsumption);
+        }
+        return Optional.empty();
+    }
+
+    public Optional<Integer> getElectricalRegeneration() {
+        Integer electricalRegeneration = this.electricalRegeneration;
+        if (electricalRegeneration != null) {
+            return Optional.of(electricalRegeneration);
+        }
+        return Optional.empty();
     }
 
 }

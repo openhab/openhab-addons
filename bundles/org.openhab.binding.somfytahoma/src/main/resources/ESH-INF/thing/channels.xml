@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="somfytahoma" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="somfytahoma"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -137,7 +138,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Relative Humidity</label>
 		<description>The current relative humidity</description>
-		<state readOnly="true" min="0" max="100" pattern="%f.1 %unit%" />
+		<state readOnly="true" min="0" max="100" pattern="%f.1 %unit%"/>
 	</channel-type>
 
 	<channel-type id="current_state">
@@ -219,7 +220,7 @@
 		<item-type>Number:Energy</item-type>
 		<label>Energy Consumption</label>
 		<description>The energy consumption reported by the sensor</description>
-		<state pattern="%.1f %unit%" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="siren_status">
@@ -330,5 +331,11 @@
 		<label>Radio Part Battery State</label>
 		<description>State of the radio part of the Somfy sensor</description>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="closure_orientation">
+		<item-type>String</item-type>
+		<label>Set Closure And Orientation</label>
+		<description>A channel for setting closure and orientation of the blind</description>
 	</channel-type>
 </thing:thing-descriptions>

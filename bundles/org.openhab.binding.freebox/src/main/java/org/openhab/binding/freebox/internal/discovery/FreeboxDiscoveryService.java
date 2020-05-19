@@ -216,5 +216,4 @@ public class FreeboxDiscoveryService extends AbstractDiscoveryService implements
             }
         }
     }
-
 }

@@ -164,5 +164,4 @@ public class Mhub4K431Handler extends BaseThingHandler {
             }
         }
     }
-
 }

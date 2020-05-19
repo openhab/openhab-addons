@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="bigassfan" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="bigassfan"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -10,36 +11,36 @@
 
 		<channels>
 			<!-- Channels related to fan functions -->
-			<channel id="fan-power" typeId="fan-power" />
-			<channel id="fan-speed" typeId="fan-speed" />
+			<channel id="fan-power" typeId="fan-power"/>
+			<channel id="fan-speed" typeId="fan-speed"/>
 			<channel id="fan-direction" typeId="fan-direction"></channel>
-			<channel id="fan-auto" typeId="fan-auto" />
-			<channel id="fan-whoosh" typeId="fan-whoosh" />
-			<channel id="fan-smartmode" typeId="fan-smartmode" />
-			<channel id="fan-learn-speed-min" typeId="fan-learn-speed-min" />
-			<channel id="fan-learn-speed-max" typeId="fan-learn-speed-max" />
-			<channel id="fan-speed-min" typeId="fan-speed-min" />
-			<channel id="fan-speed-max" typeId="fan-speed-max" />
-			<channel id="fan-wintermode" typeId="fan-wintermode" />
-			<channel id="fan-sleep" typeId="fan-sleep" />
+			<channel id="fan-auto" typeId="fan-auto"/>
+			<channel id="fan-whoosh" typeId="fan-whoosh"/>
+			<channel id="fan-smartmode" typeId="fan-smartmode"/>
+			<channel id="fan-learn-speed-min" typeId="fan-learn-speed-min"/>
+			<channel id="fan-learn-speed-max" typeId="fan-learn-speed-max"/>
+			<channel id="fan-speed-min" typeId="fan-speed-min"/>
+			<channel id="fan-speed-max" typeId="fan-speed-max"/>
+			<channel id="fan-wintermode" typeId="fan-wintermode"/>
+			<channel id="fan-sleep" typeId="fan-sleep"/>
 
 			<!-- Channels related to light functions -->
-			<channel id="light-power" typeId="light-power" />
-			<channel id="light-level" typeId="light-level" />
-			<channel id="light-auto" typeId="light-auto" />
-			<channel id="light-smarter" typeId="light-smarter" />
-			<channel id="light-level-min" typeId="light-level-min" />
-			<channel id="light-level-max" typeId="light-level-max" />
-			<channel id="light-present" typeId="light-present" />
+			<channel id="light-power" typeId="light-power"/>
+			<channel id="light-level" typeId="light-level"/>
+			<channel id="light-auto" typeId="light-auto"/>
+			<channel id="light-smarter" typeId="light-smarter"/>
+			<channel id="light-level-min" typeId="light-level-min"/>
+			<channel id="light-level-max" typeId="light-level-max"/>
+			<channel id="light-present" typeId="light-present"/>
 
 			<!-- Channels related to motion sensor -->
-			<channel id="motion" typeId="motion" />
+			<channel id="motion" typeId="motion"/>
 
 			<!-- Miscellaneous channels -->
-			<channel id="time" typeId="time" />
+			<channel id="time" typeId="time"/>
 		</channels>
 
-		<config-description-ref uri="thing-type:bigassfan:device" />
+		<config-description-ref uri="thing-type:bigassfan:device"/>
 	</thing-type>
 
 	<!-- Thing Type for BigAssFan light -->
@@ -49,20 +50,20 @@
 
 		<channels>
 			<!-- Channels related to light functions -->
-			<channel id="light-power" typeId="light-power" />
-			<channel id="light-level" typeId="light-level" />
-			<channel id="light-hue" typeId="light-hue" />
-			<channel id="light-present" typeId="light-present" />
-			<channel id="light-color" typeId="light-color" />
+			<channel id="light-power" typeId="light-power"/>
+			<channel id="light-level" typeId="light-level"/>
+			<channel id="light-hue" typeId="light-hue"/>
+			<channel id="light-present" typeId="light-present"/>
+			<channel id="light-color" typeId="light-color"/>
 
 			<!-- Channels related to motion sensor -->
-			<channel id="motion" typeId="motion" />
+			<channel id="motion" typeId="motion"/>
 
 			<!-- Miscellaneous channels -->
-			<channel id="time" typeId="time" />
+			<channel id="time" typeId="time"/>
 		</channels>
 
-		<config-description-ref uri="thing-type:bigassfan:device" />
+		<config-description-ref uri="thing-type:bigassfan:device"/>
 	</thing-type>
 
 	<!-- Thing Type for BigAssFan controller -->
@@ -71,11 +72,11 @@
 		<description>Wall controller for Big Ass Fan</description>
 
 		<channels>
-			<channel id="motion" typeId="motion" />
-			<channel id="time" typeId="time" />
+			<channel id="motion" typeId="motion"/>
+			<channel id="time" typeId="time"/>
 		</channels>
 
-		<config-description-ref uri="thing-type:bigassfan:device" />
+		<config-description-ref uri="thing-type:bigassfan:device"/>
 	</thing-type>
 
 	<!-- Channel types -->

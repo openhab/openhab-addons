@@ -91,6 +91,7 @@ public class ShellyApiJsonDTO {
     // API values
     //
     public static final String SHELLY_BTNT_MOMENTARY = "momentary";
+    public static final String SHELLY_BTNT_MOM_ON_RELEASE = "momentary_on_release";
     public static final String SHELLY_BTNT_TOGGLE = "toggle";
     public static final String SHELLY_BTNT_EDGE = "edge";
     public static final String SHELLY_BTNT_DETACHED = "detached";

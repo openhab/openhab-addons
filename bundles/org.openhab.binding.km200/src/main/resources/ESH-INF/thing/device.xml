@@ -6,7 +6,8 @@
 
 	<bridge-type id="kmdevice">
 		<label>KM200/100/50</label>
-		<description>The KM200 binding is communicating with a Buderus Logamatic web KM200 / KM100 / KM50. It is possible to receive and send parameters like string or float values.</description>
+		<description>The KM200 binding is communicating with a Buderus Logamatic web KM200 / KM100 / KM50. It is possible to
+			receive and send parameters like string or float values.</description>
 
 		<config-description>
 			<parameter name="ip4Address" type="text" required="true">

@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.daikin.internal.api;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import org.openhab.binding.daikin.internal.api.Enums.FanMovement;
 import org.openhab.binding.daikin.internal.api.Enums.FanSpeed;
@@ -31,10 +31,11 @@ import org.slf4j.LoggerFactory;
  * @author Paul Smedley <paul@smedley.id.au> - mods for Daikin Airbase
  *
  */
+@NonNullByDefault
 public class ControlInfo {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ControlInfo.class);
+    private static final Logger logger = LoggerFactory.getLogger(ControlInfo.class);
 
-    public String ret;
+    public String ret = "";
     public boolean power = false;
     public Mode mode = Mode.AUTO;
     /** Degrees in Celsius. */
@@ -48,27 +49,21 @@ public class ControlInfo {
     }
 
     public static ControlInfo parse(String response) {
-        LOGGER.debug("Parsing string: \"{}\"", response);
+        logger.debug("Parsing string: \"{}\"", response);
 
-        Map<String, String> responseMap = Arrays.asList(response.split(",")).stream().filter(kv -> kv.contains("="))
-                .map(kv -> {
-                    String[] keyValue = kv.split("=");
-                    String key = keyValue[0];
-                    String value = keyValue.length > 1 ? keyValue[1] : "";
-                    return new String[] { key, value };
-                }).collect(Collectors.toMap(x -> x[0], x -> x[1]));
+        Map<String, String> responseMap = InfoParser.parse(response);
 
         ControlInfo info = new ControlInfo();
-        info.ret = responseMap.get("ret");
+        info.ret = Optional.ofNullable(responseMap.get("ret")).orElse("");
         info.power = "1".equals(responseMap.get("pow"));
-        info.mode = Optional.ofNullable(responseMap.get("mode")).flatMap(value -> parseInt(value))
+        info.mode = Optional.ofNullable(responseMap.get("mode")).flatMap(value -> InfoParser.parseInt(value))
                 .map(value -> Mode.fromValue(value)).orElse(Mode.AUTO);
-        info.temp = Optional.ofNullable(responseMap.get("stemp")).flatMap(value -> parseDouble(value));
+        info.temp = Optional.ofNullable(responseMap.get("stemp")).flatMap(value -> InfoParser.parseDouble(value));
         info.fanSpeed = Optional.ofNullable(responseMap.get("f_rate")).map(value -> FanSpeed.fromValue(value))
                 .orElse(FanSpeed.AUTO);
-        info.fanMovement = Optional.ofNullable(responseMap.get("f_dir")).flatMap(value -> parseInt(value))
+        info.fanMovement = Optional.ofNullable(responseMap.get("f_dir")).flatMap(value -> InfoParser.parseInt(value))
                 .map(value -> FanMovement.fromValue(value)).orElse(FanMovement.STOPPED);
-        info.targetHumidity = Optional.ofNullable(responseMap.get("shum")).flatMap(value -> parseInt(value));
+        info.targetHumidity = Optional.ofNullable(responseMap.get("shum")).flatMap(value -> InfoParser.parseInt(value));
 
         return info;
     }
@@ -83,21 +78,5 @@ public class ControlInfo {
         params.put("shum", targetHumidity.map(value -> value.toString()).orElse(""));
 
         return params;
-    }
-
-    private static Optional<Double> parseDouble(String value) {
-        try {
-            return Optional.of(Double.parseDouble(value));
-        } catch (NumberFormatException e) {
-            return Optional.empty();
-        }
-    }
-
-    private static Optional<Integer> parseInt(String value) {
-        try {
-            return Optional.of(Integer.parseInt(value));
-        } catch (Exception e) {
-            return Optional.empty();
-        }
     }
 }

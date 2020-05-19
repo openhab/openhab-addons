@@ -11,7 +11,11 @@
 		<channels>
 			<channel id="distance" typeId="opengarage-distance" />
 			<channel id="status" typeId="opengarage-status" />
+			<channel id="status-switch" typeId="opengarage-status-switch" />
+			<channel id="status-contact" typeId="opengarage-status-contact" />
+			<channel id="status-rollershutter" typeId="opengarage-status-rollershutter" />
 			<channel id="vehicle" typeId="opengarage-vehicle" />
+			<channel id="vehicle-status" typeId="opengarage-vehicle-status" />
 		</channels>
 
 		<config-description>
@@ -45,16 +49,43 @@
 		<description>Distance Reading from the OG unit</description>
 		<state readOnly="true" pattern="%d %unit%" />
 	</channel-type>
-	<channel-type id="opengarage-status">
+	<channel-type id="opengarage-status" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Status</label>
-		<description>Status of the OG unit</description>
+		<description>On/Off Status of the OG unit (now deprecated, use status-switch instead)</description>
 	</channel-type>
-	<channel-type id="opengarage-vehicle">
+	<channel-type id="opengarage-status-switch">
+		<item-type>Switch</item-type>
+		<label>Status</label>
+		<description>On/Off Status of the OG unit</description>
+	</channel-type>
+	<channel-type id="opengarage-status-contact">
+		<item-type>Contact</item-type>
+		<label>Contact Status</label>
+		<description>Contact Status of the OG unit</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="opengarage-status-rollershutter">
+		<item-type>Rollershutter</item-type>
+		<label>Rollershutter Status</label>
+		<description>Roller Shutter Status of the OG unit</description>
+	</channel-type>
+	<channel-type id="opengarage-vehicle" advanced="true">
 		<item-type>String</item-type>
 		<label>Vehicle Presence</label>
-		<description>Is a vehicle present or not</description>
-		<state readOnly="true"/>
+		<description>Is a vehicle present or not (now deprecated, use vehicle-status instead)</description>
+		<state readOnly="true" />
 	</channel-type>
-
+	<channel-type id="opengarage-vehicle-status">
+		<item-type>Number</item-type>
+		<label>Vehicle Presence</label>
+		<description>Vehicle presence detection</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">No vehicle detected</option>
+				<option value="1">Vehicle detected</option>
+				<option value="2">Vehicle status unknown</option>
+			</options>
+		</state>
+	</channel-type>
 </thing:thing-descriptions>

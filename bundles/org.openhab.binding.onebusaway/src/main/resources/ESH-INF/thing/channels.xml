@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="onebusaway"
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-		xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<channel-type id="arrival">
 		<item-type>DateTime</item-type>
 		<label>Arrival Time</label>
 		<description>The arrival time</description>
-		<state readOnly="true" pattern="%1$tF %1$tR" />
-		<config-description-ref uri="channel-type:onebusaway:config" />
+		<state readOnly="true" pattern="%1$tF %1$tR"/>
+		<config-description-ref uri="channel-type:onebusaway:config"/>
 	</channel-type>
 
 	<channel-type id="departure">
 		<item-type>DateTime</item-type>
 		<label>Departure Time</label>
 		<description>The departure time</description>
-		<state readOnly="true" pattern="%1$tF %1$tR" />
-		<config-description-ref uri="channel-type:onebusaway:config" />
+		<state readOnly="true" pattern="%1$tF %1$tR"/>
+		<config-description-ref uri="channel-type:onebusaway:config"/>
 	</channel-type>
 
 	<channel-type id="routeEvent">
@@ -30,13 +30,13 @@
 				<option value="DEPARTURE">departure</option>
 			</options>
 		</event>
-		<config-description-ref uri="channel-type:onebusaway:config" />
+		<config-description-ref uri="channel-type:onebusaway:config"/>
 	</channel-type>
 
 	<channel-type id="update">
 		<item-type>DateTime</item-type>
 		<label>Last Update Time</label>
 		<description>The last time information was updated</description>
-		<state readOnly="true" pattern="%1$tF %1$tR" />
+		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 </thing:thing-descriptions>

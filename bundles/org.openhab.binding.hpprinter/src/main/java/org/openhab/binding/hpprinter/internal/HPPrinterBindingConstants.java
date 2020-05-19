@@ -36,6 +36,9 @@ public class HPPrinterBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream.of(THING_PRINTER)
             .collect(Collectors.toSet());
 
+    // ********** Channel Types **********
+    public static final String CHAN_TYPE_CUMLMARK = "Number:Volume";
+    public static final String CHAN_TYPE_INK = "Number:Dimensionless";
     // ********** List of all Channel ids **********
     public static final String CHANNEL_STATUS = "status";
 

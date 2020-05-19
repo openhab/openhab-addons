@@ -77,5 +77,4 @@ public class ApiHandler extends BaseBridgeHandler {
         }
         return config;
     }
-
 }

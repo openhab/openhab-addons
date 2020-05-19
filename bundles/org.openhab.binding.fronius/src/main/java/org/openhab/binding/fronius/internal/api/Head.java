@@ -65,5 +65,4 @@ public class Head {
     public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
     }
-
 }

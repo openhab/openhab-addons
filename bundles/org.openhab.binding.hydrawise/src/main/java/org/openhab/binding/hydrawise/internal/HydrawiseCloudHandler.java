@@ -155,7 +155,6 @@ public class HydrawiseCloudHandler extends HydrawiseHandler {
         if (relay != null) {
             client.stopRelay(relay.relayId);
         }
-
     }
 
     @Override

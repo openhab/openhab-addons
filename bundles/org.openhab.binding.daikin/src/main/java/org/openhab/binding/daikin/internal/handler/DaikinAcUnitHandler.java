@@ -13,9 +13,12 @@
 package org.openhab.binding.daikin.internal.handler;
 
 import java.io.IOException;
+import java.lang.IllegalArgumentException;
 import java.util.Optional;
 
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -33,6 +36,8 @@ import org.openhab.binding.daikin.internal.api.Enums.FanSpeed;
 import org.openhab.binding.daikin.internal.api.Enums.HomekitMode;
 import org.openhab.binding.daikin.internal.api.Enums.Mode;
 import org.openhab.binding.daikin.internal.api.SensorInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Handles communicating with a Daikin air conditioning unit.
@@ -43,8 +48,10 @@ import org.openhab.binding.daikin.internal.api.SensorInfo;
  */
 @NonNullByDefault
 public class DaikinAcUnitHandler extends DaikinBaseHandler {
-    public DaikinAcUnitHandler(Thing thing, DaikinDynamicStateDescriptionProvider stateDescriptionProvider) {
-        super(thing, stateDescriptionProvider);
+    private final Logger logger = LoggerFactory.getLogger(DaikinAcUnitHandler.class);
+
+    public DaikinAcUnitHandler(Thing thing, DaikinDynamicStateDescriptionProvider stateDescriptionProvider, @Nullable HttpClient httpClient) {
+        super(thing, stateDescriptionProvider, httpClient);
     }
 
     @Override
@@ -114,21 +121,55 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
 
     @Override
     protected void changeMode(String mode) throws DaikinCommunicationException {
+        Mode newMode;
+        try {
+            newMode = Mode.valueOf(mode);
+        } catch (IllegalArgumentException ex) {
+            logger.warn("Invalid mode: {}. Valid values: {}", mode, Mode.values());
+            return;
+        }
         ControlInfo info = webTargets.getControlInfo();
-        info.mode = Mode.valueOf(mode);
+        info.mode = newMode;
         webTargets.setControlInfo(info);
     }
 
     @Override
     protected void changeFanSpeed(String fanSpeed) throws DaikinCommunicationException {
+        FanSpeed newSpeed;
+        try {
+            newSpeed = FanSpeed.valueOf(fanSpeed);
+        } catch (IllegalArgumentException ex) {
+            logger.warn("Invalid fan speed: {}. Valid values: {}", fanSpeed, FanSpeed.values());
+            return;
+        }
         ControlInfo info = webTargets.getControlInfo();
-        info.fanSpeed = FanSpeed.valueOf(fanSpeed);
+        info.fanSpeed = newSpeed;
         webTargets.setControlInfo(info);
     }
 
     protected void changeFanDir(String fanDir) throws DaikinCommunicationException {
+        FanMovement newMovement;
+        try {
+            newMovement = FanMovement.valueOf(fanDir);
+        } catch (IllegalArgumentException ex) {
+            logger.warn("Invalid fan direction: {}. Valid values: {}", fanDir, FanMovement.values());
+            return;
+        }
         ControlInfo info = webTargets.getControlInfo();
-        info.fanMovement = FanMovement.valueOf(fanDir);
+        info.fanMovement = newMovement;
         webTargets.setControlInfo(info);
+    }
+
+    @Override
+    protected void registerUuid(@Nullable String key) {
+        if (key == null) {
+            return;
+        }
+        try {
+            webTargets.registerUuid(key);
+        } catch (Exception e) {
+            // suppress exceptions
+            logger.debug("registerUuid({}) error: {}", key, e.getMessage());
+        }
     }
 }

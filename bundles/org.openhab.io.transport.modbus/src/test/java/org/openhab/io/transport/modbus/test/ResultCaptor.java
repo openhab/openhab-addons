@@ -30,7 +30,6 @@ public class ResultCaptor<T> implements Answer<T> {
 
     public ResultCaptor(LongSupplier longSupplier) {
         this.longSupplier = longSupplier;
-
     }
 
     public ArrayList<T> getAllReturnValues() {

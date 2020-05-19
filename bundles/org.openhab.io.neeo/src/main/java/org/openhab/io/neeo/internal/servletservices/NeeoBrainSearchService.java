@@ -121,7 +121,7 @@ public class NeeoBrainSearchService extends DefaultServletService {
      * Does the search of all things and returns the results
      *
      * @param queryString the non-null, possibly empty query string
-     * @param resp        the non-null response to write to
+     * @param resp the non-null response to write to
      * @throws IOException Signals that an I/O exception has occurred.
      */
     private void doSearch(String queryString, HttpServletResponse resp) throws IOException {
@@ -154,7 +154,7 @@ public class NeeoBrainSearchService extends DefaultServletService {
     /**
      * Does a query for the NEEO device definition
      *
-     * @param id   the non-empty (last) search identifier
+     * @param id the non-empty (last) search identifier
      * @param resp the non-null response to write to
      * @throws IOException Signals that an I/O exception has occurred.
      */
@@ -184,7 +184,7 @@ public class NeeoBrainSearchService extends DefaultServletService {
     /**
      * Does a query for the NEEO device definition
      *
-     * @param id   the non-empty (last) search identifier
+     * @param id the non-empty (last) search identifier
      * @param resp the non-null response to write to
      * @throws IOException Signals that an I/O exception has occurred.
      */

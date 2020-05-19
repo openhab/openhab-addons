@@ -38,30 +38,38 @@ public class SomfyTahomaVenetianBlindHandler extends SomfyTahomaBaseThingHandler
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         super.handleCommand(channelUID, command);
-        if (!CONTROL.equals(channelUID.getId()) && !ORIENTATION.equals(channelUID.getId())) {
-            return;
-        }
 
         if (command instanceof RefreshType) {
             return;
-        } else {
-            String cmd = getTahomaCommand(command.toString(), channelUID.getId());
-            if (COMMAND_MY.equals(cmd)) {
-                sendCommand(COMMAND_MY);
-            } else if (COMMAND_STOP.equals(cmd)) {
-                String executionId = getCurrentExecutions();
-                if (executionId != null) {
-                    //Check if the venetian blind is moving and STOP is sent => STOP it
-                    cancelExecution(executionId);
-                } else {
-                    sendCommand(COMMAND_MY);
-                }
-            } else {
-                String param = (COMMAND_SET_CLOSURE.equals(cmd) || COMMAND_SET_ORIENTATION.equals(cmd)) ? "[" + command.toString() + "]" : "[]";
-                sendCommand(cmd, param);
-            }
         }
 
+        switch (channelUID.getId()) {
+            case CLOSURE_AND_ORIENTATION:
+                sendCommand(COMMAND_SET_CLOSURE_ORIENTATION, "[" + command.toString() + "]");
+                break;
+            case CONTROL:
+            case ORIENTATION:
+                String cmd = getTahomaCommand(command.toString(), channelUID.getId());
+                if (COMMAND_MY.equals(cmd)) {
+                    sendCommand(COMMAND_MY);
+                } else if (COMMAND_STOP.equals(cmd)) {
+                    String executionId = getCurrentExecutions();
+                    if (executionId != null) {
+                        // Check if the venetian blind is moving and STOP is sent => STOP it
+                        cancelExecution(executionId);
+                    } else {
+                        sendCommand(COMMAND_MY);
+                    }
+                } else {
+                    String param = (COMMAND_SET_CLOSURE.equals(cmd) || COMMAND_SET_ORIENTATION.equals(cmd))
+                            ? "[" + command.toString() + "]"
+                            : "[]";
+                    sendCommand(cmd, param);
+                }
+                break;
+            default:
+                return;
+        }
     }
 
     private String getTahomaCommand(String command, String channelId) {

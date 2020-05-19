@@ -47,7 +47,8 @@ import org.slf4j.LoggerFactory;
  * @author David Graeff - Rewritten
  */
 @NonNullByDefault
-public class NetworkHandler extends BaseThingHandler implements PresenceDetectionListener, NetworkBindingConfigurationListener {
+public class NetworkHandler extends BaseThingHandler
+        implements PresenceDetectionListener, NetworkBindingConfigurationListener {
     private final Logger logger = LoggerFactory.getLogger(NetworkHandler.class);
     private @NonNullByDefault({}) PresenceDetection presenceDetection;
 

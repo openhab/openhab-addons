@@ -43,8 +43,7 @@ public class SomfyTahomaBindingConstants {
             "rollershutter_silent");
 
     // Uno Roller Shutter
-    public static final ThingTypeUID THING_TYPE_ROLLERSHUTTER_UNO = new ThingTypeUID(BINDING_ID,
-            "rollershutter_uno");
+    public static final ThingTypeUID THING_TYPE_ROLLERSHUTTER_UNO = new ThingTypeUID(BINDING_ID, "rollershutter_uno");
 
     // Screen
     public static final ThingTypeUID THING_TYPE_SCREEN = new ThingTypeUID(BINDING_ID, "screen");
@@ -105,7 +104,8 @@ public class SomfyTahomaBindingConstants {
 
     // Heating system
     public static final ThingTypeUID THING_TYPE_HEATING_SYSTEM = new ThingTypeUID(BINDING_ID, "heatingsystem");
-    public static final ThingTypeUID THING_TYPE_ONOFF_HEATING_SYSTEM = new ThingTypeUID(BINDING_ID, "onoffheatingsystem");
+    public static final ThingTypeUID THING_TYPE_ONOFF_HEATING_SYSTEM = new ThingTypeUID(BINDING_ID,
+            "onoffheatingsystem");
 
     // Door lock
     public static final ThingTypeUID THING_TYPE_DOOR_LOCK = new ThingTypeUID(BINDING_ID, "doorlock");
@@ -135,7 +135,8 @@ public class SomfyTahomaBindingConstants {
     public static final ThingTypeUID THING_TYPE_SIREN = new ThingTypeUID(BINDING_ID, "siren");
 
     // Adjustable slats roller shutter
-    public static final ThingTypeUID THING_TYPE_ADJUSTABLE_SLATS_ROLLERSHUTTER = new ThingTypeUID(BINDING_ID, "adjustableslatsrollershutter");
+    public static final ThingTypeUID THING_TYPE_ADJUSTABLE_SLATS_ROLLERSHUTTER = new ThingTypeUID(BINDING_ID,
+            "adjustableslatsrollershutter");
 
     // MyFox Camera
     public static final ThingTypeUID THING_TYPE_MYFOX_CAMERA = new ThingTypeUID(BINDING_ID, "myfoxcamera");
@@ -160,6 +161,7 @@ public class SomfyTahomaBindingConstants {
 
     // Blind
     public static final String ORIENTATION = "orientation";
+    public static final String CLOSURE_AND_ORIENTATION = "closure_orientation";
 
     // Action group
     public static final String EXECUTE_ACTION = "execute_action";
@@ -182,7 +184,6 @@ public class SomfyTahomaBindingConstants {
     public static final String ALARM_CHECK = "alarm_check";
     public static final String RADIO_BATTERY = "radio_battery";
     public static final String SENSOR_BATTERY = "sensor_battery";
-
 
     // Light sensor
     public static final String LUMINANCE = "luminance";
@@ -268,6 +269,7 @@ public class SomfyTahomaBindingConstants {
     // Commands
     public static final String COMMAND_MY = "my";
     public static final String COMMAND_SET_CLOSURE = "setClosure";
+    public static final String COMMAND_SET_CLOSURE_ORIENTATION ="setClosureAndOrientation";
     public static final String COMMAND_SET_DEPLOYMENT = "setDeployment";
     public static final String COMMAND_SET_ORIENTATION = "setOrientation";
     public static final String COMMAND_SET_CLOSURESPEED = "setClosureAndLinearSpeed";
@@ -344,19 +346,18 @@ public class SomfyTahomaBindingConstants {
     public static final String COMPLETED_EVENT = "COMPLETED";
 
     // supported thing types for discovery
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(Arrays.asList(
-            THING_TYPE_GATEWAY, THING_TYPE_ROLLERSHUTTER, THING_TYPE_ROLLERSHUTTER_SILENT, THING_TYPE_SCREEN,
-            THING_TYPE_VENETIANBLIND, THING_TYPE_EXTERIORSCREEN, THING_TYPE_EXTERIORVENETIANBLIND,
-            THING_TYPE_GARAGEDOOR, THING_TYPE_AWNING, THING_TYPE_ACTIONGROUP, THING_TYPE_ONOFF, THING_TYPE_LIGHT,
-            THING_TYPE_LIGHTSENSOR, THING_TYPE_SMOKESENSOR, THING_TYPE_CONTACTSENSOR, THING_TYPE_OCCUPANCYSENSOR,
-            THING_TYPE_WINDOW, THING_TYPE_INTERNAL_ALARM, THING_TYPE_EXTERNAL_ALARM, THING_TYPE_POD,
-            THING_TYPE_HEATING_SYSTEM, THING_TYPE_ONOFF_HEATING_SYSTEM, THING_TYPE_DOOR_LOCK, THING_TYPE_PERGOLA,
-            THING_TYPE_WINDOW_HANDLE, THING_TYPE_TEMPERATURESENSOR, THING_TYPE_GATE, THING_TYPE_CURTAIN,
-            THING_TYPE_ELECTRICITYSENSOR, THING_TYPE_DOCK, THING_TYPE_SIREN, THING_TYPE_ADJUSTABLE_SLATS_ROLLERSHUTTER,
-            THING_TYPE_MYFOX_CAMERA, THING_TYPE_ROLLERSHUTTER_UNO, THING_TYPE_WATERSENSOR, THING_TYPE_HUMIDITYSENSOR,
-            THING_TYPE_MYFOX_ALARM, THING_TYPE_THERMOSTAT));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(Arrays.asList(THING_TYPE_GATEWAY,
+            THING_TYPE_ROLLERSHUTTER, THING_TYPE_ROLLERSHUTTER_SILENT, THING_TYPE_SCREEN, THING_TYPE_VENETIANBLIND,
+            THING_TYPE_EXTERIORSCREEN, THING_TYPE_EXTERIORVENETIANBLIND, THING_TYPE_GARAGEDOOR, THING_TYPE_AWNING,
+            THING_TYPE_ACTIONGROUP, THING_TYPE_ONOFF, THING_TYPE_LIGHT, THING_TYPE_LIGHTSENSOR, THING_TYPE_SMOKESENSOR,
+            THING_TYPE_CONTACTSENSOR, THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_WINDOW, THING_TYPE_INTERNAL_ALARM,
+            THING_TYPE_EXTERNAL_ALARM, THING_TYPE_POD, THING_TYPE_HEATING_SYSTEM, THING_TYPE_ONOFF_HEATING_SYSTEM,
+            THING_TYPE_DOOR_LOCK, THING_TYPE_PERGOLA, THING_TYPE_WINDOW_HANDLE, THING_TYPE_TEMPERATURESENSOR,
+            THING_TYPE_GATE, THING_TYPE_CURTAIN, THING_TYPE_ELECTRICITYSENSOR, THING_TYPE_DOCK, THING_TYPE_SIREN,
+            THING_TYPE_ADJUSTABLE_SLATS_ROLLERSHUTTER, THING_TYPE_MYFOX_CAMERA, THING_TYPE_ROLLERSHUTTER_UNO,
+            THING_TYPE_WATERSENSOR, THING_TYPE_HUMIDITYSENSOR, THING_TYPE_MYFOX_ALARM, THING_TYPE_THERMOSTAT));
 
-    //somfy gateways
+    // somfy gateways
     public static Map<Integer, String> gatewayTypes = new HashMap<Integer, String>() {
         {
             put(0, "VIRTUAL_KIZBOX");

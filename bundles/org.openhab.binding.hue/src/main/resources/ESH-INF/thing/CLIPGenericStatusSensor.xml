@@ -6,15 +6,15 @@
 	<!-- CLIP Generic Status Sensor -->
 	<thing-type id="0840">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>CLIP Generic Status Sensor</label>
 		<description>A generic sensor object for IP sensor use.</description>
 
 		<channels>
-			<channel id="status" typeId="status" />
-			<channel id="last_updated" typeId="last_updated" />
+			<channel id="status" typeId="status"/>
+			<channel id="last_updated" typeId="last_updated"/>
 		</channels>
 
 		<representation-property>uniqueId</representation-property>

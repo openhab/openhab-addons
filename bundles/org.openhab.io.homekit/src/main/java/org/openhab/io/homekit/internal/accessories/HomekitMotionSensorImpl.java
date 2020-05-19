@@ -12,63 +12,51 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.smarthome.core.items.GenericItem;
-import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
+import org.openhab.io.homekit.internal.HomekitCharacteristicType;
+import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
-import org.openhab.io.homekit.internal.battery.BatteryStatus;
 
-import io.github.hapjava.HomekitCharacteristicChangeCallback;
-import io.github.hapjava.accessories.BatteryStatusAccessory;
-import io.github.hapjava.accessories.MotionSensor;
+import io.github.hapjava.accessories.MotionSensorAccessory;
+import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
+import io.github.hapjava.services.impl.MotionSensorService;
 
 /**
  *
  * @author Tim Harper - Initial contribution
  */
-public class HomekitMotionSensorImpl extends AbstractHomekitAccessoryImpl<GenericItem>
-        implements MotionSensor, BatteryStatusAccessory {
-    private BatteryStatus batteryStatus;
-    private BooleanItemReader motionSensedReader;
+public class HomekitMotionSensorImpl extends AbstractHomekitAccessoryImpl implements MotionSensorAccessory {
+    private final BooleanItemReader motionSensedReader;
 
-    public HomekitMotionSensorImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
-            HomekitAccessoryUpdater updater, BatteryStatus batteryStatus) {
-        super(taggedItem, itemRegistry, updater, GenericItem.class);
-        this.motionSensedReader = new BooleanItemReader(taggedItem.getItem(), OnOffType.ON, OpenClosedType.OPEN);
-        this.batteryStatus = batteryStatus;
+    public HomekitMotionSensorImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
+            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
+        super(taggedItem, mandatoryCharacteristics, updater, settings);
+        this.motionSensedReader = new BooleanItemReader(
+                getItem(HomekitCharacteristicType.MOTION_DETECTED_STATE, GenericItem.class), OnOffType.ON,
+                OpenClosedType.OPEN);
+
+        getServices().add(new MotionSensorService(this));
     }
 
     @Override
     public CompletableFuture<Boolean> getMotionDetected() {
-        return CompletableFuture.completedFuture(motionSensedReader.getValue());
+        return CompletableFuture
+                .completedFuture((this.motionSensedReader.getValue() != null) ? motionSensedReader.getValue() : false);
     }
 
     @Override
     public void subscribeMotionDetected(HomekitCharacteristicChangeCallback callback) {
-        getUpdater().subscribe(getItem(), callback);
+        subscribe(HomekitCharacteristicType.MOTION_DETECTED_STATE, callback);
     }
 
     @Override
     public void unsubscribeMotionDetected() {
-        getUpdater().unsubscribe(getItem());
-    }
-
-    @Override
-    public CompletableFuture<Boolean> getLowBatteryState() {
-        return CompletableFuture.completedFuture(batteryStatus.isLow());
-    }
-
-    @Override
-    public void subscribeLowBatteryState(HomekitCharacteristicChangeCallback callback) {
-        batteryStatus.subscribe(getUpdater(), callback);
-    }
-
-    @Override
-    public void unsubscribeLowBatteryState() {
-        batteryStatus.unsubscribe(getUpdater());
+        unsubscribe(HomekitCharacteristicType.MOTION_DETECTED_STATE);
     }
 }

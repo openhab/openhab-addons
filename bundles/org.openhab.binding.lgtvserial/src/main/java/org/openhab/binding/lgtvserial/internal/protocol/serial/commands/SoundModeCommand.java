@@ -23,5 +23,4 @@ public class SoundModeCommand extends BaseStringCommand {
     protected SoundModeCommand(int setId) {
         super('d', 'y', setId);
     }
-
 }

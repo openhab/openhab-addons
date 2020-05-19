@@ -98,13 +98,13 @@ public interface HomematicGateway {
      * Returns the id of the HomematicGateway.
      */
     public String getId();
-    
+
     /**
      * Set install mode of homematic controller. During install mode the
      * controller will accept any device (normal mode)
      * 
      * @param enable <i>true</i> will start install mode, whereas <i>false</i>
-     *         will stop it
+     *            will stop it
      * @param seconds specify how long the install mode should last
      * @throws IOException if RpcClient fails to propagate command
      */
@@ -139,5 +139,4 @@ public interface HomematicGateway {
      * @param defer <i>true</i> will delete the device once it becomes available.
      */
     public void deleteDevice(String address, boolean reset, boolean force, boolean defer);
-
 }

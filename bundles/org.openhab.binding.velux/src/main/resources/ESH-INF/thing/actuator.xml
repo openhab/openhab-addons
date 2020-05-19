@@ -9,18 +9,18 @@
 	<!-- -->
 	<thing-type id="actuator">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="klf200" />
+			<bridge-type-ref id="klf200"/>
 		</supported-bridge-type-refs>
 		<label>@text/thing-type.velux.actuator.label</label>
 		<description>@text/thing-type.velux.actuator.description</description>
 		<category>Blinds</category>
 		<channels>
-			<channel id="position" typeId="position" />
-			<channel id="state" typeId="state" />
-			<channel id="limitMinimum" typeId="limitMinimum" />
-			<channel id="limitMaximum" typeId="limitMaximum" />
+			<channel id="position" typeId="position"/>
+			<channel id="state" typeId="state"/>
+			<channel id="limitMinimum" typeId="limitMinimum"/>
+			<channel id="limitMaximum" typeId="limitMaximum"/>
 		</channels>
 		<representation-property>serialNumber</representation-property>
-		<config-description-ref uri="thing-type:velux:actuator" />
+		<config-description-ref uri="thing-type:velux:actuator"/>
 	</thing-type>
 </thing:thing-descriptions>

@@ -38,7 +38,7 @@ public class SomfyTahomaAdjustableSlatsRollerShutterHandler extends SomfyTahomaB
         stateNames.put(CONTROL, CLOSURE_OR_ROCKER_STATE);
         stateNames.put(ROCKER, CLOSURE_OR_ROCKER_STATE);
         stateNames.put(ORIENTATION, SLATE_ORIENTATION_STATE);
-        //override state type because the control may return string 'rocker'
+        // override state type because the control may return string 'rocker'
         cacheStateType(CONTROL, TYPE_PERCENT);
     }
 
@@ -76,33 +76,40 @@ public class SomfyTahomaAdjustableSlatsRollerShutterHandler extends SomfyTahomaB
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         super.handleCommand(channelUID, command);
-        if (!ROCKER.equals(channelUID.getId()) && !CONTROL.equals(channelUID.getId())
-                && !ORIENTATION.equals(channelUID.getId())) {
-            return;
-        }
 
         if (command instanceof RefreshType) {
             return;
-        } else if (ROCKER.equals(channelUID.getId())) {
-            if (OnOffType.ON.equals(command)) {
-                sendCommand(COMMAND_SET_ROCKERPOSITION);
-            }
-        } else {
-            String cmd = getTahomaCommand(command.toString(), channelUID.getId());
-            if (COMMAND_SET_ROCKERPOSITION.equals(cmd)) {
-                String executionId = getCurrentExecutions();
-                if (executionId != null) {
-                    // Check if the roller shutter is moving and rocker is sent => STOP it
-                    cancelExecution(executionId);
-                } else {
+        }
+
+        switch (channelUID.getId()) {
+            case ROCKER:
+                if (OnOffType.ON.equals(command)) {
                     sendCommand(COMMAND_SET_ROCKERPOSITION);
                 }
-            } else {
-                String param = (COMMAND_SET_CLOSURE.equals(cmd) || COMMAND_SET_ORIENTATION.equals(cmd))
-                        ? "[" + command.toString() + "]"
-                        : "[]";
-                sendCommand(cmd, param);
-            }
+                break;
+            case CLOSURE_AND_ORIENTATION:
+                sendCommand(COMMAND_SET_CLOSURE_ORIENTATION, "[" + command.toString() + "]");
+                break;
+            case CONTROL:
+            case ORIENTATION:
+                String cmd = getTahomaCommand(command.toString(), channelUID.getId());
+                if (COMMAND_SET_ROCKERPOSITION.equals(cmd)) {
+                    String executionId = getCurrentExecutions();
+                    if (executionId != null) {
+                        // Check if the roller shutter is moving and rocker is sent => STOP it
+                        cancelExecution(executionId);
+                    } else {
+                        sendCommand(COMMAND_SET_ROCKERPOSITION);
+                    }
+                } else {
+                    String param = (COMMAND_SET_CLOSURE.equals(cmd) || COMMAND_SET_ORIENTATION.equals(cmd))
+                            ? "[" + command.toString() + "]"
+                            : "[]";
+                    sendCommand(cmd, param);
+                }
+                break;
+            default:
+                return;
         }
     }
 

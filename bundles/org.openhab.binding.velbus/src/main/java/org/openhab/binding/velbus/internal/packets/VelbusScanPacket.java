@@ -29,5 +29,4 @@ public class VelbusScanPacket extends VelbusPacket {
     protected byte[] getDataBytes() {
         return new byte[0];
     }
-
 }

@@ -1,37 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="miele" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="miele"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Hob -->
 	<thing-type id="hob">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="xgw3000" />
+			<bridge-type-ref id="xgw3000"/>
 		</supported-bridge-type-refs>
 
 		<label>Hob</label>
 		<description>This is a Miele@home compatible hob</description>
 
 		<channels>
-			<channel id="state" typeId="state" />
-			<channel id="plate1power" typeId="power" />
-			<channel id="plate1heat" typeId="heat" />
-			<channel id="plate1time" typeId="time" />
-			<channel id="plate2power" typeId="power" />
-			<channel id="plate2heat" typeId="heat" />
-			<channel id="plate2time" typeId="time" />
-			<channel id="plate3power" typeId="power" />
-			<channel id="plate3heat" typeId="heat" />
-			<channel id="plate3time" typeId="time" />
-			<channel id="plate4power" typeId="power" />
-			<channel id="plate4heat" typeId="heat" />
-			<channel id="plate4time" typeId="time" />
-			<channel id="plate5power" typeId="power" />
-			<channel id="plate5heat" typeId="heat" />
-			<channel id="plate5time" typeId="time" />
-			<channel id="plate6power" typeId="power" />
-			<channel id="plate6heat" typeId="heat" />
-			<channel id="plate6time" typeId="time" />
+			<channel id="state" typeId="state"/>
+			<channel id="plate1power" typeId="power"/>
+			<channel id="plate1heat" typeId="heat"/>
+			<channel id="plate1time" typeId="time"/>
+			<channel id="plate2power" typeId="power"/>
+			<channel id="plate2heat" typeId="heat"/>
+			<channel id="plate2time" typeId="time"/>
+			<channel id="plate3power" typeId="power"/>
+			<channel id="plate3heat" typeId="heat"/>
+			<channel id="plate3time" typeId="time"/>
+			<channel id="plate4power" typeId="power"/>
+			<channel id="plate4heat" typeId="heat"/>
+			<channel id="plate4time" typeId="time"/>
+			<channel id="plate5power" typeId="power"/>
+			<channel id="plate5heat" typeId="heat"/>
+			<channel id="plate5time" typeId="time"/>
+			<channel id="plate6power" typeId="power"/>
+			<channel id="plate6heat" typeId="heat"/>
+			<channel id="plate6time" typeId="time"/>
 		</channels>
 
 		<config-description>

@@ -315,7 +315,6 @@ public class LGWebOSHandler extends BaseThingHandler
                 break;
 
         }
-
     }
 
     @Override
@@ -401,5 +400,13 @@ public class LGWebOSHandler extends BaseThingHandler
                 logger.debug("Unable to determine MAC address: {}", e.getMessage());
             }
         }
+    }
+
+    public List<String> reportApplications() {
+        return appLauncher.reportApplications(getThing().getUID());
+    }
+
+    public List<String> reportChannels() {
+        return ((TVControlChannel) channelHandlers.get(CHANNEL_CHANNEL)).reportChannels(getThing().getUID());
     }
 }

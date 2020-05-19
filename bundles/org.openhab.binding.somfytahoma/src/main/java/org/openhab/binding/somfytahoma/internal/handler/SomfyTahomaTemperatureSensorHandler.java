@@ -31,7 +31,7 @@ public class SomfyTahomaTemperatureSensorHandler extends SomfyTahomaBaseThingHan
         super(thing);
         stateNames.put(TEMPERATURE, "core:TemperatureState");
 
-        //override state type because the cloud sends both percent & decimal
+        // override state type because the cloud sends both percent & decimal
         cacheStateType("core:TemperatureState", TYPE_DECIMAL);
     }
 }

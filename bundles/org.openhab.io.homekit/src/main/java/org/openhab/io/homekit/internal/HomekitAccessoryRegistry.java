@@ -12,19 +12,16 @@
  */
 package org.openhab.io.homekit.internal;
 
+import java.io.IOException;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.github.hapjava.HomekitAccessory;
-import io.github.hapjava.HomekitRoot;
+import io.github.hapjava.accessories.HomekitAccessory;
+import io.github.hapjava.server.impl.HomekitRoot;
 
 /**
  * Stores the created HomekitAccessories. GroupedAccessories are also held here
@@ -36,14 +33,31 @@ class HomekitAccessoryRegistry {
 
     private @Nullable HomekitRoot bridge;
     private final Map<String, HomekitAccessory> createdAccessories = new HashMap<>();
-    private final Set<Integer> createdIds = new HashSet<>();
-
+    private int configurationRevision = 1;
     private final Logger logger = LoggerFactory.getLogger(HomekitAccessoryRegistry.class);
+
+    public void setConfigurationRevision(int revision) {
+        configurationRevision = revision;
+    }
+
+    public int makeNewConfigurationRevision() {
+        configurationRevision = (configurationRevision + 1) % 65535;
+        final HomekitRoot bridge = this.bridge;
+        try {
+            if (bridge != null) {
+                bridge.setConfigurationIndex(configurationRevision);
+            }
+        } catch (IOException e) {
+            logger.warn("Could not update configuration revision number", e);
+        }
+        return configurationRevision;
+    }
 
     public synchronized void remove(String itemName) {
         if (createdAccessories.containsKey(itemName)) {
             HomekitAccessory accessory = createdAccessories.remove(itemName);
-            logger.debug("Removed accessory {} for taggedItem {}", accessory.getId(), itemName);
+            logger.trace("Removed accessory {} for taggedItem {}", accessory, itemName);
+            final HomekitRoot bridge = this.bridge;
             if (bridge != null) {
                 bridge.removeAccessory(accessory);
             } else {
@@ -53,38 +67,37 @@ class HomekitAccessoryRegistry {
     }
 
     public synchronized void clear() {
-        Iterator<Entry<String, HomekitAccessory>> iter = createdAccessories.entrySet().iterator();
-        while (iter.hasNext()) {
-            Entry<String, HomekitAccessory> entry = iter.next();
-            if (bridge != null) {
-                bridge.removeAccessory(entry.getValue());
-            } else {
-                logger.warn("trying to clear {} but bridge is null", entry);
-            }
-            iter.remove();
+        final HomekitRoot bridge = this.bridge;
+        if (bridge != null) {
+            createdAccessories.values().forEach(bridge::removeAccessory);
+        } else {
+            logger.warn("trying to clear accessories but bridge is null");
         }
-        createdIds.clear();
     }
 
     public synchronized void setBridge(HomekitRoot bridge) {
         this.bridge = bridge;
-        createdAccessories.values().forEach(accessory -> bridge.addAccessory(accessory));
+        createdAccessories.values().forEach(bridge::addAccessory);
     }
 
     public synchronized void unsetBridge() {
         final HomekitRoot oldBridge = bridge;
         if (oldBridge != null) {
-            createdAccessories.values().forEach(accessory -> oldBridge.removeAccessory(accessory));
+            createdAccessories.values().forEach(oldBridge::removeAccessory);
         }
         bridge = null;
     }
 
     public synchronized void addRootAccessory(String itemName, HomekitAccessory accessory) {
         createdAccessories.put(itemName, accessory);
-        createdIds.add(accessory.getId());
+        final HomekitRoot bridge = this.bridge;
         if (bridge != null) {
             bridge.addAccessory(accessory);
         }
-        logger.debug("Added accessory {}", accessory.getId());
+        logger.trace("Added accessory {}", accessory.getId());
+    }
+
+    public Map<String, HomekitAccessory> getAllAccessories() {
+        return this.createdAccessories;
     }
 }

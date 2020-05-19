@@ -22,18 +22,16 @@ import java.util.TooManyListenersException;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.io.transport.serial.PortInUseException;
+import org.eclipse.smarthome.io.transport.serial.SerialPort;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEvent;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEventListener;
+import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
+import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
 import org.openhab.binding.dscalarm.internal.config.IT100BridgeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import gnu.io.CommPort;
-import gnu.io.CommPortIdentifier;
-import gnu.io.NoSuchPortException;
-import gnu.io.PortInUseException;
-import gnu.io.SerialPort;
-import gnu.io.SerialPortEvent;
-import gnu.io.SerialPortEventListener;
-import gnu.io.UnsupportedCommOperationException;
 
 /**
  * The bridge handler for the DSC IT100 RS232 Serial interface.
@@ -44,21 +42,18 @@ import gnu.io.UnsupportedCommOperationException;
 public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements SerialPortEventListener {
 
     private final Logger logger = LoggerFactory.getLogger(IT100BridgeHandler.class);
-
-    /**
-     * Constructor.
-     *
-     * @param bridge
-     */
-    public IT100BridgeHandler(Bridge bridge) {
-        super(bridge, DSCAlarmBridgeType.IT100, DSCAlarmProtocol.IT100_API);
-    }
+    private final SerialPortManager serialPortManager;
 
     private String serialPortName = "";
     private int baudRate;
     private SerialPort serialPort = null;
     private OutputStreamWriter serialOutput = null;
     private BufferedReader serialInput = null;
+
+    public IT100BridgeHandler(Bridge bridge, SerialPortManager serialPortManager) {
+        super(bridge, DSCAlarmBridgeType.IT100, DSCAlarmProtocol.IT100_API);
+        this.serialPortManager = serialPortManager;
+    }
 
     @Override
     public void initialize() {
@@ -98,13 +93,19 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
 
     @Override
     public void openConnection() {
+        logger.debug("openConnection(): Connecting to IT-100");
+
+        SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(serialPortName);
+        if (portIdentifier == null) {
+            logger.error("openConnection(): No Such Port: {}", serialPort);
+            setConnected(false);
+            return;
+        }
+
         try {
-            logger.debug("openConnection(): Connecting to IT-100 ");
+            SerialPort commPort = portIdentifier.open(this.getClass().getName(), 2000);
 
-            CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(serialPortName);
-            CommPort commPort = portIdentifier.open(this.getClass().getName(), 2000);
-
-            serialPort = (SerialPort) commPort;
+            serialPort = commPort;
             serialPort.setSerialPortParams(baudRate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
                     SerialPort.PARITY_NONE);
             serialPort.enableReceiveThreshold(1);
@@ -116,10 +117,6 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
             setSerialEventHandler(this);
 
             setConnected(true);
-
-        } catch (NoSuchPortException noSuchPortException) {
-            logger.error("openConnection(): No Such Port Exception: {}", noSuchPortException.getMessage());
-            setConnected(false);
         } catch (PortInUseException portInUseException) {
             logger.error("openConnection(): Port in Use Exception: {}", portInUseException.getMessage());
             setConnected(false);
@@ -168,7 +165,6 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
         }
 
         return message;
-
     }
 
     /**

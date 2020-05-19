@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.dwdpollenflug.internal.dto;
 
-import com.google.gson.annotations.SerializedName;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * DTO for data per pollen type

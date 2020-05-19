@@ -1,27 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="systeminfo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="systeminfo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- This thing represents a computer with single logical storage device, single drive, single display, battery and one 
-		network interface installed. If other configurations are needed feel free to create different thing types. Currently dynamic 
+	<!-- This thing represents a computer with single logical storage device, single drive, single display, battery and one
+		network interface installed. If other configurations are needed feel free to create different thing types. Currently dynamic
 		channel creation is not supported from the binding. -->
 	<thing-type id="computer">
 		<label>Systeminfo</label>
 		<description>The computer operating system and hardware information</description>
 
 		<channel-groups>
-			<channel-group id="memory" typeId="memoryGroup" />
-			<channel-group id="storage" typeId="storageGroup" />
-			<channel-group id="sensors" typeId="sensorsGroup" />
-			<channel-group id="cpu" typeId="cpuGroup" />
+			<channel-group id="memory" typeId="memoryGroup"/>
+			<channel-group id="storage" typeId="storageGroup"/>
+			<channel-group id="sensors" typeId="sensorsGroup"/>
+			<channel-group id="cpu" typeId="cpuGroup"/>
 			<!-- This group types are not mandatory for every computer configuration -->
-			<channel-group id="process" typeId="processGroup" />
-			<channel-group id="drive" typeId="driveGroup" />
-			<channel-group id="swap" typeId="swapGroup" />
-			<channel-group id="display" typeId="displayGroup" />
-			<channel-group id="battery" typeId="batteryGroup" />
-			<channel-group id="network" typeId="networkGroup" />
+			<channel-group id="process" typeId="processGroup"/>
+			<channel-group id="drive" typeId="driveGroup"/>
+			<channel-group id="swap" typeId="swapGroup"/>
+			<channel-group id="display" typeId="displayGroup"/>
+			<channel-group id="battery" typeId="batteryGroup"/>
+			<channel-group id="network" typeId="networkGroup"/>
 		</channel-groups>
 
 		<properties>
@@ -32,7 +33,7 @@
 			<property name="OS Family">Not available</property>
 		</properties>
 
-		<config-description-ref uri="thing-type:systeminfo:computerConfig" />
+		<config-description-ref uri="thing-type:systeminfo:computerConfig"/>
 	</thing-type>
 
 </thing:thing-descriptions>

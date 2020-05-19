@@ -12,13 +12,17 @@
  */
 package org.openhab.binding.daikin.internal.api.airbase;
 
-import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.stream.IntStream;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.openhab.binding.daikin.internal.api.InfoParser;
 
 /**
  * Holds information from the basic_info call.
@@ -26,10 +30,11 @@ import org.slf4j.LoggerFactory;
  * @author Paul Smedley - Initial contribution
  *
  */
+@NonNullByDefault
 public class AirbaseZoneInfo {
     private static final Logger LOGGER = LoggerFactory.getLogger(AirbaseZoneInfo.class);
 
-    public String zonenames;
+    public String zonenames = "";
     public boolean zone[] = new boolean[9];
 
     private AirbaseZoneInfo() {
@@ -38,32 +43,26 @@ public class AirbaseZoneInfo {
     public static AirbaseZoneInfo parse(String response) {
         LOGGER.debug("Parsing string: \"{}\"", response);
 
-        Map<String, String> responseMap = Arrays.asList(response.split(",")).stream().filter(kv -> kv.contains("="))
-                .map(kv -> {
-                    String[] keyValue = kv.split("=");
-                    String key = keyValue[0];
-                    String value = keyValue.length > 1 ? keyValue[1] : "";
-                    return new String[] { key, value };
-                }).collect(Collectors.toMap(x -> x[0], x -> x[1]));
+        Map<String, String> responseMap = InfoParser.parse(response);
 
         AirbaseZoneInfo info = new AirbaseZoneInfo();
-        info.zonenames = responseMap.get("zone_name");
-        String zoneinfo = responseMap.get("zone_onoff");
+        info.zonenames = Optional.ofNullable(responseMap.get("zone_name")).orElse("");
+        String zoneinfo = Optional.ofNullable(responseMap.get("zone_onoff")).orElse("");
 
         String[] Zones = zoneinfo.split("%3b");
 
         for (int i = 1; i < 9; i++)
-            info.zone[i] = "1".equals(Zones[i-1]);
+            info.zone[i] = "1".equals(Zones[i - 1]);
         return info;
     }
 
     public Map<String, String> getParamString() {
         Map<String, String> params = new LinkedHashMap<>();
-        String onoffstring = IntStream.range(1, zone.length).mapToObj(idx -> zone[idx] ? "1" : "0").collect(Collectors.joining("%3b"));
+        String onoffstring = IntStream.range(1, zone.length).mapToObj(idx -> zone[idx] ? "1" : "0")
+                .collect(Collectors.joining("%3b"));
         params.put("zone_name", zonenames);
         params.put("zone_onoff", onoffstring);
 
         return params;
     }
-
 }

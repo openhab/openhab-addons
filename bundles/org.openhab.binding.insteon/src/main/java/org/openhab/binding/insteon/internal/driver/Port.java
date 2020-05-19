@@ -243,7 +243,6 @@ public class Port {
         } catch (IllegalStateException e) {
             logger.warn("cannot write message {}, write queue is full!", m);
         }
-
     }
 
     /**
@@ -375,7 +374,7 @@ public class Port {
                 tempList = (ArrayList<MsgListener>) listeners.clone();
             }
             for (MsgListener l : tempList) {
-                l.msg(msg, devName); // deliver msg to listener
+                l.msg(msg); // deliver msg to listener
             }
         }
 
@@ -477,7 +476,7 @@ public class Port {
         }
 
         @Override
-        public void msg(Msg msg, String fromPort) {
+        public void msg(Msg msg) {
             try {
                 if (msg.isPureNack()) {
                     return;
@@ -495,7 +494,6 @@ public class Port {
                         device.setProductKey(prodKey);
                         device.setDriver(driver);
                         device.setIsModem(true);
-                        device.addPort(fromPort);
                         logger.debug("found modem {} in device_types: {}", a, device.toString());
                         mdbb.updateModemDB(a, Port.this, null);
                     }

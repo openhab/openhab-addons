@@ -280,5 +280,4 @@ public class DeviceSensorValue {
         }
         return true;
     }
-
 }

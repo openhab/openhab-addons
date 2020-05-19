@@ -40,18 +40,24 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="nightMode">
+		<item-type>Switch</item-type>
+		<label>Night Mode</label>
+		<description>Enable/Disable Night Mode</description>
+	</channel-type>
+
 	<!-- HT-z9f Thing Type -->
 	<thing-type id="HT-Z9F">
 		<label>SONY Soundbar HT-Z9F</label>
 		<description>SONY Soundbar HT-Z9F</description>
 		<channels>
-			<channel id="power" typeId="power" />
-			<channel id="input" typeId="input-z9f-zf9" />
-			<channel id="volume" typeId="volume" />
-			<channel id="mute" typeId="mute" />
-			<channel id="soundField" typeId="sound-field-z9f-zf9" />
+			<channel id="power" typeId="power"/>
+			<channel id="input" typeId="input-z9f-zf9"/>
+			<channel id="volume" typeId="volume"/>
+			<channel id="mute" typeId="mute"/>
+			<channel id="soundField" typeId="sound-field-z9f-zf9"/>
 		</channels>
-		<config-description-ref uri="thing-type:sonyaudio:config" />
+		<config-description-ref uri="thing-type:sonyaudio:config"/>
 	</thing-type>
 
 	<!-- HT-zf9 Thing Type -->
@@ -64,7 +70,8 @@
 			<channel id="volume" typeId="volume" />
 			<channel id="mute" typeId="mute" />
 			<channel id="soundField" typeId="sound-field-z9f-zf9" />
+			<channel id="nightMode" typeId="nightMode" />
 		</channels>
-		<config-description-ref uri="thing-type:sonyaudio:config" />
+		<config-description-ref uri="thing-type:sonyaudio:config"/>
 	</thing-type>
 </thing:thing-descriptions>

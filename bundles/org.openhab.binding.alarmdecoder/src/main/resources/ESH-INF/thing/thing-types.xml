@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="alarmdecoder"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Alarm Decoder Bridge -->
+	<bridge-type id="ipbridge">
+		<label>Alarm Decoder IP Bridge</label>
+		<description>Nu Tech Alarm Decoder IP Bridge</description>
+		<properties>
+			<property name="vendor">Nu Tech Software Solutions</property>
+		</properties>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<label>Host Name</label>
+				<context>network-address</context>
+				<description>The hostname or IP address of the Alarm Decoder device</description>
+			</parameter>
+			<parameter name="tcpPort" type="integer">
+				<label>TCP Port</label>
+				<description>TCP port number for the Alarm Decoder connection</description>
+				<default>10000</default>
+			</parameter>
+			<parameter name="discovery" type="boolean">
+				<label>Enable Discovery</label>
+				<description>Enable automatic discovery of zones and RF zones</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="reconnect" type="integer" min="1" max="60" unit="min">
+				<label>Reconnect Interval</label>
+				<description>The period in minutes that the handler will wait between connection attempts and checks</description>
+				<unitLabel>minutes</unitLabel>
+				<default>2</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="timeout" type="integer" min="0" max="60" unit="min">
+				<label>Message Receive Timeout</label>
+				<description>The period in minutes after which the connection will be reset if no valid messages have been received.
+					Set to 0 to disable.</description>
+				<unitLabel>minutes</unitLabel>
+				<default>5</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<bridge-type id="serialbridge">
+		<label>Alarm Decoder Serial Bridge</label>
+		<description>Nu Tech Alarm Decoder Serial Bridge</description>
+		<properties>
+			<property name="vendor">Nu Tech Software Solutions</property>
+		</properties>
+
+		<config-description>
+			<parameter name="serialPort" type="text" required="true">
+				<label>Serial Or USB Port</label>
+				<context>serial-port</context>
+				<limitToOptions>false</limitToOptions>
+				<description>The name of the serial port used to connect to the Alarm Decoder device</description>
+			</parameter>
+			<parameter name="bitrate" type="integer">
+				<label>Bitrate</label>
+				<default>115200</default>
+				<description>Speed of the serial connection</description>
+			</parameter>
+			<parameter name="discovery" type="boolean">
+				<label>Enable Discovery</label>
+				<description>Enable automatic discovery of zones and RF zones</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<!-- Zone Thing Type -->
+	<thing-type id="zone">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge" />
+			<bridge-type-ref id="serialbridge" />
+		</supported-bridge-type-refs>
+
+		<label>Alarm Zone</label>
+		<description>Alarm Decoder REL or EXP zone</description>
+
+		<channels>
+			<channel id="contact" typeId="contact-channel" />
+		</channels>
+
+		<representation-property>id</representation-property>
+
+		<config-description>
+			<parameter name="address" type="integer" required="true">
+				<label>Zone Address</label>
+			</parameter>
+			<parameter name="channel" type="integer" required="true">
+				<label>Zone Channel</label>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- RF Zone Thing Type -->
+	<thing-type id="rfzone">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge" />
+			<bridge-type-ref id="serialbridge" />
+		</supported-bridge-type-refs>
+
+		<label>Alarm RF Zone</label>
+		<description>Alarm Decoder RFX zone</description>
+
+		<channels>
+			<channel id="lowbat" typeId="system.low-battery">
+				<label>Low Battery</label>
+			</channel>
+			<channel id="supervision" typeId="indicator-channel">
+				<label>Supervision Indicator</label>
+			</channel>
+			<channel id="loop1" typeId="contact-channel">
+				<label>Loop 1</label>
+			</channel>
+			<channel id="loop2" typeId="contact-channel">
+				<label>Loop 2</label>
+			</channel>
+			<channel id="loop3" typeId="contact-channel">
+				<label>Loop 3</label>
+			</channel>
+			<channel id="loop4" typeId="contact-channel">
+				<label>Loop 4</label>
+			</channel>
+		</channels>
+
+		<representation-property>serial</representation-property>
+
+		<config-description>
+			<parameter name="serial" type="integer" required="true">
+				<label>Serial</label>
+				<description>Serial number of the RF zone</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Keypad Thing Type -->
+	<thing-type id="keypad">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge" />
+			<bridge-type-ref id="serialbridge" />
+		</supported-bridge-type-refs>
+
+		<label>Alarm Keypad</label>
+		<description>Alarm Decoder keypad thing</description>
+
+		<channels>
+			<channel id="zone" typeId="number-channel">
+				<label>Zone</label>
+			</channel>
+			<channel id="text" typeId="text-channel">
+				<label>Keypad Message</label>
+			</channel>
+			<channel id="ready" typeId="indicator-channel">
+				<label>Ready</label>
+			</channel>
+			<channel id="armedaway" typeId="indicator-channel">
+				<label>Armed Away</label>
+			</channel>
+			<channel id="armedhome" typeId="indicator-channel">
+				<label>Armed Stay</label>
+			</channel>
+			<channel id="backlight" typeId="indicator-channel">
+				<label>Keypad Backlight</label>
+			</channel>
+			<channel id="program" typeId="indicator-channel">
+				<label>Programming Mode</label>
+			</channel>
+			<channel id="beeps" typeId="number-channel">
+				<label>Beeps</label>
+				<description>Number of beeps for message</description>
+			</channel>
+			<channel id="bypassed" typeId="indicator-channel">
+				<label>Zone Bypassed</label>
+			</channel>
+			<channel id="acpower" typeId="indicator-channel">
+				<label>AC Power</label>
+			</channel>
+			<channel id="chime" typeId="indicator-channel">
+				<label>Chime Enabled</label>
+			</channel>
+			<channel id="alarmoccurred" typeId="indicator-channel">
+				<label>Alarm Occurred</label>
+				<description>Alarm has occurred in the past</description>
+			</channel>
+			<channel id="alarm" typeId="indicator-channel">
+				<label>Alarm</label>
+				<description>Alarm is currently sounding</description>
+			</channel>
+			<channel id="lowbat" typeId="system.low-battery">
+				<label>Low Battery</label>
+			</channel>
+			<channel id="delayoff" typeId="indicator-channel">
+				<label>Entry Delay Off</label>
+			</channel>
+			<channel id="fire" typeId="indicator-channel">
+				<label>Fire Detected</label>
+			</channel>
+			<channel id="sysfault" typeId="indicator-channel">
+				<label>System Fault</label>
+			</channel>
+			<channel id="perimeter" typeId="indicator-channel">
+				<label>Perimeter Only</label>
+			</channel>
+			<channel id="command" typeId="command-channel">
+				<label>Keypad Command</label>
+			</channel>
+			<channel id="intcommand" typeId="int-command-channel">
+				<label>Integer Mapped Keypad Command</label>
+			</channel>
+		</channels>
+
+		<config-description>
+			<parameter name="addressMask" type="text" required="true">
+				<label>Address Mask</label>
+				<description>Keypad address mask</description>
+			</parameter>
+			<parameter name="sendCommands" type="boolean">
+				<label>Send Commands</label>
+				<description>Allow keypad commands to be sent to the alarm system from openHAB. Enabling this means the alarm system
+					will be only as secure as your openHAB system.</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="sendStar" type="boolean">
+				<label>Send * for Fault Info</label>
+				<description>When disarmed, automatically send * character to obtain zone fault information.</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="commandMapping" type="text">
+				<label>Command Mapping for intcommand Channel</label>
+				<description>Comma separated list of key/value pairs mapping integers to command strings for intcommand channel.</description>
+				<default>0=0,1=1,2=2,3=3,4=4,5=5,6=6,7=7,8=8,9=9,10=*,11=#</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<!-- LRR Thing Type -->
+	<thing-type id="lrr">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge" />
+			<bridge-type-ref id="serialbridge" />
+		</supported-bridge-type-refs>
+
+		<label>Long Range Radio</label>
+		<description>Long range radio message handler</description>
+
+		<channels>
+			<channel id="partition" typeId="number-channel">
+				<label>Partition</label>
+				<description>Partition number (0 = System)</description>
+			</channel>
+			<channel id="eventdata" typeId="number-channel">
+				<label>Event Data</label>
+				<description>CID event data (user or zone)</description>
+			</channel>
+			<channel id="cidmessage" typeId="text-channel">
+				<label>CID Message</label>
+				<description>SIA Contact ID Protocol message</description>
+			</channel>
+			<channel id="reportcode" typeId="text-channel">
+				<label>Report Code</label>
+				<description>CID report code</description>
+			</channel>
+		</channels>
+
+		<config-description>
+			<parameter name="partition" type="integer">
+				<label>Partition</label>
+				<description>Partition for which to receive LRR events (0=All)</description>
+				<default>0</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- ===== Channel Type Definitions ===== -->
+
+	<!-- Contact Channel Type -->
+	<channel-type id="contact-channel">
+		<item-type>Contact</item-type>
+		<label>Contact State</label>
+		<category>Switch</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<!-- Indicator Channel Type -->
+	<channel-type id="indicator-channel">
+		<item-type>Switch</item-type>
+		<label>Indicator State</label>
+		<category>Switch</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<!-- Number Channel Type -->
+	<channel-type id="number-channel">
+		<item-type>Number</item-type>
+		<label>Number</label>
+		<category>Number</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<!-- Text channel type -->
+	<channel-type id="text-channel">
+		<item-type>String</item-type>
+		<label>Text Channel</label>
+		<state readOnly="true" />
+	</channel-type>
+
+	<!-- Command channel type -->
+	<channel-type id="command-channel" advanced="true">
+		<item-type>String</item-type>
+		<label>Command Channel</label>
+	</channel-type>
+
+	<!-- Integer Command channel type -->
+	<channel-type id="int-command-channel" advanced="true">
+		<item-type>Number</item-type>
+		<label>Integer Command Channel</label>
+	</channel-type>
+</thing:thing-descriptions>

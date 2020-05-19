@@ -22,6 +22,7 @@ import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketTimeoutException;
+import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
@@ -206,6 +207,11 @@ public class PJLinkDevice {
         this.prefixForNextCommand = cmd;
     }
 
+    public static String preprocessResponse(String response) {
+        // some devices send leading zero bytes, see https://github.com/openhab/openhab-addons/issues/6725
+        return response.replaceAll("^\0*|\0*$", "");
+    }
+
     public synchronized String execute(String command) throws IOException, AuthenticationException, ResponseException {
         String fullCommand = this.prefixForNextCommand + command;
         this.prefixForNextCommand = "";
@@ -227,18 +233,20 @@ public class PJLinkDevice {
         }
 
         String response = null;
-        while ((response = getReader().readLine()) != null && response.isEmpty()) {
+        while ((response = getReader().readLine()) != null && preprocessResponse(response).isEmpty()) {
             logger.debug("Got empty string response for request '{}' from {}, waiting for another line", response,
                     fullCommand.replaceAll("\r", "\\\\r"));
         }
         if (response == null) {
-            throw new ResponseException("Response to request '" + fullCommand.replaceAll("\r", "\\\\r") + "' was null");
+            throw new ResponseException(MessageFormat.format("Response to request ''{0}'' was null",
+                    fullCommand.replaceAll("\r", "\\\\r")));
         }
+
         if (logger.isDebugEnabled()) {
             logger.debug("Got response '{}' ({}) for request '{}' from {}", response,
                     Arrays.toString(response.getBytes()), fullCommand.replaceAll("\r", "\\\\r"), ipAddress);
         }
-        return response;
+        return preprocessResponse(response);
     }
 
     public void checkAvailability() throws IOException, AuthenticationException, ResponseException {
@@ -350,7 +358,6 @@ public class PJLinkDevice {
 
     public Set<Input> getAvailableInputs() throws ResponseException, IOException, AuthenticationException {
         return new InputListQueryCommand(this).execute().getResult();
-
     }
 
     public void dispose() {

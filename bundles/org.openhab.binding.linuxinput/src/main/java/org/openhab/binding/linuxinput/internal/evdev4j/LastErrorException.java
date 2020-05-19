@@ -17,9 +17,10 @@ import static org.openhab.binding.linuxinput.internal.evdev4j.Utils.constantFrom
 import java.text.MessageFormat;
 import java.util.Optional;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import jnr.constants.platform.linux.Errno;
 import jnr.posix.POSIX;
-import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Exception wrapping an operating system errno.

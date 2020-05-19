@@ -12,6 +12,13 @@
  */
 package org.openhab.binding.gpstracker.internal;
 
+import static org.openhab.binding.gpstracker.internal.GPSTrackerBindingConstants.CONFIG_PID;
+
+import java.net.URI;
+import java.util.*;
+
+import javax.servlet.ServletException;
+
 import org.eclipse.smarthome.config.core.ConfigOptionProvider;
 import org.eclipse.smarthome.config.core.ParameterOption;
 import org.eclipse.smarthome.core.i18n.LocationProvider;
@@ -36,18 +43,12 @@ import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.ServletException;
-import java.net.URI;
-import java.util.*;
-
-import static org.openhab.binding.gpstracker.internal.GPSTrackerBindingConstants.CONFIG_PID;
-
 /**
  * Main component
  *
  * @author Gabor Bicskei - Initial contribution
  */
-@Component(configurationPid = CONFIG_PID, service = {ThingHandlerFactory.class, ConfigOptionProvider.class})
+@Component(configurationPid = CONFIG_PID, service = { ThingHandlerFactory.class, ConfigOptionProvider.class })
 public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements TrackerRegistry, ConfigOptionProvider {
     /**
      * Config URI
@@ -127,7 +128,7 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
         if (GPSTrackerBindingConstants.THING_TYPE_TRACKER.equals(thingTypeUID)
                 && ConfigHelper.getTrackerId(thing.getConfiguration()) != null) {
             TrackerHandler trackerHandler = new TrackerHandler(thing, notificationBroker, regions,
-                    locationProvider != null ? locationProvider.getLocation(): null, unitProvider);
+                    locationProvider != null ? locationProvider.getLocation() : null, unitProvider);
             discoveryService.removeTracker(trackerHandler.getTrackerId());
             trackerHandlers.put(trackerHandler.getTrackerId(), trackerHandler);
             return trackerHandler;
@@ -189,7 +190,7 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
     public Collection<ParameterOption> getParameterOptions(URI uri, String param, Locale locale) {
         if (URI_STR.equals(uri.toString()) && ConfigHelper.CONFIG_REGION_NAME.equals(param)) {
             Set<ParameterOption> ret = new HashSet<>();
-            regions.forEach(r->ret.add(new ParameterOption(r, r)));
+            regions.forEach(r -> ret.add(new ParameterOption(r, r)));
             return ret;
         }
         return Collections.emptyList();

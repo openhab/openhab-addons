@@ -32,6 +32,6 @@ public class SomfyTahomaThermostatHandler extends SomfyTahomaBaseThingHandler {
         stateNames.put(BATTERY_LEVEL, BATTERY_LEVEL_STATE);
         stateNames.put(HEATING_MODE, "somfythermostat:HeatingModeState");
         stateNames.put(DEROGATION_HEATING_MODE, "somfythermostat:DerogationHeatingModeState");
-        stateNames.put(DEROGATION_ACTIVATION, "core:DerogationActivationState" );
+        stateNames.put(DEROGATION_ACTIVATION, "core:DerogationActivationState");
     }
 }

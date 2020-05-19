@@ -202,5 +202,4 @@ public class FrontierSiliconRadioConnection {
         isLoggedIn = false; // 3 tries failed. log in again next time, maybe our session went invalid (radio restarted?)
         return null;
     }
-
 }

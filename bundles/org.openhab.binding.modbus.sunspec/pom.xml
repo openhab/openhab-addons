@@ -1,30 +1,30 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.openhab.addons.bundles</groupId>
-        <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-        <version>2.5.5-SNAPSHOT</version>
-    </parent>
+  <parent>
+    <groupId>org.openhab.addons.bundles</groupId>
+    <artifactId>org.openhab.addons.reactor.bundles</artifactId>
+    <version>2.5.6-SNAPSHOT</version>
+  </parent>
 
-    <artifactId>org.openhab.binding.modbus.sunspec</artifactId>
+  <artifactId>org.openhab.binding.modbus.sunspec</artifactId>
 
-    <name>openHAB Add-ons :: Bundles :: SunSpec Bundle</name>
+  <name>openHAB Add-ons :: Bundles :: SunSpec Bundle</name>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.openhab.addons.bundles</groupId>
-            <artifactId>org.openhab.binding.modbus</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.openhab.addons.bundles</groupId>
-            <artifactId>org.openhab.io.transport.modbus</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.modbus</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.io.transport.modbus</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
 
 </project>

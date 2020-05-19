@@ -170,5 +170,4 @@ public class TellstickNetDevice implements Device {
         return "TellstickNetDevice [deviceId=" + deviceId + ", name=" + name + ", online=" + online + ", state=" + state
                 + ", statevalue=" + statevalue + ", updated=" + updated + "]";
     }
-
 }

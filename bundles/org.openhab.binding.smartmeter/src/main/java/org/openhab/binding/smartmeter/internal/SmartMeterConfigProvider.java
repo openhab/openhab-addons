@@ -77,5 +77,4 @@ public class SmartMeterConfigProvider implements ConfigOptionProvider {
         }
         return null;
     }
-
 }

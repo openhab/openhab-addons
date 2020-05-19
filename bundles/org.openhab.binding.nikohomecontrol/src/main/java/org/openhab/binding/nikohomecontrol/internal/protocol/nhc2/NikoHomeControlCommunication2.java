@@ -407,10 +407,12 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                 thermostats.put(device.uuid, nhcThermostat);
             }
         } else if ("centralmeter".equals(device.type)) {
-            logger.debug("Niko Home Control: adding centralmeter device {}, {}", device.uuid, device.name);
-            NhcEnergyMeter2 nhcEnergyMeter = new NhcEnergyMeter2(device.uuid, device.name, device.model,
-                    device.technology, this, scheduler);
-            energyMeters.put(device.uuid, nhcEnergyMeter);
+            if (!energyMeters.containsKey(device.uuid)) {
+                logger.debug("Niko Home Control: adding centralmeter device {}, {}", device.uuid, device.name);
+                NhcEnergyMeter2 nhcEnergyMeter = new NhcEnergyMeter2(device.uuid, device.name, device.model,
+                        device.technology, this, scheduler);
+                energyMeters.put(device.uuid, nhcEnergyMeter);
+            }
         } else {
             logger.debug("Niko Home Control: device type {} not supported for {}, {}", device.type, device.uuid,
                     device.name);
@@ -482,10 +484,8 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
     private void updateRollershutterState(NhcAction2 action, NhcDevice2 device) {
         Optional<NhcProperty> positionProperty = device.properties.stream().filter(p -> (p.position != null))
                 .findFirst();
-        Optional<NhcProperty> movingProperty = device.properties.stream().filter(p -> (p.moving != null)).findFirst();
 
-        if (!(movingProperty.isPresent() && Boolean.parseBoolean(movingProperty.get().moving))
-                && positionProperty.isPresent()) {
+        if (positionProperty.isPresent()) {
             action.setState(Integer.parseInt(positionProperty.get().position));
             logger.debug("Niko Home Control: setting action {} internally to {}", action.getId(),
                     positionProperty.get().position);
@@ -559,7 +559,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                 .ifPresent(electricalPower -> {
                     try {
                         energyMeter.setPower(Integer.parseInt(electricalPower));
-                        logger.debug("Niko Home Control: setting energy meter {} power to {}", energyMeter.getId(),
+                        logger.trace("Niko Home Control: setting energy meter {} power to {}", energyMeter.getId(),
                                 electricalPower);
                     } catch (NumberFormatException e) {
                         energyMeter.setPower(null);
@@ -567,7 +567,6 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                                 energyMeter.getId());
                     }
                 });
-
     }
 
     @Override
@@ -775,7 +774,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             logger.debug("Niko Home Control: received topic {}, payload {}", topic, message);
             notificationEvt(message);
         } else if ((profile + "/control/devices/evt").equals(topic)) {
-            logger.debug("Niko Home Control: received topic {}, payload {}", topic, message);
+            logger.trace("Niko Home Control: received topic {}, payload {}", topic, message);
             devicesEvt(message);
         } else if ((profile + "/control/devices/rsp").equals(topic)) {
             logger.debug("Niko Home Control: received topic {}, payload {}", topic, message);

@@ -6,10 +6,13 @@
 
 	<thing-type id="basic">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Basic Xiaomi MiHome Device</label>
-		<description>This device is not supported by the binding but you can still add it to your OpenHAB configuration. All messages from the device are available as channels providing values to String Items. Please open an issue on the openhab-addons2 github page to get this device added to the binding in the future. Meanwhile you can parse the messages with rules and/or JSONPATH transformations.</description>
+		<description>This device is not supported by the binding but you can still add it to your OpenHAB configuration. All
+			messages from the device are available as channels providing values to String Items. Please open an issue on the
+			openhab-addons2 github page to get this device added to the binding in the future. Meanwhile you can parse the
+			messages with rules and/or JSONPATH transformations.</description>
 		<channels>
 			<channel id="reportMessage" typeId="rawMessage">
 				<label>Last Report Message</label>
@@ -36,6 +39,6 @@
 				<description>Channel to write command parameters - Example: \"join_permission\":\"yes\"</description>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:mihome:device" />
+		<config-description-ref uri="thing-type:mihome:device"/>
 	</thing-type>
 </thing:thing-descriptions>

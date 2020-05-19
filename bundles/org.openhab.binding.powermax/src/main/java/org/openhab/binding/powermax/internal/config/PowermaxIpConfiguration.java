@@ -29,5 +29,4 @@ public class PowermaxIpConfiguration {
     public Boolean forceStandardMode;
     public String panelType;
     public Boolean autoSyncTime;
-
 }

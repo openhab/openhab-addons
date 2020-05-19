@@ -280,5 +280,4 @@ public abstract class VeluxBridge {
      */
     protected abstract boolean bridgeDirectCommunicate(BridgeCommunicationProtocol communication,
             boolean useAuthentication);
-
 }
