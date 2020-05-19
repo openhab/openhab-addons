@@ -13,4 +13,29 @@
 
   <name>openHAB Add-ons :: Bundles :: RootedToon Binding</name>
 
+	<build>
+	    <plugins>
+	      <plugin>
+	        <groupId>org.commonjava.maven.plugins</groupId>
+	        <artifactId>directory-maven-plugin</artifactId>
+	        <version>0.3.1</version>
+	        <executions>
+	          <execution>
+	            <id>directories</id>
+	            <phase>none</phase>
+	            <goals>
+	              <goal>directory-of</goal>
+	            </goals>
+	            <configuration>
+	              <property>basedirRoot</property>
+	              <project>
+	                <groupId>org.openhab.addons</groupId>
+	                <artifactId>org.openhab.addons.reactor</artifactId>
+	              </project>
+	            </configuration>
+	          </execution>
+	        </executions>
+	      </plugin>
+	   </plugins>
+	</build>
 </project>
