@@ -35,6 +35,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
@@ -74,6 +75,12 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
         initializeThing((bridge == null) ? null : bridge.getStatus());
     }
 
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        logger.debug("bridgeStatusChanged {}", bridgeStatusInfo);
+        initializeThing(bridgeStatusInfo.getStatus());
+    }
+
     private void initializeThing(@Nullable ThingStatus bridgeStatus) {
         logger.debug("initializeThing thing {} bridge status {}", getThing().getUID(), bridgeStatus);
         final String configSensorId = (String) getConfig().get(SENSOR_ID);
@@ -89,7 +96,7 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,

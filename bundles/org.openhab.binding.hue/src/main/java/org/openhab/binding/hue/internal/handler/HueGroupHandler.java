@@ -29,6 +29,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
@@ -74,6 +75,12 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
         initializeThing((bridge == null) ? null : bridge.getStatus());
     }
 
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        logger.debug("bridgeStatusChanged {}", bridgeStatusInfo);
+        initializeThing(bridgeStatusInfo.getStatus());
+    }
+
     private void initializeThing(@Nullable ThingStatus bridgeStatus) {
         logger.debug("initializeThing thing {} bridge status {}", getThing().getUID(), bridgeStatus);
         final String configGroupId = (String) getConfig().get(GROUP_ID);
@@ -92,7 +99,7 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
