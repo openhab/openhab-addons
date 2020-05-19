@@ -89,7 +89,7 @@ public class BRC1HUartProcessor {
 
             for (byte[] msg : uartMessages) {
                 if (msg.length > 1) {
-                    bos.write(msg, 1, msg.length);
+                    bos.write(msg, 1, msg.length - 1);
                 }
             }
 
