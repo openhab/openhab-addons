@@ -185,24 +185,25 @@ public class HomekitCharacteristicFactory {
     }
 
     @SuppressWarnings("null")
+    private static int getIntFromItem(final HomekitTaggedItem item) {
+        int value = 0;
+        final State state = item.getItem().getState();
+        if (state instanceof PercentType) {
+            value = state.as(PercentType.class).intValue();
+        } else if (state instanceof DecimalType) {
+            value = state.as(DecimalType.class).intValue();
+        } else if (state instanceof UnDefType) {
+            logger.debug("Item state {} is UNDEF {}.", state, item.getName());
+        } else {
+            logger.warn(
+                    "Item state {} is not supported for {}. Only PercentType and DecimalType (0/100) are supported.",
+                    state, item.getName());
+        }
+        return value;
+    }
+
     private static Supplier<CompletableFuture<Integer>> getIntSupplier(final HomekitTaggedItem item) {
-        return () -> {
-            int value = 0;
-            final State state = item.getItem().getState();
-            if (state instanceof PercentType) {
-                value = state.as(PercentType.class).intValue();
-            } else if (state instanceof DecimalType) {
-                value = state.as(DecimalType.class).intValue();
-            } else if (state instanceof UnDefType) {
-                logger.debug("Item state {} is UNDEF {}.", state, item.getName());
-            } else {
-                logger.warn(
-                        "Item state {} is not supported for {}. Only PercentType and DecimalType (0/100) are supported.",
-                        state, item.getName());
-            }
-            logger.trace(" Get Int for {} value {}", item.getName(), value);
-            return CompletableFuture.completedFuture(value);
-        };
+        return () -> CompletableFuture.completedFuture(getIntFromItem(item));
     }
 
     private static ExceptionalConsumer<Integer> setIntConsumer(final HomekitTaggedItem item) {
@@ -223,12 +224,12 @@ public class HomekitCharacteristicFactory {
         };
     }
 
-    private static Consumer<HomekitCharacteristicChangeCallback> getSubscriber(final HomekitTaggedItem item,
+    protected static Consumer<HomekitCharacteristicChangeCallback> getSubscriber(final HomekitTaggedItem item,
             final HomekitCharacteristicType key, final HomekitAccessoryUpdater updater) {
         return (callback) -> updater.subscribe((GenericItem) item.getItem(), key.getTag(), callback);
     }
 
-    private static Runnable getUnsubscriber(final HomekitTaggedItem item, final HomekitCharacteristicType key,
+    protected static Runnable getUnsubscriber(final HomekitTaggedItem item, final HomekitCharacteristicType key,
             final HomekitAccessoryUpdater updater) {
         return () -> updater.unsubscribe((GenericItem) item.getItem(), key.getTag());
     }
@@ -490,26 +491,13 @@ public class HomekitCharacteristicFactory {
     private static SetDurationCharacteristic createDurationCharacteristic(final HomekitTaggedItem item,
             HomekitAccessoryUpdater updater) {
         return new SetDurationCharacteristic(() -> {
-            int value = 0;
-            final State state = item.getItem().getState();
-            if (state instanceof PercentType) {
-                value = state.as(PercentType.class).intValue();
-            } else if (state instanceof DecimalType) {
-                value = state.as(DecimalType.class).intValue();
-            } else if (state instanceof UnDefType) {
-                logger.debug("Item state {} is UNDEF {}.", state, item.getName());
-            } else {
-                logger.warn(
-                        "Item state {} is not supported for {}. Only PercentType and DecimalType (0/100) are supported.",
-                        state, item.getName());
-            }
+            int value = getIntFromItem(item);
             if (value == 0) { // check for default duration
                 final Object duration = item.getConfiguration().get(HomekitValveImpl.CONFIG_DEFAULT_DURATION);
                 if ((duration != null) && (duration instanceof BigDecimal)) {
                     value = ((BigDecimal) duration).intValue();
                 }
             }
-            logger.trace(" Get Int for {} value {}", item.getName(), value);
             return CompletableFuture.completedFuture(value);
         }, setIntConsumer(item), getSubscriber(item, DURATION, updater), getUnsubscriber(item, DURATION, updater));
     }

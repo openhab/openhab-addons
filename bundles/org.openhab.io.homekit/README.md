@@ -381,7 +381,9 @@ String security_target_state 				"Security Target State" 				(gSecuritySystem) 	
 ## Usage of valve timer
 
 The HomeKit valve accessory supports following 2 optional characteristics:
+
 - duration: this describes how long the valve should set "InUse" once it is activated. The duration changes will apply to the next operation. If valve is already active then duration changes have no effect.
+
 - remaining duration: this describes the remaining duration on the valve. Notifications on this characteristic must only
                       be used if the remaining duration increases/decreases from the accessoryʼs usual countdown of remaining duration.
 

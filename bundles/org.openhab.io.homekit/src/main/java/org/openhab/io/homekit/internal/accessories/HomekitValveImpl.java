@@ -77,27 +77,27 @@ public class HomekitValveImpl extends AbstractHomekitAccessoryImpl implements Va
                 OnOffType.ON, OpenClosedType.OPEN);
         this.activeReader = new BooleanItemReader(getItem(HomekitCharacteristicType.ACTIVE_STATUS, GenericItem.class),
                 OnOffType.ON, OpenClosedType.OPEN);
-        getServices().add(new ValveService(this));
+        ValveService service = new ValveService(this);
+        getServices().add(service);
         final String timerConfig = getAccessoryConfiguration(CONFIG_TIMER, "");
         homekitTimer = timerConfig.equalsIgnoreCase("yes") || timerConfig.equalsIgnoreCase("true");
         if (homekitTimer) {
-            addRemainingDurationCharacteristic(taggedItem, updater);
+            addRemainingDurationCharacteristic(taggedItem, updater, service);
         }
     }
 
-    private void addRemainingDurationCharacteristic(HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
+    private void addRemainingDurationCharacteristic(HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater,
+            ValveService service) {
         logger.trace("addRemainingDurationCharacteristic for {}", taggedItem);
-        ((ValveService) getPrimaryService()).addOptionalCharacteristic(new RemainingDurationCharacteristic(() -> {
+        service.addOptionalCharacteristic(new RemainingDurationCharacteristic(() -> {
             int remainingTime = 0;
             ScheduledFuture<?> future = valveTimer;
             if (future != null && !future.isDone()) {
-                remainingTime = java.lang.Math.toIntExact(future.getDelay(TimeUnit.SECONDS));
+                remainingTime = Math.toIntExact(future.getDelay(TimeUnit.SECONDS));
             }
             return CompletableFuture.completedFuture(remainingTime);
-        }, (callback) -> updater.subscribe((GenericItem) taggedItem.getItem(), REMAINING_DURATION.getTag(), callback),
-                () -> updater.unsubscribe((GenericItem) taggedItem.getItem(), REMAINING_DURATION.getTag())
-
-        ));
+        }, HomekitCharacteristicFactory.getSubscriber(taggedItem, REMAINING_DURATION, updater),
+                HomekitCharacteristicFactory.getUnsubscriber(taggedItem, REMAINING_DURATION, updater)));
     }
 
     /**
@@ -119,19 +119,13 @@ public class HomekitValveImpl extends AbstractHomekitAccessoryImpl implements Va
         int duration = getDuration();
         logger.trace("start timer for duration {}", duration);
         if (duration > 0) {
-            ScheduledFuture<?> future = valveTimer;
-            if (future != null && !future.isDone()) {
-                future.cancel(true);
-            }
+            stopTimer();
             valveTimer = timerService.schedule(() -> {
                 logger.trace("valve timer is over. switching off the valve");
                 switchOffValve();
                 // let home app refresh the remaining duration, which is 0
                 ((GenericItem) getRootAccessory().getItem()).send(RefreshType.REFRESH);
             }, duration, TimeUnit.SECONDS);
-
-            // let home app refresh the remaining duration, which is 0
-            ((GenericItem) getRootAccessory().getItem()).send(RefreshType.REFRESH);
             logger.trace("started valve timer for {} seconds.", duration);
         } else {
             logger.debug("valve timer not started as duration = 0");
@@ -143,8 +137,6 @@ public class HomekitValveImpl extends AbstractHomekitAccessoryImpl implements Va
         if (future != null && !future.isDone()) {
             future.cancel(true);
         }
-        // let home app refresh the remaining duration, which is 0
-        ((GenericItem) getRootAccessory().getItem()).send(RefreshType.REFRESH);
     }
 
     @Override
@@ -165,13 +157,14 @@ public class HomekitValveImpl extends AbstractHomekitAccessoryImpl implements Va
                 } else {
                     stopTimer();
                 }
+                // let home app refresh the remaining duration
+                ((GenericItem) getRootAccessory().getItem()).send(RefreshType.REFRESH);
             }
         }
         return CompletableFuture.completedFuture(null);
     }
 
     private void switchOffValve() {
-        logger.trace("switch off valve");
         SwitchItem item = getItem(HomekitCharacteristicType.ACTIVE_STATUS, SwitchItem.class);
         if (item != null) {
             item.send(OnOffType.OFF);
