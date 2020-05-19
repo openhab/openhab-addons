@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.library.unit.MetricPrefix;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -44,6 +45,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Paul Smedley - Initial contribution
+ * @author Dan Cunningham - Minor improvements to vehicle state and invert option
  */
 @NonNullByDefault
 public class OpenGarageHandler extends BaseThingHandler {
@@ -64,15 +66,16 @@ public class OpenGarageHandler extends BaseThingHandler {
         try {
             logger.debug("Received command {} for thing '{}' on channel {}", command, thing.getUID().getAsString(),
                     channelUID.getId());
+            boolean invert = isChannelInverted(channelUID.getId());
             switch (channelUID.getId()) {
                 case OpenGarageBindingConstants.CHANNEL_OG_STATUS:
                 case OpenGarageBindingConstants.CHANNEL_OG_STATUS_SWITCH:
                 case OpenGarageBindingConstants.CHANNEL_OG_STATUS_ROLLERSHUTTER:
                     if (command.equals(OnOffType.ON) || command.equals(UpDownType.UP)) {
-                        changeStatus(OpenGarageCommand.OPEN);
+                        changeStatus(invert ? OpenGarageCommand.CLOSE : OpenGarageCommand.OPEN);
                         return;
                     } else if (command.equals(OnOffType.OFF) || command.equals(UpDownType.DOWN)) {
-                        changeStatus(OpenGarageCommand.CLOSE);
+                        changeStatus(invert ? OpenGarageCommand.OPEN : OpenGarageCommand.CLOSE);
                         return;
                     } else if (command.equals(StopMoveType.STOP) || command.equals(StopMoveType.MOVE)) {
                         changeStatus(OpenGarageCommand.CLICK);
@@ -141,16 +144,19 @@ public class OpenGarageHandler extends BaseThingHandler {
         if (controllerVariables != null) {
             updateState(OpenGarageBindingConstants.CHANNEL_OG_DISTANCE,
                     new QuantityType<>(controllerVariables.dist, MetricPrefix.CENTI(SIUnits.METRE)));
+            boolean invert = isChannelInverted(OpenGarageBindingConstants.CHANNEL_OG_STATUS_SWITCH);
             switch (controllerVariables.door) {
                 case 0:
-                    updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS, OnOffType.OFF);
-                    updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_SWITCH, OnOffType.OFF);
+                    updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS, invert ? OnOffType.ON : OnOffType.OFF);
+                    updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_SWITCH,
+                            invert ? OnOffType.ON : OnOffType.OFF);
                     updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_ROLLERSHUTTER, UpDownType.DOWN);
                     updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_CONTACT, OpenClosedType.CLOSED);
                     break;
                 case 1:
-                    updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS, OnOffType.ON);
-                    updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_SWITCH, OnOffType.ON);
+                    updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS, invert ? OnOffType.OFF : OnOffType.ON);
+                    updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_SWITCH,
+                            invert ? OnOffType.OFF : OnOffType.ON);
                     updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_ROLLERSHUTTER, UpDownType.UP);
                     updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_CONTACT, OpenClosedType.OPEN);
                     break;
@@ -178,5 +184,10 @@ public class OpenGarageHandler extends BaseThingHandler {
 
     private void changeStatus(OpenGarageCommand status) throws OpenGarageCommunicationException {
         webTargets.setControllerVariables(status);
+    }
+
+    private boolean isChannelInverted(String channelUID) {
+        Channel channel = getThing().getChannel(channelUID);
+        return channel != null && channel.getConfiguration().as(OpenGarageChannelConfiguration.class).invert;
     }
 }
