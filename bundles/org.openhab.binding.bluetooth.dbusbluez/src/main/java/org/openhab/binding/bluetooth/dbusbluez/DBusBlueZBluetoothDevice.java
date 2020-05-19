@@ -12,30 +12,24 @@
  */
 package org.openhab.binding.bluetooth.dbusbluez;
 
-import java.time.ZonedDateTime;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.freedesktop.dbus.errors.NoReply;
 import org.freedesktop.dbus.exceptions.DBusExecutionException;
+import org.openhab.binding.bluetooth.BaseBluetoothDevice;
 import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.BluetoothCharacteristic;
 import org.openhab.binding.bluetooth.BluetoothCompletionStatus;
 import org.openhab.binding.bluetooth.BluetoothDescriptor;
-import org.openhab.binding.bluetooth.BluetoothDevice;
-import org.openhab.binding.bluetooth.BluetoothDeviceListener;
 import org.openhab.binding.bluetooth.BluetoothService;
 import org.openhab.binding.bluetooth.dbusbluez.handler.DBusBlueZBridgeHandler;
 import org.openhab.binding.bluetooth.dbusbluez.handler.DBusBlueZEvent;
@@ -64,7 +58,7 @@ import com.github.hypfvieh.bluetooth.wrapper.BluetoothGattService;
  *
  */
 @NonNullByDefault
-public class DBusBlueZBluetoothDevice extends BluetoothDevice implements DBusBlueZEventListener {
+public class DBusBlueZBluetoothDevice extends BaseBluetoothDevice implements DBusBlueZEventListener {
 
     private final Logger logger = LoggerFactory.getLogger(DBusBlueZBluetoothDevice.class);
 
@@ -73,19 +67,7 @@ public class DBusBlueZBluetoothDevice extends BluetoothDevice implements DBusBlu
 
     private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("bluetooth");
 
-    private short txPower;
-
-    private short rssi;
-
-    private ConnectionState connectionState;
-
-    private @Nullable String name;
-
-    private ZonedDateTime lastSeenTime;
-
     protected final Map<UUID, BluetoothService> supportedServices = new HashMap<>();
-
-    private final List<BluetoothDeviceListener> eventListeners = new CopyOnWriteArrayList<>();
 
     /**
      * Constructor
@@ -97,9 +79,6 @@ public class DBusBlueZBluetoothDevice extends BluetoothDevice implements DBusBlu
     public DBusBlueZBluetoothDevice(DBusBlueZBridgeHandler adapter, BluetoothAddress address) {
         super(adapter, address);
         logger.debug("Creating DBusBlueZ device with address '{}'", address);
-        this.connectionState = ConnectionState.DISCONNECTED;
-
-        this.lastSeenTime = ZonedDateTime.now(); // To be fixed - it may have NEVER been seen
     }
 
     @Override
@@ -327,7 +306,7 @@ public class DBusBlueZBluetoothDevice extends BluetoothDevice implements DBusBlu
     }
 
     private void onTxPowerUpdate(TXPowerEvent event) {
-        this.txPower = event.getTxPower();
+        this.txPower = (int) event.getTxPower();
     }
 
     private void onCharacteristicNotify(CharacteristicUpdateEvent event) {
@@ -347,7 +326,7 @@ public class DBusBlueZBluetoothDevice extends BluetoothDevice implements DBusBlu
     }
 
     private void onRssiUpdate(RssiEvent event) {
-        this.rssi = event.getRssi();
+        this.rssi = (int) event.getRssi();
         BluetoothScanNotification notification = new BluetoothScanNotification();
         notification.setRssi(this.rssi);
         notifyListeners(BluetoothEventType.SCAN_RECORD, notification);
@@ -421,51 +400,6 @@ public class DBusBlueZBluetoothDevice extends BluetoothDevice implements DBusBlu
     }
 
     @Override
-    public ZonedDateTime getLastSeenTime() {
-        return this.lastSeenTime;
-    }
-
-    @Override
-    public void updateLastSeenTime() {
-        this.lastSeenTime = ZonedDateTime.now();
-    }
-
-    @Override
-    public @Nullable String getName() {
-        return this.name;
-    }
-
-    @Override
-    public @Nullable BluetoothService getServices(UUID uuid) {
-        return supportedServices.get(uuid);
-    }
-
-    @Override
-    public Collection<BluetoothService> getServices() {
-        return supportedServices.values();
-    }
-
-    @Override
-    public @Nullable Integer getTxPower() {
-        return (int) this.txPower;
-    }
-
-    @Override
-    public @Nullable Integer getRssi() {
-        return (int) this.rssi;
-    }
-
-    @Override
-    public boolean supportsService(UUID uuid) {
-        return supportedServices.containsKey(uuid);
-    }
-
-    @Override
-    public ConnectionState getConnectionState() {
-        return this.connectionState;
-    }
-
-    @Override
     public boolean readCharacteristic(BluetoothCharacteristic characteristic) {
         BluetoothGattCharacteristic c = getDBusBlueZCharacteristicByUUID(characteristic.getUuid().toString());
         if (c == null) {
@@ -512,66 +446,6 @@ public class DBusBlueZBluetoothDevice extends BluetoothDevice implements DBusBlu
     }
 
     @Override
-    protected boolean addService(BluetoothService service) {
-        if (supportedServices.containsKey(service.getUuid())) {
-            return false;
-        }
-        logger.trace("Adding new service to device {}: {}", address, service);
-        supportedServices.put(service.getUuid(), service);
-        return true;
-    }
-
-    @Override
-    public void addListener(BluetoothDeviceListener listener) {
-        eventListeners.add(listener);
-    }
-
-    @Override
-    public void removeListener(BluetoothDeviceListener listener) {
-        eventListeners.remove(listener);
-    }
-
-    @Override
-    public boolean hasListeners() {
-        return !eventListeners.isEmpty();
-    }
-
-    @Override
-    protected void notifyListeners(BluetoothEventType event, Object @NonNull... args) {
-        for (BluetoothDeviceListener listener : eventListeners) {
-            try {
-                switch (event) {
-                    case SCAN_RECORD:
-                        listener.onScanRecordReceived((BluetoothScanNotification) args[0]);
-                        break;
-                    case CONNECTION_STATE:
-                        listener.onConnectionStateChange((BluetoothConnectionStatusNotification) args[0]);
-                        break;
-                    case SERVICES_DISCOVERED:
-                        listener.onServicesDiscovered();
-                        break;
-                    case CHARACTERISTIC_READ_COMPLETE:
-                        listener.onCharacteristicReadComplete((BluetoothCharacteristic) args[0],
-                                (BluetoothCompletionStatus) args[1]);
-                        break;
-                    case CHARACTERISTIC_WRITE_COMPLETE:
-                        listener.onCharacteristicWriteComplete((BluetoothCharacteristic) args[0],
-                                (BluetoothCompletionStatus) args[1]);
-                        break;
-                    case CHARACTERISTIC_UPDATED:
-                        listener.onCharacteristicUpdate((BluetoothCharacteristic) args[0]);
-                        break;
-                    case DESCRIPTOR_UPDATED:
-                        listener.onDescriptorUpdate((BluetoothDescriptor) args[0]);
-                        break;
-                }
-            } catch (Exception e) {
-                logger.error("Failed to inform listener '{}': {}", listener, e.getMessage(), e);
-            }
-        }
-    }
-
-    @Override
     public boolean enableNotifications(BluetoothDescriptor descriptor) {
         // TODO Auto-generated method stub
         return false;
@@ -581,12 +455,6 @@ public class DBusBlueZBluetoothDevice extends BluetoothDevice implements DBusBlu
     public boolean disableNotifications(BluetoothDescriptor descriptor) {
         // TODO Auto-generated method stub
         return false;
-    }
-
-    @Override
-    public @Nullable Integer getManufacturerId() {
-        // TODO Auto-generated method stub
-        return null;
     }
 
 }

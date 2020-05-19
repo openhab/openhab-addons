@@ -74,6 +74,8 @@ public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusB
 
     @Override
     public void initialize() {
+        logger.debug("Initializing DBus BlueZ binding. Build 1.");
+
         super.initialize();
         initializeInternal();
     }
@@ -306,6 +308,7 @@ public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusB
 
     @Override
     protected DBusBlueZBluetoothDevice createDevice(BluetoothAddress address) {
+        logger.debug("createDevice {}", address);
         DBusBlueZBluetoothDevice device = new DBusBlueZBluetoothDevice(this, address);
         this.propertiesChangedHandler.addListener(device);
         return device;
