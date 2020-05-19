@@ -25,6 +25,7 @@ import org.freedesktop.dbus.interfaces.Properties.PropertiesChanged;
 import org.freedesktop.dbus.types.UInt16;
 import org.freedesktop.dbus.types.Variant;
 import org.openhab.binding.bluetooth.BluetoothAddress;
+import org.openhab.binding.bluetooth.dbusbluez.handler.events.AdapterPoweredChangedEvent;
 import org.openhab.binding.bluetooth.dbusbluez.handler.events.CharacteristicUpdateEvent;
 import org.openhab.binding.bluetooth.dbusbluez.handler.events.ConnectedEvent;
 import org.openhab.binding.bluetooth.dbusbluez.handler.events.ManufacturerDataEvent;
@@ -97,7 +98,8 @@ public class DBusBlueZPropertiesChangedHandler extends AbstractPropertiesChanged
             }
 
             if (properties.getPropertiesChanged().containsKey("Powered")) {
-                // TODO
+                onPoweredUpdate(properties.getPath(),
+                        (boolean) properties.getPropertiesChanged().get("Powered").getValue());
             }
 
             if (properties.getPropertiesChanged().containsKey("Discovering")) {
@@ -116,6 +118,13 @@ public class DBusBlueZPropertiesChangedHandler extends AbstractPropertiesChanged
             logger.error("Error occured in DBus Handler", e);
         }
 
+    }
+
+    private void onPoweredUpdate(String dbusPath, boolean powered) {
+        String adapter = DBusBlueZUtils.dbusPathToAdapterName(dbusPath);
+        if (adapter != null) {
+            notifyListeners(new AdapterPoweredChangedEvent(adapter, powered));
+        }
     }
 
     private void onServicesResolved(String dbusPath, boolean resolved) {

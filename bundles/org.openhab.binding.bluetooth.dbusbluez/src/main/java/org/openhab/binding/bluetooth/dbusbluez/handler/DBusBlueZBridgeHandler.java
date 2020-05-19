@@ -26,6 +26,7 @@ import org.freedesktop.dbus.exceptions.DBusException;
 import org.openhab.binding.bluetooth.AbstractBluetoothBridgeHandler;
 import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.dbusbluez.DBusBlueZBluetoothDevice;
+import org.openhab.binding.bluetooth.dbusbluez.handler.events.AdapterPoweredChangedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +43,8 @@ import com.github.hypfvieh.bluetooth.wrapper.BluetoothDevice;
  * @author Benjamin Lafois - Initial contribution and API
  */
 @NonNullByDefault
-public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusBlueZBluetoothDevice> {
+public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusBlueZBluetoothDevice>
+        implements DBusBlueZEventListener {
 
     private final Logger logger = LoggerFactory.getLogger(DBusBlueZBridgeHandler.class);
 
@@ -84,6 +86,8 @@ public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusB
      */
     private boolean initializeDeviceManager() {
         logger.debug("Initializing Device Manager");
+
+        propertiesChangedHandler.addListener(this);
 
         try {
             initializeDeviceManagerInternal();
@@ -136,7 +140,7 @@ public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusB
      *
      * @return
      */
-    private boolean initializeAdapter() {
+    private boolean initializeAdapterInternal() {
 
         List<BluetoothAdapter> adapters = this.deviceManager.getAdapters();
 
@@ -150,17 +154,17 @@ public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusB
                 // Found the good adapter
                 this.adapter = btAdapter;
 
-                logger.debug("Turning off adapter...");
-                // Power cycle OFF / ON for a clean start
-                this.adapter.setPowered(false);
-                logger.debug("Adapter state: {}", this.adapter.isPowered());
-
-                // Only restart the adapter 1 second at least after stopping it. stop/start too quick will not work.
-                scheduler.schedule(() -> {
-                    logger.debug("Turning on adapter...");
-                    this.adapter.setPowered(true);
-                    logger.debug("Adapter DBUS path: {}", this.adapter.getDbusPath());
-                }, 1, TimeUnit.SECONDS);
+                // logger.debug("Turning off adapter...");
+                // // Power cycle OFF / ON for a clean start
+                // this.adapter.setPowered(false);
+                // logger.debug("Adapter state: {}", this.adapter.isPowered());
+                //
+                // // Only restart the adapter 1 second at least after stopping it. stop/start too quick will not work.
+                // scheduler.schedule(() -> {
+                // logger.debug("Turning on adapter...");
+                // this.adapter.setPowered(true);
+                // logger.debug("Adapter DBUS path: {}", this.adapter.getDbusPath());
+                // }, 1, TimeUnit.SECONDS);
 
                 return true;
             }
@@ -190,11 +194,18 @@ public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusB
             return;
         }
 
-        if (!initializeAdapter()) {
+        initializeAdapter();
+    }
+
+    private void initializeAdapter() {
+        if (!initializeAdapterInternal()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                     "Bluetooth adapter could not be found.");
             // Re-schedule adapter discovery in case it gets connected later
-            this.adapterDiscoveryJob = scheduler.scheduleAtFixedRate(this::initializeInternal, 5, 5, TimeUnit.MINUTES);
+            // TODO: not sure about this
+            // this.adapterDiscoveryJob =
+            // scheduler.scheduleAtFixedRate(this::initializeInternal, 5, 5,
+            // TimeUnit.MINUTES);
             return;
         }
 
@@ -298,6 +309,47 @@ public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusB
         DBusBlueZBluetoothDevice device = new DBusBlueZBluetoothDevice(this, address);
         this.propertiesChangedHandler.addListener(device);
         return device;
+    }
+
+    @Override
+    public void onDBusBlueZEvent(DBusBlueZEvent event) {
+        // logger.debug("onDBusBlueZEvent(): {}", event);
+
+        switch (event.getEventType()) {
+            case ADAPTER_POWERED_CHANGED:
+                onPoweredChange((AdapterPoweredChangedEvent) event);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void onPoweredChange(AdapterPoweredChangedEvent event) {
+        String adapterName = event.getAdapter();
+        if (adapterName == null) {
+            // We cannot be sure that this event concerns this adapter.. So ignore message
+            return;
+        }
+
+        logger.debug("AdapterPoweredChangedEvent. Adapter={}. AdapterBridge={}", event.getAdapter(),
+                this.adapter.getName());
+        if (adapterName.equals(this.adapter.getName())) {
+            // does not concern this adapter
+            return;
+        }
+
+        if (event.isPowered()) {
+            // Adapter has been turned on (externally)
+            initializeAdapter();
+        } else {
+            // Adapter has been turned off (externally)
+            // Disable discovery job
+            if (this.discoveryJob != null) {
+                this.discoveryJob.cancel(true);
+                this.discoveryJob = null;
+            }
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "adapter turned off");
+        }
     }
 
 }

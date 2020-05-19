@@ -41,7 +41,7 @@ public class DBusBlueZUtils {
 
     /**
      * Returns BluetoothAddress object from a DBus path
-     * 
+     *
      * @param dbusPath
      * @return
      */
@@ -53,6 +53,17 @@ public class DBusBlueZUtils {
         } else {
             String s = m.group(2).replace("_", ":");
             return new BluetoothAddress(s);
+        }
+    }
+
+    public static @Nullable String dbusPathToAdapterName(String dbusPath) {
+        Pattern p = Pattern.compile("/org/bluez/([^/]+)");
+        Matcher m = p.matcher(dbusPath);
+        if (!m.matches()) {
+            return null;
+        } else {
+            String s = m.group(1);
+            return s;
         }
     }
 

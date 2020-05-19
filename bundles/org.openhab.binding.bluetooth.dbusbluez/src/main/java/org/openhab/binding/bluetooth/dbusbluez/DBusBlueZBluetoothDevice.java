@@ -29,6 +29,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.freedesktop.dbus.errors.NoReply;
+import org.freedesktop.dbus.exceptions.DBusExecutionException;
 import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.BluetoothCharacteristic;
 import org.openhab.binding.bluetooth.BluetoothCompletionStatus;
@@ -97,6 +98,7 @@ public class DBusBlueZBluetoothDevice extends BluetoothDevice implements DBusBlu
         super(adapter, address);
         logger.debug("Creating DBusBlueZ device with address '{}'", address);
         this.connectionState = ConnectionState.DISCONNECTED;
+
         this.lastSeenTime = ZonedDateTime.now(); // To be fixed - it may have NEVER been seen
     }
 
@@ -107,7 +109,6 @@ public class DBusBlueZBluetoothDevice extends BluetoothDevice implements DBusBlu
         com.github.hypfvieh.bluetooth.wrapper.BluetoothDevice dev = device;
         if (dev != null) {
             if (Boolean.FALSE.equals(dev.isConnected())) {
-
                 try {
                     boolean ret = dev.connect();
                     logger.debug("Connect result: {}", ret);
@@ -123,7 +124,9 @@ public class DBusBlueZBluetoothDevice extends BluetoothDevice implements DBusBlu
                     } else {
                         return true;
                     }
-
+                } catch (DBusExecutionException e) {
+                    // Catch "software caused connection abort"
+                    return false;
                 } catch (Exception e) {
                     logger.error("error occured while trying to connect", e);
                 }

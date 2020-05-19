@@ -13,6 +13,7 @@
 package org.openhab.binding.bluetooth.dbusbluez.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.BluetoothAddress;
 
 /**
@@ -31,22 +32,34 @@ public class DBusBlueZEvent {
         TXPOWER,
         NAME,
         SERVICES_RESOLVED,
+        ADAPTER_POWERED_CHANGED
     }
 
     private EventType eventType;
-    private BluetoothAddress device;
+
+    private @Nullable BluetoothAddress device;
+    private @Nullable String adapter;
 
     public DBusBlueZEvent(EventType eventType, BluetoothAddress device) {
         this.eventType = eventType;
         this.device = device;
     }
 
+    public DBusBlueZEvent(EventType eventType, String adapter) {
+        this.eventType = eventType;
+        this.adapter = adapter;
+    }
+
     public EventType getEventType() {
         return eventType;
     }
 
-    public BluetoothAddress getDevice() {
+    public @Nullable BluetoothAddress getDevice() {
         return device;
+    }
+
+    public @Nullable String getAdapter() {
+        return adapter;
     }
 
     @Override
