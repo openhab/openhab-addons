@@ -201,7 +201,7 @@ public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusB
         // Beyond this point, lib is initialized and adapter was found.
         updateStatus(ThingStatus.ONLINE);
 
-        this.discoveryJob = scheduler.scheduleAtFixedRate(this::refreshDevices, 10, 10, TimeUnit.SECONDS);
+        this.discoveryJob = scheduler.scheduleAtFixedRate(this::refreshDevices, 30, 30, TimeUnit.SECONDS);
     }
 
     /**
@@ -287,6 +287,8 @@ public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusB
                 lockDiscoveryJob.unlock();
             }
 
+        } else {
+            logger.debug("Lock is already taken. Cannot refresh.");
         }
 
     }
