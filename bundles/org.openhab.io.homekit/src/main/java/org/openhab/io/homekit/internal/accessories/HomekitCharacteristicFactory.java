@@ -496,6 +496,9 @@ public class HomekitCharacteristicFactory {
                 final Object duration = item.getConfiguration().get(HomekitValveImpl.CONFIG_DEFAULT_DURATION);
                 if ((duration != null) && (duration instanceof BigDecimal)) {
                     value = ((BigDecimal) duration).intValue();
+                    if (item.getItem() instanceof NumberItem) {
+                        ((NumberItem) item.getItem()).setState(new DecimalType(value));
+                    }
                 }
             }
             return CompletableFuture.completedFuture(value);
