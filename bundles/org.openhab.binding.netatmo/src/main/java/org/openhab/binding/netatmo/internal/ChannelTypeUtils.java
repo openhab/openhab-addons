@@ -96,6 +96,10 @@ public class ChannelTypeUtils {
         return value != null ? (value == 1 ? OnOffType.ON : OnOffType.OFF) : UnDefType.NULL;
     }
 
+    public static State toOnOffType(@Nullable Boolean value) {
+        return value != null ? (value ? OnOffType.ON : OnOffType.OFF) : UnDefType.NULL;
+    }
+
     public static State toQuantityType(@Nullable Float value, Unit<?> unit) {
         return value == null ? UnDefType.NULL : toQuantityType(new BigDecimal(value), unit);
     }
