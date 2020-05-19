@@ -29,7 +29,6 @@ import org.eclipse.smarthome.core.library.types.PointType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
@@ -60,11 +59,7 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
     }
 
     @Override
-    protected void initializeThing(ThingHandler bridgeHandler, ThingStatus bridgeStatus) {
-        super.initializeThing(bridgeHandler, bridgeStatus);
-        if (bridgeHandler == null || bridgeStatus != ThingStatus.ONLINE) {
-            return;
-        }
+    protected void initializeThing() {
         defineRefreshInterval();
         updateStatus(ThingStatus.ONLINE);
         scheduleRefreshJob();

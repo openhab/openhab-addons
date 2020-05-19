@@ -103,7 +103,7 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
         }
     }
 
-    protected void initializeThing(ThingHandler bridgeHandler, ThingStatus bridgeStatus) {
+    private void initializeThing(ThingHandler bridgeHandler, ThingStatus bridgeStatus) {
         if (bridgeHandler != null && bridgeStatus != null) {
             if (bridgeStatus == ThingStatus.ONLINE) {
                 config = getThing().getConfiguration();
@@ -115,6 +115,8 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
                         ? Optional.of(new BatteryHelper(thing.getProperties().get(PROPERTY_BATTERY_LEVELS)))
                         : Optional.empty();
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Pending parent object initialization");
+
+                initializeThing();
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             }
@@ -122,6 +124,8 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
+
+    protected abstract void initializeThing();
 
     protected State getNAThingProperty(String channelId) {
         Optional<State> result;
