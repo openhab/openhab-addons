@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Coaster Li - Initial contribution
  * @author Joe Ho - Added Duration Thing parameter
- * @author Nikita Pogdalov - Added DeviceType for ceiling 1
+ * @author DragonNP - Added DeviceType for ceiling 1
  */
 public abstract class YeelightHandlerBase extends BaseThingHandler
         implements DeviceConnectionStateListener, DeviceStatusChangeListener {

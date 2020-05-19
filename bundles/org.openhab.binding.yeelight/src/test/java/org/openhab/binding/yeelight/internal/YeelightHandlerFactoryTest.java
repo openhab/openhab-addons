@@ -38,7 +38,7 @@ import org.openhab.binding.yeelight.internal.handler.*;
  * Unit tests for {@link YeelightHandlerFactory}
  *
  * @author Viktor Koop - Initial contribution
- * @author Nikita Pogudalov - Added YeelightCeilingWithNightHandler for Ceiling 1
+ * @author DragonNP - Added YeelightCeilingWithNightHandler for Ceiling 1
  */
 @RunWith(value = Parameterized.class)
 public class YeelightHandlerFactoryTest {

@@ -25,7 +25,7 @@ import com.google.gson.JsonParser;
 /**
  * The {@link CeilingDeviceWithNightDevice} contains methods for handling the ceiling device with ambient light.
  *
- * @author Pogudalov Nikita - Initial contribution
+ * @author DragonNP - Initial contribution
  */
 public class CeilingDeviceWithNightDevice extends CeilingDevice
         implements DeviceWithNightlight {

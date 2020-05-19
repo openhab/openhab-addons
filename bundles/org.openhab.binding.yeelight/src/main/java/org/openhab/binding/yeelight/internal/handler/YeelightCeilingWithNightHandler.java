@@ -24,7 +24,7 @@ import org.openhab.binding.yeelight.internal.lib.enums.ActiveMode;
  * The {@link YeelightCeilingWithNightHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author Nikita Pogudalov - Initial contribution
+ * @author DragonNP - Initial contribution
  */
 public class YeelightCeilingWithNightHandler extends YeelightHandlerBase {
 

@@ -17,7 +17,7 @@ import org.openhab.binding.yeelight.internal.lib.enums.MethodAction;
 
 /**
  * @author Coaster Li - Initial contribution
- * @author Nikita Pogudalov - Added active_mode for Ceiling 1
+ * @author DragonNP - Added DeviceMethod for Ceiling 1
  */
 public class MethodFactory {
     public static DeviceMethod buildBrightnessMethd(int brightness, String effect, int duration) {

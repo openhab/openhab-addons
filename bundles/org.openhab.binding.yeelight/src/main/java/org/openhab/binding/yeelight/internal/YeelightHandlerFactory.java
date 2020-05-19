@@ -29,7 +29,7 @@ import org.osgi.service.component.annotations.Component;
  * The {@link YeelightHandlerFactory} is responsible for returning supported things and handlers for the devices.
  *
  * @author Coaster Li - Initial contribution
- * @author Nikita Pogudalov - Added YeelightCeilingWithNightHandler for Ceiling 3
+ * @author DragonNP - Added YeelightCeilingWithNightHandler for Ceiling 3
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.yeelight")
 public class YeelightHandlerFactory extends BaseThingHandlerFactory {
