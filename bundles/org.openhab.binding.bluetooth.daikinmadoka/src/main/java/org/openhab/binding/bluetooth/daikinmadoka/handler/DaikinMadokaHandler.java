@@ -392,8 +392,8 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
             try {
                 command.handleResponse(scheduler, this, MadokaMessage.parse(response));
             } catch (MadokaParsingException e) {
-                logger.debug("Response message could not be parsed correctly ({}): {}",
-                        command.getClass().getSimpleName(), HexUtils.bytesToHex(response));
+                logger.debug("Response message could not be parsed correctly ({}): {}. Reason: {}",
+                        command.getClass().getSimpleName(), HexUtils.bytesToHex(response), e.getMessage());
             }
         }
     }

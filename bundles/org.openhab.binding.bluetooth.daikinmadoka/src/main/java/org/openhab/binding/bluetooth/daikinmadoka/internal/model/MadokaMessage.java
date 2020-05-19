@@ -107,7 +107,7 @@ public class MadokaMessage {
             mv.setId(msg[i]);
             mv.setSize(Byte.toUnsignedInt(msg[i + 1]));
 
-            if ((i + 2 + mv.getSize()) >= msg.length) {
+            if ((i + 1 + mv.getSize()) >= msg.length) {
                 throw new MadokaParsingException("Truncated message detected while parsing response value content");
             }
 
