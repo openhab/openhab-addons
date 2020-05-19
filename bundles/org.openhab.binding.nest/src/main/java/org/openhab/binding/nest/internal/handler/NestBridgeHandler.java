@@ -373,5 +373,4 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
             }
         }
     }
-
 }

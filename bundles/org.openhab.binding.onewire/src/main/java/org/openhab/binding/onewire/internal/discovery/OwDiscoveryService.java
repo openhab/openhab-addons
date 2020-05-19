@@ -137,5 +137,4 @@ public class OwDiscoveryService extends AbstractDiscoveryService {
     public void deactivate() {
         removeOlderResults(new Date().getTime());
     }
-
 }

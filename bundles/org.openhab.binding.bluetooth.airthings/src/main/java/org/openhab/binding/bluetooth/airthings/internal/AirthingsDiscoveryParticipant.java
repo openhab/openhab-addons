@@ -25,7 +25,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.bluetooth.BluetoothBindingConstants;
-import org.openhab.binding.bluetooth.BluetoothDevice;
+import org.openhab.binding.bluetooth.discovery.BluetoothDiscoveryDevice;
 import org.openhab.binding.bluetooth.discovery.BluetoothDiscoveryParticipant;
 import org.osgi.service.component.annotations.Component;
 
@@ -49,8 +49,7 @@ public class AirthingsDiscoveryParticipant implements BluetoothDiscoveryParticip
     }
 
     @Override
-    @Nullable
-    public ThingUID getThingUID(BluetoothDevice device) {
+    public @Nullable ThingUID getThingUID(BluetoothDiscoveryDevice device) {
         if (isAirthingsDevice(device)) {
             if (WAVE_PLUS_MODEL.equals(device.getModel())) {
                 return new ThingUID(AirthingsBindingConstants.THING_TYPE_AIRTHINGS_WAVE_PLUS,
@@ -61,8 +60,7 @@ public class AirthingsDiscoveryParticipant implements BluetoothDiscoveryParticip
     }
 
     @Override
-    @Nullable
-    public DiscoveryResult createResult(BluetoothDevice device) {
+    public @Nullable DiscoveryResult createResult(BluetoothDiscoveryDevice device) {
         if (!isAirthingsDevice(device)) {
             return null;
         }
@@ -77,11 +75,11 @@ public class AirthingsDiscoveryParticipant implements BluetoothDiscoveryParticip
     }
 
     @Override
-    public boolean requiresConnection(BluetoothDevice device) {
+    public boolean requiresConnection(BluetoothDiscoveryDevice device) {
         return isAirthingsDevice(device);
     }
 
-    private boolean isAirthingsDevice(BluetoothDevice device) {
+    private boolean isAirthingsDevice(BluetoothDiscoveryDevice device) {
         Integer manufacturerId = device.getManufacturerId();
         if (manufacturerId != null && manufacturerId == AIRTHINGS_COMPANY_ID) {
             return true;
@@ -89,7 +87,7 @@ public class AirthingsDiscoveryParticipant implements BluetoothDiscoveryParticip
         return false;
     }
 
-    private DiscoveryResult createWavePlus(BluetoothDevice device, ThingUID thingUID) {
+    private DiscoveryResult createWavePlus(BluetoothDiscoveryDevice device, ThingUID thingUID) {
         Map<String, Object> properties = new HashMap<>();
         properties.put(BluetoothBindingConstants.CONFIGURATION_ADDRESS, device.getAddress().toString());
         properties.put(Thing.PROPERTY_VENDOR, "Airthings AS");

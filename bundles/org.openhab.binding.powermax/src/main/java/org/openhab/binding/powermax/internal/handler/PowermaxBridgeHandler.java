@@ -649,5 +649,4 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
         }
         return result;
     }
-
 }

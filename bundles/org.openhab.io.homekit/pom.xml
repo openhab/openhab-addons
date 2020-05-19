@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>2.5.5-SNAPSHOT</version>
+    <version>2.5.6-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.io.homekit</artifactId>
@@ -14,14 +14,14 @@
 
   <properties>
     <dep.noembedding>javax.json,javax.json-api,netty-common,netty-buffer,netty-transport,netty-handler,netty-codec,netty-codec-http,netty-resolver</dep.noembedding>
-   <netty.version>4.1.42.Final</netty.version>
+    <netty.version>4.1.42.Final</netty.version>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>io.github.hap-java</groupId>
       <artifactId>hap</artifactId>
-      <version>1.2.0.OH</version>
+      <version>2.0.0.OH</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -103,5 +103,4 @@
       <scope>compile</scope>
     </dependency>
   </dependencies>
-
 </project>

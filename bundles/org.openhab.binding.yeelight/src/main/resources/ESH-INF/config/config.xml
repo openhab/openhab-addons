@@ -12,7 +12,8 @@
 		</parameter>
 		<parameter name="duration" type="integer" unit="ms" min="50" max="10000">
 			<label>Duration</label>
-			<description>Duration of transition of events such as on/off, change of brightness and change of color, in milliseconds.</description>
+			<description>Duration of transition of events such as on/off, change of brightness and change of color, in
+				milliseconds.</description>
 			<unitLabel>milliseconds</unitLabel>
 			<default>500</default>
 		</parameter>

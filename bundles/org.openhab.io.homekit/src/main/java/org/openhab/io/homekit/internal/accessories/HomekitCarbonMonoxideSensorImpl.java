@@ -12,75 +12,58 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.items.GenericItem;
-import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
+import org.openhab.io.homekit.internal.HomekitCharacteristicType;
+import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
-import org.openhab.io.homekit.internal.battery.BatteryStatus;
 
-import io.github.hapjava.HomekitCharacteristicChangeCallback;
-import io.github.hapjava.accessories.BatteryStatusAccessory;
-import io.github.hapjava.accessories.CarbonMonoxideSensor;
-import io.github.hapjava.accessories.properties.CarbonMonoxideDetectedState;
+import io.github.hapjava.accessories.CarbonMonoxideSensorAccessory;
+import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
+import io.github.hapjava.characteristics.impl.carbonmonoxidesensor.CarbonMonoxideDetectedEnum;
+import io.github.hapjava.services.impl.CarbonMonoxideSensorService;
 
 /**
  *
  * @author Cody Cutrer - Initial contribution
  */
-public class HomekitCarbonMonoxideSensorImpl extends AbstractHomekitAccessoryImpl<GenericItem>
-        implements CarbonMonoxideSensor, BatteryStatusAccessory {
+public class HomekitCarbonMonoxideSensorImpl extends AbstractHomekitAccessoryImpl
+        implements CarbonMonoxideSensorAccessory {
 
-    @NonNull
-    private BatteryStatus batteryStatus;
+    private final BooleanItemReader carbonMonoxideDetectedReader;
 
-    private BooleanItemReader carbonMonoxideDetectedReader;
-
-    public HomekitCarbonMonoxideSensorImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
-            HomekitAccessoryUpdater updater, BatteryStatus batteryStatus) {
-        super(taggedItem, itemRegistry, updater, GenericItem.class);
-
-        this.carbonMonoxideDetectedReader = new BooleanItemReader(taggedItem.getItem(), OnOffType.ON,
+    public HomekitCarbonMonoxideSensorImpl(HomekitTaggedItem taggedItem,
+            List<HomekitTaggedItem> mandatoryCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings)
+            throws IncompleteAccessoryException {
+        super(taggedItem, mandatoryCharacteristics, updater, settings);
+        this.carbonMonoxideDetectedReader = new BooleanItemReader(
+                getItem(HomekitCharacteristicType.CARBON_MONOXIDE_DETECTED_STATE, GenericItem.class), OnOffType.ON,
                 OpenClosedType.OPEN);
-        this.batteryStatus = batteryStatus;
+        getServices().add(new CarbonMonoxideSensorService(this));
     }
 
     @Override
-    public CompletableFuture<CarbonMonoxideDetectedState> getCarbonMonoxideDetectedState() {
+    public CompletableFuture<CarbonMonoxideDetectedEnum> getCarbonMonoxideDetectedState() {
         Boolean state = this.carbonMonoxideDetectedReader.getValue();
         if (state == null) {
             return CompletableFuture.completedFuture(null);
         }
         return CompletableFuture
-                .completedFuture(state ? CarbonMonoxideDetectedState.ABNORMAL : CarbonMonoxideDetectedState.NORMAL);
+                .completedFuture(state ? CarbonMonoxideDetectedEnum.ABNORMAL : CarbonMonoxideDetectedEnum.NORMAL);
     }
 
     @Override
     public void subscribeCarbonMonoxideDetectedState(HomekitCharacteristicChangeCallback callback) {
-        getUpdater().subscribe(getItem(), callback);
+        subscribe(HomekitCharacteristicType.CARBON_MONOXIDE_DETECTED_STATE, callback);
     }
 
     @Override
     public void unsubscribeCarbonMonoxideDetectedState() {
-        getUpdater().unsubscribe(getItem());
-    }
-
-    @Override
-    public CompletableFuture<Boolean> getLowBatteryState() {
-        return CompletableFuture.completedFuture(batteryStatus.isLow());
-    }
-
-    @Override
-    public void subscribeLowBatteryState(HomekitCharacteristicChangeCallback callback) {
-        batteryStatus.subscribe(getUpdater(), callback);
-    }
-
-    @Override
-    public void unsubscribeLowBatteryState() {
-        batteryStatus.unsubscribe(getUpdater());
+        unsubscribe(HomekitCharacteristicType.CARBON_MONOXIDE_DETECTED_STATE);
     }
 }

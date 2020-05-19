@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.openhab.addons</groupId>
     <artifactId>org.openhab.addons.reactor</artifactId>
-    <version>2.5.5-SNAPSHOT</version>
+    <version>2.5.6-SNAPSHOT</version>
   </parent>
 
   <groupId>org.openhab.addons.itests</groupId>
@@ -20,10 +20,10 @@
     <module>org.openhab.binding.feed.tests</module>
     <module>org.openhab.binding.hue.tests</module>
     <module>org.openhab.binding.max.tests</module>
-    <module>org.openhab.binding.modbus.tests</module>            
-    <!-- disable itests for mqtt temporarily    
-    <module>org.openhab.binding.mqtt.homeassistant.tests</module>
-    <module>org.openhab.binding.mqtt.homie.tests</module>
+    <module>org.openhab.binding.modbus.tests</module>
+    <!-- disable itests for mqtt temporarily
+      <module>org.openhab.binding.mqtt.homeassistant.tests</module>
+      <module>org.openhab.binding.mqtt.homie.tests</module>
     -->
     <module>org.openhab.binding.nest.tests</module>
     <module>org.openhab.binding.ntp.tests</module>
@@ -31,8 +31,8 @@
     <module>org.openhab.binding.tradfri.tests</module>
     <module>org.openhab.binding.wemo.tests</module>
     <module>org.openhab.io.hueemulation.tests</module>
-    <!-- disable itests for mqtt temporarily 
-    <module>org.openhab.io.mqttembeddedbroker.tests</module>
+    <!-- disable itests for mqtt temporarily
+      <module>org.openhab.io.mqttembeddedbroker.tests</module>
     -->
   </modules>
 

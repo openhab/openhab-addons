@@ -39,7 +39,7 @@
 
 	<thing-type id="device">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="network" />
+			<bridge-type-ref id="network"/>
 		</supported-bridge-type-refs>
 
 		<label>Insteon Device</label>
@@ -55,7 +55,7 @@
 				<description>Insteon binding product key that is used to identify the model of the device.</description>
 				<options>
 					<option value="F00.00.01">2477D SwitchLinc Dimmer - F00.00.01</option>
-					<option value="F00.00.02">2477S SwitchLinc Switch- F00.00.02</option>
+					<option value="F00.00.02">2477S SwitchLinc Switch - F00.00.02</option>
 					<option value="F00.00.03">2845-222 Hidden Door Sensor - F00.00.03</option>
 					<option value="F00.00.04">2876S ICON Switch - F00.00.04</option>
 					<option value="F00.00.05">2456D3 LampLinc V2 - F00.00.05</option>
@@ -95,7 +95,7 @@
 					<option value="0x000049">2843-222 Wireless Open/Close Sensor - 0x000049</option>
 					<option value="0x00004A">2842-222 Motion Sensor - 0x00004A</option>
 					<option value="0x000051">2486DWH8 KeypadLinc Dimmer - 0x000051</option>
-					<option value="0x000068">2472D OutletLincDimmer - 0x000068</option>
+					<option value="0x000068">2472D OutletLinc Dimmer - 0x000068</option>
 					<option value="X00.00.01">X10 switch Generic X10 switch - X00.00.01</option>
 					<option value="X00.00.02">X10 dimmer Generic X10 dimmer - X00.00.02</option>
 					<option value="X00.00.03">X10 motion Generic X10 motion sensor - X00.00.03</option>
@@ -321,7 +321,7 @@
 	</channel-type>
 
 	<channel-type id="kWh">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Kilowatt Hour</label>
 	</channel-type>
 
@@ -349,7 +349,7 @@
 		<item-type>Number</item-type>
 		<label>Light Level</label>
 	</channel-type>
-	
+
 	<channel-type id="lightLevelAboveThreshold">
 		<item-type>Contact</item-type>
 		<label>Light Level Above/Below Threshold</label>
@@ -481,7 +481,7 @@
 	</channel-type>
 
 	<channel-type id="watts">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Watts</label>
 	</channel-type>
 

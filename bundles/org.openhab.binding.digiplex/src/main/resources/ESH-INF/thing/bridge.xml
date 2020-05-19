@@ -8,8 +8,8 @@
 		<label>Digiplex PRT3 Module</label>
 		<description>Digiplex PRT3 module with Serial Interface</description>
 		<channel-groups>
-			<channel-group typeId="statistics" id="statistics" />
-			<channel-group typeId="troubles" id="troubles" />
+			<channel-group typeId="statistics" id="statistics"/>
+			<channel-group typeId="troubles" id="troubles"/>
 		</channel-groups>
 
 		<config-description>
@@ -23,6 +23,7 @@
 			<parameter name="port" type="text" required="true" groupName="port">
 				<label>Serial Port</label>
 				<context>serial-port</context>
+				<limitToOptions>false</limitToOptions>
 				<description>Set the serial port used to access PRT3 device</description>
 				<default></default>
 			</parameter>
@@ -47,9 +48,9 @@
 		<label>Statistics</label>
 		<description>Statistics of PRT3 communication</description>
 		<channels>
-			<channel typeId="messages_sent" id="messages_sent" />
-			<channel typeId="responses_received" id="responses_received" />
-			<channel typeId="events_received" id="events_received" />
+			<channel typeId="messages_sent" id="messages_sent"/>
+			<channel typeId="responses_received" id="responses_received"/>
+			<channel typeId="events_received" id="events_received"/>
 		</channels>
 	</channel-group-type>
 
@@ -57,14 +58,14 @@
 		<label>Troubles</label>
 		<description>Problems reported by the alarm system</description>
 		<channels>
-			<channel typeId="tlm_trouble" id="tlm_trouble" />
-			<channel typeId="ac_failure" id="ac_failure" />
-			<channel typeId="battery_failure" id="battery_failure" />
-			<channel typeId="aux_current_limit" id="aux_current_limit" />
-			<channel typeId="bell_current_limit" id="bell_current_limit" />
-			<channel typeId="bell_absent" id="bell_absent" />
-			<channel typeId="clock_trouble" id="clock_trouble" />
-			<channel typeId="global_fire_loop" id="global_fire_loop" />
+			<channel typeId="tlm_trouble" id="tlm_trouble"/>
+			<channel typeId="ac_failure" id="ac_failure"/>
+			<channel typeId="battery_failure" id="battery_failure"/>
+			<channel typeId="aux_current_limit" id="aux_current_limit"/>
+			<channel typeId="bell_current_limit" id="bell_current_limit"/>
+			<channel typeId="bell_absent" id="bell_absent"/>
+			<channel typeId="clock_trouble" id="clock_trouble"/>
+			<channel typeId="global_fire_loop" id="global_fire_loop"/>
 		</channels>
 	</channel-group-type>
 

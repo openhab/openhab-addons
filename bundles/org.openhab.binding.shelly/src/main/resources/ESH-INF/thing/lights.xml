@@ -30,6 +30,19 @@
 		<config-description-ref uri="thing-type:shelly:light" />
 	</thing-type>
 
+	<thing-type id="shellyvintage">
+		<label>Shelly Vintage (SHVIN-1)</label>
+		<description>Shelly Vintage</description>
+		<channel-groups>
+			<channel-group id="control" typeId="duoControl" />
+			<channel-group id="white" typeId="whiteSettingsSimple" />
+			<channel-group id="meter" typeId="meter" />
+			<channel-group id="device" typeId="deviceStatus" />
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:shelly:light" />
+	</thing-type>
+
 	<thing-type id="shellyrgbw2-color">
 		<label>Shelly RGBW2 Color Mode (SHRGBW2)</label>
 		<description>Shelly RGBW2 Controller - Color Mode</description>
@@ -137,6 +150,13 @@
 			<channel id="temperature" typeId="whiteTemp" />
 		</channels>
 	</channel-group-type>
+	<channel-group-type id="whiteSettingsSimple">
+		<label>White settings</label>
+		<description>Adjust colors when device is in white mode</description>
+		<channels>
+			<channel id="brightness" typeId="whiteBrightness" />
+		</channels>
+	</channel-group-type>
 	<channel-group-type id="rgbw2Channel">
 		<label>Control</label>
 		<description>Switch channel and adjust settings</description>
@@ -213,7 +233,8 @@
 	<channel-type id="colorEffectBulb">
 		<item-type>Number</item-type>
 		<label>Effect</label>
-		<description>Currently applied effect, description: 0: Off, 1: Meteor Shower, 2: Gradual Change, 3: Breath, 4: Flash, 5: On/Off Gradual, 6: Red/Green Change</description>
+		<description>Currently applied effect, description: 0: Off, 1: Meteor Shower, 2: Gradual Change, 3: Breath, 4: Flash,
+			5: On/Off Gradual, 6: Red/Green Change</description>
 		<state>
 			<options>
 				<option value="0">Off</option>

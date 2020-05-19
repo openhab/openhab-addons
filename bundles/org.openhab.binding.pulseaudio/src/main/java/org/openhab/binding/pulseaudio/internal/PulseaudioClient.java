@@ -629,5 +629,4 @@ public class PulseaudioClient {
             }
         }
     }
-
 }

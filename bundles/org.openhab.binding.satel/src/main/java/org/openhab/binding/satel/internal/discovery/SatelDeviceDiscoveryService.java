@@ -193,5 +193,4 @@ public class SatelDeviceDiscoveryService extends AbstractDiscoveryService {
                 return false;
         }
     }
-
 }

@@ -47,5 +47,4 @@ public class AtlonaBindingConstants {
      * Thing ID for the AT-UHD-PRO3-1616m (16x16 hdbaset matrix)
      */
     public static final ThingTypeUID THING_TYPE_PRO3_1616M = new ThingTypeUID(BINDING_ID, "pro3-1616m");
-
 }

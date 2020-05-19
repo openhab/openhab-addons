@@ -17,8 +17,8 @@
 				<label>Moonset</label>
 				<description>The moonset event range</description>
 			</channel-group>
-			<channel-group id="phase" typeId="moonPhase" />
-			<channel-group id="eclipse" typeId="moonEclipse" />
+			<channel-group id="phase" typeId="moonPhase"/>
+			<channel-group id="eclipse" typeId="moonEclipse"/>
 			<channel-group id="distance" typeId="distance">
 				<description>The distance to the moon</description>
 			</channel-group>
@@ -33,12 +33,12 @@
 			<channel-group id="position" typeId="position">
 				<description>The position of the moon</description>
 			</channel-group>
-			<channel-group id="zodiac" typeId="moonZodiac" />
+			<channel-group id="zodiac" typeId="moonZodiac"/>
 		</channel-groups>
 
 		<representation-property>geolocation</representation-property>
 
-		<config-description-ref uri="thing-type:astro:config" />
+		<config-description-ref uri="thing-type:astro:config"/>
 	</thing-type>
 
 </thing:thing-descriptions>

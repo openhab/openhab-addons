@@ -226,7 +226,7 @@ class LxControlJalousie extends LxControl {
      * position.
      *
      * @param position end position to move jalousie to, floating point number from 0..1 (0-fully closed to 1-fully
-     *                     open)
+     *            open)
      * @throws IOException when something went wrong with communication
      */
     private void moveToPosition(Double position) throws IOException {

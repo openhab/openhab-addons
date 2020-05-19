@@ -5,11 +5,33 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>2.5.5-SNAPSHOT</version>
+    <version>2.5.6-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.io.neeo</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: IO :: NEEO Integration</name>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <phase>generate-sources</phase>
+            <configuration>
+              <sources>
+                <source>src/3rdparty/java</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>

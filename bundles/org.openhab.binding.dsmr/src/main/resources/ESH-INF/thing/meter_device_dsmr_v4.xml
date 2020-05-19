@@ -6,18 +6,18 @@
 
 	<thing-type id="device_v4" listed="false">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="dsmrBridge" />
-			<bridge-type-ref id="smartyBridge" />
+			<bridge-type-ref id="dsmrBridge"/>
+			<bridge-type-ref id="smartyBridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Device Meter (DSMR V4.x)</label>
 		<description>This is the device meter that complies to the DSMR V4 specification.</description>
 		<channels>
-			<channel id="p1_text_code" typeId="p1TextCodeType" />
-			<channel id="p1_text_string" typeId="p1TextStringType" />
-			<channel id="p1_version_output" typeId="p1VersionType" />
-			<channel id="p1_timestamp" typeId="p1TimestampType" />
+			<channel id="p1_text_code" typeId="p1TextCodeType"/>
+			<channel id="p1_text_string" typeId="p1TextStringType"/>
+			<channel id="p1_version_output" typeId="p1VersionType"/>
+			<channel id="p1_timestamp" typeId="p1TimestampType"/>
 		</channels>
-		<config-description-ref uri="thing-type:dsmr:meterdescriptor" />
+		<config-description-ref uri="thing-type:dsmr:meterdescriptor"/>
 	</thing-type>
 </thing:thing-descriptions>

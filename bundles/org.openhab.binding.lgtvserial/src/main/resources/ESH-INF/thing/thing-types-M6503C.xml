@@ -4,7 +4,8 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Unimplemented so far : Abnormal state, Remote lock, Auto configure, command 36,37,38,39,42 (timers), reset, 52 scheduling input select -->
+	<!-- Unimplemented so far : Abnormal state, Remote lock, Auto configure, command 36,37,38,39,42 (timers), reset, 52 scheduling
+		input select -->
 	<thing-type id="lgtv-M6503C">
 		<label>M6503C Model</label>
 		<description><![CDATA[This thing supports the M6503C LG TV]]></description>
@@ -20,13 +21,13 @@
 			<channel id="color-temperature" typeId="color-temperature"/>
 			<channel id="elapsed-time" typeId="elapsed-time"/>
 			<channel id="fan-fault-check" typeId="fan-fault-check"/>
-			<channel id="h-position" typeId="h-position" />
+			<channel id="h-position" typeId="h-position"/>
 			<!-- Not yet implemented
-			<channel id="h-size" typeId="h-size" />
+				<channel id="h-size" typeId="h-size" />
 			-->
 			<channel id="input" typeId="input-M6503C"/>
 			<channel id="input2" typeId="input2-M6503C"/>
-			<channel id="ir-key-code" typeId="ir-key-code-M6503C" />
+			<channel id="ir-key-code" typeId="ir-key-code-M6503C"/>
 			<channel id="ism-method" typeId="ism-M6503C"/>
 			<channel id="lamp-fault-check" typeId="lamp-fault-check"/>
 			<channel id="natural-mode" typeId="natural-mode"/>
@@ -37,7 +38,7 @@
 			<channel id="power-indicator" typeId="power-indicator"/>
 			<channel id="power-saving" typeId="power-saving"/>
 			<channel id="raw" typeId="raw"/>
-			<channel id="screen-mute" typeId="screen-mute" />
+			<channel id="screen-mute" typeId="screen-mute"/>
 			<channel id="serial-number" typeId="serial-number"/>
 			<channel id="sharpness" typeId="sharpness"/>
 			<channel id="sleep-time" typeId="sleep-time"/>
@@ -53,17 +54,17 @@
 			<channel id="tile-v-size" typeId="tile-v-size"/>
 			<channel id="tint" typeId="tint"/>
 			<!-- Used to set the time on the TV, but have no clue yet how to handle this...
-			<channel id="time" typeId="time"/>
+				<channel id="time" typeId="time"/>
 			-->
 			<channel id="v-position" typeId="v-position"/>
-			<!--  Not yet implemented
-			<channel id="v-size" typeId="v-size"/>
+			<!-- Not yet implemented
+				<channel id="v-size" typeId="v-size"/>
 			-->
 			<channel id="volume" typeId="volume"/>
 			<channel id="volume-mute" typeId="volume-mute"/>
 
 		</channels>
-		<config-description-ref uri="thing-type:lgtvserial:serial" />
+		<config-description-ref uri="thing-type:lgtvserial:serial"/>
 	</thing-type>
 
 	<channel-type id="aspect-ratio-M6503C">
@@ -173,4 +174,3 @@
 	</channel-type>
 
 </thing:thing-descriptions>
-

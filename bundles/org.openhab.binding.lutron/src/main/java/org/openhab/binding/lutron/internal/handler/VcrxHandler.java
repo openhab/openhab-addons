@@ -122,5 +122,4 @@ public class VcrxHandler extends BaseKeypadHandler {
     public VcrxHandler(Thing thing) {
         super(thing);
     }
-
 }

@@ -35,5 +35,4 @@ public class HeatSetpointStatus {
     public String getSetpointMode() {
         return setpointMode;
     }
-
 }

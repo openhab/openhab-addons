@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.measure.quantity.Temperature;
 
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -37,6 +38,7 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.daikin.internal.DaikinBindingConstants;
 import org.openhab.binding.daikin.internal.DaikinCommunicationException;
+import org.openhab.binding.daikin.internal.DaikinCommunicationForbiddenException;
 import org.openhab.binding.daikin.internal.DaikinDynamicStateDescriptionProvider;
 import org.openhab.binding.daikin.internal.DaikinWebTargets;
 import org.openhab.binding.daikin.internal.api.Enums.HomekitMode;
@@ -56,11 +58,15 @@ import org.slf4j.LoggerFactory;
 public abstract class DaikinBaseHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(DaikinBaseHandler.class);
 
+    private final @Nullable HttpClient httpClient;
+
     private long refreshInterval;
 
     protected @Nullable DaikinWebTargets webTargets;
     private @Nullable ScheduledFuture<?> pollFuture;
     protected final DaikinDynamicStateDescriptionProvider stateDescriptionProvider;
+    protected @Nullable DaikinConfiguration config;
+    private boolean uuidRegistrationAttempted = false;
 
     // Abstract methods to be overridden by specific Daikin implementation class
     protected abstract void pollStatus() throws IOException;
@@ -77,9 +83,12 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
     protected abstract boolean handleCommandInternal(ChannelUID channelUID, Command command)
             throws DaikinCommunicationException;
 
-    public DaikinBaseHandler(Thing thing, DaikinDynamicStateDescriptionProvider stateDescriptionProvider) {
+    protected abstract void registerUuid(@Nullable String key);
+
+    public DaikinBaseHandler(Thing thing, DaikinDynamicStateDescriptionProvider stateDescriptionProvider, @Nullable HttpClient httpClient) {
         super(thing);
         this.stateDescriptionProvider = stateDescriptionProvider;
+        this.httpClient = httpClient;
     }
 
     @Override
@@ -130,11 +139,14 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing Daikin AC Unit");
-        DaikinConfiguration config = getConfigAs(DaikinConfiguration.class);
+        config = getConfigAs(DaikinConfiguration.class);
         if (config.host == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Host address must be set");
         } else {
-            webTargets = new DaikinWebTargets(config.host);
+            if (config.uuid != null) {
+                config.uuid = config.uuid.replaceAll("\\s|-", "");
+            }
+            webTargets = new DaikinWebTargets(httpClient, config.host, config.secure, config.uuid);
             refreshInterval = config.refresh;
 
             schedulePoll();
@@ -172,6 +184,15 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
         try {
             logger.debug("Polling for state");
             pollStatus();
+        } catch (DaikinCommunicationForbiddenException e) {
+            if (!uuidRegistrationAttempted && config.key != null && config.uuid != null) {
+                logger.debug("poll: Attempting to register uuid {} with key {}", config.uuid, config.key);
+                registerUuid(config.key);
+                uuidRegistrationAttempted = true;
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR , "Access denied. Check uuid/key.");
+                logger.warn("{} access denied by adapter. Check uuid/key.", thing.getUID());
+            }
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (RuntimeException e) {
@@ -218,5 +239,4 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
             }
         }
     }
-
 }

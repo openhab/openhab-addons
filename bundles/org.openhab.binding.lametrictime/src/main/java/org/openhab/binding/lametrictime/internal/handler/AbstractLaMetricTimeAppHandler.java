@@ -24,14 +24,14 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.lametrictime.api.LaMetricTime;
+import org.openhab.binding.lametrictime.api.local.ApplicationNotFoundException;
+import org.openhab.binding.lametrictime.api.local.model.Application;
+import org.openhab.binding.lametrictime.api.local.model.Widget;
 import org.openhab.binding.lametrictime.internal.WidgetRef;
 import org.openhab.binding.lametrictime.internal.config.LaMetricTimeAppConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.syphr.lametrictime.api.LaMetricTime;
-import org.syphr.lametrictime.api.local.ApplicationNotFoundException;
-import org.syphr.lametrictime.api.local.model.Application;
-import org.syphr.lametrictime.api.local.model.Widget;
 
 /**
  * The {@link AbstractLaMetricTimeAppHandler} is the parent of all app handlers for

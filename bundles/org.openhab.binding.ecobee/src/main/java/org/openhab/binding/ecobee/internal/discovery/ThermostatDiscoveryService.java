@@ -126,7 +126,7 @@ public class ThermostatDiscoveryService extends AbstractDiscoveryService
         Map<String, Object> properties = new HashMap<>(2);
         properties.put(CONFIG_THERMOSTAT_ID, identifier);
         return DiscoveryResultBuilder.create(thermostatUID).withProperties(properties)
-                .withRepresentationProperty(identifier).withBridge(bridgeHandler.getThing().getUID())
+                .withRepresentationProperty(CONFIG_THERMOSTAT_ID).withBridge(bridgeHandler.getThing().getUID())
                 .withLabel(buildLabel(name)).build();
     }
 }

@@ -25,5 +25,4 @@ public class MessageIsWaitingException extends Exception {
      * required variable to avoid IncorrectMultilineIndexException warning
      */
     private static final long serialVersionUID = -7317329978634583853L;
-
 }

@@ -9,7 +9,7 @@
 
   <groupId>org.openhab.addons</groupId>
   <artifactId>org.openhab.addons.reactor</artifactId>
-  <version>2.5.5-SNAPSHOT</version>
+  <version>2.5.6-SNAPSHOT</version>
 
   <packaging>pom</packaging>
 
@@ -76,8 +76,8 @@
     <bnd.includeresource>-${.}/NOTICE, -${.}/*.xsd</bnd.includeresource>
 
     <feature.directory>src/main/feature/feature.xml</feature.directory>
-    <spotless.version>1.24.3</spotless.version>
     <spotless.check.skip>true</spotless.check.skip> <!-- Spotless disabled for now -->
+    <spotless.version>1.30.0</spotless.version>
   </properties>
 
   <dependencyManagement>
@@ -163,8 +163,7 @@ Import-Package: \\
             </execution>
           </executions>
         </plugin>
-        <!-- Required to make the maven-jar-plugin pick up the bnd generated
-          manifest. Also avoid packaging empty Jars -->
+        <!-- Required to make the maven-jar-plugin pick up the bnd generated manifest. Also avoid packaging empty Jars -->
         <!-- Moved... -->
 
         <!-- Setup the indexer for running and testing -->
@@ -252,8 +251,7 @@ Import-Package: \\
           </executions>
         </plugin>
 
-        <!-- Define the version of the baseline plugin we use and avoid failing
-          when no baseline jar exists. -->
+        <!-- Define the version of the baseline plugin we use and avoid failing when no baseline jar exists. -->
         <!-- (for example before the first release) -->
         <plugin>
           <groupId>biz.aQute.bnd</groupId>
@@ -530,7 +528,7 @@ Import-Package: \\
             <java>
               <eclipse>
                 <file>openhab_codestyle.xml</file>
-                <version>4.11.0</version>
+                <version>4.13.0</version>
               </eclipse>
               <removeUnusedImports/>
               <importOrder>
@@ -546,18 +544,19 @@ Import-Package: \\
                 </includes>
                 <excludes>
                   <exclude>**/pom.xml</exclude>
-                </excludes>
-                <excludes>
                   <exclude>**/feature.xml</exclude>
+                  <exclude>src/main/history/**/*.xml</exclude>
                   <exclude>features/openhab-addons/src/main/resources/header.xml</exclude>
                   <exclude>features/openhab-addons/src/main/resources/footer.xml</exclude>
+                  <exclude>src/main/resources/input/rss*.xml</exclude>
+                  <exclude>src/test/resources/**/*.xml</exclude>
                 </excludes>
                 <eclipseWtp>
                   <type>XML</type>
                   <files>
                     <file>openhab_wst_xml_files.prefs</file>
                   </files>
-                  <version>4.12.0</version>
+                  <version>4.13.0</version>
                 </eclipseWtp>
                 <trimTrailingWhitespace/>
                 <endWithNewline/>
@@ -572,7 +571,7 @@ Import-Package: \\
                   <files>
                     <file>openhab_wst_feature_file.prefs</file>
                   </files>
-                  <version>4.12.0</version>
+                  <version>4.13.0</version>
                 </eclipseWtp>
                 <trimTrailingWhitespace/>
                 <endWithNewline/>
@@ -587,7 +586,7 @@ Import-Package: \\
                   <files>
                     <file>openhab_wst_pom_file.prefs</file>
                   </files>
-                  <version>4.12.0</version>
+                  <version>4.13.0</version>
                 </eclipseWtp>
                 <trimTrailingWhitespace/>
                 <endWithNewline/>
@@ -598,7 +597,7 @@ Import-Package: \\
             <dependency>
               <groupId>org.openhab.tools</groupId>
               <artifactId>openhab-codestyle</artifactId>
-              <version>${sat.version}</version>
+              <version>0.10.0</version>
             </dependency>
           </dependencies>
           <executions>
@@ -662,11 +661,11 @@ Import-Package: \\
       </plugin>
     </plugins>
     <extensions>
-       <extension>
-          <groupId>org.openhab.tools.sat</groupId>
-          <artifactId>sat-extension</artifactId>
-          <version>${sat.version}</version>
-       </extension>
+      <extension>
+        <groupId>org.openhab.tools.sat</groupId>
+        <artifactId>sat-extension</artifactId>
+        <version>${sat.version}</version>
+      </extension>
     </extensions>
   </build>
 

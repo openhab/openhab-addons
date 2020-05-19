@@ -54,5 +54,4 @@ public interface DeviceStatusListener {
      *            The device which is added.
      */
     public void onDeviceAdded(Bridge bridge, Device device);
-
 }

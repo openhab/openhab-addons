@@ -60,5 +60,4 @@ public class AggregateYearDataResponsePrivateApi extends AbstractAggregateDataRe
 
         return valueMap;
     }
-
 }

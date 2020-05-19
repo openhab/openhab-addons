@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>2.5.5-SNAPSHOT</version>
+    <version>2.5.6-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.transform.jinja</artifactId>
@@ -13,6 +13,18 @@
   <name>openHAB Add-ons :: Bundles :: Transformation Service :: Jinja</name>
 
   <dependencies>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.9.10</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.javassist</groupId>
+      <artifactId>javassist</artifactId>
+      <version>3.22.0-GA</version>
+      <scope>compile</scope>
+    </dependency>
     <dependency>
       <groupId>org.openhab.osgiify</groupId>
       <artifactId>com.hubspot.jinjava.jinjava</artifactId>

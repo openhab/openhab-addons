@@ -44,5 +44,4 @@ public abstract class RadioRACommand {
 
         return str.toString();
     }
-
 }

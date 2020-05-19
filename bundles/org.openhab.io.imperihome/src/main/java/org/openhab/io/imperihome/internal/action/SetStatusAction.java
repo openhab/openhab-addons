@@ -23,6 +23,7 @@ import org.openhab.io.imperihome.internal.model.device.AbstractDevice;
 
 /**
  * Action setting device status to 1 or 0.
+ * 
  * @author Pepijn de Geus - Initial contribution
  */
 public class SetStatusAction extends Action {
@@ -46,5 +47,4 @@ public class SetStatusAction extends Action {
         ItemCommandEvent event = ItemEventFactory.createCommandEvent(item.getName(), cmdValue, COMMAND_SOURCE);
         eventPublisher.post(event);
     }
-
 }

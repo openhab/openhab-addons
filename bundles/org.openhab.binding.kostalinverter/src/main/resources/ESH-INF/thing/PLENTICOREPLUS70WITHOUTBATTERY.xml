@@ -8,69 +8,69 @@
 		<description>Bindings for the KOSTAL PIKO PLENTICORE plus 7.0 solar inverter (no battery attached)</description>
 		<category>Inverter</category>
 		<channels>
-			<channel id="deviceLocalDCPower" typeId="device-local-dc-power" />
-			<channel id="deviceLocalHomeconsumptionFromGrid" typeId="device-local-homeconsumption-from-grid" />
-			<channel id="deviceLocalOwnconsumption" typeId="device-local-ownconsumption" />
-			<channel id="deviceLocalHomeconsumptionFromPV" typeId="device-local-homeconsumption-from-pv" />
-			<channel id="deviceLocalHomeconsumptionTotal" typeId="device-local-homeconsumption-total" />
-			<channel id="deviceLocalLimitEVUAbsolute" typeId="device-local-limit-evu-absolute" />
-			<channel id="deviceLocalLimitEVURelativ" typeId="device-local-limit-evu-relativ" />
-			<channel id="deviceLocalWorktime" typeId="device-local-worktime" />
-			<channel id="deviceLocalACPhase1CurrentAmperage" typeId="device-local-ac-phase-1-current-amperage" />
-			<channel id="deviceLocalACPhase1CurrentPower" typeId="device-local-ac-phase-1-current-power" />
-			<channel id="deviceLocalACPhase1CurrentVoltage" typeId="device-local-ac-phase-1-current-voltage" />
-			<channel id="deviceLocalACPhase2CurrentAmperage" typeId="device-local-ac-phase-2-current-amperage" />
-			<channel id="deviceLocalACPhase2CurrentPower" typeId="device-local-ac-phase-2-current-power" />
-			<channel id="deviceLocalACPhase2CurrentVoltage" typeId="device-local-ac-phase-2-current-voltage" />
-			<channel id="deviceLocalACPhase3CurrentAmperage" typeId="device-local-ac-phase-3-current-amperage" />
-			<channel id="deviceLocalACPhase3CurrentPower" typeId="device-local-ac-phase-3-current-power" />
-			<channel id="deviceLocalACPhase3CurrentVoltage" typeId="device-local-ac-phase-3-current-voltage" />
-			<channel id="deviceLocalACCurrentPower" typeId="device-local-ac-current-power" />
-			<channel id="deviceLocalPVString1Amperage" typeId="device-local-pvstring-1-amperage" />
-			<channel id="deviceLocalPVString1Power" typeId="device-local-pvstring-1-power" />
-			<channel id="deviceLocalPVString1Voltage" typeId="device-local-pvstring-1-voltage" />
-			<channel id="deviceLocalPVString2Amperage" typeId="device-local-pvstring-2-amperage" />
-			<channel id="deviceLocalPVString2Power" typeId="device-local-pvstring-2-power" />
-			<channel id="deviceLocalPVString2Voltage" typeId="device-local-pvstring-2-voltage" />
-			<channel id="deviceLocalPVString3Amperage" typeId="device-local-pvstring-3-amperage" />
-			<channel id="deviceLocalPVString3Power" typeId="device-local-pvstring-3-power" />
-			<channel id="deviceLocalPVString3Voltage" typeId="device-local-pvstring-3-voltage" />
-			<channel id="SCBEventErrorCountMc" typeId="scb-event-error-count-mc" />
-			<channel id="SCBEventErrorCountSFH" typeId="scb-event-error-count-sfh" />
-			<channel id="SCBEventErrorCountSCB" typeId="scb-event-error-count-scb" />
-			<channel id="SCBEventWarningCountSCB" typeId="scb-event-warning-count-scb" />
-			<channel id="statisticAutarkyDay" typeId="statistic-autarky-day" />
-			<channel id="statisticAutarkyMonth" typeId="statistic-autarky-month" />
-			<channel id="statisticAutarkyTotal" typeId="statistic-autarky-total" />
-			<channel id="statisticAutarkyYear" typeId="statistic-autarky-year" />
-			<channel id="statisticCo2SavingDay" typeId="statistic-co2saving-day" />
-			<channel id="statisticCo2SavingMonth" typeId="statistic-co2saving-month" />
-			<channel id="statisticCo2SavingTotal" typeId="statistic-co2saving-total" />
-			<channel id="statisticCo2SavingYear" typeId="statistic-co2saving-year" />
-			<channel id="statisticHomeconsumptionDay" typeId="statistic-homeconsumption-day" />
-			<channel id="statisticHomeconsumptionMonth" typeId="statistic-homeconsumption-month" />
-			<channel id="statisticHomeconsumptionTotal" typeId="statistic-homeconsumption-total" />
-			<channel id="statisticHomeconsumptionYear" typeId="statistic-homeconsumption-year" />
-			<channel id="statisticHomeconsumptionFromGridDay" typeId="statistic-homeconsumption-from-grid-day" />
-			<channel id="statisticHomeconsumptionFromGridMonth" typeId="statistic-homeconsumption-from-grid-month" />
-			<channel id="statisticHomeconsumptionFromGridTotal" typeId="statistic-homeconsumption-from-grid-total" />
-			<channel id="statisticHomeconsumptionFromGridYear" typeId="statistic-homeconsumption-from-grid-year" />
-			<channel id="statisticHomeconsumptionFromPVDay" typeId="statistic-homeconsumption-from-pv-day" />
-			<channel id="statisticHomeconsumptionFromPVMonth" typeId="statistic-homeconsumption-from-pv-month" />
-			<channel id="statisticHomeconsumptionFromPVTotal" typeId="statistic-homeconsumption-from-pv-total" />
-			<channel id="statisticHomeconsumptionFromPVYear" typeId="statistic-homeconsumption-from-pv-year" />
-			<channel id="statisticOwnconsumptionRateDay" typeId="statistic-ownconsumption-rate-day" />
-			<channel id="statisticOwnconsumptionRateMonth" typeId="statistic-ownconsumption-rate-month" />
-			<channel id="statisticOwnconsumptionRateTotal" typeId="statistic-ownconsumption-rate-total" />
-			<channel id="statisticOwnconsumptionRateYear" typeId="statistic-ownconsumption-rate-year" />
-			<channel id="statisticYieldDay" typeId="statistic-yield-day" />
-			<channel id="statisticYieldMonth" typeId="statistic-yield-month" />
-			<channel id="statisticYieldTotal" typeId="statistic-yield-total" />
-			<channel id="statisticYieldYear" typeId="statistic-yield-year" />
+			<channel id="deviceLocalDCPower" typeId="device-local-dc-power"/>
+			<channel id="deviceLocalHomeconsumptionFromGrid" typeId="device-local-homeconsumption-from-grid"/>
+			<channel id="deviceLocalOwnconsumption" typeId="device-local-ownconsumption"/>
+			<channel id="deviceLocalHomeconsumptionFromPV" typeId="device-local-homeconsumption-from-pv"/>
+			<channel id="deviceLocalHomeconsumptionTotal" typeId="device-local-homeconsumption-total"/>
+			<channel id="deviceLocalLimitEVUAbsolute" typeId="device-local-limit-evu-absolute"/>
+			<channel id="deviceLocalLimitEVURelativ" typeId="device-local-limit-evu-relativ"/>
+			<channel id="deviceLocalWorktime" typeId="device-local-worktime"/>
+			<channel id="deviceLocalACPhase1CurrentAmperage" typeId="device-local-ac-phase-1-current-amperage"/>
+			<channel id="deviceLocalACPhase1CurrentPower" typeId="device-local-ac-phase-1-current-power"/>
+			<channel id="deviceLocalACPhase1CurrentVoltage" typeId="device-local-ac-phase-1-current-voltage"/>
+			<channel id="deviceLocalACPhase2CurrentAmperage" typeId="device-local-ac-phase-2-current-amperage"/>
+			<channel id="deviceLocalACPhase2CurrentPower" typeId="device-local-ac-phase-2-current-power"/>
+			<channel id="deviceLocalACPhase2CurrentVoltage" typeId="device-local-ac-phase-2-current-voltage"/>
+			<channel id="deviceLocalACPhase3CurrentAmperage" typeId="device-local-ac-phase-3-current-amperage"/>
+			<channel id="deviceLocalACPhase3CurrentPower" typeId="device-local-ac-phase-3-current-power"/>
+			<channel id="deviceLocalACPhase3CurrentVoltage" typeId="device-local-ac-phase-3-current-voltage"/>
+			<channel id="deviceLocalACCurrentPower" typeId="device-local-ac-current-power"/>
+			<channel id="deviceLocalPVString1Amperage" typeId="device-local-pvstring-1-amperage"/>
+			<channel id="deviceLocalPVString1Power" typeId="device-local-pvstring-1-power"/>
+			<channel id="deviceLocalPVString1Voltage" typeId="device-local-pvstring-1-voltage"/>
+			<channel id="deviceLocalPVString2Amperage" typeId="device-local-pvstring-2-amperage"/>
+			<channel id="deviceLocalPVString2Power" typeId="device-local-pvstring-2-power"/>
+			<channel id="deviceLocalPVString2Voltage" typeId="device-local-pvstring-2-voltage"/>
+			<channel id="deviceLocalPVString3Amperage" typeId="device-local-pvstring-3-amperage"/>
+			<channel id="deviceLocalPVString3Power" typeId="device-local-pvstring-3-power"/>
+			<channel id="deviceLocalPVString3Voltage" typeId="device-local-pvstring-3-voltage"/>
+			<channel id="SCBEventErrorCountMc" typeId="scb-event-error-count-mc"/>
+			<channel id="SCBEventErrorCountSFH" typeId="scb-event-error-count-sfh"/>
+			<channel id="SCBEventErrorCountSCB" typeId="scb-event-error-count-scb"/>
+			<channel id="SCBEventWarningCountSCB" typeId="scb-event-warning-count-scb"/>
+			<channel id="statisticAutarkyDay" typeId="statistic-autarky-day"/>
+			<channel id="statisticAutarkyMonth" typeId="statistic-autarky-month"/>
+			<channel id="statisticAutarkyTotal" typeId="statistic-autarky-total"/>
+			<channel id="statisticAutarkyYear" typeId="statistic-autarky-year"/>
+			<channel id="statisticCo2SavingDay" typeId="statistic-co2saving-day"/>
+			<channel id="statisticCo2SavingMonth" typeId="statistic-co2saving-month"/>
+			<channel id="statisticCo2SavingTotal" typeId="statistic-co2saving-total"/>
+			<channel id="statisticCo2SavingYear" typeId="statistic-co2saving-year"/>
+			<channel id="statisticHomeconsumptionDay" typeId="statistic-homeconsumption-day"/>
+			<channel id="statisticHomeconsumptionMonth" typeId="statistic-homeconsumption-month"/>
+			<channel id="statisticHomeconsumptionTotal" typeId="statistic-homeconsumption-total"/>
+			<channel id="statisticHomeconsumptionYear" typeId="statistic-homeconsumption-year"/>
+			<channel id="statisticHomeconsumptionFromGridDay" typeId="statistic-homeconsumption-from-grid-day"/>
+			<channel id="statisticHomeconsumptionFromGridMonth" typeId="statistic-homeconsumption-from-grid-month"/>
+			<channel id="statisticHomeconsumptionFromGridTotal" typeId="statistic-homeconsumption-from-grid-total"/>
+			<channel id="statisticHomeconsumptionFromGridYear" typeId="statistic-homeconsumption-from-grid-year"/>
+			<channel id="statisticHomeconsumptionFromPVDay" typeId="statistic-homeconsumption-from-pv-day"/>
+			<channel id="statisticHomeconsumptionFromPVMonth" typeId="statistic-homeconsumption-from-pv-month"/>
+			<channel id="statisticHomeconsumptionFromPVTotal" typeId="statistic-homeconsumption-from-pv-total"/>
+			<channel id="statisticHomeconsumptionFromPVYear" typeId="statistic-homeconsumption-from-pv-year"/>
+			<channel id="statisticOwnconsumptionRateDay" typeId="statistic-ownconsumption-rate-day"/>
+			<channel id="statisticOwnconsumptionRateMonth" typeId="statistic-ownconsumption-rate-month"/>
+			<channel id="statisticOwnconsumptionRateTotal" typeId="statistic-ownconsumption-rate-total"/>
+			<channel id="statisticOwnconsumptionRateYear" typeId="statistic-ownconsumption-rate-year"/>
+			<channel id="statisticYieldDay" typeId="statistic-yield-day"/>
+			<channel id="statisticYieldMonth" typeId="statistic-yield-month"/>
+			<channel id="statisticYieldTotal" typeId="statistic-yield-total"/>
+			<channel id="statisticYieldYear" typeId="statistic-yield-year"/>
 		</channels>
 		<properties>
 			<property name="vendor">KOSTAL Solar Electric GmbH</property>
 		</properties>
-		<config-description-ref uri="thing-type:kostalplenticorepikoiq_config" />
+		<config-description-ref uri="thing-type:kostalplenticorepikoiq_config"/>
 	</thing-type>
 </thing:thing-descriptions>

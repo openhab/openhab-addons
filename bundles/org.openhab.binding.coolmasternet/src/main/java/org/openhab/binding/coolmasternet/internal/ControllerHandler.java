@@ -12,23 +12,28 @@
  */
 package org.openhab.binding.coolmasternet.internal;
 
+import static java.nio.charset.StandardCharsets.US_ASCII;
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.Writer;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+
+import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.unit.ImperialUnits;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -44,232 +49,326 @@ import org.slf4j.LoggerFactory;
 /**
  * Bridge to access a CoolMasterNet unit's ASCII protocol via TCP socket.
  *
- * A single CoolMasterNet can be connected to one or more HVAC units, each with a unique UID.
- * These are individual Things inside the bridge.
+ * <p>
+ * A single CoolMasterNet can be connected to one or more HVAC units, each with
+ * a unique UID. Each HVAC is an individual thing inside the bridge.
  *
  * @author Angus Gratton - Initial contribution
  * @author Wouter Born - Fix null pointer exceptions and stop refresh job on update/dispose
  */
 @NonNullByDefault
-public class ControllerHandler extends BaseBridgeHandler {
-    private static final int SOCKET_TIMEOUT = 2000;
+public final class ControllerHandler extends BaseBridgeHandler {
+    private static final String LF = "\n";
+    private static final byte PROMPT = ">".getBytes(US_ASCII)[0];
+    private static final int LS_LINE_LENGTH = 36;
+    private static final int LS_LINE_TEMP_SCALE_OFFSET = 13;
+    private static final int MAX_VALID_LINE_LENGTH = LS_LINE_LENGTH * 20;
+    private static final int SINK_TIMEOUT_MS = 25;
+    private static final int SOCKET_TIMEOUT_MS = 2000;
 
+    private ControllerConfiguration cfg = new ControllerConfiguration();
+    private Unit<?> unit = SIUnits.CELSIUS;
     private final Logger logger = LoggerFactory.getLogger(ControllerHandler.class);
-    private final Object refreshLock = new Object();
     private final Object socketLock = new Object();
 
-    private @Nullable ScheduledFuture<?> refreshJob;
+    private @Nullable ScheduledFuture<?> poller;
     private @Nullable Socket socket;
 
-    public ControllerHandler(Bridge thing) {
+    public ControllerHandler(final Bridge thing) {
         super(thing);
     }
 
     @Override
     public void initialize() {
-        logger.debug("Initializing CoolMasterNet Controller handler...");
-        stopRefresh();
-        startRefresh();
+        cfg = getConfigAs(ControllerConfiguration.class);
+        updateStatus(ThingStatus.UNKNOWN);
+        determineTemperatureUnits();
+        stopPoller();
+        startPoller();
     }
 
     @Override
     public void dispose() {
-        stopRefresh();
-        super.dispose();
+        updateStatus(ThingStatus.OFFLINE);
+        stopPoller();
+        disconnect();
     }
 
-    private void startRefresh() {
-        synchronized (refreshLock) {
-            ControllerConfiguration config = getConfigAs(ControllerConfiguration.class);
-            logger.debug("Scheduling new refresh job");
-            refreshJob = scheduler.scheduleWithFixedDelay(this::refreshHVACUnits, 0, config.refresh, TimeUnit.SECONDS);
-        }
+    /**
+     * Obtain the temperature unit configured for this controller.
+     *
+     * <p>
+     * CoolMasterNet defaults to Celsius, but allows a user to change the scale
+     * on a per-controller basis using the ASCII I/F "set deg" command. Given
+     * changing the unit is very rarely performed, there is no direct support
+     * for doing so within this binding.
+     *
+     * @return the unit as determined from the first line of the "ls" command
+     */
+    public Unit<?> getUnit() {
+        return unit;
     }
 
-    private void stopRefresh() {
-        synchronized (refreshLock) {
-            ScheduledFuture<?> localRefreshJob = refreshJob;
-            if (localRefreshJob != null && !localRefreshJob.isCancelled()) {
-                logger.debug("Cancelling existing refresh job");
-                localRefreshJob.cancel(true);
-                refreshJob = null;
+    private void determineTemperatureUnits() {
+        synchronized (socketLock) {
+            try {
+                checkConnection();
+                final String ls = sendCommand("ls");
+                if (ls.length() < LS_LINE_LENGTH) {
+                    throw new CoolMasterClientError("Invalid 'ls' response: '%s'", ls);
+                }
+                final char scale = ls.charAt(LS_LINE_TEMP_SCALE_OFFSET);
+                unit = scale == 'C' ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT;
+                logger.trace("Temperature scale '{}' set to {}", scale, unit);
+            } catch (final IOException ioe) {
+                logger.warn("Could not determine temperature scale", ioe);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ioe.getMessage());
             }
         }
     }
 
-    private void refreshHVACUnits() {
+    private void startPoller() {
+        synchronized (scheduler) {
+            logger.debug("Scheduling new poller");
+            poller = scheduler.scheduleWithFixedDelay(this::poll, 0, cfg.refresh, SECONDS);
+        }
+    }
+
+    private void stopPoller() {
+        synchronized (scheduler) {
+            final ScheduledFuture<?> poller = this.poller;
+            if (poller != null) {
+                logger.debug("Cancelling existing poller");
+                poller.cancel(true);
+                this.poller = null;
+            }
+        }
+    }
+
+    private void poll() {
         try {
             checkConnection();
-            updateStatus(ThingStatus.ONLINE);
-            for (Thing t : getThing().getThings()) {
-                HVACHandler h = (HVACHandler) t.getHandler();
-                if (h != null) {
-                    h.refresh();
-                }
+        } catch (final IOException ioe) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ioe.getMessage());
+            return;
+        }
+        for (Thing t : getThing().getThings()) {
+            final HVACHandler h = (HVACHandler) t.getHandler();
+            if (h != null) {
+                h.refresh();
             }
-        } catch (CoolMasterClientError e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
+        if (isConnected()) {
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
     }
 
-    /*
-     * Return true if the client socket is connected.
+    /**
+     * Passively determine if the client socket appears to be connected, but do
+     * modify the connection state.
      *
-     * Use checkConnection() to probe if the coolmasternet is responding correctly,
-     * and try to re-establish the connection if possible.
+     * <p>
+     * Use {@link #checkConnection()} if active verification (and potential
+     * reconnection) of the CoolNetMaster connection is required.
      */
     public boolean isConnected() {
         synchronized (socketLock) {
-            Socket localSocket = socket;
-            return localSocket != null && localSocket.isConnected() && !localSocket.isClosed();
+            final Socket socket = this.socket;
+            return socket != null && socket.isConnected() && !socket.isClosed();
         }
     }
 
-    /*
-     * Send a particular ASCII command to the CoolMasterNet, and return the successful response as a string.
+    /**
+     * Send a specific ASCII I/F command to CoolMasterNet and return its response.
      *
-     * If the "OK" prompt is not received then a CoolMasterClientError is thrown that contains whatever
-     * error message was printed by the CoolMasterNet.
+     * <p>
+     * This method automatically acquires a connection.
+     *
+     * @return the server response to the command (never empty)
+     * @throws {@link IOException} if communications failed with the server
      */
-    @SuppressWarnings("resource")
-    public @Nullable String sendCommand(String command) throws CoolMasterClientError {
+    public String sendCommand(final String command) throws IOException {
         synchronized (socketLock) {
             checkConnection();
 
-            StringBuilder response = new StringBuilder();
+            final StringBuilder response = new StringBuilder();
             try {
-                Socket localSocket = socket;
-                if (localSocket == null || !isConnected()) {
+                final Socket socket = this.socket;
+                if (socket == null || !isConnected()) {
                     throw new CoolMasterClientError(String.format("No connection for sending command %s", command));
                 }
 
                 logger.trace("Sending command '{}'", command);
-                OutputStream out = localSocket.getOutputStream();
-                out.write(command.getBytes());
-                out.write("\r\n".getBytes());
+                final Writer out = new OutputStreamWriter(socket.getOutputStream(), US_ASCII);
+                out.write(command);
+                out.write(LF);
+                out.flush();
 
-                try (Reader isr = new InputStreamReader(localSocket.getInputStream());
-                        BufferedReader in = new BufferedReader(isr)) {
-                    while (true) {
-                        String line = in.readLine();
-                        logger.trace("Read result '{}'", line);
-                        if ("OK".equals(line)) {
-                            return response.toString();
-                        }
-                        response.append(line);
-                        if (response.length() > 100) {
-                            /*
-                             * Usually this loop times out on errors, but in the case that we just keep getting
-                             * data we should also fail with an error.
-                             */
-                            throw new CoolMasterClientError(
-                                    String.format("Got gibberish response to command %s", command));
-                        }
+                final Reader isr = new InputStreamReader(socket.getInputStream(), US_ASCII);
+                final BufferedReader in = new BufferedReader(isr);
+                while (true) {
+                    String line = in.readLine();
+                    logger.trace("Read result '{}'", line);
+                    if (line == null || "OK".equals(line)) {
+                        return response.toString();
+                    }
+                    response.append(line);
+                    if (response.length() > MAX_VALID_LINE_LENGTH) {
+                        throw new CoolMasterClientError("Command '%s' received unexpected response '%s'", command,
+                                response);
                     }
                 }
-            } catch (SocketTimeoutException e) {
+            } catch (final SocketTimeoutException ste) {
                 if (response.length() == 0) {
-                    throw new CoolMasterClientError(String.format("No response to command %s", command));
+                    throw new CoolMasterClientError("Command '%s' received no response", command);
                 }
-                throw new CoolMasterClientError(String.format("Command '%s' got error '%s'", command, response));
-            } catch (IOException e) {
-                logger.error("{}", e.getLocalizedMessage(), e);
-                return null;
+                throw new CoolMasterClientError("Command '%s' received truncated response '%s'", command, response);
             }
         }
     }
 
-    /*
-     * Verify that the client socket is connected and responding, and try to reconnect if possible.
-     * May block for 1-2 seconds.
+    /**
+     * Ensure a client socket is connected and ready to receive commands.
      *
-     * Throws CoolMasterNetClientError if there is a connection problem.
+     * <p>
+     * This method may block for up to {@link #SOCKET_TIMEOUT_MS}, depending on
+     * the state of the connection. This usual time is {@link #SINK_TIMEOUT_MS}.
+     *
+     * <p>
+     * Return of this method guarantees the socket is ready to receive a
+     * command. If the socket could not be made ready, an exception is raised.
+     *
+     * @throws IOException if the socket could not be made ready
      */
-    @SuppressWarnings("resource")
-    private void checkConnection() throws CoolMasterClientError {
+    private void checkConnection() throws IOException {
         synchronized (socketLock) {
-            ControllerConfiguration config = getConfigAs(ControllerConfiguration.class);
             try {
-                if (!isConnected()) {
+                // Longer sink time used for initial connection welcome > prompt
+                final int sinkTime;
+                if (isConnected()) {
+                    sinkTime = SINK_TIMEOUT_MS;
+                } else {
+                    sinkTime = SOCKET_TIMEOUT_MS;
                     connect();
-                    if (!isConnected()) {
-                        throw new CoolMasterClientError(
-                                String.format("Failed to connect to %s:%s", config.host, config.port));
+                }
+
+                final Socket socket = this.socket;
+                if (socket == null) {
+                    throw new IllegalStateException(
+                            "Socket is null, which is unexpected because it was verified as available earlier in the same synchronized block; please log a bug report");
+                }
+                final InputStream in = socket.getInputStream();
+
+                // Sink (clear) buffer until earlier of the sinkTime or > prompt
+                try {
+                    socket.setSoTimeout(sinkTime);
+                    logger.trace("Waiting {} ms for buffer to sink", sinkTime);
+                    while (true) {
+                        int b = in.read();
+                        if (b == -1) {
+                            break;
+                        }
+                        if (b == PROMPT) {
+                            if (in.available() > 0) {
+                                throw new IOException("Unexpected data following prompt");
+                            }
+                            logger.trace("Buffer empty following unsolicited > prompt");
+                            return;
+                        }
                     }
+                } catch (final SocketTimeoutException expectedFromRead) {
+                } finally {
+                    socket.setSoTimeout(SOCKET_TIMEOUT_MS);
                 }
 
-                Socket localSocket = socket;
-                if (localSocket == null) {
-                    throw new CoolMasterClientError(
-                            String.format("Failed to connect to %s:%s", config.host, config.port));
-                }
+                // Solicit for a prompt given we haven't received one earlier
+                final Writer out = new OutputStreamWriter(socket.getOutputStream(), US_ASCII);
+                out.write(LF);
+                out.flush();
 
-                InputStream in = localSocket.getInputStream();
-                /* Flush anything pending in the input stream */
-                while (in.available() > 0) {
-                    in.read();
+                // Block until the > prompt arrives or IOE if SOCKET_TIMEOUT_MS
+                final int b = in.read();
+                if (b != PROMPT) {
+                    throw new IOException("Unexpected character received");
                 }
-                /* Send a CRLF, expect a > prompt (and a CRLF) back */
-                OutputStream out = localSocket.getOutputStream();
-                out.write("\r\n".getBytes(StandardCharsets.US_ASCII));
-                /*
-                 * this will time out with IOException if it doesn't see that prompt
-                 * with no other data following it, within 1 second (socket timeout)
-                 */
-                final byte prompt = ">".getBytes(StandardCharsets.US_ASCII)[0];
-                while (in.read() != prompt || in.available() > 3) {
-                    continue; // empty by design
+                if (in.available() > 0) {
+                    throw new IOException("Unexpected data following prompt");
                 }
-            } catch (IOException e) {
+                logger.trace("Buffer empty following solicited > prompt");
+            } catch (final IOException ioe) {
                 disconnect();
-                logger.debug("{}", e.getLocalizedMessage(), e);
-                throw new CoolMasterClientError(
-                        String.format("No response from CoolMasterNet unit %s:%s", config.host, config.port));
+                throw ioe;
             }
         }
     }
 
+    /**
+     * Opens the socket.
+     *
+     * <p>
+     * Guarantees to either open the socket or thrown an exception.
+     *
+     * @throws IOException if the socket could not be opened
+     */
     private void connect() throws IOException {
         synchronized (socketLock) {
-            ControllerConfiguration config = getConfigAs(ControllerConfiguration.class);
             try {
-                Socket localSocket = new Socket();
-                localSocket.connect(new InetSocketAddress(config.host, config.port), SOCKET_TIMEOUT);
-                localSocket.setSoTimeout(SOCKET_TIMEOUT);
-                socket = localSocket;
-            } catch (UnknownHostException e) {
-                logger.error("Unknown socket host: {}", config.host);
+                logger.debug("Connecting to {}:{}", cfg.host, cfg.port);
+                final Socket socket = new Socket();
+                socket.connect(new InetSocketAddress(cfg.host, cfg.port), SOCKET_TIMEOUT_MS);
+                socket.setSoTimeout(SOCKET_TIMEOUT_MS);
+                this.socket = socket;
+            } catch (final IOException ioe) {
                 socket = null;
-            } catch (SocketException e) {
-                logger.error("Failed to connect to {}:{}: {}", config.host, config.port, e.getLocalizedMessage(), e);
-                socket = null;
+                throw ioe;
             }
         }
     }
 
+    /**
+     * Attempts to disconnect the socket.
+     *
+     * <p>
+     * Disconnection failure is not considered an error, although will be logged.
+     */
     private void disconnect() {
         synchronized (socketLock) {
-            Socket localSocket = socket;
-            if (localSocket != null) {
+            final Socket socket = this.socket;
+            if (socket != null) {
+                logger.debug("Disconnecting from {}:{}", cfg.host, cfg.port);
                 try {
-                    localSocket.close();
-                } catch (IOException e1) {
-                    logger.error("{}", e1.getLocalizedMessage(), e1);
+                    socket.close();
+                } catch (final IOException ioe) {
+                    logger.warn("Could not disconnect", ioe);
                 }
-                socket = null;
+                this.socket = null;
             }
         }
     }
 
-    public class CoolMasterClientError extends Exception {
-        private static final long serialVersionUID = 1L;
+    /**
+     * Encodes ASCII I/F protocol error messages.
+     *
+     * <p>
+     * This exception is not used for normal socket and connection failures.
+     * It is only used when there is a protocol level error (eg unexpected
+     * messages or malformed content from the CoolNetMaster server).
+     */
+    public class CoolMasterClientError extends IOException {
+        private static final long serialVersionUID = 2L;
 
-        public CoolMasterClientError(String message) {
+        public CoolMasterClientError(final String message) {
             super(message);
+        }
+
+        public CoolMasterClientError(String format, Object... args) {
+            super(String.format(format, args));
         }
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
+    public void handleCommand(final ChannelUID channelUID, final Command command) {
     }
 }

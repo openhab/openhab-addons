@@ -73,5 +73,4 @@ public class VeluxGwLAN {
         return String.format("ip %s, nm %s, gw %s, DHCP %s", this.ipAddress, this.subnetMask, this.defaultGW,
                 this.enabledDHCP ? "enabled" : "disabled");
     }
-
 }

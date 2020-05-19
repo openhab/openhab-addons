@@ -7,21 +7,21 @@
 	<!-- Volvo Vehicle -->
 	<thing-type id="vehicle">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="vocapi" />
+			<bridge-type-ref id="vocapi"/>
 		</supported-bridge-type-refs>
 
 		<label>Volvo Vehicle</label>
 
 		<channel-groups>
-			<channel-group id="doors" typeId="doors" />
-			<channel-group id="windows" typeId="windows" />
-			<channel-group id="odometer" typeId="odometer" />
-			<channel-group id="tank" typeId="tank" />
-			<channel-group id="position" typeId="position" />
-			<channel-group id="tyrePressure" typeId="tyrePressure" />
-			<channel-group id="battery" typeId="battery" />
-			<channel-group id="other" typeId="other" />
-			<channel-group id="lasttrip" typeId="lasttrip" />
+			<channel-group id="doors" typeId="doors"/>
+			<channel-group id="windows" typeId="windows"/>
+			<channel-group id="odometer" typeId="odometer"/>
+			<channel-group id="tank" typeId="tank"/>
+			<channel-group id="position" typeId="position"/>
+			<channel-group id="tyrePressure" typeId="tyrePressure"/>
+			<channel-group id="battery" typeId="battery"/>
+			<channel-group id="other" typeId="other"/>
+			<channel-group id="lasttrip" typeId="lasttrip"/>
 		</channel-groups>
 
 		<representation-property>vin</representation-property>
@@ -43,13 +43,14 @@
 	<channel-group-type id="other">
 		<label>Other</label>
 		<channels>
-			<channel id="averageSpeed" typeId="averageSpeed" />
-			<channel id="engineRunning" typeId="engineRunning" />
-			<channel id="remoteHeater" typeId="remoteHeater" />
-			<channel id="preclimatization" typeId="preclimatization" />
-			<channel id="brakeFluidLevel" typeId="brakeFluidLevel" />
-			<channel id="washerFluidLevel" typeId="washerFluidLevel" />
-			<channel id="serviceWarningStatus" typeId="serviceWarningStatus" />
+			<channel id="averageSpeed" typeId="averageSpeed"/>
+			<channel id="engineRunning" typeId="engineRunning"/>
+			<channel id="remoteHeater" typeId="remoteHeater"/>
+			<channel id="preclimatization" typeId="preclimatization"/>
+			<channel id="brakeFluidLevel" typeId="brakeFluidLevel"/>
+			<channel id="washerFluidLevel" typeId="washerFluidLevel"/>
+			<channel id="serviceWarningStatus" typeId="serviceWarningStatus"/>
+			<channel id="bulbFailure" typeId="bulbFailure"/>
 		</channels>
 	</channel-group-type>
 
@@ -72,7 +73,7 @@
 				<label>End Time</label>
 				<description>Trip end time</description>
 			</channel>
-			<channel id="tripDuration" typeId="tripDuration" />
+			<channel id="tripDuration" typeId="tripDuration"/>
 			<channel id="tripStartOdometer" typeId="odometer">
 				<label>Start Odometer</label>
 			</channel>
@@ -111,7 +112,7 @@
 			<channel id="tailgate" typeId="door">
 				<label>Tailgate</label>
 			</channel>
-			<channel id="carLocked" typeId="carLocked" />
+			<channel id="carLocked" typeId="carLocked"/>
 		</channels>
 	</channel-group-type>
 
@@ -154,7 +155,7 @@
 	<channel-group-type id="odometer">
 		<label>Trip Meters</label>
 		<channels>
-			<channel id="odometer" typeId="odometer" />
+			<channel id="odometer" typeId="odometer"/>
 			<channel id="tripmeter1" typeId="odometer">
 				<label>Tripmeter 1</label>
 			</channel>
@@ -171,9 +172,9 @@
 				<label>Fuel Amount</label>
 				<description>Indicates the quantity of fuel available in the tank</description>
 			</channel>
-			<channel id="fuelLevel" typeId="fuelLevel" />
-			<channel id="fuelConsumption" typeId="fuelConsumption" />
-			<channel id="fuelAlert" typeId="fuelAlert" />
+			<channel id="fuelLevel" typeId="fuelLevel"/>
+			<channel id="fuelConsumption" typeId="fuelConsumption"/>
+			<channel id="fuelAlert" typeId="fuelAlert"/>
 			<channel id="distanceToEmpty" typeId="odometer">
 				<label>Distance Left</label>
 				<description>Distance left with given quantity of fuel</description>
@@ -188,8 +189,8 @@
 				<label>Location</label>
 				<description>The position of the vehicle</description>
 			</channel>
-			<channel id="calculatedLocation" typeId="calculatedLocation" />
-			<channel id="heading" typeId="heading" />
+			<channel id="calculatedLocation" typeId="calculatedLocation"/>
+			<channel id="heading" typeId="heading"/>
 			<channel id="locationTimestamp" typeId="timestamp">
 				<label>Location Timestamp</label>
 				<description>Timestamp of location value update</description>
@@ -200,12 +201,12 @@
 	<channel-group-type id="battery">
 		<label>Plugin Hybrid / Twin Engine info</label>
 		<channels>
-			<channel id="batteryLevel" typeId="batteryLevel" />
+			<channel id="batteryLevel" typeId="batteryLevel"/>
 			<channel id="batteryDistanceToEmpty" typeId="odometer">
 				<label>Distance to battery empty</label>
 			</channel>
-			<channel id="chargeStatus" typeId="chargeStatus" />
-			<channel id="timeToHVBatteryFullyCharged" typeId="timeToHVBatteryFullyCharged" />
+			<channel id="chargeStatus" typeId="chargeStatus"/>
+			<channel id="timeToHVBatteryFullyCharged" typeId="timeToHVBatteryFullyCharged"/>
 			<channel id="chargingEnd" typeId="timestamp">
 				<label>Charging end</label>
 			</channel>
@@ -291,7 +292,7 @@
 		<item-type>DateTime</item-type>
 		<label>Timestamp</label>
 		<description>Data timestamp</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="engineStart">
@@ -322,6 +323,13 @@
 		<item-type>Switch</item-type>
 		<label>Remote Heater</label>
 		<description>(De)Activates remote heater</description>
+	</channel-type>
+	
+	<channel-type id="bulbFailure">
+		<item-type>Switch</item-type>
+		<label>Bulb Failure</label>
+		<description>At least on bulb is reported as dead</description>
+		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="brakeFluidLevel">
@@ -377,7 +385,7 @@
 		<item-type>Switch</item-type>
 		<label>Fuel Alarm</label>
 		<description>set to 'ON' when the tank level is low</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

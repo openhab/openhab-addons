@@ -49,5 +49,4 @@ public class RealTimeClockSetRequestMessage extends Message {
 
         return second + minute + hour + dayOfWeek + day + month + year;
     }
-
 }

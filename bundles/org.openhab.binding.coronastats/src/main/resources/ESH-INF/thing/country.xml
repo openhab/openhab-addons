@@ -6,9 +6,9 @@
 
 	<thing-type id="country">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="world" />
+			<bridge-type-ref id="world"/>
 		</supported-bridge-type-refs>
-		
+
 		<label>Corona Statistics (Country)</label>
 		<description>Corona statistics for a specific country</description>
 
@@ -23,11 +23,11 @@
 			<channel id="tests" typeId="tests"/>
 			<channel id="updated" typeId="updated"/>
 		</channels>
-		
+
 		<properties>
 			<property name="country"/>
 		</properties>
-		
+
 		<config-description>
 			<parameter name="countryCode" type="text" required="true">
 				<label>Country Code</label>

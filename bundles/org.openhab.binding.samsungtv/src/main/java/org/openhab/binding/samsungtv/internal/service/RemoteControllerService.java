@@ -34,6 +34,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.io.net.http.WebSocketFactory;
 import org.openhab.binding.samsungtv.internal.config.SamsungTvConfiguration;
 import org.openhab.binding.samsungtv.internal.protocol.KeyCode;
@@ -254,6 +255,9 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
     @Override
     public void handleCommand(String channel, Command command) {
         logger.debug("Received channel: {}, command: {}", channel, command);
+        if (command == RefreshType.REFRESH) {
+            return;
+        }
 
         if (remoteController == null) {
             return;
@@ -411,7 +415,6 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
         } catch (RemoteControllerException e) {
             reportError(String.format("Could not send command to device on %s:%d", host, port), e);
         }
-
     }
 
     private void sendKeyCodePress(KeyCode key) {
@@ -422,7 +425,6 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
         } catch (RemoteControllerException e) {
             reportError(String.format("Could not send command to device on %s:%d", host, port), e);
         }
-
     }
 
     /**
@@ -502,7 +504,6 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
         for (EventListener listener : listeners) {
             listener.putConfig(key, value);
         }
-
     }
 
     @Override

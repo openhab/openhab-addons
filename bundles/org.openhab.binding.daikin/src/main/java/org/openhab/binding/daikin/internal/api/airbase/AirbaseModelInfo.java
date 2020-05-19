@@ -12,14 +12,16 @@
  */
 package org.openhab.binding.daikin.internal.api.airbase;
 
-import java.util.Arrays;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.EnumSet;
+import java.util.Optional;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.daikin.internal.api.airbase.AirbaseEnums.AirbaseFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.openhab.binding.daikin.internal.api.InfoParser;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseEnums.AirbaseFeature;
 
 /**
@@ -28,13 +30,14 @@ import org.openhab.binding.daikin.internal.api.airbase.AirbaseEnums.AirbaseFeatu
  * @author Paul Smedley - Initial Contribution
  *
  */
+@NonNullByDefault
 public class AirbaseModelInfo {
     private static final Logger LOGGER = LoggerFactory.getLogger(AirbaseModelInfo.class);
 
-    public String ret;
-    public Integer zonespresent;
-    public Integer commonzone;
-    public Integer frate_steps; // fan rate steps
+    public String ret = "";
+    public int zonespresent;
+    public int commonzone;
+    public int frate_steps; // fan rate steps
     public EnumSet<AirbaseFeature> features;
 
     private AirbaseModelInfo() {
@@ -44,25 +47,18 @@ public class AirbaseModelInfo {
     public static AirbaseModelInfo parse(String response) {
         LOGGER.debug("Parsing string: \"{}\"", response);
 
-        Map<String, String> responseMap = Arrays.asList(response.split(",")).stream().filter(kv -> kv.contains("="))
-                .map(kv -> {
-                    String[] keyValue = kv.split("=");
-                    String key = keyValue[0];
-                    String value = keyValue.length > 1 ? keyValue[1] : "";
-                    return new String[] { key, value };
-                }).collect(Collectors.toMap(x -> x[0], x -> x[1]));
+        Map<String, String> responseMap = InfoParser.parse(response);
 
         AirbaseModelInfo info = new AirbaseModelInfo();
-        info.ret = responseMap.get("ret");
-        info.zonespresent = Integer.parseInt(responseMap.get("en_zone"));
-        info.commonzone = Integer.parseInt(responseMap.get("en_common_zone"));  
-        info.frate_steps = Integer.parseInt(responseMap.get("frate_steps"));      
-        for (AirbaseFeature f: AirbaseFeature.values()) {
+        info.ret = Optional.ofNullable(responseMap.get("ret")).orElse("");
+        info.zonespresent = Optional.ofNullable(responseMap.get("en_zone")).flatMap(value -> InfoParser.parseInt(value)).orElse(0);
+        info.commonzone = Optional.ofNullable(responseMap.get("en_common_zone")).flatMap(value -> InfoParser.parseInt(value)).orElse(0);
+        info.frate_steps = Optional.ofNullable(responseMap.get("frate_steps")).flatMap(value -> InfoParser.parseInt(value)).orElse(1);
+        for (AirbaseFeature f : AirbaseFeature.values()) {
             if ("1".equals(responseMap.get(f.getValue()))) {
                 info.features.add(f);
             }
         }
         return info;
     }
-
 }

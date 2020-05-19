@@ -5,15 +5,15 @@
 	<!-- Dimmer -->
 	<thing-type id="dimmer">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="artnet-bridge" />
-			<bridge-type-ref id="lib485-bridge" />
-			<bridge-type-ref id="sacn-bridge" />
+			<bridge-type-ref id="artnet-bridge"/>
+			<bridge-type-ref id="lib485-bridge"/>
+			<bridge-type-ref id="sacn-bridge"/>
 		</supported-bridge-type-refs>
 		<label>DMX Dimmer</label>
 		<description>A single/multi-channel dimmer</description>
 		<channels>
-			<channel id="brightness" typeId="brightness" />
-			<channel id="switch" typeId="switch" />
+			<channel id="brightness" typeId="brightness"/>
+			<channel id="switch" typeId="switch"/>
 		</channels>
 		<config-description>
 			<parameter name="dmxid" type="text">
@@ -33,13 +33,17 @@
 			</parameter>
 			<parameter name="turnonvalue" type="text">
 				<label>Turn-On Value(s)</label>
-				<description>Format is "value[, value, ...]". If less values than channels are defined, they are reused from the beginning. </description>
+				<description>Format is "value[, value, ...]". If less values than channels are defined, they are reused from the
+					beginning.
+				</description>
 				<required>false</required>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="turnoffvalue" type="text">
 				<label>Turn-Off Value(s)</label>
-				<description>Format is "value[, value, ...]". If less values than channels are defined, they are reused from the beginning. </description>
+				<description>Format is "value[, value, ...]". If less values than channels are defined, they are reused from the
+					beginning.
+				</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="dynamicturnonvalue" type="boolean">

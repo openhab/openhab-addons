@@ -100,5 +100,4 @@ public class DiscoveryParticipantClass1 extends AbstractDiscoveryParticipant {
             // no device here
         }
     }
-
 }

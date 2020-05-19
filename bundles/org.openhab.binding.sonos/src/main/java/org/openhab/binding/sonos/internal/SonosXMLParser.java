@@ -626,7 +626,6 @@ public class SonosXMLParser {
         public List<String> getTextFields() {
             return textFields;
         }
-
     }
 
     private static class AVTransportEventHandler extends DefaultHandler {
@@ -699,7 +698,6 @@ public class SonosXMLParser {
         public Map<String, String> getChanges() {
             return changes;
         }
-
     }
 
     private static class MetaDataHandler extends DefaultHandler {
@@ -832,7 +830,6 @@ public class SonosXMLParser {
         public Map<String, String> getChanges() {
             return changes;
         }
-
     }
 
     private static class MusicServiceHandler extends DefaultHandler {
@@ -850,7 +847,6 @@ public class SonosXMLParser {
         public List<SonosMusicService> getServices() {
             return services;
         }
-
     }
 
     public static String getRoomName(String descriptorXML) {

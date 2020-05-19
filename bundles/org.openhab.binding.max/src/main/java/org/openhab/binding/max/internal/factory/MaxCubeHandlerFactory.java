@@ -122,5 +122,4 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
             return null;
         }
     }
-
 }

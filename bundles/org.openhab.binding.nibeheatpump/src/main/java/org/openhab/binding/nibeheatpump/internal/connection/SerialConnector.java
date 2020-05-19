@@ -23,6 +23,13 @@ import java.util.TooManyListenersException;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.smarthome.core.util.HexUtils;
+import org.eclipse.smarthome.io.transport.serial.PortInUseException;
+import org.eclipse.smarthome.io.transport.serial.SerialPort;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEvent;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEventListener;
+import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
+import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
 import org.openhab.binding.nibeheatpump.internal.NibeHeatPumpException;
 import org.openhab.binding.nibeheatpump.internal.config.NibeHeatPumpConfiguration;
 import org.openhab.binding.nibeheatpump.internal.message.MessageFactory;
@@ -34,14 +41,6 @@ import org.openhab.binding.nibeheatpump.internal.protocol.NibeHeatPumpProtocolCo
 import org.openhab.binding.nibeheatpump.internal.protocol.NibeHeatPumpProtocolDefaultContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import gnu.io.CommPortIdentifier;
-import gnu.io.NoSuchPortException;
-import gnu.io.PortInUseException;
-import gnu.io.SerialPort;
-import gnu.io.SerialPortEvent;
-import gnu.io.SerialPortEventListener;
-import gnu.io.UnsupportedCommOperationException;
 
 /**
  * Connector for serial port communication.
@@ -55,14 +54,16 @@ public class SerialConnector extends NibeHeatPumpBaseConnector {
     private InputStream in;
     private OutputStream out;
     private SerialPort serialPort;
+    private final SerialPortManager serialPortManager;
     private Thread readerThread;
     private NibeHeatPumpConfiguration conf;
 
     private final List<byte[]> readQueue = new ArrayList<>();
     private final List<byte[]> writeQueue = new ArrayList<>();
 
-    SerialConnector() {
+    public SerialConnector(SerialPortManager serialPortManager) {
         logger.debug("Nibe heatpump Serial Port message listener created");
+        this.serialPortManager = serialPortManager;
     }
 
     @Override
@@ -73,7 +74,10 @@ public class SerialConnector extends NibeHeatPumpBaseConnector {
 
         conf = configuration;
         try {
-            CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(conf.serialPort);
+            SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(conf.serialPort);
+            if (portIdentifier == null) {
+                throw new NibeHeatPumpException("Connection failed, no such port: " + conf.serialPort);
+            }
 
             serialPort = portIdentifier.open(this.getClass().getName(), 2000);
             serialPort.setSerialPortParams(9600, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
@@ -88,12 +92,10 @@ public class SerialConnector extends NibeHeatPumpBaseConnector {
             if (in.markSupported()) {
                 in.reset();
             }
-        } catch (NoSuchPortException e) {
-            throw new NibeHeatPumpException("Connection failed, no such a port", e);
         } catch (PortInUseException e) {
-            throw new NibeHeatPumpException("Connection failed, port in use", e);
+            throw new NibeHeatPumpException("Connection failed, port in use: " + conf.serialPort, e);
         } catch (UnsupportedCommOperationException | IOException e) {
-            throw new NibeHeatPumpException("Connection failed, reason: {}" + e.getMessage(), e);
+            throw new NibeHeatPumpException("Connection failed, reason: " + e.getMessage(), e);
         }
 
         readQueue.clear();

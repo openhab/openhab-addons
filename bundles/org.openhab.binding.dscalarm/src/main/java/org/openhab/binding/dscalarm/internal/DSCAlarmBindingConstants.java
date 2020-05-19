@@ -119,5 +119,4 @@ public class DSCAlarmBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(ENVISALINKBRIDGE_THING_TYPE, IT100BRIDGE_THING_TYPE, TCPSERVERBRIDGE_THING_TYPE)
                     .collect(Collectors.toSet()));
-
 }

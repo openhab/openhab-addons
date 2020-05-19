@@ -24,5 +24,4 @@ public class UnsupportedMessageTypeException extends Exception {
      * required variable to avoid IncorrectMultilineIndexException warning
      */
     private static final long serialVersionUID = -5163044407682700913L;
-
 }

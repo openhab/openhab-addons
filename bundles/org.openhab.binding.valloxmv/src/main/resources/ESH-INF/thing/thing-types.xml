@@ -7,43 +7,43 @@
 		<label>Vallox Ventilation Unit</label>
 		<description>Interface to online interface of Vallox ventilation unit</description>
 		<channels>
-			<channel id="onoff" typeId="onoff" />
-			<channel id="state" typeId="state" />
-			<channel id="fanspeed" typeId="fanspeed" />
-			<channel id="fanspeedextract" typeId="fanspeedextract" />
-			<channel id="fanspeedsupply" typeId="fanspeedsupply" />
-			<channel id="tempinside" typeId="tempinside" />
-			<channel id="tempoutside" typeId="tempoutside" />
-			<channel id="tempexhaust" typeId="tempexhaust" />
-			<channel id="tempincomingbeforeheating" typeId="tempincomingbeforeheating" />
-			<channel id="tempincoming" typeId="tempincoming" />
-			<channel id="humidity" typeId="humidity" />
-			<channel id="cellstate" typeId="cellstate" />
-			<channel id="uptimeyears" typeId="uptimeyears" />
-			<channel id="uptimehours" typeId="uptimehours" />
-			<channel id="uptimehourscurrent" typeId="uptimehourscurrent" />
-			<channel id="filterchangeddate" typeId="filterchangeddate" />
-			<channel id="remainingfilterdays" typeId="remainingfilterdays" />
-			<channel id="extrfanbalancebase" typeId="extrfanbalancebase" />
-			<channel id="suppfanbalancebase" typeId="suppfanbalancebase" />
-			<channel id="homespeedsetting" typeId="homespeedsetting" />
-			<channel id="awayspeedsetting" typeId="awayspeedsetting" />
-			<channel id="boostspeedsetting" typeId="boostspeedsetting" />
-			<channel id="homeairtemptarget" typeId="homeairtemptarget" />
-			<channel id="awayairtemptarget" typeId="awayairtemptarget" />
-			<channel id="boostairtemptarget" typeId="boostairtemptarget" />
-			<channel id="boosttime" typeId="boosttime" />
-			<channel id="boosttimerenabled" typeId="boosttimerenabled" />
-			<channel id="fireplaceextrfan" typeId="fireplaceextrfan" />
-			<channel id="fireplacesuppfan" typeId="fireplacesuppfan" />
-			<channel id="fireplacetime" typeId="fireplacetime" />
-			<channel id="fireplacetimerenabled" typeId="fireplacetimerenabled" />
-			<channel id="extraairtemptarget" typeId="extraairtemptarget" />
-			<channel id="extraextrfan" typeId="extraextrfan" />
-			<channel id="extrasuppfan" typeId="extrasuppfan" />
-			<channel id="extratime" typeId="extratime" />
-			<channel id="extratimerenabled" typeId="extratimerenabled" />
-			<channel id="weeklytimerenabled" typeId="weeklytimerenabled" />
+			<channel id="onoff" typeId="onoff"/>
+			<channel id="state" typeId="state"/>
+			<channel id="fanspeed" typeId="fanspeed"/>
+			<channel id="fanspeedextract" typeId="fanspeedextract"/>
+			<channel id="fanspeedsupply" typeId="fanspeedsupply"/>
+			<channel id="tempinside" typeId="tempinside"/>
+			<channel id="tempoutside" typeId="tempoutside"/>
+			<channel id="tempexhaust" typeId="tempexhaust"/>
+			<channel id="tempincomingbeforeheating" typeId="tempincomingbeforeheating"/>
+			<channel id="tempincoming" typeId="tempincoming"/>
+			<channel id="humidity" typeId="humidity"/>
+			<channel id="cellstate" typeId="cellstate"/>
+			<channel id="uptimeyears" typeId="uptimeyears"/>
+			<channel id="uptimehours" typeId="uptimehours"/>
+			<channel id="uptimehourscurrent" typeId="uptimehourscurrent"/>
+			<channel id="filterchangeddate" typeId="filterchangeddate"/>
+			<channel id="remainingfilterdays" typeId="remainingfilterdays"/>
+			<channel id="extrfanbalancebase" typeId="extrfanbalancebase"/>
+			<channel id="suppfanbalancebase" typeId="suppfanbalancebase"/>
+			<channel id="homespeedsetting" typeId="homespeedsetting"/>
+			<channel id="awayspeedsetting" typeId="awayspeedsetting"/>
+			<channel id="boostspeedsetting" typeId="boostspeedsetting"/>
+			<channel id="homeairtemptarget" typeId="homeairtemptarget"/>
+			<channel id="awayairtemptarget" typeId="awayairtemptarget"/>
+			<channel id="boostairtemptarget" typeId="boostairtemptarget"/>
+			<channel id="boosttime" typeId="boosttime"/>
+			<channel id="boosttimerenabled" typeId="boosttimerenabled"/>
+			<channel id="fireplaceextrfan" typeId="fireplaceextrfan"/>
+			<channel id="fireplacesuppfan" typeId="fireplacesuppfan"/>
+			<channel id="fireplacetime" typeId="fireplacetime"/>
+			<channel id="fireplacetimerenabled" typeId="fireplacetimerenabled"/>
+			<channel id="extraairtemptarget" typeId="extraairtemptarget"/>
+			<channel id="extraextrfan" typeId="extraextrfan"/>
+			<channel id="extrasuppfan" typeId="extrasuppfan"/>
+			<channel id="extratime" typeId="extratime"/>
+			<channel id="extratimerenabled" typeId="extratimerenabled"/>
+			<channel id="weeklytimerenabled" typeId="weeklytimerenabled"/>
 		</channels>
 		<config-description>
 			<parameter name="ip" type="text" required="true">
@@ -84,7 +84,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Fan Speed</label>
 		<description>Fan speed in % (0-100)</description>
-		<state readOnly="true" min="0" max="1" pattern="%d %unit%" />
+		<state readOnly="true" min="0" max="1" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="fanspeedextract" advanced="true">
@@ -106,7 +106,7 @@
 		<label>Temperature Inside</label>
 		<description>Current temperature inside the building.</description>
 		<category>Temperature</category>
-		<state pattern="%.2f %unit%" readOnly="true" />
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="tempoutside">
@@ -114,7 +114,7 @@
 		<label>Temperature Outside</label>
 		<description>Current temperature outside the building.</description>
 		<category>Temperature</category>
-		<state pattern="%.2f %unit%" readOnly="true" />
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="tempexhaust">
@@ -122,7 +122,7 @@
 		<label>Temperature Exhaust</label>
 		<description>Current temperature of the air flow exhausting the building.</description>
 		<category>Temperature</category>
-		<state pattern="%.2f %unit%" readOnly="true" />
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="tempincomingbeforeheating" advanced="true">
@@ -133,7 +133,7 @@
 			included in ventilation unit).
 		</description>
 		<category>Temperature</category>
-		<state pattern="%.2f %unit%" readOnly="true" />
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="tempincoming">
@@ -141,14 +141,14 @@
 		<label>Temperature Incoming</label>
 		<description>Current temperature of the air flow incoming to the building.</description>
 		<category>Temperature</category>
-		<state pattern="%.2f %unit%" readOnly="true" />
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="humidity">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Current humidity of the air flow exhausting the building.</description>
-		<state readOnly="true" min="0" max="100" pattern="%d %unit%" />
+		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="cellstate">
@@ -169,70 +169,70 @@
 		<item-type>Number</item-type>
 		<label>Total Uptime Years</label>
 		<description>Total uptime in years (+ uptime in hours = total uptime)</description>
-		<state pattern="%d Y" readOnly="true" />
+		<state pattern="%d Y" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="uptimehours">
 		<item-type>Number</item-type>
 		<label>Total Uptime Hours</label>
 		<description>Total uptime in hours (+ uptime in years = total uptime)</description>
-		<state pattern="%d h" readOnly="true" />
+		<state pattern="%d h" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="uptimehourscurrent">
 		<item-type>Number</item-type>
 		<label>Current Uptime Hours</label>
 		<description>Current uptime in hours</description>
-		<state pattern="%d h" readOnly="true" />
+		<state pattern="%d h" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="filterchangeddate" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Last Filter Change</label>
 		<description>Date filter was changed last time</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="remainingfilterdays" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Next Filter Change</label>
 		<description>Days until filter has to be changed</description>
-		<state pattern="%d d" readOnly="true" />
+		<state pattern="%d d" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="extrfanbalancebase" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Extract Fan Base Speed</label>
 		<description>Extract fan base speed in % (0-100)</description>
-		<state readOnly="false" min="0" max="100" pattern="%d %%" />
+		<state readOnly="false" min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="suppfanbalancebase" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Supply Fan Base Speed</label>
 		<description>Supply fan base speed in % (0-100)</description>
-		<state readOnly="false" min="0" max="100" pattern="%d %%" />
+		<state readOnly="false" min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="homespeedsetting" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Home Fan Speed</label>
 		<description>Home fan speed in % (0-100)</description>
-		<state readOnly="false" min="0" max="100" pattern="%d %%" />
+		<state readOnly="false" min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="awayspeedsetting" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Away Fan Speed</label>
 		<description>Away fan speed in % (0-100)</description>
-		<state readOnly="false" min="0" max="100" pattern="%d %%" />
+		<state readOnly="false" min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="boostspeedsetting" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Boost Fan Speed</label>
 		<description>Boost fan speed in % (0-100)</description>
-		<state readOnly="false" min="0" max="100" pattern="%d %%" />
+		<state readOnly="false" min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="homeairtemptarget" advanced="true">
@@ -240,7 +240,7 @@
 		<label>Home Target Temperature</label>
 		<description>Target temperature in home state</description>
 		<category>Temperature</category>
-		<state pattern="%.2f %unit%" readOnly="false" />
+		<state pattern="%.2f %unit%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="awayairtemptarget" advanced="true">
@@ -248,7 +248,7 @@
 		<label>Away Target Temperature</label>
 		<description>Target temperature in away state</description>
 		<category>Temperature</category>
-		<state pattern="%.2f %unit%" readOnly="false" />
+		<state pattern="%.2f %unit%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="boostairtemptarget" advanced="true">
@@ -256,14 +256,14 @@
 		<label>Boost Target Temperature</label>
 		<description>Target temperature in boost state</description>
 		<category>Temperature</category>
-		<state pattern="%.2f %unit%" readOnly="false" />
+		<state pattern="%.2f %unit%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="boosttime" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Boost Timer</label>
 		<description>Boost profile timer value in minutes</description>
-		<state readOnly="false" min="1" max="65535" pattern="%d min" />
+		<state readOnly="false" min="1" max="65535" pattern="%d min"/>
 	</channel-type>
 
 	<channel-type id="boosttimerenabled" advanced="true">
@@ -276,21 +276,21 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Fireplace Extract Fan Speed</label>
 		<description>Fireplace profile extract fan speed in % (0-100)</description>
-		<state readOnly="false" min="0" max="100" pattern="%d %%" />
+		<state readOnly="false" min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="fireplacesuppfan" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Fireplace Supply Fan Speed</label>
 		<description>Fireplace profile supply fan speed in % (0-100)</description>
-		<state readOnly="false" min="0" max="100" pattern="%d %%" />
+		<state readOnly="false" min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="fireplacetime" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Fireplace Timer</label>
 		<description>Fireplace profile timer value in minutes</description>
-		<state readOnly="false" min="1" max="65535" pattern="%d min" />
+		<state readOnly="false" min="1" max="65535" pattern="%d min"/>
 	</channel-type>
 
 	<channel-type id="fireplacetimerenabled" advanced="true">
@@ -304,28 +304,28 @@
 		<label>Extra Target Temperature</label>
 		<description>Target temperature in extra profile</description>
 		<category>Temperature</category>
-		<state readOnly="false" min="5" max="25" pattern="%.2f %unit%" />
+		<state readOnly="false" min="5" max="25" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="extraextrfan" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Extra Extract Fan Speed</label>
 		<description>Extra profile extract fan speed in % (0-100)</description>
-		<state readOnly="false" min="0" max="100" pattern="%d %%" />
+		<state readOnly="false" min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="extrasuppfan" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Extra Supply Fan Speed</label>
 		<description>Extra profile supply fan speed in % (0-100)</description>
-		<state readOnly="false" min="0" max="100" pattern="%d %%" />
+		<state readOnly="false" min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="extratime" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Extra Timer</label>
 		<description>Extra profile timer value in minutes</description>
-		<state readOnly="false" min="1" max="65535" pattern="%d min" />
+		<state readOnly="false" min="1" max="65535" pattern="%d min"/>
 	</channel-type>
 
 	<channel-type id="extratimerenabled" advanced="true">

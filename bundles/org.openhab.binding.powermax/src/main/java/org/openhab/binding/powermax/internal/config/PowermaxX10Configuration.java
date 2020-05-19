@@ -23,5 +23,4 @@ public class PowermaxX10Configuration {
     public static final String DEVICE_NUMBER = "deviceNumber";
 
     public Integer deviceNumber;
-
 }

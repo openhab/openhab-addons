@@ -78,7 +78,6 @@ public class StatefulHandlerCallback implements RioHandlerCallback {
 
         // If we got this far - call the underlying one
         wrappedCallback.statusChanged(status, detail, msg);
-
     }
 
     /**
@@ -109,7 +108,6 @@ public class StatefulHandlerCallback implements RioHandlerCallback {
         // Something changed - save the new state and call the underlying wrapped
         state.put(channelId, newState);
         wrappedCallback.stateChanged(channelId, newState);
-
     }
 
     /**
@@ -134,7 +132,6 @@ public class StatefulHandlerCallback implements RioHandlerCallback {
     @Override
     public void setProperty(String propertyName, String propertyValue) {
         wrappedCallback.setProperty(propertyName, propertyValue);
-
     }
 
     /**
@@ -150,7 +147,6 @@ public class StatefulHandlerCallback implements RioHandlerCallback {
     @Override
     public void addListener(String channelId, RioHandlerCallbackListener listener) {
         wrappedCallback.addListener(channelId, listener);
-
     }
 
     @Override

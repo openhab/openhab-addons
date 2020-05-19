@@ -48,5 +48,4 @@ public class HDPowerViewBindingConstants {
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_HUB);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_SHADE);
     }
-
 }

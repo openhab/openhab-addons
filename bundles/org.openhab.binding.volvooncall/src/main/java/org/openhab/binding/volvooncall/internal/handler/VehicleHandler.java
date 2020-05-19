@@ -13,6 +13,8 @@
 package org.openhab.binding.volvooncall.internal.handler;
 
 import static org.eclipse.smarthome.core.library.unit.MetricPrefix.KILO;
+import static org.eclipse.smarthome.core.library.unit.SIUnits.*;
+import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.*;
 import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.*;
 
 import java.io.IOException;
@@ -33,8 +35,6 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.library.unit.SIUnits;
-import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -48,15 +48,21 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.volvooncall.internal.VolvoOnCallException;
 import org.openhab.binding.volvooncall.internal.action.VolvoOnCallActions;
 import org.openhab.binding.volvooncall.internal.config.VehicleConfiguration;
 import org.openhab.binding.volvooncall.internal.dto.Attributes;
+import org.openhab.binding.volvooncall.internal.dto.DoorsStatus;
+import org.openhab.binding.volvooncall.internal.dto.Heater;
+import org.openhab.binding.volvooncall.internal.dto.HvBattery;
 import org.openhab.binding.volvooncall.internal.dto.Position;
 import org.openhab.binding.volvooncall.internal.dto.Status;
 import org.openhab.binding.volvooncall.internal.dto.Trip;
 import org.openhab.binding.volvooncall.internal.dto.TripDetail;
 import org.openhab.binding.volvooncall.internal.dto.Trips;
+import org.openhab.binding.volvooncall.internal.dto.TyrePressure;
 import org.openhab.binding.volvooncall.internal.dto.Vehicles;
+import org.openhab.binding.volvooncall.internal.dto.WindowsStatus;
 import org.openhab.binding.volvooncall.internal.wrapper.VehiclePositionWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,8 +78,7 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class VehicleHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
-
-    private @NonNullByDefault({}) Map<String, String> activeOptions;
+    private final Map<String, String> activeOptions = new HashMap<>();
     private @Nullable ScheduledFuture<?> refreshJob;
 
     private Vehicles vehicle = new Vehicles();
@@ -86,9 +91,9 @@ public class VehicleHandler extends BaseThingHandler {
         super(thing);
     }
 
-    private Map<String, String> discoverAttributes(VolvoOnCallBridgeHandler bridgeHandler, String vin)
-            throws JsonSyntaxException, IOException {
-        Attributes attributes = bridgeHandler.getURL(Attributes.class, vin);
+    private Map<String, String> discoverAttributes(VolvoOnCallBridgeHandler bridgeHandler)
+            throws JsonSyntaxException, IOException, VolvoOnCallException {
+        Attributes attributes = bridgeHandler.getURL(vehicle.attributesURL, Attributes.class);
 
         Map<String, String> properties = new HashMap<>();
         properties.put(CAR_LOCATOR, attributes.carLocatorSupported.toString());
@@ -118,12 +123,12 @@ public class VehicleHandler extends BaseThingHandler {
                 vehicle = bridgeHandler.getURL(SERVICE_URL + "vehicles/" + configuration.vin, Vehicles.class);
 
                 if (thing.getProperties().isEmpty()) {
-                    Map<String, String> properties = discoverAttributes(bridgeHandler, configuration.vin);
+                    Map<String, String> properties = discoverAttributes(bridgeHandler);
                     updateProperties(properties);
                 }
 
-                activeOptions = thing.getProperties().entrySet().stream().filter(p -> "true".equals(p.getValue()))
-                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                activeOptions.putAll(thing.getProperties().entrySet().stream().filter(p -> "true".equals(p.getValue()))
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
 
                 if (thing.getProperties().containsKey(LAST_TRIP_ID)) {
                     lastTripId = Integer.parseInt(thing.getProperties().get(LAST_TRIP_ID));
@@ -131,7 +136,7 @@ public class VehicleHandler extends BaseThingHandler {
 
                 updateStatus(ThingStatus.ONLINE);
                 startAutomaticRefresh(configuration.refresh);
-            } catch (JsonSyntaxException | IOException e) {
+            } catch (JsonSyntaxException | IOException | VolvoOnCallException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, e.getMessage());
             }
         }
@@ -143,6 +148,7 @@ public class VehicleHandler extends BaseThingHandler {
      * @param refresh : refresh frequency in minutes
      */
     private void startAutomaticRefresh(int refresh) {
+        ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob == null || refreshJob.isCancelled()) {
             refreshJob = scheduler.scheduleWithFixedDelay(this::queryApiAndUpdateChannels, 10, refresh,
                     TimeUnit.MINUTES);
@@ -153,27 +159,42 @@ public class VehicleHandler extends BaseThingHandler {
         VolvoOnCallBridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler != null) {
             try {
-                vehicleStatus = bridgeHandler.getURL(Status.class, configuration.vin);
+                vehicleStatus = bridgeHandler.getURL(vehicle.statusURL, Status.class);
                 vehiclePosition = new VehiclePositionWrapper(bridgeHandler.getURL(Position.class, configuration.vin));
                 // Update all channels from the updated data
                 getThing().getChannels().stream().map(Channel::getUID)
                         .filter(channelUID -> isLinked(channelUID) && !LAST_TRIP_GROUP.equals(channelUID.getGroupId()))
                         .forEach(channelUID -> {
-                            State state = getValue(channelUID.getIdWithoutGroup(), vehicleStatus, vehiclePosition);
+                            State state = getValue(channelUID.getGroupId(), channelUID.getIdWithoutGroup(),
+                                    vehicleStatus, vehiclePosition);
 
                             updateState(channelUID, state);
                         });
                 updateTrips(bridgeHandler);
-            } catch (JsonSyntaxException | IOException e) {
+            } catch (VolvoOnCallException e) {
                 logger.warn("Exception occurred during execution: {}", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                refreshJob = null;
+                freeRefreshJob();
                 startAutomaticRefresh(configuration.refresh);
             }
         }
     }
 
-    private void updateTrips(VolvoOnCallBridgeHandler bridgeHandler) throws JsonSyntaxException, IOException {
+    private void freeRefreshJob() {
+        ScheduledFuture<?> refreshJob = this.refreshJob;
+        if (refreshJob != null) {
+            refreshJob.cancel(true);
+            this.refreshJob = null;
+        }
+    }
+
+    @Override
+    public void dispose() {
+        freeRefreshJob();
+        super.dispose();
+    }
+
+    private void updateTrips(VolvoOnCallBridgeHandler bridgeHandler) throws VolvoOnCallException {
         // This seems to rewind 100 days by default, did not find any way to filter it
         Trips carTrips = bridgeHandler.getURL(Trips.class, configuration.vin);
         List<Trip> tripList = carTrips.trips;
@@ -230,23 +251,21 @@ public class VehicleHandler extends BaseThingHandler {
     private State getTripValue(String channelId, TripDetail tripDetails) {
         switch (channelId) {
             case TRIP_CONSUMPTION:
-                if (tripDetails.fuelConsumption != null) {
-                    return new QuantityType<>(tripDetails.fuelConsumption.floatValue() / 100, SmartHomeUnits.LITRE);
-                } else {
-                    return UnDefType.UNDEF;
-                }
+                return tripDetails.getFuelConsumption()
+                        .map(value -> (State) new QuantityType<>(value.floatValue() / 100, LITRE))
+                        .orElse(UnDefType.UNDEF);
             case TRIP_DISTANCE:
-                return new QuantityType<>((double) tripDetails.distance / 1000, KILO(SIUnits.METRE));
+                return new QuantityType<>((double) tripDetails.distance / 1000, KILO(METRE));
             case TRIP_START_TIME:
                 return tripDetails.getStartTime();
             case TRIP_END_TIME:
                 return tripDetails.getEndTime();
             case TRIP_DURATION:
-                return new QuantityType<>(tripDetails.getDurationInMinutes(), SmartHomeUnits.MINUTE);
+                return new QuantityType<>(tripDetails.getDurationInMinutes(), MINUTE);
             case TRIP_START_ODOMETER:
-                return new QuantityType<>((double) tripDetails.startOdometer / 1000, KILO(SIUnits.METRE));
+                return new QuantityType<>((double) tripDetails.startOdometer / 1000, KILO(METRE));
             case TRIP_STOP_ODOMETER:
-                return new QuantityType<>((double) tripDetails.endOdometer / 1000, KILO(SIUnits.METRE));
+                return new QuantityType<>((double) tripDetails.endOdometer / 1000, KILO(METRE));
             case TRIP_START_POSITION:
                 return tripDetails.getStartPosition();
             case TRIP_END_POSITION:
@@ -256,88 +275,111 @@ public class VehicleHandler extends BaseThingHandler {
         return UnDefType.NULL;
     }
 
-    private State getValue(String channelId, Status status, VehiclePositionWrapper position) {
+    private State getDoorsValue(String channelId, DoorsStatus doors) {
         switch (channelId) {
             case TAILGATE:
-                return status.doors != null ? status.doors.tailgateOpen : UnDefType.NULL;
+                return doors.tailgateOpen;
             case REAR_RIGHT:
-                return status.doors != null ? status.doors.rearRightDoorOpen : UnDefType.NULL;
+                return doors.rearRightDoorOpen;
             case REAR_LEFT:
-                return status.doors != null ? status.doors.rearLeftDoorOpen : UnDefType.NULL;
+                return doors.rearLeftDoorOpen;
             case FRONT_RIGHT:
-                return status.doors != null ? status.doors.frontRightDoorOpen : UnDefType.NULL;
+                return doors.frontRightDoorOpen;
             case FRONT_LEFT:
-                return status.doors != null ? status.doors.frontLeftDoorOpen : UnDefType.NULL;
+                return doors.frontLeftDoorOpen;
             case HOOD:
-                return status.doors != null ? status.doors.hoodOpen : UnDefType.NULL;
+                return doors.hoodOpen;
+        }
+        return UnDefType.NULL;
+    }
+
+    private State getWindowsValue(String channelId, WindowsStatus windows) {
+        switch (channelId) {
             case REAR_RIGHT_WND:
-                return status.windows != null ? status.windows.rearRightWindowOpen : UnDefType.NULL;
+                return windows.rearRightWindowOpen;
             case REAR_LEFT_WND:
-                return status.windows != null ? status.windows.rearLeftWindowOpen : UnDefType.NULL;
+                return windows.rearLeftWindowOpen;
             case FRONT_RIGHT_WND:
-                return status.windows != null ? status.windows.frontRightWindowOpen : UnDefType.NULL;
+                return windows.frontRightWindowOpen;
             case FRONT_LEFT_WND:
-                return status.windows != null ? status.windows.frontLeftWindowOpen : UnDefType.NULL;
+                return windows.frontLeftWindowOpen;
+        }
+        return UnDefType.NULL;
+    }
+
+    private State getTyresValue(String channelId, TyrePressure tyrePressure) {
+        switch (channelId) {
             case REAR_RIGHT_TYRE:
-                return status.tyrePressure != null ? new StringType(status.tyrePressure.rearRightTyrePressure)
-                        : UnDefType.NULL;
+                return new StringType(tyrePressure.rearRightTyrePressure);
             case REAR_LEFT_TYRE:
-                return status.tyrePressure != null ? new StringType(status.tyrePressure.rearLeftTyrePressure)
-                        : UnDefType.NULL;
+                return new StringType(tyrePressure.rearLeftTyrePressure);
             case FRONT_RIGHT_TYRE:
-                return status.tyrePressure != null ? new StringType(status.tyrePressure.frontRightTyrePressure)
-                        : UnDefType.NULL;
+                return new StringType(tyrePressure.frontRightTyrePressure);
             case FRONT_LEFT_TYRE:
-                return status.tyrePressure != null ? new StringType(status.tyrePressure.frontLeftTyrePressure)
-                        : UnDefType.NULL;
+                return new StringType(tyrePressure.frontLeftTyrePressure);
+        }
+        return UnDefType.NULL;
+    }
+
+    private State getHeaterValue(String channelId, Heater heater) {
+        switch (channelId) {
+            case REMOTE_HEATER:
+            case PRECLIMATIZATION:
+                return heater.getStatus();
+        }
+        return UnDefType.NULL;
+    }
+
+    private State getBatteryValue(String channelId, HvBattery hvBattery) {
+        switch (channelId) {
+            case BATTERY_LEVEL:
+                return hvBattery.hvBatteryLevel != UNDEFINED ? new QuantityType<>(hvBattery.hvBatteryLevel, PERCENT)
+                        : UnDefType.UNDEF;
+            case BATTERY_DISTANCE_TO_EMPTY:
+                return hvBattery.distanceToHVBatteryEmpty != UNDEFINED
+                        ? new QuantityType<>(hvBattery.distanceToHVBatteryEmpty, KILO(METRE))
+                        : UnDefType.UNDEF;
+            case CHARGE_STATUS:
+                return hvBattery.hvBatteryChargeStatusDerived != null
+                        ? new StringType(hvBattery.hvBatteryChargeStatusDerived)
+                        : UnDefType.UNDEF;
+            case TIME_TO_BATTERY_FULLY_CHARGED:
+                return hvBattery.timeToHVBatteryFullyCharged != UNDEFINED
+                        ? new QuantityType<>(hvBattery.timeToHVBatteryFullyCharged, MINUTE)
+                        : UnDefType.UNDEF;
+            case CHARGING_END:
+                return hvBattery.timeToHVBatteryFullyCharged != UNDEFINED && hvBattery.timeToHVBatteryFullyCharged > 0
+                        ? new DateTimeType(ZonedDateTime.now().plusMinutes(hvBattery.timeToHVBatteryFullyCharged))
+                        : UnDefType.UNDEF;
+
+        }
+        return UnDefType.NULL;
+    }
+
+    private State getValue(@Nullable String groupId, String channelId, Status status, VehiclePositionWrapper position) {
+        switch (channelId) {
             case ODOMETER:
-                return status.odometer != UNDEFINED
-                        ? new QuantityType<>((double) status.odometer / 1000, KILO(SIUnits.METRE))
+                return status.odometer != UNDEFINED ? new QuantityType<>((double) status.odometer / 1000, KILO(METRE))
                         : UnDefType.UNDEF;
             case TRIPMETER1:
                 return status.tripMeter1 != UNDEFINED
-                        ? new QuantityType<>((double) status.tripMeter1 / 1000, KILO(SIUnits.METRE))
+                        ? new QuantityType<>((double) status.tripMeter1 / 1000, KILO(METRE))
                         : UnDefType.UNDEF;
             case TRIPMETER2:
                 return status.tripMeter2 != UNDEFINED
-                        ? new QuantityType<>((double) status.tripMeter2 / 1000, KILO(SIUnits.METRE))
+                        ? new QuantityType<>((double) status.tripMeter2 / 1000, KILO(METRE))
                         : UnDefType.UNDEF;
             case DISTANCE_TO_EMPTY:
-                return status.distanceToEmpty != UNDEFINED
-                        ? new QuantityType<>(status.distanceToEmpty, KILO(SIUnits.METRE))
+                return status.distanceToEmpty != UNDEFINED ? new QuantityType<>(status.distanceToEmpty, KILO(METRE))
                         : UnDefType.UNDEF;
             case FUEL_AMOUNT:
-                return status.fuelAmount != UNDEFINED ? new QuantityType<>(status.fuelAmount, SmartHomeUnits.LITRE)
-                        : UnDefType.UNDEF;
+                return status.fuelAmount != UNDEFINED ? new QuantityType<>(status.fuelAmount, LITRE) : UnDefType.UNDEF;
             case FUEL_LEVEL:
-                return status.fuelAmountLevel != UNDEFINED
-                        ? new QuantityType<>(status.fuelAmountLevel, SmartHomeUnits.PERCENT)
+                return status.fuelAmountLevel != UNDEFINED ? new QuantityType<>(status.fuelAmountLevel, PERCENT)
                         : UnDefType.UNDEF;
             case FUEL_CONSUMPTION:
                 return status.averageFuelConsumption != UNDEFINED ? new DecimalType(status.averageFuelConsumption / 10)
                         : UnDefType.UNDEF;
-            case BATTERY_LEVEL:
-                return status.hvBattery.hvBatteryLevel != UNDEFINED
-                        ? new QuantityType<>(status.hvBattery.hvBatteryLevel, SmartHomeUnits.PERCENT)
-                        : UnDefType.UNDEF;
-            case BATTERY_DISTANCE_TO_EMPTY:
-                return status.hvBattery.distanceToHVBatteryEmpty != UNDEFINED
-                        ? new QuantityType<>(status.hvBattery.distanceToHVBatteryEmpty, KILO(SIUnits.METRE))
-                        : UnDefType.UNDEF;
-            case CHARGE_STATUS:
-                return status.hvBattery.hvBatteryChargeStatusDerived != null
-                        ? new StringType(status.hvBattery.hvBatteryChargeStatusDerived)
-                        : UnDefType.UNDEF;
-            case TIME_TO_BATTERY_FULLY_CHARGED:
-                return status.hvBattery.timeToHVBatteryFullyCharged != UNDEFINED
-                        ? new QuantityType<>(status.hvBattery.timeToHVBatteryFullyCharged, SmartHomeUnits.MINUTE)
-                        : UnDefType.UNDEF;
-            case CHARGING_END:
-                return status.hvBattery.timeToHVBatteryFullyCharged != UNDEFINED
-                        && status.hvBattery.timeToHVBatteryFullyCharged > 0
-                                ? new DateTimeType(
-                                        ZonedDateTime.now().plusMinutes(status.hvBattery.timeToHVBatteryFullyCharged))
-                                : UnDefType.UNDEF;
             case ACTUAL_LOCATION:
                 return position.getPosition();
             case CALCULATED_LOCATION:
@@ -347,27 +389,43 @@ public class VehicleHandler extends BaseThingHandler {
             case LOCATION_TIMESTAMP:
                 return position.getTimestamp();
             case CAR_LOCKED:
-                return status.carLocked;
+                // Warning : carLocked is in the Doors group but is part of general status informations.
+                // Did not change it to avoid breaking change for users
+                return status.getCarLocked().map(State.class::cast).orElse(UnDefType.UNDEF);
             case ENGINE_RUNNING:
-                return status.engineRunning;
+                return status.getEngineRunning().map(State.class::cast).orElse(UnDefType.UNDEF);
             case BRAKE_FLUID_LEVEL:
                 return new StringType(status.brakeFluid);
             case WASHER_FLUID_LEVEL:
                 return new StringType(status.washerFluidLevel);
             case AVERAGE_SPEED:
-                return status.averageSpeed != UNDEFINED
-                        ? new QuantityType<>(status.averageSpeed, SIUnits.KILOMETRE_PER_HOUR)
+                return status.averageSpeed != UNDEFINED ? new QuantityType<>(status.averageSpeed, KILOMETRE_PER_HOUR)
                         : UnDefType.UNDEF;
             case SERVICE_WARNING:
                 return new StringType(status.serviceWarningStatus);
             case FUEL_ALERT:
                 return status.distanceToEmpty < 100 ? OnOffType.ON : OnOffType.OFF;
+            case BULB_FAILURE:
+                return status.aFailedBulb() ? OnOffType.ON : OnOffType.OFF;
             case REMOTE_HEATER:
-                return status.heater != null && status.heater.status != null ? status.heater.status : UnDefType.UNDEF;
             case PRECLIMATIZATION:
-                return status.heater != null && status.heater.status != null ? status.heater.status : UnDefType.UNDEF;
+                return status.getHeater().map(heater -> getHeaterValue(channelId, heater)).orElse(UnDefType.NULL);
         }
-
+        if (groupId != null) {
+            switch (groupId) {
+                case GROUP_DOORS:
+                    return status.getDoors().map(doors -> getDoorsValue(channelId, doors)).orElse(UnDefType.NULL);
+                case GROUP_WINDOWS:
+                    return status.getWindows().map(windows -> getWindowsValue(channelId, windows))
+                            .orElse(UnDefType.NULL);
+                case GROUP_TYRES:
+                    return status.getTyrePressure().map(tyres -> getTyresValue(channelId, tyres))
+                            .orElse(UnDefType.NULL);
+                case GROUP_BATTERY:
+                    return status.getHvBattery().map(batteries -> getBatteryValue(channelId, batteries))
+                            .orElse(UnDefType.NULL);
+            }
+        }
         return UnDefType.NULL;
     }
 
@@ -389,7 +447,7 @@ public class VehicleHandler extends BaseThingHandler {
 
             try {
                 bridgeHandler.postURL(url.toString(), vehiclePosition.getPositionAsJSon());
-            } catch (JsonSyntaxException | IOException e) {
+            } catch (VolvoOnCallException e) {
                 logger.warn("Exception occurred during execution: {}", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
@@ -400,11 +458,15 @@ public class VehicleHandler extends BaseThingHandler {
         VolvoOnCallBridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler != null) {
             if (activeOptions.containsKey(action)) {
-                if (vehicleStatus.carLocked != controlState) {
+                if (!vehicleStatus.getCarLocked().isPresent() || vehicleStatus.getCarLocked().get() != controlState) {
                     try {
-                        String address = SERVICE_URL + "vehicles/" + configuration.vin + "/" + action;
-                        bridgeHandler.postURL(address, "{}");
-                    } catch (JsonSyntaxException | IOException e) {
+                        StringBuilder address = new StringBuilder(SERVICE_URL);
+                        address.append("vehicles/");
+                        address.append(configuration.vin);
+                        address.append("/");
+                        address.append(action);
+                        bridgeHandler.postURL(address.toString(), "{}");
+                    } catch (VolvoOnCallException e) {
                         logger.warn("Exception occurred during execution: {}", e.getMessage(), e);
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                     }
@@ -431,7 +493,7 @@ public class VehicleHandler extends BaseThingHandler {
                         String address = SERVICE_URL + "vehicles/" + configuration.vin + "/preclimatization/" + command;
                         bridgeHandler.postURL(address, start ? "{}" : null);
                     }
-                } catch (JsonSyntaxException | IOException e) {
+                } catch (VolvoOnCallException e) {
                     logger.warn("Exception occurred during execution: {}", e.getMessage(), e);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
@@ -466,7 +528,7 @@ public class VehicleHandler extends BaseThingHandler {
 
                 try {
                     bridgeHandler.postURL(url, json);
-                } catch (JsonSyntaxException | IOException e) {
+                } catch (VolvoOnCallException e) {
                     logger.warn("Exception occurred during execution: {}", e.getMessage(), e);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }

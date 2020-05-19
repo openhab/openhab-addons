@@ -13,12 +13,16 @@
 package org.openhab.binding.daikin.internal.handler;
 
 import java.io.IOException;
+import java.lang.IllegalArgumentException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -48,12 +52,13 @@ import org.slf4j.LoggerFactory;
  * @author Jimmy Tanagra - Support Airside and auto fan levels, DynamicStateDescription
  *
  */
+@NonNullByDefault
 public class DaikinAirbaseUnitHandler extends DaikinBaseHandler {
     private final Logger logger = LoggerFactory.getLogger(DaikinAirbaseUnitHandler.class);
-    private AirbaseModelInfo airbaseModelInfo;
+    private @Nullable AirbaseModelInfo airbaseModelInfo;
 
-    public DaikinAirbaseUnitHandler(Thing thing, DaikinDynamicStateDescriptionProvider stateDescriptionProvider) {
-        super(thing, stateDescriptionProvider);
+    public DaikinAirbaseUnitHandler(Thing thing, DaikinDynamicStateDescriptionProvider stateDescriptionProvider, @Nullable HttpClient httpClient) {
+        super(thing, stateDescriptionProvider, httpClient);
     }
 
     @Override
@@ -128,11 +133,19 @@ public class DaikinAirbaseUnitHandler extends DaikinBaseHandler {
 
     @Override
     protected void changeMode(String mode) throws DaikinCommunicationException {
-        AirbaseMode newMode = AirbaseMode.valueOf(mode);
-        if ((newMode == AirbaseMode.AUTO && !airbaseModelInfo.features.contains(AirbaseFeature.AUTO))
-                || (newMode == AirbaseMode.DRY && !airbaseModelInfo.features.contains(AirbaseFeature.DRY))) {
-            logger.warn("{} mode is not supported by your controller", mode);
+        AirbaseMode newMode;
+        try {
+            newMode = AirbaseMode.valueOf(mode);
+        } catch (IllegalArgumentException ex) {
+            logger.warn("Invalid mode: {}. Valid values: {}", mode, AirbaseMode.values());
             return;
+        }
+        if (airbaseModelInfo != null) {
+            if ((newMode == AirbaseMode.AUTO && !airbaseModelInfo.features.contains(AirbaseFeature.AUTO))
+                    || (newMode == AirbaseMode.DRY && !airbaseModelInfo.features.contains(AirbaseFeature.DRY))) {
+                logger.warn("{} mode is not supported by your controller", mode);
+                return;
+            }
         }
         AirbaseControlInfo info = webTargets.getAirbaseControlInfo();
         info.mode = newMode;
@@ -141,15 +154,23 @@ public class DaikinAirbaseUnitHandler extends DaikinBaseHandler {
 
     @Override
     protected void changeFanSpeed(String speed) throws DaikinCommunicationException {
-        AirbaseFanSpeed newFanSpeed = AirbaseFanSpeed.valueOf(speed);
-        if (EnumSet.range(AirbaseFanSpeed.AUTO_LEVEL_1, AirbaseFanSpeed.AUTO_LEVEL_5).contains(newFanSpeed)
-                && !airbaseModelInfo.features.contains(AirbaseFeature.FRATE_AUTO)) {
-            logger.warn("Fan AUTO_LEVEL_X is not supported by your controller");
+        AirbaseFanSpeed newFanSpeed;
+        try {
+            newFanSpeed = AirbaseFanSpeed.valueOf(speed);
+        } catch (IllegalArgumentException ex) {
+            logger.warn("Invalid fan speed: {}. Valid values: {}", speed, AirbaseFanSpeed.values());
             return;
         }
-        if (newFanSpeed == AirbaseFanSpeed.AIRSIDE && !airbaseModelInfo.features.contains(AirbaseFeature.AIRSIDE)) {
-            logger.warn("Airside is not supported by your controller");
-            return;
+        if (airbaseModelInfo != null) {
+            if (EnumSet.range(AirbaseFanSpeed.AUTO_LEVEL_1, AirbaseFanSpeed.AUTO_LEVEL_5).contains(newFanSpeed)
+                    && !airbaseModelInfo.features.contains(AirbaseFeature.FRATE_AUTO)) {
+                logger.warn("Fan AUTO_LEVEL_X is not supported by your controller");
+                return;
+            }
+            if (newFanSpeed == AirbaseFanSpeed.AIRSIDE && !airbaseModelInfo.features.contains(AirbaseFeature.AIRSIDE)) {
+                logger.warn("Airside is not supported by your controller");
+                return;
+            }
         }
         AirbaseControlInfo info = webTargets.getAirbaseControlInfo();
         info.fanSpeed = newFanSpeed;
@@ -162,9 +183,21 @@ public class DaikinAirbaseUnitHandler extends DaikinBaseHandler {
                     zone, airbaseModelInfo.zonespresent);
             return;
         }
-        AirbaseZoneInfo info = webTargets.getAirbaseZoneInfo();
-        info.zone[zone] = command;
-        webTargets.setAirbaseZoneInfo(info, airbaseModelInfo);
+
+        AirbaseZoneInfo zoneInfo = webTargets.getAirbaseZoneInfo();
+        long count = IntStream.range(0, zoneInfo.zone.length).filter(idx -> zoneInfo.zone[idx]).count()
+                + airbaseModelInfo.commonzone;
+        logger.debug("Number of open zones: \"{}\"", count);
+
+        if (count >= 1) {
+            zoneInfo.zone[zone] = command;
+            webTargets.setAirbaseZoneInfo(zoneInfo);
+        }
+    }
+
+    @Override
+    protected void registerUuid(@Nullable String key) {
+        // not implemented. There is currently no known Airbase adapter that requires uuid authentication
     }
 
     protected void updateChannelStateDescriptions() {

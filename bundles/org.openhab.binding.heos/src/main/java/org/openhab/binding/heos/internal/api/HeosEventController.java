@@ -229,7 +229,6 @@ public class HeosEventController extends HeosSystemEventListener {
 
     private void shuffleModeChanged() {
         fireStateEvent(heosDecoder.getPid(), SHUFFLE_MODE_CHANGED, heosDecoder.getShuffleMode());
-
     }
 
     private void repeatModeChanged() {
