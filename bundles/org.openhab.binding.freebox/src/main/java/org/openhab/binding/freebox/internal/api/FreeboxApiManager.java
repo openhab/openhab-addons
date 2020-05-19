@@ -493,7 +493,7 @@ public class FreeboxApiManager {
             byte[] rawHmac = mac.doFinal(value.getBytes());
 
             // Convert raw bytes to a String
-            return HexUtils.bytesToHex(rawHmac);
+            return HexUtils.bytesToHex(rawHmac).toLowerCase();
         } catch (IllegalArgumentException | NoSuchAlgorithmException | InvalidKeyException | IllegalStateException e) {
             throw new FreeboxException("Computing the hmac-sha1 of the challenge and the app token failed", e);
         }
