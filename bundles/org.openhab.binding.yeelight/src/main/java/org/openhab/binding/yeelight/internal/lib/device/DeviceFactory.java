@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
  * The {@link DeviceFactory} creates device handler classes.
  *
  * @author Coaster Li - Initial contribution
+ * @author Nikita Pogudalov - Added CeilingDeviceWithNightDevice for Ceiling 1
  */
 public class DeviceFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceFactory.class);
@@ -33,9 +34,10 @@ public class DeviceFactory {
         DeviceType type = DeviceType.valueOf(model);
         switch (type) {
             case ceiling:
-            case ceiling1:
             case ceiling3:
                 return new CeilingDevice(id);
+            case ceiling1:
+                return new CeilingDeviceWithNightDevice(id);
             case ceiling4:
                 return new CeilingDeviceWithAmbientDevice(id);
             case color:
