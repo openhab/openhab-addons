@@ -35,6 +35,8 @@ After installing this add-on, you will find configuration options in the Paper U
 
 ![Configuration](contrib/doc/cfg.png)
 
+You may need to restart your OpenHAB server before it can be seen by openHAB Cloud.
+
 Please note, that you should not expose all your items in this settings dialog.
 Also note that at present this feature is currently turned off.
 You just need to expose those items, which you want to be accessible by IFTTT.
