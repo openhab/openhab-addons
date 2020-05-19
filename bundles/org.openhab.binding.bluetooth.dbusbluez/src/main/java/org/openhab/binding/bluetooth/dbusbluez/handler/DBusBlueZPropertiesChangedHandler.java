@@ -146,7 +146,6 @@ public class DBusBlueZPropertiesChangedHandler extends AbstractPropertiesChanged
         }
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     private void onManufacturerDataUpdate(String dbusPath, Variant v) {
         Map<Short, byte[]> eventData = new HashMap<>();
 

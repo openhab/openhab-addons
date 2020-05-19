@@ -59,6 +59,8 @@ public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusB
 
     private @Nullable ScheduledFuture<?> discoveryJob;
 
+    private @Nullable ScheduledFuture<?> adapterDiscoveryJob;
+
     /**
      * Constructor
      *
@@ -191,6 +193,8 @@ public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusB
         if (!initializeAdapter()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                     "Bluetooth adapter could not be found.");
+            // Re-schedule adapter discovery in case it gets connected later
+            this.adapterDiscoveryJob = scheduler.scheduleAtFixedRate(this::initializeInternal, 5, 5, TimeUnit.MINUTES);
             return;
         }
 
@@ -217,8 +221,12 @@ public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusB
 
     @Override
     public void dispose() {
-
         logger.debug("Termination of DBus BlueZ handler");
+
+        if (this.adapterDiscoveryJob != null) {
+            this.adapterDiscoveryJob.cancel(true);
+            this.adapterDiscoveryJob = null;
+        }
 
         if (this.discoveryJob != null) {
             this.discoveryJob.cancel(true);
