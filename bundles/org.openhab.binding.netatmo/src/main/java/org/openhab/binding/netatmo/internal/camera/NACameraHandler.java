@@ -47,25 +47,53 @@ public class NACameraHandler extends NetatmoModuleHandler<NAWelcomeCamera> {
 
     @SuppressWarnings("null")
     @Override
-    protected State getNAThingProperty(String chanelId) {
-        switch (chanelId) {
+    protected State getNAThingProperty(String channelId) {
+        switch (channelId) {
             case CHANNEL_CAMERA_STATUS:
-                return module != null ? toOnOffType(module.getStatus()) : UnDefType.UNDEF;
+                return getStatusState();
             case CHANNEL_CAMERA_SDSTATUS:
-                return module != null ? toOnOffType(module.getSdStatus()) : UnDefType.UNDEF;
+                return getSdStatusState();
             case CHANNEL_CAMERA_ALIMSTATUS:
-                return module != null ? toOnOffType(module.getAlimStatus()) : UnDefType.UNDEF;
+                return getAlimStatusState();
             case CHANNEL_CAMERA_ISLOCAL:
-                return (module == null || module.getIsLocal() == null) ? UnDefType.UNDEF
-                        : module.getIsLocal() ? OnOffType.ON : OnOffType.OFF;
+                return getIsLocalState();
             case CHANNEL_CAMERA_LIVEPICTURE_URL:
-                return getLivePictureURL() == null ? UnDefType.UNDEF : toStringType(getLivePictureURL());
+                return getLivePictureURLState();
             case CHANNEL_CAMERA_LIVEPICTURE:
-                return getLivePictureURL() == null ? UnDefType.UNDEF : HttpUtil.downloadImage(getLivePictureURL());
+                return getLivePictureState();
             case CHANNEL_CAMERA_LIVESTREAM_URL:
-                return getLiveStreamURL() == null ? UnDefType.UNDEF : new StringType(getLiveStreamURL());
+                return getLiveStreamState();
         }
-        return super.getNAThingProperty(chanelId);
+        return super.getNAThingProperty(channelId);
+    }
+
+    protected State getStatusState() {
+        return module != null ? toOnOffType(module.getStatus()) : UnDefType.UNDEF;
+    }
+
+    protected State getSdStatusState() {
+        return module != null ? toOnOffType(module.getSdStatus()) : UnDefType.UNDEF;
+    }
+
+    protected State getAlimStatusState() {
+        return module != null ? toOnOffType(module.getAlimStatus()) : UnDefType.UNDEF;
+    }
+
+    protected State getIsLocalState() {
+        return (module == null || module.getIsLocal() == null) ? UnDefType.UNDEF
+                : module.getIsLocal() ? OnOffType.ON : OnOffType.OFF;
+    }
+
+    protected State getLivePictureURLState() {
+        return getLivePictureURL() == null ? UnDefType.UNDEF : toStringType(getLivePictureURL());
+    }
+
+    protected State getLivePictureState() {
+        return getLivePictureURL() == null ? UnDefType.UNDEF : HttpUtil.downloadImage(getLivePictureURL());
+    }
+
+    protected State getLiveStreamState() {
+        return getLiveStreamURL() == null ? UnDefType.UNDEF : new StringType(getLiveStreamURL());
     }
 
     /**
@@ -73,7 +101,7 @@ public class NACameraHandler extends NetatmoModuleHandler<NAWelcomeCamera> {
      *
      * @return Url of the live snapshot
      */
-    protected String getLivePictureURL() {
+    private String getLivePictureURL() {
         String result = getVpnUrl();
         if (result != null) {
             result += LIVE_PICTURE;
@@ -86,7 +114,7 @@ public class NACameraHandler extends NetatmoModuleHandler<NAWelcomeCamera> {
      *
      * @return Url of the live stream
      */
-    protected String getLiveStreamURL() {
+    private String getLiveStreamURL() {
         String result = getVpnUrl();
         if (result != null) {
             result += "/live/index";
