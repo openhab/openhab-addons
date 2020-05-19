@@ -39,7 +39,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
-import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -85,25 +85,18 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
     public void initialize() {
         logger.debug("initializing handler for thing {}", getThing().getUID());
         Bridge bridge = getBridge();
-        if (bridge == null) {
-            initializeThing(null, null);
-        } else {
-            initializeThing(bridge.getHandler(), bridge.getStatus());
-        }
+        initializeThing(bridge != null ? bridge.getStatus() : null);
     }
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        logger.debug("bridgeStatusChanged {}", bridgeStatusInfo);
-        Bridge bridge = getBridge();
-        if (bridge == null) {
-            initializeThing(null, bridgeStatusInfo.getStatus());
-        } else {
-            initializeThing(bridge.getHandler(), bridgeStatusInfo.getStatus());
-        }
+        logger.debug("bridgeStatusChanged {} for thing {}", bridgeStatusInfo, getThing().getUID());
+        initializeThing(bridgeStatusInfo.getStatus());
     }
 
-    private void initializeThing(ThingHandler bridgeHandler, ThingStatus bridgeStatus) {
+    private void initializeThing(ThingStatus bridgeStatus) {
+        Bridge bridge = getBridge();
+        BridgeHandler bridgeHandler = bridge != null ? bridge.getHandler() : null;
         if (bridgeHandler != null && bridgeStatus != null) {
             if (bridgeStatus == ThingStatus.ONLINE) {
                 config = getThing().getConfiguration();
