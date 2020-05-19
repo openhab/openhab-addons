@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  * The {@link DeviceFactory} creates device handler classes.
  *
  * @author Coaster Li - Initial contribution
- * @author DragonNP - Added CeilingDeviceWithNightDevice for Ceiling 1
+ * @author Nikita Pogudalov - Added CeilingDeviceWithNightDevice for Ceiling 1
  */
 public class DeviceFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceFactory.class);
