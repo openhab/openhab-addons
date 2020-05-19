@@ -26,7 +26,6 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
@@ -66,11 +65,7 @@ public class OpenWeatherMapUVIndexHandler extends AbstractOpenWeatherMapHandler 
     }
 
     @Override
-    protected void initializeThing(@Nullable ThingHandler bridgeHandler, @Nullable ThingStatus bridgeStatus) {
-        super.initializeThing(bridgeHandler, bridgeStatus);
-        if (bridgeHandler == null || bridgeStatus != ThingStatus.ONLINE) {
-            return;
-        }
+    protected void initializeThing() {
         logger.debug("Initialize OpenWeatherMapUVIndexHandler handler '{}'.", getThing().getUID());
         OpenWeatherMapUVIndexConfiguration config = getConfigAs(OpenWeatherMapUVIndexConfiguration.class);
 

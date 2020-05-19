@@ -93,7 +93,7 @@ public abstract class AbstractOpenWeatherMapHandler extends BaseThingHandler {
         }
     }
 
-    protected void initializeThing(@Nullable ThingHandler bridgeHandler, @Nullable ThingStatus bridgeStatus) {
+    private void initializeThing(@Nullable ThingHandler bridgeHandler, @Nullable ThingStatus bridgeStatus) {
         if (bridgeHandler != null && bridgeStatus != null) {
             if (bridgeStatus == ThingStatus.ONLINE) {
                 OpenWeatherMapLocationConfiguration config = getConfigAs(OpenWeatherMapLocationConfiguration.class);
@@ -116,6 +116,7 @@ public abstract class AbstractOpenWeatherMapHandler extends BaseThingHandler {
 
                 if (configValid) {
                     updateStatus(ThingStatus.UNKNOWN);
+                    initializeThing();
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
@@ -124,6 +125,8 @@ public abstract class AbstractOpenWeatherMapHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
+
+    protected abstract void initializeThing();
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
