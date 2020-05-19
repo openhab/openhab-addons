@@ -256,6 +256,15 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_WELCOME_EVENT_MESSAGE = "welcomeEventMessage";
     public static final String CHANNEL_WELCOME_EVENT_SUBTYPE = "welcomeEventSubType";
 
+    // Camera specific channels
+    public static final String CHANNEL_CAMERA_STATUS = "cameraStatus";
+    public static final String CHANNEL_CAMERA_SDSTATUS = "cameraSdStatus";
+    public static final String CHANNEL_CAMERA_ALIMSTATUS = "cameraAlimStatus";
+    public static final String CHANNEL_CAMERA_ISLOCAL = "cameraIsLocal";
+    public static final String CHANNEL_CAMERA_LIVEPICTURE = "cameraLivePicture";
+    public static final String CHANNEL_CAMERA_LIVEPICTURE_URL = "cameraLivePictureUrl";
+    public static final String CHANNEL_CAMERA_LIVESTREAM_URL = "cameraLiveStreamUrl";
+
     public static final String WELCOME_PICTURE_URL = "https://api.netatmo.com/api/getcamerapicture";
     public static final String WELCOME_PICTURE_IMAGEID = "image_id";
     public static final String WELCOME_PICTURE_KEY = "key";

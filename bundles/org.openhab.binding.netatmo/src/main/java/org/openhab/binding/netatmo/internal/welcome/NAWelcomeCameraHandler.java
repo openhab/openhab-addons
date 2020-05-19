@@ -22,9 +22,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.netatmo.internal.handler.NetatmoModuleHandler;
-
-import io.swagger.client.model.NAWelcomeCamera;
+import org.openhab.binding.netatmo.internal.camera.NACameraHandler;
 
 /**
  * {@link NAWelcomeCameraHandler} is the class used to handle the Welcome Camera Data
@@ -32,16 +30,10 @@ import io.swagger.client.model.NAWelcomeCamera;
  * @author Ing. Peter Weiss - Initial contribution
  *
  */
-public class NAWelcomeCameraHandler extends NetatmoModuleHandler<NAWelcomeCamera> {
-    private static final String LIVE_PICTURE = "/live/snapshot_720.jpg";
+public class NAWelcomeCameraHandler extends NACameraHandler {
 
     public NAWelcomeCameraHandler(@NonNull Thing thing) {
         super(thing);
-    }
-
-    @Override
-    protected void updateProperties(NAWelcomeCamera moduleData) {
-        updateProperties(null, moduleData.getType());
     }
 
     @SuppressWarnings("null")
@@ -65,53 +57,5 @@ public class NAWelcomeCameraHandler extends NetatmoModuleHandler<NAWelcomeCamera
                 return getLiveStreamURL() == null ? UnDefType.UNDEF : new StringType(getLiveStreamURL());
         }
         return super.getNAThingProperty(chanelId);
-    }
-
-    /**
-     * Get the url for the live snapshot
-     *
-     * @return Url of the live snapshot
-     */
-    private String getLivePictureURL() {
-        String result = getVpnUrl();
-        if (result != null) {
-            result += LIVE_PICTURE;
-        }
-        return result;
-    }
-
-    /**
-     * Get the url for the live stream depending wether local or not
-     *
-     * @return Url of the live stream
-     */
-    private String getLiveStreamURL() {
-        String result = getVpnUrl();
-        if (result != null) {
-            result += "/live/index";
-            result += isLocal() ? "_local" : "";
-            result += ".m3u8";
-        }
-        return result;
-    }
-
-    @SuppressWarnings("null")
-    private String getVpnUrl() {
-        return (module == null) ? null : module.getVpnUrl();
-    }
-
-    public String getStreamURL(String videoId) {
-        String result = getVpnUrl();
-        if (result != null) {
-            result += "/vod/" + videoId + "/index";
-            result += isLocal() ? "_local" : "";
-            result += ".m3u8";
-        }
-        return result;
-    }
-
-    @SuppressWarnings("null")
-    private boolean isLocal() {
-        return (module == null || module.getIsLocal() == null) ? false : module.getIsLocal().booleanValue();
     }
 }
