@@ -47,8 +47,7 @@ public class NetatmoModuleHandler<MODULE> extends AbstractNetatmoThingHandler {
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
+    protected void initializeThing() {
         refreshJob = scheduler.schedule(() -> {
             requestParentRefresh();
         }, 5, TimeUnit.SECONDS);
