@@ -194,7 +194,7 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                 "state");
 
         String json = gson.toJson(newLightState);
-        logger.trace("Sending {} to light {}", json, config.id);
+        logger.trace("Sending {} to light {} via {}", json, config.id, url);
 
         asyncHttpClient.put(url, json, bridgeConfig.timeout)
                 .thenAccept(v -> logger.trace("Result code={}, body={}", v.getResponseCode(), v.getBody()))
@@ -276,7 +276,13 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
     }
 
     private PercentType toPercentType(int val) {
-        return new PercentType((int) Math.ceil(val / BRIGHTNESS_FACTOR));
+        int scaledValue = (int) Math.ceil(val / BRIGHTNESS_FACTOR);
+        if (scaledValue < 0 || scaledValue > 100) {
+            logger.trace("received value {} (converted to {}). Coercing.", val, scaledValue);
+            scaledValue = scaledValue < 0 ? 0 : scaledValue;
+            scaledValue = scaledValue > 100 ? 100 : scaledValue;
+        }
+        return new PercentType(scaledValue);
     }
 
     private int fromPercentType(PercentType val) {

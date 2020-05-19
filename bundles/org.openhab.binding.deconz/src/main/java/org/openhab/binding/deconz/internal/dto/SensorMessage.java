@@ -27,4 +27,12 @@ public class SensorMessage extends DeconzBaseMessage {
 
     public @Nullable SensorConfig config;
     public @Nullable SensorState state;
+
+    @Override
+    public String toString() {
+        return "SensorMessage{" + "type='" + type + '\'' + ", config=" + config + ", state=" + state + ", e='" + e
+                + '\'' + ", r='" + r + '\'' + ", t='" + t + '\'' + ", id='" + id + '\'' + ", manufacturername='"
+                + manufacturername + '\'' + ", modelid='" + modelid + '\'' + ", name='" + name + '\'' + ", swversion='"
+                + swversion + '\'' + ", ep='" + ep + '\'' + ", uniqueid='" + uniqueid + '\'' + '}';
+    }
 }
