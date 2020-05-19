@@ -53,11 +53,35 @@
 		<item-type>Switch</item-type>
 		<label>Status</label>
 		<description>On/Off Status of the OG unit (now deprecated, use status-switch instead)</description>
+		<config-description>
+			<parameter name="invert" type="boolean">
+				<label>Invert Switch</label>
+				<description>Invert switch to ON=Closed, OFF=Open</description>
+				<default>false</default>
+				<options>
+					<option value="true">Yes</option>
+					<option value="false">No</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+			</parameter>
+		</config-description>
 	</channel-type>
 	<channel-type id="opengarage-status-switch">
 		<item-type>Switch</item-type>
 		<label>Status</label>
 		<description>On/Off Status of the OG unit</description>
+		<config-description>
+			<parameter name="invert" type="boolean">
+				<label>Invert Switch</label>
+				<description>Invert switch to ON=Closed, OFF=Open</description>
+				<default>false</default>
+				<options>
+					<option value="true">Yes</option>
+					<option value="false">No</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+			</parameter>
+		</config-description>
 	</channel-type>
 	<channel-type id="opengarage-status-contact">
 		<item-type>Contact</item-type>
