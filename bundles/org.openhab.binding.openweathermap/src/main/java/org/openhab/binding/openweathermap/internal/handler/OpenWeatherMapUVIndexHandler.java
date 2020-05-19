@@ -65,8 +65,7 @@ public class OpenWeatherMapUVIndexHandler extends AbstractOpenWeatherMapHandler 
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
+    protected void initializeThing() {
         logger.debug("Initialize OpenWeatherMapUVIndexHandler handler '{}'.", getThing().getUID());
         OpenWeatherMapUVIndexConfiguration config = getConfigAs(OpenWeatherMapUVIndexConfiguration.class);
 
