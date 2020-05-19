@@ -38,24 +38,23 @@ public class NAWelcomeCameraHandler extends NACameraHandler {
 
     @SuppressWarnings("null")
     @Override
-    protected State getNAThingProperty(String chanelId) {
-        switch (chanelId) {
+    protected State getNAThingProperty(String channelId) {
+        switch (channelId) {
             case CHANNEL_WELCOME_CAMERA_STATUS:
-                return module != null ? toOnOffType(module.getStatus()) : UnDefType.UNDEF;
+                return getStatusState();
             case CHANNEL_WELCOME_CAMERA_SDSTATUS:
-                return module != null ? toOnOffType(module.getSdStatus()) : UnDefType.UNDEF;
+                return getSdStatusState();
             case CHANNEL_WELCOME_CAMERA_ALIMSTATUS:
-                return module != null ? toOnOffType(module.getAlimStatus()) : UnDefType.UNDEF;
+                return getAlimStatusState();
             case CHANNEL_WELCOME_CAMERA_ISLOCAL:
-                return (module == null || module.getIsLocal() == null) ? UnDefType.UNDEF
-                        : module.getIsLocal() ? OnOffType.ON : OnOffType.OFF;
+                return getIsLocalState();
             case CHANNEL_WELCOME_CAMERA_LIVEPICTURE_URL:
-                return getLivePictureURL() == null ? UnDefType.UNDEF : toStringType(getLivePictureURL());
+                return getLivePictureURLState();
             case CHANNEL_WELCOME_CAMERA_LIVEPICTURE:
-                return getLivePictureURL() == null ? UnDefType.UNDEF : HttpUtil.downloadImage(getLivePictureURL());
+                return getLivePictureState();
             case CHANNEL_WELCOME_CAMERA_LIVESTREAM_URL:
-                return getLiveStreamURL() == null ? UnDefType.UNDEF : new StringType(getLiveStreamURL());
+                return getLiveStreamState();
         }
-        return super.getNAThingProperty(chanelId);
+        return super.getNAThingProperty(channelId);
     }
 }
