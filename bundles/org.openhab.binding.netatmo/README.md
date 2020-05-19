@@ -472,7 +472,12 @@ All these channels are read only.
 
 ### Welcome and Presence Camera
 
-**Supported channels for the Camera thing:**
+All these channels are read only.
+
+Warning : the URL of the live snapshot is a fixed URL so the value of the channel cameraLivePictureUrl / welcomeCameraLivePictureUrl will never be updated once first set by the binding.
+So to get a refreshed picture, you need to use the refresh parameter in your sitemap image element.
+
+**Supported channels for the Welcome Camera thing:**
 
 | Channel ID                  | Item Type | Description                                              |
 |-----------------------------|-----------|----------------------------------------------------------|
@@ -484,10 +489,17 @@ All these channels are read only.
 | welcomeCameraLivePictureUrl | String    | Url of the live snapshot for this camera                 |
 | welcomeCameraLiveStreamUrl  | String    | Url of the live stream for this camera                   |
 
-All these channels are read only.
+**Supported channels for the Presence Camera thing:**
 
-Warning : the URL of the live snapshot is a fixed URL so the value of the channel welcomeCameraLivePictureUrl will never be updated once first set by the binding.
-So to get a refreshed picture, you need to use the refresh parameter in your sitemap image element.
+| Channel ID                  | Item Type | Description                                              |
+|-----------------------------|-----------|----------------------------------------------------------|
+| cameraStatus         | Switch    | State of the camera                                      |
+| cameraSdStatus       | Switch    | State of the SD card                                     |
+| cameraAlimStatus     | Switch    | State of the power connector                             |
+| cameraIsLocal        | Switch    | indicates whether the camera is on the same network than the openHAB Netatmo Binding |
+| cameraLivePicture    | Image     | Camera Live Snapshot                                     |
+| cameraLivePictureUrl | String    | Url of the live snapshot for this camera                 |
+| cameraLiveStreamUrl  | String    | Url of the live stream for this camera                   |
 
 
 ### Welcome Person
