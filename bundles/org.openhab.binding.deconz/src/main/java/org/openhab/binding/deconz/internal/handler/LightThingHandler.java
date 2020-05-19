@@ -155,6 +155,12 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                 if (newBri != null && newBri == 0 && currentOn != null && !currentOn) {
                     return;
                 }
+
+                Double transitiontime = config.transitiontime;
+                if (transitiontime != null) {
+                    // value is in 1/10 seconds
+                    newLightState.transitiontime = (int) Math.round(10 * transitiontime);
+                }
                 break;
             case CHANNEL_COLOR_TEMPERATURE:
                 if (command instanceof DecimalType) {

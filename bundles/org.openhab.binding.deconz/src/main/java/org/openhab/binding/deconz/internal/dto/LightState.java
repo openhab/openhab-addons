@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * The {@link LightState} is send by the websocket connection as well as the Rest API.
  * It is part of a {@link LightMessage}.
  *
- * This should be in sync with the supported sensors from
+ * This should be in sync with the supported lights from
  * https://github.com/dresden-elektronik/deconz-rest-plugin/wiki/Supported-Devices.
  *
  * @author Jan N. Klug - Initial contribution
@@ -43,10 +43,13 @@ public class LightState {
     public @Nullable Integer ct;
     public Double @Nullable [] xy;
 
+    public @Nullable Integer transitiontime;
+
     @Override
     public String toString() {
         return "LightState{" + "lastupdated='" + lastupdated + '\'' + ", reachable=" + reachable + ", on=" + on
                 + ", bri=" + bri + ", alert='" + alert + '\'' + ", colormode='" + colormode + '\'' + ", effect='"
-                + effect + '\'' + ", hue=" + hue + ", sat=" + sat + ", ct=" + ct + ", xy=" + Arrays.toString(xy) + '}';
+                + effect + '\'' + ", hue=" + hue + ", sat=" + sat + ", ct=" + ct + ", xy=" + Arrays.toString(xy)
+                + ", transitiontime=" + transitiontime + '}';
     }
 }

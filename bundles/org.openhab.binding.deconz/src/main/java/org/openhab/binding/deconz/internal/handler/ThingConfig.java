@@ -13,6 +13,7 @@
 package org.openhab.binding.deconz.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link ThingConfig} class holds the configuration properties of a sensor Thing.
@@ -22,4 +23,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class ThingConfig {
     public String id = "";
+    public @Nullable Double transitiontime;
 }

@@ -4,7 +4,6 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-
 	<thing-type id="windowcovering">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="deconz"/>
@@ -47,7 +46,7 @@
 
 		<representation-property>uid</representation-property>
 
-		<config-description-ref uri="thing-type:deconz:sensor"/>
+		<config-description-ref uri="thing-type:deconz:light"/>
 	</thing-type>
 
 	<thing-type id="colortemperaturelight">
@@ -63,7 +62,7 @@
 
 		<representation-property>uid</representation-property>
 
-		<config-description-ref uri="thing-type:deconz:sensor"/>
+		<config-description-ref uri="thing-type:deconz:light"/>
 	</thing-type>
 
 	<thing-type id="colorlight">
@@ -78,7 +77,7 @@
 
 		<representation-property>uid</representation-property>
 
-		<config-description-ref uri="thing-type:deconz:sensor"/>
+		<config-description-ref uri="thing-type:deconz:light"/>
 	</thing-type>
 
 	<thing-type id="extendedcolorlight">
@@ -94,7 +93,7 @@
 
 		<representation-property>uid</representation-property>
 
-		<config-description-ref uri="thing-type:deconz:sensor"/>
+		<config-description-ref uri="thing-type:deconz:light"/>
 	</thing-type>
 
 	<channel-type id="position">

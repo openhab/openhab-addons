@@ -45,6 +45,8 @@ Sensors, switches are discovered as soon as a `deconz` bridge Thing comes online
 
 ## Thing Configuration
 
+### Bridge
+
 These configuration parameters are available:
 
 | Parameter | Description                                                                     | Type    | Default |
@@ -63,6 +65,17 @@ The API key is an optional value.
 If a deCONZ API key is available because it has already been created manually, it can also be entered as a configuration value.
 Otherwise the field can be left empty and the binding will generate the key automatically.
 For this process the deCONZ bridge must be unlocked in the deCONZ software so that third party applications can register ([see deCONZ documentation](https://dresden-elektronik.github.io/deconz-rest-doc/getting_started/#unlock-the-gateway)).
+
+### Things
+
+All non-bridge things share the mandatory `id` parameter, an integer assigned to the device while pairing to deconz.
+Auto-discovered things do not need to be configured. 
+
+`dimmablelight`, `extendedcolorlight`, `colorlight` and `colortemperaturelight` have an additional optional parameter `transitiontime`.
+The transition time is the time to move between two states and is configured in seconds.
+The resolution provided is 1/10s.
+If no value is provided, the default value of the device is used.
+
 
 ### Textual Thing Configuration - Retrieving an API Key
 
