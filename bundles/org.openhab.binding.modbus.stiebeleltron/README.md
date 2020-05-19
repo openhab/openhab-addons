@@ -71,20 +71,20 @@ This group contains system paramters of the heat pump.
 
 This group contains general operational information about the device.
 
-| Channel ID                 | Item Type            | Description                                           |
-| -------------------------- | -------------------- | ----------------------------------------------------- |
-| fek-temperature            | Number:Temperature   | The current temperature measured by the FEK           |
-| fek-temperature-setpoint   | Number:Temperature   | The current set point of the FEK temperature          |
-| fek-humidity               | Number:Dimensionless | The current humidity measured by the FEK              |
-| fek-dewpoint               | Number:Temperature   | The current dew point temperature measured by the FEK |
-| outdoor-temperature        | Number:Temperature   | The current outdoor temperature                       |
-| hk1-temperature            | Number:Temperature   | The current temperature of the HK1                    |
-| hk1-temperature-setpoint   | Number:Temperature   | The current temperature set point of the HK1          |
-| supply-temperature         | Number:Temperature   | The current supply temperature                        |
-| return-temperature         | Number:Temperature   | The current return measured                           |
-| source-temperature         | Number:Temperature   | The current sourcetemperature                         |
-| water-temperature          | Number:Temperature   | The current water temperature                         |
-| water-temperature-setpoint | Number:Temperature   | The current water temperature set point               |
+| Channel ID                 | Item Type            | Read only | Description                                           |
+| -------------------------- | -------------------- | --------- | ----------------------------------------------------- |
+| fek-temperature            | Number:Temperature   | true      | The current temperature measured by the FEK           |
+| fek-temperature-setpoint   | Number:Temperature   | true      | The current set point of the FEK temperature          |
+| fek-humidity               | Number:Dimensionless | true      | The current humidity measured by the FEK              |
+| fek-dewpoint               | Number:Temperature   | true      | The current dew point temperature measured by the FEK |
+| outdoor-temperature        | Number:Temperature   | true      | The current outdoor temperature                       |
+| hk1-temperature            | Number:Temperature   | true      | The current temperature of the HK1                    |
+| hk1-temperature-setpoint   | Number:Temperature   | true      | The current temperature set point of the HK1          |
+| supply-temperature         | Number:Temperature   | true      | The current supply temperature                        |
+| return-temperature         | Number:Temperature   | true      | The current return measured                           |
+| source-temperature         | Number:Temperature   | true      | The current sourcetemperature                         |
+| water-temperature          | Number:Temperature   | true      | The current water temperature                         |
+| water-temperature-setpoint | Number:Temperature   | true      | The current water temperature set point               |
 
 ### Energy Information Group 
 
