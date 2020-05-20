@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.items.GenericItem;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.library.items.ColorItem;
@@ -133,14 +134,14 @@ public class HomekitCharacteristicFactory {
      */
     public static Characteristic createCharacteristic(final HomekitTaggedItem item, HomekitAccessoryUpdater updater)
             throws HomekitException {
-        logger.trace("createCharacteristic, type {} item {}", item.getCharacteristicType(), item);
-        if (optional.containsKey(item.getCharacteristicType())) {
-            return optional.get(item.getCharacteristicType()).apply(item, updater);
+        final @Nullable HomekitCharacteristicType type = item.getCharacteristicType();
+        logger.trace("createCharacteristic, type {} item {}", type, item);
+        if (optional.containsKey(type)) {
+            return optional.get(type).apply(item, updater);
         }
-        logger.warn("Unsupported optional characteristic. Item type {}, characteristic type {}",
-                item.getAccessoryType(), item.getCharacteristicType());
-        throw new HomekitException(
-                "Unsupported optional characteristic. Characteristic type \"" + item.getCharacteristicType());
+        logger.warn("Unsupported optional characteristic. Accessory type {}, characteristic type {}",
+                item.getAccessoryType(), type);
+        throw new HomekitException("Unsupported optional characteristic. Characteristic type \"" + type);
     }
 
     // METHODS TO CREATE SINGLE CHARACTERISTIC FROM OH ITEM
