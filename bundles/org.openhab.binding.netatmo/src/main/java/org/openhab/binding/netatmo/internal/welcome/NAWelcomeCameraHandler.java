@@ -12,17 +12,12 @@
  */
 package org.openhab.binding.netatmo.internal.welcome;
 
-import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.types.UnDefType;
-import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.netatmo.internal.camera.NACameraHandler;
+import org.openhab.binding.netatmo.internal.camera.CameraHandler;
 
 /**
  * {@link NAWelcomeCameraHandler} is the class used to handle the Welcome Camera Data
@@ -30,7 +25,7 @@ import org.openhab.binding.netatmo.internal.camera.NACameraHandler;
  * @author Ing. Peter Weiss - Initial contribution
  *
  */
-public class NAWelcomeCameraHandler extends NACameraHandler {
+public class NAWelcomeCameraHandler extends CameraHandler {
 
     public NAWelcomeCameraHandler(@NonNull Thing thing) {
         super(thing);
