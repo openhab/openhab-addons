@@ -70,7 +70,7 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
                     if (args.length > 1) {
                         printAccessory(args[1], console);
                     } else {
-                        console.println("accessory id or name are required as an argument");
+                        console.println("accessory id or name is required as an argument");
                     }
                     break;
                 default:
