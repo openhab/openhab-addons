@@ -62,11 +62,10 @@ public class GeohashTransformationService implements TransformationService {
                         new DecimalType(centerPoint.getLongitude()));
                 return point.toString();
             } catch (NullPointerException e2) {
-                logger.info("The value '{}' is not valid geohash nor a valid coordinate expression : {}", coordinates,
-                        e.getMessage());
+                throw new TransformationException(String
+                        .format("The value '{}' is not valid geohash nor a valid coordinate expression", coordinates));
             }
         }
-
         return null;
     }
 }
