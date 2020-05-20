@@ -26,6 +26,7 @@ import org.freedesktop.dbus.exceptions.DBusException;
 import org.openhab.binding.bluetooth.AbstractBluetoothBridgeHandler;
 import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.dbusbluez.DBusBlueZBluetoothDevice;
+import org.openhab.binding.bluetooth.dbusbluez.handler.events.AdapterDiscoveringChangedEvent;
 import org.openhab.binding.bluetooth.dbusbluez.handler.events.AdapterPoweredChangedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +64,8 @@ public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusB
 
     private @Nullable ScheduledFuture<?> adapterDiscoveryJob;
 
+    private @Nullable Boolean discovering;
+
     /**
      * Constructor
      *
@@ -74,8 +77,6 @@ public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusB
 
     @Override
     public void initialize() {
-        logger.debug("Initializing DBus BlueZ binding. Build 1.");
-
         super.initialize();
         initializeInternal();
     }
@@ -221,10 +222,11 @@ public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusB
      *
      * @return
      */
-    public boolean isCurrentlyScanning() {
-        boolean scanning = this.adapter.isDiscovering();
-        logger.debug("Is adapter currently scanning : {}", scanning);
-        return scanning;
+    public @Nullable Boolean isDiscovering() {
+        // The status reported by the object "adapter" is not accurate. So we use internal status.
+        // boolean scanning = this.adapter.isDiscovering();
+        logger.debug("Is adapter currently discovering : {}", discovering);
+        return discovering;
     }
 
     @Override
@@ -259,13 +261,16 @@ public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusB
         super.dispose();
     }
 
-    private void startDiscovery() {
+    private void setDiscovering(boolean status) {
         // we need to make sure the adapter is powered first
         if (!adapter.isPowered()) {
             adapter.setPowered(true);
         }
-        if (Boolean.FALSE.equals(adapter.isDiscovering())) {
+
+        if (status) {
             adapter.startDiscovery();
+        } else {
+            adapter.stopDiscovery();
         }
     }
 
@@ -290,8 +295,8 @@ public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusB
                     deviceDiscovered(device);
                 }
 
-                if (!isCurrentlyScanning()) {
-                    startDiscovery();
+                if (this.discovering == null || Boolean.FALSE.equals(discovering)) {
+                    setDiscovering(true);
                 }
 
             } catch (Exception e) {
@@ -316,19 +321,8 @@ public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusB
 
     @Override
     public void onDBusBlueZEvent(DBusBlueZEvent event) {
-        // logger.debug("onDBusBlueZEvent(): {}", event);
-
-        switch (event.getEventType()) {
-            case ADAPTER_POWERED_CHANGED:
-                onPoweredChange((AdapterPoweredChangedEvent) event);
-                break;
-            default:
-                break;
-        }
-    }
-
-    private void onPoweredChange(AdapterPoweredChangedEvent event) {
         String adapterName = event.getAdapter();
+        logger.debug("Adapter name: {}", adapterName);
         if (adapterName == null) {
             // We cannot be sure that this event concerns this adapter.. So ignore message
             return;
@@ -341,6 +335,24 @@ public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusB
             return;
         }
 
+        switch (event.getEventType()) {
+            case ADAPTER_POWERED_CHANGED:
+                onPoweredChange((AdapterPoweredChangedEvent) event);
+                break;
+            case ADAPTER_DISCOVERING_CHANGED:
+                onDiscoveringChanged((AdapterDiscoveringChangedEvent) event);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void onDiscoveringChanged(AdapterDiscoveringChangedEvent event) {
+        // TODO Auto-generated method stub
+
+    }
+
+    private void onPoweredChange(AdapterPoweredChangedEvent event) {
         if (event.isPowered()) {
             // Adapter has been turned on (externally)
             initializeAdapter();

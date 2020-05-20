@@ -32,7 +32,8 @@ public class DBusBlueZEvent {
         TXPOWER,
         NAME,
         SERVICES_RESOLVED,
-        ADAPTER_POWERED_CHANGED
+        ADAPTER_POWERED_CHANGED,
+        ADAPTER_DISCOVERING_CHANGED
     }
 
     private EventType eventType;
