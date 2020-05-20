@@ -45,6 +45,11 @@ public class OpenSessionData {
         mac.init(signingKey);
         byte[] rawHmac = mac.doFinal(challenge.getBytes()); // Compute the hmac on input data bytes
         byte[] hexBytes = new Hex().encode(rawHmac); // Convert raw bytes to Hex
-        this.password = new String(hexBytes, StandardCharsets.UTF_8); // Covert array of Hex bytes to a String
+        this.password = new String(hexBytes, StandardCharsets.UTF_8).toLowerCase(); // Convert array of Hex bytes to
+                                                                                    // String
+    }
+
+    public String getPassword() {
+        return password;
     }
 }
