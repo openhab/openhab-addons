@@ -48,9 +48,10 @@ public class GeohashTransformationServiceTest {
 
         assertEquals("48.85894775390625,2.3565673828125", transformedResponse);
 
+        // check that transformation of an invalid geohash returns null
         hash = "aaaa";
         transformedResponse = processor.transform("", hash);
-        assertEquals("48.85894775390625,2.3565673828125", transformedResponse);
+        assertEquals(null, transformedResponse);
     }
 
 }

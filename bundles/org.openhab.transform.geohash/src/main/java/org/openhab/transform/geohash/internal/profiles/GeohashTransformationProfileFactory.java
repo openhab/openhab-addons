@@ -31,9 +31,9 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * Profilefactory that creates the transformation profile for the map transformation service
+ * Profilefactory that creates the transformation profile for the geohash transformation service
  *
- * @author Stefan Triller - initial contribution
+ * @author Gaël L'hopital - initial contribution
  *
  */
 @NonNullByDefault

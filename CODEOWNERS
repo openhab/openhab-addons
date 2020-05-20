@@ -231,6 +231,7 @@
 /bundles/org.openhab.io.webaudio/ @kaikreuzer
 /bundles/org.openhab.persistence.mapdb/ @mkhl
 /bundles/org.openhab.transform.exec/ @openhab/add-ons-maintainers
+/bundles/org.openhab.transform.geohash/ @clinique
 /bundles/org.openhab.transform.javascript/ @openhab/add-ons-maintainers
 /bundles/org.openhab.transform.jinja/ @jochen314
 /bundles/org.openhab.transform.jsonpath/ @clinique

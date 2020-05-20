@@ -8,7 +8,7 @@
 		<parameter name="precision" type="text" required="false">
 			<label>Precision</label>
 			<description>Precision level of the desired geohash (between 1 and 12).</description>
-            <advanced>true</advanced>
+			<advanced>true</advanced>
 		</parameter>
 		<parameter name="sourceFormat" type="text" required="false">
 			<label>State Formatter</label>

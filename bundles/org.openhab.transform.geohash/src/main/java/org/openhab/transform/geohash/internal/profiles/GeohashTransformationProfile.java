@@ -28,9 +28,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Profile to offer the MapTransformationservice on a ItemChannelLink
+ * Profile to offer the GeohashTransformationservice on a ItemChannelLink
  *
- * @author Stefan Triller - initial contribution
+ * @author Gaël L'hopital - initial contribution
  *
  */
 @NonNullByDefault
