@@ -493,13 +493,13 @@ So to get a refreshed picture, you need to use the refresh parameter in your sit
 
 | Channel ID                  | Item Type | Description                                              |
 |-----------------------------|-----------|----------------------------------------------------------|
-| cameraStatus                | Switch    | State of the camera                                      |
-| cameraSdStatus              | Switch    | State of the SD card                                     |
-| cameraAlimStatus            | Switch    | State of the power connector                             |
-| cameraIsLocal               | Switch    | indicates whether the camera is on the same network than the openHAB Netatmo Binding |
-| cameraLivePicture           | Image     | Camera Live Snapshot                                     |
-| cameraLivePictureUrl        | String    | Url of the live snapshot for this camera                 |
-| cameraLiveStreamUrl         | String    | Url of the live stream for this camera                   |
+| cameraStatus         | Switch    | State of the camera                                      |
+| cameraSdStatus       | Switch    | State of the SD card                                     |
+| cameraAlimStatus     | Switch    | State of the power connector                             |
+| cameraIsLocal        | Switch    | indicates whether the camera is on the same network than the openHAB Netatmo Binding |
+| cameraLivePicture    | Image     | Camera Live Snapshot                                     |
+| cameraLivePictureUrl | String    | Url of the live snapshot for this camera                 |
+| cameraLiveStreamUrl  | String    | Url of the live stream for this camera                   |
 
 
 ### Welcome Person
