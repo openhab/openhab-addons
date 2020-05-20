@@ -43,6 +43,7 @@ public class DaikinMadokaBindingConstants {
     public static final String CHANNEL_ID_SETPOINT = "setpoint";
     public static final String CHANNEL_ID_HOMEKIT_CURRENT_HEATING_COOLING_MODE = "homekitCurrentHeatingCoolingMode";
     public static final String CHANNEL_ID_HOMEKIT_TARGET_HEATING_COOLING_MODE = "homekitTargetHeatingCoolingMode";
+    public static final String CHANNEL_ID_HOMEBRIDGE_MODE = "homebridgeMode";
 
     /**
      * BLUETOOTH UUID (service + chars)

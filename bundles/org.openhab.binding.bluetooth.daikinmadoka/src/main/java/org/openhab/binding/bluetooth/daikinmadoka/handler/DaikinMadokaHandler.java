@@ -215,6 +215,44 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
                     logger.info("Data received is not a valid OPERATION MODE", e);
                 }
                 break;
+            case DaikinMadokaBindingConstants.CHANNEL_ID_HOMEBRIDGE_MODE:
+                try {
+                    // Homebridge are discrete value different from Daikin
+                    // 0 - Off
+                    // 1 - Heating
+                    // 2 - Cooling
+                    // 3 - Auto
+                    DecimalType homebridgeMode = (DecimalType) command;
+                    switch (homebridgeMode.intValue()) {
+                        case 0: // Off
+                            submitCommand(new SetPowerstateCommand(OnOffType.OFF));
+                            break;
+                        case 1: // Heating
+                            submitCommand(new SetOperationmodeCommand(OperationMode.HEAT));
+                            if (madokaSettings.getOnOffState() == OnOffType.OFF) {
+                                submitCommand(new SetPowerstateCommand(OnOffType.ON));
+                            }
+                            break;
+                        case 2: // Cooling
+                            submitCommand(new SetOperationmodeCommand(OperationMode.COOL));
+                            if (madokaSettings.getOnOffState() == OnOffType.OFF) {
+                                submitCommand(new SetPowerstateCommand(OnOffType.ON));
+                            }
+                            break;
+                        case 3: // Auto
+                            submitCommand(new SetOperationmodeCommand(OperationMode.AUTO));
+                            if (madokaSettings.getOnOffState() == OnOffType.OFF) {
+                                submitCommand(new SetPowerstateCommand(OnOffType.ON));
+                            }
+                            break;
+                        default: // Invalid Value
+                            logger.info("Invalid value received for channel {}. Ignoring.", channelUID);
+                            break;
+                    }
+                } catch (Exception e) {
+                    logger.info("Data received is not a valid HOMEBRIDGE OPERATION MODE", e);
+                }
+                break;
             case DaikinMadokaBindingConstants.CHANNEL_ID_HOMEKIT_TARGET_HEATING_COOLING_MODE:
                 try {
                     StringType homekitOperationMode = (StringType) command;
@@ -524,17 +562,27 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
         updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_OPERATION_MODE, new StringType(newMode.name()));
 
         // For HomeKit channel, we need to map it to HomeKit supported strings
-        switch (newMode) {
-            case COOL:
-                updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_HOMEKIT_CURRENT_HEATING_COOLING_MODE,
-                        new StringType("Cooling"));
-                break;
-            case HEAT:
-                updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_HOMEKIT_CURRENT_HEATING_COOLING_MODE,
-                        new StringType("Heating"));
-                break;
-            default:
-                break;
+        OnOffType ooStatus = madokaSettings.getOnOffState();
+
+        if (ooStatus != null && ooStatus == OnOffType.ON) {
+            switch (newMode) {
+                case COOL:
+                    updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_HOMEKIT_CURRENT_HEATING_COOLING_MODE,
+                            new StringType("Cooling"));
+                    updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_HOMEBRIDGE_MODE, new DecimalType(2));
+                    break;
+                case HEAT:
+                    updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_HOMEKIT_CURRENT_HEATING_COOLING_MODE,
+                            new StringType("Heating"));
+                    updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_HOMEBRIDGE_MODE, new DecimalType(1));
+                    break;
+                case AUTO:
+                    updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_HOMEKIT_CURRENT_HEATING_COOLING_MODE,
+                            new StringType("Auto"));
+                    updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_HOMEBRIDGE_MODE, new DecimalType(3));
+                default:
+                    break;
+            }
         }
 
         // If this is the first channel update - then we set target = current mode
@@ -552,10 +600,18 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
                 default:
                     return;
             }
-            this.madokaSettings.setHomekitTargetMode(newHomekitTargetStatus);
 
-            updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_HOMEKIT_TARGET_HEATING_COOLING_MODE,
-                    new StringType(newHomekitTargetStatus));
+            if (ooStatus != null && ooStatus == OnOffType.ON) {
+                this.madokaSettings.setHomekitTargetMode(newHomekitTargetStatus);
+                updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_HOMEKIT_TARGET_HEATING_COOLING_MODE,
+                        new StringType(newHomekitTargetStatus));
+            } else if (ooStatus != null && ooStatus == OnOffType.OFF) {
+                newHomekitTargetStatus = "Off";
+                this.madokaSettings.setHomekitTargetMode(newHomekitTargetStatus);
+                updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_HOMEKIT_TARGET_HEATING_COOLING_MODE,
+                        new StringType(newHomekitTargetStatus));
+            }
+
         }
     }
 
@@ -580,6 +636,7 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
                     new StringType("Off"));
             updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_HOMEKIT_TARGET_HEATING_COOLING_MODE,
                     new StringType("Off"));
+            updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_HOMEBRIDGE_MODE, new DecimalType(0));
         }
     }
 
@@ -621,14 +678,17 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
                 case AUTO:
                     updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_HOMEKIT_CURRENT_HEATING_COOLING_MODE,
                             new StringType("Auto"));
+                    updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_HOMEBRIDGE_MODE, new DecimalType(3));
                     break;
                 case HEAT:
                     updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_HOMEKIT_CURRENT_HEATING_COOLING_MODE,
                             new StringType("Heating"));
+                    updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_HOMEBRIDGE_MODE, new DecimalType(1));
                     break;
                 case COOL:
                     updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_HOMEKIT_CURRENT_HEATING_COOLING_MODE,
                             new StringType("Cooling"));
+                    updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_HOMEBRIDGE_MODE, new DecimalType(2));
                     break;
                 default: // Other Modes are not [yet] supported
                     break;
@@ -636,6 +696,7 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
         } else {
             updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_HOMEKIT_CURRENT_HEATING_COOLING_MODE,
                     new StringType("Off"));
+            updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_HOMEBRIDGE_MODE, new DecimalType(0));
         }
     }
 
