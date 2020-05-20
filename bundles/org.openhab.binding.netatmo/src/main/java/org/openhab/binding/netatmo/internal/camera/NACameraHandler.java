@@ -80,8 +80,7 @@ public class NACameraHandler extends NetatmoModuleHandler<NAWelcomeCamera> {
     }
 
     protected State getIsLocalState() {
-        return (module == null || module.getIsLocal() == null) ? UnDefType.UNDEF
-                : toOnOffType(module.getIsLocal());
+        return module != null ? toOnOffType(module.getIsLocal()) : UnDefType.UNDEF;
     }
 
     protected State getLivePictureURLState() {
