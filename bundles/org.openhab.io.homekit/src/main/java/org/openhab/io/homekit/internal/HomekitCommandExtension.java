@@ -87,7 +87,7 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
     public List<String> getUsages() {
         return Arrays.asList(buildCommandUsage(SUBCMD_LIST_ACCESSORIES, "list all HomeKit accessories"),
                 buildCommandUsage(SUBCMD_PRINT_ACCESSORY + " <accessory id | accessory name>",
-                        "search for accessories and show details. "),
+                        "print additional details of the accessories which partially match provided ID or name."),
                 buildCommandUsage(SUBCMD_CLEAR_PAIRINGS, "removes all pairings with HomeKit clients."),
                 buildCommandUsage(SUBCMD_ALLOW_UNAUTHENTICATED + " <boolean>",
                         "enables or disables unauthenticated access to facilitate debugging"));
