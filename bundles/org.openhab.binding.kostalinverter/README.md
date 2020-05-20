@@ -4,13 +4,19 @@ Scrapes the web interface of the inverter for the metrics of the supported chann
 
 ![Kostal Pico](doc/kostalpico.jpg)
 
+![Kostal Piko 10-20](doc/kostalpiko10_20.jpg)
+
 ![Kostal PLENTICORE / PIKI IQ](doc/plenticore.jpg)
 
 ## Supported Things
 
 ### First generation devices (PIKO)
 
-Tested with Kostal Inverter PIKO but might work with other inverters from kostal too.
+Tested with Kostal Inverter PIKO but might work with other inverters from Kostal too.
+
+### Second generation devices (PIKO 10-20, PIKO NEW GENERATION)
+
+Tested with Kostal Inverter PIKO 10-20, PIKO NEW GENERATION.
 
 ### Third generation devices (PIKO IQ / PLENTICORE plus)
 
@@ -31,10 +37,6 @@ Currently supported things are:
 * PLENTICORE plus 10.0 (with or without battery attached)
 
 Others may be supported (like future devices using the same SCB or offering the same Web API, branded OEM devices, ...), but they were not tested!
-
-Kostal bindings to third generation devices require Java's strong cryptography to be enabled in order to establish connections. In case you are allowed to use 
-strong cryptography in your country, you can achieve this by modifying the $JAVA_HOME/jre/lib/security/java.security file (find the line *crypto.policy=limited* and set it to *unlimited*). 
-If you're using the official openHAB docker image you may also enable Java's strong cryptography by specifying an environment variable *CRYPTO_POLICY="unlimited"*.
 
 ## Discovery
 
@@ -58,6 +60,74 @@ None
 -   l2Power
 -   l3Voltage
 -   l3Power
+
+### Second generation devices (PIKO 10-20, PIKO NEW GENERATION)
+
+Channel Type ID                 Item Type                   Description
+-   gridOutputPower             Number:Power                WATT
+-   yieldDay                    Number:Power                WATT
+-   yieldTotal                  Number:Energy               KILOWATT_HOUR
+-   operatingStatus             String
+-   gridVoltageL1               Number:ElectricPotential    VOLT
+-   gridCurrentL1               Number:ElectricCurrent      AMPERE
+-   gridPowerL1                 Number:Power                WATT
+-   gridVoltageL2               Number:ElectricPotential    VOLT
+-   gridCurrentL2               Number:ElectricCurrent      AMPERE
+-   gridPowerL2                 Number:Power                WATT
+-   gridVoltageL3               Number:ElectricPotential    VOLT
+-   gridCurrentL3               Number:ElectricCurrent      AMPERE
+-   gridPowerL3                 Number:Power                WATT
+-   dcPowerPV                   Number:Power                WATT
+-   dc1Voltage                  Number:ElectricPotential    VOLT
+-   dc1Current                  Number:ElectricCurrent      AMPERE
+-   dc1Power                    Number:Power                WATT
+-   dc2Voltage                  Number:ElectricPotential    VOLT
+-   dc2Current                  Number:ElectricCurrent      AMPERE
+-   dc2Power                    Number:Power                WATT
+-   dc3Voltage                  Number:ElectricPotential    VOLT
+-   dc3Current                  Number:ElectricCurrent      AMPERE
+-   dc3Power                    Number:Power                WATT
+
+-   aktHomeConsumptionSolar     Number:Power                WATT
+-   aktHomeConsumptionBat       Number:Power                WATT
+-   aktHomeConsumptionGrid      Number:Power                KILOWATT_HOUR
+-   phaseSelHomeConsumpL1       Number:Power                WATT
+-   phaseSelHomeConsumpL2       Number:Power                WATT
+-   phaseSelHomeConsumpL3       Number:Power                WATT
+-   gridFreq                    Number:Frequency            HERTZ
+-   gridCosPhi                  Number:Angle                DEGREE_ANGLE
+-   homeConsumptionDay          Number:Energy               KILOWATT_HOUR
+-   ownConsumptionDay           Number:Energy               KILOWATT_HOUR
+-   ownConsRateDay              Number:Dimensionless        PERCENT
+-   autonomyDegreeDay           Number:Dimensionless        PERCENT
+-   homeConsumptionTotal        Number:Energy               KILOWATT_HOUR
+-   ownConsumptionTotal         Number:Energy               KILOWATT_HOUR
+-   totalOperatingTime          Number:Time                 HOUR
+-   current                     Number:ElectricCurrent      AMPERE
+-   currentDir                  Number:ElectricCurrent      AMPERE
+-   chargeCycles                String 
+-   batteryTemperature          Number:Temperature          CELCIUS
+-   loginterval                 Number:Time                 MINUTE
+-   s0InPulseCnt                String
+-   ownConsRateTotal            Number:Dimensionless        PERCENT
+-   autonomyDegreeTotal         Number:Dimensionless        PERCENT
+-   batteryVoltage              Number:ElectricPotential    VOLT
+-   batStateOfCharge            Dimensionless               PERCENT
+
+The following Channels are changeable
+
+-  batteryType                  String          Battery type, Value = 1 = None, Value = 2 = PIKO Battery Li, Value = 3 = BYD B-Box HV
+-  batteryUsageConsumption      String          Value = 100
+-  batteryUsageStrategy         String          Value = 1 = Automatic, Value = 2 = Automatic economical             
+-  smartBatteryControl          Switch          Value = False / True
+-  smartBatteryControlText      String          Value = False / True
+-  batterChargeTimeFrom         Number:Time     Battery charge time, Value = 00:00
+-  batteryChargeTimeTo          Number:Time     Battery charge time, Value = 23:59
+-  maxDepthOfDischarge          String          Max.depth of discharge (SoC), Value = 10
+-  shadowManagement             Number          Shadow management, Value = 0 = None, Value = 1 = Shadow management + String 1 activated, Value = 2 = Shadow  management + String 2 activated, Value = 3 = Shadow management + String 1 and 2 activated
+-  externalModuleControl        String          External module control, Value = 0 = True
+-  inverterName                 String          Value = 'Name of inverter'
+
 
 ### Third generation devices (PIKO IQ / PLENTICORE plus)
 
@@ -148,6 +218,17 @@ If the thing goes online then the connection to the web interface is successful.
 In case it is offline you should see an error message.
 You optionally can define a `userName` and a `password` parameter if the access to the webinterface is protected and a desired `refreshInterval` (the time interval between updates, default 60 seconds).
 
+
+### Second generation devices (PIKO 10-20, PIKO NEW GENERATION)
+
+demo.things
+
+```
+
+Thing kostalinverter:kostalinverterpiko1020:inverter [ url="http://'inverter-ip'", username="'username'", password="'password'", refreshInterval=60]
+```
+
+
 ### Third generation devices (PIKO IQ / PLENTICORE plus)
 
 All third generation inverters require to define 3 mandatory configuration parameters:
@@ -181,6 +262,99 @@ Number:Energy SolarEnergyDay "Solar day energy [%.3f %unit%]" <energy> { channel
 Number:Energy SolarTotalEnergy "Solar total energy [%.3f %unit%]" <energy> { channel="kostalinverter:kostalinverter:inverter:totalEnergy" }
 String SolarStatus "Solar status [%s]" <energy> { channel="kostalinverter:kostalinverter:inverter:status" }
 ```
+
+### Second generation devices (PIKO NEW GENERATION)
+
+demo.items:
+
+```
+Number:Power SolarPower                 "AC Power [%.2f %unit%]"                    <energy> (gGF) { channel="kostalinverter:kostalinverterpiko1020:inverter:gridOutputPower" }
+Number SolarPowerMax                    "Todays Maximum [%.2f %unit%]"              <energy> (gGF) 
+Number SolarPowerMin                    "Todays Mimimum [%.2f %unit%]"              <energy> (gGF) 
+Number SolarPowerChart                  "Chart Period Solar Power"
+DateTime SolarPowerTimestamp            "Last Update AC Power [%1$ta %1$tR]"        <clock>
+
+Number:Power SolarEnergyDay             "Day Energy [%.2f %unit%]"                  <energy> (gGF) { channel="kostalinverter:kostalinverterpiko1020:inverter:yieldDay" }
+Number SolarEnergyDayMax                "Todays Maximum [%.2f %unit%]"              <energy> (gGF) 
+Number SolarEnergyDayMin                "Todays Mimimum [%.2f %unit%]"              <energy> (gGF) 
+Number SolarEnergyDayChart              "Chart Period SolarEnergyDay "
+DateTime SolarEnergyDayTimestamp        "Last Update Day Energy  [%1$ta %1$tR]"     <clock>
+
+Number:Energy SolarTotalEnergy          "Total Energy [%.2f %unit%]"                <energy> (gGF) { channel="kostalinverter:kostalinverterpikon1020:inverter:yieldTotal" } 
+Number SolarTotalEnergyMax              "Todays Maximum [%.2f %unit%]"              <energy> (gGF) 
+Number SolarTotalEnergyMin              "Todays Mimimum [%.2f %unit%]"              <energy> (gGF) 
+Number SolarTotalEnergyChart            "Chart Period SolarTotalEnergy "
+DateTime SolarTotalEnergyTimestamp      "Last Update Total Energy  [%1$ta %1$tR]"   <clock>
+
+String SolarStatus                      "Status[%s]"                                <energy> (gGF) { channel="kostalinverter:kostalinverterpiko1020:inverter:operatingStatus" }
+Number SolarStatusMax                   "Todays Maximum [%s]"                       <energy> (gGF) 
+Number SolarStatusMin                   "Todays Mimimum [%s]"                       <energy> (gGF) 
+Number SolarStatusChart                 "Chart Period SolarStatus "
+DateTime SolarStatusTimestamp           "Last Update Solar Status  [%1$ta %1$tR]"   <clock>
+
+Number:ElectricPotential        GridVoltageL1       "L1 Voltage[%.2f %unit%]"       <energy> (gGF) { channel="kostalinverter:kostalinverterpiko1020:inverter:gridVoltageL1" }
+Number:ElectricCurrent          GridCurrentL1       "L1 Current[%.2f %unit%]"       <energy> (gGF) { channel="kostalinverter:kostalinverterpiko1020:inverter:gridCurrentL1" }
+Number:Power                    GridPowerL1         "L1 Power[%.2f %unit%]"         <energy> (gGF) { channel="kostalinverter:kostalinverterpiko1020:inverter:gridPowerL1" }
+Number:ElectricPotential        GridVoltageL2       "L2 Voltage[%.2f %unit%]"       <energy> (gGF) { channel="kostalinverter:kostalinverterpiko1020:inverter:gridVoltageL2" }
+Number:ElectricCurrent          GridCurrentL2       "L2 Current[%.2f %unit%]"       <energy> (gGF) { channel="kostalinverter:kostalinverterpiko1020:inverter:gridCurrentL2" }
+Number:Power                    GridPowerL2         "L2 Power[%.2f %unit%]"         <energy> (gGF) { channel="kostalinverter:kostalinverterpiko1020:inverter:gridPowerL2" }
+Number:ElectricPotential        GridVoltageL3       "L3 Voltage[%.2f %unit%]"       <energy> (gGF) { channel="kostalinverter:kostalinverterpiko1020:inverter:gridVoltageL3" }
+Number:ElectricCurrent          GridCurrentL3       "L3 Current[%.2f %unit%]"       <energy> (gGF) { channel="kostalinverter:kostalinverterpiko1020:inverter:gridCurrentL3" }
+Number:Power                    GridPowerL3         "L3 Power[%.2f %unit%]"         <energy> (gGF) { channel="kostalinverter:kostalinverterpiko1020:inverter:gridPowerL3" }
+Number:Power                    DcPvPower           "PV Power[%.2f %unit%]"         <energy> (gGF) { channel="kostalinverter:kostalinverterpiko1020:inverter:dcPowerPV" }
+Number:ElectricPotential        DC1Voltage          "DC1 Voltage[%.2f %unit%]"      <energy> (gGF) { channel="kostalinverter:kostalinverterpiko1020:inverter:dc1Voltage" }
+Number:ElectricCurrent          DC1Current          "DC1 Current[%.2f %unit%]"      <energy> (gGF) { channel="kostalinverter:kostalinverterpiko1020:inverter:dc1Current" }
+Number:Power                    DC1Power            "DC1 Power[%.2f %unit%]"        <energy> (gGF) { channel="kostalinverter:kostalinverterpiko1020:inverter:dc1Power" }
+Number:ElectricPotential        DC2Voltage          "DC2 Voltage[%.2f %unit%]"      <energy> (gGF) { channel="kostalinverter:kostalinverterpiko1020:inverter:dc2Voltage" }
+Number:ElectricCurrent          DC2Current          "DC2 Current[%.2f %unit%]"      <energy> (gGF) { channel="kostalinverter:kostalinverterpiko1020:inverter:dc2Current" }
+Number:Power                    DC2Power            "DC2 Power[%.2f %unit%]"        <energy> (gGF) { channel="kostalinverter:kostalinverterpiko1020:inverter:dc2Power" }
+Number:ElectricPotential        DC3Voltage          "DC3 Voltage[%.2f %unit%]"      <energy> (gGF) { channel="kostalinverter:kostalinverterpiko1020:inverter:dc3Voltage" }
+Number:ElectricCurrent          Dc3Current          "DC3 Current[%.2f %unit%]"      <energy> (gGF) { channel="kostalinverter:kostalinverterpiko1020:inverter:dc3Current" }
+Number:Power                    DC3Power            "DC3 Power[%.2f %unit%]"        <energy> (gGF) { channel="kostalinverter:kostalinverterpiko1020:inverter:dc3Power" }
+
+Number:Power                    AktHomeConsumptionSolar "Home Consumption Solar[%.2f %unit%]"   <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:aktHomeConsumptionSolar" }
+Number:Power                    AktHomeConsumptionBat   "Home Consumption Battery[%.2f %unit%]" <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:aktHomeConsumptionBat" }
+Number:Power                    AktHomeConsumptionGrid  "Home Consumption Grid[%.2f %unit%]"    <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:aktHomeConsumptionGrid" }
+Number:Power                    PhaseSelHomeConsumpL1   "Home Consumption L1[%.2f %unit%]"      <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:phaseSelHomeConsumpL1" }
+Number:Power                    PhaseSelHomeConsumpL2   "Home Consumption L2[%.2f %unit%]"      <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:phaseSelHomeConsumpL2" }
+Number:Power                    PhaseSelHomeConsumpL3   "Home Consumption L3[%.2f %unit%]"      <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:phaseSelHomeConsumpL3" }
+Number:Frequency                GridFreq                "Grid Frequency[%.2f %unit%]"           <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:gridFreq" }
+Number:Angle                    GridCosPhi              "Grid Phase Shift[%.2f %unit%]"         <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:gridCosPhi" }
+Number:Energy                   HomeConsumptionDay      "Home Consumption Daily[%.2f %unit%]"   <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:homeConsumptionDay" } 
+Number:Energy                   OwnConsumptionDay       "Own Consumption Daily[%.2f %unit%]"    <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:ownConsumptionDay" } 
+Number:Dimensionless            OwnConsRate             "Own Cons Rate Daily[%.2f %unit%]"      <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:ownConsRateDay" } 
+Number:Dimensionless            AutonomyDegree          "Autonomy Degree Daily[%.2f %unit%]"    <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:autonomyDegreeDay" }
+Number:Energy                   HomeConsumptionTotal    "Home Consumption Total[%.2f %unit%]"   <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:homeConsumptionTotal" } 
+Number:Energy                   OwnConsumptionTotal     "Own Consumption Total[%.2f %unit%]"    <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:ownConsumptionTotal" } 
+Number:Time                     OperatingTime           "Operating Time Total[%.2f %unit%]"     <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:totalOperatingTime" }
+Number:ElectricCurrent          Current                 "Current[%.2f %unit%]"                  <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:current" }
+Number:ElectricCurrent          CurrentDir              "Current Dir[%.2f %unit%]"              <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:currentDir" }
+String                          ChargeCycles            "Charge Cycles[%s]"                     <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:chargeCycles" }
+Number:Temperature              Temperature             "Temperature[%.2f %unit%]"              <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:batteryTemperature" }
+Number:Time                     Loginterval             "Log Interval[%.2f %unit%]"             <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:loginterval" }
+String                          S0InPulseCnt            "S0 In Pulse Counter[%s]"               <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:s0InPulseCnt" }
+Number:Dimensionless            OwnConsRateTotal        "Own Cons Rate Total[%.2f %unit%]"      <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:ownConsRateTotal" } 
+Number:Dimensionless            AutonomyDegreeTotal     "Autonomy Degree Total[%.2f %unit%]"    <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:autonomyDegreeTotal" } 
+
+Number:Dimensionless            ChargeLevelBattery      "Charge Level Battery[%.2f %unit%]"     <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:chargeLevelBattery" }
+Number:Dimensionless            GridLimitation          "Grid Limitation[%.2f %unit%]"          <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:gridLimitation" }
+Number:ElectricPotential        BatteryVoltage          "Battery Voltage[%.2f %unit%]"          <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:batteryVoltage" }
+Number:Dimensionless            BatStateOfCharge        "Bat State Of Charge[%.2f %unit%]"      <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:batStateOfCharge" }
+
+String                          BatteryType             "Battery Type[%s]"                      <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:batteryType" }
+String                          BatteryUsageConsumption "Battery Usage Consumption[%s]"         <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:batteryUsageConsumption" }
+String                          BatteryUsageStrategy    "Battery Usage Strategy[%s]"            <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:batteryUsageStrategy" }
+Switch                          SmartBatteryControl     "Smart Battery Control[%s]"             <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:smartBatteryControl" }
+String                          SmartBatteryControlText "Smart Battery ControlText[%s]"         <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:smartBatteryControlText" } 
+Number:Time                     BatteryChargeTimeFrom   "Battery Charge Time From[%.2f %unit%]" <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:batteryChargeTimeFrom" }
+Number:Time                     BatteryChargeTimeTo     "Battery Charge Time To[%.2f %unit%]"   <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:batteryChargeTimeTo" }
+String                          MaxDephtOfDischarge     "Max Depht Of Discharge[%s]"            <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:maxDephtOfDischarge" }
+String                          ShadowManagement        "Shadow Management[%s]"                 <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:shadowManagement" }
+String                          ExternalModuleControl   "External Module Control[%s]"           <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:externalModuleControl" }
+String                          InverterName            "InverterName[%s]"                      <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:inverterName" }
+
+```
+
 
 ### Third generation devices (PIKO IQ / PLENTICORE plus)
 

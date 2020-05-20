@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,6 +25,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.internal.kostal.inverter.firstgeneration.WebscrapeHandler;
+import org.openhab.binding.internal.kostal.inverter.secondgeneration.SecondGenerationHandler;
 import org.openhab.binding.internal.kostal.inverter.thirdgeneration.ThirdGenerationHandler;
 import org.openhab.binding.internal.kostal.inverter.thirdgeneration.ThirdGenerationInverterTypes;
 import org.osgi.service.component.annotations.Component;
@@ -33,6 +34,7 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Christian Schneider - Initial contribution (as WebscrapeHandlerFactory.java)
  * @author René Stakemeier - extension for the third generation of KOSTAL inverters
+ * @author Örjan Backsell - extension for the second generation of KOSTAL inverters
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.kostalinverter")
 public class KostalInverterFactory extends BaseThingHandlerFactory {
@@ -70,23 +72,34 @@ public class KostalInverterFactory extends BaseThingHandlerFactory {
 
     public static final ThingTypeUID FIRST_GENERATION_INVERTER = new ThingTypeUID("kostalinverter", "kostalinverter");
 
+    public static final ThingTypeUID SECOND_GENERATION_INVERTER = new ThingTypeUID("kostalinverter",
+            "kostalinverterpiko1020");
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return thingTypeUID.equals(FIRST_GENERATION_INVERTER)
+        return thingTypeUID.equals(FIRST_GENERATION_INVERTER) || thingTypeUID.equals(SECOND_GENERATION_INVERTER)
                 || SUPPORTED_THIRD_GENERATION_THING_TYPES_UIDS.keySet().contains(thingTypeUID);
     }
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
+
         // first generation
         if (FIRST_GENERATION_INVERTER.equals(thing.getThingTypeUID())) {
             return new WebscrapeHandler(thing);
         }
+
+        // second generation
+        if (SECOND_GENERATION_INVERTER.equals(thing.getThingTypeUID())) {
+            return new SecondGenerationHandler(thing, httpClient);
+        }
+
         // third generation
         if (SUPPORTED_THIRD_GENERATION_THING_TYPES_UIDS.containsKey(thing.getThingTypeUID())) {
             return new ThirdGenerationHandler(thing, httpClient,
                     SUPPORTED_THIRD_GENERATION_THING_TYPES_UIDS.get(thing.getThingTypeUID()));
         }
+
         return null;
     }
 
@@ -102,4 +115,5 @@ public class KostalInverterFactory extends BaseThingHandlerFactory {
     protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
         this.httpClient = null;
     }
+
 }
