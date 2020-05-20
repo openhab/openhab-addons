@@ -51,7 +51,7 @@ import com.google.gson.Gson;
  * A REST API call is made to get the initial light/rollershutter state.
  *
  * Every light and rollershutter is supported by this Thing, because a unified state is kept
- * in {@link #lightState}. Every field that got received by the REST API for this specific
+ * in {@link #lightStateCache}. Every field that got received by the REST API for this specific
  * sensor is published to the framework.
  *
  * @author Jan N. Klug - Initial contribution
@@ -71,7 +71,7 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
     /**
      * The light state. Contains all possible fields for all supported lights
      */
-    private LightState lightState = new LightState();
+    private LightState lightStateCache = new LightState();
 
     public LightThingHandler(Thing thing, Gson gson) {
         super(thing, gson);
@@ -101,13 +101,13 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            updateChannels(lightState);
+            valueUpdated(channelUID.getId(), lightStateCache);
             return;
         }
 
         LightState newLightState = new LightState();
-        Boolean currentOn = lightState.on;
-        Integer currentBri = lightState.bri;
+        Boolean currentOn = lightStateCache.on;
+        Integer currentBri = lightStateCache.bri;
 
         switch (channelUID.getId()) {
             case CHANNEL_SWITCH:
@@ -124,18 +124,18 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                 } else if (command instanceof HSBType) {
                     HSBType hsbCommand = (HSBType) command;
 
-                    if ("xy".equals(lightState.colormode)) {
+                    if ("xy".equals(lightStateCache.colormode)) {
                         PercentType[] xy = hsbCommand.toXY();
                         if (xy.length < 2) {
                             logger.warn("Failed to convert {} to xy-values", command);
                         }
                         newLightState.xy = new Double[] { xy[0].doubleValue() / 100.0, xy[1].doubleValue() / 100.0 };
+                        newLightState.bri = fromPercentType(hsbCommand.getBrightness());
                     } else {
                         // default is colormode "hs" (used when colormode "hs" is set or colormode is unknown)
                         newLightState.bri = fromPercentType(hsbCommand.getBrightness());
                         newLightState.hue = (int) (hsbCommand.getHue().doubleValue() * HUE_FACTOR);
                         newLightState.sat = fromPercentType(hsbCommand.getSaturation());
-                        break;
                     }
                 } else if (command instanceof PercentType) {
                     newLightState.bri = fromPercentType((PercentType) command);
@@ -165,7 +165,7 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
             case CHANNEL_COLOR_TEMPERATURE:
                 if (command instanceof DecimalType) {
                     newLightState.colormode = "ct";
-                    newLightState.ct = scaleColorTemperature(((DecimalType) command).doubleValue());
+                    newLightState.ct = unscaleColorTemperature(((DecimalType) command).doubleValue());
                 } else {
                     return;
                 }
@@ -273,7 +273,20 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
         }
     }
 
-    private int scaleColorTemperature(double ct) {
+    @Override
+    public void messageReceived(String sensorID, DeconzBaseMessage message) {
+        if (message instanceof LightMessage) {
+            LightMessage lightMessage = (LightMessage) message;
+            logger.trace("{} received {}", thing.getUID(), lightMessage);
+            LightState lightState = lightMessage.state;
+            if (lightState != null) {
+                this.lightStateCache = lightState;
+                thing.getChannels().stream().map(c -> c.getUID().getId()).forEach(c -> valueUpdated(c, lightState));
+            }
+        }
+    }
+
+    private int unscaleColorTemperature(double ct) {
         return (int) (ct / 100.0 * (500 - 153) + 153);
     }
 
@@ -293,22 +306,5 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
 
     private int fromPercentType(PercentType val) {
         return (int) Math.floor(val.doubleValue() * BRIGHTNESS_FACTOR);
-    }
-
-    @Override
-    public void messageReceived(String sensorID, DeconzBaseMessage message) {
-        if (message instanceof LightMessage) {
-            LightMessage lightMessage = (LightMessage) message;
-            logger.trace("{} received {}", thing.getUID(), lightMessage);
-            LightState lightState = lightMessage.state;
-            if (lightState != null) {
-                updateChannels(lightState);
-            }
-        }
-    }
-
-    private void updateChannels(LightState newState) {
-        lightState = newState;
-        thing.getChannels().stream().map(c -> c.getUID().getId()).forEach(c -> valueUpdated(c, newState));
     }
 }

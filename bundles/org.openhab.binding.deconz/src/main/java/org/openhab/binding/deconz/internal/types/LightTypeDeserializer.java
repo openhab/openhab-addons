@@ -29,11 +29,6 @@ public class LightTypeDeserializer implements JsonDeserializer<LightType> {
     public LightType deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
             throws JsonParseException {
         String s = json.getAsString();
-
-        LightType lightType = LightType.UNKNOWN;
-        if (s != null) {
-            lightType = LightType.fromString(s);
-        }
-        return lightType;
+        return s == null ? LightType.UNKNOWN : LightType.fromString(s);
     }
 }

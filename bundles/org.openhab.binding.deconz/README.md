@@ -19,7 +19,7 @@ These sensors are supported:
 | Temperature Sensor                | ZHATemperature                    | `temperaturesensor`  |
 | Humidity Sensor                   | ZHAHumidity                       | `humiditysensor`     |
 | Pressure Sensor                   | ZHAPressure                       | `pressuresensor`     |
-| Open/Close Sensor                 | ZHAOpenClose                      | `oenclosesensor`    |
+| Open/Close Sensor                 | ZHAOpenClose                      | `openclosesensor`    |
 | Water Leakage Sensor              | ZHAWater                          | `waterleakagesensor` |
 | Alarm Sensor                      | ZHAAlarm                          | `alarmsensor`        |
 | Fire Sensor                       | ZHAFire                           | `firesensor`         |

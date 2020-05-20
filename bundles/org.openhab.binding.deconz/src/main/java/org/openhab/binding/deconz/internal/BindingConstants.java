@@ -111,7 +111,7 @@ public class BindingConstants {
         url.append(host).append(":").append(port);
         url.append("/api/");
         if (urlParts.length > 0) {
-            url.append(Stream.of(urlParts).collect(Collectors.joining("/")));
+            url.append(Stream.of(urlParts).filter(s -> s != null && !s.isEmpty()).collect(Collectors.joining("/")));
         }
 
         return url.toString();
