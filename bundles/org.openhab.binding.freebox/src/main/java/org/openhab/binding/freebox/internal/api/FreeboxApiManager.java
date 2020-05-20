@@ -479,7 +479,7 @@ public class FreeboxApiManager {
         }
     }
 
-    private static String hmacSha1(String key, String value) throws FreeboxException {
+    public static String hmacSha1(String key, String value) throws FreeboxException {
         try {
             // Get an hmac_sha1 key from the raw key bytes
             byte[] keyBytes = key.getBytes();
@@ -493,7 +493,7 @@ public class FreeboxApiManager {
             byte[] rawHmac = mac.doFinal(value.getBytes());
 
             // Convert raw bytes to a String
-            return HexUtils.bytesToHex(rawHmac);
+            return HexUtils.bytesToHex(rawHmac).toLowerCase();
         } catch (IllegalArgumentException | NoSuchAlgorithmException | InvalidKeyException | IllegalStateException e) {
             throw new FreeboxException("Computing the hmac-sha1 of the challenge and the app token failed", e);
         }
