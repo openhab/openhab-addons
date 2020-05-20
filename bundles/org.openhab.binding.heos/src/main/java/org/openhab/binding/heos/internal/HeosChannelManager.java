@@ -39,14 +39,14 @@ public class HeosChannelManager {
         this.handler = handler;
     }
 
-    public List<Channel> addSingleChannel(Channel channel) {
+    public synchronized List<Channel> addSingleChannel(Channel channel) {
         ChannelWrapper channelList = getChannelsFromThing();
         channelList.removeChannel(channel.getUID());
         channelList.add(channel);
         return channelList.get();
     }
 
-    public List<Channel> removeSingleChannel(String channelIdentifier) {
+    public synchronized List<Channel> removeSingleChannel(String channelIdentifier) {
         ChannelWrapper channelWrapper = getChannelsFromThing();
         channelWrapper.removeChannel(generateChannelUID(channelIdentifier));
         return channelWrapper.get();

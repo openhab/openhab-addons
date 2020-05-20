@@ -12,10 +12,6 @@
  */
 package org.openhab.binding.heos.internal.resources;
 
-import org.apache.commons.net.telnet.TelnetClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -25,14 +21,19 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import org.apache.commons.net.io.CRLFLineReader;
+import org.apache.commons.net.telnet.TelnetClient;
+import org.eclipse.jdt.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link Telnet} is an Telnet Client which handles the connection
@@ -59,11 +60,10 @@ public class Telnet {
     private DataOutputStream outStream;
     private BufferedInputStream bufferedStream;
 
-
     /**
      * Connects to a host with the specified IP address and port
      *
-     * @param ip   IP Address of the host
+     * @param ip IP Address of the host
      * @param port where to be connected
      * @return True if connection was successful
      * @throws SocketException
@@ -133,7 +133,7 @@ public class Telnet {
      * @throws IOException
      * @see Telnet.readLine(int timeOut).
      */
-    public List<String> readLine() throws ReadException, IOException {
+    public String readLine() throws ReadException, IOException {
         return readLine(READ_TIMEOUT);
     }
 
@@ -149,23 +149,18 @@ public class Telnet {
      * @throws ReadException
      * @throws IOException
      */
-    public List<String> readLine(int timeOut) throws ReadException, IOException {
-        List<String> readResultList = new ArrayList<>();
-        long timeZero = System.currentTimeMillis();
+    public @Nullable String readLine(int timeOut) throws ReadException, IOException {
         if (client.isConnected()) {
             try {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(bufferedStream, StandardCharsets.UTF_8));
-                do {
-                    String line = timedReadLine(reader, timeOut);
-                    if (line != null) {
-                        readResultList.add(line);
-                    }
-
-                    // the telnet timeout is only for a single read, also put the same timeout on the total readLine
-                    if (System.currentTimeMillis() - timeZero >= timeOut) {
-                        throw new ReadException();
-                    }
-                } while (reader.ready());
+                return timedCallable(() -> {
+                    BufferedReader reader = new CRLFLineReader(
+                            new InputStreamReader(bufferedStream, StandardCharsets.UTF_8));
+                    String lastLine;
+                    do {
+                        lastLine = reader.readLine();
+                    } while (reader.ready());
+                    return lastLine;
+                }, timeOut);
             } catch (InterruptedException | TimeoutException e) {
                 throw new ReadException(e);
             } catch (ExecutionException e) {
@@ -177,11 +172,12 @@ public class Telnet {
                 }
             }
         }
-        return readResultList;
+        return null;
     }
 
-    String timedReadLine(BufferedReader reader, int timeOut) throws InterruptedException, ExecutionException, TimeoutException {
-        Future<String> future = timedReaderExecutor.submit(reader::readLine);
+    private String timedCallable(Callable<String> callable, int timeOut)
+            throws InterruptedException, ExecutionException, TimeoutException {
+        Future<String> future = timedReaderExecutor.submit(callable);
         try {
             return future.get(timeOut, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
@@ -235,7 +231,7 @@ public class Telnet {
      * Then fires event for change Listener.
      *
      * @return -1 to indicate that end of line is reached
-     * else returns 0
+     *         else returns 0
      */
     private int concatReadResult(String value) {
         readResult = readResult.concat(value);

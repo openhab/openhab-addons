@@ -72,10 +72,12 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
         // Only commands from the UNGROUP channel are passed through
         // to activate the group if it is offline
         if (gid != null || CH_ID_UNGROUP.equals(channelUID.getId())) {
-            @Nullable HeosChannelHandler channelHandler = getHeosChannelHandler(channelUID);
+            @Nullable
+            HeosChannelHandler channelHandler = getHeosChannelHandler(channelUID);
             if (channelHandler != null) {
                 try {
-                    @Nullable String id = getMaybeId(channelUID, command);
+                    @Nullable
+                    String id = getMaybeId(channelUID, command);
                     channelHandler.handleGroupCommand(command, id, thing.getUID(), this);
                     handleSuccess();
                 } catch (IOException | ReadException e) {
@@ -123,7 +125,8 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
 
     @Override
     public String getId() throws HeosNotFoundException {
-        @Nullable String localGroupId = this.gid;
+        @Nullable
+        String localGroupId = this.gid;
         if (localGroupId == null) {
             throw new HeosNotFoundException();
         }
@@ -156,9 +159,12 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
             return;
         }
 
-        @Nullable String localGid = this.gid;
-        @Nullable String eventGroupId = eventObject.getAttribute(HeosCommunicationAttribute.GROUP_ID);
-        @Nullable String eventPlayerId = eventObject.getAttribute(HeosCommunicationAttribute.PLAYER_ID);
+        @Nullable
+        String localGid = this.gid;
+        @Nullable
+        String eventGroupId = eventObject.getAttribute(HeosCommunicationAttribute.GROUP_ID);
+        @Nullable
+        String eventPlayerId = eventObject.getAttribute(HeosCommunicationAttribute.PLAYER_ID);
         if (localGid == null || !(localGid.equals(eventGroupId) || localGid.equals(eventPlayerId))) {
             return;
         }
@@ -179,7 +185,8 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
             return;
         }
 
-        @Nullable String localGid = this.gid;
+        @Nullable
+        String localGid = this.gid;
         if (localGid == null || !localGid.equals(responseObject.getAttribute(HeosCommunicationAttribute.GROUP_ID))) {
             return;
         }
@@ -239,7 +246,8 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
     }
 
     private void delayedInitialize() {
-        @Nullable HeosBridgeHandler bridgeHandler = this.bridgeHandler;
+        @Nullable
+        HeosBridgeHandler bridgeHandler = this.bridgeHandler;
 
         if (bridgeHandler == null) {
             logger.debug("Bridge handler not found, rescheduling");
@@ -254,7 +262,8 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
         bridgeHandler.addGroupHandlerInformation(this);
         // Checks if there is a group online with the same group member hash.
         // If not setting the group offline.
-        @Nullable String groupId = bridgeHandler.getActualGID(HeosGroup.calculateGroupMemberHash(configuration.members));
+        @Nullable
+        String groupId = bridgeHandler.getActualGID(HeosGroup.calculateGroupMemberHash(configuration.members));
         if (groupId == null) {
             blockInitialization = false;
             setStatusOffline();
@@ -263,12 +272,11 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
                 refreshPlayState(groupId);
 
                 HeosResponseObject<Group> response = getApiConnection().getGroupInfo(groupId);
-                @Nullable Group group = response.payload;
+                @Nullable
+                Group group = response.payload;
                 if (group == null) {
                     throw new IllegalStateException("Invalid group response received");
                 }
-
-                getApiConnection().addHeosGroupToOldGroupMap(HeosGroup.calculateGroupMemberHash(group), group);
 
                 gid = groupId;
                 updateConfiguration(groupId, group);

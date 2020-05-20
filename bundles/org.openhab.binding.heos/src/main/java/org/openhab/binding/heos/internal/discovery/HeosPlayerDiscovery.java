@@ -15,6 +15,7 @@ package org.openhab.binding.heos.internal.discovery;
 import static org.openhab.binding.heos.internal.HeosBindingConstants.*;
 import static org.openhab.binding.heos.internal.handler.FutureUtil.cancel;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -35,6 +36,8 @@ import org.openhab.binding.heos.internal.handler.HeosBridgeHandler;
 import org.openhab.binding.heos.internal.handler.HeosPlayerHandler;
 import org.openhab.binding.heos.internal.json.payload.Group;
 import org.openhab.binding.heos.internal.json.payload.Player;
+import org.openhab.binding.heos.internal.resources.HeosGroup;
+import org.openhab.binding.heos.internal.resources.Telnet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +55,15 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService implements Heo
     private static final int INITIAL_DELAY = 5;
     private static final int SCAN_INTERVAL = 20;
 
-    private HeosBridgeHandler bridge;
+    private final HeosBridgeHandler bridge;
+
+    private final Map<Integer, Player> playerMapNew = new HashMap<>();
+    private final Map<Integer, Player> playerMapOld = new HashMap<>();
+    private Map<Integer, Player> removedPlayerMap = new HashMap<>();
+
+    private final Map<String, Group> groupMapNew = new HashMap<>();
+    private final Map<String, Group> groupMapOld = new HashMap<>();
+    private Map<String, Group> removedGroupMap = new HashMap<>();
 
     private @Nullable ScheduledFuture<?> scanningJob;
 
@@ -75,7 +86,7 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService implements Heo
         }
         logger.debug("Start scan for HEOS Player");
 
-        Map<Integer, Player> playerMap = bridge.getNewPlayers();
+        Map<Integer, Player> playerMap = getNewPlayers();
 
         if (playerMap == null) {
             return;
@@ -97,7 +108,7 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService implements Heo
 
         logger.debug("Start scan for HEOS Groups");
 
-        Map<String, Group> groupMap = bridge.getNewGroups();
+        Map<String, Group> groupMap = getNewGroups();
 
         if (groupMap == null) {
             return;
@@ -134,9 +145,91 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService implements Heo
         removedGroups();
     }
 
+    /**
+     * This method returns a {@code Map<String pid, HeosPlayer heosPlayer>} with
+     * all player found on the network after an connection to the system is
+     * established via a bridge.
+     *
+     * @return a HashMap with all HEOS Player in the network
+     */
+    private @Nullable Map<Integer, Player> getNewPlayers() {
+        try {
+            playerMapNew.clear();
+
+            for (Player player : bridge.getPlayers()) {
+                playerMapNew.put(player.playerId, player);
+                removedPlayerMap = comparePlayerMaps(playerMapNew, playerMapOld);
+                playerMapOld.clear();
+                playerMapOld.putAll(playerMapNew);
+            }
+            return playerMapNew;
+        } catch (IOException | Telnet.ReadException e) {
+            logger.debug("Failed getting/processing groups", e);
+            return null;
+        }
+    }
+
+    /**
+     * This method searches for all groups which are on the HEOS network
+     * and returns a {@code Map<String gid, HeosGroup heosGroup>}.
+     * Before calling this method a connection via a bridge has to be
+     * established
+     *
+     * @return a HashMap with all HEOS groups
+     * @throws Telnet.ReadException
+     * @throws IOException
+     */
+    private @Nullable Map<String, Group> getNewGroups() {
+        groupMapNew.clear();
+        removedGroupMap.clear();
+
+        try {
+            Group[] groups = bridge.getGroups();
+
+            if (groups.length == 0) {
+                removedGroupMap = compareGroupMaps(groupMapNew, groupMapOld);
+                groupMapOld.clear();
+                return groupMapNew;
+            }
+
+            for (Group group : groups) {
+                logger.debug("Found: Group {} with {} Players", group.name, group.players.size());
+                groupMapNew.put(HeosGroup.calculateGroupMemberHash(group), group);
+                removedGroupMap = compareGroupMaps(groupMapNew, groupMapOld);
+                groupMapOld.clear(); // clear the old map so that only the currently available groups are added in the
+                                     // next
+                // step.
+                groupMapOld.putAll(groupMapNew);
+            }
+            return groupMapNew;
+        } catch (IOException | Telnet.ReadException e) {
+            logger.debug("Failed getting/processing groups", e);
+            return null;
+        }
+    }
+
+    private Map<String, Group> compareGroupMaps(Map<String, Group> mapNew, Map<String, Group> mapOld) {
+        Map<String, Group> removedItems = new HashMap<>();
+        for (String key : mapOld.keySet()) {
+            if (!mapNew.containsKey(key)) {
+                removedItems.put(key, mapOld.get(key));
+            }
+        }
+        return removedItems;
+    }
+
+    private Map<Integer, Player> comparePlayerMaps(Map<Integer, Player> mapNew, Map<Integer, Player> mapOld) {
+        Map<Integer, Player> removedItems = new HashMap<>();
+        for (Integer key : mapOld.keySet()) {
+            if (!mapNew.containsKey(key)) {
+                removedItems.put(key, mapOld.get(key));
+            }
+        }
+        return removedItems;
+    }
+
     // Informs the system of removed groups by using the thingRemoved method.
     private void removedGroups() {
-        Map<String, Group> removedGroupMap = bridge.getRemovedGroups();
         for (String groupMemberHash : removedGroupMap.keySet()) {
             // The same as above!
             ThingUID uid = new ThingUID(THING_TYPE_GROUP, groupMemberHash);
@@ -148,7 +241,6 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService implements Heo
 
     // Informs the system of removed players by using the thingRemoved method.
     private void removedPlayers() {
-        Map<Integer, Player> removedPlayerMap = bridge.getRemovedPlayers();
         for (Player player : removedPlayerMap.values()) {
             // The same as above!
             ThingUID uid = new ThingUID(THING_TYPE_PLAYER, String.valueOf(player.playerId));

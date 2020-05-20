@@ -19,9 +19,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -354,6 +352,24 @@ public class HeosFacade {
     }
 
     /**
+     * Get all the players known by HEOS
+     * 
+     * @return
+     */
+    public HeosResponseObject<Player[]> getPlayers() throws IOException, ReadException {
+        return heosSystem.send(HeosCommands.getPlayers(), Player[].class);
+    }
+
+    /**
+     * Get all the groups known by HEOS
+     * 
+     * @return
+     */
+    public HeosResponseObject<Group[]> getGroups() throws IOException, ReadException {
+        return heosSystem.send(HeosCommands.getGroups(), Group[].class);
+    }
+
+    /**
      * Plays a specific station on the HEOS player
      *
      * @param pid The player ID
@@ -536,25 +552,5 @@ public class HeosFacade {
 
     public void closeConnection() {
         heosSystem.closeConnection();
-    }
-
-    public Map<Integer, Player> getNewPlayers() throws IOException, ReadException {
-        return new HashMap<>(heosSystem.getAllPlayer());
-    }
-
-    public Map<Integer, Player> getRemovedPlayers() {
-        return new HashMap<>(heosSystem.getPlayerRemoved());
-    }
-
-    public Map<String, Group> getNewGroups() throws IOException, ReadException {
-        return new HashMap<>(heosSystem.getGroups());
-    }
-
-    public Map<String, Group> getRemovedGroups() {
-        return new HashMap<>(heosSystem.getGroupsRemoved());
-    }
-
-    public void addHeosGroupToOldGroupMap(String calculateGroupMemberHash, Group group) {
-        heosSystem.addHeosGroupToOldGroupMap(calculateGroupMemberHash, group);
     }
 }

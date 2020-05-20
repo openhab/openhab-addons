@@ -16,8 +16,6 @@ import static org.openhab.binding.heos.internal.handler.FutureUtil.cancel;
 
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
 
@@ -25,10 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.heos.internal.json.HeosJsonParser;
 import org.openhab.binding.heos.internal.json.dto.HeosResponseObject;
-import org.openhab.binding.heos.internal.json.payload.Group;
-import org.openhab.binding.heos.internal.json.payload.Player;
 import org.openhab.binding.heos.internal.resources.HeosCommands;
-import org.openhab.binding.heos.internal.resources.HeosGroup;
 import org.openhab.binding.heos.internal.resources.HeosSendCommand;
 import org.openhab.binding.heos.internal.resources.Telnet;
 import org.openhab.binding.heos.internal.resources.Telnet.ReadException;
@@ -60,14 +55,6 @@ public class HeosSystem {
 
     private final Telnet commandLine = new Telnet();
     private final HeosSendCommand sendCommand = new HeosSendCommand(commandLine);
-
-    private final Map<Integer, Player> playerMapNew = new HashMap<>();
-    private final Map<Integer, Player> playerMapOld = new HashMap<>();
-    private Map<Integer, Player> removedPlayerMap = new HashMap<>();
-
-    private final Map<String, Group> groupMapNew = new HashMap<>();
-    private final Map<String, Group> groupMapOld = new HashMap<>();
-    private Map<String, Group> removedGroupMap = new HashMap<>();
 
     private final HeosJsonParser parser = new HeosJsonParser();
     private final PropertyChangeListener eventProcessor = evt -> {
@@ -153,7 +140,8 @@ public class HeosSystem {
         eventSendCommand.stopInputListener(HeosCommands.registerChangeEventOff());
         eventSendCommand.disconnect();
         sendCommand.disconnect();
-        @Nullable ExecutorService executor = this.singleThreadExecutor;
+        @Nullable
+        ExecutorService executor = this.singleThreadExecutor;
         if (executor != null && executor.isShutdown()) {
             executor.shutdownNow();
         }
@@ -165,105 +153,6 @@ public class HeosSystem {
 
     synchronized <T> HeosResponseObject<T> send(String command, Class<T> clazz) throws IOException, ReadException {
         return sendCommand.send(command, clazz);
-    }
-
-    /**
-     * This method returns a {@code Map<String pid, HeosPlayer heosPlayer>} with
-     * all player found on the network after an connection to the system is
-     * established via a bridge.
-     *
-     * @return a HashMap with all HEOS Player in the network
-     * @throws ReadException
-     * @throws IOException
-     */
-    synchronized Map<Integer, Player> getAllPlayer() throws IOException, ReadException {
-        playerMapNew.clear();
-
-        HeosResponseObject<Player[]> response = send(HeosCommands.getPlayers(), Player[].class);
-        @Nullable Player[] players = response.payload;
-        if (players == null) {
-            throw new IOException("Received no valid payload");
-        }
-
-        for (Player player : players) {
-            playerMapNew.put(player.playerId, player);
-            removedPlayerMap = comparePlayerMaps(playerMapNew, playerMapOld);
-            playerMapOld.clear();
-            playerMapOld.putAll(playerMapNew);
-        }
-        return playerMapNew;
-    }
-
-    /**
-     * This method searches for all groups which are on the HEOS network
-     * and returns a {@code Map<String gid, HeosGroup heosGroup>}.
-     * Before calling this method a connection via a bridge has to be
-     * established
-     *
-     * @return a HashMap with all HEOS groups
-     * @throws ReadException
-     * @throws IOException
-     */
-    synchronized Map<String, Group> getGroups() throws IOException, ReadException {
-        groupMapNew.clear();
-        removedGroupMap.clear();
-        HeosResponseObject<Group[]> response = send(HeosCommands.getGroups(), Group[].class);
-        Group[] groups = response.payload;
-        if (groups == null) {
-            throw new IOException("Received no valid payload");
-        }
-
-        if (groups.length == 0) {
-            removedGroupMap = compareGroupMaps(groupMapNew, groupMapOld);
-            groupMapOld.clear();
-            return groupMapNew;
-        }
-
-        for (Group group : groups) {
-            logger.debug("Found: Group {} with {} Players", group.name, group.players.size());
-            groupMapNew.put(HeosGroup.calculateGroupMemberHash(group), group);
-            removedGroupMap = compareGroupMaps(groupMapNew, groupMapOld);
-            groupMapOld.clear(); // clear the old map so that only the currently available groups are added in the next
-            // step.
-            groupMapOld.putAll(groupMapNew);
-        }
-        return groupMapNew;
-    }
-
-    private Map<String, Group> compareGroupMaps(Map<String, Group> mapNew, Map<String, Group> mapOld) {
-        Map<String, Group> removedItems = new HashMap<>();
-        for (String key : mapOld.keySet()) {
-            if (!mapNew.containsKey(key)) {
-                removedItems.put(key, mapOld.get(key));
-            }
-        }
-        return removedItems;
-    }
-
-    private Map<Integer, Player> comparePlayerMaps(Map<Integer, Player> mapNew, Map<Integer, Player> mapOld) {
-        Map<Integer, Player> removedItems = new HashMap<>();
-        for (Integer key : mapOld.keySet()) {
-            if (!mapNew.containsKey(key)) {
-                removedItems.put(key, mapOld.get(key));
-            }
-        }
-        return removedItems;
-    }
-
-    /**
-     * Be used to fill the map which contains old Groups at startup
-     * with existing HEOS groups.
-     */
-    void addHeosGroupToOldGroupMap(String hashValue, Group heosGroup) {
-        groupMapOld.put(hashValue, heosGroup);
-    }
-
-    Map<String, Group> getGroupsRemoved() {
-        return removedGroupMap;
-    }
-
-    Map<Integer, Player> getPlayerRemoved() {
-        return removedPlayerMap;
     }
 
     /**

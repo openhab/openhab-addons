@@ -13,7 +13,6 @@
 package org.openhab.binding.heos.internal.resources;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.openhab.binding.heos.internal.json.HeosJsonParser;
 import org.openhab.binding.heos.internal.json.dto.HeosResponseObject;
@@ -45,19 +44,19 @@ public class HeosSendCommand {
         if (clazz == null) {
             return null;
         } else if (send) {
-            List<String> lines = client.readLine();
-            if (lines.isEmpty()) {
+            String line = client.readLine();
+            if (line == null) {
                 throw new IOException("No valid input was received");
             }
-            result = parser.parseResponse(lines.get(lines.size() - 1), clazz);
+            result = parser.parseResponse(line, clazz);
 
             while (!result.isFinished() && attempt < 3) {
                 attempt++;
                 logger.trace("Retrying \"{}\" (attempt {})", command, attempt);
-                lines = client.readLine(15000);
+                line = client.readLine(15000);
 
-                if (!lines.isEmpty()) {
-                    result = parser.parseResponse(lines.get(lines.size() - 1), clazz);
+                if (line != null) {
+                    result = parser.parseResponse(line, clazz);
                 }
             }
 

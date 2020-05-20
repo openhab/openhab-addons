@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.heos.internal.handler;
 
+import java.util.concurrent.Future;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-
-import java.util.concurrent.Future;
 
 /**
  * Instead of continously rewriting the termination of future a small util method was added
@@ -31,10 +31,10 @@ public class FutureUtil {
     /**
      * Cancel the future
      *
-     *  - when it is not null
-     *  - and it is not already cancelled
+     * - when it is not null
+     * - and it is not already cancelled
      *
-     *  interrupt if still/already running
+     * interrupt if still/already running
      *
      * @param future nullable future to be cancelled
      */
@@ -42,12 +42,11 @@ public class FutureUtil {
         cancel(future, true);
     }
 
-
     /**
      * Cancel the future
      *
-     *  - when it is not null
-     *  - and it is not already cancelled
+     * - when it is not null
+     * - and it is not already cancelled
      *
      * @param future nullable future to be cancelled
      * @param interruptIfRunning choose whether to interrupt a running future

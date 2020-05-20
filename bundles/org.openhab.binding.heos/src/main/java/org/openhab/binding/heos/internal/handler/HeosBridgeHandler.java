@@ -12,17 +12,26 @@
  */
 package org.openhab.binding.heos.internal.handler;
 
-import static org.eclipse.smarthome.core.thing.ThingStatus.*;
+import static org.eclipse.smarthome.core.thing.ThingStatus.OFFLINE;
+import static org.eclipse.smarthome.core.thing.ThingStatus.ONLINE;
 import static org.openhab.binding.heos.internal.HeosBindingConstants.*;
 import static org.openhab.binding.heos.internal.handler.FutureUtil.cancel;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -85,7 +94,7 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
     private List<String[]> selectedPlayerList = new CopyOnWriteArrayList<>();
 
     private @Nullable Future<?> startupFuture;
-    private @Nullable Future<?> childHandlerInitializedFuture;
+    private List<Future<?>> childHandlerInitializedFutures = new ArrayList<>();
 
     private final HeosSystem heosSystem;
     private @Nullable HeosFacade apiConnection;
@@ -97,8 +106,8 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
 
     private int failureCount;
 
-    public HeosBridgeHandler(Bridge thing, HeosDynamicStateDescriptionProvider heosDynamicStateDescriptionProvider) {
-        super(thing);
+    public HeosBridgeHandler(Bridge bridge, HeosDynamicStateDescriptionProvider heosDynamicStateDescriptionProvider) {
+        super(bridge);
         heosSystem = new HeosSystem(scheduler);
         channelHandlerFactory = new HeosChannelHandlerFactory(this, heosDynamicStateDescriptionProvider);
     }
@@ -108,14 +117,17 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
         if (command instanceof RefreshType) {
             return;
         }
-        @Nullable Channel channel = this.getThing().getChannel(channelUID.getId());
+        @Nullable
+        Channel channel = this.getThing().getChannel(channelUID.getId());
         if (channel == null) {
             logger.debug("No valid channel found");
             return;
         }
 
-        @Nullable ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
-        @Nullable HeosChannelHandler channelHandler = channelHandlerFactory.getChannelHandler(channelUID, this, channelTypeUID);
+        @Nullable
+        ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
+        @Nullable
+        HeosChannelHandler channelHandler = channelHandlerFactory.getChannelHandler(channelUID, this, channelTypeUID);
         if (channelHandler != null) {
             try {
                 channelHandler.handleBridgeCommand(command, thing.getUID());
@@ -141,7 +153,8 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
     }
 
     private void delayedInitialize() {
-        @Nullable HeosFacade connection = null;
+        @Nullable
+        HeosFacade connection = null;
         try {
             logger.debug("Running scheduledStartUp job");
 
@@ -153,14 +166,18 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
             // gets all available player and groups to ensure that the system knows
             // about the conjunction between the groupMemberHash and the GID
             triggerPlayerDiscovery();
-            @Nullable String username = configuration.username;
-            @Nullable String password = configuration.password;
+            @Nullable
+            String username = configuration.username;
+            @Nullable
+            String password = configuration.password;
             if (username != null && !"".equals(username) && password != null && !"".equals(password)) {
                 login(connection, username, password);
             } else {
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Can't log in. Username or password not set.");
             }
+
+            fetchPlayersAndGroups();
         } catch (Telnet.ReadException | IOException | RuntimeException e) {
             logger.debug("Error occurred while connecting", e);
             if (connection != null) {
@@ -169,6 +186,48 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
             updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Errors occurred: " + e.getMessage());
             cancel(startupFuture, false);
             startupFuture = scheduler.schedule(this::delayedInitialize, 30, TimeUnit.SECONDS);
+        }
+    }
+
+    private void fetchPlayersAndGroups() {
+        try {
+            @Nullable
+            Player[] onlinePlayers = getApiConnection().getPlayers().payload;
+            @Nullable
+            Group[] onlineGroups = getApiConnection().getGroups().payload;
+
+            updatePlayerStatus(onlinePlayers, onlineGroups);
+        } catch (ReadException | IOException e) {
+            logger.debug("Failed updating online state of groups/players", e);
+        }
+    }
+
+    private void updatePlayerStatus(@Nullable Player[] onlinePlayers, @Nullable Group[] onlineGroups) {
+        if (onlinePlayers == null || onlineGroups == null) {
+            return;
+        }
+        Set<String> players = Stream.of(onlinePlayers).map(p -> Objects.toString(p.playerId))
+                .collect(Collectors.toSet());
+        Set<String> groups = Stream.of(onlineGroups).map(p -> p.id).collect(Collectors.toSet());
+
+        for (Thing thing : getThing().getThings()) {
+            try {
+                @Nullable
+                ThingHandler handler = thing.getHandler();
+                if (handler instanceof HeosThingBaseHandler) {
+                    Set<String> target = handler instanceof HeosPlayerHandler ? players : groups;
+                    HeosThingBaseHandler heosHandler = (HeosThingBaseHandler) handler;
+                    String id = heosHandler.getId();
+
+                    if (target.contains(id)) {
+                        heosHandler.setStatusOnline();
+                    } else {
+                        heosHandler.setStatusOffline();
+                    }
+                }
+            } catch (HeosNotFoundException e) {
+                logger.debug("SKipping handler which reported not found", e);
+            }
         }
     }
 
@@ -196,7 +255,8 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
             return;
         }
 
-        @Nullable HeosError error = response.getError();
+        @Nullable
+        HeosError error = response.getError();
         logger.debug("Failed to login: {}", error);
         updateStatus(ONLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                 error != null ? error.code.toString() : "Failed to login, no error was returned.");
@@ -207,9 +267,12 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
         bridgeHandlerDisposalOngoing = true; // Flag to prevent the handler from being updated during disposal
 
         cancel(startupFuture);
-        cancel(childHandlerInitializedFuture);
+        for (Future<?> future : childHandlerInitializedFutures) {
+            cancel(future);
+        }
 
-        @Nullable HeosFacade localApiConnection = apiConnection;
+        @Nullable
+        HeosFacade localApiConnection = apiConnection;
         if (localApiConnection == null) {
             logger.debug("Not disposing bridge because of missing apiConnection");
             return;
@@ -245,8 +308,8 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
 
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
-        cancel(childHandlerInitializedFuture);
-        childHandlerInitializedFuture = scheduler.submit(() -> addPlayerChannel(childThing, null));
+        logger.debug("Initialized child handler for: {}.", childThing.getUID().getId());
+        childHandlerInitializedFutures.add(scheduler.submit(() -> addPlayerChannel(childThing, null)));
     }
 
     void resetPlayerList(ChannelUID channelUID) {
@@ -291,7 +354,8 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
         try {
             String channelIdentifier = "";
             String pid = "";
-            @Nullable ThingHandler handler = childThing.getHandler();
+            @Nullable
+            ThingHandler handler = childThing.getHandler();
             if (handler instanceof HeosPlayerHandler) {
                 channelIdentifier = "P" + childThing.getUID().getId();
                 pid = ((HeosPlayerHandler) handler).getId();
@@ -304,7 +368,8 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
                 }
             }
             Map<String, String> properties = new HashMap<>();
-            @Nullable String playerName = childThing.getLabel();
+            @Nullable
+            String playerName = childThing.getLabel();
             playerName = playerName == null ? pid : playerName;
             ChannelUID channelUID = new ChannelUID(getThing().getUID(), channelIdentifier);
             properties.put(PROP_NAME, playerName);
@@ -348,9 +413,8 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
     @Override
     public void bridgeChangeEvent(String event, boolean success, Object command) {
         if (EVENT_TYPE_EVENT.equals(event)) {
-            if (HeosEvent.PLAYERS_CHANGED.equals(command)) {
-                triggerPlayerDiscovery();
-            } else if (HeosEvent.GROUPS_CHANGED.equals(command)) {
+            if (HeosEvent.PLAYERS_CHANGED.equals(command) || HeosEvent.GROUPS_CHANGED.equals(command)) {
+                fetchPlayersAndGroups();
                 triggerPlayerDiscovery();
             } else if (EVENT_STREAM_TIMEOUT.equals(command)) {
                 logger.debug("HEOS Bridge events timed-out might be nothing, trying to reconnect");
@@ -368,46 +432,30 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
         }
     }
 
-    private void updateThingChannels(List<Channel> channelList) {
+    private synchronized void updateThingChannels(List<Channel> channelList) {
         ThingBuilder thingBuilder = editThing();
         thingBuilder.withChannels(channelList);
         updateThing(thingBuilder.build());
     }
 
-    public @Nullable Map<Integer, Player> getNewPlayers() {
-        try {
-            return getApiConnection().getNewPlayers();
-        } catch (IOException | ReadException e) {
-            logger.debug("Failed fetching new players", e);
-            return null;
+    public Player[] getPlayers() throws IOException, ReadException {
+        HeosResponseObject<Player[]> response = getApiConnection().getPlayers();
+        @Nullable
+        Player[] players = response.payload;
+        if (players == null) {
+            throw new IOException("Received no valid payload");
         }
+        return players;
     }
 
-    public Map<Integer, Player> getRemovedPlayers() {
-        try {
-            return getApiConnection().getRemovedPlayers();
-        } catch (HeosNotConnectedException e) {
-            logger.debug("Failed fetching removed players", e);
-            return Collections.emptyMap();
+    public Group[] getGroups() throws IOException, ReadException {
+        HeosResponseObject<Group[]> response = getApiConnection().getGroups();
+        @Nullable
+        Group[] groups = response.payload;
+        if (groups == null) {
+            throw new IOException("Received no valid payload");
         }
-    }
-
-    public @Nullable Map<String, Group> getNewGroups() {
-        try {
-            return getApiConnection().getNewGroups();
-        } catch (IOException | ReadException e) {
-            logger.debug("Failed fetching new groups", e);
-            return null;
-        }
-    }
-
-    public Map<String, Group> getRemovedGroups() {
-        try {
-            return getApiConnection().getRemovedGroups();
-        } catch (HeosNotConnectedException e) {
-            logger.debug("Failed fetching removed groups", e);
-            return Collections.emptyMap();
-        }
+        return groups;
     }
 
     /**
@@ -450,12 +498,14 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
     }
 
     public boolean isBridgeConnected() {
-        @Nullable HeosFacade connection = apiConnection;
+        @Nullable
+        HeosFacade connection = apiConnection;
         return connection != null && connection.isConnected();
     }
 
     public HeosFacade getApiConnection() throws HeosNotConnectedException {
-        @Nullable HeosFacade localApiConnection = apiConnection;
+        @Nullable
+        HeosFacade localApiConnection = apiConnection;
         if (localApiConnection != null) {
             return localApiConnection;
         } else {

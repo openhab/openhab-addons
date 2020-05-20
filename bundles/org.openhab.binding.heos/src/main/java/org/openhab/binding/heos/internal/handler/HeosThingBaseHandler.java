@@ -85,8 +85,10 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
 
     @Override
     public void initialize() {
-        @Nullable Bridge bridge = getBridge();
-        @Nullable HeosBridgeHandler localBridgeHandler;
+        @Nullable
+        Bridge bridge = getBridge();
+        @Nullable
+        HeosBridgeHandler localBridgeHandler;
         if (bridge != null) {
             localBridgeHandler = (HeosBridgeHandler) bridge.getHandler();
             if (localBridgeHandler != null) {
@@ -130,7 +132,8 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
     }
 
     public HeosFacade getApiConnection() throws HeosNotConnectedException {
-        @Nullable HeosBridgeHandler localBridge = bridgeHandler;
+        @Nullable
+        HeosBridgeHandler localBridge = bridgeHandler;
         if (localBridge != null) {
             return localBridge.getApiConnection();
         }
@@ -153,7 +156,8 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
 
     @Nullable
     HeosChannelHandler getHeosChannelHandler(ChannelUID channelUID) {
-        @Nullable HeosChannelHandlerFactory localChannelHandlerFactory = this.channelHandlerFactory;
+        @Nullable
+        HeosChannelHandlerFactory localChannelHandlerFactory = this.channelHandlerFactory;
         return localChannelHandlerFactory != null ? localChannelHandlerFactory.getChannelHandler(channelUID, this, null)
                 : null;
     }
@@ -248,7 +252,10 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
      * @param eventObject containing information about the even which was sent to us by the HEOS device
      */
     protected void handleThingStateUpdate(HeosEventObject eventObject) {
-        @Nullable HeosEvent command = eventObject.command;
+        updateStatus(ONLINE, ThingStatusDetail.NONE, "Receiving events");
+
+        @Nullable
+        HeosEvent command = eventObject.command;
 
         if (command == null) {
             logger.debug("Ignoring event with null command");
@@ -263,7 +270,8 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
 
             case PLAYER_VOLUME_CHANGED:
             case GROUP_VOLUME_CHANGED:
-                @Nullable String level = eventObject.getAttribute(LEVEL);
+                @Nullable
+                String level = eventObject.getAttribute(LEVEL);
                 if (level != null) {
                     notificationVolume = level;
                     updateState(CH_ID_VOLUME, PercentType.valueOf(level));
@@ -276,8 +284,10 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
                 break;
 
             case PLAYER_NOW_PLAYING_PROGRESS:
-                @Nullable Long position = eventObject.getNumericAttribute(CURRENT_POSITION);
-                @Nullable Long duration = eventObject.getNumericAttribute(DURATION);
+                @Nullable
+                Long position = eventObject.getNumericAttribute(CURRENT_POSITION);
+                @Nullable
+                Long duration = eventObject.getNumericAttribute(DURATION);
                 if (position != null && duration != null) {
                     updateState(CH_ID_CUR_POS, quantityFromMilliSeconds(position));
                     updateState(CH_ID_DURATION, quantityFromMilliSeconds(duration));
@@ -328,7 +338,8 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
     protected <T> void handleThingStateUpdate(HeosResponseObject<T> responseObject) throws HeosFunctionalException {
         handleResponseError(responseObject);
 
-        @Nullable HeosCommandTuple cmd = responseObject.heosCommand;
+        @Nullable
+        HeosCommandTuple cmd = responseObject.heosCommand;
 
         if (cmd == null) {
             logger.debug("Ignoring response with null command");
@@ -346,7 +357,8 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
                     break;
 
                 case GET_VOLUME:
-                    @Nullable String level = responseObject.getAttribute(LEVEL);
+                    @Nullable
+                    String level = responseObject.getAttribute(LEVEL);
                     if (level != null) {
                         notificationVolume = level;
                         updateState(CH_ID_VOLUME, PercentType.valueOf(level));
@@ -359,14 +371,16 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
                     break;
 
                 case GET_NOW_PLAYING_MEDIA:
-                    @Nullable T mediaPayload = responseObject.payload;
+                    @Nullable
+                    T mediaPayload = responseObject.payload;
                     if (mediaPayload instanceof Media) {
                         handleThingMediaUpdate((Media) mediaPayload);
                     }
                     break;
 
                 case GET_PLAYER_INFO:
-                    @Nullable T playerPayload = responseObject.payload;
+                    @Nullable
+                    T playerPayload = responseObject.payload;
                     if (playerPayload instanceof Player) {
                         handlePlayerInfo((Player) playerPayload);
                     }
@@ -376,14 +390,16 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
     }
 
     private <T> void handleResponseError(HeosResponseObject<T> responseObject) throws HeosFunctionalException {
-        @Nullable HeosError error = responseObject.getError();
+        @Nullable
+        HeosError error = responseObject.getError();
         if (error != null) {
             throw new HeosFunctionalException(error.code);
         }
     }
 
     private void handleRepeatMode(HeosObject eventObject) {
-        @Nullable String repeatMode = eventObject.getAttribute(REPEAT);
+        @Nullable
+        String repeatMode = eventObject.getAttribute(REPEAT);
         if (repeatMode == null) {
             updateState(CH_ID_REPEAT_MODE, UnDefType.NULL);
             return;
@@ -405,7 +421,8 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
     }
 
     private void playerStateChanged(HeosObject eventObject) {
-        @Nullable String attribute = eventObject.getAttribute(STATE);
+        @Nullable
+        String attribute = eventObject.getAttribute(STATE);
         if (attribute == null) {
             updateState(CH_ID_CONTROL, UnDefType.NULL);
             return;

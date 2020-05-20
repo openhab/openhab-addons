@@ -32,7 +32,6 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.heos.internal.configuration.PlayerConfiguration;
 import org.openhab.binding.heos.internal.exception.HeosFunctionalException;
-import org.openhab.binding.heos.internal.exception.HeosNotConnectedException;
 import org.openhab.binding.heos.internal.json.dto.HeosErrorCode;
 import org.openhab.binding.heos.internal.json.dto.HeosEventObject;
 import org.openhab.binding.heos.internal.json.dto.HeosResponseObject;
@@ -61,7 +60,8 @@ public class HeosPlayerHandler extends HeosThingBaseHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        @Nullable HeosChannelHandler channelHandler = getHeosChannelHandler(channelUID);
+        @Nullable
+        HeosChannelHandler channelHandler = getHeosChannelHandler(channelUID);
         if (channelHandler != null) {
             try {
                 channelHandler.handlePlayerCommand(command, getId(), thing.getUID());
@@ -83,7 +83,7 @@ public class HeosPlayerHandler extends HeosThingBaseHandler {
         scheduledFuture = scheduler.submit(this::delayedInitialize);
     }
 
-    private void delayedInitialize() {
+    private synchronized void delayedInitialize() {
         try {
             refreshPlayState(pid);
 
@@ -160,18 +160,12 @@ public class HeosPlayerHandler extends HeosThingBaseHandler {
 
     @Override
     public void setStatusOffline() {
-        logger.debug("Status was set offline");
-        try {
-            getApiConnection().unregisterForChangeEvents(this);
-        } catch (HeosNotConnectedException e) {
-            logger.debug("Failed to unregister because the connection could not be fetched");
-        }
         updateStatus(ThingStatus.OFFLINE);
     }
 
     @Override
     public void setStatusOnline() {
-        this.initialize();
+        updateStatus(ThingStatus.ONLINE);
     }
 
     public static void propertiesFromPlayer(Map<String, ? super String> prop, Player player) {
@@ -181,7 +175,8 @@ public class HeosPlayerHandler extends HeosThingBaseHandler {
         prop.put(Thing.PROPERTY_FIRMWARE_VERSION, player.version);
         prop.put(PROP_NETWORK, player.network);
         prop.put(PROP_IP, player.ip);
-        @Nullable String serialNumber = player.serial;
+        @Nullable
+        String serialNumber = player.serial;
         if (serialNumber != null) {
             prop.put(Thing.PROPERTY_SERIAL_NUMBER, serialNumber);
         }
