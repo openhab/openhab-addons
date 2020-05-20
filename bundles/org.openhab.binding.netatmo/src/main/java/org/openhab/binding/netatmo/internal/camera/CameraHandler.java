@@ -14,7 +14,6 @@ package org.openhab.binding.netatmo.internal.camera;
 
 import io.swagger.client.model.NAWelcomeCamera;
 import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
@@ -27,16 +26,16 @@ import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.toStringType
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 /**
- * {@link NACameraHandler} is the class used to handle Camera Data
+ * {@link CameraHandler} is the class used to handle Camera Data
  *
  * @author Sven Strohschein (partly moved code from NAWelcomeCameraHandler to introduce inheritance, see NAWelcomeCameraHandler)
  *
  */
-public class NACameraHandler extends NetatmoModuleHandler<NAWelcomeCamera> {
+public class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera> {
 
     private static final String LIVE_PICTURE = "/live/snapshot_720.jpg";
 
-    public NACameraHandler(@NonNull Thing thing) {
+    public CameraHandler(@NonNull Thing thing) {
         super(thing);
     }
 
