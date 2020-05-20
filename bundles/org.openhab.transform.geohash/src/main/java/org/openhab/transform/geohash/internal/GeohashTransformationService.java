@@ -12,6 +12,7 @@
  */
 package org.openhab.transform.geohash.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.PointType;
@@ -32,6 +33,7 @@ import ch.hsr.geohash.WGS84Point;
  * @author Gaël L'hopital - Initial contribution and API
  */
 @Component(immediate = true, service = TransformationService.class, property = { "smarthome.transform=GEOHASH" })
+@NonNullByDefault
 public class GeohashTransformationService implements TransformationService {
 
     private final Logger logger = LoggerFactory.getLogger(GeohashTransformationService.class);
@@ -60,7 +62,7 @@ public class GeohashTransformationService implements TransformationService {
                         new DecimalType(centerPoint.getLongitude()));
                 return point.toString();
             } catch (NullPointerException e2) {
-                logger.info("The value '{}' is not valid geohash nor a valid coordinate expression", coordinates,
+                logger.info("The value '{}' is not valid geohash nor a valid coordinate expression : {}", coordinates,
                         e.getMessage());
             }
         }

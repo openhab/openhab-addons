@@ -14,22 +14,18 @@ package org.openhab.transform.geohash.internal;
 
 import static org.junit.Assert.assertEquals;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.PointType;
 import org.eclipse.smarthome.core.transform.TransformationException;
-import org.junit.Before;
 import org.junit.Test;
 
 /**
  * @author Gaël L'hopital - Initial contribution
  */
+@NonNullByDefault
 public class GeohashTransformationServiceTest {
 
-    private GeohashTransformationService processor;
-
-    @Before
-    public void init() {
-        processor = new GeohashTransformationService();
-    }
+    private GeohashTransformationService processor = new GeohashTransformationService();
 
     @Test
     public void testTransformToGeohash() throws TransformationException {
@@ -47,11 +43,14 @@ public class GeohashTransformationServiceTest {
         String transformedResponse = processor.transform("", hash);
 
         assertEquals("48.85894775390625,2.3565673828125", transformedResponse);
+    }
 
+    @Test(expected = TransformationException.class)
+    public void testInvalidGeohash() throws TransformationException {
         // check that transformation of an invalid geohash returns null
-        hash = "aaaa";
-        transformedResponse = processor.transform("", hash);
-        assertEquals(null, transformedResponse);
+        String hash = "aaaa";
+        @SuppressWarnings("unused")
+        String transformedResponse = processor.transform("", hash);
     }
 
 }
