@@ -412,6 +412,7 @@ openhab> log:tail io.github.hapjava
 
 ## Console commands
 
-`smarthome:homekit listAccessories` - list all HomeKit accessory currently advertised to the HomeKit clients. the commands list the ID and name of accessories.
+`smarthome:homekit list` - list all HomeKit accessories currently advertised to the HomeKit clients.  
 
-`smarthome:homekit printAccessory <accessory_id>` - print additional details like list of characteristics for give accessory.
+`smarthome:homekit show <accessory_id | name>` - print additional details of the accessories which partially match provided ID or name.
+ 
