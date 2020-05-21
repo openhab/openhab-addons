@@ -108,7 +108,7 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
         } catch (Exception e) {
             logger.warn("Unable to fetch stationboard data", e);
 
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             updateState(CHANNEL_CSV, new StringType("No data available"));
         }
     }
