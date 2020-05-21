@@ -193,6 +193,10 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         return this.accessoryRegistry.getAllAccessories();
     }
 
+    public int getConfigurationRevision() {
+        return this.accessoryRegistry.getConfigurationRevision();
+    }
+
     /**
      * creates one or more HomeKit items for given openhab item.
      * one openhab item can linked to several HomeKit accessories or characteristics.
