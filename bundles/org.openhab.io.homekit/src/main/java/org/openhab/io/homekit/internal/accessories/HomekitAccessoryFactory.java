@@ -335,16 +335,17 @@ public class HomekitAccessoryFactory {
         characteristics.forEach((type, item) -> {
             try {
                 logger.trace("adding optional characteristic: {} for item {}", type, item.getName());
-
-                final Characteristic characteristic = HomekitCharacteristicFactory.createCharacteristic(type, item,
+                final HomekitTaggedItem optionalItem = new HomekitTaggedItem(item,
+                        accessory.getRootAccessory().getAccessoryType(), type,
+                        accessory.getRootAccessory().getRootDeviceGroupItem(),
+                        getItemConfiguration(item, metadataRegistry));
+                final Characteristic characteristic = HomekitCharacteristicFactory.createCharacteristic(optionalItem,
                         accessory.getUpdater());
                 // find the corresponding add method at service and call it.
                 service.getClass().getMethod("addOptionalCharacteristic", characteristic.getClass()).invoke(service,
                         characteristic);
 
-                accessory.addCharacteristic(new HomekitTaggedItem(item, accessory.getRootAccessory().getAccessoryType(),
-                        type, accessory.getRootAccessory().getRootDeviceGroupItem(),
-                        getItemConfiguration(item, metadataRegistry)));
+                accessory.addCharacteristic(optionalItem);
             } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | HomekitException e) {
                 logger.warn("Not supported optional HomeKit characteristic. Service type {}, characteristic type {}",
                         service.getType(), type, e);

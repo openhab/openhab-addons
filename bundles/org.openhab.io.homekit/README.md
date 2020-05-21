@@ -128,7 +128,7 @@ A full list of supported accessory types can be found in the table *below*.
 | Accessory Tag        | Mandatory Characteristics   | Optional     Characteristics | Supported OH items       | Description                                                                                                                                                                                                                                                                                               |
 |:---------------------|:----------------------------|:-----------------------------|:-------------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | LeakSensor           |                             |                              |                          | Leak Sensor                                                                                                                                                                                                                                                                                               |
-|                      | **LeakDetectedState**       |                              | SwitchItem, Contact Item | Leak sensor state (ON=Leak Detected, OFF=no leak                                                                                                                                                                                                                                                          |
+|                      | LeakDetectedState           |                              | SwitchItem, Contact Item | Leak sensor state (ON=Leak Detected, OFF=no leak                                                                                                                                                                                                                                                          |
 |                      |                             | Name                         | String                   | Name of the sensor                                                                                                                                                                                                                                                                                        |
 |                      |                             | ActiveStatus                 | Switch, Contact          | accessory current working status. A value of "ON"/"OPEN" indicate that the accessory is active and is functioning without any errors.                                                                                                                                                                     |
 |                      |                             | FaultStatus                  | Switch, Contact          | accessory fault status.  "ON"/"OPEN" value indicates that the accessory has experienced a fault that may be interfering with its intended functionality. A value of "OFF"/"CLOSED" indicates that there is no fault.                                                                                      |
@@ -236,10 +236,10 @@ A full list of supported accessory types can be found in the table *below*.
 |                      | LockCurrentState            |                              | Switch                   | current states of lock mechanism (OFF=SECURED, ON=UNSECURED)                                                                                                                                                                                                                                              |
 |                      | LockTargetState             |                              | Switch                   | target states of lock mechanism (OFF=SECURED, ON=UNSECURED)                                                                                                                                                                                                                                               |
 |                      |                             | Name                         | String                   | Name of the lock                                                                                                                                                                                                                                                                                          |
-| Valve                |                             |                              |                          | Valve. additional configuration: homekitValveType = ["Generic", "Irrigation", "Shower", "Faucet"] and homekitDefaultDuration = <default duration in seconds>                                                                                                                                              |
+| Valve                |                             |                              |                          | Valve. additional configuration: homekitValveType = ["Generic", "Irrigation", "Shower", "Faucet"]                                                                                                                                             |
 |                      | ActiveStatus                |                              | Switch                   | accessory current working status. A value of "ON"/"OPEN" indicate that the accessory is active and is functioning without any errors.                                                                                                                                                                     |
 |                      | InUseStatus                 |                              | Switch                   | indicated whether fluid flowing through the valve. A value of "ON"/"OPEN" indicate that fluid is flowing.                                                                                                                                                                                                 |
-|                      |                             | Duration                     | Number                   | defines how long a valve should be set to ʼIn Useʼ in second. Integration starts a timer and will stop the valve after that time.                                                                                                                                                                         |
+|                      |                             | Duration                     | Number                   | defines how long a valve should be set to ʼIn Useʼ in second. You can define the default duration via configuration homekitDefaultDuration = <default duration in seconds>                                                                                                                                                                        |
 |                      |                             | RemainingDuration            | Number                   | describes the remaining duration on the accessory. the remaining duration increases/decreases from the accessoryʼs usual countdown. i.e. changes from 90 to 80 in a second.                                                                                                                               |
 |                      |                             | Name                         | String                   | Name of the lock                                                                                                                                                                                                                                                                                          |
 |                      |                             | FaultStatus                  | Switch, Contact          | accessory fault status.  "ON"/"OPEN" value indicates that the accessory has experienced a fault that may be interfering with its intended functionality. A value of "OFF"/"CLOSED" indicates that there is no fault.                                                                                      |
@@ -375,6 +375,41 @@ Group           gSecuritySystem            "Security System Group"              
 String          security_current_state     "Security Current State"             (gSecuritySystem)    {homekit="SecuritySystem.CurrentSecuritySystemState"}
 String          security_target_state      "Security Target State"              (gSecuritySystem)    {homekit="SecuritySystem.TargetSecuritySystemState"}
 ```
+
+
+## Usage of valve timer
+
+The HomeKit valve accessory supports following 2 optional characteristics:
+
+- duration: this describes how long the valve should set "InUse" once it is activated. The duration changes will apply to the next operation. If valve is already active then duration changes have no effect. 
+
+- remaining duration: this describes the remaining duration on the valve. Notifications on this characteristic must only
+                      be used if the remaining duration increases/decreases from the accessoryʼs usual countdown of remaining duration.
+
+Upon valve activation in home app, home app starts to count down from the "duration" to "0" without contacting the server. Home app also does not trigger any acion if it remaining duration get 0. 
+It is up to valve to have an own timer and stop valve once the timer is over. 
+Some valves have such timer, e.g. pretty common for sprinklers. 
+In case the valve has no timer capability, OpenHAB can take care on this -  start an internal timer and send "Off" command to the valve once the timer is over. 
+
+configuration for these two cases looks as follow:
+
+- valve with timer:
+
+```xtend
+Group  			gValve    			"Valve Group"       						 	{homekit="Valve"  [homekitValveType="Irrigation"]}
+Switch 			valve_active 		"Valve active"				    (gValve) 		{homekit = "Valve.ActiveStatus, Valve.InUseStatus"}
+Number 			valve_duration 		"Valve duration" 				(gValve) 		{homekit = "Valve.Duration"}
+Number 			valve_remaining_duration "Valve remaining duration" (gValve) 		{homekit = "Valve.RemainingDuration"}
+```
+
+- valve without timer (no item for remaining duration required)
+
+```xtend
+Group  			gValve    			"Valve Group"       						 	{homekit="Valve"  [homekitValveType="Irrigation", homekitTimer="true]}
+Switch 			valve_active 		"Valve active"				    (gValve) 		{homekit = "Valve.ActiveStatus, Valve.InUseStatus"}
+Number 			valve_duration 		"Valve duration" 				(gValve) 		{homekit = "Valve.Duration" [homekitDefaultDuration = 1800]}
+```
+
 
 ## Common Problems
 
