@@ -99,6 +99,8 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
             String requestUrl = BASE_URL + "stationboard?station=" + escapedStation + fieldFilters;
 
             String response = HttpUtil.executeUrl("GET", requestUrl, 10_000);
+            logger.debug("Got response from API: {}", response);
+
             JsonElement jsonObject = new JsonParser().parse(response);
 
             updateCsvChannel(jsonObject);
