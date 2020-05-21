@@ -373,7 +373,7 @@ public class HomekitCharacteristicFactory {
             } else if (item instanceof DimmerItem) {
                 ((DimmerItem) item).send(new PercentType(brightness));
             } else {
-                logger.warn("Item type {} is not supported for {}. Only ColorItem and DimmerIterm are supported.",
+                logger.warn("Item type {} is not supported for {}. Only ColorItem and DimmerItem are supported.",
                         item.getType(), item.getName());
             }
         }, (callback) -> updater.subscribe(item, BRIGHTNESS.getTag(), callback),
