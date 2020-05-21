@@ -141,7 +141,7 @@ public class HomekitCharacteristicFactory {
         }
         logger.warn("Unsupported optional characteristic. Accessory type {}, characteristic type {}",
                 item.getAccessoryType(), type);
-        throw new HomekitException("Unsupported optional characteristic. Characteristic type \"" + type);
+        throw new HomekitException("Unsupported optional characteristic. Characteristic type \"" + type + "\"");
     }
 
     // METHODS TO CREATE SINGLE CHARACTERISTIC FROM OH ITEM
