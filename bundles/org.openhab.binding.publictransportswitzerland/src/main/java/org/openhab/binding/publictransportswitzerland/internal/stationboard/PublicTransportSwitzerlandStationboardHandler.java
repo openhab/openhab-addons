@@ -52,8 +52,6 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
 
     private final Logger logger = LoggerFactory.getLogger(PublicTransportSwitzerlandStationboardHandler.class);
 
-    private @Nullable ScheduledFuture<?> updateDataJob;
-
     // Limit the API response to the necessary fields
     private static final String fieldFilters = createFilterForFields(
             "stationboard/to",
@@ -62,6 +60,8 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
             "stationboard/stop/departureTimestamp",
             "stationboard/stop/delay",
             "stationboard/stop/platform");
+
+    private @Nullable ScheduledFuture<?> updateDataJob;
 
     public PublicTransportSwitzerlandStationboardHandler(Thing thing) {
         super(thing);
