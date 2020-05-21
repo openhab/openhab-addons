@@ -83,15 +83,18 @@ public class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera> {
     }
 
     protected State getLivePictureURLState() {
-        return getLivePictureURL() == null ? UnDefType.UNDEF : toStringType(getLivePictureURL());
+        String livePictureURL = getLivePictureURL();
+        return livePictureURL == null ? UnDefType.UNDEF : toStringType(livePictureURL);
     }
 
     protected State getLivePictureState() {
-        return getLivePictureURL() == null ? UnDefType.UNDEF : HttpUtil.downloadImage(getLivePictureURL());
+        String livePictureURL = getLivePictureURL();
+        return livePictureURL == null ? UnDefType.UNDEF : HttpUtil.downloadImage(livePictureURL);
     }
 
     protected State getLiveStreamState() {
-        return getLiveStreamURL() == null ? UnDefType.UNDEF : new StringType(getLiveStreamURL());
+        String liveStreamURL = getLiveStreamURL();
+        return liveStreamURL == null ? UnDefType.UNDEF : new StringType(liveStreamURL);
     }
 
     /**
@@ -114,12 +117,17 @@ public class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera> {
      */
     private String getLiveStreamURL() {
         String result = getVpnUrl();
-        if (result != null) {
-            result += "/live/index";
-            result += isLocal() ? "_local" : "";
-            result += ".m3u8";
+        if (result == null) {
+            return null;
         }
-        return result;
+
+        StringBuilder resultStringBuilder = new StringBuilder(result);
+        resultStringBuilder.append("/live/index");
+        if(isLocal()) {
+            resultStringBuilder.append("_local");
+        }
+        resultStringBuilder.append(".m3u8");
+        return resultStringBuilder.toString();
     }
 
     @SuppressWarnings("null")
@@ -129,16 +137,23 @@ public class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera> {
 
     public String getStreamURL(String videoId) {
         String result = getVpnUrl();
-        if (result != null) {
-            result += "/vod/" + videoId + "/index";
-            result += isLocal() ? "_local" : "";
-            result += ".m3u8";
+        if(result == null) {
+            return null;
         }
-        return result;
+
+        StringBuilder resultStringBuilder = new StringBuilder(result);
+        resultStringBuilder.append("/vod/");
+        resultStringBuilder.append(videoId);
+        resultStringBuilder.append("/index");
+        if(isLocal()) {
+            resultStringBuilder.append("_local");
+        }
+        resultStringBuilder.append(".m3u8");
+        return resultStringBuilder.toString();
     }
 
     @SuppressWarnings("null")
     private boolean isLocal() {
-        return (module == null || module.getIsLocal() == null) ? false : module.getIsLocal().booleanValue();
+        return (module == null || module.getIsLocal() == null) ? false : module.getIsLocal();
     }
 }
