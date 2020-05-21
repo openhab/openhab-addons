@@ -20,7 +20,8 @@
 			<channel id="fandir" typeId="acunit-fandir"/>
 		</channels>
 
-		<config-description-ref uri="thing-type:daikin:config"/>
+		<representation-property>host</representation-property>
+		<config-description-ref uri="thing-type:daikin:config" />
 	</thing-type>
 
 	<thing-type id="airbase_ac_unit">
@@ -46,7 +47,8 @@
 
 		</channels>
 
-		<config-description-ref uri="thing-type:daikin:config"/>
+		<representation-property>host</representation-property>
+		<config-description-ref uri="thing-type:daikin:config" />
 	</thing-type>
 
 	<channel-type id="acunit-power">

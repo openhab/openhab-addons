@@ -14,9 +14,7 @@ package org.openhab.io.homekit.internal;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
-
-import org.eclipse.smarthome.core.items.Item;
+import java.util.Optional;
 
 /**
  * Characteristics are used by complex accessories that can't be represented by
@@ -28,15 +26,88 @@ public enum HomekitCharacteristicType {
     /*
      * It is illegal to have a characteristic type also be a device type
      */
-    BATTERY_LEVEL("homekit:BatteryLevel"),
-    TARGET_TEMPERATURE("homekit:TargetTemperature"),
+    EMPTY("Empty"), // used in case only accessory type but no characteristic provided
+    NAME("Name"),
+    BATTERY_LOW_STATUS("BatteryLowStatus"),
+    ACTIVE_STATUS("ActiveStatus"),
+    ISCONFIGURED("IsConfigured"),
+    SERVICELABELIDX("ServiceLabelIndex"),
+    INUSE_STATUS("InUseStatus"),
+    FAULT_STATUS("FaultStatus"),
+    TAMPERED_STATUS("TamperedStatus"),
+    OBSTRUCTION_STATUS("ObstructionStatus"),
+    ON_STATE("OnState"),
+    CONTACT_SENSOR_STATE("ContactSensorState"),
+
+    MOTION_DETECTED_STATE("MotionDetectedState"),
+    OCCUPANCY_DETECTED_STATE("OccupancyDetectedState"),
+    SMOKE_DETECTED_STATE("SmokeDetectedState"),
+
+    CARBON_MONOXIDE_DETECTED_STATE("CarbonMonoxideDetectedState"),
+    CARBON_MONOXIDE_LEVEL("CarbonMonoxideLevel"),
+    CARBON_MONOXIDE_PEAK_LEVEL("CarbonMonoxidePeakLevel"),
+
+    CARBON_DIOXIDE_DETECTED_STATE("CarbonDioxideDetectedState"),
+    CARBON_DIOXIDE_LEVEL("CarbonDioxideLevel"),
+    CARBON_DIOXIDE_PEAK_LEVEL("CarbonDioxidePeakLevel"),
+
+    RELATIVE_HUMIDITY("RelativeHumidity"),
+    LEAK_DETECTED_STATE("LeakDetectedState"),
+    HOLD_POSITION("HoldPosition"),
+
+    TARGET_POSITION("TargetPosition"),
+    CURRENT_POSITION("CurrentPosition"),
+    POSITION_STATE("PositionState"),
+    CURRENT_HORIZONTAL_TILT_ANGLE("CurrentHorizontalTiltAngle"),
+    CURRENT_VERTICAL_TILT_ANGLE("CurrentVerticalTiltAngle"),
+    TARGET_HORIZONTAL_TILT_ANGLE("TargetHorizontalTiltAngle"),
+    TARGET_VERTICAL_TILT_ANGLE("TargetVerticalTiltAngle"),
+
+    HUE("Hue"),
+    BRIGHTNESS("Brightness"),
+    SATURATION("Saturation"),
+    COLOR_TEMPERATURE("ColorTemperature"),
+
+    CURRENT_FAN_STATE("CurrentFanState"),
+    TARGET_FAN_STATE("TargetFanState"),
+    ROTATION_DIRECTION("RotationDirection"),
+    ROTATION_SPEED("RotationSpeed"),
+    SWING_MODE("SwingMode"),
+    LOCK_CONTROL("LockControl"),
+
+    CURRENT_TEMPERATURE("CurrentTemperature"),
+    TARGET_HEATING_COOLING_STATE("TargetHeatingCoolingMode"),
+    CURRENT_HEATING_COOLING_STATE("CurrentHeatingCoolingMode"),
+    TARGET_TEMPERATURE("TargetTemperature"),
+    TEMPERATURE_UNIT("TemperatureUnit"),
+
+    LOCK_CURRENT_STATE("LockCurrentState"),
+    LOCK_TARGET_STATE("LockTargetState"),
+
+    DURATION("Duration"),
+    REMAINING_DURATION("RemainingDuration"),
+
+    SECURITY_SYSTEM_CURRENT_STATE("CurrentSecuritySystemState"),
+    SECURITY_SYSTEM_TARGET_STATE("TargetSecuritySystemState"),
+
+    VOLUME("Volume"),
+    MUTE("Mute"),
+
+    CURRENT_DOOR_STATE("CurrentDoorState"),
+    TARGET_DOOR_STATE("TargetDoorState"),
+
     @Deprecated()
-    OLD_TARGET_TEMPERATURE("TargetTemperature"),
-    BATTERY_LOW_STATUS("homekit:BatteryLowStatus"),
+    OLD_BATTERY_LEVEL("homekit:BatteryLevel"),
     @Deprecated()
-    OLD_TARGET_HEATING_COOLING_MODE("homekit:HeatingCoolingMode"),
-    TARGET_HEATING_COOLING_MODE("homekit:TargetHeatingCoolingMode"),
-    CURRENT_HEATING_COOLING_STATE("homekit:CurrentHeatingCoolingMode");
+    OLD_BATTERY_LOW_STATUS("homekit:BatteryLowStatus"),
+    @Deprecated()
+    VERY_OLD_TARGET_HEATING_COOLING_MODE("homekit:HeatingCoolingMode"),
+    @Deprecated()
+    OLD_TARGET_HEATING_COOLING_MODE("homekit:TargetHeatingCoolingMode"),
+    @Deprecated()
+    OLD_CURRENT_HEATING_COOLING_STATE("homekit:CurrentHeatingCoolingMode"),
+    @Deprecated()
+    OLD_TARGET_TEMPERATURE("homekit:TargetTemperature");
 
     private static final Map<String, HomekitCharacteristicType> TAG_MAP = new HashMap<>();
 
@@ -62,17 +133,7 @@ public enum HomekitCharacteristicType {
      * @param tag the tag string
      * @return characteristicType or null if not found
      */
-    public static HomekitCharacteristicType valueOfTag(String tag) {
-        return TAG_MAP.get(tag);
-    }
-
-    /**
-     * get characteristicType for a given Item
-     *
-     * @param item the item
-     * @return characteristicType or null if not found
-     */
-    public static HomekitCharacteristicType fromItem(Item item) {
-        return item.getTags().stream().map(tag -> TAG_MAP.get(tag)).filter(Objects::nonNull).findFirst().orElse(null);
+    public static Optional<HomekitCharacteristicType> valueOfTag(String tag) {
+        return Optional.ofNullable(TAG_MAP.get(tag));
     }
 }

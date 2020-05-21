@@ -7,6 +7,7 @@
 	<config-description uri="thing-type:dsmr:bridgesettings">
 		<parameter name="serialPort" type="text" required="true">
 			<context>serial-port</context>
+			<limitToOptions>false</limitToOptions>
 			<label>Serial Port</label>
 			<description>The serial port where the P1 port of the Smart Meter is connected (e.g. Linux: /dev/ttyUSB0, Windows:
 				COM1)</description>
@@ -65,6 +66,7 @@
 	<config-description uri="thing-type:dsmr:smartybridgesettings">
 		<parameter name="serialPort" type="text" required="true">
 			<context>serial-port</context>
+			<limitToOptions>false</limitToOptions>
 			<label>Serial Port</label>
 			<description>The serial port where the P1 port of the Smart Meter is connected (e.g. Linux: /dev/ttyUSB0, Windows:
 				COM1)</description>

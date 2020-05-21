@@ -55,7 +55,7 @@
 				<required>false</required>
 			</parameter>
 
-			<parameter name="refreshInterval" type="integer" min="1">
+			<parameter name="refreshInterval" type="integer" min="1" unit="s">
 				<label>Refresh Interval</label>
 				<description>The refresh interval in seconds which is used to poll given Freebox Server</description>
 				<default>30</default>
@@ -122,14 +122,14 @@
 		</channel-groups>
 
 		<config-description>
-			<parameter name="refreshPhoneInterval" type="integer" min="0">
+			<parameter name="refreshPhoneInterval" type="integer" min="0" unit="s">
 				<label>Phone State Refresh Interval</label>
 				<description>The refresh interval in seconds which is used to poll given Freebox Server for phone state</description>
 				<default>2</default>
 				<required>false</required>
 			</parameter>
 
-			<parameter name="refreshPhoneCallsInterval" type="integer" min="0">
+			<parameter name="refreshPhoneCallsInterval" type="integer" min="0" unit="s">
 				<label>Phone Calls Refresh Interval</label>
 				<description>The refresh interval in seconds which is used to poll given Freebox Server for phone calls</description>
 				<default>60</default>

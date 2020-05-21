@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.openhab.addons.bundles</groupId>
+    <artifactId>org.openhab.addons.reactor.bundles</artifactId>
+    <version>2.5.6-SNAPSHOT</version>
+  </parent>
+  <artifactId>org.openhab.binding.icalendar</artifactId>
+  <name>openHAB Add-ons :: Bundles :: iCalendar Binding</name>
+  <properties>
+    <dep.noembedding>jackson-core,jackson-annotations,jackson-databind</dep.noembedding>
+    <jackson.version>2.9.10</jackson.version>
+  </properties>
+  <dependencies>
+    <!-- own dependencies -->
+    <dependency>
+      <groupId>net.sf.biweekly</groupId>
+      <artifactId>biweekly</artifactId>
+      <version>0.6.3</version>
+      <scope>compile</scope>
+    </dependency>
+    <!-- dependencies of biweekly -->
+    <dependency>
+      <groupId>com.github.mangstadt</groupId>
+      <artifactId>vinnie</artifactId>
+      <version>2.0.2</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>${jackson.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>${jackson.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson.version}</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+</project>

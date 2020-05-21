@@ -23,6 +23,7 @@
 			<parameter name="port" type="text" required="true" groupName="port">
 				<label>Serial Port</label>
 				<context>serial-port</context>
+				<limitToOptions>false</limitToOptions>
 				<description>Set the serial port used to access PRT3 device</description>
 				<default></default>
 			</parameter>

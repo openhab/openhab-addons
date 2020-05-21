@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.lutron.internal.radiora.RS232Connection;
 import org.openhab.binding.lutron.internal.radiora.RadioRAConnection;
 import org.openhab.binding.lutron.internal.radiora.RadioRAConnectionException;
@@ -48,10 +49,10 @@ public class RS232Handler extends BaseBridgeHandler implements RadioRAFeedbackLi
 
     private ScheduledFuture<?> zoneMapScheduledTask;
 
-    public RS232Handler(Bridge bridge) {
+    public RS232Handler(Bridge bridge, SerialPortManager serialPortManager) {
         super(bridge);
 
-        this.connection = new RS232Connection();
+        this.connection = new RS232Connection(serialPortManager);
         this.connection.setListener(this);
     }
 

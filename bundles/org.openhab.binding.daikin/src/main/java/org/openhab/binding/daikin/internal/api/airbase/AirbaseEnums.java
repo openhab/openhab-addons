@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.daikin.internal.api.airbase;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +23,7 @@ import org.slf4j.LoggerFactory;
  * @author Paul Smedley <paul@smedley.id.au> - Mods for Daikin Airbase Units
  *
  */
+@NonNullByDefault
 public class AirbaseEnums {
     public enum AirbaseMode {
         COLD(2, "Cooling"),

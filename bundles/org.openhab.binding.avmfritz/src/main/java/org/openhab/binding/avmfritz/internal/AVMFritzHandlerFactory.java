@@ -14,28 +14,21 @@ package org.openhab.binding.avmfritz.internal;
 
 import static org.openhab.binding.avmfritz.internal.BindingConstants.*;
 
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
-
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
-import org.openhab.binding.avmfritz.internal.discovery.AVMFritzDiscoveryService;
-import org.openhab.binding.avmfritz.internal.handler.AVMFritzBaseBridgeHandler;
 import org.openhab.binding.avmfritz.internal.handler.BoxHandler;
 import org.openhab.binding.avmfritz.internal.handler.DeviceHandler;
 import org.openhab.binding.avmfritz.internal.handler.GroupHandler;
 import org.openhab.binding.avmfritz.internal.handler.Powerline546EHandler;
-import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -47,27 +40,26 @@ import org.slf4j.LoggerFactory;
  * @author Robert Bausdorf - Initial contribution
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.avmfritz")
+@NonNullByDefault
 public class AVMFritzHandlerFactory extends BaseThingHandlerFactory {
-    /**
-     * Logger
-     */
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-    /**
-     * Service registration map
-     */
-    private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
-    /**
-     * shared instance of HTTP client for asynchronous calls
-     */
-    private HttpClient httpClient;
 
-    private AVMFritzDynamicStateDescriptionProvider stateDescriptionProvider;
+    private final Logger logger = LoggerFactory.getLogger(AVMFritzHandlerFactory.class);
+
+    private final HttpClient httpClient;
+    private final AVMFritzDynamicStateDescriptionProvider stateDescriptionProvider;
+
+    @Activate
+    public AVMFritzHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
+            final @Reference AVMFritzDynamicStateDescriptionProvider stateDescriptionProvider) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.stateDescriptionProvider = stateDescriptionProvider;
+    }
 
     /**
      * Provides the supported thing types
      */
     @Override
-    public boolean supportsThingType(@NonNull ThingTypeUID thingTypeUID) {
+    public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
@@ -75,74 +67,19 @@ public class AVMFritzHandlerFactory extends BaseThingHandlerFactory {
      * Create handler of things.
      */
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (BRIDGE_THING_TYPE.equals(thingTypeUID)) {
-            BoxHandler handler = new BoxHandler((Bridge) thing, httpClient, stateDescriptionProvider);
-            registerDeviceDiscoveryService(handler);
-            return handler;
+            return new BoxHandler((Bridge) thing, httpClient, stateDescriptionProvider);
         } else if (PL546E_STANDALONE_THING_TYPE.equals(thingTypeUID)) {
-            Powerline546EHandler handler = new Powerline546EHandler((Bridge) thing, httpClient,
-                    stateDescriptionProvider);
-            registerDeviceDiscoveryService(handler);
-            return handler;
-        } else if (SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thing.getThingTypeUID())) {
+            return new Powerline546EHandler((Bridge) thing, httpClient, stateDescriptionProvider);
+        } else if (SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new DeviceHandler(thing);
         } else if (SUPPORTED_GROUP_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new GroupHandler(thing);
         } else {
-            logger.error("ThingHandler not found for {}", thing.getThingTypeUID());
+            logger.error("ThingHandler not found for {}", thingTypeUID);
         }
         return null;
-    }
-
-    /**
-     * Remove handler of things.
-     */
-    @Override
-    protected synchronized void removeHandler(@NonNull ThingHandler thingHandler) {
-        if (thingHandler instanceof AVMFritzBaseBridgeHandler) {
-            ServiceRegistration<?> serviceReg = discoveryServiceRegs.remove(thingHandler.getThing().getUID());
-            if (serviceReg != null) {
-                // remove discovery service, if bridge handler is removed
-                AVMFritzDiscoveryService service = (AVMFritzDiscoveryService) bundleContext
-                        .getService(serviceReg.getReference());
-                serviceReg.unregister();
-                if (service != null) {
-                    service.deactivate();
-                }
-            }
-        }
-    }
-
-    /**
-     * Register a new discovery service for a new FRITZ!Box.
-     *
-     * @param handler
-     */
-    private synchronized void registerDeviceDiscoveryService(AVMFritzBaseBridgeHandler handler) {
-        AVMFritzDiscoveryService discoveryService = new AVMFritzDiscoveryService(handler);
-        discoveryServiceRegs.put(handler.getThing().getUID(),
-                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
-    }
-
-    @Reference
-    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
-    }
-
-    protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClient = null;
-    }
-
-    @Reference
-    protected void setDynamicStateDescriptionProvider(
-            AVMFritzDynamicStateDescriptionProvider stateDescriptionProvider) {
-        this.stateDescriptionProvider = stateDescriptionProvider;
-    }
-
-    protected void unsetDynamicStateDescriptionProvider(
-            AVMFritzDynamicStateDescriptionProvider stateDescriptionProvider) {
-        this.stateDescriptionProvider = null;
     }
 }

@@ -137,12 +137,15 @@ public class ShellyDeviceProfile {
         isRoller = mode.equalsIgnoreCase(SHELLY_MODE_ROLLER);
 
         if (settings.sleepMode != null) {
+            // Sensor, usally 12h
             updatePeriod = getString(settings.sleepMode.unit).equalsIgnoreCase("m") ? settings.sleepMode.period * 60 // minutes
                     : settings.sleepMode.period * 3600; // hours
+            updatePeriod += 600; // give 10min extra
         } else if ((settings.coiot != null) && (settings.coiot.updatePeriod != null)) {
-            updatePeriod = 2 * getInteger(settings.coiot.updatePeriod) + 5; // usually 2*15+5s=50sec
+            // Derive from CoAP update interval, usually 2*15+5s=50sec -> 70sec
+            updatePeriod = Math.max(UPDATE_SETTINGS_INTERVAL_SECONDS, 3 * getInteger(settings.coiot.updatePeriod)) + 10;
         } else {
-            updatePeriod = 2 * 15 + 5; // Default acc. CoIoT Spec
+            updatePeriod = 2 * UPDATE_SETTINGS_INTERVAL_SECONDS + 10;
         }
 
         initialized = true;
@@ -175,8 +178,10 @@ public class ShellyDeviceProfile {
         isRGBW2 = thingType.startsWith(THING_TYPE_SHELLYRGBW2_PREFIX);
         hasLed = isPlugS;
         isLight = isBulb || isDuo || isRGBW2;
-        minTemp = isBulb ? MIN_COLOR_TEMP_BULB : MIN_COLOR_TEMP_DUO;
-        maxTemp = isBulb ? MAX_COLOR_TEMP_BULB : MAX_COLOR_TEMP_DUO;
+        if (isLight) {
+            minTemp = isBulb ? MIN_COLOR_TEMP_BULB : MIN_COLOR_TEMP_DUO;
+            maxTemp = isBulb ? MAX_COLOR_TEMP_BULB : MAX_COLOR_TEMP_DUO;
+        }
 
         boolean isHT = thingType.equals(THING_TYPE_SHELLYHT_STR);
         boolean isFlood = thingType.equals(THING_TYPE_SHELLYFLOOD_STR);
