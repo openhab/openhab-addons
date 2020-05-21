@@ -38,7 +38,7 @@ public class HomekitSettings {
     public String thermostatCurrentModeOff = "Off";
     public String doorCurrentStateOpen = "OPEN";
     public String doorCurrentStateOpening = "OPENING";
-    public String doorCurrentStateClosed = "CLOSE";
+    public String doorCurrentStateClosed = "CLOSED";
     public String doorCurrentStateClosing = "CLOSING";
     public String doorCurrentStateStopped = "STOPPED";
     public String doorTargetStateClosed = "CLOSED";
