@@ -25,4 +25,3 @@ This binding does not support auto-discovery.
 | channel  | type   | description                                |
 |----------|--------|--------------------------------------------|
 | csv      | String | A csv which contains the fields:<br />`category, number, departureTime, destination, track, delay` |
-| json     | String | This is the raw json response from the API |
