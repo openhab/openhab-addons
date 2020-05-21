@@ -154,7 +154,8 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
         SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
         String formattedDate = timeFormat.format(departureDate);
 
-        String result = String.format("%s - %s %s - Pl. %s", formattedDate, category + number.replace(category, ""), destination, track);
+        String train = number.startsWith(category) ? category : category + number;
+        String result = String.format("%s - %s %s - Pl. %s", formattedDate, train, destination, track);
 
         if (delay != null && !delay.isEmpty()) {
             result += String.format(" (%s' late)", delay);
