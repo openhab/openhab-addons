@@ -39,7 +39,7 @@ public class VerisureBaseThingDTO implements VerisureThingDTO {
     protected @Nullable String location;
     protected @Nullable String status;
     protected @Nullable String siteName;
-    protected BigDecimal siteId = new BigDecimal(0);
+    protected BigDecimal siteId = BigDecimal.ZERO;
 
     /**
      *
@@ -143,7 +143,7 @@ public class VerisureBaseThingDTO implements VerisureThingDTO {
         result = prime * result + ((status == null) ? 0 : status.hashCode());
         String siteName = this.siteName;
         result = prime * result + ((siteName == null) ? 0 : siteName.hashCode());
-        result = prime * result + ((siteId.equals(new BigDecimal(0))) ? 0 : siteId.hashCode());
+        result = prime * result + ((siteId.equals(BigDecimal.ZERO)) ? 0 : siteId.hashCode());
         return result;
     }
 

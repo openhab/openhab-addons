@@ -62,6 +62,8 @@
 			<property name="vendor">Verisure</property>
 		</properties>
 
+		<representation-property>deviceId</representation-property>
+
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
 				<label>Device Id</label>
@@ -97,6 +99,8 @@
 			<property name="vendor">Verisure</property>
 		</properties>
 
+		<representation-property>deviceId</representation-property>
+
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
 				<label>Device Id</label>
@@ -125,6 +129,8 @@
 		<properties>
 			<property name="vendor">Verisure</property>
 		</properties>
+
+		<representation-property>deviceId</representation-property>
 
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
@@ -157,6 +163,8 @@
 			<property name="vendor">Verisure</property>
 		</properties>
 
+		<representation-property>deviceId</representation-property>
+
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
 				<label>Device Id</label>
@@ -185,6 +193,8 @@
 		<properties>
 			<property name="vendor">Verisure</property>
 		</properties>
+
+		<representation-property>deviceId</representation-property>
 
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
@@ -215,6 +225,8 @@
 			<property name="vendor">Verisure</property>
 		</properties>
 
+		<representation-property>deviceId</representation-property>
+
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
 				<label>Device Id</label>
@@ -244,6 +256,8 @@
 			<property name="vendor">Verisure</property>
 		</properties>
 
+		<representation-property>deviceId</representation-property>
+
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
 				<label>Device Id</label>
@@ -272,6 +286,8 @@
 		<properties>
 			<property name="vendor">Verisure</property>
 		</properties>
+
+		<representation-property>deviceId</representation-property>
 
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
@@ -304,6 +320,8 @@
 			<property name="vendor">Verisure</property>
 		</properties>
 
+		<representation-property>deviceId</representation-property>
+
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
 				<label>Device Id</label>
@@ -331,6 +349,8 @@
 		<properties>
 			<property name="vendor">Verisure</property>
 		</properties>
+
+		<representation-property>deviceId</representation-property>
 
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
@@ -365,6 +385,8 @@
 			<property name="vendor">Verisure</property>
 		</properties>
 
+		<representation-property>deviceId</representation-property>
+
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
 				<label>Device Id</label>
@@ -395,6 +417,8 @@
 		<properties>
 			<property name="vendor">Verisure</property>
 		</properties>
+
+		<representation-property>deviceId</representation-property>
 
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
@@ -428,6 +452,8 @@
 		<properties>
 			<property name="vendor">Verisure</property>
 		</properties>
+
+		<representation-property>deviceId</representation-property>
 
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">

@@ -84,7 +84,8 @@ public class VerisureThingDiscoveryService extends AbstractDiscoveryService
                     label += ", Site name: " + thing.getSiteName();
                 }
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
-                        .withLabel(label).withProperty(VerisureThingConfiguration.DEVICE_ID_LABEL, deviceId).build();
+                        .withLabel(label).withProperty(VerisureThingConfiguration.DEVICE_ID_LABEL, deviceId)
+                        .withRepresentationProperty(deviceId).build();
                 logger.debug("thinguid: {}, bridge {}, label {}", thingUID.toString(), bridgeUID, thing.getDeviceId());
                 thingDiscovered(discoveryResult);
             }
