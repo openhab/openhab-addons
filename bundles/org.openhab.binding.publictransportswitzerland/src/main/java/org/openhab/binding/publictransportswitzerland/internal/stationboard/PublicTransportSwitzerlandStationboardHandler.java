@@ -56,7 +56,7 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
             "stationboard/stop/delay",
             "stationboard/stop/platform");
 
-    private final ChannelGroupUID dynamicChannelGroupUID = new ChannelGroupUID(getThing().getUID(), "Departures");
+    private final ChannelGroupUID dynamicChannelGroupUID = new ChannelGroupUID(getThing().getUID(), "departures");
 
     private final Logger logger = LoggerFactory.getLogger(PublicTransportSwitzerlandStationboardHandler.class);
 
