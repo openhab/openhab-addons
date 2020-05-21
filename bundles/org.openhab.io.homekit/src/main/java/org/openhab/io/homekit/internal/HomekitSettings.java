@@ -18,14 +18,15 @@ package org.openhab.io.homekit.internal;
  * @author Andy Lintner - Initial contribution
  */
 public class HomekitSettings {
-    public static final String MANUFACTURER = "openHAB";
+    public static final String MANUFACTURER = "openHAB Community";
     public static final String SERIAL_NUMBER = "none";
-    public static final String FIRMWARE_REVISION = "2.5.3";
+    public static final String MODEL = "openHAB";
     public static final String HARDWARE_REVISION = "2.5";
 
     public String name = "openHAB";
     public int port = 9123;
     public String pin = "031-45-154";
+    public int startDelay = 30;
     public boolean useFahrenheitTemperature = false;
     public double minimumTemperature = -100;
     public double maximumTemperature = 100;

@@ -19,11 +19,14 @@ import java.security.InvalidAlgorithmParameterException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.ConfigurableService;
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.eclipse.smarthome.core.items.MetadataRegistry;
 import org.eclipse.smarthome.core.net.NetworkAddressService;
@@ -65,6 +68,9 @@ public class HomekitImpl implements Homekit {
     private @Nullable InetAddress networkInterface;
     private @Nullable HomekitServer homekitServer;
     private @Nullable HomekitRoot bridge;
+
+    private final ScheduledExecutorService scheduler = ThreadPoolManager
+            .getScheduledPool(ThreadPoolManager.THREAD_POOL_NAME_COMMON);
 
     @Activate
     public HomekitImpl(@Reference StorageService storageService, @Reference ItemRegistry itemRegistry,
@@ -120,13 +126,29 @@ public class HomekitImpl implements Homekit {
         final HomekitServer homekitServer = this.homekitServer;
         if (homekitServer != null && bridge == null) {
             final HomekitRoot bridge = homekitServer.createBridge(new HomekitAuthInfoImpl(storageService, settings.pin),
-                    settings.name, HomekitSettings.MANUFACTURER,
-                    FrameworkUtil.getBundle(getClass()).getVersion().toString(), HomekitSettings.SERIAL_NUMBER,
-                    HomekitSettings.FIRMWARE_REVISION, HomekitSettings.HARDWARE_REVISION);
+                    settings.name, HomekitSettings.MANUFACTURER, HomekitSettings.MODEL, HomekitSettings.SERIAL_NUMBER,
+                    FrameworkUtil.getBundle(getClass()).getVersion().toString(), HomekitSettings.HARDWARE_REVISION);
             changeListener.setBridge(bridge);
-            bridge.setConfigurationIndex(changeListener.getConfigurationRevision());
-            bridge.start();
             this.bridge = bridge;
+            bridge.setConfigurationIndex(changeListener.getConfigurationRevision());
+
+            final int lastAccessoryCount = changeListener.getLastAccessoryCount();
+            int currentAccessoryCount = changeListener.getAccessories().size();
+            if (currentAccessoryCount < lastAccessoryCount) {
+                logger.debug(
+                        "It looks like not all items were initialized yet. Old configuration had {} accessories, the current one has only {} accessories. Delay HomeKit bridge start for {} seconds.",
+                        lastAccessoryCount, currentAccessoryCount, settings.startDelay);
+                scheduler.schedule(() -> {
+                    if (currentAccessoryCount < lastAccessoryCount) {
+                        // the number of items is still different, maybe it is desired.
+                        // make new configuration revision.
+                        changeListener.makeNewConfigurationRevision();
+                    }
+                    bridge.start();
+                }, settings.startDelay, TimeUnit.SECONDS);
+            } else { // start bridge immediately.
+                bridge.start();
+            }
         } else {
             logger.warn(
                     "trying to start bridge but HomeKit server is not initialized or bridge is already initialized");
