@@ -20,7 +20,6 @@ import java.util.stream.IntStream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -102,13 +101,15 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
         updateTemperatureChannel(DaikinBindingConstants.CHANNEL_OUTDOOR_TEMP, sensorInfo.outdoortemp);
 
         if (sensorInfo.indoorhumidity.isPresent()) {
-            updateState(DaikinBindingConstants.CHANNEL_HUMIDITY, new DecimalType(sensorInfo.indoorhumidity.get()));
+            updateState(DaikinBindingConstants.CHANNEL_HUMIDITY,
+                    new QuantityType<>(sensorInfo.indoorhumidity.get(), SmartHomeUnits.PERCENT));
         } else {
             updateState(DaikinBindingConstants.CHANNEL_HUMIDITY, UnDefType.UNDEF);
         }
 
         if (sensorInfo.compressorfrequency.isPresent()) {
-            updateState(DaikinBindingConstants.CHANNEL_CMP_FREQ, new DecimalType(sensorInfo.compressorfrequency.get()));
+            updateState(DaikinBindingConstants.CHANNEL_CMP_FREQ,
+                    new QuantityType<>(sensorInfo.compressorfrequency.get(), SmartHomeUnits.PERCENT));
         } else {
             updateState(DaikinBindingConstants.CHANNEL_CMP_FREQ, UnDefType.UNDEF);
         }
@@ -124,9 +125,8 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
                 updateEnergyYearChannel(DaikinBindingConstants.CHANNEL_ENERGY_COOLING_CURRENTYEAR_PREFIX,
                         energyInfoYear.energyCoolingThisYear);
             }
-        } catch (Exception e) {
-
-            // Suppress any error if power info is not supported.
+        } catch (DaikinCommunicationException e) {
+            // Suppress any error if energy info is not supported.
             logger.debug("getEnergyInfoYear() error: {}", e.getMessage());
         }
     }
@@ -237,7 +237,6 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
         if (webTargets == null) {
             return false;
         }
-
         return webTargets.setSpecialMode(SpecialModeKind.POWERFUL, powerfulMode);
     }
 

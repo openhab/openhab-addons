@@ -56,7 +56,7 @@ public class InfoParser {
         }
         try {
             return Optional.of(Integer.parseInt(value));
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             return Optional.empty();
         }
     }
