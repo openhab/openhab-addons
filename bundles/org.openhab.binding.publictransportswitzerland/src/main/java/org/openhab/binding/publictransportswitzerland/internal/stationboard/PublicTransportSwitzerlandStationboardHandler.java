@@ -55,7 +55,7 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
     private @Nullable ScheduledFuture<?> updateDataJob;
 
     // Limit the API response to the necessary fields
-    private final String fieldFilters = createFilterForFields(
+    private static final String fieldFilters = createFilterForFields(
             "stationboard/to",
             "stationboard/category",
             "stationboard/number",
@@ -112,7 +112,7 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
         }
     }
 
-    private String createFilterForFields(String... fields) {
+    private static String createFilterForFields(String... fields) {
         return Arrays.stream(fields).map((field) -> "&fields[]=" + field).collect(Collectors.joining());
     }
 
