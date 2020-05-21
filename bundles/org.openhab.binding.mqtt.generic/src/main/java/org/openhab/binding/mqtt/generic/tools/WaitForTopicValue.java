@@ -24,14 +24,14 @@ import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.eclipse.smarthome.io.transport.mqtt.MqttMessageSubscriber;
 
 /**
- * Waits for a topic value to appear on a MQTT topic. One-time useable only per instance.
+ * Waits for a topic value to appear on a MQTT topic. One-time usable only per instance.
  *
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
 public class WaitForTopicValue {
     private CompletableFuture<String> future = new CompletableFuture<>();
-    private final CompletableFuture<Boolean> subscripeFuture;
+    private final CompletableFuture<Boolean> subscribeFuture;
 
     /**
      * Creates an a instance.
@@ -46,11 +46,11 @@ public class WaitForTopicValue {
         final MqttMessageSubscriber mqttMessageSubscriber = (t, payload) -> {
             future.complete(new String(payload));
         };
-        future = future.whenComplete((r, e) -> {
+        future.whenComplete((r, e) -> {
             connection.unsubscribe(topic, mqttMessageSubscriber);
         });
 
-        subscripeFuture = connection.subscribe(topic, mqttMessageSubscriber);
+        subscribeFuture = connection.subscribe(topic, mqttMessageSubscriber);
     }
 
     /**
@@ -68,7 +68,7 @@ public class WaitForTopicValue {
      */
     public @Nullable String waitForTopicValue(int timeoutInMS) {
         try {
-            return subscripeFuture.thenCompose(b -> future).get(timeoutInMS, TimeUnit.MILLISECONDS);
+            return subscribeFuture.thenCompose(b -> future).get(timeoutInMS, TimeUnit.MILLISECONDS);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             return null;
         }
@@ -89,6 +89,6 @@ public class WaitForTopicValue {
      */
     public CompletableFuture<String> waitForTopicValueAsync(ScheduledExecutorService scheduler, int timeoutInMS) {
         scheduler.schedule(this::timeout, timeoutInMS, TimeUnit.MILLISECONDS);
-        return subscripeFuture.thenCompose(b -> future);
+        return subscribeFuture.thenCompose(b -> future);
     }
 }
