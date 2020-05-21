@@ -124,6 +124,7 @@ public class HomekitImpl implements Homekit {
                     FrameworkUtil.getBundle(getClass()).getVersion().toString(), HomekitSettings.SERIAL_NUMBER,
                     HomekitSettings.FIRMWARE_REVISION, HomekitSettings.HARDWARE_REVISION);
             changeListener.setBridge(bridge);
+            bridge.setConfigurationIndex(changeListener.getConfigurationRevision());
             bridge.start();
             this.bridge = bridge;
         } else {
