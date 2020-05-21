@@ -50,8 +50,6 @@ import static org.openhab.binding.publictransportswitzerland.internal.PublicTran
 @NonNullByDefault
 public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(PublicTransportSwitzerlandStationboardHandler.class);
-
     // Limit the API response to the necessary fields
     private static final String fieldFilters = createFilterForFields(
             "stationboard/to",
@@ -60,6 +58,8 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
             "stationboard/stop/departureTimestamp",
             "stationboard/stop/delay",
             "stationboard/stop/platform");
+
+    private final Logger logger = LoggerFactory.getLogger(PublicTransportSwitzerlandStationboardHandler.class);
 
     private @Nullable ScheduledFuture<?> updateDataJob;
 
