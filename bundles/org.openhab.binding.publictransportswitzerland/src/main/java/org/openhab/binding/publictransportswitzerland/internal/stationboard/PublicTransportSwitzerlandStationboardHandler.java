@@ -22,6 +22,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -75,9 +76,15 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN);
+        PublicTransportSwitzerlandStationboardConfiguration config = getConfigAs(PublicTransportSwitzerlandStationboardConfiguration.class);
 
-        //noinspection ConstantConditions
+        if (config.station == null || config.station.isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            return;
+        }
+
+        updateStatus(ThingStatus.INITIALIZING);
+
         if (updateDataJob == null || updateDataJob.isCancelled()) {
             updateDataJob = scheduler.scheduleWithFixedDelay(this::updateData, 0, 60, TimeUnit.SECONDS);
         }
@@ -99,7 +106,7 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
         } catch (Exception e) {
             logger.warn("Unable to fetch stationboard data", e);
 
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             updateState(CHANNEL_CSV, new StringType("No data available"));
             updateState(CHANNEL_JSON, new StringType("{}"));
         }
