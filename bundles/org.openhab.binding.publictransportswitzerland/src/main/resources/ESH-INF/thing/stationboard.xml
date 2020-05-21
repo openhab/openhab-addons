@@ -21,7 +21,7 @@
 
 	</thing-type>
 
-	<channel-type id="csv">
+	<channel-type id="csv" advanced="true">
 		<item-type>String</item-type>
 		<label>CSV</label>
 		<description>A CSV representation</description>
