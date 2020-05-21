@@ -101,23 +101,17 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
             JsonElement jsonObject = new JsonParser().parse(response);
 
             updateCsvChannel(jsonObject);
-            updateJsonChannel(jsonObject);
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
             logger.warn("Unable to fetch stationboard data", e);
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             updateState(CHANNEL_CSV, new StringType("No data available"));
-            updateState(CHANNEL_JSON, new StringType("{}"));
         }
     }
 
     private static String createFilterForFields(String... fields) {
         return Arrays.stream(fields).map((field) -> "&fields[]=" + field).collect(Collectors.joining());
-    }
-
-    private void updateJsonChannel(JsonElement jsonObject) {
-        updateState(CHANNEL_JSON, new StringType(jsonObject.toString()));
     }
 
     private void updateCsvChannel(JsonElement jsonObject) throws Exception {
