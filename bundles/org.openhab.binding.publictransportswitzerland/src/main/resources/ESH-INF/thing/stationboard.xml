@@ -9,7 +9,7 @@
 		<description>Upcoming departures for a single station.</description>
 
 		<channels>
-			<channel id="csv" typeId="csv" />
+			<channel id="tsv" typeId="tsv" />
 		</channels>
 
 		<config-description>
@@ -21,10 +21,10 @@
 
 	</thing-type>
 
-	<channel-type id="csv" advanced="true">
+	<channel-type id="tsv" advanced="true">
 		<item-type>String</item-type>
-		<label>CSV</label>
-		<description>A CSV representation</description>
+		<label>TSV</label>
+		<description>A TSV representation</description>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -24,4 +24,4 @@ This binding does not support auto-discovery.
 ### Stationboard
 | channel  | type   | description                                |
 |----------|--------|--------------------------------------------|
-| csv      | String | A csv which contains the fields:<br />`category, number, departureTime, destination, track, delay` |
+| tsv      | String | A tsv which contains the fields:<br />`category, number, departureTime, destination, track, delay` |

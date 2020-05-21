@@ -30,7 +30,7 @@ public class PublicTransportSwitzerlandBindingConstants {
     public static final ThingTypeUID THING_TYPE_STATIONBOARD = new ThingTypeUID(BINDING_ID, "stationboard");
 
     // List of all Channel ids
-    public static final String CHANNEL_CSV = "csv";
+    public static final String CHANNEL_TSV = "tsv";
 
     public static final String BASE_URL = "https://transport.opendata.ch/v1/";
 
