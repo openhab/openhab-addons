@@ -26,7 +26,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.PointType;
-import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
@@ -60,23 +59,10 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            logger.debug("Initializing {} with id '{}'", getClass(), getId());
-            if (bridge.getStatus() == ThingStatus.ONLINE) {
-                defineRefreshInterval();
-                updateStatus(ThingStatus.ONLINE);
-                scheduleRefreshJob();
-            } else {
-                logger.debug("setting device '{}' offline (bridge or thing offline)", getId());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.BRIDGE_OFFLINE);
-            }
-        } else {
-            logger.debug("setting device '{}' offline (bridge == null)", getId());
-            updateStatus(ThingStatus.OFFLINE);
-        }
+    protected void initializeThing() {
+        defineRefreshInterval();
+        updateStatus(ThingStatus.ONLINE);
+        scheduleRefreshJob();
     }
 
     private void scheduleRefreshJob() {

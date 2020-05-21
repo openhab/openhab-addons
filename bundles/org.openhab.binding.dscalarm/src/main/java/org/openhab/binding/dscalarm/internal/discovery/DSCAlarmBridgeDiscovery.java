@@ -21,7 +21,6 @@ import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.dscalarm.internal.DSCAlarmBindingConstants;
 import org.openhab.binding.dscalarm.internal.config.EnvisalinkBridgeConfiguration;
-import org.openhab.binding.dscalarm.internal.config.IT100BridgeConfiguration;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,11 +36,7 @@ public class DSCAlarmBridgeDiscovery extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(DSCAlarmBridgeDiscovery.class);
 
     private EnvisalinkBridgeDiscovery envisalinkBridgeDiscovery = new EnvisalinkBridgeDiscovery(this);
-    private IT100BridgeDiscovery it100BridgeDiscovery = new IT100BridgeDiscovery(this);
 
-    /**
-     * Constructor.
-     */
     public DSCAlarmBridgeDiscovery() {
         super(DSCAlarmBindingConstants.SUPPORTED_BRIDGE_THING_TYPES_UIDS, 15, true);
     }
@@ -50,15 +45,10 @@ public class DSCAlarmBridgeDiscovery extends AbstractDiscoveryService {
     protected void startScan() {
         logger.trace("Start DSC Alarm Bridge discovery.");
         scheduler.execute(envisalinkBridgeDiscoveryRunnable);
-        scheduler.execute(it100BridgeDiscoveryRunnable);
     }
 
     private Runnable envisalinkBridgeDiscoveryRunnable = () -> {
         envisalinkBridgeDiscovery.discoverBridge();
-    };
-
-    private Runnable it100BridgeDiscoveryRunnable = () -> {
-        it100BridgeDiscovery.discoverBridge();
     };
 
     /**
@@ -78,42 +68,6 @@ public class DSCAlarmBridgeDiscovery extends AbstractDiscoveryService {
 
             thingDiscovered(DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                     .withLabel("EyezOn Envisalink Bridge - " + ipAddress).build());
-
-            logger.trace("addBridge(): '{}' was added to Smarthome inbox.", thingUID);
-        } catch (Exception e) {
-            logger.error("addBridge(): Error", e);
-        }
-    }
-
-    /**
-     * Method to add an IT-100 Bridge to the Smarthome Inbox.
-     *
-     * @param port
-     */
-    public void addIT100Bridge(String port) {
-        logger.trace("addBridge(): Adding new IT-100 Bridge on {} to Smarthome inbox", port);
-
-        String bridgeID = "";
-        boolean containsChar = port.contains("/");
-
-        if (containsChar) {
-            String[] parts = port.split("/");
-            String id = parts[parts.length - 1].toUpperCase();
-            bridgeID = id.replaceAll("\\W", "_");
-
-        } else {
-            String id = port.toUpperCase();
-            bridgeID = id.replaceAll("\\W", "_");
-        }
-
-        Map<String, Object> properties = new HashMap<>(0);
-        properties.put(IT100BridgeConfiguration.SERIAL_PORT, port);
-
-        try {
-            ThingUID thingUID = new ThingUID(DSCAlarmBindingConstants.IT100BRIDGE_THING_TYPE, bridgeID);
-
-            thingDiscovered(DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    .withLabel("DSC IT-100 Bridge - " + port).build());
 
             logger.trace("addBridge(): '{}' was added to Smarthome inbox.", thingUID);
         } catch (Exception e) {

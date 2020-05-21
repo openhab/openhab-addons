@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.nibeheatpump.internal.handler;
 
+import static org.openhab.binding.nibeheatpump.internal.NibeHeatPumpBindingConstants.*;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -34,17 +36,21 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.nibeheatpump.internal.NibeHeatPumpCommandResult;
 import org.openhab.binding.nibeheatpump.internal.NibeHeatPumpException;
 import org.openhab.binding.nibeheatpump.internal.config.NibeHeatPumpConfiguration;
-import org.openhab.binding.nibeheatpump.internal.connection.ConnectorFactory;
 import org.openhab.binding.nibeheatpump.internal.connection.NibeHeatPumpConnector;
 import org.openhab.binding.nibeheatpump.internal.connection.NibeHeatPumpEventListener;
+import org.openhab.binding.nibeheatpump.internal.connection.SerialConnector;
+import org.openhab.binding.nibeheatpump.internal.connection.SimulatorConnector;
+import org.openhab.binding.nibeheatpump.internal.connection.UDPConnector;
 import org.openhab.binding.nibeheatpump.internal.message.ModbusDataReadOutMessage;
 import org.openhab.binding.nibeheatpump.internal.message.ModbusReadRequestMessage;
 import org.openhab.binding.nibeheatpump.internal.message.ModbusReadResponseMessage;
@@ -70,6 +76,7 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
     private static final int TIMEOUT = 4500;
     private final Logger logger = LoggerFactory.getLogger(NibeHeatPumpHandler.class);
     private final PumpModel pumpModel;
+    private final SerialPortManager serialPortManager;
     private final List<Integer> itemsToPoll = Collections.synchronizedList(new ArrayList<>());
     private final List<Integer> itemsToEnableWrite = new ArrayList<>();
     private final Map<Integer, CacheObject> stateMap = Collections.synchronizedMap(new HashMap<>());
@@ -135,9 +142,28 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
     private ScheduledFuture<?> pollingJob;
     private long lastUpdateTime = 0;
 
-    public NibeHeatPumpHandler(Thing thing, PumpModel pumpModel) {
+    public NibeHeatPumpHandler(Thing thing, PumpModel pumpModel, SerialPortManager serialPortManager) {
         super(thing);
         this.pumpModel = pumpModel;
+        this.serialPortManager = serialPortManager;
+    }
+
+    private NibeHeatPumpConnector getConnector() throws NibeHeatPumpException {
+        ThingTypeUID type = thing.getThingTypeUID();
+
+        if (THING_TYPE_F1X45_UDP.equals(type) || THING_TYPE_F1X55_UDP.equals(type) || THING_TYPE_F750_UDP.equals(type)
+                || THING_TYPE_F470_UDP.equals(type)) {
+            return new UDPConnector();
+        } else if (THING_TYPE_F1X45_SERIAL.equals(type) || THING_TYPE_F1X55_SERIAL.equals(type)
+                || THING_TYPE_F750_SERIAL.equals(type) || THING_TYPE_F470_SERIAL.equals(type)) {
+            return new SerialConnector(serialPortManager);
+        } else if (THING_TYPE_F1X45_SIMULATOR.equals(type) || THING_TYPE_F1X55_SIMULATOR.equals(type)
+                || THING_TYPE_F750_SIMULATOR.equals(type) || THING_TYPE_F470_SIMULATOR.equals(type)) {
+            return new SimulatorConnector();
+        }
+
+        String description = String.format("Unknown connector type %s", type);
+        throw new NibeHeatPumpException(description);
     }
 
     @Override
@@ -260,7 +286,7 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
 
         try {
             parseWriteEnabledItems();
-            connector = ConnectorFactory.getConnector(thing.getThingTypeUID());
+            connector = getConnector();
         } catch (IllegalArgumentException | NibeHeatPumpException e) {
             String description = String.format("Illegal configuration, %s", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, description);

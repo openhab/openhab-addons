@@ -523,7 +523,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
 
         String ip = hueBridgeConfig.getIpAddress();
         if (ip == null || ip.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-no-ip-address");
         } else {
             if (hueBridge == null) {
@@ -661,19 +661,19 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     private void handleAuthenticationFailure(Exception ex, String userName) {
         logger.warn("User {} is not authenticated on Hue bridge {}", userName, hueBridgeConfig.getIpAddress());
         logger.warn("Please configure a valid user or remove user from configuration to generate a new one.");
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                 "@text/offline.conf-error-invalid-username");
     }
 
     private void handleLinkButtonNotPressed(LinkButtonException ex) {
         logger.debug("Failed creating new user on Hue bridge: {}", ex.getMessage());
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                 "@text/offline.conf-error-press-pairing-button");
     }
 
     private void handleExceptionWhileCreatingUser(Exception ex) {
         logger.warn("Failed creating new user on Hue bridge", ex);
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                 "@text/offline.conf-error-creation-username");
     }
 

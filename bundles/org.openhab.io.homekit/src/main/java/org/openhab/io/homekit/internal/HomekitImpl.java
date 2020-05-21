@@ -117,12 +117,14 @@ public class HomekitImpl implements Homekit {
     }
 
     private void startBridge() throws InvalidAlgorithmParameterException, IOException {
+        final HomekitServer homekitServer = this.homekitServer;
         if (homekitServer != null && bridge == null) {
             final HomekitRoot bridge = homekitServer.createBridge(new HomekitAuthInfoImpl(storageService, settings.pin),
                     settings.name, HomekitSettings.MANUFACTURER,
                     FrameworkUtil.getBundle(getClass()).getVersion().toString(), HomekitSettings.SERIAL_NUMBER,
                     HomekitSettings.FIRMWARE_REVISION, HomekitSettings.HARDWARE_REVISION);
             changeListener.setBridge(bridge);
+            bridge.setConfigurationIndex(changeListener.getConfigurationRevision());
             bridge.start();
             this.bridge = bridge;
         } else {
@@ -161,6 +163,7 @@ public class HomekitImpl implements Homekit {
 
     @Override
     public void refreshAuthInfo() throws IOException {
+        final HomekitRoot bridge = this.bridge;
         if (bridge != null) {
             bridge.refreshAuthInfo();
         }
@@ -168,6 +171,7 @@ public class HomekitImpl implements Homekit {
 
     @Override
     public void allowUnauthenticatedRequests(boolean allow) {
+        final HomekitRoot bridge = this.bridge;
         if (bridge != null) {
             bridge.allowUnauthenticatedRequests(allow);
         }

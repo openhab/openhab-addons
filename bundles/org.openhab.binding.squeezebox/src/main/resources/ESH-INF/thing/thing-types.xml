@@ -12,6 +12,8 @@
 			<channel id="favoritesList" typeId="favoritesList"/>
 		</channels>
 
+		<representation-property>ipAddress</representation-property>
+
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
 				<label>IP or Host Name</label>
@@ -90,6 +92,8 @@
 			<property name="uid"></property>
 			<property name="ip"></property>
 		</properties>
+
+		<representation-property>mac</representation-property>
 
 		<config-description>
 			<parameter name="mac" type="text" required="true">

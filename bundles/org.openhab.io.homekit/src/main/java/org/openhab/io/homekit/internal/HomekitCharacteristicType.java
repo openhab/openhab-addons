@@ -90,6 +90,12 @@ public enum HomekitCharacteristicType {
     SECURITY_SYSTEM_CURRENT_STATE("CurrentSecuritySystemState"),
     SECURITY_SYSTEM_TARGET_STATE("TargetSecuritySystemState"),
 
+    VOLUME("Volume"),
+    MUTE("Mute"),
+
+    CURRENT_DOOR_STATE("CurrentDoorState"),
+    TARGET_DOOR_STATE("TargetDoorState"),
+
     @Deprecated()
     OLD_BATTERY_LEVEL("homekit:BatteryLevel"),
     @Deprecated()

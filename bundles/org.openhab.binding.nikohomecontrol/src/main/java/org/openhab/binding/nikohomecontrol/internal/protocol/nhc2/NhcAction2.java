@@ -95,7 +95,12 @@ public class NhcAction2 extends NhcAction {
     @Override
     public void setState(int state) {
         this.state = state;
-        if (booleanState) { // only send the update to the event handler if on
+        if (getType().equals(ActionType.DIMMER)) { // for dimmers, only send the update to the event
+                                                   // handler if on
+            if (booleanState) {
+                updateState();
+            }
+        } else {
             updateState();
         }
     }

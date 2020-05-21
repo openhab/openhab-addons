@@ -13,6 +13,7 @@
 package org.openhab.binding.nibeheatpump.internal.handler;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -21,10 +22,12 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.mockito.Mock;
 import org.openhab.binding.nibeheatpump.internal.models.PumpModel;
 import org.openhab.binding.nibeheatpump.internal.models.VariableInformation;
 
@@ -49,6 +52,8 @@ public class NibeHeatPumpHandlerNibe2StateTest {
     private String fFormat;
     private String fType;
     private String fExpected;
+
+    private @Mock SerialPortManager serialPortManager;
 
     @Parameterized.Parameters(name = "{index}: f({0}, {1}, {3})={4}")
     public static Collection<Object[]> data() {
@@ -93,7 +98,9 @@ public class NibeHeatPumpHandlerNibe2StateTest {
 
     @Before
     public void setUp() throws Exception {
-        product = new NibeHeatPumpHandler(null, PumpModel.F1X55);
+        initMocks(this);
+
+        product = new NibeHeatPumpHandler(null, PumpModel.F1X55, serialPortManager);
         parameterTypes = new Class[3];
         parameterTypes[0] = VariableInformation.class;
         parameterTypes[1] = int.class;

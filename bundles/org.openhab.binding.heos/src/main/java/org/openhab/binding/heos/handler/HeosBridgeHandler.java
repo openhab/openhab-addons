@@ -244,8 +244,9 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
      */
     @SuppressWarnings("null")
     public void setThingStatusOffline(ThingUID uid) {
-        if (getThingByUID(uid) != null) {
-            HeosThingBaseHandler childHandler = (HeosThingBaseHandler) getThingByUID(uid).getHandler();
+        Thing child = getThing().getThing(uid);
+        if (child != null) {
+            HeosThingBaseHandler childHandler = (HeosThingBaseHandler) child.getHandler();
             childHandler.setStatusOffline();
         }
     }

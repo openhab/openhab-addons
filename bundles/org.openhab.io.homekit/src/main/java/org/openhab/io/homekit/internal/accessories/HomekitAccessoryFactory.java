@@ -59,12 +59,13 @@ import io.github.hapjava.services.Service;
  * @author Eugen Freiter - refactoring for optional characteristics
  */
 @NonNullByDefault
+@SuppressWarnings("deprecation")
 public class HomekitAccessoryFactory {
     private static final Logger logger = LoggerFactory.getLogger(HomekitAccessoryFactory.class);
     public final static String METADATA_KEY = "homekit"; // prefix for HomeKit meta information in items.xml
 
     /** List of mandatory attributes for each accessory type. **/
-    private final static Map<HomekitAccessoryType, HomekitCharacteristicType[]> mandatoryCharacteristics = new HashMap<HomekitAccessoryType, HomekitCharacteristicType[]>() {
+    private final static Map<HomekitAccessoryType, HomekitCharacteristicType[]> MANDATORY_CHARACTERISTICS = new HashMap<HomekitAccessoryType, HomekitCharacteristicType[]>() {
         {
             put(LEAK_SENSOR, new HomekitCharacteristicType[] { LEAK_DETECTED_STATE });
             put(MOTION_SENSOR, new HomekitCharacteristicType[] { MOTION_DETECTED_STATE });
@@ -85,6 +86,11 @@ public class HomekitAccessoryFactory {
             put(VALVE, new HomekitCharacteristicType[] { ACTIVE_STATUS, INUSE_STATUS });
             put(SECURITY_SYSTEM,
                     new HomekitCharacteristicType[] { SECURITY_SYSTEM_CURRENT_STATE, SECURITY_SYSTEM_TARGET_STATE });
+            put(OUTLET, new HomekitCharacteristicType[] { ON_STATE, INUSE_STATUS });
+            put(SPEAKER, new HomekitCharacteristicType[] { MUTE });
+            put(GARAGE_DOOR_OPENER,
+                    new HomekitCharacteristicType[] { CURRENT_DOOR_STATE, TARGET_DOOR_STATE, OBSTRUCTION_STATUS });
+
             // LEGACY
             put(BLINDS, new HomekitCharacteristicType[] { TARGET_POSITION, CURRENT_POSITION, POSITION_STATE });
             put(OLD_HUMIDITY_SENSOR, new HomekitCharacteristicType[] { RELATIVE_HUMIDITY });
@@ -94,13 +100,12 @@ public class HomekitAccessoryFactory {
     };
 
     /** List of service implementation for each accessory type. **/
-    private final static Map<HomekitAccessoryType, Class<? extends AbstractHomekitAccessoryImpl>> serviceImplMap = new HashMap<HomekitAccessoryType, Class<? extends AbstractHomekitAccessoryImpl>>() {
+    private final static Map<HomekitAccessoryType, Class<? extends AbstractHomekitAccessoryImpl>> SERVICE_IMPL_MAP = new HashMap<HomekitAccessoryType, Class<? extends AbstractHomekitAccessoryImpl>>() {
         {
             put(LEAK_SENSOR, HomekitLeakSensorImpl.class);
             put(MOTION_SENSOR, HomekitMotionSensorImpl.class);
             put(OCCUPANCY_SENSOR, HomekitOccupancySensorImpl.class);
             put(CONTACT_SENSOR, HomekitContactSensorImpl.class);
-            put(TEMPERATURE_SENSOR, HomekitTemperatureSensorImpl.class);
             put(SMOKE_SENSOR, HomekitSmokeSensorImpl.class);
             put(HUMIDITY_SENSOR, HomekitHumiditySensorImpl.class);
             put(SWITCH, HomekitSwitchImpl.class);
@@ -114,16 +119,18 @@ public class HomekitAccessoryFactory {
             put(LOCK, HomekitLockImpl.class);
             put(VALVE, HomekitValveImpl.class);
             put(SECURITY_SYSTEM, HomekitSecuritySystemImpl.class);
+            put(OUTLET, HomekitOutletImpl.class);
+            put(SPEAKER, HomekitSpeakerImpl.class);
+            put(GARAGE_DOOR_OPENER, HomekitGarageDoorOpenerImpl.class);
             put(BLINDS, HomekitWindowCoveringImpl.class);
             put(OLD_HUMIDITY_SENSOR, HomekitHumiditySensorImpl.class);
             put(OLD_DIMMABLE_LIGHTBULB, HomekitLightbulbImpl.class);
             put(OLD_COLORFUL_LIGHTBULB, HomekitLightbulbImpl.class);
-
         }
     };
 
     /** mapping of legacy attributes to new attributes. **/
-    private final static Map<HomekitCharacteristicType, HomekitCharacteristicType> legacyCharacteristicsMapping = new HashMap<HomekitCharacteristicType, HomekitCharacteristicType>() {
+    private final static Map<HomekitCharacteristicType, HomekitCharacteristicType> LEGACY_CHARACTERISTICS_MAPPING = new HashMap<HomekitCharacteristicType, HomekitCharacteristicType>() {
         {
             put(OLD_CURRENT_HEATING_COOLING_STATE, CURRENT_HEATING_COOLING_STATE);
             put(OLD_TARGET_HEATING_COOLING_MODE, TARGET_HEATING_COOLING_STATE);
@@ -134,7 +141,7 @@ public class HomekitAccessoryFactory {
     };
 
     /** list of optional implicit optional characteristics. mainly used for legacy accessory type */
-    private final static Map<HomekitAccessoryType, HomekitCharacteristicType[]> implicitOptionalCharacteristics = new HashMap<HomekitAccessoryType, HomekitCharacteristicType[]>() {
+    private final static Map<HomekitAccessoryType, HomekitCharacteristicType[]> IMPLICIT_OPTIONAL_CHARACTERISTICS = new HashMap<HomekitAccessoryType, HomekitCharacteristicType[]>() {
         {
             put(OLD_DIMMABLE_LIGHTBULB, new HomekitCharacteristicType[] { BRIGHTNESS });
             put(OLD_COLORFUL_LIGHTBULB, new HomekitCharacteristicType[] { HUE, SATURATION, BRIGHTNESS });
@@ -154,22 +161,25 @@ public class HomekitAccessoryFactory {
      * @throws HomekitException exception in case HomeKit accessory could not be created, e.g. due missing mandatory
      *             characteristic
      */
+    @SuppressWarnings("null")
     public static HomekitAccessory create(HomekitTaggedItem taggedItem, MetadataRegistry metadataRegistry,
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws HomekitException {
         final HomekitAccessoryType accessoryType = taggedItem.getAccessoryType();
         logger.trace("Constructing {} of accessoryType {}", taggedItem.getName(), accessoryType);
         final List<HomekitTaggedItem> requiredCharacteristics = getMandatoryCharacteristics(taggedItem,
                 metadataRegistry);
-        if ((mandatoryCharacteristics.get(accessoryType) != null)
-                && (requiredCharacteristics.size() < mandatoryCharacteristics.get(accessoryType).length)) {
+        final HomekitCharacteristicType[] mandatoryCharacteristics = MANDATORY_CHARACTERISTICS.get(accessoryType);
+        if ((mandatoryCharacteristics != null) && (requiredCharacteristics.size() < mandatoryCharacteristics.length)) {
             logger.warn("Accessory of type {} must have following characteristics {}. Found only {}", accessoryType,
-                    mandatoryCharacteristics.get(accessoryType), requiredCharacteristics);
+                    mandatoryCharacteristics, requiredCharacteristics);
             throw new HomekitException("Missing mandatory characteristics");
         }
-        AbstractHomekitAccessoryImpl accessoryImpl = null;
+        AbstractHomekitAccessoryImpl accessoryImpl;
 
         try {
-            final Class<? extends AbstractHomekitAccessoryImpl> accessoryImplClass = serviceImplMap.get(accessoryType);
+            @Nullable
+            final Class<? extends AbstractHomekitAccessoryImpl> accessoryImplClass = SERVICE_IMPL_MAP
+                    .get(accessoryType);
             if (accessoryImplClass != null) {
                 accessoryImpl = accessoryImplClass
                         .getConstructor(HomekitTaggedItem.class, List.class, HomekitAccessoryUpdater.class,
@@ -199,9 +209,8 @@ public class HomekitAccessoryFactory {
             MetadataRegistry metadataRegistry) {
         final List<Entry<HomekitAccessoryType, HomekitCharacteristicType>> accessories = new ArrayList<>();
         Metadata metadata = metadataRegistry.get(new MetadataKey(METADATA_KEY, item.getUID()));
-        boolean legacyMode = !(metadata != null);
+        boolean legacyMode = metadata == null;
         String[] tags = !legacyMode ? metadata.getValue().split(",") : item.getTags().toArray(new String[0]); // fallback
-                                                                                                              // to tags
 
         logger.trace("item {} meta data {}  tags {} ", item.getName(), metadata, tags);
         for (String tag : tags) {
@@ -218,12 +227,10 @@ public class HomekitAccessoryFactory {
                         type = OLD_DIMMABLE_LIGHTBULB;
                     }
                 }
-                if ((meta.length > 1) && (HomekitCharacteristicType.valueOfTag(meta[1].trim()).isPresent())) { // it has
-                                                                                                               // characteristic
-                                                                                                               // as
-                                                                                                               // well
-                    accessories
-                            .add(new SimpleEntry<>(type, HomekitCharacteristicType.valueOfTag(meta[1].trim()).get()));
+                if (meta.length > 1) {
+                    // it has characteristic as well
+                    accessories.add(new SimpleEntry<>(type,
+                            HomekitCharacteristicType.valueOfTag(meta[1].trim()).orElse(EMPTY)));
                 } else {// it has no characteristic
                     accessories.add(new SimpleEntry<>(type, EMPTY));
                 }
@@ -291,13 +298,15 @@ public class HomekitAccessoryFactory {
      * @param item current item
      * @param metadataRegistry meta date registry
      */
+    @SuppressWarnings("null")
     private static void addMandatoryCharacteristics(HomekitTaggedItem mainItem, List<HomekitTaggedItem> characteristics,
             Item item, MetadataRegistry metadataRegistry) {
-        HomekitCharacteristicType[] requiredChar = mandatoryCharacteristics.get(mainItem.getAccessoryType());
+        HomekitCharacteristicType[] mandatoryCharacteristics = MANDATORY_CHARACTERISTICS
+                .get(mainItem.getAccessoryType());
         for (Entry<HomekitAccessoryType, HomekitCharacteristicType> accessory : getAccessoryTypes(item,
                 metadataRegistry)) {
-            if (isRootAccessory(accessory) && (requiredChar != null)) {
-                Arrays.stream(requiredChar)
+            if (isRootAccessory(accessory) && (mandatoryCharacteristics != null)) {
+                Arrays.stream(mandatoryCharacteristics)
                         .forEach(c -> characteristics.add(new HomekitTaggedItem(item, accessory.getKey(), c,
                                 mainItem.isGroup() ? (GroupItem) mainItem.getItem() : null,
                                 HomekitAccessoryFactory.getItemConfiguration(item, metadataRegistry))));
@@ -329,13 +338,9 @@ public class HomekitAccessoryFactory {
 
                 final Characteristic characteristic = HomekitCharacteristicFactory.createCharacteristic(type, item,
                         accessory.getUpdater());
-
-                service.getClass().getMethod("addOptionalCharacteristic", characteristic.getClass()). // find the
-                                                                                                      // corresponding
-                                                                                                      // add method at
-                                                                                                      // service and
-                                                                                                      // call it.
-                invoke(service, characteristic);
+                // find the corresponding add method at service and call it.
+                service.getClass().getMethod("addOptionalCharacteristic", characteristic.getClass()).invoke(service,
+                        characteristic);
 
                 accessory.addCharacteristic(new HomekitTaggedItem(item, accessory.getRootAccessory().getAccessoryType(),
                         type, accessory.getRootAccessory().getRootDeviceGroupItem(),
@@ -354,6 +359,7 @@ public class HomekitAccessoryFactory {
      * @param metadataRegistry OH metadata registry
      * @return a map with characteristics and corresponding OH items
      */
+    @SuppressWarnings("null")
     private static Map<HomekitCharacteristicType, GenericItem> getOptionalCharacteristics(HomekitTaggedItem taggedItem,
             MetadataRegistry metadataRegistry) {
         logger.trace("get optional characteristics for item {}: isGroup? {}, isMember? {}", taggedItem.getName(),
@@ -361,21 +367,20 @@ public class HomekitAccessoryFactory {
         Map<HomekitCharacteristicType, GenericItem> characteristicItems = new HashMap<>();
         if (taggedItem.isGroup()) {
             GroupItem groupItem = (GroupItem) taggedItem.getItem();
-            groupItem.getMembers().forEach(item -> {
-                getAccessoryTypes(item, metadataRegistry).stream().filter(c -> !isRootAccessory(c)).filter(
-                        c -> !isMandatoryCharacteristic(taggedItem.getAccessoryType(), legacyCheck(c.getValue())))
-                        .forEach(characteristic -> characteristicItems.put(legacyCheck(characteristic.getValue()),
-                                (GenericItem) item));
-            });
+            groupItem.getMembers().forEach(item -> getAccessoryTypes(item, metadataRegistry).stream()
+                    .filter(c -> !isRootAccessory(c))
+                    .filter(c -> !isMandatoryCharacteristic(taggedItem.getAccessoryType(), legacyCheck(c.getValue())))
+                    .forEach(characteristic -> characteristicItems.put(legacyCheck(characteristic.getValue()),
+                            (GenericItem) item)));
         } else {
             getAccessoryTypes(taggedItem.getItem(), metadataRegistry).stream().filter(c -> !isRootAccessory(c))
                     .filter(c -> !isMandatoryCharacteristic(taggedItem.getAccessoryType(), legacyCheck(c.getValue())))
                     .forEach(characteristic -> characteristicItems.put(legacyCheck(characteristic.getValue()),
                             (GenericItem) taggedItem.getItem()));
-            final HomekitCharacteristicType[] implCharacteristics = implicitOptionalCharacteristics
+            final HomekitCharacteristicType[] implicitOptionalCharacteristics = IMPLICIT_OPTIONAL_CHARACTERISTICS
                     .get(taggedItem.getAccessoryType());
-            if (implCharacteristics != null) {
-                Arrays.stream(implCharacteristics)
+            if (implicitOptionalCharacteristics != null) {
+                Arrays.stream(implicitOptionalCharacteristics)
                         .filter(c -> !isMandatoryCharacteristic(taggedItem.getAccessoryType(), c))
                         .forEach(characteristic -> characteristicItems.put(legacyCheck(characteristic),
                                 (GenericItem) taggedItem.getItem()));
@@ -392,11 +397,11 @@ public class HomekitAccessoryFactory {
      * @param characteristic characteristic
      * @return true if characteristic is mandatory, false if not mandatory
      */
+    @SuppressWarnings("null")
     private static boolean isMandatoryCharacteristic(HomekitAccessoryType accessory,
             HomekitCharacteristicType characteristic) {
-        return mandatoryCharacteristics.get(accessory) != null
-                ? Arrays.stream(mandatoryCharacteristics.get(accessory)).anyMatch(c -> c.equals(characteristic))
-                : false;
+        return MANDATORY_CHARACTERISTICS.get(accessory) != null
+                && Arrays.asList(MANDATORY_CHARACTERISTICS.get(accessory)).contains(characteristic);
     }
 
     /**
@@ -405,6 +410,7 @@ public class HomekitAccessoryFactory {
      * @param accessory accessory
      * @return true if accessory has not characteristic.
      */
+    @SuppressWarnings("null")
     private static boolean isRootAccessory(Entry<HomekitAccessoryType, HomekitCharacteristicType> accessory) {
         return ((accessory.getValue() == null) || (accessory.getValue() == EMPTY));
     }
@@ -416,9 +422,10 @@ public class HomekitAccessoryFactory {
      * @param characteristicType characteristic to check
      * @return new characteristic type
      */
+    @SuppressWarnings("null")
     private static HomekitCharacteristicType legacyCheck(final HomekitCharacteristicType characteristicType) {
-        if (legacyCharacteristicsMapping.get(characteristicType) != null)
-            return legacyCharacteristicsMapping.get(characteristicType);
+        if (LEGACY_CHARACTERISTICS_MAPPING.get(characteristicType) != null)
+            return LEGACY_CHARACTERISTICS_MAPPING.get(characteristicType);
         return characteristicType;
     }
 }

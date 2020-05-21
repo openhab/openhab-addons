@@ -18,8 +18,8 @@ import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.TooManyListenersException;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -28,15 +28,15 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.io.transport.serial.PortInUseException;
+import org.eclipse.smarthome.io.transport.serial.SerialPort;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEvent;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEventListener;
+import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
+import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import gnu.io.CommPortIdentifier;
-import gnu.io.PortInUseException;
-import gnu.io.SerialPort;
-import gnu.io.SerialPortEvent;
-import gnu.io.SerialPortEventListener;
-import gnu.io.UnsupportedCommOperationException;
 
 /**
  * The {@link SerialThingHandler} is responsible for handling commands, which
@@ -58,7 +58,8 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
     private final Logger logger = LoggerFactory.getLogger(SerialThingHandler.class);
 
     private SerialPort serialPort;
-    private CommPortIdentifier portId;
+    private SerialPortIdentifier portId;
+    private final SerialPortManager serialPortManager;
     private InputStream inputStream;
     private OutputStream outputStream;
     protected int baud;
@@ -66,17 +67,17 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
     protected int bufferSize;
     protected long sleep = 100;
     protected long interval = 0;
-    Thread readerThread = null;
+    private Thread readerThread = null;
 
-    public SerialThingHandler(Thing thing) {
+    public SerialThingHandler(Thing thing, SerialPortManager serialPortManager) {
         super(thing);
+        this.serialPortManager = serialPortManager;
     }
 
     /**
      * Called when data is received on the serial port
      *
-     * @param line
-     *            - the received data as a String
+     * @param line the received data as a String
      *
      **/
     public abstract void onDataReceived(String line);
@@ -84,8 +85,7 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
     /**
      * Write data to the serial port
      *
-     * @param msg
-     *            - the received data as a String
+     * @param msg the received data as a String
      *
      **/
     public void writeString(String msg) {
@@ -127,6 +127,7 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
         IOUtils.closeQuietly(outputStream);
         if (serialPort != null) {
             serialPort.close();
+            serialPort = null;
         }
 
         if (readerThread != null) {
@@ -142,92 +143,80 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
     public void initialize() {
         logger.debug("Initializing serial thing handler.");
 
-        if (serialPort == null && port != null && baud != 0) {
-            // parse ports and if the default port is found, initialized the
-            // reader
-            @SuppressWarnings("rawtypes")
-            Enumeration portList = CommPortIdentifier.getPortIdentifiers();
-            while (portList.hasMoreElements()) {
-                CommPortIdentifier id = (CommPortIdentifier) portList.nextElement();
-                if (id.getPortType() == CommPortIdentifier.PORT_SERIAL) {
-                    if (id.getName().equals(port)) {
-                        logger.debug("Serial port '{}' has been found.", port);
-                        portId = id;
-                    }
-                }
-            }
-
-            if (portId != null) {
-                // initialize serial port
-                try {
-                    serialPort = portId.open("openHAB", 2000);
-                } catch (PortInUseException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Could not open serial port " + serialPort + ": " + e.getMessage());
-                    return;
-                }
-
-                try {
-                    inputStream = serialPort.getInputStream();
-                } catch (IOException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Could not open serial port " + serialPort + ": " + e.getMessage());
-                    return;
-                }
-
-                try {
-                    serialPort.addEventListener(this);
-                } catch (TooManyListenersException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Could not open serial port " + serialPort + ": " + e.getMessage());
-                    return;
-                }
-
-                // activate the DATA_AVAILABLE notifier
-                serialPort.notifyOnDataAvailable(true);
-
-                try {
-                    // set port parameters
-                    serialPort.setSerialPortParams(baud, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
-                            SerialPort.PARITY_NONE);
-                } catch (UnsupportedCommOperationException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Could not configure serial port " + serialPort + ": " + e.getMessage());
-                    return;
-                }
-
-                try {
-                    // get the output stream
-                    outputStream = serialPort.getOutputStream();
-                    updateStatus(ThingStatus.ONLINE);
-                } catch (IOException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Could not communicate with the serial port " + serialPort + ": " + e.getMessage());
-                    return;
-                }
-
-                readerThread = new SerialPortReader(inputStream);
-                readerThread.start();
-
-            } else {
-                StringBuilder sb = new StringBuilder();
-                portList = CommPortIdentifier.getPortIdentifiers();
-                while (portList.hasMoreElements()) {
-                    CommPortIdentifier id = (CommPortIdentifier) portList.nextElement();
-                    if (id.getPortType() == CommPortIdentifier.PORT_SERIAL) {
-                        sb.append(id.getName() + "\n");
-                    }
-                }
-                logger.error("Serial port '{}' could not be found. Available ports are:\n {}", port, sb);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
-            }
+        if (baud == 0) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Baud rate is not configured");
+            return;
+        } else if (port == null || port.isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Serial port is not configured");
+            return;
         }
+
+        portId = serialPortManager.getIdentifier(port);
+
+        if (portId == null) {
+            String availablePorts = serialPortManager.getIdentifiers().map(id -> id.getName())
+                    .collect(Collectors.joining(System.lineSeparator()));
+            String description = String.format("Serial port '%s' could not be found. Available ports are:%n%s", port,
+                    availablePorts);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, description);
+            return;
+
+        }
+
+        // initialize serial port
+        try {
+            serialPort = portId.open("openHAB", 2000);
+        } catch (PortInUseException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Could not open serial port " + port + ": " + e.getMessage());
+            return;
+        }
+
+        try {
+            inputStream = serialPort.getInputStream();
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Could not open serial port " + port + ": " + e.getMessage());
+            return;
+        }
+
+        try {
+            serialPort.addEventListener(this);
+        } catch (TooManyListenersException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Could not open serial port " + port + ": " + e.getMessage());
+            return;
+        }
+
+        // activate the DATA_AVAILABLE notifier
+        serialPort.notifyOnDataAvailable(true);
+
+        try {
+            // set port parameters
+            serialPort.setSerialPortParams(baud, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
+        } catch (UnsupportedCommOperationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Could not configure serial port " + port + ": " + e.getMessage());
+            return;
+        }
+
+        try {
+            // get the output stream
+            outputStream = serialPort.getOutputStream();
+            updateStatus(ThingStatus.ONLINE);
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Could not communicate with the serial port " + port + ": " + e.getMessage());
+            return;
+        }
+
+        readerThread = new SerialPortReader(inputStream);
+        readerThread.start();
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // by default, we write anything we received as a string to the serial
-        // port
+        // by default, we write anything we received as a string to the serial port
         writeString(command.toString());
     }
 

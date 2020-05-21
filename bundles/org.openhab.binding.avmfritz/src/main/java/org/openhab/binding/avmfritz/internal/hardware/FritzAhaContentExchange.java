@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.avmfritz.internal.hardware;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.api.Response.CompleteListener;
 import org.eclipse.jetty.client.api.Response.ContentListener;
@@ -28,17 +29,16 @@ import org.slf4j.LoggerFactory;
  *
  * @author Robert Bausdorf - Initial contribution
  */
+@NonNullByDefault
 public class FritzAhaContentExchange extends BufferingResponseListener
         implements SuccessListener, FailureListener, ContentListener, CompleteListener {
-    /**
-     * logger
-     */
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    private final Logger logger = LoggerFactory.getLogger(FritzAhaContentExchange.class);
 
     /**
      * Callback to execute on complete response
      */
-    private FritzAhaCallback callback;
+    private final FritzAhaCallback callback;
 
     /**
      * Constructor
@@ -49,28 +49,20 @@ public class FritzAhaContentExchange extends BufferingResponseListener
         this.callback = callback;
     }
 
-    /**
-     * Log request success
-     */
     @Override
-    public void onSuccess(Response response) {
+    public void onSuccess(@NonNullByDefault({}) Response response) {
         logger.debug("{} response: {}", response.getRequest().getScheme().toUpperCase(), response.getStatus());
     }
 
-    /**
-     * Log request failure
-     */
     @Override
-    public void onFailure(Response response, Throwable failure) {
-        logger.debug("response failed: {}", failure.getLocalizedMessage());
+    public void onFailure(@NonNullByDefault({}) Response response, @NonNullByDefault({}) Throwable failure) {
+        logger.debug("response failed: {}", failure.getLocalizedMessage(), failure);
     }
 
-    /**
-     * Call the callbacks execute method on request completion.
-     */
     @Override
-    public void onComplete(Result result) {
-        logger.debug("response complete: {}", this.getContentAsString());
-        this.callback.execute(result.getResponse().getStatus(), this.getContentAsString());
+    public void onComplete(@NonNullByDefault({}) Result result) {
+        String content = getContentAsString();
+        logger.debug("response complete: {}", content);
+        callback.execute(result.getResponse().getStatus(), content);
     }
 }
