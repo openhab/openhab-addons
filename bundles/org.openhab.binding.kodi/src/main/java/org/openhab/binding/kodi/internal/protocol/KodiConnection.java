@@ -861,12 +861,23 @@ public class KodiConnection implements KodiClientSocketEventListener {
             // we have to strip ending "/" here because Kodi returns a not valid path and filename
             // "fanart":"image://http%3a%2f%2fthetvdb.com%2fbanners%2ffanart%2foriginal%2f263365-31.jpg/"
             // "thumbnail":"image://http%3a%2f%2fthetvdb.com%2fbanners%2fepisodes%2f263365%2f5640869.jpg/"
-            String encodedURL = URLEncoder.encode(url.replaceAll("/$", ""), StandardCharsets.UTF_8.name());
+            String encodedURL = URLEncoder.encode(stripEnd(url, '/'), StandardCharsets.UTF_8.name());
             return imageUri.resolve(encodedURL).toString();
         } catch (UnsupportedEncodingException e) {
             logger.debug("exception during encoding {}", url, e);
             return null;
         }
+    }
+
+    private String stripEnd(String str, char suffix) {
+        int end = str.length();
+        if (end == 0) {
+            return str;
+        }
+        while (end > 0 && str.charAt(end - 1) == suffix) {
+            end--;
+        }
+        return str.substring(0, end);
     }
 
     private @Nullable RawType downloadImage(String url) {
