@@ -65,7 +65,7 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
     private final Logger logger = LoggerFactory.getLogger(HomeAssistantDiscovery.class);
     protected final Map<String, Set<HaID>> componentsPerThingID = new TreeMap<>();
     protected final Map<String, ThingUID> thingIDPerTopic = new TreeMap<>();
-    protected final Map<String, Integer> configHashPerTopic = new TreeMap<>();
+    protected final Map<String, Integer> configHashPerTopic = new ConcurrentHashMap<>();
     protected final Map<String, DiscoveryResult> results = new ConcurrentHashMap<>();
 
     private @Nullable ScheduledFuture<?> future;
@@ -143,14 +143,10 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
         BaseChannelConfiguration config = BaseChannelConfiguration
                 .fromString(new String(payload, StandardCharsets.UTF_8), gson);
 
-        synchronized (configHashPerTopic) {
-            if (!configHashPerTopic.containsKey(topic)) {
-                configHashPerTopic.put(topic, config.hashCode());
-            } else {
-                if (configHashPerTopic.get(topic).equals(config.hashCode())) {
-                    return;
-                }
-            }
+        Integer newHash = config.hashCode();
+        Integer oldHash = configHashPerTopic.putIfAbsent(topic, newHash);
+        if (newHash.equals(oldHash)) {
+            return;
         }
 
         // Reset the found-component timer.
