@@ -40,6 +40,10 @@ class HomekitAccessoryRegistry {
         configurationRevision = revision;
     }
 
+    public int getConfigurationRevision() {
+        return configurationRevision;
+    }
+
     public int makeNewConfigurationRevision() {
         configurationRevision = (configurationRevision + 1) % 65535;
         final HomekitRoot bridge = this.bridge;
