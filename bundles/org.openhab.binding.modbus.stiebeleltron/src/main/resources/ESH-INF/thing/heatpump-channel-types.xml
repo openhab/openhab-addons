@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="fek-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>FFK temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="fek-temperature-setpoint-type">
+		<item-type>Number:Temperature</item-type>
+		<label>FFK temperature set point</label>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+	<channel-type id="fek-humidity-type">
+		<item-type>Number:Dimensionless</item-type>
+		<label>FFK humidity</label>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+	<channel-type id="fek-dewpoint-type">
+		<item-type>Number:Temperature</item-type>
+		<label>FFK dewpoint</label>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+	<channel-type id="outdoor-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Outdoor temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="hk1-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>HK1 temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+	<channel-type id="hk1-temperature-setpoint-type">
+		<item-type>Number:Temperature</item-type>
+		<label>HK1 temperature set point</label>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+	<channel-type id="supply-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Supply temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+	<channel-type id="return-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Return temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+	<channel-type id="source-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Source temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+	<channel-type id="water-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Water temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+	<channel-type id="water-temperature-setpoint-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Water temperature set point</label>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+
+	<channel-type id="production_heat_today-type">
+		<item-type>Number:Energy</item-type>
+		<label>Heat quantity today</label>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+	<channel-type id="production_heat_total-type">
+		<item-type>Number:Energy</item-type>
+		<label>Heat quantity total</label>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+	<channel-type id="production_water_today-type">
+		<item-type>Number:Energy</item-type>
+		<label>Water heat quantity today</label>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+	<channel-type id="production_water_total-type">
+		<item-type>Number:Energy</item-type>
+		<label>Water heat quantity total</label>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="consumption_heat_today-type">
+		<item-type>Number:Energy</item-type>
+		<label>Power consumption for heating today</label>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+	<channel-type id="consumption_heat_total-type">
+		<item-type>Number:Energy</item-type>
+		<label>Power consumption for heating total</label>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+	<channel-type id="consumption_water_today-type">
+		<item-type>Number:Energy</item-type>
+		<label>Power consumption for water today</label>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+	<channel-type id="consumption_water_total-type">
+		<item-type>Number:Energy</item-type>
+		<label>Power consumption for water total</label>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+	<channel-type id="is-heating-type">
+		<item-type>Contact</item-type>
+		<label>Currently heating</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="is-heating-water-type">
+		<item-type>Contact</item-type>
+		<label>Currently heating water</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="is-cooling-type">
+		<item-type>Contact</item-type>
+		<label>Currently cooling</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="is-pumping-type">
+		<item-type>Contact</item-type>
+		<label>Currently pumping</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="is-summer-type">
+		<item-type>Contact</item-type>
+		<label>Summer operation mode</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="operation-mode-type">
+		<item-type>Number</item-type>
+		<label>Operation mode</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">Emergency</option>
+				<option value="1">Ready</option>
+				<option value="2">Program</option>
+				<option value="3">Comfort</option>
+				<option value="4">Eco</option>
+				<option value="5">Water</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="comfort-temperature-heating-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Comfort temperature heating</label>
+		<state pattern="%.1f %unit%" />
+	</channel-type>
+	<channel-type id="eco-temperature-heating-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Eco temperature heating</label>
+		<state pattern="%.1f %unit%" />
+	</channel-type>
+	<channel-type id="comfort-temperature-water-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Comfort temperature water</label>
+		<state pattern="%.1f %unit%" />
+	</channel-type>
+	<channel-type id="eco-temperature-water-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Eco temperature water</label>
+		<state pattern="%.1f %unit%" />
+	</channel-type>
+</thing:thing-descriptions>
