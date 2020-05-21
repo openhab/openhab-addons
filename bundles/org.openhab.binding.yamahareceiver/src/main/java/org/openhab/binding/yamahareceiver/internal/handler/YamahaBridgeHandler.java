@@ -34,7 +34,6 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
-import org.eclipse.smarthome.core.thing.binding.builder.ThingStatusInfoBuilder;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.yamahareceiver.internal.config.YamahaBridgeConfig;
@@ -224,6 +223,7 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
     private void cancelRefreshTimer() {
         if (refreshTimer != null) {
             refreshTimer.cancel(false);
+            refreshTimer = null;
         }
     }
 
@@ -255,13 +255,8 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
                 YamahaZoneThingHandler handler = (YamahaZoneThingHandler) thing.getHandler();
 
                 // Ensure the handler has been already assigned
-                if (handler != null) {
-                    // If thing still thinks that the bridge is offline, update its status.
-                    if (thing.getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE) {
-                        handler.bridgeStatusChanged(ThingStatusInfoBuilder.create(bridge.getStatus()).build());
-                    } else if (handler.isCorrectlyInitialized()) {
-                        handler.updateZoneInformation();
-                    }
+                if (handler != null && handler.isCorrectlyInitialized()) {
+                    handler.updateZoneInformation();
                 }
             }
         } catch (IOException e) {
@@ -373,7 +368,7 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
 
     /**
      * Attempts to perform a one-time initialization after a connection is created.
-     * 
+     *
      * @return true if initialization was successful
      */
     private boolean ensureConnectionInitialized() {

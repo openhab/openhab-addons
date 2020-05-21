@@ -17,8 +17,8 @@ import javax.xml.bind.JAXBException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.avmfritz.internal.ahamodel.DeviceListModel;
-import org.openhab.binding.avmfritz.internal.ahamodel.templates.TemplateListModel;
+import org.openhab.binding.avmfritz.internal.dto.DeviceListModel;
+import org.openhab.binding.avmfritz.internal.dto.templates.TemplateListModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -98,22 +97,6 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         hasChannelStructure = false;
         isIdentified = false;
         refreshList = new ArrayList<>();
-    }
-
-    @Override
-    public void dispose() {
-        logger.debug("Disposing Xiaomi Mi IO Basic handler '{}'", getThing().getUID());
-        final @Nullable ScheduledFuture<?> pollingJob = this.pollingJob;
-        if (pollingJob != null) {
-            pollingJob.cancel(true);
-        }
-        this.pollingJob = null;
-        final @Nullable MiIoAsyncCommunication miioCom = this.miioCom;
-        if (miioCom != null) {
-            lastId = miioCom.getId();
-            miioCom.close();
-            this.miioCom = null;
-        }
     }
 
     @Override

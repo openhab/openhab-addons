@@ -34,9 +34,13 @@ import org.slf4j.LoggerFactory;
 @Component(service = ConsoleCommandExtension.class)
 public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
     private static final String SUBCMD_CLEAR_PAIRINGS = "clearPairings";
-    private static final String SUBCMD_LIST_ACCESSORIES = "listAccessories";
-    private static final String SUBCMD_PRINT_ACCESSORY = "printAccessory";
+    private static final String SUBCMD_LIST_ACCESSORIES = "list";
+    private static final String SUBCMD_PRINT_ACCESSORY = "show";
     private static final String SUBCMD_ALLOW_UNAUTHENTICATED = "allowUnauthenticated";
+    @Deprecated
+    private static final String LEGACY_SUBCMD_LIST_ACCESSORIES = "listAccessories";
+    @Deprecated
+    private static final String LEGACY_SUBCMD_PRINT_ACCESSORY = "printAccessory";
 
     private final Logger logger = LoggerFactory.getLogger(HomekitCommandExtension.class);
     private StorageService storageService;
@@ -64,14 +68,23 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
                     }
                     break;
                 case SUBCMD_LIST_ACCESSORIES:
+                case LEGACY_SUBCMD_LIST_ACCESSORIES:
                     listAccessories(console);
+                    if (subCommand.equalsIgnoreCase(LEGACY_SUBCMD_LIST_ACCESSORIES)) {
+                        console.println("");
+                        console.println("Hey, you can use the shorter command 'homekit list'");
+                    }
                     break;
                 case SUBCMD_PRINT_ACCESSORY:
+                case LEGACY_SUBCMD_PRINT_ACCESSORY:
                     if (args.length > 1) {
-                        Integer id = Integer.valueOf(args[1]);
-                        printAccessory(id, console);
+                        printAccessory(args[1], console);
                     } else {
-                        console.println("accessory id is required as an argument");
+                        console.println("accessory id or name is required as an argument");
+                    }
+                    if (subCommand.equalsIgnoreCase(LEGACY_SUBCMD_PRINT_ACCESSORY)) {
+                        console.println("");
+                        console.println("Hey, you can use the shorter command 'homekit show <accessory_id|name>'");
                     }
                     break;
                 default:
@@ -79,14 +92,17 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
                     printUsage(console);
                     break;
             }
+        } else {
+            printUsage(console);
         }
     }
 
     @Override
     public List<String> getUsages() {
         return Arrays.asList(buildCommandUsage(SUBCMD_LIST_ACCESSORIES, "list all HomeKit accessories"),
-                buildCommandUsage(SUBCMD_PRINT_ACCESSORY + " <accessory id>", "print accessorty details"),
-                buildCommandUsage(SUBCMD_CLEAR_PAIRINGS, "removes all pairings with HomeKit clients"),
+                buildCommandUsage(SUBCMD_PRINT_ACCESSORY + " <accessory id | accessory name>",
+                        "print additional details of the accessories which partially match provided ID or name."),
+                buildCommandUsage(SUBCMD_CLEAR_PAIRINGS, "removes all pairings with HomeKit clients."),
                 buildCommandUsage(SUBCMD_ALLOW_UNAUTHENTICATED + " <boolean>",
                         "enables or disables unauthenticated access to facilitate debugging"));
     }
@@ -134,10 +150,11 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
         });
     }
 
-    private void printAccessory(Integer accessory_id, Console console) {
+    private void printAccessory(String id, Console console) {
         homekit.getAccessories().forEach(v -> {
             try {
-                if (v.getId() == accessory_id) {
+                if (("" + v.getId()).contains(id) || ((v.getName().get() != null)
+                        && (v.getName().get().toUpperCase().contains(id.toUpperCase())))) {
                     console.println(v.getId() + " " + v.getName().get());
                     console.println("Services:");
                     v.getServices().forEach(s -> {
@@ -147,6 +164,7 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
                             console.println("      : " + c.getClass());
                         });
                     });
+                    console.println("");
                 }
             } catch (InterruptedException | ExecutionException e) {
                 logger.warn("Cannot print accessory", e);

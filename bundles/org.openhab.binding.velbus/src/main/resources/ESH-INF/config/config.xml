@@ -7,6 +7,7 @@
 	<config-description uri="bridge-type:velbus:bridge">
 		<parameter name="port" type="text">
 			<context>serial-port</context>
+			<limitToOptions>false</limitToOptions>
 			<label>Serial Port</label>
 			<description>Select serial port (COM1, /dev/ttyS0, ...)</description>
 			<required>true</required>

@@ -12,93 +12,33 @@
  */
 package org.openhab.binding.avmfritz.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Bean holding configuration data for FRITZ! Box.
  *
  * @author Robert Bausdorf - Initial contribution
  */
+@NonNullByDefault
 public class AVMFritzBoxConfiguration {
 
-    private String ipAddress;
-    private Integer port;
-    private String protocol;
+    public @NonNullByDefault({}) String ipAddress;
+    public @Nullable Integer port;
+    public String protocol = "http";
 
-    private String user;
-    private String password;
+    public @Nullable String user;
+    public @NonNullByDefault({}) String password;
 
-    private Integer asyncTimeout;
-    private Integer syncTimeout;
-    private Integer pollingInterval;
-
-    public String getIpAddress() {
-        return ipAddress;
-    }
-
-    public void setIpAddress(String ipAddress) {
-        this.ipAddress = ipAddress;
-    }
-
-    public Integer getPort() {
-        return port;
-    }
-
-    public void setPort(Integer port) {
-        this.port = port;
-    }
-
-    public String getProtocol() {
-        return protocol;
-    }
-
-    public void setProtocol(String protocol) {
-        this.protocol = protocol;
-    }
-
-    public String getUser() {
-        return user;
-    }
-
-    public void setUser(String user) {
-        this.user = user;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Integer getAsyncTimeout() {
-        return asyncTimeout;
-    }
-
-    public void setAsyncTimeout(Integer asyncTimeout) {
-        this.asyncTimeout = asyncTimeout;
-    }
-
-    public Integer getSyncTimeout() {
-        return syncTimeout;
-    }
-
-    public void setSyncTimeout(Integer syncTimeout) {
-        this.syncTimeout = syncTimeout;
-    }
-
-    public Integer getPollingInterval() {
-        return pollingInterval;
-    }
-
-    public void setPollingInterval(Integer pollingInterval) {
-        this.pollingInterval = pollingInterval;
-    }
+    public long pollingInterval = 15;
+    public long asyncTimeout = 10000;
+    public long syncTimeout = 2000;
 
     @Override
     public String toString() {
-        return new StringBuilder().append("[IP=").append(getIpAddress()).append(",port=").append(getPort())
-                .append(",protocol=").append(getProtocol()).append(",user=").append(getUser())
-                .append(",pollingInterval=").append(getPollingInterval()).append(",asyncTimeout=")
-                .append(getAsyncTimeout()).append(",syncTimeout=").append(getSyncTimeout()).append("]").toString();
+        return new StringBuilder().append("[IP=").append(ipAddress).append(",port=").append(port).append(",protocol=")
+                .append(protocol).append(",user=").append(user).append(",pollingInterval=").append(pollingInterval)
+                .append(",asyncTimeout=").append(asyncTimeout).append(",syncTimeout=").append(syncTimeout).append("]")
+                .toString();
     }
 }

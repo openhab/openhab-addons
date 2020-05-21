@@ -22,6 +22,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.rme.internal.RMEBindingConstants.DataField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,8 +42,8 @@ public class RMEThingHandler extends SerialThingHandler {
     private static final StringType MANUAL = new StringType("Manual");
     private static final StringType RAIN = new StringType("Rain");
 
-    public RMEThingHandler(Thing thing) {
-        super(thing);
+    public RMEThingHandler(Thing thing, SerialPortManager serialPortManager) {
+        super(thing, serialPortManager);
     }
 
     @Override
@@ -76,8 +77,8 @@ public class RMEThingHandler extends SerialThingHandler {
     }
 
     @Override
-    public void onDataReceived(String line) {
-        line = StringUtils.chomp(line);
+    public void onDataReceived(String receivedLine) {
+        String line = StringUtils.chomp(receivedLine);
 
         // little hack to overcome Locale limits of the RME Rain Manager
         // note to the attentive reader : should we add support for system
