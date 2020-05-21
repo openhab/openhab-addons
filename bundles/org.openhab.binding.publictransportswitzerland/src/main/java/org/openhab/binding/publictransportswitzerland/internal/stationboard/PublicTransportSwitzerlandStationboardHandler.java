@@ -83,7 +83,7 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         } else {
-            updateStatus(ThingStatus.INITIALIZING);
+            updateStatus(ThingStatus.UNKNOWN);
 
             if (updateDataJob == null || updateDataJob.isCancelled()) {
                 updateDataJob = scheduler.scheduleWithFixedDelay(this::updateData, 0, 60, TimeUnit.SECONDS);
