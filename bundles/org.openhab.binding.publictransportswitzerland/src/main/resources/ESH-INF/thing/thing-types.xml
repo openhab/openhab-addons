@@ -6,7 +6,7 @@
 
 	<thing-type id="stationboard">
 		<label>Public Transport Switzerland - Stationboard</label>
-		<description>Upcoming departures</description>
+		<description>Upcoming departures for a single station.</description>
 
 		<channels>
 			<channel id="csv" typeId="csv" />
@@ -23,8 +23,8 @@
 
 	<channel-type id="csv">
 		<item-type>String</item-type>
-		<label>Public Transport Switzerland - CSV</label>
-		<description>A csv representation</description>
+		<label>CSV</label>
+		<description>A CSV representation</description>
 	</channel-type>
 
 </thing:thing-descriptions>
