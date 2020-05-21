@@ -213,7 +213,7 @@ public class YamahaZoneThingHandler extends BaseThingHandler
                         zoneAvailableInputs = getProtocolFactory().ZoneAvailableInputs(getConnection(), zoneConfig,
                                 this, brHandler::getInputConverter, getDeviceInformationState());
 
-                        updateZoneInformation();
+                        scheduler.submit(this::updateZoneInformation);
                     }
 
                     updateStatus(ThingStatus.ONLINE);
@@ -239,24 +239,8 @@ public class YamahaZoneThingHandler extends BaseThingHandler
      * Request new zone and available input information
      */
     void updateZoneInformation() {
-        updateAsyncMakeOfflineIfFail(zoneAvailableInputs);
-        updateAsyncMakeOfflineIfFail(zoneControl);
-
-        if (inputWithPlayControl != null) {
-            updateAsyncMakeOfflineIfFail(inputWithPlayControl);
-        }
-
-        if (inputWithNavigationControl != null) {
-            updateAsyncMakeOfflineIfFail(inputWithNavigationControl);
-        }
-
-        if (inputWithPresetControl != null) {
-            updateAsyncMakeOfflineIfFail(inputWithPresetControl);
-        }
-
-        if (inputWithDabBandControl != null) {
-            updateAsyncMakeOfflineIfFail(inputWithDabBandControl);
-        }
+        Stream.of(zoneAvailableInputs, zoneControl, inputWithPlayControl, inputWithNavigationControl,
+                inputWithPresetControl, inputWithDabBandControl).forEach(this::updateMakeOfflineIfFail);
     }
 
     @Override
@@ -720,18 +704,23 @@ public class YamahaZoneThingHandler extends BaseThingHandler
     }
 
     protected void updateAsyncMakeOfflineIfFail(IStateUpdatable stateUpdatable) {
-        scheduler.submit(() -> {
-            try {
-                stateUpdatable.update();
-            } catch (IOException e) {
-                logger.debug("State update error. Changing thing to offline", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-            } catch (ReceivedMessageParseException e) {
-                updateProperty(PROPERTY_LAST_PARSE_ERROR, e.getMessage());
-                // Some AVRs send unexpected responses. We log parser exceptions therefore.
-                logger.debug("Parse error!", e);
-            }
-        });
+        scheduler.submit(() -> updateMakeOfflineIfFail(stateUpdatable));
+    }
+
+    protected void updateMakeOfflineIfFail(IStateUpdatable stateUpdatable) {
+        if (stateUpdatable == null) {
+            return;
+        }
+        try {
+            stateUpdatable.update();
+        } catch (IOException e) {
+            logger.debug("State update error. Changing thing to offline", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        } catch (ReceivedMessageParseException e) {
+            updateProperty(PROPERTY_LAST_PARSE_ERROR, e.getMessage());
+            // Some AVRs send unexpected responses. We log parser exceptions therefore.
+            logger.debug("Parse error!", e);
+        }
     }
 
     /**
