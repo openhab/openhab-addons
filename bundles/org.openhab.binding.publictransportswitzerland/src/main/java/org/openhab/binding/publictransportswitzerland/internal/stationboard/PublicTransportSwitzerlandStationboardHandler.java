@@ -108,7 +108,7 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
             logger.warn("Unable to fetch stationboard data", e);
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            updateState(CHANNEL_CSV, new StringType("No data available"));
+            updateState(CHANNEL_TSV, new StringType("No data available"));
         }
     }
 
@@ -120,7 +120,7 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
         JsonArray stationboard = jsonObject.getAsJsonObject().get("stationboard").getAsJsonArray();
         createDynamicChannels(stationboard.size());
 
-        List<String> departures = new ArrayList<>();
+        List<String> tsvRows = new ArrayList<>();
 
         for (int i = 0; i < stationboard.size(); i++) {
             JsonElement jsonElement = stationboard.get(i);
@@ -142,10 +142,10 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
             String track = stopObject.get("platform").getAsString();
 
             updateState(getChannelUIDForPosition(i), new StringType(formatDeparture(category, number, departureTime, destination, track, delay)));
-            departures.add(String.join("\t", category, number, departureTime.toString(), destination, track, delay));
+            tsvRows.add(String.join("\t", category, number, departureTime.toString(), destination, track, delay));
         }
 
-        updateState(CHANNEL_CSV, new StringType(String.join("\n", departures)));
+        updateState(CHANNEL_TSV, new StringType(String.join("\n", tsvRows)));
     }
 
     private String formatDeparture(String category, String number, Long departureTimestamp, String destination, String track, @Nullable String delay) {
