@@ -69,9 +69,7 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType) {
-            // TODO?
-        }
+        // This handler does not support any commands
     }
 
     @Override
