@@ -90,7 +90,8 @@ Switch  TV_ArtMode       "Art Mode"                            (gLivingRoomTV)  
 
 ### Apps
 
-List of known apps and the respectve name that can be passed on to the `sourceApp` channel. Values are confirme to work on UE50MU6179.
+List of known apps and the respective name that can be passed on to the `sourceApp` channel.
+Values are confirmed to work on UE50MU6179.
 
 | App           | Value in sourceApp | Description                       |
 |---------------|--------------------|-----------------------------------|
