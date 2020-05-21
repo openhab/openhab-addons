@@ -10,7 +10,6 @@
 
 		<channels>
 			<channel id="csv" typeId="csv" />
-			<channel id="json" typeId="json" />
 		</channels>
 
 		<config-description>
@@ -21,12 +20,6 @@
 		</config-description>
 
 	</thing-type>
-
-	<channel-type id="json">
-		<item-type>String</item-type>
-		<label>Public Transport Switzerland - JSON</label>
-		<description>The raw json response</description>
-	</channel-type>
 
 	<channel-type id="csv">
 		<item-type>String</item-type>
