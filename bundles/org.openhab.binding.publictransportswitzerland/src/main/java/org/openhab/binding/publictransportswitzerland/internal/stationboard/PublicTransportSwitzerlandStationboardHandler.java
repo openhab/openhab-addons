@@ -79,14 +79,17 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
         PublicTransportSwitzerlandStationboardConfiguration config = getConfigAs(PublicTransportSwitzerlandStationboardConfiguration.class);
 
         if (config.station == null || config.station.isEmpty()) {
+            if (updateDataJob != null) {
+                updateDataJob.cancel(true);
+            }
+
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
-            return;
-        }
+        } else {
+            updateStatus(ThingStatus.INITIALIZING);
 
-        updateStatus(ThingStatus.INITIALIZING);
-
-        if (updateDataJob == null || updateDataJob.isCancelled()) {
-            updateDataJob = scheduler.scheduleWithFixedDelay(this::updateData, 0, 60, TimeUnit.SECONDS);
+            if (updateDataJob == null || updateDataJob.isCancelled()) {
+                updateDataJob = scheduler.scheduleWithFixedDelay(this::updateData, 0, 60, TimeUnit.SECONDS);
+            }
         }
     }
 
