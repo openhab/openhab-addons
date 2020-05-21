@@ -19,22 +19,19 @@ import com.google.gson.JsonParser;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
+import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -58,6 +55,8 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
             "stationboard/stop/departureTimestamp",
             "stationboard/stop/delay",
             "stationboard/stop/platform");
+
+    private final ChannelGroupUID dynamicChannelGroupUID = new ChannelGroupUID(getThing().getUID(), "Departures");
 
     private final Logger logger = LoggerFactory.getLogger(PublicTransportSwitzerlandStationboardHandler.class);
 
@@ -103,7 +102,7 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
 
             JsonElement jsonObject = new JsonParser().parse(response);
 
-            updateCsvChannel(jsonObject);
+            updateChannels(jsonObject);
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
             logger.warn("Unable to fetch stationboard data", e);
@@ -117,12 +116,15 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
         return Arrays.stream(fields).map((field) -> "&fields[]=" + field).collect(Collectors.joining());
     }
 
-    private void updateCsvChannel(JsonElement jsonObject) throws Exception {
+    private void updateChannels(JsonElement jsonObject) throws Exception {
         JsonArray stationboard = jsonObject.getAsJsonObject().get("stationboard").getAsJsonArray();
+        createDynamicChannels(stationboard.size());
 
         List<String> departures = new ArrayList<>();
 
-        for (JsonElement jsonElement : stationboard) {
+        for (int i = 0; i < stationboard.size(); i++) {
+            JsonElement jsonElement = stationboard.get(i);
+
             JsonObject departureObject = jsonElement.getAsJsonObject();
             JsonObject stopObject = departureObject.get("stop").getAsJsonObject();
 
@@ -136,13 +138,49 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
                 delay = delayElement.getAsString();
             }
 
-            String departureTime = stopObject.get("departureTimestamp").getAsString();
+            Long departureTime = stopObject.get("departureTimestamp").getAsLong();
             String track = stopObject.get("platform").getAsString();
 
-            departures.add(String.join("\t", category, number, departureTime, destination, track, delay));
+            updateState(getChannelUIDForPosition(i), new StringType(formatDeparture(category, number, departureTime, destination, track, delay)));
+            departures.add(String.join("\t", category, number, departureTime.toString(), destination, track, delay));
         }
 
         updateState(CHANNEL_CSV, new StringType(String.join("\n", departures)));
+    }
+
+    private String formatDeparture(String category, String number, Long departureTimestamp, String destination, String track, @Nullable String delay) {
+        Date departureDate = new Date(departureTimestamp * 1000);
+
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+        String formattedDate = timeFormat.format(departureDate);
+
+        String result = String.format("%s - %s %s - Pl. %s", formattedDate, category + number.replace(category, ""), destination, track);
+
+        if (delay != null && !delay.isEmpty()) {
+            result += String.format(" (%s' late)", delay);
+        }
+
+        return result;
+    }
+
+    private void createDynamicChannels(int numberOfChannels) {
+        List<Channel> existingChannels = getThing().getChannelsOfGroup(dynamicChannelGroupUID.getId());
+
+        ThingBuilder thingBuilder = editThing();
+
+        for (int i = existingChannels.size(); i < numberOfChannels; i++) {
+            Channel channel = ChannelBuilder
+                    .create(getChannelUIDForPosition(i), "String")
+                    .withLabel("Departure " + (i + 1))
+                    .build();
+            thingBuilder.withChannel(channel);
+        }
+
+        updateThing(thingBuilder.build());
+    }
+
+    private ChannelUID getChannelUIDForPosition(int position) {
+        return new ChannelUID(dynamicChannelGroupUID, String.valueOf(position + 1));
     }
 
 }
