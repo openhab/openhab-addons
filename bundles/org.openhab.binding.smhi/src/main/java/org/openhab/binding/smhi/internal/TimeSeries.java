@@ -14,7 +14,10 @@
 package org.openhab.binding.smhi.internal;
 
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Spliterator;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
