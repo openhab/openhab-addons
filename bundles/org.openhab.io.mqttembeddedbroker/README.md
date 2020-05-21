@@ -1,6 +1,6 @@
 # MQTT Broker Moquette
 
-**Attention:** Moquette is no longer maintained upstream and this addon is therefore considered deprecated in openHAB. 
+**Attention:** Moquette is no longer maintained upstream and this add-on is therefore considered deprecated in openHAB. 
 It is recommended to switch to an external broker like mosquitto.
 The Moquette addon will be removed in a future release of openHAB.
 
