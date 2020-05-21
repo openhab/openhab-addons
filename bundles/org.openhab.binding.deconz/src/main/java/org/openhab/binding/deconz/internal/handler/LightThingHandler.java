@@ -65,13 +65,17 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
 
     private static final double HUE_FACTOR = 65535 / 360.0;
     private static final double BRIGHTNESS_FACTOR = 2.54;
+    private static final long SKIP_UPDATE_TIMESPAN = 500; // in ms
 
     private final Logger logger = LoggerFactory.getLogger(LightThingHandler.class);
+
+    private long lastCommandTimestamp = 0;
 
     /**
      * The light state. Contains all possible fields for all supported lights
      */
     private LightState lightStateCache = new LightState();
+    private LightState lastCommand = new LightState();
 
     public LightThingHandler(Thing thing, Gson gson) {
         super(thing, gson);
@@ -202,12 +206,14 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
         String json = gson.toJson(newLightState);
         logger.trace("Sending {} to light {} via {}", json, config.id, url);
 
-        asyncHttpClient.put(url, json, bridgeConfig.timeout)
-                .thenAccept(v -> logger.trace("Result code={}, body={}", v.getResponseCode(), v.getBody()))
-                .exceptionally(e -> {
-                    logger.debug("Sending command {} to channel {} failed:", command, channelUID, e);
-                    return null;
-                });
+        asyncHttpClient.put(url, json, bridgeConfig.timeout).thenAccept(v -> {
+            lastCommandTimestamp = System.currentTimeMillis();
+            lastCommand = newLightState;
+            logger.trace("Result code={}, body={}", v.getResponseCode(), v.getBody());
+        }).exceptionally(e -> {
+            logger.debug("Sending command {} to channel {} failed:", command, channelUID, e);
+            return null;
+        });
     }
 
     @Override
@@ -280,6 +286,12 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
             logger.trace("{} received {}", thing.getUID(), lightMessage);
             LightState lightState = lightMessage.state;
             if (lightState != null) {
+                if (lastCommandTimestamp + SKIP_UPDATE_TIMESPAN > System.currentTimeMillis()
+                        && !lightState.equalsIgnoreNull(lastCommand)) {
+                    // skip for SKIP_UPDATE_TIMESPAN after last command if lightState is different from command
+                    logger.trace("Ignoring differing update within {}ms after last command", SKIP_UPDATE_TIMESPAN);
+                    return;
+                }
                 this.lightStateCache = lightState;
                 thing.getChannels().stream().map(c -> c.getUID().getId()).forEach(c -> valueUpdated(c, lightState));
             }

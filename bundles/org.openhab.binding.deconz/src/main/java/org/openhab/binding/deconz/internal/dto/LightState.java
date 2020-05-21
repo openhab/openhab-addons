@@ -28,7 +28,6 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class LightState {
-    public @Nullable String lastupdated;
     public @Nullable Boolean reachable;
     public @Nullable Boolean on;
     public @Nullable Integer bri;
@@ -45,11 +44,19 @@ public class LightState {
 
     public @Nullable Integer transitiontime;
 
+    public boolean equalsIgnoreNull(LightState o) {
+        return equalsIgnoreNull(on, o.on) && equalsIgnoreNull(bri, o.bri) && equalsIgnoreNull(hue, o.hue)
+                && equalsIgnoreNull(sat, o.sat) && ((xy != null && o.xy != null) ? Arrays.equals(xy, o.xy) : true);
+    }
+
+    private <T> boolean equalsIgnoreNull(T o1, T o2) {
+        return (o1 != null && o2 != null) ? o1.equals(o2) : true;
+    }
+
     @Override
     public String toString() {
-        return "LightState{" + "lastupdated='" + lastupdated + '\'' + ", reachable=" + reachable + ", on=" + on
-                + ", bri=" + bri + ", alert='" + alert + '\'' + ", colormode='" + colormode + '\'' + ", effect='"
-                + effect + '\'' + ", hue=" + hue + ", sat=" + sat + ", ct=" + ct + ", xy=" + Arrays.toString(xy)
-                + ", transitiontime=" + transitiontime + '}';
+        return "LightState{reachable=" + reachable + ", on=" + on + ", bri=" + bri + ", alert='" + alert + '\''
+                + ", colormode='" + colormode + '\'' + ", effect='" + effect + '\'' + ", hue=" + hue + ", sat=" + sat
+                + ", ct=" + ct + ", xy=" + Arrays.toString(xy) + ", transitiontime=" + transitiontime + '}';
     }
 }
