@@ -24,13 +24,11 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.satel.internal.command.IntegraVersionCommand;
-import org.openhab.binding.satel.internal.command.ModuleVersionCommand;
 import org.openhab.binding.satel.internal.command.SatelCommand;
 import org.openhab.binding.satel.internal.command.SatelCommand.State;
 import org.openhab.binding.satel.internal.event.ConnectionStatusEvent;
 import org.openhab.binding.satel.internal.event.EventDispatcher;
 import org.openhab.binding.satel.internal.event.IntegraVersionEvent;
-import org.openhab.binding.satel.internal.event.ModuleVersionEvent;
 import org.openhab.binding.satel.internal.event.SatelEventListener;
 import org.openhab.binding.satel.internal.types.IntegraType;
 import org.slf4j.Logger;
@@ -59,7 +57,7 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
     private final int timeout;
     private volatile IntegraType integraType;
     private volatile String integraVersion;
-    private volatile boolean extPayloadSupport;
+    private final boolean extPayloadSupport;
     private @Nullable CommunicationChannel channel;
     private @Nullable CommunicationWatchdog communicationWatchdog;
 
@@ -106,13 +104,15 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
     /**
      * Creates new instance of the class.
      *
-     * @param timeout timeout value in milliseconds for connect/read/write operations
+     * @param timeout           timeout value in milliseconds for connect/read/write operations
+     * @param extPayloadSupport if <code>true</code>, the module supports extended command payload for reading
+     *                              INTEGRA256 state
      */
-    public SatelModule(int timeout) {
+    public SatelModule(int timeout, boolean extPayloadSupport) {
         this.timeout = timeout;
         this.integraType = IntegraType.UNKNOWN;
         this.integraVersion = "";
-        this.extPayloadSupport = false;
+        this.extPayloadSupport = extPayloadSupport;
 
         addEventListener(this);
     }
@@ -210,7 +210,7 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
     /**
      * Enqueues specified command in send queue.
      *
-     * @param cmd command to enqueue
+     * @param cmd   command to enqueue
      * @param force if <code>true</code> enqueues unconditionally
      * @return <code>true</code> if operation succeeded
      */
@@ -227,13 +227,6 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
         } catch (InterruptedException e) {
             return false;
         }
-    }
-
-    @Override
-    public void incomingEvent(ModuleVersionEvent event) {
-        ModuleVersionEvent versionEvent = event;
-        this.extPayloadSupport = versionEvent.hasExtPayloadSupport();
-        logger.info("Module version: {}.", versionEvent.getVersion());
     }
 
     @Override
@@ -527,7 +520,6 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
             this.thread.start();
             // if module is not initialized yet, send version command
             if (!SatelModule.this.isInitialized()) {
-                SatelModule.this.sendCommand(new ModuleVersionCommand());
                 SatelModule.this.sendCommand(new IntegraVersionCommand());
             }
         }

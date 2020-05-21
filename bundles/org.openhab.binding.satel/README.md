@@ -41,13 +41,14 @@ You can configure the following settings for this bridge:
 
 | Name          | Required | Description                                                                                                                                                                                                                                                                  |
 |---------------|----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| host          | yes      | Host name or IP addres of ETHM-1 module                                                                                                                                                                                                                                      |
-| port          | no       | TCP port for the integration protocol, defaults to 7094                                                                                                                                                                                                                      |
-| timeout       | no       | Timeout value in milliseconds for connect, read and write operations, defaults to 5000 (5secs)                                                                                                                                                                               |
+| host          | yes      | Host name or IP addres of ETHM-1 module.                                                                                                                                                                                                                                     |
+| port          | no       | TCP port for the integration protocol, defaults to 7094.                                                                                                                                                                                                                     |
+| timeout       | no       | Timeout value in milliseconds for connect, read and write operations, defaults to 5000 (5secs).                                                                                                                                                                              |
 | refresh       | no       | Polling interval in milliseconds, defaults to 5000 (5secs). As of version 2.03 ETHM-1 Plus firmware the module disconnects after 25 seconds of inactivity. Setting this parameter to value greater than 25000 will cause inability to correctly communicate with the module. |
-| userCode      | no       | Security code of the user in behalf of all operations will be executed. If empty, only read operations are allowed                                                                                                                                                           |
-| encryptionKey | no       | Encryption key used to encrypt data sent and received, if empty communication is not encrypted                                                                                                                                                                               |
-| encoding      | no       | Encoding for all the texts received from the module                                                                                                                                                                                                                          |
+| userCode      | no       | Security code of the user in behalf of all operations will be executed. If empty, only read operations are allowed.                                                                                                                                                          |
+| encryptionKey | no       | Encryption key used to encrypt data sent and received. If empty, communication is not encrypted.                                                                                                                                                                             |
+| encoding      | no       | Encoding for all the texts received from the module.                                                                                                                                                                                                                         |
+| extCommands   | no       | Check this option to enable extended commands, supported by ETHM-1 Plus and newer versions of ETHM-1. Enabled by default, turn off in case of communication timeouts.                                                                                                        |
 
 Example:
 
@@ -63,13 +64,14 @@ In case you have troubles connecting to the system using this module, please mak
 
 You can configure the following settings for this bridge:
 
-| Name     | Required | Description                                                                                                        |
-|----------|----------|--------------------------------------------------------------------------------------------------------------------|
-| port     | yes      | Serial port connected to the module                                                                                |
-| timeout  | no       | Timeout value in milliseconds for connect, read and write operations, defaults to 5000 (5secs)                     |
-| refresh  | no       | Polling interval in milliseconds, defaults to 5000 (5secs)                                                         |
-| userCode | no       | Security code of the user in behalf of all operations will be executed. If empty, only read operations are allowed |
-| encoding | no       | Encoding for all the texts received from the module                                                                |
+| Name        | Required | Description                                                                                                                                         |
+|-------------|----------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
+| port        | yes      | Serial port connected to the module.                                                                                                                |
+| timeout     | no       | Timeout value in milliseconds for connect, read and write operations, defaults to 5000 (5secs).                                                     |
+| refresh     | no       | Polling interval in milliseconds, defaults to 5000 (5secs).                                                                                         |
+| userCode    | no       | Security code of the user in behalf of all operations will be executed. If empty, only read operations are allowed.                                 |
+| encoding    | no       | Encoding for all the texts received from the module.                                                                                                |
+| extCommands | no       | Check this option to enable extended commands, supported by version 2.xx of INT-RS. Enabled by default, turn off in case of communication timeouts. |
 
 Example:
 
