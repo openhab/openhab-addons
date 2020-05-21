@@ -5,7 +5,7 @@ In order to do so, your Daikin air conditioning unit must have a BRP072A42, BRP0
 
 ## Supported Things
 
-Daikin air conditioning units with a BRP072A42, BRP072C42 or BRP15B61 installed.
+Daikin air conditioning units with a BRP069B41, BRP072A42, BRP072C42 or BRP15B61 installed.
 This may work with the older KRP series of wired adapters, but has not been tested with them.
 
 ## Discovery
@@ -42,7 +42,7 @@ For the BRP072A42 and BRP072C42:
 | outdoortemp  | The outdoor temperature as measured by the external part of the air conditioning system. May not be available when unit is off. |
 | humidity     | The indoor humidity as measured by the unit. This is not available on all units.            |
 | mode         | The mode set for the unit (AUTO, DEHUMIDIFIER, COLD, HEAT, FAN)                             |
-| homekitmode  | A mode that is compatible with homekit/alexa/google home (off, auto, heat, cool)            |
+| homekitmode  | A mode that is compatible with homekit/alexa/google home (off, auto, heat, cool). Not tested for BRP069B41 |
 | fanspeed     | The fan speed set for the unit (AUTO, SILENCE, LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5) |
 | fandir       | The fan blade direction (STOPPED, VERTICAL, HORIZONTAL, VERTICAL_AND_HORIZONTAL)            |
 
@@ -71,7 +71,7 @@ For the BRP15B61:
 daikin.things:
 
 ```
-// for BRP072A42
+// for BRP069B41 or BRP072A42
 daikin:ac_unit:living_room_ac [ host="192.168.0.5" ]
 // for BRP072C42
 daikin:ac_unit:living_room_ac [ host="192.168.0.5", secure=true, uuid="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", key="xxxxxxxxxxxxx" ]
@@ -83,7 +83,7 @@ daikin:airbase_ac_unit:living_room_ac [ host="192.168.0.5" ]
 daikin.items:
 
 ```
-// for BRP072A42 or BRP072C42
+// for BRP069B41, BRP072A42 or BRP072C42
 Switch DaikinACUnit_Power { channel="daikin:ac_unit:living_room_ac:power" }
 Number:Temperature DaikinACUnit_SetPoint { channel="daikin:ac_unit:living_room_ac:settemp" }
 String DaikinACUnit_Mode { channel="daikin:ac_unit:living_room_ac:mode" }
@@ -116,7 +116,7 @@ Switch DaikinACUnit_Zone8 { channel="daikin:airbase_ac_unit:living_room_ac:zone8
 daikin.sitemap:
 
 ```
-// for BRP072A42 or BRP072C42
+// for BRP069B41, BRP072A42 or BRP072C42
 Switch item=DaikinACUnit_Power
 Setpoint item=DaikinACUnit_SetPoint visibility=[DaikinACUnit_Power==ON]
 Selection item=DaikinACUnit_Mode mappings=["AUTO"="Auto", "DEHUMIDIFIER"="Dehumidifier", "COLD"="Cold", "HEAT"="Heat", "FAN"="Fan"] visibility=[DaikinACUnit_Power==ON]
