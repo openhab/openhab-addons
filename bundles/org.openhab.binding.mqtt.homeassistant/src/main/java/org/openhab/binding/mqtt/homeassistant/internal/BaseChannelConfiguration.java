@@ -106,6 +106,18 @@ public abstract class BaseChannelConfiguration {
         public String getId() {
             return StringUtils.join(identifiers, "_");
         }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((identifiers != null) ? identifiers.hashCode() : 0);
+            result = prime * result + ((manufacturer != null) ? manufacturer.hashCode() : 0);
+            result = prime * result + ((model != null) ? model.hashCode() : 0);
+            result = prime * result + ((name != null) ? name.hashCode() : 0);
+            result = prime * result + ((sw_version != null) ? sw_version.hashCode() : 0);
+            return result;
+        }
     }
 
     @JsonAdapter(ConnectionDeserializer.class)
@@ -157,5 +169,23 @@ public abstract class BaseChannelConfiguration {
             properties.put(Thing.PROPERTY_FIRMWARE_VERSION, sw_version);
         }
         return properties;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((availability_topic != null) ? availability_topic.hashCode() : 0);
+        result = prime * result + ((device != null) ? device.hashCode() : 0);
+        result = prime * result + icon.hashCode();
+        result = prime * result + name.hashCode();
+        result = prime * result + payload_available.hashCode();
+        result = prime * result + payload_not_available.hashCode();
+        result = prime * result + qos;
+        result = prime * result + (retain ? 1231 : 1237);
+        result = prime * result + tilde.hashCode();
+        result = prime * result + ((unique_id != null) ? unique_id.hashCode() : 0);
+        result = prime * result + ((value_template != null) ? value_template.hashCode() : 0);
+        return result;
     }
 }

@@ -65,6 +65,7 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
     private final Logger logger = LoggerFactory.getLogger(HomeAssistantDiscovery.class);
     protected final Map<String, Set<HaID>> componentsPerThingID = new TreeMap<>();
     protected final Map<String, ThingUID> thingIDPerTopic = new TreeMap<>();
+    protected final Map<String, Integer> configHashPerTopic = new TreeMap<>();
     protected final Map<String, DiscoveryResult> results = new ConcurrentHashMap<>();
 
     private @Nullable ScheduledFuture<?> future;
@@ -139,6 +140,19 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
             return;
         }
 
+        BaseChannelConfiguration config = BaseChannelConfiguration
+                .fromString(new String(payload, StandardCharsets.UTF_8), gson);
+
+        synchronized (configHashPerTopic) {
+            if (!configHashPerTopic.containsKey(topic)) {
+                configHashPerTopic.put(topic, config.hashCode());
+            } else {
+                if (configHashPerTopic.get(topic).equals(config.hashCode())) {
+                    return;
+                }
+            }
+        }
+
         // Reset the found-component timer.
         // We will collect components for the thing label description for another 2 seconds.
         final ScheduledFuture<?> future = this.future;
@@ -146,9 +160,6 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
             future.cancel(false);
         }
         this.future = scheduler.schedule(this::publishResults, 2, TimeUnit.SECONDS);
-
-        BaseChannelConfiguration config = BaseChannelConfiguration
-                .fromString(new String(payload, StandardCharsets.UTF_8), gson);
 
         // We will of course find multiple of the same unique Thing IDs, for each different component another one.
         // Therefore the components are assembled into a list and given to the DiscoveryResult label for the user to
