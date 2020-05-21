@@ -51,12 +51,15 @@ import io.github.hapjava.server.impl.HomekitRoot;
 public class HomekitChangeListener implements ItemRegistryChangeListener {
     private final Logger logger = LoggerFactory.getLogger(HomekitChangeListener.class);
     private final static String REVISION_CONFIG = "revision";
+    private final static String ACCESSORY_COUNT = "accessories";
+
     private final ItemRegistry itemRegistry;
     private final HomekitAccessoryRegistry accessoryRegistry = new HomekitAccessoryRegistry();
     private final MetadataRegistry metadataRegistry;
     private final Storage<String> storage;
     private HomekitAccessoryUpdater updater = new HomekitAccessoryUpdater();
     private HomekitSettings settings;
+    private int lastAccessoryCount;
 
     private Set<String> pendingUpdates = new HashSet<>();
 
@@ -96,6 +99,12 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         } catch (java.lang.NumberFormatException e) {
             revision = 1;
             storage.put(REVISION_CONFIG, "" + revision);
+        }
+        try {
+            lastAccessoryCount = Integer.valueOf(storage.get(ACCESSORY_COUNT));
+        } catch (java.lang.NumberFormatException e) {
+            lastAccessoryCount = 0;
+            storage.put(ACCESSORY_COUNT, "0");
         }
         accessoryRegistry.setConfigurationRevision(revision);
     }
@@ -143,6 +152,12 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         }
     }
 
+    public void makeNewConfigurationRevision() {
+        storage.put(REVISION_CONFIG, "" + accessoryRegistry.makeNewConfigurationRevision());
+        lastAccessoryCount = accessoryRegistry.getAllAccessories().size();
+        storage.put(ACCESSORY_COUNT, "" + lastAccessoryCount);
+    }
+
     private synchronized void applyUpdates() {
         logger.trace("apply updates");
         Iterator<String> iter = pendingUpdates.iterator();
@@ -154,7 +169,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
             getItemOptional(name).ifPresent(this::createRootAccessories);
         }
         if (!pendingUpdates.isEmpty()) {
-            storage.put(REVISION_CONFIG, "" + accessoryRegistry.makeNewConfigurationRevision());
+            makeNewConfigurationRevision();
             pendingUpdates.clear();
         }
     }
@@ -195,6 +210,10 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
 
     public int getConfigurationRevision() {
         return this.accessoryRegistry.getConfigurationRevision();
+    }
+
+    public int getLastAccessoryCount() {
+        return lastAccessoryCount;
     }
 
     /**
