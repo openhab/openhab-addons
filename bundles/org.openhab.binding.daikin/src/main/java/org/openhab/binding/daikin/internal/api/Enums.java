@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
  * Container class for enums related to Daikin A/C systems
  *
  * @author Tim Waterhouse <tim@timwaterhouse.com> - Initial contribution
+ * @author Lukas Agethen - Add special modes
  *
  */
 @NonNullByDefault

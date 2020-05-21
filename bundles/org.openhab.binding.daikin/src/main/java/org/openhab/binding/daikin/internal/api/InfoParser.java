@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.daikin.internal.api;
 
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -32,7 +31,7 @@ public class InfoParser {
     }
 
     public static Map<String, String> parse(String response) {
-        return Arrays.asList(response.split(",")).stream().filter(kv -> kv.contains("=")).map(kv -> {
+        return Stream.of(response.split(",")).filter(kv -> kv.contains("=")).map(kv -> {
             String[] keyValue = kv.split("=");
             String key = keyValue[0];
             String value = keyValue.length > 1 ? keyValue[1] : "";
@@ -69,7 +68,7 @@ public class InfoParser {
         try {
             return Optional.of(Stream.of(value.split("/")).map(val -> Integer.parseInt(val)).toArray(Integer[]::new));
 
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             return Optional.empty();
         }
     }

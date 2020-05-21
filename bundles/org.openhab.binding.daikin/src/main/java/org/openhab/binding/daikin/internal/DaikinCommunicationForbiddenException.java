@@ -22,9 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class DaikinCommunicationForbiddenException extends DaikinCommunicationException {
-    /**
-     *
-     */
+
     private static final long serialVersionUID = 1L;
 
     public DaikinCommunicationForbiddenException(String message) {

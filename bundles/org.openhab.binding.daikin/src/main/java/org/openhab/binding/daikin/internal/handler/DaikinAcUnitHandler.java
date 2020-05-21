@@ -34,6 +34,7 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.daikin.internal.DaikinBindingConstants;
 import org.openhab.binding.daikin.internal.DaikinCommunicationException;
 import org.openhab.binding.daikin.internal.DaikinDynamicStateDescriptionProvider;
+import org.openhab.binding.daikin.internal.DaikinWebTargets;
 import org.openhab.binding.daikin.internal.api.ControlInfo;
 import org.openhab.binding.daikin.internal.api.EnergyInfoYear;
 import org.openhab.binding.daikin.internal.api.Enums.FanMovement;
@@ -63,81 +64,70 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
 
     @Override
     protected void pollStatus() throws IOException {
-        if (webTargets != null) {
-            ControlInfo controlInfo = webTargets.getControlInfo();
-            updateStatus(ThingStatus.ONLINE);
-            if (controlInfo != null) {
-                updateState(DaikinBindingConstants.CHANNEL_AC_POWER, controlInfo.power ? OnOffType.ON : OnOffType.OFF);
-                updateTemperatureChannel(DaikinBindingConstants.CHANNEL_AC_TEMP, controlInfo.temp);
+        DaikinWebTargets webTargets = this.webTargets;
+        if (webTargets == null) {
+            return;
+        }
+        ControlInfo controlInfo = webTargets.getControlInfo();
+        updateStatus(ThingStatus.ONLINE);
+        updateState(DaikinBindingConstants.CHANNEL_AC_POWER, controlInfo.power ? OnOffType.ON : OnOffType.OFF);
+        updateTemperatureChannel(DaikinBindingConstants.CHANNEL_AC_TEMP, controlInfo.temp);
 
-                updateState(DaikinBindingConstants.CHANNEL_AC_MODE, new StringType(controlInfo.mode.name()));
-                updateState(DaikinBindingConstants.CHANNEL_AC_FAN_SPEED, new StringType(controlInfo.fanSpeed.name()));
-                updateState(DaikinBindingConstants.CHANNEL_AC_FAN_DIR, new StringType(controlInfo.fanMovement.name()));
+        updateState(DaikinBindingConstants.CHANNEL_AC_MODE, new StringType(controlInfo.mode.name()));
+        updateState(DaikinBindingConstants.CHANNEL_AC_FAN_SPEED, new StringType(controlInfo.fanSpeed.name()));
+        updateState(DaikinBindingConstants.CHANNEL_AC_FAN_DIR, new StringType(controlInfo.fanMovement.name()));
 
-                if (!controlInfo.power) {
-                    updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE,
-                            new StringType(HomekitMode.OFF.getValue()));
-                } else if (controlInfo.mode == Mode.COLD) {
-                    updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE,
-                            new StringType(HomekitMode.COOL.getValue()));
-                } else if (controlInfo.mode == Mode.HEAT) {
-                    updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE,
-                            new StringType(HomekitMode.HEAT.getValue()));
-                } else if (controlInfo.mode == Mode.AUTO) {
-                    updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE,
-                            new StringType(HomekitMode.AUTO.getValue()));
-                }
+        if (!controlInfo.power) {
+            updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType(HomekitMode.OFF.getValue()));
+        } else if (controlInfo.mode == Mode.COLD) {
+            updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType(HomekitMode.COOL.getValue()));
+        } else if (controlInfo.mode == Mode.HEAT) {
+            updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType(HomekitMode.HEAT.getValue()));
+        } else if (controlInfo.mode == Mode.AUTO) {
+            updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType(HomekitMode.AUTO.getValue()));
+        }
 
-                updateState(DaikinBindingConstants.CHANNEL_AC_SPECIALMODE,
-                        new StringType(controlInfo.specialMode.name()));
+        updateState(DaikinBindingConstants.CHANNEL_AC_SPECIALMODE, new StringType(controlInfo.specialMode.name()));
 
-                if (controlInfo.specialMode.isUndefined()) {
-                    updateState(DaikinBindingConstants.CHANNEL_AC_SPECIALMODE_POWERFUL, UnDefType.UNDEF);
-                } else {
-                    updateState(DaikinBindingConstants.CHANNEL_AC_SPECIALMODE_POWERFUL,
-                            controlInfo.specialMode.isPowerfulActive() ? OnOffType.ON : OnOffType.OFF);
-                }
+        if (controlInfo.specialMode.isUndefined()) {
+            updateState(DaikinBindingConstants.CHANNEL_AC_SPECIALMODE_POWERFUL, UnDefType.UNDEF);
+        } else {
+            updateState(DaikinBindingConstants.CHANNEL_AC_SPECIALMODE_POWERFUL,
+                    controlInfo.specialMode.isPowerfulActive() ? OnOffType.ON : OnOffType.OFF);
+        }
 
+        SensorInfo sensorInfo = webTargets.getSensorInfo();
+        updateTemperatureChannel(DaikinBindingConstants.CHANNEL_INDOOR_TEMP, sensorInfo.indoortemp);
+
+        updateTemperatureChannel(DaikinBindingConstants.CHANNEL_OUTDOOR_TEMP, sensorInfo.outdoortemp);
+
+        if (sensorInfo.indoorhumidity.isPresent()) {
+            updateState(DaikinBindingConstants.CHANNEL_HUMIDITY, new DecimalType(sensorInfo.indoorhumidity.get()));
+        } else {
+            updateState(DaikinBindingConstants.CHANNEL_HUMIDITY, UnDefType.UNDEF);
+        }
+
+        if (sensorInfo.compressorfrequency.isPresent()) {
+            updateState(DaikinBindingConstants.CHANNEL_CMP_FREQ, new DecimalType(sensorInfo.compressorfrequency.get()));
+        } else {
+            updateState(DaikinBindingConstants.CHANNEL_CMP_FREQ, UnDefType.UNDEF);
+        }
+
+        try {
+            EnergyInfoYear energyInfoYear = webTargets.getEnergyInfoYear();
+
+            if (energyInfoYear.energyHeatingThisYear.isPresent()) {
+                updateEnergyYearChannel(DaikinBindingConstants.CHANNEL_ENERGY_HEATING_CURRENTYEAR_PREFIX,
+                        energyInfoYear.energyHeatingThisYear);
             }
-
-            SensorInfo sensorInfo = webTargets.getSensorInfo();
-            if (sensorInfo != null) {
-                updateTemperatureChannel(DaikinBindingConstants.CHANNEL_INDOOR_TEMP, sensorInfo.indoortemp);
-
-                updateTemperatureChannel(DaikinBindingConstants.CHANNEL_OUTDOOR_TEMP, sensorInfo.outdoortemp);
-
-                if (sensorInfo.indoorhumidity.isPresent()) {
-                    updateState(DaikinBindingConstants.CHANNEL_HUMIDITY,
-                            new DecimalType(sensorInfo.indoorhumidity.get()));
-                } else {
-                    updateState(DaikinBindingConstants.CHANNEL_HUMIDITY, UnDefType.UNDEF);
-                }
-
-                if (sensorInfo.compressorfrequency.isPresent()) {
-                    updateState(DaikinBindingConstants.CHANNEL_CMP_FREQ,
-                            new DecimalType(sensorInfo.compressorfrequency.get()));
-                } else {
-                    updateState(DaikinBindingConstants.CHANNEL_CMP_FREQ, UnDefType.UNDEF);
-                }
-
+            if (energyInfoYear.energyCoolingThisYear.isPresent()) {
+                updateEnergyYearChannel(DaikinBindingConstants.CHANNEL_ENERGY_COOLING_CURRENTYEAR_PREFIX,
+                        energyInfoYear.energyCoolingThisYear);
             }
+        } catch (Exception e) {
 
-            try {
-                EnergyInfoYear energyInfoYear = webTargets.getEnergyInfoYear();
-
-                if (energyInfoYear.energyHeatingThisYear.isPresent()) {
-                    updateEnergyYearChannel(DaikinBindingConstants.CHANNEL_ENERGY_HEATING_CURRENTYEAR_PREFIX,
-                            energyInfoYear.energyHeatingThisYear);
-                }
-                if (energyInfoYear.energyCoolingThisYear.isPresent()) {
-                    updateEnergyYearChannel(DaikinBindingConstants.CHANNEL_ENERGY_COOLING_CURRENTYEAR_PREFIX,
-                            energyInfoYear.energyCoolingThisYear);
-                }
-            } catch (Exception e) {
-
-                // Suppress any error if power info is not supported.
-                logger.debug("getEnergyInfoYear() error: {}", e.getMessage());
-            }
+            // Suppress any error if power info is not supported.
+            logger.debug("getEnergyInfoYear() error: {}", e.getMessage());
         }
     }
 
@@ -163,6 +153,10 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
 
     @Override
     protected void changePower(boolean power) throws DaikinCommunicationException {
+        DaikinWebTargets webTargets = this.webTargets;
+        if (webTargets == null) {
+            return;
+        }
         ControlInfo info = webTargets.getControlInfo();
         info.power = power;
         webTargets.setControlInfo(info);
@@ -170,6 +164,10 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
 
     @Override
     protected void changeSetPoint(double newTemperature) throws DaikinCommunicationException {
+        DaikinWebTargets webTargets = this.webTargets;
+        if (webTargets == null) {
+            return;
+        }
         ControlInfo info = webTargets.getControlInfo();
         info.temp = Optional.of(newTemperature);
         webTargets.setControlInfo(info);
@@ -177,6 +175,10 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
 
     @Override
     protected void changeMode(String mode) throws DaikinCommunicationException {
+        DaikinWebTargets webTargets = this.webTargets;
+        if (webTargets == null) {
+            return;
+        }
         Mode newMode;
         try {
             newMode = Mode.valueOf(mode);
@@ -191,6 +193,10 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
 
     @Override
     protected void changeFanSpeed(String fanSpeed) throws DaikinCommunicationException {
+        DaikinWebTargets webTargets = this.webTargets;
+        if (webTargets == null) {
+            return;
+        }
         FanSpeed newSpeed;
         try {
             newSpeed = FanSpeed.valueOf(fanSpeed);
@@ -204,6 +210,10 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
     }
 
     protected void changeFanDir(String fanDir) throws DaikinCommunicationException {
+        DaikinWebTargets webTargets = this.webTargets;
+        if (webTargets == null) {
+            return;
+        }
         FanMovement newMovement;
         try {
             newMovement = FanMovement.valueOf(fanDir);
@@ -223,6 +233,10 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
      * @throws DaikinCommunicationException
      */
     protected boolean changeSpecialModePowerful(boolean powerfulMode) throws DaikinCommunicationException {
+        DaikinWebTargets webTargets = this.webTargets;
+        if (webTargets == null) {
+            return false;
+        }
 
         return webTargets.setSpecialMode(SpecialModeKind.POWERFUL, powerfulMode);
     }
@@ -234,14 +248,13 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
      * @param maybePower
      */
     protected void updateEnergyYearChannel(String channelPrefix, Optional<Integer[]> maybePower) {
-        IntStream.range(1, 13).forEach(
-                i -> updateState(String.format(DaikinBindingConstants.CHANNEL_ENERGY_STRING_FORMAT, channelPrefix, i),
-                        maybePower.<State>map(
-                                t -> new QuantityType<>(new DecimalType(BigDecimal.valueOf(t[i - 1].longValue(), 1)),
-                                        SmartHomeUnits.KILOWATT_HOUR))
-                                .orElse(UnDefType.UNDEF))
+        IntStream.range(1, 13)
+                .forEach(i -> updateState(
+                        String.format(DaikinBindingConstants.CHANNEL_ENERGY_STRING_FORMAT, channelPrefix, i),
+                        maybePower.<State>map(t -> new QuantityType<>(BigDecimal.valueOf(t[i - 1].longValue(), 1),
+                                SmartHomeUnits.KILOWATT_HOUR)).orElse(UnDefType.UNDEF))
 
-        );
+                );
 
     }
 
@@ -251,6 +264,10 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
             return;
         }
         try {
+            DaikinWebTargets webTargets = this.webTargets;
+            if (webTargets == null) {
+                return;
+            }
             webTargets.registerUuid(key);
         } catch (Exception e) {
             // suppress exceptions

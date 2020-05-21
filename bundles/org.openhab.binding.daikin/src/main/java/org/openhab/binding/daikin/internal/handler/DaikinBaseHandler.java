@@ -203,8 +203,8 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
     }
 
     protected void updateTemperatureChannel(String channel, Optional<Double> maybeTemperature) {
-        updateState(channel, maybeTemperature.<State>map(t -> new QuantityType<>(new DecimalType(t), SIUnits.CELSIUS))
-                .orElse(UnDefType.UNDEF));
+        updateState(channel,
+                maybeTemperature.<State>map(t -> new QuantityType<>(t, SIUnits.CELSIUS)).orElse(UnDefType.UNDEF));
     }
 
     /**

@@ -182,13 +182,13 @@
 	</channel-type>
 	<channel-type id="acunit-specialmode" advanced="true">
 		<item-type>String</item-type>
-		<label>Special mode</label>
+		<label>Special Mode</label>
 		<description>Current special mode</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 	<channel-type id="acunit-specialmode-powerful" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Powerful mode</label>
+		<label>Powerful Mode</label>
 		<description>Powerful mode switch</description>
 	</channel-type>
 	<channel-type id="acunit-energyheatingcurrentyear-1" advanced="true">
