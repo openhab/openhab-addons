@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.mqtt.generic.tools;
 
+import java.io.UnsupportedEncodingException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
@@ -30,8 +31,9 @@ import org.eclipse.smarthome.io.transport.mqtt.MqttMessageSubscriber;
  */
 @NonNullByDefault
 public class WaitForTopicValue {
-    private CompletableFuture<String> future = new CompletableFuture<>();
+    private final CompletableFuture<String> future = new CompletableFuture<>();
     private final CompletableFuture<Boolean> subscribeFuture;
+    private final CompletableFuture<String> composeFuture;
 
     /**
      * Creates an a instance.
@@ -44,13 +46,19 @@ public class WaitForTopicValue {
     public WaitForTopicValue(MqttBrokerConnection connection, String topic)
             throws InterruptedException, ExecutionException {
         final MqttMessageSubscriber mqttMessageSubscriber = (t, payload) -> {
-            future.complete(new String(payload));
+            try {
+                future.complete(new String(payload, "UTF-8"));
+            } catch (UnsupportedEncodingException e1) {
+                future.complete(new String(payload));
+            }
         };
         future.whenComplete((r, e) -> {
             connection.unsubscribe(topic, mqttMessageSubscriber);
         });
 
         subscribeFuture = connection.subscribe(topic, mqttMessageSubscriber);
+
+        composeFuture = subscribeFuture.thenCompose(b -> future);
     }
 
     /**
@@ -68,7 +76,7 @@ public class WaitForTopicValue {
      */
     public @Nullable String waitForTopicValue(int timeoutInMS) {
         try {
-            return subscribeFuture.thenCompose(b -> future).get(timeoutInMS, TimeUnit.MILLISECONDS);
+            return composeFuture.get(timeoutInMS, TimeUnit.MILLISECONDS);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             return null;
         }
@@ -89,6 +97,6 @@ public class WaitForTopicValue {
      */
     public CompletableFuture<String> waitForTopicValueAsync(ScheduledExecutorService scheduler, int timeoutInMS) {
         scheduler.schedule(this::timeout, timeoutInMS, TimeUnit.MILLISECONDS);
-        return subscribeFuture.thenCompose(b -> future);
+        return composeFuture;
     }
 }
