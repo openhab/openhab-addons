@@ -26,7 +26,6 @@ import java.util.stream.Stream;
 
 import javax.measure.Unit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
@@ -97,7 +96,7 @@ public abstract class AbstractOpenWeatherMapHandler extends BaseThingHandler {
                 OpenWeatherMapLocationConfiguration config = getConfigAs(OpenWeatherMapLocationConfiguration.class);
 
                 boolean configValid = true;
-                if (StringUtils.trimToNull(config.getLocation()) == null) {
+                if (config.getLocation() == null || config.getLocation().trim().isEmpty()) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "@text/offline.conf-error-missing-location");
                     configValid = false;
