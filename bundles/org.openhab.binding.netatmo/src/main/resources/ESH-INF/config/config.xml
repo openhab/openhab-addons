@@ -55,6 +55,12 @@
 			<default>false</default>
 		</parameter>
 
+		<parameter name="readPresence" type="boolean" required="true">
+			<label>Access Presence Camera</label>
+			<description>Read and Access Presence camera's data.</description>
+			<default>false</default>
+		</parameter>
+
 		<parameter name="webHookUrl" type="text" required="false">
 			<label>Webhook Address</label>
 			<description>Protocol, public IP and port to access OH2 server from Internet.</description>
@@ -142,7 +148,7 @@
 		</parameter>
 	</config-description>
 
-	<config-description uri="thing-type:netatmo:nawelcomecamera">
+	<config-description uri="thing-type:netatmo:camera">
 		<parameter name="id" type="text" pattern="([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})">
 			<label>Camera ID</label>
 			<description>Camera MAC Address</description>

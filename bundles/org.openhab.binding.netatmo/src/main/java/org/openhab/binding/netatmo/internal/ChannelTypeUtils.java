@@ -93,7 +93,11 @@ public class ChannelTypeUtils {
     }
 
     public static State toOnOffType(@Nullable Integer value) {
-        return value != null ? (value == 1 ? OnOffType.ON : OnOffType.OFF) : UnDefType.NULL;
+        return value != null ? (value == 1 ? OnOffType.ON : OnOffType.OFF) : UnDefType.UNDEF;
+    }
+
+    public static State toOnOffType(@Nullable Boolean value) {
+        return value != null ? (value ? OnOffType.ON : OnOffType.OFF) : UnDefType.UNDEF;
     }
 
     public static State toQuantityType(@Nullable Float value, Unit<?> unit) {

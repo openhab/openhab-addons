@@ -4,7 +4,8 @@ The Netatmo binding integrates the following Netatmo products:
 
 - *Personal Weather Station*. Reports temperature, humidity, air pressure, carbon dioxide concentration in the air, as well as the ambient noise level.
 - *Thermostat*. Reports ambient temperature, allow to check target temperature, consult and change furnace heating status.
-- *Welcome Camera*. Reports last event and persons at home, consult picture and video from event/camera.
+- *Indoor Camera / Welcome*. Reports last event and persons at home, consult picture and video from event/camera.
+- *Outdoor Camera / Presence*. Consult picture and video from camera. The last event is also available, but without content yet, this will get enhanced later.
 
 See http://www.netatmo.com/ for details on their product.
 
@@ -33,7 +34,7 @@ Once you will get needed informations from the Netatmo API, you will be able to 
 E.g.
 
 ```
-Bridge netatmo:netatmoapi:home [ clientId="<CLIENT_ID>", clientSecret="<CLIENT_SECRET>", username = "<USERNAME>", password = "<PASSWORD>", readStation=true|false, readHealthyHomeCoach=true|false, readThermostat=true|false, readWelcome=true|false] {
+Bridge netatmo:netatmoapi:home [ clientId="<CLIENT_ID>", clientSecret="<CLIENT_SECRET>", username = "<USERNAME>", password = "<PASSWORD>", readStation=true|false, readHealthyHomeCoach=true|false, readThermostat=true|false, readWelcome=true|false, readPresence=true|false] {
     Thing NAMain    inside  [ id="aa:aa:aa:aa:aa:aa" ]
     Thing NAModule1 outside  [ id="yy:yy:yy:yy:yy:yy", parentId="aa:aa:aa:aa:aa:aa" ]
     Thing NHC       homecoach  [ id="cc:cc:cc:cc:cc:cc", [refreshInterval=60000] ]
@@ -469,9 +470,14 @@ All these channels except Sp_Temperature, SetpointMode and Planning are read onl
 All these channels are read only.
 
 
-### Welcome Camera
+### Welcome and Presence Camera
 
-**Supported channels for the Camera thing:**
+All these channels are read only.
+
+Warning : the URL of the live snapshot is a fixed URL so the value of the channel cameraLivePictureUrl / welcomeCameraLivePictureUrl will never be updated once first set by the binding.
+So to get a refreshed picture, you need to use the refresh parameter in your sitemap image element.
+
+**Supported channels for the Welcome Camera thing:**
 
 | Channel ID                  | Item Type | Description                                              |
 |-----------------------------|-----------|----------------------------------------------------------|
@@ -483,10 +489,17 @@ All these channels are read only.
 | welcomeCameraLivePictureUrl | String    | Url of the live snapshot for this camera                 |
 | welcomeCameraLiveStreamUrl  | String    | Url of the live stream for this camera                   |
 
-All these channels are read only.
+**Supported channels for the Presence Camera thing:**
 
-Warning : the URL of the live snapshot is a fixed URL so the value of the channel welcomeCameraLivePictureUrl will never be updated once first set by the binding.
-So to get a refreshed picture, you need to use the refresh parameter in your sitemap image element.
+| Channel ID                  | Item Type | Description                                              |
+|-----------------------------|-----------|----------------------------------------------------------|
+| cameraStatus                | Switch    | State of the camera                                      |
+| cameraSdStatus              | Switch    | State of the SD card                                     |
+| cameraAlimStatus            | Switch    | State of the power connector                             |
+| cameraIsLocal               | Switch    | indicates whether the camera is on the same network than the openHAB Netatmo Binding |
+| cameraLivePicture           | Image     | Camera Live Snapshot                                     |
+| cameraLivePictureUrl        | String    | Url of the live snapshot for this camera                 |
+| cameraLiveStreamUrl         | String    | Url of the live stream for this camera                   |
 
 
 ### Welcome Person

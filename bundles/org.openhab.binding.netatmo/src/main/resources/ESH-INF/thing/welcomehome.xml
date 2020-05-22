@@ -10,7 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Welcome Home</label>
-		<description>This represents a home hosting a Welcome Camera</description>
+		<description>This represents a home hosting a camera</description>
 
 		<channels>
 			<channel id="welcomeHomeCity" typeId="homecity"></channel>

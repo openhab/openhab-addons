@@ -210,6 +210,11 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
             scopes.add("write_camera");
         }
 
+        if (configuration.readPresence) {
+            scopes.add("read_presence");
+            scopes.add("access_presence");
+        }
+
         return String.join(" ", scopes);
     }
 
@@ -348,7 +353,9 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
 
     private String getWebHookURI() {
         String webHookURI = null;
-        if (configuration.webHookUrl != null && configuration.readWelcome && webHookServlet != null) {
+        if (configuration.webHookUrl != null
+                && (configuration.readWelcome || configuration.readPresence)
+                && webHookServlet != null) {
             webHookURI = configuration.webHookUrl + webHookServlet.getPath();
         }
         return webHookURI;
