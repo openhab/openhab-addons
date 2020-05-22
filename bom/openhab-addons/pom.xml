@@ -18,6 +18,11 @@
   <dependencies>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.nest</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.persistence.dynamodb</artifactId>
       <version>${project.version}</version>
     </dependency>
