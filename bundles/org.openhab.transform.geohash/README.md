@@ -21,7 +21,7 @@ when
     Item YourTriggeringItem changed
 then
     var geohash = transform("GEOHASH","6", newState.toString)
-    yourFormattedItem.sendCommand(formatted.toString) 
+    yourFormattedItem.sendCommand(geohash.toString) 
 end
 ```
 
