@@ -13,9 +13,7 @@
 package org.openhab.binding.enigma2.internal.discovery;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.net.InetAddress;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -23,7 +21,6 @@ import java.util.stream.Stream;
 
 import javax.jmdns.ServiceInfo;
 
-import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
@@ -55,32 +52,31 @@ public class Enigma2DiscoveryParticipant implements MDNSDiscoveryParticipant {
     }
 
     @Override
-    @Nullable
-    public DiscoveryResult createResult(ServiceInfo info) {
+    public @Nullable DiscoveryResult createResult(ServiceInfo info) {
         logger.debug("ServiceInfo {}", info);
-        Validate.notNull(info);
         String ipAddress = getIPAddress(info);
         if (ipAddress != null && isEnigma2Device(ipAddress)) {
             logger.debug("Enigma2 device discovered: IP-Adress={}, name={}", ipAddress, info.getName());
             ThingUID uid = getThingUID(info);
-            Validate.notNull(uid);
-            Map<String, Object> properties = new HashMap<>();
-            properties.put(Enigma2BindingConstants.CONFIG_HOST, ipAddress);
-            properties.put(Enigma2BindingConstants.CONFIG_REFRESH, new BigDecimal(5));
-            properties.put(Enigma2BindingConstants.CONFIG_TIMEOUT, new BigDecimal(5));
-            return DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(info.getName()).build();
+            if(uid != null) {
+                Map<String, Object> properties = new HashMap<>();
+                properties.put(Enigma2BindingConstants.CONFIG_HOST, ipAddress);
+                properties.put(Enigma2BindingConstants.CONFIG_REFRESH, 5);
+                properties.put(Enigma2BindingConstants.CONFIG_TIMEOUT, 5);
+                return DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(info.getName()).build();
+            }
         }
         return null;
     }
 
     @Override
-    @Nullable
-    public ThingUID getThingUID(ServiceInfo info) {
+    public @Nullable ThingUID getThingUID(ServiceInfo info) {
         logger.debug("ServiceInfo {}", info);
-        Validate.notNull(info);
         String ipAddress = getIPAddress(info);
-        Validate.notNull(ipAddress);
-        return new ThingUID(Enigma2BindingConstants.THING_TYPE_DEVICE, ipAddress.replace(".", "_"));
+        if( ipAddress != null) {
+            return new ThingUID(Enigma2BindingConstants.THING_TYPE_DEVICE, ipAddress.replace(".", "_"));
+        }
+        return null;
     }
 
     @Override
@@ -91,17 +87,15 @@ public class Enigma2DiscoveryParticipant implements MDNSDiscoveryParticipant {
     private boolean isEnigma2Device(String ipAddress) {
         try {
             return getEnigma2HttpClient().get("http://" + ipAddress + "/web/about").contains("e2enigmaversion");
-        } catch (IOException e) {
+        } catch (IOException ignore) {
             return false;
         }
     }
 
-    @Nullable
-    private String getIPAddress(ServiceInfo info) {
+    private @Nullable String getIPAddress(ServiceInfo info) {
         InetAddress[] addresses = info.getInet4Addresses();
         if (addresses.length > 1) {
-            logger.info("Enigma2 device {} reports multiple addresses - using the first one! {}", info.getName(),
-                    Arrays.toString(addresses));
+            logger.debug("Enigma2 device {} reports multiple addresses - using the first one! {}", info.getName(), addresses);
         }
         return Stream.of(addresses).findFirst().map(InetAddress::getHostAddress).orElse(null);
     }

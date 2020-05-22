@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 @NonNullByDefault
 public class Enigma2HttpClient {
     public static final Pattern PATTERN = Pattern.compile("[^\\u0009\\u000A\\u000D\\u0020-\\uD7FF\\uE000-\\uFFFD\\u10000-\\u10FFF]+");
-    private int timeout;
+    private final int timeout;
 
     public Enigma2HttpClient(int timeout) {
         this.timeout = timeout;

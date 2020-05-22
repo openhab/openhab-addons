@@ -23,7 +23,6 @@ import org.openhab.binding.enigma2.internal.Enigma2HttpClient;
 
 import javax.jmdns.ServiceInfo;
 
-import java.math.BigDecimal;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 
@@ -82,9 +81,9 @@ public class Enigma2DiscoveryParticipantTest {
         assertThat(discoveryResult.getProperties(), is(notNullValue()));
         assertThat(discoveryResult.getProperties(), hasEntry(Enigma2BindingConstants.CONFIG_HOST, "192.168.10.3"));
         assertThat(discoveryResult.getProperties(),
-                hasEntry(Enigma2BindingConstants.CONFIG_REFRESH, new BigDecimal(5)));
+                hasEntry(Enigma2BindingConstants.CONFIG_REFRESH, 5));
         assertThat(discoveryResult.getProperties(),
-                hasEntry(Enigma2BindingConstants.CONFIG_TIMEOUT, new BigDecimal(5)));
+                hasEntry(Enigma2BindingConstants.CONFIG_TIMEOUT, 5));
     }
 
     @Test

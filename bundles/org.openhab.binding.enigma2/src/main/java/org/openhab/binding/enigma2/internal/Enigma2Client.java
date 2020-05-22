@@ -75,13 +75,15 @@ public class Enigma2Client {
     private int volume = 0;
     private boolean mute;
     private boolean online;
-    private boolean initialized = false;
-    private boolean asking = false;
+    private boolean initialized;
+    private boolean asking;
     private LocalDateTime lastAnswerTime = LocalDateTime.of(2020, 1, 1, 0, 0); // Date in the past
-    private Enigma2HttpClient enigma2HttpClient;
+    private final Enigma2HttpClient enigma2HttpClient;
+    private final DocumentBuilderFactory factory;
 
     public Enigma2Client(String host, @Nullable String user, @Nullable String password, int requestTimeout) {
         this.enigma2HttpClient = new Enigma2HttpClient(requestTimeout);
+        this.factory = DocumentBuilderFactory.newInstance();
         if (StringUtils.isNotEmpty(user) && StringUtils.isNotEmpty(password)) {
             this.host = "http://" + user + ":" + password + "@" + host;
         } else {
@@ -152,7 +154,6 @@ public class Enigma2Client {
         try {
             Optional<String> xml = transmit(path);
             if(xml.isPresent()) {
-                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder builder = factory.newDocumentBuilder();
                 return Optional.ofNullable(builder.parse(new InputSource(new StringReader(xml.get()))));
             }
