@@ -148,17 +148,18 @@ public class FreeboxDiscoveryService extends AbstractDiscoveryService implements
             // Network devices
             for (FreeboxLanHost host : lanHosts) {
                 String mac = host.getMAC();
+                String primaryName = host.getPrimaryName();
+                String vendorName = host.getVendorName();
                 if (mac != null && !mac.isEmpty()) {
                     if (discoverNetDevice) {
                         String uid = mac.replaceAll("[^A-Za-z0-9_]", "_");
                         thingUID = new ThingUID(FreeboxBindingConstants.FREEBOX_THING_TYPE_NET_DEVICE, bridge, uid);
-                        String name = (host.getPrimaryName() == null || host.getPrimaryName().isEmpty())
-                                ? ("Freebox Network Device " + mac)
-                                : host.getPrimaryName();
+                        String name = (primaryName == null || primaryName.isEmpty()) ? ("Freebox Network Device " + mac)
+                                : primaryName;
                         logger.trace("Adding new Freebox Network Device {} to inbox", thingUID);
                         Map<String, Object> properties = new HashMap<>(1);
-                        if (host.getVendorName() != null && !host.getVendorName().isEmpty()) {
-                            properties.put(Thing.PROPERTY_VENDOR, host.getVendorName());
+                        if (vendorName != null && !vendorName.isEmpty()) {
+                            properties.put(Thing.PROPERTY_VENDOR, vendorName);
                         }
                         properties.put(FreeboxNetDeviceConfiguration.MAC_ADDRESS, mac);
                         discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
@@ -175,13 +176,13 @@ public class FreeboxDiscoveryService extends AbstractDiscoveryService implements
                                 thingUID = new ThingUID(FreeboxBindingConstants.FREEBOX_THING_TYPE_NET_INTERFACE,
                                         bridge, uid);
                                 String name = addr;
-                                if (host.getPrimaryName() != null && !host.getPrimaryName().isEmpty()) {
-                                    name += " (" + (host.getPrimaryName() + ")");
+                                if (primaryName != null && !primaryName.isEmpty()) {
+                                    name += " (" + (primaryName + ")");
                                 }
                                 logger.trace("Adding new Freebox Network Interface {} to inbox", thingUID);
                                 Map<String, Object> properties = new HashMap<>(1);
-                                if (host.getVendorName() != null && !host.getVendorName().isEmpty()) {
-                                    properties.put(Thing.PROPERTY_VENDOR, host.getVendorName());
+                                if (vendorName != null && !vendorName.isEmpty()) {
+                                    properties.put(Thing.PROPERTY_VENDOR, vendorName);
                                 }
                                 properties.put(FreeboxNetInterfaceConfiguration.IP_ADDRESS, addr);
                                 discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
