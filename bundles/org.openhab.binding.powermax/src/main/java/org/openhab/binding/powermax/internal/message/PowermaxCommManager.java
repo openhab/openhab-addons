@@ -23,7 +23,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.util.HexUtils;
@@ -107,7 +106,7 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
         this.forceStandardMode = forceStandardMode;
         this.autoSyncTime = autoSyncTime;
         this.panelSettings = new PowermaxPanelSettings(panelType);
-        String serialPort = StringUtils.isNotBlank(sPort) ? sPort : null;
+        String serialPort = (sPort != null && !sPort.trim().isEmpty()) ? sPort.trim() : null;
         if (serialPort != null) {
             connector = new PowermaxSerialConnector(serialPortManager, serialPort, DEFAULT_BAUD_RATE);
         } else {
@@ -131,7 +130,7 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
         this.forceStandardMode = forceStandardMode;
         this.autoSyncTime = autoSyncTime;
         this.panelSettings = new PowermaxPanelSettings(panelType);
-        String ipAddress = StringUtils.isNotBlank(ip) ? ip : null;
+        String ipAddress = (ip != null && !ip.trim().isEmpty()) ? ip.trim() : null;
         int tcpPort = (port > 0) ? port : DEFAULT_TCP_PORT;
         if (ipAddress != null) {
             connector = new PowermaxTcpConnector(ipAddress, tcpPort, TCP_CONNECTION_TIMEOUT);
