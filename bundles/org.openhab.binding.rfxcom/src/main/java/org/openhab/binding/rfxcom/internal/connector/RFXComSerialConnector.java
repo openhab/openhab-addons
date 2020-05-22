@@ -108,6 +108,7 @@ public class RFXComSerialConnector extends RFXComBaseConnector implements Serial
             try {
                 out.close();
             } catch (IOException e) {
+                logger.debug("Error while closing the out stream: {}", e.getMessage());
             }
         }
         if (in != null) {
@@ -115,6 +116,7 @@ public class RFXComSerialConnector extends RFXComBaseConnector implements Serial
             try {
                 in.close();
             } catch (IOException e) {
+                logger.debug("Error while closing the in stream: {}", e.getMessage());
             }
         }
 

@@ -71,6 +71,7 @@ public class RFXComTcpConnector extends RFXComBaseConnector {
             try {
                 out.close();
             } catch (IOException e) {
+                logger.debug("Error while closing the out stream: {}", e.getMessage());
             }
         }
         if (in != null) {
@@ -78,6 +79,7 @@ public class RFXComTcpConnector extends RFXComBaseConnector {
             try {
                 in.close();
             } catch (IOException e) {
+                logger.debug("Error while closing the in stream: {}", e.getMessage());
             }
         }
 
@@ -86,6 +88,7 @@ public class RFXComTcpConnector extends RFXComBaseConnector {
             try {
                 socket.close();
             } catch (IOException e) {
+                logger.debug("Error while closing the socket: {}", e.getMessage());
             }
         }
 
