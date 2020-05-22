@@ -31,4 +31,9 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="scanner">
+		<label>Scanner</label>
+		<description>Scanner Usage Information</description>
+	</channel-group-type>
+
 </thing:thing-descriptions>

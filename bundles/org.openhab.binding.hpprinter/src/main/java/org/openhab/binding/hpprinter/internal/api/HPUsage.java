@@ -44,6 +44,12 @@ public class HPUsage {
     private float inkYellowMarking;
     private float inkColorMarking;
 
+    private int scanAdfCount;
+    private int scanFlatbedCount;
+    private int scanToEmailCount;
+    private int scanToFolderCount;
+    private int scanToHostCount;
+
     public HPUsage() {
     }
 
@@ -147,6 +153,32 @@ public class HPUsage {
                 .getElementsByTagName("dd:TotalFrontPanelCancelPresses");
         if (frontpanelCancelCount.getLength() > 0)
             this.frontpanelCancelCount = Integer.parseInt(frontpanelCancelCount.item(0).getTextContent());
+
+        
+        //Scanner
+        NodeList scanSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:ScanApplicationSubunit");
+        Element currScannerSubUnit = (Element) scanSubUnit.item(0);
+
+        NodeList totalAdf = currScannerSubUnit.getElementsByTagName("dd:AdfImages");
+        if (totalAdf.getLength() > 0)
+            this.scanAdfCount = Integer.parseInt(totalAdf.item(0).getTextContent());
+
+        NodeList totalFlatbed = currScannerSubUnit.getElementsByTagName("dd:FlatbedImages");
+        if (totalFlatbed.getLength() > 0)
+            this.scanFlatbedCount = Integer.parseInt(totalFlatbed.item(0).getTextContent());
+
+        NodeList sentToEmail = currScannerSubUnit.getElementsByTagName("dd:ImagesSentToEmail");
+        if (sentToEmail.getLength() > 0)
+            this.scanToEmailCount = Integer.parseInt(sentToEmail.item(0).getTextContent());
+
+        NodeList sendToFolder = currScannerSubUnit.getElementsByTagName("dd:ImagesSentToFolder");
+        if (sendToFolder.getLength() > 0)
+            this.scanToFolderCount = Integer.parseInt(sendToFolder.item(0).getTextContent());
+
+        NodeList scanToHost = currScannerSubUnit.getElementsByTagName("dd:ScanToHostImages");
+        if (scanToHost.getLength() > 0)
+            this.scanToHostCount = Integer.parseInt(scanToHost.item(0).getTextContent());
+
     }
 
     public int getFrontPanelCancelCount() {
@@ -215,5 +247,25 @@ public class HPUsage {
 
     public float getInkColorMarking() {
         return inkColorMarking;
+    }
+
+    public int getScanAdfCount() {
+        return scanAdfCount;
+    }
+
+    public int getScanFlatbedCount() {
+        return scanFlatbedCount;
+    }
+
+    public int getScanToEmailCount() {
+        return scanToEmailCount;
+    }
+
+    public int getScanToFolderCount() {
+        return scanToFolderCount;
+    }
+
+    public int getScanToHostCount() {
+        return scanToHostCount;
     }
 }

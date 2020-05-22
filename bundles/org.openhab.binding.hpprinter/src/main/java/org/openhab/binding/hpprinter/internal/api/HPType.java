@@ -33,6 +33,11 @@ public class HPType {
     private boolean subscriptionImpressions;
     private boolean frontPanelCancel;
     private boolean cumuMarking;
+    private boolean scanAdf;
+    private boolean scanFlatbed;
+    private boolean scanToHost;
+    private boolean scanToEmail;
+    private boolean scanToFolder;
 
     public enum PrinterType {
         UNKNOWN,
@@ -78,28 +83,107 @@ public class HPType {
             }
         }
 
-        NodeList subUnit = document.getDocumentElement().getElementsByTagName("pudyn:PrinterSubunit");
-        Element currSubUnit = (Element) subUnit.item(0);
+        NodeList printerSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:PrinterSubunit");
+        Element currPrinterSubUnit = (Element) printerSubUnit.item(0);
 
-        if (currSubUnit.getElementsByTagName("dd:JamEvents").getLength() > 0) {
+        if (currPrinterSubUnit.getElementsByTagName("dd:JamEvents").getLength() > 0) {
             jamEvents = true;
         }
 
-        if (currSubUnit.getElementsByTagName("dd:MispickEvents").getLength() > 0) {
+        if (currPrinterSubUnit.getElementsByTagName("dd:MispickEvents").getLength() > 0) {
             mispickEvents = true;
         }
 
-        if (currSubUnit.getElementsByTagName("pudyn:SubscriptionImpressions").getLength() > 0) {
+        if (currPrinterSubUnit.getElementsByTagName("pudyn:SubscriptionImpressions").getLength() > 0) {
             subscriptionImpressions = true;
         }
 
-        if (currSubUnit.getElementsByTagName("dd:TotalFrontPanelCancelPresses").getLength() > 0) {
+        if (currPrinterSubUnit.getElementsByTagName("dd:TotalFrontPanelCancelPresses").getLength() > 0) {
             frontPanelCancel = true;
         }
+
+        NodeList scannerSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:ScanApplicationSubunit");
+        Element currScannerSubUnit = (Element) scannerSubUnit.item(0);
+
+        if (currScannerSubUnit.getElementsByTagName("dd:AdfImages").getLength() > 0) {
+            scanAdf = true;
+        }
+
+        if (currScannerSubUnit.getElementsByTagName("dd:FlatbedImages").getLength() > 0) {
+            scanFlatbed = true;
+        }
+
+        if (currScannerSubUnit.getElementsByTagName("dd:ImagesSentToEmail").getLength() > 0) {
+            scanToEmail = true;
+        }
+
+        if (currScannerSubUnit.getElementsByTagName("dd:ImagesSentToFolder").getLength() > 0) {
+            scanToFolder = true;
+        }
+
+        if (currScannerSubUnit.getElementsByTagName("dd:ScanToHostImages").getLength() > 0) {
+            scanToHost = true;
+        }
+
     }
 
     public PrinterType getType() {
         return printerType;
+    }
+
+    /**
+     * Printer data contains Scan to Email.
+     *
+     * pudyn:ProductUsageDyn -> pudyn:ScanApplicationSubunit -> dd:ImagesSentToEmail
+     *
+     * @return {boolean} True if supported.
+     */
+    public boolean hasScanToEmail() {
+        return scanToEmail;
+    }
+
+    /**
+     * Printer data contains Scan to Folder.
+     *
+     * pudyn:ProductUsageDyn -> pudyn:ScanApplicationSubunit -> dd:ImagesSentToFolder
+     *
+     * @return {boolean} True if supported.
+     */
+    public boolean hasScanToFolder() {
+        return scanToFolder;
+    }
+
+    /**
+     * Printer data contains Scan to Host.
+     *
+     * pudyn:ProductUsageDyn -> pudyn:ScanApplicationSubunit -> dd:ScanToHostImages
+     *
+     * @return {boolean} True if supported.
+     */
+    public boolean hasScanToHost() {
+        return scanToHost;
+    }
+
+    /**
+     * Printer data contains Scanner Automatic Document Feeder.
+     *
+     * pudyn:ProductUsageDyn -> pudyn:ScanApplicationSubunit -> dd:AdfImages
+     *
+     * @return {boolean} True if supported.
+     */
+    public boolean hasScannerADF() {
+        return scanAdf;
+    }
+
+    /**
+     * Printer data contains Scanner Flatbed.
+     *
+     * pudyn:ProductUsageDyn -> pudyn:ScanApplicationSubunit -> dd:FlatbedImages
+     *
+     * @return {boolean} True if supported.
+     */
+    public boolean hasScannerFlatbed() {
+        return scanFlatbed;
     }
 
     /**

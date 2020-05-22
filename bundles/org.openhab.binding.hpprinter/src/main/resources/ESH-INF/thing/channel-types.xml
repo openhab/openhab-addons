@@ -17,13 +17,6 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="pagesRemain">
-		<item-type>String</item-type>
-		<label>Pages Remaining</label>
-		<description>Shows the estimated amount of pages remaining</description>
-		<state readOnly="true" pattern="%s"/>
-	</channel-type>
-
 	<channel-type id="cumlMarkingUsed">
 		<item-type>Number:Volume</item-type>
 		<label>Cumulative Marking Used</label>

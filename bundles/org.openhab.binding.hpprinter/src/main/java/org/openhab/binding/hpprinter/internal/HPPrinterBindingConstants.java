@@ -18,6 +18,8 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeUID;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 
 /**
  * The {@link HPPrinterBindingConstants} class defines common constants, which are
@@ -37,8 +39,14 @@ public class HPPrinterBindingConstants {
             .collect(Collectors.toSet());
 
     // ********** Channel Types **********
-    public static final String CHAN_TYPE_CUMLMARK = "Number:Volume";
-    public static final String CHAN_TYPE_INK = "Number:Dimensionless";
+    public static ChannelTypeUID CHAN_TYPE_TOTALS = new ChannelTypeUID("hpprinter:totals");
+    public static ChannelTypeUID CHAN_TYPE_MARKING = new ChannelTypeUID("hpprinter:cumlMarkingUsed");
+    public static ChannelTypeUID CHAN_TYPE_INKLEVEL = new ChannelTypeUID("hpprinter:inkLevel");
+
+    // ********** Item Types **********
+    public static final String ITEM_TYPE_CUMLMARK = "Number:Volume";
+    public static final String ITEM_TYPE_INK = "Number:Dimensionless";
+
     // ********** List of all Channel ids **********
     public static final String CHANNEL_STATUS = "status";
 
@@ -64,7 +72,16 @@ public class HPPrinterBindingConstants {
     public static final String CHANNEL_MISPICK_EVENTS = "mispickEvents"; // Dynamic
     public static final String CHANNEL_FRONT_PANEL_CANCEL = "fpCancelCount"; // Dynamic
 
+    //Scanner
+    public static final String CHANNEL_TOTAL_ADF = "totalAdf";
+    public static final String CHANNEL_TOTAL_FLATBED = "totalFlatbed";
+    public static final String CHANNEL_TOTAL_TOEMAIL = "totalToEmail";
+    public static final String CHANNEL_TOTAL_TOFOLDER = "totalToFolder";
+    public static final String CHANNEL_TOTAL_TOHOST = "totalToHost";
+    
+    // ********** List of all Channel Groups **********
     public static final String CGROUP_INK = "ink";
     public static final String CGROUP_STATUS = "status";
     public static final String CGROUP_USAGE = "usage";
+    public static final String CGROUP_SCANNER = "scanner";
 }

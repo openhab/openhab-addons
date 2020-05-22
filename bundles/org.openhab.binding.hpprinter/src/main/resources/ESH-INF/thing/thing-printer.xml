@@ -11,6 +11,7 @@
 			<channel-group typeId="printerStatus" id="status"/>
 			<channel-group typeId="ink" id="ink"/>
 			<channel-group typeId="usageInfo" id="usage"/>
+			<channel-group typeId="scanner" id="scanner"/>
 		</channel-groups>
 		<properties>
 			<property name="vendor">HP</property>
