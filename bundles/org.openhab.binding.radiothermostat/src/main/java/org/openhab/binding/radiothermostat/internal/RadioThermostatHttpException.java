@@ -13,14 +13,14 @@
 package org.openhab.binding.radiothermostat.internal;
 
 /**
- * The {@link RadioThemostatHttpException} extends RuntimeException
+ * The {@link RadioThermostatHttpException} extends Exception
  *
  * @author Michael Lobstein - Initial contribution
  */
-public class RadioThemostatHttpException extends RuntimeException {
+public class RadioThermostatHttpException extends Exception {
     private static final long serialVersionUID = 1L;
 
-    public RadioThemostatHttpException(String errorMessage) {
+    public RadioThermostatHttpException(String errorMessage) {
         super(errorMessage);
     }
 }

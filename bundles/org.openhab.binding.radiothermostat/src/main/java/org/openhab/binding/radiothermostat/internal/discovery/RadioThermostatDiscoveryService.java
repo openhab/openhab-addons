@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.radiothermostat.internal.discovery;
 
+import static org.eclipse.jetty.http.HttpMethod.GET;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
@@ -25,18 +27,22 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.radiothermostat.internal.RadioThermostatBindingConstants;
-import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +59,7 @@ import com.google.gson.JsonParser;
  * 
  */
 
-@Component(service = DiscoveryService.class, configurationPid = "discovery.radiothermostat")
+@NonNullByDefault
 public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(RadioThermostatDiscoveryService.class);
     private static final String RADIOTHERMOSTAT_DISCOVERY_MESSAGE = "TYPE: WM-DISCOVER\r\nVERSION: 1.0\r\n\r\nservices:com.marvell.wm.system*\r\n\r\n";
@@ -61,17 +67,34 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
     private static final String SSDP_MATCH = "WM-NOTIFY";
     private static final int BACKGROUND_SCAN_INTERVAL_SECONDS = 300;
 
+    @Nullable
     private ScheduledFuture<?> scheduledFuture = null;
 
-    public RadioThermostatDiscoveryService() {
+    private final HttpClient httpClient;
+
+    public RadioThermostatDiscoveryService(HttpClient httpClient) {
         super(RadioThermostatBindingConstants.SUPPORTED_THING_TYPES_UIDS, 30, true);
+        this.httpClient = httpClient;
+        activate(null);
     }
+
+    @Override
+    protected void activate(@Nullable Map<String, @Nullable Object> configProperties) {
+        super.activate(configProperties);
+    }
+    
+    @Override
+    public void deactivate() {
+        stopBackgroundDiscovery();
+        super.deactivate();
+    }
+
 
     @Override
     protected void startBackgroundDiscovery() {
         logger.debug("Starting Background Scan");
         stopBackgroundDiscovery();
-        scheduledFuture = scheduler.scheduleAtFixedRate(this::doRunRun, 0, BACKGROUND_SCAN_INTERVAL_SECONDS,
+        scheduledFuture = scheduler.scheduleWithFixedDelay(this::doRunRun, 0, BACKGROUND_SCAN_INTERVAL_SECONDS,
                 TimeUnit.SECONDS);
     }
 
@@ -89,13 +112,13 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
     }
 
     protected synchronized void doRunRun() {
-        logger.trace("Sending SSDP discover.");
+        logger.debug("Sending SSDP discover.");
         for (int i = 0; i < 1; i++) {
             try {
                 Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
                 while (nets.hasMoreElements()) {
                     NetworkInterface ni = nets.nextElement();
-                    if (ni.isUp() && ni.supportsMulticast() && !ni.getName().matches("lo")) {
+                    if (ni.isUp() && ni.supportsMulticast() && !ni.isLoopback()) {
                         sendDiscoveryBroacast(ni);
                     }
                 }
@@ -119,8 +142,7 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
             throws UnknownHostException, SocketException, UnsupportedEncodingException {
         InetAddress m = InetAddress.getByName("239.255.255.250");
         final int port = 1900;
-        logger.trace("Sending discovery broadcast");
-        // logger.trace("Considering {}", ni.getName());
+        logger.debug("Sending discovery broadcast");
         try {
             Enumeration<InetAddress> addrs = ni.getInetAddresses();
             InetAddress a = null;
@@ -133,7 +155,7 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
                 }
             }
             if (a == null) {
-                logger.trace("no ipv4 address on {}", ni.getName());
+                logger.debug("no ipv4 address on {}", ni.getName());
                 return;
             }
 
@@ -147,7 +169,7 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
             // socket.setBroadcast(true);
             socket.setNetworkInterface(ni);
             socket.joinGroup(m);
-            logger.trace("Joined UPnP Multicast group on Interface: {}", ni.getName());
+            logger.debug("Joined UPnP Multicast group on Interface: {}", ni.getName());
             byte[] requestMessage = RADIOTHERMOSTAT_DISCOVERY_MESSAGE.getBytes("UTF-8");
             DatagramPacket datagramPacket = new DatagramPacket(requestMessage, requestMessage.length, m, port);
             socket.send(datagramPacket);
@@ -165,15 +187,15 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
                     while (!Thread.interrupted()) {
                         socket.receive(packet);
                         String response = new String(packet.getData());
-                        logger.trace("Response: {} ", response);
+                        logger.debug("Response: {} ", response);
                         if (response.contains(SSDP_MATCH)) {
-                            logger.trace("Match: {} ", response);
+                            logger.debug("Match: {} ", response);
                             parseResponse(response);
                         }
                     }
-                    logger.info("Bridge device scan interrupted");
+                    logger.debug("Bridge device scan interrupted");
                 } catch (SocketTimeoutException e) {
-                    logger.trace(
+                    logger.debug(
                             "Timed out waiting for multicast response. Presumably all devices have already responded.");
                 }
             } finally {
@@ -181,7 +203,7 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
                 socket.close();
             }
         } catch (IOException | InterruptedException e) {
-            logger.trace("got exception: {}", e.getMessage());
+            logger.debug("got exception: {}", e.getMessage());
         }
         return;
     }
@@ -215,7 +237,7 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
             }
             String key = pair[0].toLowerCase();
             String value = pair[1].trim();
-            logger.trace("key: {} value: {}.", key, value);
+            logger.debug("key: {} value: {}.", key, value);
             switch (key) {
                 case "location":
                     try {
@@ -231,10 +253,10 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
         }
         scanner.close();
 
-        logger.trace("Found thermostat, ip: {} ", ip);
+        logger.debug("Found thermostat, ip: {} ", ip);
 
         if (ip == null) {
-            logger.trace("Bad Format from thermostat");
+            logger.debug("Bad Format from thermostat");
             return;
         }
 
@@ -242,33 +264,36 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
         String sysinfo;
 
         try {
-            sysinfo = HttpUtil.executeUrl("GET", url, 15000);
+            // Run the HTTP request and get the JSON response from the thermostat
+            ContentResponse contentResponse = httpClient.newRequest(url).method(GET).timeout(20, TimeUnit.SECONDS).send();
+            sysinfo = contentResponse.getContentAsString();
             content = new JsonParser().parse(sysinfo).getAsJsonObject();
             uuid = content.get("uuid").getAsString();
-        } catch (Exception e) {
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logger.debug("Cannot get system info from thermostat {} {}", ip, e.getMessage());
             sysinfo = null;
         }
 
         try {
-            String nameinfo = HttpUtil.executeUrl("GET", url + "name", 15000);
+            ContentResponse contentResponse = httpClient.newRequest(url + "name").method(GET).timeout(20, TimeUnit.SECONDS).send();
+            String nameinfo = contentResponse.getContentAsString();
             content = new JsonParser().parse(nameinfo).getAsJsonObject();
             name = content.get("name").getAsString();
         } catch (Exception e) {
             logger.debug("Cannot get name from thermostat {} {}", ip, e.getMessage());
         }
 
-        logger.trace("Discovery returned: {} uuid {} name {}", sysinfo, uuid, name);
+        logger.debug("Discovery returned: {} uuid {} name {}", sysinfo, uuid, name);
 
         ThingUID thingUid = new ThingUID(RadioThermostatBindingConstants.THING_TYPE_RTHERM, uuid);
 
-        logger.trace("Got discovered device.");
+        logger.debug("Got discovered device.");
 
         String label = String.format("RadioThermostat (%s)", name);
         result = DiscoveryResultBuilder.create(thingUid).withLabel(label).withRepresentationProperty(uuid)
                 // .withProperty(RadioThermostatBindingConstants.PROPERTY_UUID, uuid)
                 .withProperty(RadioThermostatBindingConstants.PROPERTY_IP, ip).build();
-        logger.trace("New RadioThermostat discovered with ID=<{}>", uuid);
+        logger.debug("New RadioThermostat discovered with ID=<{}>", uuid);
         this.thingDiscovered(result);
     }
 

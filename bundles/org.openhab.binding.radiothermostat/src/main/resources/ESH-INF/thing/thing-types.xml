@@ -37,6 +37,7 @@
 		
 		<config-description>
 			<parameter name="hostName" type="text" required="true">
+				<context>network-address</context>
 				<label>Thermostat Host Name/IP Address</label>
 				<description>Host name or IP address of the thermostat</description>
 			</parameter>
