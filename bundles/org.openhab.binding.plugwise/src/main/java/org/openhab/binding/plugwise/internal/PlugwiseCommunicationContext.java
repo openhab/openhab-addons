@@ -20,7 +20,6 @@ import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.transport.serial.PortInUseException;
@@ -97,8 +96,20 @@ public class PlugwiseCommunicationContext {
         SerialPort localSerialPort = serialPort;
         if (localSerialPort != null) {
             try {
-                IOUtils.closeQuietly(localSerialPort.getInputStream());
-                IOUtils.closeQuietly(localSerialPort.getOutputStream());
+                if (localSerialPort.getInputStream() != null) {
+                    try {
+                        localSerialPort.getInputStream().close();
+                    } catch (IOException e) {
+                        logger.debug("Error while closing the input stream: {}", e.getMessage());
+                    }
+                }
+                if (localSerialPort.getOutputStream() != null) {
+                    try {
+                        localSerialPort.getOutputStream().close();
+                    } catch (IOException e) {
+                        logger.debug("Error while closing the output stream: {}", e.getMessage());
+                    }
+                }
                 localSerialPort.close();
                 serialPort = null;
             } catch (IOException e) {
