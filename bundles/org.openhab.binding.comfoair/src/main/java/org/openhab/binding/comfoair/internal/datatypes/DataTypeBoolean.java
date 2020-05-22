@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DataTypeBoolean implements ComfoAirDataType {
-    private Logger logger = LoggerFactory.getLogger(DataTypeBoolean.class);
+    private final Logger logger = LoggerFactory.getLogger(DataTypeBoolean.class);
 
     @Override
     public State convertToState(int @Nullable [] data, ComfoAirCommandType commandType) {

@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DataTypeRPM implements ComfoAirDataType {
-    private Logger logger = LoggerFactory.getLogger(DataTypeRPM.class);
+    private final Logger logger = LoggerFactory.getLogger(DataTypeRPM.class);
 
     @Override
     public State convertToState(int @Nullable [] data, ComfoAirCommandType commandType) {

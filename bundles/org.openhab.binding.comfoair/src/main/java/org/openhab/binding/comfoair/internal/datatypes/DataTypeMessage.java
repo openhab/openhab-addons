@@ -29,8 +29,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DataTypeMessage implements ComfoAirDataType {
-
-    private Logger logger = LoggerFactory.getLogger(DataTypeMessage.class);
+    private final Logger logger = LoggerFactory.getLogger(DataTypeMessage.class);
 
     @Override
     public State convertToState(int @Nullable [] data, ComfoAirCommandType commandType) {
@@ -85,30 +84,25 @@ public class DataTypeMessage implements ComfoAirDataType {
     }
 
     private int convertToCode(int code) {
-        if (code == 0x1) {
-            return 1;
+        switch (code) {
+            case 0x1:
+                return 1;
+            case 0x2:
+                return 2;
+            case 0x4:
+                return 3;
+            case 0x8:
+                return 4;
+            case 0xF:
+                return 5;
+            case 0x20:
+                return 6;
+            case 0x40:
+                return 7;
+            case 0x80:
+                return 8;
+            default:
+                return -1;
         }
-        if (code == 0x2) {
-            return 2;
-        }
-        if (code == 0x4) {
-            return 3;
-        }
-        if (code == 0x8) {
-            return 4;
-        }
-        if (code == 0xF) {
-            return 5;
-        }
-        if (code == 0x20) {
-            return 6;
-        }
-        if (code == 0x40) {
-            return 7;
-        }
-        if (code == 0x80) {
-            return 8;
-        }
-        return -1;
     }
 }

@@ -1024,7 +1024,6 @@
 		<state readOnly="true" />
 	</channel-type>
 
-
 	<channel-type id="menu20_mode" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Menu 20 Mode (P10)</label>
@@ -1302,7 +1301,7 @@
 		<label>Analog Input 1 Min</label>
 		<description>Minimum setting for analog input 1</description>
 		<category>Number</category>
-		<state readOnly="false" />
+		<state min="0" max="100" step="1" readOnly="false" />
 	</channel-type>
 
 	<channel-type id="analog1_max" advanced="true">
@@ -1310,7 +1309,7 @@
 		<label>Analog Input 1 Max</label>
 		<description>Maximum setting for analog input 1</description>
 		<category>Number</category>
-		<state readOnly="false" />
+		<state min="0" max="100" step="1" readOnly="false" />
 	</channel-type>
 
 	<channel-type id="analog1_value" advanced="true">
@@ -1318,7 +1317,7 @@
 		<label>Analog Input 1 Target</label>
 		<description>Target setting for analog input 1</description>
 		<category>Number</category>
-		<state readOnly="false" />
+		<state min="0" max="100" step="1" readOnly="false" />
 	</channel-type>
 
 	<channel-type id="analog2_volt" advanced="true">
@@ -1334,7 +1333,7 @@
 		<label>Analog Input 2 Min</label>
 		<description>Minimum setting for analog input 2</description>
 		<category>Number</category>
-		<state readOnly="false" />
+		<state min="0" max="100" step="1" readOnly="false" />
 	</channel-type>
 
 	<channel-type id="analog2_max" advanced="true">
@@ -1342,7 +1341,7 @@
 		<label>Analog Input 2 Max</label>
 		<description>Maximum setting for analog input 2</description>
 		<category>Number</category>
-		<state readOnly="false" />
+		<state min="0" max="100" step="1" readOnly="false" />
 	</channel-type>
 
 	<channel-type id="analog2_value" advanced="true">
@@ -1350,7 +1349,7 @@
 		<label>Analog Input 2 Target</label>
 		<description>Target setting for analog input 2</description>
 		<category>Number</category>
-		<state readOnly="false" />
+		<state min="0" max="100" step="1" readOnly="false" />
 	</channel-type>
 
 	<channel-type id="analog3_volt" advanced="true">
@@ -1366,7 +1365,7 @@
 		<label>Analog Input 3 Min</label>
 		<description>Minimum setting for analog input 3</description>
 		<category>Number</category>
-		<state readOnly="false" />
+		<state min="0" max="100" step="1" readOnly="false" />
 	</channel-type>
 
 	<channel-type id="analog3_max" advanced="true">
@@ -1374,7 +1373,7 @@
 		<label>Analog Input 3 Max</label>
 		<description>Maximum setting for analog input 3</description>
 		<category>Number</category>
-		<state readOnly="false" />
+		<state min="0" max="100" step="1" readOnly="false" />
 	</channel-type>
 
 	<channel-type id="analog3_value" advanced="true">
@@ -1382,7 +1381,7 @@
 		<label>Analog Input 3 Target</label>
 		<description>Target setting for analog input 3</description>
 		<category>Number</category>
-		<state readOnly="false" />
+		<state min="0" max="100" step="1" readOnly="false" />
 	</channel-type>
 
 	<channel-type id="analog4_volt" advanced="true">
@@ -1398,7 +1397,7 @@
 		<label>Analog Input 4 Min</label>
 		<description>Minimum setting for analog input 4</description>
 		<category>Number</category>
-		<state readOnly="false" />
+		<state min="0" max="100" step="1" readOnly="false" />
 	</channel-type>
 
 	<channel-type id="analog4_max" advanced="true">
@@ -1406,7 +1405,7 @@
 		<label>Analog Input 4 Max</label>
 		<description>Maximum setting for analog input 4</description>
 		<category>Number</category>
-		<state readOnly="false" />
+		<state min="0" max="100" step="1" readOnly="false" />
 	</channel-type>
 
 	<channel-type id="analog4_value" advanced="true">
@@ -1414,7 +1413,7 @@
 		<label>Analog Input 4 Target</label>
 		<description>Target setting for analog input 4</description>
 		<category>Number</category>
-		<state readOnly="false" />
+		<state min="0" max="100" step="1" readOnly="false" />
 	</channel-type>
 
 	<channel-type id="RF_min" advanced="true">
@@ -1422,7 +1421,7 @@
 		<label>RF Input Min</label>
 		<description>Minimum setting for RF input</description>
 		<category>Number</category>
-		<state readOnly="false" />
+		<state min="0" max="100" step="1" readOnly="false" />
 	</channel-type>
 
 	<channel-type id="RF_max" advanced="true">
@@ -1430,7 +1429,7 @@
 		<label>RF Input Max</label>
 		<description>Maximum setting for RF input</description>
 		<category>Number</category>
-		<state readOnly="false" />
+		<state min="0" max="100" step="1" readOnly="false" />
 	</channel-type>
 
 	<channel-type id="RF_value" advanced="true">
@@ -1438,7 +1437,7 @@
 		<label>RF Input Target</label>
 		<description>Target setting for RF input</description>
 		<category>Number</category>
-		<state readOnly="false" />
+		<state min="0" max="100" step="1" readOnly="false" />
 	</channel-type>
 
 	<channel-type id="errorA_current">

@@ -72,7 +72,7 @@ public enum ComfoAirCommandType {
      *            DataTypeBoolean.class data_type)
      */
     ACTIVATE("bindingControl#activate", DataTypeBoolean.class, new int[] { 0x03 }, Constants.REQUEST_SET_RS232, 1, 0,
-            new String[] {}, Constants.REPLY_SET_RS232, Constants.REPLY_SET_RS232, new int[] { 0 }, 0x03),
+            Constants.EMPTY_STRING_ARRAY, Constants.REPLY_SET_RS232, Constants.REPLY_SET_RS232, new int[] { 0 }, 0x03),
     MENU20_MODE("menuP1#menu20Mode", DataTypeBoolean.class, Constants.REQUEST_GET_STATES, Constants.REPLY_GET_STATES,
             new int[] { 6 }, 0x01),
     MENU21_MODE("menuP1#menu21Mode", DataTypeBoolean.class, Constants.REQUEST_GET_STATES, Constants.REPLY_GET_STATES,
@@ -221,7 +221,8 @@ public enum ComfoAirCommandType {
                     "ventilation#fanIn1", "ventilation#fanIn2", "ventilation#fanIn3" },
             Constants.REQUEST_GET_STATES, Constants.REPLY_GET_STATES, new int[] { 3 }),
     IS_CHIMNEY("options#isChimney", DataTypeBoolean.class, new int[] { 0x01 }, Constants.REQUEST_SET_STATES, 8, 4,
-            new String[] {}, Constants.REQUEST_GET_STATES, Constants.REPLY_GET_STATES, new int[] { 4 }, 0x01),
+            Constants.EMPTY_STRING_ARRAY, Constants.REQUEST_GET_STATES, Constants.REPLY_GET_STATES, new int[] { 4 },
+            0x01),
     IS_COOKERHOOD("options#isCookerhood", DataTypeBoolean.class, new int[] { 0x02 }, Constants.REQUEST_SET_STATES, 8, 4,
             new String[] { "menuP2#cookerhoodDelay", "menuP9#cookerhoodState", "cookerhood#cookerhoodSpeed",
                     "temperatures#cookerhoodTemperature" },
@@ -383,47 +384,53 @@ public enum ComfoAirCommandType {
             new String[] { "analog#RFNegative", "analog#RFMin", "analog#RFMax", "analog#RFValue" },
             Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 1 }, 0x10),
     ANALOG1_NEGATIVE("analog#analog1Negative", DataTypeBoolean.class, new int[] { 0x01 }, Constants.REQUEST_SET_ANALOGS,
-            19, 2, new String[] {}, Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 2 }, 0x01),
+            19, 2, Constants.EMPTY_STRING_ARRAY, Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS,
+            new int[] { 2 }, 0x01),
     ANALOG2_NEGATIVE("analog#analog2Negative", DataTypeBoolean.class, new int[] { 0x02 }, Constants.REQUEST_SET_ANALOGS,
-            19, 2, new String[] {}, Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 2 }, 0x02),
+            19, 2, Constants.EMPTY_STRING_ARRAY, Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS,
+            new int[] { 2 }, 0x02),
     ANALOG3_NEGATIVE("analog#analog3Negative", DataTypeBoolean.class, new int[] { 0x04 }, Constants.REQUEST_SET_ANALOGS,
-            19, 2, new String[] {}, Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 2 }, 0x04),
+            19, 2, Constants.EMPTY_STRING_ARRAY, Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS,
+            new int[] { 2 }, 0x04),
     ANALOG4_NEGATIVE("analog#analog4Negative", DataTypeBoolean.class, new int[] { 0x08 }, Constants.REQUEST_SET_ANALOGS,
-            19, 2, new String[] {}, Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 2 }, 0x08),
+            19, 2, Constants.EMPTY_STRING_ARRAY, Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS,
+            new int[] { 2 }, 0x08),
     RF_NEGATIVE("analog#RFNegative", DataTypeBoolean.class, new int[] { 0x10 }, Constants.REQUEST_SET_ANALOGS, 19, 2,
-            new String[] {}, Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 2 }, 0x10),
-    ANALOG1_MIN("analog#analog1Min", DataTypeNumber.class, Constants.REQUEST_SET_ANALOGS, 19, 3, new String[] {},
-            Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 3 }),
-    ANALOG1_MAX("analog#analog1Max", DataTypeNumber.class, Constants.REQUEST_SET_ANALOGS, 19, 4, new String[] {},
-            Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 4 }),
-    ANALOG1_VALUE("analog#analog1Value", DataTypeNumber.class, Constants.REQUEST_SET_ANALOGS, 19, 5, new String[] {},
-            Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 5 }),
-    ANALOG2_MIN("analog#analog2Min", DataTypeNumber.class, Constants.REQUEST_SET_ANALOGS, 19, 6, new String[] {},
-            Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 6 }),
-    ANALOG2_MAX("analog#analog2Max", DataTypeNumber.class, Constants.REQUEST_SET_ANALOGS, 19, 7, new String[] {},
-            Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 7 }),
-    ANALOG2_VALUE("analog#analog2Value", DataTypeNumber.class, Constants.REQUEST_SET_ANALOGS, 19, 8, new String[] {},
-            Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 8 }),
-    ANALOG3_MIN("analog#analog3Min", DataTypeNumber.class, Constants.REQUEST_SET_ANALOGS, 19, 9, new String[] {},
-            Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 9 }),
-    ANALOG3_MAX("analog#analog3Max", DataTypeNumber.class, Constants.REQUEST_SET_ANALOGS, 19, 10, new String[] {},
-            Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 10 }),
-    ANALOG3_VALUE("analog#analog3Value", DataTypeNumber.class, Constants.REQUEST_SET_ANALOGS, 19, 11, new String[] {},
-            Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 11 }),
-    ANALOG4_MIN("analog#analog4Min", DataTypeNumber.class, Constants.REQUEST_SET_ANALOGS, 19, 12, new String[] {},
-            Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 12 }),
-    ANALOG4_MAX("analog#analog4Max", DataTypeNumber.class, Constants.REQUEST_SET_ANALOGS, 19, 13, new String[] {},
-            Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 13 }),
-    ANALOG4_VALUE("analog#analog4Value", DataTypeNumber.class, Constants.REQUEST_SET_ANALOGS, 19, 14, new String[] {},
-            Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 14 }),
-    RF_MIN("analog#RFMin", DataTypeNumber.class, Constants.REQUEST_SET_ANALOGS, 19, 15, new String[] {},
+            Constants.EMPTY_STRING_ARRAY, Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 2 },
+            0x10),
+    ANALOG1_MIN("analog#analog1Min", DataTypeNumber.class, Constants.REQUEST_SET_ANALOGS, 19, 3,
+            Constants.EMPTY_STRING_ARRAY, Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 3 }),
+    ANALOG1_MAX("analog#analog1Max", DataTypeNumber.class, Constants.REQUEST_SET_ANALOGS, 19, 4,
+            Constants.EMPTY_STRING_ARRAY, Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 4 }),
+    ANALOG1_VALUE("analog#analog1Value", DataTypeNumber.class, Constants.REQUEST_SET_ANALOGS, 19, 5,
+            Constants.EMPTY_STRING_ARRAY, Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 5 }),
+    ANALOG2_MIN("analog#analog2Min", DataTypeNumber.class, Constants.REQUEST_SET_ANALOGS, 19, 6,
+            Constants.EMPTY_STRING_ARRAY, Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 6 }),
+    ANALOG2_MAX("analog#analog2Max", DataTypeNumber.class, Constants.REQUEST_SET_ANALOGS, 19, 7,
+            Constants.EMPTY_STRING_ARRAY, Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 7 }),
+    ANALOG2_VALUE("analog#analog2Value", DataTypeNumber.class, Constants.REQUEST_SET_ANALOGS, 19, 8,
+            Constants.EMPTY_STRING_ARRAY, Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 8 }),
+    ANALOG3_MIN("analog#analog3Min", DataTypeNumber.class, Constants.REQUEST_SET_ANALOGS, 19, 9,
+            Constants.EMPTY_STRING_ARRAY, Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 9 }),
+    ANALOG3_MAX("analog#analog3Max", DataTypeNumber.class, Constants.REQUEST_SET_ANALOGS, 19, 10,
+            Constants.EMPTY_STRING_ARRAY, Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 10 }),
+    ANALOG3_VALUE("analog#analog3Value", DataTypeNumber.class, Constants.REQUEST_SET_ANALOGS, 19, 11,
+            Constants.EMPTY_STRING_ARRAY, Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 11 }),
+    ANALOG4_MIN("analog#analog4Min", DataTypeNumber.class, Constants.REQUEST_SET_ANALOGS, 19, 12,
+            Constants.EMPTY_STRING_ARRAY, Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 12 }),
+    ANALOG4_MAX("analog#analog4Max", DataTypeNumber.class, Constants.REQUEST_SET_ANALOGS, 19, 13,
+            Constants.EMPTY_STRING_ARRAY, Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 13 }),
+    ANALOG4_VALUE("analog#analog4Value", DataTypeNumber.class, Constants.REQUEST_SET_ANALOGS, 19, 14,
+            Constants.EMPTY_STRING_ARRAY, Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 14 }),
+    RF_MIN("analog#RFMin", DataTypeNumber.class, Constants.REQUEST_SET_ANALOGS, 19, 15, Constants.EMPTY_STRING_ARRAY,
             Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 15 }),
-    RF_MAX("analog#RFMax", DataTypeNumber.class, Constants.REQUEST_SET_ANALOGS, 19, 16, new String[] {},
+    RF_MAX("analog#RFMax", DataTypeNumber.class, Constants.REQUEST_SET_ANALOGS, 19, 16, Constants.EMPTY_STRING_ARRAY,
             Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 16 }),
-    RF_VALUE("analog#RFValue", DataTypeNumber.class, Constants.REQUEST_SET_ANALOGS, 19, 17, new String[] {},
-            Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 17 }),
+    RF_VALUE("analog#RFValue", DataTypeNumber.class, Constants.REQUEST_SET_ANALOGS, 19, 17,
+            Constants.EMPTY_STRING_ARRAY, Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 17 }),
     ANALOG_MODE("analog#analogMode", DataTypeNumber.class, new int[] { 0x00, 0x01 }, Constants.REQUEST_SET_ANALOGS, 19,
-            18, new String[] {}, Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 18 }),
+            18, Constants.EMPTY_STRING_ARRAY, Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS,
+            new int[] { 18 }),
     ANALOG1_VOLT("analog#analog1Volt", DataTypeVolt.class, Constants.REQUEST_GET_ANALOG_VOLTS,
             Constants.REPLY_GET_ANALOG_VOLTS, new int[] { 0 }),
     ANALOG2_VOLT("analog#analog2Volt", DataTypeVolt.class, Constants.REQUEST_GET_ANALOG_VOLTS,
@@ -630,6 +637,9 @@ public enum ComfoAirCommandType {
         public static final int REQUEST_GET_EWT = 0xeb;
         public static final int REPLY_GET_EWT = 0xec;
         public static final int REQUEST_SET_EWT = 0xed;
+
+        public static final String[] EMPTY_STRING_ARRAY = new String[0];
+        public static final int[] EMPTY_INT_ARRAY = new int[0];
     }
 
     /**
@@ -701,10 +711,10 @@ public enum ComfoAirCommandType {
         ComfoAirCommandType commandType = ComfoAirCommandType.getCommandTypeByKey(key);
 
         if (commandType != null) {
-            Integer getCmd = commandType.read_command == 0 ? null : Integer.valueOf(commandType.read_command);
-            Integer replyCmd = Integer.valueOf(commandType.read_reply_command);
+            int getCmd = commandType.read_command == 0 ? null : commandType.read_command;
+            int replyCmd = commandType.read_reply_command;
 
-            return new ComfoAirCommand(key, getCmd, replyCmd, new int[0], null, null);
+            return new ComfoAirCommand(key, getCmd, replyCmd, Constants.EMPTY_INT_ARRAY, null, null);
         }
         return null;
     }
@@ -756,10 +766,11 @@ public enum ComfoAirCommandType {
         ComfoAirCommandType commandType = ComfoAirCommandType.getCommandTypeByKey(key);
         if (commandType != null) {
             if (commandType.read_reply_command != 0) {
-                Integer getCmd = commandType.read_command == 0 ? null : Integer.valueOf(commandType.read_command);
-                Integer replyCmd = Integer.valueOf(commandType.read_reply_command);
+                int getCmd = commandType.read_command == 0 ? null : commandType.read_command;
+                int replyCmd = commandType.read_reply_command;
 
-                ComfoAirCommand command = new ComfoAirCommand(key, getCmd, replyCmd, new int[0], null, null);
+                ComfoAirCommand command = new ComfoAirCommand(key, getCmd, replyCmd, Constants.EMPTY_INT_ARRAY, null,
+                        null);
                 commands.put(replyCmd, command);
             }
 
@@ -773,14 +784,14 @@ public enum ComfoAirCommandType {
                     ComfoAirCommandType affectedCommandType = ComfoAirCommandType.getCommandTypeByKey(affectedKey);
 
                     if (affectedCommandType != null) {
-                        Integer getCmd = affectedCommandType.read_command == 0 ? null
-                                : Integer.valueOf(affectedCommandType.read_command);
-                        Integer replyCmd = Integer.valueOf(affectedCommandType.read_reply_command);
+                        int getCmd = affectedCommandType.read_command == 0 ? null : affectedCommandType.read_command;
+                        int replyCmd = affectedCommandType.read_reply_command;
 
                         ComfoAirCommand command = commands.get(replyCmd);
 
                         if (command == null) {
-                            command = new ComfoAirCommand(affectedKey, getCmd, replyCmd, new int[0], null, null);
+                            command = new ComfoAirCommand(affectedKey, getCmd, replyCmd, Constants.EMPTY_INT_ARRAY,
+                                    null, null);
                             commands.put(replyCmd, command);
                         } else {
                             command.addKey(affectedKey);
@@ -809,13 +820,13 @@ public enum ComfoAirCommandType {
                 continue;
             }
 
-            Integer getCmd = entry.read_command == 0 ? null : Integer.valueOf(entry.read_command);
-            Integer replyCmd = Integer.valueOf(entry.read_reply_command);
+            int getCmd = entry.read_command == 0 ? null : entry.read_command;
+            int replyCmd = entry.read_reply_command;
 
             ComfoAirCommand command = commands.get(replyCmd);
 
             if (command == null) {
-                command = new ComfoAirCommand(entry.key, getCmd, replyCmd, new int[0], null, null);
+                command = new ComfoAirCommand(entry.key, getCmd, replyCmd, Constants.EMPTY_INT_ARRAY, null, null);
                 commands.put(replyCmd, command);
             } else {
                 command.addKey(entry.key);

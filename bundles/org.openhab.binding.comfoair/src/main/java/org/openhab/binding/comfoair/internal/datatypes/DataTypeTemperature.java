@@ -31,8 +31,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DataTypeTemperature implements ComfoAirDataType {
-
-    private Logger logger = LoggerFactory.getLogger(DataTypeTemperature.class);
+    private final Logger logger = LoggerFactory.getLogger(DataTypeTemperature.class);
 
     @Override
     public State convertToState(int @Nullable [] data, ComfoAirCommandType commandType) {
@@ -51,15 +50,15 @@ public class DataTypeTemperature implements ComfoAirDataType {
 
     @Override
     public int @Nullable [] convertFromState(State value, ComfoAirCommandType commandType) {
-        if (value instanceof UnDefType) {
-            logger.trace("\"DataTypeTemperature\" class \"convertFromState\" undefined state");
-            return null;
-        } else {
+        if (((DecimalType) value) instanceof DecimalType) {
             int[] template = commandType.getChangeDataTemplate();
 
             template[commandType.getChangeDataPos()] = (int) (((DecimalType) value).doubleValue() + 20) * 2;
 
             return template;
+        } else {
+            logger.trace("\"DataTypeTemperature\" class \"convertFromState\" undefined state");
+            return null;
         }
     }
 }

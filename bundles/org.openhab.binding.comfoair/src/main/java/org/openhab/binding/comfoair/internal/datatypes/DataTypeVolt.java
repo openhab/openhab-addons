@@ -31,8 +31,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DataTypeVolt implements ComfoAirDataType {
-
-    private Logger logger = LoggerFactory.getLogger(DataTypeVolt.class);
+    private final Logger logger = LoggerFactory.getLogger(DataTypeVolt.class);
 
     @Override
     public State convertToState(int @Nullable [] data, ComfoAirCommandType commandType) {
@@ -51,15 +50,15 @@ public class DataTypeVolt implements ComfoAirDataType {
 
     @Override
     public int @Nullable [] convertFromState(State value, ComfoAirCommandType commandType) {
-        if (value instanceof UnDefType) {
-            logger.trace("\"DataTypeVolt\" class \"convertFromState\" undefined state");
-            return null;
-        } else {
+        if (((DecimalType) value) instanceof DecimalType) {
             int[] template = commandType.getChangeDataTemplate();
 
             template[commandType.getChangeDataPos()] = (int) (((DecimalType) value).doubleValue() * 255 / 10);
 
             return template;
+        } else {
+            logger.trace("\"DataTypeVolt\" class \"convertFromState\" undefined state");
+            return null;
         }
     }
 }
