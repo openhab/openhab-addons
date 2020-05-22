@@ -45,10 +45,8 @@ public class MonopriceAudioIpConnector extends MonopriceAudioConnector {
     /**
      * Constructor
      *
-     * @param address the IP address of the projector
+     * @param address the IP address of the serial over IP device
      * @param port the TCP port to be used
-     * @param model the projector model in use
-     * @param protocol the protocol to be used
      */
     public MonopriceAudioIpConnector(String address, Integer port) {
         this.address = address;
@@ -76,7 +74,7 @@ public class MonopriceAudioIpConnector extends MonopriceAudioConnector {
             logger.debug("IP connection opened");
         } catch (IOException | SecurityException | IllegalArgumentException e) {
             setConnected(false);
-            logger.error("Opening IP connection failed: {}", e.getMessage());
+            logger.warn("Opening IP connection failed: {}", e.getMessage());
             throw new MonopriceAudioException("Opening IP connection failed: " + e.getMessage());
         }
     }

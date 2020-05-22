@@ -275,7 +275,7 @@ public abstract class MonopriceAudioConnector {
             // pull out just the digits and send them as an event
             dispatchKeyValue(KEY_ZONE_UPDATE, matcher.group(1));
         } catch (IllegalStateException e){
-            logger.trace("no match on message: {}", message);
+            logger.debug("no match on message: {}", message);
         }
 
     }

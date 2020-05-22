@@ -78,8 +78,6 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
     private static final String ALL = "all";
     private static final String CHANNEL_DELIMIT = "#";
 
-    private static final Integer MIN_POLLING_INTEGER = 5;
-    private static final Integer MAX_POLLING_INTEGER = 60;
     private static final Integer ONE = 1;
     private static final Integer MAX_ZONES = 18;
     private static final Integer MAX_SRC = 6;
@@ -91,7 +89,6 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
     private static final Integer MAX_BALANCE = 10;
     private static final Integer BALANCE_OFFSET = 10;
     private static final Integer TONE_OFFSET = 7;
-    private static final Integer MAX_INIT_ALL_VOLUME = 30;
 
     private @Nullable ScheduledFuture<?> reconnectJob;
     private @Nullable ScheduledFuture<?> pollingJob;
@@ -162,18 +159,6 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
             }
         }
 
-        if (config.pollingInterval == null || config.pollingInterval < MIN_POLLING_INTEGER || config.pollingInterval > MAX_POLLING_INTEGER) {
-            configError = "polling interval must be a number between " + MIN_POLLING_INTEGER.toString() + " and " + MAX_POLLING_INTEGER.toString();
-        }
-
-        if (config.numZones == null || config.numZones < ONE || config.numZones > MAX_ZONES) {
-            configError = "number of zones must be a number between " + ONE.toString() + " and " + MAX_ZONES.toString();
-        }
-
-        if (config.initialAllVolume == null || config.initialAllVolume < ONE || config.initialAllVolume > MAX_INIT_ALL_VOLUME) {
-            configError = "initial All Volume must be between " + ONE.toString() + " and " + MAX_INIT_ALL_VOLUME.toString();
-        }
-
         if (configError != null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configError);
         } else {
@@ -225,9 +210,9 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                            
                 zonesToRemove.forEach(zone -> {
                     if (channels.removeIf(c -> (c.getUID().getId().contains("zone" + zone.toString())))) {
-                        logger.trace("Removed channels for zone: {}", zone);
+                        logger.debug("Removed channels for zone: {}", zone);
                     } else {
-                        logger.trace("Could NOT remove channels for zone: {}", zone);
+                        logger.debug("Could NOT remove channels for zone: {}", zone);
                     }
                 });
                 updateThing(editThing().withChannels(channels).build());
@@ -444,7 +429,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                     logger.debug("Command {} from channel {} succeeded", command, channel);
                 }
             } catch (MonopriceAudioException e) {
-                logger.error("Command {} from channel {} failed: {}", command, channel, e.getMessage());
+                logger.warn("Command {} from channel {} failed: {}", command, channel, e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Sending command failed");
                 closeConnection();
                 scheduleReconnectJob();
@@ -565,7 +550,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                         }
                         
                     } else {
-                        logger.error("invalid event: {} for key: {}", evt.getValue(), key);
+                        logger.warn("invalid event: {} for key: {}", evt.getValue(), key);
                     }
                     break;
                 default:
@@ -594,7 +579,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                         try {
                             Long prevUpdateTime = lastPollingUpdate;
                             connector.queryZone(MonopriceAudioZone.ZONE1);
-                            Thread.sleep(500);
+                            Thread.sleep(150);
 
                             // prevUpdateTime should have changed if a zone update was received
                             if (prevUpdateTime.equals(lastPollingUpdate)) {
@@ -603,7 +588,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
 
                         } catch (MonopriceAudioException | InterruptedException e) {
                             error = "First command after connection failed";
-                            logger.error("{}: {}", error, e.getMessage());
+                            logger.warn("{}: {}", error, e.getMessage());
                             closeConnection();
                         }
                     }
@@ -658,7 +643,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                     // if the last successful polling update was more than 2.25 intervals ago, the controller
                     // is either switched off or not responding even though the connection is still good
                     if ((System.currentTimeMillis() - lastPollingUpdate) > (pollingInterval * 2.25 * 1000)) {
-                        logger.error("Controller not responding to status requests");
+                        logger.warn("Controller not responding to status requests");
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Controller not responding to status requests");
                         closeConnection();
                         scheduleReconnectJob();
@@ -756,7 +741,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                 logger.debug("Updating zone data for zone: {}", matcher.group(1));
                 
             } catch (IllegalStateException e) {
-                logger.error("Invalid zone update message: {}", newZoneData);
+                logger.warn("Invalid zone update message: {}", newZoneData);
             }
 
             channelTypes.forEach(channelType -> {

@@ -1,8 +1,8 @@
 # MonopriceAudio Binding
 
 This binding can be used to control the Monoprice MPR-SG6Z or Dayton Audio DAX66 whole house multi-zone amplifier.
-All controller fuctions available through the serial port interface can be controlled by the binding.
-Up to 18 zones can be contolled when 3 amplifiers are connected together (if not all zones on the amp are used they can be excluded via configuration).
+All controller functions available through the serial port interface can be controlled by the binding.
+Up to 18 zones can be controlled when 3 amplifiers are connected together (if not all zones on the amp are used they can be excluded via configuration).
 Activating the 'Page All Zones' feature can only be done through the +12v trigger input on the back of the amplifier.
 
 The binding supports two different kinds of connections:
@@ -10,7 +10,7 @@ The binding supports two different kinds of connections:
 * serial connection,
 * serial over IP connection
 
-For users without serial connector on server side, of course you can add a serial to USB adapter.
+For users without serial connector on server side, you can add a serial to USB adapter.
 
 You don't need to have your Monoprice whole house amplifier device directly connected to your openHAB server.
 You can connect it for example to a Raspberry Pi and use [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) to make the serial connection available on LAN (serial over IP).
@@ -34,21 +34,21 @@ All settings are through thing configuration parameters.
 
 The thing has the following configuration parameters:
 
-| Parameter Label      | Parameter ID     | Description                                           | Accepted values                                                                         |
-|----------------------|------------------|-------------------------------------------------------|-----------------------------------------------------------------------------------------|
-| Serial Port          | serialPort       | Serial port to use for connecting to the Monoprice whole house amplifier device                                                               | |
-| Address              | host             | Host name or IP address of the machine connected to the Monoprice whole house amplifier device (serial over IP)                               | |
-| Port                 | port             | Communication port (serial over IP).                                                                                                          | |
-| Number of Zones      | numZones         | (Optional) Number of zones on the amplifier to utilize in the binding (up to 18 zones with 3 amplifiers connected together) (1-18; default 6) | |
-| Polling Interval     | pollingInterval  | (Optional) Configures how often (in seconds) to poll the controller to check for zone updates (5-60; default 15)                              | |
-| Ignore Zones         | ignoreZones      | (Optional) A comma seperated list of Zone numbers that will ignore the 'All Zone' (except All Off) commands (ie: "1,6,10")                    | |
-| Initial All Volume   | initialAllVolume | (Optional) When 'All' zones are activated, the volume will reset to this value (1-30; default 10) to prevent excessive blaring of sound ;)    | |
-| Source 1 Input Label | inputLabel1      | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 1")                | |
-| Source 2 Input Label | inputLabel2      | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 2")                | |
-| Source 3 Input Label | inputLabel3      | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 3")                | |
-| Source 4 Input Label | inputLabel4      | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 4")                | |
-| Source 5 Input Label | inputLabel5      | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 5")                | |
-| Source 6 Input Label | inputLabel6      | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 6")                | |
+| Parameter Label      | Parameter ID     | Description                                                                                                                    | Accepted values    |
+|----------------------|------------------|--------------------------------------------------------------------------------------------------------------------------------|--------------------|
+| Serial Port          | serialPort       | Serial port to use for connecting to the Monoprice whole house amplifier device                                                | Serial port name | |
+| Address              | host             | Host name or IP address of the machine connected to the Monoprice whole house amplifier device (serial over IP)                | Host name or IP  | |
+| Port                 | port             | Communication port (serial over IP).                                                                                           | TCP port number  | |
+| Number of Zones      | numZones         | (Optional) Number of zones on the amplifier to utilize in the binding (up to 18 zones with 3 amplifiers connected together)    | 1-18; default 6  | |
+| Polling Interval     | pollingInterval  | (Optional) Configures how often (in seconds) to poll the controller to check for zone updates                                  | 5-60; default 15 | |
+| Ignore Zones         | ignoreZones      | (Optional) A comma seperated list of Zone numbers that will ignore the 'All Zone' (except All Off) commands                    | ie: "1,6,10"     | |
+| Initial All Volume   | initialAllVolume | (Optional) When 'All' zones are activated, the volume will reset to this value to prevent excessive blaring of sound ;)        | 1-30; default 10 | |
+| Source 1 Input Label | inputLabel1      | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 1") | A free text name | |
+| Source 2 Input Label | inputLabel2      | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 2") | A free text name | |
+| Source 3 Input Label | inputLabel3      | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 3") | A free text name | |
+| Source 4 Input Label | inputLabel4      | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 4") | A free text name | |
+| Source 5 Input Label | inputLabel5      | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 5") | A free text name | |
+| Source 6 Input Label | inputLabel6      | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 6") | A free text name | |
 
 Some notes:
 
@@ -88,34 +88,34 @@ monoprice.things:
 
 ```java
 //serial port connection
-monopriceaudio:amplifier:myamp1 "Monoprice WHA" [ serialPort="COM5", pollingInterval=15, numZones=6, inputLabel1="Chromecast", inputLabel2="Radio", inputLabel3="CD Player", inputLabel4="Bluetooth Audio", inputLabel5="HTPC", inputLabel6="Phono"]
+monopriceaudio:amplifier:myamp "Monoprice WHA" [ serialPort="COM5", pollingInterval=15, numZones=6, inputLabel1="Chromecast", inputLabel2="Radio", inputLabel3="CD Player", inputLabel4="Bluetooth Audio", inputLabel5="HTPC", inputLabel6="Phono"]
 
 // serial over IP connection
-monopriceaudio:amplifier:myamp1 "Monoprice WHA" [ host="192.168.0.10", port=4444, pollingInterval=15, numZones=6, inputLabel1="Chromecast", inputLabel2="Radio", inputLabel3="CD Player", inputLabel4="Bluetooth Audio", inputLabel5="HTPC", inputLabel6="Phono"]
+monopriceaudio:amplifier:myamp "Monoprice WHA" [ host="192.168.0.10", port=4444, pollingInterval=15, numZones=6, inputLabel1="Chromecast", inputLabel2="Radio", inputLabel3="CD Player", inputLabel4="Bluetooth Audio", inputLabel5="HTPC", inputLabel6="Phono"]
 
 ```
 
 monoprice.items:
 
 ```java
-Switch all_allon "All Zones On" { channel="monopriceaudio:amplifier:myamp1:all#allon" }
-Switch all_alloff "All Zones Off" { channel="monopriceaudio:amplifier:myamp1:all#alloff" }
-Number all_source "Source Input [%s]" { channel="monopriceaudio:amplifier:myamp1:all#allsource" }
-Dimmer all_volume "Volume [%d %%]" { channel="monopriceaudio:amplifier:myamp1:all#allvolume" }
-Switch all_mute "Mute" { channel="monopriceaudio:amplifier:myamp1:all#allmute" }
+Switch all_allon "All Zones On" { channel="monopriceaudio:amplifier:myamp:all#allon" }
+Switch all_alloff "All Zones Off" { channel="monopriceaudio:amplifier:myamp:all#alloff" }
+Number all_source "Source Input [%s]" { channel="monopriceaudio:amplifier:myamp:all#allsource" }
+Dimmer all_volume "Volume [%d %%]" { channel="monopriceaudio:amplifier:myamp:all#allvolume" }
+Switch all_mute "Mute" { channel="monopriceaudio:amplifier:myamp:all#allmute" }
 
-Switch z1_power "Power" { channel="monopriceaudio:amplifier:myamp1:zone1#power" }
-Number z1_source "Source Input [%s]" { channel="monopriceaudio:amplifier:myamp1:zone1#source" }
-Dimmer z1_volume "Volume [%d %%]" { channel="monopriceaudio:amplifier:myamp1:zone1#volume" }
-Switch z1_mute "Mute" { channel="monopriceaudio:amplifier:myamp1:zone1#mute" }
-Number z1_treble "Treble Adjustment [%s]" { channel="monopriceaudio:amplifier:myamp1:zone1#treble" }
-Number z1_bass "Bass Adjustment [%s]" { channel="monopriceaudio:amplifier:myamp1:zone1#bass" }
-Number z1_balance "Balance Adjustment [%s]" { channel="monopriceaudio:amplifier:myamp1:zone1#balance" }
-Switch z1_dnd "Do Not Disturb" { channel="monopriceaudio:amplifier:myamp1:zone1#dnd" }
-Number z1_page "Page Active [%s]" { channel="monopriceaudio:amplifier:myamp1:zone1#page" }
-Number z1_keypad "Keypad Active [%s]" { channel="monopriceaudio:amplifier:myamp1:zone1#keypad" }
+Switch z1_power "Power" { channel="monopriceaudio:amplifier:myamp:zone1#power" }
+Number z1_source "Source Input [%s]" { channel="monopriceaudio:amplifier:myamp:zone1#source" }
+Dimmer z1_volume "Volume [%d %%]" { channel="monopriceaudio:amplifier:myamp:zone1#volume" }
+Switch z1_mute "Mute" { channel="monopriceaudio:amplifier:myamp:zone1#mute" }
+Number z1_treble "Treble Adjustment [%s]" { channel="monopriceaudio:amplifier:myamp:zone1#treble" }
+Number z1_bass "Bass Adjustment [%s]" { channel="monopriceaudio:amplifier:myamp:zone1#bass" }
+Number z1_balance "Balance Adjustment [%s]" { channel="monopriceaudio:amplifier:myamp:zone1#balance" }
+Switch z1_dnd "Do Not Disturb" { channel="monopriceaudio:amplifier:myamp:zone1#dnd" }
+Number z1_page "Page Active [%s]" { channel="monopriceaudio:amplifier:myamp:zone1#page" }
+Number z1_keypad "Keypad Active [%s]" { channel="monopriceaudio:amplifier:myamp:zone1#keypad" }
 
-//repeat for zones 2-18
+//repeat for zones 2-18 (substitute z1 and zone1)
 ```
 
 monoprice.sitemap:
@@ -144,6 +144,6 @@ sitemap monoprice label="Audio Control" {
         Text item=z1_keypad visibility=[z1_power==ON]
     }
     
-    //repeat for zones 2-18
+    //repeat for zones 2-18 (substitute z1)
 }
 ```
