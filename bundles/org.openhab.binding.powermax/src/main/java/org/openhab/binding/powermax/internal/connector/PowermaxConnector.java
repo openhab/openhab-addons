@@ -18,7 +18,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.openhab.binding.powermax.internal.message.PowermaxBaseMessage;
 import org.openhab.binding.powermax.internal.message.PowermaxMessageEvent;
 import org.openhab.binding.powermax.internal.message.PowermaxMessageEventListener;
@@ -63,11 +62,17 @@ public abstract class PowermaxConnector implements PowermaxConnectorInterface {
         }
 
         if (output != null) {
-            IOUtils.closeQuietly(output);
+            try {
+                output.close();
+            } catch (IOException e) {
+            }
         }
 
         if (input != null) {
-            IOUtils.closeQuietly(input);
+            try {
+                input.close();
+            } catch (IOException e) {
+            }
         }
 
         readerThread = null;

@@ -20,7 +20,6 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,7 +89,10 @@ public class PowermaxTcpConnector extends PowermaxConnector {
         super.cleanup();
 
         if (tcpSocket != null) {
-            IOUtils.closeQuietly(tcpSocket);
+            try {
+                tcpSocket.close();
+            } catch (IOException e) {
+            }
         }
 
         tcpSocket = null;
