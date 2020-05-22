@@ -20,7 +20,7 @@ rule "Your Rule Name"
 when
     Item YourTriggeringItem changed
 then
-    var geohash = transform("GEOHASH","6", YourTriggeringItem.state.toString)
+    var geohash = transform("GEOHASH","6", newState.toString)
     yourFormattedItem.sendCommand(formatted.toString) 
 end
 ```

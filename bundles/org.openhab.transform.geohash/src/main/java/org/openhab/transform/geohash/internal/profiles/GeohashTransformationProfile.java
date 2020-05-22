@@ -108,7 +108,7 @@ public class GeohashTransformationProfile implements StateProfile {
     public void onStateUpdateFromHandler(State state) {
         if (precision == null || sourceFormat == null) {
             logger.warn(
-                    "Please specify a precision and a source format for this Profile in the '{}', and '{}' parameters. Returning the original command now.",
+                    "Please specify a precision and a source format for this Profile in the '{}', and '{}' parameters. Returning the original state now.",
                     PRECISION_PARAM, SOURCE_FORMAT_PARAM);
             callback.sendUpdate(state);
             return;
