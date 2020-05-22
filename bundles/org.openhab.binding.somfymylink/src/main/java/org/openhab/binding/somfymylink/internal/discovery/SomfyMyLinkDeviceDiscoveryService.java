@@ -20,7 +20,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
@@ -169,7 +168,7 @@ public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService
     }
 
     private void notifyThingDiscovery(ThingTypeUID thingTypeUID, String id, String label, String idType) {
-        if (StringUtils.isEmpty(id)) {
+        if (id.isEmpty()) {
             logger.info("Discovered {} with no ID", label);
             return;
         }

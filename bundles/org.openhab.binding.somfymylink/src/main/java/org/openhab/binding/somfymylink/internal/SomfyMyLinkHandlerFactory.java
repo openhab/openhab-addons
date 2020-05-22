@@ -32,8 +32,6 @@ import org.openhab.binding.somfymylink.internal.handler.SomfySceneHandler;
 import org.openhab.binding.somfymylink.internal.handler.SomfyShadeHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Chris Johnson - Initial contribution
@@ -41,8 +39,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(configurationPid = "binding.somfymylink", service = ThingHandlerFactory.class)
 public class SomfyMyLinkHandlerFactory extends BaseThingHandlerFactory {
-
-    private final Logger logger = LoggerFactory.getLogger(SomfyMyLinkHandlerFactory.class);
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
             Arrays.asList(THING_TYPE_MYLINK, THING_TYPE_SHADE, THING_TYPE_SCENE));
@@ -62,7 +58,6 @@ public class SomfyMyLinkHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_MYLINK)) {
-            logger.debug("Registering discovery service.");
             return new SomfyMyLinkBridgeHandler((Bridge) thing, stateDescriptionProvider);
         }
         if (THING_TYPE_SHADE.equals(thingTypeUID)) {

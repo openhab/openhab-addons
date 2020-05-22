@@ -34,7 +34,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.common.NamedThreadFactory;
@@ -154,7 +153,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
             return false;
         }
 
-        if (StringUtils.isEmpty(config.ipAddress) || StringUtils.isEmpty(config.systemId)) {
+        if (config.ipAddress.isEmpty() || config.systemId.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "mylink address or system id not specified");
             return false;
