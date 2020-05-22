@@ -50,7 +50,7 @@ public class GeohashTransformationService implements TransformationService {
                 }
             } catch (NumberFormatException e) {
                 throw new TransformationException(
-                        String.format("\"The value '{}' is not valid precision level : {}", precision));
+                        String.format("The value '{}' is not valid precision level : {}", precision));
             }
         } catch (IllegalArgumentException e) {
             try {
