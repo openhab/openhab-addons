@@ -24,7 +24,29 @@
 		</channels>
 
 		<representation-property>id</representation-property>
-		<config-description-ref uri="thing-type:netatmo:nawelcomecamera"/>
+		<config-description-ref uri="thing-type:netatmo:camera"/>
+	</thing-type>
+
+	<thing-type id="NOC">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="netatmoapi" />
+		</supported-bridge-type-refs>
+
+		<label>Presence Camera</label>
+		<description>This represents a presence camera at home</description>
+
+		<channels>
+			<channel id="cameraStatus" typeId="status"></channel>
+			<channel id="cameraSdStatus" typeId="sd_status"></channel>
+			<channel id="cameraAlimStatus" typeId="alim_status"></channel>
+			<channel id="cameraIsLocal" typeId="is_locale"></channel>
+			<channel id="cameraLivePicture" typeId="live_picture"></channel>
+			<channel id="cameraLivePictureUrl" typeId="live_picture_url"></channel>
+			<channel id="cameraLiveStreamUrl" typeId="live_stream_url"></channel>
+		</channels>
+
+		<representation-property>id</representation-property>
+		<config-description-ref uri="thing-type:netatmo:camera" />
 	</thing-type>
 
 
