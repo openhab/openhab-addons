@@ -22,7 +22,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -150,7 +149,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
             dataListener.applyConfig(configDiscovery);
         }
 
-        if (StringUtils.isNotEmpty(configuration.fqdn)) {
+        if (configuration.fqdn != null && !configuration.fqdn.isEmpty()) {
             updateStatus(ThingStatus.UNKNOWN);
 
             logger.debug("Binding will schedule a job to establish a connection...");
@@ -211,12 +210,12 @@ public class FreeboxHandler extends BaseBridgeHandler {
         String errorMsg = null;
         if (result == null) {
             errorMsg = "Can't connect to " + fqdn;
-        } else if (StringUtils.isEmpty(result.getApiBaseUrl())) {
+        } else if (result.getApiBaseUrl() == null || result.getApiBaseUrl().isEmpty()) {
             errorMsg = fqdn + " does not deliver any API base URL";
-        } else if (StringUtils.isEmpty(result.getApiVersion())) {
+        } else if (result.getApiVersion() == null || result.getApiVersion().isEmpty()) {
             errorMsg = fqdn + " does not deliver any API version";
         } else if (Boolean.TRUE.equals(result.isHttpsAvailable()) && !Boolean.TRUE.equals(configuration.useOnlyHttp)) {
-            if (result.getHttpsPort() == null || StringUtils.isEmpty(result.getApiDomain())) {
+            if (result.getHttpsPort() == null || result.getApiDomain() == null || result.getApiDomain().isEmpty()) {
                 if (httpsRequestOk) {
                     useHttps = true;
                 } else {
@@ -234,7 +233,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
         } else if (!apiManager.authorize(useHttps, fqdn, result.getApiBaseUrl(), result.getApiVersion(),
                 configuration.appToken)) {
-            if (StringUtils.isEmpty(configuration.appToken)) {
+            if (configuration.appToken == null || configuration.appToken.isEmpty()) {
                 errorMsg = "App token not set in the thing configuration";
             } else {
                 errorMsg = "Check your app token in the thing configuration; opening session with " + fqdn + " using "
@@ -260,13 +259,13 @@ public class FreeboxHandler extends BaseBridgeHandler {
         }
 
         Map<String, String> properties = editProperties();
-        if (result != null && StringUtils.isNotEmpty(result.getApiBaseUrl())) {
+        if (result != null && result.getApiBaseUrl() != null && !result.getApiBaseUrl().isEmpty()) {
             properties.put(API_BASE_URL, result.getApiBaseUrl());
         }
-        if (result != null && StringUtils.isNotEmpty(result.getApiVersion())) {
+        if (result != null && result.getApiVersion() != null && !result.getApiVersion().isEmpty()) {
             properties.put(API_VERSION, result.getApiVersion());
         }
-        if (result != null && StringUtils.isNotEmpty(result.getDeviceType())) {
+        if (result != null && result.getDeviceType() != null && !result.getDeviceType().isEmpty()) {
             properties.put(Thing.PROPERTY_HARDWARE_VERSION, result.getDeviceType());
         }
         updateProperties(properties);
@@ -308,10 +307,10 @@ public class FreeboxHandler extends BaseBridgeHandler {
     private boolean fetchConnectionStatus() {
         try {
             FreeboxConnectionStatus connectionStatus = apiManager.getConnectionStatus();
-            if (StringUtils.isNotEmpty(connectionStatus.getState())) {
+            if (connectionStatus.getState() != null && !connectionStatus.getState().isEmpty()) {
                 updateChannelStringState(LINESTATUS, connectionStatus.getState());
             }
-            if (StringUtils.isNotEmpty(connectionStatus.getIpv4())) {
+            if (connectionStatus.getIpv4() != null && !connectionStatus.getIpv4().isEmpty()) {
                 updateChannelStringState(IPV4, connectionStatus.getIpv4());
             }
             updateChannelDecimalState(RATEUP, connectionStatus.getRateUp());
@@ -328,7 +327,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
     private boolean fetchxDslStatus() {
         try {
             String status = apiManager.getxDslStatus();
-            if (StringUtils.isNotEmpty(status)) {
+            if (status != null && !status.isEmpty()) {
                 updateChannelStringState(XDSLSTATUS, status);
             }
             return true;
@@ -422,17 +421,17 @@ public class FreeboxHandler extends BaseBridgeHandler {
         try {
             FreeboxSystemConfig config = apiManager.getSystemConfig();
             Map<String, String> properties = editProperties();
-            if (StringUtils.isNotEmpty(config.getSerial())) {
+            if (config.getSerial() != null && !config.getSerial().isEmpty()) {
                 properties.put(Thing.PROPERTY_SERIAL_NUMBER, config.getSerial());
             }
-            if (StringUtils.isNotEmpty(config.getBoardName())) {
+            if (config.getBoardName() != null && !config.getBoardName().isEmpty()) {
                 properties.put(Thing.PROPERTY_HARDWARE_VERSION, config.getBoardName());
             }
-            if (StringUtils.isNotEmpty(config.getFirmwareVersion())) {
+            if (config.getFirmwareVersion() != null && !config.getFirmwareVersion().isEmpty()) {
                 properties.put(Thing.PROPERTY_FIRMWARE_VERSION, config.getFirmwareVersion());
                 updateChannelStringState(FWVERSION, config.getFirmwareVersion());
             }
-            if (StringUtils.isNotEmpty(config.getMac())) {
+            if (config.getMac() != null && !config.getMac().isEmpty()) {
                 properties.put(Thing.PROPERTY_MAC_ADDRESS, config.getMac());
             }
             updateProperties(properties);
