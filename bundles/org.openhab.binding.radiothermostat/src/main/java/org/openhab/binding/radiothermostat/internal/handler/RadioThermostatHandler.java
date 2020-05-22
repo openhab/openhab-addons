@@ -111,7 +111,7 @@ public class RadioThermostatHandler extends BaseThingHandler {
     public void initialize() {
         logger.debug("Initializing RadioThermostat handler.");
         RadioThermostatConfiguration config = getConfigAs(RadioThermostatConfiguration.class);
-        updateStatus(ThingStatus.INITIALIZING);
+        updateStatus(ThingStatus.UNKNOWN);
         
         startAutomaticRefresh();
         if (!(config.disableLogs == 1 && config.disableHumidity == 1)) {
@@ -165,7 +165,6 @@ public class RadioThermostatHandler extends BaseThingHandler {
                         if (result instanceof RadioThermostatJsonHumidity) {
                             rthermData.setHumidity(((RadioThermostatJsonHumidity) result).getHumidity());
                         }
-                        Thread.sleep(2000);
                     }
                     
                     if (config.disableLogs != 1) {
@@ -190,25 +189,18 @@ public class RadioThermostatHandler extends BaseThingHandler {
         String errorMsg = null;
     
         //test the thermostat connection by getting the thermostat name and model
-        try {
-            Object nameResult = getRadioThermostatData(NAME_RESOURCE);
-            if (nameResult instanceof RadioThermostatJsonName) {
-                rthermData.setName(((RadioThermostatJsonName) nameResult).getName());
-            } else {
-                errorMsg = "Unable to get thermostat name";
-            }
-            
-            Thread.sleep(2000);
-            
-            Object modelResult = getRadioThermostatData(MODEL_RESOURCE);
-            if (modelResult instanceof RadioThermostatJsonModel) {
-                rthermData.setModel(((RadioThermostatJsonModel) modelResult).getModel());
-                Thread.sleep(2000);
-            } else {
-                errorMsg = "Unable to get thermostat model";
-            }
-        } catch (InterruptedException e) {
-            logger.warn("Exception occurred attempting to connect with thermostat: {}", e.getMessage());
+        Object nameResult = getRadioThermostatData(NAME_RESOURCE);
+        if (nameResult instanceof RadioThermostatJsonName) {
+            rthermData.setName(((RadioThermostatJsonName) nameResult).getName());
+        } else {
+            errorMsg = "Unable to get thermostat name";
+        }
+        
+        Object modelResult = getRadioThermostatData(MODEL_RESOURCE);
+        if (modelResult instanceof RadioThermostatJsonModel) {
+            rthermData.setModel(((RadioThermostatJsonModel) modelResult).getModel());
+        } else {
+            errorMsg = "Unable to get thermostat model";
         }
         
         // populate fan mode options based on thermostat model
