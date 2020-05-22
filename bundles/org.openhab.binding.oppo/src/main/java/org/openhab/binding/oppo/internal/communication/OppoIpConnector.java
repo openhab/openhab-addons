@@ -74,7 +74,7 @@ public class OppoIpConnector extends OppoConnector {
             logger.debug("IP connection opened");
         } catch (IOException | SecurityException | IllegalArgumentException e) {
             setConnected(false);
-            logger.error("Opening IP connection failed: {}", e.getMessage());
+            logger.warn("Opening IP connection failed: {}", e.getMessage());
             throw new OppoException("Opening IP connection failed: " + e.getMessage());
         }
     }

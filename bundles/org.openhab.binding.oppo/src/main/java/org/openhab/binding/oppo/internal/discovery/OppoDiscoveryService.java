@@ -13,6 +13,7 @@
 package org.openhab.binding.oppo.internal.discovery;
 
 import static org.openhab.binding.oppo.internal.OppoBindingConstants.*;
+import static org.eclipse.jetty.http.HttpMethod.GET;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -25,21 +26,24 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +54,8 @@ import org.slf4j.LoggerFactory;
  * @author Tim Roberts - Initial contribution
  * @author Michael Lobstein - Adapted for the Oppo binding
  */
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.oppo")
+
+@NonNullByDefault
 public class OppoDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(OppoDiscoveryService.class);
@@ -86,16 +91,31 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
     /**
      * The {@link ExecutorService} to run the listening threads on.
      */
+    @Nullable
     private ExecutorService executorService;
+
+    private final HttpClient httpClient;
 
     /**
      * Constructs the discovery class using the thing IDs that we can discover.
      */
-    @Activate
-    public OppoDiscoveryService() {
+    public OppoDiscoveryService(HttpClient httpClient) {
         super(SUPPORTED_THING_TYPES_UIDS, 30, false);
+        this.httpClient = httpClient;
+        activate(null);
     }
     
+    @Override
+    protected void activate(@Nullable Map<String, @Nullable Object> configProperties) {
+        super.activate(configProperties);
+    }
+
+    @Override
+    public void deactivate() {
+        stopScan();
+        super.deactivate();
+    }
+
     @Override
     public Set<ThingTypeUID> getSupportedThingTypes() {
         return SUPPORTED_THING_TYPES_UIDS;
@@ -222,7 +242,8 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
                 // for the 10x we need to get the DLNA service list page and find modelNumber there
                 // in order to determine if this is a BDP-103 or BDP-105
                 try {
-                    String result = HttpUtil.executeUrl("GET", "http://"+ host + ":2870/dmr.xml", 5000);
+                    ContentResponse contentResponse = httpClient.newRequest("http://"+ host + ":2870/dmr.xml").method(GET).timeout(5, TimeUnit.SECONDS).send();
+                    String result = contentResponse.getContentAsString();
                     
                     if (StringUtils.isNotEmpty(result) && result.contains("<modelName>OPPO BDP-103</modelName>")) {
                         model = MODEL103;
@@ -234,9 +255,9 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
                         model = MODEL103;
                         displayName = DISPLAY_NAME_103;
                     }
-                } catch (IOException e) {
+                } catch (ExecutionException | InterruptedException | TimeoutException e) {
                     logger.debug("Error getting player DLNA info page: {}", e.getMessage());
-                    // the call failed for some reason, just pretend we are a 103
+                    // the call failed for some reason, just assume we are a 103
                     model = MODEL103;
                     displayName = DISPLAY_NAME_103;
                 }

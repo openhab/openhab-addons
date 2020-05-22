@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	
-	<!-- Oppo Whole House Amplifier Thing -->
+	<!-- Oppo Blu-ray disc player Thing -->
 	<thing-type id="player">
 		<label>Oppo</label>
 		<description>
@@ -42,7 +42,7 @@
 		
 		<config-description>
 			<parameter name="model" type="integer" required="true">
-				<label>Player model</label>
+				<label>Player Model</label>
 				<description>Choose model of Oppo player</description>
 				<limitToOptions>true</limitToOptions>
 				<options>
@@ -121,14 +121,14 @@
 	<channel-type id="time_display">
 		<item-type>String</item-type>
 		<label>Time Display</label>
-		<description>The time display (same as on the player's LCD screen) </description>
+		<description>The playback time display (same as on the player's LCD screen) </description>
 		<state readOnly="true"/>
 	</channel-type>
 	
 	<channel-type id="current_title">
 		<item-type>Number</item-type>
 		<label>Current Title/Track</label>
-		<description>Current title or track number playing </description>
+		<description>Current title or track number playing</description>
 		<state readOnly="true"/>
 	</channel-type>
 	
@@ -281,8 +281,11 @@
 		<description>Simulate pressing a button on the remote control</description>
 		<state>
 			<options>
-				<option value="VUP">Vol up</option>
-				<option value="VDN">Vol dn</option>
+				<option value="EJT">Eject</option>
+				<option value="DIM">Dimmer</option>
+				<option value="PUR">Pure Audio</option>
+				<option value="VUP">Vol +</option>
+				<option value="VDN">Vol -</option>
 				<option value="MUT">Mute</option>
 				<option value="NU1">1</option>
 				<option value="NU2">2</option>
@@ -322,9 +325,15 @@
 				<option value="NXT">Next</option>
 				<option value="AUD">Audio</option>
 				<option value="SUB">Subtitle</option>
+				<option value="ANG">Angle</option>
 				<option value="ZOM">Zoom</option>
+				<option value="SAP">SAP</option>
+				<option value="ATB">AB Replay</option>
+				<option value="RPT">Repeat</option>
 				<option value="PIP">Picture in Picture</option>
 				<option value="HDM">HDMI Mode</option>
+				<option value="NFX">Netflix</option>
+				<!--<option value="VUD">VUDU</option>-->
 				<option value="INH">Extended OSD</option>
 			</options>
 		</state>

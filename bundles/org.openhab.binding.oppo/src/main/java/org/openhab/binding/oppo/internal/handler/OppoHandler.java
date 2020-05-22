@@ -71,7 +71,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
     private static final long RECON_POLLING_INTERVAL = TimeUnit.SECONDS.toSeconds(60);
     private static final long POLLING_INTERVAL = TimeUnit.SECONDS.toSeconds(30);
     private static final long INITIAL_POLLING_DELAY = TimeUnit.SECONDS.toSeconds(10);
-    private static final long SLEEP_BETWEEN_CMD = TimeUnit.MILLISECONDS.toMillis(250);
+    private static final long SLEEP_BETWEEN_CMD = TimeUnit.MILLISECONDS.toMillis(50);
 
     private static final String ON = "ON";
     private static final String OFF = "OFF";
@@ -178,11 +178,11 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                 channels.removeIf(c -> (c.getUID().getId().equals(CHANNEL_ASPECT_RATIO) || c.getUID().getId().equals(CHANNEL_HDR_MODE)));
             }
             
-            // no query for this, set the default value at startup
+            // no query to determine this, so set the default value at startup
             updateChannelState(CHANNEL_TIME_MODE, currentTimeMode);
             
             updateThing(editThing().withChannels(channels).build());
-                  
+            
             updateStatus(ThingStatus.UNKNOWN);
             scheduleReconnectJob();
             schedulePollingJob();
@@ -227,7 +227,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                     case CHANNEL_POWER:
                         if (command instanceof OnOffType && command == OnOffType.ON) {
                             connector.sendCommand(OppoCommand.POWER_ON);
-                            Thread.sleep(3000); // wait 3 seconds and set verbose mode  again mode just be sure
+                            Thread.sleep(SLEEP_BETWEEN_CMD);
                             connector.sendCommand(OppoCommand.SET_VERBOSE_MODE, this.verboseMode);
                         } else if (command instanceof OnOffType && command == OnOffType.OFF) {
                             connector.sendCommand(OppoCommand.POWER_OFF);
@@ -301,14 +301,17 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                             connector.sendCommand(command.toString());
                         }
                         break;
+                    default:
+                        logger.warn("Unknown Command {} from channel {}", command, channel);
+                        break;
                 }
             } catch (OppoException | InterruptedException e) {
-                logger.error("Command {} from channel {} failed: {}", command, channel, e.getMessage());
+                logger.warn("Command {} from channel {} failed: {}", command, channel, e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Sending command failed");
                 closeConnection();
                 scheduleReconnectJob();
             }
-        }                    
+        }
     }
 
     /**
@@ -394,7 +397,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                 case "QCR":
                     // these are used with verbose mode 2
                     updateChannelState(CHANNEL_TIME_DISPLAY, updateData);
-                    break;                    
+                    break;
                 case "QVR":
                     this.versionString = updateData;
                     break;
@@ -428,7 +431,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                     // example: 0 BD-PLAYER, split off just the number
                     updateChannelState(CHANNEL_SOURCE, updateData.split(" ")[0]);
                     break;
-                case "UPL":                    
+                case "UPL":
                     // we got the playback status update, throw it away and call the query because the text output is better
                     connector.sendCommand(OppoCommand.QUERY_PLAYBACK_STATUS); 
                     break;
@@ -443,7 +446,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                     updateChannelState(CHANNEL_TOTAL_CHAPTER, updateData.split("/")[1]);
                     break;
                 case "QPL":
-                    // if playback has stopped, we have to zero out Time, Title and Track info manually
+                    // if playback has stopped, we have to zero out Time, Title and Track info and so on manually
                     if ("NO DISC".equals(updateData) || "LOADING".equals(updateData) || "OPEN".equals(updateData) || "CLOSE".equals(updateData) || "STOP".equals(updateData)) {
                         updateChannelState(CHANNEL_CURRENT_TITLE, UNDEF);
                         updateChannelState(CHANNEL_TOTAL_TITLE, UNDEF);
@@ -521,7 +524,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                     break;
             }
         } catch (OppoException e) {
-            logger.debug("Exception sending initial commands: {}", e.getMessage());
+            logger.debug("Exception processing event from player: {}", e.getMessage());
         }
     }
 
@@ -542,10 +545,10 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         try {
                             Long prevUpdateTime = lastEventReceived;
                             
-                            // if the player is off most of these won't really do much...
                             connector.sendCommand(OppoCommand.SET_VERBOSE_MODE, this.verboseMode);
                             Thread.sleep(SLEEP_BETWEEN_CMD);
                             
+                            // if the player is off most of these won't really do much...
                             OppoCommand.initialCommands.forEach(cmd -> {
                                 try {
                                     connector.sendCommand(cmd);
@@ -599,7 +602,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
         // when the Oppo is off, this will keep the connection (esp Serial over IP) alive and detect if the connection goes down
         pollingJob = scheduler.scheduleWithFixedDelay(() -> {
             if (connector.isConnected()) {
-                logger.debug("Polling the component for updated status...");
+                logger.debug("Polling the player for updated status...");
 
                 synchronized (sequenceLock) {
                     try {
@@ -631,14 +634,14 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         }
                         
                     } catch (OppoException | InterruptedException e) {
-                        logger.debug("Polling error: {}", e.getMessage());
+                        logger.warn("Polling error: {}", e.getMessage());
                     }
 
                     // if the last event received was more than 1.25 intervals ago,
-                    // the component is not responding even though the connection is still good
+                    // the player is not responding even though the connection is still good
                     if ((System.currentTimeMillis() - lastEventReceived) > (POLLING_INTERVAL * 1.25 * 1000)) {
-                        logger.debug("Component not responding to status requests");
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Component not responding to status requests");
+                        logger.debug("Player not responding to status requests");
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Player not responding to status requests");
                         closeConnection();
                         scheduleReconnectJob();
                     } 
@@ -741,7 +744,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                 connector.sendCommand(OppoCommand.REWIND);
             }
         } else {
-            logger.debug("Unknown control command: {}", command);
+            logger.warn("Unknown control command: {}", command);
         }
     }
     
@@ -800,7 +803,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                 inputSourceOptions.add(new StateOption("3","Optical In"));
                 inputSourceOptions.add(new StateOption("4","Coaxial In"));
                 inputSourceOptions.add(new StateOption("5","USB Audio In")); 
-            }   
+            }
         }
     }
     

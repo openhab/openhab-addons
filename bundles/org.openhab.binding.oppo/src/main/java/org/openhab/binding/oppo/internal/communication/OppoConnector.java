@@ -38,8 +38,8 @@ import org.slf4j.LoggerFactory;
 public abstract class OppoConnector {
     private final Logger logger = LoggerFactory.getLogger(OppoConnector.class);
 
-    public String END_CMD = "\r";    
-    private String  BEGIN_CMD = "#";
+    private String BEGIN_CMD = "#";
+    private String END_CMD = "\r";
 
     /** The output stream */
     protected @Nullable OutputStream dataOut;
@@ -198,7 +198,7 @@ public abstract class OppoConnector {
         logger.debug("sending command: {}", messageStr);
 
         byte[] message = messageStr.getBytes(StandardCharsets.US_ASCII);
-        logger.debug("Send command {}", messageStr);      
+        logger.debug("Send command {}", messageStr);
 
         OutputStream dataOut = this.dataOut;
         if (dataOut == null) {
@@ -279,9 +279,8 @@ public abstract class OppoConnector {
     }
 
     /**
-     * Dispatch an event (type, key, value) to the event listeners
+     * Dispatch an event (key, value) to the event listeners
      *
-     * @param type the type
      * @param key the key
      * @param value the value
      */
