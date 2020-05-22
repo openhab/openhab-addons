@@ -48,7 +48,7 @@ public class GeohashTransformationServiceTest {
     @Test(expected = TransformationException.class)
     public void testInvalidGeohash() throws TransformationException {
         // check that transformation of an invalid geohash returns null
-        String hash = "aaaa";
+        String hash = "invalidHash";
         @SuppressWarnings("unused")
         String transformedResponse = processor.transform("", hash);
     }

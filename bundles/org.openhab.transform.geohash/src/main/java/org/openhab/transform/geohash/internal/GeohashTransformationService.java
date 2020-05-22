@@ -35,12 +35,11 @@ import ch.hsr.geohash.WGS84Point;
 @Component(immediate = true, service = TransformationService.class, property = { "smarthome.transform=GEOHASH" })
 @NonNullByDefault
 public class GeohashTransformationService implements TransformationService {
-
     private final Logger logger = LoggerFactory.getLogger(GeohashTransformationService.class);
     private int DEFAULT_PRECISION = 6;
 
     @Override
-    public @Nullable String transform(String precision, String coordinates) throws TransformationException {
+    public @Nullable String transform(final String precision, final String coordinates) throws TransformationException {
         try {
             PointType point = new PointType(coordinates);
             try {
@@ -49,7 +48,8 @@ public class GeohashTransformationService implements TransformationService {
                     return GeoHash.withCharacterPrecision(point.getLatitude().doubleValue(),
                             point.getLongitude().doubleValue(), numcar).toBase32();
                 } else {
-                    logger.info("Valid range for Precision is ]0,12] : '{}'", precision);
+                    throw new TransformationException(
+                            String.format("Valid range for Precision is ]0,12] : '{}'", precision));
                 }
             } catch (NumberFormatException e) {
                 logger.info("The value '{}' is not valid precision level : {}", precision, e.getMessage());

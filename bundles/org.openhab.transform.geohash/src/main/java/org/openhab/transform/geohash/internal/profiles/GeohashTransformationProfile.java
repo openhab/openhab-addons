@@ -38,14 +38,12 @@ public class GeohashTransformationProfile implements StateProfile {
 
     public static final ProfileTypeUID PROFILE_TYPE_UID = new ProfileTypeUID(
             TransformationService.TRANSFORM_PROFILE_SCOPE, "GEOHASH");
-
-    private final Logger logger = LoggerFactory.getLogger(GeohashTransformationProfile.class);
-
-    private final TransformationService service;
-    private final ProfileCallback callback;
-
     private static final String PRECISION_PARAM = "precision";
     private static final String SOURCE_FORMAT_PARAM = "sourceFormat";
+
+    private final Logger logger = LoggerFactory.getLogger(GeohashTransformationProfile.class);
+    private final TransformationService service;
+    private final ProfileCallback callback;
 
     private final @NonNullByDefault({}) String precision;
     private final @NonNullByDefault({}) String sourceFormat;
