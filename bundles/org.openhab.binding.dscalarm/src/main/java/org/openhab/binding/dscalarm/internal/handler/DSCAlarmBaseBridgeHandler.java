@@ -82,7 +82,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
     private String userCode = null;
 
     // Polling variables
-    public int pollPeriod = 0;
+    protected int pollPeriod = 0;
     private long pollElapsedTime = 0;
     private long pollStartTime = 0;
     private long refreshInterval = 5000;
@@ -131,6 +131,24 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
      */
     public void setBridgeType(DSCAlarmBridgeType dscAlarmBridgeType) {
         this.dscAlarmBridgeType = dscAlarmBridgeType;
+    }
+
+    @Override
+    public void initialize() {
+        if (this.pollPeriod > 15) {
+            this.pollPeriod = 15;
+        } else if (this.pollPeriod < 1) {
+            this.pollPeriod = 1;
+        }
+        updateStatus(ThingStatus.OFFLINE);
+        startPolling();
+    }
+
+    @Override
+    public void dispose() {
+        stopPolling();
+        closeConnection();
+        super.dispose();
     }
 
     /**
@@ -210,8 +228,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
      * @param isOnline
      */
     public void setBridgeStatus(boolean isOnline) {
-        logger.debug("setBridgeConnection(): Setting Bridge to {}",
-                isOnline ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
+        logger.debug("setBridgeStatus(): Setting Bridge to {}", isOnline ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
 
         updateStatus(isOnline ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
 
@@ -276,7 +293,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
     /**
      * Method to start the polling task.
      */
-    public void startPolling() {
+    private void startPolling() {
         logger.debug("Starting DSC Alarm Polling Task.");
         if (pollingTask == null || pollingTask.isCancelled()) {
             pollingTask = scheduler.scheduleWithFixedDelay(this::polling, 0, refreshInterval, TimeUnit.MILLISECONDS);
@@ -286,7 +303,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
     /**
      * Method to stop the polling task.
      */
-    public void stopPolling() {
+    private void stopPolling() {
         logger.debug("Stopping DSC Alarm Polling Task.");
         if (pollingTask != null && !pollingTask.isCancelled()) {
             pollingTask.cancel(true);
@@ -316,13 +333,11 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
 
             checkThings();
 
-            if (thingsHaveChanged) {
-                if (allThingsInitialized) {
-                    this.setBridgeStatus(isConnected());
-                    thingsHaveChanged = false;
-                    // Get a status report from DSC Alarm.
-                    sendCommand(DSCAlarmCode.StatusReport);
-                }
+            if (thingsHaveChanged && allThingsInitialized) {
+                this.setBridgeStatus(isConnected());
+                thingsHaveChanged = false;
+                // Get a status report from DSC Alarm.
+                sendCommand(DSCAlarmCode.StatusReport);
             }
         } else {
             logger.error("Not Connected to the DSC Alarm!");
@@ -353,11 +368,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                 logger.debug("***Checking '{}' - Status: {}, Initialized: {}", thing.getUID(), thing.getStatus(),
                         handler.isThingHandlerInitialized());
 
-                if (!handler.isThingHandlerInitialized() || !thing.getStatus().equals(ThingStatus.ONLINE)) {
-                    if (getThing().getStatus().equals(ThingStatus.ONLINE)) {
-                        handler.bridgeStatusChanged(getThing().getStatusInfo());
-                    }
-
+                if (!handler.isThingHandlerInitialized() || thing.getStatus() != ThingStatus.ONLINE) {
                     allThingsInitialized = false;
                 }
 
@@ -508,7 +519,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                     DSCAlarmBaseThingHandler thingHandler = (DSCAlarmBaseThingHandler) thing.getHandler();
 
                     if (thingHandler != null) {
-                        if (thingHandler.isThingHandlerInitialized()) {
+                        if (thingHandler.isThingHandlerInitialized() && thing.getStatus() == ThingStatus.ONLINE) {
                             thingHandler.dscAlarmEventReceived(event, thing);
 
                         } else {

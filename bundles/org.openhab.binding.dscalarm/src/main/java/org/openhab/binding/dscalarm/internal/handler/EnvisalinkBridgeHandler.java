@@ -24,6 +24,7 @@ import java.net.UnknownHostException;
 
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.openhab.binding.dscalarm.internal.config.EnvisalinkBridgeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,18 +62,20 @@ public class EnvisalinkBridgeHandler extends DSCAlarmBaseBridgeHandler {
 
         EnvisalinkBridgeConfiguration configuration = getConfigAs(EnvisalinkBridgeConfiguration.class);
 
-        if (configuration.ipAddress != null) {
-            ipAddress = configuration.ipAddress;
+        if (configuration.ipAddress == null || configuration.ipAddress.trim().isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Set an IP address in the thing configuration.");
+        } else if (configuration.port == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Set a TCP port in the thing configuration.");
+        } else {
+            ipAddress = configuration.ipAddress.trim();
             tcpPort = configuration.port.intValue();
             setPassword(configuration.password);
             connectionTimeout = configuration.connectionTimeout.intValue();
             pollPeriod = configuration.pollPeriod.intValue();
 
-            if (this.pollPeriod > 15) {
-                this.pollPeriod = 15;
-            } else if (this.pollPeriod < 1) {
-                this.pollPeriod = 1;
-            }
+            super.initialize();
 
             logger.debug("Envisalink Bridge Handler Initialized");
             logger.debug("   IP Address:         {},", ipAddress);
@@ -80,17 +83,7 @@ public class EnvisalinkBridgeHandler extends DSCAlarmBaseBridgeHandler {
             logger.debug("   Password:           {},", getPassword());
             logger.debug("   PollPeriod:         {},", pollPeriod);
             logger.debug("   Connection Timeout: {}.", connectionTimeout);
-
-            updateStatus(ThingStatus.OFFLINE);
-            startPolling();
         }
-    }
-
-    @Override
-    public void dispose() {
-        stopPolling();
-        closeConnection();
-        super.dispose();
     }
 
     @Override

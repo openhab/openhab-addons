@@ -22,6 +22,7 @@ import java.util.TooManyListenersException;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.io.transport.serial.PortInUseException;
 import org.eclipse.smarthome.io.transport.serial.SerialPort;
 import org.eclipse.smarthome.io.transport.serial.SerialPortEvent;
@@ -61,34 +62,22 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
 
         IT100BridgeConfiguration configuration = getConfigAs(IT100BridgeConfiguration.class);
 
-        serialPortName = configuration.serialPort;
-
-        if (serialPortName != null) {
+        if (configuration.serialPort == null || configuration.serialPort.trim().isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Set a serial port in the thing configuration.");
+        } else {
+            serialPortName = configuration.serialPort.trim();
             baudRate = configuration.baud.intValue();
             pollPeriod = configuration.pollPeriod.intValue();
 
-            if (this.pollPeriod > 15) {
-                this.pollPeriod = 15;
-            } else if (this.pollPeriod < 1) {
-                this.pollPeriod = 1;
-            }
+            super.initialize();
 
             logger.debug("IT100 Bridge Handler Initialized.");
             logger.debug("   Serial Port: {},", serialPortName);
             logger.debug("   Baud:        {},", baudRate);
             logger.debug("   Password:    {},", getPassword());
             logger.debug("   PollPeriod:  {},", pollPeriod);
-
-            updateStatus(ThingStatus.OFFLINE);
-            startPolling();
         }
-    }
-
-    @Override
-    public void dispose() {
-        stopPolling();
-        closeConnection();
-        super.dispose();
     }
 
     @Override
