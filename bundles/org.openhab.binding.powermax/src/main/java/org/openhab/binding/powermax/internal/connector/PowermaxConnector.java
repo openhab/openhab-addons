@@ -65,6 +65,7 @@ public abstract class PowermaxConnector implements PowermaxConnectorInterface {
             try {
                 output.close();
             } catch (IOException e) {
+                logger.debug("Error while closing the output stream: {}", e.getMessage());
             }
         }
 
@@ -72,6 +73,7 @@ public abstract class PowermaxConnector implements PowermaxConnectorInterface {
             try {
                 input.close();
             } catch (IOException e) {
+                logger.debug("Error while closing the input stream: {}", e.getMessage());
             }
         }
 

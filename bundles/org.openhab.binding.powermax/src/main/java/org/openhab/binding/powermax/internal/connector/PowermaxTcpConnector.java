@@ -92,6 +92,7 @@ public class PowermaxTcpConnector extends PowermaxConnector {
             try {
                 tcpSocket.close();
             } catch (IOException e) {
+                logger.debug("Error while closing the socket: {}", e.getMessage());
             }
         }
 
