@@ -46,25 +46,7 @@ The default audio format can be overriden with the value "mp3" or "ogg".
 
 ### Service Configuration via Text files
 
-PollyTTS can also be installed and configured textually:
-
-#### Installing
-
-In your `$OPENHAB_ROOT/conf/services/addons.cfg` add:
-
-```
-...other stuff...
-
-voice = pollytts
-
-...other stuff...
-```
-
-This will install the Polly TTS voice addon. 
-
-### Configuring
-
-Creat a new file in `$OPENHAB_ROOT/conf/services` named `pollytts.cfg`
+Create a new file in `$OPENHAB_ROOT/conf/services` named `pollytts.cfg`
 
 It's contents should look similar to:
 
