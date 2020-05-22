@@ -1,7 +1,7 @@
 # Nuvo Grand Concerto & Essentia G Binding
 
 This binding can be used to control the Nuvo Grand Concerto or Essentia G whole house multi-zone amplifier.
-Up to 20 keypad zones can be contolled when zone expansion modules are used (if not all zones on the amp are used they can be excluded via configuration).
+Up to 20 keypad zones can be controlled when zone expansion modules are used (if not all zones on the amp are used they can be excluded via configuration).
 
 The binding supports two different kinds of connections:
 

@@ -152,10 +152,6 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                 configError = "invalid port configuration setting";
             }
         }
-
-        if (config.numZones == null || config.numZones < ONE || config.numZones > MAX_ZONES) {
-            configError = "number of zones must be a number between " + ONE.toString() + " and " + MAX_ZONES.toString();
-        }
         
         if (config.clockSync != null && config.clockSync == 1) {
             scheduleClockSyncJob();
@@ -354,7 +350,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                         break;
                 }
             } catch (NuvoException e) {
-                logger.error("Command {} from channel {} failed: {}", command, channel, e.getMessage());
+                logger.warn("Command {} from channel {} failed: {}", command, channel, e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Sending command failed");
                 closeConnection();
                 scheduleReconnectJob();
