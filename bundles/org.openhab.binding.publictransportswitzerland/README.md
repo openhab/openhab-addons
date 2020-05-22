@@ -24,5 +24,5 @@ This binding does not support auto-discovery.
 ### Stationboard
 | channel | type   | description |
 |---------|--------|-------------|
-| departures#n   | String | A dynamic channel for each upcoming departure
+| departures#n   | String | A dynamic channel for each upcoming departure |
 | tsv (advanced) | String | A tsv which contains the fields:<br />`category, number, departureTime, destination, track, delay` |
