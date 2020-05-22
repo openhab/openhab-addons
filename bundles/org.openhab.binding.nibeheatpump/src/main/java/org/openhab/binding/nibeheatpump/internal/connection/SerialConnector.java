@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TooManyListenersException;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.eclipse.smarthome.io.transport.serial.PortInUseException;
 import org.eclipse.smarthome.io.transport.serial.SerialPort;
@@ -109,18 +108,28 @@ public class SerialConnector extends NibeHeatPumpBaseConnector {
     @Override
     public void disconnect() {
         logger.debug("Disconnecting");
-        serialPort.removeEventListener();
+        if (serialPort != null) {
+            serialPort.removeEventListener();
+        }
         if (readerThread != null) {
             logger.debug("Interrupt serial listener");
             readerThread.interrupt();
         }
         if (out != null) {
             logger.debug("Close serial out stream");
-            IOUtils.closeQuietly(out);
+            try {
+                out.close();
+            } catch (IOException e) {
+                logger.debug("Error while closing the output stream: {}", e.getMessage());
+            }
         }
         if (in != null) {
             logger.debug("Close serial in stream");
-            IOUtils.closeQuietly(in);
+            try {
+                in.close();
+            } catch (IOException e) {
+                logger.debug("Error while closing the input stream: {}", e.getMessage());
+            }
         }
         if (serialPort != null) {
             logger.debug("Close serial port");
@@ -163,7 +172,6 @@ public class SerialConnector extends NibeHeatPumpBaseConnector {
         public void interrupt() {
             interrupted = true;
             super.interrupt();
-            IOUtils.closeQuietly(in);
         }
 
         @Override
