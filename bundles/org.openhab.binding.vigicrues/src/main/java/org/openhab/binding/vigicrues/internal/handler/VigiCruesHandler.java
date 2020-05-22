@@ -16,8 +16,6 @@ import static org.openhab.binding.vigicrues.internal.VigiCruesBindingConstants.*
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.concurrent.ScheduledFuture;
@@ -25,8 +23,8 @@ import java.util.concurrent.TimeUnit;
 
 import javax.measure.Unit;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -38,6 +36,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.vigicrues.internal.VigiCruesConfiguration;
 import org.openhab.binding.vigicrues.internal.json.OpenDatasoftResponse;
 import org.slf4j.Logger;
@@ -58,6 +57,7 @@ import tec.uom.se.unit.Units;
 @NonNullByDefault
 public class VigiCruesHandler extends BaseThingHandler {
     private static final String URL = OPENDATASOFT_URL + "?dataset=vigicrues&sort=timestamp&q=";
+    private static final int TIMEOUT_MS = 30000;
     private final Logger logger = LoggerFactory.getLogger(VigiCruesHandler.class);
     private final Gson gson = new GsonBuilder()
             .registerTypeAdapter(ZonedDateTime.class, (JsonDeserializer<ZonedDateTime>) (json, type,
@@ -67,8 +67,8 @@ public class VigiCruesHandler extends BaseThingHandler {
     // Time zone provider representing time zone configured in openHAB configuration
     private final TimeZoneProvider timeZoneProvider;
 
-    private @NonNullByDefault({}) ScheduledFuture<?> refreshJob;
-    private @NonNullByDefault({}) String queryUrl;
+    private @Nullable ScheduledFuture<?> refreshJob;
+    private String queryUrl = "";
 
     public VigiCruesHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
@@ -92,9 +92,10 @@ public class VigiCruesHandler extends BaseThingHandler {
     public void dispose() {
         logger.debug("Disposing the VigiCrues handler.");
 
+        ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob != null && !refreshJob.isCancelled()) {
             refreshJob.cancel(true);
-            refreshJob = null;
+            this.refreshJob = null;
         }
     }
 
@@ -109,11 +110,11 @@ public class VigiCruesHandler extends BaseThingHandler {
 
     private void updateAndPublish() {
         try {
-            URL url = new URL(queryUrl);
+            if (queryUrl.isEmpty()) {
+                throw new MalformedURLException();
+            }
             try {
-                URLConnection connection = url.openConnection();
-                String response = IOUtils.toString(connection.getInputStream());
-                IOUtils.closeQuietly(connection.getInputStream());
+                String response = HttpUtil.executeUrl("GET", queryUrl, TIMEOUT_MS);
                 updateStatus(ThingStatus.ONLINE);
                 OpenDatasoftResponse apiResponse = gson.fromJson(response, OpenDatasoftResponse.class);
                 Arrays.stream(apiResponse.getRecords()).findFirst().ifPresent(record -> {
