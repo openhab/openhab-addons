@@ -14,23 +14,18 @@ package org.openhab.binding.meteoalerte.internal.handler;
 
 import static org.openhab.binding.meteoalerte.internal.MeteoAlerteBindingConstants.*;
 
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.imageio.ImageIO;
-
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
@@ -45,6 +40,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.meteoalerte.internal.MeteoAlerteConfiguration;
 import org.openhab.binding.meteoalerte.internal.json.ApiResponse;
 import org.osgi.framework.FrameworkUtil;
@@ -66,8 +62,8 @@ public class MeteoAlerteHandler extends BaseThingHandler {
     private static final String URL = "https://public.opendatasoft.com/api/records/1.0/search/?dataset=risques-meteorologiques-copy&"
             + "facet=etat_vent&facet=etat_pluie_inondation&facet=etat_orage&facet=etat_inondation&facet=etat_neige&facet=etat_canicule&"
             + "facet=etat_grand_froid&facet=etat_avalanches&refine.nom_dept=";
-    private static final ArrayList<String> ALERT_LEVELS = new ArrayList<>(
-            Arrays.asList("Vert", "Jaune", "Orange", "Rouge"));
+    private static final int TIMEOUT_MS = 30000;
+    private static final List<String> ALERT_LEVELS = Arrays.asList("Vert", "Jaune", "Orange", "Rouge");
     private final Logger logger = LoggerFactory.getLogger(MeteoAlerteHandler.class);
     private final Gson gson = new GsonBuilder()
             .registerTypeAdapter(ZonedDateTime.class, (JsonDeserializer<ZonedDateTime>) (json, type,
@@ -77,8 +73,8 @@ public class MeteoAlerteHandler extends BaseThingHandler {
     // Time zone provider representing time zone configured in openHAB configuration
     private final TimeZoneProvider timeZoneProvider;
 
-    private @NonNullByDefault({}) ScheduledFuture<?> refreshJob;
-    private @NonNullByDefault({}) String queryUrl;
+    private @Nullable ScheduledFuture<?> refreshJob;
+    private String queryUrl = "";
 
     public MeteoAlerteHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
@@ -101,10 +97,10 @@ public class MeteoAlerteHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         logger.debug("Disposing the Météo Alerte handler.");
-
+        ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob != null && !refreshJob.isCancelled()) {
             refreshJob.cancel(true);
-            refreshJob = null;
+            this.refreshJob = null;
         }
     }
 
@@ -119,11 +115,11 @@ public class MeteoAlerteHandler extends BaseThingHandler {
 
     private void updateAndPublish() {
         try {
-            URL url = new URL(queryUrl);
+            if (queryUrl.isEmpty()) {
+                throw new MalformedURLException();
+            }
             try {
-                URLConnection connection = url.openConnection();
-                String response = IOUtils.toString(connection.getInputStream());
-                IOUtils.closeQuietly(connection.getInputStream());
+                String response = HttpUtil.executeUrl("GET", queryUrl, TIMEOUT_MS);
                 updateStatus(ThingStatus.ONLINE);
                 ApiResponse apiResponse = gson.fromJson(response, ApiResponse.class);
                 updateChannels(apiResponse);
@@ -181,21 +177,22 @@ public class MeteoAlerteHandler extends BaseThingHandler {
     }
 
     private byte @Nullable [] getImage(String iconPath) {
-        byte[] data = null;
         URL url = FrameworkUtil.getBundle(getClass()).getResource(iconPath);
-        logger.trace("Path to icon image resource is: {}", url);
-        if (url != null) {
-            try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-                InputStream is = url.openStream();
-                BufferedImage image = ImageIO.read(is);
-                ImageIO.write(image, "gif", out);
-                out.flush();
-                data = out.toByteArray();
-            } catch (IOException e) {
-                logger.debug("I/O exception occurred getting image data: {}", e.getMessage(), e);
+        logger.debug("Path to icon image resource is: {}", url);
+        try {
+            InputStream in = url.openStream();
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            int next = in.read();
+            while (next > -1) {
+                bos.write(next);
+                next = in.read();
             }
+            bos.flush();
+            return bos.toByteArray();
+        } catch (IOException e) {
+            logger.debug("I/O exception occurred getting image data: {}", e.getMessage(), e);
         }
-        return data;
+        return null;
     }
 
     public void updateAlertString(String channelId, String value) {
