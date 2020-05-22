@@ -19,7 +19,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.smarthome.core.audio.AudioFormat;
 import org.eclipse.smarthome.core.audio.AudioHTTPServer;
 import org.eclipse.smarthome.core.audio.AudioSink;
@@ -115,7 +114,10 @@ public class SonosAudioSink implements AudioSink {
                 logger.warn("We do not have any callback url, so Sonos cannot play the audio stream!");
             }
         } else {
-            IOUtils.closeQuietly(audioStream);
+            try {
+                audioStream.close();
+            } catch (IOException e) {
+            }
             throw new UnsupportedAudioStreamException(
                     "Sonos can only handle FixedLengthAudioStreams and URLAudioStreams.", audioStream.getClass());
             // Instead of throwing an exception, we could ourselves try to wrap it into a
