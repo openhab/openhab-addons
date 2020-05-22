@@ -20,7 +20,7 @@ It has the `player` id.
 
 ## Discovery
 
-Manually initiated Auto-discovery is supported if Kaleidescape components are accessable on the same IP subnet of the openHAB server. Since discovery involves scanning all IP
+Manually initiated Auto-discovery is supported if Kaleidescape components are accessible on the same IP subnet of the openHAB server. Since discovery involves scanning all IP
 addresses in the subnet range for an open socket, the discovery must be initiated by the user. In the Paper UI Inbox, select Search For Things at the bottom and then choose the
 Kaleidescape System Binding to initiate discovery.
 

@@ -263,7 +263,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                     logger.debug("Command {} from channel {} succeeded", command, channel);
                 }
             } catch (KaleidescapeException e) {
-                logger.error("Command {} from channel {} failed: {}", command, channel, e.getMessage());
+                logger.warn("Command {} from channel {} failed: {}", command, channel, e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Sending command failed");
                 closeConnection();
                 scheduleReconnectJob();
@@ -436,7 +436,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                     // if the last successful polling update was more than 1.25 intervals ago,
                     // the component is not responding even though the connection is still good
                     if ((System.currentTimeMillis() - lastPollingUpdate) > (POLLING_INTERVAL * 1.25 * 1000)) {
-                        logger.error("Component not responding to status requests");
+                        logger.warn("Component not responding to status requests");
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Component not responding to status requests");
                         closeConnection();
                         scheduleReconnectJob();

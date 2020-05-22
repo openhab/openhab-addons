@@ -74,7 +74,7 @@ public class KaleidescapeDiscoveryJob implements Runnable {
             if (isKaleidescapeDevice(address, DEFAULT_API_PORT)) {
                 return true;
             } else {
-                logger.trace("No Kaleidescape component found at IP address ({})", ip);
+                logger.debug("No Kaleidescape component found at IP address ({})", ip);
                 return false;
             }
         } catch (Exception exp) {

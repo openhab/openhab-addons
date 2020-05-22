@@ -133,15 +133,15 @@ public class KaleidescapeDiscoveryService extends AbstractDiscoveryService {
 
             /* Apache Subnet Utils only supports IP v4 for creating string list of IP's */
             if (ipAddress instanceof Inet4Address) {
-                logger.info("Found interface IPv4 address to scan: {}", cidrSubnet);
+                logger.debug("Found interface IPv4 address to scan: {}", cidrSubnet);
 
                 SubnetUtils utils = new SubnetUtils(cidrSubnet);
 
                 results.addAll(Arrays.asList(utils.getInfo().getAllAddresses()));
             } else if (ipAddress instanceof Inet6Address) {
-                logger.info("Found interface IPv6 address to scan: {}", cidrSubnet);
+                logger.debug("Found interface IPv6 address to scan: {}", cidrSubnet);
             } else {
-                logger.info("Found interface unknown IP type address to scan: {}", cidrSubnet);
+                logger.debug("Found interface unknown IP type address to scan: {}", cidrSubnet);
             }
         }
 
