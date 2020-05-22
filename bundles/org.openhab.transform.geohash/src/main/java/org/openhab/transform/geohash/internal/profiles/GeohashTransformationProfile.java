@@ -70,7 +70,7 @@ public class GeohashTransformationProfile implements StateProfile {
             precision = (String) paramPrecision;
             sourceFormat = (String) paramSource;
         } else {
-            logger.error("Parameter '{}' and '{}' have to be Strings. Profile will be inactive.", PRECISION_PARAM,
+            logger.warn("Parameter '{}' and '{}' have to be Strings. Profile will be inactive.", PRECISION_PARAM,
                     SOURCE_FORMAT_PARAM);
             precision = null;
             sourceFormat = null;

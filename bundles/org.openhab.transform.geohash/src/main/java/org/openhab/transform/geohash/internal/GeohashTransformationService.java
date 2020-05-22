@@ -19,8 +19,6 @@ import org.eclipse.smarthome.core.library.types.PointType;
 import org.eclipse.smarthome.core.transform.TransformationException;
 import org.eclipse.smarthome.core.transform.TransformationService;
 import org.osgi.service.component.annotations.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ch.hsr.geohash.GeoHash;
 import ch.hsr.geohash.WGS84Point;
@@ -35,7 +33,6 @@ import ch.hsr.geohash.WGS84Point;
 @Component(immediate = true, service = TransformationService.class, property = { "smarthome.transform=GEOHASH" })
 @NonNullByDefault
 public class GeohashTransformationService implements TransformationService {
-    private final Logger logger = LoggerFactory.getLogger(GeohashTransformationService.class);
     private int DEFAULT_PRECISION = 6;
 
     @Override
@@ -52,7 +49,8 @@ public class GeohashTransformationService implements TransformationService {
                             String.format("Valid range for Precision is ]0,12] : '{}'", precision));
                 }
             } catch (NumberFormatException e) {
-                logger.info("The value '{}' is not valid precision level : {}", precision, e.getMessage());
+                throw new TransformationException(
+                        String.format("\"The value '{}' is not valid precision level : {}", precision));
             }
         } catch (IllegalArgumentException e) {
             try {
@@ -66,6 +64,5 @@ public class GeohashTransformationService implements TransformationService {
                         .format("The value '{}' is not valid geohash nor a valid coordinate expression", coordinates));
             }
         }
-        return null;
     }
 }
