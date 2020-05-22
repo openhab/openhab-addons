@@ -28,6 +28,7 @@ import org.eclipse.jetty.websocket.common.WebSocketSession;
 import org.eclipse.jetty.websocket.common.frames.PongFrame;
 import org.eclipse.smarthome.io.net.http.WebSocketFactory;
 import org.openhab.binding.gardena.internal.config.GardenaConfig;
+import org.openhab.binding.gardena.internal.model.api.PostOAuth2Response;
 import org.openhab.binding.gardena.internal.model.api.WebSocketCreatedResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,15 +52,17 @@ public class GardenaSmartWebSocket {
     private ScheduledExecutorService scheduler;
     private ScheduledFuture connectionTrackerFuture;
     private ByteBuffer pingPayload = ByteBuffer.wrap("ping".getBytes());
+    private PostOAuth2Response token;
 
     /**
      * Starts the websocket session.
      */
     public GardenaSmartWebSocket(GardenaSmartWebSocketListener socketEventListener,
             WebSocketCreatedResponse webSocketCreatedResponse, GardenaConfig config, ScheduledExecutorService scheduler,
-            WebSocketFactory webSocketFactory) throws Exception {
+            WebSocketFactory webSocketFactory, PostOAuth2Response token) throws Exception {
         this.socketEventListener = socketEventListener;
         this.scheduler = scheduler;
+        this.token = token;
 
         webSocketClient = webSocketFactory.createWebSocketClient(String.valueOf(this.getClass().hashCode()));
         webSocketClient.setConnectTimeout(config.getConnectionTimeout() * 1000L);
@@ -155,7 +158,8 @@ public class GardenaSmartWebSocket {
                 logger.trace("Sending ping");
                 session.getRemote().sendPing(pingPayload);
 
-                if (Instant.now().getEpochSecond() - lastPong.getEpochSecond() > WEBSOCKET_IDLE_TIMEOUT) {
+                if ((Instant.now().getEpochSecond() - lastPong.getEpochSecond() > WEBSOCKET_IDLE_TIMEOUT)
+                        || token.isAccessTokenExpired()) {
                     session.close(1000, "Timeout manually closing dead connection");
                 }
             } catch (IOException ex) {

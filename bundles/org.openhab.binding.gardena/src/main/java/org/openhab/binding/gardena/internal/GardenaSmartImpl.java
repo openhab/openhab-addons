@@ -138,7 +138,7 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
         for (LocationDataItem location : locationsResponse.data) {
             WebSocketCreatedResponse webSocketCreatedResponse = getWebsocketInfo(location.id);
             webSockets.add(
-                    new GardenaSmartWebSocket(this, webSocketCreatedResponse, config, scheduler, webSocketFactory));
+                    new GardenaSmartWebSocket(this, webSocketCreatedResponse, config, scheduler, webSocketFactory, token));
         }
     }
 
