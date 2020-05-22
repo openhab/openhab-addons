@@ -117,6 +117,7 @@ public class SonosAudioSink implements AudioSink {
             try {
                 audioStream.close();
             } catch (IOException e) {
+                logger.debug("Error while closing the audio stream: {}", e.getMessage());
             }
             throw new UnsupportedAudioStreamException(
                     "Sonos can only handle FixedLengthAudioStreams and URLAudioStreams.", audioStream.getClass());
