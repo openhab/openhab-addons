@@ -32,6 +32,7 @@ import java.util.concurrent.TimeoutException;
 import org.apache.commons.net.io.CRLFLineReader;
 import org.apache.commons.net.telnet.TelnetClient;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.common.NamedThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
