@@ -93,7 +93,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
     private Object sequenceLock = new Object();
     private String versionString = "";
     private String verboseMode = "2";
-    private Boolean is203205 = false;
+    private Boolean isUDP20X = false;
     private String currentChapter = "";
     private String currentTimeMode = "T";
     private String currentPlayMode = "";
@@ -160,7 +160,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
             this.verboseMode = config.verboseMode.toString();
             
             if (MODEL203.equals(model) || MODEL205.equals(model)) {
-                this.is203205 = true;
+                this.isUDP20X = true;
             }
             
             this.buildOptionDropdowns(model);
@@ -510,7 +510,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                     updateChannelState(CHANNEL_OSD_POSITION, updateData);
                     break;
                 case "QHD":
-                    if (this.is203205) {
+                    if (this.isUDP20X) {
                         updateChannelState(CHANNEL_HDMI_MODE, updateData);
                     } else {
                         handleHdmiModeUpdate(updateData);
