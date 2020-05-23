@@ -252,7 +252,7 @@ public class SDS011Communicator implements SerialPortEventListener {
                 reply = readReply();
                 logger.debug("Got data from sensor: {}", reply);
             } catch (IOException e) {
-                logger.warn("Could not read available data from the serial port", e);
+                logger.warn("Could not read available data from the serial port: {}", e.getMessage());
             }
             if (reply instanceof SensorMeasuredDataReply) {
                 SensorMeasuredDataReply sensorData = (SensorMeasuredDataReply) reply;
