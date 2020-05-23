@@ -108,7 +108,7 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService implements Heo
         ThingUID bridgeUID = bridge.getThing().getUID();
 
         for (Player player : currentPlayers.values()) {
-            ThingUID uid = new ThingUID(THING_TYPE_PLAYER, "" + player.playerId);
+            ThingUID uid = new ThingUID(THING_TYPE_PLAYER, String.valueOf(player.playerId));
             Map<String, Object> properties = new HashMap<>();
             HeosPlayerHandler.propertiesFromPlayer(properties, player);
 
