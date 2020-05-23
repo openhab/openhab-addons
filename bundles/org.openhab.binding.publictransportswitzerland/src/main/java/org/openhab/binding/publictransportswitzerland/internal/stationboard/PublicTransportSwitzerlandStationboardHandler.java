@@ -141,8 +141,8 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
             String destination = departureObject.get("to").getAsString();
             Long departureTime = stopObject.get("departureTimestamp").getAsLong();
 
-            String delay = getStringValueOrEmpty(departureObject.get("delay"));
-            String track = getStringValueOrEmpty(stopObject.get("platform"));
+            @Nullable String delay = getStringValueOrNull(departureObject.get("delay"));
+            @Nullable String track = getStringValueOrNull(stopObject.get("platform"));
 
             String identifier = createIdentifier(category, number);
 
@@ -153,12 +153,18 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
         updateState(CHANNEL_TSV, new StringType(String.join("\n", tsvRows)));
     }
 
-    private String getStringValueOrEmpty(@Nullable JsonElement jsonElement) {
+    private @Nullable String getStringValueOrNull(@Nullable JsonElement jsonElement) {
         if (jsonElement == null || jsonElement.isJsonNull()) {
-            return "";
+            return null;
         }
 
-        return jsonElement.getAsString();
+        String stringValue = jsonElement.getAsString();
+
+        if (stringValue.isEmpty()) {
+            return null;
+        }
+
+        return stringValue;
     }
 
     private String formatDeparture(String identifier, Long departureTimestamp, String destination, @Nullable String track, @Nullable String delay) {
@@ -169,11 +175,11 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
 
         String result = String.format("%s - %s %s", formattedDate, identifier, destination);
 
-        if (track != null && !track.isEmpty()) {
+        if (track != null) {
             result += " - Pl. " + track;
         }
 
-        if (delay != null && !delay.isEmpty()) {
+        if (delay != null) {
             result += String.format(" (%s' late)", delay);
         }
 
