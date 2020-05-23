@@ -18,11 +18,14 @@ import java.util.Collections;
 import java.util.Properties;
 import java.util.Set;
 
+import javax.ws.rs.client.ClientBuilder;
+
 import org.openhab.binding.nest.internal.exceptions.InvalidAccessTokenException;
 import org.openhab.binding.nest.internal.handler.NestBridgeHandler;
 import org.openhab.binding.nest.internal.handler.NestRedirectUrlSupplier;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingTypeUID;
+import org.osgi.service.jaxrs.client.SseEventSourceFactory;
 
 /**
  * The {@link NestTestBridgeHandler} is a {@link NestBridgeHandler} modified for testing. Using the
@@ -50,8 +53,9 @@ public class NestTestBridgeHandler extends NestBridgeHandler {
 
     private String redirectUrl;
 
-    public NestTestBridgeHandler(Bridge bridge, String redirectUrl) {
-        super(bridge);
+    public NestTestBridgeHandler(Bridge bridge, ClientBuilder clientBuilder, SseEventSourceFactory eventSourceFactory,
+            String redirectUrl) {
+        super(bridge, clientBuilder, eventSourceFactory);
         this.redirectUrl = redirectUrl;
     }
 

@@ -20,22 +20,20 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.net.ssl.SSLContext;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.sse.InboundSseEvent;
+import javax.ws.rs.sse.SseEventSource;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.glassfish.jersey.SslConfigurator;
-import org.glassfish.jersey.media.sse.EventSource;
-import org.glassfish.jersey.media.sse.InboundEvent;
-import org.glassfish.jersey.media.sse.SseFeature;
 import org.openhab.binding.nest.internal.NestUtils;
 import org.openhab.binding.nest.internal.data.TopLevelData;
 import org.openhab.binding.nest.internal.data.TopLevelStreamingData;
 import org.openhab.binding.nest.internal.exceptions.FailedResolvingNestUrlException;
 import org.openhab.binding.nest.internal.handler.NestRedirectUrlSupplier;
 import org.openhab.binding.nest.internal.listener.NestStreamingDataListener;
+import org.osgi.service.jaxrs.client.SseEventSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,31 +57,35 @@ public class NestStreamingRestClient {
 
     private final Logger logger = LoggerFactory.getLogger(NestStreamingRestClient.class);
 
-    private final List<NestStreamingDataListener> listeners = new CopyOnWriteArrayList<>();
+    private final String accessToken;
+    private final ClientBuilder clientBuilder;
+    private final SseEventSourceFactory eventSourceFactory;
+    private final NestRedirectUrlSupplier redirectUrlSupplier;
     private final ScheduledExecutorService scheduler;
-    private final Object startStopLock = new Object();
 
-    private String accessToken;
+    private final Object startStopLock = new Object();
+    private final List<NestStreamingDataListener> listeners = new CopyOnWriteArrayList<>();
+
     private @Nullable ScheduledFuture<?> checkConnectionJob;
     private boolean connected;
-    private @Nullable EventSource eventSource;
+    private @Nullable SseEventSource eventSource;
     private long lastEventTimestamp;
     private @Nullable TopLevelData lastReceivedTopLevelData;
-    private NestRedirectUrlSupplier redirectUrlSupplier;
 
-    public NestStreamingRestClient(String accessToken, NestRedirectUrlSupplier redirectUrlSupplier,
+    public NestStreamingRestClient(String accessToken, ClientBuilder clientBuilder,
+            SseEventSourceFactory eventSourceFactory, NestRedirectUrlSupplier redirectUrlSupplier,
             ScheduledExecutorService scheduler) {
         this.accessToken = accessToken;
+        this.clientBuilder = clientBuilder;
+        this.eventSourceFactory = eventSourceFactory;
         this.redirectUrlSupplier = redirectUrlSupplier;
         this.scheduler = scheduler;
     }
 
-    private EventSource createEventSource() throws FailedResolvingNestUrlException {
-        SSLContext sslContext = SslConfigurator.newInstance().createSSLContext();
-        Client client = ClientBuilder.newBuilder().sslContext(sslContext).register(SseFeature.class)
-                .register(new NestStreamingRequestFilter(accessToken)).build();
-        EventSource eventSource = new EventSource(client.target(redirectUrlSupplier.getRedirectUrl()), false);
-        eventSource.register(this::onEvent);
+    private SseEventSource createEventSource() throws FailedResolvingNestUrlException {
+        Client client = clientBuilder.register(new NestStreamingRequestFilter(accessToken)).build();
+        SseEventSource eventSource = eventSourceFactory.newSource(client.target(redirectUrlSupplier.getRedirectUrl()));
+        eventSource.register(this::onEvent, this::onError);
         return eventSource;
     }
 
@@ -116,7 +118,7 @@ public class NestStreamingRestClient {
             closeEventSource(10, TimeUnit.SECONDS);
 
             logger.debug("Opening new EventSource");
-            EventSource localEventSource = createEventSource();
+            SseEventSource localEventSource = createEventSource();
             localEventSource.open();
 
             eventSource = localEventSource;
@@ -144,7 +146,7 @@ public class NestStreamingRestClient {
     }
 
     private void closeEventSource(long timeout, TimeUnit timeoutUnit) {
-        EventSource localEventSource = eventSource;
+        SseEventSource localEventSource = eventSource;
         if (localEventSource != null) {
             if (!localEventSource.isOpen()) {
                 logger.debug("Existing EventSource is already closed");
@@ -185,7 +187,7 @@ public class NestStreamingRestClient {
         return lastReceivedTopLevelData;
     }
 
-    private void onEvent(InboundEvent inboundEvent) {
+    private void onEvent(InboundSseEvent inboundEvent) {
         try {
             lastEventTimestamp = System.currentTimeMillis();
 
@@ -222,5 +224,9 @@ public class NestStreamingRestClient {
             // catch exceptions here otherwise they will be swallowed by the implementation
             logger.warn("An exception occurred while processing the inbound event", e);
         }
+    }
+
+    private void onError(Throwable error) {
+        logger.debug("Error occurred while receiving events", error);
     }
 }

@@ -29,6 +29,9 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.function.Function;
 
+import javax.ws.rs.client.ClientBuilder;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.junit.After;
 import org.junit.Before;
@@ -76,6 +79,7 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.osgi.service.component.ComponentContext;
+import org.osgi.service.jaxrs.client.SseEventSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,6 +117,8 @@ public abstract class NestThingHandlerOSGiTest extends JavaOSGiTest {
     private Class<? extends NestBaseHandler<?>> thingClass;
 
     private NestTestHandlerFactory nestTestHandlerFactory;
+    private @NonNullByDefault({}) ClientBuilder clientBuilder;
+    private @NonNullByDefault({}) SseEventSourceFactory eventSourceFactory;
 
     public NestThingHandlerOSGiTest(Class<? extends NestBaseHandler<?>> thingClass) {
         this.thingClass = thingClass;
@@ -153,17 +159,22 @@ public abstract class NestThingHandlerOSGiTest extends JavaOSGiTest {
         managedItemChannelLinkProvider = getService(ManagedItemChannelLinkProvider.class);
         assertThat("Could not get ManagedItemChannelLinkProvider", managedItemChannelLinkProvider, is(notNullValue()));
 
+        clientBuilder = getService(ClientBuilder.class);
+        assertThat("Could not get ClientBuilder", clientBuilder, is(notNullValue()));
+
+        eventSourceFactory = getService(SseEventSourceFactory.class);
+        assertThat("Could not get SseEventSourceFactory", eventSourceFactory, is(notNullValue()));
+
         ComponentContext componentContext = mock(ComponentContext.class);
         when(componentContext.getBundleContext()).thenReturn(bundleContext);
 
-        nestTestHandlerFactory = new NestTestHandlerFactory();
-        nestTestHandlerFactory.setRedirectUrl(REDIRECT_URL);
-        nestTestHandlerFactory.activate(componentContext);
+        nestTestHandlerFactory = new NestTestHandlerFactory(clientBuilder, eventSourceFactory);
+        nestTestHandlerFactory.activate(componentContext,
+                Map.of(NestTestHandlerFactory.REDIRECT_URL_CONFIG_PROPERTY, REDIRECT_URL));
         registerService(nestTestHandlerFactory);
 
         nestTestHandlerFactory = getService(ThingHandlerFactory.class, NestTestHandlerFactory.class);
         assertThat("Could not get NestTestHandlerFactory", nestTestHandlerFactory, is(notNullValue()));
-        nestTestHandlerFactory.setRedirectUrl(REDIRECT_URL);
 
         bridge = buildBridge();
         thing = buildThing(bridge);

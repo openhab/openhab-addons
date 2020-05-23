@@ -16,6 +16,10 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
+import javax.ws.rs.client.ClientBuilder;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.nest.internal.discovery.NestDiscoveryService;
 import org.openhab.binding.nest.internal.handler.NestBridgeHandler;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -28,33 +32,59 @@ import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Modified;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.jaxrs.client.SseEventSourceFactory;
 
 /**
  * The {@link NestTestHandlerFactory} is responsible for creating test things and thing handlers.
  *
  * @author Wouter Born - Increase test coverage
  */
+@NonNullByDefault
 public class NestTestHandlerFactory extends BaseThingHandlerFactory implements ThingHandlerFactory {
+
+    public static final String REDIRECT_URL_CONFIG_PROPERTY = "redirect.url";
+
+    private final ClientBuilder clientBuilder;
+    private final SseEventSourceFactory eventSourceFactory;
+    private final Map<ThingUID, ServiceRegistration<?>> discoveryService = new HashMap<>();
 
     private String redirectUrl = "http://localhost";
 
-    private Map<ThingUID, ServiceRegistration<?>> discoveryService = new HashMap<>();
+    @Activate
+    public NestTestHandlerFactory(@Reference ClientBuilder clientBuilder,
+            @Reference SseEventSourceFactory eventSourceFactory) {
+        this.clientBuilder = clientBuilder;
+        this.eventSourceFactory = eventSourceFactory;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return NestTestBridgeHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID);
     }
 
-    @Override
-    public void activate(ComponentContext componentContext) {
+    @Activate
+    public void activate(ComponentContext componentContext, Map<String, Object> config) {
         super.activate(componentContext);
+        modified(config);
+    }
+
+    @Modified
+    public void modified(Map<String, Object> config) {
+        String url = (String) config.get(REDIRECT_URL_CONFIG_PROPERTY);
+        if (url != null) {
+            this.redirectUrl = url;
+        }
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(NestTestBridgeHandler.THING_TYPE_TEST_BRIDGE)) {
-            NestTestBridgeHandler handler = new NestTestBridgeHandler((Bridge) thing, redirectUrl);
+            NestTestBridgeHandler handler = new NestTestBridgeHandler((Bridge) thing, clientBuilder, eventSourceFactory,
+                    redirectUrl);
             NestDiscoveryService service = new NestDiscoveryService(handler);
             // Register the discovery service.
             discoveryService.put(handler.getThing().getUID(),
@@ -72,19 +102,16 @@ public class NestTestHandlerFactory extends BaseThingHandlerFactory implements T
     @Override
     protected void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof NestBridgeHandler) {
-            ServiceRegistration<?> reg = discoveryService.get(thingHandler.getThing().getUID());
-            if (reg != null) {
+            ServiceRegistration<?> registration = discoveryService.get(thingHandler.getThing().getUID());
+            if (registration != null) {
                 // Unregister the discovery service.
-                NestDiscoveryService service = (NestDiscoveryService) bundleContext.getService(reg.getReference());
+                NestDiscoveryService service = (NestDiscoveryService) bundleContext
+                        .getService(registration.getReference());
                 service.deactivate();
-                reg.unregister();
+                registration.unregister();
                 discoveryService.remove(thingHandler.getThing().getUID());
             }
         }
         super.removeHandler(thingHandler);
-    }
-
-    public void setRedirectUrl(String redirectUrl) {
-        this.redirectUrl = redirectUrl;
     }
 }

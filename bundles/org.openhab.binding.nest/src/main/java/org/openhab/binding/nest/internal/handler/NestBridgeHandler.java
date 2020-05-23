@@ -26,6 +26,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.ws.rs.client.ClientBuilder;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -54,6 +56,7 @@ import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.osgi.service.jaxrs.client.SseEventSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,6 +76,8 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
 
     private final Logger logger = LoggerFactory.getLogger(NestBridgeHandler.class);
 
+    private final ClientBuilder clientBuilder;
+    private final SseEventSourceFactory eventSourceFactory;
     private final List<NestUpdateRequest> nestUpdateRequests = new CopyOnWriteArrayList<>();
     private final NestCompositeUpdateHandler updateHandler = new NestCompositeUpdateHandler(
             this::getPresentThingsNestIds);
@@ -90,8 +95,10 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
      *
      * @param bridge The bridge to connect to Nest with.
      */
-    public NestBridgeHandler(Bridge bridge) {
+    public NestBridgeHandler(Bridge bridge, ClientBuilder clientBuilder, SseEventSourceFactory eventSourceFactory) {
         super(bridge);
+        this.clientBuilder = clientBuilder;
+        this.eventSourceFactory = eventSourceFactory;
     }
 
     /**
@@ -316,7 +323,8 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
         synchronized (this) {
             try {
                 NestStreamingRestClient localStreamingRestClient = new NestStreamingRestClient(
-                        getExistingOrNewAccessToken(), getOrCreateRedirectUrlSupplier(), scheduler);
+                        getExistingOrNewAccessToken(), clientBuilder, eventSourceFactory,
+                        getOrCreateRedirectUrlSupplier(), scheduler);
                 localStreamingRestClient.addStreamingDataListener(this);
                 localStreamingRestClient.start();
 

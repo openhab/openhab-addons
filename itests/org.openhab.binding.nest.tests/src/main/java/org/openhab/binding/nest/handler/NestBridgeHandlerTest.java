@@ -18,6 +18,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
+import javax.ws.rs.client.ClientBuilder;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -32,6 +34,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.osgi.service.jaxrs.client.SseEventSourceFactory;
 
 /**
  * Tests cases for {@link NestBridgeHandler}.
@@ -42,23 +45,18 @@ public class NestBridgeHandlerTest {
 
     private ThingHandler handler;
 
-    @Mock
-    private ThingHandlerCallback callback;
-
-    @Mock
-    private Bridge bridge;
-
-    @Mock
-    private Configuration configuration;
-
-    @Mock
-    private NestRedirectUrlSupplier redirectUrlSupplier;
+    private @Mock Bridge bridge;
+    private @Mock ThingHandlerCallback callback;
+    private @Mock ClientBuilder clientBuilder;
+    private @Mock Configuration configuration;
+    private @Mock SseEventSourceFactory eventSourceFactory;
+    private @Mock NestRedirectUrlSupplier redirectUrlSupplier;
 
     @Before
     public void setUp() {
         initMocks(this);
 
-        handler = new NestTestBridgeHandler(bridge, "http://localhost");
+        handler = new NestTestBridgeHandler(bridge, clientBuilder, eventSourceFactory, "http://localhost");
         handler.setCallback(callback);
     }
 
