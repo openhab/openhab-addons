@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.heos.internal.discovery;
 
-//import org.openhab.binding.heos.handler.HeosBridgeHandler;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.heos.internal.handler.HeosBridgeHandler;
 
 /**
  * The {@link HeosPlayerDiscoveryListener } is an Event Listener
@@ -22,6 +23,7 @@ package org.openhab.binding.heos.internal.discovery;
  *
  * @author Johannes Einig - Initial contribution
  */
+@NonNullByDefault
 public interface HeosPlayerDiscoveryListener {
     void playerChanged();
 }

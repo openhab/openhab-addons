@@ -12,12 +12,17 @@
  */
 package org.openhab.binding.heos.internal.handler;
 
+import java.io.IOException;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.heos.handler.HeosBridgeHandler;
-import org.openhab.binding.heos.internal.api.HeosFacade;
+import org.openhab.binding.heos.internal.resources.Telnet.ReadException;
 
 /**
  * The {@link HeosChannelHandlerBuildGroup} handles the BuidlGroup channel command
@@ -25,36 +30,37 @@ import org.openhab.binding.heos.internal.api.HeosFacade;
  *
  * @author Johannes Einig - Initial contribution *
  */
-public class HeosChannelHandlerBuildGroup extends HeosChannelHandler {
+@NonNullByDefault
+public class HeosChannelHandlerBuildGroup extends BaseHeosChannelHandler {
+    private final ChannelUID channelUID;
 
-    public HeosChannelHandlerBuildGroup(HeosBridgeHandler bridge, HeosFacade api) {
-        super(bridge, api);
+    public HeosChannelHandlerBuildGroup(ChannelUID channelUID, HeosBridgeHandler bridge) {
+        super(bridge);
+        this.channelUID = channelUID;
     }
 
     @Override
-    protected void handleCommandPlayer() {
+    public void handlePlayerCommand(Command command, String id, ThingUID uid) {
         // not used on player
     }
 
     @Override
-    protected void handleCommandGroup() {
+    public void handleGroupCommand(Command command, @Nullable String id, ThingUID uid,
+            HeosGroupHandler heosGroupHandler) {
         // not used on group
     }
 
     @Override
-    protected void handleCommandBridge() {
+    public void handleBridgeCommand(Command command, ThingUID uid) throws IOException, ReadException {
         if (command instanceof RefreshType) {
             bridge.resetPlayerList(channelUID);
             return;
         }
-        if (command.equals(OnOffType.ON)) {
+
+        if (command == OnOffType.ON) {
             List<String[]> selectedPlayerList = bridge.getSelectedPlayerList();
             if (!selectedPlayerList.isEmpty()) {
-                String[] player = new String[selectedPlayerList.size()];
-                for (int i = 0; i < selectedPlayerList.size(); i++) {
-                    player[i] = selectedPlayerList.get(i)[0];
-                }
-                api.groupPlayer(player);
+                getApi().groupPlayer(selectedPlayerList.stream().map(a -> a[0]).toArray(String[]::new));
                 bridge.resetPlayerList(channelUID);
             }
         }

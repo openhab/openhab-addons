@@ -18,21 +18,25 @@ A bridge uses the thing ID "bridge".
 Player:
 A generic player is supported via this binding.
 Currently no differences are made between the players.
-A player uses the thing ID "player"
+A player uses the Thing ID "player"
 
 Groups:
 The binding supports HEOS groups.
-A group uses the thing ID "group"
+A group uses the Thing ID "group"
 
 
 ## Discovery
 
-This binding supports full automatic discovery of available players to be used as a bridge, players and groups (both after establishing a connection via a bridge).
+This binding supports full automatic discovery of available players to be used as a bridge, players and groups.
+You need to add a Bridge device first (which is also auto-discovered by the binding) which can be any HEOS device in your network (preferably which has wired connection).
+
+__Important!__
 Please note that only one bridge is required to establish a connection.
 Adding a second bridge can cause trouble with the connection.
-It is recommended to use the Paper UI or other GUI to setup the system and add all players and groups.
+
+It is recommended to use the Paper UI to setup the system and add all players and groups.
 The bridge is discovered through UPnP in the local network.
-Once it is added the players and groups are discovered via the bridge and placed within the inbox.
+Once it is added the players and groups are discovered via the bridge and placed in the Paper UI Inbox.
 
 ## Binding Configuration
 
@@ -46,7 +50,7 @@ The bridge has the following configuration parameter
 
 | Parameter         | Description                                                 | Required  |
 |-----------------  |------------------------------------------------------------ | --------- |
-| ipAddress         | The network address of the bridge                           | yes       |
+| ipAddress         | The network address of the Bridge                           | yes       |
 | username          | The user name to login to the HEOS account                  | no        |
 | password          | The password for the HEOS account                           | no        |
 | heartbeat         | The time in seconds for the HEOS Heartbeat (default = 60 s) | no        |
@@ -65,7 +69,7 @@ Player have the following configuration parameter
 
 | Parameter         | Description                                                | Required  |
 |-----------------  |----------------------------------------------------------- | --------- |
-| pid               | The internal player ID                                     | yes       |
+| pid               | The internal Player ID                                     | yes       |
 
 For manual configuration a player can be defined as followed:
 
@@ -74,9 +78,9 @@ Thing heos:player:player1 "name" [pid="123456789"]
 ````
 
 PID behind the heos:player:--- should be changed as required.
-It is recommended to use the player PID.
+It is recommended to use the Player PID.
 If the PID isn't known it can be discovered by establishing a Telnet connection (port 1255) to one player and search for available players (Command: heos://player/get_players) within the network.
-Another way is to use Paper UI to discover the player via the bridge and get the PID.
+Another way is to use Paper UI to discover the Player via the bridge and get the PID.
 For further details refer to the [HEOS CLI](https://rn.dmglobal.com/euheos/HEOS_CLI_ProtocolSpecification.pdf) specification.
 
 ### Group Configuration
@@ -87,7 +91,8 @@ Player have the following configuration parameter
 |-----------------  |------------------------------------------------------------------------------------- | --------- |
 | members           | The members of the groups. These are the player IDs. IDs have to be separated by ";" | yes       |
 
-
+If you use Paper UI to manage your Things (which is the preferred way), you can also set up your group automatically from Paper UI.
+Groups will automatically appear in the Inbox if that Group is active. To do this, build your Group from the HEOS app, then the group will appear in the Inbox.
 ```
 Thing heos:group:group1 "name" [members="45345634;35534567"]
 ```
@@ -126,13 +131,20 @@ Bridge heos:bridge:main "Bridge" [ipAddress="192.168.0.1", username="userName", 
 | PlayUrl           | String        | Plays a media file located at the URL                                 |
 | Shuffle           | Switch        | Switches shuffle ON or OFF                                            |
 | RepeatMode        | String        | Defines the repeat mode: Inputs are: "One" , "All" or "Off"           |
-| Playlists         | String        | Plays a playlist. Playlists are identified by numbers (starting at 0!). List can be found in the HEOS App |
+| Favourites        | String        | Plays a favourite. The selection options are retrieved automatically  |
+| Playlists         | String        | Plays a playlist. The selection options are retrieved automatically   |
+| Queue             | String        | Plays from the queue. The queue items are retrieved automatically     |
+| ClearQueue        | Switch        | Clear the queue when turned ON                                        |
 
+The `Favourites`, `Playlists`, `Queue` selection options are queried automatically from the HEOS system (if you set up any in the HEOS app).
+This means the available options will be visible in a Selection, you don't have to specify them manually.
+You can send commands to these channels from rules by sending the name of the selected item (For example: Starting a favorite radio channel from rule).
 
 #### Example
 
 ```
 Player LivingRoom_Control "Control" {channel="heos:player:main:LivingRoom:Control"}
+Selection item=LivingRoom_Playlists     label="Playlist" icon="music"
 ```
 
 ### Channels of Thing type 'group'
@@ -155,7 +167,16 @@ Player LivingRoom_Control "Control" {channel="heos:player:main:LivingRoom:Contro
 | PlayUrl           | String        | Plays a media file located at the URL                                 |
 | Shuffle           | Switch        | Switches shuffle ON or OFF                                            |
 | RepeatMode        | String        | Defines the repeat mode: Inputs are: "One" ; "All" or "Off"           |
-| Playlists         | String        | Plays a playlist. Playlists are identified by numbers (starting at 0!). List can be found in the HEOS App            |
+| Favourites        | String        | Plays a favourite. The selection options are retrieved automatically  |
+| Playlists         | String        | Plays a playlist. The selection options are retrieved automatically   |
+| Queue             | String        | Plays from the queue. The queue items are retrieved automatically     |
+| ClearQueue        | Switch        | Clear the queue when turned ON                                        |
+
+The `Favourites`, `Playlists`, `Queue` selection options are queried automatically from the HEOS system (if you set up any in the HEOS app).
+This means the available options will be visible in a Selection, you don't have to specify them manually.
+You can send commands to these channels from rules by sending the name of the selected item (For example: Starting a favorite radio channel from rule).
+
+### Available inputs
 
 | Input names   |
 |-------------- |
@@ -191,39 +212,21 @@ Player LivingRoom_Control "Control" {channel="heos:player:main:LivingRoom:Contro
 | tvaudio       |
 | phono         |
 
-An current list can be found within the HEOS CLI protocol which can be found [here](https://rn.dmglobal.com/euheos/HEOS_CLI_ProtocolSpecification.pdf).
+A current list can be found within the HEOS CLI protocol which can be found [here](https://rn.dmglobal.com/euheos/HEOS_CLI_ProtocolSpecification.pdf).
 
 ### Channels of Thing type 'bridge'
 
 | Channel ID            | Item Type     | Description                                                                                                                                               |
 |---------------------- |-----------    |--------------------------------------------------------------------------------------------------------------------------------------------------------   |
 | Reboot                | Switch        | Reboot the whole HEOS System. Can be used if you get in trouble with the system                                                                           |
-| BuildGroup            | Switch        | Is used to define a group. The player which shall be grouped has to be selected first. If Switch is then activated the group is build.                    |
-
-
+| BuildGroup            | Switch        | Is used to define a group. The player which shall be grouped has to be selected first. If Switch is then activated the group is built.                    |
 
 For a list of the commands please refer to the [HEOS CLI protocol](https://rn.dmglobal.com/euheos/HEOS_CLI_ProtocolSpecification.pdf).
 
-
 ## *Dynamic Channels*
 
-Also the bridge, players and groups supports dynamic channels which represent the players of the network and the favorites.
-They are added dynamically if a player is found and if favorites are defined within the HEOS Account.
-To activate Favorites the system has to be signed in to the HEOS Account.
-The player and group channels are only shown on the bridge.
-
-
-### Favorite Channels
-
-| Channel ID    | Item Type     | Description                                                                                               |
-|------------   |-----------    |-------------------------------------------------------------------------------------------------------    |
-| {mid}         | Switch        | A channel which represents the favorite. Please check via UI how the correct Channel Type looks like.     |
-
- Example
-
- ```
- Switch Favorite_1 "Fav 1 [%s]" {channel="heos:bridge:main:s17492"}
- ```
+Also the bridge supports dynamic channels which represent the players of the network.
+They are added dynamically if a player is found. The player and group channels are only shown on the bridge.
 
 ### Player Channels
 
@@ -241,7 +244,7 @@ Example
 
 ## Full Example
 
-###demo.things:
+### demo.things:
 
 ```
 Bridge heos:bridge:main "Bridge" [ipAddress="192.168.0.1", username="userName", password="123456"] {
@@ -251,7 +254,7 @@ Bridge heos:bridge:main "Bridge" [ipAddress="192.168.0.1", username="userName", 
 }
 ```
 
-###demo.items:
+### demo.items:
 
 ```
 Player LivingRoom_Control "Control" {channel="heos:player:main:LivingRoom:Control"}
@@ -260,9 +263,10 @@ Dimmer LivingRoom_Volume "Volume" {channel="heos:player:main:LivingRoom:Volume"}
 String LivingRoom_Title "Title [%s]" {channel="heos:player:main:LivingRoom:Title"}
 String LivingRoom_Interpret "Interpret [%s]" {channel="heos:player:main:LivingRoom:Artist"}
 String LivingRoom_Album "Album [%s]" {channel="heos:player:main:LivingRoom:Album"}
+String LivingRoom_Playlists {channel="heos:player:main:LivingRoom:Playlists"}
 ```
 
-###demo.sitemap
+### demo.sitemap
 
 ```
    Frame label="LivingRoom" {
@@ -272,6 +276,7 @@ String LivingRoom_Album "Album [%s]" {channel="heos:player:main:LivingRoom:Album
     	Default item=LivingRoom_Title
     	Default item=LivingRoom_Interpret
     	Default item=LivingRoom_Album
+        Selection item=LivingRoom_Playlists     label="Playlist" icon="music"
     }
 ```
 
@@ -282,12 +287,11 @@ This section gives some detailed explanations how to use the binding.
 ### Grouping Players
 
 Players can be grouped via the binding.
-To do so, select the player channels of the players you want to group at the bridge and then use the "Made Group" channel to create the group.
-The first player which is selected will be the group leader.
-The group GID then is the same as the PID of the group leader.
-Therefore changing play pause and some other things at the leading player will also change that at the whole group.
-Muting and Volume on the other hand can be changed individually for each player also for the group leader.
-If you want to change that for the whole group you have to do it via the group thing.
+The easiest way to do this is to use the created Group type Thing. To group them simply use the `Ungroup` channel on the Group. Switching this Switch ON and OFF will group and ungroup that Group.
+The first player which is selected will be the Group leader.
+Therefore changing play/pause and some other things at any player (which is included in that group) will also change that at the whole group.
+Muting and Volume on the other hand can be changed individually for each Player also for the group leader.
+If you want to change that for the whole group you have to do it via the Group thing.
 
 ### Inputs
 
@@ -385,22 +389,20 @@ Frame label="Heos Group" visibility=[HeosGroup_Status==ONLINE] {
 }
 ```
 
-### Playlists
+## Rule Actions
 
-Playlists can be played by sending the number (starts at 0!) to the binding via the playlists channel at the corresponding player or group.
-To find the correct number for the playlist, please have a look to the HEOS App and see at which position the playlist you want to play is located.
-
-#### Example
-
-Items:
+Multiple actions are supported by this binding. In classic rules these are accessible as shown in the example below:
 
 ```
-String HeosKitchen_Playlist		"Playlists" (gHeos) {channel="heos:player:918797451:Playlists"}
-
+ val actions = getActions("heos","heos:bridge:bridgeId")
+ if(null === actions) {
+        logInfo("actions", "Actions not found, check thing ID")
+        return
+ } else {
+        actions.playInputFromPlayer(-3213214, "aux_in_1", 89089081)
+ }
 ```
 
-Sitemap:
+### playInputFromPlayer(sourcePlayer, sourceInput, destination)
 
-```
-Switch item=HeosKitchen_Playlists  	mappings=[0="San Glaser", 1="Classic", 2="Beasty Boys"]
-```
+Allows to play a source from a player to another player. 
