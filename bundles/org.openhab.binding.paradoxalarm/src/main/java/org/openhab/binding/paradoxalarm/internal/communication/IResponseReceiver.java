@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.paradoxalarm.internal.communication;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link IResponseReceiver} Used to pass parsed responses from Paradox to original senders of the requests for
  * further processing.
  *
  * @author Konstantin Polihronov - Initial contribution
  */
+@NonNullByDefault
 public interface IResponseReceiver {
     void receiveResponse(IResponse response, IParadoxInitialLoginCommunicator communicator);
 }

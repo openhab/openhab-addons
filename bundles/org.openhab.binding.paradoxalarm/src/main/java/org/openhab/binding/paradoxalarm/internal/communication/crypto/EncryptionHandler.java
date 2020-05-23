@@ -14,6 +14,7 @@ package org.openhab.binding.paradoxalarm.internal.communication.crypto;
 
 import java.util.Arrays;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +39,7 @@ import org.slf4j.LoggerFactory;
  * @see <a href=https://github.com/ParadoxAlarmInterface/pai>Github of jpbaracca's work - ParadoxAlarmInterface in
  *      python</a>
  */
+@NonNullByDefault
 public class EncryptionHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EncryptionHandler.class);
@@ -47,7 +49,7 @@ public class EncryptionHandler {
     private static final int KEY_LENGTH = 240;
     private static final int PAYLOAD_RATE_LENGTH = 16;
 
-    private static EncryptionHandler instance;
+    private static EncryptionHandler instance = new EncryptionHandler();
 
     private int[] lTable = new int[TABLE_SIZE];
     private int[] aTable = new int[TABLE_SIZE];
@@ -59,26 +61,17 @@ public class EncryptionHandler {
     }
 
     public static EncryptionHandler getInstance() {
-        if (instance == null) {
-            synchronized (EncryptionHandler.class) {
-                instance = new EncryptionHandler();
-            }
-        }
         return instance;
     }
 
     public byte[] encrypt(byte[] payload) {
-        if (payload == null) {
-            throw new IllegalArgumentException("Payload should not be null or empty !");
-        }
-
         if (payload.length % 16 != 0) {
             payload = ParadoxUtil.extendArray(payload, PAYLOAD_RATE_LENGTH);
             printArray("Array had to be extended:", payload);
             logger.trace("New payload length={}", payload.length);
         }
 
-        int[] payloadAsIntArray = ParadoxUtil.copyArray(payload);
+        int[] payloadAsIntArray = ParadoxUtil.toIntArray(payload);
 
         final int[] s = EncryptionHandlerConstants.S;
         byte[] result = new byte[0];
@@ -96,7 +89,7 @@ public class EncryptionHandler {
             shiftRow(a, 0);
             keyAddition(a, Arrays.copyOfRange(expandedKey, 16 * rounds, (rounds + 1) * 16));
 
-            result = ParadoxUtil.mergeByteArrays(result, ParadoxUtil.copyArray(a));
+            result = ParadoxUtil.mergeByteArrays(result, ParadoxUtil.toByteArray(a));
         }
 
         printArray("Encrypted array", result);
@@ -104,7 +97,7 @@ public class EncryptionHandler {
     }
 
     public byte[] decrypt(byte[] payload) {
-        int[] payloadAsIntArray = ParadoxUtil.copyArray(payload);
+        int[] payloadAsIntArray = ParadoxUtil.toIntArray(payload);
 
         final int[] si = EncryptionHandlerConstants.Si;
         byte[] result = new byte[0];
@@ -123,7 +116,7 @@ public class EncryptionHandler {
 
             keyAddition(a, expandedKey);
 
-            result = ParadoxUtil.mergeByteArrays(result, ParadoxUtil.copyArray(a));
+            result = ParadoxUtil.mergeByteArrays(result, ParadoxUtil.toByteArray(a));
         }
 
         printArray("Decrypted array", result);
@@ -144,7 +137,7 @@ public class EncryptionHandler {
         return expandedArray;
     }
 
-    public void updateKey(byte[] newKey) {
+    public synchronized void updateKey(byte[] newKey) {
         expandedKey = new int[KEY_LENGTH];
         expandKey(newKey);
     }

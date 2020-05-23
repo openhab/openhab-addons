@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.paradoxalarm.internal.communication.messages;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +22,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Konstantin Polihronov - Initial contribution
  */
+@NonNullByDefault
 public enum PartitionCommand {
     UNKNOWN(0),
     ARM(2),

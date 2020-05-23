@@ -203,7 +203,7 @@ public class ParadoxUtil {
         return str.getBytes(StandardCharsets.US_ASCII);
     }
 
-    public static int[] copyArray(byte[] input) {
+    public static int[] toIntArray(byte[] input) {
         if (input == null) {
             throw new IllegalArgumentException("Input array must not be null");
         }
@@ -215,7 +215,7 @@ public class ParadoxUtil {
         return result;
     }
 
-    public static byte[] copyArray(int[] input) {
+    public static byte[] toByteArray(int[] input) {
         if (input == null) {
             throw new IllegalArgumentException("Input array must not be null");
         }
