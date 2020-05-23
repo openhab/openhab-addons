@@ -140,11 +140,8 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
             String number = departureObject.get("number").getAsString();
             String destination = departureObject.get("to").getAsString();
 
-            JsonElement delayElement = departureObject.get("delay");
-            String delay = "";
-            if (delayElement != null) {
-                delay = delayElement.getAsString();
-            }
+            String delay = getStringValueOrEmpty(departureObject.get("delay"));
+            String track = getStringValueOrEmpty(stopObject.get("platform"));
 
             Long departureTime = stopObject.get("departureTimestamp").getAsLong();
             String track = stopObject.get("platform").getAsString();
@@ -154,6 +151,14 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
         }
 
         updateState(CHANNEL_TSV, new StringType(String.join("\n", tsvRows)));
+    }
+
+    private String getStringValueOrEmpty(@Nullable JsonElement jsonElement) {
+        if (jsonElement == null || jsonElement.isJsonNull()) {
+            return "";
+        }
+
+        return jsonElement.getAsString();
     }
 
     private String formatDeparture(String category, String number, Long departureTimestamp, String destination, String track, @Nullable String delay) {
