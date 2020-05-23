@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,7 +109,12 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
             logger.warn("Unable to fetch stationboard data", e);
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            updateState(CHANNEL_TSV, new StringType("No data available"));
+
+            updateState(CHANNEL_TSV, UnDefType.UNDEF);
+
+            for (Channel channel : getThing().getChannelsOfGroup(dynamicChannelGroupUID.getId())) {
+                updateState(channel.getUID(), UnDefType.UNDEF);
+            }
         }
     }
 
@@ -118,7 +124,9 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
 
     private void updateChannels(JsonElement jsonObject) throws Exception {
         JsonArray stationboard = jsonObject.getAsJsonObject().get("stationboard").getAsJsonArray();
+
         createDynamicChannels(stationboard.size());
+        setUnusedDynamicChannelsToUndef(stationboard.size());
 
         List<String> tsvRows = new ArrayList<>();
 
@@ -178,6 +186,13 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
         }
 
         updateThing(thingBuilder.build());
+    }
+
+    private void setUnusedDynamicChannelsToUndef(int amountOfUsedChannels) {
+        getThing().getChannelsOfGroup(dynamicChannelGroupUID.getId())
+                .stream()
+                .skip(amountOfUsedChannels)
+                .forEach(channel -> updateState(channel.getUID(), UnDefType.UNDEF));
     }
 
     private ChannelUID getChannelUIDForPosition(int position) {
