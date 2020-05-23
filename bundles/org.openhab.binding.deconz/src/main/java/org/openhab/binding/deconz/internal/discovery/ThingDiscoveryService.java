@@ -137,7 +137,7 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
                 // ignore configuration tool device
                 return;
             default:
-                logger.warn(
+                logger.debug(
                         "Found light: {} ({}), type {} but no thing type defined for that type. This should be reported.",
                         light.modelid, light.name, lightType);
                 return;

@@ -51,7 +51,7 @@ public enum LightType {
     public static LightType fromString(String s) {
         LightType lightType = MAPPING.getOrDefault(s, UNKNOWN);
         if (lightType == UNKNOWN) {
-            LOGGER.warn("Unknown light type '{}' found. This should be reported.", s);
+            LOGGER.debug("Unknown light type '{}' found. This should be reported.", s);
         }
         return lightType;
     }

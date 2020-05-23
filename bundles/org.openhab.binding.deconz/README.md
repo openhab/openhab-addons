@@ -41,7 +41,8 @@ Additionally lights and window coverings (blinds) are supported:
 ## Discovery
 
 deCONZ software instances are discovered automatically in the same subnet.
-Sensors, switches are discovered as soon as a `deconz` bridge Thing comes online.
+Sensors, switches, lights and blinds are discovered as soon as a `deconz` bridge thing comes online.
+If your device is not discovered, please check the DEBUG log for unknown devices and report your findings.
 
 ## Thing Configuration
 
