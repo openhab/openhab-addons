@@ -31,7 +31,7 @@ A full overview about the parameters of the `SDS011` thing is given in the follo
 
 | parameter name    | mandatory | description                                                                           |
 |-------------------|-----------|---------------------------------------------------------------------------------------|
-| port              | yes       | the port the sensor is connected to, i.e. /detv/ttyUSB0.                              |
+| port              | yes       | the port the sensor is connected to, i.e. /dev/ttyUSB0.                              |
 | reporting         | yes       | whether the reporting mode (value=true) or polling mode should be used.               |
 | reportingInterval | no        | the time in minutes between reportings from the sensor (default=1, min=0, max=30).    |
 | pollingInterval   | no        | the time in seconds between data polls from the device. (default=10, min=3, max=3600) |

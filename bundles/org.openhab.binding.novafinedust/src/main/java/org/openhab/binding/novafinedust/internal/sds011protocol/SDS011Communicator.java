@@ -19,7 +19,6 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.TooManyListenersException;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.transport.serial.PortInUseException;
@@ -253,7 +252,7 @@ public class SDS011Communicator implements SerialPortEventListener {
                 reply = readReply();
                 logger.debug("Got data from sensor: {}", reply);
             } catch (IOException e) {
-                logger.error("Could not read available data from the serial port", e);
+                logger.warn("Could not read available data from the serial port", e);
             }
             if (reply instanceof SensorMeasuredDataReply) {
                 SensorMeasuredDataReply sensorData = (SensorMeasuredDataReply) reply;
@@ -281,7 +280,17 @@ public class SDS011Communicator implements SerialPortEventListener {
                 serialPort = null;
             }
         }
-        IOUtils.closeQuietly(inputStream);
-        IOUtils.closeQuietly(outputStream);
+
+        try {
+            inputStream.close();
+        } catch (IOException e) {
+            logger.debug("Error while closing the input stream: {}", e.getMessage());
+        }
+
+        try {
+            outputStream.close();
+        } catch (IOException e) {
+            logger.debug("Error while closing the output stream: {}", e.getMessage());
+        }
     }
 }

@@ -15,8 +15,6 @@ package org.openhab.binding.novafinedust.internal;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.ZonedDateTime;
-import java.time.chrono.ChronoZonedDateTime;
-import java.time.temporal.Temporal;
 import java.util.TooManyListenersException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -61,11 +59,11 @@ public class SDS011Handler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> pollingJob;
     private @Nullable ScheduledFuture<?> connectionMonitor;
 
-    private Temporal lastCommunication = ZonedDateTime.now();
+    private ZonedDateTime lastCommunication = ZonedDateTime.now();
 
     // initialize timeBetweenDataShouldArrive with a large number
     private Duration timeBetweenDataShouldArrive = Duration.ofDays(1);
-    private final Duration dataCanBeLateTollerance = Duration.ofSeconds(5);
+    private final Duration dataCanBeLateTolerance = Duration.ofSeconds(5);
 
     public SDS011Handler(Thing thing, SerialPortManager serialPortManager) {
         super(thing);
@@ -159,20 +157,6 @@ public class SDS011Handler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Port must be set!");
             return false;
         }
-
-        if (config.reporting) {
-            if (config.reportingInterval < 0 || config.reportingInterval > 30) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                        "Reporting interval has to be between 0 and 30 minutes");
-                return false;
-            }
-        } else {
-            if (config.pollingInterval < 3 || config.pollingInterval > 3600) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                        "Polling interval has to be between 3 and 3600 seconds");
-                return false;
-            }
-        }
         return true;
     }
 
@@ -218,10 +202,10 @@ public class SDS011Handler extends BaseThingHandler {
 
     private void verifyIfStillConnected() {
         ZonedDateTime now = ZonedDateTime.now();
-        Temporal lastData = lastCommunication.plus(timeBetweenDataShouldArrive).plus(dataCanBeLateTollerance);
-        if (now.isAfter((ChronoZonedDateTime<?>) lastData)) {
+        ZonedDateTime lastData = lastCommunication.plus(timeBetweenDataShouldArrive).plus(dataCanBeLateTolerance);
+        if (now.isAfter(lastData)) {
             logger.debug("Check Alive timer: Timeout: lastCommunication={}, interval={}, tollerance={}",
-                    lastCommunication, timeBetweenDataShouldArrive, dataCanBeLateTollerance);
+                    lastCommunication, timeBetweenDataShouldArrive, dataCanBeLateTolerance);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Check connection cable and afterwards disable and enable this thing to make it work again");
             // in case someone has pulled the plug, we dispose ourselves and the user has to deactivate/activate the
@@ -229,7 +213,7 @@ public class SDS011Handler extends BaseThingHandler {
             dispose();
         } else {
             logger.trace("Check Alive timer: All OK: lastCommunication={}, interval={}, tollerance={}",
-                    lastCommunication, timeBetweenDataShouldArrive, dataCanBeLateTollerance);
+                    lastCommunication, timeBetweenDataShouldArrive, dataCanBeLateTolerance);
         }
     }
 
