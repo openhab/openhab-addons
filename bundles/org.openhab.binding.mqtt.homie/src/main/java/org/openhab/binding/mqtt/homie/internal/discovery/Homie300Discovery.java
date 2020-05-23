@@ -96,8 +96,9 @@ public class Homie300Discovery extends AbstractMQTTDiscovery {
         // Retrieve name and update found discovery
         try {
             WaitForTopicValue w = new WaitForTopicValue(connection, topic.replace("$homie", "$name"));
-            w.waitForTopicValueAsync(scheduler, 700).thenAccept(name -> {
-                publishDevice(connectionBridge, connection, deviceID, topic, name);
+            w.waitForTopicValueAsync(scheduler, 700).whenComplete((name, ex) -> {
+                String deviceName = ex == null ? name : deviceID;
+                publishDevice(connectionBridge, connection, deviceID, topic, deviceName);
             });
         } catch (InterruptedException | ExecutionException ignored) {
             // The name is nice to have, but not required, use deviceId as fallback

@@ -32,7 +32,6 @@ import org.eclipse.smarthome.io.transport.mqtt.MqttMessageSubscriber;
 @NonNullByDefault
 public class WaitForTopicValue {
     private final CompletableFuture<String> future = new CompletableFuture<>();
-    private final CompletableFuture<Boolean> subscribeFuture;
     private final CompletableFuture<String> composeFuture;
 
     /**
@@ -56,16 +55,14 @@ public class WaitForTopicValue {
             connection.unsubscribe(topic, mqttMessageSubscriber);
         });
 
-        subscribeFuture = connection.subscribe(topic, mqttMessageSubscriber);
-
-        composeFuture = subscribeFuture.thenCompose(b -> future);
+        composeFuture = connection.subscribe(topic, mqttMessageSubscriber).thenCompose(b -> future);
     }
 
     /**
      * Free any resources
      */
     public void stop() {
-        future.completeExceptionally(new Exception("Stopped"));
+        composeFuture.completeExceptionally(new Exception("Stopped"));
     }
 
     /**
@@ -83,8 +80,8 @@ public class WaitForTopicValue {
     }
 
     private void timeout() {
-        if (!future.isDone()) {
-            future.completeExceptionally(new TimeoutException());
+        if (!composeFuture.isDone()) {
+            composeFuture.completeExceptionally(new TimeoutException());
         }
     }
 
