@@ -49,7 +49,7 @@ import static org.openhab.binding.publictransportswitzerland.internal.PublicTran
 public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHandler {
 
     // Limit the API response to the necessary fields
-    private static final String fieldFilters = createFilterForFields(
+    private static final String FIELD_FILTERS = createFilterForFields(
             "stationboard/to",
             "stationboard/category",
             "stationboard/number",
@@ -96,7 +96,7 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
 
         try {
             String escapedStation = URLEncoder.encode(config.station, StandardCharsets.UTF_8.name());
-            String requestUrl = BASE_URL + "stationboard?station=" + escapedStation + fieldFilters;
+            String requestUrl = BASE_URL + "stationboard?station=" + escapedStation + FIELD_FILTERS;
 
             String response = HttpUtil.executeUrl("GET", requestUrl, 10_000);
             logger.debug("Got response from API: {}", response);

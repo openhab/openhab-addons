@@ -9,19 +9,23 @@ For example, here is a station board in HABPanel. (Download [here](https://githu
 ## Supported Things
 
 ### Stationboard
+
 Upcoming departures for a single station.
 
 ## Discovery
+
 This binding does not support auto-discovery.
 
 ## Thing Configuration
 
 ### Stationboard
+
 `Station` is the station name for which to display departures.
 
 ## Channels
 
 ### Stationboard
+
 | channel | type   | description |
 |---------|--------|-------------|
 | departures#n   | String | A dynamic channel for each upcoming departure |

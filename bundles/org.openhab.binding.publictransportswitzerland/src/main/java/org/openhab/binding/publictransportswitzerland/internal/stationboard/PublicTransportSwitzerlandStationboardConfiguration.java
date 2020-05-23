@@ -12,15 +12,19 @@
  */
 package org.openhab.binding.publictransportswitzerland.internal.stationboard;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link PublicTransportSwitzerlandStationboardConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Jeremy Stucki - Initial contribution
  */
+@NonNullByDefault
 public class PublicTransportSwitzerlandStationboardConfiguration {
 
     /**
      * The station name
      */
-    public String station;
+    public @Nullable String station;
 }
