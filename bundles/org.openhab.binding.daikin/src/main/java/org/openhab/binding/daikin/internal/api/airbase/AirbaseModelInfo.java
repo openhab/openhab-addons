@@ -12,17 +12,15 @@
  */
 package org.openhab.binding.daikin.internal.api.airbase;
 
-import java.util.Map;
 import java.util.EnumSet;
+import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.daikin.internal.api.InfoParser;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseEnums.AirbaseFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.openhab.binding.daikin.internal.api.InfoParser;
-import org.openhab.binding.daikin.internal.api.airbase.AirbaseEnums.AirbaseFeature;
 
 /**
  * Class for holding the set of parameters used by get model info.
@@ -51,9 +49,12 @@ public class AirbaseModelInfo {
 
         AirbaseModelInfo info = new AirbaseModelInfo();
         info.ret = Optional.ofNullable(responseMap.get("ret")).orElse("");
-        info.zonespresent = Optional.ofNullable(responseMap.get("en_zone")).flatMap(value -> InfoParser.parseInt(value)).orElse(0);
-        info.commonzone = Optional.ofNullable(responseMap.get("en_common_zone")).flatMap(value -> InfoParser.parseInt(value)).orElse(0);
-        info.frate_steps = Optional.ofNullable(responseMap.get("frate_steps")).flatMap(value -> InfoParser.parseInt(value)).orElse(1);
+        info.zonespresent = Optional.ofNullable(responseMap.get("en_zone")).flatMap(value -> InfoParser.parseInt(value))
+                .orElse(0);
+        info.commonzone = Optional.ofNullable(responseMap.get("en_common_zone"))
+                .flatMap(value -> InfoParser.parseInt(value)).orElse(0);
+        info.frate_steps = Optional.ofNullable(responseMap.get("frate_steps"))
+                .flatMap(value -> InfoParser.parseInt(value)).orElse(1);
         for (AirbaseFeature f : AirbaseFeature.values()) {
             if ("1".equals(responseMap.get(f.getValue()))) {
                 info.features.add(f);
