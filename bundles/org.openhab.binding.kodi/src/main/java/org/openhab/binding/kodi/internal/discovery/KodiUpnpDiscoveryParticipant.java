@@ -94,14 +94,18 @@ public class KodiUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
     @Override
     public @Nullable ThingUID getThingUID(RemoteDevice device) {
         String manufacturer = device.getDetails().getManufacturerDetails().getManufacturer();
-        if (manufacturer != null && manufacturer.toLowerCase().contains(MANUFACTURER.toLowerCase())) {
+        if (containsIgnoreCase(manufacturer, MANUFACTURER)) {
             logger.debug("Manufacturer matched: search: {}, device value: {}.", MANUFACTURER, manufacturer);
             String type = device.getType().getType();
-            if (type != null && type.toLowerCase().contains(UPNP_DEVICE_TYPE.toLowerCase())) {
+            if (containsIgnoreCase(type, UPNP_DEVICE_TYPE)) {
                 logger.debug("Device type matched: search: {}, device value: {}.", UPNP_DEVICE_TYPE, type);
                 return new ThingUID(THING_TYPE_KODI, device.getIdentity().getUdn().getIdentifierString());
             }
         }
         return null;
+    }
+
+    private boolean containsIgnoreCase(final @Nullable String str, final String searchStr) {
+        return str != null && str.toLowerCase().contains(searchStr.toLowerCase());
     }
 }

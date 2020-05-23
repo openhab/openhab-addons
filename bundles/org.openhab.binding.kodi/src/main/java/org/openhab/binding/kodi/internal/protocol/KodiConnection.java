@@ -381,7 +381,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
     public @Nullable KodiFavorite getFavorite(final String favoriteTitle) {
         for (KodiFavorite favorite : getFavorites()) {
             String title = favorite.getTitle();
-            if (title != null && title.equals(favoriteTitle)) {
+            if (favoriteTitle.equalsIgnoreCase(title)) {
                 return favorite;
             }
         }
@@ -869,7 +869,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
         }
     }
 
-    private String stripEnd(String str, char suffix) {
+    private String stripEnd(final String str, final char suffix) {
         int end = str.length();
         if (end == 0) {
             return str;
@@ -1186,7 +1186,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
         List<KodiPVRChannelGroup> pvrChannelGroups = getPVRChannelGroups(channelType);
         for (KodiPVRChannelGroup pvrChannelGroup : pvrChannelGroups) {
             String label = pvrChannelGroup.getLabel();
-            if (label != null && label.equals(pvrChannelGroupName)) {
+            if (pvrChannelGroupName.equalsIgnoreCase(label)) {
                 return pvrChannelGroup.getId();
             }
         }
@@ -1226,7 +1226,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
     public int getPVRChannelId(final int pvrChannelGroupId, final String pvrChannelName) {
         for (KodiPVRChannel pvrChannel : getPVRChannels(pvrChannelGroupId)) {
             String label = pvrChannel.getLabel();
-            if (label != null && label.equals(pvrChannelName)) {
+            if (pvrChannelName.equalsIgnoreCase(label)) {
                 return pvrChannel.getId();
             }
         }
