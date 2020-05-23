@@ -18,7 +18,6 @@ import static org.openhab.binding.heos.internal.HeosBindingConstants.*;
 import static org.openhab.binding.heos.internal.handler.FutureUtil.cancel;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -94,7 +93,7 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
     private List<String[]> selectedPlayerList = new CopyOnWriteArrayList<>();
 
     private @Nullable Future<?> startupFuture;
-    private List<Future<?>> childHandlerInitializedFutures = new ArrayList<>();
+    private final List<Future<?>> childHandlerInitializedFutures = new CopyOnWriteArrayList<>();
 
     private final HeosSystem heosSystem;
     private @Nullable HeosFacade apiConnection;
@@ -331,7 +330,7 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
 
     /**
      * Sets the HEOS Thing online. Also updates the link between
-     * the groubMemberHash value with the actual gid of this group *
+     * the groupMemberHash value with the actual gid of this group *
      */
     public void setGroupOnline(String groupMemberHash, String groupId) {
         hashToGidMap.put(groupMemberHash, groupId);
