@@ -39,10 +39,10 @@ oltu.oauth2
 * Project: https://oltu.apache.org
 * Source:  https://svn.apache.org/viewvc/oltu/trunk
 
-netatmo-java-retrofit
-* License: Apache 2.0 License
+netatmo-swagger-decl
+* License: MIT License
 * Project: https://dev.netatmo.com
-* Source:  https://github.com/cbornet/netatmo-swagger-api
+* Source:  https://github.com/cbornet/netatmo-swagger-decl
 
 retrofit
 * License: Apache 2.0 License
