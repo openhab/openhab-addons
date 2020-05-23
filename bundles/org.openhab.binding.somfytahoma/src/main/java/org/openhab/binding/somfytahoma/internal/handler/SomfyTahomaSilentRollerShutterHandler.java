@@ -61,7 +61,7 @@ public class SomfyTahomaSilentRollerShutterHandler extends SomfyTahomaRollerShut
                     String param = "[" + command.toString() + ", \"lowspeed\"]";
                     sendCommand(COMMAND_SET_CLOSURESPEED, param);
                 } else {
-                    String param = COMMAND_SET_CLOSURE.equals(cmd) ? "[" + command.toString() + "]" : "[]";
+                    String param = COMMAND_SET_CLOSURE.equals(cmd) ? "[" + toInteger(command) + "]" : "[]";
                     sendCommand(cmd, param);
                 }
             }

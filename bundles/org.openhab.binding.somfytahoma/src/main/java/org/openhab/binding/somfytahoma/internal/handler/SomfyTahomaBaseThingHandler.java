@@ -331,4 +331,8 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
             }
         });
     }
+
+    public int toInteger(Command command) {
+        return (command instanceof DecimalType) ? ((DecimalType) command).intValue() : 0;
+    }
 }

@@ -62,7 +62,7 @@ public class SomfyTahomaVenetianBlindHandler extends SomfyTahomaBaseThingHandler
                     }
                 } else {
                     String param = (COMMAND_SET_CLOSURE.equals(cmd) || COMMAND_SET_ORIENTATION.equals(cmd))
-                            ? "[" + command.toString() + "]"
+                            ? "[" + toInteger(command) + "]"
                             : "[]";
                     sendCommand(cmd, param);
                 }

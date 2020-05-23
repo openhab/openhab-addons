@@ -57,7 +57,7 @@ public class SomfyTahomaRollerShutterHandler extends SomfyTahomaBaseThingHandler
                     sendCommand(COMMAND_MY);
                 }
             } else {
-                String param = COMMAND_SET_CLOSURE.equals(cmd) ? "[" + command.toString() + "]" : "[]";
+                String param = COMMAND_SET_CLOSURE.equals(cmd) ? "[" + toInteger(command) + "]" : "[]";
                 sendCommand(cmd, param);
             }
         }
