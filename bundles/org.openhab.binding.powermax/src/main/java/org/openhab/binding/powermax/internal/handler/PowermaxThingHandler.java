@@ -65,37 +65,11 @@ public class PowermaxThingHandler extends BaseThingHandler implements PowermaxPa
     @Override
     public void initialize() {
         logger.debug("Initializing handler for thing {}", getThing().getUID());
-
-        boolean validConfig = false;
-        String errorMsg = "Unexpected thing type " + getThing().getThingTypeUID();
-
-        if (getThing().getThingTypeUID().equals(THING_TYPE_ZONE)) {
-            PowermaxZoneConfiguration config = getConfigAs(PowermaxZoneConfiguration.class);
-            if (config.zoneNumber != null && config.zoneNumber >= ZONE_NR_MIN && config.zoneNumber <= ZONE_NR_MAX) {
-                validConfig = true;
-            } else {
-                errorMsg = "zoneNumber setting must be defined in thing configuration and set between " + ZONE_NR_MIN
-                        + " and " + ZONE_NR_MAX;
-            }
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_X10)) {
-            PowermaxX10Configuration config = getConfigAs(PowermaxX10Configuration.class);
-            if (config.deviceNumber != null && config.deviceNumber >= X10_NR_MIN && config.deviceNumber <= X10_NR_MAX) {
-                validConfig = true;
-            } else {
-                errorMsg = "deviceNumber setting must be defined in thing configuration and set between " + X10_NR_MIN
-                        + " and " + X10_NR_MAX;
-            }
-        }
-
-        if (validConfig) {
-            Bridge bridge = getBridge();
-            if (bridge == null) {
-                initializeThingState(null, null);
-            } else {
-                initializeThingState(bridge.getHandler(), bridge.getStatus());
-            }
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            initializeThingState(null, null);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
+            initializeThingState(bridge.getHandler(), bridge.getStatus());
         }
     }
 
@@ -108,11 +82,38 @@ public class PowermaxThingHandler extends BaseThingHandler implements PowermaxPa
     private void initializeThingState(ThingHandler bridgeHandler, ThingStatus bridgeStatus) {
         if (bridgeHandler != null && bridgeStatus != null) {
             if (bridgeStatus == ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.UNKNOWN);
-                logger.debug("Set handler status to UNKNOWN for thing {} (bridge ONLINE)", getThing().getUID());
-                this.bridgeHandler = (PowermaxBridgeHandler) bridgeHandler;
-                this.bridgeHandler.registerPanelSettingsListener(this);
-                onPanelSettingsUpdated(this.bridgeHandler.getPanelSettings());
+                boolean validConfig = false;
+                String errorMsg = "Unexpected thing type " + getThing().getThingTypeUID();
+
+                if (getThing().getThingTypeUID().equals(THING_TYPE_ZONE)) {
+                    PowermaxZoneConfiguration config = getConfigAs(PowermaxZoneConfiguration.class);
+                    if (config.zoneNumber != null && config.zoneNumber >= ZONE_NR_MIN
+                            && config.zoneNumber <= ZONE_NR_MAX) {
+                        validConfig = true;
+                    } else {
+                        errorMsg = "zoneNumber setting must be defined in thing configuration and set between "
+                                + ZONE_NR_MIN + " and " + ZONE_NR_MAX;
+                    }
+                } else if (getThing().getThingTypeUID().equals(THING_TYPE_X10)) {
+                    PowermaxX10Configuration config = getConfigAs(PowermaxX10Configuration.class);
+                    if (config.deviceNumber != null && config.deviceNumber >= X10_NR_MIN
+                            && config.deviceNumber <= X10_NR_MAX) {
+                        validConfig = true;
+                    } else {
+                        errorMsg = "deviceNumber setting must be defined in thing configuration and set between "
+                                + X10_NR_MIN + " and " + X10_NR_MAX;
+                    }
+                }
+
+                if (validConfig) {
+                    updateStatus(ThingStatus.UNKNOWN);
+                    logger.debug("Set handler status to UNKNOWN for thing {} (bridge ONLINE)", getThing().getUID());
+                    this.bridgeHandler = (PowermaxBridgeHandler) bridgeHandler;
+                    this.bridgeHandler.registerPanelSettingsListener(this);
+                    onPanelSettingsUpdated(this.bridgeHandler.getPanelSettings());
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
+                }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
                 logger.debug("Set handler status to OFFLINE for thing {} (bridge OFFLINE)", getThing().getUID());
