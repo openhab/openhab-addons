@@ -37,6 +37,7 @@ public class AlarmDecoderBindingConstants {
     public static final ThingTypeUID THING_TYPE_SERIALBRIDGE = new ThingTypeUID(BINDING_ID, "serialbridge");
     public static final ThingTypeUID THING_TYPE_ZONE = new ThingTypeUID(BINDING_ID, "zone");
     public static final ThingTypeUID THING_TYPE_RFZONE = new ThingTypeUID(BINDING_ID, "rfzone");
+    public static final ThingTypeUID THING_TYPE_VZONE = new ThingTypeUID(BINDING_ID, "vzone");
     public static final ThingTypeUID THING_TYPE_KEYPAD = new ThingTypeUID(BINDING_ID, "keypad");
     public static final ThingTypeUID THING_TYPE_LRR = new ThingTypeUID(BINDING_ID, "lrr");
 
@@ -54,6 +55,9 @@ public class AlarmDecoderBindingConstants {
     public static final String PROPERTY_ID = "id";
 
     public static final String CHANNEL_CONTACT = "contact";
+
+    // Channel IDs for VZoneHandler
+    public static final String CHANNEL_COMMAND = "command";
 
     // Channel IDs for RFZoneHandler
     public static final String PROPERTY_SERIAL = "serial";

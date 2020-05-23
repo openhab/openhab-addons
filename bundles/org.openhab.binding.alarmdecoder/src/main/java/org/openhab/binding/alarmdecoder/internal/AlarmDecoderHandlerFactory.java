@@ -38,6 +38,7 @@ import org.openhab.binding.alarmdecoder.internal.handler.KeypadHandler;
 import org.openhab.binding.alarmdecoder.internal.handler.LRRHandler;
 import org.openhab.binding.alarmdecoder.internal.handler.RFZoneHandler;
 import org.openhab.binding.alarmdecoder.internal.handler.SerialBridgeHandler;
+import org.openhab.binding.alarmdecoder.internal.handler.VZoneHandler;
 import org.openhab.binding.alarmdecoder.internal.handler.ZoneHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
@@ -58,7 +59,7 @@ public class AlarmDecoderHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_IPBRIDGE, THING_TYPE_SERIALBRIDGE, THING_TYPE_ZONE, THING_TYPE_RFZONE,
-                    THING_TYPE_KEYPAD, THING_TYPE_LRR).collect(Collectors.toSet()));
+                    THING_TYPE_VZONE, THING_TYPE_KEYPAD, THING_TYPE_LRR).collect(Collectors.toSet()));
 
     private final Logger logger = LoggerFactory.getLogger(AlarmDecoderHandlerFactory.class);
 
@@ -94,6 +95,8 @@ public class AlarmDecoderHandlerFactory extends BaseThingHandlerFactory {
             return new ZoneHandler(thing);
         } else if (THING_TYPE_RFZONE.equals(thingTypeUID)) {
             return new RFZoneHandler(thing);
+        } else if (THING_TYPE_VZONE.equals(thingTypeUID)) {
+            return new VZoneHandler(thing);
         } else if (THING_TYPE_KEYPAD.equals(thingTypeUID)) {
             return new KeypadHandler(thing);
         } else if (THING_TYPE_LRR.equals(thingTypeUID)) {
