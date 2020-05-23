@@ -139,15 +139,15 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
             String category = departureObject.get("category").getAsString();
             String number = departureObject.get("number").getAsString();
             String destination = departureObject.get("to").getAsString();
+            Long departureTime = stopObject.get("departureTimestamp").getAsLong();
 
             String delay = getStringValueOrEmpty(departureObject.get("delay"));
             String track = getStringValueOrEmpty(stopObject.get("platform"));
 
-            Long departureTime = stopObject.get("departureTimestamp").getAsLong();
-            String track = stopObject.get("platform").getAsString();
+            String identifier = createIdentifier(category, number);
 
-            updateState(getChannelUIDForPosition(i), new StringType(formatDeparture(category, number, departureTime, destination, track, delay)));
-            tsvRows.add(String.join("\t", category, number, departureTime.toString(), destination, track, delay));
+            updateState(getChannelUIDForPosition(i), new StringType(formatDeparture(identifier, departureTime, destination, track, delay)));
+            tsvRows.add(String.join("\t", identifier, departureTime.toString(), destination, track, delay));
         }
 
         updateState(CHANNEL_TSV, new StringType(String.join("\n", tsvRows)));
@@ -161,20 +161,37 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
         return jsonElement.getAsString();
     }
 
-    private String formatDeparture(String category, String number, Long departureTimestamp, String destination, String track, @Nullable String delay) {
+    private String formatDeparture(String identifier, Long departureTimestamp, String destination, @Nullable String track, @Nullable String delay) {
         Date departureDate = new Date(departureTimestamp * 1000);
 
         SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
         String formattedDate = timeFormat.format(departureDate);
 
-        String train = number.startsWith(category) ? category : category + number;
-        String result = String.format("%s - %s %s - Pl. %s", formattedDate, train, destination, track);
+        String result = String.format("%s - %s %s", formattedDate, identifier, destination);
+
+        if (track != null && !track.isEmpty()) {
+            result += " - Pl. " + track;
+        }
 
         if (delay != null && !delay.isEmpty()) {
             result += String.format(" (%s' late)", delay);
         }
 
         return result;
+    }
+
+    private String createIdentifier(String category, String number) {
+        // Only show the number for buses
+        if (category.equals("B")) {
+            return number;
+        }
+
+        // Some weird quirk with the API
+        if (number.startsWith(category)) {
+            return category;
+        }
+
+        return category + number;
     }
 
     private void createDynamicChannels(int numberOfChannels) {
