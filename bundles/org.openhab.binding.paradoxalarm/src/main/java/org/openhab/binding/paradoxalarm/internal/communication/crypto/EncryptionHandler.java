@@ -79,15 +79,14 @@ public class EncryptionHandler {
             int[] a = Arrays.copyOfRange(payloadAsIntArray, i * 16, (i + 1) * 16);
             keyAddition(a, Arrays.copyOfRange(expandedKey, 0, 16));
 
-            for (int r = 1; r < rounds; r++) {
+            for (int r = 1; r <= rounds; r++) {
                 sBox(a, s);
                 shiftRow(a, 0);
-                mixColumn(a);
+                if (r != rounds) {
+                    mixColumn(a);
+                }
                 keyAddition(a, Arrays.copyOfRange(expandedKey, r * 16, (r + 1) * 16));
             }
-            sBox(a, s);
-            shiftRow(a, 0);
-            keyAddition(a, Arrays.copyOfRange(expandedKey, 16 * rounds, (rounds + 1) * 16));
 
             result = ParadoxUtil.mergeByteArrays(result, ParadoxUtil.toByteArray(a));
         }
@@ -103,13 +102,12 @@ public class EncryptionHandler {
         byte[] result = new byte[0];
         for (int i = 0, rounds = 14; i < payloadAsIntArray.length / 16; i++) {
             int[] a = Arrays.copyOfRange(payloadAsIntArray, i * 16, (i + 1) * 16);
-            keyAddition(a, Arrays.copyOfRange(expandedKey, 16 * rounds, (rounds + 1) * 16));
-            sBox(a, si);
-            shiftRow(a, 1);
 
-            for (int r = rounds - 1; r > 0; r--) {
+            for (int r = rounds; r > 0; r--) {
                 keyAddition(a, Arrays.copyOfRange(expandedKey, r * 16, (r + 1) * 16));
-                invMixColumn(a);
+                if (r != rounds) {
+                    invMixColumn(a);
+                }
                 sBox(a, si);
                 shiftRow(a, 1);
             }
@@ -188,29 +186,11 @@ public class EncryptionHandler {
     }
 
     private int gmul(int c, int b) {
-        int s;
-        int q;
-        int z = 0;
-        s = lTable[c] + lTable[b];
+        int s = lTable[c] + lTable[b];
         s %= 255;
-        /* Get the antilog */
         s = aTable[s];
-        /*
-         * Now, we have some fancy code that returns 0 if either
-         * a or b are zero; we write the code this way so that the
-         * code will (hopefully) run at a constant speed in order to
-         * minimize the risk of timing attacks
-         */
-        q = s;
-        if (c == 0) {
-            s = z;
-        } else {
-            s = q;
-        }
-        if (b == 0) {
-            s = z;
-        } else {
-            q = z;
+        if (b == 0 || c == 0) {
+            s = 0;
         }
         return s;
     }
