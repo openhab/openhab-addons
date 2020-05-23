@@ -15,26 +15,28 @@ package org.openhab.binding.nibeuplink.internal.model;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * the channel class
+ * exception whichs is used to state a validation error
  *
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class CustomChannel extends Channel {
+public class ConfigurationException extends RuntimeException {
+    private static final long serialVersionUID = 1L;
 
-    CustomChannel(String id, String name) {
-        super(id, name, ChannelGroup.CUSTOM);
-        this.channelCode = "0";
+    public ConfigurationException() {
+        super();
     }
 
-    /**
-     * used to set the channelcode obtained from configuration file
-     *
-     * @param channelCode the channelCode to be set
-     */
-    public final void setCode(Integer channelCode) {
-        if (getChannelGroup().equals(ChannelGroup.CUSTOM)) {
-            this.channelCode = channelCode.toString();
-        }
+    public ConfigurationException(String message) {
+        super(message);
     }
+
+    public ConfigurationException(Throwable cause) {
+        super(cause);
+    }
+
+    public ConfigurationException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
 }
