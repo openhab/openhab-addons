@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.smarthome.core.cache.ExpiringCacheMap;
@@ -379,10 +378,10 @@ public class KodiConnection implements KodiClientSocketEventListener {
      * @param favoriteTitle the title of the favorite
      * @return the ({@link KodiFavorite}) with the given title
      */
-    @Nullable
-    public KodiFavorite getFavorite(final String favoriteTitle) {
+    public @Nullable KodiFavorite getFavorite(final String favoriteTitle) {
         for (KodiFavorite favorite : getFavorites()) {
-            if (StringUtils.equalsIgnoreCase(favorite.getTitle(), favoriteTitle)) {
+            String title = favorite.getTitle();
+            if (favoriteTitle.equalsIgnoreCase(title)) {
                 return favorite;
             }
         }
@@ -862,12 +861,23 @@ public class KodiConnection implements KodiClientSocketEventListener {
             // we have to strip ending "/" here because Kodi returns a not valid path and filename
             // "fanart":"image://http%3a%2f%2fthetvdb.com%2fbanners%2ffanart%2foriginal%2f263365-31.jpg/"
             // "thumbnail":"image://http%3a%2f%2fthetvdb.com%2fbanners%2fepisodes%2f263365%2f5640869.jpg/"
-            String encodedURL = URLEncoder.encode(StringUtils.stripEnd(url, "/"), StandardCharsets.UTF_8.name());
+            String encodedURL = URLEncoder.encode(stripEnd(url, '/'), StandardCharsets.UTF_8.name());
             return imageUri.resolve(encodedURL).toString();
         } catch (UnsupportedEncodingException e) {
             logger.debug("exception during encoding {}", url, e);
             return null;
         }
+    }
+
+    private String stripEnd(final String str, final char suffix) {
+        int end = str.length();
+        if (end == 0) {
+            return str;
+        }
+        while (end > 0 && str.charAt(end - 1) == suffix) {
+            end--;
+        }
+        return str.substring(0, end);
     }
 
     private @Nullable RawType downloadImage(String url) {
@@ -1175,7 +1185,8 @@ public class KodiConnection implements KodiClientSocketEventListener {
     public int getPVRChannelGroupId(final String channelType, final String pvrChannelGroupName) {
         List<KodiPVRChannelGroup> pvrChannelGroups = getPVRChannelGroups(channelType);
         for (KodiPVRChannelGroup pvrChannelGroup : pvrChannelGroups) {
-            if (StringUtils.equalsIgnoreCase(pvrChannelGroup.getLabel(), pvrChannelGroupName)) {
+            String label = pvrChannelGroup.getLabel();
+            if (pvrChannelGroupName.equalsIgnoreCase(label)) {
                 return pvrChannelGroup.getId();
             }
         }
@@ -1214,7 +1225,8 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
     public int getPVRChannelId(final int pvrChannelGroupId, final String pvrChannelName) {
         for (KodiPVRChannel pvrChannel : getPVRChannels(pvrChannelGroupId)) {
-            if (StringUtils.equalsIgnoreCase(pvrChannel.getLabel(), pvrChannelName)) {
+            String label = pvrChannel.getLabel();
+            if (pvrChannelName.equalsIgnoreCase(label)) {
                 return pvrChannel.getId();
             }
         }
