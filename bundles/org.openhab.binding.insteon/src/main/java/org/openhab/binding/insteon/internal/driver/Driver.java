@@ -102,4 +102,8 @@ public class Driver {
     public boolean isModemDBComplete() {
         return port.isModemDBComplete();
     }
+
+    public void disconnected() {
+        listener.disconnected();
+    }
 }

@@ -324,6 +324,11 @@ public class InsteonBinding {
         }
     }
 
+    public boolean reconnect() {
+        driver.stop();
+        return startPolling();
+    }
+
     /**
      * Everything below was copied from Insteon PLM v1
      */
@@ -488,6 +493,11 @@ public class InsteonBinding {
             if (!missing.isEmpty()) {
                 handler.addMissingDevices(missing);
             }
+        }
+
+        @Override
+        public void disconnected() {
+            handler.bindingDisconnected();
         }
 
         private void handleInsteonMessage(Msg msg) {
