@@ -17,10 +17,10 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-
 import org.openhab.binding.daikin.internal.api.Enums.FanMovement;
 import org.openhab.binding.daikin.internal.api.Enums.FanSpeed;
 import org.openhab.binding.daikin.internal.api.Enums.Mode;
+import org.openhab.binding.daikin.internal.api.Enums.SpecialMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,6 +44,7 @@ public class ControlInfo {
     public FanMovement fanMovement = FanMovement.STOPPED;
     /* Not supported by all units. Sets the target humidity for dehumidifying. */
     public Optional<Integer> targetHumidity = Optional.empty();
+    public SpecialMode specialMode = SpecialMode.UNKNOWN;
 
     private ControlInfo() {
     }
@@ -65,6 +66,8 @@ public class ControlInfo {
                 .map(value -> FanMovement.fromValue(value)).orElse(FanMovement.STOPPED);
         info.targetHumidity = Optional.ofNullable(responseMap.get("shum")).flatMap(value -> InfoParser.parseInt(value));
 
+        info.specialMode = Optional.ofNullable(responseMap.get("adv")).map(value -> SpecialMode.fromValue(value))
+                .orElse(SpecialMode.UNKNOWN);
         return info;
     }
 

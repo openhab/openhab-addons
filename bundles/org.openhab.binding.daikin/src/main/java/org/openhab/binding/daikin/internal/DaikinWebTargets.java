@@ -13,11 +13,10 @@
 package org.openhab.binding.daikin.internal;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -29,14 +28,15 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.daikin.internal.api.BasicInfo;
 import org.openhab.binding.daikin.internal.api.ControlInfo;
+import org.openhab.binding.daikin.internal.api.Enums.SpecialModeKind;
 import org.openhab.binding.daikin.internal.api.SensorInfo;
+import org.openhab.binding.daikin.internal.api.EnergyInfoYear;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseBasicInfo;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseControlInfo;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseModelInfo;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseZoneInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 /**
  * Handles performing the actual HTTP requests for communicating with Daikin air conditioning units.
@@ -55,6 +55,9 @@ public class DaikinWebTargets {
     private String getControlInfoUri;
     private String getSensorInfoUri;
     private String registerUuidUri;
+    private String getEnergyInfoYearUri;
+    private String setSpecialModeUri;
+
     private String setAirbaseControlInfoUri;
     private String getAirbaseControlInfoUri;
     private String getAirbaseSensorInfoUri;
@@ -68,7 +71,8 @@ public class DaikinWebTargets {
 
     private Logger logger = LoggerFactory.getLogger(DaikinWebTargets.class);
 
-    public DaikinWebTargets(@Nullable HttpClient httpClient, @Nullable String host, @Nullable Boolean secure, @Nullable String uuid) {
+    public DaikinWebTargets(@Nullable HttpClient httpClient, @Nullable String host, @Nullable Boolean secure,
+            @Nullable String uuid) {
         this.httpClient = httpClient;
         this.uuid = uuid;
 
@@ -78,6 +82,8 @@ public class DaikinWebTargets {
         getControlInfoUri = baseUri + "aircon/get_control_info";
         getSensorInfoUri = baseUri + "aircon/get_sensor_info";
         registerUuidUri = baseUri + "common/register_terminal";
+        getEnergyInfoYearUri = baseUri + "aircon/get_year_power_ex";
+        setSpecialModeUri = baseUri + "aircon/set_special_mode";
 
         // Daikin Airbase API
         getAirbaseBasicInfoUri = baseUri + "skyfi/common/basic_info";
@@ -115,6 +121,19 @@ public class DaikinWebTargets {
         params.put("key", key);
         String response = invoke(registerUuidUri, params);
         logger.debug("registerUuid result: {}", response);
+    }
+
+    public EnergyInfoYear getEnergyInfoYear() throws DaikinCommunicationException {
+        String response = invoke(getEnergyInfoYearUri);
+        return EnergyInfoYear.parse(response);
+    }
+
+    public boolean setSpecialMode(SpecialModeKind specialModeKind, boolean state) throws DaikinCommunicationException {
+        Map<String, String> queryParams = new HashMap<>();
+        queryParams.put("spmode_kind",String.valueOf(specialModeKind.getValue()));
+        queryParams.put("set_spmode", state ? "1" : "0");
+        String response = invoke(setSpecialModeUri, queryParams);
+        return !response.contains("ret=OK");
     }
 
     // Daikin Airbase API
@@ -188,9 +207,8 @@ public class DaikinWebTargets {
 
     private String executeUrl(String url) throws DaikinCommunicationException {
         try {
-            Request request = httpClient.newRequest(url)
-                                        .method(HttpMethod.GET)
-                                        .timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            Request request = httpClient.newRequest(url).method(HttpMethod.GET).timeout(TIMEOUT_MS,
+                    TimeUnit.MILLISECONDS);
             if (uuid != null) {
                 request.header("X-Daikin-uuid", uuid);
                 logger.debug("Header: X-Daikin-uuid: {}", uuid);

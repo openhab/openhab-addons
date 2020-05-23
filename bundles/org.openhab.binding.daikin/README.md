@@ -45,6 +45,33 @@ For the BRP072A42 and BRP072C42:
 | homekitmode  | A mode that is compatible with homekit/alexa/google home (off, auto, heat, cool). Not tested for BRP069B41 |
 | fanspeed     | The fan speed set for the unit (AUTO, SILENCE, LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5) |
 | fandir       | The fan blade direction (STOPPED, VERTICAL, HORIZONTAL, VERTICAL_AND_HORIZONTAL)            |
+| cmpfrequency | The compressor frequency                                                                    |
+| specialmode  | The special mode currently active (OFF, STREAMER, ECO, POWERFUL, POWERFUL & STREAMER, ECO & STREAMER). Not all modes might be available on the unit. |
+| specialmode-powerful | Turns the powerful mode on/off for the air conditioning unit.                       |
+| energyheatingcurrentyear-1 | The energy consumption when heating for current year January                  |
+| energyheatingcurrentyear-2 | The energy consumption when heating for current year February                 |
+| energyheatingcurrentyear-3 | The energy consumption when heating for current year March                    |
+| energyheatingcurrentyear-4 | The energy consumption when heating for current year April                    |
+| energyheatingcurrentyear-5 | The energy consumption when heating for current year May                      |
+| energyheatingcurrentyear-6 | The energy consumption when heating for current year June                     |
+| energyheatingcurrentyear-7 | The energy consumption when heating for current year July                     |
+| energyheatingcurrentyear-8 | The energy consumption when heating for current year August                   |
+| energyheatingcurrentyear-9 | The energy consumption when heating for current year September                |
+| energyheatingcurrentyear-10| The energy consumption when heating for current year October                  |
+| energyheatingcurrentyear-11| The energy consumption when heating for current year November                 |
+| energyheatingcurrentyear-12| The energy consumption when heating for current year December                 |
+| energycoolingcurrentyear-1 | The energy consumption when cooling for current year January                  |
+| energycoolingcurrentyear-2 | The energy consumption when cooling for current year February                 |
+| energycoolingcurrentyear-3 | The energy consumption when cooling for current year March                    |
+| energycoolingcurrentyear-4 | The energy consumption when cooling for current year April                    |
+| energycoolingcurrentyear-5 | The energy consumption when cooling for current year May                      |
+| energycoolingcurrentyear-6 | The energy consumption when cooling for current year June                     |
+| energycoolingcurrentyear-7 | The energy consumption when cooling for current year July                     |
+| energycoolingcurrentyear-8 | The energy consumption when cooling for current year August                   |
+| energycoolingcurrentyear-9 | The energy consumption when cooling for current year September                |
+| energycoolingcurrentyear-10| The energy consumption when cooling for current year October                  |
+| energycoolingcurrentyear-11| The energy consumption when cooling for current year November                 |
+| energycoolingcurrentyear-12| The energy consumption when cooling for current year December                 |
 
 For the BRP15B61:
 
