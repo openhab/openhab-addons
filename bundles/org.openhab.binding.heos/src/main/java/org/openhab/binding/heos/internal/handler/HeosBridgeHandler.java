@@ -334,11 +334,10 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
      */
     public void setGroupOnline(String groupMemberHash, String groupId) {
         hashToGidMap.put(groupMemberHash, groupId);
-        groupHandlerMap.forEach((hash, handler) -> {
-            if (hash.equals(groupMemberHash)) {
+        Optional.ofNullable(groupHandlerMap.get(groupMemberHash))
+            .ifPresent(handler -> {
                 handler.setStatusOnline();
                 addPlayerChannel(handler.getThing(), groupId);
-            }
         });
     }
 
