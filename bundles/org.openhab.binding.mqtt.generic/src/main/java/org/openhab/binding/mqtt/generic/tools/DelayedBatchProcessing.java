@@ -62,12 +62,13 @@ public class DelayedBatchProcessing<T> implements Consumer<T> {
      * @param t An object
      */
     @Override
-    public void accept(T t) {
+    synchronized public void accept(T t) {
         queue.add(t);
         final ScheduledFuture<?> scheduledFuture = this.future;
-        if (scheduledFuture == null || scheduledFuture.isDone()) {
-            this.future = executor.schedule(this::run, delay, TimeUnit.MILLISECONDS);
+        if (scheduledFuture != null && !scheduledFuture.isDone()) {
+            scheduledFuture.cancel(true);
         }
+        this.future = executor.schedule(this::run, delay, TimeUnit.MILLISECONDS);
     }
 
     /**
