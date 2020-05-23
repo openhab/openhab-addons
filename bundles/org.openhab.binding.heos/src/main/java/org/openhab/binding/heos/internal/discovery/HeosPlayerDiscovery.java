@@ -103,7 +103,7 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService implements Heo
         }
     }
 
-    private void handleDiscoveredPlayers(HashMap<Integer, Player> currentPlayers) {
+    private void handleDiscoveredPlayers(Map<Integer, Player> currentPlayers) {
         logger.debug("Found: {} player", currentPlayers.size());
         ThingUID bridgeUID = bridge.getThing().getUID();
 
