@@ -50,7 +50,7 @@ public abstract class PowermaxConnector implements PowermaxConnectorInterface {
     /**
      * Cleanup everything; to be called when closing the communication
      */
-    protected void cleanup() {
+    protected void cleanup(boolean closeStreams) {
         logger.debug("cleanup(): cleaning up Connection");
 
         if (readerThread != null) {
@@ -61,19 +61,21 @@ public abstract class PowermaxConnector implements PowermaxConnectorInterface {
             }
         }
 
-        if (output != null) {
-            try {
-                output.close();
-            } catch (IOException e) {
-                logger.debug("Error while closing the output stream: {}", e.getMessage());
+        if (closeStreams) {
+            if (output != null) {
+                try {
+                    output.close();
+                } catch (IOException e) {
+                    logger.debug("Error while closing the output stream: {}", e.getMessage());
+                }
             }
-        }
 
-        if (input != null) {
-            try {
-                input.close();
-            } catch (IOException e) {
-                logger.debug("Error while closing the input stream: {}", e.getMessage());
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e) {
+                    logger.debug("Error while closing the input stream: {}", e.getMessage());
+                }
             }
         }
 

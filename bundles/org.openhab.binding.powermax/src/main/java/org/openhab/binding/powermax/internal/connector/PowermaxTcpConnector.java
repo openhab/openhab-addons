@@ -86,7 +86,7 @@ public class PowermaxTcpConnector extends PowermaxConnector {
     public void close() {
         logger.debug("close(): Closing TCP Connection");
 
-        super.cleanup();
+        super.cleanup(false);
 
         if (tcpSocket != null) {
             try {
