@@ -15,12 +15,13 @@ package org.openhab.binding.smhi.internal;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -46,17 +47,16 @@ public class Parser {
      */
     public static TimeSeries parseTimeSeries(String json) {
         ZonedDateTime referenceTime;
-        List<Forecast> forecasts = new ArrayList<>();
         JsonObject object = parser.parse(json).getAsJsonObject();
 
         referenceTime = parseApprovedTime(json);
         JsonArray timeSeries = object.get("timeSeries").getAsJsonArray();
 
-        timeSeries.forEach(element -> {
-            forecasts.add(parseForecast(element.getAsJsonObject()));
-        });
+        List<Forecast> forecasts = StreamSupport.stream(timeSeries.spliterator(), false)
+                        .map(element -> parseForecast(element.getAsJsonObject()))
+                        .sorted(Comparator.naturalOrder())
+                        .collect(Collectors.toList());
 
-        forecasts.sort(Comparator.naturalOrder());
         return new TimeSeries(referenceTime, forecasts);
     }
 

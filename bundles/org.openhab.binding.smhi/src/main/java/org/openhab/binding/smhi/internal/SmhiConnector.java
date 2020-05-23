@@ -49,7 +49,7 @@ public class SmhiConnector {
      * 
      * @return A {@link ZonedDateTime} with the time of the latest forecast.
      */
-    public ZonedDateTime getReferenceTime() {
+    public ZonedDateTime getReferenceTime() throws SmhiException {
         logger.debug("Fetching reference time");
         Request req = httpClient.newRequest(APPROVED_TIME_URL);
         req.accept(ACCEPT);
@@ -69,7 +69,7 @@ public class SmhiConnector {
      * @param lon Longitude
      * @return A {@link TimeSeries} object containing the published forecasts.
      */
-    public TimeSeries getForecast(double lat, double lon) {
+    public TimeSeries getForecast(double lat, double lon) throws SmhiException {
         logger.debug("Fetching new forecast");
         String url = String.format(POINT_FORECAST_URL, lon, lat);
         Request req = httpClient.newRequest(url);

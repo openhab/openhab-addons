@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Anders Alfredsson - Initial contribution
  */
 @NonNullByDefault
-public class SmhiException extends RuntimeException {
+public class SmhiException extends Exception {
 
     private static final long serialVersionUID = 516565331L;
 

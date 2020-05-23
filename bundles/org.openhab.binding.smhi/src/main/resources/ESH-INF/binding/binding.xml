@@ -3,8 +3,8 @@
 	xmlns:binding="https://openhab.org/schemas/binding/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
-	<name>Smhi Binding</name>
-	<description>Binding for getting weather forecasts from smhi</description>
+	<name>SMHI Binding</name>
+	<description>Binding for getting weather forecasts from the Swedish Meteorological and Hydrological Institute (SMHI)</description>
 	<author>Anders Alfredsson</author>
 
 </binding:binding>

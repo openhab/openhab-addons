@@ -20,7 +20,6 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.Future;
@@ -126,7 +125,7 @@ public class SmhiHandler extends BaseThingHandler {
     }
 
     /**
-     * Start polling wor updated weather forecast.
+     * Start polling for updated weather forecast.
      */
     private synchronized void startPolling() {
         forecastUpdater = scheduler.scheduleWithFixedDelay(this::waitForForecast, 1, 1, TimeUnit.MINUTES);
@@ -175,20 +174,13 @@ public class SmhiHandler extends BaseThingHandler {
                 continue;
             }
             Forecast forecast = timeSeries.getForecast(i);
-            channels.forEach(c -> {
-                String id = c.getUID().getIdWithoutGroup();
-                BigDecimal value = forecast.getParameter(id);
-                if (value != null) {
-                    // Smhi returns -9 for spp if there's no precipitation, convert to UNDEF
-                    if (id.equals(PERCENT_FROZEN) && value.intValue() == -9) {
-                        updateState(c.getUID(), UnDefType.UNDEF);
-                    } else {
-                        updateState(c.getUID(), new DecimalType(value));
-                    }
-                } else {
-                    updateState(c.getUID(), UnDefType.NULL);
-                }
-            });
+            if (forecast != null) {
+                channels.forEach(c -> {
+                    String id = c.getUID().getIdWithoutGroup();
+                    BigDecimal value = forecast.getParameter(id);
+                    updateChannel(c, value);
+                });
+            }
         }
         // Loop through daily forecasts and updates those available
         for (int i = 0; i < 10; i++) {
@@ -196,30 +188,46 @@ public class SmhiHandler extends BaseThingHandler {
             if (channels.isEmpty()) {
                 continue;
             }
-            Forecast forecast;
-            try {
-                forecast = timeSeries.getForecast(currentDay, 24 * i + 12);
-            } catch (NoSuchElementException e) {
+            Forecast forecast = timeSeries.getForecast(currentDay, 24 * i + 12);
+
+            if (forecast == null) {
                 logger.info("No forecast yet for {}", currentDay.plusHours(24 * i + 12));
                 channels.forEach(c -> {
                     updateState(c.getUID(), UnDefType.NULL);
                 });
-                continue;
+            } else {
+                channels.forEach(c -> {
+                    String id = c.getUID().getIdWithoutGroup();
+                    BigDecimal value = forecast.getParameter(id);
+                    updateChannel(c, value);
+                });
             }
-            channels.forEach(c -> {
-                String id = c.getUID().getIdWithoutGroup();
-                BigDecimal value = forecast.getParameter(id);
-                if (value != null) {
+        }
+    }
+
+    private void updateChannel(Channel channel, @Nullable BigDecimal value) {
+        String id = channel.getUID().getIdWithoutGroup();
+        if (value != null) {
+            switch (id) {
+                case HIGH_CLOUD_COVER:
+                case MEDIUM_CLOUD_COVER:
+                case LOW_CLOUD_COVER:
+                case TOTAL_CLOUD_COVER:
+                    updateState(channel.getUID(), new DecimalType(value.doubleValue() / 8 * 100));
+                    break;
+                case PERCENT_FROZEN:
                     // Smhi returns -9 for spp if there's no precipitation, convert to UNDEF
-                    if (id.equals(PERCENT_FROZEN) && value.intValue() == -9) {
-                        updateState(c.getUID(), UnDefType.UNDEF);
+                    if (value.intValue() == -9) {
+                        updateState(channel.getUID(), UnDefType.UNDEF);
                     } else {
-                        updateState(c.getUID(), new DecimalType(value));
+                        updateState(channel.getUID(), new DecimalType(value));
                     }
-                } else {
-                    updateState(c.getUID(), UnDefType.NULL);
-                }
-            });
+                    break;
+                default:
+                    updateState(channel.getUID(), new DecimalType(value));
+            }
+        } else {
+            updateState(channel.getUID(), UnDefType.NULL);
         }
     }
 
@@ -231,6 +239,10 @@ public class SmhiHandler extends BaseThingHandler {
         if (localRef != null) {
             localRef.cancel(false);
         }
+        localRef = instantUpdate;
+        if (localRef != null) {
+            localRef.cancel(false);
+        }
     }
 
     /**
@@ -238,22 +250,18 @@ public class SmhiHandler extends BaseThingHandler {
      * published, in that case, fetch it and update channels.
      */
     private void waitForForecast() {
-        try {
-            if (isItNewHour()) {
-                currentHour = calculateCurrentHour();
-                currentDay = calculateCurrentDay();
-                // Update channels with cached forecasts - just shift an hour forward
-                TimeSeries forecast = cachedTimeSeries;
-                if (forecast != null) {
-                    updateChannels(forecast);
-                }
-                hasLatestForecast = false;
+        if (isItNewHour()) {
+            currentHour = calculateCurrentHour();
+            currentDay = calculateCurrentDay();
+            // Update channels with cached forecasts - just shift an hour forward
+            TimeSeries forecast = cachedTimeSeries;
+            if (forecast != null) {
+                updateChannels(forecast);
             }
-            if (!hasLatestForecast && isForecastUpdated()) {
-                getUpdatedForecast();
-            }
-        } catch (Exception e) {
-            logger.debug("Something went wrong: ", e);
+            hasLatestForecast = false;
+        }
+        if (!hasLatestForecast && isForecastUpdated()) {
+            getUpdatedForecast();
         }
     }
 
@@ -272,7 +280,12 @@ public class SmhiHandler extends BaseThingHandler {
      * @return true if the time of the latest forecast is equal to or after currentHour, otherwise false
      */
     private boolean isForecastUpdated() {
-        ZonedDateTime referenceTime = connection.getReferenceTime();
+        ZonedDateTime referenceTime;
+        try {
+            referenceTime = connection.getReferenceTime();
+        } catch (SmhiException e) {
+            return false;
+        }
         return referenceTime.isEqual(currentHour) || referenceTime.isAfter(currentHour);
     }
 
@@ -281,9 +294,16 @@ public class SmhiHandler extends BaseThingHandler {
      * If it is, set flag to indicate we have the latest forecast.
      */
     private void getUpdatedForecast() {
-        TimeSeries forecast = connection.getForecast(config.latitude, config.longitude);
+        TimeSeries forecast;
+        ZonedDateTime referenceTime;
+        try {
+            forecast = connection.getForecast(config.latitude, config.longitude);
+        } catch (SmhiException e) {
+            logger.warn("Failed to get new forecast: {}", e.getMessage());
+            return;
+        }
+        referenceTime = forecast.getReferenceTime();
         updateChannels(forecast);
-        ZonedDateTime referenceTime = forecast.getReferenceTime();
         if (referenceTime.isEqual(currentHour) || referenceTime.isAfter(currentHour)) {
             hasLatestForecast = true;
         }

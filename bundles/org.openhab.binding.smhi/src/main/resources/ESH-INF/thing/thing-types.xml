@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="forecast">
-		<label>Smhi Weather forecast</label>
+		<label>SMHI weather forecast</label>
 		<description>Gets weather forecasts from SMHI</description>
 
 		<channel-groups>

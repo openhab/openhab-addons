@@ -16,7 +16,6 @@ package org.openhab.binding.smhi.internal;
 import java.time.ZonedDateTime;
 import java.util.Iterator;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
@@ -49,7 +48,7 @@ public class TimeSeries implements Iterable<Forecast> {
      * @param hourOffset number of hours after now.
      * @return
      */
-    public Forecast getForecast(int hourOffset) {
+    public @Nullable Forecast getForecast(int hourOffset) {
         return getForecast(ZonedDateTime.now(), hourOffset);
     }
 
@@ -58,9 +57,8 @@ public class TimeSeries implements Iterable<Forecast> {
      *
      * @param hourOffset number of hours after now.
      * @return
-     * @throws {@link NoSuchElementException} if the offset time is after the forecast.
      */
-    public Forecast getForecast(ZonedDateTime startTime, int hourOffset) throws NoSuchElementException {
+    public @Nullable Forecast getForecast(ZonedDateTime startTime, int hourOffset) {
         if (hourOffset < 0) {
             throw new IllegalArgumentException("Offset must be at least 0");
         }
@@ -73,7 +71,7 @@ public class TimeSeries implements Iterable<Forecast> {
                 return forecast;
             }
         }
-        throw new NoSuchElementException();
+        return null;
     }
 
     @Override
