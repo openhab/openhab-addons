@@ -48,6 +48,7 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("null")
 public class InsteonNetworkHandler extends BaseBridgeHandler {
     private static final int LOG_DEVICE_STATISTICS_DELAY_IN_SECONDS = 600;
+    private static final int RETRY_DELAY_IN_SECONDS = 30;
     private static final int SETTLE_TIME_IN_SECONDS = 5;
 
     private final Logger logger = LoggerFactory.getLogger(InsteonNetworkHandler.class);
@@ -56,6 +57,7 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
     private @Nullable InsteonBinding insteonBinding;
     private @Nullable InsteonDeviceDiscoveryService insteonDeviceDiscoveryService;
     private @Nullable ScheduledFuture<?> pollingJob = null;
+    private @Nullable ScheduledFuture<?> reconnectJob = null;
     private @Nullable ScheduledFuture<?> settleJob = null;
     private long lastInsteonDeviceCreatedTimestamp = 0;
     private @Nullable SerialPortManager serialPortManager;
@@ -105,7 +107,7 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
                     }
 
-                    settleJob.cancel(true);
+                    settleJob.cancel(false);
                     settleJob = null;
                 }
             }, SETTLE_TIME_IN_SECONDS, 1, TimeUnit.SECONDS);
@@ -119,6 +121,11 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
         if (pollingJob != null) {
             pollingJob.cancel(true);
             pollingJob = null;
+        }
+
+        if (reconnectJob != null) {
+            reconnectJob.cancel(true);
+            reconnectJob = null;
         }
 
         if (settleJob != null) {
@@ -140,6 +147,18 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
     @Override
     public void updateState(ChannelUID channelUID, State state) {
         super.updateState(channelUID, state);
+    }
+
+    public void bindingDisconnected() {
+        reconnectJob = scheduler.scheduleWithFixedDelay(() -> {
+            if (insteonBinding.reconnect()) {
+                updateStatus(ThingStatus.ONLINE);
+                reconnectJob.cancel(false);
+                reconnectJob = null;
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Port disconnected.");
+            }
+        }, 0, RETRY_DELAY_IN_SECONDS, TimeUnit.SECONDS);
     }
 
     public void insteonDeviceWasCreated() {

@@ -60,10 +60,10 @@ public class TcpIOStream extends IOStream {
             in = socket.getInputStream();
             out = socket.getOutputStream();
         } catch (UnknownHostException e) {
-            logger.warn("unknown host name: {}", host, e);
+            logger.warn("unknown host name: {}", host);
             return (false);
         } catch (IOException e) {
-            logger.warn("cannot open connection to {} port {}: ", host, port, e);
+            logger.warn("cannot open connection to {} port {}: {}", host, port, e.getMessage());
             return (false);
         }
         return true;
