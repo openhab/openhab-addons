@@ -56,7 +56,7 @@ public class SomfyTahomaAwningHandler extends SomfyTahomaBaseThingHandler {
                     sendCommand(COMMAND_MY);
                 }
             } else {
-                String param = COMMAND_SET_DEPLOYMENT.equals(cmd) ? "[" + command.toString() + "]" : "[]";
+                String param = COMMAND_SET_DEPLOYMENT.equals(cmd) ? "[" + toInteger(command) + "]" : "[]";
                 sendCommand(cmd, param);
             }
         }
