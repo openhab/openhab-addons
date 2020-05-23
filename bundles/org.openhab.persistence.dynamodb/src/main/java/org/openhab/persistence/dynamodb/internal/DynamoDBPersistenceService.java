@@ -84,13 +84,13 @@ import com.amazonaws.services.dynamodbv2.model.WriteRequest;
  */
 @NonNullByDefault
 @Component(service = { PersistenceService.class,
-        QueryablePersistenceService.class }, configurationPid = "org.openhab.dynamodb", property = {
-                Constants.SERVICE_PID + "=org.openhab.dynamodb",
-                ConfigurableService.SERVICE_PROPERTY_DESCRIPTION_URI + "=persistence:dynamodb",
-                ConfigurableService.SERVICE_PROPERTY_LABEL + "=DynamoDB Persistence Service",
-                ConfigurableService.SERVICE_PROPERTY_CATEGORY + "=persistence" })
+        QueryablePersistenceService.class }, configurationPid = "org.openhab.dynamodb", //
+        property = Constants.SERVICE_PID + "=org.openhab.dynamodb")
+@ConfigurableService(category = "persistence", label = "DynamoDB Persistence Service", description_uri = DynamoDBPersistenceService.CONFIG_URI)
 public class DynamoDBPersistenceService extends AbstractBufferedPersistenceService<DynamoDBItem<?>>
         implements QueryablePersistenceService {
+
+    protected static final String CONFIG_URI = "persistence:dynamodb";
 
     private class ExponentialBackoffRetry implements Runnable {
         private int retry;

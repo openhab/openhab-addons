@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.jetbrains.annotations.NotNull;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemRegistry;
@@ -73,28 +72,26 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 @Component(service = { PersistenceService.class,
-        QueryablePersistenceService.class }, configurationPid = "org.openhab.influxdb", property = {
-                Constants.SERVICE_PID + "=org.openhab.influxdb",
-                ConfigurableService.SERVICE_PROPERTY_DESCRIPTION_URI + "=persistence:influxdb",
-                ConfigurableService.SERVICE_PROPERTY_LABEL + "=InfluxDB Persistence Service",
-                ConfigurableService.SERVICE_PROPERTY_CATEGORY + "=persistence" })
+        QueryablePersistenceService.class }, configurationPid = "org.openhab.influxdb", //
+        property = Constants.SERVICE_PID + "=org.openhab.influxdb")
+@ConfigurableService(category = "persistence", label = "InfluxDB Persistence Service", description_uri = InfluxDBPersistenceService.CONFIG_URI)
 public class InfluxDBPersistenceService implements QueryablePersistenceService {
     public static final String SERVICE_NAME = "influxdb";
 
     private final Logger logger = LoggerFactory.getLogger(InfluxDBPersistenceService.class);
 
+    protected static final String CONFIG_URI = "persistence:influxdb";
+
     // External dependencies
-    @Nullable
-    private ItemRegistry itemRegistry;
-    @Nullable
-    private MetadataRegistry metadataRegistry;
+    private @Nullable ItemRegistry itemRegistry;
+    private @Nullable MetadataRegistry metadataRegistry;
 
     // Internal dependencies/state
     private InfluxDBConfiguration configuration = InfluxDBConfiguration.NO_CONFIGURATION;
-    @NonNullByDefault({}) // Relax rules because can only be null if component is not active
-    private ItemToStorePointCreator itemToStorePointCreator;
-    @NonNullByDefault({}) // Relax rules because can only be null if component is not active
-    private InfluxDBRepository influxDBRepository;
+
+    // Relax rules because can only be null if component is not active
+    private @NonNullByDefault({}) ItemToStorePointCreator itemToStorePointCreator;
+    private @NonNullByDefault({}) InfluxDBRepository influxDBRepository;
 
     /**
      * Connect to database when service is activated
@@ -114,16 +111,15 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
         logger.debug("InfluxDB persistence service is now activated");
     }
 
-    @NotNull
     // Visible for testing
     protected InfluxDBRepository createInfluxDBRepository() {
         return RepositoryFactory.createRepository(configuration);
     }
 
-    @Deactivate
     /**
      * Disconnect from database when service is deactivated
      */
+    @Deactivate
     public void deactivate() {
         logger.debug("InfluxDB persistence service deactivated");
         if (influxDBRepository != null) {
@@ -135,10 +131,10 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
         }
     }
 
-    @Modified
     /**
      * Rerun deactivation/activation code each time configuration is changed
      */
+    @Modified
     protected void modified(@Nullable Map<String, @Nullable Object> config) {
         if (config != null) {
             logger.debug("Config has been modified will deactivate/activate with new config");
