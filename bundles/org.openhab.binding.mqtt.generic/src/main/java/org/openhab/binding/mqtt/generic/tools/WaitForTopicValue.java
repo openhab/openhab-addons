@@ -31,7 +31,6 @@ import org.eclipse.smarthome.io.transport.mqtt.MqttMessageSubscriber;
  */
 @NonNullByDefault
 public class WaitForTopicValue {
-    private final CompletableFuture<String> future = new CompletableFuture<>();
     private final CompletableFuture<String> composeFuture;
 
     /**
@@ -42,8 +41,8 @@ public class WaitForTopicValue {
      * @throws InterruptedException
      * @throws ExecutionException
      */
-    public WaitForTopicValue(MqttBrokerConnection connection, String topic)
-            throws InterruptedException, ExecutionException {
+    public WaitForTopicValue(MqttBrokerConnection connection, String topic) {
+        final CompletableFuture<String> future = new CompletableFuture<>();
         final MqttMessageSubscriber mqttMessageSubscriber = (t, payload) -> {
             try {
                 future.complete(new String(payload, "UTF-8"));
