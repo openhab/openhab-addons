@@ -77,7 +77,7 @@ public class Telnet {
         } catch (UnknownHostException e) {
             logger.debug("Unknown Host Exception - Message: {}", e.getMessage());
         }
-        timedReaderExecutor = Executors.newFixedThreadPool(1);
+        timedReaderExecutor = Executors.newSingleThreadExecutor(new NamedThreadFactory("heos-telnet-reader", true));
 
         return openConnection();
     }
