@@ -12,61 +12,70 @@
  */
 package org.openhab.binding.heos.internal.handler;
 
+import java.io.IOException;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.heos.handler.HeosBridgeHandler;
-import org.openhab.binding.heos.internal.api.HeosFacade;
+import org.openhab.binding.heos.internal.exception.HeosNotFoundException;
+import org.openhab.binding.heos.internal.resources.HeosEventListener;
+import org.openhab.binding.heos.internal.resources.Telnet.ReadException;
 
 /**
  * The {@link HeosChannelHandlerControl} handles the control commands
  * coming from the implementing thing
  *
  * @author Johannes Einig - Initial contribution
- *
  */
-public class HeosChannelHandlerControl extends HeosChannelHandler {
+@NonNullByDefault
+public class HeosChannelHandlerControl extends BaseHeosChannelHandler {
+    private final HeosEventListener eventListener;
 
-    public HeosChannelHandlerControl(HeosBridgeHandler bridge, HeosFacade api) {
-        super(bridge, api);
+    public HeosChannelHandlerControl(HeosEventListener eventListener, HeosBridgeHandler bridge) {
+        super(bridge);
+        this.eventListener = eventListener;
     }
 
     @Override
-    protected void handleCommandPlayer() {
-        handleCommand();
+    public void handlePlayerCommand(Command command, String id, ThingUID uid) throws IOException, ReadException {
+        handleCommand(command, id);
     }
 
     @Override
-    protected void handleCommandGroup() {
-        handleCommand();
+    public void handleGroupCommand(Command command, @Nullable String id, ThingUID uid,
+            HeosGroupHandler heosGroupHandler) throws IOException, ReadException {
+        if (id == null) {
+            throw new HeosNotFoundException();
+        }
+        handleCommand(command, id);
     }
 
     @Override
-    protected void handleCommandBridge() {
+    public void handleBridgeCommand(Command command, ThingUID uid) {
         // No such channel within bridge
     }
 
-    private void handleCommand() {
+    private void handleCommand(Command command, String id) throws IOException, ReadException {
         if (command instanceof RefreshType) {
-            api.getHeosPlayState(id);
+            eventListener.playerStateChangeEvent(getApi().getPlayState(id));
             return;
         }
         switch (command.toString()) {
             case "PLAY":
-                api.play(id);
+            case "ON":
+                getApi().play(id);
                 break;
             case "PAUSE":
-                api.pause(id);
+            case "OFF":
+                getApi().pause(id);
                 break;
             case "NEXT":
-                api.next(id);
+                getApi().next(id);
                 break;
             case "PREVIOUS":
-                api.previous(id);
-                break;
-            case "ON":
-                api.play(id);
-                break;
-            case "OFF":
-                api.pause(id);
+                getApi().previous(id);
                 break;
         }
     }
