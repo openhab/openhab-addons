@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.mqtt.generic.tools;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
@@ -38,17 +38,11 @@ public class WaitForTopicValue {
      *
      * @param connection A broker connection.
      * @param topic The topic
-     * @throws InterruptedException
-     * @throws ExecutionException
      */
     public WaitForTopicValue(MqttBrokerConnection connection, String topic) {
         final CompletableFuture<String> future = new CompletableFuture<>();
         final MqttMessageSubscriber mqttMessageSubscriber = (t, payload) -> {
-            try {
-                future.complete(new String(payload, "UTF-8"));
-            } catch (UnsupportedEncodingException e1) {
-                future.complete(new String(payload));
-            }
+            future.complete(new String(payload, StandardCharsets.UTF_8));
         };
         future.whenComplete((r, e) -> {
             connection.unsubscribe(topic, mqttMessageSubscriber);
