@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.nibeuplink.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * exception whichs is used to state a validation error
  *
  * @author Alexander Friese - initial contribution
  */
+@NonNullByDefault
 public class ValidationException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
