@@ -88,7 +88,7 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService implements Heo
         logger.debug("Start scan for HEOS Player");
 
         try {
-            HashMap<Integer, Player> currentPlayers = new HashMap<>();
+            Map<Integer, Player> currentPlayers = new HashMap<>();
 
             for (Player player : bridge.getPlayers()) {
                 currentPlayers.put(player.playerId, player);
