@@ -84,7 +84,7 @@ Following channels are currently available:
 | aggregate_day#batterySelfConsumption          | Number:Energy        | Day Aggregate self consumption from battery      | requires battery and private API activated       |
 | aggregate_day#import                          | Number:Energy        | Day Aggregate import from grid                   | requires meter attached and 'meterInstalled' set |
 | aggregate_day#export                          | Number:Energy        | Day Aggregate export to grid                     | requires meter attached and 'meterInstalled' set |
-| aggregate_week#production                     | Number:Energy        | Week Aggregate PV production                     | requires meter attached and 'meterInstalled' set |
+| aggregate_week#production                     | Number:Energy        | Week Aggregate PV production                     | general available                                |
 | aggregate_week#consumption                    | Number:Energy        | Week Aggregate power consumption                 | requires meter attached and 'meterInstalled' set |
 | aggregate_week#selfConsumptionForConsumption  | Number:Energy        | Week Aggregate self consumption (incl battery)   | requires meter attached and 'meterInstalled' set |
 | aggregate_week#selfConsumptionCoverage        | Number:Dimensionless | Week Coverage of consumption by self production  | requires meter attached and 'meterInstalled' set |
