@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.tacmi.internal.podData;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tacmi.internal.message.Message;
 import org.openhab.binding.tacmi.internal.message.MessageType;
 
@@ -20,11 +22,12 @@ import org.openhab.binding.tacmi.internal.message.MessageType;
  *
  * @author Christian Niessner - Initial contribution
  */
+@NonNullByDefault
 public final class PodData {
     public final byte podId;
     public final MessageType messageType;
     public boolean dirty;
-    public Message message;
+    public @Nullable Message message;
     public long lastSent;
 
     /**

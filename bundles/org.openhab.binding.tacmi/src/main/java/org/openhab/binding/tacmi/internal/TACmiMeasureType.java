@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  * numbers.
  *
  * @author Timo Wendt - Initial contribution
- * @author Wolfgang Klimt 
+ * @author Wolfgang Klimt - improvements
  * @author Christian Niessner (marvkis) - Ported to OpenHAB2
  */
 public enum TACmiMeasureType {

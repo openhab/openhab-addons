@@ -71,6 +71,7 @@ public class TACmiCoEBridgeHandler extends BaseBridgeHandler {
     /**
      * Thread which receives all data from the bridge.
      */
+    @NonNullByDefault
     private class ReceiveThread extends Thread {
         private final Logger logger = LoggerFactory.getLogger(ReceiveThread.class);
 
@@ -112,7 +113,7 @@ public class TACmiCoEBridgeHandler extends BaseBridgeHandler {
                             logger.debug("Invalid message received");
                             continue;
                         }
-                        logger.debug(message.toString());
+                        logger.debug("{}", message.toString());
 
                         final InetAddress remoteAddress = receivePacket.getAddress();
                         final int node = message.canNode;
@@ -144,6 +145,7 @@ public class TACmiCoEBridgeHandler extends BaseBridgeHandler {
     /**
      * Thread which periodically polls status of the bridge.
      */
+    @NonNullByDefault
     private class MonitorThread extends Thread {
 
         MonitorThread() {

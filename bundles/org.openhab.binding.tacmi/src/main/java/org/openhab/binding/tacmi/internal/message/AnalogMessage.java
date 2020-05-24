@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.tacmi.internal.message;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 
 /**
@@ -56,8 +57,8 @@ import org.slf4j.Logger;
  *
  * so we don't rely on the documentation.
  *
- * @author Timo Wendt
- * @author Wolfgang Klimt
+ * @author Timo Wendt - Initial contribution
+ * @author Wolfgang Klimt - improvements
  * @author Christian Niessner (marvkis) - Ported to OpenHAB2
  * @see TACmiMeasureType.java
  */
@@ -67,10 +68,11 @@ import org.slf4j.Logger;
  * also to create a new AnalogMessage used to send analog values to an analog
  * CAN Input port. Creation of new message is not implemented so far.
  *
- * @author Timo Wendt
- * @author Wolfgang Klimt
- * @since 1.8.0
+ * @author Timo Wendt - Initial contribution
+ * @author Wolfgang Klimt - improvements
+ * @author Christian Niessner (marvkis) - Ported to OpenHAB2
  */
+@NonNullByDefault
 public final class AnalogMessage extends Message {
 
     /**

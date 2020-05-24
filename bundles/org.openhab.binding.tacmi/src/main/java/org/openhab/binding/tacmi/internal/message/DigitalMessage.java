@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.tacmi.internal.message;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 
 /**
@@ -22,6 +23,7 @@ import org.slf4j.Logger;
  * @author Timo Wendt - Initial contribution
  * @author Christian Niessner (marvkis) - Ported to OpenHAB2
  */
+@NonNullByDefault
 public final class DigitalMessage extends Message {
 
     public DigitalMessage(byte[] raw) {

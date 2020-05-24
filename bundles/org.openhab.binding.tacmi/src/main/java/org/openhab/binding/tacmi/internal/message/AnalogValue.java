@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.tacmi.internal.message;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.tacmi.internal.TACmiMeasureType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,10 +20,11 @@ import org.slf4j.LoggerFactory;
 /**
  * This class handles analog values as used in the analog message.
  *
- * @author Timo Wendt
+ * @author Timo Wendt - Initial contribution
  * @author Wolfgang Klimt
  * @author Christian Niessner (marvkis) - Ported to OpenHAB2
  */
+@NonNullByDefault
 public final class AnalogValue {
     public double value;
     public TACmiMeasureType measureType;

@@ -60,17 +60,22 @@ public class StateCacheUtils {
                         Collection<PodState> spe = storedPod.entries;
                         if (spe != null) {
                             for (PodData pod : podDatas) {
+                                if (pod == null) {
+                                    continue;
+                                }
+                                @Nullable
+                                Message message = pod.message;
                                 // pod.message is only initialzied for outgoing pod's
-                                if (pod != null && pod.message != null && pod.podId == storedPod.podId) {
+                                if (message != null && pod.podId == storedPod.podId) {
                                     final Iterator<PodState> spi = spe.iterator();
                                     int id = 0;
                                     while (spi.hasNext() && id < 4) {
                                         @Nullable // seems quit idiotic here as null checks also generate warnings... ?
                                         final PodState ps = spi.next();
                                         // if (ps == null) {
-                                        //     pod.message.setValue(id, (short) 0, 0);
+                                        //     message.setValue(id, (short) 0, 0);
                                         // } else {
-                                        pod.message.setValue(id, (short) (ps.value & 0xffff), ps.measureType);
+                                        message.setValue(id, (short) (ps.value & 0xffff), ps.measureType);
                                         // }
                                         id++;
                                     }
@@ -79,13 +84,13 @@ public class StateCacheUtils {
                         }
                     }
                 }
-            } catch (final Throwable t) {
+            } catch (final Exception t) {
                 logger.warn("Restore of state file {} failed: {}", this.stateCacheFile, t.getMessage(), t);
             } finally {
                 if (fr != null)
                     try {
                         fr.close();
-                    } catch (final Throwable t) {
+                    } catch (final Exception t) {
                         // ignore...
                     }
             }
@@ -136,7 +141,7 @@ public class StateCacheUtils {
             final FileWriter fw = new FileWriter(this.stateCacheFile);
             fw.write(json);
             fw.close();
-        } catch (final Throwable t) {
+        } catch (final Exception t) {
             logger.warn("Persistance of state file {} failed: {}", this.stateCacheFile, t.getMessage(), t);
         }
     }

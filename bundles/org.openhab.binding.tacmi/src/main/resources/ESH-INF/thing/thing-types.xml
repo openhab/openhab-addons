@@ -7,8 +7,8 @@
 	<!-- Sample Thing Type -->
 	<thing-type id="cmi" extensible="coe-digital-in,coe-digital-out,coe-analog-in,coe-analog-out">
 		<supported-bridge-type-refs>
-        	<bridge-type-ref id="coe-bridge" />
-      	</supported-bridge-type-refs>
+			<bridge-type-ref id="coe-bridge" />
+	  	</supported-bridge-type-refs>
 
 		<label>TA C.M.I. CoE Connection</label>
 		<description>CoE Communication to the "Technische Alternative C.M.I. Control and Monitoring Interface"</description>
@@ -27,8 +27,8 @@
 
 	</thing-type>
 
-    <!-- CoE digital Channel Type -->
-    <channel-type id="coe-digital-in">
+	<!-- CoE digital Channel Type -->
+	<channel-type id="coe-digital-in">
 		<item-type>Switch</item-type>
 		<label>Digital Input (C.M.I. -> OH)</label>
 		<description>A digital channel sent from C.M.I. to OpenHAB</description>
@@ -39,8 +39,8 @@
 				<description>C.M.I. Network Output</description>
 			</parameter>
 		</config-description>
-    </channel-type>
-    <channel-type id="coe-digital-out">
+	</channel-type>
+	<channel-type id="coe-digital-out">
 		<item-type>Switch</item-type>
 		<label>Digital Output (OH -> C.M.I.)</label>
 		<description>A digital channel sent from OpenHAB to C.M.I.</description>
@@ -50,12 +50,12 @@
 				<description>Network Output</description>
 			</parameter>
 		</config-description>
-    </channel-type>
-    <!-- COA analog Channel Type -->
-    <channel-type id="coe-analog-in">
-    	<item-type>Number</item-type>
-    	<label>Analog Input Channel (C.M.I. -> OH)</label>
-    	<description>A Analog Channel received from the C.M.I.</description>
+	</channel-type>
+	<!-- COA analog Channel Type -->
+	<channel-type id="coe-analog-in">
+		<item-type>Number</item-type>
+		<label>Analog Input Channel (C.M.I. -> OH)</label>
+		<description>A Analog Channel received from the C.M.I.</description>
 		<state readOnly="true" />
 		<config-description>
 			<parameter name="output" type="integer" min="1" max="32" required="true">
@@ -63,11 +63,11 @@
 				<description>C.M.I. Network Output</description>
 			</parameter>
 		</config-description>
-    </channel-type>
-    <channel-type id="coe-analog-out">
-    	<item-type>Number</item-type>
-    	<label>Analog Output Channel (OH -> C.M.I.)</label>
-    	<description>A Analog Channel sent to the C.M.I.</description>
+	</channel-type>
+	<channel-type id="coe-analog-out">
+		<item-type>Number</item-type>
+		<label>Analog Output Channel (OH -> C.M.I.)</label>
+		<description>A Analog Channel sent to the C.M.I.</description>
 		<config-description>
 			<parameter name="output" type="integer" min="1" max="32" required="true">
 				<label>Output</label>
@@ -102,5 +102,5 @@
 				</options>
 			</parameter>
 		</config-description>
-    </channel-type>
+	</channel-type>
 </thing:thing-descriptions>

@@ -15,6 +15,7 @@ package org.openhab.binding.tacmi.internal.message;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +25,7 @@ import org.slf4j.LoggerFactory;
  * @author Timo Wendt - Initial contribution
  * @author Christian Niessner (marvkis) - Ported to OpenHAB2
  */
+@NonNullByDefault
 public abstract class Message {
 
     protected final static Logger logger = LoggerFactory.getLogger(Message.class);
@@ -31,7 +33,7 @@ public abstract class Message {
     /**
      * ByteBuffer that stores the content of the message.
      */
-    private ByteBuffer buffer = null;
+    private ByteBuffer buffer;
 
     /**
      * CAN Node number used in the message

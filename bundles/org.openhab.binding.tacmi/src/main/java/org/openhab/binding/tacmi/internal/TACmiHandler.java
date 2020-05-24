@@ -122,7 +122,8 @@ public class TACmiHandler extends BaseThingHandler {
                         || CHANNEL_TYPE_COE_ANALOG_OUT_UID.equals(ct);
                 final boolean outgoing = CHANNEL_TYPE_COE_ANALOG_OUT_UID.equals(ct)
                         || CHANNEL_TYPE_COE_DIGITAL_OUT_UID.equals(ct);
-                // for the analog out channel we have the measurement type. for the input channel we take it from the C.M.I.
+                // for the analog out channel we have the measurement type. for the input
+                // channel we take it from the C.M.I.
                 final Class<? extends TACmiChannelConfiguration> ccClass = CHANNEL_TYPE_COE_ANALOG_OUT_UID.equals(ct)
                         ? TACmiChannelConfigurationAnalog.class
                         : TACmiChannelConfiguration.class;
@@ -196,29 +197,41 @@ public class TACmiHandler extends BaseThingHandler {
         final Channel channel = thing.getChannel(channelUID);
         if (channel == null)
             return;
-        PodData pd;
-        byte[] messageBytes;
-        boolean modified;
+        MessageType mt;
         if ((TACmiBindingConstants.CHANNEL_TYPE_COE_DIGITAL_OUT_UID.equals(channel.getChannelTypeUID()))) {
-            final boolean state = OnOffType.ON.equals(command) ? true : false;
-            final byte podId = getPodId(MessageType.D, cc.output);
-            pd = getPodData(new PodIdentifier(MessageType.D, podId, true));
-            final DigitalMessage message = (DigitalMessage) pd.message;
-            modified = message.setPortState((cc.output - 1) % 16, state);
-            pd.dirty = true; // flag as dirty
-            messageBytes = message.getRaw();
+            mt = MessageType.D;
         } else if ((TACmiBindingConstants.CHANNEL_TYPE_COE_ANALOG_OUT_UID.equals(channel.getChannelTypeUID()))) {
-            final TACmiMeasureType measureType = TACmiMeasureType.values()[((TACmiChannelConfigurationAnalog) cc).type];
-            final byte podId = getPodId(MessageType.A, cc.output);
-            pd = getPodData(new PodIdentifier(MessageType.A, podId, true));
-            final AnalogMessage message = (AnalogMessage) pd.message;
-            final DecimalType dt = (DecimalType) command;
-            final double val = dt.doubleValue() * measureType.getOffset();
-            modified = message.setValue((cc.output - 1) % 4, (short) val, measureType.ordinal());
-            messageBytes = message.getRaw();
+            mt = MessageType.A;
         } else {
             logger.warn("Recived unhandled command '{}' on Channel {} ", command, channelUID);
             return;
+        }
+
+        final byte podId = getPodId(mt, cc.output);
+        PodData pd = getPodData(new PodIdentifier(mt, podId, true));
+        @Nullable
+        Message message = pd.message;
+        if (message == null) {
+            logger.error("Internal error - BUG - no outgoing message for command '{}' on Channel {} ", command,
+                    channelUID);
+            return;
+        }
+        boolean modified;
+        switch (mt) {
+            case D:
+                final boolean state = OnOffType.ON.equals(command) ? true : false;
+                modified = ((DigitalMessage) message).setPortState((cc.output - 1) % 16, state);
+                break;
+            case A:
+                final TACmiMeasureType measureType = TACmiMeasureType
+                        .values()[((TACmiChannelConfigurationAnalog) cc).type];
+                final DecimalType dt = (DecimalType) command;
+                final double val = dt.doubleValue() * measureType.getOffset();
+                modified = message.setValue((cc.output - 1) % 4, (short) val, measureType.ordinal());
+                break;
+            default:
+                logger.warn("Recived unhandled command '{}' on Channel {} ", command, channelUID);
+                return;
         }
         if (modified) {
             pd.dirty = true; // flag as dirty
@@ -228,7 +241,7 @@ public class TACmiHandler extends BaseThingHandler {
                 @Nullable
                 final InetAddress cmia = this.cmiAddress;
                 if (br != null && cmia != null) {
-                    br.sendData(messageBytes, cmia);
+                    br.sendData(message.getRaw(), cmia);
                     pd.lastSent = System.currentTimeMillis();
                 }
                 // we also update the local state after we successfully sent out the command
@@ -300,7 +313,9 @@ public class TACmiHandler extends BaseThingHandler {
         for (final PodData pd : this.podDatas.values()) {
             if (pd == null) // Nullable check complains when this is missing...
                 continue;
-            if (pd.message != null && refTs - pd.lastSent > 300000) {
+            @Nullable
+            Message message = pd.message;
+            if (message != null && refTs - pd.lastSent > 300000) {
                 // reset every 300 secs...
                 try {
                     @Nullable
@@ -308,7 +323,7 @@ public class TACmiHandler extends BaseThingHandler {
                     @Nullable
                     final InetAddress cmia = this.cmiAddress;
                     if (br != null && cmia != null) {
-                        br.sendData(pd.message.getRaw(), cmia);
+                        br.sendData(message.getRaw(), cmia);
                         pd.lastSent = System.currentTimeMillis();
                     }
                 } catch (final IOException e) {
