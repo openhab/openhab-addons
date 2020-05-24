@@ -32,6 +32,10 @@
 			<channel id="welcomeEventMessage" typeId="message"></channel>
 			<channel id="welcomeEventSubType" typeId="sub_type"></channel>
 			<channel id="welcomeHomeEvent" typeId="homeEvent"></channel>
+
+			<channel id="homeEventHumanDetected" typeId="humanDetected"/>
+			<channel id="homeEventAnimalDetected" typeId="animalDetected"/>
+			<channel id="homeEventVehicleDetected" typeId="vehicleDetected"/>
 		</channels>
 
 		<representation-property>id</representation-property>
@@ -135,6 +139,25 @@
 		<item-type>String</item-type>
 		<label>Sub Type</label>
 		<description>Sub-type of SD and Alim events. Go to Welcome page for further details.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="humanDetected" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Human detected</label>
+		<description>Switched to true/on when the camera detects a person/human.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="animalDetected" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Animal detected</label>
+		<description>Switched to true/on when the camera detects an animal.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="vehicleDetected" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Vehicle detected</label>
+		<description>Switched to true/on when the camera detects a vehicle.</description>
 		<state readOnly="true"></state>
 	</channel-type>
 

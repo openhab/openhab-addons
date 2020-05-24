@@ -16,8 +16,10 @@ import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import java.util.Calendar;
+import java.util.List;
 import java.util.Optional;
 
+import io.swagger.client.model.*;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -31,11 +33,6 @@ import org.openhab.binding.netatmo.internal.handler.AbstractNetatmoThingHandler;
 import org.openhab.binding.netatmo.internal.handler.NetatmoDeviceHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import io.swagger.client.model.NAWelcomeEvent;
-import io.swagger.client.model.NAWelcomeHome;
-import io.swagger.client.model.NAWelcomeHomeData;
-import io.swagger.client.model.NAWelcomeSnapshot;
 
 /**
  * {@link NAWelcomeHomeHandler} is the class used to handle the Welcome Home Data
@@ -164,6 +161,12 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
                         : UnDefType.UNDEF;
             case CHANNEL_WELCOME_EVENT_SUBTYPE:
                 return lastEvent != null ? toDecimalType(lastEvent.getSubType()) : UnDefType.UNDEF;
+            case CHANNEL_HOME_EVENT_HUMAN_DETECTED:
+                return getIsDetectedState(NAWelcomeSubEvent.TypeEnum.HUMAN);
+            case CHANNEL_HOME_EVENT_ANIMAL_DETECTED:
+                return getIsDetectedState(NAWelcomeSubEvent.TypeEnum.ANIMAL);
+            case CHANNEL_HOME_EVENT_VEHICLE_DETECTED:
+                return getIsDetectedState(NAWelcomeSubEvent.TypeEnum.VEHICLE);
         }
         return super.getNAThingProperty(channelId);
     }
@@ -188,5 +191,16 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
     @Override
     protected @Nullable Integer getDataTimestamp() {
         return dataTimeStamp;
+    }
+
+    private State getIsDetectedState(NAWelcomeSubEvent.TypeEnum detectedType) {
+        if(lastEvent != null) {
+            List<NAWelcomeSubEvent> subEvents = lastEvent.getEventList();
+            if(subEvents != null && !subEvents.isEmpty()) {
+                boolean isDetected = subEvents.stream().anyMatch(e -> e.getType().equals(detectedType));
+                return toOnOffType(isDetected);
+            }
+        }
+        return OnOffType.OFF;
     }
 }
