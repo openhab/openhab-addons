@@ -190,27 +190,23 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
      * @return Url of the picture or null
      */
     protected String findSnapshotURL() {
-        if(lastEvent == null) {
-            return null;
-        }
+        if(lastEvent != null) {
+            NAWelcomeSnapshot snapshot = lastEvent.getSnapshot();
+            if (snapshot == null) {
+                NAWelcomeSubEvent firstSubEvent = findFirstSubEvent(lastEvent);
+                if (firstSubEvent != null) {
+                    snapshot = firstSubEvent.getSnapshot();
+                }
+            }
 
-        String result = null;
-
-        NAWelcomeSnapshot snapshot = lastEvent.getSnapshot();
-        if(snapshot == null) {
-            NAWelcomeSubEvent firstSubEvent = findFirstSubEvent(lastEvent);
-            if(firstSubEvent != null) {
-                snapshot = firstSubEvent.getSnapshot();
+            if (snapshot != null && snapshot.getId() != null && snapshot.getKey() != null) {
+                return WELCOME_PICTURE_URL + "?" + WELCOME_PICTURE_IMAGEID + "=" + snapshot.getId() + "&"
+                        + WELCOME_PICTURE_KEY + "=" + snapshot.getKey();
+            } else {
+                logger.debug("Unable to build snapshot url for Home : {}", getId());
             }
         }
-
-        if (snapshot != null && snapshot.getId() != null && snapshot.getKey() != null) {
-            result = WELCOME_PICTURE_URL + "?" + WELCOME_PICTURE_IMAGEID + "=" + snapshot.getId() + "&"
-                    + WELCOME_PICTURE_KEY + "=" + snapshot.getKey();
-        } else {
-            logger.debug("Unable to build snapshot url for Home : {}", getId());
-        }
-        return result;
+        return null;
     }
 
     @Override
