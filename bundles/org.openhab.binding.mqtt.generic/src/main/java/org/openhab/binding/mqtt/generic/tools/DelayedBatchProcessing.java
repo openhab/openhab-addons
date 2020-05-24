@@ -56,8 +56,8 @@ public class DelayedBatchProcessing<T> implements Consumer<T> {
     }
 
     /**
-     * Add new object to the batch process list. If the list was empty, the delay timer
-     * is armed and all successive objects are accumulated from here on.
+     * Add new object to the batch process list. Every time a new object is received,
+     * the delay timer is rescheduled.
      *
      * @param t An object
      */
