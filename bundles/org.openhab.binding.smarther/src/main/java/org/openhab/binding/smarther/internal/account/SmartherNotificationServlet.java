@@ -22,7 +22,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
@@ -31,6 +30,7 @@ import org.openhab.binding.smarther.internal.api.exception.SmartherGatewayExcept
 import org.openhab.binding.smarther.internal.api.exception.SmartherNotificationException;
 import org.openhab.binding.smarther.internal.api.model.ModelUtil;
 import org.openhab.binding.smarther.internal.api.model.Notification;
+import org.openhab.binding.smarther.internal.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,7 +87,7 @@ public class SmartherNotificationServlet extends HttpServlet {
      */
     private String handleSmartherNotifications(@Nullable String payload) {
         logger.trace("C2C listener received payload: {}", payload);
-        if (!StringUtils.isBlank(payload)) {
+        if (!StringUtil.isBlank(payload)) {
             List<Notification> notifications = ModelUtil.gsonInstance().fromJson(payload,
                     new TypeToken<List<Notification>>() {
                     }.getType());

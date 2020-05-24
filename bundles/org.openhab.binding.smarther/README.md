@@ -8,7 +8,8 @@ Companion HABPanel widget can be found here: [BTicino Smarther HABPanel widget](
 
 # Configuring the binding
 
-The binding requires you to register an Application with Legrand Developer portal at https://developer.legrand.com - this will get you a set of Client ID and Client Secret parameters to be used by your binding configuration
+The binding requires you to register an Application with Legrand Developer portal at https://developer.legrand.com
+This will get you a set of Client ID and Client Secret parameters to be used by your binding configuration.
 
 Optionally, if you want to later receive push notifications on the status of your units, consider to make your openHAB installation reachable in https from a public IP or domain (see [Note on notifications](#note-on-notifications)).
 
@@ -30,46 +31,57 @@ Follow the instructions in the tutorial at https://developer.legrand.com/tutoria
 * Step 2 : Check scopes
 * Step 3 : Getting application details
 
-When registering your new Legrand Application for openHAB Smarther Bridge you have to specify the allowed Reply URL, aka white-listed address. Here you have to specify the URL to the Bridge Authorization page on your server.
+When registering your new Legrand Application for openHAB Smarther Bridge you have to specify the allowed Reply URL, aka white-listed address.
+Here you have to specify the URL to the Bridge Authorization page on your server.
 
-For example if you run your openHAB server on http://openhabianpi:8080 you should set `http://openhabianpi:8080/smarther/connectsmarther` as the "First Reply URL" required field in Step 1. Other Reply URLs (second, third, etc.) you can leave them blank.
+For example if you run your openHAB server on http://openhabianpi:8080 you should set `http://openhabianpi:8080/smarther/connectsmarther` as the "First Reply URL" required field in Step 1.
+Other Reply URLs (second, third, etc.) you can leave them blank.
 
-This is **very important** since the authorize process with Legrand takes place using your client web browser and Legrand will have to know the right URL to your openHAB server for the authorization to be completed. When you have authorized with Legrand, this Redirect URI is where authorization tokens for your openHAB Smarther Brigde will be sent and they have to be received by the servlet on `/smarther/connectsmarther`.
+This is **very important** since the authorize process with Legrand takes place using your client web browser and Legrand will have to know the right URL to your openHAB server for the authorization to be completed.
+When you have authorized with Legrand, this Redirect URI is where authorization tokens for your openHAB Smarther Brigde will be sent and they have to be received by the servlet on `/smarther/connectsmarther`.
 
-![Application 1](src/main/resources/images/application-1.png)
+![Application 1](doc/images/application-1.png)
 
 On Step 2, please make sure to select both `comfort.read` and `comfort.write` scopes, as they're mandatory for the binding to work.
 
-![Application 2](src/main/resources/images/application-2.png)
+![Application 2](doc/images/application-2.png)
 
 Usually, Step 3 is then completed by Legrand within 1-2 days and you'll receive an email containing your application's Client ID and Client Secret.
 
 ### Note on notifications
 
-If you want to later receive push notifications (device status) from Legrand for this application, you must have your openHAB server reacheable from a public IP/address and use the related public IP/address and public port when filling-in the "Reply URL" field in Step 1.
+If you want to later receive push notifications (device status) from Legrand for this application, you must have your openHAB server reachable from a public IP/address and use the related public IP/address and public port when filling-in the "Reply URL" field in Step 1.
 
 ## Configure the binding
 
 1. Install the binding and make sure the _Smarther Binding_ is listed on your server.
 2. Complete the _Create an account_ and _Create an application_ steps if you have not already done so (see above).
 3. Make sure you have your Legrand account _Primary Key_ and your Legrand application _Client ID_ and _Client Secret_ identities available.
-4. Go to your preferred openHAB admin UI and add a new Thing - select the **"Smarther Bridge"**. Choose new Id for the bridge, unless you like the generated one. Put in your _Primary Key_ (in _Subscription Key_ field), _Client ID_ and _Client Secret_ in their respective fields of the bridge configuration. Set _Use Notifications_ to `ON` if your openHAB server is reacheable from a public https URL (see [Note on notifications](#note-on-notifications)), set `OFF` otherwise. You can leave the _Bridge Status Refresh Period_ as is. Save the bridge.
-5. The bridge thing will stay in state _INITIALIZING_ and eventually go _OFFLINE_ - this is fine, as you now have to authorize this bridge with Legrand.
-6. Go to the authorization page of your server (see [Create an application](#create-an-application)) `http://<your openHAB address>:<your openHAB port>/smarther/connectsmarther`. Your newly added bridge should be listed there (along with the available locations).
-7. Press the _"Authorize Bridge"_ button. This will take you either to the login page of Legrand portal or directly to the authorization screen. Login and/or authorize the application. If the Reply URL is correct you will be returned and the entry should show your Bridge is authorized with your Client ID; otherwise, go back to your application configuration on Legrand portal and ensure you have set the right Reply URL (see [Troubleshooting](#troubleshooting) below).
-8. The binding will be updated with a refresh token and go _ONLINE_. The refresh token is used to re-authorize the bridge with Legrand Smarther API whenever required.
+4. Go to your preferred openHAB admin UI and add a new Thing - select the **"Smarther Bridge"**.
+5. Choose new Id for the bridge, unless you like the generated one.
+6. Put in your _Primary Key_ (in _Subscription Key_ field), _Client ID_ and _Cliend Secret_ in their respective fields of the bridge configuration.
+7. Set _Use Notifications_ to `ON` if your openHAB server is reachable from a public https URL (see [Note on notifications](#note-on-notifications)), set `OFF` otherwise.
+8. You can leave the _Bridge Status Refresh Period_ as is.
+9. Save the bridge.
+10. The bridge thing will stay in state _INITIALIZING_ and eventually go _OFFLINE_ - this is fine, as you now have to authorize this bridge with Legrand.
+11. Go to the authorization page of your server (see [Create an application](#create-an-application)) `http://<your openHAB address>:<your openHAB port>/smarther/connectsmarther`; your newly added bridge should be listed there (along with the available locations).
+12. Press the _"Authorize Bridge"_ button; this will take you either to the login page of Legrand portal or directly to the authorization screen.
+13. Login and/or authorize the application; if the Reply URL is correct you will be returned and the entry should show your Bridge is authorized with your Client ID; otherwise, go back to your application configuration on Legrand portal and ensure you have set the right Reply URL (see [Troubleshooting](#troubleshooting) below).
+14. The binding will be updated with a refresh token and go _ONLINE_ (the refresh token is used to re-authorize the bridge with Legrand Smarther API whenever required).
 
-![Tutorial 1](src/main/resources/images/tutorial-1.png)
+![Tutorial 1](doc/images/tutorial-1.png)
 
-![Tutorial 2](src/main/resources/images/tutorial-2.png)
+![Tutorial 2](doc/images/tutorial-2.png)
 
-![Tutorial 3](src/main/resources/images/tutorial-3.png)
+![Tutorial 3](doc/images/tutorial-3.png)
 
-Now that you have got your bridge _ONLINE_ it is time to discover your devices! Go to Paper UI Inbox and search for **"Smarther Chronothermostat"** things. Any Smarther Chronothermostat device currently available on your account should show up immediately.
+Now that you have got your bridge _ONLINE_ it is time to discover your devices! Go to Paper UI Inbox and search for **"Smarther Chronothermostat"** things.
+Any Smarther Chronothermostat device currently available on your account should show up immediately.
 
 If no devices show up you may have to trigger the openHAB discovery several times as bridge will only find active devices known by the Smarther API at the time the discovery is triggered.
 
-Should the bridge configuration be broken for any reason, the authorization procedure can be reinitiated from step 6 whenever required. You can force reinitialization by authorizing again on the `/smarther/connectsmarther` page, even if the page shows it as already authorized. This will reset the refresh token.
+Should the bridge configuration be broken for any reason, the authorization procedure can be reinitiated from step 6 whenever required.
+You can force reinitialization by authorizing again on the `/smarther/connectsmarther` page, even if the page shows it as already authorized. This will reset the refresh token.
 
 The following configuration options are available on the Smarther Bridge thing:
 
@@ -94,7 +106,7 @@ The following configuration options are available on the Smarther Chronothermost
 
 ## Troubleshooting
 
-When configuring the binding (see step 7 [here](#configure-the-binding)), you can receive the following error from Legrand portal:
+When configuring the binding (see step 13 [here](#configure-the-binding)), you can receive the following error from Legrand portal:
 
 ```
 {
@@ -103,7 +115,8 @@ When configuring the binding (see step 7 [here](#configure-the-binding)), you ca
 }
 ```
 
-This means you've either opened the `/smarther/connectsmarther` page from the wrong address or set the wrong "Reply URL" attribute in your application (see step 1 [here](#create-an-application)). Please remember these two strings must match for authentication process to work.
+This means you've either opened the `/smarther/connectsmarther` page from the wrong address or set the wrong "Reply URL" attribute in your application (see step 1 [here](#create-an-application)).
+Please remember these two strings must match for authentication process to work.
 
 To solve the issue, either:
 

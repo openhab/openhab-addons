@@ -20,16 +20,12 @@ import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import javax.measure.quantity.Temperature;
-
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.library.unit.ImperialUnits;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.scheduler.CronScheduler;
 import org.eclipse.smarthome.core.scheduler.ScheduledCompletableFuture;
@@ -44,7 +40,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
-import org.joda.time.DateTime;
 import org.openhab.binding.smarther.internal.api.exception.SmartherGatewayException;
 import org.openhab.binding.smarther.internal.api.exception.SmartherSubscriptionAlreadyExistsException;
 import org.openhab.binding.smarther.internal.api.model.Chronothermostat;
@@ -55,6 +50,8 @@ import org.openhab.binding.smarther.internal.api.model.ModuleStatus;
 import org.openhab.binding.smarther.internal.api.model.Notification;
 import org.openhab.binding.smarther.internal.api.model.Program;
 import org.openhab.binding.smarther.internal.config.SmartherModuleConfiguration;
+import org.openhab.binding.smarther.internal.util.DateUtil;
+import org.openhab.binding.smarther.internal.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -201,25 +198,18 @@ public class SmartherModuleHandler extends BaseThingHandler {
             return false;
         }
 
-        @SuppressWarnings("unchecked")
-        QuantityType<Temperature> newMeasure = (QuantityType<Temperature>) command;
+        QuantityType<?> quantity = (QuantityType<?>) command;
+        QuantityType<?> newMeasure = quantity.toUnit(SIUnits.CELSIUS);
 
         // Check remote device temperature limits
-        if (newMeasure.getUnit() == SIUnits.CELSIUS) {
-            if (newMeasure.doubleValue() < 7.1 || newMeasure.doubleValue() > 40.0) {
-                return false;
-            }
-        } else if (newMeasure.getUnit() == ImperialUnits.FAHRENHEIT) {
-            if (newMeasure.doubleValue() < 44.7 || newMeasure.doubleValue() > 104) {
-                return false;
-            }
+        if (newMeasure != null && newMeasure.doubleValue() >= 7.1 && newMeasure.doubleValue() <= 40.0) {
+            // Only tenth degree increments are allowed
+            double newTemperature = Math.round(newMeasure.doubleValue() * 10) / 10.0;
+
+            moduleSettings.setSetPointTemperature(QuantityType.valueOf(newTemperature, SIUnits.CELSIUS));
+            return true;
         }
-
-        // Only tenth degree increments are allowed
-        double newTemperature = Math.round(newMeasure.doubleValue() * 10) / 10.0;
-
-        moduleSettings.setSetPointTemperature(QuantityType.valueOf(newTemperature, newMeasure.getUnit()));
-        return true;
+        return false;
     }
 
     private boolean changeTimeHour(Command command) {
@@ -275,12 +265,12 @@ public class SmartherModuleHandler extends BaseThingHandler {
         }
 
         config = getConfigAs(SmartherModuleConfiguration.class);
-        if (StringUtils.isBlank(config.getPlantId())) {
+        if (StringUtil.isBlank(config.getPlantId())) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "The 'Plant Id' property is not set or empty. If you have an older thing please recreate it.");
             return;
         }
-        if (StringUtils.isBlank(config.getModuleId())) {
+        if (StringUtil.isBlank(config.getModuleId())) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "The 'Module Id' property is not set or empty. If you have an older thing please recreate it.");
             return;
@@ -363,19 +353,13 @@ public class SmartherModuleHandler extends BaseThingHandler {
      * Action to be executed by the daily job: refresh the end dates list for "manual" mode.
      */
     private void dailyJob() {
-        try {
-            logger.debug("Module[{}] Daily job, refreshing the end dates list for \"manual\" mode", thing.getUID());
-            // Refresh the end dates list for "manual" mode
-            dynamicStateDescriptionProvider.setEndDates(endDateChannelUID, config.getNumberOfEndDays());
-            // If expired, update EndDate in module settings
-            if (moduleSettings != null && moduleSettings.isEndDateExpired()) {
-                final DateTime today = DateTime.now().withTimeAtStartOfDay();
-                moduleSettings.setEndDate(today.toString(DATE_FORMAT));
-                updateChannelState(CHANNEL_SETTINGS_ENDDATE, new StringType(moduleSettings.getEndDate()));
-            }
-        } catch (RuntimeException e) {
-            logger.warn("Module[{}] Unexpected error on daily job, please report if this keeps occurring: ",
-                    thing.getUID(), e);
+        logger.debug("Module[{}] Daily job, refreshing the end dates list for \"manual\" mode", thing.getUID());
+        // Refresh the end dates list for "manual" mode
+        dynamicStateDescriptionProvider.setEndDates(endDateChannelUID, config.getNumberOfEndDays());
+        // If expired, update EndDate in module settings
+        if (moduleSettings != null && moduleSettings.isEndDateExpired()) {
+            moduleSettings.setEndDate(DateUtil.format(DateUtil.todayAtStartOfDay(), DATE_FORMAT));
+            updateChannelState(CHANNEL_SETTINGS_ENDDATE, new StringType(moduleSettings.getEndDate()));
         }
     }
 
@@ -411,36 +395,38 @@ public class SmartherModuleHandler extends BaseThingHandler {
      */
     private synchronized boolean poll() {
         try {
-            @SuppressWarnings("null")
-            final ThingStatusInfo bridgeStatusInfo = getBridge().getStatusInfo();
+            final Bridge bridge = getBridge();
+            if (bridge != null) {
+                final ThingStatusInfo bridgeStatusInfo = bridge.getStatusInfo();
+                if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
+                    ModuleStatus moduleStatus = bridgeHandler.getModuleStatus(config.getPlantId(),
+                            config.getModuleId());
+                    if (!moduleStatus.hasChronothermostat()) {
+                        throw new SmartherGatewayException("No chronothermostat data found");
+                    }
 
-            if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
-                ModuleStatus moduleStatus = bridgeHandler.getModuleStatus(config.getPlantId(), config.getModuleId());
-                if (!moduleStatus.hasChronothermostat()) {
-                    throw new SmartherGatewayException("No chronothermostat data found");
+                    boolean isFirstRemoteUpdate = (chronothermostat == null);
+                    chronothermostat = moduleStatus.toChronothermostat();
+                    if (isFirstRemoteUpdate || config.isSettingsAutoupdate()) {
+                        moduleSettings.updateFromChronothermostat(chronothermostat);
+                    }
+                    logger.debug("Module[{}] Status: [{}]", thing.getUID(), chronothermostat);
+
+                    // Refresh the programs list for "automatic" mode
+                    dynamicStateDescriptionProvider.setPrograms(programChannelUID, programCache.getValue());
+
+                    updateModuleStatus();
+
+                    bridgeHandler.registerNotification(config.getPlantId());
+
+                    // Everything is ok > set the Thing state to Online
+                    updateStatus(ThingStatus.ONLINE);
+                    return true;
+                } else if (thing.getStatus() != ThingStatus.OFFLINE) {
+                    logger.debug("Module[{}] Switched {} as Bridge is not online", thing.getUID(),
+                            bridgeStatusInfo.getStatus());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Smarther Bridge Offline");
                 }
-
-                boolean isFirstRemoteUpdate = (chronothermostat == null);
-                chronothermostat = moduleStatus.toChronothermostat();
-                if (isFirstRemoteUpdate || config.isSettingsAutoupdate()) {
-                    moduleSettings.updateFromChronothermostat(chronothermostat);
-                }
-                logger.debug("Module[{}] Status: [{}]", thing.getUID(), chronothermostat);
-
-                // Refresh the programs list for "automatic" mode
-                dynamicStateDescriptionProvider.setPrograms(programChannelUID, programCache.getValue());
-
-                updateModuleStatus();
-
-                bridgeHandler.registerNotification(config.getPlantId());
-
-                // Everything is ok > set the Thing state to Online
-                updateStatus(ThingStatus.ONLINE);
-                return true;
-            } else if (thing.getStatus() != ThingStatus.OFFLINE) {
-                logger.debug("Module[{}] Switched {} as Bridge is not online", thing.getUID(),
-                        bridgeStatusInfo.getStatus());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Smarther Bridge Offline");
             }
             return false;
         } catch (SmartherSubscriptionAlreadyExistsException e) {
@@ -471,9 +457,9 @@ public class SmartherModuleHandler extends BaseThingHandler {
             // Update the Status channels
             updateChannelState(CHANNEL_STATUS_STATE, (chronothermostat.isActive() ? OnOffType.ON : OnOffType.OFF));
             updateChannelState(CHANNEL_STATUS_FUNCTION,
-                    new StringType(StringUtils.capitalize(chronothermostat.getFunction().toLowerCase())));
+                    new StringType(StringUtil.capitalize(chronothermostat.getFunction().toLowerCase())));
             updateChannelState(CHANNEL_STATUS_MODE,
-                    new StringType(StringUtils.capitalize(chronothermostat.getMode().toLowerCase())));
+                    new StringType(StringUtil.capitalize(chronothermostat.getMode().toLowerCase())));
             updateChannelState(CHANNEL_STATUS_TEMPERATURE, chronothermostat.getSetPointTemperature().toState());
             updateChannelState(CHANNEL_STATUS_PROGRAM, new StringType("" + chronothermostat.getProgram().getNumber()));
             updateChannelState(CHANNEL_STATUS_ENDTIME, new StringType(chronothermostat.getActivationTimeLabel()));

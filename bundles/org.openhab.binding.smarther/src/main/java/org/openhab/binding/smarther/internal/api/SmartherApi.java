@@ -313,8 +313,13 @@ public class SmartherApi {
             return connector.request(call, this.oAuthSubscriptionKey, BEARER + accessToken);
         } catch (SmartherTokenExpiredException e) {
             // Retry with new access token
-            return connector.request(call, this.oAuthSubscriptionKey,
-                    BEARER + oAuthClientService.refreshToken().getAccessToken());
+            try {
+                return connector.request(call, this.oAuthSubscriptionKey,
+                        BEARER + oAuthClientService.refreshToken().getAccessToken());
+            } catch (SmartherTokenExpiredException ex) {
+                // This should never happen in normal conditions
+                throw new SmartherAuthorizationException(String.format("Cannot refresh token: %s", ex.getMessage()));
+            }
         }
     }
 

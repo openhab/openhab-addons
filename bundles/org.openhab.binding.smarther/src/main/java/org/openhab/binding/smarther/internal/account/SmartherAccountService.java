@@ -28,11 +28,11 @@ import java.util.Optional;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smarther.internal.api.exception.SmartherGatewayException;
 import org.openhab.binding.smarther.internal.api.model.Notification;
+import org.openhab.binding.smarther.internal.util.StringUtil;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
@@ -127,8 +127,8 @@ public class SmartherAccountService {
             throw new FileNotFoundException(
                     String.format("Cannot find template '%s' - failed to initialize Smarther servlet", templateName));
         } else {
-            try (InputStream inputStream = index.openStream()) {
-                return IOUtils.toString(inputStream);
+            try (InputStream input = index.openStream()) {
+                return StringUtil.streamToString(input);
             }
         }
     }

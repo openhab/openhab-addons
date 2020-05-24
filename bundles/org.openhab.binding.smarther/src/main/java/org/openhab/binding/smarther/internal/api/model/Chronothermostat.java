@@ -13,11 +13,12 @@
 package org.openhab.binding.smarther.internal.api.model;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
-import org.joda.time.DateTime;
 import org.openhab.binding.smarther.internal.api.model.Enums.LoadState;
 import org.openhab.binding.smarther.internal.api.model.Enums.MeasureUnit;
+import org.openhab.binding.smarther.internal.util.DateUtil;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -92,15 +93,17 @@ public class Chronothermostat {
     public String getActivationTimeLabel() {
         String timeLabel = "Forever";
         if (activationTime != null) {
-            final DateTime dateActivationTime = new DateTime(activationTime);
-            final DateTime dateTomorrow = DateTime.now().plusDays(1).withTimeAtStartOfDay();
+            final Date dateActivationTime = DateUtil.parse(activationTime, "yyyy-MM-dd'T'HH:mm:ssXXX");
+            final Date dateTomorrow = DateUtil.tomorrowAtStartOfDay();
 
-            if (dateActivationTime.isBefore(dateTomorrow)) {
-                timeLabel = dateActivationTime.toString("'Today at' HH:mm");
-            } else if (dateActivationTime.isBefore(dateTomorrow.plusDays(1))) {
-                timeLabel = dateActivationTime.toString("'Tomorrow at' HH:mm");
+            if (dateActivationTime == null) {
+                timeLabel = null;
+            } else if (dateActivationTime.before(dateTomorrow)) {
+                timeLabel = DateUtil.format(dateActivationTime, "'Today at' HH:mm");
+            } else if (dateActivationTime.before(DateUtil.plusDays(dateTomorrow, 1))) {
+                timeLabel = DateUtil.format(dateActivationTime, "'Tomorrow at' HH:mm");
             } else {
-                timeLabel = dateActivationTime.toString("dd/MM/yyyy 'at' HH:mm");
+                timeLabel = DateUtil.format(dateActivationTime, "dd/MM/yyyy 'at' HH:mm");
             }
         }
         return timeLabel;

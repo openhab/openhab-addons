@@ -14,19 +14,20 @@ package org.openhab.binding.smarther.internal.api.model;
 
 import static org.openhab.binding.smarther.internal.SmartherBindingConstants.*;
 
+import java.util.Date;
+
 import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
 import org.openhab.binding.smarther.internal.api.model.Enums.BoostTime;
 import org.openhab.binding.smarther.internal.api.model.Enums.Function;
 import org.openhab.binding.smarther.internal.api.model.Enums.Mode;
+import org.openhab.binding.smarther.internal.util.DateUtil;
+import org.openhab.binding.smarther.internal.util.StringUtil;
 
 /**
  * Smarther API ModuleSettings update data class.
@@ -123,14 +124,14 @@ public class ModuleSettings {
             return false;
         }
 
-        final DateTime dtEndDate = DateTimeFormat.forPattern(DATE_FORMAT).parseDateTime(endDate).withTimeAtStartOfDay();
-        final DateTime dtToday = DateTime.now().withTimeAtStartOfDay();
+        final Date dtEndDate = DateUtil.dateAtStartOfDay(DateUtil.parse(endDate, DATE_FORMAT));
+        final Date dtToday = DateUtil.todayAtStartOfDay();
 
-        return (dtEndDate.isBefore(dtToday));
+        return (dtEndDate.before(dtToday));
     }
 
     public void setEndDate(String endDate) {
-        this.endDate = StringUtils.stripToNull(endDate);
+        this.endDate = StringUtil.stripToNull(endDate);
     }
 
     public int getEndHour() {
@@ -151,13 +152,13 @@ public class ModuleSettings {
 
     public String getActivationTime() {
         if (mode.equals(Mode.MANUAL) && (endDate != null)) {
-            DateTime d = DateTimeFormat.forPattern(DATE_FORMAT).parseDateTime(endDate);
-            d = d.withTime(endHour, endMinute, 0, 0);
-            return d.toString(DATETIME_FORMAT);
+            Date d = DateUtil.parse(endDate, DATE_FORMAT);
+            d = DateUtil.setTime(d, endHour, endMinute, 0, 0);
+            return DateUtil.format(d, DATETIME_FORMAT);
         } else if (mode.equals(Mode.BOOST)) {
-            DateTime d1 = DateTime.now().withSecondOfMinute(0).withMillisOfSecond(0);
-            DateTime d2 = d1.plusMinutes(boostTime.getValue());
-            return String.format("%s/%s", d1.toString(DATETIME_FORMAT), d2.toString(DATETIME_FORMAT));
+            Date d1 = DateUtil.todayResetTime(false, false, true, true);
+            Date d2 = DateUtil.plusMinutes(d1, boostTime.getValue());
+            return String.format("%s/%s", DateUtil.format(d1, DATETIME_FORMAT), DateUtil.format(d2, DATETIME_FORMAT));
         }
 
         return "";

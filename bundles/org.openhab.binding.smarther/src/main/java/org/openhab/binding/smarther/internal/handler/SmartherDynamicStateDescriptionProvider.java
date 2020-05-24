@@ -15,6 +15,7 @@ package org.openhab.binding.smarther.internal.handler;
 import static org.openhab.binding.smarther.internal.SmartherBindingConstants.DATE_FORMAT;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,8 +25,8 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.binding.BaseDynamicStateDescriptionProvider;
 import org.eclipse.smarthome.core.thing.type.DynamicStateDescriptionProvider;
 import org.eclipse.smarthome.core.types.StateOption;
-import org.joda.time.DateTime;
 import org.openhab.binding.smarther.internal.api.model.Program;
+import org.openhab.binding.smarther.internal.util.DateUtil;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -46,13 +47,13 @@ public class SmartherDynamicStateDescriptionProvider extends BaseDynamicStateDes
 
         endDates.add(new StateOption("", LABEL_FOREVER));
 
-        final DateTime today = DateTime.now().withTimeAtStartOfDay();
-        endDates.add(new StateOption(today.toString(DATE_FORMAT), LABEL_TODAY));
-        if (maxEndDays > 1) {
-            endDates.add(new StateOption(today.plusDays(1).toString(DATE_FORMAT), LABEL_TOMORROW));
+        final Date today = DateUtil.todayAtStartOfDay();
 
+        endDates.add(new StateOption(DateUtil.format(today, DATE_FORMAT), LABEL_TODAY));
+        if (maxEndDays > 1) {
+            endDates.add(new StateOption(DateUtil.format(DateUtil.plusDays(today, 1), DATE_FORMAT), LABEL_TOMORROW));
             for (int i = 2; i < maxEndDays; i++) {
-                final String newDate = today.plusDays(i).toString(DATE_FORMAT);
+                final String newDate = DateUtil.format(DateUtil.plusDays(today, i), DATE_FORMAT);
                 endDates.add(new StateOption(newDate, newDate));
             }
         }

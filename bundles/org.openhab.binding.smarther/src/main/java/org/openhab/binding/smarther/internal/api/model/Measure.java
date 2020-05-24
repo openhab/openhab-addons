@@ -17,7 +17,6 @@ import java.util.Optional;
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Temperature;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.ImperialUnits;
@@ -25,6 +24,7 @@ import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.smarther.internal.api.model.Enums.MeasureUnit;
+import org.openhab.binding.smarther.internal.util.StringUtil;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -60,7 +60,7 @@ public class Measure {
 
     public State toState() {
         State state = UnDefType.UNDEF;
-        final Optional<Double> optValue = (StringUtils.isBlank(value)) ? Optional.empty()
+        final Optional<Double> optValue = (StringUtil.isBlank(value)) ? Optional.empty()
                 : Optional.of(Double.parseDouble(value));
 
         switch (MeasureUnit.fromValue(unit)) {
@@ -86,7 +86,7 @@ public class Measure {
 
     @Override
     public String toString() {
-        return (StringUtils.isBlank(timestamp)) ? String.format("value=%s, unit=%s", value, unit)
+        return (StringUtil.isBlank(timestamp)) ? String.format("value=%s, unit=%s", value, unit)
                 : String.format("value=%s, unit=%s, timestamp=%s", value, unit, timestamp);
     }
 

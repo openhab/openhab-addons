@@ -27,14 +27,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.util.MultiMap;
-import org.eclipse.jetty.util.StringUtil;
 import org.eclipse.jetty.util.UrlEncoded;
 import org.openhab.binding.smarther.internal.api.exception.SmartherAuthorizationException;
+import org.openhab.binding.smarther.internal.api.exception.SmartherGatewayException;
 import org.openhab.binding.smarther.internal.api.model.Location;
+import org.openhab.binding.smarther.internal.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -118,7 +118,7 @@ public class SmartherAuthorizationServlet extends HttpServlet {
         final StringBuffer requestURL = req.getRequestURL();
 
         // Try to infer the real protocol from request headers
-        final String realProtocol = StringUtils.defaultIfBlank(req.getHeader(X_FORWARDED_PROTO), req.getScheme());
+        final String realProtocol = StringUtil.defaultIfBlank(req.getHeader(X_FORWARDED_PROTO), req.getScheme());
 
         return requestURL.replace(0, requestURL.indexOf(":"), realProtocol).toString();
     }
@@ -157,7 +157,7 @@ public class SmartherAuthorizationServlet extends HttpServlet {
                     logger.debug("Received from authorization - state:[{}] code:[{}]", reqState, reqCode);
                     replaceMap.put(KEY_AUTHORIZED_BRIDGE, String.format(HTML_BRIDGE_AUTHORIZED,
                             accountService.authorize(servletBaseURL, reqState, reqCode)));
-                } catch (RuntimeException e) {
+                } catch (SmartherAuthorizationException | SmartherGatewayException e) {
                     logger.debug("Exception during authorizaton: ", e);
                     replaceMap.put(KEY_ERROR, String.format(HTML_ERROR, e.getMessage()));
                 }

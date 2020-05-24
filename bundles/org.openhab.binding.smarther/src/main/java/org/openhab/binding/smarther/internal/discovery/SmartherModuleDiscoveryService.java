@@ -34,6 +34,8 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.openhab.binding.smarther.internal.account.SmartherAccountHandler;
+import org.openhab.binding.smarther.internal.api.exception.SmartherAuthorizationException;
+import org.openhab.binding.smarther.internal.api.exception.SmartherGatewayException;
 import org.openhab.binding.smarther.internal.api.model.Location;
 import org.openhab.binding.smarther.internal.api.model.Module;
 import org.osgi.service.component.annotations.Component;
@@ -125,8 +127,8 @@ public class SmartherModuleDiscoveryService extends AbstractDiscoveryService
             try {
                 bridgeHandler.listLocations()
                         .forEach(l -> bridgeHandler.listModules(l).forEach(m -> thingDiscovered(l, m)));
-            } catch (RuntimeException e) {
-                logger.warn("Finding modules failed with message: {}", e.getMessage(), e);
+            } catch (SmartherAuthorizationException | SmartherGatewayException e) {
+                logger.warn("Finding modules failed with message: {}", e.getMessage());
             }
         }
     }

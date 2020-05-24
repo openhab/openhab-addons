@@ -277,7 +277,8 @@ public class SmartherApiConnector {
          * @param response content returned by API gateway
          * @return the error messages
          */
-        private String processErrorState(ContentResponse response) {
+        private String processErrorState(ContentResponse response)
+                throws SmartherTokenExpiredException, SmartherAuthorizationException {
             try {
                 final JsonElement element = parser.parse(response.getContentAsString());
 

@@ -16,9 +16,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.smarther.internal.util.StringUtil;
 
 /**
  * Smarther API Location data class.
@@ -64,7 +64,7 @@ public class Location {
     }
 
     public boolean hasSubscription() {
-        return StringUtils.isNotBlank(subscriptionId);
+        return !StringUtil.isBlank(subscriptionId);
     }
 
     public void setSubscription(String subscriptionId, String endpointUrl) {

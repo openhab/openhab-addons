@@ -162,11 +162,6 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
                     "The 'Client Secret' property is not set or empty. If you have an older thing please recreate it.");
             return;
         }
-        if (config.getStatusRefreshPeriod() <= 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "The 'Bridge Status Refresh Period' must be > 0. If you have an older thing please recreate it.");
-            return;
-        }
 
         updateStatus(ThingStatus.UNKNOWN);
 
@@ -463,7 +458,7 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
             schedulePoll();
 
             return config.getClientId();
-        } catch (RuntimeException | OAuthException | IOException e) {
+        } catch (OAuthException | IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             throw new SmartherGatewayException(e.getMessage(), e);
         } catch (OAuthResponseException e) {
@@ -481,7 +476,7 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
         try {
             return oAuthService.getAuthorizationUrl(redirectUri, null, thing.getUID().getAsString());
         } catch (OAuthException e) {
-            logger.warn("Bridge[{}] Error constructing AuthorizationUrl: ", thing.getUID(), e);
+            logger.warn("Bridge[{}] Error constructing AuthorizationUrl: ", thing.getUID());
             return "";
         }
     }
