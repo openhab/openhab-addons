@@ -65,7 +65,7 @@ public class YeelightHandlerFactory extends BaseThingHandlerFactory {
         } else if (thingTypeUID.equals(THING_TYPE_CEILING) || thingTypeUID.equals(THING_TYPE_CEILING3)
                 || thingTypeUID.equals(THING_TYPE_DESKLAMP)) {
             return new YeelightCeilingHandler(thing);
-        }else if (thingTypeUID.equals(THING_TYPE_CEILING1)) {
+        } else if (thingTypeUID.equals(THING_TYPE_CEILING1)) {
             return new YeelightCeilingWithNightHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_CEILING4)) {
             return new YeelightCeilingWithAmbientHandler(thing);

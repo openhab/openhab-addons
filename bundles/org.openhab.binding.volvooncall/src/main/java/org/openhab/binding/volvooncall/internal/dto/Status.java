@@ -137,5 +137,4 @@ public class Status extends VocAnswer {
      * private ZonedDateTime tripMeter2Timestamp;
      * private ZonedDateTime washerFluidLevelTimestamp;
      */
-
 }

@@ -344,5 +344,4 @@ public class MediaRendererService implements UpnpIOParticipant, SamsungTvService
     public void onStatusChanged(boolean status) {
         logger.debug("onStatusChanged: status={}", status);
     }
-
 }

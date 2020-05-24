@@ -29,5 +29,4 @@ public class FreeboxApiManagerTest {
         String actual = FreeboxApiManager.hmacSha1("Token1234", "Challenge");
         Assert.assertEquals(expected, actual);
     }
-
 }

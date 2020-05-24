@@ -100,5 +100,4 @@ public class TripDetail {
         }
         return Optional.empty();
     }
-
 }

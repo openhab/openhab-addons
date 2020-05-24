@@ -18,7 +18,6 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.daikin.internal.api.InfoParser;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

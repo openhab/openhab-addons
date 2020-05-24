@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class Enums {
-   public enum OpenGarageCommand {
+    public enum OpenGarageCommand {
         OPEN("open"),
         CLOSE("close"),
         CLICK("click");
