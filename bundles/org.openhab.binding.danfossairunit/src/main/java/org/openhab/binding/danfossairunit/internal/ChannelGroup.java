@@ -13,6 +13,7 @@
 package org.openhab.binding.danfossairunit.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Represents a channel group, channels are divided into.
  *

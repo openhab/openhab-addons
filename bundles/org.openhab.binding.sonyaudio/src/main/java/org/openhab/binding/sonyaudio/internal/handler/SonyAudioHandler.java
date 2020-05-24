@@ -267,7 +267,7 @@ abstract class SonyAudioHandler extends BaseThingHandler implements SonyAudioEve
             }
         }
         if (command instanceof OnOffType) {
-            logger.debug("handleNightMode set {}",  command);
+            logger.debug("handleNightMode set {}", command);
             connection.setSoundSettings("nightMode", ((OnOffType) command) == OnOffType.ON ? "on" : "off");
         }
     }

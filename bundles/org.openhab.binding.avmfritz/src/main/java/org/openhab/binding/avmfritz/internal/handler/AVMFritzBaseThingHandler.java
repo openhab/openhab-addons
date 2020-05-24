@@ -434,7 +434,6 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                 logger.debug("Received unknown channel {}", channelId);
                 break;
         }
-
     }
 
     /**

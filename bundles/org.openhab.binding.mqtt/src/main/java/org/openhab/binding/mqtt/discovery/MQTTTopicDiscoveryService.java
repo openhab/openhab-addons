@@ -46,5 +46,4 @@ public interface MQTTTopicDiscoveryService {
      * @param payload The message to publish
      */
     void publish(String topic, byte[] payload);
-
 }

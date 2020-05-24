@@ -28,9 +28,9 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.daikin.internal.api.BasicInfo;
 import org.openhab.binding.daikin.internal.api.ControlInfo;
+import org.openhab.binding.daikin.internal.api.EnergyInfoYear;
 import org.openhab.binding.daikin.internal.api.Enums.SpecialModeKind;
 import org.openhab.binding.daikin.internal.api.SensorInfo;
-import org.openhab.binding.daikin.internal.api.EnergyInfoYear;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseBasicInfo;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseControlInfo;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseModelInfo;
@@ -130,7 +130,7 @@ public class DaikinWebTargets {
 
     public boolean setSpecialMode(SpecialModeKind specialModeKind, boolean state) throws DaikinCommunicationException {
         Map<String, String> queryParams = new HashMap<>();
-        queryParams.put("spmode_kind",String.valueOf(specialModeKind.getValue()));
+        queryParams.put("spmode_kind", String.valueOf(specialModeKind.getValue()));
         queryParams.put("set_spmode", state ? "1" : "0");
         String response = invoke(setSpecialModeUri, queryParams);
         return !response.contains("ret=OK");

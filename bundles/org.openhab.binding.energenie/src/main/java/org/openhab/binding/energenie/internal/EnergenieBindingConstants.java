@@ -75,5 +75,4 @@ public class EnergenieBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
             Stream.of(THING_TYPE_PM2LAN, THING_TYPE_PMSLAN, THING_TYPE_PMS2LAN, THING_TYPE_PMSLAN, THING_TYPE_PWMLAN)
                     .collect(Collectors.toSet()));
-
 }

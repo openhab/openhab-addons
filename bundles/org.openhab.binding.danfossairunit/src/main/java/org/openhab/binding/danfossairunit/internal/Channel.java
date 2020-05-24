@@ -36,11 +36,13 @@ public enum Channel {
     CHANNEL_SUPPLY_FAN_STEP("supply_fan_step", ChannelGroup.MAIN, DanfossAirUnit::getSupplyFanStep),
 
     CHANNEL_BOOST("boost", ChannelGroup.MAIN, DanfossAirUnit::getBoost, DanfossAirUnit::setBoost),
-    CHANNEL_NIGHT_COOLING("night_cooling", ChannelGroup.MAIN, DanfossAirUnit::getNightCooling, DanfossAirUnit::setNightCooling),
+    CHANNEL_NIGHT_COOLING("night_cooling", ChannelGroup.MAIN, DanfossAirUnit::getNightCooling,
+            DanfossAirUnit::setNightCooling),
 
     // Main Temperature Channels
     CHANNEL_ROOM_TEMP("room_temp", ChannelGroup.TEMPS, DanfossAirUnit::getRoomTemperature),
-    CHANNEL_ROOM_TEMP_CALCULATED("room_temp_calculated", ChannelGroup.TEMPS, DanfossAirUnit::getRoomTemperatureCalculated),
+    CHANNEL_ROOM_TEMP_CALCULATED("room_temp_calculated", ChannelGroup.TEMPS,
+            DanfossAirUnit::getRoomTemperatureCalculated),
     CHANNEL_OUTDOOR_TEMP("outdoor_temp", ChannelGroup.TEMPS, DanfossAirUnit::getOutdoorTemperature),
 
     // Humidity Channel

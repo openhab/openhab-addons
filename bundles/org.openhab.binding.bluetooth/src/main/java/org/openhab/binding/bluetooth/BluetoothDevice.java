@@ -390,5 +390,4 @@ public abstract class BluetoothDevice {
      * @param args an array of arguments to pass to the callback
      */
     protected abstract void notifyListeners(BluetoothEventType event, Object... args);
-
 }

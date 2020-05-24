@@ -38,8 +38,8 @@ public class Commands {
     public static byte[] MANUAL_FAN_SPEED_STEP = { 0x15, 0x61 };
     public static byte[] SUPPLY_FAN_SPEED = { 0x14, 0x50 };
     public static byte[] EXTRACT_FAN_SPEED = { 0x14, 0x51 };
-    public static byte[] SUPPLY_FAN_STEP = {0x14,0x28};
-    public static byte[] EXTRACT_FAN_STEP = {0x14,0x29};
+    public static byte[] SUPPLY_FAN_STEP = { 0x14, 0x28 };
+    public static byte[] EXTRACT_FAN_STEP = { 0x14, 0x29 };
     public static byte[] BASE_IN = { 0x14, 0x40 };
     public static byte[] BASE_OUT = { 0x14, 0x41 };
     public static byte[] BYPASS = { 0x14, 0x60 };
