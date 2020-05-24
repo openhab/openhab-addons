@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.neohub.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * A custom class that wraps a boolean; we need this because newer versions of
  * NeoHub have broken JSON for some boolean values so we can't use the standard
@@ -20,7 +22,8 @@ package org.openhab.binding.neohub.internal;
  * @author Andrew Fiddian-Green - Initial contribution
  * 
  */
-class NeohubBool {
+@NonNullByDefault
+public class NeohubBool {
     public boolean value;
 
     public NeohubBool(boolean value) {

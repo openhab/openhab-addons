@@ -17,15 +17,22 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.openhab.binding.neohub.internal.NeoHubBindingConstants.*;
 
 import java.math.BigDecimal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.unit.ImperialUnits;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.junit.Test;
+import org.openhab.binding.neohub.internal.NeoHubAbstractDeviceData;
+import org.openhab.binding.neohub.internal.NeoHubAbstractDeviceData.AbstractRecord;
+import org.openhab.binding.neohub.internal.NeoHubGetEngineersData;
 import org.openhab.binding.neohub.internal.NeoHubInfoResponse;
-import org.openhab.binding.neohub.internal.NeoHubInfoResponse.DeviceInfo;
+import org.openhab.binding.neohub.internal.NeoHubInfoResponse.InfoRecord;
+import org.openhab.binding.neohub.internal.NeoHubLiveDeviceData;
 import org.openhab.binding.neohub.internal.NeoHubReadDcbResponse;
+import org.openhab.binding.neohub.internal.NeoHubSocket;
 
 /**
  * The {@link NeoHubTestData} class defines common constants, which are used
@@ -33,9 +40,18 @@ import org.openhab.binding.neohub.internal.NeoHubReadDcbResponse;
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
+@NonNullByDefault
 public class NeoHubTestData {
 
-    public static final String NEOHUB_JSON_TEST_STRING = "{\"devices\":["
+    /*
+     * note: (at)formatter on/off tags instruct spotless not to reformat the JSON
+     */
+
+    /*
+     * Test JSON response for an INFO request sent to a hub with older firmware
+     */
+    //@formatter:off
+    public static final String NEOHUB_JSON_TEST_STRING_INFO_OLD = "{\"devices\":["
             + "{\"AWAY\":false,\"COOLING\":false,\"COOLING_ENABLED\":false,\"COOLING_TEMPERATURE_IN_WHOLE_DEGREES\":23,\"COOL_INP\":false,\"COUNT_DOWN_TIME\":\"0:00\",\"CRADLE_PAIRED_TO_REMOTE_SENSOR\":false,\"CRADLE_PAIRED_TO_STAT\":false,\"CURRENT_FLOOR_TEMPERATURE\":23,\"CURRENT_SET_TEMPERATURE\":\"22.0\",\"CURRENT_TEMPERATURE\":\"22.2\",\"DEMAND\":false,\"DEVICE_TYPE\":12,\"ENABLE_BOILER\":false,\"ENABLE_COOLING\":false,\"ENABLE_PUMP\":false,\"ENABLE_VALVE\":false,\"ENABLE_ZONE\":false,\"FAILSAFE_STATE\":false,\"FAIL_SAFE_ENABLED\":false,\"FLOOR_LIMIT\":false,\"FULL/PARTIAL_LOCK_AVAILABLE\":false,\"HEAT/COOL_MODE\":false,\"HEATING\":false,\"HOLD_TEMPERATURE\":21,\"HOLD_TIME\":\"0:00\",\"HOLIDAY\":false,\"HOLIDAY_DAYS\":0,\"HUMIDITY\":0,\"LOCK\":false,\"LOCK_PIN_NUMBER\":\"0000\",\"LOW_BATTERY\":false,\"MAX_TEMPERATURE\":\"22.0\",\"MIN_TEMPERATURE\":\"21.0\",\"MODULATION_LEVEL\":0,\"NEXT_ON_TIME\":\"6 days 23:00\",\"OFFLINE\":false,\"OUPUT_DELAY\":false,\"OUTPUT_DELAY\":0,\"PREHEAT\":false,\"PREHEAT_TIME\":\"2:42\",\"PROGRAM_MODE\":\"24HOURSFIXED\",\"PUMP_DELAY\":false,\"RADIATORS_OR_UNDERFLOOR\":false,\"SENSOR_SELECTION\":\"BUILT_IN_AND_FLOOR\",\"SET_COUNTDOWN_TIME\":0,\"STANDBY\":false,\"STAT_MODE\":{\"4_HEAT_LEVELS\":true,\"MANUAL_OFF\":true,\"THERMOSTAT\":true},\"TEMPERATURE_FORMAT\":false,\"TEMP_HOLD\":false,\"TIMECLOCK_MODE\":false,\"TIMER\":false,\"TIME_CLOCK_OVERIDE_BIT\":false,\"ULTRA_VERSION\":0,\"VERSION_NUMBER\":20,\"WRITE_COUNT\":0,\"ZONE_1PAIRED_TO_MULTILINK\":true,\"ZONE_1_OR_2\":false,\"ZONE_2_PAIRED_TO_MULTILINK\":false,\"device\":\"Dining Room\"},"
             + "{\"AWAY\":false,\"COOLING\":false,\"COOLING_ENABLED\":false,\"COOLING_TEMPERATURE_IN_WHOLE_DEGREES\":23,\"COOL_INP\":false,\"COUNT_DOWN_TIME\":\"0:00\",\"CRADLE_PAIRED_TO_REMOTE_SENSOR\":false,\"CRADLE_PAIRED_TO_STAT\":false,\"CURRENT_FLOOR_TEMPERATURE\":127,\"CURRENT_SET_TEMPERATURE\":\"22.0\",\"CURRENT_TEMPERATURE\":\"22.6\",\"DEMAND\":false,\"DEVICE_TYPE\":12,\"ENABLE_BOILER\":false,\"ENABLE_COOLING\":false,\"ENABLE_PUMP\":false,\"ENABLE_VALVE\":false,\"ENABLE_ZONE\":false,\"FAILSAFE_STATE\":false,\"FAIL_SAFE_ENABLED\":false,\"FLOOR_LIMIT\":false,\"FULL/PARTIAL_LOCK_AVAILABLE\":false,\"HEAT/COOL_MODE\":false,\"HEATING\":false,\"HOLD_TEMPERATURE\":23,\"HOLD_TIME\":\"0:00\",\"HOLIDAY\":false,\"HOLIDAY_DAYS\":0,\"HUMIDITY\":0,\"LOCK\":false,\"LOCK_PIN_NUMBER\":\"0000\",\"LOW_BATTERY\":false,\"MAX_TEMPERATURE\":\"24.0\",\"MIN_TEMPERATURE\":\"23.0\",\"MODULATION_LEVEL\":0,\"NEXT_ON_TIME\":\"6 days 23:00\",\"OFFLINE\":false,\"OUPUT_DELAY\":false,\"OUTPUT_DELAY\":0,\"PREHEAT\":false,\"PREHEAT_TIME\":\"255:255\",\"PROGRAM_MODE\":\"24HOURSFIXED\",\"PUMP_DELAY\":false,\"RADIATORS_OR_UNDERFLOOR\":false,\"SENSOR_SELECTION\":\"REMOTE_AIR_SENSOR\",\"SET_COUNTDOWN_TIME\":0,\"STANDBY\":false,\"STAT_MODE\":{\"4_HEAT_LEVELS\":true,\"MANUAL_OFF\":true,\"THERMOSTAT\":true},\"TEMPERATURE_FORMAT\":false,\"TEMP_HOLD\":false,\"TIMECLOCK_MODE\":false,\"TIMER\":false,\"TIME_CLOCK_OVERIDE_BIT\":false,\"ULTRA_VERSION\":0,\"VERSION_NUMBER\":20,\"WRITE_COUNT\":4,\"ZONE_1PAIRED_TO_MULTILINK\":true,\"ZONE_1_OR_2\":false,\"ZONE_2_PAIRED_TO_MULTILINK\":false,\"device\":\"Shower Room\"},"
             + "{\"AWAY\":false,\"COOLING\":false,\"COOLING_ENABLED\":false,\"COOLING_TEMPERATURE_IN_WHOLE_DEGREES\":23,\"COOL_INP\":false,\"COUNT_DOWN_TIME\":\"0:00\",\"CRADLE_PAIRED_TO_REMOTE_SENSOR\":false,\"CRADLE_PAIRED_TO_STAT\":false,\"CURRENT_FLOOR_TEMPERATURE\":26,\"CURRENT_SET_TEMPERATURE\":\"22.0\",\"CURRENT_TEMPERATURE\":\"23.3\",\"DEMAND\":false,\"DEVICE_TYPE\":12,\"ENABLE_BOILER\":false,\"ENABLE_COOLING\":false,\"ENABLE_PUMP\":false,\"ENABLE_VALVE\":false,\"ENABLE_ZONE\":false,\"FAILSAFE_STATE\":false,\"FAIL_SAFE_ENABLED\":false,\"FLOOR_LIMIT\":false,\"FULL/PARTIAL_LOCK_AVAILABLE\":false,\"HEAT/COOL_MODE\":false,\"HEATING\":false,\"HOLD_TEMPERATURE\":16,\"HOLD_TIME\":\"0:00\",\"HOLIDAY\":false,\"HOLIDAY_DAYS\":0,\"HUMIDITY\":0,\"LOCK\":false,\"LOCK_PIN_NUMBER\":\"0000\",\"LOW_BATTERY\":false,\"MAX_TEMPERATURE\":\"25.0\",\"MIN_TEMPERATURE\":\"20.0\",\"MODULATION_LEVEL\":0,\"NEXT_ON_TIME\":\"6 days 23:00\",\"OFFLINE\":false,\"OUPUT_DELAY\":false,\"OUTPUT_DELAY\":0,\"PREHEAT\":false,\"PREHEAT_TIME\":\"3:48\",\"PROGRAM_MODE\":\"24HOURSFIXED\",\"PUMP_DELAY\":false,\"RADIATORS_OR_UNDERFLOOR\":false,\"SENSOR_SELECTION\":\"BUILT_IN_AND_FLOOR\",\"SET_COUNTDOWN_TIME\":0,\"STANDBY\":false,\"STAT_MODE\":{\"4_HEAT_LEVELS\":true,\"MANUAL_OFF\":true,\"THERMOSTAT\":true},\"TEMPERATURE_FORMAT\":false,\"TEMP_HOLD\":false,\"TIMECLOCK_MODE\":false,\"TIMER\":false,\"TIME_CLOCK_OVERIDE_BIT\":false,\"ULTRA_VERSION\":0,\"VERSION_NUMBER\":20,\"WRITE_COUNT\":0,\"ZONE_1PAIRED_TO_MULTILINK\":true,\"ZONE_1_OR_2\":false,\"ZONE_2_PAIRED_TO_MULTILINK\":false,\"device\":\"Conservatory\"},"
@@ -47,8 +63,15 @@ public class NeoHubTestData {
             + "{\"AWAY\":false,\"COOLING\":false,\"COOLING_ENABLED\":false,\"COOLING_TEMPERATURE_IN_WHOLE_DEGREES\":0,\"COOL_INP\":false,\"COUNT_DOWN_TIME\":\"0:00\",\"CRADLE_PAIRED_TO_REMOTE_SENSOR\":false,\"CRADLE_PAIRED_TO_STAT\":false,\"CURRENT_FLOOR_TEMPERATURE\":127,\"CURRENT_SET_TEMPERATURE\":\"0.0\",\"CURRENT_TEMPERATURE\":\"255.255\",\"DEMAND\":false,\"DEVICE_TYPE\":6,\"ENABLE_BOILER\":false,\"ENABLE_COOLING\":false,\"ENABLE_PUMP\":false,\"ENABLE_VALVE\":false,\"ENABLE_ZONE\":false,\"FAILSAFE_STATE\":false,\"FAIL_SAFE_ENABLED\":false,\"FLOOR_LIMIT\":false,\"FULL/PARTIAL_LOCK_AVAILABLE\":false,\"HEAT/COOL_MODE\":false,\"HEATING\":false,\"HOLD_TEMPERATURE\":0,\"HOLD_TIME\":\"0:00\",\"HOLIDAY\":false,\"HOLIDAY_DAYS\":0,\"HUMIDITY\":0,\"LOCK\":false,\"LOCK_PIN_NUMBER\":\"0000\",\"LOW_BATTERY\":false,\"MAX_TEMPERATURE\":\"255.255\",\"MIN_TEMPERATURE\":\"255.255\",\"MODULATION_LEVEL\":0,\"NEXT_ON_TIME\":\"255 days 255:255\",\"OFFLINE\":false,\"OUPUT_DELAY\":false,\"OUTPUT_DELAY\":0,\"PREHEAT\":false,\"PREHEAT_TIME\":\"255:255\",\"PROGRAM_MODE\":\"24HOURSFIXED\",\"PUMP_DELAY\":false,\"RADIATORS_OR_UNDERFLOOR\":false,\"SENSOR_SELECTION\":\"BUILT_IN_AIR_SENSOR\",\"SET_COUNTDOWN_TIME\":0,\"STANDBY\":false,\"STAT_MODE\":{\"4_HEAT_LEVELS\":true,\"MANUAL_ON\":true,\"TIMECLOCK\":true},\"TEMPERATURE_FORMAT\":false,\"TEMP_HOLD\":false,\"TIMECLOCK_MODE\":false,\"TIMER\":true,\"TIME_CLOCK_OVERIDE_BIT\":true,\"ULTRA_VERSION\":0,\"VERSION_NUMBER\":79,\"WRITE_COUNT\":7,\"ZONE_1PAIRED_TO_MULTILINK\":true,\"ZONE_1_OR_2\":false,\"ZONE_2_PAIRED_TO_MULTILINK\":false,\"device\":\"Plug North\"},"
             + "{\"AWAY\":false,\"COOLING\":false,\"COOLING_ENABLED\":false,\"COOLING_TEMPERATURE_IN_WHOLE_DEGREES\":0,\"COOL_INP\":false,\"COUNT_DOWN_TIME\":\"0:00\",\"CRADLE_PAIRED_TO_REMOTE_SENSOR\":false,\"CRADLE_PAIRED_TO_STAT\":false,\"CURRENT_FLOOR_TEMPERATURE\":127,\"CURRENT_SET_TEMPERATURE\":\"0.0\",\"CURRENT_TEMPERATURE\":\"255.255\",\"DEMAND\":false,\"DEVICE_TYPE\":6,\"ENABLE_BOILER\":false,\"ENABLE_COOLING\":false,\"ENABLE_PUMP\":false,\"ENABLE_VALVE\":false,\"ENABLE_ZONE\":false,\"FAILSAFE_STATE\":false,\"FAIL_SAFE_ENABLED\":false,\"FLOOR_LIMIT\":false,\"FULL/PARTIAL_LOCK_AVAILABLE\":false,\"HEAT/COOL_MODE\":false,\"HEATING\":false,\"HOLD_TEMPERATURE\":1,\"HOLD_TIME\":\"0:00\",\"HOLIDAY\":false,\"HOLIDAY_DAYS\":0,\"HUMIDITY\":0,\"LOCK\":false,\"LOCK_PIN_NUMBER\":\"0000\",\"LOW_BATTERY\":false,\"MAX_TEMPERATURE\":\"255.255\",\"MIN_TEMPERATURE\":\"255.255\",\"MODULATION_LEVEL\":0,\"NEXT_ON_TIME\":\"255 days 255:255\",\"OFFLINE\":false,\"OUPUT_DELAY\":false,\"OUTPUT_DELAY\":0,\"PREHEAT\":false,\"PREHEAT_TIME\":\"255:255\",\"PROGRAM_MODE\":\"24HOURSFIXED\",\"PUMP_DELAY\":false,\"RADIATORS_OR_UNDERFLOOR\":false,\"SENSOR_SELECTION\":\"BUILT_IN_AIR_SENSOR\",\"SET_COUNTDOWN_TIME\":0,\"STANDBY\":false,\"STAT_MODE\":{\"4_HEAT_LEVELS\":true,\"MANUAL_OFF\":true,\"TIMECLOCK\":true},\"TEMPERATURE_FORMAT\":false,\"TEMP_HOLD\":false,\"TIMECLOCK_MODE\":false,\"TIMER\":false,\"TIME_CLOCK_OVERIDE_BIT\":false,\"ULTRA_VERSION\":0,\"VERSION_NUMBER\":79,\"WRITE_COUNT\":28,\"ZONE_1PAIRED_TO_MULTILINK\":true,\"ZONE_1_OR_2\":false,\"ZONE_2_PAIRED_TO_MULTILINK\":false,\"device\":\"Watering System\"}"
             + "]}";
+    //@formatter:on
 
-    public static final String NEOHUB_JSON_TEST_STRING_NEW_OFFLINE_JSON = "{\"devices\":["
+    /*
+     * Test JSON response for an INFO request sent to a hub with older firmware; in
+     * newer firmware versions Heatmiser (wrongly) changed its definition for the
+     * OFFLINE element from "OFFLINE":true/false to "OFFLINE":0/1
+     */
+    //@formatter:off
+    public static final String NEOHUB_JSON_TEST_STRING_INFO_NEW = "{\"devices\":["
             + "{\"AWAY\":false,\"COOLING\":false,\"COOLING_ENABLED\":false,\"COOLING_TEMPERATURE_IN_WHOLE_DEGREES\":23,\"COOL_INP\":false,\"COUNT_DOWN_TIME\":\"0:00\",\"CRADLE_PAIRED_TO_REMOTE_SENSOR\":false,\"CRADLE_PAIRED_TO_STAT\":false,\"CURRENT_FLOOR_TEMPERATURE\":21,\"CURRENT_SET_TEMPERATURE\":\"22.0\",\"CURRENT_TEMPERATURE\":\"24.0\",\"DEMAND\":false,\"DEVICE_TYPE\":12,\"ENABLE_BOILER\":false,\"ENABLE_COOLING\":false,\"ENABLE_PUMP\":false,\"ENABLE_VALVE\":false,\"ENABLE_ZONE\":false,\"FAILSAFE_STATE\":false,\"FAIL_SAFE_ENABLED\":false,\"FLOOR_LIMIT\":false,\"FULL/PARTIAL_LOCK_AVAILABLE\":false,\"HEAT/COOL_MODE\":false,\"HEATING\":false,\"HOLD_TEMPERATURE\":21,\"HOLD_TIME\":\"0:00\",\"HOLIDAY\":false,\"HOLIDAY_DAYS\":0,\"HUMIDITY\":0,\"LOCK\":false,\"LOCK_PIN_NUMBER\":\"0000\",\"LOW_BATTERY\":false,\"MAX_TEMPERATURE\":\"24.0\",\"MIN_TEMPERATURE\":\"21.0\",\"MODULATION_LEVEL\":0,\"NEXT_ON_TIME\":\"3 days 23:00\",\"OFFLINE\":0,\"OUPUT_DELAY\":false,\"OUTPUT_DELAY\":0,\"PREHEAT\":false,\"PREHEAT_TIME\":\"3:24\",\"PROGRAM_MODE\":\"24HOURSFIXED\",\"PUMP_DELAY\":false,\"RADIATORS_OR_UNDERFLOOR\":false,\"SENSOR_SELECTION\":\"BUILT_IN_AND_FLOOR\",\"SET_COUNTDOWN_TIME\":0,\"STANDBY\":false,\"STAT_MODE\":{\"4_HEAT_LEVELS\":true,\"MANUAL_OFF\":true,\"THERMOSTAT\":true},\"TEMPERATURE_FORMAT\":false,\"TEMP_HOLD\":false,\"TIMECLOCK_MODE\":false,\"TIMER\":false,\"TIME_CLOCK_OVERIDE_BIT\":false,\"ULTRA_VERSION\":0,\"VERSION_NUMBER\":24,\"WRITE_COUNT\":0,\"ZONE_1PAIRED_TO_MULTILINK\":true,\"ZONE_1_OR_2\":false,\"ZONE_2_PAIRED_TO_MULTILINK\":false,\"device\":\"Dining Room\"},"
             + "{\"AWAY\":false,\"COOLING\":false,\"COOLING_ENABLED\":false,\"COOLING_TEMPERATURE_IN_WHOLE_DEGREES\":23,\"COOL_INP\":false,\"COUNT_DOWN_TIME\":\"0:00\",\"CRADLE_PAIRED_TO_REMOTE_SENSOR\":false,\"CRADLE_PAIRED_TO_STAT\":false,\"CURRENT_FLOOR_TEMPERATURE\":127,\"CURRENT_SET_TEMPERATURE\":\"22.0\",\"CURRENT_TEMPERATURE\":\"22.9\",\"DEMAND\":false,\"DEVICE_TYPE\":12,\"ENABLE_BOILER\":false,\"ENABLE_COOLING\":false,\"ENABLE_PUMP\":false,\"ENABLE_VALVE\":false,\"ENABLE_ZONE\":false,\"FAILSAFE_STATE\":false,\"FAIL_SAFE_ENABLED\":false,\"FLOOR_LIMIT\":false,\"FULL/PARTIAL_LOCK_AVAILABLE\":false,\"HEAT/COOL_MODE\":false,\"HEATING\":false,\"HOLD_TEMPERATURE\":23,\"HOLD_TIME\":\"0:00\",\"HOLIDAY\":false,\"HOLIDAY_DAYS\":0,\"HUMIDITY\":0,\"LOCK\":false,\"LOCK_PIN_NUMBER\":\"0000\",\"LOW_BATTERY\":false,\"MAX_TEMPERATURE\":\"26.0\",\"MIN_TEMPERATURE\":\"23.0\",\"MODULATION_LEVEL\":0,\"NEXT_ON_TIME\":\"3 days 23:00\",\"OFFLINE\":0,\"OUPUT_DELAY\":false,\"OUTPUT_DELAY\":0,\"PREHEAT\":false,\"PREHEAT_TIME\":\"255:255\",\"PROGRAM_MODE\":\"24HOURSFIXED\",\"PUMP_DELAY\":false,\"RADIATORS_OR_UNDERFLOOR\":false,\"SENSOR_SELECTION\":\"REMOTE_AIR_SENSOR\",\"SET_COUNTDOWN_TIME\":0,\"STANDBY\":false,\"STAT_MODE\":{\"4_HEAT_LEVELS\":true,\"MANUAL_OFF\":true,\"THERMOSTAT\":true},\"TEMPERATURE_FORMAT\":false,\"TEMP_HOLD\":false,\"TIMECLOCK_MODE\":false,\"TIMER\":false,\"TIME_CLOCK_OVERIDE_BIT\":false,\"ULTRA_VERSION\":0,\"VERSION_NUMBER\":24,\"WRITE_COUNT\":0,\"ZONE_1PAIRED_TO_MULTILINK\":true,\"ZONE_1_OR_2\":false,\"ZONE_2_PAIRED_TO_MULTILINK\":false,\"device\":\"Shower Room\"},"
             + "{\"AWAY\":false,\"COOLING\":false,\"COOLING_ENABLED\":false,\"COOLING_TEMPERATURE_IN_WHOLE_DEGREES\":23,\"COOL_INP\":false,\"COUNT_DOWN_TIME\":\"0:00\",\"CRADLE_PAIRED_TO_REMOTE_SENSOR\":false,\"CRADLE_PAIRED_TO_STAT\":false,\"CURRENT_FLOOR_TEMPERATURE\":23,\"CURRENT_SET_TEMPERATURE\":\"22.0\",\"CURRENT_TEMPERATURE\":\"25.7\",\"DEMAND\":false,\"DEVICE_TYPE\":12,\"ENABLE_BOILER\":false,\"ENABLE_COOLING\":false,\"ENABLE_PUMP\":false,\"ENABLE_VALVE\":false,\"ENABLE_ZONE\":false,\"FAILSAFE_STATE\":false,\"FAIL_SAFE_ENABLED\":false,\"FLOOR_LIMIT\":false,\"FULL/PARTIAL_LOCK_AVAILABLE\":false,\"HEAT/COOL_MODE\":false,\"HEATING\":false,\"HOLD_TEMPERATURE\":16,\"HOLD_TIME\":\"0:00\",\"HOLIDAY\":false,\"HOLIDAY_DAYS\":0,\"HUMIDITY\":0,\"LOCK\":false,\"LOCK_PIN_NUMBER\":\"0000\",\"LOW_BATTERY\":false,\"MAX_TEMPERATURE\":\"26.0\",\"MIN_TEMPERATURE\":\"21.0\",\"MODULATION_LEVEL\":0,\"NEXT_ON_TIME\":\"3 days 23:00\",\"OFFLINE\":0,\"OUPUT_DELAY\":false,\"OUTPUT_DELAY\":0,\"PREHEAT\":false,\"PREHEAT_TIME\":\"255:255\",\"PROGRAM_MODE\":\"24HOURSFIXED\",\"PUMP_DELAY\":false,\"RADIATORS_OR_UNDERFLOOR\":false,\"SENSOR_SELECTION\":\"BUILT_IN_AND_FLOOR\",\"SET_COUNTDOWN_TIME\":0,\"STANDBY\":false,\"STAT_MODE\":{\"4_HEAT_LEVELS\":true,\"MANUAL_OFF\":true,\"THERMOSTAT\":true},\"TEMPERATURE_FORMAT\":false,\"TEMP_HOLD\":false,\"TIMECLOCK_MODE\":false,\"TIMER\":false,\"TIME_CLOCK_OVERIDE_BIT\":false,\"ULTRA_VERSION\":0,\"VERSION_NUMBER\":24,\"WRITE_COUNT\":0,\"ZONE_1PAIRED_TO_MULTILINK\":true,\"ZONE_1_OR_2\":false,\"ZONE_2_PAIRED_TO_MULTILINK\":false,\"device\":\"Conservatory\"},"
@@ -58,17 +81,38 @@ public class NeoHubTestData {
             + "{\"AWAY\":false,\"COOLING\":false,\"COOLING_ENABLED\":false,\"COOLING_TEMPERATURE_IN_WHOLE_DEGREES\":23,\"COOL_INP\":false,\"COUNT_DOWN_TIME\":\"0:00\",\"CRADLE_PAIRED_TO_REMOTE_SENSOR\":false,\"CRADLE_PAIRED_TO_STAT\":false,\"CURRENT_FLOOR_TEMPERATURE\":127,\"CURRENT_SET_TEMPERATURE\":\"9.0\",\"CURRENT_TEMPERATURE\":\"19.4\",\"DEMAND\":false,\"DEVICE_TYPE\":12,\"ENABLE_BOILER\":false,\"ENABLE_COOLING\":false,\"ENABLE_PUMP\":false,\"ENABLE_VALVE\":false,\"ENABLE_ZONE\":false,\"FAILSAFE_STATE\":false,\"FAIL_SAFE_ENABLED\":false,\"FLOOR_LIMIT\":false,\"FULL/PARTIAL_LOCK_AVAILABLE\":false,\"HEAT/COOL_MODE\":false,\"HEATING\":false,\"HOLD_TEMPERATURE\":9,\"HOLD_TIME\":\"0:00\",\"HOLIDAY\":false,\"HOLIDAY_DAYS\":0,\"HUMIDITY\":0,\"LOCK\":false,\"LOCK_PIN_NUMBER\":\"0000\",\"LOW_BATTERY\":false,\"MAX_TEMPERATURE\":\"22.0\",\"MIN_TEMPERATURE\":\"15.0\",\"MODULATION_LEVEL\":0,\"NEXT_ON_TIME\":\"4 days 08:00\",\"OFFLINE\":0,\"OUPUT_DELAY\":false,\"OUTPUT_DELAY\":5,\"PREHEAT\":false,\"PREHEAT_TIME\":\"255:255\",\"PROGRAM_MODE\":\"24HOURSFIXED\",\"PUMP_DELAY\":false,\"RADIATORS_OR_UNDERFLOOR\":false,\"SENSOR_SELECTION\":\"BUILT_IN_AIR_SENSOR\",\"SET_COUNTDOWN_TIME\":0,\"STANDBY\":false,\"STAT_MODE\":{\"4_HEAT_LEVELS\":true,\"MANUAL_OFF\":true,\"THERMOSTAT\":true},\"TEMPERATURE_FORMAT\":false,\"TEMP_HOLD\":false,\"TIMECLOCK_MODE\":false,\"TIMER\":false,\"TIME_CLOCK_OVERIDE_BIT\":false,\"ULTRA_VERSION\":0,\"VERSION_NUMBER\":24,\"WRITE_COUNT\":1,\"ZONE_1PAIRED_TO_MULTILINK\":true,\"ZONE_1_OR_2\":false,\"ZONE_2_PAIRED_TO_MULTILINK\":false,\"device\":\"Shed Heating\"},"
             + "{\"AWAY\":false,\"COOLING\":false,\"COOLING_ENABLED\":false,\"COOLING_TEMPERATURE_IN_WHOLE_DEGREES\":0,\"COOL_INP\":false,\"COUNT_DOWN_TIME\":\"0:00\",\"CRADLE_PAIRED_TO_REMOTE_SENSOR\":false,\"CRADLE_PAIRED_TO_STAT\":false,\"CURRENT_FLOOR_TEMPERATURE\":127,\"CURRENT_SET_TEMPERATURE\":\"0.0\",\"CURRENT_TEMPERATURE\":\"255.255\",\"DEMAND\":false,\"DEVICE_TYPE\":6,\"ENABLE_BOILER\":false,\"ENABLE_COOLING\":false,\"ENABLE_PUMP\":false,\"ENABLE_VALVE\":false,\"ENABLE_ZONE\":false,\"FAILSAFE_STATE\":false,\"FAIL_SAFE_ENABLED\":false,\"FLOOR_LIMIT\":false,\"FULL/PARTIAL_LOCK_AVAILABLE\":false,\"HEAT/COOL_MODE\":false,\"HEATING\":false,\"HOLD_TEMPERATURE\":1,\"HOLD_TIME\":\"0:00\",\"HOLIDAY\":false,\"HOLIDAY_DAYS\":0,\"HUMIDITY\":0,\"LOCK\":false,\"LOCK_PIN_NUMBER\":\"0000\",\"LOW_BATTERY\":false,\"MAX_TEMPERATURE\":\"255.255\",\"MIN_TEMPERATURE\":\"255.255\",\"MODULATION_LEVEL\":0,\"NEXT_ON_TIME\":\"255 days 255:255\",\"OFFLINE\":0,\"OUPUT_DELAY\":false,\"OUTPUT_DELAY\":0,\"PREHEAT\":false,\"PREHEAT_TIME\":\"255:255\",\"PROGRAM_MODE\":\"24HOURSFIXED\",\"PUMP_DELAY\":false,\"RADIATORS_OR_UNDERFLOOR\":false,\"SENSOR_SELECTION\":\"BUILT_IN_AIR_SENSOR\",\"SET_COUNTDOWN_TIME\":0,\"STANDBY\":false,\"STAT_MODE\":{\"4_HEAT_LEVELS\":true,\"MANUAL_ON\":true,\"TIMECLOCK\":true},\"TEMPERATURE_FORMAT\":false,\"TEMP_HOLD\":false,\"TIMECLOCK_MODE\":false,\"TIMER\":false,\"TIME_CLOCK_OVERIDE_BIT\":false,\"ULTRA_VERSION\":0,\"VERSION_NUMBER\":79,\"WRITE_COUNT\":11,\"ZONE_1PAIRED_TO_MULTILINK\":true,\"ZONE_1_OR_2\":false,\"ZONE_2_PAIRED_TO_MULTILINK\":false,\"device\":\"Living Room South\"},"
             + "{\"AWAY\":false,\"COOLING\":false,\"COOLING_ENABLED\":false,\"COOLING_TEMPERATURE_IN_WHOLE_DEGREES\":0,\"COOL_INP\":false,\"COUNT_DOWN_TIME\":\"0:00\",\"CRADLE_PAIRED_TO_REMOTE_SENSOR\":false,\"CRADLE_PAIRED_TO_STAT\":false,\"CURRENT_FLOOR_TEMPERATURE\":127,\"CURRENT_SET_TEMPERATURE\":\"0.0\",\"CURRENT_TEMPERATURE\":\"255.255\",\"DEMAND\":false,\"DEVICE_TYPE\":6,\"ENABLE_BOILER\":false,\"ENABLE_COOLING\":false,\"ENABLE_PUMP\":false,\"ENABLE_VALVE\":false,\"ENABLE_ZONE\":false,\"FAILSAFE_STATE\":false,\"FAIL_SAFE_ENABLED\":false,\"FLOOR_LIMIT\":false,\"FULL/PARTIAL_LOCK_AVAILABLE\":false,\"HEAT/COOL_MODE\":false,\"HEATING\":false,\"HOLD_TEMPERATURE\":0,\"HOLD_TIME\":\"0:00\",\"HOLIDAY\":false,\"HOLIDAY_DAYS\":0,\"HUMIDITY\":0,\"LOCK\":false,\"LOCK_PIN_NUMBER\":\"0000\",\"LOW_BATTERY\":false,\"MAX_TEMPERATURE\":\"255.255\",\"MIN_TEMPERATURE\":\"255.255\",\"MODULATION_LEVEL\":0,\"NEXT_ON_TIME\":\"255 days 255:255\",\"OFFLINE\":0,\"OUPUT_DELAY\":false,\"OUTPUT_DELAY\":0,\"PREHEAT\":false,\"PREHEAT_TIME\":\"255:255\",\"PROGRAM_MODE\":\"24HOURSFIXED\",\"PUMP_DELAY\":false,\"RADIATORS_OR_UNDERFLOOR\":false,\"SENSOR_SELECTION\":\"BUILT_IN_AIR_SENSOR\",\"SET_COUNTDOWN_TIME\":0,\"STANDBY\":false,\"STAT_MODE\":{\"4_HEAT_LEVELS\":true,\"MANUAL_ON\":true,\"TIMECLOCK\":true},\"TEMPERATURE_FORMAT\":false,\"TEMP_HOLD\":false,\"TIMECLOCK_MODE\":false,\"TIMER\":true,\"TIME_CLOCK_OVERIDE_BIT\":true,\"ULTRA_VERSION\":0,\"VERSION_NUMBER\":79,\"WRITE_COUNT\":192,\"ZONE_1PAIRED_TO_MULTILINK\":true,\"ZONE_1_OR_2\":false,\"ZONE_2_PAIRED_TO_MULTILINK\":false,\"device\":\"Living Room North\"},"
-            + "{\"AWAY\":false,\"COOLING\":false,\"COOLING_ENABLED\":false,\"COOLING_TEMPERATURE_IN_WHOLE_DEGREES\":0,\"COOL_INP\":false,\"COUNT_DOWN_TIME\":\"0:00\",\"CRADLE_PAIRED_TO_REMOTE_SENSOR\":false,\"CRADLE_PAIRED_TO_STAT\":false,\"CURRENT_FLOOR_TEMPERATURE\":127,\"CURRENT_SET_TEMPERATURE\":\"0.0\",\"CURRENT_TEMPERATURE\":\"255.255\",\"DEMAND\":false,\"DEVICE_TYPE\":6,\"ENABLE_BOILER\":false,\"ENABLE_COOLING\":false,\"ENABLE_PUMP\":false,\"ENABLE_VALVE\":false,\"ENABLE_ZONE\":false,\"FAILSAFE_STATE\":false,\"FAIL_SAFE_ENABLED\":false,\"FLOOR_LIMIT\":false,\"FULL/PARTIAL_LOCK_AVAILABLE\":false,\"HEAT/COOL_MODE\":false,\"HEATING\":false,\"HOLD_TEMPERATURE\":1,\"HOLD_TIME\":\"0:00\",\"HOLIDAY\":false,\"HOLIDAY_DAYS\":0,\"HUMIDITY\":0,\"LOCK\":false,\"LOCK_PIN_NUMBER\":\"0000\",\"LOW_BATTERY\":false,\"MAX_TEMPERATURE\":\"255.255\",\"MIN_TEMPERATURE\":\"255.255\",\"MODULATION_LEVEL\":0,\"NEXT_ON_TIME\":\"255 days 255:255\",\"OFFLINE\":0,\"OUPUT_DELAY\":false,\"OUTPUT_DELAY\":0,\"PREHEAT\":false,\"PREHEAT_TIME\":\"255:255\",\"PROGRAM_MODE\":\"24HOURSFIXED\",\"PUMP_DELAY\":false,\"RADIATORS_OR_UNDERFLOOR\":false,\"SENSOR_SELECTION\":\"BUILT_IN_AIR_SENSOR\",\"SET_COUNTDOWN_TIME\":0,\"STANDBY\":false,\"STAT_MODE\":{\"4_HEAT_LEVELS\":true,\"MANUAL_OFF\":true,\"TIMECLOCK\":true},\"TEMPERATURE_FORMAT\":false,\"TEMP_HOLD\":false,\"TIMECLOCK_MODE\":false,\"TIMER\":false,\"TIME_CLOCK_OVERIDE_BIT\":false,\"ULTRA_VERSION\":0,\"VERSION_NUMBER\":79,\"WRITE_COUNT\":57,\"ZONE_1PAIRED_TO_MULTILINK\":true,\"ZONE_1_OR_2\":false,\"ZONE_2_PAIRED_TO_MULTILINK\":false,\"device\":\"Green Wall Watering\"}"
+            + "{\"AWAY\":false,\"COOLING\":false,\"COOLING_ENABLED\":false,\"COOLING_TEMPERATURE_IN_WHOLE_DEGREES\":0,\"COOL_INP\":false,\"COUNT_DOWN_TIME\":\"0:00\",\"CRADLE_PAIRED_TO_REMOTE_SENSOR\":false,\"CRADLE_PAIRED_TO_STAT\":false,\"CURRENT_FLOOR_TEMPERATURE\":127,\"CURRENT_SET_TEMPERATURE\":\"0.0\",\"CURRENT_TEMPERATURE\":\"255.255\",\"DEMAND\":false,\"DEVICE_TYPE\":6,\"ENABLE_BOILER\":false,\"ENABLE_COOLING\":false,\"ENABLE_PUMP\":false,\"ENABLE_VALVE\":false,\"ENABLE_ZONE\":false,\"FAILSAFE_STATE\":false,\"FAIL_SAFE_ENABLED\":false,\"FLOOR_LIMIT\":false,\"FULL/PARTIAL_LOCK_AVAILABLE\":false,\"HEAT/COOL_MODE\":false,\"HEATING\":false,\"HOLD_TEMPERATURE\":1,\"HOLD_TIME\":\"0:00\",\"HOLIDAY\":false,\"HOLIDAY_DAYS\":0,\"HUMIDITY\":0,\"LOCK\":false,\"LOCK_PIN_NUMBER\":\"0000\",\"LOW_BATTERY\":false,\"MAX_TEMPERATURE\":\"255.255\",\"MIN_TEMPERATURE\":\"255.255\",\"MODULATION_LEVEL\":0,\"NEXT_ON_TIME\":\"255 days 255:255\",\"OFFLINE\":0,\"OUPUT_DELAY\":false,\"OUTPUT_DELAY\":0,\"PREHEAT\":false,\"PREHEAT_TIME\":\"255:255\",\"PROGRAM_MODE\":\"24HOURSFIXED\",\"PUMP_DELAY\":false,\"RADIATORS_OR_UNDERFLOOR\":false,\"SENSOR_SELECTION\":\"BUILT_IN_AIR_SENSOR\",\"SET_COUNTDOWN_TIME\":0,\"STANDBY\":false,\"STAT_MODE\":{\"4_HEAT_LEVELS\":true,\"MANUAL_OFF\":true,\"TIMECLOCK\":true},\"TEMPERATURE_FORMAT\":false,\"TEMP_HOLD\":false,\"TIMECLOCK_MODE\":false,\"TIMER\":false,\"TIME_CLOCK_OVERIDE_BIT\":false,\"ULTRA_VERSION\":0,\"VERSION_NUMBER\":79,\"WRITE_COUNT\":57,\"ZONE_1PAIRED_TO_MULTILINK\":true,\"ZONE_1_OR_2\":false,\"ZONE_2_PAIRED_TO_MULTILINK\":false,\"device\":\"Green Wall Watering\"},"
+            + "{\"AWAY\":false,\"COOLING\":false,\"COOLING_ENABLED\":false,\"COOLING_TEMPERATURE_IN_WHOLE_DEGREES\":0,\"COOL_INP\":false,\"COUNT_DOWN_TIME\":\"0:00\",\"CRADLE_PAIRED_TO_REMOTE_SENSOR\":false,\"CRADLE_PAIRED_TO_STAT\":false,\"CURRENT_FLOOR_TEMPERATURE\":127,\"CURRENT_SET_TEMPERATURE\":\"0.0\",\"CURRENT_TEMPERATURE\":\"255.255\",\"DEMAND\":false,\"DEVICE_TYPE\":10,\"ENABLE_BOILER\":false,\"ENABLE_COOLING\":false,\"ENABLE_PUMP\":false,\"ENABLE_VALVE\":false,\"ENABLE_ZONE\":false,\"FAILSAFE_STATE\":false,\"FAIL_SAFE_ENABLED\":false,\"FLOOR_LIMIT\":false,\"FULL/PARTIAL_LOCK_AVAILABLE\":false,\"HEAT/COOL_MODE\":false,\"HEATING\":false,\"HOLD_TEMPERATURE\":0,\"HOLD_TIME\":\"0:00\",\"HOLIDAY\":false,\"HOLIDAY_DAYS\":0,\"HUMIDITY\":0,\"LOCK\":false,\"LOCK_PIN_NUMBER\":\"0000\",\"LOW_BATTERY\":false,\"MAX_TEMPERATURE\":\"255.255\",\"MIN_TEMPERATURE\":\"255.255\",\"MODULATION_LEVEL\":0,\"NEXT_ON_TIME\":\"255 days 255:255\",\"OFFLINE\":0,\"OUPUT_DELAY\":false,\"OUTPUT_DELAY\":0,\"PREHEAT\":false,\"PREHEAT_TIME\":\"255:255\",\"PROGRAM_MODE\":\"5DAY/2DAY\",\"PUMP_DELAY\":false,\"RADIATORS_OR_UNDERFLOOR\":false,\"SENSOR_SELECTION\":\"BUILT_IN_AIR_SENSOR\",\"SET_COUNTDOWN_TIME\":0,\"STANDBY\":false,\"STAT_MODE\":{\"4_HEAT_LEVELS\":true,\"MANUAL_OFF\":true,\"TIMECLOCK\":true},\"TEMPERATURE_FORMAT\":false,\"TEMP_HOLD\":false,\"TIMECLOCK_MODE\":false,\"TIMER\":false,\"TIME_CLOCK_OVERIDE_BIT\":false,\"ULTRA_VERSION\":0,\"VERSION_NUMBER\":69,\"WRITE_COUNT\":0,\"ZONE_1PAIRED_TO_MULTILINK\":true,\"ZONE_1_OR_2\":false,\"ZONE_2_PAIRED_TO_MULTILINK\":false,\"device\":\"repeaternode54473\"}"
             + "]}";
+    //@formatter:on
 
+    /*
+     * Test JSON response for a READ_DCB request with a "CORF":C (Celsius) response
+     */
     public static final String NEOHUB_JSON_TEST_STRING_READ_DCB_CELSIUS = "{\"AIR_ALT_DELAY\":60,\"AIR_ALT_DELAY_END\":6,\"AIR_ALT_DELAY_START\":23,\"ALT_TIMER_FORMAT\":1,\"AWAY\":false,\"BOOTTIME\":1587842223,\"CLOSE_DELAY\":null,\"COOLBOX\":\"heating\",\"COOLBOX_PRESENT\":0,\"CORF\":\"C\",\"DATE\":\"Apr 30\",\"DEVICE_ID\":\"NeoHub\",\"DSTAUTO\":true,\"DSTON\":true,\"EXTENDED_HISTORY\":\"off\",\"Firmware version\":2134,\"GDEVLIST\":[1,2,3,4,5,6,7,8,9,10],\"GLOBAL_SYSTEM_TYPE\":\"HeatOnly\",\"HEATING_LEVELS\":4,\"HEATORCOOL\":\"HEAT\",\"Homekit\":true,\"LAST_RECONNECT\":191959,\"LAST_RECONNECT_TIME\":1588034182,\"NTP\":\"Running\",\"OPEN_DELAY\":null,\"PARTITION COUNT\":\"4\",\"PROGFORMAT\":1,\"SET_GLOBAL_HC_MODE\":\"heating\",\"TIME\":\"16:24:35\",\"TIMEZONE\":0.0,\"UPTIME\":418052,\"ZIGBEE_CHANNEL\":\"15\"}";
 
+    /*
+     * Test JSON response for a READ_DCB request with a "CORF":F (Fahrenheit)
+     * response
+     */
     public static final String NEOHUB_JSON_TEST_STRING_READ_DCB_FAHRENHEIT = "{\"AIR_ALT_DELAY\":60,\"AIR_ALT_DELAY_END\":6,\"AIR_ALT_DELAY_START\":23,\"ALT_TIMER_FORMAT\":1,\"AWAY\":false,\"BOOTTIME\":1587842223,\"CLOSE_DELAY\":null,\"COOLBOX\":\"heating\",\"COOLBOX_PRESENT\":0,\"CORF\":\"F\",\"DATE\":\"Apr 30\",\"DEVICE_ID\":\"NeoHub\",\"DSTAUTO\":true,\"DSTON\":true,\"EXTENDED_HISTORY\":\"off\",\"Firmware version\":2134,\"GDEVLIST\":[1,2,3,4,5,6,7,8,9,10],\"GLOBAL_SYSTEM_TYPE\":\"HeatOnly\",\"HEATING_LEVELS\":4,\"HEATORCOOL\":\"HEAT\",\"Homekit\":true,\"LAST_RECONNECT\":191959,\"LAST_RECONNECT_TIME\":1588034182,\"NTP\":\"Running\",\"OPEN_DELAY\":null,\"PARTITION COUNT\":\"4\",\"PROGFORMAT\":1,\"SET_GLOBAL_HC_MODE\":\"heating\",\"TIME\":\"16:24:35\",\"TIMEZONE\":0.0,\"UPTIME\":418052,\"ZIGBEE_CHANNEL\":\"15\"}";
 
+    /*
+     * Test JSON response for a READ_DCB request without a "CORF" response
+     */
     public static final String NEOHUB_JSON_TEST_STRING_READ_DCB_CORF_MISSING = "{\"AIR_ALT_DELAY\":60,\"AIR_ALT_DELAY_END\":6,\"AIR_ALT_DELAY_START\":23,\"ALT_TIMER_FORMAT\":1,\"AWAY\":false,\"BOOTTIME\":1587842223,\"CLOSE_DELAY\":null,\"COOLBOX\":\"heating\",\"COOLBOX_PRESENT\":0,\"DATE\":\"Apr 30\",\"DEVICE_ID\":\"NeoHub\",\"DSTAUTO\":true,\"DSTON\":true,\"EXTENDED_HISTORY\":\"off\",\"Firmware version\":2134,\"GDEVLIST\":[1,2,3,4,5,6,7,8,9,10],\"GLOBAL_SYSTEM_TYPE\":\"HeatOnly\",\"HEATING_LEVELS\":4,\"HEATORCOOL\":\"HEAT\",\"Homekit\":true,\"LAST_RECONNECT\":191959,\"LAST_RECONNECT_TIME\":1588034182,\"NTP\":\"Running\",\"OPEN_DELAY\":null,\"PARTITION COUNT\":\"4\",\"PROGFORMAT\":1,\"SET_GLOBAL_HC_MODE\":\"heating\",\"TIME\":\"16:24:35\",\"TIMEZONE\":0.0,\"UPTIME\":418052,\"ZIGBEE_CHANNEL\":\"15\"}";
 
+    /*
+     * Test JSON response for a READ_DCB request with an empty string "CORF"
+     * response
+     */
     public static final String NEOHUB_JSON_TEST_STRING_READ_DCB_CORF_EMPTY = "{\"AIR_ALT_DELAY\":60,\"AIR_ALT_DELAY_END\":6,\"AIR_ALT_DELAY_START\":23,\"ALT_TIMER_FORMAT\":1,\"AWAY\":false,\"BOOTTIME\":1587842223,\"CLOSE_DELAY\":null,\"COOLBOX\":\"heating\",\"COOLBOX_PRESENT\":0,\"CORF\":\"\",\"DATE\":\"Apr 30\",\"DEVICE_ID\":\"NeoHub\",\"DSTAUTO\":true,\"DSTON\":true,\"EXTENDED_HISTORY\":\"off\",\"Firmware version\":2134,\"GDEVLIST\":[1,2,3,4,5,6,7,8,9,10],\"GLOBAL_SYSTEM_TYPE\":\"HeatOnly\",\"HEATING_LEVELS\":4,\"HEATORCOOL\":\"HEAT\",\"Homekit\":true,\"LAST_RECONNECT\":191959,\"LAST_RECONNECT_TIME\":1588034182,\"NTP\":\"Running\",\"OPEN_DELAY\":null,\"PARTITION COUNT\":\"4\",\"PROGFORMAT\":1,\"SET_GLOBAL_HC_MODE\":\"heating\",\"TIME\":\"16:24:35\",\"TIMEZONE\":0.0,\"UPTIME\":418052,\"ZIGBEE_CHANNEL\":\"15\"}";
 
+    /*
+     * Test JSON response for an INFO request sent to a hub with older firmware, and
+     * having a closed door contact sensor, and a temperature sensor
+     */
+    //@formatter:off
     public static final String NEOHUB_JSON_TEST_STRING_INFO_SENSORS_CLOSED = "{\"devices\":["
             + "{\"AWAY\":false,\"COOLING\":false,\"COOLING_ENABLED\":false,\"COOLING_TEMPERATURE_IN_WHOLE_DEGREES\":0,\"COOL_INP\":false,\"COUNT_DOWN_TIME\":\"0:00\",\"CRADLE_PAIRED_TO_REMOTE_SENSOR\":false,\"CRADLE_PAIRED_TO_STAT\":false,\"CURRENT_FLOOR_TEMPERATURE\":20,\"CURRENT_SET_TEMPERATURE\":\"20.0\",\"CURRENT_TEMPERATURE\":\"19.8\",\"DEMAND\":false,\"DEVICE_TYPE\":1,\"ENABLE_BOILER\":false,\"ENABLE_COOLING\":false,\"ENABLE_PUMP\":false,\"ENABLE_VALVE\":false,\"ENABLE_ZONE\":false,\"FAILSAFE_STATE\":false,\"FAIL_SAFE_ENABLED\":false,\"FLOOR_LIMIT\":false,\"FULL/PARTIAL_LOCK_AVAILABLE\":false,\"HEAT/COOL_MODE\":false,\"HEATING\":false,\"HOLD_TEMPERATURE\":12,\"HOLD_TIME\":\"0:00\",\"HOLIDAY\":false,\"HOLIDAY_DAYS\":0,\"HUMIDITY\":0,\"LOCK\":false,\"LOCK_PIN_NUMBER\":\"0000\",\"LOW_BATTERY\":false,\"MAX_TEMPERATURE\":\"20.0\",\"MIN_TEMPERATURE\":\"19.0\",\"MODULATION_LEVEL\":0,\"NEXT_ON_TIME\":\"5 days 19:00\",\"OFFLINE\":0,\"OUPUT_DELAY\":false,\"OUTPUT_DELAY\":0,\"PREHEAT\":false,\"PREHEAT_TIME\":\"5:13\",\"PROGRAM_MODE\":\"5DAY/2DAY\",\"PUMP_DELAY\":false,\"RADIATORS_OR_UNDERFLOOR\":false,\"SENSOR_SELECTION\":\"FLOOR_SENSOR_ONLY\",\"SET_COUNTDOWN_TIME\":0,\"STANDBY\":false,\"STAT_MODE\":{\"4_HEAT_LEVELS\":true,\"MANUAL_OFF\":true,\"THERMOSTAT\":true},\"TEMPERATURE_FORMAT\":false,\"TEMP_HOLD\":false,\"TIMECLOCK_MODE\":false,\"TIMER\":false,\"TIME_CLOCK_OVERIDE_BIT\":false,\"ULTRA_VERSION\":0,\"VERSION_NUMBER\":108,\"WRITE_COUNT\":89,\"ZONE_1PAIRED_TO_MULTILINK\":true,\"ZONE_1_OR_2\":false,\"ZONE_2_PAIRED_TO_MULTILINK\":false,\"device\":\"Living Room Floor\"},"
             + "{\"AWAY\":false,\"COOLING\":false,\"COOLING_ENABLED\":false,\"COOLING_TEMPERATURE_IN_WHOLE_DEGREES\":0,\"COOL_INP\":false,\"COUNT_DOWN_TIME\":\"0:00\",\"CRADLE_PAIRED_TO_REMOTE_SENSOR\":false,\"CRADLE_PAIRED_TO_STAT\":false,\"CURRENT_FLOOR_TEMPERATURE\":0,\"CURRENT_SET_TEMPERATURE\":\"0.0\",\"CURRENT_TEMPERATURE\":\"19.5\",\"DEMAND\":false,\"DEVICE_TYPE\":14,\"ENABLE_BOILER\":false,\"ENABLE_COOLING\":false,\"ENABLE_PUMP\":false,\"ENABLE_VALVE\":false,\"ENABLE_ZONE\":false,\"FAILSAFE_STATE\":false,\"FAIL_SAFE_ENABLED\":false,\"FLOOR_LIMIT\":false,\"FULL/PARTIAL_LOCK_AVAILABLE\":false,\"HEAT/COOL_MODE\":false,\"HEATING\":false,\"HOLD_TEMPERATURE\":0,\"HOLD_TIME\":\"0:00\",\"HOLIDAY\":false,\"HOLIDAY_DAYS\":0,\"HUMIDITY\":0,\"LOCK\":false,\"LOCK_PIN_NUMBER\":\"0000\",\"LOW_BATTERY\":false,\"MAX_TEMPERATURE\":\"0.0\",\"MIN_TEMPERATURE\":\"0.0\",\"MODULATION_LEVEL\":0,\"NEXT_ON_TIME\":\"0 days 00:00\",\"OFFLINE\":0,\"OUPUT_DELAY\":false,\"OUTPUT_DELAY\":0,\"PREHEAT\":false,\"PREHEAT_TIME\":\"0:00\",\"PROGRAM_MODE\":\"NONPROGRAMMABLE\",\"PUMP_DELAY\":false,\"RADIATORS_OR_UNDERFLOOR\":false,\"SENSOR_SELECTION\":\"BUILT_IN_AIR_SENSOR\",\"SET_COUNTDOWN_TIME\":0,\"STANDBY\":false,\"STAT_MODE\":{\"4_HEAT_LEVELS\":true,\"MANUAL_OFF\":true,\"THERMOSTAT\":true},\"TEMPERATURE_FORMAT\":false,\"TEMP_HOLD\":false,\"TIMECLOCK_MODE\":false,\"TIMER\":false,\"TIME_CLOCK_OVERIDE_BIT\":false,\"ULTRA_VERSION\":0,\"VERSION_NUMBER\":0,\"WRITE_COUNT\":0,\"ZONE_1PAIRED_TO_MULTILINK\":false,\"ZONE_1_OR_2\":false,\"ZONE_2_PAIRED_TO_MULTILINK\":false,\"device\":\"Master Bedroom\"},"
@@ -78,7 +122,13 @@ public class NeoHubTestData {
             + "{\"AWAY\":false,\"COOLING\":false,\"COOLING_ENABLED\":false,\"COOLING_TEMPERATURE_IN_WHOLE_DEGREES\":0,\"COOL_INP\":false,\"COUNT_DOWN_TIME\":\"0:00\",\"CRADLE_PAIRED_TO_REMOTE_SENSOR\":false,\"CRADLE_PAIRED_TO_STAT\":false,\"CURRENT_FLOOR_TEMPERATURE\":0,\"CURRENT_SET_TEMPERATURE\":\"0.0\",\"CURRENT_TEMPERATURE\":\"0.0\",\"DEMAND\":false,\"DEVICE_TYPE\":5,\"ENABLE_BOILER\":false,\"ENABLE_COOLING\":false,\"ENABLE_PUMP\":false,\"ENABLE_VALVE\":false,\"ENABLE_ZONE\":false,\"FAILSAFE_STATE\":false,\"FAIL_SAFE_ENABLED\":false,\"FLOOR_LIMIT\":false,\"FULL/PARTIAL_LOCK_AVAILABLE\":false,\"HEAT/COOL_MODE\":false,\"HEATING\":false,\"HOLD_TEMPERATURE\":0,\"HOLD_TIME\":\"0:00\",\"HOLIDAY\":false,\"HOLIDAY_DAYS\":0,\"HUMIDITY\":0,\"LOCK\":false,\"LOCK_PIN_NUMBER\":\"0000\",\"LOW_BATTERY\":false,\"MAX_TEMPERATURE\":\"0.0\",\"MIN_TEMPERATURE\":\"0.0\",\"MODULATION_LEVEL\":0,\"NEXT_ON_TIME\":\"0 days 00:00\",\"OFFLINE\":0,\"OUPUT_DELAY\":false,\"OUTPUT_DELAY\":0,\"PREHEAT\":false,\"PREHEAT_TIME\":\"0:00\",\"PROGRAM_MODE\":\"NONPROGRAMMABLE\",\"PUMP_DELAY\":false,\"RADIATORS_OR_UNDERFLOOR\":false,\"SENSOR_SELECTION\":\"BUILT_IN_AIR_SENSOR\",\"SET_COUNTDOWN_TIME\":0,\"STANDBY\":false,\"STAT_MODE\":{\"4_HEAT_LEVELS\":true,\"MANUAL_OFF\":true,\"TIMECLOCK\":true},\"TEMPERATURE_FORMAT\":false,\"TEMP_HOLD\":false,\"TIMECLOCK_MODE\":false,\"TIMER\":false,\"TIME_CLOCK_OVERIDE_BIT\":false,\"ULTRA_VERSION\":0,\"VERSION_NUMBER\":0,\"WRITE_COUNT\":0,\"ZONE_1PAIRED_TO_MULTILINK\":false,\"ZONE_1_OR_2\":false,\"ZONE_2_PAIRED_TO_MULTILINK\":false,\"device\":\"Back Door\"},"
             + "{\"AWAY\":false,\"COOLING\":false,\"COOLING_ENABLED\":false,\"COOLING_TEMPERATURE_IN_WHOLE_DEGREES\":0,\"COOL_INP\":false,\"COUNT_DOWN_TIME\":\"0:00\",\"CRADLE_PAIRED_TO_REMOTE_SENSOR\":false,\"CRADLE_PAIRED_TO_STAT\":false,\"CURRENT_FLOOR_TEMPERATURE\":0,\"CURRENT_SET_TEMPERATURE\":\"0.0\",\"CURRENT_TEMPERATURE\":\"0.0\",\"DEMAND\":false,\"DEVICE_TYPE\":5,\"ENABLE_BOILER\":false,\"ENABLE_COOLING\":false,\"ENABLE_PUMP\":false,\"ENABLE_VALVE\":false,\"ENABLE_ZONE\":false,\"FAILSAFE_STATE\":false,\"FAIL_SAFE_ENABLED\":false,\"FLOOR_LIMIT\":false,\"FULL/PARTIAL_LOCK_AVAILABLE\":false,\"HEAT/COOL_MODE\":false,\"HEATING\":false,\"HOLD_TEMPERATURE\":0,\"HOLD_TIME\":\"0:00\",\"HOLIDAY\":false,\"HOLIDAY_DAYS\":0,\"HUMIDITY\":0,\"LOCK\":false,\"LOCK_PIN_NUMBER\":\"0000\",\"LOW_BATTERY\":false,\"MAX_TEMPERATURE\":\"0.0\",\"MIN_TEMPERATURE\":\"0.0\",\"MODULATION_LEVEL\":0,\"NEXT_ON_TIME\":\"0 days 00:00\",\"OFFLINE\":0,\"OUPUT_DELAY\":false,\"OUTPUT_DELAY\":0,\"PREHEAT\":false,\"PREHEAT_TIME\":\"0:00\",\"PROGRAM_MODE\":\"NONPROGRAMMABLE\",\"PUMP_DELAY\":false,\"RADIATORS_OR_UNDERFLOOR\":false,\"SENSOR_SELECTION\":\"BUILT_IN_AIR_SENSOR\",\"SET_COUNTDOWN_TIME\":0,\"STANDBY\":false,\"STAT_MODE\":{\"4_HEAT_LEVELS\":true,\"MANUAL_OFF\":true,\"TIMECLOCK\":true},\"TEMPERATURE_FORMAT\":false,\"TEMP_HOLD\":false,\"TIMECLOCK_MODE\":false,\"TIMER\":false,\"TIME_CLOCK_OVERIDE_BIT\":false,\"ULTRA_VERSION\":0,\"VERSION_NUMBER\":0,\"WRITE_COUNT\":0,\"ZONE_1PAIRED_TO_MULTILINK\":false,\"ZONE_1_OR_2\":false,\"ZONE_2_PAIRED_TO_MULTILINK\":false,\"device\":\"Nursery Window\"}"
             + "]}";
+    //@formatter:on
 
+    /*
+     * Test JSON response for an INFO request sent to a hub with older firmware, and
+     * having an open door contact sensor
+     */
+    //@formatter:off
     public static final String NEOHUB_JSON_TEST_STRING_INFO_SENSORS_OPEN = "{\"devices\":["
             + "{\"AWAY\":false,\"COOLING\":false,\"COOLING_ENABLED\":false,\"COOLING_TEMPERATURE_IN_WHOLE_DEGREES\":0,\"COOL_INP\":false,\"COUNT_DOWN_TIME\":\"0:00\",\"CRADLE_PAIRED_TO_REMOTE_SENSOR\":false,\"CRADLE_PAIRED_TO_STAT\":false,\"CURRENT_FLOOR_TEMPERATURE\":20,\"CURRENT_SET_TEMPERATURE\":\"7.0\",\"CURRENT_TEMPERATURE\":\"19.8\",\"DEMAND\":false,\"DEVICE_TYPE\":1,\"ENABLE_BOILER\":false,\"ENABLE_COOLING\":false,\"ENABLE_PUMP\":false,\"ENABLE_VALVE\":false,\"ENABLE_ZONE\":false,\"FAILSAFE_STATE\":false,\"FAIL_SAFE_ENABLED\":false,\"FLOOR_LIMIT\":false,\"FULL/PARTIAL_LOCK_AVAILABLE\":false,\"HEAT/COOL_MODE\":false,\"HEATING\":false,\"HOLD_TEMPERATURE\":12,\"HOLD_TIME\":\"0:00\",\"HOLIDAY\":false,\"HOLIDAY_DAYS\":0,\"HUMIDITY\":0,\"LOCK\":false,\"LOCK_PIN_NUMBER\":\"0000\",\"LOW_BATTERY\":false,\"MAX_TEMPERATURE\":\"20.0\",\"MIN_TEMPERATURE\":\"19.0\",\"MODULATION_LEVEL\":0,\"NEXT_ON_TIME\":\"255 days 255:255\",\"OFFLINE\":0,\"OUPUT_DELAY\":false,\"OUTPUT_DELAY\":0,\"PREHEAT\":false,\"PREHEAT_TIME\":\"5:13\",\"PROGRAM_MODE\":\"5DAY/2DAY\",\"PUMP_DELAY\":false,\"RADIATORS_OR_UNDERFLOOR\":false,\"SENSOR_SELECTION\":\"FLOOR_SENSOR_ONLY\",\"SET_COUNTDOWN_TIME\":0,\"STANDBY\":true,\"STAT_MODE\":{\"4_HEAT_LEVELS\":true,\"MANUAL_OFF\":true,\"THERMOSTAT\":true},\"TEMPERATURE_FORMAT\":false,\"TEMP_HOLD\":false,\"TIMECLOCK_MODE\":false,\"TIMER\":false,\"TIME_CLOCK_OVERIDE_BIT\":false,\"ULTRA_VERSION\":0,\"VERSION_NUMBER\":108,\"WRITE_COUNT\":90,\"ZONE_1PAIRED_TO_MULTILINK\":true,\"ZONE_1_OR_2\":false,\"ZONE_2_PAIRED_TO_MULTILINK\":false,\"device\":\"Living Room Floor\"},"
             + "{\"AWAY\":false,\"COOLING\":false,\"COOLING_ENABLED\":false,\"COOLING_TEMPERATURE_IN_WHOLE_DEGREES\":0,\"COOL_INP\":false,\"COUNT_DOWN_TIME\":\"0:00\",\"CRADLE_PAIRED_TO_REMOTE_SENSOR\":false,\"CRADLE_PAIRED_TO_STAT\":false,\"CURRENT_FLOOR_TEMPERATURE\":0,\"CURRENT_SET_TEMPERATURE\":\"0.0\",\"CURRENT_TEMPERATURE\":\"19.5\",\"DEMAND\":false,\"DEVICE_TYPE\":14,\"ENABLE_BOILER\":false,\"ENABLE_COOLING\":false,\"ENABLE_PUMP\":false,\"ENABLE_VALVE\":false,\"ENABLE_ZONE\":false,\"FAILSAFE_STATE\":false,\"FAIL_SAFE_ENABLED\":false,\"FLOOR_LIMIT\":false,\"FULL/PARTIAL_LOCK_AVAILABLE\":false,\"HEAT/COOL_MODE\":false,\"HEATING\":false,\"HOLD_TEMPERATURE\":0,\"HOLD_TIME\":\"0:00\",\"HOLIDAY\":false,\"HOLIDAY_DAYS\":0,\"HUMIDITY\":0,\"LOCK\":false,\"LOCK_PIN_NUMBER\":\"0000\",\"LOW_BATTERY\":false,\"MAX_TEMPERATURE\":\"0.0\",\"MIN_TEMPERATURE\":\"0.0\",\"MODULATION_LEVEL\":0,\"NEXT_ON_TIME\":\"0 days 00:00\",\"OFFLINE\":0,\"OUPUT_DELAY\":false,\"OUTPUT_DELAY\":0,\"PREHEAT\":false,\"PREHEAT_TIME\":\"0:00\",\"PROGRAM_MODE\":\"NONPROGRAMMABLE\",\"PUMP_DELAY\":false,\"RADIATORS_OR_UNDERFLOOR\":false,\"SENSOR_SELECTION\":\"BUILT_IN_AIR_SENSOR\",\"SET_COUNTDOWN_TIME\":0,\"STANDBY\":false,\"STAT_MODE\":{\"4_HEAT_LEVELS\":true,\"MANUAL_OFF\":true,\"THERMOSTAT\":true},\"TEMPERATURE_FORMAT\":false,\"TEMP_HOLD\":false,\"TIMECLOCK_MODE\":false,\"TIMER\":false,\"TIME_CLOCK_OVERIDE_BIT\":false,\"ULTRA_VERSION\":0,\"VERSION_NUMBER\":0,\"WRITE_COUNT\":0,\"ZONE_1PAIRED_TO_MULTILINK\":false,\"ZONE_1_OR_2\":false,\"ZONE_2_PAIRED_TO_MULTILINK\":false,\"device\":\"Master Bedroom\"},"
@@ -86,128 +136,381 @@ public class NeoHubTestData {
             + "{\"AWAY\":false,\"COOLING\":false,\"COOLING_ENABLED\":false,\"COOLING_TEMPERATURE_IN_WHOLE_DEGREES\":0,\"COOL_INP\":false,\"COUNT_DOWN_TIME\":\"0:00\",\"CRADLE_PAIRED_TO_REMOTE_SENSOR\":false,\"CRADLE_PAIRED_TO_STAT\":false,\"CURRENT_FLOOR_TEMPERATURE\":22,\"CURRENT_SET_TEMPERATURE\":\"12.0\",\"CURRENT_TEMPERATURE\":\"21.6\",\"DEMAND\":false,\"DEVICE_TYPE\":1,\"ENABLE_BOILER\":false,\"ENABLE_COOLING\":false,\"ENABLE_PUMP\":false,\"ENABLE_VALVE\":false,\"ENABLE_ZONE\":false,\"FAILSAFE_STATE\":false,\"FAIL_SAFE_ENABLED\":false,\"FLOOR_LIMIT\":false,\"FULL/PARTIAL_LOCK_AVAILABLE\":false,\"HEAT/COOL_MODE\":false,\"HEATING\":false,\"HOLD_TEMPERATURE\":24,\"HOLD_TIME\":\"0:00\",\"HOLIDAY\":false,\"HOLIDAY_DAYS\":0,\"HUMIDITY\":0,\"LOCK\":false,\"LOCK_PIN_NUMBER\":\"0000\",\"LOW_BATTERY\":false,\"MAX_TEMPERATURE\":\"23.0\",\"MIN_TEMPERATURE\":\"21.0\",\"MODULATION_LEVEL\":0,\"NEXT_ON_TIME\":\"5 days 22:30\",\"OFFLINE\":0,\"OUPUT_DELAY\":false,\"OUTPUT_DELAY\":0,\"PREHEAT\":false,\"PREHEAT_TIME\":\"1:02\",\"PROGRAM_MODE\":\"5DAY/2DAY\",\"PUMP_DELAY\":false,\"RADIATORS_OR_UNDERFLOOR\":false,\"SENSOR_SELECTION\":\"FLOOR_SENSOR_ONLY\",\"SET_COUNTDOWN_TIME\":0,\"STANDBY\":false,\"STAT_MODE\":{\"4_HEAT_LEVELS\":true,\"MANUAL_OFF\":true,\"THERMOSTAT\":true},\"TEMPERATURE_FORMAT\":false,\"TEMP_HOLD\":false,\"TIMECLOCK_MODE\":false,\"TIMER\":false,\"TIME_CLOCK_OVERIDE_BIT\":false,\"ULTRA_VERSION\":0,\"VERSION_NUMBER\":108,\"WRITE_COUNT\":27,\"ZONE_1PAIRED_TO_MULTILINK\":true,\"ZONE_1_OR_2\":false,\"ZONE_2_PAIRED_TO_MULTILINK\":false,\"device\":\"Ensuite Floor\"},"
             + "{\"AWAY\":false,\"COOLING\":false,\"COOLING_ENABLED\":false,\"COOLING_TEMPERATURE_IN_WHOLE_DEGREES\":0,\"COOL_INP\":false,\"COUNT_DOWN_TIME\":\"0:00\",\"CRADLE_PAIRED_TO_REMOTE_SENSOR\":false,\"CRADLE_PAIRED_TO_STAT\":false,\"CURRENT_FLOOR_TEMPERATURE\":0,\"CURRENT_SET_TEMPERATURE\":\"0.0\",\"CURRENT_TEMPERATURE\":\"20.0\",\"DEMAND\":false,\"DEVICE_TYPE\":14,\"ENABLE_BOILER\":false,\"ENABLE_COOLING\":false,\"ENABLE_PUMP\":false,\"ENABLE_VALVE\":false,\"ENABLE_ZONE\":false,\"FAILSAFE_STATE\":false,\"FAIL_SAFE_ENABLED\":false,\"FLOOR_LIMIT\":false,\"FULL/PARTIAL_LOCK_AVAILABLE\":false,\"HEAT/COOL_MODE\":false,\"HEATING\":false,\"HOLD_TEMPERATURE\":0,\"HOLD_TIME\":\"0:00\",\"HOLIDAY\":false,\"HOLIDAY_DAYS\":0,\"HUMIDITY\":0,\"LOCK\":false,\"LOCK_PIN_NUMBER\":\"0000\",\"LOW_BATTERY\":false,\"MAX_TEMPERATURE\":\"0.0\",\"MIN_TEMPERATURE\":\"0.0\",\"MODULATION_LEVEL\":0,\"NEXT_ON_TIME\":\"0 days 00:00\",\"OFFLINE\":0,\"OUPUT_DELAY\":false,\"OUTPUT_DELAY\":0,\"PREHEAT\":false,\"PREHEAT_TIME\":\"0:00\",\"PROGRAM_MODE\":\"NONPROGRAMMABLE\",\"PUMP_DELAY\":false,\"RADIATORS_OR_UNDERFLOOR\":false,\"SENSOR_SELECTION\":\"BUILT_IN_AIR_SENSOR\",\"SET_COUNTDOWN_TIME\":0,\"STANDBY\":false,\"STAT_MODE\":{\"4_HEAT_LEVELS\":true,\"MANUAL_OFF\":true,\"THERMOSTAT\":true},\"TEMPERATURE_FORMAT\":false,\"TEMP_HOLD\":false,\"TIMECLOCK_MODE\":false,\"TIMER\":false,\"TIME_CLOCK_OVERIDE_BIT\":false,\"ULTRA_VERSION\":0,\"VERSION_NUMBER\":0,\"WRITE_COUNT\":0,\"ZONE_1PAIRED_TO_MULTILINK\":false,\"ZONE_1_OR_2\":false,\"ZONE_2_PAIRED_TO_MULTILINK\":false,\"device\":\"Nursery\"},"
             + "{\"AWAY\":false,\"COOLING\":false,\"COOLING_ENABLED\":false,\"COOLING_TEMPERATURE_IN_WHOLE_DEGREES\":0,\"COOL_INP\":true,\"COUNT_DOWN_TIME\":\"0:00\",\"CRADLE_PAIRED_TO_REMOTE_SENSOR\":false,\"CRADLE_PAIRED_TO_STAT\":false,\"CURRENT_FLOOR_TEMPERATURE\":0,\"CURRENT_SET_TEMPERATURE\":\"0.0\",\"CURRENT_TEMPERATURE\":\"0.0\",\"DEMAND\":false,\"DEVICE_TYPE\":5,\"ENABLE_BOILER\":false,\"ENABLE_COOLING\":false,\"ENABLE_PUMP\":false,\"ENABLE_VALVE\":false,\"ENABLE_ZONE\":false,\"FAILSAFE_STATE\":false,\"FAIL_SAFE_ENABLED\":false,\"FLOOR_LIMIT\":false,\"FULL/PARTIAL_LOCK_AVAILABLE\":false,\"HEAT/COOL_MODE\":false,\"HEATING\":false,\"HOLD_TEMPERATURE\":0,\"HOLD_TIME\":\"0:00\",\"HOLIDAY\":false,\"HOLIDAY_DAYS\":0,\"HUMIDITY\":0,\"LOCK\":false,\"LOCK_PIN_NUMBER\":\"0000\",\"LOW_BATTERY\":true,\"MAX_TEMPERATURE\":\"0.0\",\"MIN_TEMPERATURE\":\"0.0\",\"MODULATION_LEVEL\":0,\"NEXT_ON_TIME\":\"0 days 00:00\",\"OFFLINE\":0,\"OUPUT_DELAY\":false,\"OUTPUT_DELAY\":0,\"PREHEAT\":false,\"PREHEAT_TIME\":\"0:00\",\"PROGRAM_MODE\":\"NONPROGRAMMABLE\",\"PUMP_DELAY\":false,\"RADIATORS_OR_UNDERFLOOR\":false,\"SENSOR_SELECTION\":\"BUILT_IN_AIR_SENSOR\",\"SET_COUNTDOWN_TIME\":0,\"STANDBY\":false,\"STAT_MODE\":{\"4_HEAT_LEVELS\":true,\"MANUAL_OFF\":true,\"TIMECLOCK\":true},\"TEMPERATURE_FORMAT\":false,\"TEMP_HOLD\":false,\"TIMECLOCK_MODE\":false,\"TIMER\":false,\"TIME_CLOCK_OVERIDE_BIT\":false,\"ULTRA_VERSION\":0,\"VERSION_NUMBER\":0,\"WRITE_COUNT\":0,\"ZONE_1PAIRED_TO_MULTILINK\":false,\"ZONE_1_OR_2\":false,\"ZONE_2_PAIRED_TO_MULTILINK\":false,\"device\":\"Back Door\"},"
-            + "{\"AWAY\":false,\"COOLING\":false,\"COOLING_ENABLED\":false,\"COOLING_TEMPERATURE_IN_WHOLE_DEGREES\":0,\"COOL_INP\":true,\"COUNT_DOWN_TIME\":\"0:00\",\"CRADLE_PAIRED_TO_REMOTE_SENSOR\":false,\"CRADLE_PAIRED_TO_STAT\":false,\"CURRENT_FLOOR_TEMPERATURE\":0,\"CURRENT_SET_TEMPERATURE\":\"0.0\",\"CURRENT_TEMPERATURE\":\"0.0\",\"DEMAND\":false,\"DEVICE_TYPE\":5,\"ENABLE_BOILER\":false,\"ENABLE_COOLING\":false,\"ENABLE_PUMP\":false,\"ENABLE_VALVE\":false,\"ENABLE_ZONE\":false,\"FAILSAFE_STATE\":false,\"FAIL_SAFE_ENABLED\":false,\"FLOOR_LIMIT\":false,\"FULL/PARTIAL_LOCK_AVAILABLE\":false,\"HEAT/COOL_MODE\":false,\"HEATING\":false,\"HOLD_TEMPERATURE\":0,\"HOLD_TIME\":\"0:00\",\"HOLIDAY\":false,\"HOLIDAY_DAYS\":0,\"HUMIDITY\":0,\"LOCK\":false,\"LOCK_PIN_NUMBER\":\"0000\",\"LOW_BATTERY\":true,\"MAX_TEMPERATURE\":\"0.0\",\"MIN_TEMPERATURE\":\"0.0\",\"MODULATION_LEVEL\":0,\"NEXT_ON_TIME\":\"0 days 00:00\",\"OFFLINE\":0,\"OUPUT_DELAY\":false,\"OUTPUT_DELAY\":0,\"PREHEAT\":false,\"PREHEAT_TIME\":\"0:00\",\"PROGRAM_MODE\":\"NONPROGRAMMABLE\",\"PUMP_DELAY\":false,\"RADIATORS_OR_UNDERFLOOR\":false,\"SENSOR_SELECTION\":\"BUILT_IN_AIR_SENSOR\",\"SET_COUNTDOWN_TIME\":0,\"STANDBY\":false,\"STAT_MODE\":{\"4_HEAT_LEVELS\":true,\"MANUAL_OFF\":true,\"TIMECLOCK\":true},\"TEMPERATURE_FORMAT\":false,\"TEMP_HOLD\":false,\"TIMECLOCK_MODE\":false,\"TIMER\":false,\"TIME_CLOCK_OVERIDE_BIT\":false,\"ULTRA_VERSION\":0,\"VERSION_NUMBER\":0,\"WRITE_COUNT\":0,\"ZONE_1PAIRED_TO_MULTILINK\":false,\"ZONE_1_OR_2\":false,\"ZONE_2_PAIRED_TO_MULTILINK\":false,\"device\":\"Nursery Window\"}]}";
+            + "{\"AWAY\":false,\"COOLING\":false,\"COOLING_ENABLED\":false,\"COOLING_TEMPERATURE_IN_WHOLE_DEGREES\":0,\"COOL_INP\":true,\"COUNT_DOWN_TIME\":\"0:00\",\"CRADLE_PAIRED_TO_REMOTE_SENSOR\":false,\"CRADLE_PAIRED_TO_STAT\":false,\"CURRENT_FLOOR_TEMPERATURE\":0,\"CURRENT_SET_TEMPERATURE\":\"0.0\",\"CURRENT_TEMPERATURE\":\"0.0\",\"DEMAND\":false,\"DEVICE_TYPE\":5,\"ENABLE_BOILER\":false,\"ENABLE_COOLING\":false,\"ENABLE_PUMP\":false,\"ENABLE_VALVE\":false,\"ENABLE_ZONE\":false,\"FAILSAFE_STATE\":false,\"FAIL_SAFE_ENABLED\":false,\"FLOOR_LIMIT\":false,\"FULL/PARTIAL_LOCK_AVAILABLE\":false,\"HEAT/COOL_MODE\":false,\"HEATING\":false,\"HOLD_TEMPERATURE\":0,\"HOLD_TIME\":\"0:00\",\"HOLIDAY\":false,\"HOLIDAY_DAYS\":0,\"HUMIDITY\":0,\"LOCK\":false,\"LOCK_PIN_NUMBER\":\"0000\",\"LOW_BATTERY\":true,\"MAX_TEMPERATURE\":\"0.0\",\"MIN_TEMPERATURE\":\"0.0\",\"MODULATION_LEVEL\":0,\"NEXT_ON_TIME\":\"0 days 00:00\",\"OFFLINE\":0,\"OUPUT_DELAY\":false,\"OUTPUT_DELAY\":0,\"PREHEAT\":false,\"PREHEAT_TIME\":\"0:00\",\"PROGRAM_MODE\":\"NONPROGRAMMABLE\",\"PUMP_DELAY\":false,\"RADIATORS_OR_UNDERFLOOR\":false,\"SENSOR_SELECTION\":\"BUILT_IN_AIR_SENSOR\",\"SET_COUNTDOWN_TIME\":0,\"STANDBY\":false,\"STAT_MODE\":{\"4_HEAT_LEVELS\":true,\"MANUAL_OFF\":true,\"TIMECLOCK\":true},\"TEMPERATURE_FORMAT\":false,\"TEMP_HOLD\":false,\"TIMECLOCK_MODE\":false,\"TIMER\":false,\"TIME_CLOCK_OVERIDE_BIT\":false,\"ULTRA_VERSION\":0,\"VERSION_NUMBER\":0,\"WRITE_COUNT\":0,\"ZONE_1PAIRED_TO_MULTILINK\":false,\"ZONE_1_OR_2\":false,\"ZONE_2_PAIRED_TO_MULTILINK\":false,\"device\":\"Nursery Window\"}"
+            + "]}";
+    //@formatter:on
 
+    /*
+     * Test JSON response for a GET_SYSTEM request sent to a hub with newer
+     * firmware; note: from NeoHub rev2.6 onwards the READ_DCB command is
+     * "deprecated" and it should be replaced by the new GET_SYSTEM command
+     */
+    public static final String NEOHUB_JSON_TEST_STRING_GET_SYSTEM = "{\"ALT_TIMER_FORMAT\":1,\"CORF\":\"C\",\"DEVICE_ID\":\"NeoHub\",\"DST_AUTO\":true,\"DST_ON\":true,\"EXTENDED_HISTORY\":\"off\",\"FORMAT\":1,\"GDEVLIST\":[1,2,3,4,5,6,7,8,9,10],\"GLOBAL_HC_MODE\":\"heating\",\"GLOBAL_SYSTEM_TYPE\":\"HeatOnly\",\"HEATING_LEVELS\":4,\"HUB_TYPE\":2,\"HUB_VERSION\":2134,\"NTP_ON\":\"Running\",\"PARTITION\":\"4\",\"TIMESTAMP\":0,\"TIMEZONESTR\":null,\"TIME_ZONE\":0.0,\"UTC\":1588513535}";
+
+    /*
+     * Test JSON response for a GET_LIVE_DATA request sent to a hub with newer
+     * firmware; note: from NeoHub rev2.6 onwards the INFO command is "deprecated"
+     * and it should be replaced by the new GET_LIVE_DATA command
+     */
+    //@formatter:off
+    public static final String NEOHUB_JSON_TEST_STRING_GET_LIVE_DATA = "{\"CLOSE_DELAY\":0,\"COOL_INPUT\":false,\"HOLIDAY_END\":0,\"HUB_AWAY\":false,\"HUB_HOLIDAY\":false,\"HUB_TIME\":1588517135,\"OPEN_DELAY\":0,\"TIMESTAMP_DEVICE_LISTS\":1588493827,\"TIMESTAMP_ENGINEERS\":1588494785,\"TIMESTAMP_PROFILE_0\":1588493909,\"TIMESTAMP_PROFILE_COMFORT_LEVELS\":0,\"TIMESTAMP_PROFILE_TIMERS\":0,\"TIMESTAMP_PROFILE_TIMERS_0\":1588494437,\"TIMESTAMP_RECIPES\":0,\"TIMESTAMP_SYSTEM\":0,\"devices\":["
+            + "{\"ACTIVE_LEVEL\":1,\"ACTIVE_PROFILE\":7,\"ACTUAL_TEMP\":\"22.2\",\"AVAILABLE_MODES\":[\"heat\"],\"AWAY\":false,\"COOL_MODE\":false,\"COOL_ON\":false,\"COOL_TEMP\":23,\"CURRENT_FLOOR_TEMPERATURE\":20.50,\"DATE\":\"sunday\",\"DEVICE_ID\":1,\"FAN_CONTROL\":\"Manual\",\"FAN_SPEED\":\"Off\",\"FLOOR_LIMIT\":false,\"HC_MODE\":\"HEATING\",\"HEAT_MODE\":true,\"HEAT_ON\":false,\"HOLD_COOL\":23,\"HOLD_OFF\":true,\"HOLD_ON\":false,\"HOLD_TEMP\":21,\"HOLD_TIME\":\"0:00\",\"HOLIDAY\":false,\"LOCK\":false,\"LOW_BATTERY\":false,\"MANUAL_OFF\":true,\"MODELOCK\":false,\"MODULATION_LEVEL\":0,\"OFFLINE\":false,\"PIN_NUMBER\":\"0000\",\"PREHEAT_ACTIVE\":false,\"PRG_TEMP\":0,\"PRG_TIMER\":false,\"RECENT_TEMPS\":[\"21.5\",\"21.4\",\"21.6\",\"21.8\",\"21.6\",\"21.7\",\"21.6\",\"22.6\",\"22.8\",\"23.0\",\"23.0\",\"23.1\",\"23.1\",\"22.7\",\"22.5\",\"22.5\",\"22.4\",\"22.4\",\"22.3\",\"22.5\",\"22.8\",\"22.7\",\"22.7\",\"22.9\",\"23.0\",\"23.0\",\"23.1\",\"23.1\",\"23.0\",\"23.1\",\"22.9\",\"23.0\",\"23.0\",\"22.9\",\"22.9\",\"22.9\",\"23.0\",\"22.8\",\"22.7\",\"22.6\",\"22.8\",\"22.6\",\"22.5\",\"22.4\",\"22.3\",\"22.3\",\"22.3\",\"22.3\",\"22.2\",\"22.2\",\"22.1\",\"22.1\",\"22.0\",\"21.9\",\"21.9\",\"21.9\",\"21.8\",\"21.7\",\"21.7\",\"21.7\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,\"21.4\",\"21.4\",\"21.3\",\"21.3\",\"21.4\",\"21.3\",\"21.5\",\"21.5\",\"21.4\",\"21.4\",\"21.5\",\"21.4\",\"22.1\",\"22.2\",\"22.2\",\"22.1\",\"22.2\",\"22.2\",\"22.2\",\"22.2\",\"22.3\",\"22.3\"],\"SET_TEMP\":\"22.0\",\"STANDBY\":false,\"SWITCH_DELAY_LEFT\":\"0:00\",\"TEMPORARY_SET_FLAG\":false,\"THERMOSTAT\":true,\"TIME\":\"14:45\",\"TIMER_ON\":false,\"WINDOW_OPEN\":false,\"WRITE_COUNT\":6,\"ZONE_NAME\":\"Dining Room\"},"
+            + "{\"ACTIVE_LEVEL\":1,\"ACTIVE_PROFILE\":7,\"ACTUAL_TEMP\":\"22.7\",\"AVAILABLE_MODES\":[\"heat\"],\"AWAY\":false,\"COOL_MODE\":false,\"COOL_ON\":false,\"COOL_TEMP\":23,\"CURRENT_FLOOR_TEMPERATURE\":127.50,\"DATE\":\"sunday\",\"DEVICE_ID\":2,\"FAN_CONTROL\":\"Manual\",\"FAN_SPEED\":\"Off\",\"FLOOR_LIMIT\":false,\"HC_MODE\":\"HEATING\",\"HEAT_MODE\":true,\"HEAT_ON\":false,\"HOLD_COOL\":23,\"HOLD_OFF\":true,\"HOLD_ON\":false,\"HOLD_TEMP\":23,\"HOLD_TIME\":\"0:00\",\"HOLIDAY\":false,\"LOCK\":false,\"LOW_BATTERY\":false,\"MANUAL_OFF\":true,\"MODELOCK\":false,\"MODULATION_LEVEL\":0,\"OFFLINE\":true,\"PIN_NUMBER\":\"0000\",\"PREHEAT_ACTIVE\":false,\"PRG_TEMP\":0,\"PRG_TIMER\":false,\"RECENT_TEMPS\":[\"22.9\",\"22.8\",\"22.8\",\"22.8\",\"22.8\",\"22.8\",\"22.8\",\"22.7\",\"22.7\",\"22.8\",\"22.8\",\"22.9\",\"23.0\",\"23.0\",\"23.0\",\"22.9\",\"22.9\",\"22.9\",\"22.9\",\"22.8\",\"26.1\",\"26.4\",\"25.2\",\"24.4\",\"23.9\",\"23.9\",\"23.9\",\"23.8\",\"23.8\",\"23.7\",\"23.7\",\"23.6\",\"23.6\",\"23.6\",\"23.6\",\"23.6\",\"23.6\",\"23.6\",\"23.6\",\"23.6\",\"23.6\",\"23.5\",\"23.5\",\"23.4\",\"23.4\",\"23.3\",\"23.3\",\"23.2\",\"23.2\",\"23.1\",\"23.1\",\"23.1\",\"23.1\",\"23.0\",\"23.0\",\"22.9\",\"22.9\",\"22.9\",\"22.8\",\"22.8\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,\"22.8\",\"22.8\",\"22.8\",\"22.9\",\"22.9\",\"22.8\",\"22.8\",\"22.8\",\"22.8\",\"22.8\",\"22.7\",\"22.8\",\"22.8\",\"22.7\",\"22.7\",\"22.7\",\"22.7\",\"22.7\",\"22.7\",\"22.7\",\"22.7\",\"22.7\"],\"SET_TEMP\":\"22.0\",\"STANDBY\":false,\"SWITCH_DELAY_LEFT\":\"0:00\",\"TEMPORARY_SET_FLAG\":false,\"THERMOSTAT\":true,\"TIME\":\"14:44\",\"TIMER_ON\":false,\"WINDOW_OPEN\":false,\"WRITE_COUNT\":0,\"ZONE_NAME\":\"Shower Room\"},"
+            + "{\"ACTIVE_LEVEL\":1,\"ACTIVE_PROFILE\":7,\"ACTUAL_TEMP\":\"24.6\",\"AVAILABLE_MODES\":[\"heat\"],\"AWAY\":false,\"COOL_MODE\":false,\"COOL_ON\":false,\"COOL_TEMP\":23,\"CURRENT_FLOOR_TEMPERATURE\":22.50,\"DATE\":\"sunday\",\"DEVICE_ID\":3,\"FAN_CONTROL\":\"Manual\",\"FAN_SPEED\":\"Off\",\"FLOOR_LIMIT\":false,\"HC_MODE\":\"HEATING\",\"HEAT_MODE\":true,\"HEAT_ON\":false,\"HOLD_COOL\":23,\"HOLD_OFF\":true,\"HOLD_ON\":false,\"HOLD_TEMP\":16,\"HOLD_TIME\":\"0:00\",\"HOLIDAY\":false,\"LOCK\":false,\"LOW_BATTERY\":true,\"MANUAL_OFF\":true,\"MODELOCK\":false,\"MODULATION_LEVEL\":0,\"OFFLINE\":false,\"PIN_NUMBER\":\"0000\",\"PREHEAT_ACTIVE\":false,\"PRG_TEMP\":0,\"PRG_TIMER\":false,\"RECENT_TEMPS\":[\"21.3\",\"21.5\",\"21.8\",\"22.0\",\"22.0\",\"21.8\",\"21.8\",\"23.4\",\"24.0\",\"24.3\",\"24.2\",\"24.3\",\"24.5\",\"23.5\",\"23.2\",\"22.8\",\"22.6\",\"22.5\",\"22.5\",\"23.5\",\"24.2\",\"24.3\",\"24.3\",\"24.4\",\"24.5\",\"24.4\",\"24.4\",\"24.5\",\"24.6\",\"24.5\",\"24.6\",\"24.4\",\"24.4\",\"24.4\",\"24.5\",\"24.5\",\"24.4\",\"24.3\",\"24.2\",\"24.2\",\"24.2\",\"24.1\",\"24.0\",\"23.9\",\"23.9\",\"23.9\",\"23.7\",\"23.7\",\"23.7\",\"23.6\",\"23.5\",\"23.5\",\"23.4\",\"23.3\",\"23.4\",\"23.2\",\"23.2\",\"23.2\",\"23.1\",\"23.1\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,\"23.5\",\"23.5\",\"23.0\",\"23.5\",\"23.6\",\"23.8\",\"23.9\",\"23.9\",\"24.0\",\"24.2\",\"24.2\",\"22.8\",\"24.1\",\"23.8\",\"24.3\",\"23.9\",\"23.9\",\"24.0\",\"24.2\",\"24.6\",\"24.4\",\"24.4\"],\"SET_TEMP\":\"22.0\",\"STANDBY\":false,\"SWITCH_DELAY_LEFT\":\"0:00\",\"TEMPORARY_SET_FLAG\":false,\"THERMOSTAT\":true,\"TIME\":\"14:45\",\"TIMER_ON\":false,\"WINDOW_OPEN\":false,\"WRITE_COUNT\":0,\"ZONE_NAME\":\"Conservatory\"},"
+            + "{\"ACTIVE_LEVEL\":1,\"ACTIVE_PROFILE\":7,\"ACTUAL_TEMP\":\"23.4\",\"AVAILABLE_MODES\":[\"heat\"],\"AWAY\":false,\"COOL_MODE\":false,\"COOL_ON\":false,\"COOL_TEMP\":23,\"CURRENT_FLOOR_TEMPERATURE\":26,\"DATE\":\"sunday\",\"DEVICE_ID\":4,\"FAN_CONTROL\":\"Manual\",\"FAN_SPEED\":\"Off\",\"FLOOR_LIMIT\":false,\"HC_MODE\":\"HEATING\",\"HEAT_MODE\":true,\"HEAT_ON\":false,\"HOLD_COOL\":23,\"HOLD_OFF\":true,\"HOLD_ON\":false,\"HOLD_TEMP\":21,\"HOLD_TIME\":\"0:00\",\"HOLIDAY\":false,\"LOCK\":false,\"LOW_BATTERY\":false,\"MANUAL_OFF\":true,\"MODELOCK\":false,\"MODULATION_LEVEL\":0,\"OFFLINE\":false,\"PIN_NUMBER\":\"0000\",\"PREHEAT_ACTIVE\":false,\"PRG_TEMP\":0,\"PRG_TIMER\":false,\"RECENT_TEMPS\":[\"21.3\",\"21.3\",\"21.5\",\"21.6\",\"21.5\",\"21.8\",\"21.7\",\"22.8\",\"23.3\",\"23.5\",\"23.7\",\"24.2\",\"24.2\",\"23.3\",\"23.0\",\"22.8\",\"22.7\",\"22.6\",\"22.6\",\"22.6\",\"22.6\",\"22.6\",\"22.5\",\"22.7\",\"22.7\",\"22.9\",\"23.0\",\"23.0\",\"23.1\",\"23.1\",\"23.1\",\"23.1\",\"23.1\",\"23.1\",\"23.1\",\"23.2\",\"22.9\",\"22.5\",\"22.3\",\"22.2\",\"22.2\",\"22.1\",\"22.0\",\"21.9\",\"21.8\",\"21.8\",\"21.6\",\"21.6\",\"21.6\",\"21.5\",\"21.4\",\"21.4\",\"21.3\",\"21.2\",\"21.3\",\"21.1\",\"21.1\",\"21.1\",\"21.0\",\"21.0\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,\"21.7\",\"21.9\",\"21.7\",\"21.8\",\"21.9\",\"22.1\",\"22.3\",\"22.3\",\"22.5\",\"22.9\",\"23.1\",\"22.0\",\"23.1\",\"23.1\",\"23.2\",\"23.2\",\"23.3\",\"23.2\",\"23.5\",\"23.7\",\"23.4\",\"23.3\"],\"SET_TEMP\":\"22.0\",\"STANDBY\":false,\"SWITCH_DELAY_LEFT\":\"0:00\",\"TEMPORARY_SET_FLAG\":false,\"THERMOSTAT\":true,\"TIME\":\"14:45\",\"TIMER_ON\":false,\"WINDOW_OPEN\":false,\"WRITE_COUNT\":1,\"ZONE_NAME\":\"Living Room\"},"
+            + "{\"ACTIVE_LEVEL\":1,\"ACTIVE_PROFILE\":5,\"ACTUAL_TEMP\":\"23.1\",\"AVAILABLE_MODES\":[\"heat\"],\"AWAY\":false,\"COOL_MODE\":false,\"COOL_ON\":false,\"COOL_TEMP\":23,\"CURRENT_FLOOR_TEMPERATURE\":20,\"DATE\":\"sunday\",\"DEVICE_ID\":5,\"FAN_CONTROL\":\"Manual\",\"FAN_SPEED\":\"Off\",\"FLOOR_LIMIT\":false,\"HC_MODE\":\"HEATING\",\"HEAT_MODE\":true,\"HEAT_ON\":false,\"HOLD_COOL\":23,\"HOLD_OFF\":true,\"HOLD_ON\":false,\"HOLD_TEMP\":21,\"HOLD_TIME\":\"0:00\",\"HOLIDAY\":false,\"LOCK\":false,\"LOW_BATTERY\":false,\"MANUAL_OFF\":true,\"MODELOCK\":false,\"MODULATION_LEVEL\":0,\"OFFLINE\":false,\"PIN_NUMBER\":\"0000\",\"PREHEAT_ACTIVE\":false,\"PRG_TEMP\":0,\"PRG_TIMER\":false,\"RECENT_TEMPS\":[\"22.7\",\"22.8\",\"23.0\",\"23.0\",\"23.1\",\"23.4\",\"23.3\",\"24.0\",\"24.1\",\"24.2\",\"24.2\",\"24.0\",\"24.0\",\"23.8\",\"23.6\",\"23.5\",\"23.4\",\"23.3\",\"23.2\",\"23.0\",\"23.0\",\"22.9\",\"22.9\",\"22.9\",\"23.0\",\"23.1\",\"23.2\",\"23.1\",\"23.0\",\"23.0\",\"22.9\",\"22.4\",\"22.6\",\"22.8\",\"22.8\",\"22.7\",\"22.3\",\"22.1\",\"21.9\",\"21.9\",\"21.8\",\"21.8\",\"21.7\",\"21.7\",\"21.7\",\"21.6\",\"21.6\",\"21.7\",\"21.7\",\"21.6\",\"21.6\",\"21.5\",\"21.5\",\"21.3\",\"21.3\",\"21.2\",\"21.1\",\"21.1\",\"21.0\",\"21.0\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,\"20.7\",\"21.0\",\"21.3\",\"21.3\",\"21.4\",\"21.4\",\"21.5\",\"21.5\",\"21.5\",\"21.6\",\"21.6\",\"21.5\",\"21.9\",\"22.1\",\"22.2\",\"22.1\",\"22.3\",\"22.4\",\"22.6\",\"22.7\",\"22.9\",\"23.1\"],\"SET_TEMP\":\"21.0\",\"STANDBY\":false,\"SWITCH_DELAY_LEFT\":\"0:00\",\"TEMPORARY_SET_FLAG\":false,\"THERMOSTAT\":true,\"TIME\":\"14:44\",\"TIMER_ON\":false,\"WINDOW_OPEN\":false,\"WRITE_COUNT\":0,\"ZONE_NAME\":\"Kitchen\"},"
+            + "{\"ACTIVE_LEVEL\":1,\"ACTIVE_PROFILE\":12,\"ACTUAL_TEMP\":\"23.6\",\"AVAILABLE_MODES\":[\"heat\"],\"AWAY\":false,\"COOL_MODE\":false,\"COOL_ON\":false,\"COOL_TEMP\":23,\"CURRENT_FLOOR_TEMPERATURE\":20,\"DATE\":\"sunday\",\"DEVICE_ID\":6,\"FAN_CONTROL\":\"Manual\",\"FAN_SPEED\":\"Off\",\"FLOOR_LIMIT\":false,\"HC_MODE\":\"HEATING\",\"HEAT_MODE\":true,\"HEAT_ON\":false,\"HOLD_COOL\":23,\"HOLD_OFF\":true,\"HOLD_ON\":false,\"HOLD_TEMP\":21,\"HOLD_TIME\":\"0:00\",\"HOLIDAY\":false,\"LOCK\":false,\"LOW_BATTERY\":false,\"MANUAL_OFF\":true,\"MODELOCK\":false,\"MODULATION_LEVEL\":0,\"OFFLINE\":false,\"PIN_NUMBER\":\"0000\",\"PREHEAT_ACTIVE\":false,\"PRG_TEMP\":0,\"PRG_TIMER\":false,\"RECENT_TEMPS\":[\"23.6\",\"23.7\",\"23.6\",\"23.6\",\"23.7\",\"23.8\",\"23.9\",\"23.6\",\"23.7\",\"23.8\",\"23.8\",\"23.7\",\"23.7\",\"24.0\",\"24.1\",\"24.0\",\"24.0\",\"24.1\",\"24.1\",\"23.9\",\"23.8\",\"23.8\",\"23.9\",\"23.9\",\"23.9\",\"24.0\",\"24.0\",\"24.0\",\"24.0\",\"24.1\",\"24.1\",\"24.1\",\"24.0\",\"24.0\",\"24.1\",\"23.9\",\"23.9\",\"24.1\",\"24.0\",\"24.0\",\"24.0\",\"24.0\",\"24.0\",\"24.0\",\"24.0\",\"24.0\",\"24.0\",\"24.0\",\"24.0\",\"23.9\",\"23.9\",\"23.9\",\"23.9\",\"23.9\",\"23.9\",\"23.9\",\"23.8\",\"23.8\",\"23.8\",\"23.8\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,\"23.5\",\"23.4\",\"23.5\",\"23.5\",\"23.5\",\"23.6\",\"23.5\",\"23.4\",\"23.6\",\"23.6\",\"23.7\",\"23.7\",\"23.6\",\"23.5\",\"23.5\",\"23.5\",\"23.5\",\"23.5\",\"23.6\",\"23.7\",\"23.6\",\"23.6\"],\"SET_TEMP\":\"20.0\",\"STANDBY\":false,\"SWITCH_DELAY_LEFT\":\"0:00\",\"TEMPORARY_SET_FLAG\":false,\"THERMOSTAT\":true,\"TIME\":\"14:45\",\"TIMER_ON\":false,\"WINDOW_OPEN\":false,\"WRITE_COUNT\":1,\"ZONE_NAME\":\"Hallway\"},"
+            + "{\"ACTIVE_LEVEL\":1,\"ACTIVE_PROFILE\":6,\"ACTUAL_TEMP\":\"18.1\",\"AVAILABLE_MODES\":[\"heat\"],\"AWAY\":false,\"COOL_MODE\":false,\"COOL_ON\":false,\"COOL_TEMP\":23,\"CURRENT_FLOOR_TEMPERATURE\":127.50,\"DATE\":\"sunday\",\"DEVICE_ID\":7,\"FAN_CONTROL\":\"Manual\",\"FAN_SPEED\":\"Off\",\"FLOOR_LIMIT\":false,\"HC_MODE\":\"HEATING\",\"HEAT_MODE\":true,\"HEAT_ON\":false,\"HOLD_COOL\":23,\"HOLD_OFF\":true,\"HOLD_ON\":false,\"HOLD_TEMP\":9,\"HOLD_TIME\":\"0:00\",\"HOLIDAY\":false,\"LOCK\":false,\"LOW_BATTERY\":false,\"MANUAL_OFF\":true,\"MODELOCK\":false,\"MODULATION_LEVEL\":0,\"OFFLINE\":false,\"PIN_NUMBER\":\"0000\",\"PREHEAT_ACTIVE\":false,\"PRG_TEMP\":0,\"PRG_TIMER\":false,\"RECENT_TEMPS\":[\"19.4\",\"19.6\",\"19.8\",\"19.9\",\"20.1\",\"20.3\",\"20.4\",\"20.5\",\"20.7\",\"20.8\",\"20.8\",\"20.9\",\"21.0\",\"20.9\",\"21.2\",\"21.5\",\"21.6\",\"21.8\",\"21.7\",\"21.6\",\"21.5\",\"21.4\",\"21.4\",\"21.2\",\"21.2\",\"21.1\",\"21.0\",\"20.9\",\"20.8\",\"20.6\",\"20.5\",\"20.4\",\"20.3\",\"20.1\",\"20.0\",\"19.9\",\"19.7\",\"19.6\",\"19.5\",\"19.3\",\"19.2\",\"19.1\",\"18.9\",\"18.9\",\"18.7\",\"18.6\",\"18.5\",\"18.4\",\"18.2\",\"18.1\",\"18.0\",\"17.9\",\"17.9\",\"17.7\",\"17.6\",\"17.5\",\"17.4\",\"17.3\",\"17.2\",\"17.2\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,\"16.7\",\"16.7\",\"16.8\",\"16.8\",\"16.8\",\"16.9\",\"16.9\",\"17.0\",\"17.0\",\"17.1\",\"17.2\",\"17.4\",\"17.5\",\"17.6\",\"17.7\",\"17.7\",\"17.8\",\"17.8\",\"17.9\",\"18.0\",\"18.0\",\"18.1\"],\"SET_TEMP\":\"9.0\",\"STANDBY\":false,\"SWITCH_DELAY_LEFT\":\"0:00\",\"TEMPORARY_SET_FLAG\":false,\"THERMOSTAT\":true,\"TIME\":\"14:43\",\"TIMER_ON\":false,\"WINDOW_OPEN\":false,\"WRITE_COUNT\":28,\"ZONE_NAME\":\"Shed Heating\"},"
+            + "{\"ACTIVE_LEVEL\":0,\"ACTIVE_PROFILE\":0,\"ACTUAL_TEMP\":\"255.255\",\"AVAILABLE_MODES\":[\"heat\"],\"AWAY\":false,\"COOL_MODE\":false,\"COOL_ON\":false,\"COOL_TEMP\":0,\"CURRENT_FLOOR_TEMPERATURE\":127.50,\"DATE\":\"sunday\",\"DEVICE_ID\":8,\"FAN_CONTROL\":\"Automatic\",\"FAN_SPEED\":\"Off\",\"FLOOR_LIMIT\":false,\"HC_MODE\":\"VENT\",\"HEAT_MODE\":true,\"HEAT_ON\":false,\"HOLD_COOL\":0,\"HOLD_OFF\":true,\"HOLD_ON\":false,\"HOLD_TEMP\":1,\"HOLD_TIME\":\"0:00\",\"HOLIDAY\":false,\"LOCK\":false,\"LOW_BATTERY\":false,\"MANUAL_ON\":true,\"MODELOCK\":false,\"MODULATION_LEVEL\":0,\"OFFLINE\":false,\"PIN_NUMBER\":\"0000\",\"PREHEAT_ACTIVE\":false,\"PRG_TEMP\":0,\"PRG_TIMER\":false,\"RECENT_TEMPS\":[\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\"],\"SET_TEMP\":\"0.0\",\"STANDBY\":false,\"SWITCH_DELAY_LEFT\":\"0:00\",\"TEMPORARY_SET_FLAG\":false,\"TIME\":\"14:42\",\"TIMECLOCK\":true,\"TIMER_ON\":false,\"WINDOW_OPEN\":false,\"WRITE_COUNT\":7,\"ZONE_NAME\":\"Living Room South\"},"
+            + "{\"ACTIVE_LEVEL\":0,\"ACTIVE_PROFILE\":0,\"ACTUAL_TEMP\":\"255.255\",\"AVAILABLE_MODES\":[\"heat\"],\"AWAY\":false,\"COOL_MODE\":false,\"COOL_ON\":false,\"COOL_TEMP\":0,\"CURRENT_FLOOR_TEMPERATURE\":127.50,\"DATE\":\"sunday\",\"DEVICE_ID\":9,\"FAN_CONTROL\":\"Automatic\",\"FAN_SPEED\":\"Off\",\"FLOOR_LIMIT\":false,\"HC_MODE\":\"VENT\",\"HEAT_MODE\":true,\"HEAT_ON\":false,\"HOLD_COOL\":0,\"HOLD_OFF\":true,\"HOLD_ON\":false,\"HOLD_TEMP\":0,\"HOLD_TIME\":\"0:00\",\"HOLIDAY\":false,\"LOCK\":false,\"LOW_BATTERY\":false,\"MANUAL_ON\":true,\"MODELOCK\":false,\"MODULATION_LEVEL\":0,\"OFFLINE\":false,\"PIN_NUMBER\":\"0000\",\"PREHEAT_ACTIVE\":false,\"PRG_TEMP\":0,\"PRG_TIMER\":false,\"RECENT_TEMPS\":[\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\"],\"SET_TEMP\":\"0.0\",\"STANDBY\":false,\"SWITCH_DELAY_LEFT\":\"0:00\",\"TEMPORARY_SET_FLAG\":false,\"TIME\":\"14:42\",\"TIMECLOCK\":true,\"TIMER_ON\":true,\"WINDOW_OPEN\":false,\"WRITE_COUNT\":195,\"ZONE_NAME\":\"Living Room North\"},"
+            + "{\"ACTIVE_LEVEL\":0,\"ACTIVE_PROFILE\":10,\"ACTUAL_TEMP\":\"255.255\",\"AVAILABLE_MODES\":[\"heat\"],\"AWAY\":false,\"COOL_MODE\":false,\"COOL_ON\":false,\"COOL_TEMP\":0,\"CURRENT_FLOOR_TEMPERATURE\":127.50,\"DATE\":\"sunday\",\"DEVICE_ID\":10,\"FAN_CONTROL\":\"Automatic\",\"FAN_SPEED\":\"Off\",\"FLOOR_LIMIT\":false,\"HC_MODE\":\"VENT\",\"HEAT_MODE\":true,\"HEAT_ON\":false,\"HOLD_COOL\":0,\"HOLD_OFF\":true,\"HOLD_ON\":false,\"HOLD_TEMP\":1,\"HOLD_TIME\":\"0:00\",\"HOLIDAY\":false,\"LOCK\":false,\"LOW_BATTERY\":false,\"MANUAL_OFF\":true,\"MODELOCK\":false,\"MODULATION_LEVEL\":0,\"OFFLINE\":false,\"PIN_NUMBER\":\"0000\",\"PREHEAT_ACTIVE\":false,\"PRG_TEMP\":0,\"PRG_TIMER\":false,\"RECENT_TEMPS\":[\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,\"0.0\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\",\"255.255\"],\"SET_TEMP\":\"0.0\",\"STANDBY\":false,\"SWITCH_DELAY_LEFT\":\"0:00\",\"TEMPORARY_SET_FLAG\":false,\"TIME\":\"14:42\",\"TIMECLOCK\":true,\"TIMER_ON\":false,\"WINDOW_OPEN\":false,\"WRITE_COUNT\":16,\"ZONE_NAME\":\"Green Wall Watering\"},"
+            + "{\"ACTIVE_LEVEL\":0,\"ACTIVE_PROFILE\":0,\"ACTUAL_TEMP\":\"0.0\",\"AVAILABLE_MODES\":[\"heat\"],\"AWAY\":false,\"COOL_MODE\":false,\"COOL_ON\":false,\"COOL_TEMP\":0,\"CURRENT_FLOOR_TEMPERATURE\":0,\"DATE\":\"sunday\",\"DEVICE_ID\":11,\"FAN_CONTROL\":\"Automatic\",\"FAN_SPEED\":\"Off\",\"FLOOR_LIMIT\":false,\"HC_MODE\":\"VENT\",\"HEAT_MODE\":true,\"HEAT_ON\":false,\"HOLD_COOL\":0,\"HOLD_OFF\":true,\"HOLD_ON\":false,\"HOLD_TEMP\":0,\"HOLD_TIME\":\"0:00\",\"HOLIDAY\":false,\"LOCK\":false,\"LOW_BATTERY\":false,\"MANUAL_OFF\":true,\"MODELOCK\":false,\"MODULATION_LEVEL\":0,\"OFFLINE\":false,\"PIN_NUMBER\":\"0000\",\"PREHEAT_ACTIVE\":false,\"PRG_TEMP\":0,\"PRG_TIMER\":false,\"RECENT_TEMPS\":[null,null,null,null,\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\",\"0.0\"],\"SET_TEMP\":\"0.0\",\"STANDBY\":false,\"SWITCH_DELAY_LEFT\":\"0:00\",\"TEMPORARY_SET_FLAG\":false,\"TIME\":\"0:00\",\"TIMECLOCK\":true,\"TIMER_ON\":false,\"WINDOW_OPEN\":true,\"WRITE_COUNT\":0,\"ZONE_NAME\":\"Door Contact\"},"
+            + "{\"ACTIVE_LEVEL\":0,\"ACTIVE_PROFILE\":0,\"ACTUAL_TEMP\":\"21.5\",\"AVAILABLE_MODES\":[\"heat\"],\"AWAY\":false,\"COOL_MODE\":false,\"COOL_ON\":false,\"COOL_TEMP\":0,\"CURRENT_FLOOR_TEMPERATURE\":0,\"DATE\":\"sunday\",\"DEVICE_ID\":12,\"FAN_CONTROL\":\"Automatic\",\"FAN_SPEED\":\"Off\",\"FLOOR_LIMIT\":false,\"HC_MODE\":\"VENT\",\"HEAT_MODE\":true,\"HEAT_ON\":false,\"HOLD_COOL\":0,\"HOLD_OFF\":true,\"HOLD_ON\":false,\"HOLD_TEMP\":0,\"HOLD_TIME\":\"0:00\",\"HOLIDAY\":false,\"LOCK\":false,\"LOW_BATTERY\":false,\"MANUAL_OFF\":true,\"MODELOCK\":false,\"MODULATION_LEVEL\":0,\"OFFLINE\":false,\"PIN_NUMBER\":\"0000\",\"PREHEAT_ACTIVE\":false,\"PRG_TEMP\":0,\"PRG_TIMER\":false,\"RECENT_TEMPS\":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,\"22.5\",\"22.5\",\"22.5\",\"22.5\",\"22.5\",\"22.5\",\"22.0\",\"22.0\",\"21.5\",\"21.5\",\"21.0\",\"21.0\",\"21.0\",\"21.0\",\"21.0\",\"20.5\",\"20.5\",\"20.5\",\"20.5\",\"20.5\",\"20.5\",\"21.0\",\"21.0\",\"21.0\",\"21.0\",\"20.5\",\"20.5\",\"20.5\",\"20.5\",\"20.0\",\"20.0\",\"20.0\",\"20.0\",\"20.0\",\"20.0\",\"19.5\",\"19.5\",\"19.5\",\"19.5\",\"19.5\",\"19.5\",\"19.5\",\"19.5\",\"19.5\",\"19.0\",\"19.0\",\"19.5\",\"19.5\",\"19.5\",\"19.5\",\"19.5\",\"19.5\",\"20.0\",\"20.0\",\"20.0\",\"20.5\",\"21.5\",\"23.5\",\"25.0\",\"25.5\",\"26.0\",\"24.5\",\"23.0\",\"22.5\",\"22.0\",\"22.0\",\"21.5\",\"21.5\",\"21.5\",\"21.5\",\"21.5\",\"21.5\",\"21.0\",\"21.0\",\"21.5\",\"21.0\"],\"SET_TEMP\":\"0.0\",\"STANDBY\":false,\"SWITCH_DELAY_LEFT\":\"0:00\",\"TEMPORARY_SET_FLAG\":false,\"THERMOSTAT\":true,\"TIME\":\"0:00\",\"TIMER_ON\":false,\"WINDOW_OPEN\":false,\"WRITE_COUNT\":0,\"ZONE_NAME\":\"Room Sensor\"},"
+            + "{\"ACTIVE_LEVEL\":0,\"ACTIVE_PROFILE\":0,\"ACTUAL_TEMP\":\"255.255\",\"AVAILABLE_MODES\":[\"heat\"],\"AWAY\":false,\"COOL_MODE\":false,\"COOL_ON\":false,\"COOL_TEMP\":0,\"CURRENT_FLOOR_TEMPERATURE\":127.50,\"DATE\":\"sunday\",\"FAN_CONTROL\":\"Automatic\",\"FAN_SPEED\":\"Off\",\"FLOOR_LIMIT\":false,\"HC_MODE\":\"VENT\",\"HEAT_MODE\":true,\"HEAT_ON\":false,\"HOLD_COOL\":0,\"HOLD_OFF\":true,\"HOLD_ON\":false,\"HOLD_TEMP\":0,\"HOLD_TIME\":\"0:00\",\"HOLIDAY\":false,\"LOCK\":false,\"LOW_BATTERY\":false,\"MANUAL_OFF\":true,\"MODELOCK\":false,\"MODULATION_LEVEL\":0,\"OFFLINE\":false,\"PIN_NUMBER\":\"0000\",\"PREHEAT_ACTIVE\":false,\"PRG_TEMP\":29,\"PRG_TIMER\":false,\"SET_TEMP\":\"0.0\",\"STANDBY\":false,\"SWITCH_DELAY_LEFT\":\"0:00\",\"TEMPORARY_SET_FLAG\":false,\"TIME\":\"0:00\",\"TIMECLOCK\":true,\"TIMER_ON\":false,\"WINDOW_OPEN\":false,\"WRITE_COUNT\":0,\"device\":\"repeaternode54473\"}"
+            + "]}";
+    //@formatter:on
+
+    /*
+     * From NeoHub rev2.6 onwards the INFO command is "deprecated" and the DEVICE_ID
+     * element is not returned in the GET_LIVE_DATA call so we must test the
+     * replacement GET_ENGINEERS command => actual test case is "TBD" ...
+     */
+    //@formatter:off
+    public static final String NEOHUB_JSON_TEST_STRING_GET_ENGINEERS = "{"
+            + "\"Conservatory\":{\"DEADBAND\":2,\"DEVICE_ID\":3,\"DEVICE_TYPE\":12,\"FLOOR_LIMIT\":38,\"FROST_TEMP\":12,\"MAX_PREHEAT\":2,\"OUTPUT_DELAY\":0,\"PUMP_DELAY\":0,\"RF_SENSOR_MODE\":\"self\",\"STAT_FAILSAFE\":0,\"STAT_VERSION\":24,\"SWITCHING DIFFERENTIAL\":1,\"SWITCH_DELAY\":0,\"SYSTEM_TYPE\":0,\"TIMESTAMP\":1588493839,\"USER_LIMIT\":0,\"WINDOW_SWITCH_OPEN\":false},"
+            + "\"Dining Room\":{\"DEADBAND\":2,\"DEVICE_ID\":1,\"DEVICE_TYPE\":12,\"FLOOR_LIMIT\":37,\"FROST_TEMP\":12,\"MAX_PREHEAT\":2,\"OUTPUT_DELAY\":0,\"PUMP_DELAY\":0,\"RF_SENSOR_MODE\":\"self\",\"STAT_FAILSAFE\":0,\"STAT_VERSION\":24,\"SWITCHING DIFFERENTIAL\":1,\"SWITCH_DELAY\":0,\"SYSTEM_TYPE\":0,\"TIMESTAMP\":1588493858,\"USER_LIMIT\":0,\"WINDOW_SWITCH_OPEN\":false},"
+            + "\"Door Contact\":{\"DEADBAND\":0,\"DEVICE_ID\":11,\"DEVICE_TYPE\":5,\"FLOOR_LIMIT\":0,\"FROST_TEMP\":0,\"MAX_PREHEAT\":0,\"OUTPUT_DELAY\":0,\"PUMP_DELAY\":0,\"RF_SENSOR_MODE\":\"self\",\"STAT_FAILSAFE\":0,\"STAT_VERSION\":0,\"SWITCHING DIFFERENTIAL\":0,\"SWITCH_DELAY\":0,\"SYSTEM_TYPE\":0,\"TIMESTAMP\":1588700958,\"USER_LIMIT\":0,\"WINDOW_SWITCH_OPEN\":true},"
+            + "\"Green Wall Watering\":{\"DEADBAND\":0,\"DEVICE_ID\":10,\"DEVICE_TYPE\":6,\"FLOOR_LIMIT\":0,\"FROST_TEMP\":0,\"MAX_PREHEAT\":0,\"OUTPUT_DELAY\":0,\"PUMP_DELAY\":0,\"RF_SENSOR_MODE\":\"self\",\"STAT_FAILSAFE\":0,\"STAT_VERSION\":79,\"SWITCHING DIFFERENTIAL\":0,\"SWITCH_DELAY\":0,\"SYSTEM_TYPE\":0,\"TIMESTAMP\":1588494897,\"USER_LIMIT\":0,\"WINDOW_SWITCH_OPEN\":false},"
+            + "\"Hallway\":{\"DEADBAND\":2,\"DEVICE_ID\":6,\"DEVICE_TYPE\":12,\"FLOOR_LIMIT\":37,\"FROST_TEMP\":12,\"MAX_PREHEAT\":2,\"OUTPUT_DELAY\":0,\"PUMP_DELAY\":0,\"RF_SENSOR_MODE\":\"self\",\"STAT_FAILSAFE\":0,\"STAT_VERSION\":24,\"SWITCHING DIFFERENTIAL\":1,\"SWITCH_DELAY\":0,\"SYSTEM_TYPE\":0,\"TIMESTAMP\":1588493838,\"USER_LIMIT\":0,\"WINDOW_SWITCH_OPEN\":false},"
+            + "\"Kitchen\":{\"DEADBAND\":2,\"DEVICE_ID\":5,\"DEVICE_TYPE\":12,\"FLOOR_LIMIT\":37,\"FROST_TEMP\":12,\"MAX_PREHEAT\":2,\"OUTPUT_DELAY\":0,\"PUMP_DELAY\":0,\"RF_SENSOR_MODE\":\"self\",\"STAT_FAILSAFE\":0,\"STAT_VERSION\":24,\"SWITCHING DIFFERENTIAL\":1,\"SWITCH_DELAY\":0,\"SYSTEM_TYPE\":0,\"TIMESTAMP\":1588493861,\"USER_LIMIT\":0,\"WINDOW_SWITCH_OPEN\":false},"
+            + "\"Living Room\":{\"DEADBAND\":2,\"DEVICE_ID\":4,\"DEVICE_TYPE\":12,\"FLOOR_LIMIT\":37,\"FROST_TEMP\":12,\"MAX_PREHEAT\":2,\"OUTPUT_DELAY\":0,\"PUMP_DELAY\":0,\"RF_SENSOR_MODE\":\"self\",\"STAT_FAILSAFE\":0,\"STAT_VERSION\":24,\"SWITCHING DIFFERENTIAL\":1,\"SWITCH_DELAY\":0,\"SYSTEM_TYPE\":0,\"TIMESTAMP\":1588493838,\"USER_LIMIT\":0,\"WINDOW_SWITCH_OPEN\":false},"
+            + "\"Living Room North\":{\"DEADBAND\":0,\"DEVICE_ID\":9,\"DEVICE_TYPE\":6,\"FLOOR_LIMIT\":0,\"FROST_TEMP\":0,\"MAX_PREHEAT\":0,\"OUTPUT_DELAY\":0,\"PUMP_DELAY\":0,\"RF_SENSOR_MODE\":\"self\",\"STAT_FAILSAFE\":0,\"STAT_VERSION\":79,\"SWITCHING DIFFERENTIAL\":0,\"SWITCH_DELAY\":0,\"SYSTEM_TYPE\":0,\"TIMESTAMP\":1588493846,\"USER_LIMIT\":0,\"WINDOW_SWITCH_OPEN\":false},"
+            + "\"Living Room South\":{\"DEADBAND\":0,\"DEVICE_ID\":8,\"DEVICE_TYPE\":6,\"FLOOR_LIMIT\":0,\"FROST_TEMP\":0,\"MAX_PREHEAT\":0,\"OUTPUT_DELAY\":0,\"PUMP_DELAY\":0,\"RF_SENSOR_MODE\":\"self\",\"STAT_FAILSAFE\":0,\"STAT_VERSION\":79,\"SWITCHING DIFFERENTIAL\":0,\"SWITCH_DELAY\":0,\"SYSTEM_TYPE\":0,\"TIMESTAMP\":1588493846,\"USER_LIMIT\":0,\"WINDOW_SWITCH_OPEN\":false},"
+            + "\"Shed Heating\":{\"DEADBAND\":2,\"DEVICE_ID\":7,\"DEVICE_TYPE\":12,\"FLOOR_LIMIT\":28,\"FROST_TEMP\":9,\"MAX_PREHEAT\":0,\"OUTPUT_DELAY\":0,\"PUMP_DELAY\":0,\"RF_SENSOR_MODE\":\"self\",\"STAT_FAILSAFE\":0,\"STAT_VERSION\":24,\"SWITCHING DIFFERENTIAL\":1,\"SWITCH_DELAY\":0,\"SYSTEM_TYPE\":0,\"TIMESTAMP\":1588493854,\"USER_LIMIT\":0,\"WINDOW_SWITCH_OPEN\":false},"
+            + "\"Shower Room\":{\"DEADBAND\":2,\"DEVICE_ID\":2,\"DEVICE_TYPE\":12,\"FLOOR_LIMIT\":28,\"FROST_TEMP\":12,\"MAX_PREHEAT\":2,\"OUTPUT_DELAY\":0,\"PUMP_DELAY\":0,\"RF_SENSOR_MODE\":\"self\",\"STAT_FAILSAFE\":0,\"STAT_VERSION\":24,\"SWITCHING DIFFERENTIAL\":1,\"SWITCH_DELAY\":0,\"SYSTEM_TYPE\":0,\"TIMESTAMP\":1588493860,\"USER_LIMIT\":0,\"WINDOW_SWITCH_OPEN\":false}"
+            + "}";
+    //@formatter:on
+
+    /*
+     * The main unit test method
+     */
     @Test
     public void test() {
-        // info response (old JSON format)
-        NeoHubInfoResponse infoResponse = NeoHubInfoResponse.createInfoResponse(NEOHUB_JSON_TEST_STRING);
+        testInfoJsonOld();
+        testInfoJsonNew();
+        testReadDcbJson();
+        testInfoJsonWithSensors();
+        testGetSystemJson();
+        testGetLiveDataJson();
+        testGetEngineersJson();
+        testCommunications();
+    }
+
+    /*
+     * Test an INFO JSON response string as produced by older firmware versions
+     */
+    private void testInfoJsonOld() {
+        // load INFO JSON response string in old JSON format
+        NeoHubAbstractDeviceData infoResponse = NeoHubInfoResponse.createDeviceData(NEOHUB_JSON_TEST_STRING_INFO_OLD);
         assertNotNull(infoResponse);
 
         // missing device
-        DeviceInfo device = infoResponse.getDeviceInfo("Aardvark");
+        AbstractRecord device = infoResponse.getDeviceRecord("Aardvark");
         assertNull(device);
 
         // existing type 12 thermostat device
-        device = infoResponse.getDeviceInfo("Dining Room");
+        device = infoResponse.getDeviceRecord("Dining Room");
         assertNotNull(device);
         assertEquals("Dining Room", device.getDeviceName());
         assertEquals(new BigDecimal("22.0"), device.getTargetTemperature());
-        assertEquals(new BigDecimal("22.2"), device.getRoomTemperature());
+        assertEquals(new BigDecimal("22.2"), device.getActualTemperature());
         assertEquals(new BigDecimal("23"), device.getFloorTemperature());
-        assertEquals(new BigDecimal("12"), device.getDeviceType());
+        assertTrue(device instanceof InfoRecord);
+        assertEquals(12, ((InfoRecord) device).getDeviceType());
         assertFalse(device.isStandby());
         assertFalse(device.isHeating());
         assertFalse(device.isPreHeating());
         assertFalse(device.isTimerOn());
-        assertFalse(device.isOffline());
+        assertFalse(device.offline());
         assertFalse(device.stateManual());
         assertTrue(device.stateAuto());
-        assertFalse(device.isCoolInputOn());
+        assertFalse(device.isWindowOpen());
         assertFalse(device.isBatteryLow());
 
         // existing type 6 plug device (MANUAL OFF)
-        device = infoResponse.getDeviceInfo("Plug South");
+        device = infoResponse.getDeviceRecord("Plug South");
         assertNotNull(device);
         assertEquals("Plug South", device.getDeviceName());
-        assertEquals(new BigDecimal("6"), device.getDeviceType());
+        assertTrue(device instanceof InfoRecord);
+        assertEquals(6, ((InfoRecord) device).getDeviceType());
         assertFalse(device.isTimerOn());
         assertTrue(device.stateManual());
 
         // existing type 6 plug device (MANUAL ON)
-        device = infoResponse.getDeviceInfo("Plug North");
+        device = infoResponse.getDeviceRecord("Plug North");
         assertNotNull(device);
         assertEquals("Plug North", device.getDeviceName());
-        assertEquals(new BigDecimal("6"), device.getDeviceType());
+        assertTrue(device instanceof InfoRecord);
+        assertEquals(6, ((InfoRecord) device).getDeviceType());
         assertTrue(device.isTimerOn());
         assertTrue(device.stateManual());
 
         // existing type 6 plug device (AUTO OFF)
-        device = infoResponse.getDeviceInfo("Watering System");
+        device = infoResponse.getDeviceRecord("Watering System");
         assertNotNull(device);
         assertEquals("Watering System", device.getDeviceName());
-        assertEquals(new BigDecimal("6"), device.getDeviceType());
+        assertTrue(device instanceof InfoRecord);
+        assertEquals(6, ((InfoRecord) device).getDeviceType());
         assertFalse(device.isTimerOn());
         assertFalse(device.stateManual());
+    }
 
-        // info response (new JSON format)
-        infoResponse = NeoHubInfoResponse.createInfoResponse(NEOHUB_JSON_TEST_STRING_NEW_OFFLINE_JSON);
+    /*
+     * Test an INFO JSON response string as produced by newer firmware versions
+     */
+    private void testInfoJsonNew() {
+        // load INFO JSON response string in new JSON format
+        NeoHubAbstractDeviceData infoResponse = NeoHubInfoResponse.createDeviceData(NEOHUB_JSON_TEST_STRING_INFO_NEW);
         assertNotNull(infoResponse);
 
         // existing device (new JSON format)
-        device = infoResponse.getDeviceInfo("Dining Room");
+        AbstractRecord device = infoResponse.getDeviceRecord("Dining Room");
         assertNotNull(device);
         assertEquals("Dining Room", device.getDeviceName());
-        assertFalse(device.isOffline());
-        assertFalse(device.isCoolInputOn());
+        assertFalse(device.offline());
+        assertFalse(device.isWindowOpen());
 
-        // READ_DCB valid CORF C response
+        // existing repeater device
+        device = infoResponse.getDeviceRecord("repeaternode54473");
+        assertNotNull(device);
+        assertEquals("repeaternode54473", device.getDeviceName());
+        assertEquals(new BigDecimal("127"), device.getFloorTemperature());
+        assertEquals(new BigDecimal("255.255"), device.getActualTemperature());
+    }
+
+    /*
+     * Test for a READ_DCB JSON string that has valid CORF C response
+     */
+    private void testReadDcbJson() {
+        // load READ_DCB JSON response string with valid CORF C response
         NeoHubReadDcbResponse dcbResponse = NeoHubReadDcbResponse
-                .createReadDcbResponse(NEOHUB_JSON_TEST_STRING_READ_DCB_CELSIUS);
+                .createSystemData(NEOHUB_JSON_TEST_STRING_READ_DCB_CELSIUS);
         assertNotNull(dcbResponse);
         assertEquals(SIUnits.CELSIUS, dcbResponse.getTemperatureUnit());
 
-        // READ_DCB valid CORF F response
-        dcbResponse = NeoHubReadDcbResponse.createReadDcbResponse(NEOHUB_JSON_TEST_STRING_READ_DCB_FAHRENHEIT);
+        // load READ_DCB JSON response string with valid CORF F response
+        dcbResponse = NeoHubReadDcbResponse.createSystemData(NEOHUB_JSON_TEST_STRING_READ_DCB_FAHRENHEIT);
         assertNotNull(dcbResponse);
         assertEquals(ImperialUnits.FAHRENHEIT, dcbResponse.getTemperatureUnit());
 
-        // READ_DCB missing CORF element
-        dcbResponse = NeoHubReadDcbResponse.createReadDcbResponse(NEOHUB_JSON_TEST_STRING_READ_DCB_CORF_MISSING);
+        // load READ_DCB JSON response string with missing CORF element
+        dcbResponse = NeoHubReadDcbResponse.createSystemData(NEOHUB_JSON_TEST_STRING_READ_DCB_CORF_MISSING);
         assertNotNull(dcbResponse);
         assertEquals(SIUnits.CELSIUS, dcbResponse.getTemperatureUnit());
 
-        // READ_DCB CORF element is an empty string
-        dcbResponse = NeoHubReadDcbResponse.createReadDcbResponse(NEOHUB_JSON_TEST_STRING_READ_DCB_CORF_EMPTY);
+        // load READ_DCB JSON response string where CORF element is an empty string
+        dcbResponse = NeoHubReadDcbResponse.createSystemData(NEOHUB_JSON_TEST_STRING_READ_DCB_CORF_EMPTY);
         assertNotNull(dcbResponse);
         assertEquals(SIUnits.CELSIUS, dcbResponse.getTemperatureUnit());
+    }
 
-        // info response (with sensors CLOSED)
-        infoResponse = NeoHubInfoResponse.createInfoResponse(NEOHUB_JSON_TEST_STRING_INFO_SENSORS_CLOSED);
+    /*
+     * Test an INFO JSON string that has a door contact and a temperature sensor
+     */
+    private void testInfoJsonWithSensors() {
+        /*
+         * load an INFO JSON response string that has a closed door contact and a
+         * temperature sensor
+         */
+        NeoHubAbstractDeviceData infoResponse = NeoHubInfoResponse
+                .createDeviceData(NEOHUB_JSON_TEST_STRING_INFO_SENSORS_CLOSED);
         assertNotNull(infoResponse);
 
         // existing contact device type 5 (CLOSED)
-        device = infoResponse.getDeviceInfo("Back Door");
+        AbstractRecord device = infoResponse.getDeviceRecord("Back Door");
         assertNotNull(device);
         assertEquals("Back Door", device.getDeviceName());
-        assertEquals(new BigDecimal("5"), device.getDeviceType());
-        assertFalse(device.isCoolInputOn());
+        assertTrue(device instanceof InfoRecord);
+        assertEquals(5, ((InfoRecord) device).getDeviceType());
+        assertFalse(device.isWindowOpen());
         assertFalse(device.isBatteryLow());
 
         // existing temperature sensor type 14
-        device = infoResponse.getDeviceInfo("Master Bedroom");
+        device = infoResponse.getDeviceRecord("Master Bedroom");
         assertNotNull(device);
         assertEquals("Master Bedroom", device.getDeviceName());
-        assertEquals(new BigDecimal("14"), device.getDeviceType());
-        assertEquals(new BigDecimal("19.5"), device.getRoomTemperature());
+        assertTrue(device instanceof InfoRecord);
+        assertEquals(14, ((InfoRecord) device).getDeviceType());
+        assertEquals(new BigDecimal("19.5"), device.getActualTemperature());
 
         // existing thermostat type 1
-        device = infoResponse.getDeviceInfo("Living Room Floor");
+        device = infoResponse.getDeviceRecord("Living Room Floor");
         assertNotNull(device);
         assertEquals("Living Room Floor", device.getDeviceName());
-        assertEquals(new BigDecimal("1"), device.getDeviceType());
-        assertEquals(new BigDecimal("19.8"), device.getRoomTemperature());
+        assertTrue(device instanceof InfoRecord);
+        assertEquals(1, ((InfoRecord) device).getDeviceType());
+        assertEquals(new BigDecimal("19.8"), device.getActualTemperature());
 
-        // info response (with sensors OPEN)
-        infoResponse = NeoHubInfoResponse.createInfoResponse(NEOHUB_JSON_TEST_STRING_INFO_SENSORS_OPEN);
+        // load an INFO JSON response string that has an open door contact
+        infoResponse = NeoHubInfoResponse.createDeviceData(NEOHUB_JSON_TEST_STRING_INFO_SENSORS_OPEN);
         assertNotNull(infoResponse);
 
         // existing contact device type 5 (OPEN)
-        device = infoResponse.getDeviceInfo("Back Door");
+        device = infoResponse.getDeviceRecord("Back Door");
         assertNotNull(device);
         assertEquals("Back Door", device.getDeviceName());
-        assertEquals(new BigDecimal("5"), device.getDeviceType());
-        assertTrue(device.isCoolInputOn());
+        assertTrue(device instanceof InfoRecord);
+        assertEquals(5, ((InfoRecord) device).getDeviceType());
+        assertTrue(device.isWindowOpen());
         assertTrue(device.isBatteryLow());
+    }
+
+    /*
+     * From NeoHub rev2.6 onwards the READ_DCB command is "deprecated" so we can
+     * also test the replacement GET_SYSTEM command (valid CORF response)
+     */
+    private void testGetSystemJson() {
+        // load GET_SYSTEM JSON response string
+        NeoHubReadDcbResponse dcbResponse;
+        dcbResponse = NeoHubReadDcbResponse.createSystemData(NEOHUB_JSON_TEST_STRING_GET_SYSTEM);
+        assertNotNull(dcbResponse);
+        assertEquals(SIUnits.CELSIUS, dcbResponse.getTemperatureUnit());
+    }
+
+    /*
+     * From NeoHub rev2.6 onwards the INFO command is "deprecated" so we must test
+     * the replacement GET_LIVE_DATA command
+     */
+    private void testGetLiveDataJson() {
+        // load GET_LIVE_DATA JSON response string
+        NeoHubLiveDeviceData liveDataResponse = NeoHubLiveDeviceData
+                .createDeviceData(NEOHUB_JSON_TEST_STRING_GET_LIVE_DATA);
+        assertNotNull(liveDataResponse);
+
+        // test the time stamps
+        assertEquals(1588494785, liveDataResponse.getTimestampEngineers());
+        assertEquals(0, liveDataResponse.getTimestampSystem());
+
+        // missing device
+        AbstractRecord device = liveDataResponse.getDeviceRecord("Aardvark");
+        assertNull(device);
+
+        // test an existing thermostat device
+        device = liveDataResponse.getDeviceRecord("Dining Room");
+        assertNotNull(device);
+        assertEquals("Dining Room", device.getDeviceName());
+        assertEquals(new BigDecimal("22.0"), device.getTargetTemperature());
+        assertEquals(new BigDecimal("22.2"), device.getActualTemperature());
+        assertEquals(new BigDecimal("20.50"), device.getFloorTemperature());
+        assertFalse(device.isStandby());
+        assertFalse(device.isHeating());
+        assertFalse(device.isPreHeating());
+        assertFalse(device.isTimerOn());
+        assertFalse(device.offline());
+        assertFalse(device.stateManual());
+        assertTrue(device.stateAuto());
+        assertFalse(device.isWindowOpen());
+        assertFalse(device.isBatteryLow());
+
+        // test a plug device (MANUAL OFF)
+        device = liveDataResponse.getDeviceRecord("Living Room South");
+        assertNotNull(device);
+        assertEquals("Living Room South", device.getDeviceName());
+        assertFalse(device.isTimerOn());
+        assertTrue(device.stateManual());
+
+        // test a plug device (MANUAL ON)
+        device = liveDataResponse.getDeviceRecord("Living Room North");
+        assertNotNull(device);
+        assertEquals("Living Room North", device.getDeviceName());
+        assertTrue(device.isTimerOn());
+        assertTrue(device.stateManual());
+
+        // test a plug device (AUTO OFF)
+        device = liveDataResponse.getDeviceRecord("Green Wall Watering");
+        assertNotNull(device);
+        assertEquals("Green Wall Watering", device.getDeviceName());
+        assertFalse(device.isTimerOn());
+        assertFalse(device.stateManual());
+
+        // test a device that is offline
+        device = liveDataResponse.getDeviceRecord("Shower Room");
+        assertNotNull(device);
+        assertEquals("Shower Room", device.getDeviceName());
+        assertTrue(device.offline());
+
+        // test a device with a low battery
+        device = liveDataResponse.getDeviceRecord("Conservatory");
+        assertNotNull(device);
+        assertEquals("Conservatory", device.getDeviceName());
+        assertTrue(device.isBatteryLow());
+
+        // test a device with an open window alarm
+        device = liveDataResponse.getDeviceRecord("Door Contact");
+        assertNotNull(device);
+        assertEquals("Door Contact", device.getDeviceName());
+        assertTrue(device.isWindowOpen());
+
+        // test a wireless temperature sensor
+        device = liveDataResponse.getDeviceRecord("Room Sensor");
+        assertNotNull(device);
+        assertEquals("Room Sensor", device.getDeviceName());
+        assertEquals(new BigDecimal("21.5"), device.getActualTemperature());
+
+        // test a repeater node
+        device = liveDataResponse.getDeviceRecord("repeaternode54473");
+        assertNotNull(device);
+        assertEquals("repeaternode54473", device.getDeviceName());
+        assertTrue(device.getDeviceName().matches(REGEX_HEATMISER_REPEATER));
+    }
+
+    /*
+     * From NeoHub rev2.6 onwards the INFO command is "deprecated" and the DEVICE_ID
+     * element is not returned in the GET_LIVE_DATA call so we must test the
+     * replacement GET_ENGINEERS command
+     */
+    private void testGetEngineersJson() {
+        // load GET_ENGINEERS JSON response string
+        NeoHubGetEngineersData engResponse = NeoHubGetEngineersData
+                .createEngineersData(NEOHUB_JSON_TEST_STRING_GET_ENGINEERS);
+        assertNotNull(engResponse);
+
+        // test device ID (type 12 thermostat device)
+        assertEquals(12, engResponse.getDeviceType("Dining Room"));
+
+        // test device ID (type 6 plug device)
+        assertEquals(6, engResponse.getDeviceType("Living Room South"));
+    }
+
+    /*
+     * send JSON request to the socket and retrieve JSON response
+     */
+    private String testCommunicationInner(String requestJson) {
+        NeoHubSocket socket = new NeoHubSocket("192.168.1.109", 4242, 5);
+        String responseJson = "";
+        try {
+            responseJson = socket.sendMessage(requestJson);
+        } catch (Exception e) {
+            assertTrue(false);
+        }
+        return responseJson;
+    }
+
+    /*
+     * Test the communications
+     */
+    private void testCommunications() {
+        String responseJson = testCommunicationInner(CMD_CODE_INFO);
+        assertFalse(responseJson.isEmpty());
+        responseJson = testCommunicationInner(CMD_CODE_READ_DCB);
+        assertFalse(responseJson.isEmpty());
+        responseJson = testCommunicationInner(CMD_CODE_GET_LIVE_DATA);
+        assertFalse(responseJson.isEmpty());
+        responseJson = testCommunicationInner(CMD_CODE_GET_ENGINEERS);
+        assertFalse(responseJson.isEmpty());
+        responseJson = testCommunicationInner(CMD_CODE_GET_SYSTEM);
+        assertFalse(responseJson.isEmpty());
+        responseJson = testCommunicationInner(String.format(CMD_CODE_TEMP, "20", "Hallway"));
+        assertFalse(responseJson.isEmpty());
     }
 }
