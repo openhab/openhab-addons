@@ -14,11 +14,7 @@ package org.openhab.binding.verisure.internal.dto;
 
 import static org.openhab.binding.verisure.internal.VerisureBindingConstants.THING_TYPE_DOORWINDOW;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -35,29 +31,9 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class VerisureDoorWindowsDTO extends VerisureBaseThingDTO {
 
-    private Data data = new Data();
-
-    public Data getData() {
-        return data;
-    }
-
-    public void setData(Data data) {
-        this.data = data;
-    }
-
     @Override
     public ThingTypeUID getThingTypeUID() {
         return THING_TYPE_DOORWINDOW;
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this).append("data", data).toString();
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().append(data).toHashCode();
     }
 
     @Override
@@ -70,82 +46,6 @@ public class VerisureDoorWindowsDTO extends VerisureBaseThingDTO {
         }
         VerisureDoorWindowsDTO rhs = ((VerisureDoorWindowsDTO) other);
         return new EqualsBuilder().append(data, rhs.data).isEquals();
-    }
-
-    public static class Data {
-
-        private Installation installation = new Installation();
-
-        public Installation getInstallation() {
-            return installation;
-        }
-
-        public void setInstallation(Installation installation) {
-            this.installation = installation;
-        }
-
-        @Override
-        public String toString() {
-            return new ToStringBuilder(this).append("installation", installation).toString();
-        }
-
-        @Override
-        public int hashCode() {
-            return new HashCodeBuilder().append(installation).toHashCode();
-        }
-
-        @Override
-        public boolean equals(@Nullable Object other) {
-            if (other == this) {
-                return true;
-            }
-            if (!(other instanceof Data)) {
-                return false;
-            }
-            Data rhs = ((Data) other);
-            return new EqualsBuilder().append(installation, rhs.installation).isEquals();
-        }
-    }
-
-    public static class Installation {
-
-        private List<DoorWindow> doorWindows = new ArrayList<>();
-        @SerializedName("__typename")
-        private @Nullable String typename;
-
-        public List<DoorWindow> getDoorWindows() {
-            return doorWindows;
-        }
-
-        public void setDoorWindows(List<DoorWindow> doorWindows) {
-            this.doorWindows = doorWindows;
-        }
-
-        public @Nullable String getTypename() {
-            return typename;
-        }
-
-        @Override
-        public String toString() {
-            return new ToStringBuilder(this).append("doorWindows", doorWindows).append("typename", typename).toString();
-        }
-
-        @Override
-        public int hashCode() {
-            return new HashCodeBuilder().append(typename).append(doorWindows).toHashCode();
-        }
-
-        @Override
-        public boolean equals(@Nullable Object other) {
-            if (other == this) {
-                return true;
-            }
-            if (!(other instanceof Installation)) {
-                return false;
-            }
-            Installation rhs = ((Installation) other);
-            return new EqualsBuilder().append(typename, rhs.typename).append(doorWindows, rhs.doorWindows).isEquals();
-        }
     }
 
     public static class DoorWindow {
@@ -184,14 +84,9 @@ public class VerisureDoorWindowsDTO extends VerisureBaseThingDTO {
 
         @Override
         public String toString() {
-            return new ToStringBuilder(this).append("device", device).append("type", type).append("state", state)
-                    .append("wired", wired).append("reportTime", reportTime).append("typename", typename).toString();
-        }
-
-        @Override
-        public int hashCode() {
-            return new HashCodeBuilder().append(reportTime).append(typename).append(state).append(device).append(wired)
-                    .append(type).toHashCode();
+            return type != null ? new ToStringBuilder(this).append("device", device).append("type", type)
+                    .append("state", state).append("wired", wired).append("reportTime", reportTime)
+                    .append("typename", typename).toString() : "";
         }
 
         @Override

@@ -15,7 +15,6 @@ package org.openhab.binding.verisure.internal.dto;
 import static org.openhab.binding.verisure.internal.VerisureBindingConstants.THING_TYPE_BROADBAND_CONNECTION;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -32,25 +31,9 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class VerisureBroadbandConnectionsDTO extends VerisureBaseThingDTO {
 
-    private Data data = new Data();
-
-    public Data getData() {
-        return data;
-    }
-
     @Override
     public ThingTypeUID getThingTypeUID() {
         return THING_TYPE_BROADBAND_CONNECTION;
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this).append("data", data).toString();
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().append(data).toHashCode();
     }
 
     @Override
@@ -84,19 +67,10 @@ public class VerisureBroadbandConnectionsDTO extends VerisureBaseThingDTO {
             return typename;
         }
 
-        public void setTypename(@Nullable String typename) {
-            this.typename = typename;
-        }
-
         @Override
         public String toString() {
-            return new ToStringBuilder(this).append("testDate", testDate)
-                    .append("isBroadbandConnected", isBroadbandConnected).append("typename", typename).toString();
-        }
-
-        @Override
-        public int hashCode() {
-            return new HashCodeBuilder().append(testDate).append(typename).append(isBroadbandConnected).toHashCode();
+            return testDate != null ? new ToStringBuilder(this).append("testDate", testDate)
+                    .append("isBroadbandConnected", isBroadbandConnected).append("typename", typename).toString() : "";
         }
 
         @Override
@@ -110,75 +84,6 @@ public class VerisureBroadbandConnectionsDTO extends VerisureBaseThingDTO {
             Broadband rhs = ((Broadband) other);
             return new EqualsBuilder().append(testDate, rhs.testDate).append(typename, rhs.typename)
                     .append(isBroadbandConnected, rhs.isBroadbandConnected).isEquals();
-        }
-
-    }
-
-    public static class Data {
-
-        private Installation installation = new Installation();
-
-        public Installation getInstallation() {
-            return installation;
-        }
-
-        @Override
-        public String toString() {
-            return new ToStringBuilder(this).append("installation", installation).toString();
-        }
-
-        @Override
-        public int hashCode() {
-            return new HashCodeBuilder().append(installation).toHashCode();
-        }
-
-        @Override
-        public boolean equals(@Nullable Object other) {
-            if (other == this) {
-                return true;
-            }
-            if (!(other instanceof Data)) {
-                return false;
-            }
-            Data rhs = ((Data) other);
-            return new EqualsBuilder().append(installation, rhs.installation).isEquals();
-        }
-    }
-
-    public static class Installation {
-
-        private Broadband broadband = new Broadband();
-        @SerializedName("__typename")
-        private @Nullable String typename;
-
-        public Broadband getBroadband() {
-            return broadband;
-        }
-
-        public @Nullable String getTypename() {
-            return typename;
-        }
-
-        @Override
-        public String toString() {
-            return new ToStringBuilder(this).append("broadband", broadband).append("typename", typename).toString();
-        }
-
-        @Override
-        public int hashCode() {
-            return new HashCodeBuilder().append(typename).append(broadband).toHashCode();
-        }
-
-        @Override
-        public boolean equals(@Nullable Object other) {
-            if (other == this) {
-                return true;
-            }
-            if (!(other instanceof Installation)) {
-                return false;
-            }
-            Installation rhs = ((Installation) other);
-            return new EqualsBuilder().append(typename, rhs.typename).append(broadband, rhs.broadband).isEquals();
         }
     }
 }

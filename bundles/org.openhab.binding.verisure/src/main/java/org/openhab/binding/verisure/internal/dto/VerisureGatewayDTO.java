@@ -14,11 +14,7 @@ package org.openhab.binding.verisure.internal.dto;
 
 import static org.openhab.binding.verisure.internal.VerisureBindingConstants.THING_TYPE_GATEWAY;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -33,25 +29,9 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class VerisureGatewayDTO extends VerisureBaseThingDTO {
 
-    private Data data = new Data();
-
-    public Data getData() {
-        return data;
-    }
-
     @Override
     public ThingTypeUID getThingTypeUID() {
         return THING_TYPE_GATEWAY;
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this).append("data", data).toString();
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().append(data).toHashCode();
     }
 
     @Override
@@ -66,76 +46,7 @@ public class VerisureGatewayDTO extends VerisureBaseThingDTO {
         return new EqualsBuilder().append(data, rhs.data).isEquals();
     }
 
-    public class Data {
-
-        private Installation installation = new Installation();
-
-        public Installation getInstallation() {
-            return installation;
-        }
-
-        @Override
-        public String toString() {
-            return new ToStringBuilder(this).append("installation", installation).toString();
-        }
-
-        @Override
-        public int hashCode() {
-            return new HashCodeBuilder().append(installation).toHashCode();
-        }
-
-        @Override
-        public boolean equals(@Nullable Object other) {
-            if (other == this) {
-                return true;
-            }
-            if (!(other instanceof Data)) {
-                return false;
-            }
-            Data rhs = ((Data) other);
-            return new EqualsBuilder().append(installation, rhs.installation).isEquals();
-        }
-    }
-
-    public class Installation {
-
-        private List<CommunicationState> communicationState = new ArrayList<>();
-        private @Nullable String typename;
-
-        public List<CommunicationState> getCommunicationState() {
-            return communicationState;
-        }
-
-        public @Nullable String getTypename() {
-            return typename;
-        }
-
-        @Override
-        public String toString() {
-            return new ToStringBuilder(this).append("communicationState", communicationState)
-                    .append("typename", typename).toString();
-        }
-
-        @Override
-        public int hashCode() {
-            return new HashCodeBuilder().append(communicationState).append(typename).toHashCode();
-        }
-
-        @Override
-        public boolean equals(@Nullable Object other) {
-            if (other == this) {
-                return true;
-            }
-            if (!(other instanceof Installation)) {
-                return false;
-            }
-            Installation rhs = ((Installation) other);
-            return new EqualsBuilder().append(communicationState, rhs.communicationState).append(typename, rhs.typename)
-                    .isEquals();
-        }
-    }
-
-    public class CommunicationState {
+    public static class CommunicationState {
 
         private @Nullable String hardwareCarrierType;
         private @Nullable String result;
@@ -170,15 +81,9 @@ public class VerisureGatewayDTO extends VerisureBaseThingDTO {
 
         @Override
         public String toString() {
-            return new ToStringBuilder(this).append("hardwareCarrierType", hardwareCarrierType).append("result", result)
-                    .append("mediaType", mediaType).append("device", device).append("testDate", testDate)
-                    .append("typename", typename).toString();
-        }
-
-        @Override
-        public int hashCode() {
-            return new HashCodeBuilder().append(result).append(hardwareCarrierType).append(mediaType).append(device)
-                    .append(testDate).append(typename).toHashCode();
+            return result != null ? new ToStringBuilder(this).append("hardwareCarrierType", hardwareCarrierType)
+                    .append("result", result).append("mediaType", mediaType).append("device", device)
+                    .append("testDate", testDate).append("typename", typename).toString() : "";
         }
 
         @Override

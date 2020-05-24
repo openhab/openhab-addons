@@ -86,14 +86,12 @@ public class VerisureThingDiscoveryService extends AbstractDiscoveryService
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
                         .withLabel(label).withProperty(VerisureThingConfiguration.DEVICE_ID_LABEL, deviceId)
                         .withRepresentationProperty(deviceId).build();
-                logger.debug("thinguid: {}, bridge {}, label {}", thingUID.toString(), bridgeUID, thing.getDeviceId());
+                logger.debug("thinguid: {}, bridge {}, label {}", thingUID, bridgeUID, deviceId);
                 thingDiscovered(discoveryResult);
             }
         } else {
-            logger.debug("Discovered unsupported thing of type '{}' with deviceId {}", thing.getClass(),
-                    thing.getDeviceId());
+            logger.debug("Discovered unsupported thing of type '{}' with deviceId {}", thing.getClass(), deviceId);
         }
-
     }
 
     private @Nullable ThingUID getThingUID(VerisureThingDTO thing) {

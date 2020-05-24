@@ -15,6 +15,8 @@ package org.openhab.binding.verisure.internal.dto;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -41,6 +43,26 @@ public class VerisureSmartLockDTO {
 
     public DoorLockVolumeSettings getDoorLockVolumeSettings() {
         return doorLockVolumeSettings;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object other) {
+        if (other == this) {
+            return true;
+        }
+        if (!(other instanceof VerisureSmartLockDTO)) {
+            return false;
+        }
+        VerisureSmartLockDTO rhs = ((VerisureSmartLockDTO) other);
+        return new EqualsBuilder().append(autoRelockEnabled, rhs.autoRelockEnabled).append(deviceLabel, rhs.deviceLabel)
+                .append(doorLockVolumeSettings, rhs.doorLockVolumeSettings).isEquals();
+    }
+
+    @Override
+    public String toString() {
+        return deviceLabel != null ? new ToStringBuilder(this).append("autoRelockEnabled", autoRelockEnabled)
+                .append("deviceLabel", deviceLabel).append("doorLockVolumeSettings", doorLockVolumeSettings).toString()
+                : "";
     }
 
     public static class DoorLockVolumeSettings {
@@ -71,123 +93,24 @@ public class VerisureSmartLockDTO {
         }
 
         @Override
-        public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            String active = this.active;
-            result = prime * result + ((active == null) ? 0 : active.hashCode());
-            result = prime * result + availableVoiceLevels.hashCode();
-            result = prime * result + availableVolumes.hashCode();
-            String voiceLevel = this.voiceLevel;
-            result = prime * result + ((voiceLevel == null) ? 0 : voiceLevel.hashCode());
-            String volume = this.volume;
-            result = prime * result + ((volume == null) ? 0 : volume.hashCode());
-            return result;
-        }
-
-        @Override
-        public boolean equals(@Nullable Object obj) {
-            if (this == obj) {
+        public boolean equals(@Nullable Object other) {
+            if (other == this) {
                 return true;
             }
-            if (obj == null) {
+            if (!(other instanceof DoorLockVolumeSettings)) {
                 return false;
             }
-            if (!(obj instanceof DoorLockVolumeSettings)) {
-                return false;
-            }
-            DoorLockVolumeSettings other = (DoorLockVolumeSettings) obj;
-
-            String localActive = active;
-            String localVoiceLevel = voiceLevel;
-            String localVolume = volume;
-            if (localActive == null) {
-                if (other.active != null) {
-                    return false;
-                }
-            } else if (!localActive.equals(other.active)) {
-                return false;
-            }
-            if (!availableVoiceLevels.equals(other.availableVoiceLevels)) {
-                return false;
-            }
-            if (!availableVolumes.equals(other.availableVolumes)) {
-                return false;
-            }
-            if (localVoiceLevel == null) {
-                if (other.voiceLevel != null) {
-                    return false;
-                }
-            } else if (!localVoiceLevel.equals(other.voiceLevel)) {
-                return false;
-            }
-            if (localVolume == null) {
-                if (other.volume != null) {
-                    return false;
-                }
-            } else if (!localVolume.equals(other.volume)) {
-                return false;
-            }
-            return true;
+            DoorLockVolumeSettings rhs = ((DoorLockVolumeSettings) other);
+            return new EqualsBuilder().append(volume, rhs.volume).append(voiceLevel, rhs.voiceLevel)
+                    .append(active, rhs.active).append(availableVoiceLevels, rhs.availableVoiceLevels)
+                    .append(availableVolumes, rhs.availableVolumes).isEquals();
         }
 
         @Override
         public String toString() {
-            return "DoorLockVolumeSettings [volume=" + volume + ", voiceLevel=" + voiceLevel + ", active=" + active
-                    + ", availableVolumes=" + availableVolumes + ", availableVoiceLevels=" + availableVoiceLevels + "]";
+            return volume != null ? new ToStringBuilder(this).append("volume", volume).append("voiceLevel", voiceLevel)
+                    .append("active", active).append("availableVolumes", availableVolumes)
+                    .append("availableVoiceLevels", availableVoiceLevels).toString() : "";
         }
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        String deviceLabel = this.deviceLabel;
-        result = prime * result + ((deviceLabel == null) ? 0 : deviceLabel.hashCode());
-        result = prime * result + doorLockVolumeSettings.hashCode();
-        return result;
-    }
-
-    @Override
-    public boolean equals(@Nullable Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (!super.equals(obj)) {
-            return false;
-        }
-        if (!(obj instanceof VerisureSmartLockDTO)) {
-            return false;
-        }
-        VerisureSmartLockDTO other = (VerisureSmartLockDTO) obj;
-        String localDeviceLabel = deviceLabel;
-        if (localDeviceLabel == null) {
-            if (other.deviceLabel != null) {
-                return false;
-            }
-        } else if (!localDeviceLabel.equals(other.deviceLabel)) {
-            return false;
-        }
-        if (!doorLockVolumeSettings.equals(other.doorLockVolumeSettings)) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("VerisureSmartLockJSON [");
-        builder.append("autoRelockEnabled=");
-        builder.append(autoRelockEnabled);
-        builder.append(", ");
-        if (deviceLabel != null) {
-            builder.append("deviceLabel=");
-            builder.append(deviceLabel);
-            builder.append(", ");
-        }
-        builder.append(doorLockVolumeSettings.toString());
-        builder.append("]");
-        return super.toString() + "\n" + builder.toString();
     }
 }

@@ -14,11 +14,7 @@ package org.openhab.binding.verisure.internal.dto;
 
 import static org.openhab.binding.verisure.internal.VerisureBindingConstants.THING_TYPE_USERPRESENCE;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -35,29 +31,9 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class VerisureUserPresencesDTO extends VerisureBaseThingDTO {
 
-    private Data data = new Data();
-
-    public Data getData() {
-        return data;
-    }
-
-    public void setData(Data data) {
-        this.data = data;
-    }
-
     @Override
     public ThingTypeUID getThingTypeUID() {
         return THING_TYPE_USERPRESENCE;
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this).append("data", data).toString();
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().append(data).toHashCode();
     }
 
     @Override
@@ -71,84 +47,6 @@ public class VerisureUserPresencesDTO extends VerisureBaseThingDTO {
         }
         VerisureUserPresencesDTO rhs = ((VerisureUserPresencesDTO) other);
         return new EqualsBuilder().append(data, rhs.data).isEquals();
-    }
-
-    public static class Data {
-
-        private Installation installation = new Installation();
-
-        public Installation getInstallation() {
-            return installation;
-        }
-
-        public void setInstallation(Installation installation) {
-            this.installation = installation;
-        }
-
-        @Override
-        public String toString() {
-            return new ToStringBuilder(this).append("installation", installation).toString();
-        }
-
-        @Override
-        public int hashCode() {
-            return new HashCodeBuilder().append(installation).toHashCode();
-        }
-
-        @Override
-        public boolean equals(@Nullable Object other) {
-            if (other == this) {
-                return true;
-            }
-            if (!(other instanceof Data)) {
-                return false;
-            }
-            Data rhs = ((Data) other);
-            return new EqualsBuilder().append(installation, rhs.installation).isEquals();
-        }
-    }
-
-    public static class Installation {
-
-        private List<UserTracking> userTrackings = new ArrayList<>();
-        @SerializedName("__typename")
-        private @Nullable String typename;
-
-        public List<UserTracking> getUserTrackings() {
-            return userTrackings;
-        }
-
-        public void setUserTrackings(List<UserTracking> userTrackings) {
-            this.userTrackings = userTrackings;
-        }
-
-        public @Nullable String getTypename() {
-            return typename;
-        }
-
-        @Override
-        public String toString() {
-            return new ToStringBuilder(this).append("userTrackings", userTrackings).append("typename", typename)
-                    .toString();
-        }
-
-        @Override
-        public int hashCode() {
-            return new HashCodeBuilder().append(userTrackings).append(typename).toHashCode();
-        }
-
-        @Override
-        public boolean equals(@Nullable Object other) {
-            if (other == this) {
-                return true;
-            }
-            if (!(other instanceof Installation)) {
-                return false;
-            }
-            Installation rhs = ((Installation) other);
-            return new EqualsBuilder().append(userTrackings, rhs.userTrackings).append(typename, rhs.typename)
-                    .isEquals();
-        }
     }
 
     public static class UserTracking {
@@ -211,19 +109,12 @@ public class VerisureUserPresencesDTO extends VerisureBaseThingDTO {
 
         @Override
         public String toString() {
-            return new ToStringBuilder(this).append("isCallingUser", isCallingUser).append("webAccount", webAccount)
-                    .append("status", status).append("xbnContactId", xbnContactId)
+            return status != null ? new ToStringBuilder(this).append("isCallingUser", isCallingUser)
+                    .append("webAccount", webAccount).append("status", status).append("xbnContactId", xbnContactId)
                     .append("currentLocationName", currentLocationName).append("deviceId", deviceId)
                     .append("name", name).append("currentLocationTimestamp", currentLocationTimestamp)
                     .append("deviceName", deviceName).append("currentLocationId", currentLocationId)
-                    .append("typename", typename).toString();
-        }
-
-        @Override
-        public int hashCode() {
-            return new HashCodeBuilder().append(currentLocationId).append(deviceName).append(status)
-                    .append(currentLocationTimestamp).append(currentLocationName).append(typename).append(name)
-                    .append(isCallingUser).append(xbnContactId).append(webAccount).append(deviceId).toHashCode();
+                    .append("typename", typename).toString() : "";
         }
 
         @Override

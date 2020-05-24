@@ -148,11 +148,9 @@ public abstract class VerisureThingHandler<T extends VerisureThingDTO> extends B
     }
 
     public synchronized void update(T thing) {
-        ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_INSTALLATION_ID);
         BigDecimal siteId = thing.getSiteId();
-        updateState(cuid, new DecimalType(siteId.longValue()));
-        cuid = new ChannelUID(getThing().getUID(), CHANNEL_INSTALLATION_NAME);
-        updateState(cuid, new StringType(thing.getSiteName()));
+        updateState(CHANNEL_INSTALLATION_ID, new DecimalType(siteId.longValue()));
+        updateState(CHANNEL_INSTALLATION_NAME, new StringType(thing.getSiteName()));
     }
 
     @Override

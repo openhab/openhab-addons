@@ -12,16 +12,26 @@
  */
 package org.openhab.binding.verisure.internal.dto;
 
-import static org.openhab.binding.verisure.internal.VerisureBindingConstants.THING_TYPE_ALARM;
-
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.openhab.binding.verisure.internal.dto.VerisureAlarmsDTO.ArmState;
+import org.openhab.binding.verisure.internal.dto.VerisureBroadbandConnectionsDTO.Broadband;
+import org.openhab.binding.verisure.internal.dto.VerisureClimatesDTO.Climate;
+import org.openhab.binding.verisure.internal.dto.VerisureDoorWindowsDTO.DoorWindow;
+import org.openhab.binding.verisure.internal.dto.VerisureEventLogDTO.EventLog;
+import org.openhab.binding.verisure.internal.dto.VerisureGatewayDTO.CommunicationState;
+import org.openhab.binding.verisure.internal.dto.VerisureInstallationsDTO.Account;
+import org.openhab.binding.verisure.internal.dto.VerisureMiceDetectionDTO.Mouse;
+import org.openhab.binding.verisure.internal.dto.VerisureSmartLocksDTO.Doorlock;
+import org.openhab.binding.verisure.internal.dto.VerisureSmartPlugsDTO.Smartplug;
+import org.openhab.binding.verisure.internal.dto.VerisureUserPresencesDTO.UserTracking;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -40,6 +50,7 @@ public class VerisureBaseThingDTO implements VerisureThingDTO {
     protected @Nullable String status;
     protected @Nullable String siteName;
     protected BigDecimal siteId = BigDecimal.ZERO;
+    protected Data data = new Data();
 
     /**
      *
@@ -127,24 +138,15 @@ public class VerisureBaseThingDTO implements VerisureThingDTO {
 
     @Override
     public ThingTypeUID getThingTypeUID() {
-        return THING_TYPE_ALARM;
+        return getThingTypeUID();
     }
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((deviceId.equals("")) ? 0 : deviceId.hashCode());
-        String location = this.location;
-        result = prime * result + ((location == null) ? 0 : location.hashCode());
-        String name = this.name;
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
-        String status = this.status;
-        result = prime * result + ((status == null) ? 0 : status.hashCode());
-        String siteName = this.siteName;
-        result = prime * result + ((siteName == null) ? 0 : siteName.hashCode());
-        result = prime * result + ((siteId.equals(BigDecimal.ZERO)) ? 0 : siteId.hashCode());
-        return result;
+    public Data getData() {
+        return data;
+    }
+
+    public void setData(Data data) {
+        this.data = data;
     }
 
     @Override
@@ -201,36 +203,160 @@ public class VerisureBaseThingDTO implements VerisureThingDTO {
             return false;
         }
 
+        if (!data.equals(other.data)) {
+            return false;
+        }
+
         return true;
     }
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("VerisureBaseThingJSON [");
-        if (name != null) {
-            builder.append("name=");
-            builder.append(name);
-            builder.append(", ");
+        return new ToStringBuilder(this).append("data", data).toString();
+    }
+
+    public static class Data {
+        private Installation installation = new Installation();
+        private Account account = new Account();
+
+        public Account getAccount() {
+            return account;
         }
-        builder.append(", deviceId=");
-        builder.append(deviceId);
-        if (location != null) {
-            builder.append(", location=");
-            builder.append(location);
+
+        public Installation getInstallation() {
+            return installation;
         }
-        if (status != null) {
-            builder.append(", status=");
-            builder.append(status);
+
+        public void setInstallation(Installation installation) {
+            this.installation = installation;
         }
-        if (siteName != null) {
-            builder.append(", siteName=");
-            builder.append(siteName);
+
+        @Override
+        public String toString() {
+            return new ToStringBuilder(this).append("installation", installation).append("account", account).toString();
         }
-        builder.append(", siteId=");
-        builder.append(siteId);
-        builder.append("]");
-        return builder.toString();
+
+        @Override
+        public boolean equals(@Nullable Object other) {
+            if (other == this) {
+                return true;
+            }
+            if (!(other instanceof Data)) {
+                return false;
+            }
+            Data rhs = ((Data) other);
+            return new EqualsBuilder().append(installation, rhs.installation).isEquals();
+        }
+    }
+
+    public static class Installation {
+
+        private ArmState armState = new ArmState();
+        private Broadband broadband = new Broadband();
+        private EventLog eventLog = new EventLog();
+        private List<Climate> climates = new ArrayList<>();
+        private List<DoorWindow> doorWindows = new ArrayList<>();
+        private List<CommunicationState> communicationState = new ArrayList<>();
+        private List<Mouse> mice = new ArrayList<>();
+        private List<Doorlock> doorlocks = new ArrayList<>();
+        private List<Smartplug> smartplugs = new ArrayList<>();
+        private List<UserTracking> userTrackings = new ArrayList<>();
+
+        @SerializedName("__typename")
+        private @Nullable String typename;
+
+        public ArmState getArmState() {
+            return armState;
+        }
+
+        public Broadband getBroadband() {
+            return broadband;
+        }
+
+        public List<Climate> getClimates() {
+            return climates;
+        }
+
+        public void setClimates(List<Climate> climates) {
+            this.climates = climates;
+        }
+
+        public List<DoorWindow> getDoorWindows() {
+            return doorWindows;
+        }
+
+        public void setDoorWindows(List<DoorWindow> doorWindows) {
+            this.doorWindows = doorWindows;
+        }
+
+        public EventLog getEventLog() {
+            return eventLog;
+        }
+
+        public List<CommunicationState> getCommunicationState() {
+            return communicationState;
+        }
+
+        public List<Mouse> getMice() {
+            return mice;
+        }
+
+        public void setMice(List<Mouse> mice) {
+            this.mice = mice;
+        }
+
+        public List<Doorlock> getDoorlocks() {
+            return doorlocks;
+        }
+
+        public void setDoorlocks(List<Doorlock> doorlocks) {
+            this.doorlocks = doorlocks;
+        }
+
+        public List<Smartplug> getSmartplugs() {
+            return smartplugs;
+        }
+
+        public void setSmartplugs(List<Smartplug> smartplugs) {
+            this.smartplugs = smartplugs;
+        }
+
+        public List<UserTracking> getUserTrackings() {
+            return userTrackings;
+        }
+
+        public void setUserTrackings(List<UserTracking> userTrackings) {
+            this.userTrackings = userTrackings;
+        }
+
+        public @Nullable String getTypename() {
+            return typename;
+        }
+
+        @Override
+        public String toString() {
+            return new ToStringBuilder(this).append("typename", typename).append("armState", armState)
+                    .append("broadband", broadband).append("eventLog", eventLog).append("climates", climates)
+                    .append("doorWindows", doorWindows).append("communicationState", communicationState)
+                    .append("mice", mice).append("doorLocks", doorlocks).append("smartplugs", smartplugs)
+                    .append("userTrackings", userTrackings).toString();
+        }
+
+        @Override
+        public boolean equals(@Nullable Object other) {
+            if (other == this) {
+                return true;
+            }
+            if (!(other instanceof Installation)) {
+                return false;
+            }
+            Installation rhs = ((Installation) other);
+            return new EqualsBuilder().append(typename, rhs.typename).append(armState, rhs.armState)
+                    .append(broadband, rhs.broadband).append(climates, rhs.climates)
+                    .append(doorWindows, rhs.doorWindows).append(communicationState, rhs.communicationState)
+                    .append(eventLog, rhs.eventLog).append(mice, rhs.mice).append(doorlocks, rhs.doorlocks)
+                    .append(smartplugs, rhs.smartplugs).append(userTrackings, rhs.userTrackings).isEquals();
+        }
     }
 
     public static class Device {
@@ -264,11 +390,6 @@ public class VerisureBaseThingDTO implements VerisureThingDTO {
         }
 
         @Override
-        public int hashCode() {
-            return new HashCodeBuilder().append(gui).append(area).append(typename).append(deviceLabel).toHashCode();
-        }
-
-        @Override
         public boolean equals(@Nullable Object other) {
             if (other == this) {
                 return true;
@@ -285,11 +406,16 @@ public class VerisureBaseThingDTO implements VerisureThingDTO {
     public static class Gui {
 
         private @Nullable String label;
+        private @Nullable String support;
         @SerializedName("__typename")
         private @Nullable String typename;
 
         public @Nullable String getLabel() {
             return label;
+        }
+
+        public @Nullable String getSupport() {
+            return support;
         }
 
         public @Nullable String getTypename() {
@@ -298,12 +424,8 @@ public class VerisureBaseThingDTO implements VerisureThingDTO {
 
         @Override
         public String toString() {
-            return new ToStringBuilder(this).append("label", label).append("typename", typename).toString();
-        }
-
-        @Override
-        public int hashCode() {
-            return new HashCodeBuilder().append(typename).append(label).toHashCode();
+            return new ToStringBuilder(this).append("label", label).append("support", support)
+                    .append("typename", typename).toString();
         }
 
         @Override
@@ -315,8 +437,8 @@ public class VerisureBaseThingDTO implements VerisureThingDTO {
                 return false;
             }
             Gui rhs = ((Gui) other);
-            return new EqualsBuilder().append(typename, rhs.typename).append(label, rhs.label).isEquals();
+            return new EqualsBuilder().append(typename, rhs.typename).append(support, rhs.support)
+                    .append(label, rhs.label).isEquals();
         }
     }
-
 }

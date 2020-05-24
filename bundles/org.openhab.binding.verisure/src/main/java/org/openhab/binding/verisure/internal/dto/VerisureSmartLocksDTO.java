@@ -14,11 +14,7 @@ package org.openhab.binding.verisure.internal.dto;
 
 import static org.openhab.binding.verisure.internal.VerisureBindingConstants.THING_TYPE_SMARTLOCK;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -35,16 +31,7 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class VerisureSmartLocksDTO extends VerisureBaseThingDTO {
 
-    private Data data = new Data();
     private @Nullable VerisureSmartLockDTO smartLockJSON;
-
-    public Data getData() {
-        return data;
-    }
-
-    public void setData(Data data) {
-        this.data = data;
-    }
 
     public @Nullable VerisureSmartLockDTO getSmartLockJSON() {
         return smartLockJSON;
@@ -55,18 +42,8 @@ public class VerisureSmartLocksDTO extends VerisureBaseThingDTO {
     }
 
     @Override
-    public String toString() {
-        return new ToStringBuilder(this).append("data", data).toString();
-    }
-
-    @Override
     public ThingTypeUID getThingTypeUID() {
         return THING_TYPE_SMARTLOCK;
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().append(data).toHashCode();
     }
 
     @Override
@@ -79,82 +56,6 @@ public class VerisureSmartLocksDTO extends VerisureBaseThingDTO {
         }
         VerisureSmartLocksDTO rhs = ((VerisureSmartLocksDTO) other);
         return new EqualsBuilder().append(data, rhs.data).isEquals();
-    }
-
-    public static class Data {
-
-        private Installation installation = new Installation();
-
-        public Installation getInstallation() {
-            return installation;
-        }
-
-        public void setInstallation(Installation installation) {
-            this.installation = installation;
-        }
-
-        @Override
-        public String toString() {
-            return new ToStringBuilder(this).append("installation", installation).toString();
-        }
-
-        @Override
-        public int hashCode() {
-            return new HashCodeBuilder().append(installation).toHashCode();
-        }
-
-        @Override
-        public boolean equals(@Nullable Object other) {
-            if (other == this) {
-                return true;
-            }
-            if (!(other instanceof Data)) {
-                return false;
-            }
-            Data rhs = ((Data) other);
-            return new EqualsBuilder().append(installation, rhs.installation).isEquals();
-        }
-    }
-
-    public static class Installation {
-
-        @SerializedName("__typename")
-        private @Nullable String typename;
-        private List<Doorlock> doorlocks = new ArrayList<>();
-
-        public @Nullable String getTypename() {
-            return typename;
-        }
-
-        public List<Doorlock> getDoorlocks() {
-            return doorlocks;
-        }
-
-        public void setDoorlocks(List<Doorlock> doorlocks) {
-            this.doorlocks = doorlocks;
-        }
-
-        @Override
-        public String toString() {
-            return new ToStringBuilder(this).append("typename", typename).append("doorlocks", doorlocks).toString();
-        }
-
-        @Override
-        public int hashCode() {
-            return new HashCodeBuilder().append(typename).append(doorlocks).toHashCode();
-        }
-
-        @Override
-        public boolean equals(@Nullable Object other) {
-            if (other == this) {
-                return true;
-            }
-            if (!(other instanceof Installation)) {
-                return false;
-            }
-            Installation rhs = ((Installation) other);
-            return new EqualsBuilder().append(typename, rhs.typename).append(doorlocks, rhs.doorlocks).isEquals();
-        }
     }
 
     public static class Doorlock {
@@ -203,16 +104,12 @@ public class VerisureSmartLocksDTO extends VerisureBaseThingDTO {
 
         @Override
         public String toString() {
-            return new ToStringBuilder(this).append("typename", typename).append("currentLockState", currentLockState)
-                    .append("device", device).append("eventTime", eventTime).append("method", method)
-                    .append("motorJam", motorJam).append("secureModeActive", secureModeActive)
-                    .append("userString", userString).toString();
-        }
-
-        @Override
-        public int hashCode() {
-            return new HashCodeBuilder().append(typename).append(device).append(secureModeActive).append(motorJam)
-                    .append(method).append(eventTime).append(currentLockState).append(userString).toHashCode();
+            return currentLockState != null
+                    ? new ToStringBuilder(this).append("typename", typename)
+                            .append("currentLockState", currentLockState).append("device", device)
+                            .append("eventTime", eventTime).append("method", method).append("motorJam", motorJam)
+                            .append("secureModeActive", secureModeActive).append("userString", userString).toString()
+                    : "";
         }
 
         @Override

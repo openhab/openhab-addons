@@ -18,13 +18,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
-import com.google.gson.annotations.SerializedName;
 
 /**
  * The alarms of the Verisure System.
@@ -35,29 +32,9 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class VerisureAlarmsDTO extends VerisureBaseThingDTO {
 
-    private Data data = new Data();
-
-    public Data getData() {
-        return data;
-    }
-
-    public void setData(Data data) {
-        this.data = data;
-    }
-
     @Override
     public ThingTypeUID getThingTypeUID() {
         return THING_TYPE_ALARM;
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this).append("data", data).toString();
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().append(data).toHashCode();
     }
 
     @Override
@@ -70,87 +47,6 @@ public class VerisureAlarmsDTO extends VerisureBaseThingDTO {
         }
         VerisureAlarmsDTO rhs = ((VerisureAlarmsDTO) other);
         return new EqualsBuilder().append(data, rhs.data).isEquals();
-    }
-
-    public static class Data {
-        private Installation installation = new Installation();
-
-        public Installation getInstallation() {
-            return installation;
-        }
-
-        public void setInstallation(Installation installation) {
-            this.installation = installation;
-        }
-
-        @Override
-        public String toString() {
-            return new ToStringBuilder(this).append("installation", installation).toString();
-        }
-
-        @Override
-        public int hashCode() {
-            return new HashCodeBuilder().append(installation).toHashCode();
-        }
-
-        @Override
-        public boolean equals(@Nullable Object other) {
-            if (other == this) {
-                return true;
-            }
-            if (!(other instanceof Data)) {
-                return false;
-            }
-            Data rhs = ((Data) other);
-            return new EqualsBuilder().append(installation, rhs.installation).isEquals();
-        }
-
-    }
-
-    public static class Installation {
-
-        private ArmState armState = new ArmState();
-        @SerializedName("__typename")
-        private @Nullable String typename;
-
-        public ArmState getArmState() {
-            return armState;
-        }
-
-        public void setArmState(ArmState armState) {
-            this.armState = armState;
-        }
-
-        public @Nullable String getTypename() {
-            return typename;
-        }
-
-        public void setTypename(@Nullable String typename) {
-            this.typename = typename;
-        }
-
-        @Override
-        public String toString() {
-            return new ToStringBuilder(this).append("armState", armState).append("typename", typename).toString();
-        }
-
-        @Override
-        public int hashCode() {
-            return new HashCodeBuilder().append(typename).append(armState).toHashCode();
-        }
-
-        @Override
-        public boolean equals(@Nullable Object other) {
-            if (other == this) {
-                return true;
-            }
-            if (!(other instanceof Installation)) {
-                return false;
-            }
-            Installation rhs = ((Installation) other);
-            return new EqualsBuilder().append(typename, rhs.typename).append(armState, rhs.armState).isEquals();
-        }
-
     }
 
     public static class ArmState {
@@ -169,10 +65,6 @@ public class VerisureAlarmsDTO extends VerisureBaseThingDTO {
             return type;
         }
 
-        public void setType(@Nullable String type) {
-            this.type = type;
-        }
-
         public @Nullable String getStatusType() {
             return statusType;
         }
@@ -185,71 +77,36 @@ public class VerisureAlarmsDTO extends VerisureBaseThingDTO {
             return date;
         }
 
-        public void setDate(@Nullable String date) {
-            this.date = date;
-        }
-
         public @Nullable String getName() {
             return name;
-        }
-
-        public void setName(@Nullable String name) {
-            this.name = name;
         }
 
         public @Nullable String getChangedVia() {
             return changedVia;
         }
 
-        public void setChangedVia(@Nullable String changedVia) {
-            this.changedVia = changedVia;
-        }
-
         public boolean getAllowedForFirstLine() {
             return allowedForFirstLine;
-        }
-
-        public void setAllowedForFirstLine(boolean allowedForFirstLine) {
-            this.allowedForFirstLine = allowedForFirstLine;
         }
 
         public boolean getAllowed() {
             return allowed;
         }
 
-        public void setAllowed(boolean allowed) {
-            this.allowed = allowed;
-        }
-
         public List<Object> getErrorCodes() {
             return errorCodes;
-        }
-
-        public void setErrorCodes(List<Object> errorCodes) {
-            this.errorCodes = errorCodes;
         }
 
         public @Nullable String getTypename() {
             return typename;
         }
 
-        public void setTypename(@Nullable String typename) {
-            this.typename = typename;
-        }
-
         @Override
         public String toString() {
-            return new ToStringBuilder(this).append("type", type).append("statusType", statusType).append("date", date)
-                    .append("name", name).append("changedVia", changedVia)
+            return type != null ? new ToStringBuilder(this).append("type", type).append("statusType", statusType)
+                    .append("date", date).append("name", name).append("changedVia", changedVia)
                     .append("allowedForFirstLine", allowedForFirstLine).append("allowed", allowed)
-                    .append("errorCodes", errorCodes).append("typename", typename).toString();
-        }
-
-        @Override
-        public int hashCode() {
-            return new HashCodeBuilder().append(allowed).append(statusType).append(typename).append(name)
-                    .append(allowedForFirstLine).append(errorCodes).append(date).append(type).append(changedVia)
-                    .toHashCode();
+                    .append("errorCodes", errorCodes).append("typename", typename).toString() : "";
         }
 
         @Override

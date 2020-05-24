@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -32,22 +31,6 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class VerisureInstallationsDTO extends VerisureBaseThingDTO {
 
-    private Data data = new Data();
-
-    public Data getData() {
-        return data;
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this).append("data", data).toString();
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().append(data).toHashCode();
-    }
-
     @Override
     public boolean equals(@Nullable Object other) {
         if (other == this) {
@@ -58,38 +41,6 @@ public class VerisureInstallationsDTO extends VerisureBaseThingDTO {
         }
         VerisureInstallationsDTO rhs = ((VerisureInstallationsDTO) other);
         return new EqualsBuilder().append(data, rhs.data).isEquals();
-    }
-
-    public static class Data {
-
-        private Account account = new Account();
-
-        public Account getAccount() {
-            return account;
-        }
-
-        @Override
-        public String toString() {
-            return new ToStringBuilder(this).append("account", account).toString();
-        }
-
-        @Override
-        public int hashCode() {
-            return new HashCodeBuilder().append(account).toHashCode();
-        }
-
-        @Override
-        public boolean equals(@Nullable Object other) {
-            if (other == this) {
-                return true;
-            }
-            if (!(other instanceof Data)) {
-                return false;
-            }
-            Data rhs = ((Data) other);
-            return new EqualsBuilder().append(account, rhs.account).isEquals();
-        }
-
     }
 
     public static class Account {
@@ -108,13 +59,8 @@ public class VerisureInstallationsDTO extends VerisureBaseThingDTO {
 
         @Override
         public String toString() {
-            return new ToStringBuilder(this).append("owainstallations", owainstallations).append("typename", typename)
-                    .toString();
-        }
-
-        @Override
-        public int hashCode() {
-            return new HashCodeBuilder().append(typename).append(owainstallations).toHashCode();
+            return owainstallations.size() > 0 ? new ToStringBuilder(this).append("owainstallations", owainstallations)
+                    .append("typename", typename).toString() : "";
         }
 
         @Override
@@ -167,15 +113,9 @@ public class VerisureInstallationsDTO extends VerisureBaseThingDTO {
 
         @Override
         public String toString() {
-            return new ToStringBuilder(this).append("giid", giid).append("alias", alias).append("type", type)
-                    .append("subsidiary", subsidiary).append("dealerId", dealerId).append("typename", typename)
-                    .toString();
-        }
-
-        @Override
-        public int hashCode() {
-            return new HashCodeBuilder().append(dealerId).append(alias).append(typename).append(giid).append(subsidiary)
-                    .append(type).toHashCode();
+            return typename != null ? new ToStringBuilder(this).append("giid", giid).append("alias", alias)
+                    .append("type", type).append("subsidiary", subsidiary).append("dealerId", dealerId)
+                    .append("typename", typename).toString() : "";
         }
 
         @Override

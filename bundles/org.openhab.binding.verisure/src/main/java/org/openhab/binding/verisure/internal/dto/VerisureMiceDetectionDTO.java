@@ -18,13 +18,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
-import com.google.gson.annotations.SerializedName;
 
 /**
  * The Mice detection status of the Verisure System.
@@ -36,17 +33,8 @@ import com.google.gson.annotations.SerializedName;
 public class VerisureMiceDetectionDTO extends VerisureBaseThingDTO {
 
     public static final int UNDEFINED = -1;
-    private Data data = new Data();
     private double temperatureValue = UNDEFINED;
     private @Nullable String temperatureTimestamp;
-
-    public Data getData() {
-        return data;
-    }
-
-    public void setData(Data data) {
-        this.data = data;
-    }
 
     public double getTemperatureValue() {
         return temperatureValue;
@@ -76,11 +64,6 @@ public class VerisureMiceDetectionDTO extends VerisureBaseThingDTO {
     }
 
     @Override
-    public int hashCode() {
-        return new HashCodeBuilder().append(data).append(temperatureValue).append(temperatureTimestamp).toHashCode();
-    }
-
-    @Override
     public boolean equals(@Nullable Object other) {
         if (other == this) {
             return true;
@@ -91,81 +74,6 @@ public class VerisureMiceDetectionDTO extends VerisureBaseThingDTO {
         VerisureMiceDetectionDTO rhs = ((VerisureMiceDetectionDTO) other);
         return new EqualsBuilder().append(data, rhs.data).append(temperatureValue, rhs.temperatureValue)
                 .append(temperatureTimestamp, rhs.temperatureTimestamp).isEquals();
-    }
-
-    public static class Data {
-
-        private Installation installation = new Installation();
-
-        public Installation getInstallation() {
-            return installation;
-        }
-
-        public void setInstallation(Installation installation) {
-            this.installation = installation;
-        }
-
-        @Override
-        public String toString() {
-            return new ToStringBuilder(this).append("installation", installation).toString();
-        }
-
-        @Override
-        public int hashCode() {
-            return new HashCodeBuilder().append(installation).toHashCode();
-        }
-
-        @Override
-        public boolean equals(@Nullable Object other) {
-            if (other == this) {
-                return true;
-            }
-            if (!(other instanceof Data)) {
-                return false;
-            }
-            Data rhs = ((Data) other);
-            return new EqualsBuilder().append(installation, rhs.installation).isEquals();
-        }
-    }
-
-    public static class Installation {
-
-        private List<Mouse> mice = new ArrayList<>();
-        private @Nullable String typename;
-
-        public List<Mouse> getMice() {
-            return mice;
-        }
-
-        public void setMice(List<Mouse> mice) {
-            this.mice = mice;
-        }
-
-        public @Nullable String getTypename() {
-            return typename;
-        }
-
-        @Override
-        public String toString() {
-            return new ToStringBuilder(this).append("mice", mice).append("typename", typename).toString();
-        }
-
-        @Override
-        public int hashCode() {
-            return new HashCodeBuilder().append(mice).append(typename).toHashCode();
-        }
-
-        @Override
-        public boolean equals(@Nullable Object other) {
-            if (other == this) {
-                return true;
-            }
-            if (!(other instanceof Installation)) {
-                return false;
-            }
-            Installation rhs = ((Installation) other);
-            return new EqualsBuilder().append(mice, rhs.mice).append(typename, rhs.typename).isEquals();
-        }
     }
 
     public static class Mouse {
@@ -195,11 +103,6 @@ public class VerisureMiceDetectionDTO extends VerisureBaseThingDTO {
         public String toString() {
             return new ToStringBuilder(this).append("device", device).append("type", type)
                     .append("detections", detections).append("typename", typename).toString();
-        }
-
-        @Override
-        public int hashCode() {
-            return new HashCodeBuilder().append(type).append(device).append(typename).append(detections).toHashCode();
         }
 
         @Override
@@ -246,14 +149,9 @@ public class VerisureMiceDetectionDTO extends VerisureBaseThingDTO {
 
         @Override
         public String toString() {
-            return new ToStringBuilder(this).append("count", count).append("gatewayTime", gatewayTime)
-                    .append("nodeTime", nodeTime).append("duration", duration).append("typename", typename).toString();
-        }
-
-        @Override
-        public int hashCode() {
-            return new HashCodeBuilder().append(count).append(duration).append(gatewayTime).append(typename)
-                    .append(nodeTime).toHashCode();
+            return gatewayTime != null ? new ToStringBuilder(this).append("count", count)
+                    .append("gatewayTime", gatewayTime).append("nodeTime", nodeTime).append("duration", duration)
+                    .append("typename", typename).toString() : "";
         }
 
         @Override
@@ -268,92 +166,6 @@ public class VerisureMiceDetectionDTO extends VerisureBaseThingDTO {
             return new EqualsBuilder().append(count, rhs.count).append(duration, rhs.duration)
                     .append(gatewayTime, rhs.gatewayTime).append(typename, rhs.typename).append(nodeTime, rhs.nodeTime)
                     .isEquals();
-        }
-
-    }
-
-    public static class Device {
-
-        private @Nullable String deviceLabel;
-        private @Nullable String area;
-        private @Nullable Gui gui;
-        @SerializedName("__typename")
-        private @Nullable String typename;
-
-        public @Nullable String getDeviceLabel() {
-            return deviceLabel;
-        }
-
-        public @Nullable String getArea() {
-            return area;
-        }
-
-        public @Nullable Gui getGui() {
-            return gui;
-        }
-
-        public @Nullable String getTypename() {
-            return typename;
-        }
-
-        @Override
-        public String toString() {
-            return new ToStringBuilder(this).append("deviceLabel", deviceLabel).append("area", area).append("gui", gui)
-                    .append("typename", typename).toString();
-        }
-
-        @Override
-        public int hashCode() {
-            return new HashCodeBuilder().append(area).append(deviceLabel).append(gui).append(typename).toHashCode();
-        }
-
-        @Override
-        public boolean equals(@Nullable Object other) {
-            if (other == this) {
-                return true;
-            }
-            if (!(other instanceof Device)) {
-                return false;
-            }
-            Device rhs = ((Device) other);
-            return new EqualsBuilder().append(area, rhs.area).append(deviceLabel, rhs.deviceLabel).append(gui, rhs.gui)
-                    .append(typename, rhs.typename).isEquals();
-        }
-    }
-
-    public static class Gui {
-
-        private @Nullable String support;
-        private @Nullable String typename;
-
-        public @Nullable String getSupport() {
-            return support;
-        }
-
-        public @Nullable String getTypename() {
-            return typename;
-        }
-
-        @Override
-        public String toString() {
-            return new ToStringBuilder(this).append("support", support).append("typename", typename).toString();
-        }
-
-        @Override
-        public int hashCode() {
-            return new HashCodeBuilder().append(support).append(typename).toHashCode();
-        }
-
-        @Override
-        public boolean equals(@Nullable Object other) {
-            if (other == this) {
-                return true;
-            }
-            if (!(other instanceof Gui)) {
-                return false;
-            }
-            Gui rhs = ((Gui) other);
-            return new EqualsBuilder().append(support, rhs.support).append(typename, rhs.typename).isEquals();
         }
     }
 }
