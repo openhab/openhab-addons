@@ -22,6 +22,7 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -39,6 +40,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
+@NonNullByDefault
 @Component(configurationPid = "binding.siemensrds", service = ThingHandlerFactory.class)
 public class RdsHandlerFactory extends BaseThingHandlerFactory {
 
@@ -52,8 +54,9 @@ public class RdsHandlerFactory extends BaseThingHandlerFactory {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
+    @Nullable
     @Override
-    protected @Nullable ThingHandler createHandler(Thing thing) {
+    protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if ((thingTypeUID.equals(THING_TYPE_CLOUD)) && (thing instanceof Bridge)) {
@@ -103,10 +106,13 @@ public class RdsHandlerFactory extends BaseThingHandlerFactory {
      */
     private synchronized void destroyDiscoveryService(RdsCloudHandler handler) {
         // fetch the respective thing's service registration from our list
-        ServiceRegistration<?> serviceReg = discos.remove(handler.getThing().getUID());
+        @Nullable
+        Object object = discos.remove(handler.getThing().getUID());
 
-        if (serviceReg != null) {
-            // retrieve the respective discovery service
+        // retrieve the respective discovery service
+        if (object instanceof ServiceRegistration<?>) {
+            ServiceRegistration<?> serviceReg = (ServiceRegistration<?>) object;
+
             RdsDiscoveryService disco = (RdsDiscoveryService) bundleContext.getService(serviceReg.getReference());
 
             // unregister the service
