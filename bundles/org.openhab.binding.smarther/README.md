@@ -10,7 +10,7 @@ Companion HABPanel widget can be found here: [BTicino Smarther HABPanel widget](
 
 The binding requires you to register an Application with Legrand Developer portal at https://developer.legrand.com - this will get you a set of Client ID and Client Secret parameters to be used by your binding configuration
 
-Optionally, if you want to later receive push notifications on the status of your units, consider to make your openHAB installation reacheble in https from a public IP or domain (see [Note on notifications](#note-on-notifications)).
+Optionally, if you want to later receive push notifications on the status of your units, consider to make your openHAB installation reachable in https from a public IP or domain (see [Note on notifications](#note-on-notifications)).
 
 ## Create an account
 
