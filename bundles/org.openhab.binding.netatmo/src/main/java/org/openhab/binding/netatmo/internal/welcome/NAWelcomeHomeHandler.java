@@ -124,19 +124,17 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
                     return UnDefType.UNDEF;
                 }
             case CHANNEL_WELCOME_EVENT_SNAPSHOT:
-                if (lastEvent != null) {
-                    String url = getSnapshotURL(lastEvent.getSnapshot());
-                    return url != null ? HttpUtil.downloadImage(url) : UnDefType.UNDEF;
-                } else {
-                    return UnDefType.UNDEF;
+                String url = findSnapshotURL();
+                if(url != null) {
+                    return HttpUtil.downloadImage(url);
                 }
+                return UnDefType.UNDEF;
             case CHANNEL_WELCOME_EVENT_SNAPSHOT_URL:
-                if (lastEvent != null) {
-                    String snapshotURL = getSnapshotURL(lastEvent.getSnapshot());
+                String snapshotURL = findSnapshotURL();
+                if(snapshotURL != null) {
                     return toStringType(snapshotURL);
-                } else {
-                    return UnDefType.UNDEF;
                 }
+                return UnDefType.UNDEF;
             case CHANNEL_WELCOME_EVENT_VIDEO_URL:
                 if (lastEvent != null && lastEvent.getVideoId() != null) {
                     String cameraId = lastEvent.getCameraId();
@@ -156,8 +154,9 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
                 return lastEvent != null ? lastEvent.getIsArrival() != null ? OnOffType.ON : OnOffType.OFF
                         : UnDefType.UNDEF;
             case CHANNEL_WELCOME_EVENT_MESSAGE:
-                return lastEvent != null && lastEvent.getMessage() != null
-                        ? new StringType(lastEvent.getMessage().replace("<b>", "").replace("</b>", ""))
+                String eventMessage = findEventMessage();
+                return eventMessage != null
+                        ? new StringType(eventMessage.replace("<b>", "").replace("</b>", ""))
                         : UnDefType.UNDEF;
             case CHANNEL_WELCOME_EVENT_SUBTYPE:
                 return lastEvent != null ? toDecimalType(lastEvent.getSubType()) : UnDefType.UNDEF;
@@ -171,13 +170,39 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
         return super.getNAThingProperty(channelId);
     }
 
+    private String findEventMessage() {
+        if(lastEvent != null) {
+            String message = lastEvent.getMessage();
+            if(message == null) {
+                NAWelcomeSubEvent firstSubEvent = findFirstSubEvent(lastEvent);
+                if(firstSubEvent != null) {
+                    message = firstSubEvent.getMessage();
+                }
+            }
+            return message;
+        }
+        return null;
+    }
+
     /**
      * Returns the Url of the picture
      *
      * @return Url of the picture or null
      */
-    protected String getSnapshotURL(NAWelcomeSnapshot snapshot) {
+    protected String findSnapshotURL() {
+        if(lastEvent == null) {
+            return null;
+        }
+
         String result = null;
+
+        NAWelcomeSnapshot snapshot = lastEvent.getSnapshot();
+        if(snapshot == null) {
+            NAWelcomeSubEvent firstSubEvent = findFirstSubEvent(lastEvent);
+            if(firstSubEvent != null) {
+                snapshot = firstSubEvent.getSnapshot();
+            }
+        }
 
         if (snapshot != null && snapshot.getId() != null && snapshot.getKey() != null) {
             result = WELCOME_PICTURE_URL + "?" + WELCOME_PICTURE_IMAGEID + "=" + snapshot.getId() + "&"
@@ -202,5 +227,13 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
             }
         }
         return OnOffType.OFF;
+    }
+
+    private static NAWelcomeSubEvent findFirstSubEvent(NAWelcomeEvent event) {
+        List<NAWelcomeSubEvent> subEvents = event.getEventList();
+        if(subEvents != null && !subEvents.isEmpty()) {
+            return subEvents.get(0);
+        }
+        return null;
     }
 }
