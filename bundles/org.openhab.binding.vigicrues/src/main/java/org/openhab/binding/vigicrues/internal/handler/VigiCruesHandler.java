@@ -111,27 +111,25 @@ public class VigiCruesHandler extends BaseThingHandler {
     private void updateAndPublish() {
         try {
             if (queryUrl.isEmpty()) {
-                throw new MalformedURLException();
+                throw new MalformedURLException("queryUrl not initialized");
             }
-            try {
-                String response = HttpUtil.executeUrl("GET", queryUrl, TIMEOUT_MS);
-                updateStatus(ThingStatus.ONLINE);
-                OpenDatasoftResponse apiResponse = gson.fromJson(response, OpenDatasoftResponse.class);
-                Arrays.stream(apiResponse.getRecords()).findFirst().ifPresent(record -> {
-                    record.getFields().ifPresent(field -> {
-                        field.getHauteur().ifPresent(height -> updateQuantity(HEIGHT, height, Units.METRE));
-                        field.getDebit()
-                                .ifPresent(flow -> updateQuantity(FLOW, flow, SmartHomeUnits.CUBICMETRE_PER_SECOND));
-                        field.getTimestamp().ifPresent(date -> updateDate(OBSERVATION_TIME, date));
-                    });
+            String response = HttpUtil.executeUrl("GET", queryUrl, TIMEOUT_MS);
+            updateStatus(ThingStatus.ONLINE);
+            OpenDatasoftResponse apiResponse = gson.fromJson(response, OpenDatasoftResponse.class);
+            Arrays.stream(apiResponse.getRecords()).findFirst().ifPresent(record -> {
+                record.getFields().ifPresent(field -> {
+                    field.getHauteur().ifPresent(height -> updateQuantity(HEIGHT, height, Units.METRE));
+                    field.getDebit()
+                            .ifPresent(flow -> updateQuantity(FLOW, flow, SmartHomeUnits.CUBICMETRE_PER_SECOND));
+                    field.getTimestamp().ifPresent(date -> updateDate(OBSERVATION_TIME, date));
                 });
-            } catch (IOException e) {
-                logger.warn("Error opening connection to VigiCrues webservice : {}", e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-            }
+            });
         } catch (MalformedURLException e) {
             logger.warn("Malformed URL in VigiCrues request : {}", queryUrl);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+        } catch (IOException e) {
+            logger.warn("Error opening connection to VigiCrues webservice : {}", e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
