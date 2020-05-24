@@ -114,7 +114,7 @@ To solve the issue, either:
 
 All Smarther Chronothermostat device models should be discoverable through this binding:
 
-* Flush ounting installation item (X8000)
+* Flush mounting installation item (X8000)
 * Wall installation item (X8000W)
 
 If you can control them from BTicino Thermostat mobile app on your iPhone/Android you should be able to add it as a thing.
