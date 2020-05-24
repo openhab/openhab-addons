@@ -155,5 +155,4 @@ public class ConnectionSettings {
                 && this.dimMode == other.dimMode && this.statusMode == other.statusMode
                 && this.timeoutMSec == other.timeoutMSec;
     }
-
 }

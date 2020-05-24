@@ -228,7 +228,7 @@ public class LcnModuleHandler extends BaseThingHandler {
     }
 
     @NonNullByDefault({}) // getOrDefault()
-    private AbstractVariableValueConverter getConverter(ChannelUID channelUid) throws LcnException {
+    private AbstractVariableValueConverter getConverter(ChannelUID channelUid) {
         return converters.getOrDefault(channelUid, IdentityConverter.getInstance());
     }
 

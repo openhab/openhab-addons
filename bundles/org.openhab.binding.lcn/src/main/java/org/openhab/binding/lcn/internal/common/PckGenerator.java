@@ -349,7 +349,7 @@ public final class PckGenerator {
      * @return the PCK command (without address header) as text
      * @throws LcnException
      */
-    public static String setSetpointAbsolute(int number, int value) throws LcnException {
+    public static String setSetpointAbsolute(int number, int value) {
         int internalValue = value;
         // Set absolute (not in PCK yet)
         int b1 = number << 6; // 01000000
@@ -374,7 +374,7 @@ public final class PckGenerator {
      * @return the PCK command (without address header) as text
      * @throws LcnException if command is not supported
      */
-    public static String setVariableRelative(Variable variable, LcnDefs.RelVarRef type, int value) throws LcnException {
+    public static String setVariableRelative(Variable variable, LcnDefs.RelVarRef type, int value) {
         if (variable.getNumber() == 0) {
             // Old command for variable 1 / T-var (compatible with all modules)
             return String.format("Z%s%d", value >= 0 ? "A" : "S", Math.abs(value));

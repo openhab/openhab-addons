@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.lcn.internal.common;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lcn.internal.subhandler.AbstractLcnModuleSubHandler;
 import org.openhab.binding.lcn.internal.subhandler.LcnModuleBinarySensorSubHandler;
 import org.openhab.binding.lcn.internal.subhandler.LcnModuleCodeSubHandler;
@@ -33,6 +34,7 @@ import org.openhab.binding.lcn.internal.subhandler.LcnModuleVariableSubHandler;
  *
  * @author Fabian Wolter - Initial contribution
  */
+@NonNullByDefault
 public enum LcnChannelGroup {
     OUTPUT(4, LcnModuleOutputSubHandler.class),
     ROLLERSHUTTEROUTPUT(1, LcnModuleRollershutterOutputSubHandler.class),

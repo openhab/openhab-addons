@@ -82,8 +82,7 @@ public class Connection {
      * @param callback the callback to the owner
      * @throws IOException
      */
-    public Connection(ConnectionSettings sets, ScheduledExecutorService scheduler, ConnectionCallback callback)
-            throws IOException {
+    public Connection(ConnectionSettings sets, ScheduledExecutorService scheduler, ConnectionCallback callback) {
         this.settings = sets;
         this.callback = callback;
         this.scheduler = scheduler;

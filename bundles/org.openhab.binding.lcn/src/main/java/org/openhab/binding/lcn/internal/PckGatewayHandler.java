@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.lcn.internal;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -105,8 +104,6 @@ public class PckGatewayHandler extends BaseBridgeHandler {
             });
 
             updateStatus(ThingStatus.UNKNOWN);
-        } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage + e.getMessage());
         } catch (LcnException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMessage + e.getMessage());
         }

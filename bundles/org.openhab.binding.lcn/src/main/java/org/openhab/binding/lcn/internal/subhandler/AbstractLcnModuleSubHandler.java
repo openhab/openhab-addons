@@ -13,10 +13,8 @@
 package org.openhab.binding.lcn.internal.subhandler;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Optional;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -46,7 +44,7 @@ import org.slf4j.LoggerFactory;
  * @author Fabian Wolter - Initial contribution
  */
 @NonNullByDefault
-public abstract class AbstractLcnModuleSubHandler {
+public abstract class AbstractLcnModuleSubHandler implements ILcnModuleSubHandler {
     private final Logger logger = LoggerFactory.getLogger(AbstractLcnModuleSubHandler.class);
     protected LcnModuleHandler handler;
     protected ModInfo info;
@@ -56,143 +54,56 @@ public abstract class AbstractLcnModuleSubHandler {
         this.info = info;
     }
 
-    /**
-     * Gets the Patterns, the sub handler is capable to process.
-     *
-     * @return the Patterns
-     */
-    public abstract Collection<Pattern> getPckStatusMessagePatterns();
-
-    /**
-     * Processes the payload of a pre-matched PCK message.
-     *
-     * @param matcher the pre-matched matcher.
-     * @throws LcnException when the message cannot be processed
-     */
-    public abstract void handleStatusMessage(Matcher matcher) throws LcnException;
-
-    /**
-     * Processes a refresh request from openHAB.
-     *
-     * @param channelGroup the Channel group that shall be refreshed
-     * @param number the Channel number within the Channel group
-     */
-    public abstract void handleRefresh(LcnChannelGroup channelGroup, int number);
-
-    /**
-     * Processes a refresh request from openHAB.
-     *
-     * @param groupId the Channel ID that shall be refreshed
-     */
+    @Override
     public void handleRefresh(String groupId) {
         // can be overwritten by subclasses.
     }
 
-    /**
-     * Handles a Command from openHAB.
-     *
-     * @param command the command to handle
-     * @param channelGroup the addressed Channel group
-     * @param number the Channel's number within the Channel group
-     * @throws LcnException when the command could not processed
-     */
+    @Override
     public void handleCommandOnOff(OnOffType command, LcnChannelGroup channelGroup, int number) throws LcnException {
         unsupportedCommand(command);
     }
 
-    /**
-     * Handles a Command from openHAB.
-     *
-     * @param command the command to handle
-     * @param channelGroup the addressed Channel group
-     * @param number the Channel's number within the Channel group
-     * @throws LcnException when the command could not processed
-     */
+    @Override
     public void handleCommandPercent(PercentType command, LcnChannelGroup channelGroup, int number)
             throws LcnException {
         unsupportedCommand(command);
     }
 
-    /**
-     * Handles a Command from openHAB.
-     *
-     * @param command the command to handle
-     * @param channelGroup the addressed Channel group
-     * @param idWithoutGroup the Channel's name within the Channel group
-     * @throws LcnException when the command could not processed
-     */
+    @Override
     public void handleCommandPercent(PercentType command, LcnChannelGroup channelGroup, String idWithoutGroup)
             throws LcnException {
         unsupportedCommand(command);
     }
 
-    /**
-     * Handles a Command from openHAB.
-     *
-     * @param command the command to handle
-     * @param channelGroup the addressed Channel group
-     * @param number the Channel's number within the Channel group
-     * @throws LcnException when the command could not processed
-     */
+    @Override
     public void handleCommandDecimal(DecimalType command, LcnChannelGroup channelGroup, int number)
             throws LcnException {
         unsupportedCommand(command);
     }
 
-    /**
-     * Handles a Command from openHAB.
-     *
-     * @param command the command to handle
-     * @param number the Channel's number within the Channel group
-     * @throws LcnException when the command could not processed
-     */
+    @Override
     public void handleCommandDimmerOutput(DimmerOutputCommand command, int number) throws LcnException {
         unsupportedCommand(command);
     }
 
-    /**
-     * Handles a Command from openHAB.
-     *
-     * @param command the command to handle
-     * @param number the Channel's number within the Channel group
-     * @throws LcnException when the command could not processed
-     */
+    @Override
     public void handleCommandString(StringType command, int number) throws LcnException {
         unsupportedCommand(command);
     }
 
-    /**
-     * Handles a Command from openHAB.
-     *
-     * @param command the command to handle
-     * @param channelGroup the addressed Channel group
-     * @param number the Channel's number within the Channel group
-     * @throws LcnException when the command could not processed
-     */
+    @Override
     public void handleCommandUpDown(UpDownType command, LcnChannelGroup channelGroup, int number) throws LcnException {
         unsupportedCommand(command);
     }
 
-    /**
-     * Handles a Command from openHAB.
-     *
-     * @param command the command to handle
-     * @param channelGroup the addressed Channel group
-     * @param number the Channel's number within the Channel group
-     * @throws LcnException when the command could not processed
-     */
+    @Override
     public void handleCommandStopMove(StopMoveType command, LcnChannelGroup channelGroup, int number)
             throws LcnException {
         unsupportedCommand(command);
     }
 
-    /**
-     * Handles a Command from openHAB.
-     *
-     * @param command the command to handle
-     * @param groupId the Channel's name within the Channel group
-     * @throws LcnException when the command could not processed
-     */
+    @Override
     public void handleCommandHsb(HSBType command, String groupId) throws LcnException {
         unsupportedCommand(command);
     }

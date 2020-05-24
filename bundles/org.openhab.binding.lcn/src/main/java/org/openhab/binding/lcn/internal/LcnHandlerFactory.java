@@ -69,7 +69,6 @@ public class LcnHandlerFactory extends BaseThingHandlerFactory {
                     new Hashtable<@Nullable String, @Nullable Object>());
             return handler;
         }
-
         return null;
     }
 }

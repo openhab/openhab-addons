@@ -64,7 +64,8 @@
 		</parameter>
 		<parameter name="moduleId" type="integer" required="true" min="5" max="254">
 			<label>Module ID</label>
-			<description>The module ID of any module in the group. The state of this module is used for visualization of the group as representative for all modules.</description>
+			<description>The module ID of any module in the group. The state of this module is used for visualization of the
+				group as representative for all modules.</description>
 		</parameter>
 		<parameter name="segmentId" type="integer" required="true" min="0" max="128">
 			<label>Segment ID</label>
@@ -80,7 +81,7 @@
 			<default>native</default>
 			<options>
 				<option value="native">LCN Native</option>
-				<option value="temperature">Temperature (°C or °F)</option> 
+				<option value="temperature">Temperature (°C or °F)</option>
 				<option value="light">Light (Lux)</option>
 				<option value="co2">CO₂ (ppm)</option>
 				<option value="power">Power (W)</option>

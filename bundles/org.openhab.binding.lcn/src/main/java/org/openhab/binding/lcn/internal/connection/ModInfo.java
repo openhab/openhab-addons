@@ -497,5 +497,4 @@ public class ModInfo {
     public void onLockedKeysResponseReceived() {
         requestStatusLockedKeys.onResponseReceived();
     }
-
 }

@@ -7,75 +7,75 @@
 		<label>LCN-PCHK Gateway</label>
 		<description>An LCN gateway speaking the PCK language. E.g. LCN-PCHK software or the DIN rail device LCN-PKE.</description>
 
-		<config-description-ref uri="thing-type:lcn:pckGateway" />
+		<config-description-ref uri="thing-type:lcn:pckGateway"/>
 	</bridge-type>
 
 	<thing-type id="module">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="pckGateway" />
+			<bridge-type-ref id="pckGateway"/>
 		</supported-bridge-type-refs>
 
 		<label>LCN Module</label>
 		<description>An LCN bus module, e.g. LCN-UPP, LCN-SH, LCN-HU</description>
 
 		<channel-groups>
-			<channel-group typeId="outputs" id="output" />
-			<channel-group typeId="rollershutteroutputs" id="rollershutteroutput" />
-			<channel-group typeId="leds" id="led" />
-			<channel-group typeId="relays" id="relay" />
-			<channel-group typeId="rollershutterrelays" id="rollershutterrelay" />
-			<channel-group typeId="logics" id="logic" />
-			<channel-group typeId="binarysensors" id="binarysensor" />
-			<channel-group typeId="variables" id="variable" />
-			<channel-group typeId="rvarsetpoints" id="rvarsetpoint" />
-			<channel-group typeId="rvarlocks" id="rvarlock" />
-			<channel-group typeId="thresholdregisters1" id="thresholdregister1" />
-			<channel-group typeId="thresholdregisters2" id="thresholdregister2" />
-			<channel-group typeId="thresholdregisters3" id="thresholdregister3" />
-			<channel-group typeId="thresholdregisters4" id="thresholdregister4" />
-			<channel-group typeId="s0inputs" id="s0input" />
-			<channel-group typeId="keyslocktablea" id="keylocktablea" />
-			<channel-group typeId="keyslocktableb" id="keylocktableb" />
-			<channel-group typeId="keyslocktablec" id="keylocktablec" />
-			<channel-group typeId="keyslocktabled" id="keylocktabled" />
-			<channel-group typeId="codes" id="code" />
+			<channel-group typeId="outputs" id="output"/>
+			<channel-group typeId="rollershutteroutputs" id="rollershutteroutput"/>
+			<channel-group typeId="leds" id="led"/>
+			<channel-group typeId="relays" id="relay"/>
+			<channel-group typeId="rollershutterrelays" id="rollershutterrelay"/>
+			<channel-group typeId="logics" id="logic"/>
+			<channel-group typeId="binarysensors" id="binarysensor"/>
+			<channel-group typeId="variables" id="variable"/>
+			<channel-group typeId="rvarsetpoints" id="rvarsetpoint"/>
+			<channel-group typeId="rvarlocks" id="rvarlock"/>
+			<channel-group typeId="thresholdregisters1" id="thresholdregister1"/>
+			<channel-group typeId="thresholdregisters2" id="thresholdregister2"/>
+			<channel-group typeId="thresholdregisters3" id="thresholdregister3"/>
+			<channel-group typeId="thresholdregisters4" id="thresholdregister4"/>
+			<channel-group typeId="s0inputs" id="s0input"/>
+			<channel-group typeId="keyslocktablea" id="keylocktablea"/>
+			<channel-group typeId="keyslocktableb" id="keylocktableb"/>
+			<channel-group typeId="keyslocktablec" id="keylocktablec"/>
+			<channel-group typeId="keyslocktabled" id="keylocktabled"/>
+			<channel-group typeId="codes" id="code"/>
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:lcn:module" />
+		<config-description-ref uri="thing-type:lcn:module"/>
 	</thing-type>
 
 	<thing-type id="group">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="pckGateway" />
+			<bridge-type-ref id="pckGateway"/>
 		</supported-bridge-type-refs>
 
 		<label>LCN Group</label>
 		<description>An LCN group with multiple modules, configured in LCN-PRO</description>
 
 		<channel-groups>
-			<channel-group typeId="outputs" id="output" />
-			<channel-group typeId="rollershutteroutputs" id="rollershutteroutput" />
-			<channel-group typeId="leds" id="led" />
-			<channel-group typeId="relays" id="relay" />
-			<channel-group typeId="rollershutterrelays" id="rollershutterrelay" />
-			<channel-group typeId="logics" id="logic" />
-			<channel-group typeId="binarysensors" id="binarysensor" />
-			<channel-group typeId="variables" id="variable" />
-			<channel-group typeId="rvarsetpoints" id="rvarsetpoint" />
-			<channel-group typeId="rvarlocks" id="rvarlock" />
-			<channel-group typeId="thresholdregisters1" id="thresholdregister1" />
-			<channel-group typeId="thresholdregisters2" id="thresholdregister2" />
-			<channel-group typeId="thresholdregisters3" id="thresholdregister3" />
-			<channel-group typeId="thresholdregisters4" id="thresholdregister4" />
-			<channel-group typeId="s0inputs" id="s0input" />
-			<channel-group typeId="keyslocktablea" id="keylocktablea" />
-			<channel-group typeId="keyslocktableb" id="keylocktableb" />
-			<channel-group typeId="keyslocktablec" id="keylocktablec" />
-			<channel-group typeId="keyslocktabled" id="keylocktabled" />
-			<channel-group typeId="codes" id="code" />
+			<channel-group typeId="outputs" id="output"/>
+			<channel-group typeId="rollershutteroutputs" id="rollershutteroutput"/>
+			<channel-group typeId="leds" id="led"/>
+			<channel-group typeId="relays" id="relay"/>
+			<channel-group typeId="rollershutterrelays" id="rollershutterrelay"/>
+			<channel-group typeId="logics" id="logic"/>
+			<channel-group typeId="binarysensors" id="binarysensor"/>
+			<channel-group typeId="variables" id="variable"/>
+			<channel-group typeId="rvarsetpoints" id="rvarsetpoint"/>
+			<channel-group typeId="rvarlocks" id="rvarlock"/>
+			<channel-group typeId="thresholdregisters1" id="thresholdregister1"/>
+			<channel-group typeId="thresholdregisters2" id="thresholdregister2"/>
+			<channel-group typeId="thresholdregisters3" id="thresholdregister3"/>
+			<channel-group typeId="thresholdregisters4" id="thresholdregister4"/>
+			<channel-group typeId="s0inputs" id="s0input"/>
+			<channel-group typeId="keyslocktablea" id="keylocktablea"/>
+			<channel-group typeId="keyslocktableb" id="keylocktableb"/>
+			<channel-group typeId="keyslocktablec" id="keylocktablec"/>
+			<channel-group typeId="keyslocktabled" id="keylocktabled"/>
+			<channel-group typeId="codes" id="code"/>
 		</channel-groups>
-		
-		<config-description-ref uri="thing-type:lcn:group" />
+
+		<config-description-ref uri="thing-type:lcn:group"/>
 	</thing-type>
 
 	<channel-type id="output" advanced="true">
@@ -307,7 +307,7 @@
 		<item-type>Number</item-type>
 		<label>Variable</label>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
-		<config-description-ref uri="channel-type:lcn:variable" />
+		<config-description-ref uri="channel-type:lcn:variable"/>
 	</channel-type>
 
 	<channel-group-type id="variables">
@@ -604,34 +604,34 @@
 	<channel-group-type id="codes">
 		<label>Transponder &amp; Remote Control</label>
 		<channels>
-			<channel typeId="transponders" id="transponder" />
-			<channel typeId="remotecontrolkeys" id="remotecontrolkey" />
-			<channel typeId="remotecontrolcodes" id="remotecontrolcode" />
-			<channel typeId="remotecontrolsbatterylow" id="remotecontrolbatterylow" />
+			<channel typeId="transponders" id="transponder"/>
+			<channel typeId="remotecontrolkeys" id="remotecontrolkey"/>
+			<channel typeId="remotecontrolcodes" id="remotecontrolcode"/>
+			<channel typeId="remotecontrolsbatterylow" id="remotecontrolbatterylow"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-type id="transponders" advanced="true">
 		<kind>trigger</kind>
 		<label>Transponder Codes</label>
-		<event />
+		<event/>
 	</channel-type>
 
 	<channel-type id="remotecontrolkeys" advanced="true">
 		<kind>trigger</kind>
 		<label>Remote Control Keys</label>
-		<event />
+		<event/>
 	</channel-type>
 
 	<channel-type id="remotecontrolcodes" advanced="true">
 		<kind>trigger</kind>
 		<label>Remote Control with Access Control Code</label>
-		<event />
+		<event/>
 	</channel-type>
 
 	<channel-type id="remotecontrolsbatterylow" advanced="true">
 		<kind>trigger</kind>
 		<label>Remote Control Low Battery</label>
-		<event />
+		<event/>
 	</channel-type>
 </thing:thing-descriptions>

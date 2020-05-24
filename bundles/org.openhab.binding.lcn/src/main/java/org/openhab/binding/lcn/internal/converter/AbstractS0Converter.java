@@ -49,5 +49,4 @@ public abstract class AbstractS0Converter extends AbstractVariableValueConverter
     public double toHumanReadable(long value) {
         return value / pulsesPerKwh * 1000;
     }
-
 }

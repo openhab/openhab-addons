@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lcn.internal.LcnBindingConstants;
 
 /**
@@ -24,8 +25,9 @@ import org.openhab.binding.lcn.internal.LcnBindingConstants;
  * @author Tobias Jüttner - Initial Contribution
  * @author Fabian Wolter - Migration to OH2
  */
+@NonNullByDefault
 public enum Variable {
-    UNKNOWN(0, Type.UNKNOWN, null), // Used if the real type is not known (yet)
+    UNKNOWN(0, Type.UNKNOWN, LcnChannelGroup.VARIABLE), // Used if the real type is not known (yet)
     VARIABLE1(0, Type.VARIABLE, LcnChannelGroup.VARIABLE), // or TVar
     VARIABLE2(1, Type.VARIABLE, LcnChannelGroup.VARIABLE),
     VARIABLE3(2, Type.VARIABLE, LcnChannelGroup.VARIABLE),
