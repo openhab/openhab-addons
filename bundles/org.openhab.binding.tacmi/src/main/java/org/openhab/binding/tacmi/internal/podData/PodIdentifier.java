@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.tacmi.internal.podData;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tacmi.internal.message.MessageType;
 
 /**
@@ -19,6 +21,7 @@ import org.openhab.binding.tacmi.internal.message.MessageType;
  *
  * @author Christian Niessner - Initial contribution
  */
+@NonNullByDefault
 public final class PodIdentifier {
     public final MessageType messageType;
     public final byte podId;
@@ -51,7 +54,7 @@ public final class PodIdentifier {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         if (!(o instanceof PodIdentifier))
             return false;
         PodIdentifier po = (PodIdentifier) o;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.tacmi.internal.stateCache;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link PodState} class defines a state cache details required
  * for communication with the TA C.M.I.
  *
  * @author Christian Niessner - Initial contribution
  */
+@NonNullByDefault
 public class PodState {
     
     public int value;

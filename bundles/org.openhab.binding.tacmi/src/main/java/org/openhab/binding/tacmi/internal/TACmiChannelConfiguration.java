@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,11 +12,15 @@
  */
 package org.openhab.binding.tacmi.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link TACmiConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Christian Niessner (marvkis) - Initial contribution
  */
+@NonNullByDefault
 public class TACmiChannelConfiguration {
 
     /**
@@ -30,7 +34,8 @@ public class TACmiChannelConfiguration {
         return output;
     }
 
-    public boolean equals(Object other) {
+    @Override
+    public boolean equals(@Nullable Object other) {
         if (this == other)
             return true;
         if (other == null || !other.getClass().equals(TACmiChannelConfiguration.class))
