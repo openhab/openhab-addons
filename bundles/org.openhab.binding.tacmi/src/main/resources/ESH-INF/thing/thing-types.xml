@@ -8,7 +8,7 @@
 	<thing-type id="cmi" extensible="coe-digital-in,coe-digital-out,coe-analog-in,coe-analog-out">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="coe-bridge" />
-	  	</supported-bridge-type-refs>
+		</supported-bridge-type-refs>
 
 		<label>TA C.M.I. CoE Connection</label>
 		<description>CoE Communication to the "Technische Alternative C.M.I. Control and Monitoring Interface"</description>
