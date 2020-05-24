@@ -250,11 +250,10 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
         IntStream.range(1, 13)
                 .forEach(i -> updateState(
                         String.format(DaikinBindingConstants.CHANNEL_ENERGY_STRING_FORMAT, channelPrefix, i),
-                        maybePower.<State>map(t -> new QuantityType<>(BigDecimal.valueOf(t[i - 1].longValue(), 1),
+                        maybePower.<State> map(t -> new QuantityType<>(BigDecimal.valueOf(t[i - 1].longValue(), 1),
                                 SmartHomeUnits.KILOWATT_HOUR)).orElse(UnDefType.UNDEF))
 
                 );
-
     }
 
     @Override

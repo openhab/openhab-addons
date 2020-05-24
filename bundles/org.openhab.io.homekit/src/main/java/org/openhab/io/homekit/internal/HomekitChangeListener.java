@@ -12,7 +12,6 @@
  */
 package org.openhab.io.homekit.internal;
 
-
 import java.time.Clock;
 import java.time.Duration;
 import java.util.Collection;

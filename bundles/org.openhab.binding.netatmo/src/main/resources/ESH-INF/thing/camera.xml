@@ -29,7 +29,7 @@
 
 	<thing-type id="NOC">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="netatmoapi" />
+			<bridge-type-ref id="netatmoapi"/>
 		</supported-bridge-type-refs>
 
 		<label>Presence Camera</label>
@@ -46,7 +46,7 @@
 		</channels>
 
 		<representation-property>id</representation-property>
-		<config-description-ref uri="thing-type:netatmo:camera" />
+		<config-description-ref uri="thing-type:netatmo:camera"/>
 	</thing-type>
 
 

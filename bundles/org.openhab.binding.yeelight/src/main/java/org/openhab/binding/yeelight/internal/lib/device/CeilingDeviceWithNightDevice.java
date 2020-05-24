@@ -27,8 +27,7 @@ import com.google.gson.JsonParser;
  *
  * @author Nikita Pogudalov - Initial contribution
  */
-public class CeilingDeviceWithNightDevice extends CeilingDevice
-        implements DeviceWithNightlight {
+public class CeilingDeviceWithNightDevice extends CeilingDevice implements DeviceWithNightlight {
     private final Logger logger = LoggerFactory.getLogger(CeilingDeviceWithNightDevice.class);
 
     public CeilingDeviceWithNightDevice(String id) {

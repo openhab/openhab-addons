@@ -49,6 +49,5 @@ public class UtilsTest {
         tokenString = "6614798643fe781563c1eebeda22479a6614798643fe781563c1eebeda22479a";
         assertEquals("66147986XXXXXXXXXXXXXXXXda22479a6614798643fe781563c1eebeda22479a",
                 Utils.obfuscateToken(tokenString));
-
     }
 }

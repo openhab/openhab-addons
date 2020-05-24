@@ -16,7 +16,8 @@
 			</channel>
 			<channel id="43005" typeId="rwtype-degree-minutes">
 				<label>Degree Minutes (16 Bit)</label>
-				<description>Degree minutes, 16bit value (-32768 &lt; x &lt; 32767). Values outside valid values are rounded to the closest valid value.</description>
+				<description>Degree minutes, 16bit value (-32768 &lt; x &lt; 32767). Values outside valid values are rounded to the
+					closest valid value.</description>
 				<properties>
 					<property name="writeApiUrl">/Manage/4.9.3</property>
 					<property name="validationExpression">-?[0-9]+</property>

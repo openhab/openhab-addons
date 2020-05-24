@@ -39,7 +39,8 @@
 			</parameter>
 			<parameter name="extCommands" type="boolean">
 				<label>Extended Commands Support</label>
-				<description>Check this option to enable extended commands supported only by version 2.xx of INT-RS. Turn off in case of communication timeouts.</description>
+				<description>Check this option to enable extended commands supported only by version 2.xx of INT-RS. Turn off in
+					case of communication timeouts.</description>
 				<default>true</default>
 			</parameter>
 		</config-description>

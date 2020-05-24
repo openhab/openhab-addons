@@ -275,6 +275,7 @@ public class InsteonDevice {
     /**
      * Handle incoming message for this device by forwarding
      * it to all features that this device supports
+     * 
      * @param msg the incoming message
      */
     public void handleMessage(Msg msg) {

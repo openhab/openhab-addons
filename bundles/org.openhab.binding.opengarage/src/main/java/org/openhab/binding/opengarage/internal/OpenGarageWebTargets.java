@@ -49,14 +49,14 @@ public class OpenGarageWebTargets {
         String queryParams = null;
         switch (request) {
             case OPEN:
-              queryParams = "&open=1";
-              break;
+                queryParams = "&open=1";
+                break;
             case CLOSE:
-              queryParams = "&close=1";
-              break;
+                queryParams = "&close=1";
+                break;
             case CLICK:
-              queryParams = "&click=1";
-              break;
+                queryParams = "&click=1";
+                break;
         }
         if (queryParams != null) {
             invoke(changeControllerVariablesUri, queryParams);

@@ -54,5 +54,4 @@ public class BasicInfo {
         params.put("ssid", ssid);
         return params;
     }
-
 }

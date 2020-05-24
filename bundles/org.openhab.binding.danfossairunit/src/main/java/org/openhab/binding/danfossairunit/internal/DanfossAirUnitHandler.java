@@ -62,8 +62,9 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
             updateAllChannels();
         } else {
             try {
-                if(hrv == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.NONE, "Air unit connection not initialized.");
+                if (hrv == null) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.NONE,
+                            "Air unit connection not initialized.");
                     return;
                 }
                 Channel channel = Channel.getByName(channelUID.getIdWithoutGroup());
@@ -120,9 +121,10 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
             try {
                 updateState(channel.getGroup().getGroupName(), channel.getChannelName(),
                         channel.getReadAccessor().access(danfossAirUnit));
-            } catch(UnexpectedResponseValueException e) {
+            } catch (UnexpectedResponseValueException e) {
                 updateState(channel.getGroup().getGroupName(), channel.getChannelName(), UnDefType.UNDEF);
-                logger.debug("Cannot update channel {}: an unexpected or invalid response has been received from the air unit: {}",
+                logger.debug(
+                        "Cannot update channel {}: an unexpected or invalid response has been received from the air unit: {}",
                         channel.getChannelName(), e.getMessage());
             } catch (IOException e) {
                 updateState(channel.getGroup().getGroupName(), channel.getChannelName(), UnDefType.UNDEF);

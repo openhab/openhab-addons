@@ -128,13 +128,14 @@ public class DataResponseTransformer {
                         putDecimalType(result, channel, value, UNSCALED);
                         break;
                     default:
-                        logger.warn("could not handle unknown type {}, channel {}, value {}", type,
-                                channel.getUID(), value);
+                        logger.warn("could not handle unknown type {}, channel {}, value {}", type, channel.getUID(),
+                                value);
                 }
             }
         }
         return result;
     }
+
     private final void putQuantityType(Map<Channel, State> targetMap, Channel channel, long value, double factor,
             Unit<?> unit) {
         // make sure that values are stored as long if no factor is to be applied
@@ -157,5 +158,4 @@ public class DataResponseTransformer {
         logger.debug("Channel {} transformed to DecimalType ({}*{}) -> {}", channel.getUID().getId(), value, factor,
                 val);
     }
-
 }

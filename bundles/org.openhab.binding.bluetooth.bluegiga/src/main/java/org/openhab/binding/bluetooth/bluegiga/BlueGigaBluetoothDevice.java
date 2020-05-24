@@ -565,5 +565,4 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
     private ScheduledFuture<?> startTimer(Runnable command, long timeout) {
         return scheduler.schedule(command, timeout, TimeUnit.SECONDS);
     }
-
 }

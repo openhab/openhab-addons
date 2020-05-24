@@ -126,12 +126,12 @@ public class MqttBrokerHandlerFactory extends BaseThingHandlerFactory implements
         });
     }
 
-     @Override
-     public void publish(String topic, byte[] payload) {
-         handlers.forEach(handler -> {
-             handler.getConnectionAsync().thenAccept(connection -> {
-                 connection.publish(topic, payload);
-             });
-         });
-     }
+    @Override
+    public void publish(String topic, byte[] payload) {
+        handlers.forEach(handler -> {
+            handler.getConnectionAsync().thenAccept(connection -> {
+                connection.publish(topic, payload);
+            });
+        });
+    }
 }

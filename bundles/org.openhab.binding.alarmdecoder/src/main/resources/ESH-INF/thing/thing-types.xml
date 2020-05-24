@@ -76,15 +76,15 @@
 	<!-- Zone Thing Type -->
 	<thing-type id="zone">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="ipbridge" />
-			<bridge-type-ref id="serialbridge" />
+			<bridge-type-ref id="ipbridge"/>
+			<bridge-type-ref id="serialbridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Alarm Zone</label>
 		<description>Alarm Decoder REL or EXP zone</description>
 
 		<channels>
-			<channel id="contact" typeId="contact-channel" />
+			<channel id="contact" typeId="contact-channel"/>
 		</channels>
 
 		<representation-property>id</representation-property>
@@ -102,8 +102,8 @@
 	<!-- RF Zone Thing Type -->
 	<thing-type id="rfzone">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="ipbridge" />
-			<bridge-type-ref id="serialbridge" />
+			<bridge-type-ref id="ipbridge"/>
+			<bridge-type-ref id="serialbridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Alarm RF Zone</label>
@@ -143,8 +143,8 @@
 	<!-- Keypad Thing Type -->
 	<thing-type id="keypad">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="ipbridge" />
-			<bridge-type-ref id="serialbridge" />
+			<bridge-type-ref id="ipbridge"/>
+			<bridge-type-ref id="serialbridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Alarm Keypad</label>
@@ -245,8 +245,8 @@
 	<!-- LRR Thing Type -->
 	<thing-type id="lrr">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="ipbridge" />
-			<bridge-type-ref id="serialbridge" />
+			<bridge-type-ref id="ipbridge"/>
+			<bridge-type-ref id="serialbridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Long Range Radio</label>
@@ -287,7 +287,7 @@
 		<item-type>Contact</item-type>
 		<label>Contact State</label>
 		<category>Switch</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- Indicator Channel Type -->
@@ -295,7 +295,7 @@
 		<item-type>Switch</item-type>
 		<label>Indicator State</label>
 		<category>Switch</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- Number Channel Type -->
@@ -303,14 +303,14 @@
 		<item-type>Number</item-type>
 		<label>Number</label>
 		<category>Number</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- Text channel type -->
 	<channel-type id="text-channel">
 		<item-type>String</item-type>
 		<label>Text Channel</label>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- Command channel type -->

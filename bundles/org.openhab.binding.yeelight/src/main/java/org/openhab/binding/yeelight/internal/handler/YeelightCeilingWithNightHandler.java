@@ -13,9 +13,7 @@
 package org.openhab.binding.yeelight.internal.handler;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.yeelight.internal.YeelightBindingConstants;
 import org.openhab.binding.yeelight.internal.lib.device.DeviceStatus;
 import org.openhab.binding.yeelight.internal.lib.enums.ActiveMode;

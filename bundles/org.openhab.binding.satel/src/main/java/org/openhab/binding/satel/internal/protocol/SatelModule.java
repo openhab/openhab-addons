@@ -104,9 +104,9 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
     /**
      * Creates new instance of the class.
      *
-     * @param timeout           timeout value in milliseconds for connect/read/write operations
+     * @param timeout timeout value in milliseconds for connect/read/write operations
      * @param extPayloadSupport if <code>true</code>, the module supports extended command payload for reading
-     *                              INTEGRA256 state
+     *            INTEGRA256 state
      */
     public SatelModule(int timeout, boolean extPayloadSupport) {
         this.timeout = timeout;
@@ -210,7 +210,7 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
     /**
      * Enqueues specified command in send queue.
      *
-     * @param cmd   command to enqueue
+     * @param cmd command to enqueue
      * @param force if <code>true</code> enqueues unconditionally
      * @return <code>true</code> if operation succeeded
      */

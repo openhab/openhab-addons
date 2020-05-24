@@ -38,7 +38,8 @@
 			</channel>
 			<channel id="47402" typeId="rwtype-room-sensor-factor">
 				<label>Room Sensor Factor S1</label>
-				<description>Setting of how much the difference between set and actual room temperature should affect the supply temperature.</description>
+				<description>Setting of how much the difference between set and actual room temperature should affect the supply
+					temperature.</description>
 				<properties>
 					<property name="writeApiUrl">/Manage/1.9.4</property>
 					<property name="validationExpression">[0123456]*[0-9]</property>
@@ -46,7 +47,8 @@
 			</channel>
 			<channel id="48793" typeId="rwtype-room-sensor-factor">
 				<label>Room Sensor Cool Factor S1</label>
-				<description>Setting of how much the difference between set and actual room temperature should affect the supply temperature in cooling mode.</description>
+				<description>Setting of how much the difference between set and actual room temperature should affect the supply
+					temperature in cooling mode.</description>
 				<properties>
 					<property name="writeApiUrl">/Manage/1.9.4</property>
 					<property name="validationExpression">[0123456]*[0-9]</property>

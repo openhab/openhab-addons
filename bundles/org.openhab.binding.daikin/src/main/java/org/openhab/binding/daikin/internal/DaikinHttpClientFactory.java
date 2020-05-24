@@ -30,5 +30,6 @@ public interface DaikinHttpClientFactory {
      *
      * @return the shared Jetty http client
      */
-    @Nullable HttpClient getHttpClient();
+    @Nullable
+    HttpClient getHttpClient();
 }

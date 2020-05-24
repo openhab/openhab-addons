@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.netatmo.internal.camera;
 
-import io.swagger.client.model.NAWelcomeCamera;
+import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.toOnOffType;
+import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.toStringType;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
+
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -21,14 +24,13 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.netatmo.internal.handler.NetatmoModuleHandler;
 
-import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.toOnOffType;
-import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.toStringType;
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
+import io.swagger.client.model.NAWelcomeCamera;
 
 /**
  * {@link CameraHandler} is the class used to handle Camera Data
  *
- * @author Sven Strohschein (partly moved code from NAWelcomeCameraHandler to introduce inheritance, see NAWelcomeCameraHandler)
+ * @author Sven Strohschein (partly moved code from NAWelcomeCameraHandler to introduce inheritance, see
+ *         NAWelcomeCameraHandler)
  *
  */
 public class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera> {
@@ -123,7 +125,7 @@ public class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera> {
 
         StringBuilder resultStringBuilder = new StringBuilder(result);
         resultStringBuilder.append("/live/index");
-        if(isLocal()) {
+        if (isLocal()) {
             resultStringBuilder.append("_local");
         }
         resultStringBuilder.append(".m3u8");
@@ -137,7 +139,7 @@ public class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera> {
 
     public String getStreamURL(String videoId) {
         String result = getVpnUrl();
-        if(result == null) {
+        if (result == null) {
             return null;
         }
 
@@ -145,7 +147,7 @@ public class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera> {
         resultStringBuilder.append("/vod/");
         resultStringBuilder.append(videoId);
         resultStringBuilder.append("/index");
-        if(isLocal()) {
+        if (isLocal()) {
             resultStringBuilder.append("_local");
         }
         resultStringBuilder.append(".m3u8");
