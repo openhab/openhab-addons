@@ -551,7 +551,9 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
             }
 
             urlStr = urlStr.replace("%QUERY%", StringUtils.trimToEmpty(config.location));
-            logger.debug("URL = {}", urlStr.replace("%APIKEY%", "***"));
+            if (logger.isDebugEnabled()) {
+                logger.debug("URL = {}", urlStr.replace("%APIKEY%", "***"));
+            }
 
             urlStr = urlStr.replace("%APIKEY%", StringUtils.trimToEmpty(bridgeHandler.getApikey()));
 
