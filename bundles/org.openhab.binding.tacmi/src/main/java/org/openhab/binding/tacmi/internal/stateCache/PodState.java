@@ -22,8 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class PodState {
-    
+
     public int value;
     public int measureType;
-
 }

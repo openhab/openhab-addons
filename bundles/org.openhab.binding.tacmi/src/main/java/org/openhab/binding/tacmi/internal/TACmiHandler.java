@@ -299,7 +299,6 @@ public class TACmiHandler extends BaseThingHandler {
                 updateState(channel.getUID(), state ? OnOffType.ON : OnOffType.OFF);
             }
         }
-
     }
 
     public void monitor() {
@@ -335,5 +334,4 @@ public class TACmiHandler extends BaseThingHandler {
         if (scu != null)
             scu.persistStates(podDatas.values());
     }
-
 }

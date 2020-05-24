@@ -19,15 +19,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tacmi.internal.message.Message;
 import org.openhab.binding.tacmi.internal.podData.PodData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * The {@link StateCache} class defines common constants, which are used across
@@ -73,7 +73,7 @@ public class StateCacheUtils {
                                         @Nullable // seems quit idiotic here as null checks also generate warnings... ?
                                         final PodState ps = spi.next();
                                         // if (ps == null) {
-                                        //     message.setValue(id, (short) 0, 0);
+                                        // message.setValue(id, (short) 0, 0);
                                         // } else {
                                         message.setValue(id, (short) (ps.value & 0xffff), ps.measureType);
                                         // }
@@ -145,5 +145,4 @@ public class StateCacheUtils {
             logger.warn("Persistance of state file {} failed: {}", this.stateCacheFile, t.getMessage(), t);
         }
     }
-
 }

@@ -36,7 +36,7 @@ public final class AnalogValue {
      */
     public AnalogValue(int rawValue, int type) {
         measureType = TACmiMeasureType.fromInt(type);
-        value = ((double)rawValue) / measureType.getOffset();
+        value = ((double) rawValue) / measureType.getOffset();
         if (measureType.equals(TACmiMeasureType.UNSUPPORTED)) {
             logger.warn("Unsupported measure type {}, value is {}", type, value);
         } else {

@@ -37,5 +37,4 @@ public final class PodData {
         this.podId = podId;
         this.messageType = messageType;
     }
-
 }

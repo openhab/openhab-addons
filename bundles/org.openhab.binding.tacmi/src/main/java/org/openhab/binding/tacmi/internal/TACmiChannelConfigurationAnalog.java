@@ -44,5 +44,4 @@ public class TACmiChannelConfigurationAnalog extends TACmiChannelConfiguration {
         TACmiChannelConfigurationAnalog o = (TACmiChannelConfigurationAnalog) other;
         return this.output == o.output && this.type == o.type;
     }
-
 }

@@ -104,5 +104,4 @@ public final class DigitalMessage extends Message {
     public MessageType getType() {
         return MessageType.D;
     }
-
 }

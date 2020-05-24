@@ -119,12 +119,10 @@ public final class AnalogMessage extends Message {
 
     @Override
     public void debug(Logger logger) {
-
     }
 
     @Override
     public MessageType getType() {
         return MessageType.A;
     }
-
 }

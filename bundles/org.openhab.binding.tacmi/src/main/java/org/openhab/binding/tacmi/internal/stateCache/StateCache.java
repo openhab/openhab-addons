@@ -28,5 +28,4 @@ public class StateCache {
 
     // could be Nullable due to json.read
     public @Nullable Collection<PodStates> pods;
-
 }

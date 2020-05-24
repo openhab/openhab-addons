@@ -31,13 +31,15 @@ public class TACmiBindingConstants {
     public static final ThingTypeUID THING_TYPE_CMI = new ThingTypeUID(BINDING_ID, "cmi");
     public static final ThingTypeUID THING_TYPE_COE_BRIDGE = new ThingTypeUID(BINDING_ID, "coe-bridge");
 
-    public static final ChannelTypeUID CHANNEL_TYPE_COE_DIGITAL_IN_UID = new ChannelTypeUID(BINDING_ID, "coe-digital-in");
+    public static final ChannelTypeUID CHANNEL_TYPE_COE_DIGITAL_IN_UID = new ChannelTypeUID(BINDING_ID,
+            "coe-digital-in");
     public static final ChannelTypeUID CHANNEL_TYPE_COE_ANALOG_IN_UID = new ChannelTypeUID(BINDING_ID, "coe-analog-in");
 
-    public static final ChannelTypeUID CHANNEL_TYPE_COE_DIGITAL_OUT_UID = new ChannelTypeUID(BINDING_ID, "coe-digital-out");
-    public static final ChannelTypeUID CHANNEL_TYPE_COE_ANALOG_OUT_UID = new ChannelTypeUID(BINDING_ID, "coe-analog-out");
+    public static final ChannelTypeUID CHANNEL_TYPE_COE_DIGITAL_OUT_UID = new ChannelTypeUID(BINDING_ID,
+            "coe-digital-out");
+    public static final ChannelTypeUID CHANNEL_TYPE_COE_ANALOG_OUT_UID = new ChannelTypeUID(BINDING_ID,
+            "coe-analog-out");
 
     // Channel specific configuration items
     public final static String CHANNEL_CONFIG_OUTPUT = "output";
-
 }

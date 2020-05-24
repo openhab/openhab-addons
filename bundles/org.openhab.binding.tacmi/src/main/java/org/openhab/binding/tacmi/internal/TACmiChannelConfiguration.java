@@ -43,5 +43,4 @@ public class TACmiChannelConfiguration {
         TACmiChannelConfiguration o = (TACmiChannelConfiguration) other;
         return this.output == o.output;
     }
-
 }
