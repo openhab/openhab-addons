@@ -133,8 +133,8 @@ public class TACmiHandler extends BaseThingHandler {
                 final PodIdentifier pi = new PodIdentifier(messageType, podId, outgoing);
                 // initialzie podData
                 getPodData(pi);
-            } catch (final Throwable e) {
-                logger.error("Failed to collect data for Channel " + chann.getUID() + ": " + e.getMessage(), e);
+            } catch (final Exception e) {
+                logger.error("Failed to collect data for Channel {}: {}", chann.getUID(), e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Failed to collect data for Channel " + chann.getUID() + ": " + e.getMessage());
                 return;

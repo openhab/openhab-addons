@@ -12,17 +12,21 @@
  */
 package org.openhab.binding.tacmi.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link TACmiConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Christian Niessner (marvkis) - Initial contribution
  */
+@NonNullByDefault
 public class TACmiConfiguration {
 
     /**
      * host address of the C.M.I.
      */
-    public String host;
+    public @Nullable String host;
 
     /**
      * CoE / CAN node ID we are representing

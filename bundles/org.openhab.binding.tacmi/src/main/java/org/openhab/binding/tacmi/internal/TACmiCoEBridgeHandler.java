@@ -21,6 +21,7 @@ import java.net.SocketTimeoutException;
 import java.util.Collection;
 import java.util.HashSet;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -42,6 +43,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Christian Niessner (marvkis) - Initial contribution
  */
+@NonNullByDefault
 public class TACmiCoEBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(TACmiCoEBridgeHandler.class);
@@ -56,9 +58,9 @@ public class TACmiCoEBridgeHandler extends BaseBridgeHandler {
      */
     private @Nullable DatagramSocket coeSocket = null;
 
-    private ReceiveThread receiveThread;
+    private @Nullable ReceiveThread receiveThread;
 
-    private MonitorThread monitor;
+    private @Nullable MonitorThread monitor;
 
     private final Collection<TACmiHandler> registeredCMIs = new HashSet<>();
 
@@ -124,15 +126,15 @@ public class TACmiCoEBridgeHandler extends BaseBridgeHandler {
                         if (!found)
                             logger.info("Received CoE-Packet from {} Node {} and we don't have a Thing for!",
                                     remoteAddress, node);
-                    } catch (final Throwable t) {
-                        logger.error("Error processing data: " + t.getMessage(), t);
+                    } catch (final Exception t) {
+                        logger.error("Error processing data: {}", t.getMessage(), t);
                     }
                 }
                 logger.debug("ReceiveThread exiting.");
-            } catch (final Throwable t) {
+            } catch (final Exception t) {
                 if (isInterrupted())
                     return;
-                logger.error("Fatal error processing data: " + t.getMessage(), t);
+                logger.error("Fatal error processing data: {}", t.getMessage(), t);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Error processing data: " + t.getMessage());
             }
@@ -176,7 +178,7 @@ public class TACmiCoEBridgeHandler extends BaseBridgeHandler {
             coeSocket.setSoTimeout(330000); // 300 sec is default resent-time; so we wait 330 secs
             this.coeSocket = coeSocket;
         } catch (final SocketException e) {
-            logger.error("Failed to create UDP-Socket for C.M.I. CoE bridge. Reason: " + e.getMessage());
+            logger.error("Failed to create UDP-Socket for C.M.I. CoE bridge. Reason: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Failed to create UDP-Socket for C.M.I. CoE bridge. Reason: " + e.getMessage());
             return;
@@ -186,11 +188,13 @@ public class TACmiCoEBridgeHandler extends BaseBridgeHandler {
         // configuration update. :
         getThing().setHandler(this);
 
-        this.receiveThread = new ReceiveThread();
-        this.receiveThread.start();
+        ReceiveThread reciveThreadNN = new ReceiveThread();
+        reciveThreadNN.start();
+        this.receiveThread = reciveThreadNN;
 
-        this.monitor = new MonitorThread();
-        this.monitor.start();
+        MonitorThread monitorNN = new MonitorThread();
+        monitorNN.start();
+        this.monitor = monitorNN;
 
         updateStatus(ThingStatus.ONLINE);
     }
@@ -231,15 +235,19 @@ public class TACmiCoEBridgeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         logger.debug("Handler disposed.");
+        @Nullable
+        MonitorThread monitor = this.monitor;
         if (monitor != null) {
             monitor.interrupt();
             try {
                 monitor.join();
             } catch (final InterruptedException e) {
-                logger.info("Unexpected interrupt in monitor.join(): " + e.getMessage(), e);
+                logger.info("Unexpected interrupt in monitor.join(): {}", e.getMessage(), e);
             }
-            monitor = null;
+            this.monitor = null;
         }
+        @Nullable
+        ReceiveThread receiveThread = this.receiveThread;
         if (receiveThread != null)
             receiveThread.interrupt(); // just interrupt it so when the socketException throws it's flagged as
                                        // interrupted.
@@ -255,9 +263,9 @@ public class TACmiCoEBridgeHandler extends BaseBridgeHandler {
             try {
                 receiveThread.join();
             } catch (final InterruptedException e) {
-                logger.info("Unexpected interrupt in receiveThread.join(): " + e.getMessage(), e);
+                logger.info("Unexpected interrupt in receiveThread.join(): {}", e.getMessage(), e);
             }
-            receiveThread = null;
+            this.receiveThread = null;
         }
         super.dispose();
     }

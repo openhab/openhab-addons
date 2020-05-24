@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.tacmi.internal.stateCache;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link PodStates} class defines a state cache details required
@@ -27,5 +27,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class PodStates {
 
     public int podId;
-    public Collection<PodState> entries = new ArrayList<>();
+    // could be Nullable due to json.read
+    public @Nullable Collection<PodState> entries;
 }

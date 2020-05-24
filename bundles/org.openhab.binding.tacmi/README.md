@@ -90,6 +90,7 @@ Bridge tacmi:coe-bridge:coe-bridge "TA C.M.I. Bridge"
 ```
 
 Sample _.items_-File:
+
 ```
 Number TACMI_Analog_In_1     "TA input value 1 [%.1f]"  <temperature> {channel="tacmi:cmi:coe-bridge:cmiTest:analogInput1"}
 Number TACMI_Analog_Out_1    "TA output value 1 [%.1f]" <temperature> {channel="tacmi:cmi:coe-bridge:cmiTest:analogOutput1"}
