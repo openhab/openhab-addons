@@ -12,7 +12,14 @@
  */
 package org.openhab.binding.sensibo.internal.handler;
 
-import static org.openhab.binding.sensibo.internal.SensiboBindingConstants.*;
+import static org.openhab.binding.sensibo.internal.SensiboBindingConstants.CHANNEL_CURRENT_HUMIDITY;
+import static org.openhab.binding.sensibo.internal.SensiboBindingConstants.CHANNEL_CURRENT_TEMPERATURE;
+import static org.openhab.binding.sensibo.internal.SensiboBindingConstants.CHANNEL_FAN_LEVEL;
+import static org.openhab.binding.sensibo.internal.SensiboBindingConstants.CHANNEL_MASTER_SWITCH;
+import static org.openhab.binding.sensibo.internal.SensiboBindingConstants.CHANNEL_MODE;
+import static org.openhab.binding.sensibo.internal.SensiboBindingConstants.CHANNEL_SWING_MODE;
+import static org.openhab.binding.sensibo.internal.SensiboBindingConstants.CHANNEL_TARGET_TEMPERATURE;
+import static org.openhab.binding.sensibo.internal.SensiboBindingConstants.CHANNEL_TIMER;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -284,7 +291,7 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
 
     private void handleCurrentTemperatureCommand(ChannelUID channelUID, Command command, SensiboSky sensiboSky) {
         if (command instanceof RefreshType) {
-            updateState(channelUID, new QuantityType<>(sensiboSky.getTemperature(), sensiboSky.getTemperatureUnit()));
+            updateState(channelUID, new QuantityType<>(sensiboSky.getTemperature(), SIUnits.CELSIUS));
         }
     }
 
@@ -476,7 +483,7 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
         }
 
         public void updateValue(Object updatedValue) {
-            this.value = updatedValue;
+            value = updatedValue;
         }
 
         public void addError(String validationMessage) {
