@@ -13,6 +13,7 @@
 package org.openhab.binding.deconz.internal.handler;
 
 import static org.openhab.binding.deconz.internal.BindingConstants.*;
+import static org.openhab.binding.deconz.internal.Util.buildUrl;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -133,7 +134,7 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                         if (xy.length < 2) {
                             logger.warn("Failed to convert {} to xy-values", command);
                         }
-                        newLightState.xy = new Double[] { xy[0].doubleValue() / 100.0, xy[1].doubleValue() / 100.0 };
+                        newLightState.xy = new double[] { xy[0].doubleValue() / 100.0, xy[1].doubleValue() / 100.0 };
                         newLightState.bri = fromPercentType(hsbCommand.getBrightness());
                     } else {
                         // default is colormode "hs" (used when colormode "hs" is set or colormode is unknown)
@@ -248,14 +249,14 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                 }
                 break;
             case CHANNEL_COLOR:
-                Double @Nullable [] xy = newState.xy;
+                double @Nullable [] xy = newState.xy;
                 Integer hue = newState.hue;
                 Integer sat = newState.sat;
                 if (hue != null && sat != null && bri != null) {
                     updateState(channelId,
                             new HSBType(new DecimalType(hue / HUE_FACTOR), toPercentType(sat), toPercentType(bri)));
                 } else if (xy != null && xy.length == 2) {
-                    updateState(channelId, HSBType.fromXY(xy[0].floatValue(), xy[1].floatValue()));
+                    updateState(channelId, HSBType.fromXY((float) xy[0], (float) xy[1]));
                 }
                 break;
             case CHANNEL_BRIGHTNESS:

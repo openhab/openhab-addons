@@ -13,6 +13,7 @@
 package org.openhab.binding.deconz.internal.handler;
 
 import static org.openhab.binding.deconz.internal.BindingConstants.*;
+import static org.openhab.binding.deconz.internal.Util.buildUrl;
 
 import java.net.SocketTimeoutException;
 import java.util.Collection;

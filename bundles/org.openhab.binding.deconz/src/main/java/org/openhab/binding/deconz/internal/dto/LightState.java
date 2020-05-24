@@ -40,7 +40,7 @@ public class LightState {
     public @Nullable Integer hue;
     public @Nullable Integer sat;
     public @Nullable Integer ct;
-    public Double @Nullable [] xy;
+    public double @Nullable [] xy;
 
     public @Nullable Integer transitiontime;
 
