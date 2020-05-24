@@ -49,7 +49,8 @@
 			</parameter>
 			<parameter name="extCommands" type="boolean">
 				<label>Extended Commands Support</label>
-				<description>Check this option to enable extended commands supported only by ETHM-1 Plus and newer versions of ETHM-1. Turn off in case of communication timeouts.</description>
+				<description>Check this option to enable extended commands supported only by ETHM-1 Plus and newer versions of
+					ETHM-1. Turn off in case of communication timeouts.</description>
 				<default>true</default>
 			</parameter>
 		</config-description>

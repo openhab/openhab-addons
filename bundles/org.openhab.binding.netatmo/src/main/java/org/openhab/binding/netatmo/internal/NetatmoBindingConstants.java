@@ -273,8 +273,7 @@ public class NetatmoBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Stream
             .of(MAIN_THING_TYPE, MODULE1_THING_TYPE, MODULE2_THING_TYPE, MODULE3_THING_TYPE, MODULE4_THING_TYPE,
                     HOMECOACH_THING_TYPE, PLUG_THING_TYPE, THERM1_THING_TYPE, WELCOME_HOME_THING_TYPE,
-                    WELCOME_CAMERA_THING_TYPE, WELCOME_PERSON_THING_TYPE,
-                    PRESENCE_CAMERA_THING_TYPE)
+                    WELCOME_CAMERA_THING_TYPE, WELCOME_PERSON_THING_TYPE, PRESENCE_CAMERA_THING_TYPE)
             .collect(Collectors.toSet());
 
     // List of all adressable things in OH = SUPPORTED_DEVICE_THING_TYPES_UIDS + the virtual bridge

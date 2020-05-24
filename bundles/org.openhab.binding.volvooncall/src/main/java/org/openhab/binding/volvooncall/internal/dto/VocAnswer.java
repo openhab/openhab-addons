@@ -33,5 +33,4 @@ public abstract class VocAnswer {
     public @Nullable String getErrorDescription() {
         return errorDescription;
     }
-
 }

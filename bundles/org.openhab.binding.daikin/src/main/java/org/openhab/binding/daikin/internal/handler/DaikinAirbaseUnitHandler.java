@@ -13,7 +13,6 @@
 package org.openhab.binding.daikin.internal.handler;
 
 import java.io.IOException;
-import java.lang.IllegalArgumentException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -57,7 +56,8 @@ public class DaikinAirbaseUnitHandler extends DaikinBaseHandler {
     private final Logger logger = LoggerFactory.getLogger(DaikinAirbaseUnitHandler.class);
     private @Nullable AirbaseModelInfo airbaseModelInfo;
 
-    public DaikinAirbaseUnitHandler(Thing thing, DaikinDynamicStateDescriptionProvider stateDescriptionProvider, @Nullable HttpClient httpClient) {
+    public DaikinAirbaseUnitHandler(Thing thing, DaikinDynamicStateDescriptionProvider stateDescriptionProvider,
+            @Nullable HttpClient httpClient) {
         super(thing, stateDescriptionProvider, httpClient);
     }
 

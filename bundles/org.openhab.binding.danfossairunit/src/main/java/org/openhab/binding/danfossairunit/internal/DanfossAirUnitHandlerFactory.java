@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.danfossairunit.internal;
 
+import static org.openhab.binding.danfossairunit.internal.DanfossAirUnitBindingConstants.THING_TYPE_AIRUNIT;
+
 import java.util.Collections;
 import java.util.Set;
 
@@ -23,8 +25,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
-
-import static org.openhab.binding.danfossairunit.internal.DanfossAirUnitBindingConstants.THING_TYPE_AIRUNIT;
 
 /**
  * The {@link DanfossAirUnitHandlerFactory} is responsible for creating things and thing

@@ -312,7 +312,8 @@ public abstract class ADBridgeHandler extends BaseBridgeHandler {
             throw new MessageParseException(e.getMessage());
         }
 
-        logger.trace("Processing version message sn:{} ver:{} cap:{}", verMsg.serial, verMsg.version, verMsg.capabilities);
+        logger.trace("Processing version message sn:{} ver:{} cap:{}", verMsg.serial, verMsg.version,
+                verMsg.capabilities);
         Map<String, String> properties = editProperties();
         properties.put(PROPERTY_SERIALNUM, verMsg.serial);
         properties.put(PROPERTY_VERSION, verMsg.version);

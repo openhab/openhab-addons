@@ -20,6 +20,7 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Arrays;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
@@ -49,7 +50,7 @@ public class DanfossAirUnitCommunicationController {
     }
 
     public synchronized void connect() throws IOException {
-        if(connected) {
+        if (connected) {
             return;
         }
         socket = new Socket(inetAddr, port);
@@ -59,7 +60,7 @@ public class DanfossAirUnitCommunicationController {
     }
 
     public synchronized void disconnect() {
-        if(!connected) {
+        if (!connected) {
             return;
         }
         try {
@@ -98,17 +99,19 @@ public class DanfossAirUnitCommunicationController {
 
     private synchronized byte[] sendRequestInternal(byte[] request) throws IOException {
 
-        if(oStream == null) {
-            throw new IOException(String.format("Output stream is null while sending request: %s", Arrays.toString(request)));
+        if (oStream == null) {
+            throw new IOException(
+                    String.format("Output stream is null while sending request: %s", Arrays.toString(request)));
         }
         oStream.write(request);
         oStream.flush();
 
         byte[] result = new byte[63];
-        if(iStream == null) {
-            throw new IOException(String.format("Input stream is null while sending request: %s", Arrays.toString(request)));
+        if (iStream == null) {
+            throw new IOException(
+                    String.format("Input stream is null while sending request: %s", Arrays.toString(request)));
         }
-        //noinspection ResultOfMethodCallIgnored
+        // noinspection ResultOfMethodCallIgnored
         iStream.read(result, 0, 63);
 
         return result;

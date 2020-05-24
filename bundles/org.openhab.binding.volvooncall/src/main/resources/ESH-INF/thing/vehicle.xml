@@ -324,7 +324,7 @@
 		<label>Remote Heater</label>
 		<description>(De)Activates remote heater</description>
 	</channel-type>
-	
+
 	<channel-type id="bulbFailure">
 		<item-type>Switch</item-type>
 		<label>Bulb Failure</label>

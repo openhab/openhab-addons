@@ -325,5 +325,4 @@ public class HueLightDiscoveryService extends AbstractDiscoveryService
     public void onGroupStateChanged(@Nullable HueBridge bridge, FullGroup group) {
         // nothing to do
     }
-
 }

@@ -200,8 +200,8 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
     public NibeUplinkConfiguration getConfiguration() {
         return this.getConfigAs(NibeUplinkConfiguration.class);
     }
+
     public Set<ChannelGroupUID> getRegisteredGroups() {
         return registeredGroups;
     }
-
 }
