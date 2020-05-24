@@ -219,6 +219,9 @@ class KeContactTransceiver {
         while (true) {
             try {
                 synchronized (selector) {
+                    if (!selector.isOpen()) {
+                        return;
+                    }
                     try {
                         selector.selectNow();
                     } catch (IOException e) {
