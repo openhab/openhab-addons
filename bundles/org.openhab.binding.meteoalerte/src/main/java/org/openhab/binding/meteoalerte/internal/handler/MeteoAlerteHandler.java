@@ -14,6 +14,7 @@ package org.openhab.binding.meteoalerte.internal.handler;
 
 import static org.openhab.binding.meteoalerte.internal.MeteoAlerteBindingConstants.*;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -116,20 +117,18 @@ public class MeteoAlerteHandler extends BaseThingHandler {
     private void updateAndPublish() {
         try {
             if (queryUrl.isEmpty()) {
-                throw new MalformedURLException();
+                throw new MalformedURLException("queryUrl not initialized");
             }
-            try {
-                String response = HttpUtil.executeUrl("GET", queryUrl, TIMEOUT_MS);
-                updateStatus(ThingStatus.ONLINE);
-                ApiResponse apiResponse = gson.fromJson(response, ApiResponse.class);
-                updateChannels(apiResponse);
-            } catch (IOException e) {
-                logger.warn("Error opening connection to Meteo Alerte webservice : {}", e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-            }
+            String response = HttpUtil.executeUrl("GET", queryUrl, TIMEOUT_MS);
+            updateStatus(ThingStatus.ONLINE);
+            ApiResponse apiResponse = gson.fromJson(response, ApiResponse.class);
+            updateChannels(apiResponse);
         } catch (MalformedURLException e) {
             logger.warn("Malformed URL in Météo Alerte request : {}", queryUrl);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+        } catch (IOException e) {
+            logger.warn("Error opening connection to Meteo Alerte webservice : {}", e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -179,8 +178,7 @@ public class MeteoAlerteHandler extends BaseThingHandler {
     private byte @Nullable [] getImage(String iconPath) {
         URL url = FrameworkUtil.getBundle(getClass()).getResource(iconPath);
         logger.debug("Path to icon image resource is: {}", url);
-        try {
-            InputStream in = url.openStream();
+        try (InputStream in = new BufferedInputStream(url.openStream())) {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             int next = in.read();
             while (next > -1) {
