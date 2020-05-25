@@ -80,7 +80,7 @@ Any Smarther Chronothermostat device currently available on your account should 
 
 If no devices show up you may have to trigger the openHAB discovery several times as bridge will only find active devices known by the Smarther API at the time the discovery is triggered.
 
-Should the bridge configuration be broken for any reason, the authorization procedure can be reinitiated from step 6 whenever required.
+Should the bridge configuration be broken for any reason, the authorization procedure can be reinitiated from step 11 whenever required.
 You can force reinitialization by authorizing again on the `/smarther/connectsmarther` page, even if the page shows it as already authorized. This will reset the refresh token.
 
 The following configuration options are available on the Smarther Bridge thing:
