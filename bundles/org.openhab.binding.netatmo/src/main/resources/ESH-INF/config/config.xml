@@ -16,6 +16,7 @@
 			<label>Client Secret</label>
 			<description>Client Secret provided for the application you created</description>
 			<required>true</required>
+			<context>password</context>
 		</parameter>
 
 		<parameter name="username" type="text">
