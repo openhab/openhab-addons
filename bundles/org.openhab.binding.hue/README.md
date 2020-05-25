@@ -247,6 +247,22 @@ hueActions.fadingLightCommand("color", new PercentType(100), new DecimalType(100
 | command   | All commands supported by the channel can be used                                                |
 | fadeTime  | Fade time in Milliseconds to a new light value (min="0", step="100")                             |
 
+## Console Commands
+
+The binding provides few specific commands you can use in the console.
+Enter the command `hue` to get the usage.
+
+```
+openhab> hue
+Usage: smarthome:hue <bridgeUID> lights - list lights
+Usage: smarthome:hue <bridgeUID> sensors - list sensors
+Usage: smarthome:hue <bridgeUID> groups - list groups
+```
+
+The command `lights` reports in the console the list of all lights registered in the Hue bridge.
+The command `sensors` reports in the console the list of all snesors registered in the Hue bridge.
+The command `groups` reports in the console the list of all groups set up on the Hue bridge.
+
 ## Full Example
 
 In this example **bulb1** is a standard Philips Hue bulb (LCT001) which supports `color` and `color_temperature`.

@@ -16,6 +16,7 @@ import static org.eclipse.smarthome.core.thing.Thing.*;
 import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -906,5 +907,36 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         }
 
         return configStatusMessages;
+    }
+
+    public List<String> reportLights() {
+        List<String> report = new ArrayList<>();
+        for (FullLight light : lastLightStates.values()) {
+            report.add(light.getId() + " : " + light.getName() + " (" + light.getType() + " "
+                    + light.getManufacturerName() + " " + light.getModelID() + ")");
+        }
+        return report;
+    }
+
+    public List<String> reportSensors() {
+        List<String> report = new ArrayList<>();
+        for (FullSensor sensor : lastSensorStates.values()) {
+            report.add(sensor.getId() + " : " + sensor.getName() + " (" + sensor.getType() + " "
+                    + sensor.getManufacturerName() + " " + sensor.getModelID() + ")");
+        }
+        return report;
+    }
+
+    public List<String> reportGroups() {
+        List<String> report = new ArrayList<>();
+        for (FullGroup group : lastGroupStates.values()) {
+            String value = group.getId() + " : " + group.getName() + " (" + group.getType() + " including lights";
+            for (String lightId : group.getLights()) {
+                value += " " + lightId;
+            }
+            value += ")";
+            report.add(value);
+        }
+        return report;
     }
 }
