@@ -55,20 +55,4 @@ class HomekitTemperatureSensorImpl extends AbstractHomekitAccessoryImpl implemen
     public void unsubscribeCurrentTemperature() {
         unsubscribe(HomekitCharacteristicType.CURRENT_TEMPERATURE);
     }
-
-    protected double convertToCelsius(double degrees) {
-        if (getSettings().useFahrenheitTemperature) {
-            return Math.round((5d / 9d) * (degrees - 32d) * 1000d) / 1000d;
-        } else {
-            return degrees;
-        }
-    }
-
-    protected double convertFromCelsius(double degrees) {
-        if (getSettings().useFahrenheitTemperature) {
-            return Math.round((((9d / 5d) * degrees) + 32d) * 10d) / 10d;
-        } else {
-            return degrees;
-        }
-    }
 }
