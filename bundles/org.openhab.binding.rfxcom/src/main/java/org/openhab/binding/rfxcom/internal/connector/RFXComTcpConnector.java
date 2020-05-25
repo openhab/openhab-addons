@@ -66,23 +66,6 @@ public class RFXComTcpConnector extends RFXComBaseConnector {
             }
         }
 
-        if (out != null) {
-            logger.debug("Close tcp out stream");
-            try {
-                out.close();
-            } catch (IOException e) {
-                logger.debug("Error while closing the out stream: {}", e.getMessage());
-            }
-        }
-        if (in != null) {
-            logger.debug("Close tcp in stream");
-            try {
-                in.close();
-            } catch (IOException e) {
-                logger.debug("Error while closing the in stream: {}", e.getMessage());
-            }
-        }
-
         if (socket != null) {
             logger.debug("Close socket");
             try {
