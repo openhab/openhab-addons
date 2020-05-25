@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.novafinedust.internal.sds011protocol;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Enum for the different sensor modes
  *
  * @author Stefan Triller - Initial contribution
  *
  */
+@NonNullByDefault
 public enum WorkMode {
     REPORTING,
     POLLING

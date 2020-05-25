@@ -21,6 +21,7 @@ import java.util.TooManyListenersException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.eclipse.smarthome.io.transport.serial.PortInUseException;
 import org.eclipse.smarthome.io.transport.serial.SerialPort;
 import org.eclipse.smarthome.io.transport.serial.SerialPortEvent;
@@ -54,8 +55,8 @@ public class SDS011Communicator implements SerialPortEventListener {
     private SDS011Handler thingHandler;
     private @NonNullByDefault({}) SerialPort serialPort;
 
-    private @NonNullByDefault({}) OutputStream outputStream;
-    private @NonNullByDefault({}) InputStream inputStream;
+    private @Nullable OutputStream outputStream;
+    private @Nullable InputStream inputStream;
 
     public SDS011Communicator(SDS011Handler thingHandler, SerialPortIdentifier portId) {
         this.thingHandler = thingHandler;
@@ -112,7 +113,7 @@ public class SDS011Communicator implements SerialPortEventListener {
     private @Nullable SensorReply sendCommand(CommandMessage message) throws IOException {
         byte[] commandData = message.getBytes();
         if (logger.isDebugEnabled()) {
-            logger.debug("Will send command: {} ({})", Helper.toHexString(commandData), Arrays.toString(commandData));
+            logger.debug("Will send command: {} ({})", HexUtils.bytesToHex(commandData), Arrays.toString(commandData));
         }
         outputStream.write(commandData, 0, commandData.length);
         outputStream.flush();
@@ -216,7 +217,7 @@ public class SDS011Communicator implements SerialPortEventListener {
         CommandMessage m = new CommandMessage(Command.REQUEST_DATA, new byte[] {});
         byte[] data = m.getBytes();
         if (logger.isDebugEnabled()) {
-            logger.debug("Requesting sensor data, will send: {}", Helper.toHexString(data));
+            logger.debug("Requesting sensor data, will send: {}", HexUtils.bytesToHex(data));
         }
         outputStream.write(data, 0, data.length);
     }
@@ -233,7 +234,7 @@ public class SDS011Communicator implements SerialPortEventListener {
             int remainingBytesRead = inputStream.read(readBuffer, 1, Constants.REPLY_LENGTH - 1);
             if (logger.isDebugEnabled()) {
                 logger.debug("Read remaining bytes: {}, full reply={}", remainingBytesRead,
-                        Helper.toHexString(readBuffer));
+                        HexUtils.bytesToHex(readBuffer));
             }
             return ReplyFactory.create(readBuffer);
         }

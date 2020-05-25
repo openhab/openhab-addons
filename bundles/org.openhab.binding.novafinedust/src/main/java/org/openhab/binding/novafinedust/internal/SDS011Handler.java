@@ -30,6 +30,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.io.transport.serial.PortInUseException;
 import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
@@ -65,6 +66,10 @@ public class SDS011Handler extends BaseThingHandler {
     private Duration timeBetweenDataShouldArrive = Duration.ofDays(1);
     private final Duration dataCanBeLateTolerance = Duration.ofSeconds(5);
 
+    // cached values fro refresh command
+    private @Nullable QuantityType<Density> statePM10;
+    private @Nullable QuantityType<Density> statePM25;
+
     public SDS011Handler(Thing thing, SerialPortManager serialPortManager) {
         super(thing);
         this.serialPortManager = serialPortManager;
@@ -72,8 +77,15 @@ public class SDS011Handler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // we do not support refreshing as values are either reported by the device or polled from the device in fixed
-        // intervals
+        // refresh channels with last received values from cache
+        if (RefreshType.REFRESH.equals(command)) {
+            if (NovaFineDustBindingConstants.CHANNEL_PM25.equals(channelUID.getId()) && statePM25 != null) {
+                updateState(NovaFineDustBindingConstants.CHANNEL_PM25, statePM25);
+            }
+            if (NovaFineDustBindingConstants.CHANNEL_PM10.equals(channelUID.getId()) && statePM10 != null) {
+                updateState(NovaFineDustBindingConstants.CHANNEL_PM10, statePM10);
+            }
+        }
     }
 
     @Override
@@ -162,12 +174,12 @@ public class SDS011Handler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        if (pollingJob != null && !pollingJob.isCancelled()) {
+        if (pollingJob != null) {
             pollingJob.cancel(true);
             pollingJob = null;
         }
 
-        if (connectionMonitor != null && !connectionMonitor.isCancelled()) {
+        if (connectionMonitor != null) {
             connectionMonitor.cancel(true);
             connectionMonitor = null;
         }
@@ -175,6 +187,9 @@ public class SDS011Handler extends BaseThingHandler {
         if (communicator != null) {
             scheduler.schedule(() -> communicator.dispose(), 0, TimeUnit.SECONDS);
         }
+
+        this.statePM10 = null;
+        this.statePM25 = null;
     }
 
     /**
@@ -189,10 +204,12 @@ public class SDS011Handler extends BaseThingHandler {
             QuantityType<Density> statePM10 = new QuantityType<>(sensorData.getPm10(),
                     SmartHomeUnits.MICROGRAM_PER_CUBICMETRE);
             updateState(NovaFineDustBindingConstants.CHANNEL_PM10, statePM10);
+            this.statePM10 = statePM10;
 
             QuantityType<Density> statePM25 = new QuantityType<>(sensorData.getPm25(),
                     SmartHomeUnits.MICROGRAM_PER_CUBICMETRE);
             updateState(NovaFineDustBindingConstants.CHANNEL_PM25, statePM25);
+            this.statePM25 = statePM25;
 
             updateStatus(ThingStatus.ONLINE);
         }

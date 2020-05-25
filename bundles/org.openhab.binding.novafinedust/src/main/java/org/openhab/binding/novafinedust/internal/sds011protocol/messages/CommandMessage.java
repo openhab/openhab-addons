@@ -15,7 +15,7 @@ package org.openhab.binding.novafinedust.internal.sds011protocol.messages;
 import java.io.ByteArrayOutputStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.novafinedust.internal.sds011protocol.Helper;
+import org.eclipse.smarthome.core.util.HexUtils;
 
 /**
  * Message to be send to the device
@@ -90,8 +90,8 @@ public class CommandMessage {
         StringBuilder sb = new StringBuilder();
         sb.append("Message: ");
         sb.append("Command=" + firstDataByte);
-        sb.append(" Target Device=" + Helper.toHexString(targetDevice));
-        sb.append(" Payload=" + Helper.toHexString(payLoad));
+        sb.append(" Target Device=" + HexUtils.bytesToHex(targetDevice));
+        sb.append(" Payload=" + HexUtils.bytesToHex(payLoad));
         return sb.toString();
     }
 }

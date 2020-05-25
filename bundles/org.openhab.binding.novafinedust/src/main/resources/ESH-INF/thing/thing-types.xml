@@ -21,19 +21,19 @@
 			</parameter>
 			<parameter name="reporting" type="boolean">
 				<default>true</default>
-				<label>Reporting if true, otherwise polling</label>
+				<label>Reporting If True, Otherwise Polling</label>
 				<description>Reporting is strongly recommended to increase sensor lifetime</description>
 			</parameter>
-			<parameter name="reportingInterval" type="integer" min="0" max="30">
+			<parameter name="reportingInterval" type="integer" min="0" max="30" unit="min">
 				<default>1</default>
 				<advanced>true</advanced>
-				<label>Time in minutes when a value will be reported</label>
+				<label>Time In Minutes When A Value Will Be Reported</label>
 				<description>Device will report every x minutes and sleep for x*60 - 30 seconds afterwards, 0 = as fast as possible without sleep</description>
 			</parameter>
-			<parameter name="pollingInterval" type="integer" min="3" max="3600">
+			<parameter name="pollingInterval" type="integer" min="3" max="3600" unit="s">
 				<default>10</default>
 				<advanced>true</advanced>
-				<label>Time in seconds when a value will be polled from the device (min 3 seconds)</label>
+				<label>Time In Seconds When A Value Will Be Polled From The Device (Min 3 Seconds)</label>
 				<description>Device will be polled every x seconds (polling is not recommended)</description>
 			</parameter>
 		</config-description>

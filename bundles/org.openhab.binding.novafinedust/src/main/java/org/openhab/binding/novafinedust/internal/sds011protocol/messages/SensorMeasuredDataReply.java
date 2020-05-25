@@ -13,7 +13,7 @@
 package org.openhab.binding.novafinedust.internal.sds011protocol.messages;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.novafinedust.internal.sds011protocol.Helper;
+import org.eclipse.smarthome.core.util.HexUtils;
 
 /**
  * Class containing the actual measured values from the sensor
@@ -72,8 +72,8 @@ public class SensorMeasuredDataReply extends SensorReply {
     public String toString() {
         return String.format(
                 "SensorMeasuredDataReply: [valid=%s, PM 2.5=%.1f, PM 10=%.1f, sourceDevice=%s, pm25lowHigh=(%s) pm10lowHigh=(%s)]",
-                isValidData(), getPm25(), getPm10(), Helper.toHexString(new byte[] { deviceID[0], deviceID[1] }),
-                Helper.toHexString(new byte[] { pm25lowByte, pm25highByte }),
-                Helper.toHexString(new byte[] { pm10lowByte, pm10highByte }));
+                isValidData(), getPm25(), getPm10(), HexUtils.bytesToHex(new byte[] { deviceID[0], deviceID[1] }),
+                HexUtils.bytesToHex(new byte[] { pm25lowByte, pm25highByte }),
+                HexUtils.bytesToHex(new byte[] { pm10lowByte, pm10highByte }));
     }
 }

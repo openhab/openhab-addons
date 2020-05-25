@@ -15,7 +15,7 @@ package org.openhab.binding.novafinedust.internal.sds011protocol.messages;
 import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.novafinedust.internal.sds011protocol.Helper;
+import org.eclipse.smarthome.core.util.HexUtils;
 
 /**
  * Base class holding information sent by the sensor to us
@@ -84,6 +84,6 @@ public class SensorReply {
     @Override
     public String toString() {
         return String.format("GeneralReply: [head=%x, commandID=%x, payload=%s, deviceID=%s, checksum=%s, tail=%x",
-                header, commandID, Helper.toHexString(payLoad), Helper.toHexString(deviceID), checksum, messageTail);
+                header, commandID, HexUtils.bytesToHex(payLoad), HexUtils.bytesToHex(deviceID), checksum, messageTail);
     }
 }
