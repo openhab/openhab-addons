@@ -16,6 +16,13 @@
 		<description>Amount of pages.</description>
 		<state readOnly="true"/>
 	</channel-type>
+	
+	<channel-type id="totalsAdv" advanced="true">
+		<item-type>Number</item-type>
+		<label>Totals</label>
+		<description>Amount of pages.</description>
+		<state readOnly="true"/>
+	</channel-type>
 
 	<channel-type id="cumlMarkingUsed">
 		<item-type>Number:Volume</item-type>

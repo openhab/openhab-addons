@@ -273,6 +273,43 @@ public class HPPrinterBinder {
                         .withType(chanTypeTotals).build());
             }
 
+            //App Usage
+            if (data.hasPrintApplication()) {
+                channels.add(ChannelBuilder
+                        .create(new ChannelUID(thingUid, CGROUP_APP, CHANNEL_TOTAL_WIN), CoreItemFactory.NUMBER)
+                        .withLabel("Windows")
+                        .withType(chanTypeTotalsAdvanced).build());
+
+                channels.add(ChannelBuilder
+                        .create(new ChannelUID(thingUid, CGROUP_APP, CHANNEL_TOTAL_ANDROID), CoreItemFactory.NUMBER)
+                        .withLabel("Android")
+                        .withType(chanTypeTotalsAdvanced).build());
+
+                channels.add(ChannelBuilder
+                        .create(new ChannelUID(thingUid, CGROUP_APP, CHANNEL_TOTAL_IOS), CoreItemFactory.NUMBER)
+                        .withLabel("iOS")
+                        .withType(chanTypeTotalsAdvanced).build());
+
+                channels.add(ChannelBuilder
+                        .create(new ChannelUID(thingUid, CGROUP_APP, CHANNEL_TOTAL_OSX), CoreItemFactory.NUMBER)
+                        .withLabel("OSX")
+                        .withType(chanTypeTotalsAdvanced).build());
+
+                channels.add(ChannelBuilder
+                        .create(new ChannelUID(thingUid, CGROUP_APP, CHANNEL_TOTAL_SAMSUNG), CoreItemFactory.NUMBER)
+                        .withLabel("Samsung")
+                        .withType(chanTypeTotalsAdvanced).build());
+
+                if (data.hasPrintApplicationChrome()) {
+                    channels.add(ChannelBuilder
+                            .create(new ChannelUID(thingUid, CGROUP_APP, CHANNEL_TOTAL_CHROME), CoreItemFactory.NUMBER)
+                            .withLabel("Chrome")
+                            .withType(chanTypeTotalsAdvanced).build());
+                }
+            }
+
+
+
             handler.binderAddChannels(channels);
         }
     }
@@ -398,6 +435,14 @@ public class HPPrinterBinder {
 
             handler.updateState(CGROUP_SCANNER, CHANNEL_TOTAL_TOHOST, new DecimalType(
                 result.getData().getScanToHostCount()));
+
+            //App Usage
+            handler.updateState(CGROUP_APP, CHANNEL_TOTAL_WIN, new DecimalType(result.getData().getAppWindowsCount()));
+            handler.updateState(CGROUP_APP, CHANNEL_TOTAL_OSX, new DecimalType(result.getData().getAppOSXCount()));
+            handler.updateState(CGROUP_APP, CHANNEL_TOTAL_IOS, new DecimalType(result.getData().getAppIosCount()));
+            handler.updateState(CGROUP_APP, CHANNEL_TOTAL_ANDROID, new DecimalType(result.getData().getAppAndroidCount()));
+            handler.updateState(CGROUP_APP, CHANNEL_TOTAL_SAMSUNG, new DecimalType(result.getData().getAppSamsungCount()));
+            handler.updateState(CGROUP_APP, CHANNEL_TOTAL_CHROME, new DecimalType(result.getData().getAppChromeCount()));
         } else {
             goneOffline();
         }

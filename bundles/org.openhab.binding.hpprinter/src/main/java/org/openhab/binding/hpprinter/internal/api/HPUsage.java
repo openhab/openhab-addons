@@ -13,8 +13,10 @@
 package org.openhab.binding.hpprinter.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
@@ -49,6 +51,13 @@ public class HPUsage {
     private int scanToEmailCount;
     private int scanToFolderCount;
     private int scanToHostCount;
+
+    private int appWindowsCount;
+    private int appOsxCount;
+    private int appIosCount;
+    private int appAndroidCount;
+    private int appSamsungCount;
+    private int appChromeCount;
 
     public HPUsage() {
     }
@@ -157,28 +166,77 @@ public class HPUsage {
         
         //Scanner
         NodeList scanSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:ScanApplicationSubunit");
-        Element currScannerSubUnit = (Element) scanSubUnit.item(0);
+        if (scanSubUnit.getLength() > 0) {
+            Element currScannerSubUnit = (Element) scanSubUnit.item(0);
 
-        NodeList totalAdf = currScannerSubUnit.getElementsByTagName("dd:AdfImages");
-        if (totalAdf.getLength() > 0)
-            this.scanAdfCount = Integer.parseInt(totalAdf.item(0).getTextContent());
+            this.scanAdfCount = setInt("dd:AdfImages", currScannerSubUnit);
+            this.scanFlatbedCount = setInt("dd:FlatbedImages", currScannerSubUnit);
 
-        NodeList totalFlatbed = currScannerSubUnit.getElementsByTagName("dd:FlatbedImages");
-        if (totalFlatbed.getLength() > 0)
-            this.scanFlatbedCount = Integer.parseInt(totalFlatbed.item(0).getTextContent());
+            this.scanToEmailCount = setInt("dd:ImagesSentToEmail", currScannerSubUnit);
+            this.scanToFolderCount = setInt("dd:ImagesSentToFolder", currScannerSubUnit);
 
-        NodeList sentToEmail = currScannerSubUnit.getElementsByTagName("dd:ImagesSentToEmail");
-        if (sentToEmail.getLength() > 0)
-            this.scanToEmailCount = Integer.parseInt(sentToEmail.item(0).getTextContent());
+            this.scanToHostCount = setInt("dd:ScanToHostImages", currScannerSubUnit);
+        }
 
-        NodeList sendToFolder = currScannerSubUnit.getElementsByTagName("dd:ImagesSentToFolder");
-        if (sendToFolder.getLength() > 0)
-            this.scanToFolderCount = Integer.parseInt(sendToFolder.item(0).getTextContent());
+        //App Usage
+        NodeList appSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:MobileApplicationSubunit");
+        if (appSubUnit.getLength() > 0) {
+            Element currAppSubUnit = (Element) appSubUnit.item(0);
+            
+            appWindowsCount = setIntCollateDirectChildren(currAppSubUnit, "pudyn:RemoteDeviceType", "Windows", "pudyn:TotalImpressions");
+            appOsxCount = setIntCollateDirectChildren(currAppSubUnit, "pudyn:RemoteDeviceType", "OSX", "pudyn:TotalImpressions");
+            appIosCount = setIntCollateDirectChildren(currAppSubUnit, "pudyn:RemoteDeviceType", "iOS", "pudyn:TotalImpressions");
+            appAndroidCount = setIntCollateDirectChildren(currAppSubUnit, "pudyn:RemoteDeviceType", "Android", "pudyn:TotalImpressions");
+            appSamsungCount = setIntCollateDirectChildren(currAppSubUnit, "pudyn:RemoteDeviceType", "samsung", "pudyn:TotalImpressions");
+            appChromeCount = setIntCollateDirectChildren(currAppSubUnit, "pudyn:RemoteDeviceType", "Chrome", "pudyn:TotalImpressions");
+        }
 
-        NodeList scanToHost = currScannerSubUnit.getElementsByTagName("dd:ScanToHostImages");
-        if (scanToHost.getLength() > 0)
-            this.scanToHostCount = Integer.parseInt(scanToHost.item(0).getTextContent());
+    }
 
+    private @Nullable Integer setIntCollateDirectChildren(Element parentNode, String collateTagName, String collateTagNameValue, String valueTagName) {
+        Integer value = 0;
+
+        for (Node n = parentNode.getFirstChild(); n != null; n = n.getNextSibling()) {
+            if (n instanceof Element) {
+                Element nodeItem = (Element) n;
+                if (nodeItem.getElementsByTagName(collateTagName).item(0).getTextContent().equalsIgnoreCase(collateTagNameValue)) {
+                    Integer nodeValue = Integer.parseInt(nodeItem.getElementsByTagName(valueTagName).item(0).getTextContent());
+
+                    if (value == null) value = nodeValue;
+                    else value += nodeValue;
+                }
+            }
+        }
+
+        return value;
+    }
+
+    private @Nullable Integer setIntCollate(NodeList nodeList, Element parentNode, String collateTagName, String collateTagNameValue, String valueTagName) {
+        Integer value = null;
+
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            Element nodeItem = (Element) nodeList.item(i);
+            if (nodeItem.getElementsByTagName(collateTagName).item(0).getTextContent().equalsIgnoreCase(collateTagNameValue)) {
+                Integer nodeValue = Integer.parseInt(nodeItem.getElementsByTagName(valueTagName).item(0).getTextContent());
+
+                if (value == null) value = nodeValue;
+                else value += nodeValue;
+            }
+        }
+        return value;
+    }
+
+    private @Nullable Integer setIntCollate(String tagName, Element parentNode, String collateTagName, String collateTagNameValue, String valueTagName) {
+        NodeList nodeList = parentNode.getElementsByTagName(tagName);
+        
+        return setIntCollate(nodeList, parentNode, collateTagName, collateTagNameValue, valueTagName);
+    }
+
+    private @Nullable Integer setInt(String tagName, Element parentNode) {
+        NodeList nodeList = parentNode.getElementsByTagName(tagName);
+            if (nodeList.getLength() > 0)
+                return Integer.parseInt(nodeList.item(0).getTextContent());
+        return null;
     }
 
     public int getFrontPanelCancelCount() {
@@ -268,4 +326,29 @@ public class HPUsage {
     public int getScanToHostCount() {
         return scanToHostCount;
     }
+
+    public int getAppWindowsCount() {
+        return appWindowsCount;
+    }
+
+    public int getAppOSXCount() {
+        return appOsxCount;
+    }
+
+    public int getAppIosCount() {
+        return appIosCount;
+    }
+
+    public int getAppAndroidCount() {
+        return appAndroidCount;
+    }
+
+    public int getAppSamsungCount() {
+        return appSamsungCount;
+    }
+
+    public int getAppChromeCount() {
+        return appChromeCount;
+    }
+
 }

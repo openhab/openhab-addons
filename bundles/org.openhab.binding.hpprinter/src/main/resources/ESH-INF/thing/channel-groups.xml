@@ -38,4 +38,14 @@
 		<description>Scanner Usage Information</description>
 	</channel-group-type>
 
+	<channel-group-type id="copier">
+		<label>Copier</label>
+		<description>Copier Usage Information</description>
+	</channel-group-type>
+
+	<channel-group-type id="app">
+		<label>Application Usage</label>
+		<description>Usage by Device or Operating System</description>
+	</channel-group-type>
+
 </thing:thing-descriptions>

@@ -39,6 +39,9 @@ public class HPType {
     private boolean scanToEmail;
     private boolean scanToFolder;
 
+    private boolean printApplication;
+    private boolean printApplicationChrome;
+
     public enum PrinterType {
         UNKNOWN,
         MONOCHROME,
@@ -103,28 +106,41 @@ public class HPType {
         }
 
         NodeList scannerSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:ScanApplicationSubunit");
-        Element currScannerSubUnit = (Element) scannerSubUnit.item(0);
+        if (scannerSubUnit.getLength() > 0) {
+            Element currScannerSubUnit = (Element) scannerSubUnit.item(0);
 
-        if (currScannerSubUnit.getElementsByTagName("dd:AdfImages").getLength() > 0) {
-            scanAdf = true;
+            if (currScannerSubUnit.getElementsByTagName("dd:AdfImages").getLength() > 0) {
+                scanAdf = true;
+            }
+
+            if (currScannerSubUnit.getElementsByTagName("dd:FlatbedImages").getLength() > 0) {
+                scanFlatbed = true;
+            }
+
+            if (currScannerSubUnit.getElementsByTagName("dd:ImagesSentToEmail").getLength() > 0) {
+                scanToEmail = true;
+            }
+
+            if (currScannerSubUnit.getElementsByTagName("dd:ImagesSentToFolder").getLength() > 0) {
+                scanToFolder = true;
+            }
+
+            if (currScannerSubUnit.getElementsByTagName("dd:ScanToHostImages").getLength() > 0) {
+                scanToHost = true;
+            }
         }
 
-        if (currScannerSubUnit.getElementsByTagName("dd:FlatbedImages").getLength() > 0) {
-            scanFlatbed = true;
-        }
+        NodeList appSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:ScanApplicationSubunit");
+        if (appSubUnit.getLength() > 0) {
+            printApplication = true;
 
-        if (currScannerSubUnit.getElementsByTagName("dd:ImagesSentToEmail").getLength() > 0) {
-            scanToEmail = true;
+            Element currAppSubUnit = (Element) appSubUnit.item(0);
+            
+            if (currAppSubUnit.getElementsByTagName("pudyn:RemoteDeviceType").getLength() > 0) {
+                printApplicationChrome = true;
+            }
+            
         }
-
-        if (currScannerSubUnit.getElementsByTagName("dd:ImagesSentToFolder").getLength() > 0) {
-            scanToFolder = true;
-        }
-
-        if (currScannerSubUnit.getElementsByTagName("dd:ScanToHostImages").getLength() > 0) {
-            scanToHost = true;
-        }
-
     }
 
     public PrinterType getType() {
@@ -184,6 +200,22 @@ public class HPType {
      */
     public boolean hasScannerFlatbed() {
         return scanFlatbed;
+    }
+
+    
+    /**
+     * Printer data contains Print Application Usage Information.
+     *
+     * pudyn:ProductUsageDyn -> pudyn:MobileApplicationSubunit
+     *
+     * @return {boolean} True if supported.
+     */
+    public boolean hasPrintApplication() {
+        return printApplication;
+    }
+
+    public boolean hasPrintApplicationChrome() {
+        return printApplicationChrome;
     }
 
     /**

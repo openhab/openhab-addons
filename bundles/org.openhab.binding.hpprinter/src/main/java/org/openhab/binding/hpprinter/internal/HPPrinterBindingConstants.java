@@ -39,6 +39,7 @@ public class HPPrinterBindingConstants {
 
     // ********** Channel Types **********
     public static ChannelTypeUID chanTypeTotals = new ChannelTypeUID("hpprinter:totals");
+    public static ChannelTypeUID chanTypeTotalsAdvanced = new ChannelTypeUID("hpprinter:totalsAdv");
     public static ChannelTypeUID chanTypeMarking = new ChannelTypeUID("hpprinter:cumlMarkingUsed");
     public static ChannelTypeUID chanTypeInkLevel = new ChannelTypeUID("hpprinter:inkLevel");
 
@@ -77,10 +78,20 @@ public class HPPrinterBindingConstants {
     public static final String CHANNEL_TOTAL_TOEMAIL = "totalToEmail";
     public static final String CHANNEL_TOTAL_TOFOLDER = "totalToFolder";
     public static final String CHANNEL_TOTAL_TOHOST = "totalToHost";
-    
+
+    //App Usage
+    public static final String CHANNEL_TOTAL_WIN = "totalWin";
+    public static final String CHANNEL_TOTAL_ANDROID = "totalAndroid";
+    public static final String CHANNEL_TOTAL_IOS = "totalIos";
+    public static final String CHANNEL_TOTAL_OSX = "totalOsx";
+    public static final String CHANNEL_TOTAL_SAMSUNG = "totalSamsung";
+    public static final String CHANNEL_TOTAL_CHROME = "totalChrome";
+
     // ********** List of all Channel Groups **********
     public static final String CGROUP_INK = "ink";
     public static final String CGROUP_STATUS = "status";
     public static final String CGROUP_USAGE = "usage";
     public static final String CGROUP_SCANNER = "scanner";
+    public static final String CGROUP_APP = "app";
+    
 }
