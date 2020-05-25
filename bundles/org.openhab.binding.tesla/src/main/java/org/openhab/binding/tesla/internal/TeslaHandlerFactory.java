@@ -18,6 +18,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -27,6 +30,8 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.tesla.internal.handler.TeslaAccountHandler;
 import org.openhab.binding.tesla.internal.handler.TeslaVehicleHandler;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
 
 /**
  * The {@link TeslaHandlerFactory} is responsible for creating things and thing
@@ -39,9 +44,23 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.tesla")
 public class TeslaHandlerFactory extends BaseThingHandlerFactory {
 
+    // TODO: Those constants are Jersey specific - once we move away from Jersey,
+    // this can be removed and the client builder creation simplified.
+    public static final String READ_TIMEOUT_JERSEY = "jersey.config.client.readTimeout";
+    public static final String CONNECT_TIMEOUT_JERSEY = "jersey.config.client.connectTimeout";
+
+    public static final String READ_TIMEOUT = "http.receive.timeout";
+    public static final String CONNECT_TIMEOUT = "http.connection.timeout";
+
+    private static final int EVENT_STREAM_CONNECT_TIMEOUT = 3000;
+    private static final int EVENT_STREAM_READ_TIMEOUT = 200000;
+
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
             .of(THING_TYPE_ACCOUNT, THING_TYPE_MODELS, THING_TYPE_MODEL3, THING_TYPE_MODELX, THING_TYPE_MODELY)
             .collect(Collectors.toSet());
+
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL)
+    private ClientBuilder clientBuilder;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -53,9 +72,42 @@ public class TeslaHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_ACCOUNT)) {
-            return new TeslaAccountHandler((Bridge) thing);
+            return new TeslaAccountHandler((Bridge) thing, getAccountClient());
         } else {
-            return new TeslaVehicleHandler(thing);
+            return new TeslaVehicleHandler(thing, getVehicleClient());
         }
+    }
+
+    private Client getAccountClient() {
+        Client client;
+        try {
+            client = ClientBuilder.newClient();
+        } catch (Exception e) {
+            // we seem to have no Jersey, so let's hope for an injected builder by CXF
+            if (clientBuilder != null) {
+                client = clientBuilder.build();
+            } else {
+                throw new IllegalStateException("No JAX RS Client Builder available.");
+            }
+        }
+        return client;
+    }
+
+    private Client getVehicleClient() {
+        Client client;
+        try {
+            client = ClientBuilder.newClient().property(CONNECT_TIMEOUT_JERSEY, EVENT_STREAM_CONNECT_TIMEOUT)
+                    .property(READ_TIMEOUT_JERSEY, EVENT_STREAM_READ_TIMEOUT);
+        } catch (Exception e) {
+            // we seem to have no Jersey, so let's hope for an injected builder by CXF
+            if (clientBuilder != null) {
+                client = clientBuilder.build();
+                client.property("http.receive.timeout", EVENT_STREAM_READ_TIMEOUT);
+                client.property("http.connection.timeout", EVENT_STREAM_CONNECT_TIMEOUT);
+            } else {
+                throw new IllegalStateException("No JAX RS Client Builder available.");
+            }
+        }
+        return client;
     }
 }

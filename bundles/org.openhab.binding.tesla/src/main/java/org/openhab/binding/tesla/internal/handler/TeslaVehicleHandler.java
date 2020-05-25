@@ -32,7 +32,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.measure.quantity.Temperature;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -86,13 +85,6 @@ import com.google.gson.JsonParser;
  */
 public class TeslaVehicleHandler extends BaseThingHandler {
 
-    // TODO: Those constants are Jersey specific - once we move away from Jersey,
-    // this must be changed to https://stackoverflow.com/a/49736022 (assuming we have a JAX-RS 2.1 implementation).
-    public static final String READ_TIMEOUT = "jersey.config.client.readTimeout";
-    public static final String CONNECT_TIMEOUT = "jersey.config.client.connectTimeout";
-
-    private static final int EVENT_STREAM_CONNECT_TIMEOUT = 3000;
-    private static final int EVENT_STREAM_READ_TIMEOUT = 200000;
     private static final int EVENT_STREAM_PAUSE = 5000;
     private static final int EVENT_TIMESTAMP_AGE_LIMIT = 3000;
     private static final int EVENT_TIMESTAMP_MAX_DELTA = 10000;
@@ -136,7 +128,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
     protected TeslaAccountHandler account;
 
     protected QueueChannelThrottler stateThrottler;
-    protected Client eventClient = ClientBuilder.newClient();
+    protected Client eventClient;
     protected TeslaChannelSelectorProxy teslaChannelSelectorProxy = new TeslaChannelSelectorProxy();
     protected Thread eventThread;
     protected ScheduledFuture<?> fastStateJob;
@@ -145,8 +137,9 @@ public class TeslaVehicleHandler extends BaseThingHandler {
     private final Gson gson = new Gson();
     private final JsonParser parser = new JsonParser();
 
-    public TeslaVehicleHandler(Thing thing) {
+    public TeslaVehicleHandler(Thing thing, Client eventClient) {
         super(thing);
+        this.eventClient = eventClient;
     }
 
     @SuppressWarnings("null")
@@ -991,8 +984,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                 if (!isEstablished) {
                     eventBufferedReader = null;
 
-                    eventClient = ClientBuilder.newClient().property(CONNECT_TIMEOUT, EVENT_STREAM_CONNECT_TIMEOUT)
-                            .property(READ_TIMEOUT, EVENT_STREAM_READ_TIMEOUT)
+                    eventClient
                             .register(new Authenticator((String) getConfig().get(CONFIG_USERNAME), vehicle.tokens[0]));
                     eventTarget = eventClient.target(URI_EVENT).path(vehicle.vehicle_id + "/").queryParam("values",
                             StringUtils.join(EventKeys.values(), ',', 1, EventKeys.values().length));
