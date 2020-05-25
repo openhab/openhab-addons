@@ -213,7 +213,9 @@ public class TeslaVehicleHandler extends BaseThingHandler {
             lock.unlock();
         }
 
-        eventClient.close();
+        if (eventClient != null) {
+            eventClient.close();
+        }
     }
 
     /**

@@ -18,7 +18,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -60,6 +59,8 @@ public class TeslaHandlerFactory extends BaseThingHandlerFactory {
             .collect(Collectors.toSet());
 
     @Reference(cardinality = ReferenceCardinality.OPTIONAL)
+    private ClientBuilder injectedClientBuilder;
+
     private ClientBuilder clientBuilder;
 
     @Override
@@ -72,40 +73,27 @@ public class TeslaHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_ACCOUNT)) {
-            return new TeslaAccountHandler((Bridge) thing, getAccountClient());
+            return new TeslaAccountHandler((Bridge) thing, getClientBuilder().build());
         } else {
-            return new TeslaVehicleHandler(thing, getVehicleClient());
+            return new TeslaVehicleHandler(thing, getClientBuilder());
         }
     }
 
-    private Client getAccountClient() {
-        Client client;
-        try {
-            client = ClientBuilder.newClient();
-        } catch (Exception e) {
-            // we seem to have no Jersey, so let's hope for an injected builder by CXF
-            if (clientBuilder != null) {
-                client = clientBuilder.build();
-            } else {
-                throw new IllegalStateException("No JAX RS Client Builder available.");
-            }
-        }
-        return client;
-    }
-
-    private ClientBuilder getClientBuilder() {
-        ClientBuilder clientBuilder;
-        try {
-            clientBuilder = ClientBuilder.newBuilder();
-            clientBuilder.property(CONNECT_TIMEOUT_JERSEY, EVENT_STREAM_CONNECT_TIMEOUT);
-            clientBuilder.property(READ_TIMEOUT_JERSEY, EVENT_STREAM_READ_TIMEOUT);
-        } catch (Exception e) {
-            // we seem to have no Jersey, so let's hope for an injected builder by CXF
-            if (clientBuilder != null) {
-                clientBuilder.property(CONNECT_TIMEOUT, EVENT_STREAM_CONNECT_TIMEOUT);
-                clientBuilder.property(READ_TIMEOUT, EVENT_STREAM_READ_TIMEOUT);
-            } else {
-                throw new IllegalStateException("No JAX RS Client Builder available.");
+    private synchronized ClientBuilder getClientBuilder() {
+        if (clientBuilder == null) {
+            try {
+                clientBuilder = ClientBuilder.newBuilder();
+                clientBuilder.property(CONNECT_TIMEOUT_JERSEY, EVENT_STREAM_CONNECT_TIMEOUT);
+                clientBuilder.property(READ_TIMEOUT_JERSEY, EVENT_STREAM_READ_TIMEOUT);
+            } catch (Exception e) {
+                // we seem to have no Jersey, so let's hope for an injected builder by CXF
+                if (this.injectedClientBuilder != null) {
+                    clientBuilder = injectedClientBuilder;
+                    clientBuilder.property(CONNECT_TIMEOUT, EVENT_STREAM_CONNECT_TIMEOUT);
+                    clientBuilder.property(READ_TIMEOUT, EVENT_STREAM_READ_TIMEOUT);
+                } else {
+                    throw new IllegalStateException("No JAX RS Client Builder available.");
+                }
             }
         }
         return clientBuilder;
