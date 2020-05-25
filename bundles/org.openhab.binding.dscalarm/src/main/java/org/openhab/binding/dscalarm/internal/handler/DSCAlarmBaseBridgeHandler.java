@@ -711,7 +711,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                 }
 
                 if (userCode == null || userCode.length() < 4 || userCode.length() > 6) {
-                    logger.error("sendCommand(): User Code is invalid, must be between 4 and 6 chars: {}", userCode);
+                    logger.error("sendCommand(): User Code is invalid, must be between 4 and 6 chars");
                     break;
                 }
 
@@ -721,6 +721,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                     data = dscAlarmData[0] + userCode;
                 }
 
+                confidentialData = true;
                 validCommand = true;
                 break;
             case VirtualKeypadControl: /* 058 */
@@ -798,12 +799,12 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                 break;
             case CodeSend: /* 200 */
                 if (userCode == null || userCode.length() < 4 || userCode.length() > 6) {
-                    logger.error("sendCommand(): Access Code is invalid, must be between 4 and 6 chars: {}",
-                            dscAlarmData[0]);
+                    logger.error("sendCommand(): Access Code is invalid, must be between 4 and 6 chars");
                     break;
                 }
 
                 data = userCode;
+                confidentialData = true;
                 validCommand = true;
                 break;
 
