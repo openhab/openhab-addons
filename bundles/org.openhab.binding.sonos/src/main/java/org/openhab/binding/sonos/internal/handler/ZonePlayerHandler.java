@@ -33,7 +33,6 @@ import java.util.TimeZone;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.NextPreviousType;
@@ -981,20 +980,25 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         }
 
         Map<String, String> properties = editProperties();
-        if (StringUtils.isNotEmpty(this.stateMap.get("HardwareVersion"))) {
-            properties.put(Thing.PROPERTY_HARDWARE_VERSION, this.stateMap.get("HardwareVersion"));
+        String value = stateMap.get("HardwareVersion");
+        if (value != null && !value.isEmpty()) {
+            properties.put(Thing.PROPERTY_HARDWARE_VERSION, value);
         }
-        if (StringUtils.isNotEmpty(this.stateMap.get("DisplaySoftwareVersion"))) {
-            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, this.stateMap.get("DisplaySoftwareVersion"));
+        value = stateMap.get("DisplaySoftwareVersion");
+        if (value != null && !value.isEmpty()) {
+            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, value);
         }
-        if (StringUtils.isNotEmpty(this.stateMap.get("SerialNumber"))) {
-            properties.put(Thing.PROPERTY_SERIAL_NUMBER, this.stateMap.get("SerialNumber"));
+        value = stateMap.get("SerialNumber");
+        if (value != null && !value.isEmpty()) {
+            properties.put(Thing.PROPERTY_SERIAL_NUMBER, value);
         }
-        if (StringUtils.isNotEmpty(this.stateMap.get("MACAddress"))) {
-            properties.put(MAC_ADDRESS, this.stateMap.get("MACAddress"));
+        value = stateMap.get("MACAddress");
+        if (value != null && !value.isEmpty()) {
+            properties.put(MAC_ADDRESS, value);
         }
-        if (StringUtils.isNotEmpty(this.stateMap.get("IPAddress"))) {
-            properties.put(IP_ADDRESS, this.stateMap.get("IPAddress"));
+        value = stateMap.get("IPAddress");
+        if (value != null && !value.isEmpty()) {
+            properties.put(IP_ADDRESS, value);
         }
         updateProperties(properties);
 
@@ -1051,8 +1055,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                     String mac = getMACAddress();
                     if (stationID != null && !stationID.isEmpty() && mac != null && !mac.isEmpty()) {
                         String url = opmlUrl;
-                        url = StringUtils.replace(url, "%id", stationID);
-                        url = StringUtils.replace(url, "%serial", mac);
+                        url = url.replace("%id", stationID);
+                        url = url.replace("%serial", mac);
 
                         String response = null;
                         try {
@@ -1156,11 +1160,24 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     private String extractStationId(String uri) {
         String stationID = null;
         if (isPlayingStream(uri)) {
-            stationID = StringUtils.substringBetween(uri, ":s", "?sid");
+            stationID = substringBetween(uri, ":s", "?sid");
         } else if (isPlayingRadioStartedByAmazonEcho(uri)) {
-            stationID = StringUtils.substringBetween(uri, "sid=s", "&");
+            stationID = substringBetween(uri, "sid=s", "&");
         }
         return stationID;
+    }
+
+    private String substringBetween(String str, String open, String close) {
+        String result = null;
+        int idx1 = str.indexOf(open);
+        if (idx1 >= 0) {
+            idx1 += open.length();
+            int idx2 = str.indexOf(close, idx1);
+            if (idx2 >= 0) {
+                result = str.substring(idx1, idx2);
+            }
+        }
+        return result;
     }
 
     public boolean isGroupCoordinator() {
@@ -1211,7 +1228,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     public String getMACAddress() {
-        if (StringUtils.isEmpty(stateMap.get("MACAddress"))) {
+        if (stateMap.get("MACAddress") == null || stateMap.get("MACAddress").isEmpty()) {
             updateZoneInfo();
         }
         return stateMap.get("MACAddress");
