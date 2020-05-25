@@ -32,6 +32,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.measure.quantity.Temperature;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -128,6 +129,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
     protected TeslaAccountHandler account;
 
     protected QueueChannelThrottler stateThrottler;
+    protected ClientBuilder clientBuilder;
     protected Client eventClient;
     protected TeslaChannelSelectorProxy teslaChannelSelectorProxy = new TeslaChannelSelectorProxy();
     protected Thread eventThread;
@@ -137,9 +139,9 @@ public class TeslaVehicleHandler extends BaseThingHandler {
     private final Gson gson = new Gson();
     private final JsonParser parser = new JsonParser();
 
-    public TeslaVehicleHandler(Thing thing, Client eventClient) {
+    public TeslaVehicleHandler(Thing thing, ClientBuilder clientBuilder) {
         super(thing);
-        this.eventClient = eventClient;
+        this.clientBuilder = clientBuilder;
     }
 
     @SuppressWarnings("null")
@@ -984,7 +986,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                 if (!isEstablished) {
                     eventBufferedReader = null;
 
-                    eventClient
+                    eventClient = clientBuilder.build()
                             .register(new Authenticator((String) getConfig().get(CONFIG_USERNAME), vehicle.tokens[0]));
                     eventTarget = eventClient.target(URI_EVENT).path(vehicle.vehicle_id + "/").queryParam("values",
                             StringUtils.join(EventKeys.values(), ',', 1, EventKeys.values().length));
