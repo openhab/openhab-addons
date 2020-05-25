@@ -256,7 +256,7 @@ public class LGWebOSHandler extends BaseThingHandler
     @Override
     public void storeKey(@Nullable String key) {
         if (!getKey().equals(key)) {
-            logger.debug("store new key");
+            logger.info("Store {} as access Key in the thing configuration", key);
             // store it current configuration and avoiding complete re-initialization via handleConfigurationUpdate
             getLGWebOSConfig().key = key;
 
