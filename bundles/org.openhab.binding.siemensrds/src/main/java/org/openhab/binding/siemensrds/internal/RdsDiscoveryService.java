@@ -49,11 +49,9 @@ public class RdsDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(RdsDiscoveryService.class);
 
-    @Nullable
-    private ScheduledFuture<?> discoveryScheduler;
+    private @Nullable ScheduledFuture<?> discoveryScheduler;
 
-    @Nullable
-    private RdsCloudHandler cloud;
+    private @Nullable RdsCloudHandler cloud;
 
     public static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_RDS).collect(Collectors.toSet()));
@@ -137,7 +135,6 @@ public class RdsDiscoveryService extends AbstractDiscoveryService {
                 }
 
                 plantClass = RdsPlants.createFromJson(json);
-                ;
             } catch (RdsCloudException e) {
                 logger.warn(LOG_SYSTEM_EXCEPTION, "discoverPlants()", e.getClass().getName(), e.getMessage());
                 return;

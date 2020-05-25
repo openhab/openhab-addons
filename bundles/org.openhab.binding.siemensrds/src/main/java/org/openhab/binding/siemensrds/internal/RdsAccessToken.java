@@ -54,15 +54,12 @@ public class RdsAccessToken {
 
     private static final Gson GSON = new Gson();
 
-    @Nullable
     @SerializedName("access_token")
-    private String accessToken;
-    @Nullable
+    private @Nullable String accessToken;
     @SerializedName(".expires")
-    private String expires;
+    private @Nullable String expires;
 
-    @Nullable
-    private Date expDate = null;
+    private @Nullable Date expDate = null;
 
     /*
      * public static method: execute the HTTP POST on the server
@@ -111,8 +108,7 @@ public class RdsAccessToken {
     /*
      * public method: parse the JSON, and create a class that encapsulates the data
      */
-    @Nullable
-    public static RdsAccessToken createFromJson(String json) {
+    public static @Nullable RdsAccessToken createFromJson(String json) {
         return GSON.fromJson(json, RdsAccessToken.class);
     }
 

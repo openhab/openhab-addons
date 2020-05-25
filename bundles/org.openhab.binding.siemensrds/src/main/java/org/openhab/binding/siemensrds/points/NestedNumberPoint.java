@@ -28,9 +28,9 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class NestedNumberPoint extends BasePoint {
-    @Nullable
+
     @SerializedName("value")
-    protected NestedNumberValue inner;
+    protected @Nullable NestedNumberValue inner;
 
     @Override
     public int asInt() {

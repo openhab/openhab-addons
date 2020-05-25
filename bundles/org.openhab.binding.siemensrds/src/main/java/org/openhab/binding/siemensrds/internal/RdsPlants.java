@@ -34,9 +34,8 @@ public class RdsPlants {
 
     protected final Logger logger = LoggerFactory.getLogger(RdsPlants.class);
 
-    @Nullable
     @SerializedName("items")
-    private List<PlantInfo> plants;
+    private @Nullable List<PlantInfo> plants;
 
     private static final Gson GSON = new Gson();
 
@@ -44,9 +43,8 @@ public class RdsPlants {
     @NonNullByDefault
     public static class PlantInfo {
 
-        @Nullable
         @SerializedName("id")
-        private String plantId;
+        private @Nullable String plantId;
         @SerializedName("isOnline")
         private boolean online;
 
@@ -66,16 +64,14 @@ public class RdsPlants {
     /*
      * public method: parse JSON, and create a class that encapsulates the data
      */
-    @Nullable
-    public static RdsPlants createFromJson(String json) {
+    public static @Nullable RdsPlants createFromJson(String json) {
         return GSON.fromJson(json, RdsPlants.class);
     }
 
     /*
      * public method: return the plant list
      */
-    @Nullable
-    public List<PlantInfo> getPlants() {
+    public @Nullable List<PlantInfo> getPlants() {
         return plants;
     }
 }

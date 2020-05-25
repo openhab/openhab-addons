@@ -30,7 +30,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class RdsDebouncer {
 
-    private final Map<String, DebounceDelay> channels = new HashMap<>();
+    private final Map<String, @Nullable DebounceDelay> channels = new HashMap<>();
 
     @SuppressWarnings("null")
     @NonNullByDefault
@@ -59,8 +59,8 @@ public class RdsDebouncer {
     public Boolean timeExpired(String channelId) {
         if (channels.containsKey(channelId)) {
             @Nullable
-            Object debounceDelay = channels.get(channelId);
-            if (debounceDelay instanceof DebounceDelay) {
+            DebounceDelay debounceDelay = channels.get(channelId);
+            if (debounceDelay != null) {
                 return ((DebounceDelay) debounceDelay).timeExpired();
             }
         }

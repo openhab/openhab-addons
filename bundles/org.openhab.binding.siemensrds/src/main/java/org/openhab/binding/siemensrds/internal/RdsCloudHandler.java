@@ -41,11 +41,9 @@ public class RdsCloudHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(RdsCloudHandler.class);
 
-    @Nullable
-    private RdsCloudConfiguration config = null;
+    private @Nullable RdsCloudConfiguration config = null;
 
-    @Nullable
-    private RdsAccessToken accessToken = null;
+    private @Nullable RdsAccessToken accessToken = null;
 
     public RdsCloudHandler(Bridge bridge) {
         super(bridge);

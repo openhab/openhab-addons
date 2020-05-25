@@ -25,9 +25,8 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class NestedNumberValue {
-    @Nullable
     @SerializedName("value")
-    protected Number value;
+    protected @Nullable Number value;
     @SerializedName("presentPriority")
     protected int presentPriority;
 }

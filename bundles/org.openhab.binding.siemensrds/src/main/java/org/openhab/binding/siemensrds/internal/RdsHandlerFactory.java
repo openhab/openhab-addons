@@ -47,16 +47,15 @@ public class RdsHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(new HashSet<>(Arrays.asList(THING_TYPE_CLOUD, THING_TYPE_RDS)));
 
-    private final Map<ThingUID, ServiceRegistration<?>> discos = new HashMap<>();
+    private final Map<ThingUID, @Nullable ServiceRegistration<?>> discos = new HashMap<>();
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
-    @Nullable
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if ((thingTypeUID.equals(THING_TYPE_CLOUD)) && (thing instanceof Bridge)) {
@@ -107,12 +106,10 @@ public class RdsHandlerFactory extends BaseThingHandlerFactory {
     private synchronized void destroyDiscoveryService(RdsCloudHandler handler) {
         // fetch the respective thing's service registration from our list
         @Nullable
-        Object object = discos.remove(handler.getThing().getUID());
+        ServiceRegistration<?> serviceReg = discos.remove(handler.getThing().getUID());
 
         // retrieve the respective discovery service
-        if (object instanceof ServiceRegistration<?>) {
-            ServiceRegistration<?> serviceReg = (ServiceRegistration<?>) object;
-
+        if (serviceReg != null) {
             RdsDiscoveryService disco = (RdsDiscoveryService) bundleContext.getService(serviceReg.getReference());
 
             // unregister the service

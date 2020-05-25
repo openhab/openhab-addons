@@ -52,30 +52,24 @@ public abstract class BasePoint {
     protected int type;
     @SerializedName("write")
     protected boolean write;
-    @Nullable
     @SerializedName("descr")
-    protected String descr;
+    protected @Nullable String descr;
     @SerializedName("limits")
     protected float @Nullable [] limits;
-    @Nullable
     @SerializedName("descriptionName")
-    protected String descriptionName;
-    @Nullable
+    protected @Nullable String descriptionName;
     @SerializedName("objectName")
-    protected String objectName;
-    @Nullable
+    protected @Nullable String objectName;
     @SerializedName("memberName")
-    private String memberName;
-    @Nullable
+    private @Nullable String memberName;
     @SerializedName("hierarchyName")
-    private String hierarchyName;
+    private @Nullable String hierarchyName;
     @SerializedName("translated")
     protected boolean translated;
     @SerializedName("presentPriority")
     protected int presentPriority;
 
-    @Nullable
-    private String @Nullable [] enumVals;
+    private @Nullable String @Nullable [] enumVals;
     private boolean enumParsed = false;
     protected boolean isEnum = false;
 
@@ -172,8 +166,7 @@ public abstract class BasePoint {
         return memberName != null ? memberName : "undefined";
     }
 
-    @Nullable
-    private String hierarchyNameSuffix() {
+    private @Nullable String hierarchyNameSuffix() {
         String fullHierarchyName = this.hierarchyName;
         if (fullHierarchyName != null) {
             int suffixPosition = fullHierarchyName.lastIndexOf("'");

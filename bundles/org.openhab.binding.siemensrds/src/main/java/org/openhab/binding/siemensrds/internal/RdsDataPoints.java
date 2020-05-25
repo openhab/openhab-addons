@@ -64,12 +64,10 @@ public class RdsDataPoints {
     private static final Gson GSON = new GsonBuilder().registerTypeAdapter(BasePoint.class, new PointDeserializer())
             .create();
 
-    @Nullable
     @SerializedName("totalCount")
-    private String totalCount;
-    @Nullable
+    private @Nullable String totalCount;
     @SerializedName("values")
-    public Map<String, BasePoint> points;
+    public @Nullable Map<String, BasePoint> points;
 
     /*
      * this is a second index into to the points Map above; the purpose is to allow
@@ -123,8 +121,7 @@ public class RdsDataPoints {
      * public static method: parse the JSON, and create a real instance of this
      * class that encapsulates the data data point values
      */
-    @Nullable
-    public static RdsDataPoints createFromJson(String json) {
+    public static @Nullable RdsDataPoints createFromJson(String json) {
         return GSON.fromJson(json, RdsDataPoints.class);
     }
 
@@ -241,7 +238,6 @@ public class RdsDataPoints {
             }
 
             httpSetPointValueJson(apiKey, token, url, payload);
-            ;
         } catch (RdsCloudException e) {
             logger.warn(LOG_SYSTEM_EXCEPTION, "setValue()", e.getClass().getName(), e.getMessage());
         } catch (JsonParseException | IOException e) {

@@ -27,9 +27,9 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class NumberPoint extends BasePoint {
-    @Nullable
+
     @SerializedName("value")
-    private Number value;
+    private @Nullable Number value;
 
     @Override
     public int asInt() {

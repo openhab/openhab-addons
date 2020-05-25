@@ -55,21 +55,16 @@ public class RdsHandler extends BaseThingHandler {
 
     protected final Logger logger = LoggerFactory.getLogger(RdsHandler.class);
 
-    @Nullable
-    private ScheduledFuture<?> lazyPollingScheduler = null;
-
-    @Nullable
-    private ScheduledFuture<?> fastPollingScheduler = null;
+    private @Nullable ScheduledFuture<?> lazyPollingScheduler = null;
+    private @Nullable ScheduledFuture<?> fastPollingScheduler = null;
 
     private final AtomicInteger fastPollingCallsToGo = new AtomicInteger();
 
     private RdsDebouncer debouncer = new RdsDebouncer();
 
-    @Nullable
-    private RdsConfiguration config = null;
+    private @Nullable RdsConfiguration config = null;
 
-    @Nullable
-    private RdsDataPoints points = null;
+    private @Nullable RdsDataPoints points = null;
 
     public RdsHandler(Thing thing) {
         super(thing);
@@ -378,7 +373,6 @@ public class RdsHandler extends BaseThingHandler {
     private RdsCloudHandler getCloudHandler() throws RdsCloudException {
         @Nullable
         Bridge b;
-
         @Nullable
         BridgeHandler h;
 
@@ -388,8 +382,7 @@ public class RdsHandler extends BaseThingHandler {
         throw new RdsCloudException("no cloud handler found");
     }
 
-    @Nullable
-    public RdsDataPoints fetchPoints() {
+    public @Nullable RdsDataPoints fetchPoints() {
         RdsConfiguration config = this.config;
         try {
             if (config == null) {
