@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class for communicating with the MonopriceAudio device through a IP connection or a serial over IP connection
+ * Class for communicating with the MonopriceAudio device through a serial over IP connection
  *
  * @author Laurent Garnier - Initial contribution
  * @author Michael Lobstein - Adapted for the MonopriceAudio binding

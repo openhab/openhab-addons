@@ -42,12 +42,20 @@ public class MonopriceAudioZoneData {
         this.page = page;
     }
 
+    public String getPage() {
+        return this.page;
+    }
+
     public boolean isPageActive() {
         return ("01").equals(this.page);
     }
 
     public void setPower(String power) {
         this.power = power;
+    }
+
+    public String getPower() {
+        return this.power;
     }
 
     public boolean isPowerOn() {
@@ -58,6 +66,10 @@ public class MonopriceAudioZoneData {
         this.mute = mute;
     }
 
+    public String getMute() {
+        return this.mute;
+    }
+
     public boolean isMuted() {
         return ("01").equals(this.mute);
     }
@@ -65,45 +77,49 @@ public class MonopriceAudioZoneData {
     public void setDnd(String dnd) {
         this.dnd = dnd;
     }
-    
+
+    public String getDnd() {
+        return this.dnd;
+    }
+
     public boolean isDndOn() {
         return ("01").equals(this.dnd);
     }
 
-    public Integer getVolume() {
-        return Integer.parseInt(volume);
+    public String getVolume() {
+        return this.volume;
     }
 
     public void setVolume(String volume) {
         this.volume = volume;
     }
 
-    public Integer getTreble() {
-        return Integer.parseInt(treble);
+    public String getTreble() {
+        return this.treble;
     }
 
     public void setTreble(String treble) {
         this.treble = treble;
     }
 
-    public Integer getBass() {
-        return Integer.parseInt(bass);
+    public String getBass() {
+        return this.bass;
     }
 
     public void setBass(String bass) {
         this.bass = bass;
     }
 
-    public Integer getBalance() {
-        return Integer.parseInt(balance);
+    public String getBalance() {
+        return this.balance;
     }
 
     public void setBalance(String balance) {
         this.balance = balance;
     }
 
-    public Integer getSource() {
-        return Integer.parseInt(source);
+    public String getSource() {
+        return this.source;
     }
 
     public void setSource(String source) {
@@ -112,6 +128,10 @@ public class MonopriceAudioZoneData {
 
     public void setKeypad(String keypad) {
         this.keypad = keypad;
+    }
+
+    public String getKeypad() {
+        return this.keypad;
     }
 
     public boolean isKeypadActive() {

@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.monopriceaudio.internal;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
@@ -48,12 +45,5 @@ public class MonopriceAudioBindingConstants {
     public static final String CHANNEL_TYPE_ALLSOURCE = "allsource";
     public static final String CHANNEL_TYPE_ALLVOLUME = "allvolume";
     public static final String CHANNEL_TYPE_ALLMUTE = "allmute";
-
-    // make a list of all channel types
-    public static ArrayList<String> channelTypes = new ArrayList<String>( 
-            Arrays.asList(CHANNEL_TYPE_POWER, CHANNEL_TYPE_SOURCE, CHANNEL_TYPE_VOLUME,
-                          CHANNEL_TYPE_MUTE, CHANNEL_TYPE_TREBLE, CHANNEL_TYPE_BASS,
-                          CHANNEL_TYPE_BALANCE, CHANNEL_TYPE_DND, CHANNEL_TYPE_PAGE,
-                          CHANNEL_TYPE_KEYPAD));
 
 }
