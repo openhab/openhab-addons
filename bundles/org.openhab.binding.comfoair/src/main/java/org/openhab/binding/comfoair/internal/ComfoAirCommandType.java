@@ -758,7 +758,6 @@ public enum ComfoAirCommandType {
      * @return ComfoAirCommand's which should be updated after a modifying
      *         ComfoAirCommand named by key
      */
-    @SuppressWarnings("null")
     public static Collection<ComfoAirCommand> getAffectedReadCommands(String key, Set<String> usedKeys) {
 
         Map<Integer, ComfoAirCommand> commands = new HashMap<Integer, ComfoAirCommand>();
@@ -784,18 +783,10 @@ public enum ComfoAirCommandType {
                     ComfoAirCommandType affectedCommandType = ComfoAirCommandType.getCommandTypeByKey(affectedKey);
 
                     if (affectedCommandType != null) {
-                        int getCmd = affectedCommandType.read_command == 0 ? null : affectedCommandType.read_command;
-                        int replyCmd = affectedCommandType.read_reply_command;
-
-                        ComfoAirCommand command = commands.get(replyCmd);
-
-                        if (command == null) {
-                            command = new ComfoAirCommand(affectedKey, getCmd, replyCmd, Constants.EMPTY_INT_ARRAY,
-                                    null, null);
-                            commands.put(replyCmd, command);
-                        } else {
-                            command.addKey(affectedKey);
+                        if (affectedCommandType.read_reply_command == 0) {
+                            continue;
                         }
+                        modifyCommandCollection(commands, affectedCommandType);
                     }
                 }
             }
@@ -808,7 +799,6 @@ public enum ComfoAirCommandType {
      *
      * @return all ComfoAirCommand's identified by keys
      */
-    @SuppressWarnings("null")
     public static Collection<ComfoAirCommand> getReadCommandsByEventTypes(List<String> keys) {
 
         Map<Integer, ComfoAirCommand> commands = new HashMap<Integer, ComfoAirCommand>();
@@ -819,20 +809,8 @@ public enum ComfoAirCommandType {
             if (entry.read_reply_command == 0) {
                 continue;
             }
-
-            int getCmd = entry.read_command == 0 ? null : entry.read_command;
-            int replyCmd = entry.read_reply_command;
-
-            ComfoAirCommand command = commands.get(replyCmd);
-
-            if (command == null) {
-                command = new ComfoAirCommand(entry.key, getCmd, replyCmd, Constants.EMPTY_INT_ARRAY, null, null);
-                commands.put(replyCmd, command);
-            } else {
-                command.addKey(entry.key);
-            }
+            modifyCommandCollection(commands, entry);
         }
-
         return commands.values();
     }
 
@@ -870,4 +848,19 @@ public enum ComfoAirCommandType {
         return null;
     }
 
+    @SuppressWarnings("null")
+    private static void modifyCommandCollection(Map<Integer, ComfoAirCommand> commands,
+            ComfoAirCommandType commandType) {
+        int getCmd = commandType.read_command == 0 ? null : commandType.read_command;
+        int replyCmd = commandType.read_reply_command;
+
+        ComfoAirCommand command = commands.get(replyCmd);
+
+        if (command == null) {
+            command = new ComfoAirCommand(commandType.key, getCmd, replyCmd, Constants.EMPTY_INT_ARRAY, null, null);
+            commands.put(replyCmd, command);
+        } else {
+            command.addKey(commandType.key);
+        }
+    }
 }
