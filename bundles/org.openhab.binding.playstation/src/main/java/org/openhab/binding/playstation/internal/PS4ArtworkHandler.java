@@ -45,6 +45,9 @@ public class PS4ArtworkHandler {
     /** Cache folder under $userdata */
     private static final String CACHE_FOLDER_NAME = "cache";
 
+    /** Some countries use EN as language in the PS Store, this is to minimize requests */
+    private static boolean useLanguageEn = false;
+
     private PS4ArtworkHandler() {
         // No need to instantiate
     }
@@ -69,16 +72,18 @@ public class PS4ArtworkHandler {
     }
 
     /**
-     * Fetch artwork for PS4 application. First looks for the file on disc, if the file is not on the disc it checks
-     * PlayStation store
+     * Builds a artwork request string for the specified TitleId, also takes into account if the language should be from
+     * the specified locale or just "en".
      *
-     * @param titleid Title ID of application.
-     * @param size Size (width & height) of art work in pixels , max 1024.
-     * @param locale Locale used on PlayStation store to find art work.
-     * @return A JPEG image as a RawType if an art work file is found otherwise null.
+     * @param locale The country and language to use for the store look up.
+     * @param titleId The Title ID of the Application/game.
+     * @param size The size of the artwork.
+     * @return A https request as a String.
      */
-    public static @Nullable RawType fetchArtworkForTitleid(String titleid, Integer size, Locale locale) {
-        return fetchArtworkForTitleid(titleid, size, locale, false);
+    private static String buildArtworkRequest(Locale locale, String titleId, Integer size) {
+        String language = useLanguageEn ? "en" : locale.getLanguage();
+        return "https://store.playstation.com/store/api/chihiro/00_09_000/titlecontainer/" + locale.getCountry() + "/"
+                + language + "/999/" + titleId + "_00/image?w=" + size.toString() + "&h=" + size.toString();
     }
 
     /**
@@ -88,18 +93,31 @@ public class PS4ArtworkHandler {
      * @param titleid Title ID of application.
      * @param size Size (width & height) of art work in pixels , max 1024.
      * @param locale Locale used on PlayStation store to find art work.
-     * @param forceRefetch The tries to re-fetch art work from PlayStation store, sometimes the art work is updated
-     *            along with the game.
      * @return A JPEG image as a RawType if an art work file is found otherwise null.
      */
-    public static @Nullable RawType fetchArtworkForTitleid(String titleid, Integer size, Locale locale,
+    public static @Nullable RawType fetchArtworkForTitleid(String titleId, Integer size, Locale locale) {
+        return fetchArtworkForTitleid(titleId, size, locale, false);
+    }
+
+    /**
+     * Fetch artwork for PS4 application. First looks for the file on disc, if the file is not on the disc it checks
+     * PlayStation store
+     *
+     * @param titleid Title ID of application.
+     * @param size Size (width & height) of art work in pixels , max 1024.
+     * @param locale Locale used on PlayStation store to find art work.
+     * @param forceRefetch When true, tries to re-fetch art work from PlayStation store, sometimes the art work is
+     *            updated along with the game.
+     * @return A JPEG image as a RawType if an art work file is found otherwise null.
+     */
+    public static @Nullable RawType fetchArtworkForTitleid(String titleId, Integer size, Locale locale,
             boolean forceRefetch) {
         // Try to find the image in the cache first, then try to download it from PlayStation Store.
         RawType artwork = null;
-        if (titleid.isEmpty()) {
+        if (titleId.isEmpty()) {
             return artwork;
         }
-        String artworkFilename = titleid + "_" + size.toString() + ".jpg";
+        String artworkFilename = titleId + "_" + size.toString() + ".jpg";
         File artworkFileInCache = new File(artworkCacheFolder, artworkFilename);
         if (artworkFileInCache.exists() && !forceRefetch) {
             logger.debug("Artwork file {} was found in cache.", artworkFileInCache.getName());
@@ -117,9 +135,14 @@ public class PS4ArtworkHandler {
                 return artwork;
             }
         }
-        String storeLocale = locale.getCountry() + "/" + locale.getLanguage();
-        artwork = HttpUtil.downloadImage("https://store.playstation.com/store/api/chihiro/00_09_000/titlecontainer/"
-                + storeLocale + "/999/" + titleid + "_00/image?w=" + size.toString() + "&h=" + size.toString(), 1000);
+        String request = buildArtworkRequest(locale, titleId, size);
+        artwork = HttpUtil.downloadImage(request, 1000);
+        if (artwork == null) {
+            // If artwork is not found for specified language/"en", try the other way around.
+            useLanguageEn = !useLanguageEn;
+            request = buildArtworkRequest(locale, titleId, size);
+            artwork = HttpUtil.downloadImage(request, 1000);
+        }
         if (artwork != null) {
             try (FileOutputStream fos = new FileOutputStream(artworkFileInCache)) {
                 logger.debug("Caching artwork file {}", artworkFileInCache.getName());
@@ -129,6 +152,8 @@ public class PS4ArtworkHandler {
             } catch (IOException ex) {
                 logger.warn("Could not write {} to cache. ", artworkFileInCache, ex);
             }
+        } else {
+            logger.debug("Could not download artwork file from {}", request);
         }
         return artwork;
     }
