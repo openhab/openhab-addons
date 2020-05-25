@@ -78,7 +78,7 @@ public class VerisureMiceDetectionThingHandler extends VerisureThingHandler<Veri
                 updateTimeStamp(mouse.getDetections().get(0).getNodeTime());
             }
             updateTimeStamp(miceDetectionJSON.getTemperatureTime(), CHANNEL_TEMPERATURE_TIMESTAMP);
-            super.update(miceDetectionJSON);
+            updateInstallationChannels(miceDetectionJSON);
         } else {
             logger.debug("MiceList is empty!");
         }

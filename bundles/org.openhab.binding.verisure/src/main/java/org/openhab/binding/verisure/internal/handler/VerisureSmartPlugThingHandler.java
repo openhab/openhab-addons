@@ -138,7 +138,7 @@ public class VerisureSmartPlugThingHandler extends VerisureThingHandler<Verisure
                             State state = getValue(channelUID.getId(), smartplug, smartPlugStatus);
                             updateState(channelUID, state);
                         });
-                super.update(smartPlugJSON);
+                updateInstallationChannels(smartPlugJSON);
             }
         } else {
             logger.debug("SmartPlugList is empty!");

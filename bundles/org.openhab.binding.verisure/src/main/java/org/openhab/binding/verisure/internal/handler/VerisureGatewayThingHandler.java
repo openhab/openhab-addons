@@ -61,7 +61,6 @@ public class VerisureGatewayThingHandler extends VerisureThingHandler<VerisureGa
                 .getCommunicationState();
         if (!communicationStateList.isEmpty()) {
             communicationStateList.forEach(communicationState -> {
-
                 getThing().getChannels().stream().map(Channel::getUID).filter(channelUID -> isLinked(channelUID))
                         .forEach(channelUID -> {
                             if (!channelUID.getId().contains("testTime")) {
@@ -76,11 +75,10 @@ public class VerisureGatewayThingHandler extends VerisureThingHandler<VerisureGa
                             }
                         });
             });
+            updateInstallationChannels(gatewayJSON);
         } else {
             logger.debug("Empty communication state list.");
         }
-
-        super.update(gatewayJSON);
     }
 
     public State getValue(String channelId, VerisureGatewayDTO verisureGateway, CommunicationState communicationState) {

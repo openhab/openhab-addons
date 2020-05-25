@@ -67,7 +67,7 @@ public class VerisureUserPresenceThingHandler extends VerisureThingHandler<Veris
                         updateState(channelUID, state);
                     });
             updateTimeStamp(userTracking.getCurrentLocationTimestamp());
-            super.update(userPresenceJSON);
+            updateInstallationChannels(userPresenceJSON);
         } else {
             logger.debug("UserTrackingList is empty!");
         }

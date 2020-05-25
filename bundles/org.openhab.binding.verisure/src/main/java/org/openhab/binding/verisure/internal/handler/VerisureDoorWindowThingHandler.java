@@ -70,7 +70,7 @@ public class VerisureDoorWindowThingHandler extends VerisureThingHandler<Verisur
 
                     });
             updateTimeStamp(doorWindow.getReportTime());
-            super.update(doorWindowJSON);
+            updateInstallationChannels(doorWindowJSON);
         } else {
             logger.debug("DoorWindow list is empty!");
         }

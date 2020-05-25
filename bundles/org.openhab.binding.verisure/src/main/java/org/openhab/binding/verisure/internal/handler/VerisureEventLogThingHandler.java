@@ -67,11 +67,10 @@ public class VerisureEventLogThingHandler extends VerisureThingHandler<VerisureE
 
             updateTimeStamp(eventLogJSON.getData().getInstallation().getEventLog().getPagedList().get(0).getEventTime(),
                     CHANNEL_LAST_EVENT_TIME);
+            updateInstallationChannels(eventLogJSON);
         } else {
             logger.debug("Empty event log.");
         }
-
-        super.update(eventLogJSON);
     }
 
     public State getValue(String channelId, VerisureEventLogDTO verisureEventLog, EventLog eventLog) {

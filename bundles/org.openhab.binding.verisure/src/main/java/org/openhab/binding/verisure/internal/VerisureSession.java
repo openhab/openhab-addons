@@ -501,7 +501,7 @@ public class VerisureSession {
         VerisureThingDTO oldObj = verisureThings.get(normalizedDeviceId);
         logger.trace("Old thing: {}", oldObj);
         logger.trace("Updated thing: {}", thing);
-        if (oldObj == null || !oldObj.equals(thing)) {
+        if (!thing.equals(oldObj)) {
             thing.setSiteId(installation.getInstallationId());
             thing.setSiteName(installation.getInstallationName());
             verisureThings.put(thing.getDeviceId(), thing);

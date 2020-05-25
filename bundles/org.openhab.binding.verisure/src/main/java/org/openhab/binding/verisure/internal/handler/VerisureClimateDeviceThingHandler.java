@@ -77,7 +77,7 @@ public class VerisureClimateDeviceThingHandler extends VerisureThingHandler<Veri
         if (timeStamp != null) {
             updateTimeStamp(timeStamp);
         }
-        super.update(climateJSON);
+        updateInstallationChannels(climateJSON);
     }
 
     public State getValue(String channelId, VerisureClimatesDTO climateJSON) {

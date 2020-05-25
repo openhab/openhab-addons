@@ -255,8 +255,8 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler<Verisure
                             State state = getValue(channelUID.getId(), doorlock, smartLockStatus, smartLockJSON);
                             updateState(channelUID, state);
                         });
-                super.update(smartLocksJSON);
                 updateTimeStamp(doorlock.getEventTime());
+                updateInstallationChannels(smartLocksJSON);
             } else {
                 logger.debug("Smart lock status {} or smartLockJSON {} is null!", smartLockStatus, smartLockJSON);
             }

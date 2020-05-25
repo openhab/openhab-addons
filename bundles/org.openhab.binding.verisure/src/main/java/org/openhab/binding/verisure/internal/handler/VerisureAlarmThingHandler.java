@@ -150,7 +150,7 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler<VerisureAlar
                         updateState(channelUID, state);
                     });
             updateTimeStamp(armState.getDate());
-            super.update(alarmsJSON);
+            updateInstallationChannels(alarmsJSON);
         } else {
             logger.warn("Alarm status is null!");
         }

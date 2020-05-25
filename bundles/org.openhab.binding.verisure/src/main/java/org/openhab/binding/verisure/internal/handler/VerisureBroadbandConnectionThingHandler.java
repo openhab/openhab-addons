@@ -60,7 +60,7 @@ public class VerisureBroadbandConnectionThingHandler extends VerisureThingHandle
             ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_CONNECTED);
             boolean broadbandConnected = vbcJSON.getData().getInstallation().getBroadband().isBroadbandConnected();
             updateState(cuid, OnOffType.from(broadbandConnected));
-            super.update(vbcJSON);
+            updateInstallationChannels(vbcJSON);
         }
     }
 
