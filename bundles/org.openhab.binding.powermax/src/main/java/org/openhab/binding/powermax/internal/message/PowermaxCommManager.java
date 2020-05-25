@@ -342,7 +342,7 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
                 dynPart[1] = (byte) Integer.parseInt(pinCode.substring(0, 2), 16);
                 dynPart[2] = (byte) Integer.parseInt(pinCode.substring(2, 4), 16);
 
-                done = sendMessage(new PowermaxBaseMessage(PowermaxSendType.ARM, dynPart), false, 0);
+                done = sendMessage(new PowermaxBaseMessage(PowermaxSendType.ARM, dynPart), false, 0, true);
             } catch (NumberFormatException e) {
                 logger.debug("Powermax alarm binding: requested arm mode {} rejected due to invalid PIN code",
                         armMode.getShortName());
@@ -422,7 +422,7 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
                 dynPart[i++] = (byte) ((val >> 16) & 0x000000FF);
                 dynPart[i++] = (byte) ((val >> 24) & 0x000000FF);
 
-                done = sendMessage(new PowermaxBaseMessage(PowermaxSendType.BYPASS, dynPart), false, 0);
+                done = sendMessage(new PowermaxBaseMessage(PowermaxSendType.BYPASS, dynPart), false, 0, true);
                 if (done) {
                     done = sendMessage(new PowermaxBaseMessage(PowermaxSendType.BYPASSTAT), false, 0);
                 }
@@ -494,7 +494,7 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
                 dynPart[0] = (byte) Integer.parseInt(pinCode.substring(0, 2), 16);
                 dynPart[1] = (byte) Integer.parseInt(pinCode.substring(2, 4), 16);
 
-                done = sendMessage(new PowermaxBaseMessage(PowermaxSendType.EVENTLOG, dynPart), false, 0);
+                done = sendMessage(new PowermaxBaseMessage(PowermaxSendType.EVENTLOG, dynPart), false, 0, true);
             } catch (NumberFormatException e) {
                 logger.debug("Powermax alarm binding: requested event log rejected due to invalid PIN code");
             }
@@ -590,16 +590,22 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
         return sendMessage(new PowermaxBaseMessage(msgType), false, waitTime);
     }
 
+    private synchronized boolean sendMessage(PowermaxBaseMessage msg, boolean immediate, int waitTime) {
+        return sendMessage(msg, immediate, waitTime, false);
+    }
+
     /**
      * Send a message or delay the sending if time frame for receiving response is not ended
      *
      * @param msg the message to be sent
      * @param immediate true if the message has to be send without considering timing
      * @param waitTime the delay in seconds to wait
+     * @param doNotLog true if the message contains data that must not be logged
      *
      * @return true if the message was sent or the sending is delayed; false in other cases
      */
-    private synchronized boolean sendMessage(PowermaxBaseMessage msg, boolean immediate, int waitTime) {
+    private synchronized boolean sendMessage(PowermaxBaseMessage msg, boolean immediate, int waitTime,
+            boolean doNotLog) {
         if ((waitTime > 0) && (msg != null)) {
             logger.debug("sendMessage(): delay ({} s) sending message (type {})", waitTime, msg.getSendType());
             // Don't queue the message
@@ -649,7 +655,7 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
 
         if (logger.isDebugEnabled()) {
             logger.debug("sendMessage(): sending {} message {}", msgToSend.getSendType(),
-                    HexUtils.bytesToHex(msgToSend.getRawData()));
+                    doNotLog ? "***" : HexUtils.bytesToHex(msgToSend.getRawData()));
         }
         boolean done = sendMessage(msgToSend.getRawData());
         if (done) {
