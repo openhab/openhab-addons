@@ -89,19 +89,19 @@ public class HPWebServerClient {
 
     private <T> HPServerResult<T> fetchData(String endpoint, Function<Document, T> function) {
         try {
-            logger.trace("HTTP Client Usage GET {}", endpoint);
+            logger.trace("HTTP Client Load {}", endpoint);
             ContentResponse cr = httpClient.newRequest(endpoint).method(HttpMethod.GET)
                     .timeout(REQUEST_TIMEOUT_SEC, TimeUnit.SECONDS).send();
 
             String contentAsString = cr.getContentAsString();
-            logger.trace("HTTP Client Usage Result {} Size {}", cr.getStatus(), contentAsString.length());
+            logger.trace("HTTP Client Result {} Size {}", cr.getStatus(), contentAsString.length());
             return new HPServerResult<>(function.apply(getDocument(contentAsString)));
         } catch (TimeoutException ex) {
-            logger.trace("HTTP Client Usage Timeout Exception {}", ex.getMessage());
+            logger.trace("HTTP Client Timeout Exception {}", ex.getMessage());
             return new HPServerResult<>(RequestStatus.TIMEOUT, ex.getMessage());
         } catch (InterruptedException | ExecutionException | ParserConfigurationException | SAXException
                 | IOException ex) {
-            logger.trace("HTTP Client Usage Exception {}", ex.getMessage());
+            logger.trace("HTTP Client Exception {}", ex.getMessage());
             return new HPServerResult<>(RequestStatus.ERROR, ex.getMessage());
         }
     }

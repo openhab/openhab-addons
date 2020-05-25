@@ -15,9 +15,7 @@ package org.openhab.binding.hpprinter.internal;
 import static org.openhab.binding.hpprinter.internal.HPPrinterBindingConstants.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -119,7 +117,7 @@ public class HPPrinterBinder {
                 channels.add(ChannelBuilder
                         .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_BLACK_MARKING), HPPrinterBindingConstants.ITEM_TYPE_CUMLMARK)
                         .withLabel("Black Marking Used").withDescription("The amount of Black Marking used")
-                        .withType(CHAN_TYPE_MARKING).build());
+                        .withType(chanTypeMarking).build());
             }
 
             switch (data.getType()) {
@@ -129,26 +127,26 @@ public class HPPrinterBinder {
                                 .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_COLOR_MARKING),
                                 HPPrinterBindingConstants.ITEM_TYPE_CUMLMARK)
                                 .withLabel("Colour Marking Used").withDescription("The amount of Colour Marking used")
-                                .withType(CHAN_TYPE_MARKING).build());
+                                .withType(chanTypeMarking).build());
                     }
 
                     channels.add(ChannelBuilder
                             .create(new ChannelUID(thingUid, CGROUP_INK, CHANNEL_COLOR_LEVEL), HPPrinterBindingConstants.ITEM_TYPE_INK)
                             .withLabel("Color Level").withDescription("Shows the amount of Colour Ink/Toner remaining")
-                            .withType(CHAN_TYPE_INKLEVEL).build());
+                            .withType(chanTypeInkLevel).build());
 
                     channels.add(ChannelBuilder
                             .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_TOTAL_COLORPAGES),
                                     CoreItemFactory.NUMBER)
                             .withLabel("Total Colour Pages").withDescription("The amount of colour pages printed")
-                            .withType(CHAN_TYPE_TOTALS).build());
+                            .withType(chanTypeTotals).build());
 
                     channels.add(ChannelBuilder
                             .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_TOTAL_MONOPAGES),
                                     CoreItemFactory.NUMBER)
                             .withLabel("Total Monochrome Pages")
                             .withDescription("The amount of monochrome pages printed")
-                            .withType(CHAN_TYPE_TOTALS).build());
+                            .withType(chanTypeTotals).build());
 
                     break;
 
@@ -158,49 +156,49 @@ public class HPPrinterBinder {
                                 .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_CYAN_MARKING),
                                 HPPrinterBindingConstants.ITEM_TYPE_CUMLMARK)
                                 .withLabel("Cyan Marking Used").withDescription("The amount of Cyan Marking used")
-                                .withType(CHAN_TYPE_MARKING).build());
+                                .withType(chanTypeMarking).build());
 
                         channels.add(ChannelBuilder
                                 .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_MAGENTA_MARKING),
                                 HPPrinterBindingConstants.ITEM_TYPE_CUMLMARK)
                                 .withLabel("Magenta Marking Used").withDescription("The amount of Magenta Marking used")
-                                .withType(CHAN_TYPE_MARKING).build());
+                                .withType(chanTypeMarking).build());
 
                         channels.add(ChannelBuilder
                                 .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_YELLOW_MARKING),
                                 HPPrinterBindingConstants.ITEM_TYPE_CUMLMARK)
                                 .withLabel("Yellow Marking Used").withDescription("The amount of Yellow Marking used")
-                                .withType(CHAN_TYPE_MARKING).build());
+                                .withType(chanTypeMarking).build());
                     }
 
                     channels.add(ChannelBuilder
                             .create(new ChannelUID(thingUid, CGROUP_INK, CHANNEL_CYAN_LEVEL), HPPrinterBindingConstants.ITEM_TYPE_INK)
                             .withLabel("Cyan Level").withDescription("Shows the amount of Cyan Ink/Toner remaining")
-                            .withType(CHAN_TYPE_INKLEVEL).build());
+                            .withType(chanTypeInkLevel).build());
 
                     channels.add(ChannelBuilder
                             .create(new ChannelUID(thingUid, CGROUP_INK, CHANNEL_MAGENTA_LEVEL), HPPrinterBindingConstants.ITEM_TYPE_INK)
                             .withLabel("Magenta Level")
                             .withDescription("Shows the amount of Magenta Ink/Toner remaining")
-                            .withType(CHAN_TYPE_INKLEVEL).build());
+                            .withType(chanTypeInkLevel).build());
 
                     channels.add(ChannelBuilder
                             .create(new ChannelUID(thingUid, CGROUP_INK, CHANNEL_YELLOW_LEVEL), HPPrinterBindingConstants.ITEM_TYPE_INK)
                             .withLabel("Yellow Level").withDescription("Shows the amount of Yellow Ink/Toner remaining")
-                            .withType(CHAN_TYPE_INKLEVEL).build());
+                            .withType(chanTypeInkLevel).build());
 
                     channels.add(ChannelBuilder
                             .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_TOTAL_COLORPAGES),
                                     CoreItemFactory.NUMBER)
                             .withLabel("Total Colour Pages").withDescription("The amount of colour pages printed")
-                            .withType(CHAN_TYPE_TOTALS).build());
+                            .withType(chanTypeTotals).build());
 
                     channels.add(ChannelBuilder
                             .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_TOTAL_MONOPAGES),
                                     CoreItemFactory.NUMBER)
                             .withLabel("Total Monochrome Pages")
                             .withDescription("The amount of monochrome pages printed")
-                            .withType(CHAN_TYPE_TOTALS).build());
+                            .withType(chanTypeTotals).build());
 
                     break;
 
@@ -211,7 +209,7 @@ public class HPPrinterBinder {
                 channels.add(ChannelBuilder
                         .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_JAM_EVENTS), CoreItemFactory.NUMBER)
                         .withLabel("Jam Events").withDescription("The amount of times the paper has jammed")
-                        .withType(CHAN_TYPE_TOTALS).build());
+                        .withType(chanTypeTotals).build());
             }
 
             if (data.hasMispickEvents()) {
@@ -219,7 +217,7 @@ public class HPPrinterBinder {
                         .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_MISPICK_EVENTS), CoreItemFactory.NUMBER)
                         .withLabel("Mispick Events")
                         .withDescription("The amount of times the mispick event has occurred")
-                        .withType(CHAN_TYPE_TOTALS).build());
+                        .withType(chanTypeTotals).build());
             }
 
             if (data.hasSubscriptionCount()) {
@@ -227,7 +225,7 @@ public class HPPrinterBinder {
                         .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_SUBSCRIPTION), CoreItemFactory.NUMBER)
                         .withLabel("Subscription Count")
                         .withDescription("The amount of times an item has been printed in subscription")
-                        .withType(CHAN_TYPE_TOTALS).build());
+                        .withType(chanTypeTotals).build());
             }
 
             if (data.hasTotalFrontPanelCancelPresses()) {
@@ -236,7 +234,7 @@ public class HPPrinterBinder {
                                 CoreItemFactory.NUMBER)
                         .withLabel("Front Panel Cancel Count")
                         .withDescription("The amount of times a print has been cancelled from the Front Panel")
-                        .withType(CHAN_TYPE_TOTALS).build());
+                        .withType(chanTypeTotals).build());
             }
 
             //Scanner
@@ -244,35 +242,35 @@ public class HPPrinterBinder {
                 channels.add(ChannelBuilder
                         .create(new ChannelUID(thingUid, CGROUP_SCANNER, CHANNEL_TOTAL_ADF), CoreItemFactory.NUMBER)
                         .withLabel("Document Feeder Count").withDescription("Times scanned via the Document Feeder")
-                        .withType(CHAN_TYPE_TOTALS).build());
+                        .withType(chanTypeTotals).build());
             }
 
             if (data.hasScannerFlatbed()) {
                 channels.add(ChannelBuilder
                         .create(new ChannelUID(thingUid, CGROUP_SCANNER, CHANNEL_TOTAL_FLATBED), CoreItemFactory.NUMBER)
                         .withLabel("Flatbed Count").withDescription("Times scanned via the Flatbed/Glass")
-                        .withType(CHAN_TYPE_TOTALS).build());
+                        .withType(chanTypeTotals).build());
             }
 
             if (data.hasScanToEmail()) {
                 channels.add(ChannelBuilder
                         .create(new ChannelUID(thingUid, CGROUP_SCANNER, CHANNEL_TOTAL_TOEMAIL), CoreItemFactory.NUMBER)
                         .withLabel("Scan to Email Count").withDescription("Times scanned using Scan to Email")
-                        .withType(CHAN_TYPE_TOTALS).build());
+                        .withType(chanTypeTotals).build());
             }
 
             if (data.hasScanToFolder()) {
                 channels.add(ChannelBuilder
                         .create(new ChannelUID(thingUid, CGROUP_SCANNER, CHANNEL_TOTAL_TOFOLDER), CoreItemFactory.NUMBER)
                         .withLabel("Scan to Folder Count").withDescription("Times scanned using Scan to Folder")
-                        .withType(CHAN_TYPE_TOTALS).build());
+                        .withType(chanTypeTotals).build());
             }
 
             if (data.hasScanToHost()) {
                 channels.add(ChannelBuilder
                         .create(new ChannelUID(thingUid, CGROUP_SCANNER, CHANNEL_TOTAL_TOHOST), CoreItemFactory.NUMBER)
                         .withLabel("Scan to Host Count").withDescription("Times scanned using Scan to Host Device")
-                        .withType(CHAN_TYPE_TOTALS).build());
+                        .withType(chanTypeTotals).build());
             }
 
             handler.binderAddChannels(channels);

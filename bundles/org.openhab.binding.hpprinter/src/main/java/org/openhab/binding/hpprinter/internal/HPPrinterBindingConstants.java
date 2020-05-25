@@ -18,7 +18,6 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 
 /**
@@ -39,9 +38,9 @@ public class HPPrinterBindingConstants {
             .collect(Collectors.toSet());
 
     // ********** Channel Types **********
-    public static ChannelTypeUID CHAN_TYPE_TOTALS = new ChannelTypeUID("hpprinter:totals");
-    public static ChannelTypeUID CHAN_TYPE_MARKING = new ChannelTypeUID("hpprinter:cumlMarkingUsed");
-    public static ChannelTypeUID CHAN_TYPE_INKLEVEL = new ChannelTypeUID("hpprinter:inkLevel");
+    public static ChannelTypeUID chanTypeTotals = new ChannelTypeUID("hpprinter:totals");
+    public static ChannelTypeUID chanTypeMarking = new ChannelTypeUID("hpprinter:cumlMarkingUsed");
+    public static ChannelTypeUID chanTypeInkLevel = new ChannelTypeUID("hpprinter:inkLevel");
 
     // ********** Item Types **********
     public static final String ITEM_TYPE_CUMLMARK = "Number:Volume";
