@@ -219,9 +219,6 @@ class KeContactTransceiver {
         while (true) {
             try {
                 synchronized (selector) {
-                    if (!selector.isOpen()) {
-                        return;
-                    }
                     try {
                         selector.selectNow();
                     } catch (IOException e) {
@@ -401,7 +398,7 @@ class KeContactTransceiver {
                 } else {
                     return;
                 }
-            } catch (InterruptedException e) {
+            } catch (InterruptedException | ClosedSelectorException e) {
                 Thread.currentThread().interrupt();
                 return;
             }
