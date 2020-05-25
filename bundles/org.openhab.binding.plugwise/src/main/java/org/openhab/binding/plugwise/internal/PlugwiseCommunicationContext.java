@@ -13,6 +13,8 @@
 package org.openhab.binding.plugwise.internal;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Comparator;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -96,16 +98,18 @@ public class PlugwiseCommunicationContext {
         SerialPort localSerialPort = serialPort;
         if (localSerialPort != null) {
             try {
-                if (localSerialPort.getInputStream() != null) {
+                InputStream inputStream = localSerialPort.getInputStream();
+                if (inputStream != null) {
                     try {
-                        localSerialPort.getInputStream().close();
+                        inputStream.close();
                     } catch (IOException e) {
                         logger.debug("Error while closing the input stream: {}", e.getMessage());
                     }
                 }
-                if (localSerialPort.getOutputStream() != null) {
+                OutputStream outputStream = localSerialPort.getOutputStream();
+                if (outputStream != null) {
                     try {
-                        localSerialPort.getOutputStream().close();
+                        outputStream.close();
                     } catch (IOException e) {
                         logger.debug("Error while closing the output stream: {}", e.getMessage());
                     }
