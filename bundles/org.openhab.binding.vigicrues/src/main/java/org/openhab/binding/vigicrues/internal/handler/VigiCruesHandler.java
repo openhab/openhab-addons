@@ -49,8 +49,8 @@ import com.google.gson.JsonDeserializer;
 import tec.uom.se.unit.Units;
 
 /**
- * The {@link VigiCruesHandler} is responsible for updating channels
- * and querying the API
+ * The {@link VigiCruesHandler} is responsible for querying the API and
+ * updating channels
  *
  * @author Gaël L'hopital - Initial contribution
  */
@@ -116,14 +116,13 @@ public class VigiCruesHandler extends BaseThingHandler {
             String response = HttpUtil.executeUrl("GET", queryUrl, TIMEOUT_MS);
             updateStatus(ThingStatus.ONLINE);
             OpenDatasoftResponse apiResponse = gson.fromJson(response, OpenDatasoftResponse.class);
-            Arrays.stream(apiResponse.getRecords()).findFirst().ifPresent(record -> {
-                record.getFields().ifPresent(field -> {
-                    field.getHauteur().ifPresent(height -> updateQuantity(HEIGHT, height, Units.METRE));
-                    field.getDebit()
-                            .ifPresent(flow -> updateQuantity(FLOW, flow, SmartHomeUnits.CUBICMETRE_PER_SECOND));
-                    field.getTimestamp().ifPresent(date -> updateDate(OBSERVATION_TIME, date));
-                });
-            });
+            Arrays.stream(apiResponse.getRecords()).findFirst().flatMap(record -> record.getFields())
+                    .ifPresent(field -> {
+                        field.getHauteur().ifPresent(height -> updateQuantity(HEIGHT, height, Units.METRE));
+                        field.getDebit()
+                                .ifPresent(flow -> updateQuantity(FLOW, flow, SmartHomeUnits.CUBICMETRE_PER_SECOND));
+                        field.getTimestamp().ifPresent(date -> updateDate(OBSERVATION_TIME, date));
+                    });
         } catch (MalformedURLException e) {
             logger.warn("Malformed URL in VigiCrues request : {}", queryUrl);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
