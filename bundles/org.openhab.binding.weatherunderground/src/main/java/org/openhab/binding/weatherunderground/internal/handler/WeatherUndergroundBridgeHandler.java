@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
@@ -54,8 +53,7 @@ public class WeatherUndergroundBridgeHandler extends BaseBridgeHandler {
     @Nullable
     private ScheduledFuture<?> controlApiKeyJob;
 
-    @Nullable
-    private String apikey;
+    private String apikey = "";
 
     public WeatherUndergroundBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -68,12 +66,13 @@ public class WeatherUndergroundBridgeHandler extends BaseBridgeHandler {
         Configuration config = getThing().getConfiguration();
 
         // Check if an api key has been provided during the bridge creation
-        if (StringUtils.trimToNull((String) config.get(WeatherUndergroundBindingConstants.APIKEY)) == null) {
+        Object configApiKey = config.get(WeatherUndergroundBindingConstants.APIKEY);
+        if (configApiKey == null || !(configApiKey instanceof String) || ((String) configApiKey).trim().isEmpty()) {
             logger.debug("Setting thing '{}' to OFFLINE: Parameter 'apikey' must be configured.", getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-missing-apikey");
         } else {
-            apikey = (String) config.get(WeatherUndergroundBindingConstants.APIKEY);
+            apikey = ((String) configApiKey).trim();
             updateStatus(ThingStatus.UNKNOWN);
             startControlApiKeyJob();
         }
@@ -95,7 +94,7 @@ public class WeatherUndergroundBridgeHandler extends BaseBridgeHandler {
 
                     // Check if the provided api key is valid for use with the weatherunderground service
                     try {
-                        String urlStr = URL.replace("%APIKEY%", StringUtils.trimToEmpty(getApikey()));
+                        String urlStr = URL.replace("%APIKEY%", getApikey());
                         // Run the HTTP request and get the JSON response from Weather Underground
                         String response = null;
                         try {
@@ -168,7 +167,7 @@ public class WeatherUndergroundBridgeHandler extends BaseBridgeHandler {
         // not needed
     }
 
-    public @Nullable String getApikey() {
+    public String getApikey() {
         return apikey;
     }
 }
