@@ -535,9 +535,7 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
         try {
             WeatherUndergroundConfiguration config = getConfigAs(WeatherUndergroundConfiguration.class);
 
-            String urlStr = URL_QUERY.replace("%APIKEY%", StringUtils.trimToEmpty(bridgeHandler.getApikey()));
-
-            urlStr = urlStr.replace("%FEATURES%", String.join("/", features));
+            String urlStr = URL_QUERY.replace("%FEATURES%", String.join("/", features));
 
             String lang = StringUtils.trimToEmpty(config.language);
             if (lang.isEmpty()) {
@@ -553,7 +551,11 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
             }
 
             urlStr = urlStr.replace("%QUERY%", StringUtils.trimToEmpty(config.location));
-            logger.debug("URL = {}", urlStr);
+            if (logger.isDebugEnabled()) {
+                logger.debug("URL = {}", urlStr.replace("%APIKEY%", "***"));
+            }
+
+            urlStr = urlStr.replace("%APIKEY%", StringUtils.trimToEmpty(bridgeHandler.getApikey()));
 
             // Run the HTTP request and get the JSON response from Weather Underground
             String response = null;
