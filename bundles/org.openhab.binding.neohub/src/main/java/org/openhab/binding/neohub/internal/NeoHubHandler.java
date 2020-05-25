@@ -17,6 +17,7 @@ import static org.openhab.binding.neohub.internal.NeoHubBindingConstants.*;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -53,14 +54,10 @@ public class NeoHubHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(NeoHubHandler.class);
 
-    @Nullable
-    private NeoHubConfiguration config;
-    @Nullable
-    private NeoHubSocket socket;
-    @Nullable
-    private ScheduledFuture<?> lazyPollingScheduler;
-    @Nullable
-    private ScheduledFuture<?> fastPollingScheduler;
+    private @Nullable NeoHubConfiguration config;
+    private @Nullable NeoHubSocket socket;
+    private @Nullable ScheduledFuture<?> lazyPollingScheduler;
+    private @Nullable ScheduledFuture<?> fastPollingScheduler;
 
     private final AtomicInteger fastPollingCallsToGo = new AtomicInteger();
 
@@ -73,7 +70,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
     private long systemTimestamp = -1;
     private Instant systemLastRefreshed = Instant.now().minusSeconds(3600);
 
-    private HashMap<String, Boolean> connectionStates = new HashMap<>();
+    private Map<String, Boolean> connectionStates = new HashMap<>();
 
     public NeoHubHandler(Bridge bridge) {
         super(bridge);
@@ -92,7 +89,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
             logger.debug("hostname={}", config.hostName);
         }
 
-        if (!config.hostName.matches(REGEX_IP_ADDRESS)) {
+        if (!MATCHER_IP_ADDRESS.matcher(config.hostName).matches()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "parameter hostName must be set!");
             return;
         }
@@ -216,8 +213,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
      * 
      * @return a class that contains the full status of all devices
      */
-    @Nullable
-    protected NeoHubAbstractDeviceData fromNeoHubGetDeviceData() {
+    protected @Nullable NeoHubAbstractDeviceData fromNeoHubGetDeviceData() {
         NeoHubSocket socket = this.socket;
 
         if (socket == null || config == null) {
@@ -281,8 +277,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
      * 
      * @return a class that contains the status of the system
      */
-    @Nullable
-    protected NeoHubReadDcbResponse fromNeoHubReadSystemData() {
+    protected @Nullable NeoHubReadDcbResponse fromNeoHubReadSystemData() {
         NeoHubSocket socket = this.socket;
 
         if (socket == null || !systemDataDirty) {
@@ -362,7 +357,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
                     for (Object device : devices) {
                         if (device instanceof AbstractRecord) {
                             String deviceName = ((AbstractRecord) device).getDeviceName();
-                            Boolean online = new Boolean(!((AbstractRecord) device).offline());
+                            Boolean online = !((AbstractRecord) device).offline();
 
                             if (connectionStates.containsKey(deviceName)) {
                                 @Nullable
@@ -446,8 +441,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
     /*
      * get the Engineers data
      */
-    @Nullable
-    public NeoHubGetEngineersData fromNeoHubGetEngineersData() {
+    public @Nullable NeoHubGetEngineersData fromNeoHubGetEngineersData() {
         NeoHubSocket socket = this.socket;
         if (socket != null) {
             String responseJson;

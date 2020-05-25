@@ -32,61 +32,45 @@ public class NeoHubLiveDeviceData extends NeoHubAbstractDeviceData {
 
     private static final Gson GSON = new Gson();
 
-    @Nullable
     @SerializedName("TIMESTAMP_ENGINEERS")
-    private BigDecimal timestampEngineers;
-    @Nullable
+    private @Nullable BigDecimal timestampEngineers;
     @SerializedName("TIMESTAMP_SYSTEM")
-    private BigDecimal timestampSystem;
+    private @Nullable BigDecimal timestampSystem;
 
-    @Nullable
     @SerializedName("devices")
-    private List<LiveDataRecord> deviceRecords;
+    private @Nullable List<LiveDataRecord> deviceRecords;
 
     @SuppressWarnings("null")
     @NonNullByDefault
     public static class LiveDataRecord extends AbstractRecord {
 
         // "alternate" is a special kludge for technical devices
-        @Nullable
         @SerializedName(value = "ZONE_NAME", alternate = { "device" })
-        private String deviceName;
-        @Nullable
+        private @Nullable String deviceName;
         @SerializedName("SET_TEMP")
-        private BigDecimal currentSetTemperature;
-        @Nullable
+        private @Nullable BigDecimal currentSetTemperature;
         @SerializedName("ACTUAL_TEMP")
-        private BigDecimal currentTemperature;
-        @Nullable
+        private @Nullable BigDecimal currentTemperature;
         @SerializedName("CURRENT_FLOOR_TEMPERATURE")
-        private BigDecimal currentFloorTemperature;
-        @Nullable
+        private @Nullable BigDecimal currentFloorTemperature;
         @SerializedName("WINDOW_OPEN")
-        private Boolean windowOpen;
-        @Nullable
+        private @Nullable Boolean windowOpen;
         @SerializedName("LOW_BATTERY")
-        private Boolean batteryLow;
-        @Nullable
+        private @Nullable Boolean batteryLow;
         @SerializedName("STANDBY")
-        private Boolean standby;
-        @Nullable
+        private @Nullable Boolean standby;
         @SerializedName("HEATING")
-        private Boolean heating;
-        @Nullable
+        private @Nullable Boolean heating;
         @SerializedName("PREHEAT")
-        private Boolean preHeat;
-        @Nullable
+        private @Nullable Boolean preHeat;
         @SerializedName("TIMER_ON")
-        private Boolean timerOn;
-        @Nullable
+        private @Nullable Boolean timerOn;
         @SerializedName("OFFLINE")
-        private Boolean offline;
-        @Nullable
+        private @Nullable Boolean offline;
         @SerializedName("MANUAL_OFF")
-        private Boolean manualOff;
-        @Nullable
+        private @Nullable Boolean manualOff;
         @SerializedName("MANUAL_ON")
-        private Boolean manualOn;
+        private @Nullable Boolean manualOn;
 
         private boolean safeBoolean(@Nullable Boolean value) {
             return (value == null ? false : value.booleanValue());
@@ -177,8 +161,7 @@ public class NeoHubLiveDeviceData extends NeoHubAbstractDeviceData {
      * @throws JsonSyntaxException
      * 
      */
-    @Nullable
-    public static NeoHubLiveDeviceData createDeviceData(String fromJson) throws JsonSyntaxException {
+    public static @Nullable NeoHubLiveDeviceData createDeviceData(String fromJson) throws JsonSyntaxException {
         return GSON.fromJson(fromJson, NeoHubLiveDeviceData.class);
     }
 
@@ -188,9 +171,8 @@ public class NeoHubLiveDeviceData extends NeoHubAbstractDeviceData {
      * @param deviceName the device name
      * @return its respective device record
      */
-    @Nullable
     @Override
-    public AbstractRecord getDeviceRecord(String deviceName) {
+    public @Nullable AbstractRecord getDeviceRecord(String deviceName) {
         List<LiveDataRecord> deviceRecords = this.deviceRecords;
         if (deviceRecords != null) {
             for (AbstractRecord deviceRecord : deviceRecords) {
@@ -205,9 +187,8 @@ public class NeoHubLiveDeviceData extends NeoHubAbstractDeviceData {
     /**
      * @return the full list of device records
      */
-    @Nullable
     @Override
-    public List<?> getDevices() {
+    public @Nullable List<? extends LiveDataRecord> getDevices() {
         return deviceRecords;
     }
 }

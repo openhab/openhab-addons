@@ -55,9 +55,8 @@ public class NeoHubHandlerFactory extends BaseThingHandlerFactory {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
-    @Nullable
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if ((thingTypeUID.equals(THING_TYPE_NEOHUB)) && (thing instanceof Bridge)) {

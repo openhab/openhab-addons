@@ -41,9 +41,8 @@ public class NeoHubGetEngineersData {
     @SuppressWarnings("null")
     @NonNullByDefault
     public class EngineersRecord {
-        @Nullable
         @SerializedName("DEVICE_TYPE")
-        private BigDecimal deviceType;
+        private @Nullable BigDecimal deviceType;
 
         public int getDeviceType() {
             BigDecimal deviceType = this.deviceType;
@@ -51,8 +50,7 @@ public class NeoHubGetEngineersData {
         }
     }
 
-    @Nullable
-    private EngineersRecords deviceRecords;
+    private @Nullable EngineersRecords deviceRecords;
 
     /**
      * Create wrapper around a JSON string
@@ -66,8 +64,7 @@ public class NeoHubGetEngineersData {
         deviceRecords = GSON.fromJson(fromJson, EngineersRecords.class);
     }
 
-    @Nullable
-    public static NeoHubGetEngineersData createEngineersData(String fromJson) throws JsonSyntaxException {
+    public static @Nullable NeoHubGetEngineersData createEngineersData(String fromJson) throws JsonSyntaxException {
         return new NeoHubGetEngineersData(fromJson);
     }
 
@@ -77,8 +74,7 @@ public class NeoHubGetEngineersData {
      * @param deviceName the device name
      * @return its respective device information record
      */
-    @Nullable
-    private EngineersRecord getDevice(String deviceName) {
+    private @Nullable EngineersRecord getDevice(String deviceName) {
         EngineersRecords deviceRecords = this.deviceRecords;
         return deviceRecords != null ? deviceRecords.get(deviceName) : null;
     }

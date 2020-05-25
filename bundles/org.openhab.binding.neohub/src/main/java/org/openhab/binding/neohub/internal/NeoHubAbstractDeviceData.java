@@ -68,12 +68,10 @@ public abstract class NeoHubAbstractDeviceData {
      * @param deviceName the device name
      * @return its respective device record
      */
-    @Nullable
-    public abstract AbstractRecord getDeviceRecord(String deviceName);
+    public abstract @Nullable AbstractRecord getDeviceRecord(String deviceName);
 
     /**
      * @return the full list of device records
      */
-    @Nullable
-    public abstract List<?> getDevices();
+    public abstract @Nullable List<? extends AbstractRecord> getDevices();
 }

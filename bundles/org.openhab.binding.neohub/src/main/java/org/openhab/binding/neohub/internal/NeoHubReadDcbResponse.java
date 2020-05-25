@@ -34,9 +34,8 @@ public class NeoHubReadDcbResponse {
 
     private static final Gson GSON = new Gson();
 
-    @Nullable
     @SerializedName("CORF")
-    private String degreesCorF;
+    private @Nullable String degreesCorF;
 
     public Unit<?> getTemperatureUnit() {
         return "F".equalsIgnoreCase(degreesCorF) ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS;
@@ -50,8 +49,7 @@ public class NeoHubReadDcbResponse {
      * @throws JsonSyntaxException
      * 
      */
-    @Nullable
-    public static NeoHubReadDcbResponse createSystemData(String fromJson) throws JsonSyntaxException {
+    public static @Nullable NeoHubReadDcbResponse createSystemData(String fromJson) throws JsonSyntaxException {
         return GSON.fromJson(fromJson, NeoHubReadDcbResponse.class);
     }
 }

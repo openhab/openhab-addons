@@ -48,8 +48,7 @@ public class NeoBaseHandler extends BaseThingHandler {
 
     protected final Logger logger = LoggerFactory.getLogger(NeoBaseHandler.class);
 
-    @Nullable
-    protected NeoBaseConfiguration config;
+    protected @Nullable NeoBaseConfiguration config;
 
     /*
      * error messages
@@ -234,11 +233,9 @@ public class NeoBaseHandler extends BaseThingHandler {
      * 
      * @return the neohub handler or null
      */
-    @Nullable
-    protected NeoHubHandler getNeoHub() {
+    protected @Nullable NeoHubHandler getNeoHub() {
         @Nullable
         Bridge b;
-
         @Nullable
         BridgeHandler h;
 

@@ -32,14 +32,14 @@
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="pollingInterval" type="integer" min="4" max="60" required="false">
+			<parameter name="pollingInterval" type="integer" min="4" max="60" required="false" unit="s">
 				<label>Polling Interval</label>
 				<description>Time (seconds) between polling the NeoHub (min=4, max/default=60)</description>
 				<default>60</default>
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="socketTimeout" type="integer" min="5" max="20" required="false">
+			<parameter name="socketTimeout" type="integer" min="5" max="20" required="false" unit="s">
 				<label>Socket Timeout</label>
 				<description>Time (seconds) to wait for connections to the Hub (min/default=5, max=20)</description>
 				<default>5</default>

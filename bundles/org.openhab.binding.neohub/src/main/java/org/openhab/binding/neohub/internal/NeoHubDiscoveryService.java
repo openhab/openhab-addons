@@ -47,8 +47,7 @@ public class NeoHubDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(NeoHubDiscoveryService.class);
 
-    @Nullable
-    private ScheduledFuture<?> discoveryScheduler;
+    private @Nullable ScheduledFuture<?> discoveryScheduler;
 
     private NeoHubHandler hub;
 
@@ -125,7 +124,7 @@ public class NeoHubDiscoveryService extends AbstractDiscoveryService {
                         }
                         String deviceName = ((LiveDataRecord) deviceRecord).getDeviceName();
                         // exclude repeater nodes from being discovered
-                        if (deviceName.matches(REGEX_HEATMISER_REPEATER)) {
+                        if (MATCHER_HEATMISER_REPEATER.matcher(deviceName).matches()) {
                             continue;
                         }
                         deviceType = engineerData.getDeviceType(deviceName);

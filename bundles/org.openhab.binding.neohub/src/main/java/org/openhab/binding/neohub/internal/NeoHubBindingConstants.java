@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.neohub.internal;
 
+import java.util.regex.Pattern;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
@@ -99,10 +101,11 @@ public class NeoHubBindingConstants {
     public static final String PARAM_HOLD_ONLINE_STATE = "holdOnlineState";
 
     /*
-     * regular expressions
+     * regular expression pattern matchers
      */
-    public static final String REGEX_HEATMISER_REPEATER = "^repeaternode\\d+";
-    public static final String REGEX_IP_ADDRESS = "\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b";
+    public static final Pattern MATCHER_HEATMISER_REPEATER = Pattern.compile("^repeaternode\\d+");
+    public static final Pattern MATCHER_IP_ADDRESS = Pattern
+            .compile("\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b");
 
     /*
      * enumerator for results of method calls

@@ -36,19 +36,16 @@ public class NeoHubInfoResponse extends NeoHubAbstractDeviceData {
     private static final Gson GSON = new GsonBuilder()
             .registerTypeAdapter(NeohubBool.class, new NeohubBoolDeserializer()).create();
 
-    @Nullable
     @SerializedName("devices")
-    private List<InfoRecord> deviceRecords;
+    private @Nullable List<InfoRecord> deviceRecords;
 
     @SuppressWarnings("null")
     @NonNullByDefault
     static class StatMode {
-        @Nullable
         @SerializedName("MANUAL_OFF")
-        private NeohubBool manualOff;
-        @Nullable
+        private @Nullable NeohubBool manualOff;
         @SerializedName("MANUAL_ON")
-        private NeohubBool manualOn;
+        private @Nullable NeohubBool manualOn;
 
         private boolean stateManualOn() {
             NeohubBool manualOn = this.manualOn;
@@ -64,45 +61,32 @@ public class NeoHubInfoResponse extends NeoHubAbstractDeviceData {
     @SuppressWarnings("null")
     @NonNullByDefault
     public static class InfoRecord extends AbstractRecord {
-        @Nullable
         @SerializedName("device")
-        private String deviceName;
-        @Nullable
+        private @Nullable String deviceName;
         @SerializedName("CURRENT_SET_TEMPERATURE")
-        private BigDecimal currentSetTemperature;
-        @Nullable
+        private @Nullable BigDecimal currentSetTemperature;
         @SerializedName("CURRENT_TEMPERATURE")
-        private BigDecimal currentTemperature;
-        @Nullable
+        private @Nullable BigDecimal currentTemperature;
         @SerializedName("CURRENT_FLOOR_TEMPERATURE")
-        private BigDecimal currentFloorTemperature;
-        @Nullable
+        private @Nullable BigDecimal currentFloorTemperature;
         @SerializedName("COOL_INP")
-        private NeohubBool coolInput;
-        @Nullable
+        private @Nullable NeohubBool coolInput;
         @SerializedName("LOW_BATTERY")
-        private NeohubBool batteryLow;
-        @Nullable
+        private @Nullable NeohubBool batteryLow;
         @SerializedName("STANDBY")
-        private NeohubBool standby;
-        @Nullable
+        private @Nullable NeohubBool standby;
         @SerializedName("HEATING")
-        private NeohubBool heating;
-        @Nullable
+        private @Nullable NeohubBool heating;
         @SerializedName("PREHEAT")
-        private NeohubBool preHeat;
-        @Nullable
+        private @Nullable NeohubBool preHeat;
         @SerializedName("TIMER")
-        private NeohubBool timerOn;
-        @Nullable
+        private @Nullable NeohubBool timerOn;
         @SerializedName("DEVICE_TYPE")
-        private BigDecimal deviceType;
+        private @Nullable BigDecimal deviceType;
         @SerializedName("OFFLINE")
-        @Nullable
-        private NeohubBool offline;
-        @Nullable
+        private @Nullable NeohubBool offline;
         @SerializedName("STAT_MODE")
-        private StatMode statMode = new StatMode();
+        private @Nullable StatMode statMode = new StatMode();
 
         private boolean safeBoolean(@Nullable NeohubBool value) {
             return (value == null ? false : value.value);
@@ -191,8 +175,7 @@ public class NeoHubInfoResponse extends NeoHubAbstractDeviceData {
      * @throws JsonSyntaxException
      * 
      */
-    @Nullable
-    public static NeoHubInfoResponse createDeviceData(String fromJson) throws JsonSyntaxException {
+    public static @Nullable NeoHubInfoResponse createDeviceData(String fromJson) throws JsonSyntaxException {
         return GSON.fromJson(fromJson, NeoHubInfoResponse.class);
     }
 
@@ -203,8 +186,7 @@ public class NeoHubInfoResponse extends NeoHubAbstractDeviceData {
      * @return its respective device record
      */
     @Override
-    @Nullable
-    public AbstractRecord getDeviceRecord(String deviceName) {
+    public @Nullable AbstractRecord getDeviceRecord(String deviceName) {
         List<InfoRecord> deviceRecords = this.deviceRecords;
         if (deviceRecords != null) {
             for (AbstractRecord deviceRecord : deviceRecords) {
@@ -220,8 +202,7 @@ public class NeoHubInfoResponse extends NeoHubAbstractDeviceData {
      * @return the full list of device records
      */
     @Override
-    @Nullable
-    public List<?> getDevices() {
+    public @Nullable List<? extends InfoRecord> getDevices() {
         return deviceRecords;
     }
 }

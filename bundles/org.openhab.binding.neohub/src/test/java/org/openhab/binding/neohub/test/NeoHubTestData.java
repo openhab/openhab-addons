@@ -461,7 +461,7 @@ public class NeoHubTestData {
         device = liveDataResponse.getDeviceRecord("repeaternode54473");
         assertNotNull(device);
         assertEquals("repeaternode54473", device.getDeviceName());
-        assertTrue(device.getDeviceName().matches(REGEX_HEATMISER_REPEATER));
+        assertTrue(MATCHER_HEATMISER_REPEATER.matcher(device.getDeviceName()).matches());
     }
 
     /*
