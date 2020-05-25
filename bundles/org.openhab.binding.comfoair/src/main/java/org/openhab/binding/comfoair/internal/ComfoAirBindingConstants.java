@@ -27,4 +27,8 @@ public class ComfoAirBindingConstants {
     private static final String BINDING_ID = "comfoair";
 
     public static final ThingTypeUID THING_TYPE_COMFOAIR_GENERIC = new ThingTypeUID(BINDING_ID, "comfoair");
+
+    public static final String PROPERTY_SOFTWARE_MAIN_VERSION = "softwareMainVersion";
+    public static final String PROPERTY_SOFTWARE_MINOR_VERSION = "softwareMinorVersion";
+    public static final String PROPERTY_SOFTWARE_BETA_VERSION = "softwareBetaVersion";
 }

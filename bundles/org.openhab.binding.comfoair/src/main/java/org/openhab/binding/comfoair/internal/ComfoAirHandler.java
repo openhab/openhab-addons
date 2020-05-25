@@ -14,6 +14,7 @@ package org.openhab.binding.comfoair.internal;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -127,6 +128,7 @@ public class ComfoAirHandler extends BaseThingHandler {
             comfoAirConnector.open();
             if (comfoAirConnector != null && comfoAirConnector.isConnected()) {
                 updateStatus(ThingStatus.ONLINE);
+                pullDeviceProperties();
 
                 List<Channel> channels = this.thing.getChannels();
 
@@ -164,6 +166,7 @@ public class ComfoAirHandler extends BaseThingHandler {
                 return;
             }
             String commandKey = channel.getUID().getId();
+
             ComfoAirCommand readCommand = ComfoAirCommandType.getReadCommand(commandKey);
             if (readCommand != null) {
                 State state = sendCommand(readCommand, commandKey);
@@ -286,6 +289,44 @@ public class ComfoAirHandler extends BaseThingHandler {
             }
         }
         return UnDefType.UNDEF;
+    }
+
+    public void pullDeviceProperties() {
+        Map<String, String> properties = editProperties();
+        ComfoAirSerialConnector comfoAirConnector = this.comfoAirConnector;
+
+        if (comfoAirConnector != null) {
+            String[] softwareVersions = new String[] { ComfoAirBindingConstants.PROPERTY_SOFTWARE_MAIN_VERSION,
+                    ComfoAirBindingConstants.PROPERTY_SOFTWARE_MINOR_VERSION,
+                    ComfoAirBindingConstants.PROPERTY_SOFTWARE_BETA_VERSION };
+
+            for (String version : softwareVersions) {
+                ComfoAirCommand readCommand = ComfoAirCommandType.getReadCommand(version);
+                if (readCommand != null) {
+                    int[] response = comfoAirConnector.sendCommand(readCommand,
+                            ComfoAirCommandType.Constants.EMPTY_INT_ARRAY);
+                    if (response.length > 0) {
+                        ComfoAirCommandType comfoAirCommandType = ComfoAirCommandType.getCommandTypeByKey(version);
+                        int value = 0;
+
+                        if (comfoAirCommandType != null) {
+                            ComfoAirDataType dataType = comfoAirCommandType.getDataType();
+                            if (dataType != null) {
+                                value = dataType.calculateNumberValue(response, comfoAirCommandType);
+                            }
+                        }
+                        if (value < 0) {
+                            if (logger.isWarnEnabled()) {
+                                logger.warn("unexpected value for DATA: {}",
+                                        ComfoAirSerialConnector.dumpData(response));
+                            }
+                        }
+                        properties.put(version, String.valueOf(value));
+                    }
+                }
+            }
+            thing.setProperties(properties);
+        }
     }
 
     private class AffectedItemsUpdateThread implements Runnable {

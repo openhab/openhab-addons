@@ -27,7 +27,6 @@
 			<channel-group id="inputs" typeId="inputs" />
 			<channel-group id="analog" typeId="analog" />
 			<channel-group id="error" typeId="error" />
-			<channel-group id="software" typeId="software" />
 		</channel-groups>
 
 		<config-description>
@@ -303,15 +302,6 @@
 			<channel id="errorAHighLast" typeId="errorA_high_last" />
 			<channel id="errorAHighPrelast" typeId="errorA_high_prelast" />
 			<channel id="errorAHighPrePrelast" typeId="errorA_high_pre_prelast" />
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="software">
-		<label>Software Version</label>
-		<channels>
-			<channel id="softwareMainVersion" typeId="software_main_version" />
-			<channel id="softwareMinorVersion" typeId="software_minor_version" />
-			<channel id="softwareBetaVersion" typeId="software_beta_version" />
 		</channels>
 	</channel-group-type>
 
@@ -1565,30 +1555,6 @@
 		<label>Error A (high) Pre-Prelast</label>
 		<description>Pre-Prelast error A (high)</description>
 		<category>Text</category>
-		<state readOnly="true" />
-	</channel-type>
-
-	<channel-type id="software_main_version" advanced="true">
-		<item-type>Number</item-type>
-		<label>Software Main Version</label>
-		<description>Main version of the device software</description>
-		<category>Number</category>
-		<state readOnly="true" />
-	</channel-type>
-
-	<channel-type id="software_minor_version" advanced="true">
-		<item-type>Number</item-type>
-		<label>Software Minor Version</label>
-		<description>Minor version of the device software</description>
-		<category>Number</category>
-		<state readOnly="true" />
-	</channel-type>
-
-	<channel-type id="software_beta_version" advanced="true">
-		<item-type>Number</item-type>
-		<label>Software Beta Version</label>
-		<description>Beta version of the device software</description>
-		<category>Number</category>
 		<state readOnly="true" />
 	</channel-type>
 

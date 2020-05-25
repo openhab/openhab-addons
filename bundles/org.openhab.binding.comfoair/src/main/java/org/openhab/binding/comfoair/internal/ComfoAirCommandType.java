@@ -257,11 +257,11 @@ public enum ComfoAirCommandType {
     HEATER_TARGET_TEMPERATUR("heater#heaterTargetTemperature", DataTypeTemperature.class, Constants.REQUEST_SET_EWT, 5,
             4, new String[] { "menuP9#heaterState", "heater#heaterPower", "temperatures#heaterTemperature" },
             Constants.REQUEST_GET_EWT, Constants.REPLY_GET_EWT, new int[] { 6 }),
-    SOFTWARE_MAIN_VERSION("software#softwareMainVersion", DataTypeNumber.class, Constants.REQUEST_GET_FIRMWARE,
+    SOFTWARE_MAIN_VERSION("softwareMainVersion", DataTypeNumber.class, Constants.REQUEST_GET_FIRMWARE,
             Constants.REPLY_GET_FIRMWARE, new int[] { 0 }),
-    SOFTWARE_MINOR_VERSION("software#softwareMinorVersion", DataTypeNumber.class, Constants.REQUEST_GET_FIRMWARE,
+    SOFTWARE_MINOR_VERSION("softwareMinorVersion", DataTypeNumber.class, Constants.REQUEST_GET_FIRMWARE,
             Constants.REPLY_GET_FIRMWARE, new int[] { 1 }),
-    SOFTWARE_BETA_VERSION("software#softwareBetaVersion", DataTypeNumber.class, Constants.REQUEST_GET_FIRMWARE,
+    SOFTWARE_BETA_VERSION("softwareBetaVersion", DataTypeNumber.class, Constants.REQUEST_GET_FIRMWARE,
             Constants.REPLY_GET_FIRMWARE, new int[] { 2 }),
     ERROR_MESSAGE("ccease#errorMessage", DataTypeMessage.class, Constants.REQUEST_GET_ERRORS,
             Constants.REPLY_GET_ERRORS, new int[] { 0, 1, 9, 13 }),
@@ -563,6 +563,7 @@ public enum ComfoAirCommandType {
         this.key = key;
         this.data_type = data_type;
         this.possible_values = possible_values;
+        this.read_command = 0;
         this.change_command = change_command;
         this.change_data_size = change_data_size;
         this.change_data_pos = change_data_pos;
@@ -711,7 +712,10 @@ public enum ComfoAirCommandType {
         ComfoAirCommandType commandType = ComfoAirCommandType.getCommandTypeByKey(key);
 
         if (commandType != null) {
-            int getCmd = commandType.read_command == 0 ? null : commandType.read_command;
+            if (commandType.read_command == 0) {
+                return null;
+            }
+            int getCmd = commandType.read_command;
             int replyCmd = commandType.read_reply_command;
 
             return new ComfoAirCommand(key, getCmd, replyCmd, Constants.EMPTY_INT_ARRAY, null, null);
@@ -786,7 +790,7 @@ public enum ComfoAirCommandType {
                         if (affectedCommandType.read_reply_command == 0) {
                             continue;
                         }
-                        modifyCommandCollection(commands, affectedCommandType);
+                        commands = modifiedCommandCollection(commands, affectedCommandType);
                     }
                 }
             }
@@ -809,7 +813,7 @@ public enum ComfoAirCommandType {
             if (entry.read_reply_command == 0) {
                 continue;
             }
-            modifyCommandCollection(commands, entry);
+            commands = modifiedCommandCollection(commands, entry);
         }
         return commands.values();
     }
@@ -849,7 +853,7 @@ public enum ComfoAirCommandType {
     }
 
     @SuppressWarnings("null")
-    private static void modifyCommandCollection(Map<Integer, ComfoAirCommand> commands,
+    private static Map<Integer, ComfoAirCommand> modifiedCommandCollection(Map<Integer, ComfoAirCommand> commands,
             ComfoAirCommandType commandType) {
         int getCmd = commandType.read_command == 0 ? null : commandType.read_command;
         int replyCmd = commandType.read_reply_command;
@@ -862,5 +866,6 @@ public enum ComfoAirCommandType {
         } else {
             command.addKey(commandType.key);
         }
+        return commands;
     }
 }
