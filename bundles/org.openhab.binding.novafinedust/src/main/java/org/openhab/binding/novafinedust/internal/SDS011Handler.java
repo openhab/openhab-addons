@@ -31,6 +31,8 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.transport.serial.PortInUseException;
 import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
@@ -67,8 +69,8 @@ public class SDS011Handler extends BaseThingHandler {
     private final Duration dataCanBeLateTolerance = Duration.ofSeconds(5);
 
     // cached values fro refresh command
-    private @Nullable QuantityType<Density> statePM10;
-    private @Nullable QuantityType<Density> statePM25;
+    private State statePM10 = UnDefType.UNDEF;
+    private State statePM25 = UnDefType.UNDEF;
 
     public SDS011Handler(Thing thing, SerialPortManager serialPortManager) {
         super(thing);
@@ -79,10 +81,10 @@ public class SDS011Handler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         // refresh channels with last received values from cache
         if (RefreshType.REFRESH.equals(command)) {
-            if (NovaFineDustBindingConstants.CHANNEL_PM25.equals(channelUID.getId()) && statePM25 != null) {
+            if (NovaFineDustBindingConstants.CHANNEL_PM25.equals(channelUID.getId()) && statePM25 != UnDefType.UNDEF) {
                 updateState(NovaFineDustBindingConstants.CHANNEL_PM25, statePM25);
             }
-            if (NovaFineDustBindingConstants.CHANNEL_PM10.equals(channelUID.getId()) && statePM10 != null) {
+            if (NovaFineDustBindingConstants.CHANNEL_PM10.equals(channelUID.getId()) && statePM10 != UnDefType.UNDEF) {
                 updateState(NovaFineDustBindingConstants.CHANNEL_PM10, statePM10);
             }
         }
@@ -188,8 +190,8 @@ public class SDS011Handler extends BaseThingHandler {
             scheduler.schedule(() -> communicator.dispose(), 0, TimeUnit.SECONDS);
         }
 
-        this.statePM10 = null;
-        this.statePM25 = null;
+        this.statePM10 = UnDefType.UNDEF;
+        this.statePM25 = UnDefType.UNDEF;
     }
 
     /**
