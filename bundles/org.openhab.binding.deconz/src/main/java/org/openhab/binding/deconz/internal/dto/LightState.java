@@ -44,9 +44,35 @@ public class LightState {
 
     public @Nullable Integer transitiontime;
 
+    /**
+     * compares two light states and ignore all fields that are null in either state
+     *
+     * @param o state to compare with
+     * @return true if equal
+     */
     public boolean equalsIgnoreNull(LightState o) {
         return equalsIgnoreNull(on, o.on) && equalsIgnoreNull(bri, o.bri) && equalsIgnoreNull(hue, o.hue)
                 && equalsIgnoreNull(sat, o.sat) && ((xy != null && o.xy != null) ? Arrays.equals(xy, o.xy) : true);
+    }
+
+    /**
+     * clear this light state
+     */
+    public void clear() {
+        reachable = null;
+        on = null;
+        bri = null;
+
+        alert = null;
+        colormode = null;
+        effect = null;
+
+        hue = null;
+        sat = null;
+        ct = null;
+        xy = null;
+
+        transitiontime = null;
     }
 
     private <T> boolean equalsIgnoreNull(T o1, T o2) {

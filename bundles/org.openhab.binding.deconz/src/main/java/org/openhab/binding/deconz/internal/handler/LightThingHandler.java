@@ -171,6 +171,11 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                 if (command instanceof DecimalType) {
                     newLightState.colormode = "ct";
                     newLightState.ct = unscaleColorTemperature(((DecimalType) command).doubleValue());
+
+                    if (currentOn != null && !currentOn) {
+                        // sending new color temperature is only allowed when light is on
+                        newLightState.on = true;
+                    }
                 } else {
                     return;
                 }
@@ -203,6 +208,12 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
         }
         String url = buildUrl(bridgeConfig.host, bridgeConfig.httpPort, bridgeConfig.apikey, "lights", config.id,
                 "state");
+
+        if (newLightState.on != null && !newLightState.on) {
+            // if light shall be off, no other commands are allowed, so reset the new light state
+            newLightState.clear();
+            newLightState.on = false;
+        }
 
         String json = gson.toJson(newLightState);
         logger.trace("Sending {} to light {} via {}", json, config.id, url);

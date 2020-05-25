@@ -20,7 +20,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import com.google.gson.Gson;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -35,6 +34,8 @@ import org.openhab.binding.deconz.internal.netutils.WebSocketConnection;
 import org.openhab.binding.deconz.internal.netutils.WebSocketMessageListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
 
 /**
  * This base thing doesn't establish any connections, that is done by the bridge Thing.
