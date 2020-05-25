@@ -80,7 +80,6 @@ public class EnvisalinkBridgeHandler extends DSCAlarmBaseBridgeHandler {
             logger.debug("Envisalink Bridge Handler Initialized");
             logger.debug("   IP Address:         {},", ipAddress);
             logger.debug("   Port:               {},", tcpPort);
-            logger.debug("   Password:           {},", getPassword());
             logger.debug("   PollPeriod:         {},", pollPeriod);
             logger.debug("   Connection Timeout: {}.", connectionTimeout);
         }
@@ -119,9 +118,9 @@ public class EnvisalinkBridgeHandler extends DSCAlarmBaseBridgeHandler {
     }
 
     @Override
-    public void write(String writeString) {
+    public void write(String writeString, boolean doNotLog) {
         try {
-            logger.debug("write(): Attempting to Send Message: {}", writeString);
+            logger.debug("write(): Attempting to Send Message: {}", doNotLog ? "***" : writeString);
             tcpOutput.write(writeString);
             tcpOutput.flush();
         } catch (IOException ioException) {

@@ -250,8 +250,9 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
      * Method for writing to an open DSC Alarm connection.
      *
      * @param writeString
+     * @param doNotLog
      */
-    public abstract void write(String writeString);
+    public abstract void write(String writeString, boolean doNotLog);
 
     /**
      * Method for reading from an open DSC Alarm connection.
@@ -628,6 +629,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
 
         String command = dscAlarmCode.getCode();
         String data = "";
+        boolean confidentialData = false;
 
         switch (dscAlarmCode) {
             case Poll: /* 000 */
@@ -650,6 +652,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                     break;
                 }
                 data = password;
+                confidentialData = true;
                 validCommand = true;
                 break;
             case DumpZoneTimers: /* 008 */
@@ -812,9 +815,9 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
 
         if (validCommand) {
             String cmd = dscAlarmCommand(command, data);
-            write(cmd);
+            write(cmd, confidentialData);
             successful = true;
-            logger.debug("sendCommand(): '{}' Command Sent - {}", dscAlarmCode, cmd);
+            logger.debug("sendCommand(): '{}' Command Sent - {}", dscAlarmCode, confidentialData ? "***" : cmd);
         } else {
             logger.error("sendCommand(): Command '{}' Not Sent - Invalid!", dscAlarmCode);
         }

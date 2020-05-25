@@ -87,7 +87,6 @@ public class TCPServerBridgeHandler extends DSCAlarmBaseBridgeHandler {
             logger.debug("TCP Server Bridge Handler Initialized");
             logger.debug("   IP Address:         {},", ipAddress);
             logger.debug("   Port:               {},", tcpPort);
-            logger.debug("   Password:           {},", getPassword());
             logger.debug("   PollPeriod:         {},", pollPeriod);
             logger.debug("   Connection Timeout: {}.", connectionTimeout);
         }
@@ -126,11 +125,11 @@ public class TCPServerBridgeHandler extends DSCAlarmBaseBridgeHandler {
     }
 
     @Override
-    public void write(String writeString) {
+    public void write(String writeString, boolean doNotLog) {
         try {
             tcpOutput.write(writeString);
             tcpOutput.flush();
-            logger.debug("write(): Message Sent: {}", writeString);
+            logger.debug("write(): Message Sent: {}", doNotLog ? "***" : writeString);
         } catch (IOException ioException) {
             logger.error("write(): {}", ioException.getMessage());
             setConnected(false);

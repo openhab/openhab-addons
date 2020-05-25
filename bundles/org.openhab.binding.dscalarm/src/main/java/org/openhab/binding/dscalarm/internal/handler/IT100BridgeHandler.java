@@ -75,7 +75,6 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
             logger.debug("IT100 Bridge Handler Initialized.");
             logger.debug("   Serial Port: {},", serialPortName);
             logger.debug("   Baud:        {},", baudRate);
-            logger.debug("   Password:    {},", getPassword());
             logger.debug("   PollPeriod:  {},", pollPeriod);
         }
     }
@@ -124,11 +123,11 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
     }
 
     @Override
-    public void write(String writeString) {
+    public void write(String writeString, boolean doNotLog) {
         try {
             serialOutput.write(writeString);
             serialOutput.flush();
-            logger.debug("write(): Message Sent: {}", writeString);
+            logger.debug("write(): Message Sent: {}", doNotLog ? "***" : writeString);
         } catch (IOException ioException) {
             logger.error("write(): {}", ioException.getMessage());
             setConnected(false);
