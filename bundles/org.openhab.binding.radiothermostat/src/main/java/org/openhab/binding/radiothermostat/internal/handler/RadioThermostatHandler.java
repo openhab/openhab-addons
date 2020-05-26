@@ -27,7 +27,6 @@ import java.util.concurrent.TimeoutException;
 
 import javax.measure.quantity.Temperature;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -243,10 +242,15 @@ public class RadioThermostatHandler extends BaseThingHandler {
             updateChannel(channelUID.getId(), rthermData);
         } else {
             Integer cmdInt = -1;
-            // remove all non-numeric characters except negative '-'
-            String cmdStr = command.toString().replaceAll("[^\\d-]", "");
-            if (!StringUtils.isEmpty(cmdStr) && StringUtils.isNumeric(cmdStr)) {
-                cmdInt = Integer.parseInt(cmdStr);
+            String cmdStr = command.toString();
+            if (cmdStr != null) {
+                try {
+                    // remove all non-numeric characters except negative '-' and parse int
+                    cmdInt = Integer.parseInt(cmdStr.replaceAll("[^\\d-]", ""));
+                } catch (NumberFormatException e) {
+                    logger.debug("Command: {} -> Not an integer", cmdStr);
+                    return;
+                }
             }
             
             switch (channelUID.getId()) {
@@ -372,7 +376,7 @@ public class RadioThermostatHandler extends BaseThingHandler {
     private String buildRequestURL(String resource) {
         RadioThermostatConfiguration config = getConfigAs(RadioThermostatConfiguration.class);
 
-        String hostName = StringUtils.trimToEmpty(config.hostName);
+        String hostName = config.hostName;
 
         String urlStr = URL.replace("%hostName%", hostName);
         urlStr = urlStr.replace("%resource%", resource);
@@ -492,11 +496,9 @@ public class RadioThermostatHandler extends BaseThingHandler {
      * @return
      * @throws Exception
      */
-    public static Object getValue(String channelId, RadioThermostatData data) throws Exception {
-        String[] fields = StringUtils.split(channelId, "#");
-        
+    public static Object getValue(String channelId, RadioThermostatData data) throws Exception {     
         if (data != null) {
-            switch (fields[0]) {
+            switch (channelId) {
                 case NAME:
                     return data.getName();
                 case MODEL:
@@ -524,7 +526,7 @@ public class RadioThermostatHandler extends BaseThingHandler {
                         return new QuantityType<Temperature>(data.getThermostatData().getSetpoint(), API_TEMPERATURE_UNIT);
                     } else {
                         return null;
-                    }            
+                    }
                 case OVERRIDE:
                     return data.getThermostatData().getOverride();
                 case HOLD:
