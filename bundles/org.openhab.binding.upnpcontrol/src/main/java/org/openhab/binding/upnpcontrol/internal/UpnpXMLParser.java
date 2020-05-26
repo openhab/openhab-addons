@@ -127,8 +127,8 @@ public class UpnpXMLParser {
              * The events are all of the form <qName val="value"/> so we can get all
              * the info we need from here.
              */
-            if ((localName != null) && (atts != null) && (atts.getValue("val") != null)) {
-                changes.put(localName, atts.getValue("val"));
+            if ((qName != null) && (atts != null) && (atts.getValue("val") != null)) {
+                changes.put(qName, atts.getValue("val"));
             }
         }
 
@@ -171,27 +171,31 @@ public class UpnpXMLParser {
         public void startElement(@Nullable String uri, @Nullable String localName, @Nullable String qName,
                 @Nullable Attributes attributes) throws SAXException {
             if (("container".equals(qName) || "item".equals(qName))) {
-                if (attributes.getValue("id") != null) {
-                    id = attributes.getValue("id");
-                }
-                if (attributes.getValue("refID") != null) {
-                    refId = attributes.getValue("refID");
-                }
-                if (attributes.getValue("parentID") != null) {
-                    parentId = attributes.getValue("parentID");
+                if (attributes != null) {
+                    if (attributes.getValue("id") != null) {
+                        id = attributes.getValue("id");
+                    }
+                    if (attributes.getValue("refID") != null) {
+                        refId = attributes.getValue("refID");
+                    }
+                    if (attributes.getValue("parentID") != null) {
+                        parentId = attributes.getValue("parentID");
+                    }
                 }
             } else if ("res".equals(qName)) {
-                String protocolInfo = attributes.getValue("protocolInfo");
-                Long size;
-                try {
-                    size = Long.parseLong(attributes.getValue("size"));
-                } catch (NumberFormatException e) {
-                    size = null;
+                if (attributes != null) {
+                    String protocolInfo = attributes.getValue("protocolInfo");
+                    Long size;
+                    try {
+                        size = Long.parseLong(attributes.getValue("size"));
+                    } catch (NumberFormatException e) {
+                        size = null;
+                    }
+                    String duration = attributes.getValue("duration");
+                    String importUri = attributes.getValue("importUri");
+                    resList.add(0, new UpnpEntryRes(protocolInfo, size, duration, importUri));
+                    element = Element.RES;
                 }
-                String duration = attributes.getValue("duration");
-                String importUri = attributes.getValue("importUri");
-                resList.add(0, new UpnpEntryRes(protocolInfo, size, duration, importUri));
-                element = Element.RES;
             } else if ("dc:title".equals(qName)) {
                 element = Element.TITLE;
             } else if ("upnp:class".equals(qName)) {

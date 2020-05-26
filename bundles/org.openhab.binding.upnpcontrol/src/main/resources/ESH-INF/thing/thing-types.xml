@@ -12,7 +12,7 @@
 			<channel id="volume" typeId="volume" />
 			<channel id="mute" typeId="mute" />
 			<channel id="control" typeId="control" />
-			<channel id="stop" typeId="stop" />
+			<channel id="stop" typeId="stop"/>
 			<channel id="title" typeId="title" />
 			<channel id="album" typeId="album" />
 			<channel id="albumart" typeId="albumart" />
@@ -74,7 +74,8 @@
 	<channel-type id="stop">
 		<item-type>Switch</item-type>
 		<label>Stop</label>
-		<description>Stop the player. ON if the player is stopped</description>
+		<description>Stop the player</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="title">
 		<item-type>String</item-type>
@@ -152,6 +153,7 @@
 		<item-type>Switch</item-type>
 		<label>Select</label>
 		<description>Select item from directory</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="searchcriteria">
 		<item-type>String</item-type>
@@ -164,10 +166,12 @@
 		<item-type>Switch</item-type>
 		<label>Search</label>
 		<description>Execute search with search criteria</description>
+        <autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="serve">
 		<item-type>Switch</item-type>
 		<label>Serve</label>
 		<description>Send selection to renderer</description>
+        <autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 </thing:thing-descriptions>

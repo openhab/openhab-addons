@@ -112,7 +112,7 @@ public class UpnpServerHandler extends UpnpHandler {
 
         getProtocolInfo();
 
-        browse(currentId, "BrowseDirectChildren", "*", "0", "0", "+dc:title");
+        browse(currentId, "BrowseDirectChildren", "*", "0", "0", getConfig().get(SORT_CRITERIA).toString());
     }
 
     @Override
@@ -148,7 +148,6 @@ public class UpnpServerHandler extends UpnpHandler {
                             if (entryMap.get(currentId) != null) {
                                 // Parent can be empty
                                 browseTarget = entryMap.get(currentId).getParentId();
-
                             }
                             if (browseTarget.isEmpty() || UP.equals(browseTarget)) {
                                 // No parent found, so make it the root directory
@@ -161,7 +160,6 @@ public class UpnpServerHandler extends UpnpHandler {
                                 getConfig().get(SORT_CRITERIA).toString());
                     }
                 }
-                updateState(SELECT, OnOffType.OFF);
                 break;
             case SEARCHCRITERIA:
                 if (command instanceof StringType) {
@@ -193,13 +191,11 @@ public class UpnpServerHandler extends UpnpHandler {
                         logger.warn("No search criteria defined.");
                     }
                 }
-                updateState(SEARCH, OnOffType.OFF);
                 break;
             case SERVE:
                 if (command == OnOffType.ON) {
                     serveMedia();
                 }
-                updateState(SERVE, OnOffType.OFF);
                 break;
         }
 
@@ -271,7 +267,7 @@ public class UpnpServerHandler extends UpnpHandler {
         StateOption current = null;
         if (!stateOptionList.isEmpty()) {
             current = stateOptionList.get(0);
-            if (current.getLabel().equals(UP) && (stateOptionList.size() > 1)) {
+            if (UP.equals(current.getLabel()) && (stateOptionList.size() > 1)) {
                 current = stateOptionList.get(1);
             }
         }
@@ -311,12 +307,12 @@ public class UpnpServerHandler extends UpnpHandler {
      * Method that does a UPnP browse on a content directory. Results will be retrieved in the {@link onValueReceived}
      * method.
      *
-     * @param objectID       content directory object
-     * @param browseFlag     BrowseMetaData or BrowseDirectChildren
-     * @param filter         properties to be returned
-     * @param startingIndex  starting index of objects to return
+     * @param objectID content directory object
+     * @param browseFlag BrowseMetaData or BrowseDirectChildren
+     * @param filter properties to be returned
+     * @param startingIndex starting index of objects to return
      * @param requestedCount number of objects to return, 0 for all
-     * @param sortCriteria   sort criteria, example: +dc:title
+     * @param sortCriteria sort criteria, example: +dc:title
      */
     public void browse(String objectID, String browseFlag, String filter, String startingIndex, String requestedCount,
             String sortCriteria) {
@@ -335,16 +331,16 @@ public class UpnpServerHandler extends UpnpHandler {
      * Method that does a UPnP search on a content directory. Results will be retrieved in the {@link onValueReceived}
      * method.
      *
-     * @param containerID    content directory container
+     * @param containerID content directory container
      * @param searchCriteria search criteria, examples:
-     *                           dc:title contains "song"
-     *                           dc:creator contains "Springsteen"
-     *                           upnp:class = "object.item.audioItem"
-     *                           upnp:album contains "Born in"
-     * @param filter         properties to be returned
-     * @param startingIndex  starting index of objects to return
+     *            dc:title contains "song"
+     *            dc:creator contains "Springsteen"
+     *            upnp:class = "object.item.audioItem"
+     *            upnp:album contains "Born in"
+     * @param filter properties to be returned
+     * @param startingIndex starting index of objects to return
      * @param requestedCount number of objects to return, 0 for all
-     * @param sortCriteria   sort criteria, example: +dc:title
+     * @param sortCriteria sort criteria, example: +dc:title
      */
     public void search(String containerID, String searchCriteria, String filter, String startingIndex,
             String requestedCount, String sortCriteria) {
@@ -410,8 +406,7 @@ public class UpnpServerHandler extends UpnpHandler {
 
     /**
      * Remove double entries by checking the refId if it exists as Id in the list and only keeping the original entry if
-     * available.
-     * If the original entry is not in the list, only keep one referring entry.
+     * available. If the original entry is not in the list, only keep one referring entry.
      *
      * @param list
      * @return filtered list

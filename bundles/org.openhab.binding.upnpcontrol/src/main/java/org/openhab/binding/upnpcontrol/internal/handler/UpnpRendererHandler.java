@@ -355,7 +355,6 @@ public class UpnpRendererHandler extends UpnpHandler {
                     }
                     break;
                 case CONTROL:
-                    updateState(STOP, OnOffType.OFF);
                     playerStopped = false;
                     if (command instanceof PlayPauseType) {
                         if (command == PlayPauseType.PLAY) {
@@ -452,7 +451,6 @@ public class UpnpRendererHandler extends UpnpHandler {
                     if (playerStopped) {
                         playing = false;
                         // Stop command came from openHAB, so don't move to next
-                        updateState(STOP, OnOffType.ON);
                         updateState(CONTROL, PlayPauseType.PAUSE);
                         cancelTrackPositionRefresh();
                     } else if (playing) {
@@ -464,8 +462,8 @@ public class UpnpRendererHandler extends UpnpHandler {
                 } else if ("PLAYING".equals(value)) {
                     playerStopped = false;
                     playing = true;
-                    updateState(STOP, OnOffType.OFF);
                     updateState(CONTROL, PlayPauseType.PLAY);
+                    scheduleTrackPositionRefresh();
                 }
                 break;
             case "CurrentTrackURI":
@@ -497,7 +495,6 @@ public class UpnpRendererHandler extends UpnpHandler {
                 } else {
                     trackDuration = value;
                 }
-                scheduleTrackPositionRefresh();
             case "RelTime":
                 updateState(TRACK_POSITION, StringType.valueOf(value));
             default:
@@ -647,6 +644,7 @@ public class UpnpRendererHandler extends UpnpHandler {
      * Update the current track position every second it the channel is linked.
      */
     private void scheduleTrackPositionRefresh() {
+        cancelTrackPositionRefresh();
         if (!isLinked(TRACK_POSITION)) {
             return;
         }
