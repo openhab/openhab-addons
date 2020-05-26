@@ -20,7 +20,6 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.TimeZone;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -104,9 +103,9 @@ public class WeatherUndergroundJsonUtils {
      */
     public static URL getValidUrl(String url) {
         URL validUrl = null;
-        if (StringUtils.isNotBlank(url)) {
+        if (url != null && !url.trim().isEmpty()) {
             try {
-                validUrl = new URL(url);
+                validUrl = new URL(url.trim());
             } catch (MalformedURLException e) {
             }
         }
