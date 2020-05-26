@@ -15,7 +15,7 @@
 			<description>Longitude for the forecast</description>
 		</parameter>
 		<parameter name="hourlyForecasts" type="integer" multiple="true">
-			<label>Hourly forecasts</label>
+			<label>Hourly Forecasts</label>
 			<description>The hourly forecasts to display</description>
 			<limitToOptions>true</limitToOptions>
 			<options>
@@ -47,7 +47,7 @@
 			</options>
 		</parameter>
 		<parameter name="dailyForecasts" type="integer" multiple="true">
-			<label>Daily forecasts</label>
+			<label>Daily Forecasts</label>
 			<description>The daily forecasts to display</description>
 			<limitToOptions>true</limitToOptions>
 			<options>

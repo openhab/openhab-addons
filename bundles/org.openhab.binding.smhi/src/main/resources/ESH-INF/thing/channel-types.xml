@@ -6,7 +6,7 @@
 
 	<channel-type id="msl">
 		<item-type>Number</item-type>
-		<label>Air pressure</label>
+		<label>Air Pressure</label>
 		<description>Air pressure in hPa</description>
 		<state readOnly="true" />
 	</channel-type>
@@ -24,85 +24,85 @@
 	</channel-type>
 	<channel-type id="wd">
 		<item-type>Number</item-type>
-		<label>Wind direction</label>
+		<label>Wind Direction</label>
 		<description>Wind direction in degrees</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="ws">
 		<item-type>Number</item-type>
-		<label>Wind speed</label>
+		<label>Wind Speed</label>
 		<description>Wind speed in m/s</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="r">
 		<item-type>Number</item-type>
-		<label>Relative humidity</label>
+		<label>Relative Humidity</label>
 		<description>Relative humidity in percent</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="tstm" advanced="true">
 		<item-type>Number</item-type>
-		<label>Thunder probability</label>
+		<label>Thunder Probability</label>
 		<description>Probability of thunder in percent</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="tcc_mean">
 		<item-type>Number</item-type>
-		<label>Total cloud cover</label>
+		<label>Total Cloud Cover</label>
 		<description>Mean value of total cloud cover in octets</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="lcc_mean" advanced="true">
 		<item-type>Number</item-type>
-		<label>Low level cloud cover</label>
+		<label>Low Level Cloud Cover</label>
 		<description>Mean value of low level cloud cover (0-2500 m) in octets</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="mcc_mean" advanced="true">
 		<item-type>Number</item-type>
-		<label>Medium level cloud cover</label>
+		<label>Medium Level Cloud Cover</label>
 		<description>Mean value of medium level cloud cover (2500-6000 m) in octets</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="hcc_mean" advanced="true">
 		<item-type>Number</item-type>
-		<label>High level cloud cover</label>
+		<label>High Level Cloud Cover</label>
 		<description>Mean value of high level cloud cover (> 6000 m) in octets</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="gust">
 		<item-type>Number</item-type>
-		<label>Wind gust speed</label>
+		<label>Wind Gust Speed</label>
 		<description>Wind gust speed in m/s</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="pmin">
 		<item-type>Number</item-type>
-		<label>Minimum precipitation</label>
+		<label>Minimum Precipitation</label>
 		<description>Minimum precipitation intensity in mm/h</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="pmax">
 		<item-type>Number</item-type>
-		<label>Maximum precipitation</label>
+		<label>Maximum Precipitation</label>
 		<description>Maximum precipitation intensity in mm/h</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="pmean" advanced="true">
 		<item-type>Number</item-type>
-		<label>Mean precipitation</label>
+		<label>Mean Precipitation</label>
 		<description>Mean precipitation intensity in mm/h</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="pmedian" advanced="true">
 		<item-type>Number</item-type>
-		<label>Median precipitation</label>
+		<label>Median Precipitation</label>
 		<description>Median precipitation intensity in mm/h</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="pcat">
 		<item-type>Number</item-type>
-		<label>Precipitation category</label>
+		<label>Precipitation Category</label>
 		<description>Type of precipitation</description>
 		<state readOnly="true">
 			<options>
@@ -118,13 +118,13 @@
 	</channel-type>
 	<channel-type id="spp" advanced="true">
 		<item-type>Number</item-type>
-		<label>Frozen precipitation</label>
+		<label>Frozen Precipitation</label>
 		<description>Percent of precipitation in frozen form</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="wsymb2">
 		<item-type>Number</item-type>
-		<label>Weather condition</label>
+		<label>Weather Condition</label>
 		<description>Short description of the weather conditions</description>
 		<state readOnly="true">
 			<options>
@@ -160,7 +160,7 @@
 	</channel-type>
 
 	<channel-group-type id="hourlyForecast">
-		<label>Hourly forecast</label>
+		<label>Hourly Forecast</label>
 		<description>Hourly forecast for the specified offset</description>
 		<channels>
 			<channel id="t" typeId="t" />
@@ -186,7 +186,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="dailyForecast">
-		<label>Daily forecast</label>
+		<label>Daily Forecast</label>
 		<description>Forecast at noon for the specified offset</description>
 		<channels>
 			<channel id="t" typeId="t" />
