@@ -103,12 +103,12 @@ public class NeoHubDiscoveryService extends AbstractDiscoveryService {
         NeoHubGetEngineersData engineerData = hub.isLegacyApiSelected() ? null : hub.fromNeoHubGetEngineersData();
 
         if (deviceData != null) {
-            List<?> deviceRecords = deviceData.getDevices();
+            List<? extends AbstractRecord> deviceRecords = deviceData.getDevices();
 
             if (deviceRecords != null) {
                 int deviceType;
 
-                for (Object deviceRecord : deviceRecords) {
+                for (AbstractRecord deviceRecord : deviceRecords) {
 
                     // the record came from the legacy API (deviceType included)
                     if (deviceRecord instanceof InfoRecord) {

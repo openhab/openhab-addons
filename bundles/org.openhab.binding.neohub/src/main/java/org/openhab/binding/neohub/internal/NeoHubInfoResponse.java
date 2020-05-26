@@ -202,7 +202,7 @@ public class NeoHubInfoResponse extends NeoHubAbstractDeviceData {
      * @return the full list of device records
      */
     @Override
-    public @Nullable List<? extends InfoRecord> getDevices() {
+    public @Nullable List<InfoRecord> getDevices() {
         return deviceRecords;
     }
 }

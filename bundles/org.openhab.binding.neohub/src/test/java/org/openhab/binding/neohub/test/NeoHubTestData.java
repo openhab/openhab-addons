@@ -66,24 +66,10 @@ public class NeoHubTestData {
     }
 
     /*
-     * The main unit test method
-     */
-    @Test
-    public void test() {
-        testInfoJsonOld();
-        testInfoJsonNew();
-        testReadDcbJson();
-        testInfoJsonWithSensors();
-        testGetSystemJson();
-        testGetLiveDataJson();
-        testGetEngineersJson();
-        testCommunications();
-    }
-
-    /*
      * Test an INFO JSON response string as produced by older firmware versions
      */
-    private void testInfoJsonOld() {
+    @Test
+    public void testInfoJsonOld() {
         // load INFO JSON response string in old JSON format
         NeoHubAbstractDeviceData infoResponse = NeoHubInfoResponse.createDeviceData(load("info_old"));
         assertNotNull(infoResponse);
@@ -142,7 +128,8 @@ public class NeoHubTestData {
     /*
      * Test an INFO JSON response string as produced by newer firmware versions
      */
-    private void testInfoJsonNew() {
+    @Test
+    public void testInfoJsonNew() {
         // load INFO JSON response string in new JSON format
         NeoHubAbstractDeviceData infoResponse = NeoHubInfoResponse.createDeviceData(load("info_new"));
         assertNotNull(infoResponse);
@@ -165,7 +152,8 @@ public class NeoHubTestData {
     /*
      * Test for a READ_DCB JSON string that has valid CORF C response
      */
-    private void testReadDcbJson() {
+    @Test
+    public void testReadDcbJson() {
         // load READ_DCB JSON response string with valid CORF C response
         NeoHubReadDcbResponse dcbResponse = NeoHubReadDcbResponse.createSystemData(load("dcb_celsius"));
         assertNotNull(dcbResponse);
@@ -190,7 +178,8 @@ public class NeoHubTestData {
     /*
      * Test an INFO JSON string that has a door contact and a temperature sensor
      */
-    private void testInfoJsonWithSensors() {
+    @Test
+    public void testInfoJsonWithSensors() {
         /*
          * load an INFO JSON response string that has a closed door contact and a
          * temperature sensor
@@ -243,7 +232,8 @@ public class NeoHubTestData {
      * From NeoHub rev2.6 onwards the READ_DCB command is "deprecated" so we can
      * also test the replacement GET_SYSTEM command (valid CORF response)
      */
-    private void testGetSystemJson() {
+    @Test
+    public void testGetSystemJson() {
         // load GET_SYSTEM JSON response string
         NeoHubReadDcbResponse dcbResponse;
         dcbResponse = NeoHubReadDcbResponse.createSystemData(load("system"));
@@ -255,7 +245,8 @@ public class NeoHubTestData {
      * From NeoHub rev2.6 onwards the INFO command is "deprecated" so we must test
      * the replacement GET_LIVE_DATA command
      */
-    private void testGetLiveDataJson() {
+    @Test
+    public void testGetLiveDataJson() {
         // load GET_LIVE_DATA JSON response string
         NeoHubLiveDeviceData liveDataResponse = NeoHubLiveDeviceData.createDeviceData(load("live_data"));
         assertNotNull(liveDataResponse);
@@ -342,7 +333,8 @@ public class NeoHubTestData {
      * element is not returned in the GET_LIVE_DATA call so we must test the
      * replacement GET_ENGINEERS command
      */
-    private void testGetEngineersJson() {
+    @Test
+    public void testGetEngineersJson() {
         // load GET_ENGINEERS JSON response string
         NeoHubGetEngineersData engResponse = NeoHubGetEngineersData.createEngineersData(load("engineers"));
         assertNotNull(engResponse);
@@ -371,7 +363,8 @@ public class NeoHubTestData {
     /*
      * Test the communications
      */
-    private void testCommunications() {
+    @Test
+    public void testCommunications() {
         String responseJson = testCommunicationInner(CMD_CODE_INFO);
         assertFalse(responseJson.isEmpty());
         responseJson = testCommunicationInner(CMD_CODE_READ_DCB);

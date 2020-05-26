@@ -54,6 +54,8 @@ public class NeoHubHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(NeoHubHandler.class);
 
+    private final Map<String, Boolean> connectionStates = new HashMap<>();
+
     private @Nullable NeoHubConfiguration config;
     private @Nullable NeoHubSocket socket;
     private @Nullable ScheduledFuture<?> lazyPollingScheduler;
@@ -69,8 +71,6 @@ public class NeoHubHandler extends BaseBridgeHandler {
     private boolean systemDataDirty = true;
     private long systemTimestamp = -1;
     private Instant systemLastRefreshed = Instant.now().minusSeconds(3600);
-
-    private Map<String, Boolean> connectionStates = new HashMap<>();
 
     public NeoHubHandler(Bridge bridge) {
         super(bridge);
@@ -240,7 +240,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
             }
 
             @Nullable
-            List<?> devices = deviceData.getDevices();
+            List<? extends AbstractRecord> devices = deviceData.getDevices();
             if (devices == null || devices.size() == 0) {
                 logger.warn(MSG_FMT_DEVICE_POLL_ERR, "no devices found");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
@@ -341,10 +341,10 @@ public class NeoHubHandler extends BaseBridgeHandler {
             }
 
             // evaluate and update the state of our RF mesh QoS channel
-            List<?> devices;
+            List<? extends AbstractRecord> devices = deviceData.getDevices();
             State state;
 
-            if ((devices = deviceData.getDevices()) == null) {
+            if (devices == null || devices.isEmpty()) {
                 state = UnDefType.UNDEF;
             } else {
                 int totalDeviceCount;
@@ -354,24 +354,22 @@ public class NeoHubHandler extends BaseBridgeHandler {
                 } else {
                     int onlineDeviceCount = 0;
 
-                    for (Object device : devices) {
-                        if (device instanceof AbstractRecord) {
-                            String deviceName = ((AbstractRecord) device).getDeviceName();
-                            Boolean online = !((AbstractRecord) device).offline();
+                    for (AbstractRecord device : devices) {
+                        String deviceName = device.getDeviceName();
+                        Boolean online = !device.offline();
 
-                            if (connectionStates.containsKey(deviceName)) {
-                                @Nullable
-                                Boolean onlineBefore = connectionStates.get(deviceName);
-                                if (!online.equals(onlineBefore)) {
-                                    logger.info("device \"{}\" has {} the RF mesh network", deviceName,
-                                            online.booleanValue() ? "joined" : "left");
-                                }
+                        if (connectionStates.containsKey(deviceName)) {
+                            @Nullable
+                            Boolean onlineBefore = connectionStates.get(deviceName);
+                            if (!online.equals(onlineBefore)) {
+                                logger.info("device \"{}\" has {} the RF mesh network", deviceName,
+                                        online.booleanValue() ? "joined" : "left");
                             }
-                            connectionStates.put(deviceName, online);
+                        }
+                        connectionStates.put(deviceName, online);
 
-                            if (online.booleanValue()) {
-                                onlineDeviceCount++;
-                            }
+                        if (online.booleanValue()) {
+                            onlineDeviceCount++;
                         }
                     }
                     state = new DecimalType((100.0 * onlineDeviceCount) / totalDeviceCount);

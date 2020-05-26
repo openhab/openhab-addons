@@ -188,7 +188,7 @@ public class NeoHubLiveDeviceData extends NeoHubAbstractDeviceData {
      * @return the full list of device records
      */
     @Override
-    public @Nullable List<? extends LiveDataRecord> getDevices() {
+    public @Nullable List<LiveDataRecord> getDevices() {
         return deviceRecords;
     }
 }
