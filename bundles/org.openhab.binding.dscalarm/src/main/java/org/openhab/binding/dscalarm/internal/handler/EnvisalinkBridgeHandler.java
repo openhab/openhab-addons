@@ -165,18 +165,9 @@ public class EnvisalinkBridgeHandler extends DSCAlarmBaseBridgeHandler {
                 logger.debug("closeConnection(): Closing Socket!");
                 tcpSocket.close();
                 tcpSocket = null;
-            }
-            if (tcpInput != null) {
-                logger.debug("closeConnection(): Closing Output Writer!");
-                tcpInput.close();
                 tcpInput = null;
-            }
-            if (tcpOutput != null) {
-                logger.debug("closeConnection(): Closing Input Reader!");
-                tcpOutput.close();
                 tcpOutput = null;
             }
-
             setConnected(false);
             logger.debug("closeConnection(): Closed TCP Connection!");
         } catch (IOException ioException) {

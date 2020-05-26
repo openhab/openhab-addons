@@ -19,7 +19,6 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.TooManyListenersException;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.io.transport.serial.PortInUseException;
@@ -189,12 +188,20 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
         serialPort.removeEventListener();
 
         if (serialInput != null) {
-            IOUtils.closeQuietly(serialInput);
+            try {
+                serialInput.close();
+            } catch (IOException e) {
+                logger.debug("Error while closing the input stream: {}", e.getMessage());
+            }
             serialInput = null;
         }
 
         if (serialOutput != null) {
-            IOUtils.closeQuietly(serialOutput);
+            try {
+                serialOutput.close();
+            } catch (IOException e) {
+                logger.debug("Error while closing the output stream: {}", e.getMessage());
+            }
             serialOutput = null;
         }
 

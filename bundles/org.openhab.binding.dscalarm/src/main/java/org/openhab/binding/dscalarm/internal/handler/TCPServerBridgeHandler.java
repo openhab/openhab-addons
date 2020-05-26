@@ -172,16 +172,9 @@ public class TCPServerBridgeHandler extends DSCAlarmBaseBridgeHandler {
             if (tcpSocket != null) {
                 tcpSocket.close();
                 tcpSocket = null;
-            }
-            if (tcpInput != null) {
-                tcpInput.close();
                 tcpInput = null;
-            }
-            if (tcpOutput != null) {
-                tcpOutput.close();
                 tcpOutput = null;
             }
-
             setConnected(false);
             logger.debug("closeConnection(): Closed TCP Connection!");
         } catch (IOException ioException) {
