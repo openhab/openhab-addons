@@ -30,4 +30,8 @@ public class SmhiException extends Exception {
     public SmhiException(String message) {
         super(message);
     }
+
+    public SmhiException(Throwable cause) {
+        super(cause);
+    }
 }

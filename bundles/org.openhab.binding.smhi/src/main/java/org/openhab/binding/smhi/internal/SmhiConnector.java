@@ -57,7 +57,7 @@ public class SmhiConnector {
         try {
             resp = req.send();
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            throw new SmhiException();
+            throw new SmhiException(e);
         }
         return Parser.parseApprovedTime(resp.getContentAsString());
     }
@@ -78,7 +78,7 @@ public class SmhiConnector {
         try {
             resp = req.send();
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            throw new SmhiException();
+            throw new SmhiException(e);
         }
         return Parser.parseTimeSeries(resp.getContentAsString());
     }

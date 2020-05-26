@@ -60,7 +60,7 @@ public class SmhiHandler extends BaseThingHandler {
     private @NonNullByDefault({}) SmhiConfiguration config;
 
     private final HttpClient httpClient;
-    private @NonNullByDefault({}) SmhiConnector connection;
+    private @Nullable SmhiConnector connection;
     private ZonedDateTime currentHour;
     private ZonedDateTime currentDay;
     private @Nullable TimeSeries cachedTimeSeries;
@@ -281,12 +281,15 @@ public class SmhiHandler extends BaseThingHandler {
      */
     private boolean isForecastUpdated() {
         ZonedDateTime referenceTime;
-        try {
-            referenceTime = connection.getReferenceTime();
-        } catch (SmhiException e) {
-            return false;
+        if (connection != null) {
+            try {
+                referenceTime = connection.getReferenceTime();
+            } catch (SmhiException e) {
+                return false;
+            }
+            return referenceTime.isEqual(currentHour) || referenceTime.isAfter(currentHour);
         }
-        return referenceTime.isEqual(currentHour) || referenceTime.isAfter(currentHour);
+        return false;
     }
 
     /**
@@ -296,18 +299,20 @@ public class SmhiHandler extends BaseThingHandler {
     private void getUpdatedForecast() {
         TimeSeries forecast;
         ZonedDateTime referenceTime;
-        try {
-            forecast = connection.getForecast(config.latitude, config.longitude);
-        } catch (SmhiException e) {
-            logger.warn("Failed to get new forecast: {}", e.getMessage());
-            return;
+        if (connection != null) {
+            try {
+                forecast = connection.getForecast(config.latitude, config.longitude);
+            } catch (SmhiException e) {
+                logger.warn("Failed to get new forecast: {}", e.getCause().getMessage());
+                return;
+            }
+            referenceTime = forecast.getReferenceTime();
+            updateChannels(forecast);
+            if (referenceTime.isEqual(currentHour) || referenceTime.isAfter(currentHour)) {
+                hasLatestForecast = true;
+            }
+            cachedTimeSeries = forecast;
         }
-        referenceTime = forecast.getReferenceTime();
-        updateChannels(forecast);
-        if (referenceTime.isEqual(currentHour) || referenceTime.isAfter(currentHour)) {
-            hasLatestForecast = true;
-        }
-        cachedTimeSeries = forecast;
     }
 
     /**
