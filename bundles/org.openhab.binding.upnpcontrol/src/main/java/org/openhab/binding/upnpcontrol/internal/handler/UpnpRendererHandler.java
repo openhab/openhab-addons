@@ -509,6 +509,9 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     private void updateProtocolInfo(String value) {
         sink.clear();
+        supportedAudioFormats.clear();
+        audioSupport = false;
+
         sink.addAll(Arrays.asList(value.split(",")));
 
         Pattern pattern = Pattern.compile("(?:.*):(?:.*):(.*):(?:.*)");
@@ -527,7 +530,7 @@ public class UpnpRendererHandler extends UpnpHandler {
                         supportedAudioFormats.add(AudioFormat.WAV);
                         break;
                 }
-                audioSupport = Pattern.matches("audio.*", format);
+                audioSupport = audioSupport ? audioSupport : Pattern.matches("audio.*", format);
             }
         }
 
