@@ -45,6 +45,12 @@ public class HPUsage {
     private float inkYellowMarking;
     private float inkColorMarking;
 
+    private int inkBlackPagesRemaining;
+    private int inkColorPagesRemaining;
+    private int inkCyanPagesRemaining;
+    private int inkMagentaPagesRemaining;
+    private int inkYellowPagesRemaining;
+
     private int scanAdfCount;
     private int scanFlatbedCount;
     private int scanToEmailCount;
@@ -80,8 +86,9 @@ public class HPUsage {
                     .getTextContent();
 
             int markAgentLength = currInk.getElementsByTagName("dd2:CumulativeMarkingAgentUsed").getLength();
-
+            Boolean hasPagesRemaining = currInk.getElementsByTagName("dd:EstimatedPagesRemaining").getLength() > 0;
             float totalMarking = 0;
+            int pagesRemaining = 0;
             if (markAgentLength > 0) { // Check to make sure Cumulative Marking Agent exists
                 for (int ai = 0; ai < markAgentLength; ai++) {
                     Element currMarking = (Element) currInk.getElementsByTagName("dd2:CumulativeMarkingAgentUsed")
@@ -90,6 +97,7 @@ public class HPUsage {
                     float marking = Integer
                             .parseInt(currMarking.getElementsByTagName("dd:ValueFloat").item(0).getTextContent());
 
+                            //TODO: Check conversions - unsure based on comments
                     switch (currMarking.getElementsByTagName("dd:Unit").item(0).getTextContent().toLowerCase()) {
                         case "microliters":
                             marking = marking / 1000; // Convert to litres
@@ -102,30 +110,39 @@ public class HPUsage {
                 }
             }
 
+            if (hasPagesRemaining) {
+                pagesRemaining = Integer.parseInt(((Element) currInk).getElementsByTagName("dd:EstimatedPagesRemaining").item(0).getTextContent());
+            }
+
             switch (inkName.toLowerCase()) {
                 case "black":
                     inkBlack = Integer.parseInt(inkRemaining);
                     inkBlackMarking = totalMarking;
+                    inkBlackPagesRemaining = pagesRemaining;
                     break;
 
                 case "yellow":
                     inkYellow = Integer.parseInt(inkRemaining);
                     inkYellowMarking = totalMarking;
+                    inkYellowPagesRemaining = pagesRemaining;
                     break;
 
                 case "magenta":
                     inkMagenta = Integer.parseInt(inkRemaining);
                     inkMagentaMarking = totalMarking;
+                    inkMagentaPagesRemaining = pagesRemaining;
                     break;
 
                 case "cyan":
                     inkCyan = Integer.parseInt(inkRemaining);
                     inkCyanMarking = totalMarking;
+                    inkCyanPagesRemaining = pagesRemaining;
                     break;
 
                 case "cyanmagentayellow":
                     inkColor = Integer.parseInt(inkRemaining);
                     inkColorMarking = totalMarking;
+                    inkColorPagesRemaining = pagesRemaining;
                     break;
             }
         }
@@ -161,8 +178,6 @@ public class HPUsage {
                 .getElementsByTagName("dd:TotalFrontPanelCancelPresses");
         if (frontpanelCancelCount.getLength() > 0)
             this.frontpanelCancelCount = Integer.parseInt(frontpanelCancelCount.item(0).getTextContent());
-
-
         
         //Scanner
         NodeList scanSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:ScanApplicationSubunit");
@@ -274,6 +289,26 @@ public class HPUsage {
 
     public float getInkYellowMarking() {
         return inkYellowMarking;
+    }
+
+    public int getInkBlackPagesRemaining() {
+        return inkBlackPagesRemaining;
+    }
+
+    public int getInkColorPagesRemaining() {
+        return inkColorPagesRemaining;
+    }
+
+    public int getInkMagentaPagesRemaining() {
+        return inkMagentaPagesRemaining;
+    }
+
+    public int getInkCyanPagesRemaining() {
+        return inkCyanPagesRemaining;
+    }
+
+    public int getInkYellowPagesRemaining() {
+        return inkYellowPagesRemaining;
     }
 
     public int getInkColor() {
