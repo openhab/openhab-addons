@@ -306,11 +306,12 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
         }
 
         // A message cannot be null or have a 0-byte length
-        if (characteristic.getByteValue() == null || characteristic.getByteValue().length == 0) {
+        byte[] msgBytes = characteristic.getByteValue();
+        if (msgBytes == null || msgBytes.length == 0) {
             return;
         }
 
-        this.uartProcessor.chunkReceived(characteristic.getByteValue());
+        this.uartProcessor.chunkReceived(msgBytes);
     }
 
     private void submitCommand(BRC1HCommand command) {
