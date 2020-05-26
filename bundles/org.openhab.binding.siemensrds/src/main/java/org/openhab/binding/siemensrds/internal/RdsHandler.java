@@ -126,7 +126,6 @@ public class RdsHandler extends BaseThingHandler {
             }
 
             startFastPollingBurst();
-            ;
         } catch (RdsCloudException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             logger.warn(LOG_SYSTEM_EXCEPTION, "initializePolling()", e.getClass().getName(), e.getMessage());

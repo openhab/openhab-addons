@@ -128,7 +128,6 @@ public class RdsCloudHandler extends BaseBridgeHandler {
                 }
 
                 accessToken = this.accessToken = RdsAccessToken.createFromJson(json);
-                ;
             } catch (RdsCloudException e) {
                 logger.warn(LOG_SYSTEM_EXCEPTION, "refreshToken()", e.getClass().getName(), e.getMessage());
             } catch (JsonParseException | IOException e) {
