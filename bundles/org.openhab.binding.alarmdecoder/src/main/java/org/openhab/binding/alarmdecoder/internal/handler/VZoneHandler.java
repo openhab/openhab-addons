@@ -12,15 +12,17 @@
  */
 package org.openhab.binding.alarmdecoder.internal.handler;
 
-import static org.openhab.binding.alarmdecoder.internal.AlarmDecoderBindingConstants.CHANNEL_COMMAND;
+import static org.openhab.binding.alarmdecoder.internal.AlarmDecoderBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.alarmdecoder.internal.config.VZoneConfig;
 import org.openhab.binding.alarmdecoder.internal.protocol.ADCommand;
 import org.openhab.binding.alarmdecoder.internal.protocol.ADMessage;
@@ -60,12 +62,17 @@ public class VZoneHandler extends ADThingHandler {
 
     @Override
     public void initChannelState() {
-        // Do nothing
+        UnDefType state = UnDefType.UNDEF;
+        updateState(CHANNEL_STATE, state);
+        firstUpdateReceived.set(false);
     }
 
     @Override
     public void notifyPanelReady() {
-        // Do nothing
+        logger.trace("Virtual zone handler for {} received panel ready notification.", config.address);
+        if (firstUpdateReceived.compareAndSet(false, true)) {
+            updateState(CHANNEL_STATE, OnOffType.ON);
+        }
     }
 
     @Override
@@ -75,17 +82,34 @@ public class VZoneHandler extends ADThingHandler {
                 String cmd = ((StringType) command).toString();
                 if (CMD_OPEN.equalsIgnoreCase(cmd)) {
                     sendCommand(ADCommand.setZone(config.address, ADCommand.ZONE_OPEN));
+                    setChannelState(OnOffType.OFF);
                 } else if (CMD_CLOSED.equalsIgnoreCase(cmd)) {
                     sendCommand(ADCommand.setZone(config.address, ADCommand.ZONE_CLOSED));
+                    setChannelState(OnOffType.ON);
                 } else {
                     logger.debug("Virtual zone handler {} received invalid command: {}", config.address, cmd);
+                }
+            }
+        } else if (channelUID.getId().equals(CHANNEL_STATE)) {
+            if (command instanceof OnOffType) {
+                if (command == OnOffType.OFF) {
+                    sendCommand(ADCommand.setZone(config.address, ADCommand.ZONE_OPEN));
+                    setChannelState(OnOffType.OFF);
+                } else if (command == OnOffType.ON) {
+                    sendCommand(ADCommand.setZone(config.address, ADCommand.ZONE_CLOSED));
+                    setChannelState(OnOffType.ON);
                 }
             }
         }
     }
 
+    private void setChannelState(OnOffType state) {
+        updateState(CHANNEL_STATE, state);
+        firstUpdateReceived.set(true);
+    }
+
     @Override
     public void handleUpdate(ADMessage msg) {
-        // Ignore update requests
+        // There can be no update requests
     }
 }

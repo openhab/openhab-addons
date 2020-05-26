@@ -55,6 +55,7 @@ public class AlarmDecoderBindingConstants {
     public static final String PROPERTY_ID = "id";
 
     public static final String CHANNEL_CONTACT = "contact";
+    public static final String CHANNEL_STATE = "state";
 
     // Channel IDs for VZoneHandler
     public static final String CHANNEL_COMMAND = "command";

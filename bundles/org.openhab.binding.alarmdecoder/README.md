@@ -145,6 +145,7 @@ Thing config file example:
 The `vzone` thing sends open/close commands a virtual zone.
 After enabling zone expander emulation on both the alarm panel and the Alarm Decoder device, it can be used to control the state of a virtual zone.
 The `command` channel is write-only, and accepts either the string "OPEN" or the string "CLOSED".
+The `state` channel is a switch type channel that reflects the current state of the virtual zone (ON=closed/OFF=open).
 
 Parameters:
 
@@ -197,6 +198,7 @@ The alarmdecoder things expose the following channels:
 |  channel     | type    |RO/RW| description                  |
 |--------------|---------|-----|------------------------------|
 | command      | String  | WO  |"OPEN" or "CLOSED" command    |
+| state        | Switch  | RW  |Zone state (ON = closed)      |
 
 **keypad**
 
