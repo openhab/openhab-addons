@@ -28,7 +28,6 @@ import java.util.stream.Stream;
 import javax.measure.Quantity;
 import javax.measure.Unit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.i18n.LocaleProvider;
@@ -233,14 +232,13 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
                 String errors = "";
                 String statusDescr = null;
 
-                if (StringUtils.trimToNull(config.location) == null) {
+                if (config.location == null || config.location.trim().isEmpty()) {
                     errors += " Parameter 'location' must be configured.";
                     statusDescr = "@text/offline.conf-error-missing-location";
                     validConfig = false;
                 }
                 if (config.language != null) {
-                    String lang = StringUtils.trimToEmpty(config.language);
-                    if (lang.length() != 2) {
+                    if (config.language.trim().length() != 2) {
                         errors += " Parameter 'language' must be 2 letters.";
                         statusDescr = "@text/offline.conf-error-syntax-language";
                         validConfig = false;
@@ -537,7 +535,7 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
 
             String urlStr = URL_QUERY.replace("%FEATURES%", String.join("/", features));
 
-            String lang = StringUtils.trimToEmpty(config.language);
+            String lang = config.language == null ? "" : config.language.trim();
             if (lang.isEmpty()) {
                 // If language is not set in the configuration, you try deducing it from the system language
                 lang = getCodeFromLanguage(localeProvider.getLocale());
@@ -550,12 +548,13 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
                 urlStr = urlStr.replace("%SETTINGS%", "lang:" + lang.toUpperCase());
             }
 
-            urlStr = urlStr.replace("%QUERY%", StringUtils.trimToEmpty(config.location));
+            String location = config.location == null ? "" : config.location.trim();
+            urlStr = urlStr.replace("%QUERY%", location);
             if (logger.isDebugEnabled()) {
                 logger.debug("URL = {}", urlStr.replace("%APIKEY%", "***"));
             }
 
-            urlStr = urlStr.replace("%APIKEY%", StringUtils.trimToEmpty(bridgeHandler.getApikey()));
+            urlStr = urlStr.replace("%APIKEY%", bridgeHandler.getApikey());
 
             // Run the HTTP request and get the JSON response from Weather Underground
             String response = null;
@@ -564,8 +563,7 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
                 logger.debug("weatherData = {}", response);
             } catch (IllegalArgumentException e) {
                 // catch Illegal character in path at index XX: http://api.wunderground.com/...
-                error = "Error creating URI with location parameter: '" + StringUtils.trimToEmpty(config.location)
-                        + "'";
+                error = "Error creating URI with location parameter: '" + location + "'";
                 errorDetail = e.getMessage();
                 statusDescr = "@text/offline.uri-error";
             }
@@ -630,11 +628,11 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
      */
     public static String getCodeFromLanguage(Locale locale) {
         String key = locale.getLanguage() + "-" + locale.getCountry();
-        String language = StringUtils.trimToEmpty(LANG_COUNTRY_TO_WU_CODES.get(key));
-        if (language.isEmpty()) {
-            language = StringUtils.trimToEmpty(LANG_ISO_TO_WU_CODES.get(locale.getLanguage().toUpperCase()));
+        String language = LANG_COUNTRY_TO_WU_CODES.get(key);
+        if (language == null) {
+            language = LANG_ISO_TO_WU_CODES.get(locale.getLanguage().toUpperCase());
         }
-        return language;
+        return language != null ? language : "";
     }
 
     private WUQuantity getTemperature(BigDecimal siValue, BigDecimal imperialValue) {
