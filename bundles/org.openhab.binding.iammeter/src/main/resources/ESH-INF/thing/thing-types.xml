@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="iammeter"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sample Thing Type -->
+	<thing-type id="powermeter">
+		<label>Iammeter Power Meter</label>
+		<description>PowerMeter thing for Iammeter Binding</description>
+
+		<channels>
+			<channel id="voltage_a" typeId="voltage_a" />
+			<channel id="current_a" typeId="current_a" />
+			<channel id="power_a" typeId="power_a" />
+			<channel id="importenergy_a" typeId="importenergy_a" />
+			<channel id="exportgrid_a" typeId="exportgrid_a" />
+			<channel id="frequency_a" typeId="frequency_a" />
+			<channel id="pf_a" typeId="pf_a" />
+			<channel id="voltage_b" typeId="voltage_b" />
+			<channel id="current_b" typeId="current_b" />
+			<channel id="power_b" typeId="power_b" />
+			<channel id="importenergy_b" typeId="importenergy_b" />
+			<channel id="exportgrid_b" typeId="exportgrid_b" />
+			<channel id="frequency_b" typeId="frequency_b" />
+			<channel id="pf_b" typeId="pf_b" />
+			<channel id="voltage_c" typeId="voltage_c" />
+			<channel id="current_c" typeId="current_c" />
+			<channel id="power_c" typeId="power_c" />
+			<channel id="importenergy_c" typeId="importenergy_c" />
+			<channel id="exportgrid_c" typeId="exportgrid_c" />
+			<channel id="frequency_c" typeId="frequency_c" />
+			<channel id="pf_c" typeId="pf_c" />
+		</channels>
+
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>Device's IP Address</label>
+				<description>This is a sample text configuration parameter</description>
+				<default>127.0.0.1</default>
+			</parameter>
+			<parameter name="port" type="text" required="false">
+				<label>Device's Port</label>
+				<description>This is a sample text configuration parameter</description>
+				<default>80</default>
+			</parameter>
+			<parameter name="refreshInterval" type="text" required="false">
+				<required>false</required>
+				<label>Refresh Interval</label>
+				<default>60</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<!-- Sample Channel Type -->
+	<channel-type id="voltage_a">
+		<item-type>Number</item-type>
+		<label>Iammeter Voltage A</label>
+		<description>voltage_a for Iammeter Binding</description>
+		<state pattern="%.2f V" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="current_a">
+		<item-type>Number</item-type>
+		<label>Iammeter Current A</label>
+		<description>current_a for Iammeter Binding</description>
+		<state pattern="%.2f A" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="power_a">
+		<item-type>Number</item-type>
+		<label>Iammeter Power A</label>
+		<description>power_a for Iammeter Binding</description>
+		<state pattern="%.2f W" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="importenergy_a">
+		<item-type>Number</item-type>
+		<label>Iammeter ImportEnergy A</label>
+		<description>importenergy_a for Iammeter Binding</description>
+		<state pattern="%.2f kWh" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="exportgrid_a">
+		<item-type>Number</item-type>
+		<label>Iammeter Exportgrid A</label>
+		<description>exportgrid_a for Iammeter Binding</description>
+		<state pattern="%.2f kWh" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="frequency_a">
+		<item-type>Number</item-type>
+		<label>Iammeter Frequency A</label>
+		<description>frequency_a for Iammeter Binding</description>
+		<state pattern="%.2f Hz" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="pf_a">
+		<item-type>Number</item-type>
+		<label>Iammeter Power Factor A</label>
+		<description>power factor for Iammeter Binding</description>
+		<state pattern="%.2f" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="voltage_b">
+		<item-type>Number</item-type>
+		<label>Iammeter Voltage B</label>
+		<description>voltage_b for Iammeter Binding</description>
+		<state pattern="%.2f V" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="current_b">
+		<item-type>Number</item-type>
+		<label>Iammeter Current B</label>
+		<description>current_b for Iammeter Binding</description>
+		<state pattern="%.2f A" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="power_b">
+		<item-type>Number</item-type>
+		<label>Iammeter Power B</label>
+		<description>power_b for Iammeter Binding</description>
+		<state pattern="%.2f W" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="importenergy_b">
+		<item-type>Number</item-type>
+		<label>Iammeter ImportEnergy B</label>
+		<description>importenergy_b for Iammeter Binding</description>
+		<state pattern="%.2f kWh" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="exportgrid_b">
+		<item-type>Number</item-type>
+		<label>Iammeter Exportgrid B</label>
+		<description>exportgrid_b for Iammeter Binding</description>
+		<state pattern="%.2f kWh"></state>
+	</channel-type>
+	<channel-type id="frequency_b">
+		<item-type>Number</item-type>
+		<label>Iammeter Frequency B</label>
+		<description>frequency_b for Iammeter Binding</description>
+		<state pattern="%.2f Hz" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="pf_b">
+		<item-type>Number</item-type>
+		<label>Iammeter Power Factor B</label>
+		<description>power factor for Iammeter Binding</description>
+		<state pattern="%.2f" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="voltage_c">
+		<item-type>Number</item-type>
+		<label>Iammeter Voltage C</label>
+		<description>voltage_c for Iammeter Binding</description>
+		<state pattern="%.2f V" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="current_c">
+		<item-type>Number</item-type>
+		<label>Iammeter Current C</label>
+		<description>current_c for Iammeter Binding</description>
+		<state pattern="%.2f A" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="power_c">
+		<item-type>Number</item-type>
+		<label>Iammeter Power C</label>
+		<description>power_c for Iammeter Binding</description>
+		<state pattern="%.2f W" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="importenergy_c">
+		<item-type>Number</item-type>
+		<label>Iammeter ImportEnergy C</label>
+		<description>importenergy_c for Iammeter Binding</description>
+		<state pattern="%.2f kWh" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="exportgrid_c">
+		<item-type>Number</item-type>
+		<label>Iammeter Exportgrid C</label>
+		<description>exportgrid_c for Iammeter Binding</description>
+		<state pattern="%.2f kWh" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="frequency_c">
+		<item-type>Number</item-type>
+		<label>Iammeter Frequency C</label>
+		<description>frequency_c for Iammeter Binding</description>
+		<state pattern="%.2f Hz" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="pf_c">
+		<item-type>Number</item-type>
+		<label>Iammeter Power Factor C</label>
+		<description>power factor for Iammeter Binding</description>
+		<state pattern="%.2f" readOnly="true"></state>
+	</channel-type>
+
+</thing:thing-descriptions>
