@@ -13,7 +13,6 @@
 package org.openhab.binding.hpprinter.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -163,6 +162,7 @@ public class HPUsage {
         if (frontpanelCancelCount.getLength() > 0)
             this.frontpanelCancelCount = Integer.parseInt(frontpanelCancelCount.item(0).getTextContent());
 
+
         
         //Scanner
         NodeList scanSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:ScanApplicationSubunit");
@@ -183,27 +183,25 @@ public class HPUsage {
         if (appSubUnit.getLength() > 0) {
             Element currAppSubUnit = (Element) appSubUnit.item(0);
             
-            appWindowsCount = setIntCollateDirectChildren(currAppSubUnit, "pudyn:RemoteDeviceType", "Windows", "pudyn:TotalImpressions");
-            appOsxCount = setIntCollateDirectChildren(currAppSubUnit, "pudyn:RemoteDeviceType", "OSX", "pudyn:TotalImpressions");
-            appIosCount = setIntCollateDirectChildren(currAppSubUnit, "pudyn:RemoteDeviceType", "iOS", "pudyn:TotalImpressions");
-            appAndroidCount = setIntCollateDirectChildren(currAppSubUnit, "pudyn:RemoteDeviceType", "Android", "pudyn:TotalImpressions");
-            appSamsungCount = setIntCollateDirectChildren(currAppSubUnit, "pudyn:RemoteDeviceType", "samsung", "pudyn:TotalImpressions");
-            appChromeCount = setIntCollateDirectChildren(currAppSubUnit, "pudyn:RemoteDeviceType", "Chrome", "pudyn:TotalImpressions");
+            this.appWindowsCount = setIntCollateDirectChildren(currAppSubUnit, "pudyn:RemoteDeviceType", "Windows", "pudyn:TotalImpressions");
+            this.appOsxCount = setIntCollateDirectChildren(currAppSubUnit, "pudyn:RemoteDeviceType", "OSX", "pudyn:TotalImpressions");
+            this.appIosCount = setIntCollateDirectChildren(currAppSubUnit, "pudyn:RemoteDeviceType", "iOS", "pudyn:TotalImpressions");
+            this.appAndroidCount = setIntCollateDirectChildren(currAppSubUnit, "pudyn:RemoteDeviceType", "Android", "pudyn:TotalImpressions");
+            this.appSamsungCount = setIntCollateDirectChildren(currAppSubUnit, "pudyn:RemoteDeviceType", "samsung", "pudyn:TotalImpressions");
+            this.appChromeCount = setIntCollateDirectChildren(currAppSubUnit, "pudyn:RemoteDeviceType", "Chrome", "pudyn:TotalImpressions");
         }
-
     }
 
-    private @Nullable Integer setIntCollateDirectChildren(Element parentNode, String collateTagName, String collateTagNameValue, String valueTagName) {
-        Integer value = 0;
+    private static int setIntCollateDirectChildren(Element parentNode, String collateTagName, String collateTagNameValue, String valueTagName) {
+        int value = 0;
 
         for (Node n = parentNode.getFirstChild(); n != null; n = n.getNextSibling()) {
             if (n instanceof Element) {
                 Element nodeItem = (Element) n;
                 if (nodeItem.getElementsByTagName(collateTagName).item(0).getTextContent().equalsIgnoreCase(collateTagNameValue)) {
-                    Integer nodeValue = Integer.parseInt(nodeItem.getElementsByTagName(valueTagName).item(0).getTextContent());
+                    int nodeValue = Integer.parseInt(nodeItem.getElementsByTagName(valueTagName).item(0).getTextContent());
 
-                    if (value == null) value = nodeValue;
-                    else value += nodeValue;
+                    value += nodeValue;
                 }
             }
         }
@@ -211,32 +209,11 @@ public class HPUsage {
         return value;
     }
 
-    private @Nullable Integer setIntCollate(NodeList nodeList, Element parentNode, String collateTagName, String collateTagNameValue, String valueTagName) {
-        Integer value = null;
-
-        for (int i = 0; i < nodeList.getLength(); i++) {
-            Element nodeItem = (Element) nodeList.item(i);
-            if (nodeItem.getElementsByTagName(collateTagName).item(0).getTextContent().equalsIgnoreCase(collateTagNameValue)) {
-                Integer nodeValue = Integer.parseInt(nodeItem.getElementsByTagName(valueTagName).item(0).getTextContent());
-
-                if (value == null) value = nodeValue;
-                else value += nodeValue;
-            }
-        }
-        return value;
-    }
-
-    private @Nullable Integer setIntCollate(String tagName, Element parentNode, String collateTagName, String collateTagNameValue, String valueTagName) {
-        NodeList nodeList = parentNode.getElementsByTagName(tagName);
-        
-        return setIntCollate(nodeList, parentNode, collateTagName, collateTagNameValue, valueTagName);
-    }
-
-    private @Nullable Integer setInt(String tagName, Element parentNode) {
+    private int setInt(String tagName, Element parentNode) {
         NodeList nodeList = parentNode.getElementsByTagName(tagName);
             if (nodeList.getLength() > 0)
                 return Integer.parseInt(nodeList.item(0).getTextContent());
-        return null;
+        return 0;
     }
 
     public int getFrontPanelCancelCount() {
