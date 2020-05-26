@@ -14,7 +14,6 @@ package org.openhab.binding.bluetooth.dbusbluez;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -374,7 +373,8 @@ public class DBusBlueZBluetoothDevice extends BaseBluetoothDevice implements DBu
     public synchronized void updateDBusBlueZDevice(
             com.github.hypfvieh.bluetooth.wrapper.BluetoothDevice dBusBlueZDevice) {
         logger.debug("updateDBusBlueZDevice({})", dBusBlueZDevice);
-        if (Objects.equals(device, dBusBlueZDevice)) {
+        if (this.device != null && this.device == dBusBlueZDevice) {
+            logger.debug("Objects representing the BT device has not changed. Exiting function.");
             return;
         }
 

@@ -202,4 +202,8 @@ public class DBusBlueZPropertiesChangedHandler extends AbstractPropertiesChanged
         }
     }
 
+    public void removeListener(DBusBlueZEventListener listener) {
+        this.listeners.remove(listener);
+    }
+
 }

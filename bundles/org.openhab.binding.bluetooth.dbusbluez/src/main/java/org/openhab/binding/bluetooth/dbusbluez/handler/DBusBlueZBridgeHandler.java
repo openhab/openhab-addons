@@ -62,7 +62,7 @@ public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusB
 
     private @Nullable ScheduledFuture<?> discoveryJob;
 
-    private @Nullable ScheduledFuture<?> adapterDiscoveryJob;
+    private @Nullable ScheduledFuture<?> bindingReset;
 
     private @Nullable Boolean discovering;
 
@@ -108,13 +108,26 @@ public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusB
 
             // a handler must be instanciated to get all notifications
             // from DBUS (new device, RSSI update, characteristic notification...)
-            try {
-                this.deviceManager.registerPropertyHandler(this.propertiesChangedHandler);
-            } catch (DBusException e) {
-                // Shoudl not happen..
-                logger.error("Error registering properties changed handler", e);
-                return false;
+            // Because it can fail, we give it 3 attempts before definitely giving up
+            for (int i = 0; i < 3; i++) {
+                try {
+                    this.deviceManager.registerPropertyHandler(this.propertiesChangedHandler);
+                    return true;
+                } catch (DBusException e) {
+                    // Shoudl not happen..
+                    // logger.error("Error registering properties changed handler", e);
+                    try {
+                        Thread.sleep(5 * 1000);
+                    } catch (InterruptedException e1) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
             }
+            logger.error("Failed registering DBUS Property Handler after 3 attempts. Giving up.");
+            propertiesChangedHandler.removeListener(this);
+            this.deviceManager.closeConnection();
+            bindingReset = scheduler.schedule(this::initialize, 5, TimeUnit.MINUTES);
+            return false;
         } else {
             // should normally not happen..
             logger.debug("Device Manager could not be instanciated but no error.");
@@ -156,6 +169,16 @@ public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusB
                     && btAdapter.getAddress().equalsIgnoreCase(this.adapterAddress.toString())) {
                 // Found the good adapter
                 this.adapter = btAdapter;
+
+                if (!this.adapter.isPowered()) {
+                    // Turn of adapter, and let it time to come up
+                    this.adapter.setPowered(true);
+                    try {
+                        Thread.sleep(5 * 1000);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
 
                 // logger.debug("Turning off adapter...");
                 // // Power cycle OFF / ON for a clean start
@@ -238,11 +261,6 @@ public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusB
     public void dispose() {
         logger.debug("Termination of DBus BlueZ handler");
 
-        if (this.adapterDiscoveryJob != null) {
-            this.adapterDiscoveryJob.cancel(true);
-            this.adapterDiscoveryJob = null;
-        }
-
         if (this.discoveryJob != null) {
             this.discoveryJob.cancel(true);
             this.discoveryJob = null;
@@ -251,6 +269,11 @@ public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusB
         if (this.adapter != null) {
             this.adapter.stopDiscovery();
             this.adapter = null;
+        }
+
+        if (this.bindingReset != null) {
+            this.bindingReset.cancel(true);
+            this.bindingReset = null;
         }
 
         if (this.deviceManager != null) {
@@ -263,9 +286,9 @@ public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusB
 
     private void setDiscovering(boolean status) {
         // we need to make sure the adapter is powered first
-        if (!adapter.isPowered()) {
-            adapter.setPowered(true);
-        }
+        // if (!adapter.isPowered()) {
+        // adapter.setPowered(true);
+        // }
 
         if (status) {
             adapter.startDiscovery();
@@ -355,7 +378,8 @@ public class DBusBlueZBridgeHandler extends AbstractBluetoothBridgeHandler<DBusB
     private void onPoweredChange(AdapterPoweredChangedEvent event) {
         if (event.isPowered()) {
             // Adapter has been turned on (externally)
-            initializeAdapter();
+            this.discoveryJob = scheduler.scheduleAtFixedRate(this::refreshDevices, 30, 30, TimeUnit.SECONDS);
+            updateStatus(ThingStatus.ONLINE);
         } else {
             // Adapter has been turned off (externally)
             // Disable discovery job
