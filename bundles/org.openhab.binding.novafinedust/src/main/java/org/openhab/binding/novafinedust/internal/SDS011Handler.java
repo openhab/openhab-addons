@@ -171,6 +171,19 @@ public class SDS011Handler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Port must be set!");
             return false;
         }
+        if (config.reporting) {
+            if (config.reportingInterval < 0 || config.reportingInterval > 30) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                        "Reporting interval has to be between 0 and 30 minutes");
+                return false;
+            }
+        } else {
+            if (config.pollingInterval < 3 || config.pollingInterval > 3600) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                        "Polling interval has to be between 3 and 3600 seconds");
+                return false;
+            }
+        }
         return true;
     }
 
