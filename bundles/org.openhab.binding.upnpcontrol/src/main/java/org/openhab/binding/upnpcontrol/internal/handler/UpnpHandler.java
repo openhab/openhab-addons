@@ -154,6 +154,8 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
             logger.debug("Upnp device {} invoke upnp action {} on service {} with inputs {}", thing.getLabel(),
                     actionId, serviceId, inputs);
             Map<String, String> result = service.invokeAction(this, serviceId, actionId, inputs);
+            logger.debug("Upnp device {} invoke upnp action {} on service {} reply {}", thing.getLabel(), actionId,
+                    serviceId, result);
             for (String variable : result.keySet()) {
                 onValueReceived(variable, result.get(variable), serviceId);
             }
