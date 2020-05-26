@@ -82,7 +82,7 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
         updateStatus(ThingStatus.UNKNOWN);
 
         scheduler.execute(() -> {
-            insteonBinding = new InsteonBinding(this, config, serialPortManager);
+            insteonBinding = new InsteonBinding(this, config, serialPortManager, scheduler);
 
             // hold off on starting to poll until devices that already are defined as things are added.
             // wait SETTLE_TIME_IN_SECONDS to start then check every second afterwards until it has been at

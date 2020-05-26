@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -92,7 +93,8 @@ public class Port {
      * @param devName the name of the port, i.e. '/dev/insteon'
      * @param d The Driver object that manages this port
      */
-    public Port(String devName, Driver d, @Nullable SerialPortManager serialPortManager) {
+    public Port(String devName, Driver d, @Nullable SerialPortManager serialPortManager,
+            ScheduledExecutorService scheduler) {
         this.devName = devName;
         this.driver = d;
         this.logName = Utils.redactPassword(devName);
@@ -101,7 +103,7 @@ public class Port {
         this.ioStream = IOStream.create(serialPortManager, devName);
         this.reader = new IOStreamReader();
         this.writer = new IOStreamWriter();
-        this.mdbb = new ModemDBBuilder(this);
+        this.mdbb = new ModemDBBuilder(this, scheduler);
     }
 
     public boolean isModem(InsteonAddress a) {
@@ -126,10 +128,6 @@ public class Port {
 
     public Driver getDriver() {
         return driver;
-    }
-
-    public void setModemDBRetryTimeout(int timeout) {
-        mdbb.setRetryTimeout(timeout);
     }
 
     public void addListener(MsgListener l) {
