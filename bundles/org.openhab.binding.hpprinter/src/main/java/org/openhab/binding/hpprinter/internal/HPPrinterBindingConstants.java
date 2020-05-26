@@ -38,6 +38,8 @@ public class HPPrinterBindingConstants {
             .collect(Collectors.toSet());
 
     // ********** Channel Types **********
+    public static ChannelTypeUID chanTypeStatus = new ChannelTypeUID("hpprinter:status");
+    public static ChannelTypeUID chanTypeReadSwitch = new ChannelTypeUID("hpprinter:readonlyswitch");
     public static ChannelTypeUID chanTypeTotals = new ChannelTypeUID("hpprinter:totals");
     public static ChannelTypeUID chanTypeTotalsAdvanced = new ChannelTypeUID("hpprinter:totalsAdv");
     public static ChannelTypeUID chanTypeMarking = new ChannelTypeUID("hpprinter:cumlMarkingUsed");
@@ -48,7 +50,12 @@ public class HPPrinterBindingConstants {
     public static final String ITEM_TYPE_INK = "Number:Dimensionless";
 
     // ********** List of all Channel ids **********
+    // Status
     public static final String CHANNEL_STATUS = "status";
+    public static final String CHANNEL_TRAYEMPTYOROPEN = "trayEmptyOrOpen";
+
+    public static final String CHANNEL_SCANNER_STATUS = "scannerStatus";
+    public static final String CHANNEL_SCANNER_ADFLOADED = "scannerAdfLoaded";
 
     // Colours
     public static final String CHANNEL_COLOR_LEVEL = "colorLevel"; // Dynamic

@@ -28,9 +28,7 @@
 
 	<channel-group-type id="printerStatus">
 		<label>Status</label>
-		<channels>
-			<channel id="status" typeId="status"/>
-		</channels>
+		<description>Printer Statuses</description>
 	</channel-group-type>
 
 	<channel-group-type id="scanner">

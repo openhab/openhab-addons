@@ -70,9 +70,18 @@ public class HPWebServerClient {
         return fetchData(serverAddress + HPStatus.ENDPOINT, (HPStatus::new));
     }
 
-    public HPServerResult<HPType> getType() {
-        return fetchData(serverAddress + HPType.ENDPOINT, (HPType::new));
+    public HPServerResult<HPProductUsageFeatures> getProductFeatures() {
+        return fetchData(serverAddress + HPProductUsageFeatures.ENDPOINT, (HPProductUsageFeatures::new));
     }
+
+    public HPServerResult<HPFeatures> getProductUsageFeatures() {
+        return fetchData(serverAddress + HPFeatures.ENDPOINT, (HPFeatures::new));
+    }
+
+    public HPServerResult<HPScannerStatusFeatures> getScannerFeatures() {
+        return fetchData(serverAddress + HPScannerStatusFeatures.ENDPOINT, (HPScannerStatusFeatures::new));
+    }
+
 
     /**
      * Gets the Usage information from the Embedded Web Server.
@@ -81,6 +90,10 @@ public class HPWebServerClient {
      */
     public HPServerResult<HPUsage> getUsage() {
         return fetchData(serverAddress + HPUsage.ENDPOINT, (HPUsage::new));
+    }
+
+    public HPServerResult<HPScannerStatus> getScannerStatus() {
+        return fetchData(serverAddress + HPScannerStatus.ENDPOINT, (HPScannerStatus::new));
     }
 
     public HPServerResult<HPProperties> getProperties() {

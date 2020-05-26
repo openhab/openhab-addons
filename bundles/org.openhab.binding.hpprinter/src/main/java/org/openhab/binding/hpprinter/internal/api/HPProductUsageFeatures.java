@@ -18,13 +18,13 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 /**
- * The {@link HPType} is responsible for determining what type of printer the
- * Web Interface supports including any features.
+ * The {@link HPProductUsageFeatures} is responsible for determining what type of printer usage
+ * data the Web Interface supports including any features.
  *
  * @author Stewart Cossey - Initial contribution
  */
 @NonNullByDefault
-public class HPType {
+public class HPProductUsageFeatures {
     public static final String ENDPOINT = "/DevMgmt/ProductUsageDyn.xml";
 
     private PrinterType printerType = PrinterType.UNKNOWN;
@@ -49,7 +49,7 @@ public class HPType {
         MULTICOLOR
     }
 
-    public HPType(Document document) {
+    public HPProductUsageFeatures(Document document) {
         // Check what Ink/Toner colours are present
         NodeList consumableInk = document.getDocumentElement().getElementsByTagName("pudyn:Consumable");
 

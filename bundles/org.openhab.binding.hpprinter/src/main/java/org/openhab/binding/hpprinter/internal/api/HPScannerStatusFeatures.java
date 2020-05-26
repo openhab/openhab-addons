@@ -1,0 +1,60 @@
+/**
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.hpprinter.internal.api;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
+/**
+ * The {@link HPScannerStatusFeatures} is responsible for determining what type of printer scanner
+ * status features the Web Interface supports.
+ *
+ * @author Stewart Cossey - Initial contribution
+ */
+@NonNullByDefault
+public class HPScannerStatusFeatures {
+    public static final String ENDPOINT = "/eSCL/ScannerStatus";
+
+    private final Boolean hasStatus;
+    private final Boolean hasAdf;
+
+    public HPScannerStatusFeatures(Document document) {
+        Boolean localHasStatus = false;
+        Boolean localHasAdf = false;
+
+        Element nodes = (Element) document.getDocumentElement();
+
+        NodeList state = nodes.getElementsByTagName("pwg:State");
+        if (state.getLength() > 0) {
+            localHasStatus = true;
+        }
+        
+        NodeList adfState = nodes.getElementsByTagName("scan:AdfState");
+        if (adfState.getLength() > 0) {
+            localHasAdf = true;
+        }
+       
+        hasStatus = localHasStatus;
+        hasAdf = localHasAdf;
+    }
+
+    public Boolean hasStatus() {
+        return hasStatus;
+    }
+
+    public Boolean hasAdf() {
+        return hasAdf;
+    }
+}
