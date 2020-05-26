@@ -65,16 +65,7 @@ public class RdsTestData {
     }
 
     @Test
-    public void test() {
-        confirmDegreeSymbolCodingNotTrashed();
-        testAccessToken();
-        testRdsPlants();
-        testRdsDataPointsFull();
-        testRdsDataPointsFullNew();
-        testRdsDataPointsRefresh();
-    }
-
-    private void testRdsDataPointsFullNew() {
+    public void testRdsDataPointsFullNew() {
         RdsDataPoints dataPoints = RdsDataPoints.createFromJson(load("datapoints_full_set_new"));
         assertNotNull(dataPoints);
         try {
@@ -83,12 +74,13 @@ public class RdsTestData {
             fail(e.getMessage());
         }
         @Nullable
-        Map<String, BasePoint> points = dataPoints.points;
+        Map<String, @Nullable BasePoint> points = dataPoints.points;
         assertNotNull(points);
         assertEquals(70, points.size());
     }
 
-    private void confirmDegreeSymbolCodingNotTrashed() {
+    @Test
+    public void confirmDegreeSymbolCodingNotTrashed() {
         /*
          * note: temperature symbols with a degree sign: the MVN Spotless trashes the
          * "degree" (looks like *) symbol, so we must escape these symbols as octal \260
@@ -101,12 +93,13 @@ public class RdsTestData {
         assertTrue(BasePoint.DEGREES_FAHRENHEIT.startsWith(BasePoint.DEGREES_CELSIUS.substring(0, 1)));
     }
 
-    private void testRdsDataPointsRefresh() {
+    @Test
+    public void testRdsDataPointsRefresh() {
         RdsDataPoints refreshPoints = RdsDataPoints.createFromJson(load("datapoints_refresh_set"));
         assertNotNull(refreshPoints);
 
         assertNotNull(refreshPoints.points);
-        Map<String, BasePoint> refreshMap = refreshPoints.points;
+        Map<String, @Nullable BasePoint> refreshMap = refreshPoints.points;
         assertNotNull(refreshMap);
 
         @Nullable
@@ -185,7 +178,7 @@ public class RdsTestData {
         assertNotNull(originalPoints.points);
 
         // check that the refresh point types match the originals
-        Map<String, BasePoint> originalMap = originalPoints.points;
+        Map<String, @Nullable BasePoint> originalMap = originalPoints.points;
         assertNotNull(originalMap);
         @Nullable
         BasePoint refreshPoint;
@@ -200,7 +193,8 @@ public class RdsTestData {
         }
     }
 
-    private void testAccessToken() {
+    @Test
+    public void testAccessToken() {
         RdsAccessToken accessToken = RdsAccessToken.createFromJson(load("access_token"));
         assertNotNull(accessToken);
         try {
@@ -211,7 +205,8 @@ public class RdsTestData {
         assertTrue(accessToken.isExpired());
     }
 
-    private void testRdsDataPointsFull() {
+    @Test
+    public void testRdsDataPointsFull() {
         RdsDataPoints dataPoints = RdsDataPoints.createFromJson(load("datapoints_full_set"));
         assertNotNull(dataPoints);
         try {
@@ -221,7 +216,7 @@ public class RdsTestData {
         }
 
         @Nullable
-        Map<String, BasePoint> points = dataPoints.points;
+        Map<String, @Nullable BasePoint> points = dataPoints.points;
         assertNotNull(points);
         assertEquals(67, points.size());
 
@@ -366,15 +361,15 @@ public class RdsTestData {
         try {
             // test the all-the-way-round lookup loop
             assertNotNull(dataPoints.points);
-            Map<String, BasePoint> pointsMap = dataPoints.points;
+            Map<String, @Nullable BasePoint> pointsMap = dataPoints.points;
             assertNotNull(pointsMap);
             @Nullable
-            Object point;
-            for (Entry<String, BasePoint> entry : pointsMap.entrySet()) {
+            BasePoint point;
+            for (Entry<String, @Nullable BasePoint> entry : pointsMap.entrySet()) {
                 point = entry.getValue();
                 assertTrue(point instanceof BasePoint);
                 // ignore UNDEF points where all-the-way-round lookup fails
-                if (!"UNDEF".equals(((BasePoint) point).getState().toString())) {
+                if (!"UNDEF".equals(point.getState().toString())) {
                     @Nullable
                     String x = entry.getKey();
                     assertNotNull(x);
@@ -490,20 +485,22 @@ public class RdsTestData {
         }
     }
 
-    @SuppressWarnings("null")
-    private void testRdsPlants() {
+    @Test
+    public void testRdsPlants() {
         try {
             RdsPlants plants = RdsPlants.createFromJson(load("plants"));
             assertNotNull(plants);
 
+            @Nullable
             List<PlantInfo> plantList = plants.getPlants();
             assertNotNull(plantList);
 
-            Object plant;
+            @Nullable
+            PlantInfo plant;
             plant = plantList.get(0);
             assertTrue(plant instanceof PlantInfo);
             assertEquals("Pd1774247-7de7-4896-ac76-b7e0dd943c40", ((PlantInfo) plant).getId());
-            assertTrue(((PlantInfo) plant).isOnline());
+            assertTrue(plant.isOnline());
 
             plant = plantList.get(1);
             assertTrue(plant instanceof PlantInfo);

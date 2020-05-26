@@ -64,18 +64,18 @@ public class RdsDataPoints {
     private static final Gson GSON = new GsonBuilder().registerTypeAdapter(BasePoint.class, new PointDeserializer())
             .create();
 
+    /*
+     * this is a second index into to the JSON "values" points Map below; the
+     * purpose is to allow point lookups by a) pointId (which we do directly from
+     * the Map, and b) by pointClass (which we do indirectly "double dereferenced"
+     * via this index
+     */
+    private final Map<String, @Nullable String> indexClassToId = new HashMap<>();
+
     @SerializedName("totalCount")
     private @Nullable String totalCount;
     @SerializedName("values")
-    public @Nullable Map<String, BasePoint> points;
-
-    /*
-     * this is a second index into to the points Map above; the purpose is to allow
-     * point lookups by a) pointId (which we do directly from the Map, and b) by
-     * pointClass (which we do indirectly "double dereferenced" via this second
-     * index
-     */
-    private Map<String, String> indexClassToId = new HashMap<>();
+    public @Nullable Map<String, @Nullable BasePoint> points;
 
     private String valueFilter = "";
 
@@ -168,11 +168,8 @@ public class RdsDataPoints {
         }
         @Nullable
         String pointId = indexClassToId.get(pointClass);
-        if (pointId instanceof String) {
-            BasePoint point = getPointById(pointId);
-            if (point instanceof BasePoint) {
-                return point;
-            }
+        if (pointId != null) {
+            return getPointById(pointId);
         }
         throw new RdsCloudException(String.format("pointClass \"%s\" not found", pointClass));
     }
@@ -181,11 +178,11 @@ public class RdsDataPoints {
      * public method: retrieve the data point with the given pointId
      */
     public BasePoint getPointById(String pointId) throws RdsCloudException {
-        Map<String, BasePoint> points = this.points;
+        Map<String, @Nullable BasePoint> points = this.points;
         if (points != null) {
             @Nullable
             BasePoint point = points.get(pointId);
-            if (point instanceof BasePoint) {
+            if (point != null) {
                 return point;
             }
         }
@@ -201,7 +198,7 @@ public class RdsDataPoints {
         }
         @Nullable
         String pointId = indexClassToId.get(pointClass);
-        if (pointId instanceof String) {
+        if (pointId != null) {
             return pointId;
         }
         throw new RdsCloudException(String.format("no pointId to match pointClass \"%s\"", pointClass));
@@ -262,13 +259,12 @@ public class RdsDataPoints {
                     }
                 }
 
-                Map<String, BasePoint> points = this.points;
+                Map<String, @Nullable BasePoint> points = this.points;
                 if (points != null) {
-                    for (Map.Entry<String, BasePoint> entry : points.entrySet()) {
+                    for (Map.Entry<String, @Nullable BasePoint> entry : points.entrySet()) {
                         @Nullable
-                        Object object = entry.getValue();
-                        if (object instanceof BasePoint) {
-                            BasePoint point = (BasePoint) object;
+                        BasePoint point = entry.getValue();
+                        if (point != null) {
                             if ("Online".equals(point.getMemberName())) {
                                 set.add(String.format("\"%s\"", entry.getKey()));
                                 break;
@@ -301,37 +297,27 @@ public class RdsDataPoints {
             }
 
             @Nullable
-            Object newPoints = GSON.fromJson(json, RdsDataPoints.class);
+            RdsDataPoints newPoints = GSON.fromJson(json, RdsDataPoints.class);
 
-            if (!(newPoints instanceof RdsDataPoints)) {
-                throw new RdsCloudException("new points list invalid");
-            }
-
-            Map<String, BasePoint> newPointsMap = ((RdsDataPoints) newPoints).points;
+            Map<String, @Nullable BasePoint> newPointsMap = newPoints.points;
 
             if (newPointsMap == null) {
                 throw new RdsCloudException("new points map empty");
             }
 
             synchronized (this) {
-                for (Map.Entry<String, BasePoint> entry : newPointsMap.entrySet()) {
+                for (Entry<String, @Nullable BasePoint> entry : newPointsMap.entrySet()) {
                     @Nullable
                     String pointId = entry.getKey();
-                    if (!(pointId instanceof String)) {
-                        throw new RdsCloudException("invalid new point id");
-                    }
 
                     @Nullable
-                    Object newPoint = entry.getValue();
-                    if (!(newPoint instanceof BasePoint)) {
+                    BasePoint newPoint = entry.getValue();
+                    if (newPoint == null) {
                         throw new RdsCloudException("invalid new point");
                     }
 
                     @Nullable
                     BasePoint myPoint = getPointById(pointId);
-                    if (!(myPoint instanceof BasePoint)) {
-                        throw new RdsCloudException("existing point not found");
-                    }
 
                     if (!(newPoint.getClass().equals(myPoint.getClass()))) {
                         throw new RdsCloudException("existing vs. new point class mismatch");
@@ -358,17 +344,16 @@ public class RdsDataPoints {
     /*
      * initialize the second index into to the points Map
      */
-    @SuppressWarnings("null")
     private void initClassToIdNameIndex() {
-        Map<String, BasePoint> points = this.points;
+        Map<String, @Nullable BasePoint> points = this.points;
         if (points != null) {
-            indexClassToId = new HashMap<>();
-            for (Entry<String, BasePoint> entry : points.entrySet()) {
+            indexClassToId.clear();
+            for (Entry<String, @Nullable BasePoint> entry : points.entrySet()) {
                 @Nullable
                 String pointKey = entry.getKey();
                 @Nullable
                 BasePoint pointValue = entry.getValue();
-                if (pointKey != null && pointValue != null) {
+                if (pointValue != null) {
                     indexClassToId.put(pointValue.getPointClass(), pointKey);
                 }
             }

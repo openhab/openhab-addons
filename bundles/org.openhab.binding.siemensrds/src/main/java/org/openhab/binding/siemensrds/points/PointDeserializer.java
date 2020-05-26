@@ -50,9 +50,9 @@ public class PointDeserializer implements JsonDeserializer<BasePoint> {
         JsonObject obj = element.getAsJsonObject();
         JsonElement value = obj.get("value");
         if (value == null) {
-            Object point = ctxt.deserialize(obj, UndefPoint.class);
-            if (point instanceof UndefPoint) {
-                return (UndefPoint) point;
+            UndefPoint point = ctxt.deserialize(obj, UndefPoint.class);
+            if (point != null) {
+                return point;
             }
             throw new JsonSyntaxException("unable to parse point WITHOUT a \"value\" element");
         }
@@ -84,33 +84,33 @@ public class PointDeserializer implements JsonDeserializer<BasePoint> {
                 pointType = PointType.NESTED_NUMBER;
         }
 
-        Object point;
+        BasePoint point;
         switch (pointType) {
             case STRING: {
                 point = ctxt.deserialize(obj, StringPoint.class);
-                if (point instanceof StringPoint) {
-                    return (StringPoint) point;
+                if (point != null) {
+                    return point;
                 }
                 break;
             }
             case NESTED_NUMBER: {
                 point = ctxt.deserialize(obj, NestedNumberPoint.class);
-                if (point instanceof NestedNumberPoint) {
-                    return (NestedNumberPoint) point;
+                if (point != null) {
+                    return point;
                 }
                 break;
             }
             case NUMBER: {
                 point = ctxt.deserialize(obj, NumberPoint.class);
-                if (point instanceof NumberPoint) {
-                    return (NumberPoint) point;
+                if (point != null) {
+                    return point;
                 }
                 break;
             }
             default: {
                 point = ctxt.deserialize(obj, UndefPoint.class);
-                if (point instanceof UndefPoint) {
-                    return (UndefPoint) point;
+                if (point != null) {
+                    return point;
                 }
             }
         }
