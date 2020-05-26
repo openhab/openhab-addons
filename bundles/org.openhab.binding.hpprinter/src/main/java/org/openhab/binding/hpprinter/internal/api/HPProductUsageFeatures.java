@@ -33,6 +33,8 @@ public class HPProductUsageFeatures {
     private boolean subscriptionImpressions;
     private boolean frontPanelCancel;
     private boolean cumuMarking;
+    private boolean pagesRemaining;
+
     private boolean scanAdf;
     private boolean scanFlatbed;
     private boolean scanToHost;
@@ -84,6 +86,10 @@ public class HPProductUsageFeatures {
                     }
                     break;
             }
+        }
+        
+        if (((Element) consumableInk.item(0)).getElementsByTagName("dd:EstimatedPagesRemaining").getLength() > 0) {
+            pagesRemaining = true;
         }
 
         NodeList printerSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:PrinterSubunit");
@@ -145,6 +151,17 @@ public class HPProductUsageFeatures {
 
     public PrinterType getType() {
         return printerType;
+    }
+
+    /**
+     * Printer data contains Estimated Pages Remaining.
+     * 
+     * pudyn:ProductUsageDyn -> pudyn:ConsumableSubunit -> pudyn:Consumable -> dd:EstimatedPagesRemaining
+     * 
+     * return {boolean} True is supported.
+     */
+    public boolean hasPagesRemaining() {
+        return pagesRemaining;
     }
 
     /**

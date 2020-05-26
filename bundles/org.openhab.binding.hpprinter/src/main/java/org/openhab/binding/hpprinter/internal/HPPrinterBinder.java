@@ -133,7 +133,7 @@ public class HPPrinterBinder {
 
                 channels.add(ChannelBuilder
                     .create(new ChannelUID(thingUid, CGROUP_STATUS, CHANNEL_TRAYEMPTYOROPEN), CoreItemFactory.SWITCH)
-                    .withLabel("Tray Empty or Open").withDescription("The tray is empty or open")
+                    .withLabel("Tray Empty/Open").withDescription("The tray is empty or open")
                     .withType(chanTypeReadSwitch).build());  
             }
 
@@ -145,7 +145,7 @@ public class HPPrinterBinder {
                     if (feature.hasStatus()) {
                         channels.add(ChannelBuilder
                             .create(new ChannelUID(thingUid, CGROUP_STATUS, CHANNEL_SCANNER_STATUS), CoreItemFactory.STRING)
-                            .withLabel("Scanner Status").withDescription("Scanner status")
+                            .withLabel("Scanner").withDescription("Scanner status")
                             .withType(chanTypeStatus).build());
                     }
 
@@ -198,6 +198,23 @@ public class HPPrinterBinder {
                                     .withDescription("The amount of monochrome pages printed")
                                     .withType(chanTypeTotals).build());
         
+
+                            if (feature.hasPagesRemaining()) {
+                                channels.add(ChannelBuilder
+                                        .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_BLACK_PAGES_REMAINING),
+                                                CoreItemFactory.NUMBER)
+                                        .withLabel("Black Pages Remaining")
+                                        .withDescription("Estimated Black pages remaining")
+                                        .withType(chanTypeTotalsAdvanced).build());
+
+                                channels.add(ChannelBuilder
+                                        .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_COLOR_PAGES_REMAINING),
+                                                CoreItemFactory.NUMBER)
+                                        .withLabel("Colour Pages Remaining")
+                                        .withDescription("Estimated Colour pages remaining")
+                                        .withType(chanTypeTotalsAdvanced).build());
+                            }
+
                             break;
         
                         case MULTICOLOR:
@@ -219,6 +236,36 @@ public class HPPrinterBinder {
                                         HPPrinterBindingConstants.ITEM_TYPE_CUMLMARK)
                                         .withLabel("Yellow Marking Used").withDescription("The amount of Yellow Marking used")
                                         .withType(chanTypeMarking).build());
+                            }
+
+                            if (feature.hasPagesRemaining()) {
+                                channels.add(ChannelBuilder
+                                        .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_BLACK_PAGES_REMAINING),
+                                                CoreItemFactory.NUMBER)
+                                        .withLabel("Black Pages Remaining")
+                                        .withDescription("Estimated Black pages remaining")
+                                        .withType(chanTypeTotalsAdvanced).build());
+
+                                channels.add(ChannelBuilder
+                                        .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_CYAN_PAGES_REMAINING),
+                                                CoreItemFactory.NUMBER)
+                                        .withLabel("Cyan Pages Remaining")
+                                        .withDescription("Estimated Cyan pages remaining")
+                                        .withType(chanTypeTotalsAdvanced).build());
+
+                                channels.add(ChannelBuilder
+                                        .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_MAGENTA_PAGES_REMAINING),
+                                                CoreItemFactory.NUMBER)
+                                        .withLabel("Magenta Pages Remaining")
+                                        .withDescription("Estimated Magenta pages remaining")
+                                        .withType(chanTypeTotalsAdvanced).build());
+                                        
+                                channels.add(ChannelBuilder
+                                        .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_YELLOW_PAGES_REMAINING),
+                                                CoreItemFactory.NUMBER)
+                                        .withLabel("Yellow Pages Remaining")
+                                        .withDescription("Estimated Yellow pages remaining")
+                                        .withType(chanTypeTotalsAdvanced).build());
                             }
         
                             channels.add(ChannelBuilder
@@ -253,21 +300,29 @@ public class HPPrinterBinder {
                             break;
         
                         default:
+                            if (feature.hasPagesRemaining()) {
+                                channels.add(ChannelBuilder
+                                        .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_BLACK_PAGES_REMAINING),
+                                                CoreItemFactory.NUMBER)
+                                        .withLabel("Black Pages Remaining")
+                                        .withDescription("Estimated Black pages remaining")
+                                        .withType(chanTypeTotalsAdvanced).build());
+                            }
                     }
         
                     if (feature.hasJamEvents()) {
                         channels.add(ChannelBuilder
                                 .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_JAM_EVENTS), CoreItemFactory.NUMBER)
-                                .withLabel("Jam Events").withDescription("The amount of times the paper has jammed")
+                                .withLabel("Paper Jams").withDescription("The amount of times the paper has jammed")
                                 .withType(chanTypeTotals).build());
                     }
         
                     if (feature.hasMispickEvents()) {
                         channels.add(ChannelBuilder
                                 .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_MISPICK_EVENTS), CoreItemFactory.NUMBER)
-                                .withLabel("Mispick Events")
-                                .withDescription("The amount of times the mispick event has occurred")
-                                .withType(chanTypeTotals).build());
+                                .withLabel("Mispicks")
+                                .withDescription("The amount of times the paper failed to feed into the printer")
+                                .withType(chanTypeTotalsAdvanced).build());
                     }
         
                     if (feature.hasSubscriptionCount()) {
@@ -275,7 +330,7 @@ public class HPPrinterBinder {
                                 .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_SUBSCRIPTION), CoreItemFactory.NUMBER)
                                 .withLabel("Subscription Count")
                                 .withDescription("The amount of times an item has been printed in subscription")
-                                .withType(chanTypeTotals).build());
+                                .withType(chanTypeTotalsAdvanced).build());
                     }
         
                     if (feature.hasTotalFrontPanelCancelPresses()) {
@@ -284,7 +339,7 @@ public class HPPrinterBinder {
                                         CoreItemFactory.NUMBER)
                                 .withLabel("Front Panel Cancel Count")
                                 .withDescription("The amount of times a print has been cancelled from the Front Panel")
-                                .withType(chanTypeTotals).build());
+                                .withType(chanTypeTotalsAdvanced).build());
                     }
         
                     //Scanner
@@ -306,21 +361,21 @@ public class HPPrinterBinder {
                         channels.add(ChannelBuilder
                                 .create(new ChannelUID(thingUid, CGROUP_SCANNER, CHANNEL_TOTAL_TOEMAIL), CoreItemFactory.NUMBER)
                                 .withLabel("Scan to Email Count").withDescription("Times scanned using Scan to Email")
-                                .withType(chanTypeTotals).build());
+                                .withType(chanTypeTotalsAdvanced).build());
                     }
         
                     if (feature.hasScanToFolder()) {
                         channels.add(ChannelBuilder
                                 .create(new ChannelUID(thingUid, CGROUP_SCANNER, CHANNEL_TOTAL_TOFOLDER), CoreItemFactory.NUMBER)
                                 .withLabel("Scan to Folder Count").withDescription("Times scanned using Scan to Folder")
-                                .withType(chanTypeTotals).build());
+                                .withType(chanTypeTotalsAdvanced).build());
                     }
         
                     if (feature.hasScanToHost()) {
                         channels.add(ChannelBuilder
                                 .create(new ChannelUID(thingUid, CGROUP_SCANNER, CHANNEL_TOTAL_TOHOST), CoreItemFactory.NUMBER)
                                 .withLabel("Scan to Host Count").withDescription("Times scanned using Scan to Host Device")
-                                .withType(chanTypeTotals).build());
+                                .withType(chanTypeTotalsAdvanced).build());
                     }
         
                     //App Usage
@@ -506,6 +561,21 @@ public class HPPrinterBinder {
                     result.getData().getInkMagentaMarking(), MetricPrefix.MILLI(SmartHomeUnits.LITRE)));
             handler.updateState(CGROUP_USAGE, CHANNEL_YELLOW_MARKING, new QuantityType<>(
                     result.getData().getInkYellowMarking(), MetricPrefix.MILLI(SmartHomeUnits.LITRE)));
+
+            handler.updateState(CGROUP_USAGE, CHANNEL_BLACK_PAGES_REMAINING, 
+                    new DecimalType(result.getData().getInkBlackPagesRemaining()));
+
+            handler.updateState(CGROUP_USAGE, CHANNEL_COLOR_PAGES_REMAINING, 
+                    new DecimalType(result.getData().getInkColorPagesRemaining()));
+
+            handler.updateState(CGROUP_USAGE, CHANNEL_CYAN_PAGES_REMAINING, 
+                    new DecimalType(result.getData().getInkCyanPagesRemaining()));
+
+            handler.updateState(CGROUP_USAGE, CHANNEL_MAGENTA_PAGES_REMAINING, 
+                    new DecimalType(result.getData().getInkMagentaPagesRemaining()));
+
+            handler.updateState(CGROUP_USAGE, CHANNEL_YELLOW_PAGES_REMAINING, 
+                    new DecimalType(result.getData().getInkYellowPagesRemaining()));
 
             //Scanner
             handler.updateState(CGROUP_SCANNER, CHANNEL_TOTAL_ADF, new DecimalType(

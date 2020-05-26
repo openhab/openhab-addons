@@ -58,26 +58,33 @@ public class HPPrinterBindingConstants {
     public static final String CHANNEL_SCANNER_ADFLOADED = "scannerAdfLoaded";
 
     // Colours
-    public static final String CHANNEL_COLOR_LEVEL = "colorLevel"; // Dynamic
-    public static final String CHANNEL_CYAN_LEVEL = "cyanLevel"; // Dynamic
-    public static final String CHANNEL_MAGENTA_LEVEL = "magentaLevel"; // Dynamic
-    public static final String CHANNEL_YELLOW_LEVEL = "yellowLevel"; // Dynamic
+    public static final String CHANNEL_COLOR_LEVEL = "colorLevel";
+    public static final String CHANNEL_CYAN_LEVEL = "cyanLevel";
+    public static final String CHANNEL_MAGENTA_LEVEL = "magentaLevel";
+    public static final String CHANNEL_YELLOW_LEVEL = "yellowLevel";
     public static final String CHANNEL_BLACK_LEVEL = "blackLevel";
 
-    public static final String CHANNEL_COLOR_MARKING = "colorMarker"; // Dynamic
-    public static final String CHANNEL_CYAN_MARKING = "cyanMarker"; // Dynamic
-    public static final String CHANNEL_MAGENTA_MARKING = "magentaMarker"; // Dynamic
-    public static final String CHANNEL_YELLOW_MARKING = "yellowMarker"; // Dynamic
-    public static final String CHANNEL_BLACK_MARKING = "blackMarker"; // Dynamic
+    public static final String CHANNEL_COLOR_MARKING = "colorMarker";
+    public static final String CHANNEL_CYAN_MARKING = "cyanMarker";
+    public static final String CHANNEL_MAGENTA_MARKING = "magentaMarker";
+    public static final String CHANNEL_YELLOW_MARKING = "yellowMarker";
+    public static final String CHANNEL_BLACK_MARKING = "blackMarker";
+
+    // Estimated Pages Remaining
+    public static final String CHANNEL_COLOR_PAGES_REMAINING = "colorPagesRemaining";
+    public static final String CHANNEL_CYAN_PAGES_REMAINING = "cyanPagesRemaining";
+    public static final String CHANNEL_MAGENTA_PAGES_REMAINING = "magentaPagesRemaining";
+    public static final String CHANNEL_YELLOW_PAGES_REMAINING = "yellowPagesRemaining";
+    public static final String CHANNEL_BLACK_PAGES_REMAINING = "blackPagesRemaining";
 
     // Page Counts
     public static final String CHANNEL_TOTAL_PAGES = "totalCount";
-    public static final String CHANNEL_SUBSCRIPTION = "subsciptionCount"; // Dynamic
-    public static final String CHANNEL_TOTAL_COLORPAGES = "totalColorCount"; // Dynamic
-    public static final String CHANNEL_TOTAL_MONOPAGES = "totalMonochromeCount"; // Dynamic
-    public static final String CHANNEL_JAM_EVENTS = "jamEvents"; // Dynamic
-    public static final String CHANNEL_MISPICK_EVENTS = "mispickEvents"; // Dynamic
-    public static final String CHANNEL_FRONT_PANEL_CANCEL = "fpCancelCount"; // Dynamic
+    public static final String CHANNEL_SUBSCRIPTION = "subsciptionCount";
+    public static final String CHANNEL_TOTAL_COLORPAGES = "totalColorCount";
+    public static final String CHANNEL_TOTAL_MONOPAGES = "totalMonochromeCount";
+    public static final String CHANNEL_JAM_EVENTS = "jamEvents";
+    public static final String CHANNEL_MISPICK_EVENTS = "mispickEvents";
+    public static final String CHANNEL_FRONT_PANEL_CANCEL = "fpCancelCount";
 
     //Scanner
     public static final String CHANNEL_TOTAL_ADF = "totalAdf";

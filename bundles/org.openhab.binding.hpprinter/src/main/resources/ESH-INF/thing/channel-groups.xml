@@ -32,7 +32,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="scanner">
-		<label>Scanner</label>
+		<label>Scanner Usage</label>
 		<description>Scanner Usage Information</description>
 	</channel-group-type>
 

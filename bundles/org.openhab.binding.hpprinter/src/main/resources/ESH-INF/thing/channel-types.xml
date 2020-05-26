@@ -24,7 +24,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="cumlMarkingUsed">
+	<channel-type id="cumlMarkingUsed" advanced="true">
 		<item-type>Number:Volume</item-type>
 		<label>Cumulative Marking Used</label>
 		<description>Shows the amount of Ink/Toner used</description>
@@ -38,7 +38,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="readonlyswitch">
+	<channel-type id="readonlyswitch" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Read Only Switch Item</label>
 		<state readOnly="true"/>
