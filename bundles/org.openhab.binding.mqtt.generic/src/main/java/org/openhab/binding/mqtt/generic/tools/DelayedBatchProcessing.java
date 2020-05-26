@@ -63,12 +63,8 @@ public class DelayedBatchProcessing<T> implements Consumer<T> {
      * @param t An object
      */
     @Override
-    synchronized public void accept(T t) {
+    public void accept(T t) {
         queue.add(t);
-        final ScheduledFuture<?> scheduledFuture = this.futureRef.get();
-        if (scheduledFuture != null && !scheduledFuture.isDone()) {
-            cancel(futureRef.getAndSet(null));
-        }
         cancel(futureRef.getAndSet(executor.schedule(this::run, delay, TimeUnit.MILLISECONDS)));
     }
 
@@ -78,10 +74,7 @@ public class DelayedBatchProcessing<T> implements Consumer<T> {
      * @return A list of accumulated objects
      */
     public List<T> join() {
-        ScheduledFuture<?> scheduledFuture = this.futureRef.get();
-        if (scheduledFuture != null && !scheduledFuture.isDone()) {
-            cancel(futureRef.getAndSet(null));
-        }
+        cancel(futureRef.getAndSet(null));
         List<T> lqueue = new ArrayList<>();
         synchronized (queue) {
             lqueue.addAll(queue);
@@ -102,10 +95,7 @@ public class DelayedBatchProcessing<T> implements Consumer<T> {
      * Deliver queued items now to the target consumer.
      */
     public void forceProcessNow() {
-        ScheduledFuture<?> scheduledFuture = this.futureRef.get();
-        if (scheduledFuture != null && !scheduledFuture.isDone()) {
-            cancel(futureRef.getAndSet(null));
-        }
+        cancel(futureRef.getAndSet(null));
         run();
     }
 
