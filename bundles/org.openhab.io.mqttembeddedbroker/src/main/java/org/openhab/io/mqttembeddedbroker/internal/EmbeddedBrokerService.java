@@ -86,7 +86,7 @@ import io.netty.handler.ssl.SslContextBuilder;
         ConfigurableService.SERVICE_PROPERTY_LABEL + "=MQTT Embedded Broker" })
 @NonNullByDefault
 public class EmbeddedBrokerService
-        implements ConfigurableService, MqttConnectionObserver, MqttServiceObserver, MqttEmbeddedBrokerStartedListener {
+        implements MqttConnectionObserver, MqttServiceObserver, MqttEmbeddedBrokerStartedListener {
     private final MqttService service;
     private String persistenceFilename = "";
     // private NetworkServerTls networkServerTls; //TODO wait for NetworkServerTls implementation
