@@ -29,7 +29,16 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DataTypeRPM implements ComfoAirDataType {
+    private static DataTypeRPM SINGLETON_INSTANCE = new DataTypeRPM();
+
+    private DataTypeRPM() {
+    }
+
     private final Logger logger = LoggerFactory.getLogger(DataTypeRPM.class);
+
+    public static DataTypeRPM getInstance() {
+        return SINGLETON_INSTANCE;
+    }
 
     @Override
     public State convertToState(int @Nullable [] data, ComfoAirCommandType commandType) {

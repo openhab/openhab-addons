@@ -183,29 +183,27 @@ public class ComfoAirHandler extends BaseThingHandler {
         if (comfoAirCommandType != null) {
             ComfoAirDataType dataType = comfoAirCommandType.getDataType();
 
-            if (dataType != null) {
-                if (dataType instanceof DataTypeBoolean) {
-                    return (OnOffType) command;
-                } else if (dataType instanceof DataTypeNumber || dataType instanceof DataTypeRPM) {
+            if (dataType instanceof DataTypeBoolean) {
+                return (OnOffType) command;
+            } else if (dataType instanceof DataTypeNumber || dataType instanceof DataTypeRPM) {
+                return (DecimalType) command;
+            } else if (dataType instanceof DataTypeTemperature) {
+                if (command instanceof QuantityType<?>) {
+                    QuantityType<?> celsius = ((QuantityType<?>) command).toUnit(SIUnits.CELSIUS);
+                    if (celsius != null) {
+                        return new DecimalType(celsius.doubleValue());
+                    }
+                } else {
                     return (DecimalType) command;
-                } else if (dataType instanceof DataTypeTemperature) {
-                    if (command instanceof QuantityType<?>) {
-                        QuantityType<?> celsius = ((QuantityType<?>) command).toUnit(SIUnits.CELSIUS);
-                        if (celsius != null) {
-                            return new DecimalType(celsius.doubleValue());
-                        }
-                    } else {
-                        return (DecimalType) command;
+                }
+            } else if (dataType instanceof DataTypeVolt) {
+                if (command instanceof QuantityType<?>) {
+                    QuantityType<?> volts = ((QuantityType<?>) command).toUnit(SmartHomeUnits.VOLT);
+                    if (volts != null) {
+                        return new DecimalType(volts.doubleValue());
                     }
-                } else if (dataType instanceof DataTypeVolt) {
-                    if (command instanceof QuantityType<?>) {
-                        QuantityType<?> volts = ((QuantityType<?>) command).toUnit(SmartHomeUnits.VOLT);
-                        if (volts != null) {
-                            return new DecimalType(volts.doubleValue());
-                        }
-                    } else {
-                        return (DecimalType) command;
-                    }
+                } else {
+                    return (DecimalType) command;
                 }
             }
         }
@@ -275,9 +273,7 @@ public class ComfoAirHandler extends BaseThingHandler {
 
                     if (comfoAirCommandType != null) {
                         ComfoAirDataType dataType = comfoAirCommandType.getDataType();
-                        if (dataType != null) {
-                            value = dataType.convertToState(response, comfoAirCommandType);
-                        }
+                        value = dataType.convertToState(response, comfoAirCommandType);
                     }
                     if (value instanceof UnDefType) {
                         if (logger.isWarnEnabled()) {
@@ -311,13 +307,10 @@ public class ComfoAirHandler extends BaseThingHandler {
 
                         if (comfoAirCommandType != null) {
                             ComfoAirDataType dataType = comfoAirCommandType.getDataType();
-                            if (dataType != null) {
-                                if (prop.equals(ComfoAirBindingConstants.PROPERTY_DEVICE_NAME)) {
-                                    value = dataType.calculateStringValue(response, comfoAirCommandType);
-                                } else {
-                                    value = String
-                                            .valueOf(dataType.calculateNumberValue(response, comfoAirCommandType));
-                                }
+                            if (prop.equals(ComfoAirBindingConstants.PROPERTY_DEVICE_NAME)) {
+                                value = dataType.calculateStringValue(response, comfoAirCommandType);
+                            } else {
+                                value = String.valueOf(dataType.calculateNumberValue(response, comfoAirCommandType));
                             }
                         }
                         properties.put(prop, value);

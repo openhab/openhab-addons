@@ -25,7 +25,6 @@ import org.openhab.binding.comfoair.internal.ComfoAirCommandType;
  */
 @NonNullByDefault
 public interface ComfoAirDataType {
-
     /**
      * Generate a openHAB State object based on response data.
      *

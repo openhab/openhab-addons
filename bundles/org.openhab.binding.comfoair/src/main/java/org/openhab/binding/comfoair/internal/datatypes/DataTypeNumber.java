@@ -29,8 +29,16 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DataTypeNumber implements ComfoAirDataType {
+    private static DataTypeNumber SINGLETON_INSTANCE = new DataTypeNumber();
+
+    private DataTypeNumber() {
+    }
 
     private final Logger logger = LoggerFactory.getLogger(DataTypeNumber.class);
+
+    public static DataTypeNumber getInstance() {
+        return SINGLETON_INSTANCE;
+    }
 
     @Override
     public State convertToState(int @Nullable [] data, ComfoAirCommandType commandType) {

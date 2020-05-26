@@ -31,7 +31,16 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DataTypeTemperature implements ComfoAirDataType {
+    private static DataTypeTemperature SINGLETON_INSTANCE = new DataTypeTemperature();
+
+    private DataTypeTemperature() {
+    }
+
     private final Logger logger = LoggerFactory.getLogger(DataTypeTemperature.class);
+
+    public static DataTypeTemperature getInstance() {
+        return SINGLETON_INSTANCE;
+    }
 
     @Override
     public State convertToState(int @Nullable [] data, ComfoAirCommandType commandType) {
