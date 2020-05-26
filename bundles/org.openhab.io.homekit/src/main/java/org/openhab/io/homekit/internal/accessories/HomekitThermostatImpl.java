@@ -77,7 +77,7 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements Ther
         } else if (stringValue.equalsIgnoreCase(settings.thermostatCurrentModeOff)) {
             mode = CurrentHeatingCoolingStateEnum.OFF;
         } else if (stringValue.equals("UNDEF") || stringValue.equals("NULL")) {
-            logger.warn("Heating cooling target mode not available. Relaying value of OFF to Homekit");
+            logger.warn("Heating cooling current mode not available. Relaying value of OFF to Homekit");
             mode = CurrentHeatingCoolingStateEnum.OFF;
         } else {
             logger.warn("Unrecognized heatingCoolingCurrentMode: {}. Expected {}, {}, or {} strings in value.",

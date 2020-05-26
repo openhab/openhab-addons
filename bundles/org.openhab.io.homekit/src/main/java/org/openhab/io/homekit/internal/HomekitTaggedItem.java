@@ -14,6 +14,7 @@ package org.openhab.io.homekit.internal;
 
 import static org.openhab.io.homekit.internal.HomekitAccessoryType.DUMMY;
 
+import java.math.BigDecimal;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -179,6 +180,39 @@ public class HomekitTaggedItem {
         return parentGroupItem != null;
     }
 
+    /**
+     * return object from item configuration for given key or default if not found
+     * 
+     * @param key configuration key
+     * @param defaultValue default value
+     * @param <T> expected class
+     * @return value
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T getConfiguration(String key, T defaultValue) {
+        if (configuration != null) {
+            final Object value = configuration.get(key);
+            if (value != null && value.getClass().equals(defaultValue.getClass())) {
+                return (T) value;
+            }
+        }
+        return defaultValue;
+    }
+
+    /**
+     * return configuration as double if exists otherwise return defaultValue
+     * 
+     * @param key configuration key
+     * @param defaultValue default value
+     * @return value
+     */
+    public double getConfigurationAsDouble(String key, double defaultValue) {
+        return getConfiguration(key, BigDecimal.valueOf(defaultValue)).doubleValue();
+    }
+
+    /**
+     * parse and apply item configuration.
+     */
     private void parseConfiguration() {
         if (configuration != null) {
             Object dimmerModeConfig = configuration.get(DIMMER_MODE);

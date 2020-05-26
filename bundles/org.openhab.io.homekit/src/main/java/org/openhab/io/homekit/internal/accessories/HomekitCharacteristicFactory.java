@@ -68,6 +68,8 @@ import io.github.hapjava.characteristics.impl.lightbulb.BrightnessCharacteristic
 import io.github.hapjava.characteristics.impl.lightbulb.ColorTemperatureCharacteristic;
 import io.github.hapjava.characteristics.impl.lightbulb.HueCharacteristic;
 import io.github.hapjava.characteristics.impl.lightbulb.SaturationCharacteristic;
+import io.github.hapjava.characteristics.impl.thermostat.CoolingThresholdTemperatureCharacteristic;
+import io.github.hapjava.characteristics.impl.thermostat.HeatingThresholdTemperatureCharacteristic;
 import io.github.hapjava.characteristics.impl.valve.RemainingDurationCharacteristic;
 import io.github.hapjava.characteristics.impl.valve.SetDurationCharacteristic;
 import io.github.hapjava.characteristics.impl.windowcovering.CurrentHorizontalTiltAngleCharacteristic;
@@ -119,7 +121,8 @@ public class HomekitCharacteristicFactory {
             put(LOCK_CONTROL, HomekitCharacteristicFactory::createLockPhysicalControlsCharacteristic);
             put(DURATION, HomekitCharacteristicFactory::createDurationCharacteristic);
             put(VOLUME, HomekitCharacteristicFactory::createVolumeCharacteristic);
-
+            put(COOLING_THRESHOLD_TEMPERATURE, HomekitCharacteristicFactory::createCoolingThresholdCharacteristic);
+            put(HEATING_THRESHOLD_TEMPERATURE, HomekitCharacteristicFactory::createHeatingThresholdCharacteristic);
             put(REMAINING_DURATION, HomekitCharacteristicFactory::createRemainingDurationCharacteristic);
             // LEGACY
             put(OLD_BATTERY_LOW_STATUS, HomekitCharacteristicFactory::createStatusLowBatteryCharacteristic);
@@ -223,6 +226,17 @@ public class HomekitCharacteristicFactory {
         return () -> {
             final DecimalType value = taggedItem.getItem().getStateAs(DecimalType.class);
             return CompletableFuture.completedFuture(value != null ? value.doubleValue() : 0.0);
+        };
+    }
+
+    private static ExceptionalConsumer<Double> setDoubleConsumer(final HomekitTaggedItem taggedItem) {
+        return (value) -> {
+            if (taggedItem.getItem() instanceof NumberItem) {
+                ((NumberItem) taggedItem.getItem()).send(new DecimalType(value));
+            } else {
+                logger.warn("Item type {} is not supported for {}. Only Number type is supported.",
+                        taggedItem.getItem().getType(), taggedItem.getName());
+            }
         };
     }
 
@@ -521,5 +535,33 @@ public class HomekitCharacteristicFactory {
         return new VolumeCharacteristic(getIntSupplier(taggedItem),
                 (volume) -> ((NumberItem) taggedItem.getItem()).send(new DecimalType(volume)),
                 getSubscriber(taggedItem, DURATION, updater), getUnsubscriber(taggedItem, DURATION, updater));
+    }
+
+    private static CoolingThresholdTemperatureCharacteristic createCoolingThresholdCharacteristic(
+            final HomekitTaggedItem taggedItem, final HomekitAccessoryUpdater updater) {
+        return new CoolingThresholdTemperatureCharacteristic(
+                taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MIN_VALUE,
+                        CoolingThresholdTemperatureCharacteristic.DEFAULT_MIN_VALUE),
+                taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MAX_VALUE,
+                        CoolingThresholdTemperatureCharacteristic.DEFAULT_MAX_VALUE),
+                taggedItem.getConfigurationAsDouble(HomekitTaggedItem.STEP,
+                        CoolingThresholdTemperatureCharacteristic.DEFAULT_STEP),
+                getDoubleSupplier(taggedItem), setDoubleConsumer(taggedItem),
+                getSubscriber(taggedItem, COOLING_THRESHOLD_TEMPERATURE, updater),
+                getUnsubscriber(taggedItem, COOLING_THRESHOLD_TEMPERATURE, updater));
+    }
+
+    private static HeatingThresholdTemperatureCharacteristic createHeatingThresholdCharacteristic(
+            final HomekitTaggedItem taggedItem, final HomekitAccessoryUpdater updater) {
+        return new HeatingThresholdTemperatureCharacteristic(
+                taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MIN_VALUE,
+                        HeatingThresholdTemperatureCharacteristic.DEFAULT_MIN_VALUE),
+                taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MAX_VALUE,
+                        HeatingThresholdTemperatureCharacteristic.DEFAULT_MAX_VALUE),
+                taggedItem.getConfigurationAsDouble(HomekitTaggedItem.STEP,
+                        HeatingThresholdTemperatureCharacteristic.DEFAULT_STEP),
+                getDoubleSupplier(taggedItem), setDoubleConsumer(taggedItem),
+                getSubscriber(taggedItem, HEATING_THRESHOLD_TEMPERATURE, updater),
+                getUnsubscriber(taggedItem, HEATING_THRESHOLD_TEMPERATURE, updater));
     }
 }

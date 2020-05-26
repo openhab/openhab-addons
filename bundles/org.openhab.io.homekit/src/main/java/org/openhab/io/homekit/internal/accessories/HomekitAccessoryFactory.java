@@ -91,7 +91,8 @@ public class HomekitAccessoryFactory {
             put(SPEAKER, new HomekitCharacteristicType[] { MUTE });
             put(GARAGE_DOOR_OPENER,
                     new HomekitCharacteristicType[] { CURRENT_DOOR_STATE, TARGET_DOOR_STATE, OBSTRUCTION_STATUS });
-
+            put(HEATER_COOLER, new HomekitCharacteristicType[] { ACTIVE_STATUS, CURRENT_HEATER_COOLER_STATE,
+                    TARGET_HEATER_COOLER_STATE, CURRENT_TEMPERATURE });
             // LEGACY
             put(BLINDS, new HomekitCharacteristicType[] { TARGET_POSITION, CURRENT_POSITION, POSITION_STATE });
             put(OLD_HUMIDITY_SENSOR, new HomekitCharacteristicType[] { RELATIVE_HUMIDITY });
@@ -124,6 +125,7 @@ public class HomekitAccessoryFactory {
             put(SPEAKER, HomekitSpeakerImpl.class);
             put(GARAGE_DOOR_OPENER, HomekitGarageDoorOpenerImpl.class);
             put(BLINDS, HomekitWindowCoveringImpl.class);
+            put(HEATER_COOLER, HomekitHeaterCoolerImpl.class);
             put(OLD_HUMIDITY_SENSOR, HomekitHumiditySensorImpl.class);
             put(OLD_DIMMABLE_LIGHTBULB, HomekitLightbulbImpl.class);
             put(OLD_COLORFUL_LIGHTBULB, HomekitLightbulbImpl.class);
@@ -166,13 +168,13 @@ public class HomekitAccessoryFactory {
     public static HomekitAccessory create(HomekitTaggedItem taggedItem, MetadataRegistry metadataRegistry,
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws HomekitException {
         final HomekitAccessoryType accessoryType = taggedItem.getAccessoryType();
-        logger.trace("Constructing {} of accessoryType {}", taggedItem.getName(), accessoryType);
+        logger.trace("Constructing {} of accessoryType {}", taggedItem.getName(), accessoryType.getTag());
         final List<HomekitTaggedItem> requiredCharacteristics = getMandatoryCharacteristics(taggedItem,
                 metadataRegistry);
         final HomekitCharacteristicType[] mandatoryCharacteristics = MANDATORY_CHARACTERISTICS.get(accessoryType);
         if ((mandatoryCharacteristics != null) && (requiredCharacteristics.size() < mandatoryCharacteristics.length)) {
-            logger.warn("Accessory of type {} must have following characteristics {}. Found only {}", accessoryType,
-                    mandatoryCharacteristics, requiredCharacteristics);
+            logger.warn("Accessory of type {} must have following characteristics {}. Found only {}",
+                    accessoryType.getTag(), mandatoryCharacteristics, requiredCharacteristics);
             throw new HomekitException("Missing mandatory characteristics");
         }
         AbstractHomekitAccessoryImpl accessoryImpl;
@@ -189,12 +191,12 @@ public class HomekitAccessoryFactory {
                 addOptionalCharacteristics(taggedItem, accessoryImpl, metadataRegistry);
                 return accessoryImpl;
             } else {
-                logger.warn("Unsupported HomeKit type: {}", accessoryType);
+                logger.warn("Unsupported HomeKit type: {}", accessoryType.getTag());
                 throw new HomekitException("Unsupported HomeKit type: " + accessoryType);
             }
         } catch (NoSuchMethodException | IllegalAccessException | InstantiationException
                 | InvocationTargetException e) {
-            logger.warn("Cannot instantiate accessory implementation for accessory {}", accessoryType, e);
+            logger.warn("Cannot instantiate accessory implementation for accessory {}", accessoryType.getTag(), e);
             throw new HomekitException("Cannot instantiate accessory implementation for accessory " + accessoryType);
         }
     }
@@ -361,7 +363,7 @@ public class HomekitAccessoryFactory {
         // an accessory can have multiple optional characteristics. iterate over them.
         characteristics.forEach((type, item) -> {
             try {
-                logger.trace("adding optional characteristic: {} for item {}", type, item.getName());
+                logger.trace("adding optional characteristic: {} for item {}", type.getTag(), item.getName());
                 // check whether a proxyItem already exists, if not create one.
                 final HomekitOHItemProxy proxyItem = proxyItems.computeIfAbsent(item.getUID(),
                         k -> new HomekitOHItemProxy(item));
@@ -378,7 +380,7 @@ public class HomekitAccessoryFactory {
                 accessory.addCharacteristic(optionalItem);
             } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | HomekitException e) {
                 logger.warn("Not supported optional HomeKit characteristic. Service type {}, characteristic type {}",
-                        service.getType(), type, e);
+                        service.getType(), type.getTag(), e);
             }
         });
     }
