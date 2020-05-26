@@ -188,13 +188,14 @@ public class GoEChargerHandler extends BaseThingHandler {
                     return UnDefType.UNDEF;
                 }
                 int count = 0;
-                if (goeResponse.energy[4] > 0) { // current P1
+                // min current is 6A, so everything below should be treated as not used
+                if (goeResponse.energy[4] > 5) { // current P1
                     count++;
                 }
-                if (goeResponse.energy[5] > 0) { // current P2
+                if (goeResponse.energy[5] > 5) { // current P2
                     count++;
                 }
-                if (goeResponse.energy[6] > 0) { // current P3
+                if (goeResponse.energy[6] > 5) { // current P3
                     count++;
                 }
                 return new DecimalType(count);
