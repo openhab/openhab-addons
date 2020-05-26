@@ -34,7 +34,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -213,18 +212,20 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
         for (String msg : message.split("\n")) {
             String[] line = msg.split(":");
             
-            if (StringUtils.isNotEmpty(line[0]) && (line[0].contains("Server IP"))) {
-                host = StringUtils.stripStart(line[1], null);
-            }
-            
-            if (StringUtils.isNotEmpty(line[0]) && (line[0].contains("Server Port"))) {
-                port = StringUtils.stripStart(line[1], null);
-            }
-            
-            if (StringUtils.isNotEmpty(line[0]) && (line[0].contains("Server Name"))) {
-                // example: "OPPO UDP-203"
-                // note: Server Name only provided on UDP models, not present on BDP models
-                displayName = StringUtils.stripStart(line[1], null);
+            if (line[0] != null && line[1] != null) {
+                if (line[0].contains("Server IP")) {
+                    host = line[1].trim();
+                }
+                
+                if (line[0].contains("Server Port")) {
+                    port = line[1].trim();
+                }
+                
+                if (line[0].contains("Server Name")) {
+                    // example: "OPPO UDP-203"
+                    // note: Server Name only provided on UDP models, not present on BDP models
+                    displayName = line[1].trim();
+                }
             }
         }
         
@@ -233,7 +234,7 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
         final String DISPLAY_NAME_105 = "OPPO BDP-105";
         
         // by looking at the port number we can mostly determine what the model number is
-        if (StringUtils.isNotEmpty(host) && StringUtils.isNotEmpty(port)) {
+        if (host != null && port != null) {
             if (BDP83_PORT.toString().equals(port)) {
                 model = MODEL83;
                 displayName = DISPLAY_NAME_83;
@@ -245,10 +246,10 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
                     ContentResponse contentResponse = httpClient.newRequest("http://"+ host + ":2870/dmr.xml").method(GET).timeout(5, TimeUnit.SECONDS).send();
                     String result = contentResponse.getContentAsString();
                     
-                    if (StringUtils.isNotEmpty(result) && result.contains("<modelName>OPPO BDP-103</modelName>")) {
+                    if (result != null && result.contains("<modelName>OPPO BDP-103</modelName>")) {
                         model = MODEL103;
                         displayName = DISPLAY_NAME_103;
-                    } else if (StringUtils.isNotEmpty(result) && result.contains("<modelName>OPPO BDP-105</modelName>")) {
+                    } else if (result != null && result.contains("<modelName>OPPO BDP-105</modelName>")) {
                         model = MODEL105;
                         displayName = DISPLAY_NAME_105;
                     } else {
@@ -272,7 +273,7 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
                 }
             }
             
-            if (StringUtils.isNotEmpty(host) && StringUtils.isNotEmpty(model)) {
+            if (host != null && model != null) {
                 ThingUID uid = new ThingUID(THING_TYPE_PLAYER, host.replace(".", "_"));
                 HashMap<String, Object> properties = new HashMap<>();
                 properties.put("model", model);
