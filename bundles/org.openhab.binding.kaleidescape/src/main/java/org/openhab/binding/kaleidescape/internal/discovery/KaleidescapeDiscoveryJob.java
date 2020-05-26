@@ -24,7 +24,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -126,7 +125,7 @@ public class KaleidescapeDiscoveryJob implements Runnable {
                         friendlyName = strArr[2];
                         break;
                     case "DEVICE_INFO":
-                        serialNumber = StringUtils.stripStart(strArr[3], "0"); // take off leading zeros
+                        serialNumber = strArr[3].trim(); // take off leading zeros
                         break;
                 }
                 

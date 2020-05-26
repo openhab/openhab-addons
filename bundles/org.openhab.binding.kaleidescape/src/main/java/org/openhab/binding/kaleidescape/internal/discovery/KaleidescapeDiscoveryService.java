@@ -137,7 +137,7 @@ public class KaleidescapeDiscoveryService extends AbstractDiscoveryService {
 
                 SubnetUtils utils = new SubnetUtils(cidrSubnet);
 
-                results.addAll(Arrays.asList(utils.getInfo().getAllAddresses()));
+                results.addAll(Arrays.asList(utils.getInfo().getAllAddresses())); // not sure how to do this without the Apache libraries
             } else if (ipAddress instanceof Inet6Address) {
                 logger.debug("Found interface IPv6 address to scan: {}", cidrSubnet);
             } else {

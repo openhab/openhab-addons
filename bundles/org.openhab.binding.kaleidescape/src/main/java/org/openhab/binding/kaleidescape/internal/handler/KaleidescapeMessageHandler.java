@@ -23,7 +23,6 @@ import java.util.regex.Pattern;
 
 import javax.measure.quantity.Time;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -232,7 +231,7 @@ public enum KaleidescapeMessageHandler {
             
             // per API reference rev 3.3.1, ASPECT_RATIO message should not be used
             // the first element of SCREEN_MASK now provides this info
-            if (!StringUtils.isEmpty(message)) {
+            if (message != null & !message.equals("")) {
                 String[] msgSplit = message.split(":", 2);
                 handler.updateChannel(KaleidescapeBindingConstants.ASPECT_RATIO,  
                         new StringType(KaleidescapeStatusCodes.aspectRatio.get(msgSplit[0])));
@@ -576,7 +575,7 @@ public enum KaleidescapeMessageHandler {
                 matcher.find();
                 
                 handler.updateChannel(KaleidescapeBindingConstants.SERIAL_NUMBER,
-                                        new StringType(StringUtils.stripStart(matcher.group(2), "0"))); // take off leading zeros
+                                        new StringType(matcher.group(2).replaceFirst("^0+(?!$)", ""))); // take off leading zeros
                 
                 handler.updateChannel(KaleidescapeBindingConstants.CONTROL_PROTOCOL_ID,
                         new StringType(matcher.group(3)));

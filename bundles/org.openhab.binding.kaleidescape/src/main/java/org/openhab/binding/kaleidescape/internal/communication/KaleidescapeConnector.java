@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.kaleidescape.internal.KaleidescapeException;
@@ -220,7 +219,7 @@ public abstract class KaleidescapeConnector {
         String message = new String(incomingMessage).trim();
         
         // ignore empty success messages
-        if (!StringUtils.equals(message, SUCCESS_MSG)) {
+        if (!SUCCESS_MSG.equals(message)) {
             logger.debug("handleIncomingMessage: {}", message);
             
             // Kaleidescape message ie: 01/!/000:TITLE_NAME:Office Space:/79
