@@ -408,15 +408,23 @@ public class NeoHubHandler extends BaseBridgeHandler {
                 responseJson = socket.sendMessage(CMD_CODE_READ_DCB);
                 systemData = NeoHubReadDcbResponse.createSystemData(responseJson);
                 supportsLegacyApi = systemData instanceof NeoHubReadDcbResponse;
+                if (!supportsLegacyApi) {
+                    throw new NeoHubException("legacy API not supported");
+                }
             } catch (Exception e) {
                 // we learned that this API is not currently supported; no big deal
+                logger.debug("Legacy API is not supported!");
             }
             try {
                 responseJson = socket.sendMessage(CMD_CODE_GET_SYSTEM);
                 systemData = NeoHubReadDcbResponse.createSystemData(responseJson);
                 supportsFutureApi = systemData instanceof NeoHubReadDcbResponse;
+                if (!supportsFutureApi) {
+                    throw new NeoHubException("new API not supported");
+                }
             } catch (Exception e) {
                 // we learned that this API is not currently supported; no big deal
+                logger.debug("New API is not supported!");
             }
         }
 
