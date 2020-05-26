@@ -66,11 +66,11 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
 
     private static final double HUE_FACTOR = 65535 / 360.0;
     private static final double BRIGHTNESS_FACTOR = 2.54;
-    private static final long SKIP_UPDATE_TIMESPAN = 500; // in ms
+    private static final long DEFAULT_COMMAND_EXPIRY_TIME = 250; // in ms
 
     private final Logger logger = LoggerFactory.getLogger(LightThingHandler.class);
 
-    private long lastCommandTimestamp = 0;
+    private long lastCommandExpireTimestamp = 0;
 
     /**
      * The light state. Contains all possible fields for all supported lights
@@ -219,7 +219,9 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
         logger.trace("Sending {} to light {} via {}", json, config.id, url);
 
         asyncHttpClient.put(url, json, bridgeConfig.timeout).thenAccept(v -> {
-            lastCommandTimestamp = System.currentTimeMillis();
+            lastCommandExpireTimestamp = System.currentTimeMillis()
+                    + (newLightState.transitiontime != null ? newLightState.transitiontime
+                            : DEFAULT_COMMAND_EXPIRY_TIME);
             lastCommand = newLightState;
             logger.trace("Result code={}, body={}", v.getResponseCode(), v.getBody());
         }).exceptionally(e -> {
@@ -298,13 +300,13 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
             logger.trace("{} received {}", thing.getUID(), lightMessage);
             LightState lightState = lightMessage.state;
             if (lightState != null) {
-                if (lastCommandTimestamp + SKIP_UPDATE_TIMESPAN > System.currentTimeMillis()
+                if (lastCommandExpireTimestamp > System.currentTimeMillis()
                         && !lightState.equalsIgnoreNull(lastCommand)) {
                     // skip for SKIP_UPDATE_TIMESPAN after last command if lightState is different from command
-                    logger.trace("Ignoring differing update within {}ms after last command", SKIP_UPDATE_TIMESPAN);
+                    logger.trace("Ignoring differing update after last command until {}", lastCommandExpireTimestamp);
                     return;
                 }
-                this.lightStateCache = lightState;
+                lightStateCache = lightState;
                 thing.getChannels().stream().map(c -> c.getUID().getId()).forEach(c -> valueUpdated(c, lightState));
             }
         }
