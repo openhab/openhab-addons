@@ -10,18 +10,33 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.siemensrds.internal;
+package org.openhab.binding.siemensrds.points;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 
 /**
- * The {@link RdsConfiguration} class contains the thing configuration
- * parameters for RDS thermostats
+ * private class a data point where "value" is unknown
  *
  * @author Andrew Fiddian-Green - Initial contribution
+ *
  */
 @NonNullByDefault
-public class RdsConfiguration {
+public class UndefPoint extends BasePoint {
 
-    public String plantId = "";
+    @Override
+    public State getState() {
+        return UnDefType.UNDEF;
+    }
+
+    @Override
+    public int asInt() {
+        return UNDEFINED_VALUE;
+    }
+
+    @Override
+    public void refreshValueFrom(BasePoint from) {
+        // do nothing
+    }
 }

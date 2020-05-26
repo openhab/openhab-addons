@@ -10,18 +10,23 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.siemensrds.internal;
+package org.openhab.binding.siemensrds.points;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link RdsConfiguration} class contains the thing configuration
- * parameters for RDS thermostats
+ * private class inner (helper) class for an embedded JSON numeric element
  *
  * @author Andrew Fiddian-Green - Initial contribution
+ *
  */
 @NonNullByDefault
-public class RdsConfiguration {
-
-    public String plantId = "";
+public class NestedNumberValue {
+    @SerializedName("value")
+    protected @Nullable Number value;
+    @SerializedName("presentPriority")
+    protected int presentPriority;
 }

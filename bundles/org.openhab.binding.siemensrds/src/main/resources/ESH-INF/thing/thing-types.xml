@@ -30,6 +30,7 @@
 				<label>Polling Interval</label>
 				<description>Time (seconds) between polling requests (min=8, max/default=60)</description>
 				<default>60</default>
+				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="apiKey" type="text" required="true">
