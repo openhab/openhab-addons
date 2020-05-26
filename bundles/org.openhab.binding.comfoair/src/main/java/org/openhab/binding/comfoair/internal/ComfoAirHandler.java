@@ -296,32 +296,31 @@ public class ComfoAirHandler extends BaseThingHandler {
         ComfoAirSerialConnector comfoAirConnector = this.comfoAirConnector;
 
         if (comfoAirConnector != null) {
-            String[] softwareVersions = new String[] { ComfoAirBindingConstants.PROPERTY_SOFTWARE_MAIN_VERSION,
+            String[] namedProperties = new String[] { ComfoAirBindingConstants.PROPERTY_SOFTWARE_MAIN_VERSION,
                     ComfoAirBindingConstants.PROPERTY_SOFTWARE_MINOR_VERSION,
-                    ComfoAirBindingConstants.PROPERTY_SOFTWARE_BETA_VERSION };
+                    ComfoAirBindingConstants.PROPERTY_DEVICE_NAME };
 
-            for (String version : softwareVersions) {
-                ComfoAirCommand readCommand = ComfoAirCommandType.getReadCommand(version);
+            for (String prop : namedProperties) {
+                ComfoAirCommand readCommand = ComfoAirCommandType.getReadCommand(prop);
                 if (readCommand != null) {
                     int[] response = comfoAirConnector.sendCommand(readCommand,
                             ComfoAirCommandType.Constants.EMPTY_INT_ARRAY);
                     if (response.length > 0) {
-                        ComfoAirCommandType comfoAirCommandType = ComfoAirCommandType.getCommandTypeByKey(version);
-                        int value = 0;
+                        ComfoAirCommandType comfoAirCommandType = ComfoAirCommandType.getCommandTypeByKey(prop);
+                        String value = "";
 
                         if (comfoAirCommandType != null) {
                             ComfoAirDataType dataType = comfoAirCommandType.getDataType();
                             if (dataType != null) {
-                                value = dataType.calculateNumberValue(response, comfoAirCommandType);
+                                if (prop.equals(ComfoAirBindingConstants.PROPERTY_DEVICE_NAME)) {
+                                    value = dataType.calculateStringValue(response, comfoAirCommandType);
+                                } else {
+                                    value = String
+                                            .valueOf(dataType.calculateNumberValue(response, comfoAirCommandType));
+                                }
                             }
                         }
-                        if (value < 0) {
-                            if (logger.isWarnEnabled()) {
-                                logger.warn("unexpected value for DATA: {}",
-                                        ComfoAirSerialConnector.dumpData(response));
-                            }
-                        }
-                        properties.put(version, String.valueOf(value));
+                        properties.put(prop, value);
                     }
                 }
             }

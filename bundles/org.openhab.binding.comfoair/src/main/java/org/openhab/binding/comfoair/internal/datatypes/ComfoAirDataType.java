@@ -63,4 +63,17 @@ public interface ComfoAirDataType {
         }
         return value;
     }
+
+    default String calculateStringValue(int[] data, ComfoAirCommandType commandType) {
+        int[] get_reply_data_pos = commandType.getGetReplyDataPos();
+        StringBuilder value = new StringBuilder();
+        if (get_reply_data_pos != null) {
+            for (int i = 0; i <= get_reply_data_pos.length - 1; i++) {
+                if (get_reply_data_pos[i] < data.length) {
+                    value.append((char) data[get_reply_data_pos[i]]);
+                }
+            }
+        }
+        return value.toString();
+    }
 }

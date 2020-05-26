@@ -30,5 +30,5 @@ public class ComfoAirBindingConstants {
 
     public static final String PROPERTY_SOFTWARE_MAIN_VERSION = "softwareMainVersion";
     public static final String PROPERTY_SOFTWARE_MINOR_VERSION = "softwareMinorVersion";
-    public static final String PROPERTY_SOFTWARE_BETA_VERSION = "softwareBetaVersion";
+    public static final String PROPERTY_DEVICE_NAME = "deviceName";
 }
