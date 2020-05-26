@@ -55,19 +55,20 @@ class HomekitTemperatureSensorImpl extends AbstractHomekitAccessoryImpl implemen
 
     @Override
     public double getMinCurrentTemperature() {
-        return getAccessoryConfiguration(HomekitCharacteristicType.CURRENT_TEMPERATURE, HomekitTaggedItem.MIN_VALUE, BigDecimal
-            .valueOf(TargetTemperatureCharacteristic.DEFAULT_MIN_VALUE)).doubleValue();
+        return getAccessoryConfiguration(HomekitCharacteristicType.CURRENT_TEMPERATURE, HomekitTaggedItem.MIN_VALUE,
+                BigDecimal.valueOf(TargetTemperatureCharacteristic.DEFAULT_MIN_VALUE)).doubleValue();
     }
 
     @Override
     public double getMaxCurrentTemperature() {
-        return getAccessoryConfiguration(HomekitCharacteristicType.CURRENT_TEMPERATURE, HomekitTaggedItem.MAX_VALUE, BigDecimal.valueOf(TargetTemperatureCharacteristic.DEFAULT_MAX_VALUE)).doubleValue();
+        return getAccessoryConfiguration(HomekitCharacteristicType.CURRENT_TEMPERATURE, HomekitTaggedItem.MAX_VALUE,
+                BigDecimal.valueOf(TargetTemperatureCharacteristic.DEFAULT_MAX_VALUE)).doubleValue();
     }
 
     @Override
     public double getMinStepCurrentTemperature() {
-        return getAccessoryConfiguration(HomekitCharacteristicType.CURRENT_TEMPERATURE, HomekitTaggedItem.STEP, BigDecimal.valueOf(
-            TargetTemperatureCharacteristic.DEFAULT_STEP)).doubleValue();
+        return getAccessoryConfiguration(HomekitCharacteristicType.CURRENT_TEMPERATURE, HomekitTaggedItem.STEP,
+                BigDecimal.valueOf(TargetTemperatureCharacteristic.DEFAULT_STEP)).doubleValue();
     }
 
     @Override

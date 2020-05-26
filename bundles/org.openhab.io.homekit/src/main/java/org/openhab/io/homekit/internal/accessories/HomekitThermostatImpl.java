@@ -96,17 +96,20 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements Ther
 
     @Override
     public double getMinCurrentTemperature() {
-        return getAccessoryConfiguration(HomekitCharacteristicType.CURRENT_TEMPERATURE, HomekitTaggedItem.MIN_VALUE, BigDecimal.valueOf(TargetTemperatureCharacteristic.DEFAULT_MIN_VALUE)).doubleValue();
+        return getAccessoryConfiguration(HomekitCharacteristicType.CURRENT_TEMPERATURE, HomekitTaggedItem.MIN_VALUE,
+                BigDecimal.valueOf(TargetTemperatureCharacteristic.DEFAULT_MIN_VALUE)).doubleValue();
     }
 
     @Override
     public double getMaxCurrentTemperature() {
-        return getAccessoryConfiguration(HomekitCharacteristicType.CURRENT_TEMPERATURE, HomekitTaggedItem.MAX_VALUE, BigDecimal.valueOf(TargetTemperatureCharacteristic.DEFAULT_MAX_VALUE)).doubleValue();
+        return getAccessoryConfiguration(HomekitCharacteristicType.CURRENT_TEMPERATURE, HomekitTaggedItem.MAX_VALUE,
+                BigDecimal.valueOf(TargetTemperatureCharacteristic.DEFAULT_MAX_VALUE)).doubleValue();
     }
 
     @Override
     public double getMinStepCurrentTemperature() {
-        return getAccessoryConfiguration(HomekitCharacteristicType.CURRENT_TEMPERATURE, HomekitTaggedItem.STEP, BigDecimal.valueOf(TargetTemperatureCharacteristic.DEFAULT_STEP)).doubleValue();
+        return getAccessoryConfiguration(HomekitCharacteristicType.CURRENT_TEMPERATURE, HomekitTaggedItem.STEP,
+                BigDecimal.valueOf(TargetTemperatureCharacteristic.DEFAULT_STEP)).doubleValue();
     }
 
     @Override
@@ -205,18 +208,20 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements Ther
 
     @Override
     public double getMinTargetTemperature() {
-        return getAccessoryConfiguration(HomekitCharacteristicType.TARGET_TEMPERATURE, HomekitTaggedItem.MIN_VALUE, BigDecimal.valueOf(TargetTemperatureCharacteristic.DEFAULT_MIN_VALUE)).doubleValue();
+        return getAccessoryConfiguration(HomekitCharacteristicType.TARGET_TEMPERATURE, HomekitTaggedItem.MIN_VALUE,
+                BigDecimal.valueOf(TargetTemperatureCharacteristic.DEFAULT_MIN_VALUE)).doubleValue();
     }
 
     @Override
     public double getMaxTargetTemperature() {
-        return getAccessoryConfiguration(HomekitCharacteristicType.TARGET_TEMPERATURE, HomekitTaggedItem.MAX_VALUE, BigDecimal.valueOf(TargetTemperatureCharacteristic.DEFAULT_MAX_VALUE)).doubleValue();
+        return getAccessoryConfiguration(HomekitCharacteristicType.TARGET_TEMPERATURE, HomekitTaggedItem.MAX_VALUE,
+                BigDecimal.valueOf(TargetTemperatureCharacteristic.DEFAULT_MAX_VALUE)).doubleValue();
     }
 
     @Override
     public double getMinStepTargetTemperature() {
-        return getAccessoryConfiguration(HomekitCharacteristicType.TARGET_TEMPERATURE, HomekitTaggedItem.STEP, BigDecimal.valueOf(
-            TargetTemperatureCharacteristic.DEFAULT_STEP)).doubleValue();
+        return getAccessoryConfiguration(HomekitCharacteristicType.TARGET_TEMPERATURE, HomekitTaggedItem.STEP,
+                BigDecimal.valueOf(TargetTemperatureCharacteristic.DEFAULT_STEP)).doubleValue();
     }
 
     @Override

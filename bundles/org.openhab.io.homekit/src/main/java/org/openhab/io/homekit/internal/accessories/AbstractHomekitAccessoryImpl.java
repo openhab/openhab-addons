@@ -178,6 +178,7 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
      * return configuration attached to the root accessory, e.g. groupItem.
      * Note: result will be casted to the type of the default value.
      * The type for number is BigDecimal.
+     * 
      * @param key configuration key
      * @param defaultValue default value
      * @param <T> expected type
@@ -191,15 +192,18 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
      * return configuration of the characteristic item, e.g. currentTemperature.
      * Note: result will be casted to the type of the default value.
      * The type for number is BigDecimal.
+     * 
      * @param characteristicType characteristic type
      * @param key configuration key
      * @param defaultValue default value
      * @param <T> expected type
      * @return configuration value
      */
-    protected <T> T getAccessoryConfiguration(@NonNull HomekitCharacteristicType characteristicType, @NonNull String key, @NonNull T defaultValue) {
+    protected <T> T getAccessoryConfiguration(@NonNull HomekitCharacteristicType characteristicType,
+            @NonNull String key, @NonNull T defaultValue) {
         final Optional<HomekitTaggedItem> characteristic = getCharacteristic(characteristicType);
-        return characteristic.isPresent()?getItemConfiguration(characteristic.get(), key,defaultValue):defaultValue;
+        return characteristic.isPresent() ? getItemConfiguration(characteristic.get(), key, defaultValue)
+                : defaultValue;
     }
 
     protected void addCharacteristic(HomekitTaggedItem characteristic) {
