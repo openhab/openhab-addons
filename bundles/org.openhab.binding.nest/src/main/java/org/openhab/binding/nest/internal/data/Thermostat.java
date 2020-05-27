@@ -569,5 +569,4 @@ public class Thermostat extends BaseNestDevice {
                 .append("]");
         return builder.toString();
     }
-
 }

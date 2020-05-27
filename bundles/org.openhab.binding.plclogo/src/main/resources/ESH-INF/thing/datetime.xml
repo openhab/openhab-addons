@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="plclogo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="plclogo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!--Siemens LOGO! Digital -->
 	<thing-type id="datetime">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="device" />
+			<bridge-type-ref id="device"/>
 		</supported-bridge-type-refs>
 		<label>Date/Time Block</label>
 		<description>Siemens LOGO! date/time block</description>
-		<config-description-ref uri="thing-type:plclogo:datetime" />
+		<config-description-ref uri="thing-type:plclogo:datetime"/>
 	</thing-type>
 </thing:thing-descriptions>
-

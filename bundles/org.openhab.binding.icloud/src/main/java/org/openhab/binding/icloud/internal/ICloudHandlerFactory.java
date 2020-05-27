@@ -115,5 +115,4 @@ public class ICloudHandlerFactory extends BaseThingHandlerFactory {
     public void unsetTranslationProvider(TranslationProvider i18nProvider) {
         this.i18nProvider = null;
     }
-
 }

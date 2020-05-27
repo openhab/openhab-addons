@@ -66,6 +66,5 @@ public class IhcTimeServiceTest {
         assertEquals(24, result.getSyncIntervalInHours());
         assertEquals(LocalDateTime.parse("2018-12-07T08:20:10", DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")),
                 result.getTimeAndDateInUTC().getAsLocalDateTime());
-
     }
 }

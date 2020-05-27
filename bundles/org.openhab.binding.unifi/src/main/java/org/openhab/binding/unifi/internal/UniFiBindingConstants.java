@@ -55,5 +55,4 @@ public class UniFiBindingConstants {
     public static final String PARAMETER_PASSWORD = "password";
     public static final String PARAMETER_SITE = "site";
     public static final String PARAMETER_CID = "cid";
-
 }

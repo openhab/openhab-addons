@@ -7,28 +7,28 @@
 	<!-- ############################### Mower ############################### -->
 	<thing-type id="mower">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="account" />
+			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 
 		<label>Gardena Smart Sileno Mower</label>
 		<description>A Gardena Smart Sileno mower</description>
 
 		<channel-groups>
-			<channel-group id="device_info" typeId="deviceInfo" />
-			<channel-group id="battery" typeId="rechargeableBattery" />
-			<channel-group id="radio" typeId="radio" />
-			<channel-group id="mower" typeId="mower" />
-			<channel-group id="mower_stats" typeId="mowerStats" />
-			<channel-group id="firmware" typeId="firmware" />
+			<channel-group id="device_info" typeId="deviceInfo"/>
+			<channel-group id="battery" typeId="rechargeableBattery"/>
+			<channel-group id="radio" typeId="radio"/>
+			<channel-group id="mower" typeId="mower"/>
+			<channel-group id="mower_stats" typeId="mowerStats"/>
+			<channel-group id="firmware" typeId="firmware"/>
 		</channel-groups>
 		<properties>
 			<!-- device info -->
-			<property name="manufacturer" />
-			<property name="product" />
-			<property name="serialNumber" />
-			<property name="sgtin" />
-			<property name="version" />
-			<property name="category" />
+			<property name="manufacturer"/>
+			<property name="product"/>
+			<property name="serialNumber"/>
+			<property name="sgtin"/>
+			<property name="version"/>
+			<property name="category"/>
 		</properties>
 	</thing-type>
 
@@ -36,7 +36,7 @@
 		<label>Device Info</label>
 		<description>Information about the device</description>
 		<channels>
-			<channel id="last_time_online" typeId="lastTimeOnline" />
+			<channel id="last_time_online" typeId="lastTimeOnline"/>
 		</channels>
 	</channel-group-type>
 
@@ -44,8 +44,8 @@
 		<label>Battery Info</label>
 		<description>Information about the rechargeable battery</description>
 		<channels>
-			<channel id="level" typeId="system.battery-level" />
-			<channel id="charging" typeId="charging" />
+			<channel id="level" typeId="system.battery-level"/>
+			<channel id="charging" typeId="charging"/>
 		</channels>
 	</channel-group-type>
 
@@ -53,8 +53,8 @@
 		<label>Radio Link</label>
 		<description>Information about the radio link</description>
 		<channels>
-			<channel id="quality" typeId="radioQuality" />
-			<channel id="state" typeId="system.signal-strength" />
+			<channel id="quality" typeId="radioQuality"/>
+			<channel id="state" typeId="system.signal-strength"/>
 		</channels>
 	</channel-group-type>
 
@@ -62,17 +62,17 @@
 		<label>Robotic Mower</label>
 		<description>Information about the robotic mower</description>
 		<channels>
-			<channel id="manual_operation" typeId="manualOperation" />
-			<channel id="status" typeId="status" />
-			<channel id="error" typeId="error" />
-			<channel id="source_for_next_start" typeId="sourceForNextStart" />
-			<channel id="timestamp_next_start" typeId="timestampNextStart" />
-			<channel id="override_end_time" typeId="overrideEndTime" />
-			<channel id="park_until_further_notice" typeId="parkUntilFurtherNotice" />
-			<channel id="park_until_next_timer" typeId="parkUntilNextTimer" />
-			<channel id="start_override_timer" typeId="startOverrideTimer" />
-			<channel id="start_resume_schedule" typeId="startResumeSchedule" />
-			<channel id="duration_property" typeId="mowerDurationProperty" />
+			<channel id="manual_operation" typeId="manualOperation"/>
+			<channel id="status" typeId="status"/>
+			<channel id="error" typeId="error"/>
+			<channel id="source_for_next_start" typeId="sourceForNextStart"/>
+			<channel id="timestamp_next_start" typeId="timestampNextStart"/>
+			<channel id="override_end_time" typeId="overrideEndTime"/>
+			<channel id="park_until_further_notice" typeId="parkUntilFurtherNotice"/>
+			<channel id="park_until_next_timer" typeId="parkUntilNextTimer"/>
+			<channel id="start_override_timer" typeId="startOverrideTimer"/>
+			<channel id="start_resume_schedule" typeId="startResumeSchedule"/>
+			<channel id="duration_property" typeId="mowerDurationProperty"/>
 		</channels>
 	</channel-group-type>
 
@@ -80,7 +80,7 @@
 		<item-type>Number</item-type>
 		<label>Mowing Time</label>
 		<description>Mowing time in minutes</description>
-		<state pattern="%d min" min="1" max="1440" step="1" />
+		<state pattern="%d min" min="1" max="1440" step="1"/>
 	</channel-type>
 
 	<channel-type id="parkUntilFurtherNotice">
@@ -111,28 +111,28 @@
 		<item-type>DateTime</item-type>
 		<label>Last Time Online</label>
 		<description>Last time the device was online</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="charging" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Battery Charging</label>
 		<description>Battery Charging</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="radioQuality" advanced="true">
 		<item-type>Number</item-type>
 		<label>Radio Link Quality</label>
 		<description>Radio Link Quality</description>
-		<state pattern="%d %%" readOnly="true" />
+		<state pattern="%d %%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="manualOperation" advanced="true">
 		<item-type>String</item-type>
 		<label>Manual Operation</label>
 		<description>The mower is controlled manually</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="status">
@@ -269,30 +269,30 @@
 		<item-type>DateTime</item-type>
 		<label>Timestamp Next Start</label>
 		<description>Timestamp of the next start</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="overrideEndTime" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Override End Time</label>
 		<description>Override End Time</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperature" advanced="true">
 		<item-type>Number</item-type>
 		<label>Temperature</label>
 		<description>Temperature</description>
-		<state pattern="%d °C" readOnly="true" />
+		<state pattern="%d °C" readOnly="true"/>
 	</channel-type>
 
 	<channel-group-type id="firmware">
 		<label>Firmware</label>
 		<description>Information about the firmware</description>
 		<channels>
-			<channel id="firmware_status" typeId="firmwareStatus" />
-			<channel id="firmware_upload_progress" typeId="firmwareUploadProgress" />
-			<channel id="firmware_available_version" typeId="firmwareAvailableVersion" />
+			<channel id="firmware_status" typeId="firmwareStatus"/>
+			<channel id="firmware_upload_progress" typeId="firmwareUploadProgress"/>
+			<channel id="firmware_available_version" typeId="firmwareAvailableVersion"/>
 		</channels>
 	</channel-group-type>
 
@@ -300,31 +300,31 @@
 		<item-type>String</item-type>
 		<label>Status</label>
 		<description>The firmware status</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="firmwareUploadProgress" advanced="true">
 		<item-type>Number</item-type>
 		<label>Upload Progress</label>
 		<description>Firmware upload in progress</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="firmwareAvailableVersion" advanced="true">
 		<item-type>String</item-type>
 		<label>Available Version</label>
 		<description>Available firmware version</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-group-type id="mowerStats">
 		<label>Robotic Mower Statistics</label>
 		<description>Statistics about the robotic mower</description>
 		<channels>
-			<channel id="cutting_time" typeId="cuttingTime" />
-			<channel id="charging_cycles" typeId="chargingCycles" />
-			<channel id="collisions" typeId="collisions" />
-			<channel id="running_time" typeId="runningTime" />
+			<channel id="cutting_time" typeId="cuttingTime"/>
+			<channel id="charging_cycles" typeId="chargingCycles"/>
+			<channel id="collisions" typeId="collisions"/>
+			<channel id="running_time" typeId="runningTime"/>
 		</channels>
 	</channel-group-type>
 
@@ -332,54 +332,54 @@
 		<item-type>Number</item-type>
 		<label>Cutting Time</label>
 		<description>The cutting time</description>
-		<state readOnly="true" pattern="%d h" />
+		<state readOnly="true" pattern="%d h"/>
 	</channel-type>
 
 	<channel-type id="chargingCycles" advanced="true">
 		<item-type>Number</item-type>
 		<label>Charging Cycles</label>
 		<description>The charging cycles</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="collisions" advanced="true">
 		<item-type>Number</item-type>
 		<label>Collisions</label>
 		<description>The number of collisions</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="runningTime" advanced="true">
 		<item-type>Number</item-type>
 		<label>Running Time</label>
 		<description>Running time</description>
-		<state readOnly="true" pattern="%d h" />
+		<state readOnly="true" pattern="%d h"/>
 	</channel-type>
 
 	<!-- ############################### Watering Computer ############################### -->
 	<thing-type id="watering_computer">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="account" />
+			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 
 		<label>Gardena Smart Watering Computer</label>
 		<description>Represents a Gardena Smart Watering Computer</description>
 
 		<channel-groups>
-			<channel-group id="device_info" typeId="deviceInfo" />
-			<channel-group id="battery" typeId="battery" />
-			<channel-group id="radio" typeId="radio" />
-			<channel-group id="outlet" typeId="outlet" />
-			<channel-group id="ambient_temperature" typeId="ambientTemperature" />
+			<channel-group id="device_info" typeId="deviceInfo"/>
+			<channel-group id="battery" typeId="battery"/>
+			<channel-group id="radio" typeId="radio"/>
+			<channel-group id="outlet" typeId="outlet"/>
+			<channel-group id="ambient_temperature" typeId="ambientTemperature"/>
 		</channel-groups>
 		<properties>
 			<!-- device info -->
-			<property name="manufacturer" />
-			<property name="product" />
-			<property name="serialNumber" />
-			<property name="sgtin" />
-			<property name="version" />
-			<property name="category" />
+			<property name="manufacturer"/>
+			<property name="product"/>
+			<property name="serialNumber"/>
+			<property name="sgtin"/>
+			<property name="version"/>
+			<property name="category"/>
 		</properties>
 	</thing-type>
 
@@ -387,8 +387,8 @@
 		<label>Battery Info</label>
 		<description>Information about the battery</description>
 		<channels>
-			<channel id="level" typeId="system.battery-level" />
-			<channel id="disposable_battery_status" typeId="disposableBatteryStatus" />
+			<channel id="level" typeId="system.battery-level"/>
+			<channel id="disposable_battery_status" typeId="disposableBatteryStatus"/>
 		</channels>
 	</channel-group-type>
 
@@ -396,9 +396,9 @@
 		<label>Watering Outlet</label>
 		<description>Information about the watering outlet</description>
 		<channels>
-			<channel id="valve_open" typeId="valveOpen" />
-			<channel id="manual_override" typeId="manualOverride" />
-			<channel id="button_manual_override_time" typeId="buttonManualOverrideTime" />
+			<channel id="valve_open" typeId="valveOpen"/>
+			<channel id="manual_override" typeId="manualOverride"/>
+			<channel id="button_manual_override_time" typeId="buttonManualOverrideTime"/>
 		</channels>
 	</channel-group-type>
 
@@ -409,7 +409,7 @@
 			<channel id="temperature" typeId="temperature">
 				<label>Ambient Temperature</label>
 			</channel>
-			<channel id="frost_warning" typeId="frostWarning" />
+			<channel id="frost_warning" typeId="frostWarning"/>
 		</channels>
 	</channel-group-type>
 
@@ -451,7 +451,7 @@
 		<item-type>Number</item-type>
 		<label>Button Manual Override</label>
 		<description>The time the valve is open when you press the button on the device</description>
-		<state pattern="%d min" min="1" max="59" step="1" />
+		<state pattern="%d min" min="1" max="59" step="1"/>
 	</channel-type>
 
 	<channel-type id="frostWarning" advanced="true">
@@ -470,29 +470,29 @@
 	<!-- ############################### Sensor ############################### -->
 	<thing-type id="sensor">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="account" />
+			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 
 		<label>Gardena Smart Sensor</label>
 		<description>Represents a Gardena Smart Sensor</description>
 
 		<channel-groups>
-			<channel-group id="device_info" typeId="deviceInfo" />
-			<channel-group id="battery" typeId="battery" />
-			<channel-group id="radio" typeId="radio" />
-			<channel-group id="ambient_temperature" typeId="ambientTemperature" />
-			<channel-group id="soil_temperature" typeId="soilTemperature" />
-			<channel-group id="humidity" typeId="humidity" />
-			<channel-group id="light" typeId="light" />
+			<channel-group id="device_info" typeId="deviceInfo"/>
+			<channel-group id="battery" typeId="battery"/>
+			<channel-group id="radio" typeId="radio"/>
+			<channel-group id="ambient_temperature" typeId="ambientTemperature"/>
+			<channel-group id="soil_temperature" typeId="soilTemperature"/>
+			<channel-group id="humidity" typeId="humidity"/>
+			<channel-group id="light" typeId="light"/>
 		</channel-groups>
 		<properties>
 			<!-- device info -->
-			<property name="manufacturer" />
-			<property name="product" />
-			<property name="serialNumber" />
-			<property name="sgtin" />
-			<property name="version" />
-			<property name="category" />
+			<property name="manufacturer"/>
+			<property name="product"/>
+			<property name="serialNumber"/>
+			<property name="sgtin"/>
+			<property name="version"/>
+			<property name="category"/>
 		</properties>
 	</thing-type>
 
@@ -510,7 +510,7 @@
 		<label>Humidity</label>
 		<description>The humidity</description>
 		<channels>
-			<channel id="humidity" typeId="humidity" />
+			<channel id="humidity" typeId="humidity"/>
 		</channels>
 	</channel-group-type>
 
@@ -518,7 +518,7 @@
 		<label>Brightness</label>
 		<description>The brightness</description>
 		<channels>
-			<channel id="light" typeId="light" />
+			<channel id="light" typeId="light"/>
 		</channels>
 	</channel-group-type>
 
@@ -526,46 +526,46 @@
 		<item-type>Number</item-type>
 		<label>Humidity</label>
 		<description>The humidity</description>
-		<state pattern="%d %%" readOnly="true" />
+		<state pattern="%d %%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="light">
 		<item-type>Number</item-type>
 		<label>Brightness</label>
 		<description>The brightness</description>
-		<state pattern="%d lx" readOnly="true" />
+		<state pattern="%d lx" readOnly="true"/>
 	</channel-type>
 
 	<!-- ############################### Pressure Pump ############################### -->
 
 	<thing-type id="electronic_pressure_pump">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="account" />
+			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 
 		<label>Gardena Smart Pressure Pump</label>
 		<description>Represents a Gardena Smart Pressure Pump</description>
 
 		<channel-groups>
-			<channel-group id="device_info" typeId="deviceInfo" />
-			<channel-group id="radio" typeId="radio" />
+			<channel-group id="device_info" typeId="deviceInfo"/>
+			<channel-group id="radio" typeId="radio"/>
 
-			<channel-group id="outlet_temperature" typeId="outletTemperature" />
-			<channel-group id="pump" typeId="pump" />
-			<channel-group id="outlet_pressure" typeId="outletPressure" />
-			<channel-group id="flow" typeId="flow" />
-			<channel-group id="manual_watering" typeId="manualWatering" />
-			<channel-group id="scheduling" typeId="scheduling" />
+			<channel-group id="outlet_temperature" typeId="outletTemperature"/>
+			<channel-group id="pump" typeId="pump"/>
+			<channel-group id="outlet_pressure" typeId="outletPressure"/>
+			<channel-group id="flow" typeId="flow"/>
+			<channel-group id="manual_watering" typeId="manualWatering"/>
+			<channel-group id="scheduling" typeId="scheduling"/>
 		</channel-groups>
 
 		<properties>
 			<!-- device info -->
-			<property name="manufacturer" />
-			<property name="product" />
-			<property name="serialNumber" />
-			<property name="sgtin" />
-			<property name="version" />
-			<property name="category" />
+			<property name="manufacturer"/>
+			<property name="product"/>
+			<property name="serialNumber"/>
+			<property name="sgtin"/>
+			<property name="version"/>
+			<property name="category"/>
 		</properties>
 
 		<config-description>
@@ -602,10 +602,10 @@
 		<label>Outlet Temperature</label>
 		<description>The outlet temperature</description>
 		<channels>
-			<channel id="temperature" typeId="temperature" />
-			<channel id="temperature_min" typeId="temperatureMin" />
-			<channel id="temperature_max" typeId="temperatureMax" />
-			<channel id="frost_warning" typeId="frostWarning" />
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="temperature_min" typeId="temperatureMin"/>
+			<channel id="temperature_max" typeId="temperatureMax"/>
+			<channel id="frost_warning" typeId="frostWarning"/>
 		</channels>
 	</channel-group-type>
 
@@ -613,30 +613,30 @@
 		<item-type>Number</item-type>
 		<label>Minimum Temperature</label>
 		<description>The minimum outlet temperature</description>
-		<state pattern="%d °C" readOnly="true" />
+		<state pattern="%d °C" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureMax" advanced="true">
 		<item-type>Number</item-type>
 		<label>Maximum Temperature</label>
 		<description>The maximum outlet temperature</description>
-		<state pattern="%d °C" readOnly="true" />
+		<state pattern="%d °C" readOnly="true"/>
 	</channel-type>
 
 	<channel-group-type id="pump">
 		<label>Pump</label>
 		<description>The pump</description>
 		<channels>
-			<channel id="mode" typeId="pumpMode" />
-			<channel id="pump_on_off" typeId="pumpOnOff" />
-			<channel id="turn_on_pressure" typeId="turnOnPressure" />
-			<channel id="operating_mode" typeId="operatingMode" />
-			<channel id="error" typeId="errorCounter" />
-			<channel id="operating_days" typeId="operatingDays" />
-			<channel id="error1_count" typeId="errorCounterOne" />
-			<channel id="error2_count" typeId="errorCounterTwo" />
-			<channel id="error3_count" typeId="errorCounterThree" />
-			<channel id="error4_count" typeId="errorCounterFour" />
+			<channel id="mode" typeId="pumpMode"/>
+			<channel id="pump_on_off" typeId="pumpOnOff"/>
+			<channel id="turn_on_pressure" typeId="turnOnPressure"/>
+			<channel id="operating_mode" typeId="operatingMode"/>
+			<channel id="error" typeId="errorCounter"/>
+			<channel id="operating_days" typeId="operatingDays"/>
+			<channel id="error1_count" typeId="errorCounterOne"/>
+			<channel id="error2_count" typeId="errorCounterTwo"/>
+			<channel id="error3_count" typeId="errorCounterThree"/>
+			<channel id="error4_count" typeId="errorCounterFour"/>
 		</channels>
 	</channel-group-type>
 
@@ -644,42 +644,42 @@
 		<item-type>Number</item-type>
 		<label>Error Counter</label>
 		<description>The error counter</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="errorCounterOne" advanced="true">
 		<item-type>Number</item-type>
 		<label>Error Counter One</label>
 		<description>The error counter one</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="errorCounterTwo" advanced="true">
 		<item-type>Number</item-type>
 		<label>Error Counter Two</label>
 		<description>The error counter two</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="errorCounterThree" advanced="true">
 		<item-type>Number</item-type>
 		<label>Error Counter Three</label>
 		<description>The error counter three</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="errorCounterFour" advanced="true">
 		<item-type>Number</item-type>
 		<label>Error Counter Four</label>
 		<description>The error counter Four</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="operatingDays" advanced="true">
 		<item-type>Number</item-type>
 		<label>Operating Days</label>
 		<description>The operating days</description>
-		<state readOnly="true" pattern="%d days" />
+		<state readOnly="true" pattern="%d days"/>
 	</channel-type>
 
 	<channel-type id="pumpMode">
@@ -698,7 +698,7 @@
 		<item-type>Switch</item-type>
 		<label>Pump</label>
 		<description>Pump</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="turnOnPressure">
@@ -732,8 +732,8 @@
 		<label>Outlet Pressure</label>
 		<description>The outlet pressure</description>
 		<channels>
-			<channel id="outlet_pressure" typeId="outletPressure" />
-			<channel id="outlet_pressure_max" typeId="outletPressureMax" />
+			<channel id="outlet_pressure" typeId="outletPressure"/>
+			<channel id="outlet_pressure_max" typeId="outletPressureMax"/>
 		</channels>
 	</channel-group-type>
 
@@ -741,24 +741,24 @@
 		<item-type>Number</item-type>
 		<label>Outlet Pressure</label>
 		<description>The outlet pressure</description>
-		<state readOnly="true" pattern="%d bar" />
+		<state readOnly="true" pattern="%d bar"/>
 	</channel-type>
 
 	<channel-type id="outletPressureMax">
 		<item-type>Number</item-type>
 		<label>Outlet Pressure Maximum</label>
 		<description>The maximum outlet pressure</description>
-		<state readOnly="true" pattern="%d bar" />
+		<state readOnly="true" pattern="%d bar"/>
 	</channel-type>
 
 	<channel-group-type id="flow">
 		<label>Flow</label>
 		<description>The flow</description>
 		<channels>
-			<channel id="flow_rate" typeId="flowRate" />
-			<channel id="flow_since_last_reset" typeId="flowSinceLastReset" />
-			<channel id="flow_total" typeId="flowTotal" />
-			<channel id="dripping_alert" typeId="drippingAlert" />
+			<channel id="flow_rate" typeId="flowRate"/>
+			<channel id="flow_since_last_reset" typeId="flowSinceLastReset"/>
+			<channel id="flow_total" typeId="flowTotal"/>
+			<channel id="dripping_alert" typeId="drippingAlert"/>
 		</channels>
 	</channel-group-type>
 
@@ -766,21 +766,21 @@
 		<item-type>Number</item-type>
 		<label>Flow Rate</label>
 		<description>The flow rate</description>
-		<state readOnly="true" pattern="%d l/h" />
+		<state readOnly="true" pattern="%d l/h"/>
 	</channel-type>
 
 	<channel-type id="flowSinceLastReset" advanced="true">
 		<item-type>Number</item-type>
 		<label>Flow Since Last Reset</label>
 		<description>The flow since last reset</description>
-		<state readOnly="true" pattern="%d m3" />
+		<state readOnly="true" pattern="%d m3"/>
 	</channel-type>
 
 	<channel-type id="flowTotal" advanced="true">
 		<item-type>Number</item-type>
 		<label>Total Flow</label>
 		<description>The total flow</description>
-		<state readOnly="true" pattern="%d m3" />
+		<state readOnly="true" pattern="%d m3"/>
 	</channel-type>
 
 	<channel-type id="drippingAlert">
@@ -800,8 +800,8 @@
 		<label>Manual Watering</label>
 		<description>Manual Watering</description>
 		<channels>
-			<channel id="manual_watering_timer" typeId="manualWateringTimer" />
-			<channel id="last_manual_override_time" typeId="lastManualOverrideTime" />
+			<channel id="manual_watering_timer" typeId="manualWateringTimer"/>
+			<channel id="last_manual_override_time" typeId="lastManualOverrideTime"/>
 		</channels>
 	</channel-group-type>
 
@@ -834,16 +834,16 @@
 		<item-type>Number</item-type>
 		<label>Last Manual Override Timer</label>
 		<description>The last manual override timer</description>
-		<state readOnly="true" pattern="%d min" />
+		<state readOnly="true" pattern="%d min"/>
 	</channel-type>
 
 	<channel-group-type id="scheduling">
 		<label>Manual Watering</label>
 		<description>Manual Watering</description>
 		<channels>
-			<channel id="scheduled_watering_end" typeId="scheduledWateringEnd" />
-			<channel id="scheduled_watering_next_start" typeId="scheduledWateringNextStart" />
-			<channel id="adaptive_scheduling_last_decision" typeId="adaptiveSchedulingLastDecision" />
+			<channel id="scheduled_watering_end" typeId="scheduledWateringEnd"/>
+			<channel id="scheduled_watering_next_start" typeId="scheduledWateringNextStart"/>
+			<channel id="adaptive_scheduling_last_decision" typeId="adaptiveSchedulingLastDecision"/>
 		</channels>
 	</channel-group-type>
 
@@ -851,14 +851,14 @@
 		<item-type>DateTime</item-type>
 		<label>Scheduled Watering End</label>
 		<description>The scheduled watering end</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="scheduledWateringNextStart" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Scheduled Watering Next Start</label>
 		<description>The scheduled watering next start</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="adaptiveSchedulingLastDecision" advanced="true">
@@ -878,26 +878,26 @@
 	<!-- ############################### Power ############################### -->
 	<thing-type id="power">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="account" />
+			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 
 		<label>Gardena Smart Power Plug</label>
 		<description>A Gardena Smart Power Plug</description>
 
 		<channel-groups>
-			<channel-group id="device_info" typeId="deviceInfo" />
-			<channel-group id="radio" typeId="radio" />
-			<channel-group id="power" typeId="power" />
-			<channel-group id="firmware" typeId="firmware" />
+			<channel-group id="device_info" typeId="deviceInfo"/>
+			<channel-group id="radio" typeId="radio"/>
+			<channel-group id="power" typeId="power"/>
+			<channel-group id="firmware" typeId="firmware"/>
 		</channel-groups>
 		<properties>
 			<!-- device info -->
-			<property name="manufacturer" />
-			<property name="product" />
-			<property name="serialNumber" />
-			<property name="sgtin" />
-			<property name="version" />
-			<property name="category" />
+			<property name="manufacturer"/>
+			<property name="product"/>
+			<property name="serialNumber"/>
+			<property name="sgtin"/>
+			<property name="version"/>
+			<property name="category"/>
 		</properties>
 	</thing-type>
 
@@ -905,8 +905,8 @@
 		<label>Power</label>
 		<description>Power</description>
 		<channels>
-			<channel id="power_timer" typeId="powerTimer" />
-			<channel id="error" typeId="powerError" />
+			<channel id="power_timer" typeId="powerTimer"/>
+			<channel id="error" typeId="powerError"/>
 		</channels>
 	</channel-group-type>
 
@@ -951,30 +951,30 @@
 
 	<thing-type id="ic24">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="account" />
+			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 
 		<label>Gardena Smart Irrigation Control</label>
 		<description>A Gardena Smart Irrigation Control</description>
 
 		<channel-groups>
-			<channel-group id="device_info" typeId="deviceInfo" />
-			<channel-group id="radio" typeId="radio" />
+			<channel-group id="device_info" typeId="deviceInfo"/>
+			<channel-group id="radio" typeId="radio"/>
 
-			<channel-group id="watering" typeId="watering" />
-			<channel-group id="ic24" typeId="ic24" />
-			<channel-group id="scheduling" typeId="ic24scheduling" />
+			<channel-group id="watering" typeId="watering"/>
+			<channel-group id="ic24" typeId="ic24"/>
+			<channel-group id="scheduling" typeId="ic24scheduling"/>
 
-			<channel-group id="firmware" typeId="firmware" />
+			<channel-group id="firmware" typeId="firmware"/>
 		</channel-groups>
 		<properties>
 			<!-- device info -->
-			<property name="manufacturer" />
-			<property name="product" />
-			<property name="serialNumber" />
-			<property name="sgtin" />
-			<property name="version" />
-			<property name="category" />
+			<property name="manufacturer"/>
+			<property name="product"/>
+			<property name="serialNumber"/>
+			<property name="sgtin"/>
+			<property name="version"/>
+			<property name="category"/>
 		</properties>
 	</thing-type>
 
@@ -1037,9 +1037,9 @@
 		<label>Irrigation Control</label>
 		<description>The irrigation control</description>
 		<channels>
-			<channel id="valves_connected" typeId="valvesConnected" />
-			<channel id="valves_master_config" typeId="valvesMasterConfig" />
-			<channel id="error" typeId="ic24error" />
+			<channel id="valves_connected" typeId="valvesConnected"/>
+			<channel id="valves_master_config" typeId="valvesMasterConfig"/>
+			<channel id="error" typeId="ic24error"/>
 			<channel id="valve_error_0" typeId="valveError">
 				<label>Valve Error 0</label>
 				<description>The error for valve 0</description>
@@ -1075,14 +1075,14 @@
 		<item-type>String</item-type>
 		<label>Valves Connected</label>
 		<description>The connected valves</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="valvesMasterConfig" advanced="true">
 		<item-type>String</item-type>
 		<label>Valves Master Config</label>
 		<description>The valves master config</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="ic24error" advanced="true">
@@ -1103,7 +1103,7 @@
 	<channel-type id="valveError" advanced="true">
 		<item-type>String</item-type>
 		<label>Valve Error</label>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-group-type id="ic24scheduling">
@@ -1164,7 +1164,7 @@
 	<channel-type id="ic24ScheduledWatering" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Scheduled Watering</label>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 

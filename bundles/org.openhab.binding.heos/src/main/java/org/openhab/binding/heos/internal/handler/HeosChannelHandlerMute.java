@@ -12,52 +12,66 @@
  */
 package org.openhab.binding.heos.internal.handler;
 
+import java.io.IOException;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.heos.handler.HeosBridgeHandler;
-import org.openhab.binding.heos.internal.api.HeosFacade;
+import org.openhab.binding.heos.internal.exception.HeosNotFoundException;
+import org.openhab.binding.heos.internal.resources.HeosEventListener;
+import org.openhab.binding.heos.internal.resources.Telnet.ReadException;
 
 /**
  * The {@link HeosChannelHandlerMute} handles the Mute channel command
  * from the implementing thing.
  *
  * @author Johannes Einig - Initial contribution
- *
  */
-public class HeosChannelHandlerMute extends HeosChannelHandler {
+@NonNullByDefault
+public class HeosChannelHandlerMute extends BaseHeosChannelHandler {
+    private final HeosEventListener eventListener;
 
-    public HeosChannelHandlerMute(HeosBridgeHandler bridge, HeosFacade api) {
-        super(bridge, api);
+    public HeosChannelHandlerMute(HeosEventListener eventListener, HeosBridgeHandler bridge) {
+        super(bridge);
+        this.eventListener = eventListener;
     }
 
     @Override
-    protected void handleCommandPlayer() {
+    public void handlePlayerCommand(Command command, String id, ThingUID uid) throws IOException, ReadException {
         if (command instanceof RefreshType) {
-            api.getHeosPlayerMuteState(id);
+            eventListener.playerStateChangeEvent(getApi().getPlayerMuteState(id));
             return;
         }
         if (command.equals(OnOffType.ON)) {
-            api.muteON(id);
+            getApi().muteON(id);
         } else if (command.equals(OnOffType.OFF)) {
-            api.muteOFF(id);
+            getApi().muteOFF(id);
         }
     }
 
     @Override
-    protected void handleCommandGroup() {
+    public void handleGroupCommand(Command command, @Nullable String id, ThingUID uid,
+            HeosGroupHandler heosGroupHandler) throws IOException, ReadException {
+        if (id == null) {
+            throw new HeosNotFoundException();
+        }
+
         if (command instanceof RefreshType) {
-            api.getHeosGroupeMuteState(id);
+            eventListener.playerStateChangeEvent(getApi().getGroupMuteState(id));
             return;
         }
         if (command.equals(OnOffType.ON)) {
-            api.muteGroupON(id);
+            getApi().muteGroupON(id);
         } else if (command.equals(OnOffType.OFF)) {
-            api.muteGroupOFF(id);
+            getApi().muteGroupOFF(id);
         }
     }
 
     @Override
-    protected void handleCommandBridge() {
+    public void handleBridgeCommand(Command command, ThingUID uid) {
         // No such channel on bridge
     }
 }

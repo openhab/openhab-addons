@@ -1,18 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="sagercaster" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+<thing:thing-descriptions bindingId="sagercaster"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="sagercaster">
 		<label>SagerCaster Thing</label>
 		<description>This thing represents a forecast for a given location</description>
-		
-		
+
+
 		<channel-groups>
-			<channel-group id="input" typeId="input" />
-			<channel-group id="output" typeId="output" />
+			<channel-group id="input" typeId="input"/>
+			<channel-group id="output" typeId="output"/>
 		</channel-groups>
 
 		<representation-property>location</representation-property>
-	
+
 		<config-description>
 			<parameter name="location" type="text" required="true"
 				pattern="^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?)[,]\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$">
@@ -20,37 +23,38 @@
 				<context>location</context>
 				<description>Your geo coordinates separated with comma (e.g. "37.8,-122.4").</description>
 			</parameter>
-			
+
 			<parameter name="observation-period" type="integer" min="0" max="6" required="true">
 				<label>Observation Period</label>
-				<description>SagerWeatherCaster needs a minimum representative period of time to produce meaningfull results. Defaults to 6 hours</description>
+				<description>SagerWeatherCaster needs a minimum representative period of time to produce meaningfull results.
+					Defaults to 6 hours</description>
 				<default>6</default>
 			</parameter>
-			
+
 		</config-description>
 	</thing-type>
-	
-	
+
+
 	<channel-group-type id="input">
 		<label>Inputs</label>
 		<description>The channels used to build the forecast results</description>
 		<channels>
-			<channel id="cloudiness" typeId="cloudiness" />
-			<channel id="is-raining" typeId="is-raining" />
-			<channel id="rain-qtty" typeId="rain-qtty" />
-			<channel id="wind-speed-beaufort" typeId="wind-speed-beaufort" />
-			<channel id="pressure" typeId="pressure" />
-			<channel id="temperature" typeId="temperature" />
+			<channel id="cloudiness" typeId="cloudiness"/>
+			<channel id="is-raining" typeId="is-raining"/>
+			<channel id="rain-qtty" typeId="rain-qtty"/>
+			<channel id="wind-speed-beaufort" typeId="wind-speed-beaufort"/>
+			<channel id="pressure" typeId="pressure"/>
+			<channel id="temperature" typeId="temperature"/>
 			<channel id="wind-angle" typeId="wind-angle-rw"/>
 		</channels>
 	</channel-group-type>
-	
+
 	<channel-group-type id="output">
 		<label>Results</label>
 		<description>Results of the Sager Weathercaster algorithm</description>
 		<channels>
-			<channel id="forecast" typeId="forecast" />
-			<channel id="velocity" typeId="velocity" />
+			<channel id="forecast" typeId="forecast"/>
+			<channel id="velocity" typeId="velocity"/>
 			<channel id="velocity-beaufort" typeId="wind-speed-beaufort">
 				<label>Wind Velocity</label>
 			</channel>
@@ -59,19 +63,19 @@
 			</channel>
 			<channel id="wind-to" typeId="wind-direction">
 				<label>Wind To</label>
-			</channel>		 
-			<channel id="wind-evolution" typeId="wind-evolution" />
+			</channel>
+			<channel id="wind-evolution" typeId="wind-evolution"/>
 			<channel id="pressure-trend" typeId="trend">
 				<label>Pressure Trend</label>
 				<description>Pressure Evolution trend over observation delay</description>
 			</channel>
-			<channel id="temperature-trend" typeId="trend" >
+			<channel id="temperature-trend" typeId="trend">
 				<label>Temperature Trend</label>
 				<description>Temperature Evolution trend over observation delay</description>
 			</channel>
 		</channels>
-	</channel-group-type>	
-	
+	</channel-group-type>
+
 	<channel-type id="forecast">
 		<item-type>String</item-type>
 		<label>Weather Forecast</label>
@@ -107,10 +111,12 @@
 				<option value="T">Precipitation or showers/Flurries followed by improvement early in period (within 6 hours)</option>
 				<option value="T1">Precipitation or showers followed by improvement early in period (within 6 hours)</option>
 				<option value="T2">Precipitation or flurries followed by improvement early in period (within 6 hours)</option>
-				<option value="U">Precipitation or showers/Flurries by improvement early in period (within 6 hours) and becoming cooler</option>
+				<option value="U">Precipitation or showers/Flurries by improvement early in period (within 6 hours) and becoming
+					cooler</option>
 				<option value="U1">Precipitation or showers by improvement early in period (within 6 hours) and becoming cooler</option>
 				<option value="U2">Precipitation or flurries by improvement early in period (within 6 hours) and becoming cooler</option>
-				<option value="W">Precipitation or showers/Flurries followed by fair early in period (within 6 hours) and becoming cooler</option>
+				<option value="W">Precipitation or showers/Flurries followed by fair early in period (within 6 hours) and
+					becoming cooler</option>
 				<option value="W1">Precipitation or showers followed by fair early in period (within 6 hours) and becoming cooler</option>
 				<option value="W2">Precipitation or flurries followed by fair early in period (within 6 hours) and becoming cooler</option>
 				<option value="X">Unsettled followed by fair</option>
@@ -118,7 +124,7 @@
 			</options>
 		</state>
 	</channel-type>
-	
+
 	<channel-type id="velocity">
 		<item-type>String</item-type>
 		<label>Wind Velocity</label>
@@ -131,11 +137,12 @@
 				<option value="W">Dangerous gale (whole gale)</option>
 				<option value="H">Hurricane</option>
 				<option value="D">Diminishing, or moderating somewhat if current winds are of fresh to strong velocity</option>
-				<option value="U">No important change. Some tendency for slight increase in winds during day, diminishing in evening</option>
+				<option value="U">No important change. Some tendency for slight increase in winds during day, diminishing in
+					evening</option>
 			</options>
 		</state>
 	</channel-type>
-	
+
 	<channel-type id="wind-direction">
 		<item-type>String</item-type>
 		<label>Wind Direction</label>
@@ -143,7 +150,7 @@
 		<category>Wind</category>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
-	
+
 	<channel-type id="wind-angle-rw">
 		<item-type>Number:Angle</item-type>
 		<label>Wind Angle</label>
@@ -164,7 +171,7 @@
 			</options>
 		</state>
 	</channel-type>
-		
+
 	<channel-type id="trend" advanced="true">
 		<item-type>String</item-type>
 		<label>Measure Trend</label>
@@ -179,7 +186,7 @@
 			</options>
 		</state>
 	</channel-type>
-	
+
 	<channel-type id="timestamp" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Calculation Time</label>
@@ -187,21 +194,21 @@
 		<category>Observation time</category>
 		<state readOnly="true"></state>
 	</channel-type>
-	
+
 	<channel-type id="cloudiness">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Cloudiness</label>
 		<description>Current cloudiness.</description>
 		<category>Clouds</category>
-		<state min="0" max="100" pattern="%d %%" />
+		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
-	
+
 	<channel-type id="rain-qtty" advanced="true">
 		<item-type>Number</item-type>
-		<label>Rain Quantity</label>		
+		<label>Rain Quantity</label>
 		<description>Current rain quantity</description>
 		<category>Rain</category>
-		<state pattern="%.2f %unit%" />
+		<state pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="is-raining">
@@ -210,28 +217,28 @@
 		<description>Is it currently raining ?</description>
 		<category>Rain</category>
 	</channel-type>
-	
+
 	<channel-type id="wind-speed-beaufort">
 		<item-type>Number</item-type>
 		<label>Beaufort</label>
 		<description>Wind speed using Beaufort Scale</description>
 		<category>Wind</category>
-		<state min="0" max="12" pattern="%d" />
+		<state min="0" max="12" pattern="%d"/>
 	</channel-type>
-	
+
 	<channel-type id="pressure">
 		<item-type>Number:Pressure</item-type>
 		<label>Sea Level Pressure</label>
 		<description>Sea Level Pressure</description>
 		<category>Pressure</category>
-		<state pattern="%.3f %unit%" />
+		<state pattern="%.3f %unit%"/>
 	</channel-type>
-	
+
 	<channel-type id="temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Current temperature</description>
 		<category>Temperature</category>
-		<state pattern="%.1f %unit%" />
+		<state pattern="%.1f %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>

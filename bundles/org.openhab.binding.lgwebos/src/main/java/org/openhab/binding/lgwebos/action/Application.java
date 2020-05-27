@@ -41,5 +41,4 @@ public class Application {
     public String toString() {
         return "Application [id=" + id + ", name=" + name + "]";
     }
-
 }

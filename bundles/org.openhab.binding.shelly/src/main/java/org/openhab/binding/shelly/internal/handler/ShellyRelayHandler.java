@@ -279,7 +279,6 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 updateChannel(groupName, CHANNEL_ROL_CONTROL_POS, new PercentType(position));
             }
         }
-
     }
 
     /**
@@ -331,16 +330,16 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                         // Shelly 1/1PM support up to 3 external sensors
                         // for whatever reason those are not represented as an array, but 3 elements
                         if (rstatus.extTemperature.sensor1 != null) {
-                            updated |= updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENDOR_TEMP1,
-                                    toQuantityType(getDouble(rstatus.extTemperature.sensor1.tC), SIUnits.CELSIUS));
+                            updated |= updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENDOR_TEMP1, toQuantityType(
+                                    getDouble(rstatus.extTemperature.sensor1.tC), DIGITS_TEMP, SIUnits.CELSIUS));
                         }
                         if (rstatus.extTemperature.sensor2 != null) {
-                            updated |= updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENDOR_TEMP2,
-                                    toQuantityType(getDouble(rstatus.extTemperature.sensor2.tC), SIUnits.CELSIUS));
+                            updated |= updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENDOR_TEMP2, toQuantityType(
+                                    getDouble(rstatus.extTemperature.sensor2.tC), DIGITS_TEMP, SIUnits.CELSIUS));
                         }
                         if (rstatus.extTemperature.sensor3 != null) {
-                            updated |= updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENDOR_TEMP3,
-                                    toQuantityType(getDouble(rstatus.extTemperature.sensor3.tC), SIUnits.CELSIUS));
+                            updated |= updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENDOR_TEMP3, toQuantityType(
+                                    getDouble(rstatus.extTemperature.sensor3.tC), DIGITS_TEMP, SIUnits.CELSIUS));
                         }
                     }
                     if ((rstatus.extHumidity != null) && (rstatus.extHumidity.sensor1 != null)) {

@@ -427,23 +427,21 @@ public class ShellyHttpApi {
             throws ShellyApiException {
         for (String eventType : eventTypes) {
             if (profile.containsEventUrl(eventType)) {
-                if (profile.containsEventUrl(eventType)) {
-                    String callBackUrl = "http://" + config.localIp + ":" + config.localPort + SHELLY_CALLBACK_URI + "/"
-                            + profile.thingName + "/" + deviceClass + "/" + index + "?type=" + eventType;
-                    String newUrl = enabled ? callBackUrl : SHELLY_NULL_URL;
-                    String test = "\"" + mkEventUrl(eventType) + "\":\"" + callBackUrl + "\"";
-                    if (!enabled && !profile.settingsJson.contains(test)) {
-                        // Don't set URL to null when the current one doesn't point to this OH
-                        // Don't interfere with a 3rd party App
-                        continue;
-                    }
-                    test = "\"" + mkEventUrl(eventType) + "\":\"" + newUrl + "\"";
-                    if (!profile.settingsJson.contains(test)) {
-                        // Current Action URL is != new URL
-                        logger.debug("{}: Set URL for type {} to {}", thingName, eventType, newUrl);
-                        request(SHELLY_URL_SETTINGS + "/" + deviceClass + "/" + index + "?" + mkEventUrl(eventType)
-                                + "=" + urlEncode(newUrl));
-                    }
+                String callBackUrl = "http://" + config.localIp + ":" + config.localPort + SHELLY_CALLBACK_URI + "/"
+                        + profile.thingName + "/" + deviceClass + "/" + index + "?type=" + eventType;
+                String newUrl = enabled ? callBackUrl : SHELLY_NULL_URL;
+                String test = "\"" + mkEventUrl(eventType) + "\":\"" + callBackUrl + "\"";
+                if (!enabled && !profile.settingsJson.contains(test)) {
+                    // Don't set URL to null when the current one doesn't point to this OH
+                    // Don't interfere with a 3rd party App
+                    continue;
+                }
+                test = "\"" + mkEventUrl(eventType) + "\":\"" + newUrl + "\"";
+                if (!profile.settingsJson.contains(test)) {
+                    // Current Action URL is != new URL
+                    logger.debug("{}: Set URL for type {} to {}", thingName, eventType, newUrl);
+                    request(SHELLY_URL_SETTINGS + "/" + deviceClass + "/" + index + "?" + mkEventUrl(eventType) + "="
+                            + urlEncode(newUrl));
                 }
             }
         }
@@ -482,13 +480,13 @@ public class ShellyHttpApi {
                 }
                 return apiResult.response; // successful
             } catch (ShellyApiException e) {
-                retries--;
                 if ((!e.isTimeout() && !apiResult.isHttpServerError()) || profile.hasBattery || (retries == 0)) {
                     // Sensor in sleep mode or API exception for non-battery device or retry counter expired
                     throw e; // non-timeout exception
                 }
 
                 timeout = true;
+                retries--;
                 timeoutErrors++; // count the retries
                 logger.debug("{}: API Timeout, retry #{} ({})", thingName, timeoutErrors, e.toString());
             }

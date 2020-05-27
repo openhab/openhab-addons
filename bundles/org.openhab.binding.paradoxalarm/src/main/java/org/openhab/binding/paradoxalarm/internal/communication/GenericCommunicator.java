@@ -90,7 +90,7 @@ public class GenericCommunicator extends AbstractCommunicator implements IParado
                 } catch (ParadoxException e) {
                     EpromRequest epromRequest = (EpromRequest) request;
                     logger.debug("Unable to retrieve EPROM message for entity Type={}, Id={}",
-                        epromRequest.getEntityType(), epromRequest.getEntityId());
+                            epromRequest.getEntityType(), epromRequest.getEntityId());
                 }
                 break;
         }

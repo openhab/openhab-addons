@@ -35,6 +35,8 @@ public class NeoHubBindingConstants {
     public static final String DEVICE_ID_NEOHUB = "neohub";
     public static final String DEVICE_ID_NEOSTAT = "neostat";
     public static final String DEVICE_ID_NEOPLUG = "neoplug";
+    public static final String DEVICE_ID_NEOCONTACT = "neocontact";
+    public static final String DEVICE_ID_NEOTEMPERATURESENSOR = "neotemperaturesensor";
 
     /*
      * Thing Type UIDs
@@ -42,9 +44,17 @@ public class NeoHubBindingConstants {
     public static final ThingTypeUID THING_TYPE_NEOHUB = new ThingTypeUID(BINDING_ID, DEVICE_ID_NEOHUB);
     public static final ThingTypeUID THING_TYPE_NEOSTAT = new ThingTypeUID(BINDING_ID, DEVICE_ID_NEOSTAT);
     public static final ThingTypeUID THING_TYPE_NEOPLUG = new ThingTypeUID(BINDING_ID, DEVICE_ID_NEOPLUG);
+    public static final ThingTypeUID THING_TYPE_NEOCONTACT = new ThingTypeUID(BINDING_ID, DEVICE_ID_NEOCONTACT);
+    public static final ThingTypeUID THING_TYPE_NEOTEMPERATURESENSOR = new ThingTypeUID(BINDING_ID,
+            DEVICE_ID_NEOTEMPERATURESENSOR);
 
     /*
-     * Channel IDs for NeoStats
+     * Channel IDs common for several device types
+     */
+    public static final String CHAN_BATTERY_LOW_ALARM = "batteryLowAlarm";
+
+    /*
+     * Channel IDs for NeoStat thermostats
      */
     public static final String CHAN_ROOM_TEMP = "roomTemperature";
     public static final String CHAN_TARGET_TEMP = "targetTemperature";
@@ -53,16 +63,28 @@ public class NeoHubBindingConstants {
     public static final String CHAN_STAT_OUTPUT_STATE = "thermostatOutputState";
 
     /*
-     * Channel IDs for NeoPlugs
+     * Channel IDs for NeoPlug smart plugs
      */
     public static final String CHAN_PLUG_OUTPUT_STATE = "plugOutputState";
     public static final String CHAN_PLUG_AUTO_MODE = "plugAutoMode";
 
     /*
+     * Channel IDs for NeoContact (wireless) contact sensors
+     */
+    public static final String CHAN_CONTACT_STATE = "contactState";
+
+    /*
+     * Channel IDs for NeoTemperatureSensor (wireless) temperature sensors
+     */
+    public static final String CHAN_TEMPERATURE_SENSOR = "sensorTemperature";
+
+    /*
      * enumerator for results of method calls
      */
     public static enum NeoHubReturnResult {
-        SUCCEEDED, ERR_COMMUNICATION, ERR_INITIALIZATION
+        SUCCEEDED,
+        ERR_COMMUNICATION,
+        ERR_INITIALIZATION
     }
 
     /*
@@ -110,19 +132,21 @@ public class NeoHubBindingConstants {
     public static final String CMD_CODE_AWAY = "{\"FROST_%s\":\"%s\"}";
     public static final String CMD_CODE_TIMER = "{\"TIMER_%s\":\"%s\"}";
     public static final String CMD_CODE_MANUAL = "{\"MANUAL_%s\":\"%s\"}";
+    public static final String CMD_CODE_READ_DCB = "{\"READ_DCB\":100}";
 
     /*
      * openHAB status strings
      */
     public static final String VAL_OFF = "Off";
     public static final String VAL_HEATING = "Heating";
-    
+
     /*
      * logger message strings
      */
     public static final String PLEASE_REPORT_BUG = "Unexpected situation - please report a bug: ";
     public static final String MSG_HUB_CONFIG = PLEASE_REPORT_BUG + "hub needs to be initialized!";
     public static final String MSG_HUB_COMM = PLEASE_REPORT_BUG + "error communicating with the hub!";
-    public static final String MSG_FMT_POLL_ERR = "Polling error: {}";
-
+    public static final String MSG_FMT_INFO_POLL_ERR = "INFO polling error: {}";
+    public static final String MSG_FMT_DCB_POLL_ERR = "READ_DCB polling error: {}";
+    public static final String MSG_FMT_SET_VALUE_ERR = "{} set value error: {}";
 }

@@ -53,7 +53,6 @@ public class AnnounceAwakeRequestMessage extends Message {
         AwakeReason(int id) {
             this.id = id;
         }
-
     }
 
     private static final Pattern PAYLOAD_PATTERN = Pattern.compile("(\\w{16})(\\w{2})");

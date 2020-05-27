@@ -89,5 +89,4 @@ public interface ModbusWriteRequestBlueprint extends ModbusRequestBlueprint {
      * @param visitor
      */
     public void accept(ModbusWriteRequestBlueprintVisitor visitor);
-
 }

@@ -19,16 +19,21 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.regoheatpump.internal.handler.IpHusdataHandler;
 import org.openhab.binding.regoheatpump.internal.handler.IpRego6xxHeatPumpHandler;
 import org.openhab.binding.regoheatpump.internal.handler.SerialHusdataHandler;
 import org.openhab.binding.regoheatpump.internal.handler.SerialRego6xxHeatPumpHandler;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link RegoHeatPumpHandlerFactory} is responsible for creating things and thing
@@ -36,6 +41,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Boris Krivonog - Initial contribution
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.regoheatpump")
 public class RegoHeatPumpHandlerFactory extends BaseThingHandlerFactory {
 
@@ -43,13 +49,20 @@ public class RegoHeatPumpHandlerFactory extends BaseThingHandlerFactory {
             .of(THING_TYPE_IP_REGO6XX, THING_TYPE_SERIAL_REGO6XX, THING_TYPE_IP_HUSDATA, THING_TYPE_SERIAL_HUSDATA)
             .collect(Collectors.toSet()));
 
+    private final SerialPortManager serialPortManager;
+
+    @Activate
+    public RegoHeatPumpHandlerFactory(final @Reference SerialPortManager serialPortManager) {
+        this.serialPortManager = serialPortManager;
+    }
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_IP_REGO6XX)) {
@@ -57,7 +70,7 @@ public class RegoHeatPumpHandlerFactory extends BaseThingHandlerFactory {
         }
 
         if (thingTypeUID.equals(THING_TYPE_SERIAL_REGO6XX)) {
-            return new SerialRego6xxHeatPumpHandler(thing);
+            return new SerialRego6xxHeatPumpHandler(thing, serialPortManager);
         }
 
         if (thingTypeUID.equals(THING_TYPE_IP_HUSDATA)) {
@@ -65,7 +78,7 @@ public class RegoHeatPumpHandlerFactory extends BaseThingHandlerFactory {
         }
 
         if (thingTypeUID.equals(THING_TYPE_SERIAL_HUSDATA)) {
-            return new SerialHusdataHandler(thing);
+            return new SerialHusdataHandler(thing, serialPortManager);
         }
 
         return null;

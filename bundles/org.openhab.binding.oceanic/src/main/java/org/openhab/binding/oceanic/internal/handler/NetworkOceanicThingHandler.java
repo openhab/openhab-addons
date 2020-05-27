@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -83,8 +82,6 @@ public class NetworkOceanicThingHandler extends OceanicThingHandler {
     public void dispose() {
         NetworkOceanicBindingConfiguration config = getConfigAs(NetworkOceanicBindingConfiguration.class);
 
-        IOUtils.closeQuietly(inputStream);
-        IOUtils.closeQuietly(outputStream);
         if (socket != null) {
             try {
                 socket.close();
@@ -93,6 +90,8 @@ public class NetworkOceanicThingHandler extends OceanicThingHandler {
                         config.portNumber, e.getMessage());
             } finally {
                 socket = null;
+                outputStream = null;
+                inputStream = null;
             }
         }
 

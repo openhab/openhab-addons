@@ -114,5 +114,4 @@ public class MieleMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
         return service.getApplication().contains(SERVICE_NAME) && service.getPropertyString(PATH_PROPERTY_NAME) != null
                 && service.getPropertyString(PATH_PROPERTY_NAME).equalsIgnoreCase(PATH_TO_CHECK_FOR_XGW3000);
     }
-
 }

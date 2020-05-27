@@ -72,7 +72,6 @@ public class LauncherApplication extends BaseChannelHandler<AppInfo> {
                 handler.setOptions(channelId, options);
             }
         });
-
     }
 
     @Override
@@ -102,7 +101,6 @@ public class LauncherApplication extends BaseChannelHandler<AppInfo> {
                 logger.warn("TV does not support any app with id: {}.", value);
             }
         }
-
     }
 
     @Override
@@ -131,5 +129,16 @@ public class LauncherApplication extends BaseChannelHandler<AppInfo> {
 
     public @Nullable List<AppInfo> getAppInfos(ThingUID key) {
         return applicationListCache.get(key);
+    }
+
+    public List<String> reportApplications(ThingUID thingUID) {
+        List<String> report = new ArrayList<>();
+        List<AppInfo> appInfos = applicationListCache.get(thingUID);
+        if (appInfos != null) {
+            for (AppInfo a : appInfos) {
+                report.add(a.getId() + " : " + a.getName());
+            }
+        }
+        return report;
     }
 }

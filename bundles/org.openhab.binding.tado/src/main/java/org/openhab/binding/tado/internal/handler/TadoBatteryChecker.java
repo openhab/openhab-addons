@@ -24,7 +24,6 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.tado.internal.api.ApiException;
 import org.openhab.binding.tado.internal.api.model.ControlDevice;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,5 +75,4 @@ public class TadoBatteryChecker {
         refreshZoneList();
         return zoneList.getOrDefault(zoneId, UnDefType.UNDEF);
     }
-
 }

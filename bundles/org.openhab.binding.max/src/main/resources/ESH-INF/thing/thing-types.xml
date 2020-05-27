@@ -5,19 +5,19 @@
 
 	<thing-type id="thermostat">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>MAX! HeatingThermostat</label>
 		<description>This is a MAX! HeatingThermostat</description>
 
 		<channels>
-			<channel id="valve" typeId="valve" />
-			<channel id="battery_low" typeId="system.low-battery" />
-			<channel id="mode" typeId="mode" />
-			<channel id="actual_temp" typeId="actual_temp" />
-			<channel id="set_temp" typeId="set_temp" />
-			<channel id="locked" typeId="locked" />
+			<channel id="valve" typeId="valve"/>
+			<channel id="battery_low" typeId="system.low-battery"/>
+			<channel id="mode" typeId="mode"/>
+			<channel id="actual_temp" typeId="actual_temp"/>
+			<channel id="set_temp" typeId="set_temp"/>
+			<channel id="locked" typeId="locked"/>
 		</channels>
 
 		<representation-property>serialNumber</representation-property>
@@ -108,9 +108,11 @@
 			<parameter name="refreshActualRate" type="integer" required="false" groupName="binding">
 				<label>Actual Temperature Refresh Rate</label>
 				<description>Experimental feature! Rate of the actual refresh in minutes.
-					0-9=refresh disabled. Minimum refresh rate once/10 minutes, recommended
+					0-9=refresh disabled. Minimum refresh rate
+					once/10 minutes, recommended
 					60min. The settings of the heating thermostats are changed to trigger an
-					update of temperature, as the actual temperature only is updated when the
+					update of
+					temperature, as the actual temperature only is updated when the
 					valves changes.</description>
 				<default>0</default>
 				<advanced>true</advanced>
@@ -133,19 +135,19 @@
 
 	<thing-type id="thermostatplus">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>MAX! HeatingThermostat+</label>
 		<description>This is a MAX! HeatingThermostat+</description>
 
 		<channels>
-			<channel id="valve" typeId="valve" />
-			<channel id="battery_low" typeId="system.low-battery" />
-			<channel id="mode" typeId="mode" />
-			<channel id="actual_temp" typeId="actual_temp" />
-			<channel id="set_temp" typeId="set_temp" />
-			<channel id="locked" typeId="locked" />
+			<channel id="valve" typeId="valve"/>
+			<channel id="battery_low" typeId="system.low-battery"/>
+			<channel id="mode" typeId="mode"/>
+			<channel id="actual_temp" typeId="actual_temp"/>
+			<channel id="set_temp" typeId="set_temp"/>
+			<channel id="locked" typeId="locked"/>
 		</channels>
 
 		<representation-property>serialNumber</representation-property>
@@ -237,9 +239,11 @@
 			<parameter name="refreshActualRate" type="integer" required="false" groupName="binding">
 				<label>Actual Temperature Refresh Rate</label>
 				<description>Experimental feature! Rate of the actual refresh in minutes.
-					0-9=refresh disabled. Minimum refresh rate once/10 minutes, recommended
+					0-9=refresh disabled. Minimum refresh rate
+					once/10 minutes, recommended
 					60min. The settings of the heating thermostats are changed to trigger an
-					update of temperature, as the actual temperature only is updated when the
+					update of
+					temperature, as the actual temperature only is updated when the
 					valves changes.</description>
 				<default>0</default>
 				<advanced>true</advanced>
@@ -262,19 +266,19 @@
 
 	<thing-type id="wallthermostat">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>MAX! WallThermostat+</label>
 		<description>This is a MAX! WallThermostat+</description>
 
 		<channels>
-			<channel id="valve" typeId="valve" />
-			<channel id="battery_low" typeId="system.low-battery" />
-			<channel id="mode" typeId="mode" />
-			<channel id="actual_temp" typeId="actual_temp" />
-			<channel id="set_temp" typeId="set_temp" />
-			<channel id="locked" typeId="locked" />
+			<channel id="valve" typeId="valve"/>
+			<channel id="battery_low" typeId="system.low-battery"/>
+			<channel id="mode" typeId="mode"/>
+			<channel id="actual_temp" typeId="actual_temp"/>
+			<channel id="set_temp" typeId="set_temp"/>
+			<channel id="locked" typeId="locked"/>
 		</channels>
 
 		<representation-property>serialNumber</representation-property>
@@ -327,14 +331,14 @@
 
 	<thing-type id="ecoswitch">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>MAX! Ecoswitch</label>
 		<description>This is a MAX! EcoSwitch</description>
 
 		<channels>
-			<channel id="battery_low" typeId="system.low-battery" />
+			<channel id="battery_low" typeId="system.low-battery"/>
 		</channels>
 
 		<representation-property>serialNumber</representation-property>
@@ -371,15 +375,15 @@
 
 	<thing-type id="shuttercontact">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>MAX! Shutter Contact</label>
 		<description>This is a MAX! Shutter Contact</description>
 
 		<channels>
-			<channel id="contact_state" typeId="contact_state" />
-			<channel id="battery_low" typeId="system.low-battery" />
+			<channel id="contact_state" typeId="contact_state"/>
+			<channel id="battery_low" typeId="system.low-battery"/>
 		</channels>
 
 		<representation-property>serialNumber</representation-property>
@@ -464,7 +468,7 @@
 		<tags>
 			<tag>heating</tag>
 		</tags>
-		<state pattern="%.1f %unit%" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="set_temp">
@@ -475,7 +479,7 @@
 		<tags>
 			<tag>heating</tag>
 		</tags>
-		<state pattern="%.1f %unit%" />
+		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="locked" advanced="true">

@@ -64,5 +64,4 @@ public interface DeviceStatusListener {
      *            The device which config is changed.
      */
     public void onDeviceConfigUpdate(Bridge bridge, Device device);
-
 }

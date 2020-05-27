@@ -38,4 +38,12 @@ public interface MQTTTopicDiscoveryService {
      * @param listener A listener that has subscribed before.
      */
     void unsubscribe(MQTTTopicDiscoveryParticipant listener);
+
+    /**
+     * Publish a message to all connected brokers
+     *
+     * @param topic The topic to publish on
+     * @param payload The message to publish
+     */
+    void publish(String topic, byte[] payload);
 }

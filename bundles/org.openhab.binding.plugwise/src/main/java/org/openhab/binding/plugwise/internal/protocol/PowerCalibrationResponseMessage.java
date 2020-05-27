@@ -75,5 +75,4 @@ public class PowerCalibrationResponseMessage extends Message {
             throw new PlugwisePayloadMismatchException(POWER_CALIBRATION_RESPONSE, PAYLOAD_PATTERN, payload);
         }
     }
-
 }

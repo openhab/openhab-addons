@@ -46,7 +46,7 @@ public abstract class SatelCommandBase extends SatelMessage implements SatelComm
      * Creates new command basing on command code and extended command flag.
      *
      * @param commandCode command code
-     * @param extended    if <code>true</code> command will be sent as extended (256 zones or outputs)
+     * @param extended if <code>true</code> command will be sent as extended (256 zones or outputs)
      */
     public SatelCommandBase(byte commandCode, boolean extended) {
         this(commandCode, extended ? EXTENDED_CMD_PAYLOAD : EMPTY_PAYLOAD);
@@ -229,5 +229,4 @@ public abstract class SatelCommandBase extends SatelMessage implements SatelComm
                 + new String(payload, offset + 9, 2);
         return verStr;
     }
-
 }

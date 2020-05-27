@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="modbus" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<bridge-type id="poller">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="tcp" />
-			<bridge-type-ref id="serial" />
+			<bridge-type-ref id="tcp"/>
+			<bridge-type-ref id="serial"/>
 		</supported-bridge-type-refs>
 
 		<label>Regular Poll</label>
@@ -18,7 +19,7 @@
 			</parameter>
 			<parameter name="start" type="integer">
 				<label>Start</label>
-				<description><![CDATA[Address of the first register, coil, or discrete input to poll. 
+				<description><![CDATA[Address of the first register, coil, or discrete input to poll.
 				<br />
 				<br />Input as zero-based index number, e.g. in place of 400001 (first holding register), use the address 0.]]></description>
 				<default>0</default>
@@ -45,7 +46,7 @@
 			<parameter name="cacheMillis" type="integer" min="0" unit="ms">
 				<label>Cache Duration</label>
 				<default>50</default>
-				<description><![CDATA[Duration for data cache to be valid, in milliseconds. This cache is used only to serve REFRESH commands. 
+				<description><![CDATA[Duration for data cache to be valid, in milliseconds. This cache is used only to serve REFRESH commands.
 					<br />
 					<br />Use zero to disable the caching.]]></description>
 				<advanced>true</advanced>

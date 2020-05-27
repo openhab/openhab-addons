@@ -176,5 +176,4 @@ public class MapTransformationServiceTest {
         }
         assertion.call();
     }
-
 }

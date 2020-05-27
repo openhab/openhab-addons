@@ -12,50 +12,65 @@
  */
 package org.openhab.binding.heos.internal.handler;
 
+import java.io.IOException;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.heos.handler.HeosBridgeHandler;
-import org.openhab.binding.heos.internal.api.HeosFacade;
+import org.openhab.binding.heos.internal.exception.HeosNotFoundException;
 import org.openhab.binding.heos.internal.resources.HeosConstants;
+import org.openhab.binding.heos.internal.resources.HeosEventListener;
+import org.openhab.binding.heos.internal.resources.Telnet.ReadException;
 
 /**
  * The {@link HeosChannelHandlerRepeatMode} handles the RepeatMode channel command
  * from the implementing thing.
  *
  * @author Johannes Einig - Initial contribution
- *
  */
-public class HeosChannelHandlerRepeatMode extends HeosChannelHandler {
+@NonNullByDefault
+public class HeosChannelHandlerRepeatMode extends BaseHeosChannelHandler {
+    private final HeosEventListener eventListener;
 
-    public HeosChannelHandlerRepeatMode(HeosBridgeHandler bridge, HeosFacade api) {
-        super(bridge, api);
+    public HeosChannelHandlerRepeatMode(HeosEventListener eventListener, HeosBridgeHandler bridge) {
+        super(bridge);
+        this.eventListener = eventListener;
     }
 
     @Override
-    protected void handleCommandPlayer() {
-        handleCommand();
+    public void handlePlayerCommand(Command command, String id, ThingUID uid) throws IOException, ReadException {
+        handleCommand(command, id);
     }
 
     @Override
-    protected void handleCommandGroup() {
-        handleCommand();
+    public void handleGroupCommand(Command command, @Nullable String id, ThingUID uid,
+            HeosGroupHandler heosGroupHandler) throws IOException, ReadException {
+        if (id == null) {
+            throw new HeosNotFoundException();
+        }
+
+        handleCommand(command, id);
     }
 
     @Override
-    protected void handleCommandBridge() {
+    public void handleBridgeCommand(Command command, ThingUID uid) {
         // Do nothing
     }
 
-    private void handleCommand() {
+    private void handleCommand(Command command, String id) throws IOException, ReadException {
         if (command instanceof RefreshType) {
-            api.getHeosPlayerRepeatMode(id);
+            eventListener.playerStateChangeEvent(getApi().getPlayMode(id));
             return;
         }
+
         if (HeosConstants.HEOS_UI_ALL.equalsIgnoreCase(command.toString())) {
-            api.setRepeatMode(id, HeosConstants.REPEAT_ALL);
+            getApi().setRepeatMode(id, HeosConstants.REPEAT_ALL);
         } else if (HeosConstants.HEOS_UI_ONE.equalsIgnoreCase(command.toString())) {
-            api.setRepeatMode(id, HeosConstants.REPEAT_ONE);
+            getApi().setRepeatMode(id, HeosConstants.REPEAT_ONE);
         } else if (HeosConstants.HEOS_UI_OFF.equalsIgnoreCase(command.toString())) {
-            api.setRepeatMode(id, HeosConstants.OFF);
+            getApi().setRepeatMode(id, HeosConstants.OFF);
         }
     }
 }

@@ -96,5 +96,4 @@ public class SensorValues extends BaseSensorValues implements ZoneIdentifier {
     public String getZoneName() {
         return zoneName;
     }
-
 }

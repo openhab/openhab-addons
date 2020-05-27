@@ -39,5 +39,4 @@ public abstract class SetHouseStatusMonitor implements BridgeCommunicationProtoc
      * @return reference to the class instance.
      */
     public abstract SetHouseStatusMonitor serviceActivation(boolean enableService);
-
 }

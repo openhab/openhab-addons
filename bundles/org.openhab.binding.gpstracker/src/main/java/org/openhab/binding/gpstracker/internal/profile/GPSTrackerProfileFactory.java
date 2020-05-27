@@ -12,6 +12,13 @@
  */
 package org.openhab.binding.gpstracker.internal.profile;
 
+import static org.openhab.binding.gpstracker.internal.GPSTrackerBindingConstants.CHANNEL_TYPE_REGION;
+
+import java.util.Collection;
+import java.util.Locale;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.CoreItemFactory;
@@ -21,13 +28,6 @@ import org.eclipse.smarthome.core.thing.type.ChannelType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.openhab.binding.gpstracker.internal.GPSTrackerBindingConstants;
 import org.osgi.service.component.annotations.Component;
-
-import java.util.Collection;
-import java.util.Locale;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static org.openhab.binding.gpstracker.internal.GPSTrackerBindingConstants.CHANNEL_TYPE_REGION;
 
 /**
  * The {@link GPSTrackerProfileFactory} class defines and provides switch profile and its type of this binding.
@@ -40,15 +40,15 @@ public class GPSTrackerProfileFactory implements ProfileFactory, ProfileAdvisor,
     /**
      * Profile UID for trigger events
      */
-    static final ProfileTypeUID UID_TRIGGER_SWITCH = new ProfileTypeUID(GPSTrackerBindingConstants.BINDING_ID, "trigger-geofence");
+    static final ProfileTypeUID UID_TRIGGER_SWITCH = new ProfileTypeUID(GPSTrackerBindingConstants.BINDING_ID,
+            "trigger-geofence");
 
     /**
      * Profile type for trigger events
      */
-    private static final TriggerProfileType TRIGGER_SWITCH_TYPE = ProfileTypeBuilder.newTrigger(UID_TRIGGER_SWITCH, "Geofence")
-            .withSupportedItemTypes(CoreItemFactory.SWITCH)
-            .withSupportedChannelTypeUIDs(CHANNEL_TYPE_REGION)
-            .build();
+    private static final TriggerProfileType TRIGGER_SWITCH_TYPE = ProfileTypeBuilder
+            .newTrigger(UID_TRIGGER_SWITCH, "Geofence").withSupportedItemTypes(CoreItemFactory.SWITCH)
+            .withSupportedChannelTypeUIDs(CHANNEL_TYPE_REGION).build();
 
     @Override
     public Collection<ProfileTypeUID> getSupportedProfileTypeUIDs() {
@@ -70,7 +70,8 @@ public class GPSTrackerProfileFactory implements ProfileFactory, ProfileAdvisor,
         return getSuggestedProfileTypeUID(channelType.getUID(), itemType);
     }
 
-    private @Nullable ProfileTypeUID getSuggestedProfileTypeUID(@Nullable ChannelTypeUID channelTypeUID, @Nullable String itemType) {
+    private @Nullable ProfileTypeUID getSuggestedProfileTypeUID(@Nullable ChannelTypeUID channelTypeUID,
+            @Nullable String itemType) {
         if (CoreItemFactory.SWITCH.equals(itemType) && CHANNEL_TYPE_REGION.equals(channelTypeUID)) {
             return UID_TRIGGER_SWITCH;
         }
@@ -78,7 +79,8 @@ public class GPSTrackerProfileFactory implements ProfileFactory, ProfileAdvisor,
     }
 
     @Override
-    public @Nullable Profile createProfile(ProfileTypeUID profileTypeUID, ProfileCallback callback, ProfileContext profileContext) {
+    public @Nullable Profile createProfile(ProfileTypeUID profileTypeUID, ProfileCallback callback,
+            ProfileContext profileContext) {
         if (UID_TRIGGER_SWITCH.equals(profileTypeUID)) {
             return new GPSTrackerTriggerSwitchProfile(callback, profileContext);
         }

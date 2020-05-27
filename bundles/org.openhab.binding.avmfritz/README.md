@@ -114,6 +114,10 @@ If the FRITZ!Powerline 546E is added via auto-discovery it determines its own `a
 
 - `ain` (mandatory), no default (AIN number of the device)
 
+### Finding The AIN ###
+
+The AIN (actor identification number) can be found in the FRITZ!Box interface -> Home Network -> SmartHome. When opening the details view for a device with the edit button, the AIN is shown. Use the AIN without the blank.
+
 ## Supported Channels
 
 | Channel Type ID | Item Type                | Description                                                                                                                                         | Available on thing                                                                                  |
@@ -186,6 +190,7 @@ Bridge avmfritz:fritzbox:1 "FRITZ!Box" [ ipAddress="192.168.x.x", password="xxx"
     Thing Comet_DECT aaaaaabbbbbb "Comet DECT #3" [ ain="aaaaaabbbbbb" ]
     Thing HAN_FUN_CONTACT zzzzzzzzzzzz_1 "HAN-FUN Contact #4" [ ain="zzzzzzzzzzzz-1" ]
     Thing HAN_FUN_SWITCH zzzzzzzzzzzz_2 "HAN-FUN Switch #5" [ ain=zzzzzzzzzzzz-2" ]
+    Thing FRITZ_DECT_Repeater_100 rrrrrrrrrrrr "DECT Repeater 100 #6" [ ain="rrrrrrrrrrrr" ]
     Thing FRITZ_GROUP_HEATING AA_AA_AA_900 "Heating group" [ ain="AA:AA:AA-900" ]
     Thing FRITZ_GROUP_SWITCH BB_BB_BB_900 "Switch group" [ ain="BB:BB:BB-900" ]
 }
@@ -213,6 +218,8 @@ Switch COMETDECTBatteryLow "Battery low" { channel="avmfritz:Comet_DECT:1:aaaaaa
 Contact HANFUNContactState "Status [%s]" { channel="avmfritz:HAN_FUN_CONTACT:1:zzzzzzzzzzzz_1:contact_state" }
 
 DateTime HANFUNSwitchLastChanged "Last change" { channel="avmfritz:HAN_FUN_SWITCH:1:zzzzzzzzzzzz_2:last_change" }
+
+Number:Temperature Temperature1 "Current measured temperature [%.1f %unit%]" { channel="avmfritz:FRITZ_DECT_Repeater_100:1:rrrrrrrrrrrr:temperature" }
 
 Number:Temperature FRITZ_GROUP_HEATINGSetTemperature "Group temperature set point [%.1f %unit%]" { channel="avmfritz:FRITZ_GROUP_HEATING:1:AA_AA_AA_900:set_temp" }
 

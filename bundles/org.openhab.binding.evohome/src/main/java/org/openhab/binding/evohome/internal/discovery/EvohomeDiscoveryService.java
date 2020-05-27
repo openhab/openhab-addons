@@ -130,5 +130,4 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService implements
                 .withBridge(bridgeUID).withLabel(displayLabel).build();
         thingDiscovered(discoveryResult);
     }
-
 }

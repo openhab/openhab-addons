@@ -98,5 +98,4 @@ final class ChannelSceneSilentmode extends ChannelHandlerTemplate {
         } while (false); // common exit
         return newValue;
     }
-
 }

@@ -19,7 +19,6 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -75,7 +74,7 @@ public class DarkSkyAPIHandler extends BaseBridgeHandler {
         config = getConfigAs(DarkSkyAPIConfiguration.class);
 
         boolean configValid = true;
-        if (StringUtils.trimToNull(config.apikey) == null) {
+        if (config.apikey == null || config.apikey.trim().isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-missing-apikey");
             configValid = false;
@@ -87,8 +86,7 @@ public class DarkSkyAPIHandler extends BaseBridgeHandler {
             configValid = false;
         }
         String language = config.language;
-        if (language != null) {
-            language = StringUtils.trimToEmpty(language);
+        if (language != null && !(language = language.trim()).isEmpty()) {
             if (!DarkSkyAPIConfiguration.SUPPORTED_LANGUAGES.contains(language.toLowerCase())) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.conf-error-not-supported-language");

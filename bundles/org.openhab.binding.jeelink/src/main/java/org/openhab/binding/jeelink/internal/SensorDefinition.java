@@ -35,7 +35,7 @@ import org.openhab.binding.jeelink.internal.revolt.RevoltSensorDefinition;
  */
 public abstract class SensorDefinition<R extends Reading> {
     public static final String ALL_TYPE = "All";
-    
+
     private static final Set<SensorDefinition<?>> SENSOR_DEFS = Stream
             .of(new LaCrosseSensorDefinition(), new Ec3kSensorDefinition(), new Pca301SensorDefinition(),
                     new Tx22SensorDefinition(), new RevoltSensorDefinition(), new LgwSensorDefinition())

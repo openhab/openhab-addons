@@ -43,5 +43,4 @@ public class SetClockCommand extends ControlCommand {
     private static byte[] getDateTimeBytes(LocalDateTime dateTime) {
         return DATETIME_FORMAT.format(dateTime).getBytes();
     }
-
 }

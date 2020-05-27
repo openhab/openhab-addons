@@ -7,8 +7,8 @@
 	<thing-type id="atd-100">
 
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="ethm-1" />
-			<bridge-type-ref id="int-rs" />
+			<bridge-type-ref id="ethm-1"/>
+			<bridge-type-ref id="int-rs"/>
 		</supported-bridge-type-refs>
 
 		<label>ATD-100</label>
@@ -16,9 +16,9 @@
 		<category>Sensor</category>
 
 		<channels>
-			<channel typeId="zoneTemperature" id="temperature" />
-			<channel typeId="system.low-battery" id="device_lobatt" />
-			<channel typeId="device_nocomm" id="device_nocomm" />
+			<channel typeId="zoneTemperature" id="temperature"/>
+			<channel typeId="system.low-battery" id="device_lobatt"/>
+			<channel typeId="device_nocomm" id="device_nocomm"/>
 		</channels>
 
 		<config-description>
@@ -41,7 +41,7 @@
 		<label>Temperature</label>
 		<description>Current temperature in the zone</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 </thing:thing-descriptions>

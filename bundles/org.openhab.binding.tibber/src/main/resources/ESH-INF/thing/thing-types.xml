@@ -1,56 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="tibber" 
+<thing:thing-descriptions bindingId="tibber"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" 
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-		
-	<thing-type id="tibberapi">   
+
+	<thing-type id="tibberapi">
 		<label>Tibber API</label>
 		<description>Tibber API connector</description>
 		<channels>
-			<channel id="current_total" typeId="price" />
-			<channel id="current_startsAt" typeId="timestamp" />
-			<channel id="daily_from" typeId="timestamp" />
-			<channel id="daily_to" typeId="timestamp" />
-			<channel id="daily_cost" typeId="cost" />
-			<channel id="daily_consumption" typeId="consumption" />
-			<channel id="hourly_from" typeId="timestamp" />
-			<channel id="hourly_to" typeId="timestamp" />
-			<channel id="hourly_cost" typeId="cost" />
-			<channel id="hourly_consumption" typeId="consumption" />
-			<channel id="live_timestamp" typeId="timestamp" />
-			<channel id="live_power" typeId="power" />
-			<channel id="live_lastMeterConsumption" typeId="consumption" />
-			<channel id="live_accumulatedConsumption" typeId="consumption" />
-			<channel id="live_accumulatedCost" typeId="cost" />
-			<channel id="live_currency" typeId="currency" />
-			<channel id="live_minPower" typeId="power" />
-			<channel id="live_averagePower" typeId="power" />
-			<channel id="live_maxPower" typeId="power" />
-			<channel id="live_voltage1" typeId="voltage" />
-			<channel id="live_voltage2" typeId="voltage" />
-			<channel id="live_voltage3" typeId="voltage" />
-			<channel id="live_current1" typeId="current" />
-			<channel id="live_current2" typeId="current" />
-			<channel id="live_current3" typeId="current" />
-			<channel id="live_powerProduction" typeId="power" />
-			<channel id="live_minPowerproduction" typeId="power" />
-			<channel id="live_maxPowerproduction" typeId="power" />
-			<channel id="live_accumulatedProduction" typeId="production" />
+			<channel id="current_total" typeId="price"/>
+			<channel id="current_startsAt" typeId="timestamp"/>
+			<channel id="daily_from" typeId="timestamp"/>
+			<channel id="daily_to" typeId="timestamp"/>
+			<channel id="daily_cost" typeId="cost"/>
+			<channel id="daily_consumption" typeId="consumption"/>
+			<channel id="hourly_from" typeId="timestamp"/>
+			<channel id="hourly_to" typeId="timestamp"/>
+			<channel id="hourly_cost" typeId="cost"/>
+			<channel id="hourly_consumption" typeId="consumption"/>
+			<channel id="live_timestamp" typeId="timestamp"/>
+			<channel id="live_power" typeId="power"/>
+			<channel id="live_lastMeterConsumption" typeId="consumption"/>
+			<channel id="live_accumulatedConsumption" typeId="consumption"/>
+			<channel id="live_accumulatedCost" typeId="cost"/>
+			<channel id="live_currency" typeId="currency"/>
+			<channel id="live_minPower" typeId="power"/>
+			<channel id="live_averagePower" typeId="power"/>
+			<channel id="live_maxPower" typeId="power"/>
+			<channel id="live_voltage1" typeId="voltage"/>
+			<channel id="live_voltage2" typeId="voltage"/>
+			<channel id="live_voltage3" typeId="voltage"/>
+			<channel id="live_current1" typeId="current"/>
+			<channel id="live_current2" typeId="current"/>
+			<channel id="live_current3" typeId="current"/>
+			<channel id="live_powerProduction" typeId="power"/>
+			<channel id="live_minPowerproduction" typeId="power"/>
+			<channel id="live_maxPowerproduction" typeId="power"/>
+			<channel id="live_accumulatedProduction" typeId="production"/>
 		</channels>
 		<properties>
 			<property name="vendor">Tibber</property>
 		</properties>
 		<config-description>
-			<parameter name="token" type="text" required="true"> 
+			<parameter name="token" type="text" required="true">
 				<label>Token</label>
 				<description>Tibber Personal Token</description>
 			</parameter>
-			<parameter name="homeid" type="text" required="true"> 
+			<parameter name="homeid" type="text" required="true">
 				<label>HomeID</label>
 				<description>Tibber Home ID</description>
 			</parameter>
-			<parameter name="refresh" type="integer" min="1" required="true"> 
+			<parameter name="refresh" type="integer" min="1" required="true">
 				<label>Refresh Interval</label>
 				<default>1</default>
 				<description>Manually Set Polling Frequency (minutes)</description>

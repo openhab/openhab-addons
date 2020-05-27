@@ -168,5 +168,4 @@ public class BulbDeviceTest extends DeviceTestBase<BulbDevice> {
         assertEquals("Power values should be set", new DecimalType(10.8),
                 device.updateChannel(CHANNEL_UID_ENERGY_POWER, deviceState));
     }
-
 }

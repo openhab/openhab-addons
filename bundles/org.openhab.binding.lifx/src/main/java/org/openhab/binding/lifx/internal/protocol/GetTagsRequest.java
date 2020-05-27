@@ -46,5 +46,4 @@ public class GetTagsRequest extends Packet {
     public int[] expectedResponses() {
         return new int[] { TagsResponse.TYPE };
     }
-
 }

@@ -93,9 +93,9 @@ public abstract class VelbusTemperatureSensorHandler extends VelbusSensorHandler
         if (command instanceof RefreshType) {
             if (channelUID.equals(temperatureChannel)) {
                 sendSensorTemperatureRequest(velbusBridgeHandler);
+            }
         }
     }
-        }
 
     protected void sendSensorTemperatureRequest(VelbusBridgeHandler velbusBridgeHandler) {
         VelbusSensorTemperatureRequestPacket packet = new VelbusSensorTemperatureRequestPacket(

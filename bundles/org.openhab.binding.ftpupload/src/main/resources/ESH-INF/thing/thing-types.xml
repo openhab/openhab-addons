@@ -9,8 +9,8 @@
 		<description>Receive image files via FTP.</description>
 
 		<channels>
-			<channel id="image" typeId="image-channel" />
-			<channel id="image-received" typeId="image-received" />
+			<channel id="image" typeId="image-channel"/>
+			<channel id="image-received" typeId="image-received"/>
 		</channels>
 
 		<config-description>

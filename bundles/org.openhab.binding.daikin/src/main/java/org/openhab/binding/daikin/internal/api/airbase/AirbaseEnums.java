@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.daikin.internal.api.airbase;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,13 +23,14 @@ import org.slf4j.LoggerFactory;
  * @author Paul Smedley <paul@smedley.id.au> - Mods for Daikin Airbase Units
  *
  */
+@NonNullByDefault
 public class AirbaseEnums {
     public enum AirbaseMode {
-        COLD    (2, "Cooling"),
-        HEAT    (1, "Heating"),
-        FAN     (0, "Fan"),
-        DRY     (7, "Dehumidifier"),
-        AUTO    (3, "Auto");
+        COLD(2, "Cooling"),
+        HEAT(1, "Heating"),
+        FAN(0, "Fan"),
+        DRY(7, "Dehumidifier"),
+        AUTO(3, "Auto");
 
         private static final Logger LOGGER = LoggerFactory.getLogger(AirbaseMode.class);
         private final int value;
@@ -42,7 +44,7 @@ public class AirbaseEnums {
         public int getValue() {
             return value;
         }
-        
+
         public String getLabel() {
             return label;
         }
@@ -60,18 +62,18 @@ public class AirbaseEnums {
 
     public enum AirbaseFanSpeed {
         // level,f_auto,f_airside
-        AUTO         (0, false, false),
-        LEVEL_1      (1, false, false),
-        LEVEL_2      (2, false, false),
-        LEVEL_3      (3, false, false),
-        LEVEL_4      (4, false, false),
-        LEVEL_5      (5, false, false),
-        AUTO_LEVEL_1 (1, true, false),
-        AUTO_LEVEL_2 (2, true, false),
-        AUTO_LEVEL_3 (3, true, false),
-        AUTO_LEVEL_4 (4, true, false),
-        AUTO_LEVEL_5 (5, true, false),
-        AIRSIDE      (1, false, true);
+        AUTO(0, false, false),
+        LEVEL_1(1, false, false),
+        LEVEL_2(2, false, false),
+        LEVEL_3(3, false, false),
+        LEVEL_4(4, false, false),
+        LEVEL_5(5, false, false),
+        AUTO_LEVEL_1(1, true, false),
+        AUTO_LEVEL_2(2, true, false),
+        AUTO_LEVEL_3(3, true, false),
+        AUTO_LEVEL_4(4, true, false),
+        AUTO_LEVEL_5(5, true, false),
+        AIRSIDE(1, false, true);
 
         private static final Logger LOGGER = LoggerFactory.getLogger(AirbaseFanSpeed.class);
         private final int level;
@@ -84,7 +86,7 @@ public class AirbaseEnums {
             this.airside = airside;
         }
 
-        public int getLevel() { 
+        public int getLevel() {
             return level;
         }
 
@@ -110,7 +112,8 @@ public class AirbaseEnums {
             return label + "Level " + Integer.toString(level);
         }
 
-        public static AirbaseFanSpeed fromValue(int rate, boolean auto, boolean airside) { // convert from f_rate, f_auto, f_airside
+        public static AirbaseFanSpeed fromValue(int rate, boolean auto, boolean airside) { // convert from f_rate,
+                                                                                           // f_auto, f_airside
             if (airside) {
                 return AIRSIDE;
             }
@@ -122,7 +125,8 @@ public class AirbaseEnums {
                     return m;
                 }
             }
-            LOGGER.debug("Unexpected FanSpeed value from rate={}, auto={}, airside={}", rate, auto?1:0, airside?1:0);
+            LOGGER.debug("Unexpected FanSpeed value from rate={}, auto={}, airside={}", rate, auto ? 1 : 0,
+                    airside ? 1 : 0);
             return LEVEL_1;
         }
     }
@@ -157,20 +161,20 @@ public class AirbaseEnums {
     }
 
     public enum AirbaseFeature {
-        ZONE            ("en_zone"),
-        FILTER_SIGN     ("en_filter_sign"),
-        TEMP_SETTING    ("en_temp_setting"),
-        FRATE           ("en_frate"),
-        DIR             ("en_dir"),
-        RTEMP_A         ("en_rtemp_a"),
-        SPMODE          ("en_spmode"),
-        MOMPOW          ("en_mompow"),
-        PATROL          ("en_patrol"),
-        AIRSIDE         ("en_airside"),
-        QUICK_TIMER     ("en_quick_timer"),
-        AUTO            ("en_auto"),
-        DRY             ("en_dry"),
-        FRATE_AUTO      ("en_frate_auto");
+        ZONE("en_zone"),
+        FILTER_SIGN("en_filter_sign"),
+        TEMP_SETTING("en_temp_setting"),
+        FRATE("en_frate"),
+        DIR("en_dir"),
+        RTEMP_A("en_rtemp_a"),
+        SPMODE("en_spmode"),
+        MOMPOW("en_mompow"),
+        PATROL("en_patrol"),
+        AIRSIDE("en_airside"),
+        QUICK_TIMER("en_quick_timer"),
+        AUTO("en_auto"),
+        DRY("en_dry"),
+        FRATE_AUTO("en_frate_auto");
 
         private static final Logger LOGGER = LoggerFactory.getLogger(AirbaseFeature.class);
         private final String value;

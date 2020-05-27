@@ -12,9 +12,13 @@
  */
 package org.openhab.binding.lgtvserial.internal.protocol.serial;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.smarthome.io.transport.serial.PortInUseException;
+import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
+import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,31 +32,32 @@ public class SerialCommunicatorFactory {
 
     private final Logger logger = LoggerFactory.getLogger(SerialCommunicatorFactory.class);
 
-    private Map<String, LGSerialCommunicator> instances = new HashMap<>();
+    private Map<SerialPortIdentifier, LGSerialCommunicator> instances = new HashMap<>();
 
-    public synchronized LGSerialCommunicator getInstance(String port) {
-        LGSerialCommunicator comm = instances.get(port);
+    public synchronized LGSerialCommunicator getInstance(SerialPortIdentifier serialPortIdentifier)
+            throws IOException, PortInUseException, UnsupportedCommOperationException {
+        LGSerialCommunicator comm = instances.get(serialPortIdentifier);
         if (comm == null) {
-            comm = createCommunicator(port);
+            comm = createCommunicator(serialPortIdentifier);
             if (comm != null) {
-                instances.put(port, comm);
+                instances.put(serialPortIdentifier, comm);
             }
         }
         return comm;
     }
 
-    private LGSerialCommunicator createCommunicator(final String portName) {
-        return new LGSerialCommunicator(portName, new RegistrationCallback() {
+    private LGSerialCommunicator createCommunicator(final SerialPortIdentifier serialPortIdentifier)
+            throws IOException, PortInUseException, UnsupportedCommOperationException {
+        return new LGSerialCommunicator(serialPortIdentifier, new RegistrationCallback() {
             @Override
             public void onUnregister() {
                 logger.debug("Unregistered last handler, closing");
-                deleteInstance(portName);
+                deleteInstance(serialPortIdentifier);
             }
         });
     }
 
-    protected synchronized void deleteInstance(String port) {
-        instances.remove(port).close();
+    protected synchronized void deleteInstance(SerialPortIdentifier serialPortIdentifier) {
+        instances.remove(serialPortIdentifier).close();
     }
-
 }

@@ -190,7 +190,7 @@ public class NeeoDeviceDefinitions {
      * {@link NeeoDevice} that is bound (according to the {@link NeeoDeviceKeys}) and then will determine if the item
      * name has been bound on that {@link NeeoDevice}.
      *
-     * @param keys     a non-null {@link NeeoDeviceKeys}
+     * @param keys a non-null {@link NeeoDeviceKeys}
      * @param itemName a non-null, non-empty item name to use
      * @return true if bound, false otherwise
      */
@@ -231,7 +231,7 @@ public class NeeoDeviceDefinitions {
      * Gets the list of {@link NeeoDevice} and {@link NeeoDeviceChannel} that are currently bound for the given itemName
      * (or all if the itemName is null)
      *
-     * @param keys     a non-null {@link NeeoDeviceKeys}
+     * @param keys a non-null {@link NeeoDeviceKeys}
      * @param itemName a possibly null, possibly empty item name to use
      * @return a non-null, possibly empty list
      */

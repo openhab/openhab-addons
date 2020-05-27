@@ -103,5 +103,4 @@ public class ErrorData {
                 .append(message).append(", instance=").append(instance).append("]");
         return builder.toString();
     }
-
 }

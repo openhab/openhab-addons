@@ -6,19 +6,19 @@
 
 	<thing-type id="gateway">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Xiaomi Mi Smart Home Gateway</label>
 		<description>Multifunctional Gateway with a built in light, ambient light sensor and capability to play sounds.</description>
 		<channels>
-			<channel id="brightness" typeId="brightness" />
-			<channel id="illumination" typeId="illumination" />
-			<channel id="color" typeId="color" />
-			<channel id="colorTemperature" typeId="colorTemperature" />
-			<channel typeId="enableSound" id="enableSound" />
-			<channel typeId="sound" id="sound" />
-			<channel typeId="volume" id="volume" />
+			<channel id="brightness" typeId="brightness"/>
+			<channel id="illumination" typeId="illumination"/>
+			<channel id="color" typeId="color"/>
+			<channel id="colorTemperature" typeId="colorTemperature"/>
+			<channel typeId="enableSound" id="enableSound"/>
+			<channel typeId="sound" id="sound"/>
+			<channel typeId="volume" id="volume"/>
 		</channels>
-		<config-description-ref uri="thing-type:mihome:device" />
+		<config-description-ref uri="thing-type:mihome:device"/>
 	</thing-type>
 </thing:thing-descriptions>

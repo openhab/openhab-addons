@@ -28,5 +28,4 @@ public class ModbusConfigurationException extends Exception {
     }
 
     private static final long serialVersionUID = -466597103876477780L;
-
 }

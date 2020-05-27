@@ -412,5 +412,4 @@ public class ModbusBitUtilities {
         }
         return Optional.empty();
     }
-
 }

@@ -42,5 +42,4 @@ public class AirQualityJsonTime {
         ZonedDateTime observationTime = ZonedDateTime.parse(fullString);
         return observationTime;
     }
-
 }

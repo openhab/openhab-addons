@@ -43,6 +43,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.allplay.internal.AllPlayBindingConstants;
 import org.openhab.binding.allplay.internal.AllPlayBindingProperties;
 import org.slf4j.Logger;
@@ -398,7 +399,6 @@ public class AllPlayHandler extends BaseThingHandler
     public void onLoopModeChanged(LoopMode loopMode) {
         logger.debug("{}: LoopMode changed to {}", speaker.getName(), loopMode);
         updateState(LOOP_MODE, new StringType(loopMode.toString()));
-
     }
 
     @Override
@@ -496,7 +496,10 @@ public class AllPlayHandler extends BaseThingHandler
             logger.debug("{}: Cover art URL changed to {}", speaker.getName(), coverArtUrl);
             updateState(COVER_ART_URL, new StringType(coverArtUrl));
             if (!coverArtUrl.isEmpty()) {
-                updateState(COVER_ART, new RawType(getRawDataFromUrl(coverArtUrl)));
+                byte[] bytes = getRawDataFromUrl(coverArtUrl);
+                String contentType = HttpUtil.guessContentTypeFromData(bytes);
+                updateState(COVER_ART, new RawType(bytes,
+                        contentType == null || contentType.isEmpty() ? RawType.DEFAULT_MIME_TYPE : contentType));
             } else {
                 updateState(COVER_ART, UnDefType.NULL);
             }

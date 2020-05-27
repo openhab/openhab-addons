@@ -200,5 +200,4 @@ public class TemperatureControlInternals extends BaseTemperatureControl {
                 + ctrlTErrorPrev + ", ctrlIntegral=" + ctrlIntegral + ", ctrlYp=" + ctrlYp + ", ctrlYi=" + ctrlYi
                 + ", ctrlYd=" + ctrlYd + ", ctrlY=" + ctrlY + ", ctrlAntiWindUp=" + ctrlAntiWindUp + "]";
     }
-
 }

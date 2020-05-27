@@ -36,5 +36,4 @@ public enum EtherRainCommandResult {
     public String getResult() {
         return result;
     }
-
 }

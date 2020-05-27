@@ -127,5 +127,4 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     private String getShadeId() {
         return getConfigAs(HDPowerViewShadeConfiguration.class).id;
     }
-
 }

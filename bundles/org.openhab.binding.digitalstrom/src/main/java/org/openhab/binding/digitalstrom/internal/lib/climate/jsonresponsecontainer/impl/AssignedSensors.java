@@ -153,5 +153,4 @@ public class AssignedSensors extends BaseZoneIdentifier {
     public String toString() {
         return "AssignedSensors [sensors=" + sensors + "]";
     }
-
 }

@@ -12,16 +12,19 @@
  */
 package org.openhab.binding.siemensrds.internal;
 
-import org.openhab.binding.siemensrds.internal.RdsDebouncer;
-
 import static org.openhab.binding.siemensrds.internal.RdsBindingConstants.*;
 
+import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.measure.Unit;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -34,9 +37,11 @@ import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
-
+import org.openhab.binding.siemensrds.points.BasePoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonParseException;
 
 /**
  * The {@link RdsHandler} is the OpenHab Handler for Siemens RDS smart
@@ -45,20 +50,21 @@ import org.slf4j.LoggerFactory;
  * @author Andrew Fiddian-Green - Initial contribution
  * 
  */
+@NonNullByDefault
 public class RdsHandler extends BaseThingHandler {
 
     protected final Logger logger = LoggerFactory.getLogger(RdsHandler.class);
 
-    private ScheduledFuture<?> lazyPollingScheduler;
-    private ScheduledFuture<?> fastPollingScheduler;
+    private @Nullable ScheduledFuture<?> lazyPollingScheduler = null;
+    private @Nullable ScheduledFuture<?> fastPollingScheduler = null;
 
     private final AtomicInteger fastPollingCallsToGo = new AtomicInteger();
 
     private RdsDebouncer debouncer = new RdsDebouncer();
 
-    private RdsConfiguration config = null;
+    private @Nullable RdsConfiguration config = null;
 
-    private RdsDataPoints points = null;
+    private @Nullable RdsDataPoints points = null;
 
     public RdsHandler(Thing thing) {
         super(thing);
@@ -76,53 +82,53 @@ public class RdsHandler extends BaseThingHandler {
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING);
 
-        config = getConfigAs(RdsConfiguration.class);
+        RdsConfiguration config = this.config = getConfigAs(RdsConfiguration.class);
 
-        if (config == null || config.plantId == null || config.plantId.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "missing Plant Id");
+        if (config.plantId.isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "missing Plant Id");
             return;
         }
 
-        RdsCloudHandler cloud = getCloudHandler();
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING);
 
-        if (cloud == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "missing cloud server handler");
+        try {
+            RdsCloudHandler cloud = getCloudHandler();
+
+            if (cloud.getThing().getStatus() != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "cloud server offline");
+                return;
+            }
+
+            initializePolling();
+        } catch (RdsCloudException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "missing cloud server handler");
             return;
         }
-
-        if (cloud.getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                    "cloud server offline");
-            return;
-        }
-
-        initializePolling();
     }
 
     public void initializePolling() {
-        RdsCloudHandler cloud = getCloudHandler();
+        try {
+            int pollInterval = getCloudHandler().getPollInterval();
 
-        if (cloud != null) {
-            int pollInterval = cloud.getPollInterval();
-
-            if (pollInterval > 0) {
-                // create a "lazy" polling scheduler
-                if (lazyPollingScheduler == null || lazyPollingScheduler.isCancelled()) {
-                    lazyPollingScheduler = scheduler.scheduleWithFixedDelay(this::lazyPollingSchedulerExecute,
-                            pollInterval, pollInterval, TimeUnit.SECONDS);
-                }
-
-                // create a "fast" polling scheduler
-                fastPollingCallsToGo.set(FAST_POLL_CYCLES);
-                if (fastPollingScheduler == null || fastPollingScheduler.isCancelled()) {
-                    fastPollingScheduler = scheduler.scheduleWithFixedDelay(this::fastPollingSchedulerExecute,
-                            FAST_POLL_INTERVAL, FAST_POLL_INTERVAL, TimeUnit.SECONDS);
-                }
-
-                startFastPollingBurst();
+            // create a "lazy" polling scheduler
+            ScheduledFuture<?> lazyPollingScheduler = this.lazyPollingScheduler;
+            if (lazyPollingScheduler == null || lazyPollingScheduler.isCancelled()) {
+                this.lazyPollingScheduler = scheduler.scheduleWithFixedDelay(this::lazyPollingSchedulerExecute,
+                        pollInterval, pollInterval, TimeUnit.SECONDS);
             }
+
+            // create a "fast" polling scheduler
+            fastPollingCallsToGo.set(FAST_POLL_CYCLES);
+            ScheduledFuture<?> fastPollingScheduler = this.fastPollingScheduler;
+            if (fastPollingScheduler == null || fastPollingScheduler.isCancelled()) {
+                this.fastPollingScheduler = scheduler.scheduleWithFixedDelay(this::fastPollingSchedulerExecute,
+                        FAST_POLL_INTERVAL, FAST_POLL_INTERVAL, TimeUnit.SECONDS);
+            }
+
+            startFastPollingBurst();
+        } catch (RdsCloudException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            logger.warn(LOG_SYSTEM_EXCEPTION, "initializePolling()", e.getClass().getName(), e.getMessage());
         }
     }
 
@@ -138,15 +144,17 @@ public class RdsHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         // clean up the lazy polling scheduler
+        ScheduledFuture<?> lazyPollingScheduler = this.lazyPollingScheduler;
         if (lazyPollingScheduler != null && !lazyPollingScheduler.isCancelled()) {
             lazyPollingScheduler.cancel(true);
-            lazyPollingScheduler = null;
+            this.lazyPollingScheduler = null;
         }
 
         // clean up the fast polling scheduler
+        ScheduledFuture<?> fastPollingScheduler = this.fastPollingScheduler;
         if (fastPollingScheduler != null && !fastPollingScheduler.isCancelled()) {
             fastPollingScheduler.cancel(true);
-            fastPollingScheduler = null;
+            this.fastPollingScheduler = null;
         }
     }
 
@@ -184,99 +192,92 @@ public class RdsHandler extends BaseThingHandler {
      * states
      */
     private void doPollNow() {
-        RdsCloudHandler cloud = getCloudHandler();
+        try {
+            RdsCloudHandler cloud = getCloudHandler();
 
-        if (cloud == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "missing cloud server handler");
-            return;
-        }
-
-        String token = cloud.getToken();
-
-        if (cloud.getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                    "cloud server offline");
-            return;
-        }
-
-        String apiKey = cloud.getApiKey();
-
-        if (points == null || (!points.refresh(apiKey, token))) {
-            points = RdsDataPoints.create(apiKey, token, config.plantId);
-        }
-
-        if (points == null) {
-            if (getThing().getStatus() == ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "cloud server has no info this device");
+            if (cloud.getThing().getStatus() != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "cloud server offline");
+                return;
             }
-            return;
-        }
 
-        if (!points.isOnline()) {
-            if (getThing().getStatus() == ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "cloud server reports device offline");
+            RdsDataPoints points = this.points;
+            if ((points == null || (!points.refresh(cloud.getApiKey(), cloud.getToken())))) {
+                points = fetchPoints();
             }
-            return;
-        }
 
-        if (getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
-                    "received info from cloud server");
-        }
+            if (points == null) {
+                if (getThing().getStatus() == ThingStatus.ONLINE) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "missing data points");
+                }
+                throw new RdsCloudException("missing data points");
+            }
 
-        for (ChannelMap chan : CHAN_MAP) {
-            if (debouncer.timeExpired(chan.channelId)) {
+            if (!points.isOnline()) {
+                if (getThing().getStatus() == ThingStatus.ONLINE) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "cloud server reports device offline");
+                }
+                return;
+            }
+
+            if (getThing().getStatus() != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "server response ok");
+            }
+
+            for (ChannelMap channel : CHAN_MAP) {
+                if (!debouncer.timeExpired(channel.id)) {
+                    continue;
+                }
+
+                BasePoint point = points.getPointByClass(channel.clazz);
                 State state = null;
 
-                switch (chan.channelId) {
-                case CHA_ROOM_TEMP:
-                case CHA_ROOM_HUMIDITY:
-                case CHA_OUTSIDE_TEMP:
-                case CHA_TARGET_TEMP: {
-                    state = points.getRaw(chan.hierarchyName);
-                    break;
-                }
-                case CHA_ROOM_AIR_QUALITY:
-                case CHA_ENERGY_SAVINGS_LEVEL: {
-                    state = points.getEnum(chan.hierarchyName);
-                    break;
-                }
-                case CHA_OUTPUT_STATE: {
-                    state = points.getEnum(chan.hierarchyName);
-                    /*
-                     * convert the state text "Neither" to the more easy to understand word "Off"
-                     */
-                    if (state.toString().equals(STATE_NEITHER)) {
-                        state = new StringType(STATE_OFF);
+                switch (channel.id) {
+                    case CHA_ROOM_TEMP:
+                    case CHA_ROOM_HUMIDITY:
+                    case CHA_OUTSIDE_TEMP:
+                    case CHA_TARGET_TEMP: {
+                        state = point.getState();
+                        break;
                     }
-                    break;
-                }
-                case CHA_STAT_AUTO_MODE: {
-                    state = OnOffType.from(points.getPresPrio(chan.hierarchyName) > 13
-                            || points.asInt(HIE_STAT_OCC_MODE_PRESENT) == 2);
-                    break;
-                }
-                case CHA_STAT_OCC_MODE_PRESENT: {
-                    state = OnOffType.from(points.asInt(chan.hierarchyName) == 3);
-                    break;
-                }
-                case CHA_DHW_AUTO_MODE: {
-                    state = OnOffType.from(points.getPresPrio(chan.hierarchyName) > 13);
-                    break;
-                }
-                case CHA_DHW_OUTPUT_STATE: {
-                    state = OnOffType.from(points.asInt(chan.hierarchyName) == 2);
-                    break;
-                }
+                    case CHA_ROOM_AIR_QUALITY:
+                    case CHA_ENERGY_SAVINGS_LEVEL: {
+                        state = point.getEnum();
+                        break;
+                    }
+                    case CHA_OUTPUT_STATE: {
+                        state = point.getEnum();
+                        // convert the state text "Neither" to the easier to understand word "Off"
+                        if (STATE_NEITHER.equals(state.toString())) {
+                            state = new StringType(STATE_OFF);
+                        }
+                        break;
+                    }
+                    case CHA_STAT_AUTO_MODE: {
+                        state = OnOffType.from(point.getPresentPriority() > 13
+                                || points.getPointByClass(HIE_STAT_OCC_MODE_PRESENT).asInt() == 2);
+                        break;
+                    }
+                    case CHA_STAT_OCC_MODE_PRESENT: {
+                        state = OnOffType.from(point.asInt() == 3);
+                        break;
+                    }
+                    case CHA_DHW_AUTO_MODE: {
+                        state = OnOffType.from(point.getPresentPriority() > 13);
+                        break;
+                    }
+                    case CHA_DHW_OUTPUT_STATE: {
+                        state = OnOffType.from(point.asInt() == 2);
+                        break;
+                    }
                 }
 
                 if (state != null) {
-                    updateState(chan.channelId, state);
+                    updateState(channel.id, state);
                 }
             }
+        } catch (RdsCloudException e) {
+            logger.warn(LOG_SYSTEM_EXCEPTION, "doPollNow()", e.getClass().getName(), e.getMessage());
         }
     }
 
@@ -284,83 +285,139 @@ public class RdsHandler extends BaseThingHandler {
      * private method: sends a new channel value to the cloud server
      */
     private synchronized void doHandleCommand(String channelId, Command command) {
-        RdsCloudHandler cloud = getCloudHandler();
-        if (cloud != null && points == null) {
-            points = RdsDataPoints.create(cloud.getApiKey(), cloud.getToken(), config.plantId);
-        }
+        RdsDataPoints points = this.points;
+        try {
+            RdsCloudHandler cloud = getCloudHandler();
 
-        if (points != null && cloud != null) {
-            for (ChannelMap chan : CHAN_MAP) {
-                if (channelId.equals(chan.channelId)) {
-                    switch (chan.channelId) {
-                    case CHA_TARGET_TEMP: {
-                        points.setValue(cloud.getApiKey(), cloud.getToken(), chan.hierarchyName, command.format("%s"));
-                        debouncer.initialize(channelId);
-                        break;
-                    }
-                    case CHA_STAT_AUTO_MODE: {
-                        /*
-                         * this command is particularly funky.. use Green Leaf = 5 to set to Auto, and
-                         * use Comfort Button = 1 to set to Manual
-                         */
-                        if (command == OnOffType.ON) {
-                            points.setValue(cloud.getApiKey(), cloud.getToken(), HIE_ENERGY_SAVINGS_LEVEL, "5");
-                        } else {
-                            points.setValue(cloud.getApiKey(), cloud.getToken(), HIE_STAT_CMF_BTN, "1");
+            String apiKey = cloud.getApiKey();
+            String token = cloud.getToken();
+
+            if ((points == null || (!points.refresh(apiKey, token)))) {
+                points = fetchPoints();
+            }
+
+            if (points == null) {
+                throw new RdsCloudException("missing data points");
+            }
+
+            for (ChannelMap channel : CHAN_MAP) {
+                if (channelId.equals(channel.id)) {
+                    switch (channel.id) {
+                        case CHA_TARGET_TEMP: {
+                            Command doCommand = command;
+                            if (command instanceof QuantityType<?>) {
+                                Unit<?> unit = points.getPointByClass(channel.clazz).getUnit();
+                                QuantityType<?> temp = ((QuantityType<?>) command).toUnit(unit);
+                                if (temp != null) {
+                                    doCommand = temp;
+                                }
+                            }
+                            points.setValue(apiKey, token, channel.clazz, doCommand.format("%s"));
+                            debouncer.initialize(channelId);
+                            break;
                         }
-                        debouncer.initialize(channelId);
-                        break;
-                    }
-                    case CHA_STAT_OCC_MODE_PRESENT: {
-                        points.setValue(cloud.getApiKey(), cloud.getToken(), chan.hierarchyName,
-                                command == OnOffType.OFF ? "2" : "3");
-                        debouncer.initialize(channelId);
-                        break;
-                    }
-                    case CHA_DHW_AUTO_MODE: {
-                        if (command == OnOffType.ON) {
-                            points.setValue(cloud.getApiKey(), cloud.getToken(), chan.hierarchyName, "0");
-                        } else {
-                            points.setValue(cloud.getApiKey(), cloud.getToken(), chan.hierarchyName,
-                                    String.valueOf(points.asInt(chan.hierarchyName)));
+                        case CHA_STAT_AUTO_MODE: {
+                            /*
+                             * this command is particularly funky.. use Green Leaf = 5 to set to Auto, and
+                             * use Comfort Button = 1 to set to Manual
+                             */
+                            if (command == OnOffType.ON) {
+                                points.setValue(apiKey, token, HIE_ENERGY_SAVINGS_LEVEL, "5");
+                            } else {
+                                points.setValue(apiKey, token, HIE_STAT_CMF_BTN, "1");
+                            }
+                            debouncer.initialize(channelId);
+                            break;
                         }
-                        debouncer.initialize(channelId);
-                        break;
-                    }
-                    case CHA_DHW_OUTPUT_STATE: {
-                        points.setValue(cloud.getApiKey(), cloud.getToken(), chan.hierarchyName,
-                                command == OnOffType.OFF ? "1" : "2");
-                        debouncer.initialize(channelId);
-                        break;
-                    }
-                    case CHA_ROOM_TEMP:
-                    case CHA_ROOM_HUMIDITY:
-                    case CHA_OUTSIDE_TEMP:
-                    case CHA_ROOM_AIR_QUALITY:
-                    case CHA_OUTPUT_STATE: {
-                        logger.debug("error: unexpected command to channel {}", chan.channelId);
-                        break;
-                    }
+                        case CHA_STAT_OCC_MODE_PRESENT: {
+                            points.setValue(apiKey, token, channel.clazz, command == OnOffType.OFF ? "2" : "3");
+                            debouncer.initialize(channelId);
+                            break;
+                        }
+                        case CHA_DHW_AUTO_MODE: {
+                            if (command == OnOffType.ON) {
+                                points.setValue(apiKey, token, channel.clazz, "0");
+                            } else {
+                                points.setValue(apiKey, token, channel.clazz,
+                                        Integer.toString(points.getPointByClass(channel.clazz).asInt()));
+                            }
+                            debouncer.initialize(channelId);
+                            break;
+                        }
+                        case CHA_DHW_OUTPUT_STATE: {
+                            points.setValue(apiKey, token, channel.clazz, command == OnOffType.OFF ? "1" : "2");
+                            debouncer.initialize(channelId);
+                            break;
+                        }
+                        case CHA_ROOM_TEMP:
+                        case CHA_ROOM_HUMIDITY:
+                        case CHA_OUTSIDE_TEMP:
+                        case CHA_ROOM_AIR_QUALITY:
+                        case CHA_OUTPUT_STATE: {
+                            logger.debug("error: unexpected command to channel {}", channel.id);
+                            break;
+                        }
                     }
                     break;
                 }
             }
+        } catch (RdsCloudException e) {
+            logger.warn(LOG_SYSTEM_EXCEPTION, "doHandleCommand()", e.getClass().getName(), e.getMessage());
         }
     }
 
     /*
      * private method: returns the cloud server handler
      */
-    private RdsCloudHandler getCloudHandler() {
-        @Nullable Bridge b;
-
-        @Nullable BridgeHandler h;
+    private RdsCloudHandler getCloudHandler() throws RdsCloudException {
+        @Nullable
+        Bridge b;
+        @Nullable
+        BridgeHandler h;
 
         if ((b = getBridge()) != null && (h = b.getHandler()) != null && h instanceof RdsCloudHandler) {
             return (RdsCloudHandler) h;
         }
-
-        return null;
+        throw new RdsCloudException("no cloud handler found");
     }
 
+    public @Nullable RdsDataPoints fetchPoints() {
+        RdsConfiguration config = this.config;
+        try {
+            if (config == null) {
+                throw new RdsCloudException("missing configuration");
+            }
+
+            String url = String.format(URL_POINTS, config.plantId);
+
+            if (logger.isTraceEnabled()) {
+                logger.trace(LOG_HTTP_COMMAND, HTTP_GET, url.length());
+                logger.trace(LOG_PAYLOAD_FMT, LOG_SENDING_MARK, url);
+            } else if (logger.isDebugEnabled()) {
+                logger.debug(LOG_HTTP_COMMAND_ABR, HTTP_GET, url.length());
+                logger.debug(LOG_PAYLOAD_FMT_ABR, LOG_SENDING_MARK, url.substring(0, Math.min(url.length(), 30)));
+            }
+
+            RdsCloudHandler cloud = getCloudHandler();
+            String apiKey = cloud.getApiKey();
+            String token = cloud.getToken();
+
+            String json = RdsDataPoints.httpGenericGetJson(apiKey, token, url);
+
+            if (logger.isTraceEnabled()) {
+                logger.trace(LOG_CONTENT_LENGTH, LOG_RECEIVED_MSG, json.length());
+                logger.trace(LOG_PAYLOAD_FMT, LOG_RECEIVED_MARK, json);
+            } else if (logger.isDebugEnabled()) {
+                logger.debug(LOG_CONTENT_LENGTH_ABR, LOG_RECEIVED_MSG, json.length());
+                logger.debug(LOG_PAYLOAD_FMT_ABR, LOG_RECEIVED_MARK, json.substring(0, Math.min(json.length(), 30)));
+            }
+
+            return this.points = RdsDataPoints.createFromJson(json);
+        } catch (RdsCloudException e) {
+            logger.warn(LOG_SYSTEM_EXCEPTION, "fetchPoints()", e.getClass().getName(), e.getMessage());
+        } catch (JsonParseException | IOException e) {
+            logger.warn(LOG_RUNTIME_EXCEPTION, "fetchPoints()", e.getClass().getName(), e.getMessage());
+        }
+        return this.points = null;
+    }
 }

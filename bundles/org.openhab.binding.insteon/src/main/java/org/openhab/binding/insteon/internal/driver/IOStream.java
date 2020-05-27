@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.insteon.internal.driver;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -37,7 +38,11 @@ public abstract class IOStream {
     private static final Logger logger = LoggerFactory.getLogger(IOStream.class);
     protected @Nullable InputStream in = null;
     protected @Nullable OutputStream out = null;
-    private boolean stopped = false;
+    private volatile boolean stopped = false;
+
+    public void start() {
+        stopped = false;
+    }
 
     public void stop() {
         stopped = true;
@@ -51,20 +56,16 @@ public abstract class IOStream {
      * @param readSize size to read
      * @return number of bytes read
      */
-    public int read(byte[] b, int offset, int readSize) throws InterruptedException {
+    public int read(byte[] b, int offset, int readSize) throws InterruptedException, IOException {
         int len = 0;
         while (!stopped && len < 1) {
-            try {
-                len = in.read(b, offset, readSize);
-                if (Thread.interrupted()) {
-                    throw new InterruptedException();
-                }
-            } catch (IOException e) {
-                logger.trace("got exception while reading: {}", e.getMessage());
-                while (!stopped && !reconnect()) {
-                    logger.trace("sleeping before reconnecting");
-                    Thread.sleep(10000);
-                }
+            len = in.read(b, offset, readSize);
+            if (len == -1) {
+                throw new EOFException();
+            }
+
+            if (Thread.interrupted()) {
+                throw new InterruptedException();
             }
         }
         return (len);
@@ -75,20 +76,8 @@ public abstract class IOStream {
      *
      * @param b byte array to write
      */
-    public void write(byte @Nullable [] b) {
-        try {
-            out.write(b);
-        } catch (IOException e) {
-            logger.trace("got exception while writing: {}", e.getMessage());
-            while (!stopped && !reconnect()) {
-                try {
-                    logger.trace("sleeping before reconnecting");
-                    Thread.sleep(10000);
-                } catch (InterruptedException ie) {
-                    logger.warn("interrupted while sleeping on write reconnect");
-                }
-            }
-        }
+    public void write(byte @Nullable [] b) throws IOException {
+        out.write(b);
     }
 
     /**
@@ -102,16 +91,6 @@ public abstract class IOStream {
      * Closes the IOStream
      */
     public abstract void close();
-
-    /**
-     * reconnects the stream
-     *
-     * @return true if reconnect succeeded
-     */
-    private synchronized boolean reconnect() {
-        close();
-        return (open());
-    }
 
     /**
      * Creates an IOStream from an allowed config string:

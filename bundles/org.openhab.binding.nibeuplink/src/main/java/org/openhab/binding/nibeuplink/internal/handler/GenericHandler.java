@@ -12,16 +12,15 @@
  */
 package org.openhab.binding.nibeuplink.internal.handler;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.smarthome.core.thing.Channel;
+import org.eclipse.smarthome.core.thing.ChannelGroupUID;
+import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.openhab.binding.nibeuplink.internal.model.Channel;
-import org.openhab.binding.nibeuplink.internal.model.ChannelList;
-import org.openhab.binding.nibeuplink.internal.model.CustomChannels;
 
 /**
  * generic implementation of handler logic
@@ -30,37 +29,33 @@ import org.openhab.binding.nibeuplink.internal.model.CustomChannels;
  */
 @NonNullByDefault
 public class GenericHandler extends UplinkBaseHandler {
-    private final ChannelList channelList;
 
     /**
      * constructor, called by the factory
      *
-     * @param thing       instance of the thing, passed in by the factory
-     * @param httpClient  the httpclient that communicates with the API
-     * @param channelList the specific channellist
+     * @param thing instance of the thing, passed in by the factory
+     * @param httpClient the httpclient that communicates with the API
      */
-    public GenericHandler(Thing thing, HttpClient httpClient, ChannelList channelList) {
+    public GenericHandler(Thing thing, HttpClient httpClient) {
         super(thing, httpClient);
-        this.channelList = channelList;
     }
 
     @Override
-    public @Nullable Channel getSpecificChannel(String channelCode) {
-        Channel channel = channelList.fromCode(channelCode);
-
-        // check custom channels if no stock channel was found
+    public @Nullable Channel getSpecificChannel(String channelId) {
+        Channel channel = getThing().getChannel(channelId);
         if (channel == null) {
-            channel = CustomChannels.getInstance().fromCode(channelCode);
+            for (ChannelGroupUID channelGroupUID : getRegisteredGroups()) {
+                channel = getThing().getChannel(new ChannelUID(channelGroupUID, channelId));
+                if (channel != null) {
+                    break;
+                }
+            }
         }
         return channel;
     }
 
     @Override
-    public Set<Channel> getChannels() {
-        Set<Channel> specificAndCustomChannels = new HashSet<>();
-        specificAndCustomChannels.addAll(channelList.getChannels());
-        specificAndCustomChannels.addAll(CustomChannels.getInstance().getChannels());
-        return specificAndCustomChannels;
+    public List<Channel> getChannels() {
+        return getThing().getChannels();
     }
-
 }

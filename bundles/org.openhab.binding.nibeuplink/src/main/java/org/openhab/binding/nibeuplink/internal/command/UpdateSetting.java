@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.nibeuplink.internal.command;
 
-import static org.openhab.binding.nibeuplink.internal.NibeUplinkBindingConstants.MANAGE_API_BASE_URL;
-
 import java.nio.charset.StandardCharsets;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -27,11 +25,13 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.thing.Channel;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.nibeuplink.internal.NibeUplinkBindingConstants;
 import org.openhab.binding.nibeuplink.internal.callback.AbstractUplinkCommandCallback;
+import org.openhab.binding.nibeuplink.internal.handler.ChannelUtil;
 import org.openhab.binding.nibeuplink.internal.handler.NibeUplinkHandler;
-import org.openhab.binding.nibeuplink.internal.model.Channel;
-import org.openhab.binding.nibeuplink.internal.model.SwitchChannel;
 import org.openhab.binding.nibeuplink.internal.model.ValidationException;
 
 /**
@@ -58,8 +58,8 @@ public class UpdateSetting extends AbstractUplinkCommandCallback implements Nibe
         // this is necessary because we must not send the unit to the nibe backend
         if (command instanceof QuantityType<?>) {
             return String.valueOf(((QuantityType<?>) command).doubleValue());
-        } else if (command instanceof OnOffType && channel instanceof SwitchChannel) {
-            return ((SwitchChannel) channel).mapValue((OnOffType) command);
+        } else if (command instanceof OnOffType) {
+            return ChannelUtil.mapValue(channel, (OnOffType) command);
         } else {
             return command.toString();
         }
@@ -67,10 +67,13 @@ public class UpdateSetting extends AbstractUplinkCommandCallback implements Nibe
 
     @Override
     protected Request prepareRequest(Request requestToPrepare) {
-        if (channel.isReadOnly()) {
-            logger.info("channel '{}' does not support write access - value to set '{}'", channel.getFQName(), value);
-            throw new UnsupportedOperationException(
-                    "channel (" + channel.getFQName() + ") does not support write access");
+        ChannelTypeUID typeUID = channel.getChannelTypeUID();
+        String channelId = channel.getUID().getIdWithoutGroup();
+
+        if (typeUID == null || typeUID.getId() == null
+                || !typeUID.getId().startsWith(NibeUplinkBindingConstants.RW_CHANNEL_PREFIX)) {
+            logger.info("channel '{}' does not support write access - value to set '{}'", channelId, value);
+            throw new UnsupportedOperationException("channel (" + channelId + ") does not support write access");
         }
 
         // although we have integers openhab often transfers decimals which will then cause a validation error. So we
@@ -79,9 +82,11 @@ public class UpdateSetting extends AbstractUplinkCommandCallback implements Nibe
             value = value.substring(0, value.length() - 2);
         }
 
-        if (value.matches(channel.getValidationExpression())) {
+        String expr = ChannelUtil.getValidationExpression(channel);
+
+        if (value.matches(expr)) {
             Fields fields = new Fields();
-            fields.add(channel.getChannelCode(), value);
+            fields.add(channelId, value);
 
             FormContentProvider cp = new FormContentProvider(fields);
 
@@ -92,16 +97,15 @@ public class UpdateSetting extends AbstractUplinkCommandCallback implements Nibe
 
             return requestToPrepare;
         } else {
-            logger.info("channel '{}' does not allow value '{}' - validation rule '{}'", channel.getFQName(), value,
-                    channel.getValidationExpression());
-            throw new ValidationException(
-                    "channel (" + channel.getFQName() + ") could not be updated due to a validation error");
+            logger.info("channel '{}' does not allow value '{}' - validation rule '{}'", channelId, value, expr);
+            throw new ValidationException("channel (" + channelId + ") could not be updated due to a validation error");
         }
     }
 
     @Override
     protected String getURL() {
-        return MANAGE_API_BASE_URL + config.getNibeId() + channel.getWriteApiUrlSuffix();
+        return NibeUplinkBindingConstants.MANAGE_API_BASE_URL + config.getNibeId()
+                + ChannelUtil.getWriteApiUrlSuffix(channel);
     }
 
     @Override
@@ -109,8 +113,8 @@ public class UpdateSetting extends AbstractUplinkCommandCallback implements Nibe
         logger.debug("onComplete()");
 
         if (!HttpStatus.Code.FOUND.equals(getCommunicationStatus().getHttpCode()) && retries++ < MAX_RETRIES) {
-            logger.debug("Could not set value '{}' for channel '{}' ({})", value, channel.getChannelCode(),
-                    channel.getName());
+            logger.debug("Could not set value '{}' for channel '{}' ({})", value, channel.getUID().getId(),
+                    channel.getLabel());
             handler.getWebInterface().enqueueCommand(this);
         }
     }

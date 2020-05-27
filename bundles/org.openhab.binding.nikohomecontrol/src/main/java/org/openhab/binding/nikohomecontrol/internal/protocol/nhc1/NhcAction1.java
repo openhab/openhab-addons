@@ -65,9 +65,9 @@ public class NhcAction1 extends NhcAction {
      * Sets state of action. This is the version for Niko Home Control I.
      *
      * @param newState - The allowed values depend on the action type.
-     *                     switch action: 0 or 100
-     *                     dimmer action: between 0 and 100
-     *                     rollershutter action: between 0 and 100
+     *            switch action: 0 or 100
+     *            dimmer action: between 0 and 100
+     *            rollershutter action: between 0 and 100
      */
     @Override
     public void setState(int newState) {
@@ -235,7 +235,7 @@ public class NhcAction1 extends NhcAction {
      * position.
      *
      * @param currentValue current percent position
-     * @param newValue     new percent position
+     * @param newValue new percent position
      *
      */
     private void scheduleRollershutterStop(int currentValue, int newValue) {

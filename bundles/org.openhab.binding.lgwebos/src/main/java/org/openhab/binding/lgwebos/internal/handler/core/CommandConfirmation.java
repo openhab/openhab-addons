@@ -36,5 +36,4 @@ public class CommandConfirmation {
     public String toString() {
         return "CommandConfirmation [returnValue=" + returnValue + "]";
     }
-
 }

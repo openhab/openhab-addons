@@ -136,5 +136,4 @@ public final class LifxNetworkUtil {
         });
         return BROADCAST_PORT + (offset % (PORT_MAX - BROADCAST_PORT));
     }
-
 }

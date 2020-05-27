@@ -88,5 +88,4 @@ public class Programme {
     public String getChannel() {
         return channel;
     }
-
 }

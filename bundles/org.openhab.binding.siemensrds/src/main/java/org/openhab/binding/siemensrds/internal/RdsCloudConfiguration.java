@@ -12,17 +12,19 @@
  */
 package org.openhab.binding.siemensrds.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link RdsCloudConfiguration} class contains the thing configuration
  * parameters for the Climatix IC cloud user account
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
+@NonNullByDefault
 public class RdsCloudConfiguration {
 
-    public String userEmail;
-    public String userPassword;
+    public String userEmail = "";
+    public String userPassword = "";
     public int pollingInterval;
-    public String apiKey;
-
+    public String apiKey = "";
 }

@@ -62,13 +62,9 @@ public class NetworkBindingConfiguration {
 
     @Override
     public String toString() {
-        return "NetworkBindingConfiguration{" +
-                "allowSystemPings=" + allowSystemPings +
-                ", allowDHCPlisten=" + allowDHCPlisten +
-                ", cacheDeviceStateTimeInMS=" + cacheDeviceStateTimeInMS +
-                ", arpPingToolPath='" + arpPingToolPath + '\'' +
-                ", arpPingUtilMethod=" + arpPingUtilMethod +
-                ", preferResponseTimeAsLatency=" + preferResponseTimeAsLatency +
-                '}';
+        return "NetworkBindingConfiguration{" + "allowSystemPings=" + allowSystemPings + ", allowDHCPlisten="
+                + allowDHCPlisten + ", cacheDeviceStateTimeInMS=" + cacheDeviceStateTimeInMS + ", arpPingToolPath='"
+                + arpPingToolPath + '\'' + ", arpPingUtilMethod=" + arpPingUtilMethod + ", preferResponseTimeAsLatency="
+                + preferResponseTimeAsLatency + '}';
     }
 }

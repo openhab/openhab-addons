@@ -390,7 +390,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                         toQuantityType(col.power == OnOffType.ON ? col.percentBrightness.doubleValue() : new Double(0),
                                 DIGITS_NONE, SmartHomeUnits.PERCENT));
 
-                if (profile.isBulb || profile.isDuo) {
+                if ((profile.isBulb || profile.isDuo) && (light.temp != null)) {
                     col.setTemp(getInteger(light.temp));
                     updated |= updateChannel(whiteGroup, CHANNEL_COLOR_TEMP, col.percentTemp);
                     logger.trace("{}: update {}.color picker", thingName, whiteGroup);
@@ -470,7 +470,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                 parms.put(SHELLY_COLOR_WHITE, String.valueOf(newCol.white));
             }
         }
-        if ((!profile.inColor) && oldCol.temp != newCol.temp) {
+        if ((!profile.inColor) && (oldCol.temp != newCol.temp)) {
             logger.debug("{}: Setting color temp to {}", thingName, newCol.temp);
             parms.put(SHELLY_COLOR_TEMP, String.valueOf(newCol.temp));
         }

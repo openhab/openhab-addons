@@ -24,5 +24,4 @@ public class MowerParkUntilNextTimerCommand extends Command {
     public MowerParkUntilNextTimerCommand() {
         super(COMMAND);
     }
-
 }
