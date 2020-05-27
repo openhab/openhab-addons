@@ -40,6 +40,7 @@ import org.openhab.binding.tesla.internal.discovery.TeslaAccountDiscoveryService
 import org.openhab.binding.tesla.internal.protocol.TokenRequest;
 import org.openhab.binding.tesla.internal.protocol.TokenRequestPassword;
 import org.openhab.binding.tesla.internal.protocol.TokenResponse;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
@@ -62,15 +63,14 @@ public class TeslaCommandExtension extends AbstractConsoleCommandExtension {
 
     private final Logger logger = LoggerFactory.getLogger(TeslaCommandExtension.class);
 
-    @Nullable
     @Reference(cardinality = ReferenceCardinality.OPTIONAL)
-    private ClientBuilder injectedClientBuilder;
+    private @Nullable ClientBuilder injectedClientBuilder;
 
-    @Nullable
-    private WebTarget tokenTarget;
+    private @Nullable WebTarget tokenTarget;
 
     private final TeslaAccountDiscoveryService teslaAccountDiscoveryService;
 
+    @Activate
     public TeslaCommandExtension(@Reference TeslaAccountDiscoveryService teslaAccountDiscoveryService) {
         super("tesla", "Interact with the Tesla integration.");
         this.teslaAccountDiscoveryService = teslaAccountDiscoveryService;
@@ -154,8 +154,9 @@ public class TeslaCommandExtension extends AbstractConsoleCommandExtension {
     }
 
     private synchronized WebTarget getTokenTarget() {
-        if (tokenTarget != null) {
-            return tokenTarget;
+        WebTarget target = this.tokenTarget;
+        if (target != null) {
+            return target;
         } else {
             Client client;
             try {
@@ -169,7 +170,7 @@ public class TeslaCommandExtension extends AbstractConsoleCommandExtension {
                 }
             }
             WebTarget teslaTarget = client.target(URI_OWNERS);
-            WebTarget target = teslaTarget.path(URI_ACCESS_TOKEN);
+            target = teslaTarget.path(URI_ACCESS_TOKEN);
             this.tokenTarget = target;
             return target;
         }
