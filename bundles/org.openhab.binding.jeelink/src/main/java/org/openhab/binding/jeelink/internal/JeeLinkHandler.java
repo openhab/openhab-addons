@@ -29,10 +29,13 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.jeelink.internal.config.JeeLinkConfig;
-import org.openhab.binding.jeelink.internal.connection.AbstractJeeLinkConnection;
 import org.openhab.binding.jeelink.internal.connection.ConnectionListener;
 import org.openhab.binding.jeelink.internal.connection.JeeLinkConnection;
+import org.openhab.binding.jeelink.internal.connection.JeeLinkSerialConnection;
+import org.openhab.binding.jeelink.internal.connection.JeeLinkTcpConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,11 +47,12 @@ import org.slf4j.LoggerFactory;
 public class JeeLinkHandler extends BaseBridgeHandler implements BridgeHandler, ConnectionListener {
     private final Logger logger = LoggerFactory.getLogger(JeeLinkHandler.class);
 
-    private JeeLinkConnection connection;
-    private List<JeeLinkReadingConverter<?>> converters = new ArrayList<>();
-    private Map<String, JeeLinkReadingConverter<?>> sensorTypeConvertersMap = new HashMap<>();
-    private Map<Class<?>, Set<ReadingHandler<? extends Reading>>> readingClassHandlerMap = new HashMap<>();
+    private final List<JeeLinkReadingConverter<?>> converters = new ArrayList<>();
+    private final Map<String, JeeLinkReadingConverter<?>> sensorTypeConvertersMap = new HashMap<>();
+    private final Map<Class<?>, Set<ReadingHandler<? extends Reading>>> readingClassHandlerMap = new HashMap<>();
+    private final SerialPortManager serialPortManager;
 
+    private JeeLinkConnection connection;
     private AtomicBoolean connectionInitialized = new AtomicBoolean(false);
     private ScheduledFuture<?> connectJob;
     private ScheduledFuture<?> initJob;
@@ -56,19 +60,30 @@ public class JeeLinkHandler extends BaseBridgeHandler implements BridgeHandler, 
     private long lastReadingTime;
     private ScheduledFuture<?> monitorJob;
 
-    public JeeLinkHandler(Bridge bridge) {
+    public JeeLinkHandler(Bridge bridge, SerialPortManager serialPortManager) {
         super(bridge);
+        this.serialPortManager = serialPortManager;
     }
 
     @Override
     public void initialize() {
         JeeLinkConfig cfg = getConfig().as(JeeLinkConfig.class);
 
-        try {
-            connection = AbstractJeeLinkConnection.createFor(cfg, scheduler, this);
+        if (cfg.serialPort != null && cfg.baudRate != null) {
+            SerialPortIdentifier serialPortIdentifier = serialPortManager.getIdentifier(cfg.serialPort);
+            if (serialPortIdentifier == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Port not found: " + cfg.serialPort);
+                return;
+            }
+            connection = new JeeLinkSerialConnection(serialPortIdentifier, cfg.baudRate, this);
             connection.openConnection();
-        } catch (java.net.ConnectException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+        } else if (cfg.ipAddress != null && cfg.port != null) {
+            connection = new JeeLinkTcpConnection(cfg.ipAddress + ":" + cfg.port, scheduler, this);
+            connection.openConnection();
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Connection configuration incomplete");
         }
     }
 
@@ -151,10 +166,10 @@ public class JeeLinkHandler extends BaseBridgeHandler implements BridgeHandler, 
             Set<ReadingHandler<? extends Reading>> handlers = readingClassHandlerMap.get(h.getReadingClass());
             if (handlers == null) {
                 handlers = new HashSet<>();
-                
+
                 // this is the first handler for this reading class => also setup converter
                 readingClassHandlerMap.put(h.getReadingClass(), handlers);
-                
+
                 if (SensorDefinition.ALL_TYPE == h.getSensorType()) {
                     converters.addAll(SensorDefinition.getDiscoveryConverters());
                 } else {
@@ -184,7 +199,7 @@ public class JeeLinkHandler extends BaseBridgeHandler implements BridgeHandler, 
                 if (handlers.isEmpty()) {
                     // this was the last handler for this reading class => also remove converter
                     readingClassHandlerMap.remove(h.getReadingClass());
-                    
+
                     if (SensorDefinition.ALL_TYPE == h.getSensorType()) {
                         converters.removeAll(SensorDefinition.getDiscoveryConverters());
                     } else {
@@ -205,11 +220,11 @@ public class JeeLinkHandler extends BaseBridgeHandler implements BridgeHandler, 
     @Override
     public void handleInput(String input) {
         lastReadingTime = System.currentTimeMillis();
-        
+
         // try all associated converters to find the correct one
         for (JeeLinkReadingConverter<?> c : converters) {
             Reading r = c.createReading(input);
-            
+
             if (r != null) {
                 // this converter is responsible
                 intializeConnection();
@@ -217,12 +232,12 @@ public class JeeLinkHandler extends BaseBridgeHandler implements BridgeHandler, 
                 // propagate to the appropriate sensor handler
                 synchronized (readingClassHandlerMap) {
                     Set<ReadingHandler<? extends Reading>> handlers = getAllHandlers(r.getClass());
-                    
+
                     for (ReadingHandler h : handlers) {
                         h.handleReading(r);
                     }
                 }
-                
+
                 break;
             }
         }
@@ -230,7 +245,7 @@ public class JeeLinkHandler extends BaseBridgeHandler implements BridgeHandler, 
 
     private Set<ReadingHandler<? extends Reading>> getAllHandlers(Class<? extends Reading> readingClass) {
         Set<ReadingHandler<? extends Reading>> handlers = new HashSet<>();
-        
+
         Set<ReadingHandler<? extends Reading>> typeHandlers = readingClassHandlerMap.get(readingClass);
         if (typeHandlers != null) {
             handlers.addAll(typeHandlers);
@@ -239,10 +254,10 @@ public class JeeLinkHandler extends BaseBridgeHandler implements BridgeHandler, 
         if (discoveryHandlers != null) {
             handlers.addAll(discoveryHandlers);
         }
-        
+
         return handlers;
     }
-    
+
     private void intializeConnection() {
         if (!connectionInitialized.getAndSet(true)) {
             JeeLinkConfig cfg = getConfig().as(JeeLinkConfig.class);

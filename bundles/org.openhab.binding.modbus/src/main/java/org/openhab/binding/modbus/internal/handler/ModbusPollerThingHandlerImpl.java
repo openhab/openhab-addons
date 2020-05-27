@@ -453,5 +453,4 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
             managerRef.get().submitOneTimePoll(pollTask);
         }
     }
-
 }

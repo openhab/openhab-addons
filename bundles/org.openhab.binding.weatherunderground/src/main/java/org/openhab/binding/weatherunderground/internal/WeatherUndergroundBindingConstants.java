@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -26,6 +27,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * @author Laurent Garnier - Initial contribution
  * @author Theo Giovanna - Added a bridge for the API key
  */
+@NonNullByDefault
 public class WeatherUndergroundBindingConstants {
 
     public static final String BINDING_ID = "weatherunderground";

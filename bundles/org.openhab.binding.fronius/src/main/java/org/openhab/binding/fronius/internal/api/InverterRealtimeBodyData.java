@@ -125,5 +125,4 @@ public class InverterRealtimeBodyData {
     public void setUdc(ValueUnit udc) {
         this.udc = udc;
     }
-
 }

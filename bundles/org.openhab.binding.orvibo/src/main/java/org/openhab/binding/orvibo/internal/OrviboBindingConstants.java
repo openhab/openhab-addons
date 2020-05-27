@@ -34,5 +34,4 @@ public class OrviboBindingConstants {
 
     // List of all Config properties
     public static final String CONFIG_PROPERTY_DEVICE_ID = "deviceId";
-
 }

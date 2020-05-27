@@ -63,9 +63,9 @@ public class EncryptionHelper {
      * Decrypts given buffer of bytes in place.
      *
      * @param buffer
-     *                   bytes to decrypt
+     *            bytes to decrypt
      * @throws GeneralSecurityException
-     *                                      on decryption errors
+     *             on decryption errors
      */
     public void decrypt(byte buffer[]) throws GeneralSecurityException {
         byte[] cv = new byte[16];
@@ -132,5 +132,4 @@ public class EncryptionHelper {
             }
         }
     }
-
 }

@@ -23,5 +23,4 @@ public class LampFaultCheckCommand extends BaseStringCommand {
     protected LampFaultCheckCommand(int setId) {
         super('d', 'p', setId, false);
     }
-
 }

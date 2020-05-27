@@ -52,5 +52,4 @@ public class Brightness implements IntegerState {
     public void setMin(Integer min) {
         this.min = min;
     }
-
 }

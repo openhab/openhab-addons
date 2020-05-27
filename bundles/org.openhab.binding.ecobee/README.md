@@ -29,10 +29,32 @@ thermostat will be added to the inbox.
 The binding will detect the capabilities (e.g. temperature, humidity, occupancy) supported by the 
 sensor, and then dynamically create channels for those capabilities.
 
-## Authorization
+## Getting Started
 
-After you have installed the binding, and have created the Account thing with a valid API key,
-the binding will try to get information about your thermostats from the Ecobee web service.
+### Getting an API Key
+
+Before you can start using the Ecobee binding, you need to get an API key.
+The following steps describe what you need to do.
+
+1. First you need to register your thermostat(s) with Ecobee.
+To complete this step, follow the directions in your Ecobee set up documentation.
+
+2. Once the thermostats are registered, the next step is to sign up as a developer.
+Do this from the Ecobee [developer portal](https://www.ecobee.com/developers/).
+
+3. Now that you are set up as an Ecobee developer, login to your Ecobee [web portal](https://www.ecobee.com/).
+Once logged in, select the **Developer** option from the menu.
+If you don't see the **Developer** option on the menu, then something went wrong with the previous step.
+
+4. Finally, create a new application.
+Give the application a name and fill in the application summary.
+Select the **Ecobee PIN** Authorization Method, then press **Create**.
+You now should see the **API key** for the application you just created.
+
+### Authorization
+
+After you have installed the binding, you can create the Account thing using the API key you just created.
+Once the Account thing is created, the binding will try to get information about your thermostats from the Ecobee web service.
 When this happens, the binding will determine that it has not yet been authorized by the Ecobee web service.
 
 At this point the binding will retrieve a four-character PIN code from the Ecobee web service.

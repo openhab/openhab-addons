@@ -1,0 +1,101 @@
+{
+	"totalCount": 11,
+	"values": {
+		"Pd1774247-7de7-4896-ac76-b7e0dd943c40;0!Online": {
+			"value": 1
+		},
+		"Pd1774247-7de7-4896-ac76-b7e0dd943c40;1!00000000E000055": {
+			"value": {
+				"value": 12.6014862,
+				"statusFlags": 0,
+				"reliability": 0,
+				"eventState": 0,
+				"minValue": -50,
+				"maxValue": 80
+			}
+		},
+		"Pd1774247-7de7-4896-ac76-b7e0dd943c40;1!002000083000055": {
+			"value": {
+				"value": 16,
+				"statusFlags": 0,
+				"reliability": 0,
+				"presentPriority": 15,
+				"eventState": 0,
+				"minValue": 6,
+				"maxValue": 35
+			}
+		},
+		"Pd1774247-7de7-4896-ac76-b7e0dd943c40;1!002000085000055": {
+			"value": {
+				"value": 39.1304474,
+				"statusFlags": 0,
+				"reliability": 0,
+				"eventState": 0,
+				"minValue": 0,
+				"maxValue": 100
+			}
+		},
+		"Pd1774247-7de7-4896-ac76-b7e0dd943c40;1!002000086000055": {
+			"value": {
+				"value": 21.51872,
+				"statusFlags": 0,
+				"reliability": 0,
+				"eventState": 0,
+				"minValue": 0,
+				"maxValue": 50
+			}
+		},
+		"Pd1774247-7de7-4896-ac76-b7e0dd943c40;1!013000051000055": {
+			"value": {
+				"value": 2,
+				"statusFlags": 0,
+				"reliability": 0,
+				"presentPriority": 13,
+				"eventState": 0
+			}
+		},
+		"Pd1774247-7de7-4896-ac76-b7e0dd943c40;1!013000052000055": {
+			"value": {
+				"value": 5,
+				"statusFlags": 0,
+				"reliability": 0,
+				"presentPriority": 15,
+				"eventState": 0
+			}
+		},
+		"Pd1774247-7de7-4896-ac76-b7e0dd943c40;1!013000053000055": {
+			"value": {
+				"value": 2,
+				"statusFlags": 0,
+				"reliability": 0,
+				"presentPriority": 15,
+				"eventState": 0
+			}
+		},
+		"Pd1774247-7de7-4896-ac76-b7e0dd943c40;1!013000056000055": {
+			"value": {
+				"value": 1,
+				"statusFlags": 0,
+				"reliability": 0,
+				"eventState": 0
+			}
+		},
+		"Pd1774247-7de7-4896-ac76-b7e0dd943c40;1!01300005A000055": {
+			"value": {
+				"value": 2,
+				"statusFlags": 0,
+				"reliability": 0,
+				"presentPriority": 13,
+				"eventState": 0
+			}
+		},
+		"Pd1774247-7de7-4896-ac76-b7e0dd943c40;1!013000074000055": {
+			"value": {
+				"value": 4,
+				"statusFlags": 0,
+				"reliability": 0,
+				"eventState": 0
+			}
+		}
+	}
+}

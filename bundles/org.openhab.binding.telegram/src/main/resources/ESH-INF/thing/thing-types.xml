@@ -9,12 +9,12 @@
 		<description>Thing to receive the latest message send to a Telegram Bot.</description>
 
 		<channels>
-			<channel id="lastMessageText" typeId="lastMessageText" />
-			<channel id="lastMessageDate" typeId="lastMessageDate" />
-			<channel id="lastMessageName" typeId="lastMessageName" />
-			<channel id="lastMessageUsername" typeId="lastMessageUsername" />
-			<channel id="chatId" typeId="chatId" />
-			<channel id="replyId" typeId="replyId" />
+			<channel id="lastMessageText" typeId="lastMessageText"/>
+			<channel id="lastMessageDate" typeId="lastMessageDate"/>
+			<channel id="lastMessageName" typeId="lastMessageName"/>
+			<channel id="lastMessageUsername" typeId="lastMessageUsername"/>
+			<channel id="chatId" typeId="chatId"/>
+			<channel id="replyId" typeId="replyId"/>
 		</channels>
 
 		<config-description>
@@ -41,7 +41,7 @@
 				<label>Proxy Host</label>
 				<description>Enter your proxy host. It will be used for telegram binding only and doesn't affect entire system.</description>
 			</parameter>
-			<parameter name="proxyPort"  type="integer" max="65535" min="1" required="false">
+			<parameter name="proxyPort" type="integer" max="65535" min="1" required="false">
 				<label>Proxy Port</label>
 				<description>Enter your proxy port.</description>
 			</parameter>
@@ -61,35 +61,35 @@
 		<item-type>String</item-type>
 		<label>Last Message Text</label>
 		<description>Contains the latest message text as a string</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="lastMessageDate">
 		<item-type>DateTime</item-type>
 		<label>Last Message Date</label>
 		<description>Contains the latest message date as a DateTime</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="lastMessageName">
 		<item-type>String</item-type>
 		<label>Last Message Name</label>
 		<description>Contains the latest message senders name as a string</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="lastMessageUsername">
 		<item-type>String</item-type>
 		<label>Last Message Username</label>
 		<description>Contains the latest message senders username as a string</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="chatId">
 		<item-type>String</item-type>
 		<label>Chat Id</label>
 		<description>Contains the id of chat from where the message was received.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="replyId">
@@ -97,7 +97,7 @@
 		<label>Reply Id</label>
 		<description>Contains the id of the reply which was passed to sendTelegram() as replyId. This id can be used to have
 			an unambiguous assignment of the user reply to the message which was sent by the bot.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

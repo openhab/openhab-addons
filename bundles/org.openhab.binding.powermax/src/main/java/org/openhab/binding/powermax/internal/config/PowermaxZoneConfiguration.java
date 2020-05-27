@@ -23,5 +23,4 @@ public class PowermaxZoneConfiguration {
     public static final String ZONE_NUMBER = "zoneNumber";
 
     public Integer zoneNumber;
-
 }

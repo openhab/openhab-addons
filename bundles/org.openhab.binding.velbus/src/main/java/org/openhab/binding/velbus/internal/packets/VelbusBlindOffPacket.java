@@ -35,5 +35,4 @@ public class VelbusBlindOffPacket extends VelbusPacket {
     protected byte[] getDataBytes() {
         return new byte[] { COMMAND_SWITCH_BLIND_OFF, channel };
     }
-
 }

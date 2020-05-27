@@ -24,5 +24,4 @@ public class FreeboxNetDeviceConfiguration {
     public static final String MAC_ADDRESS = "macAddress";
 
     public String macAddress;
-
 }

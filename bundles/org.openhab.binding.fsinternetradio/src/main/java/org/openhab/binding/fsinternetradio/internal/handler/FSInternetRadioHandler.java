@@ -164,7 +164,6 @@ public class FSInternetRadioHandler extends BaseThingHandler {
                 }
             }
         });
-
     }
 
     @Override

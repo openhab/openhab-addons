@@ -45,15 +45,15 @@ public class SomfyTahomaWindowHandler extends SomfyTahomaRollerShutterHandler {
         } else {
             String cmd = getTahomaCommand(command.toString());
             if (COMMAND_STOP.equals(cmd)) {
-                //Check if the window is not moving
+                // Check if the window is not moving
                 String executionId = getCurrentExecutions();
                 if (executionId != null) {
-                    //STOP command should be interpreted if window is moving
-                    //otherwise do nothing
+                    // STOP command should be interpreted if window is moving
+                    // otherwise do nothing
                     cancelExecution(executionId);
                 }
             } else {
-                String param = COMMAND_SET_CLOSURE.equals(cmd) ? "[" + command.toString() + "]" : "[]";
+                String param = COMMAND_SET_CLOSURE.equals(cmd) ? "[" + toInteger(command) + "]" : "[]";
                 sendCommand(cmd, param);
             }
         }

@@ -14,6 +14,8 @@ package org.openhab.binding.volvooncall.internal.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 
 /**
  * The {@link Heater} is responsible for storing
@@ -23,13 +25,18 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
  */
 @NonNullByDefault
 public class Heater {
-    public @NonNullByDefault({}) OnOffType status;
+    private String status = "";
 
     /*
      * Currently unused in the binding, maybe interesting in the future
      * private ZonedDateTime timestamp;
      */
-
+    public State getStatus() {
+        if ("off".equalsIgnoreCase(status)) {
+            return OnOffType.OFF;
+        } else if ("on".equalsIgnoreCase(status) || "onOther".equalsIgnoreCase(status)) {
+            return OnOffType.ON;
+        }
+        return UnDefType.UNDEF;
+    }
 }
-
-

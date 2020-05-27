@@ -21,7 +21,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -144,7 +143,8 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
 
     private String initializeBridgeSerial(PowermaxSerialConfiguration config) {
         String errorMsg = null;
-        if (StringUtils.isNotBlank(config.serialPort) && !config.serialPort.startsWith("rfc2217")) {
+        if (config.serialPort != null && !config.serialPort.trim().isEmpty()
+                && !config.serialPort.trim().startsWith("rfc2217")) {
             motionOffDelay = getMotionOffDelaySetting(config.motionOffDelay, DEFAULT_MOTION_OFF_DELAY);
             boolean allowArming = getBooleanSetting(config.allowArming, false);
             boolean allowDisarming = getBooleanSetting(config.allowDisarming, false);
@@ -164,7 +164,7 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
             commManager = new PowermaxCommManager(config.serialPort, panelType, forceStandardMode, autoSyncTime,
                     serialPortManager);
         } else {
-            if (StringUtils.isNotBlank(config.serialPort) && config.serialPort.startsWith("rfc2217")) {
+            if (config.serialPort != null && config.serialPort.trim().startsWith("rfc2217")) {
                 errorMsg = "Please use the IP Connection thing type for a serial over IP connection.";
             } else {
                 errorMsg = "serialPort setting must be defined in thing configuration";
@@ -175,7 +175,7 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
 
     private String initializeBridgeIp(PowermaxIpConfiguration config) {
         String errorMsg = null;
-        if (StringUtils.isNotBlank(config.ip) && config.tcpPort != null) {
+        if (config.ip != null && !config.ip.trim().isEmpty() && config.tcpPort != null) {
             motionOffDelay = getMotionOffDelaySetting(config.motionOffDelay, DEFAULT_MOTION_OFF_DELAY);
             boolean allowArming = getBooleanSetting(config.allowArming, false);
             boolean allowDisarming = getBooleanSetting(config.allowDisarming, false);
@@ -577,42 +577,25 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
      */
     private void updatePropertiesFromPanelSettings() {
         String value;
-        boolean update = false;
-
         Map<String, String> properties = editProperties();
         PowermaxPanelSettings panelSettings = getPanelSettings();
-
         value = (panelSettings.getPanelType() != null) ? panelSettings.getPanelType().getLabel() : null;
-        if (StringUtils.isNotEmpty(value) && ((properties.get(Thing.PROPERTY_MODEL_ID) == null)
-                || !properties.get(Thing.PROPERTY_MODEL_ID).equals(value))) {
-            update = true;
+        if (value != null && !value.isEmpty()) {
             properties.put(Thing.PROPERTY_MODEL_ID, value);
         }
-
         value = panelSettings.getPanelSerial();
-        if (StringUtils.isNotEmpty(value) && ((properties.get(Thing.PROPERTY_SERIAL_NUMBER) == null)
-                || !properties.get(Thing.PROPERTY_SERIAL_NUMBER).equals(value))) {
-            update = true;
+        if (value != null && !value.isEmpty()) {
             properties.put(Thing.PROPERTY_SERIAL_NUMBER, value);
         }
-
         value = panelSettings.getPanelEprom();
-        if (StringUtils.isNotEmpty(value) && ((properties.get(Thing.PROPERTY_HARDWARE_VERSION) == null)
-                || !properties.get(Thing.PROPERTY_HARDWARE_VERSION).equals(value))) {
-            update = true;
+        if (value != null && !value.isEmpty()) {
             properties.put(Thing.PROPERTY_HARDWARE_VERSION, value);
         }
-
         value = panelSettings.getPanelSoftware();
-        if (StringUtils.isNotEmpty(value) && ((properties.get(Thing.PROPERTY_FIRMWARE_VERSION) == null)
-                || !properties.get(Thing.PROPERTY_FIRMWARE_VERSION).equals(value))) {
-            update = true;
+        if (value != null && !value.isEmpty()) {
             properties.put(Thing.PROPERTY_FIRMWARE_VERSION, value);
         }
-
-        if (update) {
-            updateProperties(properties);
-        }
+        updateProperties(properties);
     }
 
     public boolean registerPanelSettingsListener(PowermaxPanelSettingsListener listener) {
@@ -649,5 +632,4 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
         }
         return result;
     }
-
 }

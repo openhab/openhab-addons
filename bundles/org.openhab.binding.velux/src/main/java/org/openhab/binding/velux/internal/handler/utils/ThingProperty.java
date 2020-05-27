@@ -93,12 +93,11 @@ public class ThingProperty {
     public static void setValue(ExtendedBaseBridgeHandler bridgeHandler, ChannelUID channelUID, String propertyName,
             String propertyValue) {
         ThingUID channelTUID = channelUID.getThingUID();
-        Thing thingOfChannel = bridgeHandler.getThingByUID(channelTUID);
+        Thing thingOfChannel = bridgeHandler.getThing().getThing(channelTUID);
         if (thingOfChannel == null) {
             LOGGER.warn("setValue(): Channel {} does not belong to a thing.", channelUID);
             return;
         }
         setValue(thingOfChannel, propertyName, propertyValue);
     }
-
 }

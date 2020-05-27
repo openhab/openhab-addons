@@ -34,5 +34,4 @@ public class FirmwareVirtualDatapointHandler extends AbstractVirtualDatapointHan
             addDatapoint(device, 0, getName(), HmValueType.STRING, device.getFirmware(), true);
         }
     }
-
 }

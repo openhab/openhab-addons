@@ -16,6 +16,7 @@ import static org.eclipse.jetty.http.HttpMethod.GET;
 
 import java.math.BigDecimal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.avmfritz.internal.hardware.FritzAhaWebInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,32 +28,32 @@ import org.slf4j.LoggerFactory;
  * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet
  *         DECT
  */
+@NonNullByDefault
 public class FritzAhaSetHeatingTemperatureCallback extends FritzAhaReauthCallback {
 
     private final Logger logger = LoggerFactory.getLogger(FritzAhaSetHeatingTemperatureCallback.class);
 
-    /**
-     * Item to update
-     */
-    private String itemName;
+    private static final String WEBSERVICE_COMMAND = "switchcmd=sethkrtsoll";
+
+    private final String ain;
 
     /**
      * Constructor
      *
-     * @param webIface    Interface to FRITZ!Box
-     * @param ain         AIN of the device that should be switched
+     * @param webIface Interface to FRITZ!Box
+     * @param ain AIN of the device that should be switched
      * @param temperature New temperature
      */
     public FritzAhaSetHeatingTemperatureCallback(FritzAhaWebInterface webIface, String ain, BigDecimal temperature) {
-        super(WEBSERVICE_PATH, "ain=" + ain + "&switchcmd=sethkrtsoll&param=" + temperature, webIface, GET, 1);
-        itemName = ain;
+        super(WEBSERVICE_PATH, WEBSERVICE_COMMAND + "&ain=" + ain + "&param=" + temperature, webIface, GET, 1);
+        this.ain = ain;
     }
 
     @Override
     public void execute(int status, String response) {
         super.execute(status, response);
         if (isValidRequest()) {
-            logger.debug("Received State response {} for item {}", response, itemName);
+            logger.debug("Received response '{}' for item '{}'", response, ain);
         }
     }
 }

@@ -28,5 +28,4 @@ public interface PowermaxStateEventListener extends EventListener {
      * @param event the event object
      */
     public void onNewStateEvent(EventObject event);
-
 }

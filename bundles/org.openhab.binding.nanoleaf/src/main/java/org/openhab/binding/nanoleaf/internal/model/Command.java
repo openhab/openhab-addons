@@ -35,5 +35,4 @@ public class Command {
     public void setWrite(Write write) {
         this.write = write;
     }
-
 }

@@ -261,15 +261,14 @@ public class DeviceFeature {
      * Called when message is incoming. Dispatches message according to message dispatcher
      *
      * @param msg The message to dispatch
-     * @param port the port from which the message came
      * @return true if dispatch successful
      */
-    public boolean handleMessage(Msg msg, String port) {
+    public boolean handleMessage(Msg msg) {
         if (dispatcher == null) {
             logger.warn("{} no dispatcher for msg {}", name, msg);
             return false;
         }
-        return (dispatcher.dispatch(msg, port));
+        return (dispatcher.dispatch(msg));
     }
 
     /**

@@ -150,5 +150,4 @@ public class SmokeDetector extends BaseNestDevice {
                 .append(getStructureId()).append(", getWhereId()=").append(getWhereId()).append("]");
         return builder.toString();
     }
-
 }

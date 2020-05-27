@@ -9,11 +9,11 @@
 		<description>The Command encapsulates a shell command to be executed</description>
 
 		<channels>
-			<channel id="output" typeId="output" />
-			<channel id="input" typeId="input" />
-			<channel id="exit" typeId="exit" />
-			<channel id="run" typeId="run" />
-			<channel id="lastexecution" typeId="lastexecution" />
+			<channel id="output" typeId="output"/>
+			<channel id="input" typeId="input"/>
+			<channel id="exit" typeId="exit"/>
+			<channel id="run" typeId="run"/>
+			<channel id="lastexecution" typeId="lastexecution"/>
 		</channels>
 
 		<config-description>

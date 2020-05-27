@@ -44,6 +44,12 @@ public class VolvoOnCallBindingConstants {
     public static final ThingTypeUID APIBRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, "vocapi");
     public static final ThingTypeUID VEHICLE_THING_TYPE = new ThingTypeUID(BINDING_ID, "vehicle");
 
+    // List of Channel groups
+    public static final String GROUP_DOORS = "doors";
+    public static final String GROUP_WINDOWS = "windows";
+    public static final String GROUP_TYRES = "tyrePressure";
+    public static final String GROUP_BATTERY = "battery";
+
     // List of Channel id's
     public static final String TAILGATE = "tailgate";
     public static final String REAR_RIGHT = "rearRight";
@@ -82,6 +88,7 @@ public class VolvoOnCallBindingConstants {
     public static final String CHARGE_STATUS = "chargeStatus";
     public static final String TIME_TO_BATTERY_FULLY_CHARGED = "timeToHVBatteryFullyCharged";
     public static final String CHARGING_END = "chargingEnd";
+    public static final String BULB_FAILURE = "bulbFailure";
 
     // Last Trip Channel Id's
     public static final String LAST_TRIP_GROUP = "lasttrip";
@@ -118,5 +125,4 @@ public class VolvoOnCallBindingConstants {
 
     // Default value for undefined integers
     public static final int UNDEFINED = -1;
-
 }

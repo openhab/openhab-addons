@@ -6,19 +6,19 @@
 
 	<thing-type id="gas_emucs_v1_0" listed="false">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="dsmrBridge" />
+			<bridge-type-ref id="dsmrBridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Gas Meter (e-MUCS V1.0)</label>
 		<description>This is a gas meter that complies to the e-MUCS V1.0 specification.</description>
 
 		<channels>
-			<channel id="meter_device_type" typeId="deviceType" />
-			<channel id="meter_equipment_identifier" typeId="equipmentIdType" />
-			<channel id="gmeter_last_value" typeId="gasLastDeliveryType" />
-			<channel id="gmeter_last_value_timestamp" typeId="gasLastTimestampType" />
-			<channel id="meter_valve_switch_position" typeId="gasValvePositionType" />
+			<channel id="meter_device_type" typeId="deviceType"/>
+			<channel id="meter_equipment_identifier" typeId="equipmentIdType"/>
+			<channel id="gmeter_last_value" typeId="gasLastDeliveryType"/>
+			<channel id="gmeter_last_value_timestamp" typeId="gasLastTimestampType"/>
+			<channel id="meter_valve_switch_position" typeId="gasValvePositionType"/>
 		</channels>
-		<config-description-ref uri="thing-type:dsmr:meterdescriptor" />
+		<config-description-ref uri="thing-type:dsmr:meterdescriptor"/>
 	</thing-type>
 </thing:thing-descriptions>

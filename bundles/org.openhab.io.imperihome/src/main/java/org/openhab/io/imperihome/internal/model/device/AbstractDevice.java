@@ -185,6 +185,7 @@ public abstract class AbstractDevice implements StateChangeListener {
 
     /**
      * Process any device-specific ISS tags.
+     * 
      * @param issTags ISS tags map.
      */
     public void processCustomTags(Map<TagType, List<String>> issTags) {
@@ -239,8 +240,7 @@ public abstract class AbstractDevice implements StateChangeListener {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "{id='" + id + '\'' + ", name='" + name + '\'' + ", room='" + room + '\'' + ", type="
-                + type + ", invert=" + inverted + ", icon=" + defaultIcon + ", links=" + links + '}';
+        return getClass().getSimpleName() + "{id='" + id + '\'' + ", name='" + name + '\'' + ", room='" + room + '\''
+                + ", type=" + type + ", invert=" + inverted + ", icon=" + defaultIcon + ", links=" + links + '}';
     }
-
 }

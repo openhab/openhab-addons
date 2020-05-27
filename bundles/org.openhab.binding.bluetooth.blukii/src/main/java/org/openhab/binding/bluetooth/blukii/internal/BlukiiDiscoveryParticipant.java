@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -25,8 +25,8 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.bluetooth.BluetoothBindingConstants;
-import org.openhab.binding.bluetooth.BluetoothDevice;
 import org.openhab.binding.bluetooth.blukii.BlukiiBindingConstants;
+import org.openhab.binding.bluetooth.discovery.BluetoothDiscoveryDevice;
 import org.openhab.binding.bluetooth.discovery.BluetoothDiscoveryParticipant;
 import org.osgi.service.component.annotations.Component;
 
@@ -36,16 +36,17 @@ import org.osgi.service.component.annotations.Component;
  * @author Kai Kreuzer - Initial contribution and API
  *
  */
+@NonNullByDefault
 @Component(immediate = true)
 public class BlukiiDiscoveryParticipant implements BluetoothDiscoveryParticipant {
 
     @Override
-    public @NonNull Set<@NonNull ThingTypeUID> getSupportedThingTypeUIDs() {
+    public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
         return Collections.singleton(BlukiiBindingConstants.THING_TYPE_BEACON);
     }
 
     @Override
-    public @Nullable ThingUID getThingUID(@NonNull BluetoothDevice device) {
+    public @Nullable ThingUID getThingUID(BluetoothDiscoveryDevice device) {
         String name = device.getName();
         if (name != null && name.startsWith(BlukiiBindingConstants.BLUKII_PREFIX)) {
             if (name.charAt(BlukiiBindingConstants.BLUKII_PREFIX.length()) == 'B') {
@@ -57,7 +58,7 @@ public class BlukiiDiscoveryParticipant implements BluetoothDiscoveryParticipant
     }
 
     @Override
-    public DiscoveryResult createResult(@NonNull BluetoothDevice device) {
+    public @Nullable DiscoveryResult createResult(BluetoothDiscoveryDevice device) {
         ThingUID thingUID = getThingUID(device);
 
         if (thingUID != null) {
@@ -79,5 +80,4 @@ public class BlukiiDiscoveryParticipant implements BluetoothDiscoveryParticipant
             return null;
         }
     }
-
 }

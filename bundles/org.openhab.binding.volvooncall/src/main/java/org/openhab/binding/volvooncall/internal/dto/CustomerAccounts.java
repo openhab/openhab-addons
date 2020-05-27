@@ -24,7 +24,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class CustomerAccounts {
+public class CustomerAccounts extends VocAnswer {
     @SerializedName("accountVehicleRelations")
     public @NonNullByDefault({}) String[] accountVehicleRelationsURL;
     public @Nullable String username;

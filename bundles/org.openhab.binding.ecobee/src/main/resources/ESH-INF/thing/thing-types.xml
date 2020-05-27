@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="ecobee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="ecobee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -7,13 +8,13 @@
 	<bridge-type id="account">
 		<label>Ecobee Account</label>
 		<description>Represents an account at Ecobee</description>
-		<config-description-ref uri="thing-type:ecobee:account" />
+		<config-description-ref uri="thing-type:ecobee:account"/>
 	</bridge-type>
 
 	<!-- THING TYPE THERMOSTAT -->
 	<bridge-type id="thermostat">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="account" />
+			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 		<label>Ecobee Thermostat</label>
 		<description>An Ecobee thermostat</description>
@@ -85,1641 +86,1648 @@
 				<label>Version</label>
 			</channel-group>
 		</channel-groups>
-		<config-description-ref uri="thing-type:ecobee:thermostat" />
+		<representation-property>thermostatId</representation-property>
+		<config-description-ref uri="thing-type:ecobee:thermostat"/>
 	</bridge-type>
 
 	<channel-group-type id="info">
 		<label>Thermostat Info</label>
 		<channels>
-			<channel id="identifier" typeId="identifier" />
-			<channel id="name" typeId="name" />
-			<channel id="thermostatRev" typeId="thermostatRev" />
-			<channel id="isRegistered" typeId="isRegistered" />
-			<channel id="modelNumber" typeId="modelNumber" />
-			<channel id="brand" typeId="brand" />
-			<channel id="features" typeId="features" />
-			<channel id="lastModified" typeId="lastModified" />
-			<channel id="thermostatTime" typeId="thermostatTime" />
+			<channel id="identifier" typeId="identifier"/>
+			<channel id="name" typeId="name"/>
+			<channel id="thermostatRev" typeId="thermostatRev"/>
+			<channel id="isRegistered" typeId="isRegistered"/>
+			<channel id="modelNumber" typeId="modelNumber"/>
+			<channel id="brand" typeId="brand"/>
+			<channel id="features" typeId="features"/>
+			<channel id="lastModified" typeId="lastModified"/>
+			<channel id="thermostatTime" typeId="thermostatTime"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-type id="identifier">
 		<item-type>String</item-type>
 		<label>Identifier</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="name">
 		<item-type>String</item-type>
 		<label>Name</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="thermostatRev" advanced="true">
 		<item-type>String</item-type>
 		<label>Thermostat Rev</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="isRegistered" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Is Registered</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="modelNumber" advanced="true">
 		<item-type>String</item-type>
 		<label>Model Number</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="brand" advanced="true">
 		<item-type>String</item-type>
 		<label>Brand</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="features" advanced="true">
 		<item-type>String</item-type>
 		<label>Features</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="lastModified" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Last Modified</label>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="thermostatTime">
 		<item-type>DateTime</item-type>
 		<label>Thermostat Time</label>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-group-type id="equipmentStatus">
 		<label>Equipment Status</label>
 		<channels>
-			<channel id="equipmentStatus" typeId="equipmentStatus" />
+			<channel id="equipmentStatus" typeId="equipmentStatus"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-type id="equipmentStatus">
 		<item-type>String</item-type>
 		<label>Equipment Status</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-group-type id="program">
 		<label>Thermostat Program</label>
 		<channels>
-			<channel id="currentClimateRef" typeId="currentClimateRef" />
+			<channel id="currentClimateRef" typeId="currentClimateRef"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-type id="currentClimateRef">
 		<item-type>String</item-type>
 		<label>Current Climate Ref</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-group-type id="runtime">
 		<label>Thermostat Runtime</label>
 		<channels>
-			<channel id="runtimeRev" typeId="runtimeRev" />
-			<channel id="connected" typeId="connected" />
-			<channel id="firstConnected" typeId="firstConnected" />
-			<channel id="connectDateTime" typeId="connectDateTime" />
-			<channel id="disconnectDateTime" typeId="disconnectDateTime" />
-			<channel id="lastModified" typeId="lastModified" />
-			<channel id="lastStatusModified" typeId="lastStatusModified" />
-			<channel id="runtimeDate" typeId="runtimeDate" />
-			<channel id="runtimeInterval" typeId="runtimeInterval" />
-			<channel id="actualTemperature" typeId="actualTemperature" />
-			<channel id="actualHumidity" typeId="actualHumidity" />
-			<channel id="rawTemperature" typeId="rawTemperature" />
-			<channel id="showIconMode" typeId="showIconMode" />
-			<channel id="desiredHeat" typeId="desiredHeat" />
-			<channel id="desiredCool" typeId="desiredCool" />
-			<channel id="desiredHumidity" typeId="desiredHumidity" />
-			<channel id="desiredDehumidity" typeId="desiredDehumidity" />
-			<channel id="desiredFanMode" typeId="desiredFanMode" />
-			<channel id="desiredHeatRangeLow" typeId="desiredHeatRangeLow" />
-			<channel id="desiredHeatRangeHigh" typeId="desiredHeatRangeHigh" />
-			<channel id="desiredCoolRangeLow" typeId="desiredCoolRangeLow" />
-			<channel id="desiredCoolRangeHigh" typeId="desiredCoolRangeHigh" />
+			<channel id="runtimeRev" typeId="runtimeRev"/>
+			<channel id="connected" typeId="connected"/>
+			<channel id="firstConnected" typeId="firstConnected"/>
+			<channel id="connectDateTime" typeId="connectDateTime"/>
+			<channel id="disconnectDateTime" typeId="disconnectDateTime"/>
+			<channel id="lastModified" typeId="lastModified"/>
+			<channel id="lastStatusModified" typeId="lastStatusModified"/>
+			<channel id="runtimeDate" typeId="runtimeDate"/>
+			<channel id="runtimeInterval" typeId="runtimeInterval"/>
+			<channel id="actualTemperature" typeId="actualTemperature"/>
+			<channel id="actualHumidity" typeId="actualHumidity"/>
+			<channel id="rawTemperature" typeId="rawTemperature"/>
+			<channel id="showIconMode" typeId="showIconMode"/>
+			<channel id="desiredHeat" typeId="desiredHeat"/>
+			<channel id="desiredCool" typeId="desiredCool"/>
+			<channel id="desiredHumidity" typeId="desiredHumidity"/>
+			<channel id="desiredDehumidity" typeId="desiredDehumidity"/>
+			<channel id="desiredFanMode" typeId="desiredFanMode"/>
+			<channel id="desiredHeatRangeLow" typeId="desiredHeatRangeLow"/>
+			<channel id="desiredHeatRangeHigh" typeId="desiredHeatRangeHigh"/>
+			<channel id="desiredCoolRangeLow" typeId="desiredCoolRangeLow"/>
+			<channel id="desiredCoolRangeHigh" typeId="desiredCoolRangeHigh"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-type id="runtimeRev" advanced="true">
 		<item-type>String</item-type>
 		<label>Runtime Rev</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="connected" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Connected</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="firstConnected" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>First Connected</label>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="connectDateTime" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Connected Date Time</label>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="disconnectDateTime" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Disconnected Date Timee</label>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="lastModified" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Last Modified</label>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="lastStatusModified">
 		<item-type>DateTime</item-type>
 		<label>Last Status Modified</label>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="runtimeDate" advanced="true">
 		<item-type>String</item-type>
 		<label>Runtime Date</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="runtimeInterval" advanced="true">
 		<item-type>Number</item-type>
 		<label>Runtime Interval</label>
-		<state readOnly="true" pattern="%.0f" />
+		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="actualTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Actual Temperature</label>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="actualHumidity">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Actual Humidity</label>
-		<state readOnly="true" pattern="%.0f %unit%" />
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="rawTemperature" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Raw Temperature</label>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="showIconMode" advanced="true">
 		<item-type>Number</item-type>
 		<label>Show Icon Mode</label>
-		<state readOnly="true" pattern="%.0f" />
+		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="desiredHeat">
 		<item-type>Number:Temperature</item-type>
 		<label>Desired Heat</label>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="desiredCool">
 		<item-type>Number:Temperature</item-type>
 		<label>Desired Cool</label>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="desiredHumidity" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Desired Humidity</label>
-		<state readOnly="true" pattern="%.0f %unit%" />
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="desiredDehumidity" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Desired Dehumidity</label>
-		<state readOnly="true" pattern="%.0f %unit%" />
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="desiredFanMode" advanced="true">
 		<item-type>String</item-type>
 		<label>Desired Fan Mode</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="desiredHeatRangeLow">
 		<item-type>Number:Temperature</item-type>
 		<label>Desired Heat Range Low</label>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="desiredHeatRangeHigh">
 		<item-type>Number:Temperature</item-type>
 		<label>Desired Heat Range High</label>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="desiredCoolRangeLow">
 		<item-type>Number:Temperature</item-type>
 		<label>Desired Cool Range Low</label>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="desiredCoolRangeHigh">
 		<item-type>Number:Temperature</item-type>
 		<label>Desired Cool Range High</label>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-group-type id="settings">
 		<label>Thermostat Settings</label>
 		<channels>
-			<channel id="hvacMode" typeId="hvacMode" />
-			<channel id="lastServiceDate" typeId="lastServiceDate" />
-			<channel id="serviceRemindMe" typeId="serviceRemindMe" />
-			<channel id="monthsBetweenService" typeId="monthsBetweenService" />
-			<channel id="remindMeDate" typeId="remindMeDate" />
-			<channel id="vent" typeId="vent" />
-			<channel id="ventilatorMinOnTime" typeId="ventilatorMinOnTime" />
-			<channel id="serviceRemindTechnician" typeId="serviceRemindTechnician" />
-			<channel id="eiLocation" typeId="eiLocation" />
-			<channel id="coldTempAlert" typeId="coldTempAlert" />
-			<channel id="coldTempAlertEnabled" typeId="coldTempAlertEnabled" />
-			<channel id="hotTempAlert" typeId="hotTempAlert" />
-			<channel id="hotTempAlertEnabled" typeId="hotTempAlertEnabled" />
-			<channel id="coolStages" typeId="coolStages" />
-			<channel id="heatStages" typeId="heatStages" />
-			<channel id="maxSetBack" typeId="maxSetBack" />
-			<channel id="maxSetForward" typeId="maxSetForward" />
-			<channel id="quickSaveSetBack" typeId="quickSaveSetBack" />
-			<channel id="quickSaveSetForward" typeId="quickSaveSetForward" />
-			<channel id="hasHeatPump" typeId="hasHeatPump" />
-			<channel id="hasForcedAir" typeId="hasForcedAir" />
-			<channel id="hasBoiler" typeId="hasBoiler" />
-			<channel id="hasHumidifier" typeId="hasHumidifier" />
-			<channel id="hasElectric" typeId="hasElectric" />
-			<channel id="hasDehumidifier" typeId="hasDehumidifier" />
-			<channel id="hasErv" typeId="hasErv" />
-			<channel id="hasHrv" typeId="hasHrv" />
-			<channel id="condensationAvoid" typeId="condensationAvoid" />
-			<channel id="useCelsius" typeId="useCelsius" />
-			<channel id="useTimeFormat12" typeId="useTimeFormat12" />
-			<channel id="locale" typeId="locale" />
-			<channel id="humidity" typeId="humidity" />
-			<channel id="humidifierMode" typeId="humidifierMode" />
-			<channel id="backlightOnIntensity" typeId="backlightOnIntensity" />
-			<channel id="backlightSleepIntensity" typeId="backlightSleepIntensity" />
-			<channel id="backlightOffTime" typeId="backlightOffTime" />
-			<channel id="soundTickVolume" typeId="soundTickVolume" />
-			<channel id="soundAlertVolume" typeId="soundAlertVolume" />
-			<channel id="compressorProtectionMinTime" typeId="compressorProtectionMinTime" />
-			<channel id="compressorProtectionMinTemp" typeId="compressorProtectionMinTemp" />
-			<channel id="stage1HeatingDifferentialTemp" typeId="stage1HeatingDifferentialTemp" />
-			<channel id="stage1CoolingDifferentialTemp" typeId="stage1CoolingDifferentialTemp" />
-			<channel id="stage1HeatingDissipationTime" typeId="stage1HeatingDissipationTime" />
-			<channel id="stage1CoolingDissipationTime" typeId="stage1CoolingDissipationTime" />
-			<channel id="heatPumpReversalOnCool" typeId="heatPumpReversalOnCool" />
-			<channel id="fanControlRequired" typeId="fanControlRequired" />
-			<channel id="fanMinOnTime" typeId="fanMinOnTime" />
-			<channel id="heatCoolMinDelta" typeId="heatCoolMinDelta" />
-			<channel id="tempCorrection" typeId="tempCorrection" />
-			<channel id="holdAction" typeId="holdAction" />
-			<channel id="heatPumpGroundWater" typeId="heatPumpGroundWater" />
-			<channel id="dehumidifierMode" typeId="dehumidifierMode" />
-			<channel id="dehumidifierLevel" typeId="dehumidifierLevel" />
-			<channel id="dehumidifyWithAC" typeId="dehumidifyWithAC" />
-			<channel id="dehumidifyOvercoolOffset" typeId="dehumidifyOvercoolOffset" />
-			<channel id="autoHeatCoolFeatureEnabled" typeId="autoHeatCoolFeatureEnabled" />
-			<channel id="wifiOfflineAlert" typeId="wifiOfflineAlert" />
-			<channel id="heatMinTemp" typeId="heatMinTemp" />
-			<channel id="heatMaxTemp" typeId="heatMaxTemp" />
-			<channel id="coolMinTemp" typeId="coolMinTemp" />
-			<channel id="coolMaxTemp" typeId="coolMaxTemp" />
-			<channel id="heatRangeHigh" typeId="heatRangeHigh" />
-			<channel id="heatRangeLow" typeId="heatRangeLow" />
-			<channel id="coolRangeHigh" typeId="coolRangeHigh" />
-			<channel id="coolRangeLow" typeId="coolRangeLow" />
-			<channel id="userAccessCode" typeId="userAccessCode" />
-			<channel id="userAccessSetting" typeId="userAccessSetting" />
-			<channel id="auxRuntimeAlert" typeId="auxRuntimeAlert" />
-			<channel id="auxOutdoorTempAlert" typeId="auxOutdoorTempAlert" />
-			<channel id="auxMaxOutdoorTemp" typeId="auxMaxOutdoorTemp" />
-			<channel id="auxRuntimeAlertNotify" typeId="auxRuntimeAlertNotify" />
-			<channel id="auxOutdoorTempAlertNotify" typeId="auxOutdoorTempAlertNotify" />
-			<channel id="auxRuntimeAlertNotifyTechnician" typeId="auxRuntimeAlertNotifyTechnician" />
-			<channel id="auxOutdoorTempAlertNotifyTechnician" typeId="auxOutdoorTempAlertNotifyTechnician" />
-			<channel id="disablePreHeating" typeId="disablePreHeating" />
-			<channel id="disablePreCooling" typeId="disablePreCooling" />
-			<channel id="installerCodeRequired" typeId="installerCodeRequired" />
-			<channel id="drAccept" typeId="drAccept" />
-			<channel id="isRentalProperty" typeId="isRentalProperty" />
-			<channel id="useZoneController" typeId="useZoneController" />
-			<channel id="randomStartDelayCool" typeId="randomStartDelayCool" />
-			<channel id="randomStartDelayHeat" typeId="randomStartDelayHeat" />
-			<channel id="humidityHighAlert" typeId="humidityHighAlert" />
-			<channel id="humidityLowAlert" typeId="humidityLowAlert" />
-			<channel id="disableHeatPumpAlerts" typeId="disableHeatPumpAlerts" />
-			<channel id="disableAlertsOnIdt" typeId="disableAlertsOnIdt" />
-			<channel id="humidityAlertNotify" typeId="humidityAlertNotify" />
-			<channel id="humidityAlertNotifyTechnician" typeId="humidityAlertNotifyTechnician" />
-			<channel id="tempAlertNotify" typeId="tempAlertNotify" />
-			<channel id="tempAlertNotifyTechnician" typeId="tempAlertNotifyTechnician" />
-			<channel id="monthlyElectricityBillLimit" typeId="monthlyElectricityBillLimit" />
-			<channel id="enableElectricityBillAlert" typeId="enableElectricityBillAlert" />
-			<channel id="enableProjectedElectricityBillAlert" typeId="enableProjectedElectricityBillAlert" />
-			<channel id="electricityBillingDayOfMonth" typeId="electricityBillingDayOfMonth" />
-			<channel id="electricityBillCycleMonths" typeId="electricityBillCycleMonths" />
-			<channel id="electricityBillStartMonth" typeId="electricityBillStartMonth" />
-			<channel id="ventilatorMinOnTimeHome" typeId="ventilatorMinOnTimeHome" />
-			<channel id="ventilatorMinOnTimeAway" typeId="ventilatorMinOnTimeAway" />
-			<channel id="backlightOffDuringSleep" typeId="backlightOffDuringSleep" />
-			<channel id="autoAway" typeId="autoAway" />
-			<channel id="smartCirculation" typeId="smartCirculation" />
-			<channel id="followMeComfort" typeId="followMeComfort" />
-			<channel id="ventilatorType" typeId="ventilatorType" />
-			<channel id="isVentilatorTimerOn" typeId="isVentilatorTimerOn" />
-			<channel id="ventilatorOffDateTime" typeId="ventilatorOffDateTime" />
-			<channel id="hasUVFilter" typeId="hasUVFilter" />
-			<channel id="coolingLockout" typeId="coolingLockout" />
-			<channel id="ventilatorFreeCooling" typeId="ventilatorFreeCooling" />
-			<channel id="dehumidifyWhenHeating" typeId="dehumidifyWhenHeating" />
-			<channel id="ventilatorDehumidify" typeId="ventilatorDehumidify" />
-			<channel id="groupRef" typeId="groupRef" />
-			<channel id="groupName" typeId="groupName" />
-			<channel id="groupSetting" typeId="groupSetting" />
+			<channel id="hvacMode" typeId="hvacMode"/>
+			<channel id="lastServiceDate" typeId="lastServiceDate"/>
+			<channel id="serviceRemindMe" typeId="serviceRemindMe"/>
+			<channel id="monthsBetweenService" typeId="monthsBetweenService"/>
+			<channel id="remindMeDate" typeId="remindMeDate"/>
+			<channel id="vent" typeId="vent"/>
+			<channel id="ventilatorMinOnTime" typeId="ventilatorMinOnTime"/>
+			<channel id="serviceRemindTechnician" typeId="serviceRemindTechnician"/>
+			<channel id="eiLocation" typeId="eiLocation"/>
+			<channel id="coldTempAlert" typeId="coldTempAlert"/>
+			<channel id="coldTempAlertEnabled" typeId="coldTempAlertEnabled"/>
+			<channel id="hotTempAlert" typeId="hotTempAlert"/>
+			<channel id="hotTempAlertEnabled" typeId="hotTempAlertEnabled"/>
+			<channel id="coolStages" typeId="coolStages"/>
+			<channel id="heatStages" typeId="heatStages"/>
+			<channel id="maxSetBack" typeId="maxSetBack"/>
+			<channel id="maxSetForward" typeId="maxSetForward"/>
+			<channel id="quickSaveSetBack" typeId="quickSaveSetBack"/>
+			<channel id="quickSaveSetForward" typeId="quickSaveSetForward"/>
+			<channel id="hasHeatPump" typeId="hasHeatPump"/>
+			<channel id="hasForcedAir" typeId="hasForcedAir"/>
+			<channel id="hasBoiler" typeId="hasBoiler"/>
+			<channel id="hasHumidifier" typeId="hasHumidifier"/>
+			<channel id="hasElectric" typeId="hasElectric"/>
+			<channel id="hasDehumidifier" typeId="hasDehumidifier"/>
+			<channel id="hasErv" typeId="hasErv"/>
+			<channel id="hasHrv" typeId="hasHrv"/>
+			<channel id="condensationAvoid" typeId="condensationAvoid"/>
+			<channel id="useCelsius" typeId="useCelsius"/>
+			<channel id="useTimeFormat12" typeId="useTimeFormat12"/>
+			<channel id="locale" typeId="locale"/>
+			<channel id="humidity" typeId="humidity"/>
+			<channel id="humidifierMode" typeId="humidifierMode"/>
+			<channel id="backlightOnIntensity" typeId="backlightOnIntensity"/>
+			<channel id="backlightSleepIntensity" typeId="backlightSleepIntensity"/>
+			<channel id="backlightOffTime" typeId="backlightOffTime"/>
+			<channel id="soundTickVolume" typeId="soundTickVolume"/>
+			<channel id="soundAlertVolume" typeId="soundAlertVolume"/>
+			<channel id="compressorProtectionMinTime" typeId="compressorProtectionMinTime"/>
+			<channel id="compressorProtectionMinTemp" typeId="compressorProtectionMinTemp"/>
+			<channel id="stage1HeatingDifferentialTemp" typeId="stage1HeatingDifferentialTemp"/>
+			<channel id="stage1CoolingDifferentialTemp" typeId="stage1CoolingDifferentialTemp"/>
+			<channel id="stage1HeatingDissipationTime" typeId="stage1HeatingDissipationTime"/>
+			<channel id="stage1CoolingDissipationTime" typeId="stage1CoolingDissipationTime"/>
+			<channel id="heatPumpReversalOnCool" typeId="heatPumpReversalOnCool"/>
+			<channel id="fanControlRequired" typeId="fanControlRequired"/>
+			<channel id="fanMinOnTime" typeId="fanMinOnTime"/>
+			<channel id="heatCoolMinDelta" typeId="heatCoolMinDelta"/>
+			<channel id="tempCorrection" typeId="tempCorrection"/>
+			<channel id="holdAction" typeId="holdAction"/>
+			<channel id="heatPumpGroundWater" typeId="heatPumpGroundWater"/>
+			<channel id="dehumidifierMode" typeId="dehumidifierMode"/>
+			<channel id="dehumidifierLevel" typeId="dehumidifierLevel"/>
+			<channel id="dehumidifyWithAC" typeId="dehumidifyWithAC"/>
+			<channel id="dehumidifyOvercoolOffset" typeId="dehumidifyOvercoolOffset"/>
+			<channel id="autoHeatCoolFeatureEnabled" typeId="autoHeatCoolFeatureEnabled"/>
+			<channel id="wifiOfflineAlert" typeId="wifiOfflineAlert"/>
+			<channel id="heatMinTemp" typeId="heatMinTemp"/>
+			<channel id="heatMaxTemp" typeId="heatMaxTemp"/>
+			<channel id="coolMinTemp" typeId="coolMinTemp"/>
+			<channel id="coolMaxTemp" typeId="coolMaxTemp"/>
+			<channel id="heatRangeHigh" typeId="heatRangeHigh"/>
+			<channel id="heatRangeLow" typeId="heatRangeLow"/>
+			<channel id="coolRangeHigh" typeId="coolRangeHigh"/>
+			<channel id="coolRangeLow" typeId="coolRangeLow"/>
+			<channel id="userAccessCode" typeId="userAccessCode"/>
+			<channel id="userAccessSetting" typeId="userAccessSetting"/>
+			<channel id="auxRuntimeAlert" typeId="auxRuntimeAlert"/>
+			<channel id="auxOutdoorTempAlert" typeId="auxOutdoorTempAlert"/>
+			<channel id="auxMaxOutdoorTemp" typeId="auxMaxOutdoorTemp"/>
+			<channel id="auxRuntimeAlertNotify" typeId="auxRuntimeAlertNotify"/>
+			<channel id="auxOutdoorTempAlertNotify" typeId="auxOutdoorTempAlertNotify"/>
+			<channel id="auxRuntimeAlertNotifyTechnician" typeId="auxRuntimeAlertNotifyTechnician"/>
+			<channel id="auxOutdoorTempAlertNotifyTechnician" typeId="auxOutdoorTempAlertNotifyTechnician"/>
+			<channel id="disablePreHeating" typeId="disablePreHeating"/>
+			<channel id="disablePreCooling" typeId="disablePreCooling"/>
+			<channel id="installerCodeRequired" typeId="installerCodeRequired"/>
+			<channel id="drAccept" typeId="drAccept"/>
+			<channel id="isRentalProperty" typeId="isRentalProperty"/>
+			<channel id="useZoneController" typeId="useZoneController"/>
+			<channel id="randomStartDelayCool" typeId="randomStartDelayCool"/>
+			<channel id="randomStartDelayHeat" typeId="randomStartDelayHeat"/>
+			<channel id="humidityHighAlert" typeId="humidityHighAlert"/>
+			<channel id="humidityLowAlert" typeId="humidityLowAlert"/>
+			<channel id="disableHeatPumpAlerts" typeId="disableHeatPumpAlerts"/>
+			<channel id="disableAlertsOnIdt" typeId="disableAlertsOnIdt"/>
+			<channel id="humidityAlertNotify" typeId="humidityAlertNotify"/>
+			<channel id="humidityAlertNotifyTechnician" typeId="humidityAlertNotifyTechnician"/>
+			<channel id="tempAlertNotify" typeId="tempAlertNotify"/>
+			<channel id="tempAlertNotifyTechnician" typeId="tempAlertNotifyTechnician"/>
+			<channel id="monthlyElectricityBillLimit" typeId="monthlyElectricityBillLimit"/>
+			<channel id="enableElectricityBillAlert" typeId="enableElectricityBillAlert"/>
+			<channel id="enableProjectedElectricityBillAlert" typeId="enableProjectedElectricityBillAlert"/>
+			<channel id="electricityBillingDayOfMonth" typeId="electricityBillingDayOfMonth"/>
+			<channel id="electricityBillCycleMonths" typeId="electricityBillCycleMonths"/>
+			<channel id="electricityBillStartMonth" typeId="electricityBillStartMonth"/>
+			<channel id="ventilatorMinOnTimeHome" typeId="ventilatorMinOnTimeHome"/>
+			<channel id="ventilatorMinOnTimeAway" typeId="ventilatorMinOnTimeAway"/>
+			<channel id="backlightOffDuringSleep" typeId="backlightOffDuringSleep"/>
+			<channel id="autoAway" typeId="autoAway"/>
+			<channel id="smartCirculation" typeId="smartCirculation"/>
+			<channel id="followMeComfort" typeId="followMeComfort"/>
+			<channel id="ventilatorType" typeId="ventilatorType"/>
+			<channel id="isVentilatorTimerOn" typeId="isVentilatorTimerOn"/>
+			<channel id="ventilatorOffDateTime" typeId="ventilatorOffDateTime"/>
+			<channel id="hasUVFilter" typeId="hasUVFilter"/>
+			<channel id="coolingLockout" typeId="coolingLockout"/>
+			<channel id="ventilatorFreeCooling" typeId="ventilatorFreeCooling"/>
+			<channel id="dehumidifyWhenHeating" typeId="dehumidifyWhenHeating"/>
+			<channel id="ventilatorDehumidify" typeId="ventilatorDehumidify"/>
+			<channel id="groupRef" typeId="groupRef"/>
+			<channel id="groupName" typeId="groupName"/>
+			<channel id="groupSetting" typeId="groupSetting"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-type id="hvacMode">
 		<item-type>String</item-type>
 		<label>HVAC Mode</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="lastServiceDate" advanced="true">
 		<item-type>String</item-type>
 		<label>Last Service Date</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="serviceRemindMe" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Service Remind Me</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="monthsBetweenService" advanced="true">
 		<item-type>Number</item-type>
 		<label>Months Between Service</label>
-		<state readOnly="false" pattern="%.0f" />
+		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="remindMeDate" advanced="true">
 		<item-type>String</item-type>
 		<label>Remind Me Date</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="vent" advanced="true">
 		<item-type>String</item-type>
 		<label>Vent</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="ventilatorMinOnTime" advanced="true">
 		<item-type>Number</item-type>
 		<label>Ventilator Min On Time</label>
-		<state readOnly="false" pattern="%.0f" />
+		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="serviceRemindTechnician" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Service Remind Technician</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="eiLocation" advanced="true">
 		<item-type>String</item-type>
 		<label>EI Location</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="coldTempAlert">
 		<item-type>Number:Temperature</item-type>
 		<label>Cold Temp Alert</label>
-		<state readOnly="false" pattern="%.1f %unit%" />
+		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="coldTempAlertEnabled">
 		<item-type>Switch</item-type>
 		<label>Cold Temp Alert Enabled</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="hotTempAlert">
 		<item-type>Number:Temperature</item-type>
 		<label>Hot Temp Alert</label>
-		<state readOnly="false" pattern="%.1f %unit%" />
+		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="hotTempAlertEnabled">
 		<item-type>Switch</item-type>
 		<label>Hot Temp Alert Enabled</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="coolStages" advanced="true">
 		<item-type>Number</item-type>
 		<label>Cool Stages</label>
-		<state readOnly="true" pattern="%.0f" />
+		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="heatStages" advanced="true">
 		<item-type>Number</item-type>
 		<label>Heat Stages</label>
-		<state readOnly="true" pattern="%.0f" />
+		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="maxSetBack" advanced="true">
 		<item-type>Number</item-type>
 		<label>Max Set Back</label>
-		<state readOnly="false" pattern="%.0f" />
+		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="maxSetForward" advanced="true">
 		<item-type>Number</item-type>
 		<label>Max Set Forward</label>
-		<state readOnly="false" pattern="%.0f" />
+		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="quickSaveSetBack" advanced="true">
 		<item-type>Number</item-type>
 		<label>Quick Save Set Back</label>
-		<state readOnly="false" pattern="%.0f" />
+		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="quickSaveSetForward" advanced="true">
 		<item-type>Number</item-type>
 		<label>Quick Save Set Forward</label>
-		<state readOnly="false" pattern="%.0f" />
+		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="hasHeatPump">
 		<item-type>Switch</item-type>
 		<label>Has Heat Pump</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="hasForcedAir">
 		<item-type>Switch</item-type>
 		<label>Has Forced Air</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="hasBoiler">
 		<item-type>Switch</item-type>
 		<label>Has Boiler</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="hasHumidifier">
 		<item-type>Switch</item-type>
 		<label>Has Humidifier</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="hasElectric">
 		<item-type>Switch</item-type>
 		<label>Has Electric</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="hasDehumidifier">
 		<item-type>Switch</item-type>
 		<label>Has Dehumidifier</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="hasErv" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Has ERV</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="hasHrv" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Has HRV</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="condensationAvoid" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Condensation Avoid</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="useCelsius" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Use Celsius</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="useTimeFormat12" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Use Time Format 12</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="locale" advanced="true">
 		<item-type>String</item-type>
 		<label>Locale</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="humidity">
 		<item-type>String</item-type>
 		<label>Humidity</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="humidifierMode">
 		<item-type>String</item-type>
 		<label>Humidifier Mode</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="backlightOnIntensity" advanced="true">
 		<item-type>Number</item-type>
 		<label>Backlight On Intensity</label>
-		<state readOnly="false" pattern="%.0f" />
+		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="backlightSleepIntensity" advanced="true">
 		<item-type>Number</item-type>
 		<label>Backlight Sleep Intensity</label>
-		<state readOnly="false" pattern="%.0f" />
+		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="backlightOffTime" advanced="true">
 		<item-type>Number</item-type>
 		<label>Backlight Off Time</label>
-		<state readOnly="false" pattern="%.0f" />
+		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="soundTickVolume" advanced="true">
 		<item-type>Number</item-type>
 		<label>Sound Tick Volume</label>
-		<state readOnly="false" pattern="%.0f" />
+		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="soundAlertVolume" advanced="true">
 		<item-type>Number</item-type>
 		<label>Sound Alert Volume</label>
-		<state readOnly="false" pattern="%.0f" />
+		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="compressorProtectionMinTime" advanced="true">
 		<item-type>Number</item-type>
 		<label>Compressor Protection Min Time</label>
-		<state readOnly="false" pattern="%.0f" />
+		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="compressorProtectionMinTemp" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Compressor Protection Min Temp</label>
-		<state readOnly="false" pattern="%.1f %unit%" />
+		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="stage1HeatingDifferentialTemp" advanced="true">
 		<item-type>Number</item-type>
 		<label>Stage 1 Heating Differential Temp</label>
-		<state readOnly="false" pattern="%.0f" />
+		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="stage1CoolingDifferentialTemp" advanced="true">
 		<item-type>Number</item-type>
 		<label>Stage 1 Cooling Differential Temp</label>
-		<state readOnly="false" pattern="%.0f" />
+		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="stage1HeatingDissipationTime" advanced="true">
 		<item-type>Number</item-type>
 		<label>Stage 1 Heating Dissipation Time</label>
-		<state readOnly="false" pattern="%.0f" />
+		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="stage1CoolingDissipationTime" advanced="true">
 		<item-type>Number</item-type>
 		<label>Stage 1 Cooling Dissipation Time</label>
-		<state readOnly="false" pattern="%.0f" />
+		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="heatPumpReversalOnCool" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Heat Pump Reversal On Cool</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="fanControlRequired" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Fan Control Required</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="fanMinOnTime" advanced="true">
 		<item-type>Number</item-type>
 		<label>Fan Min On Time</label>
-		<state readOnly="false" pattern="%.0f" />
+		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="heatCoolMinDelta" advanced="true">
 		<item-type>Number</item-type>
 		<label>Heat Cool Min Delta</label>
-		<state readOnly="false" pattern="%.0f" />
+		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="tempCorrection" advanced="true">
 		<item-type>Number</item-type>
 		<label>Temp Correction</label>
-		<state readOnly="false" pattern="%.0f" />
+		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="holdAction">
 		<item-type>String</item-type>
 		<label>Hold Action</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="heatPumpGroundWater" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Heat Pump Ground Water</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="dehumidifierMode" advanced="true">
 		<item-type>String</item-type>
 		<label>Dehumidifier Mode</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="dehumidifierLevel" advanced="true">
 		<item-type>Number</item-type>
 		<label>Dehumidifier Level</label>
-		<state readOnly="false" pattern="%.0f" />
+		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="dehumidifyWithAC" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Dehumidify With AC</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="dehumidifyOvercoolOffset" advanced="true">
 		<item-type>Number</item-type>
 		<label>Dehumidify Overcool Effect</label>
-		<state readOnly="false" pattern="%.0f" />
+		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="autoHeatCoolFeatureEnabled" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Auto Heat Cool Feature Enabled</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="wifiOfflineAlert" advanced="true">
 		<item-type>Switch</item-type>
 		<label>WiFi Offline Alert</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="heatMinTemp">
 		<item-type>Number:Temperature</item-type>
 		<label>Heat Min Temp</label>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="heatMaxTemp">
 		<item-type>Number:Temperature</item-type>
 		<label>Heat Max Temp</label>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="coolMinTemp">
 		<item-type>Number:Temperature</item-type>
 		<label>Cool Min Temp</label>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="coolMaxTemp">
 		<item-type>Number:Temperature</item-type>
 		<label>Cool Max Temp</label>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="heatRangeHigh" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Heat Range High</label>
-		<state readOnly="false" pattern="%.1f %unit%" />
+		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="heatRangeLow" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Heat Range Low</label>
-		<state readOnly="false" pattern="%.1f %unit%" />
+		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="coolRangeHigh" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Cool Range High</label>
-		<state readOnly="false" pattern="%.1f %unit%" />
+		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="coolRangeLow" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Cool Range Low</label>
-		<state readOnly="false" pattern="%.1f %unit%" />
+		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="userAccessCode" advanced="true">
 		<item-type>String</item-type>
 		<label>User Access Code</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="userAccessSetting" advanced="true">
 		<item-type>Number</item-type>
 		<label>User Access Settings</label>
-		<state readOnly="true" pattern="%.0f" />
+		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="auxRuntimeAlert" advanced="true">
 		<item-type>Number</item-type>
 		<label>Aux Runtime Alert</label>
-		<state readOnly="false" pattern="%.0f" />
+		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="auxOutdoorTempAlert" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Aux Outdoor Temp Alert</label>
-		<state readOnly="false" pattern="%.1f %unit%" />
+		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="auxMaxOutdoorTemp" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Aux Max Outdoor Temp</label>
-		<state readOnly="false" pattern="%.1f %unit%" />
+		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="auxRuntimeAlertNotify" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Aux Runtime Alert Notify</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="auxOutdoorTempAlertNotify" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Aux Outdoor Temp Alert Notify</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="auxRuntimeAlertNotifyTechnician" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Aux Runtime Alert Notify Technician</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="auxOutdoorTempAlertNotifyTechnician" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Aux Outdoor Temp Alert Notify Technician</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="disablePreHeating" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Disable Pre Heating</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="disablePreCooling" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Disable Pre Cooling</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="installerCodeRequired" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Installer Code Required</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="drAccept" advanced="true">
 		<item-type>String</item-type>
 		<label>DR Accept</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="isRentalProperty" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Is Rental Property</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="useZoneController" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Use Zone Controller</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="randomStartDelayCool" advanced="true">
 		<item-type>Number</item-type>
 		<label>Random Start Delay Cool</label>
-		<state readOnly="false" pattern="%.0f" />
+		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="randomStartDelayHeat" advanced="true">
 		<item-type>Number</item-type>
 		<label>Random Start Delay Heat</label>
-		<state readOnly="false" pattern="%.0f" />
+		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="humidityHighAlert">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity High Alert</label>
-		<state readOnly="false" pattern="%.0f %unit%" />
+		<state readOnly="false" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="humidityLowAlert">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity Low Alert</label>
-		<state readOnly="false" pattern="%.0f %unit%" />
+		<state readOnly="false" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="disableHeatPumpAlerts" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Disable Heat Pump Alerts</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="disableAlertsOnIdt" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Disable Alerts On IDT</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="humidityAlertNotify">
 		<item-type>Switch</item-type>
 		<label>Humidity Alert Notify</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="humidityAlertNotifyTechnician" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Humidity Alert Notify Technician</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="tempAlertNotify">
 		<item-type>Switch</item-type>
 		<label>Temp Alert Notify</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="tempAlertNotifyTechnician" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Temp Alert Notify Technician</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="monthlyElectricityBillLimit" advanced="true">
 		<item-type>Number</item-type>
 		<label>Monthly Electricity Bill Limit</label>
-		<state readOnly="false" pattern="%.0f" />
+		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="enableElectricityBillAlert" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Enable Electricity Bill Alert</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="enableProjectedElectricityBillAlert" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Enable Projected Electricity Bill Alert</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="electricityBillingDayOfMonth" advanced="true">
 		<item-type>Number</item-type>
 		<label>Electricity Billing Day Of Month</label>
-		<state readOnly="false" pattern="%.0f" />
+		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="electricityBillCycleMonths" advanced="true">
 		<item-type>Number</item-type>
 		<label>Electricity Bill Cycle Months</label>
-		<state readOnly="false" pattern="%.0f" />
+		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="electricityBillStartMonth" advanced="true">
 		<item-type>Number</item-type>
 		<label>Electricity Bill Start Month</label>
-		<state readOnly="false" pattern="%.0f" />
+		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="ventilatorMinOnTimeHome" advanced="true">
 		<item-type>Number</item-type>
 		<label>Ventilator Min On Time Home</label>
-		<state readOnly="false" pattern="%.0f" />
+		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="ventilatorMinOnTimeAway" advanced="true">
 		<item-type>Number</item-type>
 		<label>Ventilator Min On Time Away</label>
-		<state readOnly="false" pattern="%.0f" />
+		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="backlightOffDuringSleep">
 		<item-type>Switch</item-type>
 		<label>Backlight Off During Sleep</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="autoAway">
 		<item-type>Switch</item-type>
 		<label>Auto Away</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="smartCirculation" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Smart Circulation</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="followMeComfort">
 		<item-type>Switch</item-type>
 		<label>Follow Me Comfort</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="ventilatorType" advanced="true">
 		<item-type>String</item-type>
 		<label>Ventilator Type</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="isVentilatorTimerOn" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Is Ventilator Timer On</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="ventilatorOffDateTime" advanced="true">
 		<item-type>String</item-type>
 		<label>Ventilator Off Date Time</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="hasUVFilter" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Has UV Filter</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="coolingLockout" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Cooling Lockout</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="ventilatorFreeCooling" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Ventilator Free Cooling</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="dehumidifyWhenHeating" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Dehumidify When Heating</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="ventilatorDehumidify" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Ventilator Dehumidify</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="groupRef" advanced="true">
 		<item-type>String</item-type>
 		<label>Group Ref</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="groupName" advanced="true">
 		<item-type>String</item-type>
 		<label>Group Name</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="groupSetting" advanced="true">
 		<item-type>Number</item-type>
 		<label>Group Setting</label>
-		<state readOnly="false" pattern="%.0f" />
+		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 
 	<channel-group-type id="alerts">
 		<label>First Alert in Alert List</label>
 		<channels>
-			<channel id="acknowledgeRef" typeId="alertAcknowledgeRef" />
-			<channel id="date" typeId="alertDate" />
-			<channel id="time" typeId="alertTime" />
-			<channel id="severity" typeId="alertSeverity" />
-			<channel id="text" typeId="alertText" />
-			<channel id="number" typeId="alertNumber" />
-			<channel id="type" typeId="alertType" />
-			<channel id="isOperatorAlert" typeId="alertIsOperatorAlert" />
-			<channel id="reminder" typeId="alertReminder" />
-			<channel id="showIdt" typeId="alertShowIdt" />
-			<channel id="showWeb" typeId="alertShowWeb" />
-			<channel id="sendEmail" typeId="alertSendEmail" />
-			<channel id="acknowledgement" typeId="alertAcknowledgement" />
-			<channel id="remindMeLater" typeId="alertRemindMeLater" />
-			<channel id="thermostatIdentifier" typeId="alertThermostatIdentifier" />
-			<channel id="notificationType" typeId="alertNotificationType" />
+			<channel id="acknowledgeRef" typeId="alertAcknowledgeRef"/>
+			<channel id="date" typeId="alertDate"/>
+			<channel id="time" typeId="alertTime"/>
+			<channel id="severity" typeId="alertSeverity"/>
+			<channel id="text" typeId="alertText"/>
+			<channel id="number" typeId="alertNumber"/>
+			<channel id="type" typeId="alertType"/>
+			<channel id="isOperatorAlert" typeId="alertIsOperatorAlert"/>
+			<channel id="reminder" typeId="alertReminder"/>
+			<channel id="showIdt" typeId="alertShowIdt"/>
+			<channel id="showWeb" typeId="alertShowWeb"/>
+			<channel id="sendEmail" typeId="alertSendEmail"/>
+			<channel id="acknowledgement" typeId="alertAcknowledgement"/>
+			<channel id="remindMeLater" typeId="alertRemindMeLater"/>
+			<channel id="thermostatIdentifier" typeId="alertThermostatIdentifier"/>
+			<channel id="notificationType" typeId="alertNotificationType"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-type id="alertAcknowledgeRef">
 		<item-type>String</item-type>
 		<label>Acknowledge Ref</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="alertDate">
 		<item-type>String</item-type>
 		<label>Date</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="alertTime">
 		<item-type>String</item-type>
 		<label>Time</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="alertSeverity">
 		<item-type>String</item-type>
 		<label>Severity</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="alertText">
 		<item-type>String</item-type>
 		<label>Text</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="alertNumber">
 		<item-type>Number</item-type>
 		<label>Number</label>
-		<state readOnly="true" pattern="%.0f" />
+		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="alertType">
 		<item-type>String</item-type>
 		<label>Type</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="alertIsOperatorAlert" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Is Operator Alert</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="alertReminder">
 		<item-type>String</item-type>
 		<label>Reminder</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="alertShowIdt" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Show IDT</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="alertShowWeb" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Show Web</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="alertSendEmail" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Send Email</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="alertAcknowledgement">
 		<item-type>String</item-type>
 		<label>Acknowledgement</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="alertRemindMeLater" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Remind Me Later</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="alertThermostatIdentifier" advanced="true">
 		<item-type>String</item-type>
 		<label>Thermostat Identifier</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="alertNotificationType" advanced="true">
 		<item-type>String</item-type>
 		<label>Notification Type</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-group-type id="events">
 		<label>Currently Running Event</label>
 		<channels>
-			<channel id="name" typeId="eventName" />
-			<channel id="type" typeId="eventType" />
-			<channel id="running" typeId="eventRunning" />
-			<channel id="startDate" typeId="eventStartDate" />
-			<channel id="startTime" typeId="eventStartTime" />
-			<channel id="endDate" typeId="eventEndDate" />
-			<channel id="endTime" typeId="eventEndTime" />
-			<channel id="holdClimateRef" typeId="eventHoldClimateRef" />
-			<channel id="isOccupied" typeId="eventIsOccupied" />
-			<channel id="isCoolOff" typeId="eventIsCoolOff" />
-			<channel id="isHeatOff" typeId="eventIsHeatOff" />
-			<channel id="coolHoldTemp" typeId="eventCoolHoldTemp" />
-			<channel id="heatHoldTemp" typeId="eventHeatHoldTemp" />
-			<channel id="fan" typeId="eventFan" />
-			<channel id="vent" typeId="eventVent" />
-			<channel id="ventilatorMinOnTime" typeId="eventVentilatorMinOnTime" />
-			<channel id="isOptional" typeId="eventIsOptional" />
-			<channel id="isTemperatureRelative" typeId="eventIsTemperatureRelative" />
-			<channel id="coolRelativeTemp" typeId="eventCoolRelativeTemp" />
-			<channel id="heatRelativeTemp" typeId="eventHeatRelativeTemp" />
-			<channel id="isTemperatureAbsolute" typeId="eventIsTemperatureAbsolute" />
-			<channel id="dutyCyclePercentage" typeId="eventDutyCyclePercentage" />
-			<channel id="fanMinOnTime" typeId="eventFanMinOnTime" />
-			<channel id="occupiedSensorActive" typeId="eventOccupiedSensorActive" />
-			<channel id="unoccupiedSensorActive" typeId="eventUnoccupiedSensorActive" />
-			<channel id="drRampUpTemp" typeId="eventDrRampUpTemp" />
-			<channel id="drRampUpTime" typeId="eventDrRampUpTime" />
-			<channel id="linkRef" typeId="eventLinkRef" />
+			<channel id="name" typeId="eventName"/>
+			<channel id="type" typeId="eventType"/>
+			<channel id="running" typeId="eventRunning"/>
+			<channel id="startDate" typeId="eventStartDate"/>
+			<channel id="startTime" typeId="eventStartTime"/>
+			<channel id="endDate" typeId="eventEndDate"/>
+			<channel id="endTime" typeId="eventEndTime"/>
+			<channel id="holdClimateRef" typeId="eventHoldClimateRef"/>
+			<channel id="isOccupied" typeId="eventIsOccupied"/>
+			<channel id="isCoolOff" typeId="eventIsCoolOff"/>
+			<channel id="isHeatOff" typeId="eventIsHeatOff"/>
+			<channel id="coolHoldTemp" typeId="eventCoolHoldTemp"/>
+			<channel id="heatHoldTemp" typeId="eventHeatHoldTemp"/>
+			<channel id="fan" typeId="eventFan"/>
+			<channel id="vent" typeId="eventVent"/>
+			<channel id="ventilatorMinOnTime" typeId="eventVentilatorMinOnTime"/>
+			<channel id="isOptional" typeId="eventIsOptional"/>
+			<channel id="isTemperatureRelative" typeId="eventIsTemperatureRelative"/>
+			<channel id="coolRelativeTemp" typeId="eventCoolRelativeTemp"/>
+			<channel id="heatRelativeTemp" typeId="eventHeatRelativeTemp"/>
+			<channel id="isTemperatureAbsolute" typeId="eventIsTemperatureAbsolute"/>
+			<channel id="dutyCyclePercentage" typeId="eventDutyCyclePercentage"/>
+			<channel id="fanMinOnTime" typeId="eventFanMinOnTime"/>
+			<channel id="occupiedSensorActive" typeId="eventOccupiedSensorActive"/>
+			<channel id="unoccupiedSensorActive" typeId="eventUnoccupiedSensorActive"/>
+			<channel id="drRampUpTemp" typeId="eventDrRampUpTemp"/>
+			<channel id="drRampUpTime" typeId="eventDrRampUpTime"/>
+			<channel id="linkRef" typeId="eventLinkRef"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-type id="eventName">
 		<item-type>String</item-type>
 		<label>Event Name</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="eventType">
 		<item-type>String</item-type>
 		<label>Event Type</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="eventRunning">
 		<item-type>Switch</item-type>
 		<label>Event is Running</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="eventStartDate">
 		<item-type>String</item-type>
 		<label>Event Start Date</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="eventStartTime">
 		<item-type>String</item-type>
 		<label>Event Start Time</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="eventEndDate">
 		<item-type>String</item-type>
 		<label>Event End Date</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="eventEndTime">
 		<item-type>String</item-type>
 		<label>Event End Time</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="eventHoldClimateRef">
 		<item-type>String</item-type>
 		<label>Hold Climate Ref</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="eventIsOccupied">
 		<item-type>Switch</item-type>
 		<label>Is Occupied</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="eventIsCoolOff" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Is Cool Off</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="eventIsHeatOff" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Is Heat Off</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="eventCoolHoldTemp">
 		<item-type>Number:Temperature</item-type>
 		<label>Cool Hold Temp</label>
-		<state readOnly="true" pattern="%.0f" />
+		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="eventHeatHoldTemp">
 		<item-type>Number:Temperature</item-type>
 		<label>Heat Hold Temp</label>
-		<state readOnly="true" pattern="%.0f" />
+		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="eventFan">
 		<item-type>String</item-type>
 		<label>Fan</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="eventVent">
 		<item-type>String</item-type>
 		<label>Vent</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="eventVentilatorMinOnTime" advanced="true">
 		<item-type>Number</item-type>
 		<label>Ventilator Min On Time</label>
-		<state readOnly="true" pattern="%.0f" />
+		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="eventIsOptional" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Is Optional</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="eventIsTemperatureRelative" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Is Temperature Relative</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="eventCoolRelativeTemp" advanced="true">
 		<item-type>Number</item-type>
 		<label>Cool Relative Temp</label>
-		<state readOnly="true" pattern="%.0f" />
+		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="eventHeatRelativeTemp" advanced="true">
 		<item-type>Number</item-type>
 		<label>Heat Relative Temp</label>
-		<state readOnly="true" pattern="%.0f" />
+		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="eventIsTemperatureAbsolute" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Is Temperature Absolute</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="eventDutyCyclePercentage" advanced="true">
 		<item-type>Number</item-type>
 		<label>Duty Cycle Percentage</label>
-		<state readOnly="true" pattern="%.0f" />
+		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="eventFanMinOnTime" advanced="true">
 		<item-type>Number</item-type>
 		<label>Fan Min On Time</label>
-		<state readOnly="true" pattern="%.0f" />
+		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="eventOccupiedSensorActive" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Occupied Sensor Active</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="eventUnoccupiedSensorActive" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Unoccupied Sensor Active</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="eventDrRampUpTemp" advanced="true">
 		<item-type>Number</item-type>
 		<label>DR Ramp Up Temp</label>
-		<state readOnly="true" pattern="%.0f" />
+		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="eventDrRampUpTime" advanced="true">
 		<item-type>Number</item-type>
 		<label>DR Ramp Up Time</label>
-		<state readOnly="true" pattern="%.0f" />
+		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="eventLinkRef" advanced="true">
 		<item-type>String</item-type>
 		<label>Link Ref</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-group-type id="version">
 		<label>Thermostat Version</label>
 		<channels>
-			<channel id="thermostatFirmwareVersion" typeId="versionThermostatFirmwareVersion" />
+			<channel id="thermostatFirmwareVersion" typeId="versionThermostatFirmwareVersion"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-type id="versionThermostatFirmwareVersion">
 		<item-type>String</item-type>
 		<label>Firmware Version</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-group-type id="weather">
 		<label>Weather</label>
 		<channels>
-			<channel id="timestamp" typeId="weatherTimestamp" />
-			<channel id="weatherStation" typeId="weatherWeatherStation" />
+			<channel id="timestamp" typeId="weatherTimestamp"/>
+			<channel id="weatherStation" typeId="weatherWeatherStation"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="forecast">
 		<label>Weather Forecast</label>
 		<channels>
-			<channel id="weatherSymbol" typeId="weatherWeatherSymbol" />
-			<channel id="weatherSymbolText" typeId="weatherWeatherSymbolText" />
-			<channel id="dateTime" typeId="weatherDateTime" />
-			<channel id="condition" typeId="weatherCondition" />
-			<channel id="temperature" typeId="weatherTemperature" />
-			<channel id="pressure" typeId="weatherPressure" />
-			<channel id="relativeHumidity" typeId="weatherRelativeHumidity" />
-			<channel id="dewpoint" typeId="weatherDewpoint" />
-			<channel id="visibility" typeId="weatherVisibility" />
-			<channel id="windSpeed" typeId="weatherWindSpeed" />
-			<channel id="windGust" typeId="weatherWindGust" />
-			<channel id="windDirection" typeId="weatherWindDirection" />
-			<channel id="windBearing" typeId="weatherWindBearing" />
-			<channel id="pop" typeId="weatherPop" />
-			<channel id="tempHigh" typeId="weatherTempHigh" />
-			<channel id="tempLow" typeId="weatherTempLow" />
-			<channel id="sky" typeId="weatherSky" />
-			<channel id="skyText" typeId="weatherSkyText" />
+			<channel id="weatherSymbol" typeId="weatherWeatherSymbol"/>
+			<channel id="weatherSymbolText" typeId="weatherWeatherSymbolText"/>
+			<channel id="dateTime" typeId="weatherDateTime"/>
+			<channel id="condition" typeId="weatherCondition"/>
+			<channel id="temperature" typeId="weatherTemperature"/>
+			<channel id="pressure" typeId="weatherPressure"/>
+			<channel id="relativeHumidity" typeId="weatherRelativeHumidity"/>
+			<channel id="dewpoint" typeId="weatherDewpoint"/>
+			<channel id="visibility" typeId="weatherVisibility"/>
+			<channel id="windSpeed" typeId="weatherWindSpeed"/>
+			<channel id="windGust" typeId="weatherWindGust"/>
+			<channel id="windDirection" typeId="weatherWindDirection"/>
+			<channel id="windBearing" typeId="weatherWindBearing"/>
+			<channel id="pop" typeId="weatherPop"/>
+			<channel id="tempHigh" typeId="weatherTempHigh"/>
+			<channel id="tempLow" typeId="weatherTempLow"/>
+			<channel id="sky" typeId="weatherSky"/>
+			<channel id="skyText" typeId="weatherSkyText"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-type id="weatherTimestamp">
 		<item-type>DateTime</item-type>
 		<label>Timestamp</label>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="weatherWeatherStation">
 		<item-type>String</item-type>
 		<label>Weather Station</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="weatherWeatherSymbol" advanced="true">
 		<item-type>Number</item-type>
 		<label>Symbol</label>
-		<state readOnly="true" pattern="%.0f" />
+		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="weatherWeatherSymbolText">
 		<item-type>String</item-type>
 		<label>Symbol Text</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="weatherDateTime">
 		<item-type>DateTime</item-type>
 		<label>Date Time</label>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="weatherCondition">
 		<item-type>String</item-type>
 		<label>Condition</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="weatherTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="weatherPressure">
 		<item-type>Number:Pressure</item-type>
 		<label>Pressure</label>
-		<state readOnly="true" pattern="%.0f %unit%" />
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="weatherRelativeHumidity">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Relative Humidity</label>
-		<state readOnly="true" pattern="%.0f %unit%" />
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="weatherDewpoint">
 		<item-type>Number:Temperature</item-type>
 		<label>Dewpoint</label>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="weatherVisibility">
 		<item-type>Number</item-type>
 		<label>Visibility</label>
-		<state readOnly="true" pattern="%.0f %unit%" />
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="weatherWindSpeed">
 		<item-type>Number:Speed</item-type>
 		<label>Wind Speed</label>
-		<state readOnly="true" pattern="%.0f  %unit%" />
+		<state readOnly="true" pattern="%.0f  %unit%"/>
 	</channel-type>
 	<channel-type id="weatherWindGust" advanced="true">
 		<item-type>Number:Speed</item-type>
 		<label>Wind Gust</label>
-		<state readOnly="true" pattern="%.0f  %unit%" />
+		<state readOnly="true" pattern="%.0f  %unit%"/>
 	</channel-type>
 	<channel-type id="weatherWindDirection">
 		<item-type>String</item-type>
 		<label>Wind Direction</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="weatherWindBearing" advanced="true">
 		<item-type>Number:Angle</item-type>
 		<label>Wind Bearing</label>
-		<state readOnly="true" pattern="%.0f %unit%" />
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="weatherPop">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Probability of Precipitation</label>
-		<state readOnly="true" pattern="%.0f %unit%" />
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="weatherTempHigh">
 		<item-type>Number:Temperature</item-type>
 		<label>High Temperature</label>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="weatherTempLow">
 		<item-type>Number:Temperature</item-type>
 		<label>Low Temperature</label>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="weatherSky" advanced="true">
 		<item-type>Number</item-type>
 		<label>Sky</label>
-		<state readOnly="true" pattern="%.0f" />
+		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="weatherSkyText">
 		<item-type>String</item-type>
 		<label>Sky Text</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-group-type id="location">
 		<label>Thermostat Location</label>
 		<channels>
-			<channel id="timeZoneOffsetMinutes" typeId="locationTimeZoneOffsetMinutes" />
-			<channel id="timeZone" typeId="locationTimeZone" />
-			<channel id="isDaylightSaving" typeId="locationIsDaylightSaving" />
-			<channel id="streetAddress" typeId="locationStreetAddress" />
-			<channel id="city" typeId="locationCity" />
-			<channel id="provinceState" typeId="locationProvinceState" />
-			<channel id="country" typeId="locationCountry" />
-			<channel id="postalCode" typeId="locationPostalCode" />
-			<channel id="phoneNumber" typeId="locationPhoneNumber" />
-			<channel id="mapCoordinates" typeId="locationMapCoordinates" />
+			<channel id="timeZoneOffsetMinutes" typeId="locationTimeZoneOffsetMinutes"/>
+			<channel id="timeZone" typeId="locationTimeZone"/>
+			<channel id="isDaylightSaving" typeId="locationIsDaylightSaving"/>
+			<channel id="streetAddress" typeId="locationStreetAddress"/>
+			<channel id="city" typeId="locationCity"/>
+			<channel id="provinceState" typeId="locationProvinceState"/>
+			<channel id="country" typeId="locationCountry"/>
+			<channel id="postalCode" typeId="locationPostalCode"/>
+			<channel id="phoneNumber" typeId="locationPhoneNumber"/>
+			<channel id="mapCoordinates" typeId="locationMapCoordinates"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-type id="locationTimeZoneOffsetMinutes" advanced="true">
 		<item-type>Number</item-type>
 		<label>Time Zone Offset Minutes</label>
-		<state readOnly="true" pattern="%.1f" />
+		<state readOnly="true" pattern="%.1f"/>
 	</channel-type>
 	<channel-type id="locationTimeZone" advanced="true">
 		<item-type>String</item-type>
 		<label>Time Zone</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="locationIsDaylightSaving" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Is Daylight Saving</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="locationStreetAddress">
 		<item-type>String</item-type>
 		<label>Street Address</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="locationCity">
 		<item-type>String</item-type>
 		<label>City</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="locationProvinceState">
 		<item-type>String</item-type>
 		<label>Province/State</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="locationCountry">
 		<item-type>String</item-type>
 		<label>Country</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="locationPostalCode">
 		<item-type>String</item-type>
 		<label>Postal Code</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="locationPhoneNumber">
 		<item-type>String</item-type>
 		<label>Phone Number</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="locationMapCoordinates" advanced="true">
 		<item-type>Location</item-type>
 		<label>Thermostat Location</label>
-		<state readOnly="false" pattern="%2$s°N, %3$s°W" />
+		<state readOnly="false" pattern="%2$s°N, %3$s°W"/>
 	</channel-type>
 
 	<channel-group-type id="houseDetails">
 		<label>Thermostat House Detail</label>
 		<channels>
-			<channel id="style" typeId="housedetailsStyle" />
-			<channel id="size" typeId="housedetailsSize" />
-			<channel id="numberOfFloors" typeId="housedetailsNumberOfFloors" />
-			<channel id="numberOfRooms" typeId="housedetailsNumberOfRooms" />
-			<channel id="numberOfOccupants" typeId="housedetailsNumberOfOccupants" />
-			<channel id="age" typeId="housedetailsAge" />
-			<channel id="windowEfficiency" typeId="housedetailsWindowEfficiency" />
+			<channel id="style" typeId="housedetailsStyle"/>
+			<channel id="size" typeId="housedetailsSize"/>
+			<channel id="numberOfFloors" typeId="housedetailsNumberOfFloors"/>
+			<channel id="numberOfRooms" typeId="housedetailsNumberOfRooms"/>
+			<channel id="numberOfOccupants" typeId="housedetailsNumberOfOccupants"/>
+			<channel id="age" typeId="housedetailsAge"/>
+			<channel id="windowEfficiency" typeId="housedetailsWindowEfficiency"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-type id="housedetailsStyle">
 		<item-type>String</item-type>
 		<label>Style</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="housedetailsSize">
 		<item-type>Number</item-type>
 		<label>Size</label>
-		<state readOnly="false" pattern="%.0f" />
+		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="housedetailsNumberOfFloors">
 		<item-type>Number</item-type>
 		<label>Number of Floors</label>
-		<state readOnly="false" pattern="%.0f" />
+		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="housedetailsNumberOfRooms">
 		<item-type>Number</item-type>
 		<label>Number of Rooms</label>
-		<state readOnly="false" pattern="%.0f" />
+		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="housedetailsNumberOfOccupants">
 		<item-type>Number</item-type>
 		<label>Number of Occupants</label>
-		<state readOnly="false" pattern="%.0f" />
+		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="housedetailsAge">
 		<item-type>Number</item-type>
 		<label>Age</label>
-		<state readOnly="false" pattern="%.0f" />
+		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="housedetailsWindowEfficiency">
 		<item-type>Number</item-type>
 		<label>Window Efficiency</label>
-		<state readOnly="false" pattern="%.0f" />
+		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 
 	<channel-group-type id="management">
 		<label>Thermostat Management</label>
 		<channels>
-			<channel id="administrativeContact" typeId="managementAdministrativeContact" />
-			<channel id="billingContact" typeId="managementBillingContact" />
-			<channel id="name" typeId="managementName" />
-			<channel id="phone" typeId="managementPhone" />
-			<channel id="email" typeId="managementEmail" />
-			<channel id="web" typeId="managementWeb" />
-			<channel id="showAlertIdt" typeId="managementShowAlertIdt" />
-			<channel id="showAlertWeb" typeId="managementShowAlertWeb" />
+			<channel id="administrativeContact" typeId="managementAdministrativeContact"/>
+			<channel id="billingContact" typeId="managementBillingContact"/>
+			<channel id="name" typeId="managementName"/>
+			<channel id="phone" typeId="managementPhone"/>
+			<channel id="email" typeId="managementEmail"/>
+			<channel id="web" typeId="managementWeb"/>
+			<channel id="showAlertIdt" typeId="managementShowAlertIdt"/>
+			<channel id="showAlertWeb" typeId="managementShowAlertWeb"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-type id="managementAdministrativeContact">
 		<item-type>String</item-type>
 		<label>Administrative Contact</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="managementBillingContact">
 		<item-type>String</item-type>
 		<label>Billing Contact</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="managementName">
 		<item-type>String</item-type>
 		<label>Name</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="managementPhone">
 		<item-type>String</item-type>
 		<label>Phone</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="managementEmail">
 		<item-type>String</item-type>
 		<label>Email</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="managementWeb" advanced="true">
 		<item-type>String</item-type>
 		<label>Web</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="managementShowAlertIdt" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Show Alert Idt</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="managementShowAlertWeb" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Show Alert Web</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-group-type id="technician">
 		<label>Thermostat Technician</label>
 		<channels>
-			<channel id="contractorRef" typeId="technicianContractorRef" />
-			<channel id="name" typeId="technicianName" />
-			<channel id="phone" typeId="technicianPhone" />
-			<channel id="streetAddress" typeId="technicianStreetAddress" />
-			<channel id="city" typeId="technicianCity" />
-			<channel id="provinceState" typeId="technicianProvinceState" />
-			<channel id="country" typeId="technicianCountry" />
-			<channel id="postalCode" typeId="technicianPostalCode" />
-			<channel id="email" typeId="technicianEmail" />
-			<channel id="web" typeId="technicianWeb" />
+			<channel id="contractorRef" typeId="technicianContractorRef"/>
+			<channel id="name" typeId="technicianName"/>
+			<channel id="phone" typeId="technicianPhone"/>
+			<channel id="streetAddress" typeId="technicianStreetAddress"/>
+			<channel id="city" typeId="technicianCity"/>
+			<channel id="provinceState" typeId="technicianProvinceState"/>
+			<channel id="country" typeId="technicianCountry"/>
+			<channel id="postalCode" typeId="technicianPostalCode"/>
+			<channel id="email" typeId="technicianEmail"/>
+			<channel id="web" typeId="technicianWeb"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-type id="technicianContractorRef" advanced="true">
 		<item-type>String</item-type>
 		<label>Contractor Ref</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="technicianName">
 		<item-type>String</item-type>
 		<label>Name</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="technicianPhone">
 		<item-type>String</item-type>
 		<label>Phone</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="technicianStreetAddress">
 		<item-type>String</item-type>
 		<label>Street Address</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="technicianCity">
 		<item-type>String</item-type>
 		<label>City</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="technicianProvinceState" advanced="true">
 		<item-type>String</item-type>
 		<label>Province/State</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="technicianCountry" advanced="true">
 		<item-type>String</item-type>
 		<label>Country</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="technicianPostalCode" advanced="true">
 		<item-type>String</item-type>
 		<label>Postal Code</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="technicianEmail">
 		<item-type>String</item-type>
 		<label>Email</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="technicianWeb">
 		<item-type>String</item-type>
 		<label>Web</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<!-- THING TYPE SENSOR -->
 	<thing-type id="sensor">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="thermostat" />
+			<bridge-type-ref id="thermostat"/>
 		</supported-bridge-type-refs>
 		<label>Ecobee Remote Sensor</label>
 		<description>An Ecobee remote sensor</description>
 		<channels>
-			<channel id="id" typeId="sensorId" />
-			<channel id="name" typeId="sensorName" />
-			<channel id="type" typeId="sensorType" />
-			<channel id="code" typeId="sensorCode" />
-			<channel id="inUse" typeId="sensorInUse" />
+			<channel id="id" typeId="sensorId"/>
+			<channel id="name" typeId="sensorName"/>
+			<channel id="type" typeId="sensorType"/>
+			<channel id="code" typeId="sensorCode"/>
+			<channel id="inUse" typeId="sensorInUse"/>
 		</channels>
-		<config-description-ref uri="thing-type:ecobee:sensor" />
+		<representation-property>sensorId</representation-property>
+		<config-description-ref uri="thing-type:ecobee:sensor"/>
 	</thing-type>
 
 	<!-- Sensor channel types -->
 	<channel-type id="sensorId">
 		<item-type>String</item-type>
 		<label>Sensor Id</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="sensorName">
 		<item-type>String</item-type>
 		<label>Sensor Name</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="sensorType">
 		<item-type>String</item-type>
 		<label>Sensor Type</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="sensorCode">
 		<item-type>String</item-type>
 		<label>Sensor Code</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="sensorInUse">
 		<item-type>Switch</item-type>
 		<label>Sensor In Use</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<!-- Dynamically created sensor channel types -->
 	<channel-type id="sensorTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Sensor Temperature</label>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="sensorHumidity">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Sensor Humidity</label>
-		<state readOnly="true" pattern="%.0f %unit%" />
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="sensorOccupancy">
 		<item-type>Switch</item-type>
 		<label>Sensor Occupancy</label>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+	<channel-type id="sensorGeneric">
+		<item-type>String</item-type>
+		<label>Generic Sensor</label>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 </thing:thing-descriptions>

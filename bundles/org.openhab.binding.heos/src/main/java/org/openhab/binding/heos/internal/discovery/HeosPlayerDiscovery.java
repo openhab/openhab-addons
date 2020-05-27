@@ -12,8 +12,10 @@
  */
 package org.openhab.binding.heos.internal.discovery;
 
-import static org.openhab.binding.heos.HeosBindingConstants.*;
+import static org.openhab.binding.heos.internal.HeosBindingConstants.*;
+import static org.openhab.binding.heos.internal.handler.FutureUtil.cancel;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -22,14 +24,20 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.heos.handler.HeosBridgeHandler;
+import org.openhab.binding.heos.internal.handler.HeosBridgeHandler;
+import org.openhab.binding.heos.internal.handler.HeosPlayerHandler;
+import org.openhab.binding.heos.internal.json.payload.Group;
+import org.openhab.binding.heos.internal.json.payload.Player;
 import org.openhab.binding.heos.internal.resources.HeosGroup;
-import org.openhab.binding.heos.internal.resources.HeosPlayer;
+import org.openhab.binding.heos.internal.resources.Telnet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +47,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Johannes Einig - Initial contribution
  */
+@NonNullByDefault
 public class HeosPlayerDiscovery extends AbstractDiscoveryService implements HeosPlayerDiscoveryListener {
     private final Logger logger = LoggerFactory.getLogger(HeosPlayerDiscovery.class);
 
@@ -46,9 +55,12 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService implements Heo
     private static final int INITIAL_DELAY = 5;
     private static final int SCAN_INTERVAL = 20;
 
-    private HeosBridgeHandler bridge;
+    private final HeosBridgeHandler bridge;
 
-    private ScheduledFuture<?> scanningJob;
+    private Map<Integer, Player> players = new HashMap<>();
+    private Map<String, Group> groups = new HashMap<>();
+
+    private @Nullable ScheduledFuture<?> scanningJob;
 
     public HeosPlayerDiscovery(HeosBridgeHandler bridge) throws IllegalArgumentException {
         super(SEARCH_TIME);
@@ -67,118 +79,137 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService implements Heo
             logger.debug("Scan for Players not possible. HEOS Bridge is not connected");
             return;
         }
+
+        scanForPlayers();
+        scanForGroups();
+    }
+
+    private void scanForPlayers() {
         logger.debug("Start scan for HEOS Player");
 
-        Map<String, HeosPlayer> playerMap = new HashMap<>();
-        playerMap = bridge.getNewPlayer();
+        try {
+            Map<Integer, Player> currentPlayers = new HashMap<>();
 
-        if (playerMap == null) {
-            return;
-        } else {
-            logger.debug("Found: {} new Player", playerMap.size());
-            ThingUID bridgeUID = bridge.getThing().getUID();
-
-            for (String playerPID : playerMap.keySet()) {
-                HeosPlayer player = playerMap.get(playerPID);
-                ThingUID uid = new ThingUID(THING_TYPE_PLAYER, playerMap.get(playerPID).getPid());
-                Map<String, Object> properties = new HashMap<>();
-                properties.put(PROP_NAME, player.getName());
-                properties.put(PROP_PID, player.getPid());
-                properties.put(PROP_MODEL, player.getModel());
-                properties.put(PROP_VERSION, player.getVersion());
-                properties.put(PROP_NETOWRK, player.getNetwork());
-                properties.put(PROP_IP, player.getIp());
-                DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(player.getName())
-                        .withProperties(properties).withBridge(bridgeUID).build();
-                thingDiscovered(result);
+            for (Player player : bridge.getPlayers()) {
+                currentPlayers.put(player.playerId, player);
             }
-        }
 
+            handleRemovedPlayers(findRemovedEntries(currentPlayers, players));
+            handleDiscoveredPlayers(currentPlayers);
+
+            players = currentPlayers;
+        } catch (IOException | Telnet.ReadException e) {
+            logger.debug("Failed getting/processing groups", e);
+        }
+    }
+
+    private void handleDiscoveredPlayers(Map<Integer, Player> currentPlayers) {
+        logger.debug("Found: {} player", currentPlayers.size());
+        ThingUID bridgeUID = bridge.getThing().getUID();
+
+        for (Player player : currentPlayers.values()) {
+            ThingUID uid = new ThingUID(THING_TYPE_PLAYER, String.valueOf(player.playerId));
+            Map<String, Object> properties = new HashMap<>();
+            HeosPlayerHandler.propertiesFromPlayer(properties, player);
+
+            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(player.name)
+                    .withProperties(properties).withBridge(bridgeUID)
+                    .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).build();
+            thingDiscovered(result);
+        }
+    }
+
+    private void handleRemovedPlayers(Map<Integer, Player> removedPlayers) {
+        for (Player player : removedPlayers.values()) {
+            // The same as above!
+            ThingUID uid = new ThingUID(THING_TYPE_PLAYER, String.valueOf(player.playerId));
+            logger.debug("Removed HEOS Player: {} ", uid);
+            thingRemoved(uid);
+        }
+    }
+
+    private void scanForGroups() {
         logger.debug("Start scan for HEOS Groups");
 
-        Map<String, HeosGroup> groupMap = new HashMap<>();
+        try {
+            HashMap<String, Group> currentGroups = new HashMap<>();
 
-        groupMap = bridge.getNewGroups();
+            for (Group group : bridge.getGroups()) {
+                logger.debug("Found: Group {} with {} Players", group.name, group.players.size());
+                currentGroups.put(HeosGroup.calculateGroupMemberHash(group), group);
+            }
 
-        if (groupMap == null) {
+            handleRemovedGroups(findRemovedEntries(currentGroups, groups));
+            handleDiscoveredGroups(currentGroups);
+
+            groups = currentGroups;
+        } catch (IOException | Telnet.ReadException e) {
+            logger.debug("Failed getting/processing groups", e);
+        }
+    }
+
+    private void handleDiscoveredGroups(HashMap<String, Group> currentGroups) {
+        if (currentGroups.isEmpty()) {
+            logger.debug("No HEOS Groups found");
             return;
-        } else {
-            if (!groupMap.isEmpty()) {
-                logger.debug("Found: {} new Groups", groupMap.size());
-                ThingUID bridgeUID = bridge.getThing().getUID();
-
-                for (String groupGID : groupMap.keySet()) {
-                    HeosGroup group = groupMap.get(groupGID);
-                    String groupMemberHash = group.getGroupMemberHash();
-                    // Using an unsigned hashCode from the group members to identify
-                    // the group and generates the Thing UID.
-                    // This allows identifying the group even if the sorting within the group has changed
-                    ThingUID uid = new ThingUID(THING_TYPE_GROUP, groupMemberHash);
-                    Map<String, Object> properties = new HashMap<>();
-                    properties.put(PROP_NAME, group.getName());
-                    properties.put(PROP_GID, group.getGid());
-                    properties.put(PROP_GROUP_MEMBERS, group.getGroupMembersAsString());
-                    properties.put(PROP_GROUP_LEADER, group.getLeader());
-                    properties.put(PROP_GROUP_HASH, group.getGroupMemberHash());
-                    DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(group.getName())
-                            .withProperties(properties).withBridge(bridgeUID).build();
-                    thingDiscovered(result);
-                    bridge.setGroupOnline(group, uid);
-                }
-            } else {
-                logger.debug("No HEOS Groups found");
-            }
         }
-        removedPlayers();
-        removedGroups();
-    }
+        logger.debug("Found: {} new Groups", currentGroups.size());
+        ThingUID bridgeUID = bridge.getThing().getUID();
 
-    // Informs the system of removed groups by using the thingRemoved method.
-    private void removedGroups() {
-        Map<String, HeosGroup> removedGroupMap = new HashMap<>();
-        removedGroupMap = bridge.getRemovedGroups();
-        if (!removedGroupMap.isEmpty()) {
-            for (String key : removedGroupMap.keySet()) {
-                // The same as above!
-                ThingUID uid = new ThingUID(THING_TYPE_GROUP, removedGroupMap.get(key).getGroupMemberHash());
-                logger.debug("Removed HEOS Group: {}", uid);
-                thingRemoved(uid);
-                bridge.setGroupOffline(removedGroupMap.get(key).getGroupMemberHash());
-            }
+        for (Map.Entry<String, Group> entry : currentGroups.entrySet()) {
+            Group group = entry.getValue();
+            String groupMemberHash = entry.getKey();
+            // Using an unsigned hashCode from the group members to identify
+            // the group and generates the Thing UID.
+            // This allows identifying the group even if the sorting within the group has changed
+            ThingUID uid = new ThingUID(THING_TYPE_GROUP, groupMemberHash);
+            Map<String, Object> properties = new HashMap<>();
+            properties.put(PROP_NAME, group.name);
+            properties.put(PROP_GID, group.id);
+            String groupMembers = group.players.stream().map(p -> p.id).collect(Collectors.joining(";"));
+            properties.put(PROP_GROUP_MEMBERS, groupMembers);
+            properties.put(PROP_GROUP_LEADER, group.players.get(0).id);
+            properties.put(PROP_GROUP_HASH, groupMemberHash);
+            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(group.name).withProperties(properties)
+                    .withBridge(bridgeUID).withRepresentationProperty(PROP_GROUP_HASH).build();
+            thingDiscovered(result);
+            bridge.setGroupOnline(groupMemberHash, group.id);
         }
     }
 
-    // Informs the system of removed players by using the thingRemoved method.
-    private void removedPlayers() {
-        Map<String, HeosPlayer> removedPlayerMap = new HashMap<>();
-        removedPlayerMap = bridge.getRemovedPlayer();
-        if (!removedPlayerMap.isEmpty()) {
-            for (String key : removedPlayerMap.keySet()) {
-                // The same as above!
-                ThingUID uid = new ThingUID(THING_TYPE_PLAYER, removedPlayerMap.get(key).getPid());
-                logger.debug("Removed HEOS Player: {} ", uid);
-                thingRemoved(uid);
+    private void handleRemovedGroups(Map<String, Group> removedGroups) {
+        for (String groupMemberHash : removedGroups.keySet()) {
+            // The same as above!
+            ThingUID uid = new ThingUID(THING_TYPE_GROUP, groupMemberHash);
+            logger.debug("Removed HEOS Group: {}", uid);
+            thingRemoved(uid);
+            bridge.setGroupOffline(groupMemberHash);
+        }
+    }
+
+    private <K, V> Map<K, V> findRemovedEntries(Map<K, V> mapNew, Map<K, V> mapOld) {
+        Map<K, V> removedItems = new HashMap<>();
+        for (K key : mapOld.keySet()) {
+            if (!mapNew.containsKey(key)) {
+                removedItems.put(key, mapOld.get(key));
             }
         }
+        return removedItems;
     }
 
     @Override
     protected void startBackgroundDiscovery() {
-        logger.trace("Start HEOS Player background discovery");
-        if (scanningJob == null || scanningJob.isCancelled()) {
+        ScheduledFuture<?> runningScanningJob = this.scanningJob;
+        if (runningScanningJob == null || runningScanningJob.isCancelled()) {
             this.scanningJob = scheduler.scheduleWithFixedDelay(this::startScan, INITIAL_DELAY, SCAN_INTERVAL,
                     TimeUnit.SECONDS);
         }
-        logger.trace("scanningJob active");
     }
 
     @Override
     protected void stopBackgroundDiscovery() {
         logger.debug("Stop HEOS Player background discovery");
-        if (scanningJob != null && !scanningJob.isCancelled()) {
-            scanningJob.cancel(true);
-            scanningJob = null;
-        }
+        cancel(scanningJob);
     }
 
     @Override
@@ -187,7 +218,7 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService implements Heo
         removeOlderResults(getTimestampOfLastScan());
     }
 
-    public void scanForNewPlayers() {
+    private void scanForNewPlayers() {
         removeOlderResults(getTimestampOfLastScan());
         startScan();
     }

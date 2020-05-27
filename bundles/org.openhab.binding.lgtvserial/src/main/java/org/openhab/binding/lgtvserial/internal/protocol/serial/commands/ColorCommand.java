@@ -23,5 +23,4 @@ public class ColorCommand extends BasePercentCommand {
     protected ColorCommand(int setId) {
         super('k', 'i', setId);
     }
-
 }

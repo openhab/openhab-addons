@@ -46,12 +46,12 @@
 		<label>SONY Soundbar HT-ST5000</label>
 		<description>SONY Soundbar HT-ST5000</description>
 		<channels>
-			<channel id="power" typeId="power" />
-			<channel id="input" typeId="input-st5000" />
-			<channel id="volume" typeId="volume" />
-			<channel id="mute" typeId="mute" />
-			<channel id="soundField" typeId="sound-field-st5000" />
+			<channel id="power" typeId="power"/>
+			<channel id="input" typeId="input-st5000"/>
+			<channel id="volume" typeId="volume"/>
+			<channel id="mute" typeId="mute"/>
+			<channel id="soundField" typeId="sound-field-st5000"/>
 		</channels>
-		<config-description-ref uri="thing-type:sonyaudio:config" />
+		<config-description-ref uri="thing-type:sonyaudio:config"/>
 	</thing-type>
 </thing:thing-descriptions>

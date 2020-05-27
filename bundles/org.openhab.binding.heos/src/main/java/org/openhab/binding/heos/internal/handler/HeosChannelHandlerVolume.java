@@ -12,61 +12,74 @@
  */
 package org.openhab.binding.heos.internal.handler;
 
+import java.io.IOException;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
+import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.heos.handler.HeosBridgeHandler;
-import org.openhab.binding.heos.internal.api.HeosFacade;
+import org.openhab.binding.heos.internal.exception.HeosNotFoundException;
+import org.openhab.binding.heos.internal.resources.HeosEventListener;
+import org.openhab.binding.heos.internal.resources.Telnet.ReadException;
 
 /**
  * The {@link HeosChannelHandlerVolume} handles the Volume channel command
  * from the implementing thing.
  *
  * @author Johannes Einig - Initial contribution
- *
  */
+@NonNullByDefault
+public class HeosChannelHandlerVolume extends BaseHeosChannelHandler {
+    private final HeosEventListener eventListener;
 
-public class HeosChannelHandlerVolume extends HeosChannelHandler {
-
-    public HeosChannelHandlerVolume(HeosBridgeHandler bridge, HeosFacade api) {
-        super(bridge, api);
+    public HeosChannelHandlerVolume(HeosEventListener eventListener, HeosBridgeHandler bridge) {
+        super(bridge);
+        this.eventListener = eventListener;
     }
 
     @Override
-    protected void handleCommandPlayer() {
+    public void handlePlayerCommand(Command command, String id, ThingUID uid) throws IOException, ReadException {
         if (command instanceof RefreshType) {
-            api.getHeosPlayerVolume(id);
+            eventListener.playerStateChangeEvent(getApi().getPlayerVolume(id));
             return;
         }
         if (command instanceof IncreaseDecreaseType) {
-            if (IncreaseDecreaseType.INCREASE.equals(command)) {
-                api.increaseVolume(id);
+            if (IncreaseDecreaseType.INCREASE == command) {
+                getApi().increaseVolume(id);
             } else {
-                api.decreaseVolume(id);
+                getApi().decreaseVolume(id);
             }
         } else {
-            api.setVolume(command.toString(), id);
+            getApi().setVolume(command.toString(), id);
         }
     }
 
     @Override
-    protected void handleCommandGroup() {
+    public void handleGroupCommand(Command command, @Nullable String id, ThingUID uid,
+            HeosGroupHandler heosGroupHandler) throws IOException, ReadException {
+        if (id == null) {
+            throw new HeosNotFoundException();
+        }
+
         if (command instanceof RefreshType) {
-            api.getHeosGroupVolume(id);
+            eventListener.playerStateChangeEvent(getApi().getGroupVolume(id));
             return;
         }
         if (command instanceof IncreaseDecreaseType) {
-            if (IncreaseDecreaseType.INCREASE.equals(command)) {
-                api.increaseGroupVolume(id);
+            if (IncreaseDecreaseType.INCREASE == command) {
+                getApi().increaseGroupVolume(id);
             } else {
-                api.decreaseGroupVolume(id);
+                getApi().decreaseGroupVolume(id);
             }
         } else {
-            api.volumeGroup(command.toString(), id);
+            getApi().volumeGroup(command.toString(), id);
         }
     }
 
     @Override
-    protected void handleCommandBridge() {
+    public void handleBridgeCommand(Command command, ThingUID uid) {
         // not used on bridge
     }
 }
