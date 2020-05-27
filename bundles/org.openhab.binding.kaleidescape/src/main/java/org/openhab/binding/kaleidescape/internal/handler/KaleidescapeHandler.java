@@ -27,6 +27,7 @@ import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.library.types.NextPreviousType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -88,12 +89,15 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
 
     private Object sequenceLock = new Object();
 
+    protected final HttpClient httpClient;
+
     /**
      * Constructor
      */
-    public KaleidescapeHandler(Thing thing, SerialPortManager serialPortManager) {
+    public KaleidescapeHandler(Thing thing, SerialPortManager serialPortManager, HttpClient httpClient) {
         super(thing);
         this.serialPortManager = serialPortManager;
+        this.httpClient = httpClient;
     }
 
     public void updateChannel(String channelUID, State state) {

@@ -21,13 +21,16 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.kaleidescape.internal.handler.KaleidescapeHandler;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -45,6 +48,12 @@ public class KaleidescapeHandlerFactory extends BaseThingHandlerFactory {
             .unmodifiableSet(Stream.of(THING_TYPE_PLAYER_ZONE).collect(Collectors.toSet()));
 
     private @NonNullByDefault({}) SerialPortManager serialPortManager;
+    private final HttpClient httpClient;
+
+    @Activate
+    public KaleidescapeHandlerFactory(final @Reference HttpClientFactory httpClientFactory) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -56,7 +65,7 @@ public class KaleidescapeHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            return new KaleidescapeHandler(thing, serialPortManager);
+            return new KaleidescapeHandler(thing, serialPortManager, httpClient);
         }
 
         return null;

@@ -12,10 +12,6 @@
  */
 package org.openhab.binding.kaleidescape.internal.communication;
 
-import java.io.ByteArrayOutputStream;
-import java.net.URL;
-import java.net.URLConnection;
-
 import org.apache.commons.lang.StringEscapeUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -26,52 +22,33 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class KaleidescapeFormatter {
-    
+
     public static String formatString(String input) {
         if (input != null && !input.equals("")) {
-            //convert || back to :
+            // convert || back to :
             input = input.replace("||", ":");
-            
-            //fix escaped :
+
+            // fix escaped :
             input = input.replace("\\:", ":");
-            
-            //fix escaped / 
+
+            // fix escaped / 
             input = input.replace("\\/", "/");
-            
-            //convert \r into comma space 
+
+            // convert \r into comma space 
             input = input.replace("\\r", ", ");
-            
-            //convert \d146 from review text into apostrophe
+
+            // convert \d146 from review text into apostrophe
             input = input.replace("\\d146", "'");
-            
-            //convert \d147 & \d148 from review text into double quote
+            // convert \d147 & \d148 from review text into double quote
             input = input.replace("\\d147", "\"");
             input = input.replace("\\d148", "\"");
-            
+
             // fix the encoding for k mangled extended ascii characters (chars coming in as \dnnn)
             // example: Nöel comes in as N\d246el
             input = input.replaceAll("(?i)\\\\d([0-9]{3})", "\\&#$1;"); // first convert to html escaped codes
             // then convert with unescapeHtml, not sure how to do this without the Apache libraries :(
             return StringEscapeUtils.unescapeHtml(input);
-        }       
+        }
         return input;
     }
-    
-    public static byte[] getRawDataFromUrl(String urlString) throws Exception {
-        // todo: convert to jetty HttpClient
-        URL url = new URL(urlString);
-        URLConnection connection = url.openConnection();
-        
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        int nRead;
-        byte[] data = new byte[1024];
-        while ((nRead = connection.getInputStream().read(data, 0, data.length)) != -1) {
-            buffer.write(data, 0, nRead);
-        }
-
-        buffer.flush();
-        return  buffer.toByteArray();
-    }
-    
-
 }

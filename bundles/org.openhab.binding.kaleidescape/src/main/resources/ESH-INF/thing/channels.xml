@@ -8,32 +8,32 @@
 	<thing-type id="player">
 		<label>Kaleidescape</label>
 		<description>
-			A movie player zone in a Kaleidescape system
+			A Movie Player Zone in a Kaleidescape System
 		</description>
 
 		<channel-groups>
 			<channel-group id="ui" typeId="ui">
 				<label>User Interface</label>
-				<description>Controls and information for the player's on screen interface</description>
+				<description>Controls and Information for the Player's On Screen Interface</description>
 			</channel-group>
 			<channel-group id="music" typeId="music">
 				<label>Music Zone</label>
-				<description>Controls and information for the player's music zone</description>
+				<description>Controls and Information for the Player's Music Zone</description>
 			</channel-group>
 			<channel-group id="detail" typeId="detail">
 				<label>Content Details</label>
-				<description>Contains metadata about a selected item</description>
+				<description>Contains Metadata About a Selected Item</description>
 			</channel-group>
 			<channel-group id="system" typeId="system">
 				<label>System Details</label>
-				<description>Contains system level details about this component</description>
+				<description>Contains System Level Details About This Component</description>
 			</channel-group>
 		</channel-groups>
 
 		<config-description>
 			<parameter name="componentType" type="text" required="true">
-				<label>Component type</label>
-				<description>Choose type of Kaleidescape component</description>
+				<label>Component Type</label>
+				<description>Choose Type of Kaleidescape Component</description>
 				<limitToOptions>true</limitToOptions>
 				<options>
 					<option value="Player">Premiere (Any KPlayer, M Class [M300, M500, M700]) or Cinema One 1st Gen</option>
@@ -46,37 +46,37 @@
 			<parameter name="host" type="text" required="false">
 				<context>network-address</context>
 				<label>Address</label>
-				<description>Host name or IP address of the Kaleidescape component.</description>
+				<description>Host Name or IP Address of the Kaleidescape Component.</description>
 			</parameter>
 			<parameter name="port" type="integer" required="false">
 				<label>Port</label>
-				<description>Communication port for IP connection to the Kaleidescape component.</description>
+				<description>Communication Port for IP Connection to the Kaleidescape Component.</description>
 				<default>10000</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="serialPort" type="text" required="false">
 				<context>serial-port</context>
 				<label>Serial Port</label>
-				<description>(Optional) Serial port to use for connecting directly to an individual Kaleidescape component.</description>
+				<description>(Optional) Serial Port to Use for Connecting Directly to an Individual Kaleidescape Component.</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="updatePeriod" type="integer" min="0" max="1" required="false">
 				<label>Update Period</label>
-				<description>Tells the component how often time status updates should be sent; Values greater than 1 are not yet
-					implmented by the protocol. Setting to 1 may impact openHAB system performance due to constant updates while
-					content playing.</description>
+				<description>Tells the Component How Often Time Status Updates Should Be Sent; Values Greater Than 1 Are Not Yet
+					Implmented by the Protocol. Setting to 1 May Impact openHAB System Performance Due to Constant Updates While
+					Content Playing.</description>
 				<default>0</default>
 			</parameter>
 			<parameter name="volumeEnabled" type="integer" min="0" max="1" required="false">
 				<label>Volume Control Enabled</label>
-				<description>Enable the volume and mute controls in the Kaleidescape iPad &amp; phone apps and track their status in
-					the binding. Disabled by default to prevent conflicts with other control systems that may already be controlling
-					volume on this zone.</description>
+				<description>Enable the Volume and Mute Controls in the Kaleidescape iPad &amp; Phone Apps and Track Their Status in
+					the Binding. Disabled by Default to Prevent Conflicts With Other Control Systems That May Already Be Controlling
+					Volume On This Zone.</description>
 				<default>0</default>
 			</parameter>
 			<parameter name="initialVolume" type="integer" min="0" max="75" required="false">
 				<label>Initial Volume Setting</label>
-				<description>When the binding starts up, set the inital volume level to this value (default 25)</description>
+				<description>When the Binding Starts Up, Set the Inital Volume Level to This Value (Default 25).</description>
 				<default>25</default>
 			</parameter>
 		</config-description>
@@ -84,7 +84,7 @@
 
 	<channel-group-type id="ui">
 		<label>User Interface</label>
-		<description>Controls and information for the player's on screen interface</description>
+		<description>Controls and Information for the Player's On Screen Interface</description>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="volume" typeId="system.volume"/>
@@ -127,7 +127,7 @@
 
 	<channel-group-type id="music">
 		<label>Music Zone</label>
-		<description>Controls and information for the player's music zone</description>
+		<description>Controls and Information for the Player's Music Zone</description>
 		<channels>
 			<channel id="control" typeId="music_control"/>
 			<channel id="repeat" typeId="repeat"/>
@@ -148,7 +148,7 @@
 
 	<channel-group-type id="detail">
 		<label>Content Details</label>
-		<description>Contains metadata about a selected item</description>
+		<description>Contains Metadata About a Selected Item</description>
 		<channels>
 			<channel id="type" typeId="type"/>
 			<channel id="title" typeId="title"/>
@@ -175,7 +175,7 @@
 
 	<channel-group-type id="system">
 		<label>System Details</label>
-		<description>Contains system level details about this component</description>
+		<description>Contains System Level Details About This Component</description>
 		<channels>
 			<channel id="readiness_state" typeId="readiness_state"/>
 			<channel id="component_type" typeId="component_type"/>
@@ -190,232 +190,232 @@
 	<channel-type id="movie_control">
 		<item-type>Player</item-type>
 		<label>Control</label>
-		<description>Control Movie Playback e.g. start/pause/next/previous/ffward/rewind</description>
+		<description>Control Movie Playback e.g. Play/Pause/Next/Previous/Fforward/Rewind</description>
 		<category>Player</category>
 	</channel-type>
 
 	<channel-type id="title_name">
 		<item-type>String</item-type>
 		<label>Title Name</label>
-		<description>The title of the movie currently playing</description>
+		<description>The Title of the Movie Currently Playing</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="movie_play_mode">
 		<item-type>String</item-type>
 		<label>Play Mode</label>
-		<description>The current playback mode of the movie</description>
+		<description>The Current Playback Mode of the Movie</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="movie_play_speed">
 		<item-type>String</item-type>
 		<label>Play Speed</label>
-		<description>The speed of playback scanning</description>
+		<description>The Speed of Playback Scanning</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="title_num" advanced="true">
 		<item-type>Number</item-type>
 		<label>Title Number</label>
-		<description>The current movie title number that is playing</description>
+		<description>The Current Movie Title Number That Is Playing</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="title_length">
 		<item-type>Number:Time</item-type>
 		<label>Title Length</label>
-		<description>The total running time of the currently playing movie</description>
+		<description>The Total Running Time of the Currently Playing Movie</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="title_loc">
 		<item-type>Number:Time</item-type>
 		<label>Title Location</label>
-		<description>The running time elapsed of the currently playing movie</description>
+		<description>The Running Time Elapsed of the Currently Playing Movie</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="chapter_num">
 		<item-type>Number</item-type>
 		<label>Chapter Number</label>
-		<description>The current chapter number of the movie that is playing</description>
+		<description>The Current Chapter Number of the Movie That Is Playing</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="chapter_length">
 		<item-type>Number:Time</item-type>
 		<label>Chapter Length</label>
-		<description>The total running time of the current chapter</description>
+		<description>The Total Running Time of the Current Chapter</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="chapter_loc">
 		<item-type>Number:Time</item-type>
 		<label>Chapter Location</label>
-		<description>The running time elapsed of the current chapter</description>
+		<description>The Running Time Elapsed of the Current Chapter</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="movie_media_type">
 		<item-type>String</item-type>
 		<label>Media Type</label>
-		<description>The type of media that is currently playing</description>
+		<description>The Type of Media That Is Currently Playing</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="movie_location">
 		<item-type>String</item-type>
 		<label>Movie Location</label>
-		<description>Identifies the location in the movie, ie: main content, intermission, or end credits</description>
+		<description>Identifies the Location in the Movie, ie: Main Content, Intermission, or End Credits</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="aspect_ratio">
 		<item-type>String</item-type>
 		<label>Aspect Ratio</label>
-		<description>Identifies the aspect ratio of the movie</description>
+		<description>Identifies the Aspect Ratio of the Movie</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="video_mode" advanced="true">
 		<item-type>String</item-type>
 		<label>Video Mode - Raw</label>
-		<description>Raw output of video mode data from the component, format: 00:00:00</description>
+		<description>Raw Output of Video Mode Data From the Component, Format: 00:00:00</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="video_mode_composite">
 		<item-type>String</item-type>
 		<label>Video Mode - Composite</label>
-		<description>Identifies the video currently active on the composite video output</description>
+		<description>Identifies the Video Currently Active On the Composite Video Output</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="video_mode_component">
 		<item-type>String</item-type>
 		<label>Video Mode - Component</label>
-		<description>Identifies the video currently active on the component video output</description>
+		<description>Identifies the Video Currently Active On the Component Video Output</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="video_mode_hdmi">
 		<item-type>String</item-type>
 		<label>Video Mode - HDMI</label>
-		<description>Identifies the video currently active on the HDMI video output</description>
+		<description>Identifies the Video Currently Active On the HDMI Video Output</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="video_color" advanced="true">
 		<item-type>String</item-type>
 		<label>Video Color</label>
-		<description>Provides color information about the current video output</description>
+		<description>Provides Color Information About the Current Video Output</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="video_color_eotf">
 		<item-type>String</item-type>
 		<label>Video Color EOTF</label>
-		<description>Identifies the Electro-Optical Transfer Function standard of the current video output</description>
+		<description>Identifies the Electro-Optical Transfer Function Standard of the Current Video Output</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="content_color" advanced="true">
 		<item-type>String</item-type>
 		<label>Content Color</label>
-		<description>Provides color information about the currently playing content</description>
+		<description>Provides Color Information About the Currently Playing Content</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="content_color_eotf">
 		<item-type>String</item-type>
 		<label>Content Color EOTF</label>
-		<description>Identifies the Electro-Optical Transfer Function standard of the currently playing content</description>
+		<description>Identifies the Electro-Optical Transfer Function Standard of the Currently Playing Content</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="scale_mode" advanced="true">
 		<item-type>String</item-type>
 		<label>Scale Mode</label>
-		<description>Identifies whether the image from the player requires scaling</description>
+		<description>Identifies Whether the Image from the Player Requires Scaling</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="screen_mask" advanced="true">
 		<item-type>String</item-type>
 		<label>Screen Mask</label>
-		<description>Provides aspect ratio and masking information for the current video image</description>
+		<description>Provides Aspect Ratio and Masking Information for the Current Video Image</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="screen_mask2" advanced="true">
 		<item-type>String</item-type>
 		<label>Screen Mask 2</label>
-		<description>Provides masking information based on aspect ratio and overscan area</description>
+		<description>Provides Masking Information Based On Aspect Ratio and Overscan Area</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="cinemascape_mask" advanced="true">
 		<item-type>String</item-type>
 		<label>CinemaScape Mask</label>
-		<description>When in CinemaScape mode, provides information about the frame aspect ratio</description>
+		<description>When in CinemaScape Mode, Provides Information About the Frame Aspect Ratio</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="cinemascape_mode" advanced="true">
 		<item-type>String</item-type>
 		<label>CinemaScape Mode</label>
-		<description>Identifies the CinemaScape mode currently active</description>
+		<description>Identifies the CinemaScape Mode Currently Active</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="ui_state" advanced="true">
 		<item-type>String</item-type>
 		<label>UI State</label>
-		<description>Provides information about which screen is visible in the Kaleidescape user interface</description>
+		<description>Provides Information About Which Screen Is Visible in the Kaleidescape User Interface</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="child_mode_state" advanced="true">
 		<item-type>String</item-type>
 		<label>Child Mode State</label>
-		<description>Indicates if the onscreen display is displaying the child user interface</description>
+		<description>Indicates If the On Screen Display Is Displaying the Child User Interface</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="highlighted_selection" advanced="true">
 		<item-type>String</item-type>
 		<label>Highlighted Selection</label>
-		<description>Specifies the handle of the movie or album currently selected on the user interface</description>
+		<description>Specifies the Handle of the Movie or Album Currently Selected On the User Interface</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="send_command" advanced="true">
 		<item-type>String</item-type>
 		<label>Send Command to Component</label>
-		<description>Sends a command string to the component, ie: "PAUSE", "PLAY" or "PLAY_SCRIPT:Great Vistas"</description>
+		<description>Sends a Command String to the Component, ie: "PAUSE", "PLAY" or "PLAY_SCRIPT:Great Vistas"</description>
 	</channel-type>
 
 	<channel-type id="user_defined_event" advanced="true">
 		<item-type>String</item-type>
 		<label>User Defined Event</label>
-		<description>Will contain custom event messages generated by scripts, sent from another component, or triggered by
-			system events</description>
+		<description>Will Contain Custom Event Messages Generated By Scripts, Sent from Another Component, or Triggered by
+			System Events</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="user_input" advanced="true">
 		<item-type>String</item-type>
 		<label>User Input</label>
-		<description>Indicates if the user is being prompted for input, what type of input, and any currently entered
-			characters</description>
+		<description>Indicates If the User Is Being Prompted for Input, What Type of Input, and Any Currently Entered
+			Characters</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="user_input_prompt" advanced="true">
 		<item-type>String</item-type>
 		<label>User Input Prompt</label>
-		<description>Indicates user input prompt info and properties currently shown on screen</description>
+		<description>Indicates User Input Prompt Info and Properties Currently Shown On Screen</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -424,7 +424,7 @@
 	<channel-type id="music_control">
 		<item-type>Player</item-type>
 		<label>Control</label>
-		<description>Control Music Playback e.g. start/pause/next/previous/ffward/rewind</description>
+		<description>Control Music Playback e.g. Play/Pause/Next/Previous/Fforward/Rewind</description>
 		<category>Player</category>
 	</channel-type>
 
@@ -437,83 +437,83 @@
 	<channel-type id="random">
 		<item-type>Switch</item-type>
 		<label>Random</label>
-		<description>Controls random playback for music</description>
+		<description>Controls Random Playback for Music</description>
 	</channel-type>
 
 	<channel-type id="track">
 		<item-type>String</item-type>
 		<label>Track</label>
-		<description>The name of the currently playing track</description>
+		<description>The Name of the Currently Playing Track</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="artist">
 		<item-type>String</item-type>
 		<label>Artist</label>
-		<description>The name of the currently playing artist</description>
+		<description>The Name of the Currently Playing Artist</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="album">
 		<item-type>String</item-type>
 		<label>Album</label>
-		<description>The name of the currently playing album</description>
+		<description>The Name of the Currently Playing Album</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="music_play_mode">
 		<item-type>String</item-type>
 		<label>Play Mode</label>
-		<description>The current playback mode of the music</description>
+		<description>The Current Playback Mode of the Music</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="music_play_speed">
 		<item-type>String</item-type>
 		<label>Play Speed</label>
-		<description>The speed of playback scanning</description>
+		<description>The Speed of Playback Scanning</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="track_length">
 		<item-type>Number:Time</item-type>
 		<label>Track Length</label>
-		<description>The total running time of the current playing track</description>
+		<description>The Total Running Time of the Current Playing Track</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="track_position">
 		<item-type>Number:Time</item-type>
 		<label>Track Position</label>
-		<description>The running time elapsed of the current playing track</description>
+		<description>The Running Time Elapsed of the Current Playing Track</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="track_progress">
 		<item-type>Number</item-type>
 		<label>Track Progress</label>
-		<description>The percentage complete of the current playing track</description>
+		<description>The Percentage Complete of the Current Playing Track</description>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="track_handle" advanced="true">
 		<item-type>String</item-type>
 		<label>Track Handle</label>
-		<description>The handle of the currently playing track</description>
+		<description>The Handle of the Currently Playing Track</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="album_handle" advanced="true">
 		<item-type>String</item-type>
 		<label>Album Handle</label>
-		<description>The handle of the currently playing album</description>
+		<description>The Handle of the Currently Playing Album</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="nowplay_handle" advanced="true">
 		<item-type>String</item-type>
 		<label>Now Playing Handle</label>
-		<description>The handle of the current now playing list</description>
+		<description>The Handle of the Current Now Playing List</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -522,140 +522,140 @@
 	<channel-type id="type">
 		<item-type>String</item-type>
 		<label>Detail Type</label>
-		<description>Indicates if the currently selected item is a Movie or Album</description>
+		<description>Indicates If the Currently Selected Item Is a Movie or Album</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="title">
 		<item-type>String</item-type>
 		<label>Movie Title</label>
-		<description>The title of the selected movie</description>
+		<description>The Title of the Selected Movie</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="album_title">
 		<item-type>String</item-type>
 		<label>Album Title</label>
-		<description>The title of the selected album</description>
+		<description>The Title of the Selected Album</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="cover_art">
 		<item-type>Image</item-type>
 		<label>Cover Art</label>
-		<description>Cover art image of the currently selected item</description>
+		<description>Cover Art Image of the Currently Selected Item</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="cover_url">
 		<item-type>String</item-type>
 		<label>Cover Art URL</label>
-		<description>The url of the cover art</description>
+		<description>The URL of the Cover Art</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="hires_cover_url">
 		<item-type>String</item-type>
 		<label>HiRes Cover Art URL</label>
-		<description>The url of the high resolution cover art</description>
+		<description>The URL of the High Resolution Cover Art</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="rating">
 		<item-type>String</item-type>
 		<label>Rating</label>
-		<description>The MPAA rating of the selected movie</description>
+		<description>The MPAA Rating of the Selected Movie</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="year">
 		<item-type>String</item-type>
 		<label>Year</label>
-		<description>The release year of the selected item</description>
+		<description>The Release Year of the Selected Item</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="running_time">
 		<item-type>Number:Time</item-type>
 		<label>Running time</label>
-		<description>The total running time of the selected item</description>
+		<description>The Total Running Time of the Selected Item</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="actors">
 		<item-type>String</item-type>
 		<label>Actors</label>
-		<description>A list of actors appearing in the selected movie</description>
+		<description>A List of Actors Appearing in the Selected Movie</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="artist">
 		<item-type>String</item-type>
 		<label>Artist</label>
-		<description>The artist of the selected album</description>
+		<description>The Artist of the Selected Album</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="directors">
 		<item-type>String</item-type>
 		<label>Directors</label>
-		<description>A list of directors of the selected movie</description>
+		<description>A List of Directors of the Selected Movie</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="genres">
 		<item-type>String</item-type>
 		<label>Genres</label>
-		<description>A list of genres of the selected item</description>
+		<description>A List of Genres of the Selected Item</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="rating_reason">
 		<item-type>String</item-type>
 		<label>Rating Reason</label>
-		<description>An explaination of why the selected movie received its rating</description>
+		<description>An Explaination of Why the Selected Movie Received Its Rating</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="synopsis">
 		<item-type>String</item-type>
 		<label>Synopsis</label>
-		<description>A synopsis of the selected movie</description>
+		<description>A Synopsis of the Selected Movie</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="review">
 		<item-type>String</item-type>
 		<label>Review</label>
-		<description>A review of the selected album</description>
+		<description>A Review of the Selected Album</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="color_description">
 		<item-type>String</item-type>
 		<label>Color Description</label>
-		<description>Indicates if the selected movie is in Color, Black and White, etc.</description>
+		<description>Indicates If the Selected Movie Is in Color, Black and White, etc.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="country">
 		<item-type>String</item-type>
 		<label>Country</label>
-		<description>The country that the selected movie originates from</description>
+		<description>The Country That the Selected Movie Originates From</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="aspect_ratio">
 		<item-type>String</item-type>
 		<label>Aspect Ratio</label>
-		<description>The aspect ratio of the selected movie</description>
+		<description>The Aspect Ratio of the Selected Movie</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="disc_location">
 		<item-type>String</item-type>
 		<label>Disc Location</label>
-		<description>Indicates where the disc for the selected item is currently residing in the system (ie Vault, Tray, etc.)</description>
+		<description>Indicates Where the Disc for the Selected Item Is Currently Residing in the System (ie Vault, Tray, etc.)</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -664,49 +664,49 @@
 	<channel-type id="readiness_state">
 		<item-type>String</item-type>
 		<label>System Readiness State</label>
-		<description>Indicates the system's current idle mode</description>
+		<description>Indicates the System's Current Idle Mode</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="component_type">
 		<item-type>String</item-type>
 		<label>Component Type</label>
-		<description>The type of component, ie Player (Premiere), Cinema One, Alto, Strato</description>
+		<description>The Type of Component, ie Player (Premiere), Cinema One, Alto, Strato</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="friendly_name">
 		<item-type>String</item-type>
 		<label>Friendly Name</label>
-		<description>The friendly name of the zone component</description>
+		<description>The Friendly Name of the Zone Component</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="serial_number">
 		<item-type>String</item-type>
 		<label>Serial Number</label>
-		<description>The serial number of the zone component</description>
+		<description>The Serial Number of the Zone Component</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="control_protocol_id">
 		<item-type>String</item-type>
 		<label>Control Protocol ID</label>
-		<description>The assigned device identifier (cpdid) of the component</description>
+		<description>The Assigned Device Identifier (cpdid) of the Component</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="system_version">
 		<item-type>String</item-type>
 		<label>System Version</label>
-		<description>The current kOS version number of the system software</description>
+		<description>The Current kOS Version Number of the System Software</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="protocol_version">
 		<item-type>String</item-type>
 		<label>Protocol Version</label>
-		<description>The current control protocol version number</description>
+		<description>The Current Control Protocol Version Number</description>
 		<state readOnly="true"/>
 	</channel-type>
 

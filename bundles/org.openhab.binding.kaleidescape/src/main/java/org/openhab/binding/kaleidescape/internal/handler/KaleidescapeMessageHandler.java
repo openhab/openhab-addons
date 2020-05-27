@@ -12,13 +12,20 @@
  */
 package org.openhab.binding.kaleidescape.internal.handler;
 
+import static org.eclipse.jetty.http.HttpMethod.GET;
+import static org.eclipse.jetty.http.HttpStatus.OK_200;
+
 import java.math.BigDecimal;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -424,10 +431,19 @@ public enum KaleidescapeMessageHandler {
                         handler.updateDetailChannel(metaType, new StringType(value));
                         if (!value.isEmpty()) {
                             try {
-                                handler.updateDetailChannel(KaleidescapeBindingConstants.DETAIL_COVER_ART,
-                                        new RawType(KaleidescapeFormatter.getRawDataFromUrl(value)));
-                            } catch (Exception e) {
-                                logger.debug("Error updating Cover Art Image channel for url:  {}", value);
+                                ContentResponse contentResponse = handler.httpClient.newRequest(value).method(GET)
+                                        .timeout(20, TimeUnit.SECONDS).send();
+                                int httpStatus = contentResponse.getStatus();
+                                if (httpStatus == OK_200) {
+                                    handler.updateDetailChannel(KaleidescapeBindingConstants.DETAIL_COVER_ART,
+                                            new RawType(contentResponse.getContent()));
+                                } else {
+                                    handler.updateDetailChannel(KaleidescapeBindingConstants.DETAIL_COVER_ART,
+                                            UnDefType.NULL);
+                                }
+                            } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                                logger.debug("Error updating Cover Art Image channel for url: {}", value);
+                                handler.updateDetailChannel(KaleidescapeBindingConstants.DETAIL_COVER_ART, UnDefType.NULL);
                             }
                         } else {
                             handler.updateDetailChannel(KaleidescapeBindingConstants.DETAIL_COVER_ART, UnDefType.NULL);
