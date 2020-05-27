@@ -33,6 +33,11 @@ import org.slf4j.LoggerFactory;
 public class HomekitTaggedItem {
     private final Logger logger = LoggerFactory.getLogger(HomekitTaggedItem.class);
 
+    /** configuration keywords at items level **/
+    public final static String MIN_VALUE = "minValue";
+    public final static String MAX_VALUE = "maxValue";
+    public final static String STEP = "step";
+
     private static final Map<Integer, String> CREATED_ACCESSORY_IDS = new ConcurrentHashMap<>();
     /**
      * The type of HomekitDevice we've decided this was. If the item is question is the member of a group which is a
