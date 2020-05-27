@@ -59,9 +59,9 @@ public class NeoHubLiveDeviceData extends NeoHubAbstractDeviceData {
         private @Nullable Boolean batteryLow;
         @SerializedName("STANDBY")
         private @Nullable Boolean standby;
-        @SerializedName("HEATING")
+        @SerializedName("HEAT_ON")
         private @Nullable Boolean heating;
-        @SerializedName("PREHEAT")
+        @SerializedName("PREHEAT_ACTIVE")
         private @Nullable Boolean preHeat;
         @SerializedName("TIMER_ON")
         private @Nullable Boolean timerOn;
