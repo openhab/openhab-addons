@@ -35,7 +35,7 @@ public class NuvoMessageEvent extends EventObject {
         this.key = key;
         this.value = value;
     }
-    
+
     public String getType() {
         return type;
     }
@@ -47,5 +47,4 @@ public class NuvoMessageEvent extends EventObject {
     public String getValue() {
         return value;
     }
-
 }

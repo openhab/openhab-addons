@@ -27,5 +27,4 @@ public class NuvoThingConfiguration {
     public @NonNullByDefault({}) Integer port;
     public @NonNullByDefault({}) Integer numZones;
     public @NonNullByDefault({}) Integer clockSync;
-
 }

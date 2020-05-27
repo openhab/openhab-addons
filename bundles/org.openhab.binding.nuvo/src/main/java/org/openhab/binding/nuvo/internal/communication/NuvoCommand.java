@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public enum NuvoCommand {
-    
+
     BEGIN_CMD("*"),
     END_CMD("\r"),
     QUERY("?"),
@@ -73,5 +73,4 @@ public enum NuvoCommand {
     public String getValue() {
         return value;
     }
-
 }

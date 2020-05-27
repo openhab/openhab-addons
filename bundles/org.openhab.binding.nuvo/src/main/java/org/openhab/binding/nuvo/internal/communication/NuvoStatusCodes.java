@@ -25,26 +25,26 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 @NonNullByDefault
 public class NuvoStatusCodes {
-    
+
     // map to lookup play mode
-    public static final Map<String, String> playMode = new HashMap<>();
+    public static final Map<String, String> PLAY_MODE = new HashMap<>();
     static {
-        playMode.put("0", "Normal");
-        playMode.put("1", "Idle");
-        playMode.put("2", "Playing");
-        playMode.put("3", "Paused");
-        playMode.put("4", "Fast Forward");
-        playMode.put("5", "Rewind");
-        playMode.put("6", "Play Shuffle");
-        playMode.put("7", "Play Repeat");
-        playMode.put("8", "Play Shuffle Repeat");
-        playMode.put("9", "unknown-9");
-        playMode.put("10", "unknown-10");
-        playMode.put("11", "Radio"); // undocumented
-        playMode.put("12", "unknown-12");
+        PLAY_MODE.put("0", "Normal");
+        PLAY_MODE.put("1", "Idle");
+        PLAY_MODE.put("2", "Playing");
+        PLAY_MODE.put("3", "Paused");
+        PLAY_MODE.put("4", "Fast Forward");
+        PLAY_MODE.put("5", "Rewind");
+        PLAY_MODE.put("6", "Play Shuffle");
+        PLAY_MODE.put("7", "Play Repeat");
+        PLAY_MODE.put("8", "Play Shuffle Repeat");
+        PLAY_MODE.put("9", "unknown-9");
+        PLAY_MODE.put("10", "unknown-10");
+        PLAY_MODE.put("11", "Radio"); // undocumented
+        PLAY_MODE.put("12", "unknown-12");
     }
-    
-    /*  
+
+    /*
      * This looks broken because the controller is seriously broken...
      * On the keypad when adjusting the balance to "Left 18", the serial data reports R18 ¯\_(ツ)_/¯
      * So on top of the weird translation, the value needs to be reversed by the binding
@@ -63,7 +63,7 @@ public class NuvoStatusCodes {
             return "0";
         }
     }
-    
+
     // see above comment
     public static String getBalanceFromInt(Integer value) {
         if (value < 0) {
@@ -76,5 +76,4 @@ public class NuvoStatusCodes {
             return "C";
         }
     }
-
 }

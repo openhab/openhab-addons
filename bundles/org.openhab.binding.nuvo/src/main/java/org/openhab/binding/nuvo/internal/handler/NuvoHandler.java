@@ -82,8 +82,9 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
     private static final long CLOCK_SYNC_INTERVAL = TimeUnit.HOURS.toSeconds(1);
     private static final long INITIAL_POLLING_DELAY = TimeUnit.SECONDS.toSeconds(30);
     private static final long INITIAL_CLOCK_SYNC_DELAY = TimeUnit.SECONDS.toSeconds(10);
-    private static final long SLEEP_BETWEEN_CMD = TimeUnit.MILLISECONDS.toMillis(70); // spec says wait 50ms, lets wait 70
-    private final Unit<Time> API_SECOND_UNIT = SmartHomeUnits.SECOND;
+    // spec says wait 50ms, lets wait 70
+    private static final long SLEEP_BETWEEN_CMD = TimeUnit.MILLISECONDS.toMillis(70);
+    private static final Unit<Time> API_SECOND_UNIT = SmartHomeUnits.SECOND;
 
     private static final String ZONE = "ZONE";
     private static final String CHANNEL_DELIMIT = "#";
@@ -105,17 +106,17 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
     private SerialPortManager serialPortManager;
 
     private @Nullable NuvoConnector connector;
-    
+
     private Integer numZones = 1;
-    List<Integer> activeZones = new ArrayList<Integer>(1); 
-    
+    List<Integer> activeZones = new ArrayList<Integer>(1);
+
     // A state option list for the source labels
     List<StateOption> sourceLabels = new ArrayList<>();
 
     private Long lastEventReceived = System.currentTimeMillis();
 
     private Object sequenceLock = new Object();
-    
+
     private static final String GC_STR = "NV-IG8";
     private String versionString = "";
     private boolean isGConcerto = false;
@@ -152,7 +153,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                 configError = "invalid port configuration setting";
             }
         }
-        
+
         if (config.clockSync != null && config.clockSync == 1) {
             scheduleClockSyncJob();
         }
@@ -167,15 +168,15 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
             }
 
             numZones = config.numZones;
-            activeZones = IntStream.range((1), (numZones+1)).boxed().collect(Collectors.toList());
+            activeZones = IntStream.range((1), (numZones + 1)).boxed().collect(Collectors.toList());
 
             // remove the channels for the zones we are not using
             if (numZones < MAX_ZONES) {
                 List<Channel> channels = new ArrayList<>(this.getThing().getChannels());
 
-                List<Integer> zonesToRemove = 
-                        IntStream.range((numZones+1), (MAX_ZONES+1)).boxed().collect(Collectors.toList());
-                           
+                List<Integer> zonesToRemove = IntStream.range((numZones + 1), (MAX_ZONES + 1)).boxed()
+                        .collect(Collectors.toList());
+
                 zonesToRemove.forEach(zone -> {
                     if (channels.removeIf(c -> (c.getUID().getId().contains("zone" + zone.toString())))) {
                         logger.debug("Removed channels for zone: {}", zone);
@@ -185,7 +186,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                 });
                 updateThing(editThing().withChannels(channels).build());
             }
-            
+
             updateStatus(ThingStatus.UNKNOWN);
             scheduleReconnectJob();
             schedulePollingJob();
@@ -250,7 +251,9 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                         break;
                     case CHANNEL_TYPE_VOLUME:
                         if (command instanceof PercentType) {
-                            Integer value = (MAX_VOLUME - (int) Math.round(((PercentType) command).doubleValue() / 100.0 * (MAX_VOLUME - MIN_VOLUME))
+                            Integer value = (MAX_VOLUME
+                                    - (int) Math.round(
+                                            ((PercentType) command).doubleValue() / 100.0 * (MAX_VOLUME - MIN_VOLUME))
                                     + MIN_VOLUME);
                             logger.debug("Got volume command {} zone {}", value, target);
                             connector.sendCommand(target, NuvoCommand.VOLUME, value.toString());
@@ -275,7 +278,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                     case CHANNEL_TYPE_BASS:
                         if (command instanceof DecimalType) {
                             Integer value = ((DecimalType) command).intValue();
-                            if (value >= MIN_EQ && value <= MAX_EQ  && value % 2 == 0) {
+                            if (value >= MIN_EQ && value <= MAX_EQ && value % 2 == 0) {
                                 logger.debug("Got bass command {} zone {}", value, target);
                                 connector.sendCfgCommand(target, NuvoCommand.BASS, value.toString());
                             }
@@ -284,9 +287,10 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                     case CHANNEL_TYPE_BALANCE:
                         if (command instanceof DecimalType) {
                             Integer value = ((DecimalType) command).intValue();
-                            if (value >= MIN_EQ && value <= MAX_EQ  && value % 2 == 0) {
+                            if (value >= MIN_EQ && value <= MAX_EQ && value % 2 == 0) {
                                 logger.debug("Got balance command {} zone {}", value, target);
-                                connector.sendCfgCommand(target, NuvoCommand.BALANCE, NuvoStatusCodes.getBalanceFromInt(value));
+                                connector.sendCfgCommand(target, NuvoCommand.BALANCE,
+                                        NuvoStatusCodes.getBalanceFromInt(value));
                             }
                         }
                         break;
@@ -355,7 +359,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                 closeConnection();
                 scheduleReconnectJob();
             }
-        }                    
+        }
     }
 
     /**
@@ -378,7 +382,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
      * Close the connection with the Nuvo device
      */
     private synchronized void closeConnection() {
-        if (connector !=null && connector.isConnected()) {
+        if (connector != null && connector.isConnected()) {
             connector.close();
             connector.removeEventListener(this);
             logger.debug("closeConnection(): disconnected");
@@ -392,7 +396,6 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
      */
     @Override
     public void onNewMessageEvent(EventObject event) {
-
         NuvoMessageEvent evt = (NuvoMessageEvent) event;
         logger.debug("onNewMessageEvent: key {} = {}", evt.getKey(), evt.getValue());
         lastEventReceived = System.currentTimeMillis();
@@ -404,7 +407,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, this.versionString);
         }
         Pattern p;
-        
+
         switch (type) {
             case NuvoConnector.TYPE_VERSION:
                 this.versionString = updateData;
@@ -414,119 +417,126 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                     connector.setEssentia(false);
                 }
                 break;
-                
+
             case NuvoConnector.TYPE_ALLOFF:
                 activeZones.forEach(zoneNum -> {
-                    updateChannelState(NuvoEnum.zoneMap.get("Z"+zoneNum.toString()), CHANNEL_TYPE_POWER, NuvoCommand.OFF.getValue());
+                    updateChannelState(NuvoEnum.ZONE_MAP.get("Z" + zoneNum.toString()), CHANNEL_TYPE_POWER,
+                            NuvoCommand.OFF.getValue());
                 });
                 break;
-                
+
             case NuvoConnector.TYPE_ALLMUTE:
-                updateChannelState(NuvoEnum.SYSTEM, CHANNEL_TYPE_ALLMUTE, "1".equals(updateData) ? NuvoCommand.ON.getValue() : NuvoCommand.OFF.getValue());
+                updateChannelState(NuvoEnum.SYSTEM, CHANNEL_TYPE_ALLMUTE,
+                        "1".equals(updateData) ? NuvoCommand.ON.getValue() : NuvoCommand.OFF.getValue());
                 activeZones.forEach(zoneNum -> {
-                    updateChannelState(NuvoEnum.zoneMap.get("Z"+zoneNum.toString()), CHANNEL_TYPE_MUTE, 
-                                        "1".equals(updateData) ? NuvoCommand.ON.getValue() : NuvoCommand.OFF.getValue());
+                    updateChannelState(NuvoEnum.ZONE_MAP.get("Z" + zoneNum.toString()), CHANNEL_TYPE_MUTE,
+                            "1".equals(updateData) ? NuvoCommand.ON.getValue() : NuvoCommand.OFF.getValue());
                 });
                 break;
-                
+
             case NuvoConnector.TYPE_PAGE:
-                updateChannelState(NuvoEnum.SYSTEM, CHANNEL_TYPE_PAGE, "1".equals(updateData) ? NuvoCommand.ON.getValue() : NuvoCommand.OFF.getValue());
+                updateChannelState(NuvoEnum.SYSTEM, CHANNEL_TYPE_PAGE,
+                        "1".equals(updateData) ? NuvoCommand.ON.getValue() : NuvoCommand.OFF.getValue());
                 break;
-                
+
             case NuvoConnector.TYPE_SOURCE_UPDATE:
                 logger.debug("Source update: Source: {} - Value: {}", key, updateData);
-                NuvoEnum targetSource = NuvoEnum.sourceMap.get(key);
-                
+                NuvoEnum targetSource = NuvoEnum.SOURCE_MAP.get(key);
+
                 if (updateData.contains("DISPLINE")) {
                     // example: DISPLINE2,"Play My Song (Featuring Dee Ajayi)"
                     p = Pattern.compile("^DISPLINE(\\d{1}),\"(.*)\"$");
-                    
+
                     try {
-                        Matcher matcher=p.matcher(updateData);
+                        Matcher matcher = p.matcher(updateData);
                         matcher.find();
                         updateChannelState(targetSource, CHANNEL_DISPLAY_LINE + matcher.group(1), matcher.group(2));
-                    } catch (IllegalStateException e){
+                    } catch (IllegalStateException e) {
                         logger.debug("no match on message: {}", updateData);
                     }
                 } else if (updateData.contains("DISPINFO,")) {
                     // example: DISPINFO,DUR0,POS70,STATUS2 (DUR and POS are expressed in tenths of a second)
-                    p = Pattern.compile("^DISPINFO,DUR(\\d{1,6}),POS(\\d{1,6}),STATUS(\\d{1,2})$"); //6 places(tenths of a second)-> max 999,999 /10/60/60/24 = 1.15 days
+                    //6 places(tenths of a second)-> max 999,999 /10/60/60/24 = 1.15 days
+                    p = Pattern.compile("^DISPINFO,DUR(\\d{1,6}),POS(\\d{1,6}),STATUS(\\d{1,2})$");
                     
                     try {
-                        Matcher matcher=p.matcher(updateData);
+                        Matcher matcher = p.matcher(updateData);
                         matcher.find();
                         updateChannelState(targetSource, CHANNEL_TRACK_LENGTH, matcher.group(1));
                         updateChannelState(targetSource, CHANNEL_TRACK_POSITION, matcher.group(2));
                         updateChannelState(targetSource, CHANNEL_PLAY_MODE, matcher.group(3));
-                    } catch (IllegalStateException e){
+                    } catch (IllegalStateException e) {
                         logger.debug("no match on message: {}", updateData);
                     }
                 } else if (updateData.contains("NAME\"") && sourceLabels.size() <= MAX_SRC) {
                     // example: NAME"Ipod"
                     String name = updateData.split("\"")[1];
-                    sourceLabels.add(new StateOption(key.replace("S",""), name));
+                    sourceLabels.add(new StateOption(key.replace("S", ""), name));
                 }
-                
+
                 break;
-                
+
             case NuvoConnector.TYPE_ZONE_UPDATE:
                 logger.debug("Zone update: Zone: {} - Value: {}", key, updateData);
                 // example : OFF
                 // or: ON,SRC3,VOL63,DND0,LOCK0
                 // or: ON,SRC3,MUTE,DND0,LOCK0
-                
-                NuvoEnum targetZone = NuvoEnum.zoneMap.get(key);
-                
-                if ("OFF".equals(updateData)) {  
+
+                NuvoEnum targetZone = NuvoEnum.ZONE_MAP.get(key);
+
+                if ("OFF".equals(updateData)) {
                     updateChannelState(targetZone, CHANNEL_TYPE_POWER, NuvoCommand.OFF.getValue());
                     updateChannelState(targetZone, CHANNEL_TYPE_SOURCE, UNDEF);
                 } else {
                     p = Pattern.compile("^ON,SRC(\\d{1}),(MUTE|VOL\\d{1,2}),DND([0-1]),LOCK([0-1])$");
-                    
+
                     try {
-                        Matcher matcher=p.matcher(updateData);
+                        Matcher matcher = p.matcher(updateData);
                         matcher.find();
-                        
+
                         updateChannelState(targetZone, CHANNEL_TYPE_POWER, NuvoCommand.ON.getValue());
                         updateChannelState(targetZone, CHANNEL_TYPE_SOURCE, matcher.group(1));
-                        
+
                         if ("MUTE".equals(matcher.group(2))) {
                             updateChannelState(targetZone, CHANNEL_TYPE_MUTE, NuvoCommand.ON.getValue());
                         } else {
                             updateChannelState(targetZone, CHANNEL_TYPE_MUTE, NuvoCommand.OFF.getValue());
-                            updateChannelState(targetZone, CHANNEL_TYPE_VOLUME, matcher.group(2).replace("VOL", "")); // just the number
+                            updateChannelState(targetZone, CHANNEL_TYPE_VOLUME, matcher.group(2).replace("VOL", ""));
                         }
-                        
-                        updateChannelState(targetZone, CHANNEL_TYPE_DND, "1".equals(matcher.group(3)) ? NuvoCommand.ON.getValue() : NuvoCommand.OFF.getValue());
+
+                        updateChannelState(targetZone, CHANNEL_TYPE_DND,
+                                "1".equals(matcher.group(3)) ? NuvoCommand.ON.getValue() : NuvoCommand.OFF.getValue());
                         updateChannelState(targetZone, CHANNEL_TYPE_LOCK, matcher.group(4));
-                    } catch (IllegalStateException e){
+                    } catch (IllegalStateException e) {
                         logger.debug("no match on message: {}", updateData);
                     }
                 }
                 break;
-                
+
             case NuvoConnector.TYPE_ZONE_BUTTON:
                 logger.debug("Zone Button pressed: Source: {} - Button: {}", key, updateData);
-                updateChannelState(NuvoEnum.sourceMap.get(key), CHANNEL_BUTTON_PRESS, updateData);
+                updateChannelState(NuvoEnum.SOURCE_MAP.get(key), CHANNEL_BUTTON_PRESS, updateData);
                 break;
-                
+
             case NuvoConnector.TYPE_ZONE_CONFIG:
                 logger.debug("Zone Configuration: Zone: {} - Value: {}", key, updateData);
                 // example: BASS1,TREB-2,BALR2,LOUDCMP1
                 p = Pattern.compile("^BASS(.*),TREB(.*),BAL(.*),LOUDCMP([0-1])$");
-                
+
                 try {
-                    Matcher matcher=p.matcher(updateData);
+                    Matcher matcher = p.matcher(updateData);
                     matcher.find();
-                    updateChannelState(NuvoEnum.zoneMap.get(key), CHANNEL_TYPE_BASS, matcher.group(1));
-                    updateChannelState(NuvoEnum.zoneMap.get(key), CHANNEL_TYPE_TREBLE, matcher.group(2));
-                    updateChannelState(NuvoEnum.zoneMap.get(key), CHANNEL_TYPE_BALANCE, NuvoStatusCodes.getBalanceFromStr(matcher.group(3)));
-                    updateChannelState(NuvoEnum.zoneMap.get(key), CHANNEL_TYPE_LOUDNESS, "1".equals(matcher.group(4)) ? NuvoCommand.ON.getValue() : NuvoCommand.OFF.getValue());
-                } catch (IllegalStateException e){
+                    updateChannelState(NuvoEnum.ZONE_MAP.get(key), CHANNEL_TYPE_BASS, matcher.group(1));
+                    updateChannelState(NuvoEnum.ZONE_MAP.get(key), CHANNEL_TYPE_TREBLE, matcher.group(2));
+                    updateChannelState(NuvoEnum.ZONE_MAP.get(key), CHANNEL_TYPE_BALANCE,
+                            NuvoStatusCodes.getBalanceFromStr(matcher.group(3)));
+                    updateChannelState(NuvoEnum.ZONE_MAP.get(key), CHANNEL_TYPE_LOUDNESS,
+                            "1".equals(matcher.group(4)) ? NuvoCommand.ON.getValue() : NuvoCommand.OFF.getValue());
+                } catch (IllegalStateException e) {
                     logger.debug("no match on message: {}", updateData);
                 }
                 break;
-                
+
             default:
                 logger.debug("onNewMessageEvent: unhandled key {}", key);
                 break;
@@ -550,40 +560,43 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                             Long prevUpdateTime = lastEventReceived;
 
                             connector.sendCommand(NuvoCommand.GET_CONTROLLER_VERSION);
-                    
-                            NuvoEnum.validSources.forEach(source -> {
+
+                            NuvoEnum.VALID_SOURCES.forEach(source -> {
                                 try {
-                                    connector.sendQuery(NuvoEnum.sourceMap.get(source), NuvoCommand.NAME);
+                                    connector.sendQuery(NuvoEnum.SOURCE_MAP.get(source), NuvoCommand.NAME);
                                     Thread.sleep(SLEEP_BETWEEN_CMD);
-                                    connector.sendQuery(NuvoEnum.sourceMap.get(source), NuvoCommand.DISPINFO);
+                                    connector.sendQuery(NuvoEnum.SOURCE_MAP.get(source), NuvoCommand.DISPINFO);
                                     Thread.sleep(SLEEP_BETWEEN_CMD);
-                                    connector.sendQuery(NuvoEnum.sourceMap.get(source), NuvoCommand.DISPLINE);
+                                    connector.sendQuery(NuvoEnum.SOURCE_MAP.get(source), NuvoCommand.DISPLINE);
                                     Thread.sleep(SLEEP_BETWEEN_CMD);
                                 } catch (NuvoException | InterruptedException e) {
                                     logger.debug("Error Querying Source data: {}", e.getMessage());
                                 }
                             });
-                            
+
                             // Query all active zones to get their current status and eq configuration
                             activeZones.forEach(zoneNum -> {
                                 try {
-                                    connector.sendQuery(NuvoEnum.valueOf(ZONE+zoneNum), NuvoCommand.STATUS);
+                                    connector.sendQuery(NuvoEnum.valueOf(ZONE + zoneNum), NuvoCommand.STATUS);
                                     Thread.sleep(SLEEP_BETWEEN_CMD);
-                                    connector.sendCfgCommand(NuvoEnum.valueOf(ZONE+zoneNum), NuvoCommand.EQ_QUERY, "");
+                                    connector.sendCfgCommand(NuvoEnum.valueOf(ZONE + zoneNum), NuvoCommand.EQ_QUERY,
+                                            "");
                                     Thread.sleep(SLEEP_BETWEEN_CMD);
                                 } catch (NuvoException | InterruptedException e) {
                                     logger.debug("Error Querying Zone data: {}", e.getMessage());
                                 }
                             });
-                            
+
                             // prevUpdateTime should have changed if a zone update was received
                             if (prevUpdateTime.equals(lastEventReceived)) {
                                 error = "Controller not responding to status requests";
-                            } else {                
+                            } else {
                                 // Put the source labels on all active zones
                                 activeZones.forEach(zoneNum -> {
-                                    stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), ZONE.toLowerCase() + zoneNum.toString() +
-                                                                                CHANNEL_DELIMIT + CHANNEL_TYPE_SOURCE), sourceLabels);
+                                    stateDescriptionProvider.setStateOptions(
+                                            new ChannelUID(getThing().getUID(), ZONE.toLowerCase() + zoneNum.toString()
+                                                    + CHANNEL_DELIMIT + CHANNEL_TYPE_SOURCE),
+                                            sourceLabels);
                                 });
                             }
                         } catch (NuvoException e) {
@@ -614,7 +627,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
             this.reconnectJob = null;
         }
     }
-    
+
     /**
      * Schedule the polling job
      */
@@ -622,7 +635,8 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
         logger.debug("Schedule polling job");
         cancelPollingJob();
 
-        // when the Nuvo amp is off, this will keep the connection (esp Serial over IP) alive and detect if the connection goes down
+        // when the Nuvo amp is off, this will keep the connection (esp Serial over IP) alive and detect if the
+        // connection goes down
         pollingJob = scheduler.scheduleWithFixedDelay(() -> {
             if (connector.isConnected()) {
                 logger.debug("Polling the component for updated status...");
@@ -638,10 +652,11 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                     // the component is not responding even though the connection is still good
                     if ((System.currentTimeMillis() - lastEventReceived) > (POLLING_INTERVAL * 1.25 * 1000)) {
                         logger.debug("Component not responding to status requests");
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Component not responding to status requests");
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "Component not responding to status requests");
                         closeConnection();
                         scheduleReconnectJob();
-                    } 
+                    }
                 }
             }
         }, INITIAL_POLLING_DELAY, POLLING_INTERVAL, TimeUnit.SECONDS);
@@ -657,7 +672,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
             this.pollingJob = null;
         }
     }
-    
+
     /**
      * Schedule the clock sync job
      */
@@ -698,18 +713,18 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
      */
     private void updateChannelState(NuvoEnum target, String channelType, String value) {
         String channel = target.name().toLowerCase() + CHANNEL_DELIMIT + channelType;
-        
+
         if (!isLinked(channel)) {
             return;
         }
 
         State state = UnDefType.UNDEF;
-        
+
         if (UNDEF.equals(value)) {
             updateState(channel, state);
             return;
         }
-        
+
         switch (channelType) {
             case CHANNEL_TYPE_POWER:
             case CHANNEL_TYPE_MUTE:
@@ -741,18 +756,18 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                 state = new StringType(value);
                 break;
             case CHANNEL_PLAY_MODE:
-                state = new StringType(NuvoStatusCodes.playMode.get(value));
+                state = new StringType(NuvoStatusCodes.PLAY_MODE.get(value));
                 break;
             case CHANNEL_TRACK_LENGTH:
             case CHANNEL_TRACK_POSITION:
-                state = new QuantityType<Time>(Integer.parseInt(value)/10, this.API_SECOND_UNIT);
+                state = new QuantityType<Time>(Integer.parseInt(value) / 10, this.API_SECOND_UNIT);
                 break;
             default:
                 break;
         }
         updateState(channel, state);
     }
-    
+
     /**
      * Handle a button press from a UI Player item
      *
@@ -772,5 +787,4 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
             logger.debug("Unknown control command: {}", command);
         }
     }
-
 }

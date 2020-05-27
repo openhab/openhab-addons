@@ -35,7 +35,7 @@ public class NuvoBindingConstants {
     public static final String CHANNEL_TYPE_ALLMUTE = "allmute";
     public static final String CHANNEL_TYPE_PAGE = "page";
     public static final String CHANNEL_TYPE_SENDCMD = "sendcmd";
-    
+
     // zone
     public static final String CHANNEL_TYPE_POWER = "power";
     public static final String CHANNEL_TYPE_SOURCE = "source";
@@ -49,7 +49,7 @@ public class NuvoBindingConstants {
     public static final String CHANNEL_TYPE_DND = "dnd";
     public static final String CHANNEL_TYPE_LOCK = "lock";
     public static final String CHANNEL_TYPE_PARTY = "party";
-    
+
     // source
     public static final String CHANNEL_DISPLAY_LINE = "display_line";
     public static final String CHANNEL_DISPLAY_LINE1 = "display_line1";
@@ -60,5 +60,4 @@ public class NuvoBindingConstants {
     public static final String CHANNEL_TRACK_LENGTH = "track_length";
     public static final String CHANNEL_TRACK_POSITION = "track_position";
     public static final String CHANNEL_BUTTON_PRESS = "button_press";
-
 }

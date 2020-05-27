@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class NuvoConnector {
     private final Logger logger = LoggerFactory.getLogger(NuvoConnector.class);
-    
+
     public static final String COMMAND_ERROR = "#?";
     public static final String COMMAND_OK = "#OK";
 
@@ -63,7 +63,7 @@ public abstract class NuvoConnector {
     private @Nullable Thread readerThread;
 
     private List<NuvoMessageEventListener> listeners = new ArrayList<>();
-    
+
     private boolean isEssentia = true;
 
     /**
@@ -83,7 +83,7 @@ public abstract class NuvoConnector {
     protected void setConnected(boolean connected) {
         this.connected = connected;
     }
-    
+
     /**
      * Tell the connector if the device is an Essentia G or not
      *
@@ -171,7 +171,7 @@ public abstract class NuvoConnector {
             throw new NuvoException("readInput failed: " + e.getMessage());
         }
     }
-    
+
     /**
      * Request the Nuvo controller to execute an inquiry command
      *
@@ -185,7 +185,8 @@ public abstract class NuvoConnector {
     }
 
     /**
-     * Request the Nuvo controller to execute a command for a zone that takes no arguments (ie power on, power off, etc.)
+     * Request the Nuvo controller to execute a command for a zone that takes no arguments (ie power on, power off,
+     * etc.)
      *
      * @param zone the zone for which the command is to be run
      * @param cmd the command to execute
@@ -195,7 +196,7 @@ public abstract class NuvoConnector {
     public void sendCommand(NuvoEnum zone, NuvoCommand cmd) throws NuvoException {
         sendCommand(zone.getId() + cmd.getValue());
     }
-    
+
     /**
      * Request the Nuvo controller to execute a command for a zone and pass in a value
      *
@@ -208,7 +209,7 @@ public abstract class NuvoConnector {
     public void sendCommand(NuvoEnum zone, NuvoCommand cmd, @Nullable String value) throws NuvoException {
         sendCommand(zone.getId() + cmd.getValue() + value);
     }
-    
+
     /**
      * Request the Nuvo controller to execute a configuration command for a zone and pass in a value
      *
@@ -221,7 +222,7 @@ public abstract class NuvoConnector {
     public void sendCfgCommand(NuvoEnum zone, NuvoCommand cmd, @Nullable String value) throws NuvoException {
         sendCommand(zone.getConfigId() + cmd.getValue() + value);
     }
-    
+
     /**
      * Request the Nuvo controller to execute a system command the does not specify a zone or value
      *
@@ -232,7 +233,7 @@ public abstract class NuvoConnector {
     public void sendCommand(NuvoCommand cmd) throws NuvoException {
         sendCommand(cmd.getValue());
     }
-    
+
     /**
      * Request the Nuvo controller to execute a raw command string
      *
@@ -242,13 +243,13 @@ public abstract class NuvoConnector {
      */
     public void sendCommand(String command) throws NuvoException {
         byte[] wakeString = "\r".getBytes(StandardCharsets.US_ASCII);
-        
+
         String messageStr = NuvoCommand.BEGIN_CMD.getValue() + command + NuvoCommand.END_CMD.getValue();
-        
+
         logger.debug("sending command: {}", messageStr);
 
         byte[] message = messageStr.getBytes(StandardCharsets.US_ASCII);
-        logger.debug("Send command {}", messageStr);      
+        logger.debug("Send command {}", messageStr);
 
         OutputStream dataOut = this.dataOut;
         if (dataOut == null) {
@@ -296,91 +297,91 @@ public abstract class NuvoConnector {
      */
     public void handleIncomingMessage(byte[] incomingMessage) {
         String message = new String(incomingMessage).trim();
-        
+
         logger.debug("handleIncomingMessage: {}", message);
-        
+
         if (COMMAND_ERROR.equals(message) || COMMAND_OK.equals(message)) {
-            //ignore
+            // ignore
             return;
         }
-  
+
         if (message.contains("#VER\"NV-")) {
             // example: #VER"NV-E6G FWv2.66 HWv0"
             // split on " and return the version number
             dispatchKeyValue(TYPE_VERSION, "", message.split("\"")[1]);
             return;
         }
-        
+
         if (message.equals("#ALLOFF")) {
             dispatchKeyValue(TYPE_ALLOFF, "", "");
             return;
         }
-        
+
         if (message.contains("#MUTE")) {
             dispatchKeyValue(TYPE_ALLMUTE, "", message.substring(message.length() - 1));
             return;
         }
-        
+
         if (message.contains("#PAGE")) {
             dispatchKeyValue(TYPE_PAGE, "", message.substring(message.length() - 1));
             return;
         }
-        
+
         Pattern p;
-        
+
         // Amp controller send a source update ie: #S2DISPINFO,DUR3380,POS3090,STATUS2
         // or #S2DISPLINE1,"1 of 17"
-        p=Pattern.compile("^#(S\\d{1})(.*)$");
-        
+        p = Pattern.compile("^#(S\\d{1})(.*)$");
+
         try {
-            Matcher matcher=p.matcher(message);
+            Matcher matcher = p.matcher(message);
             matcher.find();
             // pull out the source id and the remainder of the message
             dispatchKeyValue(TYPE_SOURCE_UPDATE, matcher.group(1), matcher.group(2));
             return;
-        } catch (IllegalStateException e){
+        } catch (IllegalStateException e) {
             logger.debug("no match on message: {}", message);
         }
-        
+
         // Amp controller send a zone update ie: #Z11,ON,SRC3,VOL63,DND0,LOCK0
-        p=Pattern.compile("^#(Z\\d{1,2}),(.*)$");
-        
+        p = Pattern.compile("^#(Z\\d{1,2}),(.*)$");
+
         try {
-            Matcher matcher=p.matcher(message);
+            Matcher matcher = p.matcher(message);
             matcher.find();
             // pull out the zone id and the remainder of the message
             dispatchKeyValue(TYPE_ZONE_UPDATE, matcher.group(1), matcher.group(2));
             return;
-        } catch (IllegalStateException e){
+        } catch (IllegalStateException e) {
             logger.debug("no match on message: {}", message);
         }
-        
+
         // Amp controller send a zone button press event ie: #Z11S3PLAYPAUSE
-        p=Pattern.compile("^#(Z\\d{1,2})(S\\d{1})(.*)$");
-        
+        p = Pattern.compile("^#(Z\\d{1,2})(S\\d{1})(.*)$");
+
         try {
-            Matcher matcher=p.matcher(message);
+            Matcher matcher = p.matcher(message);
             matcher.find();
             // pull out the source id and the remainder of the message, ignore the zone id
             dispatchKeyValue(TYPE_ZONE_BUTTON, matcher.group(2), matcher.group(3));
             return;
-        } catch (IllegalStateException e){
+        } catch (IllegalStateException e) {
             logger.debug("no match on message: {}", message);
         }
-        
+
         // Amp controller send a zone configuration response ie: #ZCFG1,BASS1,TREB-2,BALR2,LOUDCMP1
-        p=Pattern.compile("^#ZCFG(\\d{1,2}),(.*)$");
-        
+        p = Pattern.compile("^#ZCFG(\\d{1,2}),(.*)$");
+
         try {
-            Matcher matcher=p.matcher(message);
+            Matcher matcher = p.matcher(message);
             matcher.find();
             // pull out the zone id and the remainder of the message
-            dispatchKeyValue(TYPE_ZONE_CONFIG, "Z"+matcher.group(1), matcher.group(2));
+            dispatchKeyValue(TYPE_ZONE_CONFIG, "Z" + matcher.group(1), matcher.group(2));
             return;
-        } catch (IllegalStateException e){
+        } catch (IllegalStateException e) {
             logger.debug("no match on message: {}", message);
         }
-        
+
         logger.debug("unhandled message: {}", message);
     }
 
