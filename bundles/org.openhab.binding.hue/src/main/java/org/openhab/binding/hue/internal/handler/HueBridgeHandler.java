@@ -238,7 +238,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
             Map<String, FullGroup> lastGroupStateCopy = new HashMap<>(lastGroupStates);
 
             for (final FullGroup fullGroup : hueBridge.getGroups()) {
-                State groupState = fullGroup.getState();
+                State groupState = new State();
                 boolean on = false;
                 int sumBri = 0;
                 int nbBri = 0;
@@ -278,6 +278,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                     groupState.setColorTemperature(colorRef.getColorTemperature());
                     groupState.setXY(colorRef.getXY());
                 }
+                fullGroup.setState(groupState);
                 logger.trace("Group {} ({}): on {} bri {} hue {} sat {} temp {} mode {} XY {}", fullGroup.getName(),
                         fullGroup.getType(), groupState.isOn(), groupState.getBrightness(), groupState.getHue(),
                         groupState.getSaturation(), groupState.getColorTemperature(), groupState.getColorMode(),
