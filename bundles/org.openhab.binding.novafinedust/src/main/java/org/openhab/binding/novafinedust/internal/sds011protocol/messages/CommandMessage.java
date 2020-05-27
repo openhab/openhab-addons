@@ -31,7 +31,7 @@ public class CommandMessage {
 
     private static final int DATA_BYTES_AFTER_FIRST_DATA_BYTE = 12;
 
-    private byte firstDataByte;
+    private final byte firstDataByte;
     private byte[] payLoad = new byte[DATA_BYTES_AFTER_FIRST_DATA_BYTE];
     private byte[] targetDevice = new byte[] { -1, -1 }; // FF FF = all devices
 

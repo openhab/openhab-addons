@@ -26,12 +26,12 @@ import org.eclipse.smarthome.core.util.HexUtils;
 @NonNullByDefault
 public class SensorReply {
 
-    protected byte header;
-    protected byte commandID;
-    protected byte[] payLoad = new byte[4];
-    protected byte[] deviceID = new byte[2];
-    protected byte checksum;
-    protected byte messageTail;
+    protected final byte header;
+    protected final byte commandID;
+    protected final byte[] payLoad;
+    protected final byte[] deviceID;
+    protected final byte checksum;
+    protected final byte messageTail;
 
     /**
      * Creates the container for data received from the sensor

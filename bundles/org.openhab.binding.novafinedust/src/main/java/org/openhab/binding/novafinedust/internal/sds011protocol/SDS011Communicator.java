@@ -115,7 +115,7 @@ public class SDS011Communicator implements SerialPortEventListener {
         if (logger.isDebugEnabled()) {
             logger.debug("Will send command: {} ({})", HexUtils.bytesToHex(commandData), Arrays.toString(commandData));
         }
-        outputStream.write(commandData, 0, commandData.length);
+        outputStream.write(commandData);
         outputStream.flush();
         try {
             // Give the sensor some time to handle the command
@@ -219,7 +219,8 @@ public class SDS011Communicator implements SerialPortEventListener {
         if (logger.isDebugEnabled()) {
             logger.debug("Requesting sensor data, will send: {}", HexUtils.bytesToHex(data));
         }
-        outputStream.write(data, 0, data.length);
+        outputStream.write(data);
+        outputStream.flush();
     }
 
     private @Nullable SensorReply readReply() throws IOException {

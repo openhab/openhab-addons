@@ -23,10 +23,10 @@ import org.eclipse.smarthome.core.util.HexUtils;
  */
 @NonNullByDefault
 public class SensorMeasuredDataReply extends SensorReply {
-    private byte pm25lowByte;
-    private byte pm25highByte;
-    private byte pm10lowByte;
-    private byte pm10highByte;
+    private final byte pm25lowByte;
+    private final byte pm25highByte;
+    private final byte pm10lowByte;
+    private final byte pm10highByte;
 
     /**
      * Create a new instance by parsing the given 10 bytes.
