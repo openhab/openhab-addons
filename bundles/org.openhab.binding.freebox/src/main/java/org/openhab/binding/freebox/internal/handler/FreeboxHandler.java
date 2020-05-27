@@ -22,6 +22,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -150,7 +151,12 @@ public class FreeboxHandler extends BaseBridgeHandler {
         }
 
         if (configuration.fqdn != null && !configuration.fqdn.isEmpty()) {
-            updateStatus(ThingStatus.UNKNOWN);
+            if (configuration.appToken == null || configuration.appToken.isEmpty()) {
+                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
+                        "Please accept pairing request directly on your freebox");
+            } else {
+                updateStatus(ThingStatus.UNKNOWN);
+            }
 
             logger.debug("Binding will schedule a job to establish a connection...");
             if (authorizeJob == null || authorizeJob.isCancelled()) {
@@ -233,22 +239,29 @@ public class FreeboxHandler extends BaseBridgeHandler {
         }
 
         if (errorMsg != null) {
-            logger.debug("Thing {}: bad configuration: {}", getThing().getUID(), errorMsg);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
         } else if (!apiManager.authorize(useHttps, fqdn, apiBaseUrl, apiVersion, configuration.appToken)) {
             if (configuration.appToken == null || configuration.appToken.isEmpty()) {
-                errorMsg = "App token not set in the thing configuration";
+                errorMsg = "Pairing request rejected or timeout";
             } else {
                 errorMsg = "Check your app token in the thing configuration; opening session with " + fqdn + " using "
                         + (useHttps ? "HTTPS" : "HTTP") + " API version " + apiVersion + " failed";
             }
-            logger.debug("Thing {}: {}", getThing().getUID(), errorMsg);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
         } else {
             logger.debug("Thing {}: session opened with {} using {} API version {}", getThing().getUID(), fqdn,
                     (useHttps ? "HTTPS" : "HTTP"), apiVersion);
+            String appToken = apiManager.getAppToken();
+            if ((configuration.appToken == null || configuration.appToken.isEmpty()) && appToken != null) {
+                logger.debug("Store new app token in the thing configuration");
+                configuration.appToken = appToken;
+                Configuration thingConfig = editConfiguration();
+                thingConfig.put(FreeboxServerConfiguration.APP_TOKEN, appToken);
+                updateConfiguration(thingConfig);
+            }
+            updateStatus(ThingStatus.ONLINE);
             if (globalJob == null || globalJob.isCancelled()) {
-                long pollingInterval = getConfigAs(FreeboxServerConfiguration.class).refreshInterval;
+                long pollingInterval = configuration.refreshInterval;
                 logger.debug("Scheduling server state update every {} seconds...", pollingInterval);
                 globalJob = scheduler.scheduleWithFixedDelay(() -> {
                     try {
@@ -291,6 +304,10 @@ public class FreeboxHandler extends BaseBridgeHandler {
 
     public FreeboxApiManager getApiManager() {
         return apiManager;
+    }
+
+    public String getAppToken() {
+        return getConfigAs(FreeboxServerConfiguration.class).appToken;
     }
 
     public boolean registerDataListener(FreeboxDataListener dataListener) {
