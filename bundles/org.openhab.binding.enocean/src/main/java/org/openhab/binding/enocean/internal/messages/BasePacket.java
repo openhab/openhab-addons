@@ -61,7 +61,6 @@ public abstract class BasePacket {
 
             throw new InvalidParameterException("Unknown packetType value");
         }
-
     }
 
     protected ESPPacketType packetType;

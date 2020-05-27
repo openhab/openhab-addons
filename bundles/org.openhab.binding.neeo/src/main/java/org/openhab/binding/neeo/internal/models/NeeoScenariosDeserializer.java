@@ -51,5 +51,4 @@ public class NeeoScenariosDeserializer implements JsonDeserializer<@Nullable Nee
         }
         return null;
     }
-
 }

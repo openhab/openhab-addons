@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="silvercrestwifisocket"
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-		xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Socket Thing Type -->
 	<thing-type id="wifiSocket">
@@ -31,8 +31,8 @@
 				<label>Vendor</label>
 				<description>The vendor selling the WiFi socket.</description>
 				<options>
-						<option value="LIDL_SILVERCREST">Lidl (Silvercrest)</option>
-						<option value="ALDI_EASYHOME">Aldi (EasyHome)</option>
+					<option value="LIDL_SILVERCREST">Lidl (Silvercrest)</option>
+					<option value="ALDI_EASYHOME">Aldi (EasyHome)</option>
 				</options>
 			</parameter>
 		</config-description>

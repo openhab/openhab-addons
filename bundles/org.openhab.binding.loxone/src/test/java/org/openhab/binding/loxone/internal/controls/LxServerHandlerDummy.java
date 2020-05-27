@@ -97,7 +97,6 @@ public class LxServerHandlerDummy implements LxServerHandlerApi {
     @Override
     public void setChannelState(ChannelUID channelId, State state) {
         // TODO Auto-generated method stub
-
     }
 
     @Override
@@ -116,7 +115,6 @@ public class LxServerHandlerDummy implements LxServerHandlerApi {
     @Override
     public void setSettings(Map<String, String> properties) {
         // TODO Auto-generated method stub
-
     }
 
     @Override

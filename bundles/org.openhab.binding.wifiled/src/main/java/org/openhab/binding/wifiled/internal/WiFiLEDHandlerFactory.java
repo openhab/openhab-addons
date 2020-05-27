@@ -51,5 +51,4 @@ public class WiFiLEDHandlerFactory extends BaseThingHandlerFactory {
 
         return null;
     }
-
 }

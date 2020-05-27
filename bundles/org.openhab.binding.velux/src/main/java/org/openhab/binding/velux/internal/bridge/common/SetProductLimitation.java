@@ -50,5 +50,4 @@ public abstract class SetProductLimitation implements BridgeCommunicationProtoco
      * @param limitationMaximum Maximum Restriction value.
      */
     public abstract void setActuatorIdAndMaximumLimitation(int nodeId, int limitationMaximum);
-
 }

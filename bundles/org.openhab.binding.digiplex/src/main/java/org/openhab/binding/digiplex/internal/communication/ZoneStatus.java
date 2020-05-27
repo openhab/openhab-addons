@@ -45,5 +45,4 @@ public enum ZoneStatus {
         return Arrays.stream(ZoneStatus.values()).filter(type -> type.indicator == indicator).findFirst()
                 .orElse(UNKNOWN);
     }
-
 }

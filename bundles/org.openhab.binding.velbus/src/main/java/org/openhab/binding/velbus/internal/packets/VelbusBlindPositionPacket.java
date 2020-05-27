@@ -37,5 +37,4 @@ public class VelbusBlindPositionPacket extends VelbusPacket {
     protected byte[] getDataBytes() {
         return new byte[] { COMMAND_BLIND_POS, channel, percentage };
     }
-
 }

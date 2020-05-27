@@ -139,5 +139,4 @@ public class WiFiLEDDiscoveryService extends AbstractDiscoveryService {
 
         return sb.toString();
     }
-
 }

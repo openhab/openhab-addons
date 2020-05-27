@@ -66,7 +66,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
     protected AstroThingConfig thingConfig;
     private final Lock monitor = new ReentrantLock();
 
-    private ScheduledCompletableFuture dailyJob;
+    private ScheduledCompletableFuture<?> dailyJob;
     private final Set<ScheduledFuture<?>> scheduledFutures = new HashSet<>();
 
     public AstroThingHandler(Thing thing, CronScheduler scheduler) {

@@ -12,38 +12,27 @@
  */
 package org.openhab.binding.avmfritz.internal.handler;
 
-import static org.eclipse.smarthome.core.library.unit.SIUnits.CELSIUS;
-import static org.eclipse.smarthome.core.thing.CommonTriggerEvents.PRESSED;
-import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
 import static org.openhab.binding.avmfritz.internal.BindingConstants.*;
-import static org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel.ETSUnitInfoModel.*;
-import static org.openhab.binding.avmfritz.internal.ahamodel.HeatingModel.*;
+import static org.openhab.binding.avmfritz.internal.dto.DeviceModel.ETSUnitInfoModel.*;
 
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.library.types.DateTimeType;
-import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.OpenClosedType;
-import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Bridge;
-import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -52,20 +41,20 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.avmfritz.internal.AVMFritzDynamicStateDescriptionProvider;
 import org.openhab.binding.avmfritz.internal.BindingConstants;
-import org.openhab.binding.avmfritz.internal.ahamodel.AVMFritzBaseModel;
-import org.openhab.binding.avmfritz.internal.ahamodel.AlertModel;
-import org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel;
-import org.openhab.binding.avmfritz.internal.ahamodel.GroupModel;
-import org.openhab.binding.avmfritz.internal.ahamodel.SwitchModel;
-import org.openhab.binding.avmfritz.internal.ahamodel.templates.TemplateModel;
-import org.openhab.binding.avmfritz.internal.config.AVMFritzConfiguration;
+import org.openhab.binding.avmfritz.internal.config.AVMFritzBoxConfiguration;
+import org.openhab.binding.avmfritz.internal.discovery.AVMFritzDiscoveryService;
+import org.openhab.binding.avmfritz.internal.dto.AVMFritzBaseModel;
+import org.openhab.binding.avmfritz.internal.dto.DeviceModel;
+import org.openhab.binding.avmfritz.internal.dto.GroupModel;
+import org.openhab.binding.avmfritz.internal.dto.templates.TemplateModel;
+import org.openhab.binding.avmfritz.internal.hardware.FritzAhaStatusListener;
 import org.openhab.binding.avmfritz.internal.hardware.FritzAhaWebInterface;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaApplyTemplateCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaUpdateCallback;
@@ -108,6 +97,8 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
 
     private final AVMFritzDynamicStateDescriptionProvider stateDescriptionProvider;
 
+    protected final List<FritzAhaStatusListener> listeners = new CopyOnWriteArrayList<>();
+
     /**
      * keeps track of the {@link ChannelUID} for the 'apply_tamplate' {@link Channel}
      */
@@ -127,41 +118,77 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
         applyTemplateChannelUID = new ChannelUID(bridge.getUID(), CHANNEL_APPLY_TEMPLATE);
     }
 
-    /**
-     * Initializes the bridge.
-     */
     @Override
     public void initialize() {
-        logger.debug("About to initialize FRITZ!Box {}", BRIDGE_FRITZBOX);
-        AVMFritzConfiguration config = getConfigAs(AVMFritzConfiguration.class);
+        boolean configValid = true;
 
-        logger.debug("Discovered FRITZ!Box initialized: {}", config);
+        AVMFritzBoxConfiguration config = getConfigAs(AVMFritzBoxConfiguration.class);
 
-        this.refreshInterval = config.getPollingInterval();
-        this.connection = new FritzAhaWebInterface(config, this, httpClient);
-        if (config.getPassword() != null) {
+        String localIpAddress = config.ipAddress;
+        if (localIpAddress == null || localIpAddress.trim().isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "The 'ipAddress' parameter must be configured.");
+            configValid = false;
+        }
+        String localPassword = config.password;
+        if (localPassword == null || localPassword.trim().isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No password set.");
+            configValid = false;
+        }
+        refreshInterval = config.pollingInterval;
+        if (refreshInterval < 5) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "The 'pollingInterval' parameter must be greater then at least 5 seconds.");
+            configValid = false;
+        }
+
+        if (configValid) {
+            this.connection = new FritzAhaWebInterface(config, this, httpClient);
+
             stopPolling();
             startPolling();
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "no password set");
         }
     }
 
-    /**
-     * Disposes the bridge.
-     */
     @Override
     public void dispose() {
-        logger.debug("Handler disposed.");
         stopPolling();
+    }
+
+    @Override
+    public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
+        if (childHandler instanceof FritzAhaStatusListener) {
+            registerStatusListener((FritzAhaStatusListener) childHandler);
+        }
+    }
+
+    @Override
+    public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
+        if (childHandler instanceof FritzAhaStatusListener) {
+            unregisterStatusListener((FritzAhaStatusListener) childHandler);
+        }
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(AVMFritzDiscoveryService.class);
+    }
+
+    public boolean registerStatusListener(FritzAhaStatusListener listener) {
+        return listeners.add(listener);
+    }
+
+    public boolean unregisterStatusListener(FritzAhaStatusListener listener) {
+        return listeners.remove(listener);
     }
 
     /**
      * Start the polling.
      */
     private void startPolling() {
-        if (pollingJob == null || pollingJob.isCancelled()) {
-            logger.debug("start polling job at interval {}s", refreshInterval);
+        ScheduledFuture<?> localPollingJob = pollingJob;
+        if (localPollingJob == null || localPollingJob.isCancelled()) {
+            logger.debug("Start polling job at interval {}s", refreshInterval);
             pollingJob = scheduler.scheduleWithFixedDelay(this::poll, INITIAL_DELAY, refreshInterval, TimeUnit.SECONDS);
         }
     }
@@ -170,9 +197,10 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
      * Stops the polling.
      */
     private void stopPolling() {
-        if (pollingJob != null && !pollingJob.isCancelled()) {
-            logger.debug("stop polling job");
-            pollingJob.cancel(true);
+        ScheduledFuture<?> localPollingJob = pollingJob;
+        if (localPollingJob != null && !localPollingJob.isCancelled()) {
+            logger.debug("Stop polling job");
+            localPollingJob.cancel(true);
             pollingJob = null;
         }
     }
@@ -183,11 +211,11 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     private void poll() {
         FritzAhaWebInterface webInterface = getWebInterface();
         if (webInterface != null) {
-            logger.debug("Poll FRITZ!Box for updates {}", getThing().getUID());
+            logger.debug("Poll FRITZ!Box for updates {}", thing.getUID());
             FritzAhaUpdateCallback updateCallback = new FritzAhaUpdateCallback(webInterface, this);
             webInterface.asyncGet(updateCallback);
             if (isLinked(applyTemplateChannelUID)) {
-                logger.debug("Poll FRITZ!Box for templates {}", getThing().getUID());
+                logger.debug("Poll FRITZ!Box for templates {}", thing.getUID());
                 FritzAhaUpdateTemplatesCallback templateCallback = new FritzAhaUpdateTemplatesCallback(webInterface,
                         this);
                 webInterface.asyncGet(templateCallback);
@@ -222,209 +250,32 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Called from {@link FritzAhaUpdateCallback} to provide new values for things.
+     * Called from {@link FritzAhaUpdateCallback} to provide new devices.
      *
-     * @param deviceList list of device models
+     * @param deviceList list of devices
      */
-    public void addDeviceList(List<AVMFritzBaseModel> deviceList) {
-        for (Thing thing : getThing().getThings()) {
-            AVMFritzBaseThingHandler handler = (AVMFritzBaseThingHandler) thing.getHandler();
-            if (handler != null) {
-                Optional<AVMFritzBaseModel> optionalDevice = deviceList.stream()
-                        .filter(it -> it.getIdentifier().equals(handler.getIdentifier())).findFirst();
+    public void onDeviceListAdded(List<AVMFritzBaseModel> deviceList) {
+        final Map<String, AVMFritzBaseModel> deviceIdentifierMap = deviceList.stream()
+                .collect(Collectors.toMap(it -> it.getIdentifier(), Function.identity()));
+        getThing().getThings().forEach(childThing -> {
+            final AVMFritzBaseThingHandler childHandler = (AVMFritzBaseThingHandler) childThing.getHandler();
+            if (childHandler != null) {
+                final Optional<AVMFritzBaseModel> optionalDevice = Optional
+                        .ofNullable(deviceIdentifierMap.get(childHandler.getIdentifier()));
                 if (optionalDevice.isPresent()) {
-                    AVMFritzBaseModel device = optionalDevice.get();
-                    logger.debug("update thing '{}' with device model: {}", thing.getUID(), device);
-                    handler.setState(device);
-                    if (device.getPresent() == 1) {
-                        handler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
-                        updateThingFromDevice(thing, device);
-                    } else {
-                        handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Device not present");
-                    }
+                    final AVMFritzBaseModel device = optionalDevice.get();
+                    deviceList.remove(device);
+                    listeners.forEach(listener -> listener.onDeviceUpdated(childThing.getUID(), device));
                 } else {
-                    handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.GONE,
-                            "Device not present in response");
+                    listeners.forEach(listener -> listener.onDeviceGone(childThing.getUID()));
                 }
             } else {
-                logger.debug("handler missing for thing '{}'", thing.getUID());
+                logger.debug("Handler missing for thing '{}'", childThing.getUID());
             }
-        }
-    }
-
-    /**
-     * Updates thing from device model.
-     *
-     * @param thing Thing to be updated.
-     * @param device Device model with new data.
-     */
-    protected void updateThingFromDevice(Thing thing, AVMFritzBaseModel device) {
-        thing.setProperty(PROPERTY_FIRMWARE_VERSION, device.getFirmwareVersion());
-        if (device instanceof GroupModel && ((GroupModel) device).getGroupinfo() != null) {
-            thing.setProperty(PROPERTY_MASTER, ((GroupModel) device).getGroupinfo().getMasterdeviceid());
-            thing.setProperty(PROPERTY_MEMBERS, ((GroupModel) device).getGroupinfo().getMembers());
-        }
-        if (device instanceof DeviceModel && device.isTempSensor() && ((DeviceModel) device).getTemperature() != null) {
-            updateThingChannelState(thing, CHANNEL_TEMPERATURE,
-                    new QuantityType<>(((DeviceModel) device).getTemperature().getCelsius(), CELSIUS));
-            updateThingChannelConfiguration(thing, CHANNEL_TEMPERATURE, CONFIG_CHANNEL_TEMP_OFFSET,
-                    ((DeviceModel) device).getTemperature().getOffset());
-        }
-        if (device.isPowermeter() && device.getPowermeter() != null) {
-            updateThingChannelState(thing, CHANNEL_ENERGY,
-                    new QuantityType<>(device.getPowermeter().getEnergy(), SmartHomeUnits.WATT_HOUR));
-            updateThingChannelState(thing, CHANNEL_POWER,
-                    new QuantityType<>(device.getPowermeter().getPower(), SmartHomeUnits.WATT));
-            updateThingChannelState(thing, CHANNEL_VOLTAGE,
-                    new QuantityType<>(device.getPowermeter().getVoltage(), SmartHomeUnits.VOLT));
-        }
-        if (device.isSwitchableOutlet() && device.getSwitch() != null) {
-            updateThingChannelState(thing, CHANNEL_MODE, new StringType(device.getSwitch().getMode()));
-            updateThingChannelState(thing, CHANNEL_LOCKED,
-                    BigDecimal.ZERO.equals(device.getSwitch().getLock()) ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
-            updateThingChannelState(thing, CHANNEL_DEVICE_LOCKED,
-                    BigDecimal.ZERO.equals(device.getSwitch().getDevicelock()) ? OpenClosedType.OPEN
-                            : OpenClosedType.CLOSED);
-            if (device.getSwitch().getState() == null) {
-                updateThingChannelState(thing, CHANNEL_OUTLET, UnDefType.UNDEF);
-            } else {
-                updateThingChannelState(thing, CHANNEL_OUTLET,
-                        SwitchModel.ON.equals(device.getSwitch().getState()) ? OnOffType.ON : OnOffType.OFF);
-            }
-        }
-        if (device.isHeatingThermostat() && device.getHkr() != null) {
-            updateThingChannelState(thing, CHANNEL_MODE, new StringType(device.getHkr().getMode()));
-            updateThingChannelState(thing, CHANNEL_LOCKED,
-                    BigDecimal.ZERO.equals(device.getHkr().getLock()) ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
-            updateThingChannelState(thing, CHANNEL_DEVICE_LOCKED,
-                    BigDecimal.ZERO.equals(device.getHkr().getDevicelock()) ? OpenClosedType.OPEN
-                            : OpenClosedType.CLOSED);
-            updateThingChannelState(thing, CHANNEL_ACTUALTEMP,
-                    new QuantityType<>(toCelsius(device.getHkr().getTist()), CELSIUS));
-            updateThingChannelState(thing, CHANNEL_SETTEMP,
-                    new QuantityType<>(toCelsius(device.getHkr().getTsoll()), CELSIUS));
-            updateThingChannelState(thing, CHANNEL_ECOTEMP,
-                    new QuantityType<>(toCelsius(device.getHkr().getAbsenk()), CELSIUS));
-            updateThingChannelState(thing, CHANNEL_COMFORTTEMP,
-                    new QuantityType<>(toCelsius(device.getHkr().getKomfort()), CELSIUS));
-            updateThingChannelState(thing, CHANNEL_RADIATOR_MODE, new StringType(device.getHkr().getRadiatorMode()));
-            if (device.getHkr().getNextchange() != null) {
-                if (device.getHkr().getNextchange().getEndperiod() == 0) {
-                    updateThingChannelState(thing, CHANNEL_NEXT_CHANGE, UnDefType.UNDEF);
-                } else {
-                    updateThingChannelState(thing, CHANNEL_NEXT_CHANGE,
-                            new DateTimeType(ZonedDateTime.ofInstant(
-                                    Instant.ofEpochSecond(device.getHkr().getNextchange().getEndperiod()),
-                                    ZoneId.systemDefault())));
-                }
-                if (TEMP_FRITZ_UNDEFINED.equals(device.getHkr().getNextchange().getTchange())) {
-                    updateThingChannelState(thing, CHANNEL_NEXTTEMP, UnDefType.UNDEF);
-                } else {
-                    updateThingChannelState(thing, CHANNEL_NEXTTEMP,
-                            new QuantityType<>(toCelsius(device.getHkr().getNextchange().getTchange()), CELSIUS));
-                }
-            }
-            if (device.getHkr().getBattery() == null) {
-                updateThingChannelState(thing, CHANNEL_BATTERY, UnDefType.UNDEF);
-            } else {
-                updateThingChannelState(thing, CHANNEL_BATTERY, new DecimalType(device.getHkr().getBattery()));
-            }
-            if (device.getHkr().getBatterylow() == null) {
-                updateThingChannelState(thing, CHANNEL_BATTERY_LOW, UnDefType.UNDEF);
-            } else {
-                updateThingChannelState(thing, CHANNEL_BATTERY_LOW,
-                        BATTERY_ON.equals(device.getHkr().getBatterylow()) ? OnOffType.ON : OnOffType.OFF);
-            }
-        }
-        if (device instanceof DeviceModel && device.isAlarmSensor() && ((DeviceModel) device).getAlert() != null) {
-            updateThingChannelState(thing, CHANNEL_CONTACT_STATE,
-                    AlertModel.ON.equals(((DeviceModel) device).getAlert().getState()) ? OpenClosedType.OPEN
-                            : OpenClosedType.CLOSED);
-        }
-        if (device instanceof DeviceModel && device.isButton() && ((DeviceModel) device).getButton() != null) {
-            if (((DeviceModel) device).getButton().getLastpressedtimestamp() == 0) {
-                updateThingChannelState(thing, CHANNEL_LAST_CHANGE, UnDefType.UNDEF);
-            } else {
-                ZoneId zoneId = ZoneId.systemDefault();
-                ZonedDateTime timestamp = ZonedDateTime.ofInstant(
-                        Instant.ofEpochSecond(((DeviceModel) device).getButton().getLastpressedtimestamp()), zoneId);
-                Instant then = timestamp.toInstant();
-                ZonedDateTime now = ZonedDateTime.now(zoneId);
-                Instant someSecondsEarlier = now.minusSeconds(refreshInterval).toInstant();
-                if (then.isAfter(someSecondsEarlier) && then.isBefore(now.toInstant())) {
-                    triggerThingChannel(thing, CHANNEL_PRESS, PRESSED);
-                }
-                updateThingChannelState(thing, CHANNEL_LAST_CHANGE, new DateTimeType(timestamp));
-            }
-        }
-    }
-
-    /**
-     * Updates thing channels.
-     *
-     * @param thing Thing which channels should be updated.
-     * @param channelId ID of the channel to be updated.
-     * @param state State to be set.
-     */
-    private void updateThingChannelState(Thing thing, String channelId, State state) {
-        Channel channel = thing.getChannel(channelId);
-        if (channel != null) {
-            updateState(channel.getUID(), state);
-        } else {
-            logger.debug("Channel '{}' in thing '{}' does not exist, recreating thing.", channelId, thing.getUID());
-            ThingHandler handler = thing.getHandler();
-            if (handler != null) {
-                if (handler instanceof AVMFritzBaseThingHandler) {
-                    ((AVMFritzBaseThingHandler) handler).createChannel(channelId);
-                } else if (handler instanceof Powerline546EHandler) {
-                    ((Powerline546EHandler) handler).createChannel(channelId);
-                }
-            }
-        }
-    }
-
-    /**
-     * Triggers thing channels.
-     *
-     * @param thing Thing which channels should be triggered.
-     * @param channelId ID of the channel to be triggered.
-     * @param event Event to emit
-     */
-    private void triggerThingChannel(Thing thing, String channelId, String event) {
-        Channel channel = thing.getChannel(channelId);
-        if (channel != null) {
-            triggerChannel(channel.getUID(), event);
-        } else {
-            logger.debug("Channel '{}' in thing '{}' does not exist.", channelId, thing.getUID());
-        }
-    }
-
-    /**
-     * Updates thing channel configurations.
-     *
-     * @param thing Thing which channel configuration should be updated.
-     * @param channelId ID of the channel which configuration to be updated.
-     * @param configId ID of the configuration to be updated.
-     * @param value Value to be set.
-     */
-    private void updateThingChannelConfiguration(Thing thing, String channelId, String configId, Object value) {
-        Channel channel = thing.getChannel(channelId);
-        if (channel != null) {
-            Configuration config = channel.getConfiguration();
-            Configuration editConfig = new Configuration(new HashMap<>(config.getProperties()));
-            editConfig.put(configId, value);
-            config.setProperties(editConfig.getProperties());
-        }
-    }
-
-    /**
-     * Provides the web interface object.
-     *
-     * @return The web interface object
-     */
-    @Nullable
-    public FritzAhaWebInterface getWebInterface() {
-        return connection;
+        });
+        deviceList.forEach(device -> {
+            listeners.forEach(listener -> listener.onDeviceAdded(device));
+        });
     }
 
     /**
@@ -435,10 +286,9 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
      * @param device Discovered device model
      * @return ThingUID without illegal characters.
      */
-    @Nullable
-    public ThingUID getThingUID(AVMFritzBaseModel device) {
+    public @Nullable ThingUID getThingUID(AVMFritzBaseModel device) {
         ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, getThingTypeId(device));
-        ThingUID bridgeUID = getThing().getUID();
+        ThingUID bridgeUID = thing.getUID();
         String thingName = getThingName(device);
 
         if (SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID)) {
@@ -491,20 +341,42 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
         logger.debug("Handle command '{}' for channel {}", command, channelId);
         if (command == RefreshType.REFRESH) {
             handleRefreshCommand();
+            return;
         }
         FritzAhaWebInterface fritzBox = getWebInterface();
         if (fritzBox == null) {
             logger.debug("Cannot handle command '{}' because connection is missing", command);
             return;
         }
-        if (CHANNEL_APPLY_TEMPLATE.equals(channelId)) {
-            if (command instanceof StringType) {
-                fritzBox.applyTemplate(command.toString());
-            }
-            updateState(CHANNEL_APPLY_TEMPLATE, UnDefType.UNDEF);
+        switch (channelId) {
+            case CHANNEL_APPLY_TEMPLATE:
+                applyTemplate(command, fritzBox);
+                break;
+            default:
+                logger.debug("Received unknown channel {}", channelId);
+                break;
         }
     }
 
+    protected void applyTemplate(Command command, FritzAhaWebInterface fritzBox) {
+        if (command instanceof StringType) {
+            fritzBox.applyTemplate(command.toString());
+        }
+        updateState(CHANNEL_APPLY_TEMPLATE, UnDefType.UNDEF);
+    }
+
+    /**
+     * Provides the web interface object.
+     *
+     * @return The web interface object
+     */
+    public @Nullable FritzAhaWebInterface getWebInterface() {
+        return connection;
+    }
+
+    /**
+     * Handles a refresh command.
+     */
     public void handleRefreshCommand() {
         scheduler.submit(this::poll);
     }

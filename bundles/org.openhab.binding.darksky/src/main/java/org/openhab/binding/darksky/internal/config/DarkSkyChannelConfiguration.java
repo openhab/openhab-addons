@@ -15,7 +15,6 @@ package org.openhab.binding.darksky.internal.config;
 import java.time.Duration;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
@@ -79,8 +78,8 @@ public class DarkSkyChannelConfiguration {
      * Parses a hh:mm string and returns the minutes.
      */
     private long getMinutesFromTime(@Nullable String configTime) {
-        String time = StringUtils.trimToNull(configTime);
-        if (time != null) {
+        String time = configTime;
+        if (time != null && !(time = time.trim()).isEmpty()) {
             try {
                 if (!HHMM_PATTERN.matcher(time).matches()) {
                     throw new NumberFormatException();

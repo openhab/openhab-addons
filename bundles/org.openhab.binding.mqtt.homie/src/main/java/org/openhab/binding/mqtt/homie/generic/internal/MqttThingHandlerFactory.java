@@ -28,7 +28,6 @@ import org.eclipse.smarthome.core.transform.TransformationService;
 import org.openhab.binding.mqtt.generic.MqttChannelStateDescriptionProvider;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
 import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
-import org.openhab.binding.mqtt.homie.generic.internal.MqttBindingConstants;
 import org.openhab.binding.mqtt.homie.internal.handler.HomieThingHandler;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
@@ -90,7 +89,7 @@ public class MqttThingHandlerFactory extends BaseThingHandlerFactory implements 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(MqttBindingConstants.HOMIE300_MQTT_THING)) {
-            return new HomieThingHandler(thing, typeProvider, 15000, 2000);
+            return new HomieThingHandler(thing, typeProvider, 1000, 500);
         }
         return null;
     }
@@ -99,5 +98,4 @@ public class MqttThingHandlerFactory extends BaseThingHandlerFactory implements 
     public @Nullable TransformationService getTransformationService(String type) {
         return TransformationHelper.getTransformationService(bundleContext, type);
     }
-
 }

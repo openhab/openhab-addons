@@ -13,6 +13,8 @@
 package org.openhab.binding.plugwise.internal;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Comparator;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -20,7 +22,6 @@ import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.transport.serial.PortInUseException;
@@ -97,8 +98,22 @@ public class PlugwiseCommunicationContext {
         SerialPort localSerialPort = serialPort;
         if (localSerialPort != null) {
             try {
-                IOUtils.closeQuietly(localSerialPort.getInputStream());
-                IOUtils.closeQuietly(localSerialPort.getOutputStream());
+                InputStream inputStream = localSerialPort.getInputStream();
+                if (inputStream != null) {
+                    try {
+                        inputStream.close();
+                    } catch (IOException e) {
+                        logger.debug("Error while closing the input stream: {}", e.getMessage());
+                    }
+                }
+                OutputStream outputStream = localSerialPort.getOutputStream();
+                if (outputStream != null) {
+                    try {
+                        outputStream.close();
+                    } catch (IOException e) {
+                        logger.debug("Error while closing the output stream: {}", e.getMessage());
+                    }
+                }
                 localSerialPort.close();
                 serialPort = null;
             } catch (IOException e) {
@@ -187,5 +202,4 @@ public class PlugwiseCommunicationContext {
     public void setSerialPortManager(SerialPortManager serialPortManager) {
         this.serialPortManager = serialPortManager;
     }
-
 }

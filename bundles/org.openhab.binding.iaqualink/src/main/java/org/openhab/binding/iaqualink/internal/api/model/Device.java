@@ -139,5 +139,4 @@ public class Device {
     public void setLastActivityAt(Object lastActivityAt) {
         this.lastActivityAt = lastActivityAt;
     }
-
 }

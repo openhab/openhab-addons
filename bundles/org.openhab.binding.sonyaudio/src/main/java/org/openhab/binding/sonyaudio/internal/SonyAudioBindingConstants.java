@@ -90,6 +90,8 @@ public class SonyAudioBindingConstants {
     public static final String CHANNEL_RADIO_STATION = "radio#broadcastStation";
     public static final String CHANNEL_RADIO_SEEK_STATION = "radio#broadcastSeekStation";
 
+    public static final String CHANNEL_NIGHTMODE = "nightMode";
+
     // Used for Discovery service
     public static final String MANUFACTURER = "SONY";
     public static final String UPNP_DEVICE_TYPE = "MediaRenderer";

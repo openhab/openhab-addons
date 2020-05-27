@@ -20,5 +20,4 @@ public interface MuteStateValues {
 
     public static final String ON_VALUE = "0";
     public static final String OFF_VALUE = "1";
-
 }

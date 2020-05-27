@@ -12,23 +12,26 @@
  */
 package org.openhab.binding.nibeheatpump.internal.handler;
 
-import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.types.Command;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.openhab.binding.nibeheatpump.internal.models.PumpModel;
-import org.openhab.binding.nibeheatpump.internal.models.VariableInformation;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 
-import static org.junit.Assert.assertEquals;
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.mockito.Mock;
+import org.openhab.binding.nibeheatpump.internal.models.PumpModel;
+import org.openhab.binding.nibeheatpump.internal.models.VariableInformation;
 
 /**
  * Tests cases for {@link NibeHeatPumpHandler}.
@@ -40,32 +43,24 @@ public class NibeHeatPumpHandlerCommand2NibeTest {
     private NibeHeatPumpHandler product; // the class under test
     private Method m;
     private static String METHOD_NAME = "convertCommandToNibeValue";
-    private Class[] parameterTypes;
+    private Class<?>[] parameterTypes;
     private Object[] parameters;
 
     private int fCoilAddress;
-
     private Command fCommand;
-
     private int fExpected;
+
+    private @Mock SerialPortManager serialPortManager;
 
     @Parameterized.Parameters(name = "{index}: f({0}, {1})={2}")
     public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][] {
-                { 47028, new DecimalType("-1"), (byte)0xFF },
-                { 48132, new DecimalType("0"), 0 },
-                { 48132, new StringType("0"), 0 },
-                { 43009, new DecimalType("28.7"), 0x011F },
-                { 40004, new DecimalType("-0.1"), (short)0xFFFF },
-                { 47418, new DecimalType("75"), 0x004B },
-                { 43514, new DecimalType("7"), 0x0007 },
-                { 47291, new DecimalType("65535"), 0xFFFF },
-                { 42437, new DecimalType("429496729.5"), 0xFFFFFFFF },
-                { 42504, new DecimalType("4294967295"), 0xFFFFFFFF },
-                { 47041, new StringType("1"), 0x1 },
-                { 47371, OnOffType.from(true), 0x1 },
-                { 47371, OnOffType.from(false), 0x0 },
-        });
+        return Arrays.asList(new Object[][] { { 47028, new DecimalType("-1"), (byte) 0xFF },
+                { 48132, new DecimalType("0"), 0 }, { 48132, new StringType("0"), 0 },
+                { 43009, new DecimalType("28.7"), 0x011F }, { 40004, new DecimalType("-0.1"), (short) 0xFFFF },
+                { 47418, new DecimalType("75"), 0x004B }, { 43514, new DecimalType("7"), 0x0007 },
+                { 47291, new DecimalType("65535"), 0xFFFF }, { 42437, new DecimalType("429496729.5"), 0xFFFFFFFF },
+                { 42504, new DecimalType("4294967295"), 0xFFFFFFFF }, { 47041, new StringType("1"), 0x1 },
+                { 47371, OnOffType.from(true), 0x1 }, { 47371, OnOffType.from(false), 0x0 }, });
     }
 
     public NibeHeatPumpHandlerCommand2NibeTest(final int coilAddress, final Command command, final int expected) {
@@ -76,7 +71,9 @@ public class NibeHeatPumpHandlerCommand2NibeTest {
 
     @Before
     public void setUp() throws Exception {
-        product = new NibeHeatPumpHandler(null, PumpModel.F1X55);
+        initMocks(this);
+
+        product = new NibeHeatPumpHandler(null, PumpModel.F1X55, serialPortManager);
         parameterTypes = new Class[2];
         parameterTypes[0] = VariableInformation.class;
         parameterTypes[1] = Command.class;

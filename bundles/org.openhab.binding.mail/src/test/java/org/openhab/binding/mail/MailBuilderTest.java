@@ -89,5 +89,4 @@ public class MailBuilderTest {
         assertEquals(TEST_EMAIL, builder.build().getToAddresses().get(0).getAddress());
         assertEquals(2, builder.withRecipients(TEST_EMAIL).build().getToAddresses().size());
     }
-
 }

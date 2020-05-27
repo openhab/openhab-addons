@@ -40,5 +40,4 @@ public class PhantomButtonConfig {
     public void setFadeSec(BigDecimal fadeSec) {
         this.fadeSec = fadeSec;
     }
-
 }

@@ -25,7 +25,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.eclipse.smarthome.io.transport.serial.PortInUseException;
 import org.eclipse.smarthome.io.transport.serial.SerialPort;
@@ -219,11 +218,19 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
 
         if (outputStream != null) {
             logger.debug("Closing serial output stream");
-            IOUtils.closeQuietly(outputStream);
+            try {
+                outputStream.close();
+            } catch (IOException e) {
+                logger.debug("Error while closing the output stream: {}", e.getMessage());
+            }
         }
         if (inputStream != null) {
             logger.debug("Closeing serial input stream");
-            IOUtils.closeQuietly(inputStream);
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                logger.debug("Error while closing the input stream: {}", e.getMessage());
+            }
         }
 
         if (serialPort != null) {

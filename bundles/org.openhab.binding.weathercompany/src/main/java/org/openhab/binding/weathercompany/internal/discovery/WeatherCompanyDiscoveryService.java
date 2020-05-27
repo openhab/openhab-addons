@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 public class WeatherCompanyDiscoveryService extends AbstractDiscoveryService {
     // Thing for local weather created during discovery
     private static final String LOCAL = "local";
-    private static final String LOCAL_WEATHER = "Weather Company Local Forecast";
+    private static final String LOCAL_WEATHER = "Local Forecast";
 
     private static final int DISCOVER_TIMEOUT_SECONDS = 4;
     private static final int DISCOVERY_INTERVAL_SECONDS = 1200;
@@ -117,8 +117,9 @@ public class WeatherCompanyDiscoveryService extends AbstractDiscoveryService {
         properties.put(CONFIG_LOCATION_TYPE, CONFIG_LOCATION_TYPE_GEOCODE);
         properties.put(CONFIG_GEOCODE, String.format("%s,%s", location.getLatitude(), location.getLongitude()));
         properties.put(CONFIG_LANGUAGE, WeatherCompanyAbstractHandler.lookupLanguage(localeProvider.getLocale()));
-        ThingUID localWeatherThing = new ThingUID(THING_TYPE_WEATHER_FORECAST, LOCAL);
-        thingDiscovered(DiscoveryResultBuilder.create(localWeatherThing).withBridge(bridgeHandler.getThing().getUID())
-                .withLabel(LOCAL_WEATHER).withProperties(properties).build());
+        ThingUID bridgeUID = bridgeHandler.getThing().getUID();
+        ThingUID localWeatherThing = new ThingUID(THING_TYPE_WEATHER_FORECAST, bridgeUID, LOCAL);
+        thingDiscovered(DiscoveryResultBuilder.create(localWeatherThing).withBridge(bridgeUID).withLabel(LOCAL_WEATHER)
+                .withProperties(properties).build());
     }
 }

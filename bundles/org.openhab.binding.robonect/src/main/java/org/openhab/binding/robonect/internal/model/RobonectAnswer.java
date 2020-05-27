@@ -22,12 +22,12 @@ import com.google.gson.annotations.SerializedName;
  * @author Marco Meyer - Initial contribution
  */
 public class RobonectAnswer {
-    
+
     private boolean successful;
 
     @SerializedName("error_code")
     private Integer errorCode;
-    
+
     @SerializedName("error_message")
     private String errorMessage;
 
@@ -40,12 +40,13 @@ public class RobonectAnswer {
 
     /**
      * allows to set the successful status for testing.
+     * 
      * @param successful
      */
-    public void setSuccessful(boolean successful){
+    public void setSuccessful(boolean successful) {
         this.successful = successful;
     }
-    
+
     /**
      * @return - in case of a not successful request, the error code, null otherwise.
      */
@@ -59,5 +60,4 @@ public class RobonectAnswer {
     public String getErrorMessage() {
         return errorMessage;
     }
-    
 }

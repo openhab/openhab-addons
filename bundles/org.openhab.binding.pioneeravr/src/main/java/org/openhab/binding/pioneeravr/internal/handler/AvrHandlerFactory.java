@@ -13,25 +13,30 @@
 package org.openhab.binding.pioneeravr.internal.handler;
 
 import java.util.Collections;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.pioneeravr.internal.PioneerAvrBindingConstants;
 import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link AvrHandlerFactory} is responsible for creating things and thing handlers.
  *
  * @author Antoine Besnard - Initial contribution
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.pioneeravr")
 public class AvrHandlerFactory extends BaseThingHandlerFactory {
 
@@ -43,8 +48,12 @@ public class AvrHandlerFactory extends BaseThingHandlerFactory {
                     PioneerAvrBindingConstants.IP_AVR_UNSUPPORTED_THING_TYPE,
                     PioneerAvrBindingConstants.SERIAL_AVR_THING_TYPE).collect(Collectors.toSet()));
 
-    protected void activate(ComponentContext componentContext, Map<String, Object> configProps) {
+    private SerialPortManager serialPortManager;
+
+    @Activate
+    public AvrHandlerFactory(ComponentContext componentContext, final @Reference SerialPortManager serialPortManager) {
         super.activate(componentContext);
+        this.serialPortManager = serialPortManager;
     }
 
     @Override
@@ -53,7 +62,7 @@ public class AvrHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(PioneerAvrBindingConstants.IP_AVR_THING_TYPE)
@@ -67,7 +76,7 @@ public class AvrHandlerFactory extends BaseThingHandlerFactory {
                 || thingTypeUID.equals(PioneerAvrBindingConstants.IP_AVR_UNSUPPORTED_THING_TYPE)) {
             return new IpAvrHandler(thing);
         } else if (thingTypeUID.equals(PioneerAvrBindingConstants.SERIAL_AVR_THING_TYPE)) {
-            return new SerialAvrHandler(thing);
+            return new SerialAvrHandler(thing, serialPortManager);
         }
 
         return null;

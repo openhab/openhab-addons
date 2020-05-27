@@ -76,6 +76,7 @@ public class DS18x20 extends AbstractOwDevice {
     @Override
     public void refresh(OwserverBridgeHandler bridgeHandler, Boolean forcedRefresh) throws OwException {
         if (isConfigured && enabledChannels.contains(CHANNEL_TEMPERATURE)) {
+            logger.trace("refresh of sensor {} started", sensorId);
             QuantityType<Temperature> temperature = new QuantityType<>(
                     (DecimalType) bridgeHandler.readDecimalType(sensorId, temperatureParameter), SIUnits.CELSIUS);
             logger.trace("read temperature {} from {}", temperature, sensorId);

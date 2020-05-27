@@ -50,5 +50,4 @@ public class NeatoBindingConstants {
     public static final String CONFIG_REFRESHTIME = "refresh";
 
     public static final String PROPERTY_NAME = "robot-name";
-
 }

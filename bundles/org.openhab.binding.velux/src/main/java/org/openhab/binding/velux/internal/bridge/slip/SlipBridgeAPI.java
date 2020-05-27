@@ -210,5 +210,4 @@ class SlipBridgeAPI implements BridgeAPI {
     public SetSceneVelocity setSceneVelocity() {
         return SETSCENEVELOCITY;
     }
-
 }

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.modbus.sunspec.internal.handler;
 
-import static org.openhab.binding.modbus.sunspec.internal.SunSpecConstants.PROPERTY_UNIQUE_ADDRESS;
+import static org.openhab.binding.modbus.sunspec.internal.SunSpecConstants.*;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -22,7 +22,6 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -152,11 +151,18 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
             return;
         }
 
-        Optional<ModelBlock> mainBlock = getAddressFromConfig();
-        if (mainBlock.isPresent()) {
-            publishUniqueAddress(mainBlock.get());
+        // Try properties first
+        @Nullable
+        ModelBlock mainBlock = getAddressFromProperties();
+
+        if (mainBlock == null) {
+            mainBlock = getAddressFromConfig();
+        }
+
+        if (mainBlock != null) {
+            publishUniqueAddress(mainBlock);
             updateStatus(ThingStatus.UNKNOWN);
-            registerPollTask(mainBlock.get());
+            registerPollTask(mainBlock);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "SunSpec item should either have the address and length configuration set or should been created by auto discovery");
@@ -165,18 +171,38 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
     }
 
     /**
+     * Load and parse configuration from the properties
+     * These will be set by the auto discovery process
+     */
+    private @Nullable ModelBlock getAddressFromProperties() {
+        Map<String, String> properties = thing.getProperties();
+        if (!properties.containsKey(PROPERTY_BLOCK_ADDRESS) || !properties.containsKey(PROPERTY_BLOCK_LENGTH)) {
+            return null;
+        }
+        try {
+            ModelBlock block = new ModelBlock();
+            block.address = (int) Double.parseDouble(thing.getProperties().get(PROPERTY_BLOCK_ADDRESS));
+            block.length = (int) Double.parseDouble(thing.getProperties().get(PROPERTY_BLOCK_LENGTH));
+            return block;
+        } catch (NumberFormatException ex) {
+            logger.debug("Could not parse address and length properties, error: {}", ex.getMessage());
+            return null;
+        }
+    }
+
+    /**
      * Load configuration from main configuration
      */
-    private Optional<ModelBlock> getAddressFromConfig() {
+    private @Nullable ModelBlock getAddressFromConfig() {
         @Nullable
         SunSpecConfiguration myconfig = config;
         if (myconfig == null) {
-            return Optional.empty();
+            return null;
         }
         ModelBlock block = new ModelBlock();
         block.address = myconfig.address;
         block.length = myconfig.length;
-        return Optional.of(block);
+        return block;
     }
 
     /**
@@ -345,8 +371,9 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
         });
 
         long refreshMillis = myconfig.getRefreshMillis();
-        if (pollTask != null) {
-            PollTask task = pollTask;
+        @Nullable
+        PollTask task = pollTask;
+        if (task != null) {
             managerRef.registerRegularPoll(task, refreshMillis, 1000);
         }
     }
@@ -444,39 +471,22 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
      * @param scaleFactor the scale factor to use (may be negative)
      * @return the scaled value as a DecimalType
      */
-    protected State getScaled(Optional<? extends Number> value, Optional<Short> scaleFactor) {
-        if (!value.isPresent() || !scaleFactor.isPresent()) {
-            return UnDefType.UNDEF;
-        }
-        return getScaled(value.get().longValue(), scaleFactor.get());
-    }
-
-    /**
-     * Returns value multiplied by the 10 on the power of scaleFactory
-     *
-     * @param value the value to alter
-     * @param scaleFactor the scale factor to use (may be negative)
-     * @return the scaled value as a DecimalType
-     */
-    protected State getScaled(Number value, Short scaleFactor) {
-        if (scaleFactor == 1) {
-            return new DecimalType(value.longValue());
-        }
-        return new DecimalType(BigDecimal.valueOf(value.longValue(), scaleFactor * -1));
-    }
-
-    /**
-     * Returns value multiplied by the 10 on the power of scaleFactory
-     *
-     * @param value the value to alter
-     * @param scaleFactor the scale factor to use (may be negative)
-     * @return the scaled value as a DecimalType
-     */
     protected State getScaled(Optional<? extends Number> value, Optional<Short> scaleFactor, Unit<?> unit) {
         if (!value.isPresent() || !scaleFactor.isPresent()) {
             return UnDefType.UNDEF;
         }
         return getScaled(value.get().longValue(), scaleFactor.get(), unit);
+    }
+
+    /**
+     * Returns value multiplied by the 10 on the power of scaleFactory
+     *
+     * @param value the value to alter
+     * @param scaleFactor the scale factor to use (may be negative)
+     * @return the scaled value as a DecimalType
+     */
+    protected State getScaled(Optional<? extends Number> value, Short scaleFactor, Unit<?> unit) {
+        return getScaled(value, Optional.of(scaleFactor), unit);
     }
 
     /**

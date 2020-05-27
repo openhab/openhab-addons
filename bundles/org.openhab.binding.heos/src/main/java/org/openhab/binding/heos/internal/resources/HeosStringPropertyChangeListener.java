@@ -15,15 +15,21 @@ package org.openhab.binding.heos.internal.resources;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * The {@Link HeosStringPropertyChangeListener} provides the possibility
  * to add a listener to an String and get informed about the new value.
  *
  * @author Johannes Einig - Initial contribution
  */
+@NonNullByDefault
 public class HeosStringPropertyChangeListener {
+    private final Logger logger = LoggerFactory.getLogger(HeosStringPropertyChangeListener.class);
+
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
-    private String value;
 
     public void addPropertyChangeListener(PropertyChangeListener propertyChangeListener) {
         pcs.addPropertyChangeListener(propertyChangeListener);
@@ -33,14 +39,8 @@ public class HeosStringPropertyChangeListener {
         pcs.removePropertyChangeListener(listener);
     }
 
-    public String getValue() {
-        return value;
-    }
-
     public void setValue(String newValue) {
-        String oldValue = this.value;
-        value = newValue;
-        pcs.firePropertyChange("value", oldValue, newValue);
-        value = null;
+        logger.debug("Firing property change: {} {}", newValue, Thread.currentThread());
+        pcs.firePropertyChange("value", null, newValue);
     }
 }

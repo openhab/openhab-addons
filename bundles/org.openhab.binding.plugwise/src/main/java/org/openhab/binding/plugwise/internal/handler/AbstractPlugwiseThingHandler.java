@@ -303,5 +303,4 @@ public abstract class AbstractPlugwiseThingHandler extends BaseThingHandler impl
             updateTask(task);
         }
     }
-
 }

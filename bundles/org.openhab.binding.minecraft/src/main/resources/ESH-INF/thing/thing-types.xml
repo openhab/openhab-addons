@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="minecraft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="minecraft"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -8,9 +9,9 @@
 		<description>Server from which data is being fetched.</description>
 
 		<channels>
-			<channel id="online" typeId="online" />
-			<channel id="players" typeId="players" />
-			<channel id="maxPlayers" typeId="maxPlayers" />
+			<channel id="online" typeId="online"/>
+			<channel id="players" typeId="players"/>
+			<channel id="maxPlayers" typeId="maxPlayers"/>
 		</channels>
 
 		<config-description>
@@ -30,7 +31,7 @@
 
 	<thing-type id="player">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="server" />
+			<bridge-type-ref id="server"/>
 		</supported-bridge-type-refs>
 
 		<label>Player</label>
@@ -41,13 +42,13 @@
 				<label>Online</label>
 				<description>Online status of the player.</description>
 			</channel>
-			<channel id="playerLevel" typeId="playerLevel" />
-			<channel id="playerTotalExperience" typeId="playerTotalExperience" />
-			<channel id="playerExperiencePercentage" typeId="playerExperiencePercentage" />
-			<channel id="playerHealth" typeId="playerHealth" />
-			<channel id="playerWalkSpeed" typeId="playerWalkSpeed" />
-			<channel id="playerLocation" typeId="location" />
-			<channel id="playerGameMode" typeId="playerGameMode" />
+			<channel id="playerLevel" typeId="playerLevel"/>
+			<channel id="playerTotalExperience" typeId="playerTotalExperience"/>
+			<channel id="playerExperiencePercentage" typeId="playerExperiencePercentage"/>
+			<channel id="playerHealth" typeId="playerHealth"/>
+			<channel id="playerWalkSpeed" typeId="playerWalkSpeed"/>
+			<channel id="playerLocation" typeId="location"/>
+			<channel id="playerGameMode" typeId="playerGameMode"/>
 
 		</channels>
 
@@ -61,14 +62,14 @@
 
 	<thing-type id="redstoneSign">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="server" />
+			<bridge-type-ref id="server"/>
 		</supported-bridge-type-refs>
 
 		<label>Sign</label>
 		<description>A sign with a redstone path under it.</description>
 
 		<channels>
-			<channel id="signActive" typeId="signActive" />
+			<channel id="signActive" typeId="signActive"/>
 		</channels>
 
 		<config-description>
@@ -83,14 +84,14 @@
 		<item-type>Number</item-type>
 		<label>Players</label>
 		<description>The number of players on the server.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="maxPlayers">
 		<item-type>Number</item-type>
 		<label>Max Players</label>
 		<description>The maxumum number of players on the server.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="online">
@@ -122,14 +123,14 @@
 		<item-type>Number</item-type>
 		<label>Total Experience</label>
 		<description>The total experience of the player.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="playerExperiencePercentage" advanced="true">
 		<item-type>Number</item-type>
 		<label>Experience</label>
 		<description>Percentage of the experience bar filled for the next level.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="playerHealth">
@@ -142,7 +143,7 @@
 		<item-type>Number</item-type>
 		<label>Speed</label>
 		<description>The speed of player.</description>
-		<state min="0" max="1" step="0.05" pattern="%.2f" />
+		<state min="0" max="1" step="0.05" pattern="%.2f"/>
 	</channel-type>
 
 	<channel-type id="playerGameMode" advanced="true">

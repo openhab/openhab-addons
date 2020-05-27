@@ -18,7 +18,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.openhab.binding.powermax.internal.message.PowermaxBaseMessage;
 import org.openhab.binding.powermax.internal.message.PowermaxMessageEvent;
 import org.openhab.binding.powermax.internal.message.PowermaxMessageEventListener;
@@ -51,7 +50,7 @@ public abstract class PowermaxConnector implements PowermaxConnectorInterface {
     /**
      * Cleanup everything; to be called when closing the communication
      */
-    protected void cleanup() {
+    protected void cleanup(boolean closeStreams) {
         logger.debug("cleanup(): cleaning up Connection");
 
         if (readerThread != null) {
@@ -62,12 +61,22 @@ public abstract class PowermaxConnector implements PowermaxConnectorInterface {
             }
         }
 
-        if (output != null) {
-            IOUtils.closeQuietly(output);
-        }
+        if (closeStreams) {
+            if (output != null) {
+                try {
+                    output.close();
+                } catch (IOException e) {
+                    logger.debug("Error while closing the output stream: {}", e.getMessage());
+                }
+            }
 
-        if (input != null) {
-            IOUtils.closeQuietly(input);
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e) {
+                    logger.debug("Error while closing the input stream: {}", e.getMessage());
+                }
+            }
         }
 
         readerThread = null;
@@ -198,5 +207,4 @@ public abstract class PowermaxConnector implements PowermaxConnectorInterface {
     public synchronized void setWaitingForResponse(long waitingForResponse) {
         this.waitingForResponse = waitingForResponse;
     }
-
 }

@@ -47,9 +47,9 @@ public class JSonPathTransformationService implements TransformationService {
      * Transforms the input <code>source</code> by JSonPath expression.
      *
      * @param function JsonPath expression
-     * @param source   String which contains JSON
+     * @param source String which contains JSON
      * @throws TransformationException If the JsonPath expression is invalid, a {@link InvalidPathException} is thrown,
-     *                                     which is encapsulated in a {@link TransformationException}.
+     *             which is encapsulated in a {@link TransformationException}.
      */
     @Override
     public @Nullable String transform(String jsonPathExpression, String source) throws TransformationException {

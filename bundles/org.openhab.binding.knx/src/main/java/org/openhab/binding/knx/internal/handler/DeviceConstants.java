@@ -43,5 +43,4 @@ public class DeviceConstants {
 
     // Property IDs for device information;
     public static final int HARDWARE_TYPE = 78;
-
 }

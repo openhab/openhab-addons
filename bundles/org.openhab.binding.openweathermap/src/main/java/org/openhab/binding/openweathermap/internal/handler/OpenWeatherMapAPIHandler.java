@@ -19,7 +19,6 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -75,7 +74,7 @@ public class OpenWeatherMapAPIHandler extends BaseBridgeHandler {
         config = getConfigAs(OpenWeatherMapAPIConfiguration.class);
 
         boolean configValid = true;
-        if (StringUtils.trimToNull(config.getApikey()) == null) {
+        if (config.getApikey() == null || config.getApikey().trim().isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-missing-apikey");
             configValid = false;
@@ -87,8 +86,7 @@ public class OpenWeatherMapAPIHandler extends BaseBridgeHandler {
             configValid = false;
         }
         String language = config.getLanguage();
-        if (language != null) {
-            language = StringUtils.trimToEmpty(language);
+        if (language != null && !(language = language.trim()).isEmpty()) {
             if (!OpenWeatherMapAPIConfiguration.SUPPORTED_LANGUAGES.contains(language.toLowerCase())) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.conf-error-not-supported-language");

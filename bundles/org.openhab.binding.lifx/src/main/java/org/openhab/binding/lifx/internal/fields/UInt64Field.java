@@ -40,5 +40,4 @@ public class UInt64Field extends Field<Long> {
     protected ByteBuffer bytesInternal(Long value) {
         return ByteBuffer.allocate(8).putLong(value);
     }
-
 }

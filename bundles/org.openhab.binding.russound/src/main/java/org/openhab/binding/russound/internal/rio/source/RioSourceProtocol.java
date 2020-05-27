@@ -632,7 +632,6 @@ class RioSourceProtocol extends AbstractRioProtocol {
         } else {
             logger.warn("Invalid Source Notification response: '{}'", resp);
         }
-
     }
 
     /**
@@ -763,5 +762,4 @@ class RioSourceProtocol extends AbstractRioProtocol {
             this.value = value;
         }
     }
-
 }

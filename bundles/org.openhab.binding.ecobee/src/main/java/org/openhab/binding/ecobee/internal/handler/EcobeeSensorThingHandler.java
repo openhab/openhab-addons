@@ -29,6 +29,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
@@ -119,8 +120,10 @@ public class EcobeeSensorThingHandler extends BaseThingHandler {
             logger.debug("SensorThing: Create channel '{}'", uid);
             ThingBuilder thingBuilder;
             thingBuilder = editThing();
-            thingBuilder.withChannel(ChannelBuilder.create(uid, getChannelType(capability.type))
-                    .withLabel("Sensor " + WordUtils.capitalize(capability.type)).build());
+            channel = ChannelBuilder.create(uid, getAcceptedItemType(capability.type))
+                    .withLabel("Sensor " + WordUtils.capitalize(capability.type))
+                    .withType(getChannelTypeUID(capability.type)).build();
+            thingBuilder.withChannel(channel);
             updateThing(thingBuilder.build());
         }
         logger.trace("Capability '{}' has type '{}' with value '{}'", capability.id, capability.type, capability.value);
@@ -128,27 +131,50 @@ public class EcobeeSensorThingHandler extends BaseThingHandler {
     }
 
     // adc, co2, dryContact, humidity, temperature, occupancy, unknown.
-    private String getChannelType(String capabilityType) {
-        String type;
+    private String getAcceptedItemType(String capabilityType) {
+        String acceptedItemType;
         switch (capabilityType) {
             case CAPABILITY_TEMPERATURE:
-                type = "Number:Temperature";
+                acceptedItemType = "Number:Temperature";
                 break;
             case CAPABILITY_HUMIDITY:
-                type = "Number:Dimensionless";
+                acceptedItemType = "Number:Dimensionless";
                 break;
             case CAPABILITY_OCCUPANCY:
-                type = "Switch";
+                acceptedItemType = "Switch";
                 break;
             case CAPABILITY_ADC:
             case CAPABILITY_CO2:
             case CAPABILITY_DRY_CONTACT:
             case CAPABILITY_UNKNOWN:
             default:
-                type = "String";
+                acceptedItemType = "String";
                 break;
         }
-        return type;
+        return acceptedItemType;
+    }
+
+    private ChannelTypeUID getChannelTypeUID(String capabilityType) {
+        ChannelTypeUID channelTypeUID;
+        switch (capabilityType) {
+            case CAPABILITY_TEMPERATURE:
+                channelTypeUID = CHANNELTYPEUID_TEMPERATURE;
+                break;
+            case CAPABILITY_HUMIDITY:
+                channelTypeUID = CHANNELTYPEUID_HUMIDITY;
+                break;
+            case CAPABILITY_OCCUPANCY:
+                channelTypeUID = CHANNELTYPEUID_OCCUPANCY;
+                break;
+            case CAPABILITY_ADC:
+            case CAPABILITY_CO2:
+            case CAPABILITY_DRY_CONTACT:
+            case CAPABILITY_UNKNOWN:
+            default:
+                channelTypeUID = CHANNELTYPEUID_GENERIC;
+                break;
+        }
+        return channelTypeUID;
     }
 
     private void updateCapabilityState(String capabilityType, String value) {

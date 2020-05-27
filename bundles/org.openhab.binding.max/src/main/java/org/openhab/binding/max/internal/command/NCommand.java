@@ -32,5 +32,4 @@ public class NCommand extends CubeCommand {
     public String getReturnStrings() {
         return "N:";
     }
-
 }

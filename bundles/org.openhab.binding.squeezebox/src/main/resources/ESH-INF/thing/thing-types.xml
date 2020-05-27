@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="squeezebox" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="squeezebox"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -8,8 +9,10 @@
 		<description>This is a SqueezeBox Server instance.</description>
 
 		<channels>
-			<channel id="favoritesList" typeId="favoritesList" />
+			<channel id="favoritesList" typeId="favoritesList"/>
 		</channels>
+
+		<representation-property>ipAddress</representation-property>
 
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
@@ -46,40 +49,40 @@
 
 	<thing-type id="squeezeboxplayer">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="squeezeboxserver" />
+			<bridge-type-ref id="squeezeboxserver"/>
 		</supported-bridge-type-refs>
 
 		<label>SqueezeBox Player</label>
 		<description>This is a SqueezeBox Player instance</description>
 
 		<channels>
-			<channel id="power" typeId="power" />
-			<channel id="mute" typeId="mute" />
-			<channel id="volume" typeId="volume" />
-			<channel id="stop" typeId="stop" />
-			<channel id="playPause" typeId="playPause" />
-			<channel id="next" typeId="next" />
-			<channel id="prev" typeId="prev" />
-			<channel id="control" typeId="control" />
-			<channel id="stream" typeId="stream" />
-			<channel id="source" typeId="source" />
-			<channel id="sync" typeId="sync" />
-			<channel id="unsync" typeId="unsync" />
-			<channel id="playListIndex" typeId="playListIndex" />
-			<channel id="currentPlayingTime" typeId="currentPlayingTime" />
-			<channel id="duration" typeId="duration" />
-			<channel id="currentPlaylistShuffle" typeId="currentPlaylistShuffle" />
-			<channel id="currentPlaylistRepeat" typeId="currentPlaylistRepeat" />
-			<channel id="title" typeId="title" />
-			<channel id="remotetitle" typeId="remotetitle" />
-			<channel id="album" typeId="album" />
-			<channel id="artist" typeId="artist" />
-			<channel id="year" typeId="year" />
-			<channel id="genre" typeId="genre" />
-			<channel id="coverartdata" typeId="coverartdata" />
-			<channel id="ircode" typeId="ircode" />
-			<channel id="numberPlaylistTracks" typeId="numberPlaylistTracks" />
-			<channel id="playFavorite" typeId="playFavorite" />
+			<channel id="power" typeId="power"/>
+			<channel id="mute" typeId="mute"/>
+			<channel id="volume" typeId="volume"/>
+			<channel id="stop" typeId="stop"/>
+			<channel id="playPause" typeId="playPause"/>
+			<channel id="next" typeId="next"/>
+			<channel id="prev" typeId="prev"/>
+			<channel id="control" typeId="control"/>
+			<channel id="stream" typeId="stream"/>
+			<channel id="source" typeId="source"/>
+			<channel id="sync" typeId="sync"/>
+			<channel id="unsync" typeId="unsync"/>
+			<channel id="playListIndex" typeId="playListIndex"/>
+			<channel id="currentPlayingTime" typeId="currentPlayingTime"/>
+			<channel id="duration" typeId="duration"/>
+			<channel id="currentPlaylistShuffle" typeId="currentPlaylistShuffle"/>
+			<channel id="currentPlaylistRepeat" typeId="currentPlaylistRepeat"/>
+			<channel id="title" typeId="title"/>
+			<channel id="remotetitle" typeId="remotetitle"/>
+			<channel id="album" typeId="album"/>
+			<channel id="artist" typeId="artist"/>
+			<channel id="year" typeId="year"/>
+			<channel id="genre" typeId="genre"/>
+			<channel id="coverartdata" typeId="coverartdata"/>
+			<channel id="ircode" typeId="ircode"/>
+			<channel id="numberPlaylistTracks" typeId="numberPlaylistTracks"/>
+			<channel id="playFavorite" typeId="playFavorite"/>
 		</channels>
 
 		<properties>
@@ -89,6 +92,8 @@
 			<property name="uid"></property>
 			<property name="ip"></property>
 		</properties>
+
+		<representation-property>mac</representation-property>
 
 		<config-description>
 			<parameter name="mac" type="text" required="true">
@@ -183,7 +188,7 @@
 		<description>Play the given HTTP or file stream (file:// or http://). </description>
 	</channel-type>
 	<channel-type id="source" advanced="true">
-	<item-type>String</item-type>
+		<item-type>String</item-type>
 		<label>Source</label>
 		<description>Shows the source of the currently playing playlist entry.</description>
 		<state readOnly="true" pattern="%s"></state>

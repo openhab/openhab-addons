@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="hdanywhere"
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-		xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- HDanywhere Thing Type -->
 	<thing-type id="multiroomplus">
@@ -28,7 +28,8 @@
 			</parameter>
 			<parameter name="ports" type="integer" required="true" min="1" max="8">
 				<label>Number of Ports</label>
-				<description>Specifies the number of input/output ports on the Matrix, e.g. 4 or 8 if 4x4 or 8x8 version of the Matrix</description>
+				<description>Specifies the number of input/output ports on the Matrix, e.g. 4 or 8 if 4x4 or 8x8 version of the
+					Matrix</description>
 				<default>4</default>
 			</parameter>
 			<parameter name="interval" type="integer" required="true">
@@ -43,7 +44,8 @@
 	<channel-type id="port">
 		<item-type>Number</item-type>
 		<label>Output Port</label>
-		<description>The port channel allows to set or read the number of the input port that is connected to the output port. Valid values are 1 to 8 depending on the nature of the Matrix, e.g 4x4 8x8 etc</description>
+		<description>The port channel allows to set or read the number of the input port that is connected to the output port.
+			Valid values are 1 to 8 depending on the nature of the Matrix, e.g 4x4 8x8 etc</description>
 	</channel-type>
 
 </thing:thing-descriptions>

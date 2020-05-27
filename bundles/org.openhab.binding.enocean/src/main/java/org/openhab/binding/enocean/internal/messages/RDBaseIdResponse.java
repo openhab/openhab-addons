@@ -48,5 +48,4 @@ public class RDBaseIdResponse extends Response {
     public int getRemainingWriteCycles() {
         return remainingWriteCycles;
     }
-
 }

@@ -10,9 +10,9 @@ This happens because of a TTL=1 for ALIVE packets send by Sonos devices, resulti
 
 ## Supported Things
 
-All available Sonos (playback) devices are supported by this binding. This includes the One, Play:1, Play:3, Play:5, Connect, Connect:Amp, Playbar, Playbase, Beam and Sub. The Bridge and Boost are not supported, but these devices do only have an auxiliary role in the Sonos network and do not have any playback capability. All supported Sonos devices are registered as an audio sink in the framework.
+All available Sonos (playback) devices are supported by this binding. This includes the One, OneSL, Play:1, Play:3, Play:5, Connect, Connect:Amp, Port, Amp, Playbar, Playbase, Beam and Sub. The Bridge and Boost are not supported, but these devices do only have an auxiliary role in the Sonos network and do not have any playback capability. All supported Sonos devices are registered as an audio sink in the framework.
 
-When being defined in a \*.things file, the specific thing types One, PLAY1, PLAY3, PLAY5, PLAYBAR, PLAYBASE, Beam, CONNECT and CONNECTAMP should be used.
+When being defined in a \*.things file, the specific thing types One, OneSL, PLAY1, PLAY3, PLAY5, PLAYBAR, PLAYBASE, Beam, CONNECT, CONNECTAMP, Port and Amp should be used.
 
 Please note that these thing types are case sensitive (you need to define them **exactly as stated above**).
 
@@ -64,17 +64,21 @@ The devices support the following channels:
 | currenttransporturi | String    | R           | URI of the current AV transport                                                                                                                           | all                                  |
 | favorite            | String    | W           | Play the given favorite entry. The favorite entry has to be predefined in the Sonos Controller app                                                        | all                                  |
 | led                 | Switch    | RW          | Set or get the status of the white LED on the front of the Zone Player                                                                                    | all                                  |
-| linein              | Switch    | R           | Indicator set to ON when the line-in of the Zone Player is connected                                                                                      | PLAY5, CONNECT, CONNECTAMP, PLAYBASE |
+| linein              | Switch    | R           | Indicator set to ON when the line-in of the Zone Player is connected                                                                                      | PLAY5, CONNECT, CONNECTAMP, PLAYBAR, PLAYBASE, Beam, Port |
+| analoglinein        | Switch    | R           | Indicator set to ON when the analog line-in of the Zone Player is connected                                                                               | Amp                                  |
+| digitallinein       | Switch    | R           | Indicator set to ON when the digital line-in of the Zone Player is connected                                                                              | Amp                                  |
 | localcoordinator    | Switch    | R           | Indicator set to ON if the this Zone Player is the Zone Group Coordinator                                                                                 | all                                  |
 | mute                | Switch    | RW          | Set or get the mute state of the master volume of the Zone Player                                                                                         | all                                  |
-| nightmode           | Switch    | RW          | Enable or disable the night mode feature                                                                                                                  | PLAYBAR, PLAYBASE, Beam              |
+| nightmode           | Switch    | RW          | Enable or disable the night mode feature                                                                                                                  | PLAYBAR, PLAYBASE, Beam, Amp         |
 | notificationsound   | String    | W           | Play a notification sound by a given URI                                                                                                                  | all                                  |
-| playlinein          | String    | W           | This channel supports playing the audio source connected to the line-in of the zoneplayer identified by the Thing UID or UPnP UDN provided by the String. | PLAY5, CONNECT, CONNECTAMP, PLAYBAR, PLAYBASE, Beam |
+| playlinein          | String    | W           | This channel supports playing the audio source connected to the line-in of the zoneplayer identified by the Thing UID or UPnP UDN provided by the String. | All                                  |
 | playlist            | String    | W           | Play the given playlist. The playlist has to predefined in the Sonos Controller app                                                                       | all                                  |
 | playqueue           | Switch    | W           | Play the songs from the current queue                                                                                                                     | all                                  |
 | playtrack           | Number    | W           | Play the given track number from the current queue                                                                                                        | all                                  |
 | playuri             | String    | W           | Play the given URI                                                                                                                                        | all                                  |
-| publicaddress       | Switch    | W           | Put all Zone Players in one group, and stream audio from the line-in from the Zone Player that triggered the command                                      | all                                  |
+| publicaddress       | Switch    | W           | Put all Zone Players in one group, and stream audio from the line-in from the Zone Player that triggered the command                                      | all except Amp                       |
+| publicanalogaddress | Switch    | W           | Put all Zone Players in one group, and stream audio from the analog line-in from the Zone Player that triggered the command                               | Amp                                  |
+| publicdigitaladdress| Switch    | W           | Put all Zone Players in one group, and stream audio from the digital line-in from the Zone Player that triggered the command                              | Amp                                  |
 | radio               | String    | W           | Play the given radio station. The radio station has to be predefined in the Sonos Controller app                                                          | all                                  |
 | remove              | String    | W           | Remove the given Zone Player from the group of this Zone Player                                                                                           | all                                  |
 | repeat              | String    | RW          | Repeat the track or queue playback. The accepted values are OFF, ONE and ALL                                                                              | all                                  |
@@ -85,7 +89,7 @@ The devices support the following channels:
 | shuffle             | Switch    | RW          | Shuffle the queue playback                                                                                                                                | all                                  |
 | sleeptimer          | Number    | RW          | Set/show the duration of the SleepTimer in seconds                                                                                                        | all                                  |
 | snooze              | Number    | W           | Snooze the running alarm, if any, with the given number of minutes                                                                                        | all                                  |
-| speechenhancement   | Switch    | RW          | Enable or disable the speech enhancement feature                                                                                                          | PLAYBAR, PLAYBASE, Beam              |
+| speechenhancement   | Switch    | RW          | Enable or disable the speech enhancement feature                                                                                                          | PLAYBAR, PLAYBASE, Beam, One, Amp    |
 | standalone          | Switch    | W           | Make the Zone Player leave its Group and become a standalone Zone Player                                                                                  | all                                  |
 | state               | String    | R           | The State channel contains state of the Zone Player, e.g. PLAYING, STOPPED, ...                                                                           | all                                  |
 | stop                | Switch    | W           | Write `ON` to this channel: Stops the Zone Player player.                                                                                                 | all                                  |
@@ -93,6 +97,10 @@ The devices support the following channels:
 | volume              | Dimmer    | RW          | Set or get the master volume of the Zone Player                                                                                                           | all                                  |
 | zonegroupid         | String    | R           | Id of the Zone Group the Zone Player belongs to                                                                                                           | all                                  |
 | zonename            | String    | R           | Name of the Zone associated to the Zone Player                                                                                                            | all                                  |
+
+The `playline` channel accepts as command either the thing UID or the UPnP UDN.
+Note that you can prefix your command value with "Analog," or "Digital," to distinguish the line-in of your Sonos device.
+This is useful for the Sonos Amp in particular.
 
 ## Audio Support
 

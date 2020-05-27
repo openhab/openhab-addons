@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<features name="org.openhab.binding.exec-${project.version}"
-	xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
+<features name="org.openhab.binding.exec-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
 	<repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${ohc.version}/xml/features</repository>
 
 	<feature name="openhab-binding-exec" description="Exec Binding" version="${project.version}">

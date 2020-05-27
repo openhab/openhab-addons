@@ -29,5 +29,4 @@ public class Timeclock {
     public Integer getIntegrationId() {
         return integrationId;
     }
-
 }

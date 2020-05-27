@@ -36,5 +36,4 @@ public abstract class HyperionCommand {
     public void setCommand(String command) {
         this.command = command;
     }
-
 }

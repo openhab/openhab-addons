@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 
 import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
 import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiException;
+import org.openhab.binding.opensprinkler.internal.model.NoCurrentDrawSensorException;
 import org.openhab.binding.opensprinkler.internal.model.StationProgram;
 
 /**
@@ -26,7 +27,7 @@ import org.openhab.binding.opensprinkler.internal.model.StationProgram;
  */
 public interface OpenSprinklerApi {
     /**
-     * Whether the devie entered manual mode and accepts API requests to control the stations.
+     * Whether the device entered manual mode and accepts API requests to control the stations.
      *
      * @return True if this API interface is connected to the Open Sprinkler API. False otherwise.
      */
@@ -89,6 +90,15 @@ public interface OpenSprinklerApi {
      * @throws Exception
      */
     public abstract boolean isRainDetected() throws CommunicationApiException;
+
+    /**
+     * Returns the current draw of all connected zones of the OpenSprinkler device in milliamperes.
+     *
+     * @return current draw in milliamperes
+     * @throws CommunicationApiException
+     * @throws
+     */
+    public abstract int currentDraw() throws CommunicationApiException, NoCurrentDrawSensorException;
 
     /**
      * Returns the number of total stations that are controllable from the OpenSprinkler

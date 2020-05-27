@@ -87,5 +87,4 @@ public class SlotHandler extends BaseThingHandler implements SlotUpdateListener 
         updateState(getThing().getChannel("run").getUID(), run ? OnOffType.ON : OnOffType.OFF);
         updateState(getThing().getChannel("description").getUID(), new StringType(si.description));
     }
-
 }

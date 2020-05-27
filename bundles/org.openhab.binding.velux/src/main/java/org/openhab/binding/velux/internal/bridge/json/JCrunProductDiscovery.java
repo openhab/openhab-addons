@@ -155,5 +155,4 @@ class JCrunProductDiscovery extends RunProductDiscovery implements JsonBridgeCom
     public String[] getErrors() {
         return response.getErrors();
     }
-
 }

@@ -5,11 +5,12 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- This thing should know just about every commands any LG TV could support.
-	This would be the thing to use if we haven't yet defined a proper thing limiting the supported
-	channels. -->
+		This would be the thing to use if we haven't yet defined a proper thing limiting the supported
+		channels. -->
 	<thing-type id="lgtv">
 		<label>Generic LG TV</label>
-		<description>Generic LG television connected through a serial interface. This thing should be used only when there is no proper thing defined for your TV model as it has most existing channels for most known commands.</description>
+		<description>Generic LG television connected through a serial interface. This thing should be used only when there is
+			no proper thing defined for your TV model as it has most existing channels for most known commands.</description>
 
 		<channels>
 			<channel id="3d" typeId="3d"/>
@@ -57,7 +58,7 @@
 			<channel id="tile-v-position" typeId="tile-v-position"/>
 			<channel id="tile-v-size" typeId="tile-v-size"/>
 			<!-- Used to set the time on the TV, but have no clue yet how to handle this...
-			<channel id="time" typeId="time"/>
+				<channel id="time" typeId="time"/>
 			-->
 			<channel id="tint" typeId="tint"/>
 			<channel id="treble" typeId="treble"/>
@@ -66,8 +67,7 @@
 			<channel id="v-position" typeId="v-position"/>
 		</channels>
 
-		<config-description-ref uri="thing-type:lgtvserial:serial" />
+		<config-description-ref uri="thing-type:lgtvserial:serial"/>
 	</thing-type>
 
 </thing:thing-descriptions>
-

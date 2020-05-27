@@ -39,5 +39,4 @@ public class NodeAvailableResponseMessage extends Message {
     protected String payloadToHexString() {
         return String.format("%02X", acceptanceCode ? 1 : 0) + destinationMAC;
     }
-
 }
