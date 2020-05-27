@@ -68,15 +68,15 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
     private static final long RECON_POLLING_INTERVAL = TimeUnit.SECONDS.toSeconds(60);
     private static final long POLLING_INTERVAL = TimeUnit.SECONDS.toSeconds(20);
     private static final long SLEEP_BETWEEN_CMD = TimeUnit.MILLISECONDS.toMillis(50);
-    
-    protected final Unit<Time> API_SECOND_UNIT = SmartHomeUnits.SECOND;
+
+    protected final Unit<Time> apiSecondUnit = SmartHomeUnits.SECOND;
     protected int metaRuntimeMultiple = 1;
     protected String friendlyName = "";
-    
+
     protected boolean volumeEnabled = false;
     protected int volume = 0;
     protected boolean isMuted = false;
-    
+
     private @Nullable ScheduledFuture<?> reconnectJob;
     private @Nullable ScheduledFuture<?> pollingJob;
 
@@ -95,13 +95,13 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
         super(thing);
         this.serialPortManager = serialPortManager;
     }
-    
+
     public void updateChannel(String channelUID, State state) {
         this.updateState(channelUID, state);
     }
-    
+
     public void updateDetailChannel(String channelUID, State state) {
-        this.updateState(DETAIL_ + channelUID, state);
+        this.updateState(DETAIL + channelUID, state);
     }
 
     @Override
@@ -126,35 +126,34 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                 configError = "invalid port configuration setting";
             }
         }
-        
+
         List<Channel> channels = new ArrayList<>(this.getThing().getChannels());
-        
+
         // check if volume is enabled, if not remove the volume & mute channels
         if (config.volumeEnabled != null && config.volumeEnabled == 1) {
             this.volumeEnabled = true;
             if (config.initialVolume != null) {
                 this.volume = config.initialVolume;
-                this.updateState(KaleidescapeBindingConstants.VOLUME,
-                        new PercentType(BigDecimal.valueOf(this.volume)));
+                this.updateState(KaleidescapeBindingConstants.VOLUME, new PercentType(BigDecimal.valueOf(this.volume)));
             }
         } else {
             channels.removeIf(c -> (c.getUID().getId().equals(VOLUME)));
             channels.removeIf(c -> (c.getUID().getId().equals(MUTE)));
         }
-        
+
         // remove music channels if we are not a Premiere Player or Cinema One
         if (!(PLAYER.equals(config.componentType) || CINEMA_ONE.equals(config.componentType))) {
-            channels.removeIf(c -> (c.getUID().getId().contains(MUSIC_)));
-            channels.removeIf(c -> (c.getUID().getId().equals(DETAIL_ + DETAIL_ALBUM_TITLE)));
-            channels.removeIf(c -> (c.getUID().getId().equals(DETAIL_ + DETAIL_ARTIST)));
-            channels.removeIf(c -> (c.getUID().getId().equals(DETAIL_ + DETAIL_REVIEW)));
+            channels.removeIf(c -> (c.getUID().getId().contains(MUSIC)));
+            channels.removeIf(c -> (c.getUID().getId().equals(DETAIL + DETAIL_ALBUM_TITLE)));
+            channels.removeIf(c -> (c.getUID().getId().equals(DETAIL + DETAIL_ARTIST)));
+            channels.removeIf(c -> (c.getUID().getId().equals(DETAIL + DETAIL_REVIEW)));
         }
-        
+
         // premiere players do not support SYSTEM_READINESS_STATE
         if (PLAYER.equals(config.componentType)) {
             channels.removeIf(c -> (c.getUID().getId().equals(SYSTEM_READINESS_STATE)));
         }
-        
+
         // remove VIDEO_COLOR and CONTENT_COLOR if not a Strato
         if (!STRATO.equals(config.componentType)) {
             channels.removeIf(c -> (c.getUID().getId().equals(VIDEO_COLOR)));
@@ -162,7 +161,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
             channels.removeIf(c -> (c.getUID().getId().equals(CONTENT_COLOR)));
             channels.removeIf(c -> (c.getUID().getId().equals(CONTENT_COLOR_EOTF)));
         }
-        
+
         updateThing(editThing().withChannels(channels).build());
 
         if (configError != null) {
@@ -291,7 +290,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
      * Close the connection with the Kaleidescape component
      */
     private synchronized void closeConnection() {
-        if (connector !=null && connector.isConnected()) {
+        if (connector != null && connector.isConnected()) {
             connector.close();
             connector.removeEventListener(this);
             logger.debug("closeConnection(): disconnected");
@@ -300,12 +299,11 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
 
     @Override
     public void onNewMessageEvent(EventObject event) {
-
         KaleidescapeMessageEvent evt = (KaleidescapeMessageEvent) event;
-        //logger.debug("onNewMessageEvent: key {} = {}", evt.getKey(), evt.getValue());
+        // logger.debug("onNewMessageEvent: key {} = {}", evt.getKey(), evt.getValue());
         lastPollingUpdate = System.currentTimeMillis();
-        
-        // check if we are in standby  
+
+        // check if we are in standby
         if (KaleidescapeConnector.STANDBY_MSG.equals(evt.getKey())) {
             if (!ThingStatusDetail.BRIDGE_OFFLINE.equals(thing.getStatusInfo().getStatusDetail())) {
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.BRIDGE_OFFLINE, KaleidescapeConnector.STANDBY_MSG);
@@ -313,9 +311,10 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
             return;
         } else {
             try {
-                // Use the Enum valueOf to handle the message based on the event key. Otherwise there would be a huge case statement here
+                // Use the Enum valueOf to handle the message based on the event key. Otherwise there would be a huge
+                // case statement here
                 KaleidescapeMessageHandler.valueOf(evt.getKey()).handleMessage(evt.getValue(), this);
-                
+
                 if (ThingStatusDetail.BRIDGE_OFFLINE.equals(thing.getStatusInfo().getStatusDetail())) {
                     // no longer in standby, update the status
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, this.friendlyName);
@@ -343,28 +342,32 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                         try {
                             Long prevUpdateTime = lastPollingUpdate;
 
-                            ArrayList<String> initialCommands = new ArrayList<String>(Arrays.asList("GET_DEVICE_TYPE_NAME",
-                                    "GET_FRIENDLY_NAME", "GET_DEVICE_INFO", "GET_SYSTEM_VERSION", "GET_DEVICE_POWER_STATE",
-                                    "GET_CINEMASCAPE_MASK", "GET_CINEMASCAPE_MODE", "GET_SCALE_MODE", "GET_SCREEN_MASK",
-                                    "GET_SCREEN_MASK2", "GET_VIDEO_MODE", "GET_UI_STATE", "GET_HIGHLIGHTED_SELECTION",
-                                    "GET_CHILD_MODE_STATE", "GET_MOVIE_LOCATION", "GET_MOVIE_MEDIA_TYPE", "GET_PLAYING_TITLE_NAME"));
-                            
+                            ArrayList<String> initialCommands = new ArrayList<String>(
+                                    Arrays.asList("GET_DEVICE_TYPE_NAME", "GET_FRIENDLY_NAME", "GET_DEVICE_INFO",
+                                            "GET_SYSTEM_VERSION", "GET_DEVICE_POWER_STATE", "GET_CINEMASCAPE_MASK",
+                                            "GET_CINEMASCAPE_MODE", "GET_SCALE_MODE", "GET_SCREEN_MASK",
+                                            "GET_SCREEN_MASK2", "GET_VIDEO_MODE", "GET_UI_STATE",
+                                            "GET_HIGHLIGHTED_SELECTION", "GET_CHILD_MODE_STATE", "GET_MOVIE_LOCATION",
+                                            "GET_MOVIE_MEDIA_TYPE", "GET_PLAYING_TITLE_NAME"));
+
                             // Premiere Players and Cinema One support music
                             if (PLAYER.equals(config.componentType) || CINEMA_ONE.equals(config.componentType)) {
-                                initialCommands.addAll(new ArrayList<String>(Arrays.asList("GET_MUSIC_NOW_PLAYING_STATUS", 
-                                        "GET_MUSIC_PLAY_STATUS", "GET_MUSIC_TITLE")));
+                                initialCommands
+                                        .addAll(new ArrayList<String>(Arrays.asList("GET_MUSIC_NOW_PLAYING_STATUS",
+                                                "GET_MUSIC_PLAY_STATUS", "GET_MUSIC_TITLE")));
                             }
-                            
+
                             // everything after Premiere Player supports GET_SYSTEM_READINESS_STATE
                             if (!PLAYER.equals(config.componentType)) {
                                 initialCommands.add("GET_SYSTEM_READINESS_STATE");
                             }
-                            
+
                             // only Strato supports the GET_*_COLOR commands
                             if (STRATO.equals(config.componentType)) {
-                                initialCommands.addAll(new ArrayList<String>(Arrays.asList("GET_VIDEO_COLOR", "GET_CONTENT_COLOR")));
+                                initialCommands.addAll(
+                                        new ArrayList<String>(Arrays.asList("GET_VIDEO_COLOR", "GET_CONTENT_COLOR")));
                             }
-                            
+
                             initialCommands.forEach(command -> {
                                 try {
                                     Thread.sleep(SLEEP_BETWEEN_CMD);
@@ -373,18 +376,18 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                                     logger.debug("{}: {}", "Error sending initial commands", e.getMessage());
                                 }
                             });
-                            
+
                             if (config.updatePeriod == 1) {
                                 Thread.sleep(SLEEP_BETWEEN_CMD);
                                 connector.sendCommand("SET_STATUS_CUE_PERIOD:1");
                             }
-                            
+
                             // prevUpdateTime should have changed if a response was received
                             if (prevUpdateTime.equals(lastPollingUpdate)) {
                                 error = "Component not responding to status requests";
                             }
 
-                        } catch (InterruptedException | KaleidescapeException e ) {
+                        } catch (InterruptedException | KaleidescapeException e) {
                             error = "First command after connection failed";
                             logger.debug("{}: {}", error, e.getMessage());
                             closeConnection();
@@ -428,7 +431,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                 synchronized (sequenceLock) {
                     try {
                         connector.ping();
-                
+
                     } catch (KaleidescapeException e) {
                         logger.debug("Polling error: {}", e.getMessage());
                     }
@@ -437,10 +440,11 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                     // the component is not responding even though the connection is still good
                     if ((System.currentTimeMillis() - lastPollingUpdate) > (POLLING_INTERVAL * 1.25 * 1000)) {
                         logger.warn("Component not responding to status requests");
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Component not responding to status requests");
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "Component not responding to status requests");
                         closeConnection();
                         scheduleReconnectJob();
-                    } 
+                    }
                 }
             }
         }, POLLING_INTERVAL, POLLING_INTERVAL, TimeUnit.SECONDS);
@@ -456,7 +460,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
             this.pollingJob = null;
         }
     }
-    
+
     private void handleControlCommand(Command command) throws KaleidescapeException {
         if (command instanceof PlayPauseType) {
             if (command == PlayPauseType.PLAY) {
@@ -480,5 +484,4 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
             logger.debug("Unknown control command: {}", command);
         }
     }
-
 }

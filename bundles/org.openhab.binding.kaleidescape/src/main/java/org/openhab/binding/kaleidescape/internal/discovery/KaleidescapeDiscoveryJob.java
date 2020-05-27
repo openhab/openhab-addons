@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Chris Graham - Initial contribution
  * @author Michael Lobstein - Adapted for the Kaleidescape binding
- *  
+ * 
  */
 @NonNullByDefault
 public class KaleidescapeDiscoveryJob implements Runnable {
@@ -56,7 +56,8 @@ public class KaleidescapeDiscoveryJob implements Runnable {
     @Override
     public void run() {
         if (hasKaleidescapeDevice(this.ipAddress)) {
-            discoveryClass.submitDiscoveryResults(this.ipAddress, this.componentType, this.friendlyName, this.serialNumber);
+            discoveryClass.submitDiscoveryResults(this.ipAddress, this.componentType, this.friendlyName,
+                    this.serialNumber);
         }
     }
 
@@ -77,7 +78,8 @@ public class KaleidescapeDiscoveryJob implements Runnable {
                 return false;
             }
         } catch (Exception exp) {
-            logger.debug("No Kaleidescape component found at IP address ({}) because of error: {}", ip, exp.getMessage());
+            logger.debug("No Kaleidescape component found at IP address ({}) because of error: {}", ip,
+                    exp.getMessage());
             return false;
         }
     }
@@ -90,19 +92,18 @@ public class KaleidescapeDiscoveryJob implements Runnable {
      * @return True if the component found is one the binding supports
      */
     private boolean isKaleidescapeDevice(InetAddress host, int port) {
-        
         try (Socket socket = new Socket()) {
             socket.connect(new InetSocketAddress(host, port), DISCOVERY_DEFAULT_IP_TIMEOUT_RATE);
 
             OutputStream output = socket.getOutputStream();
             PrintWriter writer = new PrintWriter(output, true);
-            
+
             // query the component to see if it has video zones, the device type, friendly name, and serial number
             writer.println("01/1/GET_NUM_ZONES:");
             writer.println("01/1/GET_DEVICE_TYPE_NAME:");
             writer.println("01/1/GET_FRIENDLY_NAME:");
             writer.println("01/1/GET_DEVICE_INFO:");
-            
+
             InputStream input = socket.getInputStream();
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(input));
@@ -113,7 +114,7 @@ public class KaleidescapeDiscoveryJob implements Runnable {
 
             while ((line = reader.readLine()) != null) {
                 String[] strArr = line.split(":");
-                
+
                 switch (strArr[1]) {
                     case "NUM_ZONES":
                         videoZone = strArr[2];
@@ -128,24 +129,24 @@ public class KaleidescapeDiscoveryJob implements Runnable {
                         serialNumber = strArr[3].trim(); // take off leading zeros
                         break;
                 }
-                
+
                 lineCount++;
-                
+
                 // stop after reading four lines
                 if (lineCount > 3) {
                     break;
                 }
             }
-            
+
             reader.close();
             input.close();
             output.close();
             socket.close();
-            
+
             // see if we have a video zone
             if ("01".equals(videoZone)) {
                 // now check if we are one of the allowed types
-                if (allowedDevices.contains(componentType)) {
+                if (ALLOWED_DEVICES.contains(componentType)) {
                     // A Disc Vault with a video zone (the M700 vault), just call it a 'Player'
                     if (DISC_VAULT.equals(componentType)) {
                         componentType = PLAYER;
@@ -153,13 +154,11 @@ public class KaleidescapeDiscoveryJob implements Runnable {
                     return true;
                 }
             }
-            
         } catch (IOException e) {
             logger.debug("isKaleidescapeDevice() IOException: {}", e.getMessage());
             return false;
         }
-        
+
         return false;
-        
     }
 }

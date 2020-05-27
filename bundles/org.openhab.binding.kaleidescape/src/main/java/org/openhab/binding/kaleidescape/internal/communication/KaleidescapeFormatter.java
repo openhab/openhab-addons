@@ -53,7 +53,6 @@ public class KaleidescapeFormatter {
             input = input.replaceAll("(?i)\\\\d([0-9]{3})", "\\&#$1;"); // first convert to html escaped codes
             // then convert with unescapeHtml, not sure how to do this without the Apache libraries :(
             return StringEscapeUtils.unescapeHtml(input);
-             
         }       
         return input;
     }

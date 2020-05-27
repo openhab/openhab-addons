@@ -41,5 +41,4 @@ public class KaleidescapeMessageEvent extends EventObject {
     public String getValue() {
         return value;
     }
-
 }

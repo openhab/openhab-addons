@@ -172,11 +172,11 @@ public abstract class KaleidescapeConnector {
      */
     public void sendCommand(String cmd) throws KaleidescapeException {
         String messageStr = BEGIN_CMD + cmd + END_CMD;
-        
+
         byte[] message = new byte[0];
-        
+
         message = messageStr.getBytes(StandardCharsets.US_ASCII);
-        logger.debug("Send command {}", messageStr);      
+        logger.debug("Send command {}", messageStr);
 
         OutputStream dataOut = this.dataOut;
         if (dataOut == null) {
@@ -217,26 +217,25 @@ public abstract class KaleidescapeConnector {
      */
     public void handleIncomingMessage(byte[] incomingMessage) {
         String message = new String(incomingMessage).trim();
-        
+
         // ignore empty success messages
         if (!SUCCESS_MSG.equals(message)) {
             logger.debug("handleIncomingMessage: {}", message);
-            
+
             // Kaleidescape message ie: 01/!/000:TITLE_NAME:Office Space:/79
             // or: 01/!/000:PLAY_STATUS:2:0:01:07124:00138:001:00311:00138:/27
             // or: 01/1/000:TIME:2020:04:27:11:38:52:CDT:/84
             // g1=zoneid, g2=sequence, g3=message name, g4=message, g5=checksum
-            Pattern p=Pattern.compile("^(\\d{2})/./(\\d{3})\\:([^:^/]*)\\:(.*?)\\:/(\\d{2})$");
-            
+            Pattern p = Pattern.compile("^(\\d{2})/./(\\d{3})\\:([^:^/]*)\\:(.*?)\\:/(\\d{2})$");
+
             try {
-                Matcher matcher=p.matcher(message);
+                Matcher matcher = p.matcher(message);
                 matcher.find();
                 dispatchKeyValue(matcher.group(3), matcher.group(4));
-            } catch (IllegalStateException| IllegalArgumentException e) {
+            } catch (IllegalStateException | IllegalArgumentException e) {
                 logger.debug("no match on message: {}", message);
                 if (message.contains(STANDBY_MSG)) {
                     dispatchKeyValue(STANDBY_MSG, "");
-                    
                 }
             }
         }

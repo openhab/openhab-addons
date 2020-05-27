@@ -29,5 +29,4 @@ public class KaleidescapeThingConfiguration {
     public @NonNullByDefault({}) Integer updatePeriod;
     public @NonNullByDefault({}) Integer volumeEnabled;
     public @NonNullByDefault({}) Integer initialVolume;
-
 }

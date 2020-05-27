@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
 public class KaleidescapeDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(KaleidescapeDiscoveryService.class);
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
-            Arrays.asList(THING_TYPE_PlAYER_ZONE));
+            Arrays.asList(THING_TYPE_PLAYER_ZONE));
 
     private @Nullable ExecutorService discoverySearchPool;
 
@@ -100,7 +100,7 @@ public class KaleidescapeDiscoveryService extends AbstractDiscoveryService {
      * @param serialNumber Serial Number of Kaleidescape component as a string.
      */
     public void submitDiscoveryResults(String ip, String componentType, String friendlyName, String serialNumber) {
-        ThingUID uid = new ThingUID(THING_TYPE_PlAYER_ZONE, serialNumber);
+        ThingUID uid = new ThingUID(THING_TYPE_PLAYER_ZONE, serialNumber);
 
         HashMap<String, Object> properties = new HashMap<>();
 
@@ -108,8 +108,8 @@ public class KaleidescapeDiscoveryService extends AbstractDiscoveryService {
         properties.put("port", DEFAULT_API_PORT);
         properties.put("componentType", componentType);
 
-        thingDiscovered(
-                DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(componentType + " (" + friendlyName + ")").build());
+        thingDiscovered(DiscoveryResultBuilder.create(uid).withProperties(properties)
+                .withLabel(componentType + " (" + friendlyName + ")").build());
     }
 
     /**
@@ -137,7 +137,8 @@ public class KaleidescapeDiscoveryService extends AbstractDiscoveryService {
 
                 SubnetUtils utils = new SubnetUtils(cidrSubnet);
 
-                results.addAll(Arrays.asList(utils.getInfo().getAllAddresses())); // not sure how to do this without the Apache libraries
+                results.addAll(Arrays.asList(utils.getInfo().getAllAddresses())); // not sure how to do this without the
+                                                                                  // Apache libraries
             } else if (ipAddress instanceof Inet6Address) {
                 logger.debug("Found interface IPv6 address to scan: {}", cidrSubnet);
             } else {

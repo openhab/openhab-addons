@@ -68,8 +68,7 @@ public class KaleidescapeSerialConnector extends KaleidescapeConnector {
 
             SerialPort commPort = portIdentifier.open(this.getClass().getName(), 2000);
 
-            commPort.setSerialPortParams(19200, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
-                    SerialPort.PARITY_NONE);
+            commPort.setSerialPortParams(19200, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
             commPort.enableReceiveThreshold(1);
             commPort.enableReceiveTimeout(100);
             commPort.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
