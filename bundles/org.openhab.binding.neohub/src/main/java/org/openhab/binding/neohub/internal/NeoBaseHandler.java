@@ -277,8 +277,8 @@ public class NeoBaseHandler extends BaseThingHandler {
 
     protected Unit<?> getTemperatureUnit() {
         @Nullable
-        NeoHubHandler hub;
-        if ((hub = getNeoHub()) != null) {
+        NeoHubHandler hub = getNeoHub();
+        if (hub != null) {
             return hub.getTemperatureUnit();
         }
         return SIUnits.CELSIUS;

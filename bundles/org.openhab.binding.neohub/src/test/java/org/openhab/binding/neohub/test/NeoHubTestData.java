@@ -24,6 +24,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.Instant;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.unit.ImperialUnits;
@@ -367,14 +368,31 @@ public class NeoHubTestData {
     public void testCommunications() {
         String responseJson = testCommunicationInner(CMD_CODE_INFO);
         assertFalse(responseJson.isEmpty());
+
         responseJson = testCommunicationInner(CMD_CODE_READ_DCB);
         assertFalse(responseJson.isEmpty());
+
+        NeoHubReadDcbResponse dcbResponse = NeoHubReadDcbResponse.createSystemData(responseJson);
+        assertNotNull(dcbResponse);
+
+        long timeStamp = dcbResponse.timeStamp;
+        assertEquals(Instant.now().getEpochSecond(), timeStamp, 1);
+
         responseJson = testCommunicationInner(CMD_CODE_GET_LIVE_DATA);
         assertFalse(responseJson.isEmpty());
+
+        NeoHubLiveDeviceData liveDataResponse = NeoHubLiveDeviceData.createDeviceData(responseJson);
+        assertNotNull(liveDataResponse);
+
+        assertTrue(timeStamp > liveDataResponse.getTimestampEngineers());
+        assertTrue(timeStamp > liveDataResponse.getTimestampSystem());
+
         responseJson = testCommunicationInner(CMD_CODE_GET_ENGINEERS);
         assertFalse(responseJson.isEmpty());
+
         responseJson = testCommunicationInner(CMD_CODE_GET_SYSTEM);
         assertFalse(responseJson.isEmpty());
+
         responseJson = testCommunicationInner(String.format(CMD_CODE_TEMP, "20", "Hallway"));
         assertFalse(responseJson.isEmpty());
     }

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.neohub.internal;
 
+import java.time.Instant;
+
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -36,6 +38,14 @@ public class NeoHubReadDcbResponse {
 
     @SerializedName("CORF")
     private @Nullable String degreesCorF;
+
+    /*
+     * note: time-stamps are measured in seconds from 1970-01-01T00:00:00Z
+     *
+     * this time-stamp is the moment of creation of this class instance; it is used
+     * to compare with the system last change time-stamp reported by the hub
+     */
+    public final long timeStamp = Instant.now().getEpochSecond();
 
     public Unit<?> getTemperatureUnit() {
         return "F".equalsIgnoreCase(degreesCorF) ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS;

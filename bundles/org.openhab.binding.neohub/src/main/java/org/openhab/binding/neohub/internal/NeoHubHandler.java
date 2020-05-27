@@ -15,6 +15,7 @@ package org.openhab.binding.neohub.internal;
 import static org.openhab.binding.neohub.internal.NeoHubBindingConstants.*;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,14 +64,10 @@ public class NeoHubHandler extends BaseBridgeHandler {
 
     private final AtomicInteger fastPollingCallsToGo = new AtomicInteger();
 
-    private Unit<?> temperatureUnit = SIUnits.CELSIUS;
+    private @Nullable NeoHubReadDcbResponse systemData = null;
 
     private boolean isLegacyApiSelected = true;
     private boolean isApiOnline = false;
-
-    private boolean systemDataDirty = true;
-    private long systemTimestamp = -1;
-    private Instant systemLastRefreshed = Instant.now().minusSeconds(3600);
 
     public NeoHubHandler(Bridge bridge) {
         super(bridge);
@@ -251,16 +248,28 @@ public class NeoHubHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
             }
 
-            if (deviceData instanceof NeoHubLiveDeviceData) {
-                long temp = ((NeoHubLiveDeviceData) deviceData).getTimestampSystem();
-                if (temp != systemTimestamp) {
-                    systemDataDirty = true;
-                    systemTimestamp = temp;
-                }
-            } else {
-                if (Instant.now().isAfter(systemLastRefreshed.plusSeconds(3600))) {
-                    systemDataDirty = true;
-                    systemLastRefreshed = Instant.now();
+            // check if we also need to discard and update systemData
+            NeoHubReadDcbResponse systemData = this.systemData;
+            if (systemData != null) {
+                if (deviceData instanceof NeoHubLiveDeviceData) {
+                    /*
+                     * note: time-stamps are measured in seconds from 1970-01-01T00:00:00Z
+                     * 
+                     * new API: discard systemData if its time-stamp is older than the system
+                     * time-stamp on the hub
+                     */
+                    if (systemData.timeStamp < ((NeoHubLiveDeviceData) deviceData).getTimestampSystem()) {
+                        this.systemData = null;
+                    }
+                } else {
+                    /*
+                     * note: time-stamps are measured in seconds from 1970-01-01T00:00:00Z
+                     * 
+                     * legacy API: discard systemData if its time-stamp is older than one hour
+                     */
+                    if (systemData.timeStamp < Instant.now().minus(1, ChronoUnit.HOURS).getEpochSecond()) {
+                        this.systemData = null;
+                    }
                 }
             }
 
@@ -280,7 +289,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
     protected @Nullable NeoHubReadDcbResponse fromNeoHubReadSystemData() {
         NeoHubSocket socket = this.socket;
 
-        if (socket == null || !systemDataDirty) {
+        if (socket == null) {
             return null;
         }
 
@@ -321,16 +330,6 @@ public class NeoHubHandler extends BaseBridgeHandler {
 
         NeoHubAbstractDeviceData deviceData = fromNeoHubGetDeviceData();
         if (deviceData != null) {
-            // check the temperature unit
-            if (systemDataDirty) {
-                NeoHubReadDcbResponse systemData = fromNeoHubReadSystemData();
-                if (systemData != null) {
-                    temperatureUnit = systemData.getTemperatureUnit();
-                    systemDataDirty = false;
-                    logger.info("Setting temperature unit: => {}", temperatureUnit);
-                }
-            }
-
             // dispatch deviceData to each of the hub's owned devices ..
             List<Thing> children = getThing().getThings();
             for (Thing child : children) {
@@ -347,33 +346,28 @@ public class NeoHubHandler extends BaseBridgeHandler {
             if (devices == null || devices.isEmpty()) {
                 state = UnDefType.UNDEF;
             } else {
-                int totalDeviceCount;
+                int totalDeviceCount = devices.size();
+                int onlineDeviceCount = 0;
 
-                if ((totalDeviceCount = devices.size()) == 0) {
-                    state = UnDefType.UNDEF;
-                } else {
-                    int onlineDeviceCount = 0;
+                for (AbstractRecord device : devices) {
+                    String deviceName = device.getDeviceName();
+                    Boolean online = !device.offline();
 
-                    for (AbstractRecord device : devices) {
-                        String deviceName = device.getDeviceName();
-                        Boolean online = !device.offline();
-
-                        if (connectionStates.containsKey(deviceName)) {
-                            @Nullable
-                            Boolean onlineBefore = connectionStates.get(deviceName);
-                            if (!online.equals(onlineBefore)) {
-                                logger.info("device \"{}\" has {} the RF mesh network", deviceName,
-                                        online.booleanValue() ? "joined" : "left");
-                            }
-                        }
-                        connectionStates.put(deviceName, online);
-
-                        if (online.booleanValue()) {
-                            onlineDeviceCount++;
+                    if (connectionStates.containsKey(deviceName)) {
+                        @Nullable
+                        Boolean onlineBefore = connectionStates.get(deviceName);
+                        if (!online.equals(onlineBefore)) {
+                            logger.info("device \"{}\" has {} the RF mesh network", deviceName,
+                                    online.booleanValue() ? "joined" : "left");
                         }
                     }
-                    state = new DecimalType((100.0 * onlineDeviceCount) / totalDeviceCount);
+                    connectionStates.put(deviceName, online);
+
+                    if (online.booleanValue()) {
+                        onlineDeviceCount++;
+                    }
                 }
+                state = new DecimalType((100.0 * onlineDeviceCount) / totalDeviceCount);
             }
             updateState(CHAN_MESH_NETWORK_QOS, state);
         }
@@ -466,6 +460,13 @@ public class NeoHubHandler extends BaseBridgeHandler {
     }
 
     public Unit<?> getTemperatureUnit() {
-        return temperatureUnit;
+        NeoHubReadDcbResponse systemData = this.systemData;
+        if (systemData == null) {
+            this.systemData = systemData = fromNeoHubReadSystemData();
+        }
+        if (systemData != null) {
+            return systemData.getTemperatureUnit();
+        }
+        return SIUnits.CELSIUS;
     }
 }

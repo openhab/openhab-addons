@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * 
  */
 @NonNullByDefault
-public class NeoHubException extends RuntimeException {
+public class NeoHubException extends Exception {
 
     private static final long serialVersionUID = -7358712540781217363L;
 
