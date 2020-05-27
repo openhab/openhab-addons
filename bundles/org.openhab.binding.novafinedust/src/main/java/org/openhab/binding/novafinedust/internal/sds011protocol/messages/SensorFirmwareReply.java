@@ -23,9 +23,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class SensorFirmwareReply extends SensorReply {
 
-    private byte year;
-    private byte month;
-    private byte day;
+    private final byte year;
+    private final byte month;
+    private final byte day;
 
     public SensorFirmwareReply(byte[] receivedData) {
         super(receivedData);

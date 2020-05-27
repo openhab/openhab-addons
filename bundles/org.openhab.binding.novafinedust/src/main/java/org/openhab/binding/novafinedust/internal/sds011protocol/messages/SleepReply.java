@@ -23,8 +23,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class SleepReply extends SensorReply {
 
-    private byte actionType;
-    private byte sleep;
+    private final byte actionType;
+    private final byte sleep;
 
     public SleepReply(byte[] bytes) {
         super(bytes);

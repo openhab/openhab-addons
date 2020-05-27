@@ -23,8 +23,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class WorkingPeriodReply extends SensorReply {
 
-    private byte actionType;
-    private byte period;
+    private final byte actionType;
+    private final byte period;
 
     public WorkingPeriodReply(byte[] bytes) {
         super(bytes);

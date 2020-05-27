@@ -24,8 +24,8 @@ import org.openhab.binding.novafinedust.internal.sds011protocol.WorkMode;
 @NonNullByDefault
 public class ModeReply extends SensorReply {
 
-    private byte actionType;
-    private WorkMode mode;
+    private final byte actionType;
+    private final WorkMode mode;
 
     public ModeReply(byte[] bytes) {
         super(bytes);

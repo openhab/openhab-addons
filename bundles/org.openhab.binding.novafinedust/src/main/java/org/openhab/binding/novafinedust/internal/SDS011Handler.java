@@ -199,9 +199,7 @@ public class SDS011Handler extends BaseThingHandler {
             connectionMonitor = null;
         }
 
-        if (communicator != null) {
-            scheduler.schedule(() -> communicator.dispose(), 0, TimeUnit.SECONDS);
-        }
+        communicator.dispose();
 
         this.statePM10 = UnDefType.UNDEF;
         this.statePM25 = UnDefType.UNDEF;
