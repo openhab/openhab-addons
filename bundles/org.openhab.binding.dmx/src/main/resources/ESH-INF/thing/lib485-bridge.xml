@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="dmx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+<thing:thing-descriptions bindingId="dmx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<!-- Lib485 Bridge -->
 	<bridge-type id="lib485-bridge">
 		<label>Lib485 Bridge</label>
@@ -19,7 +21,7 @@
 				<description>List of channels that should use LED dim curve. Format is channel[,channel, ...] or channel[/width].</description>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="refreshrate"  type="decimal" min="0" max="100">
+			<parameter name="refreshrate" type="decimal" min="0" max="100">
 				<description>DMX refresh rate in Hz (0=disable output)</description>
 				<default>30</default>
 				<advanced>true</advanced>

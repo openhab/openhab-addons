@@ -51,5 +51,4 @@ public class TankerkoenigBindingConstants {
 
     // String used Identify unsucessful web-return
     public static final String NO_VALID_RESPONSE = "No valid response from the web-request!";
-
 }

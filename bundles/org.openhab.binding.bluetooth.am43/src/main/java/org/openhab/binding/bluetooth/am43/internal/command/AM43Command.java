@@ -167,5 +167,4 @@ public abstract class AM43Command {
     public String toString() {
         return getClass().getSimpleName();
     }
-
 }

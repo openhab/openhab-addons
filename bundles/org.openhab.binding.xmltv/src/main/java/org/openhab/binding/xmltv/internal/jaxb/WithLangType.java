@@ -45,5 +45,4 @@ public class WithLangType {
     public String getLang() {
         return lang;
     }
-
 }

@@ -26,7 +26,7 @@ public class HomematicBindingConstants {
     public static final String BINDING_ID = "homematic";
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
     public static final String CONFIG_DESCRIPTION_URI_CHANNEL = "channel-type:homematic:config";
-    
+
     /**
      * A thing's config-description-uri is generally composed as follows:<br>
      * {@link #CONFIG_DESCRIPTION_URI_THING_PREFIX}:{@link ThingTypeUID}
@@ -64,7 +64,7 @@ public class HomematicBindingConstants {
     public static final String PROPERTY_BATTERY_TYPE = "batteryType";
     public static final String PROPERTY_AES_KEY = "aesKey";
     public static final String PROPERTY_DYNAMIC_FUNCTION_FORMAT = "dynamicFunction-%d";
-    
+
     public static final int INSTALL_MODE_NORMAL = 1;
 
     public static final int CONFIGURATION_CHANNEL_NUMBER = -1;

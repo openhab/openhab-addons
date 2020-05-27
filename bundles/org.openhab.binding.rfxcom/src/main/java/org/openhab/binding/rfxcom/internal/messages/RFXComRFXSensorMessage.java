@@ -180,7 +180,6 @@ public class RFXComRFXSensorMessage extends RFXComDeviceMessageImpl<RFXComRFXSen
         short miliVoltageTimesTenShort = this.miliVoltageTimesTen.shortValueExact();
         data[5] = (byte) ((miliVoltageTimesTenShort >> 8) & 0xFF);
         data[6] = (byte) (miliVoltageTimesTenShort & 0xFF);
-
     }
 
     private void decodeStatusMessage(byte[] data) {

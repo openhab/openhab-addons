@@ -90,7 +90,7 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
     private State volumeLevelZone2 = UnDefType.UNDEF;
     private State volumeLevelZone3 = UnDefType.UNDEF;
     private State lastPowerState = OnOffType.OFF;
-    
+
     private final OnkyoStateDescriptionProvider stateDescriptionProvider;
 
     private final OnkyoAlbumArt onkyoAlbumArt = new OnkyoAlbumArt();
@@ -509,7 +509,6 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
         } catch (ParserConfigurationException | SAXException | IOException e) {
             logger.debug("Error occured during Info XML parsing.", e);
         }
-
     }
 
     @Override
@@ -620,7 +619,6 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
             logger.debug("Not supported album art URL type: {}", data.substring(0, 2));
             updateState(CHANNEL_ALBUM_ART_URL, UnDefType.UNDEF);
         }
-
     }
 
     private void updateNetTitle(String data) {
@@ -635,7 +633,6 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
 
         updateState(CHANNEL_NET_MENU_TITLE,
                 new StringType(service.toString() + ((title.length() > 0) ? ": " + title : "")));
-
     }
 
     private void updateNetMenu(String data) {

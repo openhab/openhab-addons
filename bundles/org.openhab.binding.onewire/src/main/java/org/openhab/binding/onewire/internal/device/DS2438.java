@@ -90,6 +90,7 @@ public class DS2438 extends AbstractOwDevice {
     @Override
     public void refresh(OwserverBridgeHandler bridgeHandler, Boolean forcedRefresh) throws OwException {
         if (isConfigured) {
+            logger.trace("refresh of sensor {} started", sensorId);
             double Vcc = 5.0;
 
             if (enabledChannels.contains(CHANNEL_TEMPERATURE) || enabledChannels.contains(CHANNEL_HUMIDITY)
@@ -218,5 +219,4 @@ public class DS2438 extends AbstractOwDevice {
     public void setCurrentSensorType(CurrentSensorType currentSensorType) {
         this.currentSensorType = currentSensorType;
     }
-
 }

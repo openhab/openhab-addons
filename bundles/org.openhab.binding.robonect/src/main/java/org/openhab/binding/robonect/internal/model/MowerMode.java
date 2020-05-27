@@ -13,7 +13,7 @@
 package org.openhab.binding.robonect.internal.model;
 
 /**
- * The mower mode from the status information. Please note 
+ * The mower mode from the status information. Please note
  * that EOD and JOB from {@link org.openhab.binding.robonect.internal.model.cmd.ModeCommand.Mode}
  * are just artificial and are therfore not reported in the status information.
  * 
@@ -55,6 +55,7 @@ public enum MowerMode {
 
     /**
      * Translate the numeric mode from the JSON response into enum values.
+     * 
      * @param mode - the numeric value of the mode.
      * @return - the enum value of the mode.
      */
@@ -73,5 +74,4 @@ public enum MowerMode {
     public int getCode() {
         return code;
     }
-  
 }

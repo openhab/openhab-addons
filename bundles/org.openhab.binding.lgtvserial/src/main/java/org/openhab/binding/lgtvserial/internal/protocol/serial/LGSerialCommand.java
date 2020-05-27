@@ -36,11 +36,10 @@ public interface LGSerialCommand {
      * This method is used to send the serial protocol command to the communicator.
      *
      * @param channel Channel related to the command
-     * @param comm    Communicator linked to the serial port
-     * @param data    Data related to this command to send over the wire. If null, this means we should send an FF state
-     *                read command.
+     * @param comm Communicator linked to the serial port
+     * @param data Data related to this command to send over the wire. If null, this means we should send an FF state
+     *            read command.
      * @throws IOException
      */
     void execute(ChannelUID channel, LGSerialCommunicator comm, Object data) throws IOException;
-
 }

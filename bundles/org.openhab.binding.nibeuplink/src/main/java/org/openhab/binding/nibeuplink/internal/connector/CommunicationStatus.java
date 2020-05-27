@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.nibeuplink.internal.connector;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus.Code;
 
 /**
@@ -20,20 +22,22 @@ import org.eclipse.jetty.http.HttpStatus.Code;
  *
  * @author Alexander Friese - initial contribution
  */
+@NonNullByDefault
 public class CommunicationStatus {
 
-    private Code httpCode;
-    private Exception error;
+    private @Nullable Code httpCode;
+    private @Nullable Exception error;
 
     public final Code getHttpCode() {
-        return httpCode == null ? Code.INTERNAL_SERVER_ERROR : httpCode;
+        Code code = httpCode;
+        return code == null ? Code.INTERNAL_SERVER_ERROR : code;
     }
 
     public final void setHttpCode(Code httpCode) {
         this.httpCode = httpCode;
     }
 
-    public final Exception getError() {
+    public final @Nullable Exception getError() {
         return error;
     }
 
@@ -42,12 +46,13 @@ public class CommunicationStatus {
     }
 
     public final String getMessage() {
-        if (error != null && error.getMessage() != null && !error.getMessage().isEmpty()) {
-            return error.getMessage();
-        } else if (httpCode != null & httpCode.getMessage() != null && !httpCode.getMessage().isEmpty()) {
-            return httpCode.getMessage();
+        Exception err = error;
+        String msg = getHttpCode().getMessage();
+        if (err != null && err.getMessage() != null && !err.getMessage().isEmpty()) {
+            return err.getMessage();
+        } else if (msg != null && !msg.isEmpty()) {
+            return msg;
         }
         return "";
     }
-
 }

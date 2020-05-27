@@ -88,5 +88,4 @@ public class HyperionDiscoveryParticipant implements MDNSDiscoveryParticipant {
         }
         return new ThingUID(HyperionBindingConstants.THING_TYPE_SERVER_NG, uid);
     }
-
 }

@@ -8,7 +8,7 @@
 		<item-type>Switch</item-type>
 		<label>No Communication</label>
 		<description>Indicates communication troubles with the wireless device</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

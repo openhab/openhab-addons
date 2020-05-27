@@ -56,7 +56,7 @@ public class Ethm1BridgeHandler extends SatelBridgeHandler {
         Ethm1Config config = getConfigAs(Ethm1Config.class);
         if (StringUtils.isNotBlank(config.getHost())) {
             SatelModule satelModule = new Ethm1Module(config.getHost(), config.getPort(), config.getTimeout(),
-                    config.getEncryptionKey());
+                    config.getEncryptionKey(), config.hasExtCommandsSupport());
             super.initialize(satelModule);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
@@ -80,5 +80,4 @@ public class Ethm1BridgeHandler extends SatelBridgeHandler {
 
         return configStatusMessages;
     }
-
 }

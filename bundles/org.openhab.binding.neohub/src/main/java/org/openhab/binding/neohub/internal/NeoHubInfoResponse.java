@@ -62,12 +62,10 @@ public class NeoHubInfoResponse {
         private BigDecimal currentTemperature;
         @SerializedName("CURRENT_FLOOR_TEMPERATURE")
         private BigDecimal currentFloorTemperature;
-        @SerializedName("AWAY")
-        private NeohubBool away;
-        @SerializedName("HOLIDAY")
-        private NeohubBool holiday;
-        @SerializedName("HOLIDAY_DAYS")
-        private BigDecimal holidayDays;
+        @SerializedName("COOL_INP")
+        private NeohubBool coolInput;
+        @SerializedName("LOW_BATTERY")
+        private NeohubBool batteryLow;
         @SerializedName("STANDBY")
         private NeohubBool standby;
         @SerializedName("HEATING")
@@ -107,18 +105,6 @@ public class NeoHubInfoResponse {
             return safeBigDecimal(currentFloorTemperature);
         }
 
-        public Boolean isAway() {
-            return safeBoolean(away);
-        }
-
-        public Boolean isHoliday() {
-            return safeBoolean(holiday);
-        }
-
-        public BigDecimal getHolidayDays() {
-            return safeBigDecimal(holidayDays);
-        }
-
         public BigDecimal getDeviceType() {
             return safeBigDecimal(deviceType);
         }
@@ -151,10 +137,13 @@ public class NeoHubInfoResponse {
             return (statMode != null && statMode.stateManualOff());
         }
 
-        public Boolean hasStatMode() {
-            return statMode != null;
+        public Boolean isCoolInputOn() {
+            return safeBoolean(coolInput);
         }
 
+        public Boolean isBatteryLow() {
+            return safeBoolean(batteryLow);
+        }
     }
 
     /**

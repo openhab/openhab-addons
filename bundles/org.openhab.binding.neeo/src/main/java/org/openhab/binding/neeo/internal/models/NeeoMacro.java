@@ -112,5 +112,4 @@ public class NeeoMacro {
         return "NeeoMacro [key=" + key + ", componentType=" + componentType + ", name=" + name + ", label=" + label
                 + ", deviceName=" + deviceName + ", roomName=" + roomName + "]";
     }
-
 }

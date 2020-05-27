@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.modbus.sunspec.internal;
 
-import static org.openhab.binding.modbus.sunspec.internal.SunSpecConstants.THING_TYPE_INVERTER_SINGLE_PHASE;
-
-import java.util.Collections;
-import java.util.Set;
+import static org.openhab.binding.modbus.sunspec.internal.SunSpecConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -25,6 +22,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.modbus.sunspec.internal.handler.InverterHandler;
+import org.openhab.binding.modbus.sunspec.internal.handler.MeterHandler;
 import org.openhab.io.transport.modbus.ModbusManager;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -52,9 +50,6 @@ public class SunSpecHandlerFactory extends BaseThingHandlerFactory {
      */
     private ModbusManager manager;
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .singleton(THING_TYPE_INVERTER_SINGLE_PHASE);
-
     /**
      * This factory needs a reference to the ModbusManager wich is provided
      * by the org.openhab.io.transport.modbus bundle. Please make
@@ -69,16 +64,23 @@ public class SunSpecHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return SUPPORTED_THING_TYPES_UIDS.containsValue(thingTypeUID);
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_INVERTER_SINGLE_PHASE)) {
+        if (thingTypeUID.equals(THING_TYPE_INVERTER_SINGLE_PHASE)
+                || thingTypeUID.equals(THING_TYPE_INVERTER_SPLIT_PHASE)
+                || thingTypeUID.equals(THING_TYPE_INVERTER_THREE_PHASE)) {
             logger.debug("New InverterHandler created");
             return new InverterHandler(thing, manager);
+        } else if (thingTypeUID.equals(THING_TYPE_METER_SINGLE_PHASE)
+                || thingTypeUID.equals(THING_TYPE_METER_SPLIT_PHASE) || thingTypeUID.equals(THING_TYPE_METER_WYE_PHASE)
+                || thingTypeUID.equals(THING_TYPE_METER_DELTA_PHASE)) {
+            logger.debug("New MeterHandler created");
+            return new MeterHandler(thing, manager);
         }
 
         return null;

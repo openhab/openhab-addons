@@ -8,20 +8,20 @@
 		<label>Kostal Inverter</label>
 		<description>Kostal Inverter</description>
 		<channels>
-			<channel typeId="device-local-ac-current-power" id="acPower" />
-			<channel typeId="statistic-yield-total" id="totalEnergy" />
-			<channel typeId="statistic-yield-day" id="dayEnergy" />
-			<channel typeId="status" id="status" />
-			<channel typeId="device-local-pvstring-1-voltage" id="str1Voltage" />
-			<channel typeId="device-local-pvstring-1-amperage" id="str1Current" />
-			<channel typeId="device-local-pvstring-2-voltage" id="str2Voltage" />
-			<channel typeId="device-local-pvstring-2-amperage" id="str2Current" />
-			<channel typeId="device-local-ac-phase-1-current-voltage" id="l1Voltage" />
-			<channel typeId="device-local-ac-phase-1-current-power" id="l1Power" />
-			<channel typeId="device-local-ac-phase-2-current-voltage" id="l2Voltage" />
-			<channel typeId="device-local-ac-phase-2-current-power" id="l2Power" />
-			<channel typeId="device-local-ac-phase-3-current-voltage" id="l3Voltage" />
-			<channel typeId="device-local-ac-phase-3-current-power" id="l3Power" />
+			<channel typeId="device-local-ac-current-power" id="acPower"/>
+			<channel typeId="statistic-yield-total" id="totalEnergy"/>
+			<channel typeId="statistic-yield-day" id="dayEnergy"/>
+			<channel typeId="status" id="status"/>
+			<channel typeId="device-local-pvstring-1-voltage" id="str1Voltage"/>
+			<channel typeId="device-local-pvstring-1-amperage" id="str1Current"/>
+			<channel typeId="device-local-pvstring-2-voltage" id="str2Voltage"/>
+			<channel typeId="device-local-pvstring-2-amperage" id="str2Current"/>
+			<channel typeId="device-local-ac-phase-1-current-voltage" id="l1Voltage"/>
+			<channel typeId="device-local-ac-phase-1-current-power" id="l1Power"/>
+			<channel typeId="device-local-ac-phase-2-current-voltage" id="l2Voltage"/>
+			<channel typeId="device-local-ac-phase-2-current-power" id="l2Power"/>
+			<channel typeId="device-local-ac-phase-3-current-voltage" id="l3Voltage"/>
+			<channel typeId="device-local-ac-phase-3-current-power" id="l3Power"/>
 		</channels>
 
 		<config-description>

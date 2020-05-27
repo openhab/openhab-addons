@@ -27,5 +27,4 @@ public class PowerQueryRequest implements Request {
     public String getRequestString() {
         return "%1POWR ?";
     }
-
 }

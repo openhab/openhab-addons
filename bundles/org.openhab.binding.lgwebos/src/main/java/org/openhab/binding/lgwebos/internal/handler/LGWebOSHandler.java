@@ -256,7 +256,7 @@ public class LGWebOSHandler extends BaseThingHandler
     @Override
     public void storeKey(@Nullable String key) {
         if (!getKey().equals(key)) {
-            logger.debug("store new key");
+            logger.info("Store {} as access Key in the thing configuration", key);
             // store it current configuration and avoiding complete re-initialization via handleConfigurationUpdate
             getLGWebOSConfig().key = key;
 
@@ -315,7 +315,6 @@ public class LGWebOSHandler extends BaseThingHandler
                 break;
 
         }
-
     }
 
     @Override
@@ -401,5 +400,13 @@ public class LGWebOSHandler extends BaseThingHandler
                 logger.debug("Unable to determine MAC address: {}", e.getMessage());
             }
         }
+    }
+
+    public List<String> reportApplications() {
+        return appLauncher.reportApplications(getThing().getUID());
+    }
+
+    public List<String> reportChannels() {
+        return ((TVControlChannel) channelHandlers.get(CHANNEL_CHANNEL)).reportChannels(getThing().getUID());
     }
 }

@@ -54,7 +54,6 @@ public class DwdWarningCacheTest {
         assertThat(cache.addEntry(data), is(false));
         cache.deleteOldEntries();
         assertThat(cache.addEntry(data), is(true));
-
     }
 
     private DwdWarningData createData(String id, long secondsBeforeNow) {

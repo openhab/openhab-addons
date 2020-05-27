@@ -37,11 +37,11 @@ class LxWsSecurityHash extends LxWsSecurity {
     /**
      * Create a hash-based authentication instance.
      *
-     * @param debugId      instance of the client used for debugging purposes only
+     * @param debugId instance of the client used for debugging purposes only
      * @param thingHandler API to the thing handler
-     * @param socket       websocket to perform communication with Miniserver
-     * @param user         user to authenticate
-     * @param password     password to authenticate
+     * @param socket websocket to perform communication with Miniserver
+     * @param user user to authenticate
+     * @param password password to authenticate
      */
     LxWsSecurityHash(int debugId, LxServerHandlerApi thingHandler, LxWebSocket socket, String user, String password) {
         super(debugId, thingHandler, socket, user, password);

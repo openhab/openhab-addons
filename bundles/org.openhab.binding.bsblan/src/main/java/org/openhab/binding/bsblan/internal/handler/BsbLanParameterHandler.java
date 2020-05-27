@@ -12,23 +12,22 @@
  */
 package org.openhab.binding.bsblan.internal.handler;
 
+import static org.openhab.binding.bsblan.internal.BsbLanBindingConstants.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Command;
-
-import org.openhab.binding.bsblan.internal.configuration.BsbLanBridgeConfiguration;
-import org.openhab.binding.bsblan.internal.configuration.BsbLanParameterConfiguration;
+import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.bsblan.internal.api.BsbLanApiCaller;
 import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterDTO;
 import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterQueryResponseDTO;
 import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterSetRequestDTO.Type;
-import static org.openhab.binding.bsblan.internal.BsbLanBindingConstants.*;
+import org.openhab.binding.bsblan.internal.configuration.BsbLanBridgeConfiguration;
+import org.openhab.binding.bsblan.internal.configuration.BsbLanParameterConfiguration;
 import org.openhab.binding.bsblan.internal.helper.BsbLanParameterConverter;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,17 +96,19 @@ public class BsbLanParameterHandler extends BsbLanBaseThingHandler {
 
     private void updateChannel(String channelId, @Nullable BsbLanApiParameterQueryResponseDTO data) {
         if (data == null) {
-            logger.debug("no data available while updating channel '{}' of parameter {}", channelId, parameterConfig.id);
+            logger.debug("no data available while updating channel '{}' of parameter {}", channelId,
+                    parameterConfig.id);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.BRIDGE_OFFLINE,
-                "No data received from BSB-LAN device");
+                    "No data received from BSB-LAN device");
             return;
         }
 
         BsbLanApiParameterDTO parameter = data.getOrDefault(parameterConfig.id, null);
         if (parameter == null) {
-            logger.debug("parameter {} is not part of response data while updating channel '{}' ", parameterConfig.id, channelId);
+            logger.debug("parameter {} is not part of response data while updating channel '{}' ", parameterConfig.id,
+                    channelId);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                String.format("No data received for parameter %s", parameterConfig.id));
+                    String.format("No data received for parameter %s", parameterConfig.id));
             return;
         }
 
@@ -125,7 +126,7 @@ public class BsbLanParameterHandler extends BsbLanBaseThingHandler {
         updateState(channelId, state);
     }
 
-     /**
+    /**
      * Update the channel from the last data retrieved
      *
      * @param channelId the id identifying the channel to be updated
@@ -152,9 +153,11 @@ public class BsbLanParameterHandler extends BsbLanBaseThingHandler {
             return;
         }
 
-        boolean success = api.setParameter(parameterConfig.setId, value, Type.getTypeWithFallback(parameterConfig.setType));
+        boolean success = api.setParameter(parameterConfig.setId, value,
+                Type.getTypeWithFallback(parameterConfig.setType));
         if (!success) {
-            logger.debug("Failed to set parameter {} to '{}' for channel '{}'", parameterConfig.setId, value, channelId);
+            logger.debug("Failed to set parameter {} to '{}' for channel '{}'", parameterConfig.setId, value,
+                    channelId);
         }
 
         // refresh value

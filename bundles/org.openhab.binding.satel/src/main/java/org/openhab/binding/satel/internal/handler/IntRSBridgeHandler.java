@@ -60,7 +60,8 @@ public class IntRSBridgeHandler extends SatelBridgeHandler {
         final IntRSConfig config = getConfigAs(IntRSConfig.class);
         final String port = config.getPort();
         if (port != null && StringUtils.isNotBlank(port)) {
-            SatelModule satelModule = new IntRSModule(port, serialPortManager, config.getTimeout());
+            SatelModule satelModule = new IntRSModule(port, serialPortManager, config.getTimeout(),
+                    config.hasExtCommandsSupport());
             super.initialize(satelModule);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
@@ -84,5 +85,4 @@ public class IntRSBridgeHandler extends SatelBridgeHandler {
 
         return configStatusMessages;
     }
-
 }

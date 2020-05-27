@@ -76,5 +76,4 @@ public class EvohomeTemperatureControlSystemHandler extends BaseEvohomeHandler {
         }
         return false;
     }
-
 }

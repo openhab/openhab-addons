@@ -57,5 +57,4 @@ public class UniFiSite {
     public String toString() {
         return String.format("UniFiSite{name: '%s', desc: '%s'}", name, desc);
     }
-
 }

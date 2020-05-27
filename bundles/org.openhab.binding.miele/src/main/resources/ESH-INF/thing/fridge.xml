@@ -1,24 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="miele" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="miele"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Fridge -->
 	<thing-type id="fridge">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="xgw3000" />
+			<bridge-type-ref id="xgw3000"/>
 		</supported-bridge-type-refs>
 
 		<label>Fridge</label>
 		<description>This is a Miele@home compatible fridge</description>
 
 		<channels>
-			<channel id="state" typeId="state" />
-			<channel id="supercool" typeId="supercool" />
-			<channel id="current" typeId="current" />
-			<channel id="target" typeId="target" />
-			<channel id="door" typeId="door" />
-			<channel id="start" typeId="switch" />
+			<channel id="state" typeId="state"/>
+			<channel id="supercool" typeId="supercool"/>
+			<channel id="current" typeId="current"/>
+			<channel id="target" typeId="target"/>
+			<channel id="door" typeId="door"/>
+			<channel id="start" typeId="switch"/>
 		</channels>
 
 		<config-description>

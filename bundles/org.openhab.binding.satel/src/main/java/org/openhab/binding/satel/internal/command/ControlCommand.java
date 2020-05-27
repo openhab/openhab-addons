@@ -28,7 +28,7 @@ public abstract class ControlCommand extends SatelCommandBase {
      * Creates new command class instance.
      *
      * @param commandCode command code
-     * @param payload     command bytes
+     * @param payload command bytes
      */
     public ControlCommand(byte commandCode, byte[] payload) {
         super(commandCode, payload);
@@ -68,5 +68,4 @@ public abstract class ControlCommand extends SatelCommandBase {
 
         return bytes;
     }
-
 }

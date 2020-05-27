@@ -1,26 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="rfxcom" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="rfxcom"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="lighting5">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
-			<bridge-type-ref id="tcpbridge" />
-			<bridge-type-ref id="RFXtrx433" />
-			<bridge-type-ref id="RFXrec433" />
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="tcpbridge"/>
+			<bridge-type-ref id="RFXtrx433"/>
+			<bridge-type-ref id="RFXrec433"/>
 		</supported-bridge-type-refs>
 
 		<label>RFXCOM Lighting5 Actuator</label>
 		<description>A Lighting5 device.</description>
 
 		<channels>
-			<channel id="command" typeId="command" />
-			<channel id="contact" typeId="contact" />
-			<channel id="dimmingLevel" typeId="dimminglevel" />
-			<channel id="mood" typeId="mood" />
-			<channel id="commandString" typeId="commandString" />
-			<channel id="signalLevel" typeId="system.signal-strength" />
+			<channel id="command" typeId="command"/>
+			<channel id="contact" typeId="contact"/>
+			<channel id="dimmingLevel" typeId="dimminglevel"/>
+			<channel id="mood" typeId="mood"/>
+			<channel id="commandString" typeId="commandString"/>
+			<channel id="signalLevel" typeId="system.signal-strength"/>
 		</channels>
 
 		<config-description>

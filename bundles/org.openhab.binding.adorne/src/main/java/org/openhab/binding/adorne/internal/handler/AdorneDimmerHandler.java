@@ -95,5 +95,4 @@ public class AdorneDimmerHandler extends AdorneSwitchHandler {
         super.refresh();
         refreshBrightness();
     }
-
 }

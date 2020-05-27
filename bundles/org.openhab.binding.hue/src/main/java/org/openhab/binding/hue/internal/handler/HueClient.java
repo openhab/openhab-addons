@@ -15,6 +15,7 @@ package org.openhab.binding.hue.internal.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.ConfigUpdate;
+import org.openhab.binding.hue.internal.FullGroup;
 import org.openhab.binding.hue.internal.FullLight;
 import org.openhab.binding.hue.internal.FullSensor;
 import org.openhab.binding.hue.internal.StateUpdate;
@@ -25,6 +26,7 @@ import org.openhab.binding.hue.internal.StateUpdate;
  * @author Simon Kaufmann - initial contribution and API
  * @author Samuel Leisering - Added support for sensor API
  * @author Christoph Weitkamp - Added support for sensor API
+ * @author Laurent Garnier - Added support for groups
  */
 @NonNullByDefault
 public interface HueClient {
@@ -62,6 +64,22 @@ public interface HueClient {
     boolean unregisterSensorStatusListener(SensorStatusListener sensorStatusListener);
 
     /**
+     * Register a group status listener.
+     *
+     * @param groupStatusListener the group status listener
+     * @return {@code true} if the collection of listeners has changed as a result of this call
+     */
+    boolean registerGroupStatusListener(GroupStatusListener groupStatusListener);
+
+    /**
+     * Unregister a group status listener.
+     *
+     * @param groupStatusListener the group status listener
+     * @return {@code true} if the collection of listeners has changed as a result of this call
+     */
+    boolean unregisterGroupStatusListener(GroupStatusListener groupStatusListener);
+
+    /**
      * Get the light by its ID.
      *
      * @param lightId the light ID
@@ -78,6 +96,15 @@ public interface HueClient {
      */
     @Nullable
     FullSensor getSensorById(String sensorId);
+
+    /**
+     * Get the group by its ID.
+     *
+     * @param groupId the group ID
+     * @return the full group representation of {@code null} if it could not be found
+     */
+    @Nullable
+    FullGroup getGroupById(String groupId);
 
     /**
      * Updates the given light.
@@ -102,4 +129,12 @@ public interface HueClient {
      * @param stateUpdate the state update
      */
     void updateSensorState(FullSensor sensor, StateUpdate stateUpdate);
+
+    /**
+     * Updates the given group.
+     *
+     * @param group the group to be updated
+     * @param stateUpdate the state update
+     */
+    void updateGroupState(FullGroup group, StateUpdate stateUpdate);
 }

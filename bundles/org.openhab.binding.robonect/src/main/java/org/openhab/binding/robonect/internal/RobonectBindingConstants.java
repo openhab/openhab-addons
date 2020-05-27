@@ -39,22 +39,20 @@ public class RobonectBindingConstants {
     public static final String CHANNEL_TIMER_STATUS = "timer-status";
     public static final String CHANNEL_TIMER_NEXT_TIMER = "timer-next";
     public static final String CHANNEL_WLAN_SIGNAL = "wlan-signal";
-    
+
     public static final String CHANNEL_JOB = "job";
-    
+
     public static final String CHANNEL_ERROR_CODE = "error-code";
     public static final String CHANNEL_ERROR_MESSAGE = "error-message";
     public static final String CHANNEL_ERROR_DATE = "error-date";
-    
+
     public static final String CHANNEL_LAST_ERROR_CODE = "last-error-code";
     public static final String CHANNEL_LAST_ERROR_MESSAGE = "last-error-message";
     public static final String CHANNEL_LAST_ERROR_DATE = "last-error-date";
-    
+
     public static final String CHANNEL_HEALTH_TEMP = "health-temperature";
     public static final String CHANNEL_HEALTH_HUM = "health-humidity";
-    
+
     public static final String PROPERTY_COMPILED = "compiled";
     public static final String PROPERTY_COMMENT = "comment";
-
-    
 }

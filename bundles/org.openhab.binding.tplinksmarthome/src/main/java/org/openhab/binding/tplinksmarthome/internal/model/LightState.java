@@ -70,5 +70,4 @@ public class LightState extends ErrorResponse {
                 + ignoreDefault + ", mode:" + mode + ", on_off:" + onOff + ", saturation:" + saturation
                 + super.toString();
     }
-
 }

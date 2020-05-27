@@ -75,5 +75,4 @@ public class AreaStatusResponse extends AbstractResponse {
     public void accept(DigiplexMessageHandler visitor) {
         visitor.handleAreaStatusResponse(this);
     }
-
 }

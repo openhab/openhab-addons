@@ -18,12 +18,15 @@ package org.openhab.io.homekit.internal;
  * @author Andy Lintner - Initial contribution
  */
 public class HomekitSettings {
-    public static final String MANUFACTURER = "openHAB";
+    public static final String MANUFACTURER = "openHAB Community";
     public static final String SERIAL_NUMBER = "none";
+    public static final String MODEL = "openHAB";
+    public static final String HARDWARE_REVISION = "2.5";
 
     public String name = "openHAB";
     public int port = 9123;
     public String pin = "031-45-154";
+    public int startDelay = 30;
     public boolean useFahrenheitTemperature = false;
     public double minimumTemperature = -100;
     public double maximumTemperature = 100;
@@ -31,9 +34,16 @@ public class HomekitSettings {
     public String thermostatTargetModeCool = "CoolOn";
     public String thermostatTargetModeAuto = "Auto";
     public String thermostatTargetModeOff = "Off";
-    public String thermostatCurrentModeHeating = "Heating";
-    public String thermostatCurrentModeCooling = "Cooling";
+    public String thermostatCurrentModeHeating = "HeatOn";
+    public String thermostatCurrentModeCooling = "CoolOn";
     public String thermostatCurrentModeOff = "Off";
+    public String doorCurrentStateOpen = "OPEN";
+    public String doorCurrentStateOpening = "OPENING";
+    public String doorCurrentStateClosed = "CLOSED";
+    public String doorCurrentStateClosing = "CLOSING";
+    public String doorCurrentStateStopped = "STOPPED";
+    public String doorTargetStateClosed = "CLOSED";
+    public String doorTargetStateOpen = "OPEN";
     public String networkInterface;
 
     @Deprecated
@@ -140,5 +150,4 @@ public class HomekitSettings {
         }
         return true;
     }
-
 }

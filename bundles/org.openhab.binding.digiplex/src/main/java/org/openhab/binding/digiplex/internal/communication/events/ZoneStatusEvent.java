@@ -46,6 +46,5 @@ public class ZoneStatusEvent extends AbstractEvent implements DigiplexResponse {
     @Override
     public void accept(DigiplexMessageHandler visitor) {
         visitor.handleZoneStatusEvent(this);
-
     }
 }

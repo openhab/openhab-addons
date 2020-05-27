@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="ambientweather" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="ambientweather"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -29,7 +30,7 @@
 		<label>Temperature</label>
 		<description>Temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="dewPoint">
@@ -37,7 +38,7 @@
 		<label>Dew Point Temperature</label>
 		<description>Dew Point temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="feelingTemperature">
@@ -45,7 +46,7 @@
 		<label>Feeling Temperature</label>
 		<description>Feeling temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="relativeHumidity">
@@ -53,7 +54,7 @@
 		<label>Relative Humidity</label>
 		<description>Forecast relative humidity</description>
 		<category>Humidity</category>
-		<state readOnly="true" min="0" max="100" pattern="%d %unit%" />
+		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="pressure">
@@ -61,7 +62,7 @@
 		<label>Pressure</label>
 		<description>Barometric Pressure</description>
 		<category>Pressure</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="pressureTrend">
@@ -69,7 +70,7 @@
 		<label>Pressure Trend</label>
 		<description>Pressure evolution trend (up, down, stable)</description>
 		<category>Pressure</category>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="rainHourlyRate">
@@ -77,7 +78,7 @@
 		<label>Rain Fall Hourly Rate</label>
 		<description>Rain fall hourly rate</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.7f %unit%" />
+		<state readOnly="true" pattern="%.7f %unit%"/>
 	</channel-type>
 
 	<channel-type id="rainDay">
@@ -85,7 +86,7 @@
 		<label>Rain Fall Day</label>
 		<description>Rain fall during the day</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="rainWeek">
@@ -93,7 +94,7 @@
 		<label>Rain Fall Week</label>
 		<description>Rain fall amount for the week</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="rainMonth">
@@ -101,7 +102,7 @@
 		<label>Rain Fall Month</label>
 		<description>Rain fall amount for the month</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="rainYear">
@@ -109,7 +110,7 @@
 		<label>Rain Fall Year</label>
 		<description>Rain fall amount for the year</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="rainTotal">
@@ -117,7 +118,7 @@
 		<label>Rain Fall Total</label>
 		<description>Rain fall total amount since factpry reset</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="rain24Hour">
@@ -125,7 +126,7 @@
 		<label>Rain Fall 24 Hours</label>
 		<description>Rain fall in last 24 hours</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="rainEvent">
@@ -133,7 +134,7 @@
 		<label>Rain Fall Event</label>
 		<description>Rain fall total for last rain event</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="rainLastTime">
@@ -148,7 +149,7 @@
 		<label>Wind Speed</label>
 		<description>Wind speed</description>
 		<category>Wind</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="windSpeedMaxDaily">
@@ -156,21 +157,21 @@
 		<label>Maximum Daily Wind Speed</label>
 		<description>Maximum daily wind speed</description>
 		<category>Wind</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="windDirectionDegrees">
 		<item-type>Number:Angle</item-type>
 		<label>Wind Direction Degrees</label>
 		<description>Wind direction in degrees</description>
-		<state readOnly="true" min="0" max="360" pattern="%.0f %unit%" />
+		<state readOnly="true" min="0" max="360" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="windDirection">
 		<item-type>String</item-type>
 		<label>Wind Direction</label>
 		<description>Wind direction</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="windGust">
@@ -178,21 +179,21 @@
 		<label>Wind Gust</label>
 		<description>Wind gust</description>
 		<category>Wind</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="windGustDirectionDegrees">
 		<item-type>Number:Angle</item-type>
 		<label>Wind Gust Direction Degrees</label>
 		<description>Wind gust direction in degrees</description>
-		<state readOnly="true" min="0" max="360" pattern="%.0f %unit%" />
+		<state readOnly="true" min="0" max="360" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="windGustDirection">
 		<item-type>String</item-type>
 		<label>Wind Gust Direction</label>
 		<description>Wind gust direction</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="windGustMaxDaily">
@@ -200,7 +201,7 @@
 		<label>Maximum Daily Wind Gust</label>
 		<description>Maximum daily wind gust</description>
 		<category>Wind</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="windSpeedAvg2Minute">
@@ -208,21 +209,21 @@
 		<label>Wind Speed 2-Minute</label>
 		<description>Wind speed 2-minute average</description>
 		<category>Wind</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="windDirectionDegreesAvg2Minute">
 		<item-type>Number:Angle</item-type>
 		<label>Wind Direction Degrees 2-minute</label>
 		<description>Wind direction 2-minute average in degrees</description>
-		<state readOnly="true" min="0" max="360" pattern="%.0f %unit%" />
+		<state readOnly="true" min="0" max="360" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="windDirectionAvg2Minute">
 		<item-type>String</item-type>
 		<label>Wind Direction 2-minute</label>
 		<description>Wind direction 2-minute Average</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="windSpeedAvg10Minute">
@@ -230,42 +231,42 @@
 		<label>Wind Speed 10-Minute</label>
 		<description>Wind speed 10-minute average</description>
 		<category>Wind</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="windDirectionDegreesAvg10Minute">
 		<item-type>Number:Angle</item-type>
 		<label>Wind Direction Degrees 10-minute</label>
 		<description>Wind direction 10-minute average in degrees</description>
-		<state readOnly="true" min="0" max="360" pattern="%.0f %unit%" />
+		<state readOnly="true" min="0" max="360" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="windDirectionAvg10Minute">
 		<item-type>String</item-type>
 		<label>Wind Direction 10-minute</label>
 		<description>Wind direction 10-minute Average</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="solarRadiation">
 		<item-type>Number:Intensity</item-type>
 		<label>Solar Radiation</label>
 		<description>Solar radiation</description>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="uvIndex">
 		<item-type>Number:Dimensionless</item-type>
 		<label>UV Index</label>
 		<description>Ultraviolet radiation index</description>
-		<state readOnly="true" pattern="%.1f" />
+		<state readOnly="true" pattern="%.1f"/>
 	</channel-type>
 
 	<channel-type id="uvDanger">
 		<item-type>String</item-type>
 		<label>UV Danger</label>
 		<description>Ultraviolet radiation danger level</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="soilTemperature">
@@ -273,7 +274,7 @@
 		<label>Soil Temperature</label>
 		<description>Temperature of the soil</description>
 		<category>Sensor</category>
-		<state readOnly="true" min="0" max="100" pattern="%d %unit%" />
+		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="soilMoisture">
@@ -281,7 +282,7 @@
 		<label>Soil Moisture</label>
 		<description>Amount of moisture in the soil</description>
 		<category>Sensor</category>
-		<state readOnly="true" min="0" max="100" pattern="%d" />
+		<state readOnly="true" min="0" max="100" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="soilMoistureLevel">
@@ -289,7 +290,7 @@
 		<label>Soil Moisture Level</label>
 		<description>Soil moisture level from Very Dry to Very Wet</description>
 		<category>Sensor</category>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="co2">
@@ -297,7 +298,7 @@
 		<label>Carbon Dioxide</label>
 		<description>Amount of carbon dioxide</description>
 		<category>Sensor</category>
-		<state readOnly="true" pattern="%d %unit%" />
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="relay">
@@ -305,7 +306,7 @@
 		<label>Relay</label>
 		<description>Relay</description>
 		<category>Switch</category>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="batteryIndicator">
@@ -313,7 +314,7 @@
 		<label>Battery Indicator</label>
 		<description>Indicates if battery is good or needs replacing</description>
 		<category>Battery</category>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 </thing:thing-descriptions>

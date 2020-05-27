@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
@@ -62,7 +61,7 @@ public class KodiUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
     private void activateOrModifyService(ComponentContext componentContext) {
         Dictionary<String, @Nullable Object> properties = componentContext.getProperties();
         String autoDiscoveryPropertyValue = (String) properties.get("background");
-        if (StringUtils.isNotEmpty(autoDiscoveryPropertyValue)) {
+        if (autoDiscoveryPropertyValue != null && !autoDiscoveryPropertyValue.isEmpty()) {
             isAutoDiscoveryEnabled = Boolean.valueOf(autoDiscoveryPropertyValue);
         }
     }
@@ -77,8 +76,9 @@ public class KodiUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
         if (isAutoDiscoveryEnabled) {
             ThingUID thingUid = getThingUID(device);
             if (thingUid != null) {
-                String label = StringUtils.isEmpty(device.getDetails().getFriendlyName()) ? device.getDisplayString()
-                        : device.getDetails().getFriendlyName();
+                String friendlyName = device.getDetails().getFriendlyName();
+                String label = friendlyName == null || friendlyName.isEmpty() ? device.getDisplayString()
+                        : friendlyName;
                 Map<String, Object> properties = new HashMap<>();
                 properties.put(HOST_PARAMETER, device.getIdentity().getDescriptorURL().getHost());
 
@@ -94,16 +94,18 @@ public class KodiUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
     @Override
     public @Nullable ThingUID getThingUID(RemoteDevice device) {
         String manufacturer = device.getDetails().getManufacturerDetails().getManufacturer();
-        if (StringUtils.containsIgnoreCase(manufacturer, MANUFACTURER)) {
-            logger.debug("Manufacturer matched: search: {}, device value: {}.", MANUFACTURER,
-                    device.getDetails().getManufacturerDetails().getManufacturer());
-            if (StringUtils.containsIgnoreCase(device.getType().getType(), UPNP_DEVICE_TYPE)) {
-                logger.debug("Device type matched: search: {}, device value: {}.", UPNP_DEVICE_TYPE,
-                        device.getType().getType());
+        if (containsIgnoreCase(manufacturer, MANUFACTURER)) {
+            logger.debug("Manufacturer matched: search: {}, device value: {}.", MANUFACTURER, manufacturer);
+            String type = device.getType().getType();
+            if (containsIgnoreCase(type, UPNP_DEVICE_TYPE)) {
+                logger.debug("Device type matched: search: {}, device value: {}.", UPNP_DEVICE_TYPE, type);
                 return new ThingUID(THING_TYPE_KODI, device.getIdentity().getUdn().getIdentifierString());
             }
         }
         return null;
     }
 
+    private boolean containsIgnoreCase(final @Nullable String str, final String searchStr) {
+        return str != null && str.toLowerCase().contains(searchStr.toLowerCase());
+    }
 }

@@ -66,7 +66,7 @@ public class BluetoothDiscoveryProcess implements Supplier<DiscoveryResult>, Blu
     private final Condition serviceDiscoveryCondition = serviceDiscoveryLock.newCondition();
     private final Condition infoDiscoveryCondition = serviceDiscoveryLock.newCondition();
 
-    private final BluetoothDevice device;
+    private final BluetoothDeviceSnapshot device;
     private final Collection<BluetoothDiscoveryParticipant> participants;
     private final Set<BluetoothAdapter> adapters;
 
@@ -77,8 +77,8 @@ public class BluetoothDiscoveryProcess implements Supplier<DiscoveryResult>, Blu
      */
     private volatile @Nullable GattCharacteristic ongoingGattCharacteristic;
 
-    public BluetoothDiscoveryProcess(BluetoothDevice device, Collection<BluetoothDiscoveryParticipant> participants,
-            Set<BluetoothAdapter> adapters) {
+    public BluetoothDiscoveryProcess(BluetoothDeviceSnapshot device,
+            Collection<BluetoothDiscoveryParticipant> participants, Set<BluetoothAdapter> adapters) {
         this.participants = participants;
         this.device = device;
         this.adapters = adapters;
@@ -371,5 +371,4 @@ public class BluetoothDiscoveryProcess implements Supplier<DiscoveryResult>, Blu
     @Override
     public void onDescriptorUpdate(BluetoothDescriptor bluetoothDescriptor) {
     }
-
 }

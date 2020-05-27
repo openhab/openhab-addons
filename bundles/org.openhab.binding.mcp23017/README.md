@@ -94,6 +94,6 @@ rule "living_room_led contact"
 when
     Item living_room_led_contact changed to OPEN
 then
-    living_room_led_switch.sendCommand(living_room_led_switch.state != ON ? ON : OFF)
+    living_room_led_switch.sendCommand(if(living_room_led_switch.state != ON) ON else OFF)
 end
 ```

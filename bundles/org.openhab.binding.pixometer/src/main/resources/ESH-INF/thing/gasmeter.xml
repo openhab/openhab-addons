@@ -6,19 +6,20 @@
 
 	<thing-type id="gasmeter">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="account" />
+			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 		<label>Gasmeter</label>
 		<description>A specific gas meter.</description>
 		<channels>
-			<channel id="last_reading_value" typeId="last_reading_value_gas" />
-			<channel id="last_reading_date" typeId="last_reading_date" />
-			<channel id="last_refresh_date" typeId="last_refresh_date" />
+			<channel id="last_reading_value" typeId="last_reading_value_gas"/>
+			<channel id="last_reading_date" typeId="last_reading_date"/>
+			<channel id="last_refresh_date" typeId="last_refresh_date"/>
 		</channels>
 		<config-description>
 			<parameter name="resourceId" type="text" required="true">
 				<label>Ressource ID</label>
-				<description>The ID which represents the current meter. You can find it in the pixometer browser app while editing a specific meter. It should look like this: "https://pixometer.io/portal/#/meters/XXXXX/edit"</description>
+				<description>The ID which represents the current meter. You can find it in the pixometer browser app while editing a
+					specific meter. It should look like this: "https://pixometer.io/portal/#/meters/XXXXX/edit"</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -26,6 +27,6 @@
 		<item-type>Number:Volume</item-type>
 		<label>Last Reading</label>
 		<description>The last value that has been read for this meter.</description>
-		<state pattern="%.3f %unit%" readOnly="true" />
+		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

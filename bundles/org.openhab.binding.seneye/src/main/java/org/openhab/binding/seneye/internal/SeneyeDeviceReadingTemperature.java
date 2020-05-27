@@ -25,5 +25,4 @@ public class SeneyeDeviceReadingTemperature {
     public boolean status;
     public double curr;
     public SeneyeDeviceReadingAdvice[] advices;
-
 }

@@ -33,5 +33,4 @@ public class GardenaConfigDataWrapper {
     public GardenaConfigDataWrapper(GardenaConfig config) {
         this.config = config;
     }
-
 }

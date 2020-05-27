@@ -39,7 +39,8 @@ public class D0_06 extends _SIGMessage {
     }
 
     @Override
-    public State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc, Configuration config) {
+    public State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc,
+            Configuration config) {
         if (CHANNEL_BATTERY_LEVEL.equals(channelId)) {
             return new QuantityType<>(bytes[1] & 0xFF, SmartHomeUnits.PERCENT);
         }

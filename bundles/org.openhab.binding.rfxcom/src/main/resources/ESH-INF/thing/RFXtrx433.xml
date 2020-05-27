@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="rfxcom" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+<thing:thing-descriptions bindingId="rfxcom"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="RFXtrx433">
 		<label>RFXtrx433E USB 433.92MHz Transceiver</label>
@@ -13,7 +15,8 @@
 			</parameter>
 			<parameter name="disableDiscovery" type="boolean" required="true">
 				<label>Disable Discovery of Unknown Devices</label>
-				<description>These RF protocols are prone to noise. If you find a lot of unknown devices showing up in your inbox enabling this will stop devices being added to your inbox.</description>
+				<description>These RF protocols are prone to noise. If you find a lot of unknown devices showing up in your inbox
+					enabling this will stop devices being added to your inbox.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="ignoreConfig" type="boolean">

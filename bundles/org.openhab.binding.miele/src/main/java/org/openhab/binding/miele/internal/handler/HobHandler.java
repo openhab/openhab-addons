@@ -33,5 +33,4 @@ public class HobHandler extends MieleApplianceHandler<HobChannelSelector> {
     public void handleCommand(ChannelUID channelUID, Command command) {
         super.handleCommand(channelUID, command);
     }
-
 }

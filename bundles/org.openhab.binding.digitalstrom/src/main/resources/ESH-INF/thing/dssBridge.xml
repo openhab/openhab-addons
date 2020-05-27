@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="digitalstrom" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="digitalstrom"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd"
->
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!--digitalSTROM Bridge -->
 	<bridge-type id="dssBridge">
 		<label>@text/dSS_label</label>
 		<description>@text/dSS_desc</description>
 		<channels>
-			<channel typeId="total_consumption_wh" id="total_consumption_wh" />
-			<channel typeId="total_energy_wh" id="total_energy_wh" />
-			<!-- <channel typeId="total_energy_Ws" id="total_energy_ws"></channel>-->
+			<channel typeId="total_consumption_wh" id="total_consumption_wh"/>
+			<channel typeId="total_energy_wh" id="total_energy_wh"/>
+			<!-- <channel typeId="total_energy_Ws" id="total_energy_ws"></channel> -->
 		</channels>
 		<properties>
 			<property name="serverCert"></property>
 		</properties>
-		<config-description-ref uri="binding:digitalstrom:dssBridge" />
+		<config-description-ref uri="binding:digitalstrom:dssBridge"/>
 	</bridge-type>
 
 </thing:thing-descriptions>

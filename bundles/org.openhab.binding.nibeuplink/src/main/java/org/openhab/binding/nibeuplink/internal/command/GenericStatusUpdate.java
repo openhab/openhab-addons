@@ -25,14 +25,12 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.openhab.binding.nibeuplink.internal.callback.AbstractUplinkCommandCallback;
 import org.openhab.binding.nibeuplink.internal.connector.StatusUpdateListener;
 import org.openhab.binding.nibeuplink.internal.handler.NibeUplinkHandler;
-import org.openhab.binding.nibeuplink.internal.model.Channel;
 import org.openhab.binding.nibeuplink.internal.model.DataResponse;
 import org.openhab.binding.nibeuplink.internal.model.DataResponseTransformer;
-import org.openhab.binding.nibeuplink.internal.model.GenericDataResponse;
-import org.openhab.binding.nibeuplink.internal.model.VVM320Channels;
 
 /**
  * generic command that retrieves status values for all channels defined in {@link VVM320Channels}
@@ -59,9 +57,7 @@ public class GenericStatusUpdate extends AbstractUplinkCommandCallback implement
 
         for (Channel channel : handler.getChannels()) {
             if (!handler.getDeadChannels().contains(channel)) {
-                if (!channel.getChannelCode().equals("0")) {
-                    fields.add(DATA_API_FIELD_DATA, channel.getChannelCode());
-                }
+                fields.add(DATA_API_FIELD_DATA, channel.getUID().getIdWithoutGroup());
             }
         }
 
@@ -94,10 +90,12 @@ public class GenericStatusUpdate extends AbstractUplinkCommandCallback implement
             handler.getWebInterface().enqueueCommand(this);
         } else {
             String json = getContentAsString(StandardCharsets.UTF_8);
-            if (json != null) {
+            if (json != null && !json.isEmpty()) {
                 logger.debug("JSON String: {}", json);
-                DataResponse jsonObject = gson.fromJson(json, GenericDataResponse.class);
-                handler.updateChannelStatus(transformer.transform(jsonObject));
+                DataResponse jsonObject = fromJson(json);
+                if (jsonObject != null) {
+                    handler.updateChannelStatus(transformer.transform(jsonObject));
+                }
             }
         }
     }

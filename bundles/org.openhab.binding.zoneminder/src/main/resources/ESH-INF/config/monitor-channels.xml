@@ -14,7 +14,7 @@
 			<description>Timeout in seconds when activating alarm. Default is 60 seconds</description>
 			<default>60</default>
 		</parameter>
-		<parameter name="monitorEventText" type="text" required="false" >
+		<parameter name="monitorEventText" type="text" required="false">
 			<label>Event Text</label>
 			<description>Event text in ZoneMinder</description>
 			<default>Triggered from openHAB</default>

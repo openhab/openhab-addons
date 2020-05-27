@@ -40,5 +40,4 @@ public class PowermaxX10Settings {
     public boolean isEnabled() {
         return enabled;
     }
-
 }

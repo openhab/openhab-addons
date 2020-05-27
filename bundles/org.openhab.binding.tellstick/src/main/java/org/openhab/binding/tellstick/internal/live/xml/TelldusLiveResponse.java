@@ -31,5 +31,4 @@ public class TelldusLiveResponse {
     public String toString() {
         return "TelldusLiveResponse [status=" + status + ", error=" + error + "]";
     }
-
 }
