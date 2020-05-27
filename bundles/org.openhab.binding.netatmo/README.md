@@ -448,24 +448,27 @@ All these channels except Sp_Temperature, SetpointMode and Planning are read onl
 
 **Supported channels for the Home thing:**
 
-| Channel ID              | Item Type | Description                                              |
-|-------------------------|-----------|----------------------------------------------------------|
-| welcomeHomeCity         | String    | City of the home                                         |
-| welcomeHomeCountry      | String    | Country of the home                                      |
-| welcomeHomeTimezone     | String    | Timezone of the home                                     |
-| welcomeHomePersonCount  | Number    | Total number of Persons that are at home                 |
-| welcomeHomeUnknownCount | Number    | Count how many Unknown Persons are at home               |
-| welcomeEventType        | String    | Type of event                                            |
-| welcomeEventTime        | DateTime  | Time of occurrence of event                               |
-| welcomeEventCameraId    | String    | Camera that detected the event                           |
-| welcomeEventPersonId    | String    | Id of the person the event is about (if any)             |
-| welcomeEventSnapshot    | Image     | picture of the last event, if it applies                 |
-| welcomeEventSnapshotURL | String    | if the last event (depending upon event type) in the home lead a snapshot picture, the picture URL will be available here |
-| welcomeEventVideoURL    | String    | if the last event (depending upon event type) in the home lead a snapshot picture, the corresponding video URL will be available here |
-| welcomeEventVideoStatus | String    | Status of the video (recording, deleted or available)    |
-| welcomeEventIsArrival   | Switch    | If person was considered "away" before being seen during this event |
-| welcomeEventMessage     | String    | Message sent by Netatmo corresponding to given event     |
-| welcomeEventSubType     | String    | Sub-type of SD and Alim events                           |
+| Channel ID               | Item Type | Description                                              |
+|--------------------------|-----------|----------------------------------------------------------|
+| welcomeHomeCity          | String    | City of the home                                         |
+| welcomeHomeCountry       | String    | Country of the home                                      |
+| welcomeHomeTimezone      | String    | Timezone of the home                                     |
+| welcomeHomePersonCount   | Number    | Total number of Persons that are at home                 |
+| welcomeHomeUnknownCount  | Number    | Count how many Unknown Persons are at home               |
+| welcomeEventType         | String    | Type of event                                            |
+| welcomeEventTime         | DateTime  | Time of occurrence of event                               |
+| welcomeEventCameraId     | String    | Camera that detected the event                           |
+| welcomeEventPersonId     | String    | Id of the person the event is about (if any)             |
+| welcomeEventSnapshot     | Image     | picture of the last event, if it applies                 |
+| welcomeEventSnapshotURL  | String    | if the last event (depending upon event type) in the home lead a snapshot picture, the picture URL will be available here |
+| welcomeEventVideoURL     | String    | if the last event (depending upon event type) in the home lead a snapshot picture, the corresponding video URL will be available here |
+| welcomeEventVideoStatus  | String    | Status of the video (recording, deleted or available)    |
+| welcomeEventIsArrival    | Switch    | If person was considered "away" before being seen during this event |
+| welcomeEventMessage      | String    | Message sent by Netatmo corresponding to given event     |
+| welcomeEventSubType      | String    | Sub-type of SD and Alim events                           |
+| homeEventHumanDetected   | Switch    | If the last event recorded a human                       |
+| homeEventAnimalDetected  | Switch    | If the last event recorded an animal                     |
+| homeEventVehicleDetected | Switch    | If the last event recorded a vehicle                     |
 
 All these channels are read only.
 

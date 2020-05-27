@@ -227,6 +227,10 @@ public class NetatmoBindingConstants {
 
     public static final String CHANNEL_WELCOME_HOME_EVENT = "welcomeHomeEvent";
 
+    public static final String CHANNEL_HOME_EVENT_HUMAN_DETECTED = "homeEventHumanDetected";
+    public static final String CHANNEL_HOME_EVENT_ANIMAL_DETECTED = "homeEventAnimalDetected";
+    public static final String CHANNEL_HOME_EVENT_VEHICLE_DETECTED = "homeEventVehicleDetected";
+
     public static final String CHANNEL_WELCOME_PERSON_LASTSEEN = "welcomePersonLastSeen";
     public static final String CHANNEL_WELCOME_PERSON_ATHOME = "welcomePersonAtHome";
     public static final String CHANNEL_WELCOME_PERSON_AVATAR_URL = "welcomePersonAvatarUrl";

@@ -16,8 +16,10 @@ import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import java.util.Calendar;
+import java.util.List;
 import java.util.Optional;
 
+import io.swagger.client.model.*;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -31,11 +33,6 @@ import org.openhab.binding.netatmo.internal.handler.AbstractNetatmoThingHandler;
 import org.openhab.binding.netatmo.internal.handler.NetatmoDeviceHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import io.swagger.client.model.NAWelcomeEvent;
-import io.swagger.client.model.NAWelcomeHome;
-import io.swagger.client.model.NAWelcomeHomeData;
-import io.swagger.client.model.NAWelcomeSnapshot;
 
 /**
  * {@link NAWelcomeHomeHandler} is the class used to handle the Welcome Home Data
@@ -127,19 +124,17 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
                     return UnDefType.UNDEF;
                 }
             case CHANNEL_WELCOME_EVENT_SNAPSHOT:
-                if (lastEvent != null) {
-                    String url = getSnapshotURL(lastEvent.getSnapshot());
-                    return url != null ? HttpUtil.downloadImage(url) : UnDefType.UNDEF;
-                } else {
-                    return UnDefType.UNDEF;
+                String url = findSnapshotURL();
+                if(url != null) {
+                    return HttpUtil.downloadImage(url);
                 }
+                return UnDefType.UNDEF;
             case CHANNEL_WELCOME_EVENT_SNAPSHOT_URL:
-                if (lastEvent != null) {
-                    String snapshotURL = getSnapshotURL(lastEvent.getSnapshot());
+                String snapshotURL = findSnapshotURL();
+                if(snapshotURL != null) {
                     return toStringType(snapshotURL);
-                } else {
-                    return UnDefType.UNDEF;
                 }
+                return UnDefType.UNDEF;
             case CHANNEL_WELCOME_EVENT_VIDEO_URL:
                 if (lastEvent != null && lastEvent.getVideoId() != null) {
                     String cameraId = lastEvent.getCameraId();
@@ -159,13 +154,34 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
                 return lastEvent != null ? lastEvent.getIsArrival() != null ? OnOffType.ON : OnOffType.OFF
                         : UnDefType.UNDEF;
             case CHANNEL_WELCOME_EVENT_MESSAGE:
-                return lastEvent != null && lastEvent.getMessage() != null
-                        ? new StringType(lastEvent.getMessage().replace("<b>", "").replace("</b>", ""))
+                String eventMessage = findEventMessage();
+                return eventMessage != null
+                        ? new StringType(eventMessage.replace("<b>", "").replace("</b>", ""))
                         : UnDefType.UNDEF;
             case CHANNEL_WELCOME_EVENT_SUBTYPE:
                 return lastEvent != null ? toDecimalType(lastEvent.getSubType()) : UnDefType.UNDEF;
+            case CHANNEL_HOME_EVENT_HUMAN_DETECTED:
+                return getIsDetectedState(NAWelcomeSubEvent.TypeEnum.HUMAN);
+            case CHANNEL_HOME_EVENT_ANIMAL_DETECTED:
+                return getIsDetectedState(NAWelcomeSubEvent.TypeEnum.ANIMAL);
+            case CHANNEL_HOME_EVENT_VEHICLE_DETECTED:
+                return getIsDetectedState(NAWelcomeSubEvent.TypeEnum.VEHICLE);
         }
         return super.getNAThingProperty(channelId);
+    }
+
+    private String findEventMessage() {
+        if(lastEvent != null) {
+            String message = lastEvent.getMessage();
+            if(message == null) {
+                NAWelcomeSubEvent firstSubEvent = findFirstSubEvent(lastEvent);
+                if(firstSubEvent != null) {
+                    message = firstSubEvent.getMessage();
+                }
+            }
+            return message;
+        }
+        return null;
     }
 
     /**
@@ -173,20 +189,47 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
      *
      * @return Url of the picture or null
      */
-    protected String getSnapshotURL(NAWelcomeSnapshot snapshot) {
-        String result = null;
+    protected String findSnapshotURL() {
+        if(lastEvent != null) {
+            NAWelcomeSnapshot snapshot = lastEvent.getSnapshot();
+            if (snapshot == null) {
+                NAWelcomeSubEvent firstSubEvent = findFirstSubEvent(lastEvent);
+                if (firstSubEvent != null) {
+                    snapshot = firstSubEvent.getSnapshot();
+                }
+            }
 
-        if (snapshot != null && snapshot.getId() != null && snapshot.getKey() != null) {
-            result = WELCOME_PICTURE_URL + "?" + WELCOME_PICTURE_IMAGEID + "=" + snapshot.getId() + "&"
-                    + WELCOME_PICTURE_KEY + "=" + snapshot.getKey();
-        } else {
-            logger.debug("Unable to build snapshot url for Home : {}", getId());
+            if (snapshot != null && snapshot.getId() != null && snapshot.getKey() != null) {
+                return WELCOME_PICTURE_URL + "?" + WELCOME_PICTURE_IMAGEID + "=" + snapshot.getId() + "&"
+                        + WELCOME_PICTURE_KEY + "=" + snapshot.getKey();
+            } else {
+                logger.debug("Unable to build snapshot url for Home : {}", getId());
+            }
         }
-        return result;
+        return null;
     }
 
     @Override
     protected @Nullable Integer getDataTimestamp() {
         return dataTimeStamp;
+    }
+
+    private State getIsDetectedState(NAWelcomeSubEvent.TypeEnum detectedType) {
+        if(lastEvent != null) {
+            List<NAWelcomeSubEvent> subEvents = lastEvent.getEventList();
+            if(subEvents != null && !subEvents.isEmpty()) {
+                boolean isDetected = subEvents.stream().anyMatch(e -> e.getType().equals(detectedType));
+                return toOnOffType(isDetected);
+            }
+        }
+        return OnOffType.OFF;
+    }
+
+    private static NAWelcomeSubEvent findFirstSubEvent(NAWelcomeEvent event) {
+        List<NAWelcomeSubEvent> subEvents = event.getEventList();
+        if(subEvents != null && !subEvents.isEmpty()) {
+            return subEvents.get(0);
+        }
+        return null;
     }
 }
