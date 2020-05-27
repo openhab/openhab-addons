@@ -1,0 +1,21 @@
+{
+  "config": {
+    "battery": 100,
+    "on": true,
+    "reachable": true
+  },
+  "ep": 1,
+  "etag": "1902d2cdb9d256624398f9ec3d35481d",
+  "manufacturername": "Heiman",
+  "modelid": "COSensor-N",
+  "name": "CO Sensor",
+  "state": {
+    "carbonmonoxide": true,
+    "lastupdated": "none",
+    "lowbattery": null,
+    "tampered": null
+  },
+  "swversion": "2018.4.22",
+  "type": "ZHACarbonMonoxide",
+  "uniqueid": "00:28:9f:00:03:eb:80:2a-01-0500"
+}
