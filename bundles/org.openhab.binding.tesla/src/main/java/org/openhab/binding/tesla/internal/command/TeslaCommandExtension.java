@@ -26,6 +26,8 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
@@ -40,6 +42,7 @@ import org.openhab.binding.tesla.internal.protocol.TokenRequestPassword;
 import org.openhab.binding.tesla.internal.protocol.TokenResponse;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +54,7 @@ import com.google.gson.Gson;
  * @author Nicolai Grødum - Initial contribution
  * @author Kai Kreuzer - refactored to use Tesla account thing
  */
+@NonNullByDefault
 @Component(service = ConsoleCommandExtension.class, immediate = true)
 public class TeslaCommandExtension extends AbstractConsoleCommandExtension {
 
@@ -58,23 +62,18 @@ public class TeslaCommandExtension extends AbstractConsoleCommandExtension {
 
     private final Logger logger = LoggerFactory.getLogger(TeslaCommandExtension.class);
 
-    private final Client teslaClient = ClientBuilder.newClient();
-    private final WebTarget teslaTarget = teslaClient.target(URI_OWNERS);
-    private final WebTarget tokenTarget = teslaTarget.path(URI_ACCESS_TOKEN);
+    @Nullable
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL)
+    private ClientBuilder injectedClientBuilder;
 
-    private TeslaAccountDiscoveryService teslaAccountDiscoveryService;
+    @Nullable
+    private WebTarget tokenTarget;
 
-    public TeslaCommandExtension() {
+    private final TeslaAccountDiscoveryService teslaAccountDiscoveryService;
+
+    public TeslaCommandExtension(@Reference TeslaAccountDiscoveryService teslaAccountDiscoveryService) {
         super("tesla", "Interact with the Tesla integration.");
-    }
-
-    @Reference
-    protected void setTeslaAccountDiscoveryService(TeslaAccountDiscoveryService ds) {
-        this.teslaAccountDiscoveryService = ds;
-    }
-
-    protected void unsetTeslaAccountDiscoveryService(TeslaAccountDiscoveryService ds) {
-        this.teslaAccountDiscoveryService = null;
+        this.teslaAccountDiscoveryService = teslaAccountDiscoveryService;
     }
 
     @Override
@@ -127,7 +126,8 @@ public class TeslaCommandExtension extends AbstractConsoleCommandExtension {
             TokenRequest token = new TokenRequestPassword(username, password);
             String payLoad = gson.toJson(token);
 
-            Response response = tokenTarget.request().post(Entity.entity(payLoad, MediaType.APPLICATION_JSON_TYPE));
+            Response response = getTokenTarget().request()
+                    .post(Entity.entity(payLoad, MediaType.APPLICATION_JSON_TYPE));
 
             if (response != null) {
                 if (response.getStatus() == 200 && response.hasEntity()) {
@@ -152,4 +152,27 @@ public class TeslaCommandExtension extends AbstractConsoleCommandExtension {
             logger.error("Could not get refresh token.", e);
         }
     }
+
+    private synchronized WebTarget getTokenTarget() {
+        if (tokenTarget != null) {
+            return tokenTarget;
+        } else {
+            Client client;
+            try {
+                client = ClientBuilder.newBuilder().build();
+            } catch (Exception e) {
+                // we seem to have no Jersey, so let's hope for an injected builder by CXF
+                if (this.injectedClientBuilder != null) {
+                    client = injectedClientBuilder.build();
+                } else {
+                    throw new IllegalStateException("No JAX RS Client Builder available.");
+                }
+            }
+            WebTarget teslaTarget = client.target(URI_OWNERS);
+            WebTarget target = teslaTarget.path(URI_ACCESS_TOKEN);
+            this.tokenTarget = target;
+            return target;
+        }
+    }
+
 }
