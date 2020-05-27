@@ -14,19 +14,19 @@ package org.openhab.binding.elerotransmitterstick.internal.stick;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.TooManyListenersException;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.eclipse.smarthome.io.transport.serial.PortInUseException;
+import org.eclipse.smarthome.io.transport.serial.SerialPort;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEvent;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEventListener;
+import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
+import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import gnu.io.CommPortIdentifier;
-import gnu.io.NoSuchPortException;
-import gnu.io.PortInUseException;
-import gnu.io.SerialPort;
-import gnu.io.SerialPortEvent;
-import gnu.io.SerialPortEventListener;
-import gnu.io.UnsupportedCommOperationException;
 
 /**
  * @author Volker Bier - Initial contribution
@@ -37,11 +37,13 @@ public class SerialConnection {
     private SerialPort serialPort;
     private boolean open;
     private String portName;
-    private final ArrayList<Byte> bytes = new ArrayList<>();
+    private final List<Byte> bytes = new ArrayList<>();
     private Response response = null;
+    private final SerialPortManager serialPortManager;
 
-    public SerialConnection(String portName) {
+    public SerialConnection(String portName, SerialPortManager serialPortManager) {
         this.portName = portName;
+        this.serialPortManager = serialPortManager;
     }
 
     public synchronized void open() throws ConnectException {
@@ -49,10 +51,12 @@ public class SerialConnection {
             if (!open) {
                 logger.debug("Trying to open serial connection to port {}...", portName);
 
-                CommPortIdentifier portIdentifier;
+                SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(portName);
+                if (portIdentifier == null) {
+                    throw new ConnectException("No such port: " + portName);
+                }
 
                 try {
-                    portIdentifier = CommPortIdentifier.getPortIdentifier(portName);
                     serialPort = portIdentifier.open("openhab", 3000);
                     open = true;
                     logger.debug("Serial connection to port {} opened.", portName);
@@ -79,7 +83,7 @@ public class SerialConnection {
                     throw new ConnectException(ex);
                 }
             }
-        } catch (NoSuchPortException | PortInUseException ex) {
+        } catch (PortInUseException ex) {
             throw new ConnectException(ex);
         }
     }
@@ -203,5 +207,4 @@ public class SerialConnection {
             }
         }
     }
-
 }

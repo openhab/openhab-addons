@@ -77,5 +77,4 @@ public class TibberBindingConstants {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream.of(TIBBER_THING_TYPE)
             .collect(Collectors.toSet());
-
 }

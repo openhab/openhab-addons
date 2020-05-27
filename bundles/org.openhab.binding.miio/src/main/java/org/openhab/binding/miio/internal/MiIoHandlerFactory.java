@@ -14,7 +14,7 @@ package org.openhab.binding.miio.internal;
 
 import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
 
-import java.util.Dictionary;
+import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -31,7 +31,6 @@ import org.openhab.binding.miio.internal.handler.MiIoBasicHandler;
 import org.openhab.binding.miio.internal.handler.MiIoGenericHandler;
 import org.openhab.binding.miio.internal.handler.MiIoUnsupportedHandler;
 import org.openhab.binding.miio.internal.handler.MiIoVacuumHandler;
-import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -54,15 +53,9 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
 
     @Activate
     public MiIoHandlerFactory(@Reference MiIoDatabaseWatchService miIoDatabaseWatchService,
-            @Reference CloudConnector cloudConnector) {
+            @Reference CloudConnector cloudConnector, Map<String, Object> properties) {
         this.miIoDatabaseWatchService = miIoDatabaseWatchService;
         this.cloudConnector = cloudConnector;
-    }
-
-    @Override
-    protected void activate(ComponentContext componentContext) {
-        super.activate(componentContext);
-        Dictionary<String, Object> properties = componentContext.getProperties();
         @Nullable
         String username = (String) properties.get("username");
         @Nullable

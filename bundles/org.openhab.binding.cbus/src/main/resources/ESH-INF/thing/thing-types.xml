@@ -6,19 +6,19 @@
 
 	<thing-type id="light">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="network" />
+			<bridge-type-ref id="network"/>
 		</supported-bridge-type-refs>
 		<label>Lighting Group</label>
 		<description>Lighting Group</description>
 
 		<channels>
-			<channel id="state" typeId="light-channel" />
-			<channel id="level" typeId="level-channel" />
+			<channel id="state" typeId="light-channel"/>
+			<channel id="level" typeId="level-channel"/>
 		</channels>
 		<properties>
-			<property name="CBUS Network Id" />
-			<property name="CBUS Application Id" />
-			<property name="CBUS Group Name" />
+			<property name="CBUS Network Id"/>
+			<property name="CBUS Application Id"/>
+			<property name="CBUS Group Name"/>
 		</properties>
 		<config-description>
 			<parameter name="group" type="integer" required="true">
@@ -31,18 +31,18 @@
 
 	<thing-type id="temperature">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="network" />
+			<bridge-type-ref id="network"/>
 		</supported-bridge-type-refs>
 		<label>Temperature Group</label>
 		<description>Temperature Group</description>
 
 		<channels>
-			<channel id="temp" typeId="temp-channel" />
+			<channel id="temp" typeId="temp-channel"/>
 		</channels>
 		<properties>
-			<property name="CBUS Network Id" />
-			<property name="CBUS Application Id" />
-			<property name="CBUS Group Name" />
+			<property name="CBUS Network Id"/>
+			<property name="CBUS Application Id"/>
+			<property name="CBUS Group Name"/>
 		</properties>
 		<config-description>
 			<parameter name="group" type="integer" required="true">
@@ -55,18 +55,18 @@
 
 	<thing-type id="trigger">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="network" />
+			<bridge-type-ref id="network"/>
 		</supported-bridge-type-refs>
 		<label>Trigger Group</label>
 		<description>Trigger Group</description>
 
 		<channels>
-			<channel id="value" typeId="trigger-channel" />
+			<channel id="value" typeId="trigger-channel"/>
 		</channels>
 		<properties>
-			<property name="CBUS Network Id" />
-			<property name="CBUS Application Id" />
-			<property name="CBUS Group Name" />
+			<property name="CBUS Network Id"/>
+			<property name="CBUS Application Id"/>
+			<property name="CBUS Group Name"/>
 		</properties>
 		<config-description>
 			<parameter name="group" type="integer" required="true">
@@ -79,18 +79,18 @@
 
 	<thing-type id="dali">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="network" />
+			<bridge-type-ref id="network"/>
 		</supported-bridge-type-refs>
 		<label>DALI Group</label>
 		<description>DALI Group</description>
 
 		<channels>
-			<channel id="level" typeId="dali-channel" />
+			<channel id="level" typeId="dali-channel"/>
 		</channels>
 		<properties>
-			<property name="CBUS Network Id" />
-			<property name="CBUS Application Id" />
-			<property name="CBUS Group Name" />
+			<property name="CBUS Network Id"/>
+			<property name="CBUS Application Id"/>
+			<property name="CBUS Group Name"/>
 		</properties>
 		<config-description>
 			<parameter name="group" type="integer" required="true">
@@ -122,7 +122,7 @@
 		<label>Temperature</label>
 		<description>Group channel for CBus temperature groups</description>
 		<category>Temperature</category>
-		<state pattern="%.1f %unit%" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<!-- Trigger Group Channel Type -->

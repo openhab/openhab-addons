@@ -86,5 +86,4 @@ public class SonosResourceMetaData implements Serializable {
     public String getDesc() {
         return desc;
     }
-
 }

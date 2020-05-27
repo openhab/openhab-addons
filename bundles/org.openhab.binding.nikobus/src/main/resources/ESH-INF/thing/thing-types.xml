@@ -12,6 +12,7 @@
 			<parameter name="port" type="text" required="true">
 				<label>Port</label>
 				<context>serial-port</context>
+				<limitToOptions>false</limitToOptions>
 				<description>The serial port used to connect to the Nikobus PC Link.</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" max="65535" min="10" required="false">
@@ -24,14 +25,14 @@
 
 	<thing-type id="push-button">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="pc-link" />
+			<bridge-type-ref id="pc-link"/>
 		</supported-bridge-type-refs>
 
 		<label>Push Button</label>
 		<description>A single push button</description>
 
 		<channels>
-			<channel id="button" typeId="button" />
+			<channel id="button" typeId="button"/>
 		</channels>
 
 		<config-description>
@@ -61,7 +62,7 @@
 
 	<thing-type id="switch-module">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="pc-link" />
+			<bridge-type-ref id="pc-link"/>
 		</supported-bridge-type-refs>
 
 		<label>Switch Module</label>
@@ -116,7 +117,7 @@
 
 	<thing-type id="dimmer-module">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="pc-link" />
+			<bridge-type-ref id="pc-link"/>
 		</supported-bridge-type-refs>
 
 		<label>Dimmer Module</label>
@@ -171,7 +172,7 @@
 
 	<thing-type id="rollershutter-module">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="pc-link" />
+			<bridge-type-ref id="pc-link"/>
 		</supported-bridge-type-refs>
 
 		<label>Rollershutter Module</label>

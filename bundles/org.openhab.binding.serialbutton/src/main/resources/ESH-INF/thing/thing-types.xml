@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="serialbutton" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="serialbutton"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -8,13 +9,14 @@
 		<description>A simple push button</description>
 
 		<channels>
-			<channel id="button" typeId="system.rawbutton" />
+			<channel id="button" typeId="system.rawbutton"/>
 		</channels>
 
 		<config-description>
 			<parameter name="port" type="text">
 				<label>Serial Port</label>
 				<context>serial-port</context>
+				<limitToOptions>false</limitToOptions>
 				<required>true</required>
 				<description>The serial port that the button is connected to</description>
 			</parameter>

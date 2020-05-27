@@ -39,5 +39,4 @@ public class HistoryList {
     public void setValues(List<HistoryItem> values) {
         this.values = values;
     }
-
 }

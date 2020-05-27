@@ -20,9 +20,9 @@ package org.openhab.binding.robonect.internal.model;
 public class Timer {
 
     /**
-     * an enum defining the possible timer status. 
+     * an enum defining the possible timer status.
      */
-    public enum TimerMode{
+    public enum TimerMode {
         /**
          * timer is inactive. No timer is set or the mower is not in AUTO mode.
          */
@@ -37,10 +37,10 @@ public class Timer {
          * timer is standby. A timer is set, the mower is in AUTO mode but the timer period did not start yet.
          */
         STANDBY(2);
-        
+
         private int code;
-        
-        TimerMode(int code){
+
+        TimerMode(int code) {
             this.code = code;
         }
 
@@ -57,7 +57,7 @@ public class Timer {
             return INACTIVE;
         }
     }
-    
+
     private TimerMode status;
 
     private NextTimer next;

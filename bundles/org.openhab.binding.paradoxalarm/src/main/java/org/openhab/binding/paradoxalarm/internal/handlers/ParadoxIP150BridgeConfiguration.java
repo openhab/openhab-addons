@@ -100,5 +100,4 @@ public class ParadoxIP150BridgeConfiguration {
     public void setMaxPartitions(Integer maxPartitions) {
         this.maxPartitions = maxPartitions;
     }
-
 }

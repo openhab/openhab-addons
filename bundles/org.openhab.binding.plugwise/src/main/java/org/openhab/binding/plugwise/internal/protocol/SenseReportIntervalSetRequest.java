@@ -37,5 +37,4 @@ public class SenseReportIntervalSetRequest extends Message {
     protected String payloadToHexString() {
         return String.format("%02X", reportInterval.toMinutes());
     }
-
 }

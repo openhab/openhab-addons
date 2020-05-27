@@ -6,7 +6,7 @@
 
 	<thing-type id="gateway" listed="false">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="kmdevice" />
+			<bridge-type-ref id="kmdevice"/>
 		</supported-bridge-type-refs>
 		<label>Gateway</label>
 		<description>This thing is representing the gateway. (The connected KM200/100/50 device)</description>

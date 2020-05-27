@@ -375,5 +375,4 @@ public class MarketplaceExtensionService implements ExtensionService {
     private Optional<Node> getExtensionNode(String id) {
         return proxy.getNodes().stream().filter(node -> node != null && node.id.equals(id)).findFirst();
     }
-
 }

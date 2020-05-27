@@ -36,5 +36,4 @@ public class RFXComException extends Exception {
     public RFXComException(Throwable cause) {
         super(cause);
     }
-
 }

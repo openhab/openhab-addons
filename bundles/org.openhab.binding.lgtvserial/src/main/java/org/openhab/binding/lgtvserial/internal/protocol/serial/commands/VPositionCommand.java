@@ -23,5 +23,4 @@ public class VPositionCommand extends BasePercentCommand {
     protected VPositionCommand(int setId) {
         super('f', 'r', setId);
     }
-
 }

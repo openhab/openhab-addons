@@ -84,5 +84,4 @@ public class MaxCubeBridgeHandlerOSGiTest extends JavaOSGiTest {
         // wait for MaxCubeBridgeHandler to be registered
         waitForAssert(() -> assertThat(maxBridge.getHandler(), is(notNullValue())));
     }
-
 }

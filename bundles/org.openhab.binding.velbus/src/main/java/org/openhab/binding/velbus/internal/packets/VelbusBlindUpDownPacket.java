@@ -39,5 +39,4 @@ public class VelbusBlindUpDownPacket extends VelbusPacket {
     protected byte[] getDataBytes() {
         return new byte[] { command, channel, timeoutHighByte, timeoutMidByte, timeoutLowByte };
     }
-
 }

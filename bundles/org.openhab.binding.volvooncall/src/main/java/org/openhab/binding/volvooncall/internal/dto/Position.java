@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class Position {
+public class Position extends VocAnswer {
     public @NonNullByDefault({}) PositionData position;
     public @NonNullByDefault({}) PositionData calculatedPosition;
 }

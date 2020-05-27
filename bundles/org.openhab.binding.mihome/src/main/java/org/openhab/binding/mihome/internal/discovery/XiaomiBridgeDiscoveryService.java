@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
@@ -38,6 +39,7 @@ import com.google.gson.JsonObject;
  * @author Patrick Boos - Initial contribution
  * @author Kuba Wolanin - logger fixes
  */
+@NonNullByDefault
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.mihome")
 public class XiaomiBridgeDiscoveryService extends AbstractDiscoveryService implements XiaomiSocketListener {
 
@@ -45,7 +47,7 @@ public class XiaomiBridgeDiscoveryService extends AbstractDiscoveryService imple
     private static final int DISCOVERY_TIMEOUT_SEC = 30;
 
     private final Logger logger = LoggerFactory.getLogger(XiaomiBridgeDiscoveryService.class);
-    private XiaomiDiscoverySocket socket;
+    private final XiaomiDiscoverySocket socket = new XiaomiDiscoverySocket("discovery");
 
     public XiaomiBridgeDiscoveryService() {
         super(SUPPORTED_THING_TYPES, DISCOVERY_TIMEOUT_SEC, false);
@@ -53,8 +55,7 @@ public class XiaomiBridgeDiscoveryService extends AbstractDiscoveryService imple
 
     @Override
     protected void startScan() {
-        socket = (socket == null) ? new XiaomiDiscoverySocket() : socket;
-        socket.intialize();
+        socket.initialize();
         logger.debug("Start scan for bridges");
         socket.registerListener(this);
         discoverGateways();
@@ -65,17 +66,13 @@ public class XiaomiBridgeDiscoveryService extends AbstractDiscoveryService imple
         super.stopScan();
         logger.debug("Stop scan");
         removeOlderResults(getTimestampOfLastScan());
-        if (socket != null) {
-            socket.unregisterListener(this);
-        }
+        socket.unregisterListener(this);
     }
 
     @Override
     public void deactivate() {
         super.deactivate();
-        if (socket != null) {
-            socket.unregisterListener(this);
-        }
+        socket.unregisterListener(this);
     }
 
     @Override

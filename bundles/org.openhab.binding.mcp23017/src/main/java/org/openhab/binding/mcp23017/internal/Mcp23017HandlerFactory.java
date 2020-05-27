@@ -55,5 +55,4 @@ public class Mcp23017HandlerFactory extends BaseThingHandlerFactory {
         logger.debug("No handler match for {}", thingTypeUID.getAsString());
         return null;
     }
-
 }

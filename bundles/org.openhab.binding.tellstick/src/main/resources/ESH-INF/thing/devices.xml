@@ -7,17 +7,17 @@
 	<!-- Tellstick Dimmer -->
 	<thing-type id="dimmer">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="telldus-core" />
-			<bridge-type-ref id="telldus-live" />
+			<bridge-type-ref id="telldus-core"/>
+			<bridge-type-ref id="telldus-live"/>
 		</supported-bridge-type-refs>
 
 		<label>Dimmable Device</label>
 		<description>This is a Dimmable device</description>
 
 		<channels>
-			<channel id="dimmer" typeId="dimmer" />
-			<channel id="state" typeId="state" />
-			<channel id="timestamp" typeId="timestamp" />
+			<channel id="dimmer" typeId="dimmer"/>
+			<channel id="state" typeId="state"/>
+			<channel id="timestamp" typeId="timestamp"/>
 		</channels>
 
 		<config-description>
@@ -52,15 +52,15 @@
 
 	<thing-type id="switch">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="telldus-core" />
+			<bridge-type-ref id="telldus-core"/>
 		</supported-bridge-type-refs>
 
 		<label>On/Off Device</label>
 		<description>This Thing defines a Switch Device</description>
 
 		<channels>
-			<channel id="state" typeId="state" />
-			<channel id="timestamp" typeId="timestamp" />
+			<channel id="state" typeId="state"/>
+			<channel id="timestamp" typeId="timestamp"/>
 		</channels>
 
 		<config-description>
@@ -88,7 +88,8 @@
 			</parameter>
 			<parameter name="dimmer" type="boolean">
 				<label>Dimmer</label>
-				<description>Is this a dimmer without absolute setting (e.g. you press on to start dim and then on again to stop it).</description>
+				<description>Is this a dimmer without absolute setting (e.g. you press on to start dim and then on again to stop
+					it).</description>
 				<required>false</required>
 				<default>false</default>
 			</parameter>

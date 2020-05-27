@@ -84,5 +84,4 @@ public class BridgeApiInfoDto {
     public void setScanResults(List<BridgeApiInfoScanResultDto> scanResults) {
         this.scanResults = scanResults;
     }
-
 }

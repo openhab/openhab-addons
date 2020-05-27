@@ -71,5 +71,4 @@ public class ActivityZone {
         builder.append("CameraActivityZone [name=").append(name).append(", id=").append(id).append("]");
         return builder.toString();
     }
-
 }

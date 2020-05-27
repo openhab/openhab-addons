@@ -35,9 +35,9 @@ public interface SolarEdgeHandler extends ThingHandler {
      * Called from {@link WebInterface#authenticate()} to update
      * the thing status because updateStatus is protected.
      *
-     * @param status       Bridge status
+     * @param status Bridge status
      * @param statusDetail Bridge status detail
-     * @param description  Bridge status description
+     * @param description Bridge status description
      */
     void setStatusInfo(ThingStatus status, ThingStatusDetail statusDetail, String description);
 

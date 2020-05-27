@@ -1,27 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="miele" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="miele"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Dishwasher -->
 	<thing-type id="dishwasher">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="xgw3000" />
+			<bridge-type-ref id="xgw3000"/>
 		</supported-bridge-type-refs>
 
 		<label>Dishwasher</label>
 		<description>This is a Miele@home compatible dishwasher</description>
 
 		<channels>
-			<channel id="state" typeId="state" />
-			<channel id="program" typeId="program" />
-			<channel id="phase" typeId="phase" />
-			<channel id="start" typeId="start" />
-			<channel id="duration" typeId="duration" />
-			<channel id="elapsed" typeId="elapsed" />
-			<channel id="finish" typeId="finish" />
-			<channel id="door" typeId="door" />
-			<channel id="switch" typeId="switch" />
+			<channel id="state" typeId="state"/>
+			<channel id="program" typeId="program"/>
+			<channel id="phase" typeId="phase"/>
+			<channel id="start" typeId="start"/>
+			<channel id="duration" typeId="duration"/>
+			<channel id="elapsed" typeId="elapsed"/>
+			<channel id="finish" typeId="finish"/>
+			<channel id="door" typeId="door"/>
+			<channel id="switch" typeId="switch"/>
 		</channels>
 
 		<config-description>

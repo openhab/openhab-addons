@@ -49,5 +49,4 @@ public final class PublishPlanetJob extends AbstractJob {
     public String toString() {
         return "Publish planet job " + getThingUID();
     }
-
 }

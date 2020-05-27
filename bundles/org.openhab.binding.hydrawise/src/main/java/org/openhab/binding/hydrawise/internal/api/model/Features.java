@@ -98,5 +98,4 @@ public class Features {
     public String customerplanId;
 
     public Integer smsUsed;
-
 }

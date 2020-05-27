@@ -56,5 +56,4 @@ public class ImperiHomeConfig {
     public String getRootUrl() {
         return rootUrl;
     }
-
 }

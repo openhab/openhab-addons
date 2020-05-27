@@ -13,6 +13,7 @@
 package org.openhab.binding.satel.internal.event;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -24,7 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class IntegraStatusEvent implements SatelEvent {
 
-    private LocalDateTime integraTime;
+    private Optional<LocalDateTime> integraTime;
     private boolean serviceMode;
     private boolean troubles;
     private boolean acu100Present;
@@ -40,7 +41,7 @@ public class IntegraStatusEvent implements SatelEvent {
      * @param statusByte1 status bits, byte #1
      * @param statusByte2 status bits, byte #2
      */
-    public IntegraStatusEvent(LocalDateTime integraTime, byte statusByte1, byte statusByte2) {
+    public IntegraStatusEvent(Optional<LocalDateTime> integraTime, byte statusByte1, byte statusByte2) {
         this.integraTime = integraTime;
         this.serviceMode = (statusByte1 & 0x80) != 0;
         this.troubles = (statusByte1 & 0x40) != 0;
@@ -52,9 +53,10 @@ public class IntegraStatusEvent implements SatelEvent {
     }
 
     /**
-     * @return current date and time on connected Integra
+     * @return current date and time on connected Integra or <code>Optional.empty()</code> if date/time set in the
+     *         system is incorrect
      */
-    public LocalDateTime getIntegraTime() {
+    public Optional<LocalDateTime> getIntegraTime() {
         return integraTime;
     }
 
@@ -111,7 +113,7 @@ public class IntegraStatusEvent implements SatelEvent {
     public String toString() {
         return String.format(
                 "IntegraStatusEvent: type = %d, time = %s, service mode = %b, troubles = %b, troubles memory = %b, ACU-100 = %b, INT-RX = %b, grade 2/3 = %b",
-                this.integraType, this.integraTime, this.serviceMode, this.troubles, this.troublesMemory,
-                this.acu100Present, this.intRxPresent, this.grade23Set);
+                this.integraType, this.integraTime.map(LocalDateTime::toString).orElse("N/A"), this.serviceMode,
+                this.troubles, this.troublesMemory, this.acu100Present, this.intRxPresent, this.grade23Set);
     }
 }

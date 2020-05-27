@@ -50,13 +50,13 @@ public class SomfyTahomaAwningHandler extends SomfyTahomaBaseThingHandler {
             } else if (COMMAND_STOP.equals(cmd)) {
                 String executionId = getCurrentExecutions();
                 if (executionId != null) {
-                    //Check if the awning is moving and STOP is sent => STOP it
+                    // Check if the awning is moving and STOP is sent => STOP it
                     cancelExecution(executionId);
                 } else {
                     sendCommand(COMMAND_MY);
                 }
             } else {
-                String param = COMMAND_SET_DEPLOYMENT.equals(cmd) ? "[" + command.toString() + "]" : "[]";
+                String param = COMMAND_SET_DEPLOYMENT.equals(cmd) ? "[" + toInteger(command) + "]" : "[]";
                 sendCommand(cmd, param);
             }
         }

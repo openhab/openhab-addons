@@ -30,12 +30,12 @@ import java.util.Date;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -44,27 +44,27 @@ import com.google.gson.annotations.SerializedName;
  * @author Andrew Fiddian-Green - Initial contribution
  *
  */
-class RdsAccessToken {
+@NonNullByDefault
+public class RdsAccessToken {
 
     /*
      * NOTE: requires a static logger because the class has static methods
      */
-    protected static final Logger LOGGER = LoggerFactory.getLogger(RdsAccessToken.class);
+    protected final Logger logger = LoggerFactory.getLogger(RdsAccessToken.class);
 
     private static final Gson GSON = new Gson();
 
     @SerializedName("access_token")
-    private String accessToken;
+    private @Nullable String accessToken;
     @SerializedName(".expires")
-    private String expires;
+    private @Nullable String expires;
 
-    private Date expDate = null;
+    private @Nullable Date expDate = null;
 
     /*
-     * private method: execute the HTTP POST on the server
+     * public static method: execute the HTTP POST on the server
      */
-    private static String httpGetTokenJson(String apiKey, String user, String password)
-            throws RdsCloudException, IOException {
+    public static String httpGetTokenJson(String apiKey, String payload) throws RdsCloudException, IOException {
         /*
          * NOTE: this class uses JAVAX HttpsURLConnection library instead of the
          * preferred JETTY library; the reason is that JETTY does not allow sending the
@@ -85,12 +85,12 @@ class RdsAccessToken {
 
         try (OutputStream outputStream = https.getOutputStream();
                 DataOutputStream dataOutputStream = new DataOutputStream(outputStream)) {
-            dataOutputStream.writeBytes(String.format(TOKEN_REQUEST, user, password));
+            dataOutputStream.writeBytes(payload);
             dataOutputStream.flush();
         }
 
         if (https.getResponseCode() != HttpURLConnection.HTTP_OK) {
-            throw new RdsCloudException("invalid HTTP response");
+            throw new IOException(https.getResponseMessage());
         }
 
         try (InputStream inputStream = https.getInputStream();
@@ -106,35 +106,33 @@ class RdsAccessToken {
     }
 
     /*
-     * public method: execute a POST on the cloud server, parse the JSON, and create
-     * a class that encapsulates the data
+     * public method: parse the JSON, and create a class that encapsulates the data
      */
-    public static @Nullable RdsAccessToken create(String apiKey, String user, String password) {
-        try {
-            String json = httpGetTokenJson(apiKey, user, password);
-            return GSON.fromJson(json, RdsAccessToken.class);
-        } catch (JsonSyntaxException | RdsCloudException | IOException e) {
-            LOGGER.warn("create {}: \"{}\"", e.getClass().getName(), e.getMessage());
-            return null;
-        }
+    public static @Nullable RdsAccessToken createFromJson(String json) {
+        return GSON.fromJson(json, RdsAccessToken.class);
     }
 
     /*
      * public method: return the access token
      */
-    public String getToken() {
-        return accessToken;
+    public String getToken() throws RdsCloudException {
+        String accessToken = this.accessToken;
+        if (accessToken != null) {
+            return accessToken;
+        }
+        throw new RdsCloudException("no access token");
     }
 
     /*
      * public method: check if the token has expired
      */
-    public Boolean isExpired() {
+    public boolean isExpired() {
+        Date expDate = this.expDate;
         if (expDate == null) {
             try {
                 expDate = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z").parse(expires);
             } catch (ParseException e) {
-                LOGGER.debug("isExpired: expiry date parsing exception");
+                logger.debug("isExpired: expiry date parsing exception");
 
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(new Date());
@@ -144,5 +142,4 @@ class RdsAccessToken {
         }
         return (expDate == null || expDate.before(new Date()));
     }
-
 }

@@ -69,5 +69,4 @@ public class DeviceParam {
     public String toString() {
         return "DeviceParam{" + "key=" + key + ", value='" + value + '\'' + '}';
     }
-
 }

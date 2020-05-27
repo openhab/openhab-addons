@@ -9,9 +9,9 @@
 		<description>The innogy SmartHome Controller (SHC) is the bridge for the innogy SmartHome System.</description>
 
 		<channels>
-			<channel id="cpu" typeId="CPUUsage" />
-			<channel id="disk" typeId="DiskUsage" />
-			<channel id="memory" typeId="MemoryUsage" />
+			<channel id="cpu" typeId="CPUUsage"/>
+			<channel id="disk" typeId="DiskUsage"/>
+			<channel id="memory" typeId="MemoryUsage"/>
 		</channels>
 
 		<config-description>
@@ -47,8 +47,10 @@
 				<unitLabel>seconds</unitLabel>
 				<label>WebSocket Idle Timeout in Seconds</label>
 				<description>The WebSocket is the connection to the innogy service that listens to status updates.
-					If no data is received over the websocket connection for the given time,
-					the websocket will reconnect. 0 will disable the idle timeout. Default is 900 seconds (15 minutes).</description>
+					If no data is
+					received over the websocket connection for the given time,
+					the websocket will reconnect. 0 will disable the idle
+					timeout. Default is 900 seconds (15 minutes).</description>
 				<default>900</default>
 				<advanced>true</advanced>
 			</parameter>

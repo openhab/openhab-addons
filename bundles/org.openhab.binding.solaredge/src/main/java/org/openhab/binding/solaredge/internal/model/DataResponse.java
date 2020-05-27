@@ -74,5 +74,4 @@ public interface DataResponse {
         }
         return null;
     }
-
 }

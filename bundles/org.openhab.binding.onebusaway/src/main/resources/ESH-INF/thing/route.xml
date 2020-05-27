@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="onebusaway"
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-		xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="route">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="stop" />
+			<bridge-type-ref id="stop"/>
 		</supported-bridge-type-refs>
 		<label>Route</label>
 		<description>Provides data about a route at a specific stop.</description>
 
 		<channels>
-			<channel id="arrival" typeId="arrival" />
-			<channel id="departure" typeId="departure" />
-			<channel id="event" typeId="routeEvent" />
-			<channel id="update" typeId="update" />
+			<channel id="arrival" typeId="arrival"/>
+			<channel id="departure" typeId="departure"/>
+			<channel id="event" typeId="routeEvent"/>
+			<channel id="update" typeId="update"/>
 		</channels>
 
 		<config-description uri="thing-type:onebusaway:config">

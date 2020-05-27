@@ -52,5 +52,4 @@ public class GetRequest extends Packet {
     public int[] expectedResponses() {
         return new int[] { StateResponse.TYPE };
     }
-
 }

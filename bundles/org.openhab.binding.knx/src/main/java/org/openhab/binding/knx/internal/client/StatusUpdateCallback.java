@@ -38,5 +38,4 @@ public interface StatusUpdateCallback {
      * @param status
      */
     void updateStatus(ThingStatus status, ThingStatusDetail thingStatusDetail, String message);
-
 }
