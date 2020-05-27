@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.radiothermostat.internal.json;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -20,15 +22,16 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Michael Lobstein - Initial contribution
  */
+@NonNullByDefault
 public class RadioThermostatJsonTime {
     @SerializedName("day")
-    private Integer dayOfWeek;
+    private Integer dayOfWeek = -1;
 
     @SerializedName("hour")
-    private Integer hour;
+    private Integer hour = 0;
     
     @SerializedName("minute")
-    private Integer minute;
+    private Integer minute = 0;
     
     public RadioThermostatJsonTime() {
     }

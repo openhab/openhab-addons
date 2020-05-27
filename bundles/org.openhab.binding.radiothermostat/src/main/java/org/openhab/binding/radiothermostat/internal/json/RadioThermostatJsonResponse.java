@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.radiothermostat.internal.json;
 
-import java.math.BigDecimal;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -22,108 +23,109 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Michael Lobstein - Initial contribution
  */
+@NonNullByDefault
 public class RadioThermostatJsonResponse {
-    
+
     @SerializedName("temp")
-    private BigDecimal temperature;
-    
+    private Integer temperature = 0;
+
     @SerializedName("tmode")
-    private Integer mode;
-    
+    private @Nullable Integer mode;
+
     @SerializedName("fmode")
-    private Integer fanMode;
-    
+    private @Nullable Integer fanMode;
+
     @SerializedName("program_mode")
-    private Integer programMode;
-    
+    private @Nullable Integer programMode;
+
     @SerializedName("t_heat")
-    private Integer heatTarget;
-    
+    private Integer heatTarget = 0;
+
     @SerializedName("t_cool")
-    private Integer coolTarget;
-    
+    private Integer coolTarget = 0;
+
     @SerializedName("override")
-    private Integer override;
-    
+    private @Nullable Integer override;
+
     @SerializedName("hold")
-    private Integer hold;
-    
+    private @Nullable Integer hold;
+
     @SerializedName("tstate")
-    private Integer status;
-    
+    private @Nullable Integer status;
+
     @SerializedName("fstate")
-    private Integer fanStatus;
-    
+    private @Nullable Integer fanStatus;
+
     @SerializedName("time")
-    private RadioThermostatJsonTime time;
-   
+    private @Nullable RadioThermostatJsonTime time;
+
     public RadioThermostatJsonResponse() {
     }
 
-    public BigDecimal getTemperature() {
+    public Integer getTemperature() {
         return temperature;
     }
 
-    public Integer getMode() {
+    public @Nullable Integer getMode() {
         return mode;
     }
-    
+
     public void setMode(Integer mode) {
         this.mode = mode;
     }
 
-    public Integer getFanMode() {
+    public @Nullable Integer getFanMode() {
         return fanMode;
     }
-    
+
     public void setFanMode(Integer fanMode) {
         this.fanMode = fanMode;
     }
 
-    public Integer getProgramMode() {
+    public @Nullable Integer getProgramMode() {
         return programMode;
     }
-    
+
     public void setProgramMode(Integer programMode) {
         this.programMode = programMode;
     }
 
-    public Integer getHeatTarget() {
+    public @Nullable Integer getHeatTarget() {
         return heatTarget;
     }
-    
+
     public void setHeatTarget(Integer heatTarget) {
         this.heatTarget = heatTarget;
     }
 
-    public Integer getCoolTarget() {
+    public @Nullable  Integer getCoolTarget() {
         return coolTarget;
     }
-    
+
     public void setCoolTarget(Integer coolTarget) {
         this.coolTarget = coolTarget;
     }
 
-    public Integer getOverride() {
+    public @Nullable Integer getOverride() {
         return override;
     }
 
-    public Integer getHold() {
+    public @Nullable Integer getHold() {
         return hold;
     }
-    
+
     public void setHold(Integer hold) {
         this.hold = hold;
     }
 
-    public Integer getStatus() {
+    public @Nullable Integer getStatus() {
         return status;
     }
 
-    public Integer getFanStatus() {
+    public @Nullable Integer getFanStatus() {
         return fanStatus;
     }
-    
+
     /**
      * Determine if we are in heat mode or cool mode and return that temp value
      *
@@ -135,7 +137,7 @@ public class RadioThermostatJsonResponse {
         } else if (mode == 2) {
             return coolTarget;
         } else {
-            return null;
+            return 0;
         }
     }
 
@@ -144,7 +146,7 @@ public class RadioThermostatJsonResponse {
      *
      * @return {RadioThermostatJsonTime}
      */
-    public RadioThermostatJsonTime getTime() {
+    public @Nullable RadioThermostatJsonTime getTime() {
         return time;
     }
 

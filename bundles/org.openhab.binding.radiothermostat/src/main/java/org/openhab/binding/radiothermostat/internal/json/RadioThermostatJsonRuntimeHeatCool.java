@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.radiothermostat.internal.json;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -20,23 +23,24 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Michael Lobstein - Initial contribution
  */
+@NonNullByDefault
 public class RadioThermostatJsonRuntimeHeatCool {
     
     public RadioThermostatJsonRuntimeHeatCool() {
     }
-      
+    
     @SerializedName("heat_runtime")
-    private RadioThermostatJsonTime heatTime;
+    private @Nullable RadioThermostatJsonTime heatTime;
     
     @SerializedName("cool_runtime")
-    private RadioThermostatJsonTime coolTime;
+    private @Nullable RadioThermostatJsonTime coolTime;
     
     /**
      * Receives "heat_runtime" node from the JSON response
      *
      * @return {RadioThermostatJsonTime}
      */
-    public RadioThermostatJsonTime getHeatTime() {
+    public @Nullable RadioThermostatJsonTime getHeatTime() {
         return heatTime;
     }
     
@@ -45,7 +49,7 @@ public class RadioThermostatJsonRuntimeHeatCool {
      *
      * @return {RadioThermostatJsonTime}
      */
-    public RadioThermostatJsonTime getCoolTime() {
+    public @Nullable RadioThermostatJsonTime getCoolTime() {
         return coolTime;
     }
 

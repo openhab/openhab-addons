@@ -27,6 +27,8 @@ import java.util.concurrent.TimeoutException;
 
 import javax.measure.quantity.Temperature;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -71,8 +73,9 @@ import com.google.gson.Gson;
  *
  * @author Michael Lobstein - Initial contribution
  */
+@NonNullByDefault
 public class RadioThermostatHandler extends BaseThingHandler {
-    private final RadioThermostatStateDescriptionProvider stateDescriptionProvider;
+    private @Nullable final RadioThermostatStateDescriptionProvider stateDescriptionProvider;
 
     private Logger logger = LoggerFactory.getLogger(RadioThermostatHandler.class);
 
@@ -89,17 +92,17 @@ public class RadioThermostatHandler extends BaseThingHandler {
     private static final int DEFAULT_REFRESH_PERIOD = 2;
     private static final int DEFAULT_LOG_REFRESH_PERIOD = 10;
 
-    private ScheduledFuture<?> refreshJob;
-    private ScheduledFuture<?> logRefreshJob;
+    private @Nullable ScheduledFuture<?> refreshJob;
+    private @Nullable ScheduledFuture<?> logRefreshJob;
 
     private RadioThermostatData rthermData = new RadioThermostatData();
-    
+
     private Gson gson;
 
     private int initialized = 0;
     private int retryCounter = 0;
 
-    public RadioThermostatHandler(Thing thing, RadioThermostatStateDescriptionProvider stateDescriptionProvider, HttpClient httpClient) {
+    public RadioThermostatHandler(Thing thing, @Nullable RadioThermostatStateDescriptionProvider stateDescriptionProvider, HttpClient httpClient) {
         super(thing);
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.httpClient = httpClient;
@@ -265,8 +268,8 @@ public class RadioThermostatHandler extends BaseThingHandler {
                         // set the new operating mode, reset everything else,
                         // because refreshing the tstat data below is really slow.
                         rthermData.getThermostatData().setMode(cmdInt);
-                        rthermData.getThermostatData().setHeatTarget(null);
-                        rthermData.getThermostatData().setCoolTarget(null);
+                        rthermData.getThermostatData().setHeatTarget(0);
+                        rthermData.getThermostatData().setCoolTarget(0);
                         rthermData.getThermostatData().setHold(0);
                         rthermData.getThermostatData().setProgramMode(-1);
                         updateAllChannels();
@@ -390,7 +393,7 @@ public class RadioThermostatHandler extends BaseThingHandler {
      * @param the resource URL constant for a particular thermostat JSON resource
      * @return an object mapping to one of the various thermostat JSON responses or null in case of error
      */
-    private Object getRadioThermostatData(String resource) {
+    private @Nullable Object getRadioThermostatData(String resource) {
         Object result = null;
         String errorMsg = null;
 
@@ -448,7 +451,7 @@ public class RadioThermostatHandler extends BaseThingHandler {
      * @param the value to be updated in the thermostat
      * @return the JSON response string from the thermostat
      */
-    private String sendCommand(String cmdKey, String cmdVal) {
+    private String sendCommand(String cmdKey, @Nullable String cmdVal) {
         return sendCommand(cmdKey, cmdVal, null);
     }
     
@@ -460,7 +463,7 @@ public class RadioThermostatHandler extends BaseThingHandler {
      * @param JSON string to send directly to the thermostat instead of a key/value pair
      * @return the JSON response string from the thermostat
      */
-    private String sendCommand(String cmdKey, String cmdVal, String cmdJson) {
+    private String sendCommand(@Nullable String cmdKey, @Nullable String cmdVal, @Nullable String cmdJson) {
         // if we got a cmdJson string send that, otherwise build the json from the key and val params
         String postJson = cmdJson != null ? cmdJson : "{\""+ cmdKey + "\":" + cmdVal + "}";
         String urlStr = buildRequestURL(DEFAULT_RESOURCE);
@@ -496,70 +499,67 @@ public class RadioThermostatHandler extends BaseThingHandler {
      * @return
      * @throws Exception
      */
-    public static Object getValue(String channelId, RadioThermostatData data) throws Exception {     
-        if (data != null) {
-            switch (channelId) {
-                case NAME:
-                    return data.getName();
-                case MODEL:
-                    return data.getModel();
-                case TEMPERATURE:
-                    if (data.getThermostatData().getTemperature() != null) {
-                        return new QuantityType<Temperature>(data.getThermostatData().getTemperature(), API_TEMPERATURE_UNIT);
-                    } else {
-                        return null;
-                    }
-                case HUMIDITY:
-                    if (data.getHumidity() != null) {
-                        return new QuantityType<>(data.getHumidity(), API_HUMIDITY_UNIT);
-                    } else {
-                        return null;
-                    }
-                case MODE:
-                    return data.getThermostatData().getMode();
-                case FAN_MODE:
-                    return data.getThermostatData().getFanMode();
-                case PROGRAM_MODE:
-                    return data.getThermostatData().getProgramMode();
-                case SET_POINT:
-                    if (data.getThermostatData().getSetpoint() != null) {
-                        return new QuantityType<Temperature>(data.getThermostatData().getSetpoint(), API_TEMPERATURE_UNIT);
-                    } else {
-                        return null;
-                    }
-                case OVERRIDE:
-                    return data.getThermostatData().getOverride();
-                case HOLD:
-                    if (data.getThermostatData().getHold() == 1) {
-                        return OnOffType.ON;
-                    } else {
-                        return OnOffType.OFF;
-                    }
-                case STATUS:
-                    return data.getThermostatData().getStatus();
-                case FAN_STATUS:
-                    return data.getThermostatData().getFanStatus();
-                case DAY:
-                    return data.getThermostatData().getTime().getDayOfWeek();
-                case HOUR:
-                    return data.getThermostatData().getTime().getHour();
-                case MINUTE:
-                    return data.getThermostatData().getTime().getMinute();
-                case DATE_STAMP:
-                    return data.getThermostatData().getTime().getThemostatDateTime();
-                case LAST_UPDATE:
-                    return ZonedDateTime.now();
-                case TODAY_HEAT_RUNTIME:
-                    return new QuantityType<>(data.getRuntime().getToday().getHeatTime().getRuntime(), API_MINUTES_UNIT);
-                case TODAY_COOL_RUNTIME:
-                    return new QuantityType<>(data.getRuntime().getToday().getCoolTime().getRuntime(), API_MINUTES_UNIT);
-                case YESTERDAY_HEAT_RUNTIME:
-                    return new QuantityType<>(data.getRuntime().getYesterday().getHeatTime().getRuntime(), API_MINUTES_UNIT);
-                case YESTERDAY_COOL_RUNTIME:
-                    return new QuantityType<>(data.getRuntime().getYesterday().getCoolTime().getRuntime(), API_MINUTES_UNIT);
-            }
+    public static @Nullable Object getValue(String channelId, RadioThermostatData data) throws Exception {
+        switch (channelId) {
+            case NAME:
+                return data.getName();
+            case MODEL:
+                return data.getModel();
+            case TEMPERATURE:
+                if (data.getThermostatData().getTemperature() != 0) {
+                    return new QuantityType<Temperature>(data.getThermostatData().getTemperature(), API_TEMPERATURE_UNIT);
+                } else {
+                    return null;
+                }
+            case HUMIDITY:
+                if (data.getHumidity() != 0) {
+                    return new QuantityType<>(data.getHumidity(), API_HUMIDITY_UNIT);
+                } else {
+                    return null;
+                }
+            case MODE:
+                return data.getThermostatData().getMode();
+            case FAN_MODE:
+                return data.getThermostatData().getFanMode();
+            case PROGRAM_MODE:
+                return data.getThermostatData().getProgramMode();
+            case SET_POINT:
+                if (data.getThermostatData().getSetpoint() != 0) {
+                    return new QuantityType<Temperature>(data.getThermostatData().getSetpoint(), API_TEMPERATURE_UNIT);
+                } else {
+                    return null;
+                }
+            case OVERRIDE:
+                return data.getThermostatData().getOverride();
+            case HOLD:
+                if (data.getThermostatData().getHold() == 1) {
+                    return OnOffType.ON;
+                } else {
+                    return OnOffType.OFF;
+                }
+            case STATUS:
+                return data.getThermostatData().getStatus();
+            case FAN_STATUS:
+                return data.getThermostatData().getFanStatus();
+            case DAY:
+                return data.getThermostatData().getTime().getDayOfWeek();
+            case HOUR:
+                return data.getThermostatData().getTime().getHour();
+            case MINUTE:
+                return data.getThermostatData().getTime().getMinute();
+            case DATE_STAMP:
+                return data.getThermostatData().getTime().getThemostatDateTime();
+            case LAST_UPDATE:
+                return ZonedDateTime.now();
+            case TODAY_HEAT_RUNTIME:
+                return new QuantityType<>(data.getRuntime().getToday().getHeatTime().getRuntime(), API_MINUTES_UNIT);
+            case TODAY_COOL_RUNTIME:
+                return new QuantityType<>(data.getRuntime().getToday().getCoolTime().getRuntime(), API_MINUTES_UNIT);
+            case YESTERDAY_HEAT_RUNTIME:
+                return new QuantityType<>(data.getRuntime().getYesterday().getHeatTime().getRuntime(), API_MINUTES_UNIT);
+            case YESTERDAY_COOL_RUNTIME:
+                return new QuantityType<>(data.getRuntime().getYesterday().getCoolTime().getRuntime(), API_MINUTES_UNIT);
         }
-
         return null;
     }
     

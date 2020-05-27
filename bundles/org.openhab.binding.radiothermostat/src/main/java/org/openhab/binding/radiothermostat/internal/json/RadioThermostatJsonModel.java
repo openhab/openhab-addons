@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.radiothermostat.internal.json;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -20,9 +22,10 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Michael Lobstein - Initial contribution
  */
+@NonNullByDefault
 public class RadioThermostatJsonModel {
     @SerializedName("model")
-    private String model;
+    private String model = "";
 
     public String getModel() {
         return model;

@@ -20,6 +20,8 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -42,11 +44,12 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Michael Lobstein - Initial contribution
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.radiothermostat")
 public class RadioThermostatHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_RTHERM);
-    private RadioThermostatStateDescriptionProvider stateDescriptionProvider;
+    private @Nullable RadioThermostatStateDescriptionProvider stateDescriptionProvider;
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
     private final HttpClient httpClient;
     
@@ -61,7 +64,7 @@ public class RadioThermostatHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_RTHERM)) {

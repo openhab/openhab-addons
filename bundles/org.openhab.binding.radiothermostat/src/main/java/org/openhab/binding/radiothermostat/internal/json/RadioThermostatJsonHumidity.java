@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.radiothermostat.internal.json;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -20,9 +22,10 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Michael Lobstein - Initial contribution
  */
-public class RadioThermostatJsonHumidity {    
+@NonNullByDefault
+public class RadioThermostatJsonHumidity {
     @SerializedName("humidity")
-    private Integer humidity;
+    private Integer humidity = 0;
     
     public RadioThermostatJsonHumidity() {
     }

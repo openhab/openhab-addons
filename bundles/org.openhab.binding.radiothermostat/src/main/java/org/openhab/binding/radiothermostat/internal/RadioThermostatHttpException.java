@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.radiothermostat.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link RadioThermostatHttpException} extends Exception
  *
  * @author Michael Lobstein - Initial contribution
  */
+@NonNullByDefault
 public class RadioThermostatHttpException extends Exception {
     private static final long serialVersionUID = 1L;
 

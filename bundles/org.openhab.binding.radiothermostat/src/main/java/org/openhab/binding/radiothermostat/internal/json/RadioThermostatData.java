@@ -12,19 +12,23 @@
  */
 package org.openhab.binding.radiothermostat.internal.json;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link RadioThermostatData} is responsible for storing
  * all of the JSON data objects that are retrieved from the thermostat
  *
  * @author Michael Lobstein - Initial contribution
  */
-public class RadioThermostatData {    
-    private String name;
-    private String model;
-    private RadioThermostatJsonResponse thermostatData;
-    private Integer humidity;
-    private RadioThermostatJsonRuntime runtime;
-    
+@NonNullByDefault
+public class RadioThermostatData {
+    private String name = "";
+    private String model = "";
+    private @Nullable RadioThermostatJsonResponse thermostatData;
+    private Integer humidity = 0;
+    private @Nullable RadioThermostatJsonRuntime runtime;
+
     public RadioThermostatData() {
     }
 
@@ -44,7 +48,7 @@ public class RadioThermostatData {
         this.model = model;
     }
 
-    public RadioThermostatJsonResponse getThermostatData() {
+    public @Nullable RadioThermostatJsonResponse getThermostatData() {
         return thermostatData;
     }
 
@@ -60,7 +64,7 @@ public class RadioThermostatData {
         this.humidity = humidity;
     }
 
-    public RadioThermostatJsonRuntime getRuntime() {
+    public @Nullable RadioThermostatJsonRuntime getRuntime() {
         return runtime;
     }
 

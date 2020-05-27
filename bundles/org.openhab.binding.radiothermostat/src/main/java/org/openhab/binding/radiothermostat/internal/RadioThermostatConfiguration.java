@@ -12,18 +12,22 @@
  */
 package org.openhab.binding.radiothermostat.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link RadioThermostatConfiguration} is the class used to match the
  * thing configuration.
  *
  * @author Michael Lobstein - Initial contribution
  */
+@NonNullByDefault
 public class RadioThermostatConfiguration {
     
-    public String hostName;
-    public Integer refresh;
-    public Integer logRefresh;
-    public Integer disableLogs;
-    public Integer disableHumidity;
+    public @Nullable String hostName;
+    public @Nullable Integer refresh;
+    public @Nullable Integer logRefresh;
+    public @Nullable Integer disableLogs;
+    public @Nullable Integer disableHumidity;
 
 }
