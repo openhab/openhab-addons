@@ -17,6 +17,8 @@ import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -24,6 +26,7 @@ import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -63,6 +66,8 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
     private long defaultFadeTime = 400;
 
     private @Nullable HueClient hueClient;
+
+    private @Nullable ScheduledFuture<?> scheduledFuture;
 
     public HueGroupHandler(Thing thing) {
         super(thing);
@@ -110,6 +115,7 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
     @Override
     public void dispose() {
         logger.debug("Hue group handler disposes. Unregistering listener.");
+        cancelScheduledFuture();
         if (groupId != null) {
             HueClient bridgeHandler = getHueClient();
             if (bridgeHandler != null) {
@@ -229,6 +235,21 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
                     // this might not have been yet set in the light, if it was off
                     groupState.setColorTemperature(lastSentColorTemp);
                     groupState.setTransitionTime(fadeTime);
+                }
+                break;
+            case CHANNEL_ALERT:
+                if (command instanceof StringType) {
+                    groupState = LightStateConverter.toAlertState((StringType) command);
+                    if (groupState == null) {
+                        // Unsupported StringType is passed. Log a warning
+                        // message and return.
+                        logger.warn("Unsupported String command: {}. Supported commands are: {}, {}, {} ", command,
+                                LightStateConverter.ALERT_MODE_NONE, LightStateConverter.ALERT_MODE_SELECT,
+                                LightStateConverter.ALERT_MODE_LONG_SELECT);
+                        return;
+                    } else {
+                        scheduleAlertStateRestore(command);
+                    }
                 }
                 break;
             default:
@@ -355,6 +376,12 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
         updateState(CHANNEL_BRIGHTNESS, brightnessPercentType);
 
         updateState(CHANNEL_SWITCH, state.isOn() ? OnOffType.ON : OnOffType.OFF);
+
+        StringType stringType = LightStateConverter.toAlertStringType(state);
+        if (!"NULL".equals(stringType.toString())) {
+            updateState(CHANNEL_ALERT, stringType);
+            scheduleAlertStateRestore(stringType);
+        }
     }
 
     @Override
@@ -376,5 +403,70 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
         if (group.getId().equals(groupId)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "@text/offline.group-removed");
         }
+    }
+
+    /**
+     * Schedules restoration of the alert item state to {@link LightStateConverter#ALERT_MODE_NONE} after a given time.
+     * <br>
+     * Based on the initial command:
+     * <ul>
+     * <li>For {@link LightStateConverter#ALERT_MODE_SELECT} restoration will be triggered after <strong>2
+     * seconds</strong>.
+     * <li>For {@link LightStateConverter#ALERT_MODE_LONG_SELECT} restoration will be triggered after <strong>15
+     * seconds</strong>.
+     * </ul>
+     * This method also cancels any previously scheduled restoration.
+     *
+     * @param command The {@link Command} sent to the item
+     */
+    private void scheduleAlertStateRestore(Command command) {
+        cancelScheduledFuture();
+        int delay = getAlertDuration(command);
+
+        if (delay > 0) {
+            scheduledFuture = scheduler.schedule(() -> {
+                updateState(CHANNEL_ALERT, new StringType(LightStateConverter.ALERT_MODE_NONE));
+            }, delay, TimeUnit.MILLISECONDS);
+        }
+    }
+
+    /**
+     * This method will cancel previously scheduled alert item state
+     * restoration.
+     */
+    private void cancelScheduledFuture() {
+        if (scheduledFuture != null) {
+            scheduledFuture.cancel(true);
+            scheduledFuture = null;
+        }
+    }
+
+    /**
+     * This method returns the time in <strong>milliseconds</strong> after
+     * which, the state of the alert item has to be restored to {@link LightStateConverter#ALERT_MODE_NONE}.
+     *
+     * @param command The initial command sent to the alert item.
+     * @return Based on the initial command will return:
+     *         <ul>
+     *         <li><strong>2000</strong> for {@link LightStateConverter#ALERT_MODE_SELECT}.
+     *         <li><strong>15000</strong> for {@link LightStateConverter#ALERT_MODE_LONG_SELECT}.
+     *         <li><strong>-1</strong> for any command different from the previous two.
+     *         </ul>
+     */
+    private int getAlertDuration(Command command) {
+        int delay;
+        switch (command.toString()) {
+            case LightStateConverter.ALERT_MODE_LONG_SELECT:
+                delay = 15000;
+                break;
+            case LightStateConverter.ALERT_MODE_SELECT:
+                delay = 2000;
+                break;
+            default:
+                delay = -1;
+                break;
+        }
+
+        return delay;
     }
 }
