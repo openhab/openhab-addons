@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.deconz.internal;
 
-import static org.openhab.binding.deconz.internal.BindingConstants.*;
-
-import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,39 +27,45 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.eclipse.smarthome.io.net.http.WebSocketFactory;
 import org.openhab.binding.deconz.internal.handler.DeconzBridgeHandler;
+import org.openhab.binding.deconz.internal.handler.LightThingHandler;
 import org.openhab.binding.deconz.internal.handler.SensorThingHandler;
 import org.openhab.binding.deconz.internal.netutils.AsyncHttpClient;
+import org.openhab.binding.deconz.internal.types.LightType;
+import org.openhab.binding.deconz.internal.types.LightTypeDeserializer;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
- * The {@link HandlerFactory} is responsible for creating things and thing
+ * The {@link DeconzHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author David Graeff - Initial contribution
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.deconz")
 @NonNullByDefault
-public class HandlerFactory extends BaseThingHandlerFactory {
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
-            Stream.of(BRIDGE_TYPE, THING_TYPE_PRESENCE_SENSOR, THING_TYPE_DAYLIGHT_SENSOR, THING_TYPE_POWER_SENSOR,
-                    THING_TYPE_CONSUMPTION_SENSOR, THING_TYPE_LIGHT_SENSOR, THING_TYPE_TEMPERATURE_SENSOR,
-                    THING_TYPE_HUMIDITY_SENSOR, THING_TYPE_PRESSURE_SENSOR, THING_TYPE_SWITCH,
-                    THING_TYPE_OPENCLOSE_SENSOR, THING_TYPE_WATERLEAKAGE_SENSOR, THING_TYPE_FIRE_SENSOR,
-                    THING_TYPE_ALARM_SENSOR, THING_TYPE_VIBRATION_SENSOR).collect(Collectors.toSet()));
+public class DeconzHandlerFactory extends BaseThingHandlerFactory {
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
+            .of(DeconzBridgeHandler.SUPPORTED_THING_TYPES, LightThingHandler.SUPPORTED_THING_TYPE_UIDS,
+                    SensorThingHandler.SUPPORTED_THING_TYPES)
+            .flatMap(Set::stream).collect(Collectors.toSet());
 
-    private final Gson gson = new Gson();
+    private final Gson gson;
     private final WebSocketFactory webSocketFactory;
     private final HttpClientFactory httpClientFactory;
 
     @Activate
-    public HandlerFactory(final @Reference WebSocketFactory webSocketFactory,
+    public DeconzHandlerFactory(final @Reference WebSocketFactory webSocketFactory,
             final @Reference HttpClientFactory httpClientFactory) {
         this.webSocketFactory = webSocketFactory;
         this.httpClientFactory = httpClientFactory;
+
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(LightType.class, new LightTypeDeserializer());
+        gson = gsonBuilder.create();
     }
 
     @Override
@@ -74,11 +77,15 @@ public class HandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (BRIDGE_TYPE.equals(thingTypeUID)) {
+        if (DeconzBridgeHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new DeconzBridgeHandler((Bridge) thing, webSocketFactory,
                     new AsyncHttpClient(httpClientFactory.getCommonHttpClient()), gson);
-        } else {
+        } else if (LightThingHandler.SUPPORTED_THING_TYPE_UIDS.contains(thingTypeUID)) {
+            return new LightThingHandler(thing, gson);
+        } else if (SensorThingHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new SensorThingHandler(thing, gson);
         }
+
+        return null;
     }
 }
