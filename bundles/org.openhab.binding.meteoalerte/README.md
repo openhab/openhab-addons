@@ -6,11 +6,7 @@ The Meteo Alerte binding gives alert level regarding major weather related risk 
 
 There is exactly one supported thing type, which represents the weather alerts for a given department.
 It has the `department` id.
-Of course, you can add multiple Things, e.g. for getting alerts for different locations.
-
-## Discovery
-
-This binding does not handle auto-discovery.
+Of course, you can add multiple things, e.g. for getting alerts for different locations.
 
 ## Binding Configuration
 
@@ -20,10 +16,10 @@ The binding has no configuration options, all configuration is done at Thing lev
 
 The thing has a few configuration parameters:
 
-| Parameter  | Description                                                         |
-|------------|---------------------------------------------------------------------|
-| department | Name of the department.                                             |
-| refresh    | Refresh interval in hours. Optional, the default value is 24 hours. |
+| Parameter     | Description                                                                            |
+|---------------|----------------------------------------------------------------------------------------|
+| `department` | Name of the department.                                                               |
+| refresh       | Refresh interval in minutes. Optional, the default value is 1440 minutes (once a day). |
 
 ## Channels
 

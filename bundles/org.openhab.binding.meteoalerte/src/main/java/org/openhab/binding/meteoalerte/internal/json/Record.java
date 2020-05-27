@@ -33,7 +33,8 @@ public class Record {
     private String recordId = "";
     @SerializedName("record_timestamp")
     private String recordTimestamp = "";
-    private @Nullable Fields fields;
+    @SerializedName("fields")
+    private @Nullable ResponseFieldDTO responseFieldDTO;
 
     public String getDatasetId() {
         return datasetId;
@@ -47,8 +48,8 @@ public class Record {
         return recordTimestamp;
     }
 
-    public Optional<Fields> getFields() {
-        Fields fields = this.fields;
+    public Optional<ResponseFieldDTO> getResponseFieldDTO() {
+        ResponseFieldDTO fields = this.responseFieldDTO;
         if (fields != null) {
             return Optional.of(fields);
         }

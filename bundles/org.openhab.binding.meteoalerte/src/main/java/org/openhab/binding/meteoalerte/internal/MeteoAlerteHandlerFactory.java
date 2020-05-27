@@ -14,6 +14,8 @@ package org.openhab.binding.meteoalerte.internal;
 
 import static org.openhab.binding.meteoalerte.internal.MeteoAlerteBindingConstants.*;
 
+import java.time.ZonedDateTime;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
@@ -27,6 +29,10 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
+
 /**
  * The {@link MeteoAlerteHandlerFactory} is responsible for creating things and thing
  * handlers.
@@ -36,13 +42,17 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.meteoalerte")
 @NonNullByDefault
 public class MeteoAlerteHandlerFactory extends BaseThingHandlerFactory {
-
+    private final Gson gson;
     // Needed for converting UTC time to local time
     private final TimeZoneProvider timeZoneProvider;
 
     @Activate
     public MeteoAlerteHandlerFactory(@Reference TimeZoneProvider timeZoneProvider) {
         this.timeZoneProvider = timeZoneProvider;
+        this.gson = new GsonBuilder()
+                .registerTypeAdapter(ZonedDateTime.class, (JsonDeserializer<ZonedDateTime>) (json, type,
+                        jsonDeserializationContext) -> ZonedDateTime.parse(json.getAsJsonPrimitive().getAsString()))
+                .create();
     }
 
     @Override
@@ -55,7 +65,7 @@ public class MeteoAlerteHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_METEO_ALERT)) {
-            return new MeteoAlerteHandler(thing, timeZoneProvider);
+            return new MeteoAlerteHandler(thing, timeZoneProvider, gson);
         }
 
         return null;

@@ -21,13 +21,13 @@ import org.eclipse.jdt.annotation.Nullable;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link Fields} is the Java class used to map the JSON
+ * The {@link ResponseFieldDTO} is the Java class used to map the JSON
  * response to the webservice request.
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class Fields {
+public class ResponseFieldDTO {
     @SerializedName("nom_reg")
     private String nomReg = "";
     @SerializedName("typeprev")

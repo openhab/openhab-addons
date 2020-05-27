@@ -49,8 +49,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializer;
 
 /**
  * The {@link MeteoAlerteHandler} is responsible for updating channels
@@ -66,20 +64,17 @@ public class MeteoAlerteHandler extends BaseThingHandler {
     private static final int TIMEOUT_MS = 30000;
     private static final List<String> ALERT_LEVELS = Arrays.asList("Vert", "Jaune", "Orange", "Rouge");
     private final Logger logger = LoggerFactory.getLogger(MeteoAlerteHandler.class);
-    private final Gson gson = new GsonBuilder()
-            .registerTypeAdapter(ZonedDateTime.class, (JsonDeserializer<ZonedDateTime>) (json, type,
-                    jsonDeserializationContext) -> ZonedDateTime.parse(json.getAsJsonPrimitive().getAsString()))
-            .create();
 
     // Time zone provider representing time zone configured in openHAB configuration
     private final TimeZoneProvider timeZoneProvider;
-
+    private final Gson gson;
     private @Nullable ScheduledFuture<?> refreshJob;
     private String queryUrl = "";
 
-    public MeteoAlerteHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
+    public MeteoAlerteHandler(Thing thing, TimeZoneProvider timeZoneProvider, Gson gson) {
         super(thing);
         this.timeZoneProvider = timeZoneProvider;
+        this.gson = gson;
     }
 
     @Override
@@ -92,25 +87,23 @@ public class MeteoAlerteHandler extends BaseThingHandler {
 
         updateStatus(ThingStatus.UNKNOWN);
         queryUrl = URL + config.department;
-        refreshJob = scheduler.scheduleWithFixedDelay(this::updateAndPublish, 0, config.refresh, TimeUnit.HOURS);
+        refreshJob = scheduler.scheduleWithFixedDelay(this::updateAndPublish, 0, config.refresh, TimeUnit.MINUTES);
     }
 
     @Override
     public void dispose() {
         logger.debug("Disposing the Météo Alerte handler.");
         ScheduledFuture<?> refreshJob = this.refreshJob;
-        if (refreshJob != null && !refreshJob.isCancelled()) {
+        if (refreshJob != null) {
             refreshJob.cancel(true);
-            this.refreshJob = null;
         }
+        this.refreshJob = null;
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             updateAndPublish();
-        } else {
-            logger.debug("The Meteo Alerte binding is read-only and can not handle command {}", command);
         }
     }
 
@@ -124,8 +117,8 @@ public class MeteoAlerteHandler extends BaseThingHandler {
             ApiResponse apiResponse = gson.fromJson(response, ApiResponse.class);
             updateChannels(apiResponse);
         } catch (MalformedURLException e) {
-            logger.warn("Malformed URL in Météo Alerte request : {}", queryUrl);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    String.format("Querying '%s' raised : %s", queryUrl, e.getMessage()));
         } catch (IOException e) {
             logger.warn("Error opening connection to Meteo Alerte webservice : {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -138,29 +131,28 @@ public class MeteoAlerteHandler extends BaseThingHandler {
      * @param channelId the id identifying the channel to be updated
      */
     private void updateChannels(ApiResponse apiResponse) {
-        Arrays.stream(apiResponse.getRecords()).findFirst().ifPresent(record -> {
-            record.getFields().ifPresent(fields -> {
-                updateAlertString(WIND, fields.getVent());
-                updateAlertString(RAIN, fields.getPluieInondation());
-                updateAlertString(STORM, fields.getOrage());
-                updateAlertString(FLOOD, fields.getInondation());
-                updateAlertString(SNOW, fields.getNeige());
-                updateAlertString(HEAT, fields.getCanicule());
-                updateAlertString(FREEZE, fields.getGrandFroid());
-                updateAlertString(AVALANCHE, fields.getAvalanches());
+        Arrays.stream(apiResponse.getRecords()).findFirst()
+                .ifPresent((record) -> record.getResponseFieldDTO().ifPresent(fields -> {
+                    updateAlertString(WIND, fields.getVent());
+                    updateAlertString(RAIN, fields.getPluieInondation());
+                    updateAlertString(STORM, fields.getOrage());
+                    updateAlertString(FLOOD, fields.getInondation());
+                    updateAlertString(SNOW, fields.getNeige());
+                    updateAlertString(HEAT, fields.getCanicule());
+                    updateAlertString(FREEZE, fields.getGrandFroid());
+                    updateAlertString(AVALANCHE, fields.getAvalanches());
 
-                fields.getDateInsert().ifPresent(date -> updateDate(OBSERVATION_TIME, date));
-                updateState(COMMENT, new StringType(fields.getVigilanceComment()));
-                updateIcon(WIND, fields.getVent());
-                updateIcon(RAIN, fields.getPluieInondation());
-                updateIcon(STORM, fields.getOrage());
-                updateIcon(FLOOD, fields.getInondation());
-                updateIcon(SNOW, fields.getNeige());
-                updateIcon(HEAT, fields.getCanicule());
-                updateIcon(FREEZE, fields.getGrandFroid());
-                updateIcon(AVALANCHE, fields.getAvalanches());
-            });
-        });
+                    fields.getDateInsert().ifPresent(date -> updateDate(OBSERVATION_TIME, date));
+                    updateState(COMMENT, new StringType(fields.getVigilanceComment()));
+                    updateIcon(WIND, fields.getVent());
+                    updateIcon(RAIN, fields.getPluieInondation());
+                    updateIcon(STORM, fields.getOrage());
+                    updateIcon(FLOOD, fields.getInondation());
+                    updateIcon(SNOW, fields.getNeige());
+                    updateIcon(HEAT, fields.getCanicule());
+                    updateIcon(FREEZE, fields.getGrandFroid());
+                    updateIcon(AVALANCHE, fields.getAvalanches());
+                }));
     }
 
     public void updateIcon(String channelId, String value) {
