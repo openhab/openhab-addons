@@ -60,18 +60,18 @@ public class MonopriceAudioReaderThread extends Thread {
                 if (len > 0) {
                     for (int i = 0; i < len; i++) {
 
-                            if (index < size) {
-                                dataBuffer[index++] = readDataBuffer[i];
+                        if (index < size) {
+                            dataBuffer[index++] = readDataBuffer[i];
+                        }
+                        if (readDataBuffer[i] == terminatingChar) {
+                            if (index >= size) {
+                                dataBuffer[index - 1] = (byte) terminatingChar;
                             }
-                            if (readDataBuffer[i] == terminatingChar) {
-                                if (index >= size) {
-                                    dataBuffer[index - 1] = (byte) terminatingChar;
-                                }
-                                byte[] msg = Arrays.copyOf(dataBuffer, index);
-                                connector.handleIncomingMessage(msg);
-                                index = 0;
-                            }
-                        
+                            byte[] msg = Arrays.copyOf(dataBuffer, index);
+                            connector.handleIncomingMessage(msg);
+                            index = 0;
+                        }
+
                     }
                 }
             }

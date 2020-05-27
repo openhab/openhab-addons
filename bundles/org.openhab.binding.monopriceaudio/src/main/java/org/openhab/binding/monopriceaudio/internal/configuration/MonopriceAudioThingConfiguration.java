@@ -35,5 +35,4 @@ public class MonopriceAudioThingConfiguration {
     public @NonNullByDefault({}) String inputLabel4;
     public @NonNullByDefault({}) String inputLabel5;
     public @NonNullByDefault({}) String inputLabel6;
-
 }

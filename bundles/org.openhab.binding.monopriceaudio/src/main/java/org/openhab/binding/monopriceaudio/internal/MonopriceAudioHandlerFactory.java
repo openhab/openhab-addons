@@ -41,9 +41,8 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.monopriceaudio", service = ThingHandlerFactory.class)
 public class MonopriceAudioHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
-            .of(THING_TYPE_AMP)
-            .collect(Collectors.toSet()));
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(THING_TYPE_AMP).collect(Collectors.toSet()));
 
     private @NonNullByDefault({}) SerialPortManager serialPortManager;
 
@@ -75,11 +74,13 @@ public class MonopriceAudioHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Reference
-    protected void setDynamicStateDescriptionProvider(MonopriceAudioStateDescriptionOptionProvider stateDescriptionProvider) {
+    protected void setDynamicStateDescriptionProvider(
+            MonopriceAudioStateDescriptionOptionProvider stateDescriptionProvider) {
         this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
-    protected void unsetDynamicStateDescriptionProvider(MonopriceAudioStateDescriptionOptionProvider stateDescriptionProvider) {
+    protected void unsetDynamicStateDescriptionProvider(
+            MonopriceAudioStateDescriptionOptionProvider stateDescriptionProvider) {
         this.stateDescriptionProvider = null;
     }
 }

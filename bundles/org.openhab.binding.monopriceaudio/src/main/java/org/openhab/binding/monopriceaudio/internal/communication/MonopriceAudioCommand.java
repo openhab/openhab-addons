@@ -53,5 +53,4 @@ public enum MonopriceAudioCommand {
     public @Nullable String getValue() {
         return value;
     }
-
 }

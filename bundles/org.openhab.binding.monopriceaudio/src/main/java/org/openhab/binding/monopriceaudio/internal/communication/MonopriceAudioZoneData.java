@@ -12,24 +12,27 @@
  */
 package org.openhab.binding.monopriceaudio.internal.communication;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Represents the data elements of a single zone of the Monoprice Whole House Amplifier
  *
  * @author Michael Lobstein - Initial contribution
  */
+@NonNullByDefault
 public class MonopriceAudioZoneData {
 
-    private String zone;
-    private String page;
-    private String power;
-    private String mute;
-    private String dnd;
-    private String volume;
-    private String treble;
-    private String bass;
-    private String balance;
-    private String source;
-    private String keypad;
+    private String zone = "";
+    private String page = "";
+    private String power = "";
+    private String mute = "";
+    private String dnd = "";
+    private String volume = "";
+    private String treble = "";
+    private String bass = "";
+    private String balance = "";
+    private String source = "";
+    private String keypad = "";
 
     public MonopriceAudioZoneData() {
     }
@@ -142,6 +145,6 @@ public class MonopriceAudioZoneData {
     public String toString() {
         // Re-construct the original status message from the controller
         // This is used to determine if something changed from the last polling update
-        return zone + page + power + mute + dnd + volume + treble + bass + balance + source + keypad; 
+        return zone + page + power + mute + dnd + volume + treble + bass + balance + source + keypad;
     }
 }

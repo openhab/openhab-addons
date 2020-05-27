@@ -41,5 +41,4 @@ public class MonopriceAudioMessageEvent extends EventObject {
     public String getValue() {
         return value;
     }
-
 }

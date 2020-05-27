@@ -48,61 +48,59 @@ public enum MonopriceAudioZone {
     ZONE18("36");
 
     private String zoneId;
-    
+
     // make a map to enable lookup by the zone id value
-    public static final Map<String, MonopriceAudioZone> zoneMap = new HashMap<>();
+    public static final Map<String, MonopriceAudioZone> ZONE_MAP = new HashMap<>();
     static {
-        zoneMap.put(ZONE1.getZoneId(), ZONE1);
-        zoneMap.put(ZONE2.getZoneId(), ZONE2);
-        zoneMap.put(ZONE3.getZoneId(), ZONE3);
-        zoneMap.put(ZONE4.getZoneId(), ZONE4);
-        zoneMap.put(ZONE5.getZoneId(), ZONE5);
-        zoneMap.put(ZONE6.getZoneId(), ZONE6);
-        zoneMap.put(ZONE7.getZoneId(), ZONE7);
-        zoneMap.put(ZONE8.getZoneId(), ZONE8);
-        zoneMap.put(ZONE9.getZoneId(), ZONE9);
-        zoneMap.put(ZONE10.getZoneId(), ZONE10);
-        zoneMap.put(ZONE11.getZoneId(), ZONE11);
-        zoneMap.put(ZONE12.getZoneId(), ZONE12);
-        zoneMap.put(ZONE13.getZoneId(), ZONE13);
-        zoneMap.put(ZONE14.getZoneId(), ZONE14);
-        zoneMap.put(ZONE15.getZoneId(), ZONE15);
-        zoneMap.put(ZONE16.getZoneId(), ZONE16);
-        zoneMap.put(ZONE17.getZoneId(), ZONE17);
-        zoneMap.put(ZONE18.getZoneId(), ZONE18);
+        ZONE_MAP.put(ZONE1.getZoneId(), ZONE1);
+        ZONE_MAP.put(ZONE2.getZoneId(), ZONE2);
+        ZONE_MAP.put(ZONE3.getZoneId(), ZONE3);
+        ZONE_MAP.put(ZONE4.getZoneId(), ZONE4);
+        ZONE_MAP.put(ZONE5.getZoneId(), ZONE5);
+        ZONE_MAP.put(ZONE6.getZoneId(), ZONE6);
+        ZONE_MAP.put(ZONE7.getZoneId(), ZONE7);
+        ZONE_MAP.put(ZONE8.getZoneId(), ZONE8);
+        ZONE_MAP.put(ZONE9.getZoneId(), ZONE9);
+        ZONE_MAP.put(ZONE10.getZoneId(), ZONE10);
+        ZONE_MAP.put(ZONE11.getZoneId(), ZONE11);
+        ZONE_MAP.put(ZONE12.getZoneId(), ZONE12);
+        ZONE_MAP.put(ZONE13.getZoneId(), ZONE13);
+        ZONE_MAP.put(ZONE14.getZoneId(), ZONE14);
+        ZONE_MAP.put(ZONE15.getZoneId(), ZONE15);
+        ZONE_MAP.put(ZONE16.getZoneId(), ZONE16);
+        ZONE_MAP.put(ZONE17.getZoneId(), ZONE17);
+        ZONE_MAP.put(ZONE18.getZoneId(), ZONE18);
     }
-    
+
     // make a map to enable lookup of controller zone id by binding zone id (1-18)
-    public static final Map<String, String> bindingZoneMap = new HashMap<>();
+    public static final Map<String, String> BINDING_ZONE_MAP = new HashMap<>();
     static {
-        bindingZoneMap.put("1", ZONE1.getZoneId());
-        bindingZoneMap.put("2", ZONE2.getZoneId());
-        bindingZoneMap.put("3", ZONE3.getZoneId());
-        bindingZoneMap.put("4", ZONE4.getZoneId());
-        bindingZoneMap.put("5", ZONE5.getZoneId());
-        bindingZoneMap.put("6", ZONE6.getZoneId());
-        bindingZoneMap.put("7", ZONE7.getZoneId());
-        bindingZoneMap.put("8", ZONE8.getZoneId());
-        bindingZoneMap.put("9", ZONE9.getZoneId());
-        bindingZoneMap.put("10", ZONE10.getZoneId());
-        bindingZoneMap.put("11", ZONE11.getZoneId());
-        bindingZoneMap.put("12", ZONE12.getZoneId());
-        bindingZoneMap.put("13", ZONE13.getZoneId());
-        bindingZoneMap.put("14", ZONE14.getZoneId());
-        bindingZoneMap.put("15", ZONE15.getZoneId());
-        bindingZoneMap.put("16", ZONE16.getZoneId());
-        bindingZoneMap.put("17", ZONE17.getZoneId());
-        bindingZoneMap.put("18", ZONE18.getZoneId());
+        BINDING_ZONE_MAP.put("1", ZONE1.getZoneId());
+        BINDING_ZONE_MAP.put("2", ZONE2.getZoneId());
+        BINDING_ZONE_MAP.put("3", ZONE3.getZoneId());
+        BINDING_ZONE_MAP.put("4", ZONE4.getZoneId());
+        BINDING_ZONE_MAP.put("5", ZONE5.getZoneId());
+        BINDING_ZONE_MAP.put("6", ZONE6.getZoneId());
+        BINDING_ZONE_MAP.put("7", ZONE7.getZoneId());
+        BINDING_ZONE_MAP.put("8", ZONE8.getZoneId());
+        BINDING_ZONE_MAP.put("9", ZONE9.getZoneId());
+        BINDING_ZONE_MAP.put("10", ZONE10.getZoneId());
+        BINDING_ZONE_MAP.put("11", ZONE11.getZoneId());
+        BINDING_ZONE_MAP.put("12", ZONE12.getZoneId());
+        BINDING_ZONE_MAP.put("13", ZONE13.getZoneId());
+        BINDING_ZONE_MAP.put("14", ZONE14.getZoneId());
+        BINDING_ZONE_MAP.put("15", ZONE15.getZoneId());
+        BINDING_ZONE_MAP.put("16", ZONE16.getZoneId());
+        BINDING_ZONE_MAP.put("17", ZONE17.getZoneId());
+        BINDING_ZONE_MAP.put("18", ZONE18.getZoneId());
     }
 
     // make a list of all valid zone ids
-    public static ArrayList<String> validZones = new ArrayList<String>( 
-            Arrays.asList(ZONE1.getZoneId(),ZONE2.getZoneId(),ZONE3.getZoneId(),
-                          ZONE4.getZoneId(),ZONE5.getZoneId(),ZONE6.getZoneId(),
-                          ZONE7.getZoneId(),ZONE8.getZoneId(),ZONE9.getZoneId(),
-                          ZONE10.getZoneId(),ZONE11.getZoneId(),ZONE12.getZoneId(),
-                          ZONE13.getZoneId(),ZONE14.getZoneId(),ZONE15.getZoneId(),
-                          ZONE16.getZoneId(),ZONE17.getZoneId(),ZONE18.getZoneId()));
+    public static final ArrayList<String> VALID_ZONES = new ArrayList<String>(
+            Arrays.asList(ZONE1.getZoneId(), ZONE2.getZoneId(), ZONE3.getZoneId(), ZONE4.getZoneId(), ZONE5.getZoneId(),
+                    ZONE6.getZoneId(), ZONE7.getZoneId(), ZONE8.getZoneId(), ZONE9.getZoneId(), ZONE10.getZoneId(),
+                    ZONE11.getZoneId(), ZONE12.getZoneId(), ZONE13.getZoneId(), ZONE14.getZoneId(), ZONE15.getZoneId(),
+                    ZONE16.getZoneId(), ZONE17.getZoneId(), ZONE18.getZoneId()));
 
     MonopriceAudioZone(String zoneId) {
         this.zoneId = zoneId;

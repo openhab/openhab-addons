@@ -189,15 +189,16 @@ public abstract class MonopriceAudioConnector {
      *
      * @throws MonopriceAudioException - In case of any problem
      */
-    public void sendCommand(MonopriceAudioZone zone, MonopriceAudioCommand cmd, @Nullable Integer value) throws MonopriceAudioException {
+    public void sendCommand(MonopriceAudioZone zone, MonopriceAudioCommand cmd, @Nullable Integer value)
+            throws MonopriceAudioException {
         String messageStr = MonopriceAudioCommand.BEGIN_CMD.getValue() + zone.getZoneId() + cmd.getValue();
         byte[] message = new byte[0];
-        
+
         if (cmd == MonopriceAudioCommand.QUERY) {
             // query special case - redo messageStr (ie: ? + zoneId)
             messageStr = cmd.getValue() + zone.getZoneId();
         } else if (value != null) {
-            //if the command passed a value, append it to the messageStr
+            // if the command passed a value, append it to the messageStr
             switch (cmd) {
                 case SOURCE:
                 case VOLUME:
@@ -217,7 +218,7 @@ public abstract class MonopriceAudioConnector {
         messageStr += MonopriceAudioCommand.END_CMD.getValue();
 
         message = messageStr.getBytes(StandardCharsets.US_ASCII);
-        logger.debug("Send command {}", messageStr);      
+        logger.debug("Send command {}", messageStr);
 
         OutputStream dataOut = this.dataOut;
         if (dataOut == null) {
@@ -258,26 +259,25 @@ public abstract class MonopriceAudioConnector {
      */
     public void handleIncomingMessage(byte[] incomingMessage) {
         String message = new String(incomingMessage).trim();
-        
+
         logger.debug("handleIncomingMessage: {}", message);
-        
+
         if (READ_ERROR.equals(message)) {
             dispatchKeyValue(KEY_ERROR, MSG_VALUE_ON);
             return;
         }
-        
+
         // Amp controller sends status string: #>1200010000130809100601
-        Pattern p=Pattern.compile("^.*#>(\\d{22})$", Pattern.DOTALL);
-        
+        Pattern p = Pattern.compile("^.*#>(\\d{22})$", Pattern.DOTALL);
+
         try {
-            Matcher matcher=p.matcher(message);
+            Matcher matcher = p.matcher(message);
             matcher.find();
             // pull out just the digits and send them as an event
             dispatchKeyValue(KEY_ZONE_UPDATE, matcher.group(1));
-        } catch (IllegalStateException e){
+        } catch (IllegalStateException e) {
             logger.debug("no match on message: {}", message);
         }
-
     }
 
     /**

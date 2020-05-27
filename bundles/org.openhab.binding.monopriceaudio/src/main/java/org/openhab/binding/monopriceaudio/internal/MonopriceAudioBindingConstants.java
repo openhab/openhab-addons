@@ -45,5 +45,4 @@ public class MonopriceAudioBindingConstants {
     public static final String CHANNEL_TYPE_ALLSOURCE = "allsource";
     public static final String CHANNEL_TYPE_ALLVOLUME = "allvolume";
     public static final String CHANNEL_TYPE_ALLMUTE = "allmute";
-
 }
