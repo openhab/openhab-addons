@@ -27,7 +27,7 @@ import com.google.gson.annotations.SerializedName;
 public class RadioThermostatJsonResponse {
 
     @SerializedName("temp")
-    private Integer temperature = 0;
+    private Double temperature = new Double(0);
 
     @SerializedName("tmode")
     private @Nullable Integer mode;
@@ -62,7 +62,7 @@ public class RadioThermostatJsonResponse {
     public RadioThermostatJsonResponse() {
     }
 
-    public Integer getTemperature() {
+    public Double getTemperature() {
         return temperature;
     }
 

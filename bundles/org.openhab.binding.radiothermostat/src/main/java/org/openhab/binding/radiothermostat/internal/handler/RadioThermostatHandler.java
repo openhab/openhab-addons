@@ -511,7 +511,7 @@ public class RadioThermostatHandler extends BaseThingHandler {
             case MODEL:
                 return data.getModel();
             case TEMPERATURE:
-                if (data.getThermostatData().getTemperature() != 0) {
+                if (!data.getThermostatData().getTemperature().equals(new Double(0))) {
                     return new QuantityType<Temperature>(data.getThermostatData().getTemperature(),
                             API_TEMPERATURE_UNIT);
                 } else {
