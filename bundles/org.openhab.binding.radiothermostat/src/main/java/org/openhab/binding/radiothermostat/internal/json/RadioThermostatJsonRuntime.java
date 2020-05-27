@@ -25,16 +25,16 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class RadioThermostatJsonRuntime {
-    
+
     @SerializedName("today")
     private @Nullable RadioThermostatJsonRuntimeHeatCool today;
-    
+
     @SerializedName("yesterday")
     private @Nullable RadioThermostatJsonRuntimeHeatCool yesterday;
-    
+
     public RadioThermostatJsonRuntime() {
     }
-    
+
     /**
      * Receives "today" node from the JSON response
      *
@@ -43,7 +43,7 @@ public class RadioThermostatJsonRuntime {
     public @Nullable RadioThermostatJsonRuntimeHeatCool getToday() {
         return today;
     }
-    
+
     /**
      * Receives "yesterday" node from the JSON response
      *

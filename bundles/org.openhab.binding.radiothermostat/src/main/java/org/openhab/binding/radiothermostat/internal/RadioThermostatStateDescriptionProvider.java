@@ -29,8 +29,8 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 
 /**
- * The {@link RadioThermostatStateDescriptionProvider} class is a dynamic provider of state options while leaving other state
- * description fields as original.
+ * The {@link RadioThermostatStateDescriptionProvider} class is a dynamic provider of state options while leaving other
+ * state description fields as original.
  *
  * @author Gregory Moyer - Initial contribution
  * @author Michael Lobstein - Adapted for RadioThermostat Binding
@@ -52,7 +52,8 @@ public class RadioThermostatStateDescriptionProvider implements DynamicStateDesc
             return null;
         }
 
-        StateDescriptionFragmentBuilder builder = (original == null) ? StateDescriptionFragmentBuilder.create() : StateDescriptionFragmentBuilder.create(original);
+        StateDescriptionFragmentBuilder builder = (original == null) ? StateDescriptionFragmentBuilder.create()
+                : StateDescriptionFragmentBuilder.create(original);
         return builder.withOptions(options).build().toStateDescription();
     }
 

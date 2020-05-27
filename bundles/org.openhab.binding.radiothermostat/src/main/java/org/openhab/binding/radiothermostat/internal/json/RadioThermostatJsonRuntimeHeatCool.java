@@ -25,16 +25,16 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class RadioThermostatJsonRuntimeHeatCool {
-    
+
     public RadioThermostatJsonRuntimeHeatCool() {
     }
-    
+
     @SerializedName("heat_runtime")
     private @Nullable RadioThermostatJsonTime heatTime;
-    
+
     @SerializedName("cool_runtime")
     private @Nullable RadioThermostatJsonTime coolTime;
-    
+
     /**
      * Receives "heat_runtime" node from the JSON response
      *
@@ -43,7 +43,7 @@ public class RadioThermostatJsonRuntimeHeatCool {
     public @Nullable RadioThermostatJsonTime getHeatTime() {
         return heatTime;
     }
-    
+
     /**
      * Receives "cool_runtime" node from the JSON response
      *

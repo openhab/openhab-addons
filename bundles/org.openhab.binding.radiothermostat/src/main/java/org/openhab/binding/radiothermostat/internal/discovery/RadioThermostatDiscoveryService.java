@@ -82,13 +82,12 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
     protected void activate(@Nullable Map<String, @Nullable Object> configProperties) {
         super.activate(configProperties);
     }
-    
+
     @Override
     public void deactivate() {
         stopBackgroundDiscovery();
         super.deactivate();
     }
-
 
     @Override
     protected void startBackgroundDiscovery() {
@@ -265,7 +264,8 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
 
         try {
             // Run the HTTP request and get the JSON response from the thermostat
-            ContentResponse contentResponse = httpClient.newRequest(url).method(GET).timeout(20, TimeUnit.SECONDS).send();
+            ContentResponse contentResponse = httpClient.newRequest(url).method(GET).timeout(20, TimeUnit.SECONDS)
+                    .send();
             sysinfo = contentResponse.getContentAsString();
             content = new JsonParser().parse(sysinfo).getAsJsonObject();
             uuid = content.get("uuid").getAsString();
@@ -275,7 +275,8 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
         }
 
         try {
-            ContentResponse contentResponse = httpClient.newRequest(url + "name").method(GET).timeout(20, TimeUnit.SECONDS).send();
+            ContentResponse contentResponse = httpClient.newRequest(url + "name").method(GET)
+                    .timeout(20, TimeUnit.SECONDS).send();
             String nameinfo = contentResponse.getContentAsString();
             content = new JsonParser().parse(nameinfo).getAsJsonObject();
             name = content.get("name").getAsString();

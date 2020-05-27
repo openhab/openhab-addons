@@ -26,7 +26,7 @@ import com.google.gson.annotations.SerializedName;
 public class RadioThermostatJsonHumidity {
     @SerializedName("humidity")
     private Integer humidity = 0;
-    
+
     public RadioThermostatJsonHumidity() {
     }
 

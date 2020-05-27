@@ -52,7 +52,7 @@ public class RadioThermostatHandlerFactory extends BaseThingHandlerFactory {
     private @Nullable RadioThermostatStateDescriptionProvider stateDescriptionProvider;
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
     private final HttpClient httpClient;
-    
+
     @Activate
     public RadioThermostatHandlerFactory(final @Reference HttpClientFactory httpClientFactory) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
@@ -69,17 +69,17 @@ public class RadioThermostatHandlerFactory extends BaseThingHandlerFactory {
 
         if (thingTypeUID.equals(THING_TYPE_RTHERM)) {
             RadioThermostatHandler handler = new RadioThermostatHandler(thing, stateDescriptionProvider, httpClient);
-            
+
             RadioThermostatDiscoveryService discoveryService = new RadioThermostatDiscoveryService(httpClient);
             discoveryServiceRegs.put(handler.getThing().getUID(), bundleContext
                     .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
-            
+
             return handler;
         }
-        
+
         return null;
     }
-    
+
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof RadioThermostatHandler) {
@@ -95,7 +95,7 @@ public class RadioThermostatHandlerFactory extends BaseThingHandlerFactory {
             }
         }
     }
-    
+
     @Reference
     protected void setDynamicStateDescriptionProvider(RadioThermostatStateDescriptionProvider provider) {
         this.stateDescriptionProvider = provider;

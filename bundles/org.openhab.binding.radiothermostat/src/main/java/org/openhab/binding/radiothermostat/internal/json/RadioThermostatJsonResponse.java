@@ -98,7 +98,7 @@ public class RadioThermostatJsonResponse {
         this.heatTarget = heatTarget;
     }
 
-    public @Nullable  Integer getCoolTarget() {
+    public @Nullable Integer getCoolTarget() {
         return coolTarget;
     }
 

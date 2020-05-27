@@ -29,13 +29,13 @@ public class RadioThermostatJsonTime {
 
     @SerializedName("hour")
     private Integer hour = 0;
-    
+
     @SerializedName("minute")
     private Integer minute = 0;
-    
+
     public RadioThermostatJsonTime() {
     }
-    
+
     public Integer getDayOfWeek() {
         return dayOfWeek;
     }
@@ -64,31 +64,31 @@ public class RadioThermostatJsonTime {
      */
     public String getThemostatDateTime() {
         String day;
-        
+
         switch (dayOfWeek.toString()) {
-        case "0":
-            day = "Monday ";
-            break;
-        case "1":
-            day = "Tuesday ";
-            break;
-        case "2":
-            day = "Wedensday ";
-            break;
-        case "3":
-            day = "Thursday ";
-            break;
-        case "4":
-            day = "Friday ";
-            break;
-        case "5":
-            day = "Saturday ";
-            break;
-        case "6":
-            day = "Sunday ";
-            break;
-        default:
-            day = "";
+            case "0":
+                day = "Monday ";
+                break;
+            case "1":
+                day = "Tuesday ";
+                break;
+            case "2":
+                day = "Wedensday ";
+                break;
+            case "3":
+                day = "Thursday ";
+                break;
+            case "4":
+                day = "Friday ";
+                break;
+            case "5":
+                day = "Saturday ";
+                break;
+            case "6":
+                day = "Sunday ";
+                break;
+            default:
+                day = "";
         }
         return day + hour + ":" + String.format("%02d", minute);
     }

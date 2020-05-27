@@ -71,5 +71,5 @@ public class RadioThermostatData {
     public void setRuntime(RadioThermostatJsonRuntime runtime) {
         this.runtime = runtime;
     }
-    
+
 }
