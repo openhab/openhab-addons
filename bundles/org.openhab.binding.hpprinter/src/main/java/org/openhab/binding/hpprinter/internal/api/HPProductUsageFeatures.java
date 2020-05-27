@@ -44,6 +44,11 @@ public class HPProductUsageFeatures {
     private boolean printApplication;
     private boolean printApplicationChrome;
 
+    private boolean scannerEngine;
+    private boolean copyApplication;
+
+    private boolean cloudPrint;
+
     public enum PrinterType {
         UNKNOWN,
         MONOCHROME,
@@ -93,22 +98,24 @@ public class HPProductUsageFeatures {
         }
 
         NodeList printerSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:PrinterSubunit");
-        Element currPrinterSubUnit = (Element) printerSubUnit.item(0);
+        if (printerSubUnit.getLength() > 0) {
+            Element currPrinterSubUnit = (Element) printerSubUnit.item(0);
 
-        if (currPrinterSubUnit.getElementsByTagName("dd:JamEvents").getLength() > 0) {
-            jamEvents = true;
-        }
+            if (currPrinterSubUnit.getElementsByTagName("dd:JamEvents").getLength() > 0) {
+                jamEvents = true;
+            }
 
-        if (currPrinterSubUnit.getElementsByTagName("dd:MispickEvents").getLength() > 0) {
-            mispickEvents = true;
-        }
+            if (currPrinterSubUnit.getElementsByTagName("dd:MispickEvents").getLength() > 0) {
+                mispickEvents = true;
+            }
 
-        if (currPrinterSubUnit.getElementsByTagName("pudyn:SubscriptionImpressions").getLength() > 0) {
-            subscriptionImpressions = true;
-        }
+            if (currPrinterSubUnit.getElementsByTagName("pudyn:SubscriptionImpressions").getLength() > 0) {
+                subscriptionImpressions = true;
+            }
 
-        if (currPrinterSubUnit.getElementsByTagName("dd:TotalFrontPanelCancelPresses").getLength() > 0) {
-            frontPanelCancel = true;
+            if (currPrinterSubUnit.getElementsByTagName("dd:TotalFrontPanelCancelPresses").getLength() > 0) {
+                frontPanelCancel = true;
+            }
         }
 
         NodeList scannerSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:ScanApplicationSubunit");
@@ -136,21 +143,61 @@ public class HPProductUsageFeatures {
             }
         }
 
-        NodeList appSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:ScanApplicationSubunit");
-        if (appSubUnit.getLength() > 0) {
+        NodeList scanAppSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:ScanApplicationSubunit");
+        if (scanAppSubUnit.getLength() > 0) {
             printApplication = true;
 
-            Element currAppSubUnit = (Element) appSubUnit.item(0);
+            Element currAppSubUnit = (Element) scanAppSubUnit.item(0);
             
             if (currAppSubUnit.getElementsByTagName("pudyn:RemoteDeviceType").getLength() > 0) {
                 printApplicationChrome = true;
             }
-            
+        }
+
+        NodeList printAppSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:PrintApplicationSubunit");
+        if (printAppSubUnit.getLength() > 0) {
+            Element currPrintAppSubUnit = (Element) printAppSubUnit.item(0);
+
+            if (currPrintAppSubUnit.getElementsByTagName("dd:CloudPrintImpressions").getLength() > 0) {
+                cloudPrint = true;
+            }
+        }
+
+        NodeList scannerEngineSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:ScannerEngineSubunit");
+        if (scannerEngineSubUnit.getLength() > 0) {
+            scannerEngine = true;
+        }
+
+        NodeList copyAppSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:CopyApplicationSubunit");
+        if (copyAppSubUnit.getLength() > 0) {
+            copyApplication = true;
         }
     }
 
     public PrinterType getType() {
         return printerType;
+    }
+
+    /**
+     * Printer data contains Scanner Engine.
+     * 
+     * pudyn:ProductUsageDyn -> pudyn:ScannerEngineSubunit
+     * 
+     * return {boolean} True is supported.
+     */
+    public boolean hasScannerEngine() {
+        return scannerEngine;
+    }
+
+    /**
+     * Printer data contains Copy Application.
+     * 
+     * pudyn:ProductUsageDyn -> pudyn:ScannerEngineSubunit
+     * 
+     * return {boolean} True is supported.
+     */
+    public boolean hasCopyApplication() {
+        return copyApplication;
     }
 
     /**
@@ -204,7 +251,7 @@ public class HPProductUsageFeatures {
      *
      * @return {boolean} True if supported.
      */
-    public boolean hasScannerADF() {
+    public boolean hasScanADF() {
         return scanAdf;
     }
 
@@ -215,10 +262,20 @@ public class HPProductUsageFeatures {
      *
      * @return {boolean} True if supported.
      */
-    public boolean hasScannerFlatbed() {
+    public boolean hasScanFlatbed() {
         return scanFlatbed;
     }
 
+    /**
+     * Printer data has Google Cloud Print impressions.
+     * 
+     * pudyn:ProductUsageDyn -> pudyn:PrintApplicationSubunit -> dd:CloudPrintImpressions
+     * 
+     * @return {boolean} True if supported.
+     */
+    public boolean hasCloudPrint() {
+        return cloudPrint;
+    }
     
     /**
      * Printer data contains Print Application Usage Information.
@@ -231,6 +288,13 @@ public class HPProductUsageFeatures {
         return printApplication;
     }
 
+    /**
+     * Printer data contains Chrome Print Application Usage Information.
+     *
+     * pudyn:ProductUsageDyn -> pudyn:MobileApplicationSubunit
+     *
+     * @return {boolean} True if supported.
+     */
     public boolean hasPrintApplicationChrome() {
         return printApplicationChrome;
     }

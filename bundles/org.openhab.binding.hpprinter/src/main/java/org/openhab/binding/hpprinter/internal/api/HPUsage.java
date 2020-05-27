@@ -33,6 +33,7 @@ public class HPUsage {
     private int totalColorImpressions;
     private int frontpanelCancelCount;
     private int totalImpressions;
+
     private int jamEvents;
     private int inkBlack;
     private int inkCyan;
@@ -51,18 +52,36 @@ public class HPUsage {
     private int inkMagentaPagesRemaining;
     private int inkYellowPagesRemaining;
 
+    //Scan
     private int scanAdfCount;
     private int scanFlatbedCount;
     private int scanToEmailCount;
     private int scanToFolderCount;
     private int scanToHostCount;
 
+    //Scanner
+    private int scannerAdfCount;
+    private int scannerFlatbedCount;
+    private int scannerJamEvents;
+    private int scannerMispickEvents;
+
+    //Copy
+    private int copyAdfCount;
+    private int copyFlatbedCount;
+    private int copyTotalImpressions;
+    private int copyTotalMonochromeImpressions;
+    private int copyTotalColorImpressions;
+    
+    //App
     private int appWindowsCount;
     private int appOsxCount;
     private int appIosCount;
     private int appAndroidCount;
     private int appSamsungCount;
     private int appChromeCount;
+
+    //Other
+    private int cloudPrintImpressions;
 
     public HPUsage() {
     }
@@ -97,13 +116,12 @@ public class HPUsage {
                     float marking = Integer
                             .parseInt(currMarking.getElementsByTagName("dd:ValueFloat").item(0).getTextContent());
 
-                            //TODO: Check conversions - unsure based on comments
                     switch (currMarking.getElementsByTagName("dd:Unit").item(0).getTextContent().toLowerCase()) {
                         case "microliters":
-                            marking = marking / 1000; // Convert to litres
+                            marking = marking / 1000; // Convert from microlitres to millilitres
                             break;
                         case "liters":
-                            marking = marking * 1000; // Convert to millilitres
+                            marking = marking * 1000; // Convert to litres to millilitres
                     }
 
                     totalMarking = totalMarking + marking; // Sum the marking counts together
@@ -179,18 +197,53 @@ public class HPUsage {
         if (frontpanelCancelCount.getLength() > 0)
             this.frontpanelCancelCount = Integer.parseInt(frontpanelCancelCount.item(0).getTextContent());
         
-        //Scanner
+        //Print Apps
+        NodeList printAppsSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:PrintApplicationSubunit");
+        if (printAppsSubUnit.getLength() > 0) {
+            Element currPrintAppsSubUnit = (Element) printAppsSubUnit.item(0);
+
+            NodeList cloudPrintImpressions = currPrintAppsSubUnit
+                .getElementsByTagName("dd:CloudPrintImpressions");
+
+            if (cloudPrintImpressions.getLength() > 0)
+                this.cloudPrintImpressions = Integer.parseInt(cloudPrintImpressions.item(0).getTextContent());
+        }
+        
+        //Scan
         NodeList scanSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:ScanApplicationSubunit");
         if (scanSubUnit.getLength() > 0) {
-            Element currScannerSubUnit = (Element) scanSubUnit.item(0);
+            Element currScanSubUnit = (Element) scanSubUnit.item(0);
 
-            this.scanAdfCount = setInt("dd:AdfImages", currScannerSubUnit);
-            this.scanFlatbedCount = setInt("dd:FlatbedImages", currScannerSubUnit);
+            this.scanAdfCount = setInt("dd:AdfImages", currScanSubUnit);
+            this.scanFlatbedCount = setInt("dd:FlatbedImages", currScanSubUnit);
 
-            this.scanToEmailCount = setInt("dd:ImagesSentToEmail", currScannerSubUnit);
-            this.scanToFolderCount = setInt("dd:ImagesSentToFolder", currScannerSubUnit);
+            this.scanToEmailCount = setInt("dd:ImagesSentToEmail", currScanSubUnit);
+            this.scanToFolderCount = setInt("dd:ImagesSentToFolder", currScanSubUnit);
 
-            this.scanToHostCount = setInt("dd:ScanToHostImages", currScannerSubUnit);
+            this.scanToHostCount = setInt("dd:ScanToHostImages", currScanSubUnit);
+        }
+
+        //Scanner
+        NodeList scannerSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:ScannerEngineSubunit");
+        if (scannerSubUnit.getLength() > 0) {
+            Element currScannerSubUnit = (Element) scannerSubUnit.item(0);
+
+            this.scannerAdfCount = setInt("dd:AdfImages", currScannerSubUnit);
+            this.scannerFlatbedCount = setInt("dd:FlatbedImages", currScannerSubUnit);
+            this.scannerJamEvents = setInt("dd:JamEvents", currScannerSubUnit);
+            this.scannerMispickEvents = setInt("dd:MispickEvents", currScannerSubUnit);
+        }
+
+        //Copy
+        NodeList copySubUnit = document.getDocumentElement().getElementsByTagName("pudyn:CopyApplicationSubunit");
+        if (copySubUnit.getLength() > 0) {
+            Element currCopySubUnit = (Element) copySubUnit.item(0);
+
+            this.copyAdfCount = setInt("dd:AdfImages", currCopySubUnit);
+            this.copyFlatbedCount = setInt("dd:FlatbedImages", currCopySubUnit);
+            this.copyTotalColorImpressions = setInt("dd:ColorImpressions", currCopySubUnit);
+            this.copyTotalMonochromeImpressions = setInt("dd:MonochromeImpressions", currCopySubUnit);
+            this.copyTotalImpressions = setInt("dd:TotalImpressions", currCopySubUnit);
         }
 
         //App Usage
@@ -253,6 +306,10 @@ public class HPUsage {
 
     public int getTotalImpressions() {
         return totalImpressions;
+    }
+
+    public int getCloudPrintImpressions() {
+        return cloudPrintImpressions;
     }
 
     public int getJamEvents() {
@@ -361,6 +418,42 @@ public class HPUsage {
 
     public int getAppChromeCount() {
         return appChromeCount;
+    }
+
+    public int getScannerAdfCount() {
+        return scannerAdfCount;
+    }
+
+    public int getScannerFlatbedCount() {
+        return scannerFlatbedCount;
+    }
+
+    public int getScannerJamEvents() {
+        return scannerJamEvents;
+    }
+
+    public int getScannerMispickEvents() {
+        return scannerMispickEvents;
+    }
+
+    public int getCopyAdfCount() {
+        return copyAdfCount;
+    }
+
+    public int getCopyFlatbedCount() {
+        return copyFlatbedCount;
+    }
+
+    public int getCopyTotalImpressions() {
+        return copyTotalImpressions;
+    }
+
+    public int getCopyTotalColorImpressions() {
+        return copyTotalColorImpressions;
+    }
+
+    public int getCopyTotalMonochromeImpressions() {
+        return copyTotalMonochromeImpressions;
     }
 
 }

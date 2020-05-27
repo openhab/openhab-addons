@@ -85,6 +85,7 @@ public class HPPrinterBindingConstants {
     public static final String CHANNEL_JAM_EVENTS = "jamEvents";
     public static final String CHANNEL_MISPICK_EVENTS = "mispickEvents";
     public static final String CHANNEL_FRONT_PANEL_CANCEL = "fpCancelCount";
+    public static final String CHANNEL_CLOUD_PRINT = "cloudPrint";
 
     //Scanner
     public static final String CHANNEL_TOTAL_ADF = "totalAdf";
@@ -105,7 +106,10 @@ public class HPPrinterBindingConstants {
     public static final String CGROUP_INK = "ink";
     public static final String CGROUP_STATUS = "status";
     public static final String CGROUP_USAGE = "usage";
-    public static final String CGROUP_SCANNER = "scanner";
+    public static final String CGROUP_SCANNER = "scanner"; //Scanner Engine
+    public static final String CGROUP_SCAN = "scan"; // Scan Application
+    public static final String CGROUP_COPY = "copy";
     public static final String CGROUP_APP = "app";
+    public static final String CGROUP_OTHER = "other";
     
 }
