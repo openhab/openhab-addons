@@ -27,7 +27,6 @@ These sensors are supported:
 | deCONZ Artificial Daylight Sensor | deCONZ specific: simulated sensor | `daylightsensor`     |
 | Carbon-Monoxide Sensor            | ZHACarbonmonoxide                 | `carbonmonoxide`     |
 
-
 Additionally lights and window coverings (blinds) are supported:
 
 | Device type                          | Resource Type                          | Thing type           |
@@ -214,3 +213,9 @@ then
     ...
 end
 ```
+
+### Troubleshooting
+
+By default state updates are ignored for 250ms after a command.
+If your light takes more than that to change from one state to another, you might experience a problem with jumping sliders/color pickers.
+In that case the `transitiontime` parameter should be changed to the desired time.
