@@ -43,8 +43,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializer;
 
 import tec.uom.se.unit.Units;
 
@@ -59,20 +57,17 @@ public class VigiCruesHandler extends BaseThingHandler {
     private static final String URL = OPENDATASOFT_URL + "?dataset=vigicrues&sort=timestamp&q=";
     private static final int TIMEOUT_MS = 30000;
     private final Logger logger = LoggerFactory.getLogger(VigiCruesHandler.class);
-    private final Gson gson = new GsonBuilder()
-            .registerTypeAdapter(ZonedDateTime.class, (JsonDeserializer<ZonedDateTime>) (json, type,
-                    jsonDeserializationContext) -> ZonedDateTime.parse(json.getAsJsonPrimitive().getAsString()))
-            .create();
 
     // Time zone provider representing time zone configured in openHAB configuration
     private final TimeZoneProvider timeZoneProvider;
-
+    private final Gson gson;
     private @Nullable ScheduledFuture<?> refreshJob;
     private String queryUrl = "";
 
-    public VigiCruesHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
+    public VigiCruesHandler(Thing thing, TimeZoneProvider timeZoneProvider, Gson gson) {
         super(thing);
         this.timeZoneProvider = timeZoneProvider;
+        this.gson = gson;
     }
 
     @Override
@@ -81,7 +76,7 @@ public class VigiCruesHandler extends BaseThingHandler {
 
         VigiCruesConfiguration config = getConfigAs(VigiCruesConfiguration.class);
         logger.debug("config station = {}", config.id);
-        logger.debug("config refresh = {} mn", config.refresh);
+        logger.debug("config refresh = {} min", config.refresh);
 
         updateStatus(ThingStatus.UNKNOWN);
         queryUrl = URL + config.id;
@@ -93,18 +88,16 @@ public class VigiCruesHandler extends BaseThingHandler {
         logger.debug("Disposing the VigiCrues handler.");
 
         ScheduledFuture<?> refreshJob = this.refreshJob;
-        if (refreshJob != null && !refreshJob.isCancelled()) {
+        if (refreshJob != null) {
             refreshJob.cancel(true);
-            this.refreshJob = null;
         }
+        this.refreshJob = null;
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             updateAndPublish();
-        } else {
-            logger.debug("The VigiCrues binding is read-only and can not handle command {}", command);
         }
     }
 
@@ -124,11 +117,11 @@ public class VigiCruesHandler extends BaseThingHandler {
                         field.getTimestamp().ifPresent(date -> updateDate(OBSERVATION_TIME, date));
                     });
         } catch (MalformedURLException e) {
-            logger.warn("Malformed URL in VigiCrues request : {}", queryUrl);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    String.format("Querying '%s' raised : %s", queryUrl, e.getMessage()));
         } catch (IOException e) {
-            logger.warn("Error opening connection to VigiCrues webservice : {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    String.format("Error opening connection to VigiCrues webservice : {}", e.getMessage()));
         }
     }
 
