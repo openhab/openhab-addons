@@ -331,7 +331,7 @@ public class HPPrinterBinder {
                     if (feature.hasMispickEvents()) {
                         channels.add(ChannelBuilder
                                 .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_MISPICK_EVENTS), CoreItemFactory.NUMBER)
-                                .withLabel("Miss Picks")
+                                .withLabel("Missed Picks")
                                 .withDescription("The amount of times the paper failed to feed into the printer")
                                 .withType(chanTypeTotalsAdvanced).build());
                     }
@@ -422,7 +422,7 @@ public class HPPrinterBinder {
 
                         channels.add(ChannelBuilder
                                 .create(new ChannelUID(thingUid, CGROUP_SCANNER, CHANNEL_MISPICK_EVENTS), CoreItemFactory.NUMBER)
-                                .withLabel("Miss Picks").withDescription("The amount of times the paper failed to feed into the printer")
+                                .withLabel("Missed Picks").withDescription("The amount of times the paper failed to feed into the printer")
                                 .withType(chanTypeTotalsAdvanced).build());
 
                     }

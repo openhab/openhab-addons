@@ -52,13 +52,13 @@ Thing hpprinter:printer:djprinter "Printer" @ "Office" [ ipAddress="192.168.1.1"
 | Total Number of Colour Pages Printed       | usage       | totalColorCount       | Number               |
 | Total Number of Monochrome Pages Printed   | usage       | totalMonochromeCount  | Number               |
 | Paper Jams                                 | usage       | jamEvents             | Number               |
-| Miss Pick Events                           | usage       | mispickEvents         | Number               |
+| Missed Pick Events                         | usage       | mispickEvents         | Number               |
 | Front Panel Cancel Count                   | usage       | fpCancelCount         | Number               |
 | Subscription Count                         | usage       | subscriptionCount     | Number               |
 | Scanner Document Feeder Count              | scanner     | totalAdf              | Number               |
 | Scanner Flatbed Count                      | scanner     | totalFlatbed          | Number               |
 | Scanner Paper Jams                         | scanner     | jamEvents             | Number               |
-| Scanner Miss Picks                         | scanner     | mispickEvents         | Number               |
+| Scanner Missed Picks                       | scanner     | mispickEvents         | Number               |
 | Scan Document Feeder Count                 | scan        | totalAdf              | Number               |
 | Scan Flatbed Count                         | scan        | totalFlatbed          | Number               |
 | Scan to Email Count                        | scan        | totalToEmail          | Number               |
