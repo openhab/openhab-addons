@@ -98,7 +98,6 @@ public class SeneyeService {
                 SeneyeDeviceReading readings = gson.fromJson(responseReadings, SeneyeDeviceReading.class);
                 readings.status = gson.fromJson(responseState, SeneyeStatus.class);
                 logger.debug("seneye '{}' read", this.seneyeId);
-                logger.debug("seneye '{}' type", this.seneyeType);
 
                 return readings;
             } catch (Exception se) {

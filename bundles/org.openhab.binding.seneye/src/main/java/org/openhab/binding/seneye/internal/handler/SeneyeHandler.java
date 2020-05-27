@@ -70,7 +70,7 @@ public final class SeneyeHandler extends BaseThingHandler implements ReadingsUpd
     public void newState(SeneyeDeviceReading readings) {
         if (readings != null) {
             if (seneyeService.seneyeType == 3) {
-                logger.debug("found that sensor is type 3");
+                logger.debug("Updating readings for Reef type sensor");
                 updateState(CHANNEL_TEMPERATURE, new DecimalType(readings.temperature.curr));
                 updateState(CHANNEL_NH3, new DecimalType(readings.nh3.curr));
                 updateState(CHANNEL_NH4, new DecimalType(readings.nh4.curr));
@@ -87,7 +87,7 @@ public final class SeneyeHandler extends BaseThingHandler implements ReadingsUpd
                 updateState(CHANNEL_DISCONNECTED, new StringType(readings.status.getDisconnectedString()));
             }
             if (seneyeService.seneyeType == 2) {
-                logger.debug("found that sensor is type 2");
+                logger.debug("Updating readings for Pond type sensor");
                 updateState(CHANNEL_TEMPERATURE, new DecimalType(readings.temperature.curr));
                 updateState(CHANNEL_NH3, new DecimalType(readings.nh3.curr));
                 updateState(CHANNEL_O2, new DecimalType(readings.o2.curr));
@@ -100,7 +100,7 @@ public final class SeneyeHandler extends BaseThingHandler implements ReadingsUpd
                 updateState(CHANNEL_DISCONNECTED, new StringType(readings.status.getDisconnectedString()));
             }
             if (seneyeService.seneyeType == 1) {
-                logger.debug("found that sensor is type 1");
+                logger.debug("Updating readings for Home type sensor");
                 updateState(CHANNEL_TEMPERATURE, new DecimalType(readings.temperature.curr));
                 updateState(CHANNEL_NH3, new DecimalType(readings.nh3.curr));
                 updateState(CHANNEL_PH, new DecimalType(readings.ph.curr));
