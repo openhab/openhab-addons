@@ -100,12 +100,10 @@ public abstract class VerisureThingHandler<T extends VerisureThingDTO> extends B
         config = getConfigAs(VerisureThingConfiguration.class);
         // Set status to UNKNOWN and let background task set correct status
         updateStatus(ThingStatus.UNKNOWN);
-        scheduler.execute(() -> {
-            Bridge bridge = getBridge();
-            if (bridge != null) {
-                this.bridgeStatusChanged(bridge.getStatusInfo());
-            }
-        });
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            this.bridgeStatusChanged(bridge.getStatusInfo());
+        }
     }
 
     @Override

@@ -332,7 +332,7 @@ public class VerisureSession {
         return null;
     }
 
-    private @Nullable <T> T postJSONVerisureAPI(String url, String data, Class<T> jsonClass) {
+    private <T> @Nullable T postJSONVerisureAPI(String url, String data, Class<T> jsonClass) {
         for (int cnt = 0; cnt < APISERVERLIST.size(); cnt++) {
             ContentResponse response = postVerisureAPI(apiServerInUse + url, data, Boolean.TRUE);
             if (response != null) {
@@ -537,9 +537,7 @@ public class VerisureSession {
         operationJSON.setOperationName(operation);
         operationJSON.setVariables(variables);
         operationJSON.setQuery(query);
-        List<OperationDTO> list = Collections.singletonList(operationJSON);
-
-        return gson.toJson(list);
+        return gson.toJson(Collections.singletonList(operationJSON));
     }
 
     private synchronized void updateAlarmStatus(VerisureInstallation installation) {
@@ -586,8 +584,7 @@ public class VerisureSession {
             doorLockList.forEach(doorLock -> {
                 VerisureSmartLocksDTO slThing = new VerisureSmartLocksDTO();
                 VerisureSmartLocksDTO.Installation inst = new VerisureSmartLocksDTO.Installation();
-                List<VerisureSmartLocksDTO.Doorlock> list = Collections.singletonList(doorLock);
-                inst.setDoorlocks(list);
+                inst.setDoorlocks(Collections.singletonList(doorLock));
                 VerisureSmartLocksDTO.Data data = new VerisureSmartLocksDTO.Data();
                 data.setInstallation(inst);
                 slThing.setData(data);
@@ -629,8 +626,7 @@ public class VerisureSession {
             smartPlugList.forEach(smartPlug -> {
                 VerisureSmartPlugsDTO spThing = new VerisureSmartPlugsDTO();
                 VerisureSmartPlugsDTO.Installation inst = new VerisureSmartPlugsDTO.Installation();
-                List<VerisureSmartPlugsDTO.Smartplug> list = Collections.singletonList(smartPlug);
-                inst.setSmartplugs(list);
+                inst.setSmartplugs(Collections.singletonList(smartPlug));
                 VerisureSmartPlugsDTO.Data data = new VerisureSmartPlugsDTO.Data();
                 data.setInstallation(inst);
                 spThing.setData(data);
@@ -685,8 +681,7 @@ public class VerisureSession {
                 }
                 VerisureClimatesDTO cThing = new VerisureClimatesDTO();
                 VerisureClimatesDTO.Installation inst = new VerisureClimatesDTO.Installation();
-                List<VerisureClimatesDTO.Climate> list = Collections.singletonList(climate);
-                inst.setClimates(list);
+                inst.setClimates(Collections.singletonList(climate));
                 VerisureClimatesDTO.Data data = new VerisureClimatesDTO.Data();
                 data.setInstallation(inst);
                 cThing.setData(data);
@@ -723,8 +718,7 @@ public class VerisureSession {
             doorWindowList.forEach(doorWindow -> {
                 VerisureDoorWindowsDTO dThing = new VerisureDoorWindowsDTO();
                 VerisureDoorWindowsDTO.Installation inst = new VerisureDoorWindowsDTO.Installation();
-                List<VerisureDoorWindowsDTO.DoorWindow> list = Collections.singletonList(doorWindow);
-                inst.setDoorWindows(list);
+                inst.setDoorWindows(Collections.singletonList(doorWindow));
                 VerisureDoorWindowsDTO.Data data = new VerisureDoorWindowsDTO.Data();
                 data.setInstallation(inst);
                 dThing.setData(data);
@@ -789,8 +783,7 @@ public class VerisureSession {
                 if (localUserTrackingStatus != null && localUserTrackingStatus.equals("ACTIVE")) {
                     VerisureUserPresencesDTO upThing = new VerisureUserPresencesDTO();
                     VerisureUserPresencesDTO.Installation inst = new VerisureUserPresencesDTO.Installation();
-                    List<VerisureUserPresencesDTO.UserTracking> list = Collections.singletonList(userTracking);
-                    inst.setUserTrackings(list);
+                    inst.setUserTrackings(Collections.singletonList(userTracking));
                     VerisureUserPresencesDTO.Data data = new VerisureUserPresencesDTO.Data();
                     data.setInstallation(inst);
                     upThing.setData(data);
@@ -824,8 +817,7 @@ public class VerisureSession {
             miceList.forEach(mouse -> {
                 VerisureMiceDetectionDTO miceThing = new VerisureMiceDetectionDTO();
                 VerisureMiceDetectionDTO.Installation inst = new VerisureMiceDetectionDTO.Installation();
-                List<VerisureMiceDetectionDTO.Mouse> list = Collections.singletonList(mouse);
-                inst.setMice(list);
+                inst.setMice(Collections.singletonList(mouse));
                 VerisureMiceDetectionDTO.Data data = new VerisureMiceDetectionDTO.Data();
                 data.setInstallation(inst);
                 miceThing.setData(data);
