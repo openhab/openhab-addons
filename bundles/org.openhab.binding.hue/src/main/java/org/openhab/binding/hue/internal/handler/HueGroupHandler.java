@@ -115,6 +115,7 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
     @Override
     public void dispose() {
         logger.debug("Hue group handler disposes. Unregistering listener.");
+        cancelScheduledFuture();
         if (groupId != null) {
             HueClient bridgeHandler = getHueClient();
             if (bridgeHandler != null) {
@@ -436,6 +437,7 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
     private void cancelScheduledFuture() {
         if (scheduledFuture != null) {
             scheduledFuture.cancel(true);
+            scheduledFuture = null;
         }
     }
 

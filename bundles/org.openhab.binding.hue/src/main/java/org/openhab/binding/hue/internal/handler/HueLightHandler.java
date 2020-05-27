@@ -197,6 +197,7 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
     @Override
     public void dispose() {
         logger.debug("Hue light handler disposes. Unregistering listener.");
+        cancelScheduledFuture();
         if (lightId != null) {
             HueClient bridgeHandler = getHueClient();
             if (bridgeHandler != null) {
@@ -553,6 +554,7 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
     private void cancelScheduledFuture() {
         if (scheduledFuture != null) {
             scheduledFuture.cancel(true);
+            scheduledFuture = null;
         }
     }
 
