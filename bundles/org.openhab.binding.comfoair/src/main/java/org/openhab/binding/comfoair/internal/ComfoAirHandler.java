@@ -169,9 +169,10 @@ public class ComfoAirHandler extends BaseThingHandler {
 
             ComfoAirCommand readCommand = ComfoAirCommandType.getReadCommand(commandKey);
             if (readCommand != null) {
-                State state = sendCommand(readCommand, commandKey);
-
-                updateState(channel.getUID(), state);
+                scheduler.submit(() -> {
+                    State state = sendCommand(readCommand, commandKey);
+                    updateState(channel.getUID(), state);
+                });
             }
         } catch (IllegalArgumentException e) {
             logger.warn("Unknown channel {}", channel.getUID().getId());
