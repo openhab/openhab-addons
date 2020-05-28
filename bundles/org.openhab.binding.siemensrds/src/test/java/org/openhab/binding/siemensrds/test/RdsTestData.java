@@ -299,7 +299,11 @@ public class RdsTestData {
             assertNotNull(kelvin);
             assertEquals(0, kelvin.floatValue(), 0.01);
 
-            assertEquals("46.86865", dataPoints.getPointByClass("'RHuRel").getState().toString());
+            state = dataPoints.getPointByClass("'RHuRel").getState();
+            assertTrue(state instanceof QuantityType<?>);
+            QuantityType<?> relativeHumidity = ((QuantityType<?>) state).toUnit(Units.PERCENT);
+            assertNotNull(relativeHumidity);
+            assertEquals(46.86865, relativeHumidity.floatValue(), 0.1);
 
             state = dataPoints.getPointByClass("'RTemp").getState();
             assertTrue(state instanceof QuantityType<?>);
