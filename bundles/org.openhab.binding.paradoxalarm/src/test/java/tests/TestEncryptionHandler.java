@@ -16,8 +16,11 @@ import static org.junit.Assert.*;
 
 import java.util.Arrays;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.openhab.binding.paradoxalarm.internal.communication.crypto.EncryptionHandler;
+import org.openhab.binding.paradoxalarm.internal.communication.messages.HeaderCommand;
+import org.openhab.binding.paradoxalarm.internal.communication.messages.ParadoxIPPacket;
 import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
 
 /**
@@ -47,5 +50,26 @@ public class TestEncryptionHandler {
         assertEquals(originalBytes.length, result.length);
 
         assertEquals(INPUT_STRING, new String(result));
+    }
+
+    private static final byte[] ENCRYPTION_KEY_BYTES = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10 };
+    private static final byte[] ENCRYPTED_EXPECTED2 = { (byte) 0xAA, 0x0A, 0x00, 0x03, 0x09, (byte) 0xF0, 0x00, 0x00,
+            0x01, (byte) 0xEE, (byte) 0xEE, (byte) 0xEE, (byte) 0xEE, (byte) 0xEE, (byte) 0xEE, (byte) 0xEE,
+            (byte) 0xF9, 0x11, 0x5A, (byte) 0xD7, 0x7C, (byte) 0xCB, (byte) 0xF4, 0x75, (byte) 0xB0, 0x49, (byte) 0xC3,
+            0x11, 0x1A, 0x41, (byte) 0x94, (byte) 0xE0 };
+
+    @Test
+    public void testCreateAndEncryptStartingPacket() {
+        ParadoxIPPacket paradoxIPPacket = new ParadoxIPPacket(ENCRYPTION_KEY_BYTES, false)
+                .setCommand(HeaderCommand.CONNECT_TO_IP_MODULE);
+
+        EncryptionHandler.getInstance().updateKey(ENCRYPTION_KEY_BYTES);
+        paradoxIPPacket.encrypt();
+
+        final byte[] packetBytes = paradoxIPPacket.getBytes();
+        ParadoxUtil.printByteArray("Expected=", ENCRYPTED_EXPECTED2);
+        ParadoxUtil.printByteArray("Packet=  ", packetBytes);
+
+        Assert.assertTrue(Arrays.equals(packetBytes, ENCRYPTED_EXPECTED2));
     }
 }

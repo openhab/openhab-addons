@@ -160,10 +160,13 @@ public class EncryptionHandler {
                 temp[j] = expandedKey[(((i - 1) & 0xfc) << 2) + ((i - 1) & 0x03) + j * 4];
             }
 
-            if (i % 8 == 0) {
+            if (i % 4 == 0) {
                 for (int j = 0; j < 4; j++) {
                     temp[j] = s[temp[j]];
                 }
+            }
+
+            if (i % 8 == 0) {
                 int tmp = temp[0];
 
                 for (int j = 1; j < 4; j++) {
@@ -172,10 +175,6 @@ public class EncryptionHandler {
 
                 temp[3] = tmp;
                 temp[0] ^= EncryptionHandlerConstants.RCON[(i / 8 - 1)];
-            } else if (i % 8 == 4) {
-                for (int j = 0; j < 4; j++) {
-                    temp[j] = s[temp[j]];
-                }
             }
 
             for (int j = 0; j < 4; j++) {

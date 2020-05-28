@@ -12,13 +12,10 @@
  */
 package org.openhab.binding.paradoxalarm.internal.communication.messages;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 import org.openhab.binding.paradoxalarm.internal.communication.crypto.EncryptionHandler;
-import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxRuntimeException;
 import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
 
 /**
@@ -49,17 +46,15 @@ public class ParadoxIPPacket implements IPPacket {
 
     @Override
     public byte[] getBytes() {
-        try {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        final byte[] headerBytes = header.getBytes();
+        int bufferLength = headerBytes.length + payload.length;
 
-            outputStream.write(header.getBytes());
-            outputStream.write(payload);
-            byte[] byteArray = outputStream.toByteArray();
+        byte[] bufferArray = new byte[bufferLength];
+        ByteBuffer buf = ByteBuffer.wrap(bufferArray);
+        buf.put(headerBytes);
+        buf.put(payload);
 
-            return byteArray;
-        } catch (IOException e) {
-            throw new ParadoxRuntimeException("Unable to create byte array stream.", e);
-        }
+        return bufferArray;
     }
 
     public ParadoxIPPacket setCommand(HeaderCommand command) {
@@ -105,6 +100,8 @@ public class ParadoxIPPacket implements IPPacket {
             this.payloadLength = payloadLength;
         }
 
+        private static final int BYTES_LENGTH = 9;
+
         /**
          * Start of header - always 0xAA
          */
@@ -122,7 +119,7 @@ public class ParadoxIPPacket implements IPPacket {
         private byte messageType = 0x03;
 
         /**
-         * "IP Encryption 0x08: Disabled 0x09: Enabled"
+         * "IP Encryption Disabled=0x08, Enabled=0x09"
          */
         private byte encryption = 0x08;
         private byte command = 0;
@@ -131,23 +128,17 @@ public class ParadoxIPPacket implements IPPacket {
         private byte unknown1 = 0x01;
 
         public byte[] getBytes() {
-            try {
-                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
-                outputStream.write(startOfHeader);
-                outputStream.write(ByteBuffer.allocate(Short.SIZE / Byte.SIZE).order(ByteOrder.LITTLE_ENDIAN)
-                        .putShort(payloadLength).array());
-                outputStream.write(messageType);
-                outputStream.write(encryption);
-                outputStream.write(command);
-                outputStream.write(subCommand);
-                outputStream.write(unknown0);
-                outputStream.write(unknown1);
-                byte[] byteArray = outputStream.toByteArray();
-                return ParadoxUtil.extendArray(byteArray, 16);
-            } catch (IOException e) {
-                throw new ParadoxRuntimeException("Unable to create byte array stream.", e);
-            }
+            byte[] bufferArray = new byte[BYTES_LENGTH];
+            ByteBuffer buf = ByteBuffer.wrap(bufferArray);
+            buf.put(startOfHeader);
+            buf.order(ByteOrder.LITTLE_ENDIAN).putShort(payloadLength);
+            buf.put(messageType);
+            buf.put(encryption);
+            buf.put(command);
+            buf.put(subCommand);
+            buf.put(unknown0);
+            buf.put(unknown1);
+            return ParadoxUtil.extendArray(bufferArray, 16);
         }
     }
 }

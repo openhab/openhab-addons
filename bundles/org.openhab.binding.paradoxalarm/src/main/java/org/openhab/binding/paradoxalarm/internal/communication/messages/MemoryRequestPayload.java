@@ -12,12 +12,10 @@
  */
 package org.openhab.binding.paradoxalarm.internal.communication.messages;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxException;
-import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxRuntimeException;
-import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +26,8 @@ import org.slf4j.LoggerFactory;
  * @author Konstantin Polihronov - Initial contribution
  */
 public abstract class MemoryRequestPayload implements IPayload {
+
+    private static final int BUFFER_LENGTH = 8;
 
     private final Logger logger = LoggerFactory.getLogger(MemoryRequestPayload.class);
 
@@ -51,23 +51,15 @@ public abstract class MemoryRequestPayload implements IPayload {
 
     @Override
     public byte[] getBytes() {
-        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-            outputStream.write(ParadoxUtil.shortToByteArray(MESSAGE_START));
-            outputStream.write(calculateControlByte());
-            outputStream.write((byte) 0x00);
-
-            outputStream.write(ParadoxUtil.shortToByteArray((short) address));
-
-            outputStream.write(bytesToRead);
-
-            // The bellow 0x00 is dummy which will be overwritten by the checksum
-            outputStream.write(0x00);
-            byte[] byteArray = outputStream.toByteArray();
-
-            return byteArray;
-        } catch (IOException e) {
-            throw new ParadoxRuntimeException("Unable to create byte array stream.", e);
-        }
+        byte[] bufferArray = new byte[BUFFER_LENGTH];
+        ByteBuffer buffer = ByteBuffer.wrap(bufferArray);
+        buffer.order(ByteOrder.BIG_ENDIAN).putShort(MESSAGE_START);
+        buffer.put(calculateControlByte());
+        buffer.put((byte) 0x00);
+        buffer.order(ByteOrder.BIG_ENDIAN).putShort((short) address);
+        buffer.put(bytesToRead);
+        buffer.put((byte) 0x00);
+        return bufferArray;
     }
 
     protected int getAddress() {

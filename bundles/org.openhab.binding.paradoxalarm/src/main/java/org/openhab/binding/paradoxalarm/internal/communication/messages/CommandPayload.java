@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.paradoxalarm.internal.communication.messages;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-
-import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxRuntimeException;
+import java.nio.ByteBuffer;
 
 /**
  * The {@link CommandPayload} Class that structures the payload for partition commands.
@@ -23,6 +20,8 @@ import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxRuntimeExcept
  * @author Konstantin Polihronov - Initial contribution
  */
 public class CommandPayload implements IPayload {
+
+    private static final int BYTES_LENGTH = 15;
 
     private final byte MESSAGE_START = 0x40;
     private final byte PAYLOAD_SIZE = 0x0f;
@@ -39,17 +38,15 @@ public class CommandPayload implements IPayload {
 
     @Override
     public byte[] getBytes() {
-        try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
-            os.write(MESSAGE_START);
-            os.write(PAYLOAD_SIZE);
-            os.write(EMPTY_FOUR_BYTES);
-            os.write(calculateMessageBytes());
-            os.write(EMPTY_FOUR_BYTES);
-            os.write(CHECKSUM);
-            return os.toByteArray();
-        } catch (IOException e) {
-            throw new ParadoxRuntimeException("Unable to create byte array stream.", e);
-        }
+        byte[] bufferArray = new byte[BYTES_LENGTH];
+        ByteBuffer buf = ByteBuffer.wrap(bufferArray);
+        buf.put(MESSAGE_START);
+        buf.put(PAYLOAD_SIZE);
+        buf.put(EMPTY_FOUR_BYTES);
+        buf.put(calculateMessageBytes());
+        buf.put(EMPTY_FOUR_BYTES);
+        buf.put(CHECKSUM);
+        return bufferArray;
     }
 
     /*

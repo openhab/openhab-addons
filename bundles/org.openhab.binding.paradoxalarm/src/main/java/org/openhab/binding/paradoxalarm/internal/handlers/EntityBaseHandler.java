@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.paradoxalarm.internal.handlers;
 
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -39,6 +40,7 @@ public abstract class EntityBaseHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(EntityBaseHandler.class);
 
     protected EntityConfiguration config;
+    private ScheduledFuture<?> delayedSchedule;
 
     public EntityBaseHandler(Thing thing) {
         super(thing);
@@ -52,7 +54,7 @@ public abstract class EntityBaseHandler extends BaseThingHandler {
         config = getConfigAs(EntityConfiguration.class);
 
         timeStamp = System.currentTimeMillis();
-        scheduler.schedule(this::initializeDelayed, INITIAL_DELAY_SECONDS, TimeUnit.SECONDS);
+        delayedSchedule = scheduler.schedule(this::initializeDelayed, INITIAL_DELAY_SECONDS, TimeUnit.SECONDS);
     }
 
     private void initializeDelayed() {
@@ -64,7 +66,7 @@ public abstract class EntityBaseHandler extends BaseThingHandler {
             if (System.currentTimeMillis() - timeStamp <= MAX_WAIT_TIME_MILLIS) {
                 logger.debug("Panel information is null. Scheduling initializeDelayed() to be executed again in {} sec",
                         INITIAL_DELAY_SECONDS);
-                scheduler.schedule(this::initializeDelayed, INITIAL_DELAY_SECONDS, TimeUnit.SECONDS);
+                delayedSchedule = scheduler.schedule(this::initializeDelayed, INITIAL_DELAY_SECONDS, TimeUnit.SECONDS);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                         "Panel is not updating the information in " + MAX_WAIT_TIME_MILLIS
@@ -84,13 +86,22 @@ public abstract class EntityBaseHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (ThingStatus.OFFLINE == getThing().getStatus()) {
-            logger.debug("Received REFRESH command but {} is OFFLINE with the following detailed status {}",
+            logger.debug("Received {} command but {} is OFFLINE with the following detailed status {}", command,
                     getThing().getUID(), getThing().getStatusInfo());
             return;
         }
 
         if (command instanceof RefreshType) {
             updateEntity();
+        }
+    }
+
+    @Override
+    public void dispose() {
+        if (delayedSchedule != null && !delayedSchedule.isCancelled() && !delayedSchedule.isDone()) {
+            boolean cancelingResult = delayedSchedule.cancel(true);
+            String cancelingSuccessful = cancelingResult ? "successful" : "failed";
+            logger.debug("Canceling schedule of {} is {}", delayedSchedule, cancelingSuccessful);
         }
     }
 
