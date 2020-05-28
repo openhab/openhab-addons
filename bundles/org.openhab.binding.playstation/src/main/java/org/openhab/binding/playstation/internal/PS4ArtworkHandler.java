@@ -36,8 +36,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class PS4ArtworkHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(PS4ArtworkHandler.class);
-    private static final File artworkCacheFolder;
+    private static final Logger LOGGER = LoggerFactory.getLogger(PS4ArtworkHandler.class);
+    private static final File ARTWORK_CACHE_FOLDER;
 
     /** Service pid */
     private static final String SERVICE_PID = "org.openhab.binding.playstation";
@@ -60,15 +60,15 @@ public class PS4ArtworkHandler {
         if (!homeFolder.exists()) {
             homeFolder.mkdirs();
         }
-        logger.debug("Using home folder: {}", homeFolder.getAbsolutePath());
+        LOGGER.debug("Using home folder: {}", homeFolder.getAbsolutePath());
 
         // create binding folder
         File cacheFolder = new File(homeFolder, SERVICE_PID);
         if (!cacheFolder.exists()) {
             cacheFolder.mkdirs();
         }
-        logger.debug("Using cache folder {}", cacheFolder.getAbsolutePath());
-        artworkCacheFolder = cacheFolder;
+        LOGGER.debug("Using cache folder {}", cacheFolder.getAbsolutePath());
+        ARTWORK_CACHE_FOLDER = cacheFolder;
     }
 
     /**
@@ -118,18 +118,18 @@ public class PS4ArtworkHandler {
             return artwork;
         }
         String artworkFilename = titleId + "_" + size.toString() + ".jpg";
-        File artworkFileInCache = new File(artworkCacheFolder, artworkFilename);
+        File artworkFileInCache = new File(ARTWORK_CACHE_FOLDER, artworkFilename);
         if (artworkFileInCache.exists() && !forceRefetch) {
-            logger.debug("Artwork file {} was found in cache.", artworkFileInCache.getName());
+            LOGGER.debug("Artwork file {} was found in cache.", artworkFileInCache.getName());
             int length = (int) artworkFileInCache.length();
             byte[] fileBuffer = new byte[length];
             try (FileInputStream fis = new FileInputStream(artworkFileInCache)) {
                 fis.read(fileBuffer, 0, length);
                 artwork = new RawType(fileBuffer, "image/jpeg");
             } catch (FileNotFoundException ex) {
-                logger.debug("Could not find {} in cache. ", artworkFileInCache, ex);
+                LOGGER.debug("Could not find {} in cache. ", artworkFileInCache, ex);
             } catch (IOException ex) {
-                logger.warn("Could not read {} from cache. ", artworkFileInCache, ex);
+                LOGGER.warn("Could not read {} from cache. ", artworkFileInCache, ex);
             }
             if (artwork != null) {
                 return artwork;
@@ -145,15 +145,15 @@ public class PS4ArtworkHandler {
         }
         if (artwork != null) {
             try (FileOutputStream fos = new FileOutputStream(artworkFileInCache)) {
-                logger.debug("Caching artwork file {}", artworkFileInCache.getName());
+                LOGGER.debug("Caching artwork file {}", artworkFileInCache.getName());
                 fos.write(artwork.getBytes(), 0, artwork.getBytes().length);
             } catch (FileNotFoundException ex) {
-                logger.info("Could not create {} in cache. ", artworkFileInCache, ex);
+                LOGGER.info("Could not create {} in cache. ", artworkFileInCache, ex);
             } catch (IOException ex) {
-                logger.warn("Could not write {} to cache. ", artworkFileInCache, ex);
+                LOGGER.warn("Could not write {} to cache. ", artworkFileInCache, ex);
             }
         } else {
-            logger.debug("Could not download artwork file from {}", request);
+            LOGGER.debug("Could not download artwork file from {}", request);
         }
         return artwork;
     }

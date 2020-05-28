@@ -80,17 +80,6 @@
 		<label>Application ID</label>
 		<description>ID of the currently running application.</description>
 		<category>MediaControl</category>
-		<state>
-			<options>
-				<option value="CUSA00127">Netflix</option>
-				<option value="CUSA01116">Youtube</option>
-				<option value="CUSA00124">Viaplay</option>
-				<option value="CUSA02827">HBO</option>
-				<option value="CUSA01780">Spotify</option>
-				<option value="CUSA11993">Marvel's Spider-Man</option>
-				<option value="CUSA00342">Other game</option>
-			</options>
-		</state>
 	</channel-type>
 	<channel-type id="applicationImage-channel">
 		<item-type>Image</item-type>
