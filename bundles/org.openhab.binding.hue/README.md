@@ -94,7 +94,7 @@ Bridge hue:bridge:1 [ ipAddress="192.168.0.64" ]
 
 A user to authenticate against the Hue bridge is automatically generated.
 Please note that the generated user name cannot be written automatically to the `.thing` file, and has to be set manually.
-The generated user name can be found in the log files after pressing the authentication button on the bridge.
+The generated user name can be found, after pressing the authentication button on the bridge, with the following console command: `hue <bridgeUID> username`.
 The user name can be set using the `userName` configuration value, e.g.:
 
 ```
