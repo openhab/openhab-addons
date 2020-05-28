@@ -27,7 +27,7 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -42,6 +42,8 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.neohub.internal.NeoHubAbstractDeviceData.AbstractRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import tec.uom.se.unit.Units;
 
 /**
  * The {@link NeoHubHandler} is the openHAB Handler for NeoHub devices
@@ -367,7 +369,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
                         onlineDeviceCount++;
                     }
                 }
-                state = new DecimalType((100.0 * onlineDeviceCount) / totalDeviceCount);
+                state = new QuantityType<>((100.0 * onlineDeviceCount) / totalDeviceCount, Units.PERCENT);
             }
             updateState(CHAN_MESH_NETWORK_QOS, state);
         }
