@@ -28,13 +28,13 @@ public class OppoBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_PLAYER = new ThingTypeUID(BINDING_ID, "player");
-    
+
     public static final String MODEL83 = "83";
     public static final String MODEL103 = "103";
     public static final String MODEL105 = "105";
     public static final String MODEL203 = "203";
     public static final String MODEL205 = "205";
-    
+
     public static final Integer BDP83_PORT = 19999;
     public static final Integer BDP10X_PORT = 48360;
     public static final Integer BDP20X_PORT = 23;
@@ -57,14 +57,13 @@ public class OppoBindingConstants {
     public static final String CHANNEL_DISC_TYPE = "disc_type";
     public static final String CHANNEL_AUDIO_TYPE = "audio_type";
     public static final String CHANNEL_SUBTITLE_TYPE = "subtitle_type";
-    public static final String CHANNEL_ASPECT_RATIO = "aspect_ratio"; //203 and 205 only
+    public static final String CHANNEL_ASPECT_RATIO = "aspect_ratio"; // 203 and 205 only
     public static final String CHANNEL_SOURCE_RESOLUTION = "source_resolution";
     public static final String CHANNEL_OUTPUT_RESOLUTION = "output_resolution";
     public static final String CHANNEL_3D_INDICATOR = "3d_indicator";
-    public static final String CHANNEL_SUB_SHIFT = "sub_shift"; //not on 83
+    public static final String CHANNEL_SUB_SHIFT = "sub_shift"; // not on 83
     public static final String CHANNEL_OSD_POSITION = "osd_position"; // not on 83
     public static final String CHANNEL_HDMI_MODE = "hdmi_mode";
-    public static final String CHANNEL_HDR_MODE = "hdr_mode"; //203 and 205 only
+    public static final String CHANNEL_HDR_MODE = "hdr_mode"; // 203 and 205 only
     public static final String CHANNEL_REMOTE_BUTTON = "remote_button";
-    
 }

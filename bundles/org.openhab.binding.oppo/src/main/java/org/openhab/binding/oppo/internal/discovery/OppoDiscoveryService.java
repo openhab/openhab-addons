@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.oppo.internal.discovery;
 
-import static org.openhab.binding.oppo.internal.OppoBindingConstants.*;
 import static org.eclipse.jetty.http.HttpMethod.GET;
+import static org.openhab.binding.oppo.internal.OppoBindingConstants.*;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -58,9 +58,8 @@ import org.slf4j.LoggerFactory;
 public class OppoDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(OppoDiscoveryService.class);
-    
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
-            Arrays.asList(THING_TYPE_PLAYER));
+
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(Arrays.asList(THING_TYPE_PLAYER));
 
     /**
      * Address SDDP broadcasts on
@@ -95,6 +94,10 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
 
     private final HttpClient httpClient;
 
+    private static final String DISPLAY_NAME_83 = "OPPO BDP-83/93/95";
+    private static final String DISPLAY_NAME_103 = "OPPO BDP-103";
+    private static final String DISPLAY_NAME_105 = "OPPO BDP-105";
+
     /**
      * Constructs the discovery class using the thing IDs that we can discover.
      */
@@ -103,7 +106,7 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
         this.httpClient = httpClient;
         activate(null);
     }
-    
+
     @Override
     protected void activate(@Nullable Map<String, @Nullable Object> configProperties) {
         super.activate(configProperties);
@@ -199,7 +202,6 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
      * @param message possibly null, possibly empty SDDP message
      */
     private void messageReceive(String message) {
-        
         if (message == null || message.trim().length() == 0) {
             return;
         }
@@ -211,16 +213,16 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
 
         for (String msg : message.split("\n")) {
             String[] line = msg.split(":");
-            
+
             if (line[0] != null && line[1] != null) {
                 if (line[0].contains("Server IP")) {
                     host = line[1].trim();
                 }
-                
+
                 if (line[0].contains("Server Port")) {
                     port = line[1].trim();
                 }
-                
+
                 if (line[0].contains("Server Name")) {
                     // example: "OPPO UDP-203"
                     // note: Server Name only provided on UDP models, not present on BDP models
@@ -228,11 +230,7 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
                 }
             }
         }
-        
-        final String DISPLAY_NAME_83 = "OPPO BDP-83/93/95";
-        final String DISPLAY_NAME_103 = "OPPO BDP-103";
-        final String DISPLAY_NAME_105 = "OPPO BDP-105";
-        
+
         // by looking at the port number we can mostly determine what the model number is
         if (host != null && port != null) {
             if (BDP83_PORT.toString().equals(port)) {
@@ -243,9 +241,10 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
                 // for the 10x we need to get the DLNA service list page and find modelNumber there
                 // in order to determine if this is a BDP-103 or BDP-105
                 try {
-                    ContentResponse contentResponse = httpClient.newRequest("http://"+ host + ":2870/dmr.xml").method(GET).timeout(5, TimeUnit.SECONDS).send();
+                    ContentResponse contentResponse = httpClient.newRequest("http://" + host + ":2870/dmr.xml")
+                            .method(GET).timeout(5, TimeUnit.SECONDS).send();
                     String result = contentResponse.getContentAsString();
-                    
+
                     if (result != null && result.contains("<modelName>OPPO BDP-103</modelName>")) {
                         model = MODEL103;
                         displayName = DISPLAY_NAME_103;
@@ -272,7 +271,7 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
                     displayName = "Unknown OPPO UDP player";
                 }
             }
-            
+
             if (host != null && model != null) {
                 ThingUID uid = new ThingUID(THING_TYPE_PLAYER, host.replace(".", "_"));
                 HashMap<String, Object> properties = new HashMap<>();
@@ -286,7 +285,7 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
             }
         }
     }
-    
+
     /**
      * {@inheritDoc}
      *

@@ -26,32 +26,32 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class OppoStatusCodes {
     // map to lookup random mode
-    public static final Map<String, String> repeatMode = new HashMap<>();
+    public static final Map<String, String> REPEAT_MODE = new HashMap<>();
     static {
-        repeatMode.put("00", "OFF");
-        repeatMode.put("01", "ONE"); // maybe?"
-        repeatMode.put("02", "CH");
-        repeatMode.put("03", "ALL");
-        repeatMode.put("04", "TT");
-        repeatMode.put("05", "SHF");
-        repeatMode.put("06", "RND");
+        REPEAT_MODE.put("00", "OFF");
+        REPEAT_MODE.put("01", "ONE"); // maybe?"
+        REPEAT_MODE.put("02", "CH");
+        REPEAT_MODE.put("03", "ALL");
+        REPEAT_MODE.put("04", "TT");
+        REPEAT_MODE.put("05", "SHF");
+        REPEAT_MODE.put("06", "RND");
     }
-    
+
     // map to lookup zoom mode
-    public static final Map<String, String> zoomMode = new HashMap<>();
+    public static final Map<String, String> ZOOM_MODE = new HashMap<>();
     static {
-        zoomMode.put("00", "1"); // Off (zoom 1x)
-        zoomMode.put("01", "AR"); // Stretch
-        zoomMode.put("02", "FS"); // Full screen
-        zoomMode.put("03", "US"); // Underscan
-        zoomMode.put("04", "1.2");
-        zoomMode.put("05", "1.3");
-        zoomMode.put("06", "1.5");
-        zoomMode.put("07", "2");
-        zoomMode.put("08", "3");
-        zoomMode.put("09", "4");
-        zoomMode.put("10", "1/2");
-        zoomMode.put("11", "1/3");
-        zoomMode.put("12", "1/4");
+        ZOOM_MODE.put("00", "1"); // Off (zoom 1x)
+        ZOOM_MODE.put("01", "AR"); // Stretch
+        ZOOM_MODE.put("02", "FS"); // Full screen
+        ZOOM_MODE.put("03", "US"); // Underscan
+        ZOOM_MODE.put("04", "1.2");
+        ZOOM_MODE.put("05", "1.3");
+        ZOOM_MODE.put("06", "1.5");
+        ZOOM_MODE.put("07", "2");
+        ZOOM_MODE.put("08", "3");
+        ZOOM_MODE.put("09", "4");
+        ZOOM_MODE.put("10", "1/2");
+        ZOOM_MODE.put("11", "1/3");
+        ZOOM_MODE.put("12", "1/4");
     }
 }

@@ -45,8 +45,6 @@ public enum OppoCommand {
     QUERY_TITLE_REMAIN("QTR"),
     QUERY_CHAPTER_ELAPSED("QCE"),
     QUERY_CHAPTER_REMAIN("QCR"),
-    /*QUERY_TOTAL_ELAPSED("QEL"),
-    QUERY_TOTAL_REMAIN("QRE"),*/
     QUERY_DISC_TYPE("QDT"),
     QUERY_AUDIO_TYPE("QAT"),
     QUERY_SUBTITLE_TYPE("QST"),
@@ -68,10 +66,11 @@ public enum OppoCommand {
     NO_OP("NOP");
 
     private String value;
-    
-    public static final ArrayList<OppoCommand> initialCommands = new ArrayList<OppoCommand>( 
-            Arrays.asList(QUERY_POWER_STATUS, QUERY_FIRMWARE_VERSION, QUERY_VOLUME, QUERY_HDMI_RESOLUTION, QUERY_HDR_SETTING, QUERY_PLAYBACK_STATUS, QUERY_DISC_TYPE,
-                    QUERY_AUDIO_TYPE, QUERY_SUBTITLE_SHIFT, QUERY_OSD_POSITION, QUERY_REPEAT_MODE, QUERY_ZOOM_MODE, QUERY_INPUT_SOURCE));
+
+    public static final ArrayList<OppoCommand> INITIAL_COMMANDS = new ArrayList<OppoCommand>(
+            Arrays.asList(QUERY_POWER_STATUS, QUERY_FIRMWARE_VERSION, QUERY_VOLUME, QUERY_HDMI_RESOLUTION,
+                    QUERY_HDR_SETTING, QUERY_PLAYBACK_STATUS, QUERY_DISC_TYPE, QUERY_AUDIO_TYPE, QUERY_SUBTITLE_SHIFT,
+                    QUERY_OSD_POSITION, QUERY_REPEAT_MODE, QUERY_ZOOM_MODE, QUERY_INPUT_SOURCE));
 
     OppoCommand(String value) {
         this.value = value;
@@ -85,5 +84,4 @@ public enum OppoCommand {
     public String getValue() {
         return value;
     }
-
 }

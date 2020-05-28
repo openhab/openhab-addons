@@ -38,8 +38,8 @@ import org.slf4j.LoggerFactory;
 public abstract class OppoConnector {
     private final Logger logger = LoggerFactory.getLogger(OppoConnector.class);
 
-    private String BEGIN_CMD = "#";
-    private String END_CMD = "\r";
+    private String beginCmd = "#";
+    private String endCmd = "\r";
 
     /** The output stream */
     protected @Nullable OutputStream dataOut;
@@ -53,15 +53,15 @@ public abstract class OppoConnector {
     private @Nullable Thread readerThread;
 
     private List<OppoMessageEventListener> listeners = new ArrayList<>();
-    
+
     /**
      * Called when using direct IP connection for 83/93/95/103/105
      * overrides the command message preamble and removes the CR at the end
      */
     public void overrideCmdPreamble(Boolean override) {
         if (override) {
-            this.BEGIN_CMD = "REMOTE ";
-            this.END_CMD = "";
+            this.beginCmd = "REMOTE ";
+            this.endCmd = "";
         }
     }
 
@@ -161,7 +161,7 @@ public abstract class OppoConnector {
             throw new OppoException("readInput failed: " + e.getMessage());
         }
     }
-    
+
     /**
      * Request the Oppo controller to execute a command and pass in a value
      *
@@ -173,7 +173,7 @@ public abstract class OppoConnector {
     public void sendCommand(OppoCommand cmd, @Nullable String value) throws OppoException {
         sendCommand(cmd.getValue() + " " + value);
     }
-    
+
     /**
      * Request the Oppo controller to execute a command that does not specify a value
      *
@@ -184,7 +184,7 @@ public abstract class OppoConnector {
     public void sendCommand(OppoCommand cmd) throws OppoException {
         sendCommand(cmd.getValue());
     }
-    
+
     /**
      * Request the Oppo controller to execute a raw command string
      *
@@ -193,12 +193,10 @@ public abstract class OppoConnector {
      * @throws OppoException - In case of any problem
      */
     public void sendCommand(String command) throws OppoException {
-        String messageStr = BEGIN_CMD + command + END_CMD;
-        
-        logger.debug("sending command: {}", messageStr);
+        String messageStr = beginCmd + command + endCmd;
+        logger.debug("Sending command: {}", messageStr);
 
         byte[] message = messageStr.getBytes(StandardCharsets.US_ASCII);
-        logger.debug("Send command {}", messageStr);
 
         OutputStream dataOut = this.dataOut;
         if (dataOut == null) {
@@ -239,42 +237,42 @@ public abstract class OppoConnector {
      */
     public void handleIncomingMessage(byte[] incomingMessage) {
         String message = new String(incomingMessage).trim();
-        
+
         logger.debug("handleIncomingMessage: {}", message);
-        
+
         if ("@NOP OK".equals(message)) {
             dispatchKeyValue("NOP", "OK");
             return;
         }
-        
+
         Pattern p;
-        
+
         // Player sent an OK response to a query: @QDT OK DVD-VIDEO or a volume update @VUP OK 100
-        p=Pattern.compile("^@(Q[A-Z0-9]{2}|VUP|VDN) OK (.*)$");
-        
+        p = Pattern.compile("^@(Q[A-Z0-9]{2}|VUP|VDN) OK (.*)$");
+
         try {
-            Matcher matcher=p.matcher(message);
+            Matcher matcher = p.matcher(message);
             matcher.find();
             // pull out the inquiry type and the remainder of the message
             dispatchKeyValue(matcher.group(1), matcher.group(2));
             return;
-        } catch (IllegalStateException e){
+        } catch (IllegalStateException e) {
             logger.debug("no match on message: {}", message);
         }
-        
+
         // Player sent a status update ie: @UTC 000 000 T 00:00:01
-        p=Pattern.compile("^@(U[A-Z0-9]{2}) (.*)$");
-        
+        p = Pattern.compile("^@(U[A-Z0-9]{2}) (.*)$");
+
         try {
-            Matcher matcher=p.matcher(message);
+            Matcher matcher = p.matcher(message);
             matcher.find();
             // pull out the update type and the remainder of the message
             dispatchKeyValue(matcher.group(1), matcher.group(2));
             return;
-        } catch (IllegalStateException e){
+        } catch (IllegalStateException e) {
             logger.debug("no match on message: {}", message);
         }
-        
+
         logger.debug("unhandled message: {}", message);
     }
 

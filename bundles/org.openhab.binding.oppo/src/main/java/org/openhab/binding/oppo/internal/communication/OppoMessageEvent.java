@@ -41,5 +41,4 @@ public class OppoMessageEvent extends EventObject {
     public String getValue() {
         return value;
     }
-
 }

@@ -51,9 +51,8 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.oppo", service = ThingHandlerFactory.class)
 public class OppoHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
-            .of(THING_TYPE_PLAYER)
-            .collect(Collectors.toSet()));
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(THING_TYPE_PLAYER).collect(Collectors.toSet()));
 
     private @NonNullByDefault({}) SerialPortManager serialPortManager;
 
