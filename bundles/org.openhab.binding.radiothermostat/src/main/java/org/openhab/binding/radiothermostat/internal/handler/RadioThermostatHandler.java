@@ -254,7 +254,6 @@ public class RadioThermostatHandler extends BaseThingHandler {
                     cmdInt = Integer.parseInt(cmdStr.replaceAll("[^\\d-]", ""));
                 } catch (NumberFormatException e) {
                     logger.debug("Command: {} -> Not an integer", cmdStr);
-                    return;
                 }
             }
 
@@ -287,22 +286,18 @@ public class RadioThermostatHandler extends BaseThingHandler {
                     break;
                 case FAN_MODE:
                     rthermData.getThermostatData().setFanMode(cmdInt);
-                    updateChannel(channelUID.getId(), rthermData);
                     sendCommand("fmode", cmdStr);
                     break;
                 case PROGRAM_MODE:
                     rthermData.getThermostatData().setProgramMode(cmdInt);
-                    updateChannel(channelUID.getId(), rthermData);
                     sendCommand("program_mode", cmdStr);
                     break;
                 case HOLD:
                     if (command instanceof OnOffType && command == OnOffType.ON) {
                         rthermData.getThermostatData().setHold(1);
-                        updateChannel(channelUID.getId(), rthermData);
                         sendCommand("hold", "1");
                     } else if (command instanceof OnOffType && command == OnOffType.OFF) {
                         rthermData.getThermostatData().setHold(0);
-                        updateChannel(channelUID.getId(), rthermData);
                         sendCommand("hold", "0");
                     }
                     break;
@@ -318,7 +313,6 @@ public class RadioThermostatHandler extends BaseThingHandler {
                         // don't do anything if we are not in heat or cool mode
                         break;
                     }
-                    updateChannel(channelUID.getId(), rthermData);
                     sendCommand(cmdKey, cmdInt.toString());
                     break;
                 default:
