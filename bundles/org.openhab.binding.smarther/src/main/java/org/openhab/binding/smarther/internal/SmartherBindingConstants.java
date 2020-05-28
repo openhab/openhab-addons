@@ -32,8 +32,12 @@ public class SmartherBindingConstants {
     private static final String BINDING_ID = "smarther";
 
     // Date and time formats used by the binding
-    public static final String DATE_FORMAT = "dd/MM/yyyy";
-    public static final String DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
+    public static final String DTF_DATE = "dd/MM/yyyy";
+    public static final String DTF_DATETIME = "yyyy-MM-dd'T'HH:mm:ss";
+    public static final String DTF_DATETIME_EXT = "yyyy-MM-dd'T'HH:mm:ssXXX";
+    public static final String DTF_TODAY = "'Today at' HH:mm";
+    public static final String DTF_TOMORROW = "'Tomorrow at' HH:mm";
+    public static final String DTF_DAY_HHMM = "dd/MM/yyyy 'at' HH:mm";
 
     // Generic constants
     public static final String HTTPS_SCHEMA = "https";

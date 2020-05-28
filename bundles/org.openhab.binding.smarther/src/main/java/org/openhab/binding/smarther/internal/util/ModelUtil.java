@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.smarther.internal.api.model;
+package org.openhab.binding.smarther.internal.util;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 

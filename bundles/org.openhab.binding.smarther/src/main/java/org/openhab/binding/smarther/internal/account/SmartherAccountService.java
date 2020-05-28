@@ -30,8 +30,8 @@ import javax.servlet.http.HttpServlet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.smarther.internal.api.dto.Notification;
 import org.openhab.binding.smarther.internal.api.exception.SmartherGatewayException;
-import org.openhab.binding.smarther.internal.api.model.Notification;
 import org.openhab.binding.smarther.internal.util.StringUtil;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;

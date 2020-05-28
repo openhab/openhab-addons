@@ -17,13 +17,13 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.smarther.internal.api.model.Location;
-import org.openhab.binding.smarther.internal.api.model.Module;
-import org.openhab.binding.smarther.internal.api.model.ModuleSettings;
-import org.openhab.binding.smarther.internal.api.model.ModuleStatus;
-import org.openhab.binding.smarther.internal.api.model.Plant;
-import org.openhab.binding.smarther.internal.api.model.Program;
-import org.openhab.binding.smarther.internal.api.model.Subscription;
+import org.openhab.binding.smarther.internal.api.dto.Location;
+import org.openhab.binding.smarther.internal.api.dto.Module;
+import org.openhab.binding.smarther.internal.api.dto.ModuleSettings;
+import org.openhab.binding.smarther.internal.api.dto.ModuleStatus;
+import org.openhab.binding.smarther.internal.api.dto.Plant;
+import org.openhab.binding.smarther.internal.api.dto.Program;
+import org.openhab.binding.smarther.internal.api.dto.Subscription;
 
 /**
  * Interface to decouple Smarther Account Handler implementation from other code.

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.smarther.internal.api.model;
+package org.openhab.binding.smarther.internal.api.dto;
 
 import java.util.Optional;
 
@@ -23,7 +23,7 @@ import org.eclipse.smarthome.core.library.unit.ImperialUnits;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.smarther.internal.api.model.Enums.MeasureUnit;
+import org.openhab.binding.smarther.internal.api.dto.Enums.MeasureUnit;
 import org.openhab.binding.smarther.internal.util.StringUtil;
 
 import com.google.gson.annotations.SerializedName;

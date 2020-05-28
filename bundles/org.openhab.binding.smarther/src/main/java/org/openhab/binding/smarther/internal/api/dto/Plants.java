@@ -10,25 +10,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.smarther.internal.api.model;
+package org.openhab.binding.smarther.internal.api.dto;
 
 import java.util.List;
 
 /**
- * Smarther API Topology DTO class.
+ * Smarther API Plants DTO class.
  *
  * @author Fabio Possieri - Initial contribution
  */
-public class Topology {
+public class Plants {
 
-    private Plant plant;
+    private List<Plant> plants;
 
-    public Plant getPlant() {
-        return plant;
-    }
-
-    public List<Module> getModules() {
-        return plant.getModules();
+    public List<Plant> getPlants() {
+        return plants;
     }
 
 }

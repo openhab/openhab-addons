@@ -10,11 +10,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.smarther.internal.api.model;
+package org.openhab.binding.smarther.internal.api.dto;
 
 import static org.openhab.binding.smarther.internal.SmartherBindingConstants.*;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
@@ -23,9 +25,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
-import org.openhab.binding.smarther.internal.api.model.Enums.BoostTime;
-import org.openhab.binding.smarther.internal.api.model.Enums.Function;
-import org.openhab.binding.smarther.internal.api.model.Enums.Mode;
+import org.openhab.binding.smarther.internal.api.dto.Enums.BoostTime;
+import org.openhab.binding.smarther.internal.api.dto.Enums.Function;
+import org.openhab.binding.smarther.internal.api.dto.Enums.Mode;
 import org.openhab.binding.smarther.internal.util.DateUtil;
 import org.openhab.binding.smarther.internal.util.StringUtil;
 
@@ -120,14 +122,14 @@ public class ModuleSettings {
     }
 
     public boolean isEndDateExpired() {
-        if (endDate == null) {
+        if (endDate != null) {
+            final LocalDateTime dtEndDate = DateUtil.parse(endDate, DTF_DATE).toLocalDate().atStartOfDay();
+            final LocalDateTime dtToday = LocalDate.now().atStartOfDay();
+
+            return (dtEndDate.isBefore(dtToday));
+        } else {
             return false;
         }
-
-        final Date dtEndDate = DateUtil.dateAtStartOfDay(DateUtil.parse(endDate, DATE_FORMAT));
-        final Date dtToday = DateUtil.todayAtStartOfDay();
-
-        return (dtEndDate.before(dtToday));
     }
 
     public void setEndDate(String endDate) {
@@ -152,13 +154,12 @@ public class ModuleSettings {
 
     public String getActivationTime() {
         if (mode.equals(Mode.MANUAL) && (endDate != null)) {
-            Date d = DateUtil.parse(endDate, DATE_FORMAT);
-            d = DateUtil.setTime(d, endHour, endMinute, 0, 0);
-            return DateUtil.format(d, DATETIME_FORMAT);
+            LocalDateTime d = DateUtil.parse(endDate, DTF_DATE).truncatedTo(ChronoUnit.MINUTES);
+            return DateUtil.format(d, DTF_DATETIME);
         } else if (mode.equals(Mode.BOOST)) {
-            Date d1 = DateUtil.todayResetTime(false, false, true, true);
-            Date d2 = DateUtil.plusMinutes(d1, boostTime.getValue());
-            return String.format("%s/%s", DateUtil.format(d1, DATETIME_FORMAT), DateUtil.format(d2, DATETIME_FORMAT));
+            LocalDateTime d1 = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+            LocalDateTime d2 = d1.plusMinutes(boostTime.getValue());
+            return DateUtil.formatRange(d1, d2, DTF_DATETIME);
         }
 
         return "";

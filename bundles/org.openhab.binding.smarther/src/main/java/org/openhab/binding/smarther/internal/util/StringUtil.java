@@ -38,16 +38,7 @@ public class StringUtil {
      * @return true if the String is null, empty or whitespace
      */
     public static boolean isBlank(@Nullable String str) {
-        int strLen;
-        if (str == null || (strLen = str.length()) == 0) {
-            return true;
-        }
-        for (int i = 0; i < strLen; i++) {
-            if (!Character.isWhitespace(str.charAt(i))) {
-                return false;
-            }
-        }
-        return true;
+        return (str == null || str.trim().isEmpty());
     }
 
     /**
@@ -68,28 +59,11 @@ public class StringUtil {
      * @return the stripped String, null if whitespace, empty or null String input
      */
     public static @Nullable String stripToNull(@Nullable String str) {
-        if (str == null || str.length() == 0) {
+        if (str == null) {
             return null;
         }
-
-        int strLen = str.length();
-        int start = 0;
-        while ((start != strLen) && Character.isWhitespace(str.charAt(start))) {
-            start++;
-        }
-
-        if (start == strLen) {
-            return null;
-        }
-
-        int end = str.length();
-        while ((end != 0) && Character.isWhitespace(str.charAt(end - 1))) {
-            end--;
-        }
-
-        String newStr = str.substring(start, end);
-
-        return (newStr.length() == 0) ? null : newStr;
+        String s = str.trim();
+        return (s.isEmpty()) ? null : s;
     }
 
     /**
@@ -100,12 +74,10 @@ public class StringUtil {
      * @return the capitalized String, null if null String input
      */
     public static @Nullable String capitalize(@Nullable String str) {
-        int strLen;
-        if (str == null || (strLen = str.length()) == 0) {
+        if (str == null || str.isEmpty()) {
             return str;
         }
-        return new StringBuilder(strLen).append(Character.toTitleCase(str.charAt(0))).append(str.substring(1))
-                .toString();
+        return str.substring(0, 1).toUpperCase() + str.substring(1);
     }
 
     /**

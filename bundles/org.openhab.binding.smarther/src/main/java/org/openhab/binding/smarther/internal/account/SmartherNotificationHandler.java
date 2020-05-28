@@ -14,7 +14,7 @@ package org.openhab.binding.smarther.internal.account;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.smarther.internal.api.model.Notification;
+import org.openhab.binding.smarther.internal.api.dto.Notification;
 
 /**
  * Interface to decouple Smarther Notification Handler implementation from other code.

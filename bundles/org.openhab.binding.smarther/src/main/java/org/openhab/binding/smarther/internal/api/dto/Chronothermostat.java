@@ -10,14 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.smarther.internal.api.model;
+package org.openhab.binding.smarther.internal.api.dto;
 
+import static org.openhab.binding.smarther.internal.SmartherBindingConstants.*;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
-import org.openhab.binding.smarther.internal.api.model.Enums.LoadState;
-import org.openhab.binding.smarther.internal.api.model.Enums.MeasureUnit;
+import org.openhab.binding.smarther.internal.api.dto.Enums.LoadState;
+import org.openhab.binding.smarther.internal.api.dto.Enums.MeasureUnit;
 import org.openhab.binding.smarther.internal.util.DateUtil;
 
 import com.google.gson.annotations.SerializedName;
@@ -28,6 +32,8 @@ import com.google.gson.annotations.SerializedName;
  * @author Fabio Possieri - Initial contribution
  */
 public class Chronothermostat {
+
+    private static final String TIME_FOREVER = "Forever";
 
     private String function;
     private String mode;
@@ -91,19 +97,21 @@ public class Chronothermostat {
     }
 
     public String getActivationTimeLabel() {
-        String timeLabel = "Forever";
+        String timeLabel = TIME_FOREVER;
         if (activationTime != null) {
-            final Date dateActivationTime = DateUtil.parse(activationTime, "yyyy-MM-dd'T'HH:mm:ssXXX");
-            final Date dateTomorrow = DateUtil.tomorrowAtStartOfDay();
+            try {
+                final LocalDateTime dateActivationTime = DateUtil.parse(activationTime, DTF_DATETIME_EXT);
+                final LocalDateTime dateTomorrow = LocalDate.now().plusDays(1).atStartOfDay();
 
-            if (dateActivationTime == null) {
+                if (dateActivationTime.isBefore(dateTomorrow)) {
+                    timeLabel = DateUtil.format(dateActivationTime, DTF_TODAY);
+                } else if (dateActivationTime.isBefore(dateTomorrow.plusDays(1))) {
+                    timeLabel = DateUtil.format(dateActivationTime, DTF_TOMORROW);
+                } else {
+                    timeLabel = DateUtil.format(dateActivationTime, DTF_DAY_HHMM);
+                }
+            } catch (DateTimeParseException e) {
                 timeLabel = null;
-            } else if (dateActivationTime.before(dateTomorrow)) {
-                timeLabel = DateUtil.format(dateActivationTime, "'Today at' HH:mm");
-            } else if (dateActivationTime.before(DateUtil.plusDays(dateTomorrow, 1))) {
-                timeLabel = DateUtil.format(dateActivationTime, "'Tomorrow at' HH:mm");
-            } else {
-                timeLabel = DateUtil.format(dateActivationTime, "dd/MM/yyyy 'at' HH:mm");
             }
         }
         return timeLabel;

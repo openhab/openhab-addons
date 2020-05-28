@@ -16,6 +16,7 @@ import static org.openhab.binding.smarther.internal.SmartherBindingConstants.*;
 
 import java.lang.invoke.MethodHandles;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -40,15 +41,15 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.smarther.internal.api.dto.Chronothermostat;
+import org.openhab.binding.smarther.internal.api.dto.Enums.BoostTime;
+import org.openhab.binding.smarther.internal.api.dto.Enums.Mode;
+import org.openhab.binding.smarther.internal.api.dto.ModuleSettings;
+import org.openhab.binding.smarther.internal.api.dto.ModuleStatus;
+import org.openhab.binding.smarther.internal.api.dto.Notification;
+import org.openhab.binding.smarther.internal.api.dto.Program;
 import org.openhab.binding.smarther.internal.api.exception.SmartherGatewayException;
 import org.openhab.binding.smarther.internal.api.exception.SmartherSubscriptionAlreadyExistsException;
-import org.openhab.binding.smarther.internal.api.model.Chronothermostat;
-import org.openhab.binding.smarther.internal.api.model.Enums.BoostTime;
-import org.openhab.binding.smarther.internal.api.model.Enums.Mode;
-import org.openhab.binding.smarther.internal.api.model.ModuleSettings;
-import org.openhab.binding.smarther.internal.api.model.ModuleStatus;
-import org.openhab.binding.smarther.internal.api.model.Notification;
-import org.openhab.binding.smarther.internal.api.model.Program;
 import org.openhab.binding.smarther.internal.config.SmartherModuleConfiguration;
 import org.openhab.binding.smarther.internal.util.DateUtil;
 import org.openhab.binding.smarther.internal.util.StringUtil;
@@ -358,7 +359,7 @@ public class SmartherModuleHandler extends BaseThingHandler {
         dynamicStateDescriptionProvider.setEndDates(endDateChannelUID, config.getNumberOfEndDays());
         // If expired, update EndDate in module settings
         if (moduleSettings != null && moduleSettings.isEndDateExpired()) {
-            moduleSettings.setEndDate(DateUtil.format(DateUtil.todayAtStartOfDay(), DATE_FORMAT));
+            moduleSettings.setEndDate(DateUtil.format(LocalDateTime.now(), DTF_DATE));
             updateChannelState(CHANNEL_SETTINGS_ENDDATE, new StringType(moduleSettings.getEndDate()));
         }
     }
