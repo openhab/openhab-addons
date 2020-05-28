@@ -95,7 +95,7 @@ You will have to authorize openHAB to connect to your Freebox. Here is the proce
 
 **Step 3** the application token is automatically recorded in the Freebox Server (bridge) configuration
 
-**Step 4** you can use the console command `smarthome:freebox <bridgeUID> apptoken` to display the application token and use it later to set up your thing in a configuration file
+**Step 4** you can use the console command `freebox <bridgeUID> apptoken` to display the application token and use it later to set up your thing in a configuration file
 
 **Optionally** you can log in your Freebox admin console to allocate needed rights to openHAB
 
