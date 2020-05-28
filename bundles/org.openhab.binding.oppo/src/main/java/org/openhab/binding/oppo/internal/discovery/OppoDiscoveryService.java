@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.oppo.internal.discovery;
 
-import static org.eclipse.jetty.http.HttpMethod.GET;
 import static org.openhab.binding.oppo.internal.OppoBindingConstants.*;
 
 import java.io.IOException;
@@ -26,23 +25,21 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.io.net.http.HttpUtil;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,6 +52,7 @@ import org.slf4j.LoggerFactory;
  */
 
 @NonNullByDefault
+@Component(service = DiscoveryService.class, configurationPid = "discovery.oppo")
 public class OppoDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(OppoDiscoveryService.class);
@@ -92,8 +90,6 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
     @Nullable
     private ExecutorService executorService;
 
-    private final HttpClient httpClient;
-
     private static final String DISPLAY_NAME_83 = "OPPO BDP-83/93/95";
     private static final String DISPLAY_NAME_103 = "OPPO BDP-103";
     private static final String DISPLAY_NAME_105 = "OPPO BDP-105";
@@ -101,21 +97,8 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
     /**
      * Constructs the discovery class using the thing IDs that we can discover.
      */
-    public OppoDiscoveryService(HttpClient httpClient) {
+    public OppoDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, 30, false);
-        this.httpClient = httpClient;
-        activate(null);
-    }
-
-    @Override
-    protected void activate(@Nullable Map<String, @Nullable Object> configProperties) {
-        super.activate(configProperties);
-    }
-
-    @Override
-    public void deactivate() {
-        stopScan();
-        super.deactivate();
     }
 
     @Override
@@ -241,9 +224,7 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
                 // for the 10x we need to get the DLNA service list page and find modelNumber there
                 // in order to determine if this is a BDP-103 or BDP-105
                 try {
-                    ContentResponse contentResponse = httpClient.newRequest("http://" + host + ":2870/dmr.xml")
-                            .method(GET).timeout(5, TimeUnit.SECONDS).send();
-                    String result = contentResponse.getContentAsString();
+                    String result = HttpUtil.executeUrl("GET", "http://" + host + ":2870/dmr.xml", 10000);
 
                     if (result != null && result.contains("<modelName>OPPO BDP-103</modelName>")) {
                         model = MODEL103;
@@ -255,7 +236,7 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
                         model = MODEL103;
                         displayName = DISPLAY_NAME_103;
                     }
-                } catch (ExecutionException | InterruptedException | TimeoutException e) {
+                } catch (IOException e) {
                     logger.debug("Error getting player DLNA info page: {}", e.getMessage());
                     // the call failed for some reason, just assume we are a 103
                     model = MODEL103;
