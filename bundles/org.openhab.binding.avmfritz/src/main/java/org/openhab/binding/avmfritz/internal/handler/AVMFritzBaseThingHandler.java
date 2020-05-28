@@ -12,13 +12,14 @@
  */
 package org.openhab.binding.avmfritz.internal.handler;
 
-import static org.openhab.binding.avmfritz.internal.BindingConstants.*;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
 import static org.openhab.binding.avmfritz.internal.dto.HeatingModel.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Map;
 
 import javax.measure.quantity.Temperature;
@@ -55,6 +56,7 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.avmfritz.internal.config.AVMFritzDeviceConfiguration;
 import org.openhab.binding.avmfritz.internal.dto.AVMFritzBaseModel;
 import org.openhab.binding.avmfritz.internal.dto.AlertModel;
+import org.openhab.binding.avmfritz.internal.dto.BatteryModel;
 import org.openhab.binding.avmfritz.internal.dto.ButtonModel;
 import org.openhab.binding.avmfritz.internal.dto.DeviceModel;
 import org.openhab.binding.avmfritz.internal.dto.HeatingModel;
@@ -139,36 +141,61 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                 if (deviceModel.isTempSensor()) {
                     updateTemperatureSensor(deviceModel.getTemperature());
                 }
-                if (deviceModel.isAlarmSensor()) {
-                    updateAlarmSensor(deviceModel.getAlert());
+                if (deviceModel.isHANFUNAlarmSensor()) {
+                    updateHANFUNAlarmSensor(deviceModel.getAlert());
+                }
+                if (deviceModel.isHANFUNButton()) {
+                    updateHANFUNButton(deviceModel.getButtons());
                 }
                 if (deviceModel.isButton()) {
-                    updateButton(deviceModel.getButton());
+                    updateShortLongPressButton(deviceModel.getButtons());
+                    updateBattery(deviceModel);
                 }
             }
         }
     }
 
-    private void updateButton(@Nullable ButtonModel buttonModel) {
-        if (buttonModel != null) {
-            int lastPressedTimestamp = buttonModel.getLastpressedtimestamp();
-            if (lastPressedTimestamp == 0) {
-                updateThingChannelState(CHANNEL_LAST_CHANGE, UnDefType.UNDEF);
-            } else {
-                ZoneId zoneId = ZoneId.systemDefault();
-                ZonedDateTime timestamp = ZonedDateTime.ofInstant(Instant.ofEpochSecond(lastPressedTimestamp), zoneId);
-                Instant then = timestamp.toInstant();
-                ZonedDateTime now = ZonedDateTime.now(zoneId);
-                Instant someSecondsEarlier = now.minusSeconds(15).toInstant();
-                if (then.isAfter(someSecondsEarlier) && then.isBefore(now.toInstant())) {
-                    triggerThingChannel(CHANNEL_PRESS, CommonTriggerEvents.PRESSED);
-                }
-                updateThingChannelState(CHANNEL_LAST_CHANGE, new DateTimeType(timestamp));
-            }
+    private void updateShortLongPressButton(List<ButtonModel> buttons) {
+        ButtonModel shortPressButton = buttons.size() > 0 ? buttons.get(0) : null;
+        ButtonModel longPressButton = buttons.size() > 1 ? buttons.get(1) : null;
+        ButtonModel lastPressedButton = shortPressButton != null
+                ? (longPressButton != null
+                        ? (shortPressButton.getLastpressedtimestamp() > longPressButton.getLastpressedtimestamp()
+                                ? shortPressButton
+                                : longPressButton)
+                        : shortPressButton)
+                : longPressButton;
+        if (lastPressedButton != null) {
+            updateButton(lastPressedButton,
+                    lastPressedButton.equals(shortPressButton) ? CommonTriggerEvents.SHORT_PRESSED
+                            : CommonTriggerEvents.LONG_PRESSED);
         }
     }
 
-    private void updateAlarmSensor(@Nullable AlertModel alertModel) {
+    private void updateHANFUNButton(List<ButtonModel> buttons) {
+        if (!buttons.isEmpty()) {
+            updateButton(buttons.get(0), CommonTriggerEvents.PRESSED);
+        }
+    }
+
+    private void updateButton(ButtonModel buttonModel, String event) {
+        int lastPressedTimestamp = buttonModel.getLastpressedtimestamp();
+        if (lastPressedTimestamp == 0) {
+            updateThingChannelState(CHANNEL_LAST_CHANGE, UnDefType.UNDEF);
+        } else {
+            ZoneId zoneId = ZoneId.systemDefault();
+            ZonedDateTime timestamp = ZonedDateTime.ofInstant(Instant.ofEpochSecond(lastPressedTimestamp), zoneId);
+            Instant then = timestamp.toInstant();
+            ZonedDateTime now = ZonedDateTime.now(zoneId);
+            Instant someSecondsEarlier = now.minusSeconds(15).toInstant();
+            if (then.isAfter(someSecondsEarlier) && then.isBefore(now.toInstant())) {
+                triggerThingChannel(CHANNEL_PRESS, event);
+            }
+            updateThingChannelState(CHANNEL_LAST_CHANGE, new DateTimeType(timestamp));
+        }
+    }
+
+    private void updateHANFUNAlarmSensor(@Nullable AlertModel alertModel) {
         if (alertModel != null) {
             updateThingChannelState(CHANNEL_CONTACT_STATE,
                     AlertModel.ON.equals(alertModel.getState()) ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
@@ -210,16 +237,20 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                 updateThingChannelState(CHANNEL_NEXTTEMP, TEMP_FRITZ_UNDEFINED.equals(nextTemperature) ? UnDefType.UNDEF
                         : new QuantityType<>(toCelsius(nextTemperature), SIUnits.CELSIUS));
             }
-            BigDecimal batteryLevel = heatingModel.getBattery();
-            updateThingChannelState(CHANNEL_BATTERY,
-                    batteryLevel == null ? UnDefType.UNDEF : new DecimalType(batteryLevel));
-            BigDecimal lowBattery = heatingModel.getBatterylow();
-            if (lowBattery == null) {
-                updateThingChannelState(CHANNEL_BATTERY_LOW, UnDefType.UNDEF);
-            } else {
-                updateThingChannelState(CHANNEL_BATTERY_LOW,
-                        BATTERY_ON.equals(lowBattery) ? OnOffType.ON : OnOffType.OFF);
-            }
+            updateBattery(heatingModel);
+        }
+    }
+
+    private void updateBattery(BatteryModel batteryModel) {
+        BigDecimal batteryLevel = batteryModel.getBattery();
+        updateThingChannelState(CHANNEL_BATTERY,
+                batteryLevel == null ? UnDefType.UNDEF : new DecimalType(batteryLevel));
+        BigDecimal lowBattery = batteryModel.getBatterylow();
+        if (lowBattery == null) {
+            updateThingChannelState(CHANNEL_BATTERY_LOW, UnDefType.UNDEF);
+        } else {
+            updateThingChannelState(CHANNEL_BATTERY_LOW,
+                    BatteryModel.BATTERY_ON.equals(lowBattery) ? OnOffType.ON : OnOffType.OFF);
         }
     }
 

@@ -14,6 +14,8 @@ package org.openhab.binding.avmfritz.internal.dto;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -23,11 +25,45 @@ import javax.xml.bind.annotation.XmlType;
  * @author Christoph Weitkamp - Initial contribution
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder = { "lastpressedtimestamp" })
+@XmlType(propOrder = { "name", "lastpressedtimestamp" })
 @XmlRootElement(name = "button")
 public class ButtonModel {
 
+    @XmlAttribute(name = "identifier")
+    private String identifier;
+
+    @XmlAttribute(name = "id")
+    private String buttonId;
+
+    @XmlElement(name = "name")
+    private String name;
+
+    @XmlElement(name = "lastpressedtimestamp")
     private int lastpressedtimestamp;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getIdentifier() {
+        return identifier != null ? identifier.replace(" ", "") : null;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+
+    public String getButtonId() {
+        return buttonId;
+    }
+
+    public void setButtonId(String buttonId) {
+        this.buttonId = buttonId;
+    }
 
     public int getLastpressedtimestamp() {
         return lastpressedtimestamp;
@@ -38,7 +74,23 @@ public class ButtonModel {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        return buttonId != null ? buttonId.equals(((ButtonModel) obj).getButtonId()) : false;
+    }
+
+    @Override
     public String toString() {
-        return new StringBuilder().append("[lastpressedtimestamp=").append(lastpressedtimestamp).append("]").toString();
+        return new StringBuilder().append("[identifier=").append(getIdentifier()).append(",id=").append(buttonId)
+                .append(",name=").append(name).append(",lastpressedtimestamp=").append(lastpressedtimestamp).append("]")
+                .toString();
     }
 }

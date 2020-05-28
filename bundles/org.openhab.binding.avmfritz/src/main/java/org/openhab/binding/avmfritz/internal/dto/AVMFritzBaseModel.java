@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.avmfritz.internal.dto;
 
+import java.math.BigDecimal;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
@@ -24,7 +26,7 @@ import javax.xml.bind.annotation.XmlElement;
  * <li>Bit 0: HAN-FUN Gerät</li>
  * <li>Bit 3: Button</li>
  * <li>Bit 4: Alarm-Sensor</li>
- * <li>Bit 6: Comet DECT, Heizkostenregler</li>
+ * <li>Bit 6: Comet DECT, Heizkörperregler</li>
  * <li>Bit 7: Energie Messgerät</li>
  * <li>Bit 8: Temperatursensor</li>
  * <li>Bit 9: Schaltsteckdose</li>
@@ -37,17 +39,18 @@ import javax.xml.bind.annotation.XmlElement;
  * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet DECT
  * @author Christoph Weitkamp - Added support for groups
  */
-public abstract class AVMFritzBaseModel {
-    protected static final int HAN_FUN_DEVICE_BIT = 1;
-    protected static final int HAN_FUN_BUTTON_BIT = 8;
-    protected static final int HAN_FUN_ALARM_SENSOR_BIT = 16;
-    protected static final int HEATING_THERMOSTAT_BIT = 64;
-    protected static final int POWERMETER_BIT = 128;
-    protected static final int TEMPSENSOR_BIT = 256;
-    protected static final int OUTLET_BIT = 512;
-    protected static final int DECT_REPEATER_BIT = 1024;
-    protected static final int MICROPHONE_BIT = 2048;
-    protected static final int HAN_FUN_UNIT_BIT = 8192;
+public abstract class AVMFritzBaseModel implements BatteryModel {
+    protected static final int HAN_FUN_DEVICE_BIT = 1; // Bit 0
+    protected static final int HAN_FUN_BUTTON_BIT = 8; // Bit 3 - undocumented
+    protected static final int HAN_FUN_ALARM_SENSOR_BIT = 16; // Bit 4
+    protected static final int BUTTON_BIT = 32; // Bit 5 - undocumented
+    protected static final int HEATING_THERMOSTAT_BIT = 64; // Bit 6
+    protected static final int POWERMETER_BIT = 128; // Bit 7
+    protected static final int TEMPSENSOR_BIT = 256; // Bit 8
+    protected static final int OUTLET_BIT = 512; // Bit 9
+    protected static final int DECT_REPEATER_BIT = 1024; // Bit 10
+    protected static final int MICROPHONE_BIT = 2048; // Bit 11
+    protected static final int HAN_FUN_UNIT_BIT = 8192; // Bit 13
 
     @XmlAttribute(name = "identifier")
     private String ident;
@@ -72,6 +75,9 @@ public abstract class AVMFritzBaseModel {
 
     @XmlElement(name = "name")
     private String name;
+
+    private BigDecimal battery;
+    private BigDecimal batterylow;
 
     @XmlElement(name = "switch")
     private SwitchModel switchModel;
@@ -122,12 +128,16 @@ public abstract class AVMFritzBaseModel {
         return (bitmask & HAN_FUN_DEVICE_BIT) > 0;
     }
 
-    public boolean isButton() {
+    public boolean isHANFUNButton() {
         return (bitmask & HAN_FUN_BUTTON_BIT) > 0;
     }
 
-    public boolean isAlarmSensor() {
+    public boolean isHANFUNAlarmSensor() {
         return (bitmask & HAN_FUN_ALARM_SENSOR_BIT) > 0;
+    }
+
+    public boolean isButton() {
+        return (bitmask & BUTTON_BIT) > 0;
     }
 
     public boolean isSwitchableOutlet() {
@@ -179,16 +189,36 @@ public abstract class AVMFritzBaseModel {
     }
 
     @Override
+    public BigDecimal getBattery() {
+        return battery;
+    }
+
+    public void setBattery(BigDecimal battery) {
+        this.battery = battery;
+    }
+
+    @Override
+    public BigDecimal getBatterylow() {
+        return batterylow;
+    }
+
+    public void setBatterylow(BigDecimal batterylow) {
+        this.batterylow = batterylow;
+    }
+
+    @Override
     public String toString() {
         return new StringBuilder().append("[ain=").append(ident).append(",bitmask=").append(bitmask)
-                .append(",isHANFUNDevice=").append(isHANFUNDevice()).append(",isButton=").append(isButton())
-                .append(",isAlarmSensor=").append(isAlarmSensor()).append(",isSwitchableOutlet=")
-                .append(isSwitchableOutlet()).append(",isTempSensor=").append(isTempSensor()).append(",isPowermeter=")
-                .append(isPowermeter()).append(",isDectRepeater=").append(isDectRepeater())
-                .append(",isHeatingThermostat=").append(isHeatingThermostat()).append(",isMicrophone=")
-                .append(isMicrophone()).append(",isHANFUNUnit=").append(isHANFUNUnit()).append(",id=").append(deviceId)
-                .append(",manufacturer=").append(deviceManufacturer).append(",productname=").append(productName)
-                .append(",fwversion=").append(firmwareVersion).append(",present=").append(present).append(",name=")
-                .append(name).append(getSwitch()).append(getPowermeter()).append(getHkr()).append("]").toString();
+                .append(",isHANFUNDevice=").append(isHANFUNDevice()).append(",isHANFUNButton=").append(isHANFUNButton())
+                .append(",isHANFUNAlarmSensor=").append(isHANFUNAlarmSensor()).append("isButton").append(isButton())
+                .append(",isSwitchableOutlet=").append(isSwitchableOutlet()).append(",isTempSensor=")
+                .append(isTempSensor()).append(",isPowermeter=").append(isPowermeter()).append(",isDectRepeater=")
+                .append(isDectRepeater()).append(",isHeatingThermostat=").append(isHeatingThermostat())
+                .append(",isMicrophone=").append(isMicrophone()).append(",isHANFUNUnit=").append(isHANFUNUnit())
+                .append(",id=").append(deviceId).append(",manufacturer=").append(deviceManufacturer)
+                .append(",productname=").append(productName).append(",fwversion=").append(firmwareVersion)
+                .append(",present=").append(present).append(",name=").append(name).append(",battery")
+                .append(getBattery()).append(",batterylow").append(getBatterylow()).append(getSwitch())
+                .append(getPowermeter()).append(getHkr()).toString();
     }
 }
