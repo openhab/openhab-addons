@@ -12,27 +12,22 @@
  */
 package org.openhab.binding.hue.internal;
 
-import java.lang.reflect.Type;
-import java.util.Map;
-
-import com.google.gson.reflect.TypeToken;
-
 /**
  * Basic group information.
  *
  * @author Q42 - Initial contribution
  * @author Denis Dudnik - moved Jue library source code inside the smarthome Hue binding
+ * @author Laurent Garnier - field type added
  */
 public class Group {
-    public static final Type GSON_TYPE = new TypeToken<Map<String, Group>>() {
-    }.getType();
-
     private String id;
     private String name;
+    private String type;
 
     Group() {
         this.id = "0";
         this.name = "Lightset 0";
+        this.type = "LightGroup";
     }
 
     void setName(String name) {
@@ -41,6 +36,10 @@ public class Group {
 
     void setId(String id) {
         this.id = id;
+    }
+
+    void setType(String type) {
+        this.type = type;
     }
 
     /**
@@ -69,5 +68,14 @@ public class Group {
      */
     public String getName() {
         return name;
+    }
+
+    /**
+     * Returns the tyoe of the group.
+     *
+     * @return type
+     */
+    public String getType() {
+        return type;
     }
 }

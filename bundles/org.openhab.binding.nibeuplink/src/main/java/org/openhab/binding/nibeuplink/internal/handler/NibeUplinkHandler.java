@@ -15,13 +15,13 @@ package org.openhab.binding.nibeuplink.internal.handler;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.nibeuplink.internal.config.NibeUplinkConfiguration;
 import org.openhab.binding.nibeuplink.internal.connector.UplinkWebInterface;
-import org.openhab.binding.nibeuplink.internal.model.Channel;
 
 /**
  * public interface of the {@link UplinkBaseHandler}
@@ -34,9 +34,9 @@ public interface NibeUplinkHandler extends ThingHandler, ChannelProvider {
      * Called from {@link NibeUplinkWebInterface#authenticate()} to update
      * the thing status because updateStatus is protected.
      *
-     * @param status       Bridge status
+     * @param status Bridge status
      * @param statusDetail Bridge status detail
-     * @param description  Bridge status description
+     * @param description Bridge status description
      */
     void setStatusInfo(ThingStatus status, ThingStatusDetail statusDetail, String description);
 
@@ -50,5 +50,4 @@ public interface NibeUplinkHandler extends ThingHandler, ChannelProvider {
     void updateChannelStatus(Map<Channel, State> values);
 
     NibeUplinkConfiguration getConfiguration();
-
 }

@@ -19,6 +19,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -27,9 +29,11 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.phc.internal.handler.PHCBridgeHandler;
 import org.openhab.binding.phc.internal.handler.PHCHandler;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link PHCHandlerFactory} is responsible for creating things and thing
@@ -37,11 +41,24 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Jonas Hohaus - Initial contribution
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.phc")
 public class PHCHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
-            Stream.of(THING_TYPE_BRIDGE, THING_TYPE_AM, THING_TYPE_EM, THING_TYPE_JRM).collect(Collectors.toSet()));
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(THING_TYPE_BRIDGE, THING_TYPE_AM, THING_TYPE_EM, THING_TYPE_JRM, THING_TYPE_DIM)
+                    .collect(Collectors.toSet()));
+
+    private @NonNullByDefault({}) SerialPortManager serialPortManager;
+
+    @Reference
+    protected void setSerialPortManager(final SerialPortManager serialPortManager) {
+        this.serialPortManager = serialPortManager;
+    }
+
+    protected void unsetSerialPortManager(final SerialPortManager serialPortManager) {
+        this.serialPortManager = null;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -49,15 +66,15 @@ public class PHCHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID,
-            ThingUID bridgeUID) {
+    public @Nullable Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
+            @Nullable ThingUID thingUID, @Nullable ThingUID bridgeUID) {
         Thing thing;
 
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             if (thingTypeUID.equals(THING_TYPE_BRIDGE)) {
                 thing = super.createThing(thingTypeUID, configuration, thingUID, null);
             } else {
-                ThingUID phcThingUID = new ThingUID(thingTypeUID, configuration.get(ADDRESS).toString().toUpperCase());
+                ThingUID phcThingUID = new ThingUID(thingTypeUID, configuration.get(ADDRESS).toString());
                 thing = super.createThing(thingTypeUID, configuration, phcThingUID, bridgeUID);
             }
         } else {
@@ -69,13 +86,13 @@ public class PHCHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         ThingHandler handler = null;
 
         if (thingTypeUID.equals(THING_TYPE_BRIDGE)) {
-            handler = new PHCBridgeHandler((Bridge) thing);
+            handler = new PHCBridgeHandler((Bridge) thing, serialPortManager);
         } else if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             handler = new PHCHandler(thing);
         }

@@ -10,13 +10,13 @@
 		<description>Connection to the Rotel RCD-1572 CD player</description>
 
 		<channels>
-			<channel id="power" typeId="system.power" />
-			<channel id="playControl" typeId="system.media-control" />
-			<channel id="track" typeId="track" />
-			<channel id="brightness" typeId="brightness" />
+			<channel id="power" typeId="system.power"/>
+			<channel id="playControl" typeId="system.media-control"/>
+			<channel id="track" typeId="track"/>
+			<channel id="brightness" typeId="brightness"/>
 		</channels>
 
-		<config-description-ref uri="thing-type:rotel:serialandprotocol" />
+		<config-description-ref uri="thing-type:rotel:serialandprotocol"/>
 	</thing-type>
 
 </thing:thing-descriptions>

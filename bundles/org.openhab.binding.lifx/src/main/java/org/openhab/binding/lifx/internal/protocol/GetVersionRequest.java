@@ -52,5 +52,4 @@ public class GetVersionRequest extends Packet {
     public int[] expectedResponses() {
         return new int[] { StateVersionResponse.TYPE };
     }
-
 }

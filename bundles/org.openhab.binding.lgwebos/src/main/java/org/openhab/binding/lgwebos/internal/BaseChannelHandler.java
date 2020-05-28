@@ -73,7 +73,6 @@ abstract class BaseChannelHandler<T> implements ChannelHandler {
             logger.debug("Subscribed {} on Thing: {}", this.getClass().getName(), handler.getThing().getUID());
             subscriptions.put(handler.getThing().getUID(), listener.get());
         }
-
     }
 
     /**
@@ -101,5 +100,4 @@ abstract class BaseChannelHandler<T> implements ChannelHandler {
     protected ResponseListener<T> getDefaultResponseListener() {
         return defaultResponseListener;
     }
-
 }

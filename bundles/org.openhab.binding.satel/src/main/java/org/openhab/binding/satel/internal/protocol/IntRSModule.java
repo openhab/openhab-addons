@@ -46,12 +46,14 @@ public class IntRSModule extends SatelModule {
     /**
      * Creates new instance with port and timeout set to specified values.
      *
-     * @param port              serial port the module is connected to
+     * @param port serial port the module is connected to
      * @param serialPortManager serial port manager object
-     * @param timeout           timeout value in milliseconds for connect/read/write operations
+     * @param timeout timeout value in milliseconds for connect/read/write operations
+     * @param extPayloadSupport if <code>true</code>, the module supports extended command payload for reading
+     *            INTEGRA 256 state
      */
-    public IntRSModule(String port, SerialPortManager serialPortManager, int timeout) {
-        super(timeout);
+    public IntRSModule(String port, SerialPortManager serialPortManager, int timeout, boolean extPayloadSupport) {
+        super(timeout, extPayloadSupport);
 
         this.port = port;
         this.serialPortManager = serialPortManager;

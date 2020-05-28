@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Coaster Li - Initial contribution
  * @author Joe Ho - Added duration
+ * @author Nikita Pogudalov - Added name for Ceiling 1
  */
 public class DeviceManager {
     private final Logger logger = LoggerFactory.getLogger(DeviceManager.class);
@@ -319,9 +320,10 @@ public class DeviceManager {
         }
         switch (device.getDeviceType()) {
             case ceiling:
-            case ceiling1:
             case ceiling3:
                 return "Yeelight LED Ceiling";
+            case ceiling1:
+                return "Yeelight LED Ceiling with night mode";
             case ceiling4:
                 return "Yeelight LED Ceiling with ambient light";
             case color:

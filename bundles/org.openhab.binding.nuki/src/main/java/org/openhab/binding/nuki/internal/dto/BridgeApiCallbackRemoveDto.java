@@ -38,5 +38,4 @@ public class BridgeApiCallbackRemoveDto {
     public void setMessage(String message) {
         this.message = message;
     }
-
 }

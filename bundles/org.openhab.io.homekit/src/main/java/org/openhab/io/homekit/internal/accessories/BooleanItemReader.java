@@ -12,17 +12,20 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
+import org.eclipse.smarthome.core.items.GroupItem;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.library.items.ContactItem;
+import org.eclipse.smarthome.core.library.items.StringItem;
 import org.eclipse.smarthome.core.library.items.SwitchItem;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Wraps either a SwitchItem or a ContactItem, interpretting the open / closed states accordingly.
+ * Wraps either a SwitchItem or a ContactItem, interpreting the open / closed states accordingly.
  *
  * @author Tim Harper - Initial contribution
  *
@@ -44,8 +47,8 @@ public class BooleanItemReader {
         this.item = item;
         this.trueOnOffValue = trueOnOffValue;
         this.trueOpenClosedValue = trueOpenClosedValue;
-        if (!(item instanceof SwitchItem) && !(item instanceof ContactItem)) {
-            logger.warn("Item {} is a {} instead of the expected SwitchItem or ContactItem", item.getName(),
+        if (!(item instanceof SwitchItem) && !(item instanceof ContactItem) && !(item instanceof StringItem)) {
+            logger.warn("Item {} is a {} instead of the expected SwitchItem, ContactItem or StringItem", item.getName(),
                     item.getClass().getName());
         }
     }
@@ -56,8 +59,18 @@ public class BooleanItemReader {
             return state.equals(trueOnOffValue);
         } else if (state instanceof OpenClosedType) {
             return state.equals(trueOpenClosedValue);
+        } else if (state instanceof StringType) {
+            return state.toString().equalsIgnoreCase("Open") || state.toString().equalsIgnoreCase("Opened");
         } else {
             return null;
+        }
+    }
+
+    void setValue(Boolean value) {
+        if (item instanceof SwitchItem) {
+            ((SwitchItem) item).send(OnOffType.from(value));
+        } else if (item instanceof GroupItem) {
+            ((GroupItem) item).send(OnOffType.from(value));
         }
     }
 }

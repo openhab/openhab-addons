@@ -92,5 +92,4 @@ public class ParameterizedCommand extends SimpleCommand {
     public String getParameterPattern() {
         return parameterPattern;
     }
-
 }

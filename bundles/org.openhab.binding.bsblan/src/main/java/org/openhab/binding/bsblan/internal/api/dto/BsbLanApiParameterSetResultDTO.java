@@ -31,6 +31,7 @@ public class BsbLanApiParameterSetResultDTO {
         READ_ONLY(2);
 
         private final int value;
+
         Status(int value) {
             this.value = value;
         }

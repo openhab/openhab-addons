@@ -206,5 +206,4 @@ public final class WriteRequestJsonUtilities {
                 throw new IllegalArgumentException("Unknown function code");
         }
     }
-
 }

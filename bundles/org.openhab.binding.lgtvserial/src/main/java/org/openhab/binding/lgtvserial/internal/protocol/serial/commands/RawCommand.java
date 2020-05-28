@@ -42,5 +42,4 @@ public class RawCommand implements LGSerialCommand {
             comm.write(this, data.toString(), channel);
         }
     }
-
 }

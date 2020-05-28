@@ -304,5 +304,4 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
         // TODO : this informations could be sourced from Netatmo API instead of a local configuration element
         return ((Number) config.get(SETPOINT_DEFAULT_DURATION)).intValue();
     }
-
 }

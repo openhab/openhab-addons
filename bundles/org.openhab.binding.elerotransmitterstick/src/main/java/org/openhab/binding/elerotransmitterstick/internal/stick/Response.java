@@ -50,5 +50,4 @@ public class Response {
     public String toString() {
         return status + " for channels " + Arrays.toString(channels);
     }
-
 }

@@ -43,5 +43,4 @@ public class SenseBoxMeasurement {
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
-
 }

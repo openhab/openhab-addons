@@ -27,5 +27,4 @@ public interface RadioRAConnection {
     public void write(String command);
 
     public void setListener(RadioRAFeedbackListener listener);
-
 }

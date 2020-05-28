@@ -6,17 +6,17 @@
 	<!-- Hue Temperature Sensor -->
 	<thing-type id="0302">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Hue Temperature Sensor</label>
 		<description>A sensor providing temperature values.</description>
 
 		<channels>
-			<channel id="temperature" typeId="temperature" />
-			<channel id="last_updated" typeId="last_updated" />
-			<channel id="battery_level" typeId="system.battery-level" />
-			<channel id="battery_low" typeId="system.low-battery" />
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="last_updated" typeId="last_updated"/>
+			<channel id="battery_level" typeId="system.battery-level"/>
+			<channel id="battery_low" typeId="system.low-battery"/>
 		</channels>
 
 		<representation-property>uniqueId</representation-property>
@@ -33,7 +33,8 @@
 			</parameter>
 			<parameter name="ledindication" type="boolean">
 				<label>LED Indication</label>
-				<description>Turns device LED during normal operation on or off. Devices might still indicate exceptional operation (Reset, SW Update, Battery Low).</description>
+				<description>Turns device LED during normal operation on or off. Devices might still indicate exceptional operation
+					(Reset, SW Update, Battery Low).</description>
 			</parameter>
 		</config-description>
 	</thing-type>

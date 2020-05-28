@@ -34,5 +34,4 @@ public class CCommand extends CubeCommand {
     public String getReturnStrings() {
         return "C:";
     }
-
 }

@@ -57,5 +57,4 @@ public class PowermaxDeniedMessage extends PowermaxBaseMessage {
 
         return updatedState;
     }
-
 }

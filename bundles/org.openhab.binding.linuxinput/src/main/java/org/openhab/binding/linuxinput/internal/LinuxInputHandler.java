@@ -12,6 +12,13 @@
  */
 package org.openhab.binding.linuxinput.internal;
 
+import static org.openhab.binding.linuxinput.internal.LinuxInputBindingConstants.*;
+
+import java.io.IOException;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.util.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.CoreItemFactory;
@@ -25,13 +32,6 @@ import org.openhab.binding.linuxinput.internal.evdev4j.EvdevDevice;
 import org.openhab.binding.linuxinput.internal.evdev4j.jnr.EvdevLibrary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.util.*;
-
-import static org.openhab.binding.linuxinput.internal.LinuxInputBindingConstants.*;
 
 /**
  * Handler for Linux Input devices.
@@ -109,7 +109,8 @@ public final class LinuxInputHandler extends DeviceReadingHandler {
 
     @Override
     protected void closeDevice() throws IOException {
-        @Nullable EvdevDevice currentDevice = device;
+        @Nullable
+        EvdevDevice currentDevice = device;
         device = null;
 
         if (currentDevice != null) {
@@ -130,7 +131,8 @@ public final class LinuxInputHandler extends DeviceReadingHandler {
     @Override
     void handleEventsInThread() throws IOException {
         try (Selector selector = EvdevDevice.openSelector()) {
-            @Nullable EvdevDevice currentDevice = device;
+            @Nullable
+            EvdevDevice currentDevice = device;
             if (currentDevice == null) {
                 throw new IOException("trying to handle events without an device");
             }
@@ -163,7 +165,8 @@ public final class LinuxInputHandler extends DeviceReadingHandler {
         if (event.type() != EvdevLibrary.Type.KEY) {
             return;
         }
-        @Nullable Channel channel = channels.get(event.getCode());
+        @Nullable
+        Channel channel = channels.get(event.getCode());
         if (channel == null) {
             String msg = "Could not find channel for code {}";
             if (isInitialized()) {

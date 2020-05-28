@@ -103,5 +103,4 @@ public abstract class ModbusSlaveErrorResponseException extends ModbusTransportE
      * @return the Modbus exception code that happened
      */
     public abstract int getExceptionCode();
-
 }

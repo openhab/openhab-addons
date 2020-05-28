@@ -38,5 +38,4 @@ public class Environment {
         return "Environment [pressure=" + pressure + ", luminance=" + luminance + ", humidity=" + humidity
                 + ", temperature=" + temperature + "]";
     }
-
 }

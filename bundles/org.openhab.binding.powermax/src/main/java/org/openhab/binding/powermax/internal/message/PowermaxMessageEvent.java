@@ -35,5 +35,4 @@ public class PowermaxMessageEvent extends EventObject {
     public PowermaxBaseMessage getMessage() {
         return message;
     }
-
 }

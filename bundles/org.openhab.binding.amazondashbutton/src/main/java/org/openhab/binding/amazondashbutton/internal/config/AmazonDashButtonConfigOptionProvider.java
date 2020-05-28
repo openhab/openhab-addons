@@ -96,5 +96,4 @@ public class AmazonDashButtonConfigOptionProvider implements ConfigOptionProvide
         }
         return sb.toString();
     }
-
 }

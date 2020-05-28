@@ -152,5 +152,4 @@ public class SubscribeFieldToMQTTtopicTests {
         future.get(50, TimeUnit.MILLISECONDS);
         assertThat(attributes.Int, is(10));
     }
-
 }

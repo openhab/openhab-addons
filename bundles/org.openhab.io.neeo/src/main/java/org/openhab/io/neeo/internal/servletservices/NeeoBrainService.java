@@ -232,7 +232,6 @@ public class NeeoBrainService extends DefaultServletService {
                 logger.debug("Unknown/unhandled brain service route (GET): {}", StringUtils.join(paths, '/'));
             }
         }
-
     }
 
     /**
@@ -443,7 +442,6 @@ public class NeeoBrainService extends DefaultServletService {
                 logger.trace("Apply Event: {} --- {} --- {} = {}", event, itemName, isBound, keys);
                 return isBound;
             }
-
         };
     }
 

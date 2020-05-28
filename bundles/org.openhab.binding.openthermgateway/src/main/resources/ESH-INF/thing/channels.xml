@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="openthermgateway"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="roomtemp">
+		<item-type>Number:Temperature</item-type>
+		<label>Room Temperature</label>
+		<description>Current sensed room temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="roomsetpoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Room Setpoint</label>
+		<description>Current room temperature setpoint</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="temperaturetemporary">
+		<item-type>Number:Temperature</item-type>
+		<label>Temporary Room Setpoint Override</label>
+		<description>Temporary override room temperature setpoint</description>
+		<category>Temperature</category>
+		<state readOnly="false" min="0" max="30" step="0.1" pattern="%.1f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="temperatureconstant">
+		<item-type>Number:Temperature</item-type>
+		<label>Constant Room Setpoint Override</label>
+		<description>Constant override room temperature setpoint</description>
+		<category>Temperature</category>
+		<state readOnly="false" min="0" max="30" step="0.1" pattern="%.1f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="controlsetpoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Control Setpoint</label>
+		<description>Central heating water setpoint</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="dhwtemp">
+		<item-type>Number:Temperature</item-type>
+		<label>Domestic Hot Water Temperature</label>
+		<description>Domestic hot water temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="tdhwset">
+		<item-type>Number:Temperature</item-type>
+		<label>Domestic Hot Water Setpoint</label>
+		<description>Domestic hot water temperature setpoint</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="overridedhwsetpoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Domestic Hot Water Setpoint Override</label>
+		<description>Domestic hot water temperature setpoint override</description>
+		<category>Temperature</category>
+		<state readOnly="false" min="0" max="100" step="0.1" pattern="%.1f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="flowtemp">
+		<item-type>Number:Temperature</item-type>
+		<label>Boiler Water Temperature</label>
+		<description>Boiler water temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="returntemp">
+		<item-type>Number:Temperature</item-type>
+		<label>Return Water Temperature</label>
+		<description>Return water temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="outsidetemp">
+		<item-type>Number:Temperature</item-type>
+		<label>Outside Temperature</label>
+		<description>Outside temperature</description>
+		<category>Temperature</category>
+		<state readOnly="false" min="-40" max="100" step="0.1" pattern="%.1f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="waterpressure">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Central Heating Water Pressure</label>
+		<description>Central heating water pressure</description>
+		<state readOnly="true" pattern="%.1f bar"></state>
+	</channel-type>
+
+	<channel-type id="ch_enable">
+		<item-type>Switch</item-type>
+		<label>Central Heating Enabled</label>
+		<description>Central heating enabled</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="ch_mode">
+		<item-type>Switch</item-type>
+		<label>Central Heating Active</label>
+		<description>Central heating active</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="dhw_enable">
+		<item-type>Switch</item-type>
+		<label>Domestic Hot Water Enabled</label>
+		<description>Domestic hot water enabled</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="dhw_mode">
+		<item-type>Switch</item-type>
+		<label>Domestic Hot Water Active</label>
+		<description>Domestic hot water active</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="flame">
+		<item-type>Switch</item-type>
+		<label>Burner Active</label>
+		<description>Burner active</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="modulevel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Relative Modulation Level</label>
+		<description>Relative modulation level</description>
+		<state readOnly="true" pattern="%.1f %%"></state>
+	</channel-type>
+
+	<channel-type id="maxrelmdulevel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Maximum Relative Modulation Level</label>
+		<description>Maximum relative modulation level</description>
+		<state readOnly="true" pattern="%.1f %%"></state>
+	</channel-type>
+
+	<channel-type id="fault">
+		<item-type>Switch</item-type>
+		<label>Fault Indication</label>
+		<description>Fault indication</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="servicerequest">
+		<item-type>Switch</item-type>
+		<label>Service Required</label>
+		<description>Service required</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="lockout-reset">
+		<item-type>Switch</item-type>
+		<label>Lockout-Reset Enabled</label>
+		<description>Lockout-reset enabled</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="lowwaterpress">
+		<item-type>Switch</item-type>
+		<label>Low Water Pressure Fault</label>
+		<description>Low water pressure fault</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="gasflamefault">
+		<item-type>Switch</item-type>
+		<label>Gas Or Flame Fault</label>
+		<description>Gas or flame fault</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="airpressfault">
+		<item-type>Switch</item-type>
+		<label>Air Pressure Fault</label>
+		<description>Air pressure fault</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="waterovtemp">
+		<item-type>Switch</item-type>
+		<label>Water Over-Temperature Fault</label>
+		<description>Water over-temperature fault</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="oemfaultcode">
+		<item-type>Number:Dimensionless</item-type>
+		<label>OEM Fault Code</label>
+		<description>OEM fault code</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="sendcommand">
+		<item-type>String</item-type>
+		<label>Send Command</label>
+		<description>Channel to send commands to the OpenTherm Gateway device</description>
+		<state readOnly="false"></state>
+	</channel-type>
+
+</thing:thing-descriptions>

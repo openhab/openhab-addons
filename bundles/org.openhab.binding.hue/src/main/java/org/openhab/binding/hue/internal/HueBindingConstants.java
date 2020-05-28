@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.hue.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -25,6 +26,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * @author Samuel Leisering - Added support for sensor API
  * @author Christoph Weitkamp - Added support for sensor API
  */
+@NonNullByDefault
 public class HueBindingConstants {
 
     public static final String BINDING_ID = "hue";
@@ -50,6 +52,8 @@ public class HueBindingConstants {
     public static final ThingTypeUID THING_TYPE_PRESENCE_SENSOR = new ThingTypeUID(BINDING_ID, "0107");
     public static final ThingTypeUID THING_TYPE_TEMPERATURE_SENSOR = new ThingTypeUID(BINDING_ID, "0302");
     public static final ThingTypeUID THING_TYPE_LIGHT_LEVEL_SENSOR = new ThingTypeUID(BINDING_ID, "0106");
+
+    public static final ThingTypeUID THING_TYPE_GROUP = new ThingTypeUID(BINDING_ID, "group");
 
     // List all channels
     public static final String CHANNEL_COLORTEMPERATURE = "color_temperature";
@@ -88,6 +92,7 @@ public class HueBindingConstants {
     public static final String PRODUCT_NAME = "productName";
     public static final String UNIQUE_ID = "uniqueId";
     public static final String FADETIME = "fadetime";
+    public static final String GROUP_ID = "groupId";
 
     public static final String NORMALIZE_ID_REGEX = "[^a-zA-Z0-9_]";
 }

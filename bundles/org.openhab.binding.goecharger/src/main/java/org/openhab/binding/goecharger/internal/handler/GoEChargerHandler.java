@@ -412,7 +412,6 @@ public class GoEChargerHandler extends BaseThingHandler {
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             updateChannelsAndStatus(null, e.getMessage());
         }
-
     }
 
     private void startAutomaticRefresh() {

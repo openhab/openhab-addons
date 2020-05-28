@@ -50,5 +50,4 @@ public class DevicesListHandler {
         logger.debug("Device list response: {}", response);
         return response;
     }
-
 }

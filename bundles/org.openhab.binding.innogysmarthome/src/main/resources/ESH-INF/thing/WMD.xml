@@ -6,18 +6,18 @@
 
 	<thing-type id="WMD">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Wall Mounted Motion Detector Indoor (WMD)</label>
 		<description>A battery powered motion detector, that also measures luminance.</description>
 
 		<channels>
-			<channel id="motion_count" typeId="MotionDetectionSensor" />
-			<channel id="luminance" typeId="LuminanceSensor" />
-			<channel id="battery_low" typeId="system.low-battery" />
+			<channel id="motion_count" typeId="MotionDetectionSensor"/>
+			<channel id="luminance" typeId="LuminanceSensor"/>
+			<channel id="battery_low" typeId="system.low-battery"/>
 		</channels>
 
-		<config-description-ref uri="thing-type:innogysmarthome:config" />
+		<config-description-ref uri="thing-type:innogysmarthome:config"/>
 	</thing-type>
 </thing:thing-descriptions>

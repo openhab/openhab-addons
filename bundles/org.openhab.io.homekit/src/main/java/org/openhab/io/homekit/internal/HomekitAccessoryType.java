@@ -14,12 +14,7 @@ package org.openhab.io.homekit.internal;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-
-import org.eclipse.smarthome.core.items.Item;
-import org.eclipse.smarthome.core.library.items.ColorItem;
-import org.eclipse.smarthome.core.library.items.DimmerItem;
+import java.util.Optional;
 
 /**
  * Enum of the possible device types. The defined tag string can be used
@@ -28,13 +23,11 @@ import org.eclipse.smarthome.core.library.items.DimmerItem;
  * @author Andy Lintner - Initial contribution
  */
 public enum HomekitAccessoryType {
-    DIMMABLE_LIGHTBULB("DimmableLighting"),
-    HUMIDITY_SENSOR("CurrentHumidity"),
+    HUMIDITY_SENSOR("HumiditySensor"),
     LIGHTBULB("Lighting"),
     SWITCH("Switchable"),
-    TEMPERATURE_SENSOR("CurrentTemperature"),
+    TEMPERATURE_SENSOR("TemperatureSensor"),
     THERMOSTAT("Thermostat"),
-    COLORFUL_LIGHTBULB("ColorfulLighting"),
     CONTACT_SENSOR("ContactSensor"),
     VALVE("Valve"),
     LEAK_SENSOR("LeakSensor"),
@@ -43,9 +36,22 @@ public enum HomekitAccessoryType {
     WINDOW_COVERING("WindowCovering"),
     SMOKE_SENSOR("SmokeSensor"),
     CARBON_MONOXIDE_SENSOR("CarbonMonoxideSensor"),
+    CARBON_DIOXIDE_SENSOR("CarbonDioxideSensor"),
+    FAN("Fan"),
+    LOCK("Lock"),
+    SECURITY_SYSTEM("SecuritySystem"),
+    OUTLET("Outlet"),
+    SPEAKER("Speaker"),
+    GARAGE_DOOR_OPENER("GarageDoorOpener"),
+    DUMMY("Dummy"),
     @Deprecated()
     BLINDS("Blinds"),
-    LOCK("Lock");
+    @Deprecated()
+    OLD_DIMMABLE_LIGHTBULB("DimmableLighting"),
+    @Deprecated()
+    OLD_HUMIDITY_SENSOR("CurrentHumidity"),
+    @Deprecated()
+    OLD_COLORFUL_LIGHTBULB("ColorfulLighting");
 
     private static final Map<String, HomekitAccessoryType> TAG_MAP = new HashMap<>();
 
@@ -69,28 +75,9 @@ public enum HomekitAccessoryType {
      * get accessoryType from String
      *
      * @param tag the tag string
-     * @return accessoryType or null if not found
+     * @return accessoryType or Optional.empty if no accessory type for the tag was found
      */
-    public static HomekitAccessoryType valueOfTag(String tag) {
-        return TAG_MAP.get(tag);
-    }
-
-    /**
-     * get accessoryType for a given Item
-     *
-     * @param item the item
-     * @return accessoryType or null if not found
-     */
-    public static HomekitAccessoryType fromItem(Item item) {
-        Set<String> tags = item.getTags();
-        HomekitAccessoryType accessoryType = tags.stream().map(tag -> TAG_MAP.get(tag)).filter(Objects::nonNull)
-                .findFirst().orElse(null);
-        if (item instanceof ColorItem && accessoryType == LIGHTBULB) {
-            return COLORFUL_LIGHTBULB;
-        } else if (item instanceof DimmerItem && accessoryType == LIGHTBULB) {
-            return DIMMABLE_LIGHTBULB;
-        } else {
-            return accessoryType;
-        }
+    public static Optional<HomekitAccessoryType> valueOfTag(String tag) {
+        return Optional.ofNullable(TAG_MAP.get(tag));
     }
 }

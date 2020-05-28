@@ -82,12 +82,13 @@ public class SqueezeBoxServerDiscoveryParticipant implements UpnpDiscoveryPartic
 
             String label = device.getDetails().getFriendlyName();
 
-            properties.put("ipAddress", host);
+            String representationPropertyName = "ipAddress";
+            properties.put(representationPropertyName, host);
             properties.put("webport", new Integer(webPort));
             properties.put("cliPort", new Integer(cliPort));
 
-            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label)
-                    .build();
+            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
+                    .withRepresentationProperty(representationPropertyName).withLabel(label).build();
 
             logger.debug("Created a DiscoveryResult for device '{}' with UDN '{}'",
                     device.getDetails().getFriendlyName(), device.getIdentity().getUdn().getIdentifierString());
@@ -109,5 +110,4 @@ public class SqueezeBoxServerDiscoveryParticipant implements UpnpDiscoveryPartic
         }
         return null;
     }
-
 }

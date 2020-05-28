@@ -6,23 +6,23 @@
 
 	<thing-type id="airthings_wave_plus">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bluegiga" />
-			<bridge-type-ref id="bluez" />
+			<bridge-type-ref id="bluegiga"/>
+			<bridge-type-ref id="bluez"/>
 		</supported-bridge-type-refs>
 
 		<label>Airthings Wave+</label>
 		<description>Indoor air quality monitor with radon detection</description>
 
 		<channels>
-			<channel id="rssi" typeId="rssi" />
+			<channel id="rssi" typeId="rssi"/>
 
-			<channel id="humidity" typeId="airthings_humidity" />
-			<channel id="temperature" typeId="airthings_temperature" />
-			<channel id="pressure" typeId="airthings_pressure" />
-			<channel id="co2" typeId="airthings_co2" />
-			<channel id="tvoc" typeId="airthings_tvoc" />
-			<channel id="radon_st_avg" typeId="airthings_radon_st_avg" />
-			<channel id="radon_lt_avg" typeId="airthings_radon_lt_avg" />
+			<channel id="humidity" typeId="airthings_humidity"/>
+			<channel id="temperature" typeId="airthings_temperature"/>
+			<channel id="pressure" typeId="airthings_pressure"/>
+			<channel id="co2" typeId="airthings_co2"/>
+			<channel id="tvoc" typeId="airthings_tvoc"/>
+			<channel id="radon_st_avg" typeId="airthings_radon_st_avg"/>
+			<channel id="radon_lt_avg" typeId="airthings_radon_lt_avg"/>
 		</channels>
 
 		<config-description>
@@ -42,42 +42,42 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Humidity level</description>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="airthings_temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Temperature</description>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="airthings_pressure">
 		<item-type>Number:Pressure</item-type>
 		<label>Pressure</label>
 		<description>Pressure</description>
-		<state readOnly="true" pattern="%.0f %unit%" />
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="airthings_co2">
 		<item-type>Number:Dimensionless</item-type>
 		<label>CO₂ Level</label>
 		<description>Carbon dioxide level</description>
-		<state readOnly="true" pattern="%.0f %unit%" />
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="airthings_tvoc">
 		<item-type>Number:Dimensionless</item-type>
 		<label>TVOC Level</label>
 		<description>Total volatile organic compounds</description>
-		<state readOnly="true" pattern="%.0f %unit%" />
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="airthings_radon_st_avg">
 		<item-type>Number:Density</item-type>
 		<label>Radon Short Term Average Level</label>
 		<description>Radon gas level</description>
-		<state readOnly="true" pattern="%.0f %unit%" />
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="airthings_radon_lt_avg">
 		<item-type>Number:Density</item-type>
 		<label>Radon Long Term Average Level</label>
 		<description>Radon gas level</description>
-		<state readOnly="true" pattern="%.0f %unit%" />
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>

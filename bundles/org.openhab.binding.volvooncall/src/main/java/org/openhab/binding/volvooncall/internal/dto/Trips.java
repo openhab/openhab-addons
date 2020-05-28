@@ -24,6 +24,6 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class Trips {
-    public @Nullable List<Trip> trips = null;
+public class Trips extends VocAnswer {
+    public @Nullable List<Trip> trips;
 }

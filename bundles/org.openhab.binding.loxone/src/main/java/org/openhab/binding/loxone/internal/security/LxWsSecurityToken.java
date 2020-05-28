@@ -407,7 +407,6 @@ class LxWsSecurityToken extends LxWsSecurity {
         persistToken();
         logger.debug("[{}] Token acquired.", debugId);
         return true;
-
     }
 
     private boolean useToken() {

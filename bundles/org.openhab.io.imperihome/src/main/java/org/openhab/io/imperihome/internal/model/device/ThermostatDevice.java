@@ -118,9 +118,9 @@ public class ThermostatDevice extends AbstractDevice {
             device = getDeviceRegistry().getDevice(deviceId);
         }
         if (logWhenMissing && device == null) {
-            logger.error("Couldn't resolve linked {} device '{}', make sure the Item has iss tags", linkName, deviceName);
+            logger.error("Couldn't resolve linked {} device '{}', make sure the Item has iss tags", linkName,
+                    deviceName);
         }
         return device;
     }
-
 }

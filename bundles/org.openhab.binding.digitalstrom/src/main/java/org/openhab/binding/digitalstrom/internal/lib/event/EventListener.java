@@ -358,7 +358,6 @@ public class EventListener {
                 }
                 subscriptionScheduler.cancel(true);
             }
-
         }, 0, SUBSCRIBE_DELAY, TimeUnit.MILLISECONDS);
     }
 

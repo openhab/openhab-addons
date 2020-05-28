@@ -136,7 +136,6 @@ public class DSCAlarmDiscoveryService extends AbstractDiscoveryService {
         } else {
             logger.debug("addThing(): Unable to Add DSC Alarm Thing to Inbox!");
         }
-
     }
 
     @Override

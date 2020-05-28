@@ -131,7 +131,5 @@ class DataInputStreamWithTimeout extends DataInputStream {
         } catch (TimeoutException e) {
             throw new IOException("read timeout", e);
         }
-
     }
-
 }
