@@ -32,7 +32,7 @@
 
 			<parameter name="username" type="text" required="true">
 				<label>Username</label>
-				<description>The username of My Seneye</description>
+				<description>The email address used to login to My Seneye</description>
 			</parameter>
 
 			<parameter name="password" type="text" required="true">
