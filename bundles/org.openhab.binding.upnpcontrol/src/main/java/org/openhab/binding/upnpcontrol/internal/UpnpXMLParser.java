@@ -135,7 +135,6 @@ public class UpnpXMLParser {
         public Map<String, String> getChanges() {
             return changes;
         }
-
     }
 
     private static class EntryHandler extends DefaultHandler {

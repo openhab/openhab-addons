@@ -198,7 +198,6 @@ public class UpnpServerHandler extends UpnpHandler {
                 }
                 break;
         }
-
     }
 
     /**

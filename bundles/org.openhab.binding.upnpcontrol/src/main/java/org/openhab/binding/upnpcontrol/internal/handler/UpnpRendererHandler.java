@@ -501,7 +501,6 @@ public class UpnpRendererHandler extends UpnpHandler {
                 super.onValueReceived(variable, value, service);
                 break;
         }
-
     }
 
     private void updateProtocolInfo(String value) {

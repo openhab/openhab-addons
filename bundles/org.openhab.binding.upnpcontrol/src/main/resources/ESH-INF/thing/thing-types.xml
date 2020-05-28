@@ -9,32 +9,32 @@
 		<label>UPnPRenderer</label>
 		<description>UPnP AV Renderer</description>
 		<channels>
-			<channel id="volume" typeId="volume" />
-			<channel id="mute" typeId="mute" />
-			<channel id="control" typeId="control" />
+			<channel id="volume" typeId="volume"/>
+			<channel id="mute" typeId="mute"/>
+			<channel id="control" typeId="control"/>
 			<channel id="stop" typeId="stop"/>
-			<channel id="title" typeId="title" />
-			<channel id="album" typeId="album" />
-			<channel id="albumart" typeId="albumart" />
-			<channel id="creator" typeId="creator" />
-			<channel id="artist" typeId="artist" />
-			<channel id="publisher" typeId="publisher" />
-			<channel id="genre" typeId="genre" />
-			<channel id="tracknumber" typeId="tracknumber" />
-			<channel id="trackduration" typeId="trackduration" />
-			<channel id="trackposition" typeId="trackposition" />
+			<channel id="title" typeId="title"/>
+			<channel id="album" typeId="album"/>
+			<channel id="albumart" typeId="albumart"/>
+			<channel id="creator" typeId="creator"/>
+			<channel id="artist" typeId="artist"/>
+			<channel id="publisher" typeId="publisher"/>
+			<channel id="genre" typeId="genre"/>
+			<channel id="tracknumber" typeId="tracknumber"/>
+			<channel id="trackduration" typeId="trackduration"/>
+			<channel id="trackposition" typeId="trackposition"/>
 		</channels>
 	</thing-type>
 	<thing-type id="upnpserver">
 		<label>UPnPServer</label>
 		<description>UPnP AV Server</description>
 		<channels>
-			<channel id="upnprenderer" typeId="upnprenderer" />
-			<channel id="currenttitle" typeId="currenttitle" />
-			<channel id="select" typeId="select" />
-			<channel id="searchcriteria" typeId="searchcriteria" />
-			<channel id="search" typeId="search" />
-			<channel id="serve" typeId="serve" />
+			<channel id="upnprenderer" typeId="upnprenderer"/>
+			<channel id="currenttitle" typeId="currenttitle"/>
+			<channel id="select" typeId="select"/>
+			<channel id="searchcriteria" typeId="searchcriteria"/>
+			<channel id="search" typeId="search"/>
+			<channel id="serve" typeId="serve"/>
 		</channels>
 		<config-description>
 			<parameter name="filter" type="boolean" required="false">
@@ -46,8 +46,10 @@
 			<parameter name="sortcriteria" type="text" required="false">
 				<label>Sort criteria</label>
 				<description>Sort criteria for the titles in the selection list and when sending for playing to a renderer.
-					The criteria are defined in UPnP sort criteria format. Examples: +dc:title, -dc:creator, +upnp:album.
-					Supported sort criteria will depend on the media server.</description>
+					The
+					criteria are defined in UPnP sort criteria format. Examples: +dc:title, -dc:creator, +upnp:album.
+					Supported sort
+					criteria will depend on the media server.</description>
 				<default>+dc:title</default>
 			</parameter>
 		</config-description>
@@ -81,61 +83,61 @@
 		<item-type>String</item-type>
 		<label>Title</label>
 		<description>Now playing title</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="album">
 		<item-type>String</item-type>
 		<label>Album</label>
 		<description>Now playing album</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="albumart">
 		<item-type>Image</item-type>
 		<label>Album Art</label>
 		<description>Now playing album art</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="creator">
 		<item-type>String</item-type>
 		<label>Creator</label>
 		<description>Now playing creator</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="artist">
 		<item-type>String</item-type>
 		<label>Artist</label>
 		<description>Now playing artist</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="publisher">
 		<item-type>String</item-type>
 		<label>Publisher</label>
 		<description>Now playing publisher</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="genre">
 		<item-type>String</item-type>
 		<label>Genre</label>
 		<description>Now playing genre</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="tracknumber">
 		<item-type>Number</item-type>
 		<label>Track Number</label>
 		<description>Now playing track number</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="trackduration">
 		<item-type>String</item-type>
 		<label>Track Duration</label>
 		<description>Now playing track duration</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="trackposition">
 		<item-type>String</item-type>
 		<label>Track Position</label>
 		<description>Now playing track position</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="upnprenderer">
@@ -166,12 +168,12 @@
 		<item-type>Switch</item-type>
 		<label>Search</label>
 		<description>Execute search with search criteria</description>
-        <autoUpdatePolicy>veto</autoUpdatePolicy>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="serve">
 		<item-type>Switch</item-type>
 		<label>Serve</label>
 		<description>Send selection to renderer</description>
-        <autoUpdatePolicy>veto</autoUpdatePolicy>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 </thing:thing-descriptions>
