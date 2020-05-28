@@ -67,9 +67,9 @@ public interface ComfoAirDataType {
         int[] get_reply_data_pos = commandType.getGetReplyDataPos();
         StringBuilder value = new StringBuilder();
         if (get_reply_data_pos != null) {
-            for (int i = 0; i <= get_reply_data_pos.length - 1; i++) {
-                if (get_reply_data_pos[i] < data.length) {
-                    value.append((char) data[get_reply_data_pos[i]]);
+            for (int pos : get_reply_data_pos) {
+                if (pos < data.length) {
+                    value.append((char) data[pos]);
                 }
             }
         }

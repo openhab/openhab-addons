@@ -59,8 +59,9 @@ public class ComfoAirHandler extends BaseThingHandler {
     private static final int DEFAULT_REFRESH_INTERVAL = 60;
 
     private final Logger logger = LoggerFactory.getLogger(ComfoAirHandler.class);
+    private final SerialPortManager serialPortManager;
     private @Nullable ScheduledFuture<?> poller;
-    private SerialPortManager serialPortManager;
+    private @Nullable ScheduledFuture<?> affectedItemsPoller;
     private @Nullable ComfoAirSerialConnector comfoAirConnector;
 
     public static final int BAUDRATE = 9600;
@@ -80,33 +81,26 @@ public class ComfoAirHandler extends BaseThingHandler {
                 updateChannelState(channel);
             }
         } else {
-            try {
-                Set<ChannelUID> channelsLinked = getThing().getChannels().stream().map(Channel::getUID)
-                        .filter(this::isLinked).collect(Collectors.toSet());
-                Set<String> keysToUpdate = channelsLinked.stream().map(ChannelUID::getId).collect(Collectors.toSet());
+            State state = commandToState(command, channelId);
 
-                State state = commandToState(command, channelId);
+            if (state instanceof UnDefType) {
+                logger.warn("Unhandled command type: {}", command.toString());
+            } else {
+                ComfoAirCommand changeCommand = ComfoAirCommandType.getChangeCommand(channelId, state);
 
-                if (state instanceof UnDefType) {
-                    logger.warn("Unhandled command type: {}", command.toString());
-                } else {
-                    ComfoAirCommand changeCommand = ComfoAirCommandType.getChangeCommand(channelId, state);
+                if (changeCommand != null) {
+                    Set<String> keysToUpdate = getThing().getChannels().stream().map(Channel::getUID)
+                            .filter(this::isLinked).map(ChannelUID::getId).collect(Collectors.toSet());
+                    sendCommand(changeCommand, channelId);
 
-                    if (changeCommand != null) {
-                        sendCommand(changeCommand, channelId);
+                    Collection<ComfoAirCommand> affectedReadCommands = ComfoAirCommandType
+                            .getAffectedReadCommands(channelId, keysToUpdate);
 
-                        Collection<ComfoAirCommand> affectedReadCommands = ComfoAirCommandType
-                                .getAffectedReadCommands(channelId, keysToUpdate);
-
-                        if (affectedReadCommands.size() > 0) {
-                            Runnable updateThread = new AffectedItemsUpdateThread(affectedReadCommands);
-                            scheduler.schedule(updateThread, 3, TimeUnit.SECONDS);
-                        }
+                    if (affectedReadCommands.size() > 0) {
+                        Runnable updateThread = new AffectedItemsUpdateThread(affectedReadCommands);
+                        affectedItemsPoller = scheduler.schedule(updateThread, 3, TimeUnit.SECONDS);
                     }
                 }
-            } catch (final RuntimeException e) {
-                logger.warn("Updating ComfoAir failed: {}", e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
     }
@@ -157,6 +151,13 @@ public class ComfoAirHandler extends BaseThingHandler {
         if (localPoller != null && !localPoller.isCancelled()) {
             localPoller.cancel(true);
             poller = null;
+        }
+
+        final ScheduledFuture<?> localAffectedItemsPoller = affectedItemsPoller;
+
+        if (localAffectedItemsPoller != null && !localAffectedItemsPoller.isCancelled()) {
+            localAffectedItemsPoller.cancel(true);
+            affectedItemsPoller = null;
         }
     }
 

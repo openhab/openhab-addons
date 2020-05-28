@@ -768,7 +768,7 @@ public enum ComfoAirCommandType {
      */
     public static Collection<ComfoAirCommand> getAffectedReadCommands(String key, Set<String> usedKeys) {
 
-        Map<Integer, ComfoAirCommand> commands = new HashMap<Integer, ComfoAirCommand>();
+        Map<Integer, ComfoAirCommand> commands = new HashMap<>();
 
         ComfoAirCommandType commandType = ComfoAirCommandType.getCommandTypeByKey(key);
         if (commandType != null) {
@@ -809,7 +809,7 @@ public enum ComfoAirCommandType {
      */
     public static Collection<ComfoAirCommand> getReadCommandsByEventTypes(List<String> keys) {
 
-        Map<Integer, ComfoAirCommand> commands = new HashMap<Integer, ComfoAirCommand>();
+        Map<Integer, ComfoAirCommand> commands = new HashMap<>();
         for (ComfoAirCommandType entry : values()) {
             if (!keys.contains(entry.key)) {
                 continue;
@@ -830,7 +830,7 @@ public enum ComfoAirCommandType {
      * @return ComfoAirCommandType identified by replyCmd
      */
     public static List<ComfoAirCommandType> getCommandTypesByReplyCmd(int replyCmd) {
-        List<ComfoAirCommandType> commands = new ArrayList<ComfoAirCommandType>();
+        List<ComfoAirCommandType> commands = new ArrayList<>();
         for (ComfoAirCommandType entry : values()) {
             if (entry.read_reply_command != replyCmd) {
                 continue;
