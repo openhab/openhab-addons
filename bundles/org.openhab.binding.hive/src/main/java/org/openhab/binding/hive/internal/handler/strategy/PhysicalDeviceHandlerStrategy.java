@@ -41,11 +41,11 @@ public final class PhysicalDeviceHandlerStrategy extends ThingHandlerStrategyBas
                 thing.setProperty(Thing.PROPERTY_MODEL_ID, modelAttribute.getDisplayValue());
             });
 
-            useAttribute(hiveNode, PhysicalDeviceFeature.class, "softwareVersion", physicalDeviceFeature.getModel(), softwareVersionAttribute -> {
+            useAttribute(hiveNode, PhysicalDeviceFeature.class, "softwareVersion", physicalDeviceFeature.getSoftwareVersion(), softwareVersionAttribute -> {
                 thing.setProperty(Thing.PROPERTY_FIRMWARE_VERSION, softwareVersionAttribute.getDisplayValue());
             });
 
-            useAttribute(hiveNode, PhysicalDeviceFeature.class, "hardwareIdentifier", physicalDeviceFeature.getModel(), hardwareIdentifierAttribute -> {
+            useAttribute(hiveNode, PhysicalDeviceFeature.class, "hardwareIdentifier", physicalDeviceFeature.getHardwareIdentifier(), hardwareIdentifierAttribute -> {
                 thing.setProperty(Thing.PROPERTY_SERIAL_NUMBER, hardwareIdentifierAttribute.getDisplayValue());
             });
         });
