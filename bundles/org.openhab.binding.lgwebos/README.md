@@ -97,7 +97,7 @@ A sample HABPanel remote control widget can be found [in this github repository.
 
 ## Console Commands
 
-The binding provides few specific commands you can use in the console.
+The binding provides a few commands you can use in the console.
 Enter the command `lgwebos` to get the usage.
 
 ```
