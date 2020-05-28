@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.radiothermostat.internal.discovery;
 
-import static org.eclipse.jetty.http.HttpMethod.GET;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
@@ -26,26 +24,22 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
-import java.util.Map;
 import java.util.Scanner;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.radiothermostat.internal.RadioThermostatBindingConstants;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,6 +59,7 @@ import com.google.gson.JsonSyntaxException;
  */
 
 @NonNullByDefault
+@Component(service = DiscoveryService.class, configurationPid = "discovery.radiothermostat")
 public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(RadioThermostatDiscoveryService.class);
     private static final String RADIOTHERMOSTAT_DISCOVERY_MESSAGE = "TYPE: WM-DISCOVER\r\nVERSION: 1.0\r\n\r\nservices:com.marvell.wm.system*\r\n\r\n";
@@ -74,25 +69,8 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
 
     private @Nullable ScheduledFuture<?> scheduledFuture = null;
 
-    private final HttpClient httpClient;
-
-    @Activate
-    public RadioThermostatDiscoveryService(@Reference HttpClient httpClient) {
+    public RadioThermostatDiscoveryService() {
         super(RadioThermostatBindingConstants.SUPPORTED_THING_TYPES_UIDS, 30, true);
-        this.httpClient = httpClient;
-        activate(null);
-    }
-
-    @Override
-    protected void activate(@Nullable Map<String, @Nullable Object> configProperties) {
-        super.activate(configProperties);
-    }
-
-    @Override
-    @Deactivate
-    public void deactivate() {
-        stopBackgroundDiscovery();
-        super.deactivate();
     }
 
     @Override
@@ -118,18 +96,16 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
 
     protected synchronized void doRunRun() {
         logger.debug("Sending SSDP discover.");
-        for (int i = 0; i < 1; i++) {
-            try {
-                Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
-                while (nets.hasMoreElements()) {
-                    NetworkInterface ni = nets.nextElement();
-                    if (ni.isUp() && ni.supportsMulticast() && !ni.isLoopback()) {
-                        sendDiscoveryBroacast(ni);
-                    }
+        try {
+            Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
+            while (nets.hasMoreElements()) {
+                NetworkInterface ni = nets.nextElement();
+                if (ni.isUp() && ni.supportsMulticast() && !ni.isLoopback()) {
+                    sendDiscoveryBroacast(ni);
                 }
-            } catch (IOException e) {
-                logger.debug("Error discoverying devices", e);
             }
+        } catch (IOException e) {
+            logger.debug("Error discovering devices", e);
         }
     }
 
@@ -191,7 +167,7 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
                 try {
                     while (!Thread.interrupted()) {
                         socket.receive(packet);
-                        String response = new String(packet.getData());
+                        String response = new String(packet.getData(), StandardCharsets.UTF_8);
                         logger.debug("Response: {} ", response);
                         if (response.contains(SSDP_MATCH)) {
                             logger.debug("Match: {} ", response);
@@ -266,23 +242,19 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
 
         try {
             // Run the HTTP request and get the JSON response from the thermostat
-            ContentResponse contentResponse = httpClient.newRequest(url).method(GET).timeout(20, TimeUnit.SECONDS)
-                    .send();
-            sysinfo = contentResponse.getContentAsString();
+            sysinfo = HttpUtil.executeUrl("GET", url, 20000);
             content = new JsonParser().parse(sysinfo).getAsJsonObject();
             uuid = content.get("uuid").getAsString();
-        } catch (InterruptedException | TimeoutException | ExecutionException | JsonSyntaxException e) {
+        } catch (IOException | JsonSyntaxException e) {
             logger.debug("Cannot get system info from thermostat {} {}", ip, e.getMessage());
             sysinfo = null;
         }
 
         try {
-            ContentResponse contentResponse = httpClient.newRequest(url + "name").method(GET)
-                    .timeout(20, TimeUnit.SECONDS).send();
-            String nameinfo = contentResponse.getContentAsString();
+            String nameinfo = HttpUtil.executeUrl("GET", url + "name", 20000);
             content = new JsonParser().parse(nameinfo).getAsJsonObject();
             name = content.get("name").getAsString();
-        } catch (InterruptedException | TimeoutException | ExecutionException | JsonSyntaxException e) {
+        } catch (IOException | JsonSyntaxException e) {
             logger.debug("Cannot get name from thermostat {} {}", ip, e.getMessage());
         }
 
