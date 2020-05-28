@@ -12,8 +12,6 @@
 		</description>
 
 		<channels>
-			<channel id="name" typeId="name" />
-			<channel id="model" typeId="model" />
 			<channel id="temperature" typeId="temp-temperature" />
 			<channel id="humidity" typeId="humidity" />
 			<channel id="mode" typeId="mode" />
@@ -65,22 +63,8 @@
 		</config-description>
 	</thing-type>
 
-	<channel-type id="name" advanced="true">
-		<item-type>String</item-type>
-		<label>Thermostat Name</label>
-		<description>The Name of the Thermostat</description>
-		<state readOnly="true" />
-	</channel-type>
-
-	<channel-type id="model" advanced="true">
-		<item-type>String</item-type>
-		<label>Thermostat Model</label>
-		<description>The Model Number and Firmware Version of the Thermostat</description>
-		<state readOnly="true" />
-	</channel-type>
-
 	<channel-type id="temp-temperature">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>The Current Temperature Reading of the Thermostat</description>
 		<category>Temperature</category>
@@ -88,7 +72,7 @@
 	</channel-type>
 
 	<channel-type id="humidity">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>The Current Humidity Reading of the Thermostat</description>
 		<category>Humidity</category>

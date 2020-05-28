@@ -319,7 +319,7 @@ public class RadioThermostatHandler extends BaseThingHandler {
                         break;
                     }
                     updateChannel(channelUID.getId(), rthermData);
-                    sendCommand(cmdKey, cmdStr);
+                    sendCommand(cmdKey, cmdInt.toString());
                     break;
                 default:
                     logger.warn("Unsupported command: {}", command.toString());
@@ -506,10 +506,6 @@ public class RadioThermostatHandler extends BaseThingHandler {
      */
     public static @Nullable Object getValue(String channelId, RadioThermostatData data) throws Exception {
         switch (channelId) {
-            case NAME:
-                return data.getName();
-            case MODEL:
-                return data.getModel();
             case TEMPERATURE:
                 if (!data.getThermostatData().getTemperature().equals(new Double(0))) {
                     return new QuantityType<Temperature>(data.getThermostatData().getTemperature(),

@@ -43,11 +43,15 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.radiothermostat.internal.RadioThermostatBindingConstants;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link RadioThermostatDiscoveryService} is responsible for discovery of
@@ -56,6 +60,7 @@ import com.google.gson.JsonParser;
  * @author William Welliver - Initial contribution
  * @author Dan Cunningham - Refactoring and Improvements
  * @author Bill Forsyth - Modified for the RadioThermostat's peculiar discovery mode
+ * @author Michael Lobstein - Cleanup for RadioThermostat
  * 
  */
 
@@ -67,12 +72,12 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
     private static final String SSDP_MATCH = "WM-NOTIFY";
     private static final int BACKGROUND_SCAN_INTERVAL_SECONDS = 300;
 
-    @Nullable
-    private ScheduledFuture<?> scheduledFuture = null;
+    private @Nullable ScheduledFuture<?> scheduledFuture = null;
 
     private final HttpClient httpClient;
 
-    public RadioThermostatDiscoveryService(HttpClient httpClient) {
+    @Activate
+    public RadioThermostatDiscoveryService(@Reference HttpClient httpClient) {
         super(RadioThermostatBindingConstants.SUPPORTED_THING_TYPES_UIDS, 30, true);
         this.httpClient = httpClient;
         activate(null);
@@ -84,6 +89,7 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
     }
 
     @Override
+    @Deactivate
     public void deactivate() {
         stopBackgroundDiscovery();
         super.deactivate();
@@ -237,17 +243,13 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
             String key = pair[0].toLowerCase();
             String value = pair[1].trim();
             logger.debug("key: {} value: {}.", key, value);
-            switch (key) {
-                case "location":
-                    try {
-                        url = value;
-                        ip = new URL(value).getHost();
-                    } catch (MalformedURLException e) {
-                        logger.debug("Malfored URL {}", e.getMessage());
-                    }
-                    break;
-                default:
-                    break;
+            if ("location".equals(key)) {
+                try {
+                    url = value;
+                    ip = new URL(value).getHost();
+                } catch (MalformedURLException e) {
+                    logger.debug("Malfored URL {}", e.getMessage());
+                }
             }
         }
         scanner.close();
@@ -269,7 +271,7 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
             sysinfo = contentResponse.getContentAsString();
             content = new JsonParser().parse(sysinfo).getAsJsonObject();
             uuid = content.get("uuid").getAsString();
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (InterruptedException | TimeoutException | ExecutionException | JsonSyntaxException e) {
             logger.debug("Cannot get system info from thermostat {} {}", ip, e.getMessage());
             sysinfo = null;
         }
@@ -280,7 +282,7 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
             String nameinfo = contentResponse.getContentAsString();
             content = new JsonParser().parse(nameinfo).getAsJsonObject();
             name = content.get("name").getAsString();
-        } catch (Exception e) {
+        } catch (InterruptedException | TimeoutException | ExecutionException | JsonSyntaxException e) {
             logger.debug("Cannot get name from thermostat {} {}", ip, e.getMessage());
         }
 
@@ -291,8 +293,8 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
         logger.debug("Got discovered device.");
 
         String label = String.format("RadioThermostat (%s)", name);
-        result = DiscoveryResultBuilder.create(thingUid).withLabel(label).withRepresentationProperty(uuid)
-                // .withProperty(RadioThermostatBindingConstants.PROPERTY_UUID, uuid)
+        result = DiscoveryResultBuilder.create(thingUid).withLabel(label)
+                .withRepresentationProperty(RadioThermostatBindingConstants.PROPERTY_IP)
                 .withProperty(RadioThermostatBindingConstants.PROPERTY_IP, ip).build();
         logger.debug("New RadioThermostat discovered with ID=<{}>", uuid);
         this.thingDiscovered(result);

@@ -44,8 +44,6 @@ public class RadioThermostatBindingConstants {
     public static final ThingTypeUID THING_TYPE_RTHERM = new ThingTypeUID(BINDING_ID, "rtherm");
 
     // List of all Channel id's
-    public static final String NAME = "name";
-    public static final String MODEL = "model";
     public static final String TEMPERATURE = "temperature";
     public static final String HUMIDITY = "humidity";
     public static final String MODE = "mode";
@@ -69,7 +67,7 @@ public class RadioThermostatBindingConstants {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_RTHERM);
     public static final Set<String> SUPPORTED_CHANNEL_IDS = Stream
-            .of(NAME, MODEL, TEMPERATURE, HUMIDITY, MODE, FAN_MODE, PROGRAM_MODE, SET_POINT, OVERRIDE, HOLD, STATUS,
+            .of(TEMPERATURE, HUMIDITY, MODE, FAN_MODE, PROGRAM_MODE, SET_POINT, OVERRIDE, HOLD, STATUS,
                     FAN_STATUS, DAY, HOUR, MINUTE, DATE_STAMP, LAST_UPDATE, TODAY_HEAT_RUNTIME, TODAY_COOL_RUNTIME,
                     YESTERDAY_HEAT_RUNTIME, YESTERDAY_COOL_RUNTIME, JSON_CMD)
             .collect(Collectors.toSet());

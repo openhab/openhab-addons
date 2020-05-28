@@ -45,8 +45,6 @@ The thermostat information that is retrieved is available as these channels:
 
 | Channel ID             | Item Type            | Description                                                               |
 |------------------------|----------------------|---------------------------------------------------------------------------|
-| name                   | String               | The name of the thermostat                                                |
-| model                  | String               | The model number and firmware version of the thermostat                   |
 | temperature            | Number:Temperature   | The current temperature reading of the thermostat                         |
 | humidity               | Number               | The current humidity reading of the thermostat (CT80 only)                |
 | mode                   | Number               | The current operating mode of the HVAC system                             |
@@ -123,9 +121,6 @@ radiothermostat:rtherm:mytherm2 "My 2nd floor thermostat" [ hostName="mythermhos
 radiotherm.items:
 
 ```java
-String Therm_Name               "Thermostat Name [%s]"  { channel="radiothermostat:rtherm:mytherm1:name" }
-String Therm_Model              "Thermostat Model [%s]" { channel="radiothermostat:rtherm:mytherm1:model" }
-
 Number:Temperature  Therm_Temp  "Current Temperature [%.1f °F] " <temperature>  { channel="radiothermostat:rtherm:mytherm1:temperature" }
 // Humidity only supported on CT80
 Number Therm_Hum                "Current Humidity [%d %%]" <temperature>        { channel="radiothermostat:rtherm:mytherm1:humidity" }
@@ -134,7 +129,7 @@ Number Therm_Mode               "Thermostat Mode [MAP(radiotherm.map):%s_mode]" 
 Number Therm_Fmode              "Fan Mode [MAP(radiotherm.map):%s_fan]"         { channel="radiothermostat:rtherm:mytherm1:fan_mode" }
 // Program Mode only supported on CT80 Rev B
 Number Therm_Pmode              "Program Mode [MAP(radiotherm.map):%s_pgm]"     { channel="radiothermostat:rtherm:mytherm1:program_mode" }
-Number:Temperature  Therm_Setpt "Set Point [%d °F]" <temperature>               { channel="radiothermostat:rtherm:mytherm1:set_point" }
+Number:Temperature  Therm_Setpt "Set Point [%d]" <temperature>                  { channel="radiothermostat:rtherm:mytherm1:set_point" }
 Number Therm_Status             "Status [MAP(radiotherm.map):%s_stus]"          { channel="radiothermostat:rtherm:mytherm1:status" }
 Number Therm_FanStatus          "Fan Status [MAP(radiotherm.map):%s_fstus]"     { channel="radiothermostat:rtherm:mytherm1:fan_status" }
 Number Therm_Override           "Override [MAP(radiotherm.map):%s_over]"        { channel="radiothermostat:rtherm:mytherm1:override" }
@@ -163,9 +158,6 @@ radiotherm.sitemap:
 ```perl
 sitemap radiotherm label="My Thermostat" {
     Frame label="My 1st floor thermostat" {
-        Text item=Therm_Name
-        Text item=Therm_Model
-
         Text item=Therm_Temp icon="temperature" valuecolor=[>76="orange",>67.5="green",<=67.5="blue"]
         // Humidity only supported on CT80
         Text item=Therm_Hum icon="humidity"
