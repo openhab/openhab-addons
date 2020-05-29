@@ -39,14 +39,15 @@ Note bots may work or not at any time so eventually you need to try another one.
 
 The Telegram binding supports the following things which origin from the latest message sent to the Telegram bot:
 
-* message text
+* message text or URL
 * message date
 * full name of sender (first name + last name)
 * username of sender
 * chat id (used to identify the chat of the last message)
 * reply id (used to identify an answer from a user of a previously sent message by the binding)
 
-Please note that the things cannot be used to send messages. In order to send a message, an action must be used instead.
+Please note that the things cannot be used to send messages.
+In order to send a message, an action must be used instead.
 
 ## Thing Configuration
 
@@ -92,12 +93,17 @@ Thing telegram:telegramBot:Telegram_Bot [ chatIds="< ID >", botToken="< TOKEN >"
 | Channel Type ID                      | Item Type | Description                                                     |
 |--------------------------------------|-----------|-----------------------------------------------------------------|
 | lastMessageText                      | String    | The last received message                                       |
+| lastMessageURL                       | String    | The URL of the last received message content                    |
 | lastMessageDate                      | DateTime  | The date of the last received message (UTC)                     |
 | lastMessageName                      | String    | The full name of the sender of the last received message        |
 | lastMessageUsername                  | String    | The username of the sender of the last received message         |
 | chatId                               | String    | The id of the chat of the last received meesage                 |
 | replyId                              | String    | The id of the reply which was passed to sendTelegram() as replyId argument. This id can be used to have an unambiguous assignment of the users reply to the message which was sent by the bot             |
 
+All channels are read-only.
+Either `lastMessageText` or `lastMessageURL` are populated for a given message.
+If the message did contain text, the content is written to `lastMessageText`.
+If the message did contain an audio, photo, video or voice, the URL to retrieve that content can be found in `lastMessageURL`. 
 
 ## Rule Actions
 
@@ -108,7 +114,6 @@ val telegramAction = getActions("telegram","telegram:telegramBot:<uid>")
 ```
 
 where uid is the Thing UID of the Telegram thing (not the chat id!).
-
 
 Once this action instance is retrieved, you can invoke the `sendTelegram' method on it:
 
