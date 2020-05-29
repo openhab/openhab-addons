@@ -381,7 +381,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
             case OVERRIDE:
                 return data.getThermostatData().getOverride();
             case HOLD:
-                OnOffType.from(data.getThermostatData().getHold() == 1);
+                return OnOffType.from(data.getThermostatData().getHold() == 1);
             case STATUS:
                 return data.getThermostatData().getStatus();
             case FAN_STATUS:
