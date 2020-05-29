@@ -29,7 +29,7 @@ Standby provides the best results, because the binding could wake-up the receive
 Shutdown turns the receiver off, which requires a manual PowerOn.
 
 There is no way to detect the "display status" of the receiver. 
-The binding detects PowerOff with the MR401B/MR201 by listening to UPnP events, but can't verify the status when started.
+The binding detects Power-Off with the MR401B/MR201 by listening to UPnP events, but can't verify the status when started.
 You need to take care on the current status if you power on/off the receiver from scenes.
 Check the current status before sending the POWER button, because POWER is a toggle, not ON or OFF (see sample rules).
 
@@ -73,8 +73,8 @@ The binding uses the network settings in openHAB system configuration to determi
 
 |Parameter       |Description                                                                                                     |
 |----------------|----------------------------------------------------------------------------------------------------------------|
-|udn             |UPnP Unique Device Name - a hexa ID, which includes the 12 digit MAC address at the end (parsed by the binding) |
-|modelId         |Type of Media Receiver: DMS_TPB for MR400 amd MR200 ; MR401B for MR401B and MR201                               |
+|udn             |UPnP Unique Device Name - a hex ID, which includes the 12 digit MAC address at the end (parsed by the binding)  |
+|modelId         |Type of Media Receiver: DMS_TPB for MR400 and MR200 ; MR401B for MR401B and MR201                               |
 |ipAddress       |IP address of the receiver, usually discovered by UPnP                                                          |
 |port            |Port to reach the remote service, usually 8081 for the MR401/MR201 or 49152 for MR400/200                       |
 |accountName     |T-Online account name, should be the registered e-mail address                                                  |
@@ -113,7 +113,7 @@ The player control supports the following actions:
 |player  |PLAY           |Start playing media               |
 |        |PAUSE          |Pause player                      |
 |        |NEXT           |Move to the next chapter          |
-|        |PREVIOUS       |Move to the previous chapter      |
+|        |PREVIOUS       |Move to the previous chapter      |
 |        |FASTFORWARD    |Switch to forward mode            |
 |        |REWIND         |Switch to rewind mode             |
 |        |ON or OFF      |Toggle power - see notes on power |
@@ -128,9 +128,9 @@ The player control supports the following actions:
 | DELETE | Delete key (text edit)                         |
 | ENTER  | Enter/Select key                               |
 | RED    | Special Actions: red                           |
-| GREEN  | Special Actions:green                          |
+| GREEN  | Special Actions: green                         |
 | YELLOW | Special Actions: yellow                        |
-| BLUE   | Special Actions:blue                           |
+| BLUE   | Special Actions: blue                          |
 | EPG    | Electronic Program Guide                       |
 | OPTION | Display options                                |
 | UP     | Up arrow                                       |
@@ -236,3 +236,4 @@ to switch it ON (within a scene) and
 to switch it off.
 
 Maybe after an openHAB restart you need to make sure that OH and receiver are in sync, because the binding can't read the power status on startup.
+
