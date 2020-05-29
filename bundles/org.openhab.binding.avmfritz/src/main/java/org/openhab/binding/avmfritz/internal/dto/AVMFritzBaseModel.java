@@ -76,7 +76,10 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
     @XmlElement(name = "name")
     private String name;
 
+    @XmlElement(name = "battery")
     private BigDecimal battery;
+
+    @XmlElement(name = "batterylow")
     private BigDecimal batterylow;
 
     @XmlElement(name = "switch")
@@ -193,17 +196,9 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
         return battery;
     }
 
-    public void setBattery(BigDecimal battery) {
-        this.battery = battery;
-    }
-
     @Override
     public BigDecimal getBatterylow() {
         return batterylow;
-    }
-
-    public void setBatterylow(BigDecimal batterylow) {
-        this.batterylow = batterylow;
     }
 
     @Override

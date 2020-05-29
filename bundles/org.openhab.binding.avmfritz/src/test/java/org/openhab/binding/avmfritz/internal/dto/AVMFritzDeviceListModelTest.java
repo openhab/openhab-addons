@@ -328,8 +328,7 @@ public class AVMFritzDeviceListModelTest {
         assertEquals(new BigDecimal("100"), device.getBattery());
         assertEquals(BatteryModel.BATTERY_OFF, device.getBatterylow());
 
-        assertFalse(device.getButtons().isEmpty());
-        assertEquals(device.getButtons().size(), 2);
+        assertEquals(2, device.getButtons().size());
         assertEquals("FRITZ!DECT 400 #14: kurz", device.getButtons().get(0).getName());
         assertEquals(1549195586, device.getButtons().get(0).getLastpressedtimestamp());
         assertEquals("FRITZ!DECT 400 #14: lang", device.getButtons().get(1).getName());
@@ -448,7 +447,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isPowermeter());
         assertFalse(device.isHeatingThermostat());
 
-        assertFalse(device.getButtons().isEmpty());
+        assertEquals(1, device.getButtons().size());
         assertEquals(1529590797, device.getButtons().get(0).getLastpressedtimestamp());
 
         assertNull(device.getAlert());

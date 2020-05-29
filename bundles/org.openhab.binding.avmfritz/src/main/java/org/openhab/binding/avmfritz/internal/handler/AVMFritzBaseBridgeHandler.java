@@ -46,8 +46,8 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.avmfritz.internal.AVMFritzDynamicStateDescriptionProvider;
 import org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants;
+import org.openhab.binding.avmfritz.internal.AVMFritzDynamicStateDescriptionProvider;
 import org.openhab.binding.avmfritz.internal.config.AVMFritzBoxConfiguration;
 import org.openhab.binding.avmfritz.internal.discovery.AVMFritzDiscoveryService;
 import org.openhab.binding.avmfritz.internal.dto.AVMFritzBaseModel;
@@ -279,7 +279,8 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Builds a {@link ThingUID} from a device model. The UID is build from the {@link AVMFritzBindingConstants#BINDING_ID} and
+     * Builds a {@link ThingUID} from a device model. The UID is build from the
+     * {@link AVMFritzBindingConstants#BINDING_ID} and
      * value of {@link AVMFritzBaseModel#getProductName()} in which all characters NOT matching the RegEx [^a-zA-Z0-9_]
      * are replaced by "_".
      *
