@@ -288,7 +288,7 @@
 	<channel-type id="contactState">
 		<item-type>Contact</item-type>
 		<label>Contact State</label>
-		<description>The state of the contact, Off or On</description>
+		<description>The state of the contact</description>
 		<category>window</category>
 		<state readOnly="true"/>
 		<config-description>

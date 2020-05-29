@@ -86,7 +86,7 @@ The following Channels, and their associated channel types are shown below.
 
 | Channel           | Data Type | Description                                              |
 |-------------------|-----------|----------------------------------------------------------|
-| contactState      | Switch    | The state of the contact (Off, On)                       |
+| contactState      | Contact   | The state of the contact                                 |
 | batteryLowAlarm   | Switch    | The battery is low (Off=Ok, On=Alarm)                    |
 
 ## Channels for "NeoTemperatureSensor" Wireless Air Sensor
@@ -173,3 +173,4 @@ sitemap neohub label="Heatmiser NeoHub"
 	}
 }
 ```
+
