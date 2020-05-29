@@ -49,15 +49,20 @@ public class EncryptionHandler {
     private static final int KEY_LENGTH = 240;
     private static final int PAYLOAD_RATE_LENGTH = 16;
 
-    private static EncryptionHandler instance = new EncryptionHandler();
+    private static int[] lTable = new int[TABLE_SIZE];
+    private static int[] aTable = new int[TABLE_SIZE];
 
-    private int[] lTable = new int[TABLE_SIZE];
-    private int[] aTable = new int[TABLE_SIZE];
+    private static EncryptionHandler instance = new EncryptionHandler(new byte[] {});
+    static {
+        generateTables();
+    }
 
     private int[] expandedKey = new int[KEY_LENGTH];
 
-    private EncryptionHandler() {
-        generateTables();
+    private EncryptionHandler(byte[] newKey) {
+        if (newKey.length > 0) {
+            expandKey(newKey);
+        }
     }
 
     public static EncryptionHandler getInstance() {
@@ -135,9 +140,9 @@ public class EncryptionHandler {
         return expandedArray;
     }
 
-    public synchronized void updateKey(byte[] newKey) {
-        expandedKey = new int[KEY_LENGTH];
-        expandKey(newKey);
+    public synchronized EncryptionHandler updateKey(byte[] newKey) {
+        instance = new EncryptionHandler(newKey);
+        return instance;
     }
 
     private void expandKey(byte[] input) {
@@ -194,7 +199,7 @@ public class EncryptionHandler {
         return s;
     }
 
-    private void generateTables() {
+    private static void generateTables() {
         int a = 1;
         int d;
         for (int index = 0; index < 255; index++) {
