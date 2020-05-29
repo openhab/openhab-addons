@@ -139,7 +139,7 @@ Switch Upstairs_OccupancyModePresent "Occupancy Mode Present" { channel="neohub:
 Switch Downstairs_PlugAutoMode "Plug Auto Mode" { channel="neohub:neoplug:myhubname:mydownstairs:plugAutoMode" }
 Switch Downstairs_PlugOutputState "Plug Output State" { channel="neohub:neoplug:myhubname:mydownstairs:plugOutputState" }
 
-Switch Window_Contact_State "Window Contact State" { channel="neohub:neocontact:myhubname:mycontact:contactState" }
+Contact Window_Contact_State "Window Contact State" { channel="neohub:neocontact:myhubname:mycontact:contactState" }
 Switch Window_Contact_Battery_Low "Window Contact Battery Low" { channel="neohub:neocontact:myhubname:mycontact:batteryLowAlarm" }
 
 Number:Temperature Kitchen_Temperature "Kitchen Temperature" { channel="neohub:neotemperaturesensor:myhubname:mysensor:sensorTemperature" }
@@ -164,7 +164,7 @@ sitemap neohub label="Heatmiser NeoHub"
 	}
 
 	Frame label="Contact" {
-		Switch item=Window_Contact_State
+		Contact item=Window_Contact_State
 		Switch item=Window_Contact_Battery_Low
 	}
 
