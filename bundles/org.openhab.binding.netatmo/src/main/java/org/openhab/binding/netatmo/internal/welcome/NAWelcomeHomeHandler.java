@@ -21,6 +21,7 @@ import java.util.Optional;
 
 import io.swagger.client.model.*;
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -41,12 +42,15 @@ import org.slf4j.LoggerFactory;
  * @author Ing. Peter Weiss - Welcome camera implementation
  *
  */
+@NonNullByDefault
 public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
-    private Logger logger = LoggerFactory.getLogger(NAWelcomeHomeHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(NAWelcomeHomeHandler.class);
 
     private int iPersons = -1;
     private int iUnknowns = -1;
+    @Nullable
     private NAWelcomeEvent lastEvent;
+    @Nullable
     private Integer dataTimeStamp;
 
     public NAWelcomeHomeHandler(@NonNull Thing thing) {
@@ -54,8 +58,8 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
     }
 
     @Override
-    protected NAWelcomeHome updateReadings() {
-        NAWelcomeHome result = null;
+    protected @Nullable NAWelcomeHome updateReadings() {
+        @Nullable NAWelcomeHome result = null;
         NAWelcomeHomeData homeDataBody = getBridgeHandler().getWelcomeDataBody(getId());
         if (homeDataBody != null) {
             // data time stamp is updated to now as WelcomeDataBody does not provide any information according to this
@@ -124,13 +128,13 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
                     return UnDefType.UNDEF;
                 }
             case CHANNEL_WELCOME_EVENT_SNAPSHOT:
-                String url = findSnapshotURL();
+                @Nullable String url = findSnapshotURL();
                 if(url != null) {
                     return HttpUtil.downloadImage(url);
                 }
                 return UnDefType.UNDEF;
             case CHANNEL_WELCOME_EVENT_SNAPSHOT_URL:
-                String snapshotURL = findSnapshotURL();
+                @Nullable String snapshotURL = findSnapshotURL();
                 if(snapshotURL != null) {
                     return toStringType(snapshotURL);
                 }
@@ -154,7 +158,7 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
                 return lastEvent != null ? lastEvent.getIsArrival() != null ? OnOffType.ON : OnOffType.OFF
                         : UnDefType.UNDEF;
             case CHANNEL_WELCOME_EVENT_MESSAGE:
-                String eventMessage = findEventMessage();
+                @Nullable String eventMessage = findEventMessage();
                 return eventMessage != null
                         ? new StringType(eventMessage.replace("<b>", "").replace("</b>", ""))
                         : UnDefType.UNDEF;
@@ -170,11 +174,11 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
         return super.getNAThingProperty(channelId);
     }
 
-    private String findEventMessage() {
+    private @Nullable String findEventMessage() {
         if(lastEvent != null) {
-            String message = lastEvent.getMessage();
+            @Nullable String message = lastEvent.getMessage();
             if(message == null) {
-                NAWelcomeSubEvent firstSubEvent = findFirstSubEvent(lastEvent);
+                @Nullable NAWelcomeSubEvent firstSubEvent = findFirstSubEvent(lastEvent);
                 if(firstSubEvent != null) {
                     message = firstSubEvent.getMessage();
                 }
@@ -189,11 +193,11 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
      *
      * @return Url of the picture or null
      */
-    protected String findSnapshotURL() {
+    protected @Nullable String findSnapshotURL() {
         if(lastEvent != null) {
             NAWelcomeSnapshot snapshot = lastEvent.getSnapshot();
             if (snapshot == null) {
-                NAWelcomeSubEvent firstSubEvent = findFirstSubEvent(lastEvent);
+                @Nullable NAWelcomeSubEvent firstSubEvent = findFirstSubEvent(lastEvent);
                 if (firstSubEvent != null) {
                     snapshot = firstSubEvent.getSnapshot();
                 }
@@ -225,7 +229,7 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
         return OnOffType.OFF;
     }
 
-    private static NAWelcomeSubEvent findFirstSubEvent(NAWelcomeEvent event) {
+    private static @Nullable NAWelcomeSubEvent findFirstSubEvent(NAWelcomeEvent event) {
         List<NAWelcomeSubEvent> subEvents = event.getEventList();
         if(subEvents != null && !subEvents.isEmpty()) {
             return subEvents.get(0);
