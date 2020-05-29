@@ -117,7 +117,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     public void initialize() {
         // The framework requires you to return from this method quickly. For that the initialization itself is executed
         // asynchronously
-        logger.debug("Initialize Thing...");
+        logger.debug("Initializing Thing...");
         // updateStatus(ThingStatus.UNKNOWN);
         scheduler.execute(() -> {
             String errorMessage = "";
