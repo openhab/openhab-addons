@@ -19,6 +19,7 @@ import org.openhab.binding.hue.internal.FullGroup;
 import org.openhab.binding.hue.internal.FullLight;
 import org.openhab.binding.hue.internal.FullSensor;
 import org.openhab.binding.hue.internal.StateUpdate;
+import org.openhab.binding.hue.internal.discovery.HueLightDiscoveryService;
 
 /**
  * Access to the Hue system for light handlers.
@@ -30,6 +31,21 @@ import org.openhab.binding.hue.internal.StateUpdate;
  */
 @NonNullByDefault
 public interface HueClient {
+
+    /**
+     * Register {@link HueLightDiscoveryService} to bridge handler
+     * 
+     * @param listener the discovery service
+     * @return {@code true} if the new discovery service is accepted
+     */
+    boolean registerDiscoveryListener(HueLightDiscoveryService listener);
+
+    /**
+     * Unregister {@link HueLightDiscoveryService} from bridge handler
+     * 
+     * @return {@code true} if the discovery service was removed
+     */
+    boolean unregisterDiscoveryListener();
 
     /**
      * Register a light status listener.
@@ -109,10 +125,12 @@ public interface HueClient {
     /**
      * Updates the given light.
      *
+     * @param listener the light status listener to block it for state updates
      * @param light the light to be updated
      * @param stateUpdate the state update
+     * @param fadeTime the status listener will be blocked for this duration after command
      */
-    void updateLightState(FullLight light, StateUpdate stateUpdate);
+    void updateLightState(LightStatusListener listener, FullLight light, StateUpdate stateUpdate, long fadeTime);
 
     /**
      * Updates the given sensors config.
@@ -136,5 +154,5 @@ public interface HueClient {
      * @param group the group to be updated
      * @param stateUpdate the state update
      */
-    void updateGroupState(FullGroup group, StateUpdate stateUpdate);
+    void updateGroupState(FullGroup group, StateUpdate stateUpdate, long fadeTime);
 }

@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -97,6 +98,9 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
     private final Logger logger = LoggerFactory.getLogger(HueLightHandler.class);
 
     private @NonNullByDefault({}) String lightId;
+
+    private @Nullable FullLight lastFullLight;
+    private long endBypassTime = 0L;
 
     private @Nullable Integer lastSentColorTemp;
     private @Nullable Integer lastSentBrightness;
@@ -220,7 +224,7 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
             return;
         }
 
-        FullLight light = bridgeHandler.getLightById(lightId);
+        final FullLight light = lastFullLight == null ? bridgeHandler.getLightById(lightId) : lastFullLight;
         if (light == null) {
             logger.debug("hue light not known on bridge. Cannot handle command.");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -344,7 +348,7 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
             if (tmpColorTemp != null) {
                 lastSentColorTemp = tmpColorTemp;
             }
-            bridgeHandler.updateLightState(light, lightState);
+            bridgeHandler.updateLightState(this, light, lightState, fadeTime);
         } else {
             logger.warn("Command sent to an unknown channel id: {}:{}", getThing().getUID(), channel);
         }
@@ -435,13 +439,32 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
     }
 
     @Override
-    public void onLightStateChanged(@Nullable HueBridge bridge, FullLight fullLight) {
+    public void setPollBypass(long bypassTime) {
+        endBypassTime = System.currentTimeMillis() + bypassTime;
+    }
+
+    @Override
+    public void unsetPollBypass() {
+        endBypassTime = 0L;
+    }
+
+    @Override
+    public boolean onLightStateChanged(@Nullable HueBridge bridge, FullLight fullLight) {
         logger.trace("onLightStateChanged() was called");
 
-        if (!fullLight.getId().equals(lightId)) {
-            logger.trace("Received state change for another handler's light ({}). Will be ignored.", fullLight.getId());
-            return;
+        if (System.currentTimeMillis() <= endBypassTime) {
+            logger.debug("Bypass light update after command ({}).", lightId);
+            return false;
         }
+
+        final FullLight lastState = lastFullLight;
+        if (lastState == null || !Objects.equals(lastState.getState(), fullLight.getState())) {
+            lastFullLight = fullLight;
+        } else {
+            return true;
+        }
+
+        logger.trace("New state for light {}", lightId);
 
         initializeProperties(fullLight);
 
@@ -488,6 +511,8 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
             updateState(CHANNEL_ALERT, stringType);
             scheduleAlertStateRestore(stringType);
         }
+
+        return true;
     }
 
     @Override
@@ -590,5 +615,10 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Collections.singletonList(LightActions.class);
+    }
+
+    @Override
+    public String getLightId() {
+        return lightId;
     }
 }

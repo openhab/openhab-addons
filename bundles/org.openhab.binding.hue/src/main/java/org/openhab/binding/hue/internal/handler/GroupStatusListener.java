@@ -26,13 +26,21 @@ import org.openhab.binding.hue.internal.HueBridge;
 public interface GroupStatusListener {
 
     /**
+     * This method returns the group id of listener
+     * 
+     * @return groupId String
+     */
+    String getGroupId();
+
+    /**
      * This method is called whenever the state of the given group has changed. The new state can be obtained by
      * {@link FullGroup#getState()}.
      *
      * @param bridge The bridge the changed group is connected to.
      * @param group The group which received the state update.
+     * @return
      */
-    void onGroupStateChanged(@Nullable HueBridge bridge, FullGroup group);
+    boolean onGroupStateChanged(@Nullable HueBridge bridge, FullGroup group);
 
     /**
      * This method is called whenever a group is removed.
