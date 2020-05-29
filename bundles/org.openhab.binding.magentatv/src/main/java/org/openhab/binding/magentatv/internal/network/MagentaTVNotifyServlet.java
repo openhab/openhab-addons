@@ -27,6 +27,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.magentatv.internal.MagentaTVHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Reference;
@@ -48,6 +49,7 @@ public class MagentaTVNotifyServlet extends HttpServlet {
 
     private final MagentaTVHandlerFactory handlerFactory;
 
+    @Activate
     public MagentaTVNotifyServlet(@Reference MagentaTVHandlerFactory handlerFactory, @Reference HttpService httpService,
             Map<String, Object> config) {
         this.handlerFactory = handlerFactory;

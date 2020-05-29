@@ -135,7 +135,11 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
      * @param discoveryProperties Properties discoverd by UPnP
      */
     public void deviceDiscoverd(Map<String, String> discoveryProperties) {
-        String discoveredUDN = discoveryProperties.get(PROPERTY_UDN).toString().toUpperCase();
+        if (!discoveryProperties.containsKey(PROPERTY_UDN)) {
+            return;
+        }
+        String discoveredUDN = discoveryProperties.get(PROPERTY_UDN);
+        discoveredUDN = discoveredUDN.toUpperCase();
         logger.trace("Discovered device with UDN {}", discoveredUDN);
         try {
             MagentaTVDevice dev = null;

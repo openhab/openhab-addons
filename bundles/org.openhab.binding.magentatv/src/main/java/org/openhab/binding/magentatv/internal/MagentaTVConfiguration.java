@@ -226,8 +226,11 @@ public class MagentaTVConfiguration {
     }
 
     private synchronized void setDefault(String key, String value) {
-        if (properties.containsKey(key) && properties.get(key).toString().isEmpty()) {
-            properties.remove(key);
+        if (properties.containsKey(key)) {
+            String v = (String) properties.get(key);
+            if (v.isEmpty()) {
+                properties.remove(key);
+            }
         }
 
         if (!properties.containsKey(key)) {
@@ -237,7 +240,8 @@ public class MagentaTVConfiguration {
 
     private String getValue(String key, String defValue) {
         if (properties.containsKey(key)) {
-            return properties.get(key).toString();
+            Object o = properties.get(key);
+            return o != null ? (String) o : defValue;
         }
         return defValue;
     }

@@ -127,59 +127,83 @@ public class MagentaTVOAuth {
                 }
             }
 
-            if (oAuthScope.isEmpty() || oAuthService.isEmpty() || oAuthClientSecret.isEmpty()
-                    || oAuthClientId.isEmpty()) {
-                throw new MagentaTVException("OAuth failed: Can't get credentials: " + httpResponse);
+            if (oAuthScope.isEmpty() || oAuthService.isEmpty()) {
+                throw new MagentaTVException("OAuth failed: Can't get Scope and Service: " + httpResponse);
             }
 
             // Get OAuth token
             step = "get token";
             url = oAuthService + "/oauth2/tokens";
             logger.debug("{} from {}", step, url);
-
-            // build url parameters:
-            // {0} = user id
-            // {1} = password
-            // {2} = oAuthScope
-            // {3} = oAuthClientId
-            // {4} = oAuthClientSecret
-            // Data: = ;
-            postData = MessageFormat.format(
-                    "grant_type=password&username={0}&password={1}&scope={2}%20offline_access&client_id={3}&client_secret={4}&x_telekom.access_token.format=CompactToken&x_telekom.access_token.encoding=text%2Fbase64",
-                    URLEncoder.encode(accountName, UTF_8), URLEncoder.encode(accountPassword, UTF_8), oAuthScope,
-                    oAuthClientId, oAuthClientSecret);
-            dataStream = new ByteArrayInputStream(postData.getBytes(Charset.forName(UTF_8)));
-            httpHeader.setProperty(HEADER_HOST, StringUtils.substringAfterLast(oAuthService, "/"));
-            httpResponse = HttpUtil.executeUrl(HttpMethod.POST, url, httpHeader, dataStream, null, NETWORK_TIMEOUT_MS);
-            logger.trace("http response={}", httpResponse);
-            OAuthTokenResponse token = gson.fromJson(httpResponse, OAuthTokenResponse.class);
-            if (getString(token.accessToken).isEmpty()) {
-                String errorMessage = MessageFormat.format("Authentication for account {0} failed: {1} (rc={2})",
-                        accountName, token.errorDescription, token.error);
-                throw new MagentaTVException(errorMessage);
-            }
-            accessToken = token.accessToken;
-
-            // authenticateDevice
-            step = "authenticate with token";
-            logger.trace(step);
+            String userId = "";
             String uuid = UUID.randomUUID().toString();
             String cnonce = MagentaTVControl.computeMD5(uuid);
+            if (!oAuthClientSecret.isEmpty()) {
+                // build url parameters:
+                // {0} = user id
+                // {1} = password
+                // {2} = oAuthScope
+                // {3} = oAuthClientId
+                // {4} = oAuthClientSecret
+                // Data: = ;
+                postData = MessageFormat.format(
+                        "grant_type=password&username={0}&password={1}&scope={2}%20offline_access&client_id={3}&client_secret={4}&x_telekom.access_token.format=CompactToken&x_telekom.access_token.encoding=text%2Fbase64",
+                        URLEncoder.encode(accountName, UTF_8), URLEncoder.encode(accountPassword, UTF_8), oAuthScope,
+                        oAuthClientId, oAuthClientSecret);
+                dataStream = new ByteArrayInputStream(postData.getBytes(Charset.forName(UTF_8)));
+                httpHeader.setProperty(HEADER_HOST, StringUtils.substringAfterLast(oAuthService, "/"));
+                httpResponse = HttpUtil.executeUrl(HttpMethod.POST, url, httpHeader, dataStream, null,
+                        NETWORK_TIMEOUT_MS);
+                logger.trace("http response={}", httpResponse);
+                OAuthTokenResponse token = gson.fromJson(httpResponse, OAuthTokenResponse.class);
+                if (getString(token.accessToken).isEmpty()) {
+                    String errorMessage = MessageFormat.format("Authentication for account {0} failed: {1} (rc={2})",
+                            accountName, token.errorDescription, token.error);
+                    throw new MagentaTVException(errorMessage);
+                }
+                accessToken = token.accessToken;
 
-            // build url string
-            // {0} = uuid
-            // {1} = uuid
-            // {2} = uuid
-            // {3} = accessToken
-            // {4} = cnonce
-            // {5} = uuid
-            postData = MessageFormat.format(
-                    "'{'\"userType\": 1,\"terminalid\": \"{0}\",\"mac\":\"{1}\",\"terminaltype\":\"Iphone\",\"utcEnable\":1,\"timezone\":\"Europe/Berlin\",\"terminalvendor\":\"iPhone5\",\"osversion\":\"iOS10.3.3\",\"softwareVersion\":\"2.3.10.26\",\"terminalDetail\":['{'\"key\":\"HardwareSupplier\",\"value\":\"MyPhone\"'}','{'\"key\":\"DeviceClass\",\"value\":\"IPhone\"'}','{'\"key\":\"DeviceStorage\",\"value\":\"1\"'}','{'\"key\":\"DeviceStorageSize\",\"value\":12475'}','{'\"key\":\"GUID\",\"value\":\"{2}\"'}'],\"connectType\":1,\"reconnect\":true,\"accessToken\":\"{3}\",\"cnonce\":\"{4}\",\"caDeviceInfo\":['{'\"caDeviceType\":6,\"caDeviceId\":\"{5}\"'}'],\"preSharedKeyID\":\"NGTV000001\"'}'",
-                    // uuid, uuid, cnonce, uuid);
-                    "", "", "", accessToken, cnonce, "");
-            httpHeader.setProperty(HEADER_HOST, StringUtils.substringAfterLast(epghttpsurl, "/"));
-            httpHeader.setProperty(HEADER_CONTENT_TYPE, "text/plain;charset=UTF-8");
-            url = epghttpsurl + "/JSON/DTAuthenticate?SID=user&T=Iphone";
+                // authenticateDevice
+                step = "authenticate with token";
+                logger.trace(step);
+
+                // build url string
+                // {0} = uuid,{1} = uuid, {2} = uuid, {3} = accessToken., {4} = cnonce, {5} = uuid
+                postData = MessageFormat.format(
+                        "'{'\"userType\": 1,\"terminalid\": \"{0}\",\"mac\":\"{1}\",\"terminaltype\":\"Iphone\",\"utcEnable\":1,\"timezone\":\"Europe/Berlin\",\"terminalvendor\":\"iPhone5\",\"osversion\":\"iOS10.3.3\",\"softwareVersion\":\"2.3.10.26\",\"terminalDetail\":['{'\"key\":\"HardwareSupplier\",\"value\":\"MyPhone\"'}','{'\"key\":\"DeviceClass\",\"value\":\"IPhone\"'}','{'\"key\":\"DeviceStorage\",\"value\":\"1\"'}','{'\"key\":\"DeviceStorageSize\",\"value\":12475'}','{'\"key\":\"GUID\",\"value\":\"{2}\"'}'],\"connectType\":1,\"reconnect\":true,\"accessToken\":\"{3}\",\"cnonce\":\"{4}\",\"caDeviceInfo\":['{'\"caDeviceType\":6,\"caDeviceId\":\"{5}\"'}'],\"preSharedKeyID\":\"NGTV000001\"'}'",
+                        // uuid, uuid, cnonce, uuid);
+                        "", "", "", accessToken, cnonce, "");
+                httpHeader.setProperty(HEADER_HOST, StringUtils.substringAfterLast(epghttpsurl, "/"));
+                httpHeader.setProperty(HEADER_CONTENT_TYPE, "text/plain;charset=UTF-8");
+                url = epghttpsurl + "/JSON/DTAuthenticate?SID=user&T=Iphone";
+            } else {
+                // New flow based on WebTV
+                postData = MessageFormat.format(
+                        "password={0}&scope={1}+offline_access&grant_type=password&username={2}&x_telekom.access_token.format=CompactToken&x_telekom.access_token.encoding=text%2Fbase64&client_id=10LIVESAM30000004901NGTVWEB0000000000000",
+                        URLEncoder.encode(accountPassword, UTF_8), oAuthScope, URLEncoder.encode(accountName, UTF_8));
+                url = oAuthService + "/oauth2/tokens";
+                dataStream = new ByteArrayInputStream(postData.getBytes(Charset.forName("UTF-8")));
+                httpResponse = HttpUtil.executeUrl(HttpMethod.POST, url, httpHeader, dataStream, null,
+                        NETWORK_TIMEOUT_MS);
+                logger.trace("http response={}", httpResponse);
+                OAuthTokenResponse resp = gson.fromJson(httpResponse, OAuthTokenResponse.class);
+                if ((resp == null) || resp.accessToken.isEmpty()) {
+                    throw new MagentaTVException("Unable to authenticate");
+                }
+
+                uuid = "t_" + MagentaTVControl.computeMD5(accountName);
+                postData = "{\"userType\":1,\"terminalid\":\"" + uuid + "\",\"mac\":\"" + uuid + "\""
+                        + ",\"terminaltype\":\"MACWEBTV\",\"utcEnable\":1,\"timezone\":\"Europe/Berlin\","
+                        + "\"terminalDetail\":[{\"key\":\"GUID\",\"value\":\"" + uuid + "\"},"
+                        + "{\"key\":\"HardwareSupplier\",\"value\":\"\"},{\"key\":\"DeviceClass\",\"value\":\"PC\"},"
+                        + "{\"key\":\"DeviceStorage\",\"value\":\"1\"},{\"key\":\"DeviceStorageSize\",\"value\":\"\"}],"
+                        + "\"softwareVersion\":\"\",\"osversion\":\"\",\"terminalvendor\":\"Unknown\","
+                        + "\"caDeviceInfo\":[{\"caDeviceType\":6,\"caDeviceId\":\"" + uuid + "\"}],"
+                        + "\"accessToken\":\"" + resp.accessToken + "\",\"preSharedKeyID\":\"PC01P00002\",\"cnonce\":\""
+                        + cnonce + "\"}";
+                url = "https://web.magentatv.de/EPG/JSON/DTAuthenticate?SID=user&T=Mac_chrome_81";
+            }
+
             dataStream = new ByteArrayInputStream(postData.getBytes(Charset.forName("UTF-8")));
             httpResponse = HttpUtil.executeUrl(HttpMethod.POST, url, httpHeader, dataStream, null, NETWORK_TIMEOUT_MS);
             logger.trace("http response={}", httpResponse);
@@ -191,11 +215,12 @@ public class MagentaTVOAuth {
                 logger.warn("{}", errorMessage);
                 throw new MagentaTVException(errorMessage);
             }
+            userId = getString(resp.userID);
 
-            if (getString(resp.userID).isEmpty()) {
+            if (userId.isEmpty()) {
                 throw new MagentaTVException("No userID received!");
             }
-            String hashedUserID = MagentaTVControl.computeMD5(resp.userID).toUpperCase();
+            String hashedUserID = MagentaTVControl.computeMD5(userId).toUpperCase();
             logger.trace("done, userID = {}", hashedUserID);
             return hashedUserID;
         } catch (IOException e) {
