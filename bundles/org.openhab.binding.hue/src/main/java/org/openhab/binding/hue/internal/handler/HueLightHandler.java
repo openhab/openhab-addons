@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -457,7 +458,7 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
         }
 
         final FullLight lastState = lastFullLight;
-        if (lastState == null || !lastState.getState().equals(fullLight.getState())) {
+        if (lastState == null || !Objects.equals(lastState.getState(), fullLight.getState())) {
             lastFullLight = fullLight;
         } else {
             return true;

@@ -460,7 +460,6 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
             final LightStatusListener listener = lightStatusListeners.get(lightId);
             if (listener != null) {
                 listener.unsetPollBypass();
-                ;
             }
         });
     }
