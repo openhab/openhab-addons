@@ -135,7 +135,7 @@ public class HueLightDiscoveryServiceOSGiTest extends AbstractHueOSGiTestParent 
             }
         });
 
-        discoveryService.onLightAdded(null, light);
+        discoveryService.addLightDiscovery(light);
         waitForAssert(() -> {
             assertTrue(resultWrapper.get() != null);
         });
