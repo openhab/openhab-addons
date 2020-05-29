@@ -16,6 +16,7 @@ import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -341,7 +342,7 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
         logger.trace("onGroupStateChanged() was called for group {}", group.getId());
 
         final FullGroup lastState = lastFullGroup;
-        if (lastState == null || !lastState.getState().equals(group.getState())) {
+        if (lastState == null || !Objects.equals(lastState.getState(), group.getState())) {
             lastFullGroup = group;
         } else {
             return true;

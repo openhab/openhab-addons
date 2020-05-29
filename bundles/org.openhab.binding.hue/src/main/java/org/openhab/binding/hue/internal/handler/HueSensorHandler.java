@@ -23,6 +23,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -229,7 +230,7 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
         logger.trace("onSensorStateChanged() was called");
 
         final FullSensor lastSensor = lastFullSensor;
-        if (lastSensor == null || !lastSensor.getState().equals(sensor.getState())) {
+        if (lastSensor == null || !Objects.equals(lastSensor.getState(), sensor.getState())) {
             lastFullSensor = sensor;
         } else {
             return true;
