@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.smarther.internal.util;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -28,9 +31,23 @@ public class DateUtil {
 
     private static final String RANGE_FORMAT = "%s/%s";
 
-    public static LocalDateTime parse(@Nullable String str, String pattern) {
+    public static LocalDate parseDate(@Nullable String str, String pattern) {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern);
+        return LocalDate.parse(str, dtf);
+    }
+
+    public static LocalDateTime parseLocalTime(@Nullable String str, String pattern) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern);
         return LocalDateTime.parse(str, dtf);
+    }
+
+    public static ZonedDateTime parseZonedTime(@Nullable String str, String pattern) {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern);
+        return ZonedDateTime.parse(str, dtf);
+    }
+
+    public static ZonedDateTime getZonedStartOfDay(int days, ZoneId zoneId) {
+        return LocalDate.now().plusDays(days).atStartOfDay(zoneId);
     }
 
     public static String format(LocalDateTime date, String pattern) {
@@ -38,7 +55,17 @@ public class DateUtil {
         return date.format(dtf);
     }
 
+    public static String format(ZonedDateTime date, String pattern) {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern);
+        return date.format(dtf);
+    }
+
     public static String formatRange(LocalDateTime date1, LocalDateTime date2, String pattern) {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern);
+        return String.format(RANGE_FORMAT, date1.format(dtf), date2.format(dtf));
+    }
+
+    public static String formatRange(ZonedDateTime date1, ZonedDateTime date2, String pattern) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern);
         return String.format(RANGE_FORMAT, date1.format(dtf), date2.format(dtf));
     }

@@ -16,7 +16,6 @@ import static org.openhab.binding.smarther.internal.SmartherBindingConstants.*;
 
 import java.lang.invoke.MethodHandles;
 import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -51,7 +50,6 @@ import org.openhab.binding.smarther.internal.api.dto.Program;
 import org.openhab.binding.smarther.internal.api.exception.SmartherGatewayException;
 import org.openhab.binding.smarther.internal.api.exception.SmartherSubscriptionAlreadyExistsException;
 import org.openhab.binding.smarther.internal.config.SmartherModuleConfiguration;
-import org.openhab.binding.smarther.internal.util.DateUtil;
 import org.openhab.binding.smarther.internal.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -359,7 +357,7 @@ public class SmartherModuleHandler extends BaseThingHandler {
         dynamicStateDescriptionProvider.setEndDates(endDateChannelUID, config.getNumberOfEndDays());
         // If expired, update EndDate in module settings
         if (moduleSettings != null && moduleSettings.isEndDateExpired()) {
-            moduleSettings.setEndDate(DateUtil.format(LocalDateTime.now(), DTF_DATE));
+            moduleSettings.refreshEndDate();
             updateChannelState(CHANNEL_SETTINGS_ENDDATE, new StringType(moduleSettings.getEndDate()));
         }
     }

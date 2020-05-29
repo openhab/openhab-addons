@@ -14,8 +14,7 @@ package org.openhab.binding.smarther.internal.api.dto;
 
 import static org.openhab.binding.smarther.internal.SmartherBindingConstants.*;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.Collections;
 import java.util.List;
@@ -100,8 +99,8 @@ public class Chronothermostat {
         String timeLabel = TIME_FOREVER;
         if (activationTime != null) {
             try {
-                final LocalDateTime dateActivationTime = DateUtil.parse(activationTime, DTF_DATETIME_EXT);
-                final LocalDateTime dateTomorrow = LocalDate.now().plusDays(1).atStartOfDay();
+                final ZonedDateTime dateActivationTime = DateUtil.parseZonedTime(activationTime, DTF_DATETIME_EXT);
+                final ZonedDateTime dateTomorrow = DateUtil.getZonedStartOfDay(1, dateActivationTime.getZone());
 
                 if (dateActivationTime.isBefore(dateTomorrow)) {
                     timeLabel = DateUtil.format(dateActivationTime, DTF_TODAY);

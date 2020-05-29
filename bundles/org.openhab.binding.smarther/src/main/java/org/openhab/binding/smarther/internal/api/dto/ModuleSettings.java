@@ -123,12 +123,18 @@ public class ModuleSettings {
 
     public boolean isEndDateExpired() {
         if (endDate != null) {
-            final LocalDateTime dtEndDate = DateUtil.parse(endDate, DTF_DATE).toLocalDate().atStartOfDay();
+            final LocalDateTime dtEndDate = DateUtil.parseDate(endDate, DTF_DATE).atStartOfDay();
             final LocalDateTime dtToday = LocalDate.now().atStartOfDay();
 
             return (dtEndDate.isBefore(dtToday));
         } else {
             return false;
+        }
+    }
+
+    public void refreshEndDate() {
+        if (endDate != null) {
+            this.endDate = DateUtil.format(LocalDateTime.now(), DTF_DATE);
         }
     }
 
@@ -154,15 +160,15 @@ public class ModuleSettings {
 
     public String getActivationTime() {
         if (mode.equals(Mode.MANUAL) && (endDate != null)) {
-            LocalDateTime d = DateUtil.parse(endDate, DTF_DATE).truncatedTo(ChronoUnit.MINUTES);
+            LocalDateTime d = DateUtil.parseDate(endDate, DTF_DATE).atTime(endHour, endMinute);
             return DateUtil.format(d, DTF_DATETIME);
         } else if (mode.equals(Mode.BOOST)) {
             LocalDateTime d1 = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
             LocalDateTime d2 = d1.plusMinutes(boostTime.getValue());
             return DateUtil.formatRange(d1, d2, DTF_DATETIME);
+        } else {
+            return "";
         }
-
-        return "";
     }
 
     @Override
