@@ -56,8 +56,8 @@ public class SDS011Handler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(SDS011Handler.class);
     private final SerialPortManager serialPortManager;
 
-    private @NonNullByDefault({}) NovaFineDustConfiguration config;
-    private @NonNullByDefault({}) SDS011Communicator communicator;
+    private @Nullable NovaFineDustConfiguration config;
+    private @Nullable SDS011Communicator communicator;
 
     private @Nullable ScheduledFuture<?> pollingJob;
     private @Nullable ScheduledFuture<?> connectionMonitor;
@@ -167,6 +167,12 @@ public class SDS011Handler extends BaseThingHandler {
     }
 
     private boolean validateConfiguration() {
+        if (config == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "Configuration could not be parsed");
+            return false;
+        }
+
         if (config.port == null || config.port.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Port must be set!");
             return false;
@@ -199,7 +205,9 @@ public class SDS011Handler extends BaseThingHandler {
             connectionMonitor = null;
         }
 
-        communicator.dispose();
+        if (communicator != null) {
+            communicator.dispose();
+        }
 
         this.statePM10 = UnDefType.UNDEF;
         this.statePM25 = UnDefType.UNDEF;
