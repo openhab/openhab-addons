@@ -13,6 +13,7 @@
 package org.openhab.automation.scriptenginefactory.jython;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -25,6 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.ConfigConstants;
 import org.openhab.core.automation.module.script.AbstractScriptEngineFactory;
+import org.openhab.core.automation.module.script.ScriptEngineFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -34,22 +36,22 @@ import org.osgi.service.component.annotations.Deactivate;
  *
  * @author Scott Rushworth - Initial contribution
  */
-@Component(service = org.openhab.core.automation.module.script.ScriptEngineFactory.class)
+@Component(service = ScriptEngineFactory.class)
 @NonNullByDefault
 public class JythonScriptEngineFactory extends AbstractScriptEngineFactory {
 
     private static final String SCRIPT_TYPE = "py";
     private static javax.script.ScriptEngineManager ENGINE_MANAGER = new javax.script.ScriptEngineManager();
-    private static final String DEFAULT_PYTHON_PATH = new StringBuilder(ConfigConstants.getConfigFolder())
-            .append(File.separator).append("automation").append(File.separator).append("lib").append(File.separator)
-            .append("python").toString();
+
+    private static final String DEFAULT_PYTHON_PATH = Paths
+            .get(ConfigConstants.getConfigFolder(), "automation", "lib", "python").toString();
 
     @Activate
     public JythonScriptEngineFactory() {
         logger.debug("Loading JythonScriptEngineFactory");
-        String home = JythonScriptEngineFactory.class.getProtectionDomain().getCodeSource().getLocation().toString()
-                .replace("file:", "");
-        System.setProperty("python.home", home);
+        String pythonHome = JythonScriptEngineFactory.class.getProtectionDomain().getCodeSource().getLocation()
+                .toString().replace("file:", "");
+        System.setProperty("python.home", pythonHome);
 
         String existingPythonPath = System.getProperty("python.path");
         if (existingPythonPath == null || existingPythonPath.isEmpty()) {
@@ -62,9 +64,8 @@ public class JythonScriptEngineFactory extends AbstractScriptEngineFactory {
             System.setProperty("python.path", newPythonPath);
         }
 
-        StringBuilder newPythonCachedir = new StringBuilder(System.getenv("OPENHAB_USERDATA")).append(File.separator)
-                .append("tmp");
-        System.setProperty("python.cachedir", newPythonCachedir.toString());
+        System.setProperty("python.cachedir",
+                Paths.get(ConfigConstants.getUserDataFolder(), "tmp", "cachedir").toString());
 
         logger.trace("python.home [{}], python.path [{}], python.cachdir [{}]", System.getProperty("python.home"),
                 System.getProperty("python.path"), System.getProperty("python.cachedir"));
@@ -98,7 +99,7 @@ public class JythonScriptEngineFactory extends AbstractScriptEngineFactory {
     }
 
     @Deactivate
-    public void deactivate() {
+    public void removePythonPath() {
         logger.debug("Unloading JythonScriptEngineFactory");
         String existingPythonPath = System.getProperty("python.path");
         if (existingPythonPath.contains(DEFAULT_PYTHON_PATH)) {
