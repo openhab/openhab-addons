@@ -92,5 +92,4 @@ public class RadioThermostatJsonTime {
         }
         return day + hour + ":" + String.format("%02d", minute);
     }
-
 }

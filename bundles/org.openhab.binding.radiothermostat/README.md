@@ -36,8 +36,8 @@ The thing has a few configuration parameters:
 | hostName        | The host name or IP address of the thermostat. Mandatory.                                                 |
 | refresh         | Overrides the refresh interval of the thermostat data. Optional, the default is 2 minutes.                |
 | logRefresh      | Overrides the refresh interval of the run-time logs & humidity data. Optional, the default is 10 minutes. |
-| disableLogs     | Disable retrieval of run-time logs from the thermostat. Optional, the default is 0.                       |
-| disableHumidity | Disable retrieval of humidity information from the thermostat. Optional, the default is 0.                |
+| isCT80          | Flag to enable additional features only available on the CT80 thermostat. Optional, the default is false. |
+| disableLogs     | Disable retrieval of run-time logs from the thermostat. Optional, the default is false.                   |
 
 ## Channels
 
@@ -59,12 +59,10 @@ The thermostat information that is retrieved is available as these channels:
 | hour                   | Number               | The current hour of the day reported by the thermostat  (24 hr)           |
 | minute                 | Number               | The current minute past the hour reported by the thermostat               |
 | dt_stamp               | String               | The current day of the week and time reported by the thermostat (E HH:mm) |
-| last_update            | DateTime             | Last successful contact with thermostat                                   |
 | today_heat_runtime     | Number               | The total number of minutes of heating run-time today                     |
 | today_cool_runtime     | Number               | The total number of minutes of cooling run-time today                     |
 | yesterday_heat_runtime | Number               | The total number of minutes of heating run-time yesterday                 |
 | yesterday_cool_runtime | Number               | The total number of minutes of cooling run-time yesterday                 |
-| json_cmd               | String               | Send JSON directly to the thermostat on the /tstat endpoint               |
 
 ## Full Example
 
@@ -114,8 +112,8 @@ NULL_over=-
 radiotherm.things:
 
 ```java
-radiothermostat:rtherm:mytherm1 "My 1st floor thermostat" [ hostName="192.168.10.1", refresh=2, logRefresh=10, disableLogs=0, disableHumidity=0 ]
-radiothermostat:rtherm:mytherm2 "My 2nd floor thermostat" [ hostName="mythermhost2", refresh=1, logRefresh=20, disableLogs=1, disableHumidity=1 ]
+radiothermostat:rtherm:mytherm1 "My 1st floor thermostat" [ hostName="192.168.10.1", refresh=2, logRefresh=10, isCT80=false, disableLogs=false ]
+radiothermostat:rtherm:mytherm2 "My 2nd floor thermostat" [ hostName="mythermhost2", refresh=1, logRefresh=20, isCT80=true, disableLogs=false ]
 ```
 
 radiotherm.items:
@@ -139,15 +137,11 @@ Number Therm_Day       "Thermostat Day [%s]"                                 { c
 Number Therm_Hour      "Thermostat Hour [%s]"                                { channel="radiothermostat:rtherm:mytherm1:hour" }
 Number Therm_Minute    "Thermostat Minute [%s]"                              { channel="radiothermostat:rtherm:mytherm1:minute" }
 String Therm_Dstmp     "Thermostat DateStamp [%s]" <time>                    { channel="radiothermostat:rtherm:mytherm1:dt_stamp" }
-DateTime Therm_Lastupd "Thermostat Last Updated  [%1$tl:%1$tM %1$tp]" <time> { channel="radiothermostat:rtherm:mytherm1:last_update" }
 
 Number:Time Therm_todayheat "Today's Heating Runtime [%d %unit%]"       { channel="radiothermostat:rtherm:mytherm1:today_heat_runtime" }
 Number:Time Therm_todaycool "Today's Cooling Runtime [%d %unit%]"       { channel="radiothermostat:rtherm:mytherm1:today_cool_runtime" }
 Number:Time Therm_yesterdayheat "Yesterday's Heating Runtime [%d %unit%]"   { channel="radiothermostat:rtherm:mytherm1:yesterday_heat_runtime" }
 Number:Time Therm_yesterdaycool "Yesterday's Cooling Runtime [%d %unit%]"   { channel="radiothermostat:rtherm:mytherm1:yesterday_cool_runtime" }
-
-// Channel to send JSON commands directly to the thermostat
-String Therm_jsoncmd     "Send JSON to direct to thermostat [%s]"            { channel="radiothermostat:rtherm:mytherm1:json_cmd" }
 
 // A virtual switch used to trigger a rule to send a json command to the thermostat
 Switch Therm_mysetting   "Send my preferred setting"
@@ -179,7 +173,6 @@ sitemap radiotherm label="My Thermostat" {
         Text item=Therm_Hour
         Text item=Therm_Minute
         Text item=Therm_Dstmp
-        Text item=Therm_Lastupd
 
         Text item=Therm_todayheat
         Text item=Therm_todaycool
@@ -196,8 +189,13 @@ rule "Send my thermostat command"
 when
   Item Therm_mysetting received command
 then
+  val actions = getActions("radiothermostat","radiothermostat:rtherm:mytherm1")
+  if(null === actions) {
+      logInfo("actions", "Actions not found, check thing ID")
+      return
+  }
   // JSON to send directly to the thermostat's '/tstat' endpoint
   // See RadioThermostat_CT50_Honeywell_Wifi_API_V1.3.pdf for more detail
-  Therm_jsoncmd.sendCommand('{"hold":1, "t_heat":' + "58" + ', "tmode":1}')
+  actions.sendRawCommand('{"hold":1, "t_heat":' + "58" + ', "tmode":1}')
 end
 ```

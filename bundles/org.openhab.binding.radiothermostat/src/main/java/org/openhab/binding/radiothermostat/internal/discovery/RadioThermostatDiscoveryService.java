@@ -239,6 +239,7 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
 
         JsonObject content;
         String sysinfo;
+        boolean isCT80 = false;
 
         try {
             // Run the HTTP request and get the JSON response from the thermostat
@@ -258,6 +259,13 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
             logger.debug("Cannot get name from thermostat {} {}", ip, e.getMessage());
         }
 
+        try {
+            String model = HttpUtil.executeUrl("GET", "http://" + ip + "/tstat/model", 20000);
+            isCT80 = (model != null && model.contains("CT80")) ? true : false;
+        } catch (IOException | JsonSyntaxException e) {
+            logger.debug("Cannot get model information from thermostat {} {}", ip, e.getMessage());
+        }
+
         logger.debug("Discovery returned: {} uuid {} name {}", sysinfo, uuid, name);
 
         ThingUID thingUid = new ThingUID(RadioThermostatBindingConstants.THING_TYPE_RTHERM, uuid);
@@ -267,9 +275,9 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
         String label = String.format("RadioThermostat (%s)", name);
         result = DiscoveryResultBuilder.create(thingUid).withLabel(label)
                 .withRepresentationProperty(RadioThermostatBindingConstants.PROPERTY_IP)
-                .withProperty(RadioThermostatBindingConstants.PROPERTY_IP, ip).build();
+                .withProperty(RadioThermostatBindingConstants.PROPERTY_IP, ip)
+                .withProperty(RadioThermostatBindingConstants.PROPERTY_ISCT80, isCT80).build();
         logger.debug("New RadioThermostat discovered with ID=<{}>", uuid);
         this.thingDiscovered(result);
     }
-
 }

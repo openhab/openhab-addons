@@ -23,29 +23,11 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class RadioThermostatData {
-    private String name = "";
-    private String model = "";
     private @Nullable RadioThermostatJsonResponse thermostatData;
     private Integer humidity = 0;
     private @Nullable RadioThermostatJsonRuntime runtime;
 
     public RadioThermostatData() {
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getModel() {
-        return model;
-    }
-
-    public void setModel(String model) {
-        this.model = model;
     }
 
     public @Nullable RadioThermostatJsonResponse getThermostatData() {
@@ -71,5 +53,4 @@ public class RadioThermostatData {
     public void setRuntime(RadioThermostatJsonRuntime runtime) {
         this.runtime = runtime;
     }
-
 }

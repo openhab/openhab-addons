@@ -10,23 +10,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.radiothermostat.internal;
+package org.openhab.binding.radiothermostat.internal.communication;
+
+import java.util.EventListener;
+import java.util.EventObject;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link RadioThermostatConfiguration} is the class used to match the
- * thing configuration.
+ * RadtioThermostat Event Listener interface. Handles incoming RadioThermostat message events
  *
  * @author Michael Lobstein - Initial contribution
  */
 @NonNullByDefault
-public class RadioThermostatConfiguration {
+public interface RadioThermostatEventListener extends EventListener {
 
-    public @Nullable String hostName;
-    public @Nullable Integer refresh;
-    public @Nullable Integer logRefresh;
-    public boolean isCT80 = false;
-    public boolean disableLogs = false;
+    /**
+     * Event handler method for incoming RadioThermostat message events
+     *
+     * @param event the event object
+     */
+    public void onNewMessageEvent(EventObject event);
 }

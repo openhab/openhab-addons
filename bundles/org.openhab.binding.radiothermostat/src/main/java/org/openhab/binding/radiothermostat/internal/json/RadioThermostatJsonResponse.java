@@ -149,5 +149,4 @@ public class RadioThermostatJsonResponse {
     public @Nullable RadioThermostatJsonTime getTime() {
         return time;
     }
-
 }

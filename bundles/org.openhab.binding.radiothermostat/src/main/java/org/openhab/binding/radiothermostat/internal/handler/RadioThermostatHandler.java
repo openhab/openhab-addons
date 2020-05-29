@@ -12,28 +12,23 @@
  */
 package org.openhab.binding.radiothermostat.internal.handler;
 
-import static org.eclipse.jetty.http.HttpMethod.GET;
-import static org.eclipse.jetty.http.HttpStatus.OK_200;
 import static org.openhab.binding.radiothermostat.internal.RadioThermostatBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EventObject;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
-import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -46,18 +41,20 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.radiothermostat.internal.RadioThermostatConfiguration;
-import org.openhab.binding.radiothermostat.internal.RadioThermostatHttpException;
 import org.openhab.binding.radiothermostat.internal.RadioThermostatStateDescriptionProvider;
+import org.openhab.binding.radiothermostat.internal.RadioThermostatThingActions;
+import org.openhab.binding.radiothermostat.internal.communication.RadioThermostatConnector;
+import org.openhab.binding.radiothermostat.internal.communication.RadioThermostatEvent;
+import org.openhab.binding.radiothermostat.internal.communication.RadioThermostatEventListener;
 import org.openhab.binding.radiothermostat.internal.json.RadioThermostatData;
 import org.openhab.binding.radiothermostat.internal.json.RadioThermostatJsonHumidity;
-import org.openhab.binding.radiothermostat.internal.json.RadioThermostatJsonModel;
-import org.openhab.binding.radiothermostat.internal.json.RadioThermostatJsonName;
 import org.openhab.binding.radiothermostat.internal.json.RadioThermostatJsonResponse;
 import org.openhab.binding.radiothermostat.internal.json.RadioThermostatJsonRuntime;
 import org.slf4j.Logger;
@@ -74,20 +71,12 @@ import com.google.gson.Gson;
  * @author Michael Lobstein - Initial contribution
  */
 @NonNullByDefault
-public class RadioThermostatHandler extends BaseThingHandler {
+public class RadioThermostatHandler extends BaseThingHandler implements RadioThermostatEventListener {
     private @Nullable final RadioThermostatStateDescriptionProvider stateDescriptionProvider;
 
-    private Logger logger = LoggerFactory.getLogger(RadioThermostatHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(RadioThermostatHandler.class);
 
     private final HttpClient httpClient;
-
-    private static final String URL = "http://%hostName%/%resource%";
-
-    private static final String DEFAULT_RESOURCE = "tstat";
-    private static final String RUNTIME_RESOURCE = "tstat/datalog";
-    private static final String HUMIDITY_RESOURCE = "tstat/humidity";
-    private static final String MODEL_RESOURCE = "tstat/model";
-    private static final String NAME_RESOURCE = "sys/name";
 
     private static final int DEFAULT_REFRESH_PERIOD = 2;
     private static final int DEFAULT_LOG_REFRESH_PERIOD = 10;
@@ -97,10 +86,11 @@ public class RadioThermostatHandler extends BaseThingHandler {
 
     private RadioThermostatData rthermData = new RadioThermostatData();
 
-    private Gson gson;
+    private @Nullable RadioThermostatConnector connector;
 
-    private int initialized = 0;
-    private int retryCounter = 0;
+    private @Nullable RadioThermostatConfiguration config;
+
+    private final Gson gson;
 
     public RadioThermostatHandler(Thing thing,
             @Nullable RadioThermostatStateDescriptionProvider stateDescriptionProvider, HttpClient httpClient) {
@@ -113,13 +103,32 @@ public class RadioThermostatHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing RadioThermostat handler.");
-        RadioThermostatConfiguration config = getConfigAs(RadioThermostatConfiguration.class);
-        updateStatus(ThingStatus.UNKNOWN);
+        this.config = getConfigAs(RadioThermostatConfiguration.class);
+        connector = new RadioThermostatConnector(httpClient, config.hostName);
+        connector.addEventListener(this);
 
+        // populate fan mode options based on thermostat model
+        List<StateOption> fanModeOptions = getFanModeOptions(config.isCT80);
+        stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), FAN_MODE), fanModeOptions);
+
+        // if we are not a CT-80, remove the humidity & program mode channel
+        if (!config.isCT80) {
+            List<Channel> channels = new ArrayList<>(this.getThing().getChannels());
+            channels.removeIf(c -> (c.getUID().getId().equals(HUMIDITY)));
+            channels.removeIf(c -> (c.getUID().getId().equals(PROGRAM_MODE)));
+            updateThing(editThing().withChannels(channels).build());
+        }
         startAutomaticRefresh();
-        if (!(config.disableLogs == 1 && config.disableHumidity == 1)) {
+        if (!config.disableLogs || config.isCT80) {
             startAutomaticLogRefresh();
         }
+
+        updateStatus(ThingStatus.UNKNOWN);
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singletonList(RadioThermostatThingActions.class);
     }
 
     /**
@@ -128,26 +137,10 @@ public class RadioThermostatHandler extends BaseThingHandler {
     private void startAutomaticRefresh() {
         if (refreshJob == null || refreshJob.isCancelled()) {
             Runnable runnable = () -> {
-                if (initialized == 0) {
-                    setupConnection();
-                }
-
-                try {
-                    // Request new data from the thermostat
-                    retryCounter = 0;
-                    Object result = getRadioThermostatData(DEFAULT_RESOURCE);
-                    if (result instanceof RadioThermostatJsonResponse) {
-                        rthermData.setThermostatData((RadioThermostatJsonResponse) result);
-
-                        // Update all channels with the new data
-                        updateAllChannels();
-                    }
-                } catch (Exception e) {
-                    logger.debug("Exception occurred during execution: {}", e.getMessage());
-                }
+                // send an async call to the thermostat to get the 'tstat' data
+                connector.getAsyncThermostatData(DEFAULT_RESOURCE);
             };
 
-            RadioThermostatConfiguration config = getConfigAs(RadioThermostatConfiguration.class);
             int delay = (config.refresh != null) ? config.refresh.intValue() : DEFAULT_REFRESH_PERIOD;
             refreshJob = scheduler.scheduleWithFixedDelay(runnable, 0, delay, TimeUnit.MINUTES);
         }
@@ -158,78 +151,28 @@ public class RadioThermostatHandler extends BaseThingHandler {
      */
     private void startAutomaticLogRefresh() {
         if (logRefreshJob == null || logRefreshJob.isCancelled()) {
-            RadioThermostatConfiguration config = getConfigAs(RadioThermostatConfiguration.class);
             Runnable runnable = () -> {
-                try {
-                    // Request humidity data from the thermostat if we are a CT80
-                    if (isCT80() && config.disableHumidity != 1) {
-                        retryCounter = 0;
-                        Object result = getRadioThermostatData(HUMIDITY_RESOURCE);
-                        if (result instanceof RadioThermostatJsonHumidity) {
-                            rthermData.setHumidity(((RadioThermostatJsonHumidity) result).getHumidity());
-                        }
-                    }
+                // Request humidity data from the thermostat if we are a CT80
+                if (config.isCT80) {
+                    // send an async call to the thermostat to get the humidity data
+                    connector.getAsyncThermostatData(HUMIDITY_RESOURCE);
+                }
 
-                    if (config.disableLogs != 1) {
-                        // Request runtime data from the thermostat
-                        retryCounter = 0;
-                        Object result = getRadioThermostatData(RUNTIME_RESOURCE);
-                        if (result instanceof RadioThermostatJsonRuntime) {
-                            rthermData.setRuntime((RadioThermostatJsonRuntime) result);
-                        }
-                    }
-                } catch (Exception e) {
-                    logger.debug("Exception occurred during execution: {}", e.getMessage());
+                if (!config.disableLogs) {
+                    // send an async call to the thermostat to get the runtime data
+                    connector.getAsyncThermostatData(RUNTIME_RESOURCE);
                 }
             };
 
-            int delay = (config.logRefresh != null) ? config.logRefresh.intValue() : DEFAULT_LOG_REFRESH_PERIOD;
-            logRefreshJob = scheduler.scheduleWithFixedDelay(runnable, 1, delay, TimeUnit.MINUTES);
-        }
-    }
-
-    private void setupConnection() {
-        String errorMsg = null;
-
-        // test the thermostat connection by getting the thermostat name and model
-        Object nameResult = getRadioThermostatData(NAME_RESOURCE);
-        if (nameResult instanceof RadioThermostatJsonName) {
-            rthermData.setName(((RadioThermostatJsonName) nameResult).getName());
-        } else {
-            errorMsg = "Unable to get thermostat name";
-        }
-
-        Object modelResult = getRadioThermostatData(MODEL_RESOURCE);
-        if (modelResult instanceof RadioThermostatJsonModel) {
-            rthermData.setModel(((RadioThermostatJsonModel) modelResult).getModel());
-        } else {
-            errorMsg = "Unable to get thermostat model";
-        }
-
-        // populate fan mode options based on thermostat model
-        List<StateOption> fanModeOptions = getFanModeOptions();
-        stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), FAN_MODE), fanModeOptions);
-
-        // if we are not a CT-80, remove the humidity & program mode channel
-        if (!isCT80()) {
-            List<Channel> channels = new ArrayList<>(this.getThing().getChannels());
-            channels.removeIf(c -> (c.getUID().getId().equals(HUMIDITY)));
-            channels.removeIf(c -> (c.getUID().getId().equals(PROGRAM_MODE)));
-            updateThing(editThing().withChannels(channels).build());
-        }
-
-        if (errorMsg == null) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
-                    rthermData.getName() + " " + rthermData.getModel());
-            initialized = 1;
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
+            int delay = ((config.logRefresh != null) ? config.logRefresh.intValue() : DEFAULT_LOG_REFRESH_PERIOD) * 60;
+            logRefreshJob = scheduler.scheduleWithFixedDelay(runnable, 30, delay, TimeUnit.SECONDS);
         }
     }
 
     @Override
     public void dispose() {
         logger.debug("Disposing the RadioThermostat handler.");
+        connector.removeEventListener(this);
 
         if (refreshJob != null && !refreshJob.isCancelled()) {
             refreshJob.cancel(true);
@@ -239,6 +182,10 @@ public class RadioThermostatHandler extends BaseThingHandler {
             logRefreshJob.cancel(true);
             logRefreshJob = null;
         }
+    }
+
+    public void handleRawCommand(@Nullable String rawCommand) {
+        connector.sendCommand(null, null, rawCommand);
     }
 
     @Override
@@ -258,47 +205,42 @@ public class RadioThermostatHandler extends BaseThingHandler {
             }
 
             switch (channelUID.getId()) {
-                case JSON_CMD:
-                    sendCommand(null, null, command.toString());
-                    break;
                 case MODE:
                     // only do if commanded mode is different than current mode
                     if (!cmdInt.equals(rthermData.getThermostatData().getMode())) {
-                        sendCommand("tmode", cmdStr);
+                        connector.sendCommand("tmode", cmdStr);
 
                         // set the new operating mode, reset everything else,
                         // because refreshing the tstat data below is really slow.
                         rthermData.getThermostatData().setMode(cmdInt);
                         rthermData.getThermostatData().setHeatTarget(0);
                         rthermData.getThermostatData().setCoolTarget(0);
+                        updateChannel(SET_POINT, rthermData);
                         rthermData.getThermostatData().setHold(0);
+                        updateChannel(HOLD, rthermData);
                         rthermData.getThermostatData().setProgramMode(-1);
-                        updateAllChannels();
+                        updateChannel(PROGRAM_MODE, rthermData);
 
-                        // now just go ahead and refresh tstat data to update with the new active setpoint
-                        // this takes a while for the JSON request to complete.
-                        Object result = getRadioThermostatData(DEFAULT_RESOURCE);
-                        if (result instanceof RadioThermostatJsonResponse) {
-                            rthermData.setThermostatData((RadioThermostatJsonResponse) result);
-                            updateAllChannels();
-                        }
+                        // now just trigger a refresh of the thermost to get the new active setpoint
+                        // this takes a while for the JSON request to complete (async).
+                        connector.getAsyncThermostatData(DEFAULT_RESOURCE);
                     }
                     break;
                 case FAN_MODE:
                     rthermData.getThermostatData().setFanMode(cmdInt);
-                    sendCommand("fmode", cmdStr);
+                    connector.sendCommand("fmode", cmdStr);
                     break;
                 case PROGRAM_MODE:
                     rthermData.getThermostatData().setProgramMode(cmdInt);
-                    sendCommand("program_mode", cmdStr);
+                    connector.sendCommand("program_mode", cmdStr);
                     break;
                 case HOLD:
                     if (command instanceof OnOffType && command == OnOffType.ON) {
                         rthermData.getThermostatData().setHold(1);
-                        sendCommand("hold", "1");
+                        connector.sendCommand("hold", "1");
                     } else if (command instanceof OnOffType && command == OnOffType.OFF) {
                         rthermData.getThermostatData().setHold(0);
-                        sendCommand("hold", "0");
+                        connector.sendCommand("hold", "0");
                     }
                     break;
                 case SET_POINT:
@@ -313,10 +255,55 @@ public class RadioThermostatHandler extends BaseThingHandler {
                         // don't do anything if we are not in heat or cool mode
                         break;
                     }
-                    sendCommand(cmdKey, cmdInt.toString());
+                    connector.sendCommand(cmdKey, cmdInt.toString());
                     break;
                 default:
                     logger.warn("Unsupported command: {}", command.toString());
+            }
+        }
+    }
+
+    /**
+     * Handle a RadioThermostat event received from the listeners
+     *
+     * @param event the event received from the listeners
+     */
+    @Override
+    public void onNewMessageEvent(EventObject event) {
+        RadioThermostatEvent evt = (RadioThermostatEvent) event;
+        logger.debug("onNewMessageEvent: key {} = {}", evt.getKey(), evt.getValue());
+
+        String evtKey = evt.getKey();
+        String evtVal = evt.getValue();
+
+        if (KEY_ERROR.equals(evtKey)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                    "Error retrieving data from Thermostat ");
+        } else {
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+            Object result = null;
+
+            // Map the JSON response to the correct object and update appropriate channels
+            switch (evtKey) {
+                case DEFAULT_RESOURCE:
+                    result = gson.fromJson(evtVal, RadioThermostatJsonResponse.class);
+                    rthermData.setThermostatData((RadioThermostatJsonResponse) result);
+                    updateAllChannels();
+                    break;
+                case HUMIDITY_RESOURCE:
+                    result = gson.fromJson(evtVal, RadioThermostatJsonHumidity.class);
+                    rthermData.setHumidity(((RadioThermostatJsonHumidity) result).getHumidity());
+                    updateChannel(HUMIDITY, rthermData);
+
+                    break;
+                case RUNTIME_RESOURCE:
+                    result = gson.fromJson(evtVal, RadioThermostatJsonRuntime.class);
+                    rthermData.setRuntime((RadioThermostatJsonRuntime) result);
+                    updateChannel(TODAY_HEAT_RUNTIME, rthermData);
+                    updateChannel(TODAY_COOL_RUNTIME, rthermData);
+                    updateChannel(YESTERDAY_HEAT_RUNTIME, rthermData);
+                    updateChannel(YESTERDAY_COOL_RUNTIME, rthermData);
+                    break;
             }
         }
     }
@@ -368,140 +355,16 @@ public class RadioThermostatHandler extends BaseThingHandler {
     }
 
     /**
-     * Build request URL from configuration data
-     *
-     * @return a valid URL for the thermostat's JSON interface
-     */
-    private String buildRequestURL(String resource) {
-        RadioThermostatConfiguration config = getConfigAs(RadioThermostatConfiguration.class);
-
-        String hostName = config.hostName;
-
-        String urlStr = URL.replace("%hostName%", hostName);
-        urlStr = urlStr.replace("%resource%", resource);
-
-        return urlStr;
-    }
-
-    /**
-     * Request new data from the thermostat
-     *
-     * @param the resource URL constant for a particular thermostat JSON resource
-     * @return an object mapping to one of the various thermostat JSON responses or null in case of error
-     */
-    private @Nullable Object getRadioThermostatData(String resource) {
-        Object result = null;
-        String errorMsg = null;
-
-        String urlStr = buildRequestURL(resource);
-        logger.debug("URL = {}", urlStr);
-
-        try {
-            // Run the HTTP request and get the JSON response from the thermostat
-            ContentResponse contentResponse = httpClient.newRequest(urlStr).method(GET).timeout(20, TimeUnit.SECONDS)
-                    .send();
-
-            String response = contentResponse.getContentAsString();
-            logger.debug("thermostatResponse = {}", response);
-
-            // Map the JSON response to the correct object
-            if (DEFAULT_RESOURCE.equals(resource)) {
-                result = gson.fromJson(response, RadioThermostatJsonResponse.class);
-            } else if (HUMIDITY_RESOURCE.equals(resource)) {
-                result = gson.fromJson(response, RadioThermostatJsonHumidity.class);
-            } else if (RUNTIME_RESOURCE.equals(resource)) {
-                result = gson.fromJson(response, RadioThermostatJsonRuntime.class);
-            } else if (MODEL_RESOURCE.equals(resource)) {
-                result = gson.fromJson(response, RadioThermostatJsonModel.class);
-            } else if (NAME_RESOURCE.equals(resource)) {
-                result = gson.fromJson(response, RadioThermostatJsonName.class);
-            }
-
-            if (result != null) {
-                if (initialized == 1) {
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
-                            rthermData.getName() + " " + rthermData.getModel());
-                }
-                return result;
-            } else {
-                retryCounter++;
-                if (retryCounter == 1) {
-                    logger.warn("Error in contacting the thermostat, retrying once");
-                    return getRadioThermostatData(resource);
-                }
-                errorMsg = "missing data object";
-                logger.warn("Error in thermostat response: {}", errorMsg);
-            }
-
-        } catch (IllegalStateException | InterruptedException | TimeoutException | ExecutionException e) {
-            errorMsg = e.getMessage();
-            logger.warn("Error running thermostat request: {}", errorMsg);
-        }
-
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, errorMsg);
-        return null;
-    }
-
-    /**
-     * Sends a command to the thermostat
-     *
-     * @param the JSON attribute key for the value to be updated
-     * @param the value to be updated in the thermostat
-     * @return the JSON response string from the thermostat
-     */
-    private String sendCommand(String cmdKey, @Nullable String cmdVal) {
-        return sendCommand(cmdKey, cmdVal, null);
-    }
-
-    /**
-     * Sends a command to the thermostat
-     *
-     * @param the JSON attribute key for the value to be updated
-     * @param the value to be updated in the thermostat
-     * @param JSON string to send directly to the thermostat instead of a key/value pair
-     * @return the JSON response string from the thermostat
-     */
-    private String sendCommand(@Nullable String cmdKey, @Nullable String cmdVal, @Nullable String cmdJson) {
-        // if we got a cmdJson string send that, otherwise build the json from the key and val params
-        String postJson = cmdJson != null ? cmdJson : "{\"" + cmdKey + "\":" + cmdVal + "}";
-        String urlStr = buildRequestURL(DEFAULT_RESOURCE);
-
-        String output = null;
-
-        try {
-            Request request = httpClient.POST(urlStr);
-            request.header(HttpHeader.ACCEPT, "text/plain");
-            request.header(HttpHeader.CONTENT_TYPE, "text/plain");
-            request.content(new StringContentProvider(postJson), "application/json");
-
-            ContentResponse contentResponse = request.send();
-            int httpStatus = contentResponse.getStatus();
-
-            if (httpStatus != OK_200) {
-                throw new RadioThermostatHttpException("Thermostat HTTP response code was: " + httpStatus);
-            }
-            output = contentResponse.getContentAsString();
-        } catch (RadioThermostatHttpException | InterruptedException | TimeoutException | ExecutionException
-                | IllegalStateException e) {
-            logger.warn("Error executing thermostat command: {}, {}", postJson, e.getMessage());
-        }
-
-        return output;
-
-    }
-
-    /**
      * Update a given channelId from the thermostat data
      * 
      * @param the channel id to be updated
-     * @param data
-     * @return
-     * @throws Exception
+     * @param data the RadioThermostat dto
+     * @return the value to be set in the state
      */
-    public static @Nullable Object getValue(String channelId, RadioThermostatData data) throws Exception {
+    public static @Nullable Object getValue(String channelId, RadioThermostatData data) {
         switch (channelId) {
             case TEMPERATURE:
-                if (!data.getThermostatData().getTemperature().equals(new Double(0))) {
+                if (!data.getThermostatData().getTemperature().equals(0d)) {
                     return new QuantityType<Temperature>(data.getThermostatData().getTemperature(),
                             API_TEMPERATURE_UNIT);
                 } else {
@@ -545,8 +408,6 @@ public class RadioThermostatHandler extends BaseThingHandler {
                 return data.getThermostatData().getTime().getMinute();
             case DATE_STAMP:
                 return data.getThermostatData().getTime().getThemostatDateTime();
-            case LAST_UPDATE:
-                return ZonedDateTime.now();
             case TODAY_HEAT_RUNTIME:
                 return new QuantityType<>(data.getRuntime().getToday().getHeatTime().getRuntime(), API_MINUTES_UNIT);
             case TODAY_COOL_RUNTIME:
@@ -572,29 +433,19 @@ public class RadioThermostatHandler extends BaseThingHandler {
     }
 
     /**
-     * Check if the thermostat is a CT80 model
-     * 
-     * @return boolean indicating whether or not the thermostat is a CT80 model
-     */
-    private boolean isCT80() {
-        return (rthermData.getModel() != null && rthermData.getModel().contains("CT80"));
-    }
-
-    /**
      * Build a list of fan modes based on what model thermostat is used
      * 
      * @return list of state options for thermostat fan modes
      */
-    private List<StateOption> getFanModeOptions() {
+    private List<StateOption> getFanModeOptions(boolean isCT80) {
         List<StateOption> fanModeOptions = new ArrayList<>();
 
         fanModeOptions.add(new StateOption("0", "Auto"));
-        if (isCT80()) {
+        if (isCT80) {
             fanModeOptions.add(new StateOption("1", "Auto/Circulate"));
         }
         fanModeOptions.add(new StateOption("2", "On"));
 
         return fanModeOptions;
     }
-
 }

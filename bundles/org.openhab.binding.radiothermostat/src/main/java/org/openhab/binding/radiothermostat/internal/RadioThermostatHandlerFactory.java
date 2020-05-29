@@ -42,11 +42,13 @@ import org.osgi.service.component.annotations.Reference;
 public class RadioThermostatHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_RTHERM);
-    private @Nullable RadioThermostatStateDescriptionProvider stateDescriptionProvider;
+    private final RadioThermostatStateDescriptionProvider stateDescriptionProvider;
     private final HttpClient httpClient;
 
     @Activate
-    public RadioThermostatHandlerFactory(final @Reference HttpClientFactory httpClientFactory) {
+    public RadioThermostatHandlerFactory(final @Reference RadioThermostatStateDescriptionProvider provider,
+            final @Reference HttpClientFactory httpClientFactory) {
+        this.stateDescriptionProvider = provider;
         this.httpClient = httpClientFactory.getCommonHttpClient();
     }
 
@@ -66,14 +68,4 @@ public class RadioThermostatHandlerFactory extends BaseThingHandlerFactory {
 
         return null;
     }
-
-    @Reference
-    protected void setDynamicStateDescriptionProvider(RadioThermostatStateDescriptionProvider provider) {
-        this.stateDescriptionProvider = provider;
-    }
-
-    protected void unsetDynamicStateDescriptionProvider(RadioThermostatStateDescriptionProvider provider) {
-        this.stateDescriptionProvider = null;
-    }
-
 }

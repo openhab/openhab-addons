@@ -52,5 +52,4 @@ public class RadioThermostatJsonRuntime {
     public @Nullable RadioThermostatJsonRuntimeHeatCool getYesterday() {
         return yesterday;
     }
-
 }

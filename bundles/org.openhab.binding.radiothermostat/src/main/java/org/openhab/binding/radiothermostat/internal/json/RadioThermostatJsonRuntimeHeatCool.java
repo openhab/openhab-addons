@@ -52,5 +52,4 @@ public class RadioThermostatJsonRuntimeHeatCool {
     public @Nullable RadioThermostatJsonTime getCoolTime() {
         return coolTime;
     }
-
 }

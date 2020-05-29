@@ -33,5 +33,4 @@ public class RadioThermostatJsonHumidity {
     public Integer getHumidity() {
         return humidity;
     }
-
 }
