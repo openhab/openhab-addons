@@ -14,7 +14,6 @@ package org.openhab.binding.comfoair.internal.datatypes;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.types.State;
@@ -59,10 +58,10 @@ public class DataTypeTemperature implements ComfoAirDataType {
 
     @Override
     public int @Nullable [] convertFromState(State value, ComfoAirCommandType commandType) {
-        if (((DecimalType) value) instanceof DecimalType) {
+        if (value instanceof QuantityType) {
             int[] template = commandType.getChangeDataTemplate();
 
-            template[commandType.getChangeDataPos()] = (int) (((DecimalType) value).doubleValue() + 20) * 2;
+            template[commandType.getChangeDataPos()] = (int) (((QuantityType<?>) value).doubleValue() + 20) * 2;
 
             return template;
         } else {

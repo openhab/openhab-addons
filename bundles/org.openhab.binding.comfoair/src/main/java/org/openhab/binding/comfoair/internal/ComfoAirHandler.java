@@ -23,11 +23,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.QuantityType;
-import org.eclipse.smarthome.core.library.unit.SIUnits;
-import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -40,11 +35,6 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.comfoair.internal.datatypes.ComfoAirDataType;
-import org.openhab.binding.comfoair.internal.datatypes.DataTypeBoolean;
-import org.openhab.binding.comfoair.internal.datatypes.DataTypeNumber;
-import org.openhab.binding.comfoair.internal.datatypes.DataTypeRPM;
-import org.openhab.binding.comfoair.internal.datatypes.DataTypeTemperature;
-import org.openhab.binding.comfoair.internal.datatypes.DataTypeVolt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,26 +71,22 @@ public class ComfoAirHandler extends BaseThingHandler {
                 updateChannelState(channel);
             }
         } else {
-            State state = commandToState(command, channelId);
+            ComfoAirCommand changeCommand = ComfoAirCommandType.getChangeCommand(channelId, command);
 
-            if (state instanceof UnDefType) {
-                logger.warn("Unhandled command type: {}", command.toString());
-            } else {
-                ComfoAirCommand changeCommand = ComfoAirCommandType.getChangeCommand(channelId, state);
+            if (changeCommand != null) {
+                Set<String> keysToUpdate = getThing().getChannels().stream().map(Channel::getUID).filter(this::isLinked)
+                        .map(ChannelUID::getId).collect(Collectors.toSet());
+                sendCommand(changeCommand, channelId);
 
-                if (changeCommand != null) {
-                    Set<String> keysToUpdate = getThing().getChannels().stream().map(Channel::getUID)
-                            .filter(this::isLinked).map(ChannelUID::getId).collect(Collectors.toSet());
-                    sendCommand(changeCommand, channelId);
+                Collection<ComfoAirCommand> affectedReadCommands = ComfoAirCommandType
+                        .getAffectedReadCommands(channelId, keysToUpdate);
 
-                    Collection<ComfoAirCommand> affectedReadCommands = ComfoAirCommandType
-                            .getAffectedReadCommands(channelId, keysToUpdate);
-
-                    if (affectedReadCommands.size() > 0) {
-                        Runnable updateThread = new AffectedItemsUpdateThread(affectedReadCommands);
-                        affectedItemsPoller = scheduler.schedule(updateThread, 3, TimeUnit.SECONDS);
-                    }
+                if (affectedReadCommands.size() > 0) {
+                    Runnable updateThread = new AffectedItemsUpdateThread(affectedReadCommands);
+                    affectedItemsPoller = scheduler.schedule(updateThread, 3, TimeUnit.SECONDS);
                 }
+            } else {
+                logger.warn("Unhandled command type: {}", command.toString());
             }
         }
     }
@@ -178,38 +164,6 @@ public class ComfoAirHandler extends BaseThingHandler {
         } catch (IllegalArgumentException e) {
             logger.warn("Unknown channel {}", channel.getUID().getId());
         }
-    }
-
-    private State commandToState(Command command, String channelId) {
-        ComfoAirCommandType comfoAirCommandType = ComfoAirCommandType.getCommandTypeByKey(channelId);
-        if (comfoAirCommandType != null) {
-            ComfoAirDataType dataType = comfoAirCommandType.getDataType();
-
-            if (dataType instanceof DataTypeBoolean) {
-                return (OnOffType) command;
-            } else if (dataType instanceof DataTypeNumber || dataType instanceof DataTypeRPM) {
-                return (DecimalType) command;
-            } else if (dataType instanceof DataTypeTemperature) {
-                if (command instanceof QuantityType<?>) {
-                    QuantityType<?> celsius = ((QuantityType<?>) command).toUnit(SIUnits.CELSIUS);
-                    if (celsius != null) {
-                        return new DecimalType(celsius.doubleValue());
-                    }
-                } else {
-                    return (DecimalType) command;
-                }
-            } else if (dataType instanceof DataTypeVolt) {
-                if (command instanceof QuantityType<?>) {
-                    QuantityType<?> volts = ((QuantityType<?>) command).toUnit(SmartHomeUnits.VOLT);
-                    if (volts != null) {
-                        return new DecimalType(volts.doubleValue());
-                    }
-                } else {
-                    return (DecimalType) command;
-                }
-            }
-        }
-        return UnDefType.UNDEF;
     }
 
     private State sendCommand(ComfoAirCommand command, String commandKey) {

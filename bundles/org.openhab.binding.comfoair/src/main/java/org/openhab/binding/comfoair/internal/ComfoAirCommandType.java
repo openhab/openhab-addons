@@ -22,13 +22,20 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
+import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.comfoair.internal.datatypes.ComfoAirDataType;
 import org.openhab.binding.comfoair.internal.datatypes.DataTypeBoolean;
 import org.openhab.binding.comfoair.internal.datatypes.DataTypeMessage;
 import org.openhab.binding.comfoair.internal.datatypes.DataTypeNumber;
 import org.openhab.binding.comfoair.internal.datatypes.DataTypeRPM;
 import org.openhab.binding.comfoair.internal.datatypes.DataTypeTemperature;
+import org.openhab.binding.comfoair.internal.datatypes.DataTypeTime;
 import org.openhab.binding.comfoair.internal.datatypes.DataTypeVolt;
 
 /**
@@ -303,7 +310,7 @@ public enum ComfoAirCommandType {
             Constants.REPLY_GET_ERRORS, new int[] { 12 }),
     ERROR_RESET("ccease#errorReset", DataTypeBoolean.getInstance(), new int[] { 0x01 }, Constants.REQUEST_SET_RESETS, 4,
             0, new String[] { "ccease#errorMessage" }),
-    FILTER_HOURS("times#filterHours", DataTypeNumber.getInstance(), Constants.REQUEST_GET_HOURS,
+    FILTER_HOURS("times#filterHours", DataTypeTime.getInstance(), Constants.REQUEST_GET_HOURS,
             Constants.REPLY_GET_HOURS, new int[] { 15, 16 }),
     FILTER_RESET("ccease#filterReset", DataTypeBoolean.getInstance(), new int[] { 0x01 }, Constants.REQUEST_SET_RESETS,
             4, 3, new String[] { "times#filterHours", "ccease#filterError" }),
@@ -335,20 +342,20 @@ public enum ComfoAirCommandType {
             Constants.REPLY_GET_PREHEATER, new int[] { 3, 4 }),
     PREHEATER_OPTION("preheater#preheaterSafety", DataTypeNumber.getInstance(), Constants.REQUEST_GET_PREHEATER,
             Constants.REPLY_GET_PREHEATER, new int[] { 5 }),
-    LEVEL0_TIME("times#level0Time", DataTypeNumber.getInstance(), Constants.REQUEST_GET_HOURS,
-            Constants.REPLY_GET_HOURS, new int[] { 0, 1, 2 }),
-    LEVEL1_TIME("times#level1Time", DataTypeNumber.getInstance(), Constants.REQUEST_GET_HOURS,
-            Constants.REPLY_GET_HOURS, new int[] { 3, 4, 5 }),
-    LEVEL2_TIME("times#level2Time", DataTypeNumber.getInstance(), Constants.REQUEST_GET_HOURS,
-            Constants.REPLY_GET_HOURS, new int[] { 6, 7, 8 }),
-    LEVEL3_TIME("times#level3Time", DataTypeNumber.getInstance(), Constants.REQUEST_GET_HOURS,
-            Constants.REPLY_GET_HOURS, new int[] { 17, 18, 19 }),
-    FREEZE_TIME("times#freezeTime", DataTypeNumber.getInstance(), Constants.REQUEST_GET_HOURS,
-            Constants.REPLY_GET_HOURS, new int[] { 9, 10 }),
-    PREHEATER_TIME("times#preheaterTime", DataTypeNumber.getInstance(), Constants.REQUEST_GET_HOURS,
+    LEVEL0_TIME("times#level0Time", DataTypeTime.getInstance(), Constants.REQUEST_GET_HOURS, Constants.REPLY_GET_HOURS,
+            new int[] { 0, 1, 2 }),
+    LEVEL1_TIME("times#level1Time", DataTypeTime.getInstance(), Constants.REQUEST_GET_HOURS, Constants.REPLY_GET_HOURS,
+            new int[] { 3, 4, 5 }),
+    LEVEL2_TIME("times#level2Time", DataTypeTime.getInstance(), Constants.REQUEST_GET_HOURS, Constants.REPLY_GET_HOURS,
+            new int[] { 6, 7, 8 }),
+    LEVEL3_TIME("times#level3Time", DataTypeTime.getInstance(), Constants.REQUEST_GET_HOURS, Constants.REPLY_GET_HOURS,
+            new int[] { 17, 18, 19 }),
+    FREEZE_TIME("times#freezeTime", DataTypeTime.getInstance(), Constants.REQUEST_GET_HOURS, Constants.REPLY_GET_HOURS,
+            new int[] { 9, 10 }),
+    PREHEATER_TIME("times#preheaterTime", DataTypeTime.getInstance(), Constants.REQUEST_GET_HOURS,
             Constants.REPLY_GET_HOURS, new int[] { 11, 12 }),
-    BYPASS_TIME("times#bypassTime", DataTypeNumber.getInstance(), Constants.REQUEST_GET_HOURS,
-            Constants.REPLY_GET_HOURS, new int[] { 13, 14 }),
+    BYPASS_TIME("times#bypassTime", DataTypeTime.getInstance(), Constants.REQUEST_GET_HOURS, Constants.REPLY_GET_HOURS,
+            new int[] { 13, 14 }),
     IS_ANALOG1("analog#isAnalog1", DataTypeBoolean.getInstance(), new int[] { 0x01 }, Constants.REQUEST_SET_ANALOGS, 19,
             0,
             new String[] { "analog#analog1Mode", "analog#analog1Negative", "analog#analog1Min", "analog#analog1Max",
@@ -738,19 +745,58 @@ public enum ComfoAirCommandType {
      *            new state
      * @return initialized ComfoAirCommand
      */
-    public static @Nullable ComfoAirCommand getChangeCommand(String key, State value) {
+    public static @Nullable ComfoAirCommand getChangeCommand(String key, Command command) {
         ComfoAirCommandType commandType = ComfoAirCommandType.getCommandTypeByKey(key);
-        DecimalType decimalValue = value.as(DecimalType.class);
+        State value = UnDefType.NULL;
 
-        if (commandType != null && decimalValue != null) {
+        if (commandType != null) {
             ComfoAirDataType dataType = commandType.getDataType();
-            int[] data = dataType.convertFromState(value, commandType);
+            if (dataType instanceof DataTypeBoolean) {
+                value = (OnOffType) command;
+            } else if (dataType instanceof DataTypeNumber || dataType instanceof DataTypeRPM) {
+                value = (DecimalType) command;
+            } else if (dataType instanceof DataTypeTemperature) {
+                if (command instanceof QuantityType<?>) {
+                    QuantityType<?> celsius = ((QuantityType<?>) command).toUnit(SIUnits.CELSIUS);
+                    if (celsius != null) {
+                        value = celsius;
+                    }
+                } else {
+                    value = new QuantityType<>(((DecimalType) command).doubleValue(), SIUnits.CELSIUS);
+                }
+            } else if (dataType instanceof DataTypeVolt) {
+                if (command instanceof QuantityType<?>) {
+                    QuantityType<?> volts = ((QuantityType<?>) command).toUnit(SmartHomeUnits.VOLT);
+                    if (volts != null) {
+                        value = volts;
+                    }
+                } else {
+                    value = new QuantityType<>(((DecimalType) command).doubleValue(), SmartHomeUnits.VOLT);
+                }
+            } else if (dataType instanceof DataTypeTime) {
+                if (command instanceof QuantityType<?>) {
+                    QuantityType<?> hours = ((QuantityType<?>) command).toUnit(SmartHomeUnits.HOUR);
+                    if (hours != null) {
+                        value = hours;
+                    }
+                } else {
+                    value = new QuantityType<>(((DecimalType) command).doubleValue(), SmartHomeUnits.HOUR);
+                }
+            }
+            if (value instanceof UnDefType) {
+                return null;
+            } else {
+                int[] data = dataType.convertFromState(value, commandType);
+                DecimalType decimalValue = value.as(DecimalType.class);
+                if (decimalValue != null) {
+                    int intValue = decimalValue.intValue();
 
-            if (data != null) {
-                int dataPossition = commandType.getChangeDataPos();
-                int intValue = decimalValue.intValue();
-
-                return new ComfoAirCommand(key, commandType.change_command, null, data, dataPossition, intValue);
+                    if (data != null) {
+                        int dataPossition = commandType.getChangeDataPos();
+                        return new ComfoAirCommand(key, commandType.change_command, null, data, dataPossition,
+                                intValue);
+                    }
+                }
             }
         }
         return null;

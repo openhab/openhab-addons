@@ -23,36 +23,36 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class to handle volt values
+ * Class to handle time values
  *
- * @author Grzegorz Miasko - Initial Contribution
- * @author Hans Böhm - QuantityTypes
+ * @author Hans Böhm - Initial Contribution
  */
 @NonNullByDefault
-public class DataTypeVolt implements ComfoAirDataType {
-    private static DataTypeVolt SINGLETON_INSTANCE = new DataTypeVolt();
+public class DataTypeTime implements ComfoAirDataType {
+    private static DataTypeTime SINGLETON_INSTANCE = new DataTypeTime();
 
-    private DataTypeVolt() {
+    private DataTypeTime() {
     }
 
-    private final Logger logger = LoggerFactory.getLogger(DataTypeVolt.class);
+    private final Logger logger = LoggerFactory.getLogger(DataTypeTime.class);
 
-    public static DataTypeVolt getInstance() {
+    public static DataTypeTime getInstance() {
         return SINGLETON_INSTANCE;
     }
 
     @Override
     public State convertToState(int @Nullable [] data, ComfoAirCommandType commandType) {
         if (data == null) {
-            logger.trace("\"DataTypeVolt\" class \"convertToState\" method parameter: null");
+            logger.trace("\"DataTypeTime\" class \"convertToState\" method parameter: null");
             return UnDefType.NULL;
         } else {
-            int[] get_reply_data_pos = commandType.getGetReplyDataPos();
-            if (get_reply_data_pos != null && get_reply_data_pos[0] < data.length) {
-                return new QuantityType<>((double) data[get_reply_data_pos[0]] * 10 / 255, SmartHomeUnits.VOLT);
-            } else {
+            int value = calculateNumberValue(data, commandType);
+
+            if (value < 0) {
                 return UnDefType.NULL;
             }
+
+            return new QuantityType<>(value, SmartHomeUnits.HOUR);
         }
     }
 
@@ -60,12 +60,24 @@ public class DataTypeVolt implements ComfoAirDataType {
     public int @Nullable [] convertFromState(State value, ComfoAirCommandType commandType) {
         if (value instanceof QuantityType) {
             int[] template = commandType.getChangeDataTemplate();
+            int[] possibleValues = commandType.getPossibleValues();
+            int position = commandType.getChangeDataPos();
 
-            template[commandType.getChangeDataPos()] = (int) (((QuantityType<?>) value).doubleValue() * 255 / 10);
+            int intValue = ((QuantityType<?>) value).intValue();
 
+            if (possibleValues == null) {
+                template[position] = intValue;
+            } else {
+                for (int i = 0; i < possibleValues.length; i++) {
+                    if (possibleValues[i] == intValue) {
+                        template[position] = intValue;
+                        break;
+                    }
+                }
+            }
             return template;
         } else {
-            logger.trace("\"DataTypeVolt\" class \"convertFromState\" undefined state");
+            logger.trace("\"DataTypeTime\" class \"convertFromState\" undefined state");
             return null;
         }
     }

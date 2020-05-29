@@ -641,7 +641,7 @@
 	</channel-type>
 
 	<channel-type id="level0_time" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Level 0 Duration</label>
 		<description>Uptime at level 0 (away)</description>
 		<category>Number</category>
@@ -649,7 +649,7 @@
 	</channel-type>
 
 	<channel-type id="level1_time" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Level 1 Duration</label>
 		<description>Uptime at level 1</description>
 		<category>Number</category>
@@ -657,7 +657,7 @@
 	</channel-type>
 
 	<channel-type id="level2_time" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Level 2 Duration</label>
 		<description>Uptime at level 2</description>
 		<category>Number</category>
@@ -665,7 +665,7 @@
 	</channel-type>
 
 	<channel-type id="level3_time" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Level 3 Duration</label>
 		<description>Uptime at level 3</description>
 		<category>Number</category>
@@ -673,7 +673,7 @@
 	</channel-type>
 
 	<channel-type id="freeze_time" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Antifrost Duration</label>
 		<description>Uptime of antifrost</description>
 		<category>Number</category>
@@ -681,7 +681,7 @@
 	</channel-type>
 
 	<channel-type id="preheater_time" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Preheater Duration</label>
 		<description>Uptime of preheater</description>
 		<category>Number</category>
@@ -689,7 +689,7 @@
 	</channel-type>
 
 	<channel-type id="bypass_time" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Bypass Duration</label>
 		<description>Hours of bypass open</description>
 		<category>Number</category>
@@ -697,7 +697,7 @@
 	</channel-type>
 
 	<channel-type id="filter_hours">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Filter Duration</label>
 		<description>Uptime of the filter</description>
 		<category>Number</category>
