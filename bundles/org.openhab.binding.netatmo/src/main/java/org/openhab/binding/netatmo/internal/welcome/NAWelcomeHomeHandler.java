@@ -95,7 +95,7 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
     }
 
     @Override
-    protected State getNAThingProperty(String channelId) {
+    protected State getNAThingProperty(@Nullable String channelId) {
         switch (channelId) {
             case CHANNEL_WELCOME_HOME_CITY:
                 return device != null ? toStringType(device.getPlace().getCity()) : UnDefType.UNDEF;
@@ -229,10 +229,12 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
         return OnOffType.OFF;
     }
 
-    private static @Nullable NAWelcomeSubEvent findFirstSubEvent(NAWelcomeEvent event) {
-        List<NAWelcomeSubEvent> subEvents = event.getEventList();
-        if(subEvents != null && !subEvents.isEmpty()) {
-            return subEvents.get(0);
+    private static @Nullable NAWelcomeSubEvent findFirstSubEvent(@Nullable NAWelcomeEvent event) {
+        if(event != null) {
+            List<NAWelcomeSubEvent> subEvents = event.getEventList();
+            if (subEvents != null && !subEvents.isEmpty()) {
+                return subEvents.get(0);
+            }
         }
         return null;
     }

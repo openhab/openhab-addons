@@ -89,7 +89,7 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
         }
     }
 
-    protected abstract DEVICE updateReadings();
+    protected abstract @Nullable DEVICE updateReadings();
 
     protected void updateProperties(DEVICE deviceData) {
     }
