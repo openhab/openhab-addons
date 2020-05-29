@@ -390,6 +390,8 @@ public class UpnpRendererHandler extends UpnpHandler {
             }
             subscriptionRefreshJob = null;
             upnpSubscribed = false;
+
+            cancelTrackPositionRefresh();
         }
         super.onStatusChanged(status);
     }
