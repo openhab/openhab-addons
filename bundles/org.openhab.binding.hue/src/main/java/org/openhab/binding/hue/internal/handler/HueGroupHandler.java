@@ -16,6 +16,7 @@ import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -68,6 +69,7 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
     private @Nullable HueClient hueClient;
 
     private @Nullable ScheduledFuture<?> scheduledFuture;
+    private @Nullable FullGroup lastFullGroup;
 
     public HueGroupHandler(Thing thing) {
         super(thing);
@@ -265,7 +267,7 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
             if (tmpColorTemp != null) {
                 lastSentColorTemp = tmpColorTemp;
             }
-            bridgeHandler.updateGroupState(group, groupState);
+            bridgeHandler.updateGroupState(group, groupState, fadeTime);
         } else {
             logger.debug("Command sent to an unknown channel id: {}:{}", getThing().getUID(), channel);
         }
@@ -336,13 +338,17 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
     }
 
     @Override
-    public void onGroupStateChanged(@Nullable HueBridge bridge, FullGroup group) {
+    public boolean onGroupStateChanged(@Nullable HueBridge bridge, FullGroup group) {
         logger.trace("onGroupStateChanged() was called for group {}", group.getId());
 
-        if (!group.getId().equals(groupId)) {
-            logger.trace("Received state change for another handler's group ({}). Will be ignored.", group.getId());
-            return;
+        final FullGroup lastState = lastFullGroup;
+        if (lastState == null || !Objects.equals(lastState.getState(), group.getState())) {
+            lastFullGroup = group;
+        } else {
+            return true;
         }
+
+        logger.trace("New state for group {}", groupId);
 
         lastSentColorTemp = null;
         lastSentBrightness = null;
@@ -377,32 +383,22 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
 
         updateState(CHANNEL_SWITCH, state.isOn() ? OnOffType.ON : OnOffType.OFF);
 
-        StringType stringType = LightStateConverter.toAlertStringType(state);
-        if (!"NULL".equals(stringType.toString())) {
-            updateState(CHANNEL_ALERT, stringType);
-            scheduleAlertStateRestore(stringType);
-        }
+        return true;
     }
 
     @Override
     public void onGroupAdded(@Nullable HueBridge bridge, FullGroup group) {
-        if (group.getId().equals(groupId)) {
-            onGroupStateChanged(bridge, group);
-        }
+        onGroupStateChanged(bridge, group);
     }
 
     @Override
     public void onGroupRemoved(@Nullable HueBridge bridge, FullGroup group) {
-        if (group.getId().equals(groupId)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.group-removed");
-        }
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.group-removed");
     }
 
     @Override
     public void onGroupGone(@Nullable HueBridge bridge, FullGroup group) {
-        if (group.getId().equals(groupId)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "@text/offline.group-removed");
-        }
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "@text/offline.group-removed");
     }
 
     /**
@@ -468,5 +464,10 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
         }
 
         return delay;
+    }
+
+    @Override
+    public String getGroupId() {
+        return groupId;
     }
 }
