@@ -16,8 +16,8 @@ import static org.eclipse.jetty.http.HttpMethod.GET;
 import static org.eclipse.jetty.http.HttpStatus.OK_200;
 import static org.openhab.binding.radiothermostat.internal.RadioThermostatBindingConstants.*;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -46,10 +46,10 @@ public class RadioThermostatConnector {
 
     private static final String URL = "http://%hostName%/%resource%";
 
-    private HttpClient httpClient;
-    private @Nullable String hostName;
+    private final HttpClient httpClient;
+    private final @Nullable String hostName;
 
-    private List<RadioThermostatEventListener> listeners = new ArrayList<>();
+    private final List<RadioThermostatEventListener> listeners = new CopyOnWriteArrayList<>();
 
     public RadioThermostatConnector(HttpClient httpClient, @Nullable String hostName) {
         this.httpClient = httpClient;
@@ -163,8 +163,8 @@ public class RadioThermostatConnector {
      */
     private void dispatchKeyValue(String key, String value) {
         RadioThermostatEvent event = new RadioThermostatEvent(this, key, value);
-        for (int i = 0; i < listeners.size(); i++) {
-            listeners.get(i).onNewMessageEvent(event);
+        for (RadioThermostatEventListener listener : listeners) {
+            listener.onNewMessageEvent(event);
         }
     }
 }

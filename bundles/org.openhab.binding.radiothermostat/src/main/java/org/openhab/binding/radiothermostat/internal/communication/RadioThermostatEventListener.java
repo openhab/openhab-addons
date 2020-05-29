@@ -13,7 +13,6 @@
 package org.openhab.binding.radiothermostat.internal.communication;
 
 import java.util.EventListener;
-import java.util.EventObject;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -30,5 +29,5 @@ public interface RadioThermostatEventListener extends EventListener {
      *
      * @param event the event object
      */
-    public void onNewMessageEvent(EventObject event);
+    public void onNewMessageEvent(RadioThermostatEvent event);
 }

@@ -19,7 +19,6 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.EventObject;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -72,25 +71,22 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class RadioThermostatHandler extends BaseThingHandler implements RadioThermostatEventListener {
+    private static final int DEFAULT_REFRESH_PERIOD = 2;
+    private static final int DEFAULT_LOG_REFRESH_PERIOD = 10;
+
     private @Nullable final RadioThermostatStateDescriptionProvider stateDescriptionProvider;
 
     private final Logger logger = LoggerFactory.getLogger(RadioThermostatHandler.class);
 
     private final HttpClient httpClient;
-
-    private static final int DEFAULT_REFRESH_PERIOD = 2;
-    private static final int DEFAULT_LOG_REFRESH_PERIOD = 10;
+    private final Gson gson;
+    private final RadioThermostatData rthermData = new RadioThermostatData();
 
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable ScheduledFuture<?> logRefreshJob;
 
-    private RadioThermostatData rthermData = new RadioThermostatData();
-
     private @Nullable RadioThermostatConnector connector;
-
     private @Nullable RadioThermostatConfiguration config;
-
-    private final Gson gson;
 
     public RadioThermostatHandler(Thing thing,
             @Nullable RadioThermostatStateDescriptionProvider stateDescriptionProvider, HttpClient httpClient) {
@@ -269,36 +265,30 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
      * @param event the event received from the listeners
      */
     @Override
-    public void onNewMessageEvent(EventObject event) {
-        RadioThermostatEvent evt = (RadioThermostatEvent) event;
-        logger.debug("onNewMessageEvent: key {} = {}", evt.getKey(), evt.getValue());
+    public void onNewMessageEvent(RadioThermostatEvent event) {
+        logger.debug("onNewMessageEvent: key {} = {}", event.getKey(), event.getValue());
 
-        String evtKey = evt.getKey();
-        String evtVal = evt.getValue();
+        String evtKey = event.getKey();
+        String evtVal = event.getValue();
 
         if (KEY_ERROR.equals(evtKey)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Error retrieving data from Thermostat ");
         } else {
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
-            Object result = null;
 
             // Map the JSON response to the correct object and update appropriate channels
             switch (evtKey) {
                 case DEFAULT_RESOURCE:
-                    result = gson.fromJson(evtVal, RadioThermostatJsonResponse.class);
-                    rthermData.setThermostatData((RadioThermostatJsonResponse) result);
+                    rthermData.setThermostatData(gson.fromJson(evtVal, RadioThermostatJsonResponse.class));
                     updateAllChannels();
                     break;
                 case HUMIDITY_RESOURCE:
-                    result = gson.fromJson(evtVal, RadioThermostatJsonHumidity.class);
-                    rthermData.setHumidity(((RadioThermostatJsonHumidity) result).getHumidity());
+                    rthermData.setHumidity(gson.fromJson(evtVal, RadioThermostatJsonHumidity.class).getHumidity());
                     updateChannel(HUMIDITY, rthermData);
-
                     break;
                 case RUNTIME_RESOURCE:
-                    result = gson.fromJson(evtVal, RadioThermostatJsonRuntime.class);
-                    rthermData.setRuntime((RadioThermostatJsonRuntime) result);
+                    rthermData.setRuntime(gson.fromJson(evtVal, RadioThermostatJsonRuntime.class));
                     updateChannel(TODAY_HEAT_RUNTIME, rthermData);
                     updateChannel(TODAY_COOL_RUNTIME, rthermData);
                     updateChannel(YESTERDAY_HEAT_RUNTIME, rthermData);
@@ -391,11 +381,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
             case OVERRIDE:
                 return data.getThermostatData().getOverride();
             case HOLD:
-                if (data.getThermostatData().getHold() == 1) {
-                    return OnOffType.ON;
-                } else {
-                    return OnOffType.OFF;
-                }
+                OnOffType.from(data.getThermostatData().getHold() == 1);
             case STATUS:
                 return data.getThermostatData().getStatus();
             case FAN_STATUS:
