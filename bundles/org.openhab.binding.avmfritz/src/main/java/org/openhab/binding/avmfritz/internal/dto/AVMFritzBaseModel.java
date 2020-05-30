@@ -41,16 +41,16 @@ import javax.xml.bind.annotation.XmlElement;
  */
 public abstract class AVMFritzBaseModel implements BatteryModel {
     protected static final int HAN_FUN_DEVICE_BIT = 1; // Bit 0
-    protected static final int HAN_FUN_BUTTON_BIT = 8; // Bit 3 - undocumented
-    protected static final int HAN_FUN_ALARM_SENSOR_BIT = 16; // Bit 4
-    protected static final int BUTTON_BIT = 32; // Bit 5 - undocumented
-    protected static final int HEATING_THERMOSTAT_BIT = 64; // Bit 6
-    protected static final int POWERMETER_BIT = 128; // Bit 7
-    protected static final int TEMPSENSOR_BIT = 256; // Bit 8
-    protected static final int OUTLET_BIT = 512; // Bit 9
-    protected static final int DECT_REPEATER_BIT = 1024; // Bit 10
-    protected static final int MICROPHONE_BIT = 2048; // Bit 11
-    protected static final int HAN_FUN_UNIT_BIT = 8192; // Bit 13
+    protected static final int HAN_FUN_BUTTON_BIT = 1 << 3; // Bit 3 - undocumented
+    protected static final int HAN_FUN_ALARM_SENSOR_BIT = 1 << 4; // Bit 4
+    protected static final int BUTTON_BIT = 1 << 5; // Bit 5 - undocumented
+    protected static final int HEATING_THERMOSTAT_BIT = 1 << 6; // Bit 6
+    protected static final int POWERMETER_BIT = 1 << 7; // Bit 7
+    protected static final int TEMPSENSOR_BIT = 1 << 8; // Bit 8
+    protected static final int OUTLET_BIT = 1 << 9; // Bit 9
+    protected static final int DECT_REPEATER_BIT = 1 << 10; // Bit 10
+    protected static final int MICROPHONE_BIT = 1 << 11; // Bit 11
+    protected static final int HAN_FUN_UNIT_BIT = 1 << 13; // Bit 13
 
     @XmlAttribute(name = "identifier")
     private String ident;

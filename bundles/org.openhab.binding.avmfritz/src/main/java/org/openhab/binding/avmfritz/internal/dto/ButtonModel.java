@@ -17,7 +17,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
 
 /**
  * See {@link DeviceListModel}.
@@ -25,7 +24,6 @@ import javax.xml.bind.annotation.XmlType;
  * @author Christoph Weitkamp - Initial contribution
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder = { "name", "lastpressedtimestamp" })
 @XmlRootElement(name = "button")
 public class ButtonModel {
 

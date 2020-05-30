@@ -158,13 +158,10 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
     private void updateShortLongPressButton(List<ButtonModel> buttons) {
         ButtonModel shortPressButton = buttons.size() > 0 ? buttons.get(0) : null;
         ButtonModel longPressButton = buttons.size() > 1 ? buttons.get(1) : null;
-        ButtonModel lastPressedButton = shortPressButton != null
-                ? (longPressButton != null
-                        ? (shortPressButton.getLastpressedtimestamp() > longPressButton.getLastpressedtimestamp()
-                                ? shortPressButton
-                                : longPressButton)
-                        : shortPressButton)
-                : longPressButton;
+        ButtonModel lastPressedButton = shortPressButton != null && (longPressButton == null
+                || shortPressButton.getLastpressedtimestamp() > longPressButton.getLastpressedtimestamp())
+                        ? shortPressButton
+                        : longPressButton;
         if (lastPressedButton != null) {
             updateButton(lastPressedButton,
                     lastPressedButton.equals(shortPressButton) ? CommonTriggerEvents.SHORT_PRESSED
