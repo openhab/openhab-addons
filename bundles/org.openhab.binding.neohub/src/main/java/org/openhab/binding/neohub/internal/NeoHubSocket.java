@@ -14,6 +14,7 @@ package org.openhab.binding.neohub.internal;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
 
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.InetSocketAddress;
@@ -62,12 +63,11 @@ public class NeoHubSocket {
      *
      * @param requestJson the message to be sent to the NeoHub
      * @return responseJson received from NeoHub
-     * @throws NeoHubException, IOException, IllegalBlockingModeException,
-     *             IllegalArgumentException
+     * @throws NeoHubException, IOException
      * 
      */
-    public String sendMessage(final String requestJson) throws Exception {
-        Exception caughtException = null;
+    public String sendMessage(final String requestJson) throws IOException, NeoHubException {
+        IOException caughtException = null;
         StringBuilder builder = new StringBuilder();
 
         try (Socket socket = new Socket()) {
@@ -95,8 +95,8 @@ public class NeoHubSocket {
                     builder.append((char) inChar);
                 }
             }
-        } catch (Exception e) {
-            // catch any type of exceptions here, and save it to be re-thrown later
+        } catch (IOException e) {
+            // catch IOExceptions here, and save them to be re-thrown later
             caughtException = e;
         }
 

@@ -14,6 +14,7 @@ package org.openhab.binding.neohub.internal;
 
 import static org.openhab.binding.neohub.internal.NeoHubBindingConstants.*;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
@@ -42,6 +43,8 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.neohub.internal.NeoHubAbstractDeviceData.AbstractRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonSyntaxException;
 
 import tec.uom.se.unit.Units;
 
@@ -355,15 +358,12 @@ public class NeoHubHandler extends BaseBridgeHandler {
                     String deviceName = device.getDeviceName();
                     Boolean online = !device.offline();
 
-                    if (connectionStates.containsKey(deviceName)) {
-                        @Nullable
-                        Boolean onlineBefore = connectionStates.get(deviceName);
-                        if (!online.equals(onlineBefore)) {
-                            logger.info("device \"{}\" has {} the RF mesh network", deviceName,
-                                    online.booleanValue() ? "joined" : "left");
-                        }
+                    @Nullable
+                    Boolean onlineBefore = connectionStates.put(deviceName, online);
+                    if (!online.equals(onlineBefore)) {
+                        logger.info("device \"{}\" has {} the RF mesh network", deviceName,
+                                online.booleanValue() ? "joined" : "left");
                     }
-                    connectionStates.put(deviceName, online);
 
                     if (online.booleanValue()) {
                         onlineDeviceCount++;
@@ -403,22 +403,22 @@ public class NeoHubHandler extends BaseBridgeHandler {
             try {
                 responseJson = socket.sendMessage(CMD_CODE_READ_DCB);
                 systemData = NeoHubReadDcbResponse.createSystemData(responseJson);
-                supportsLegacyApi = systemData instanceof NeoHubReadDcbResponse;
+                supportsLegacyApi = systemData != null;
                 if (!supportsLegacyApi) {
                     throw new NeoHubException("legacy API not supported");
                 }
-            } catch (Exception e) {
+            } catch (JsonSyntaxException | NeoHubException | IOException e) {
                 // we learned that this API is not currently supported; no big deal
                 logger.debug("Legacy API is not supported!");
             }
             try {
                 responseJson = socket.sendMessage(CMD_CODE_GET_SYSTEM);
                 systemData = NeoHubReadDcbResponse.createSystemData(responseJson);
-                supportsFutureApi = systemData instanceof NeoHubReadDcbResponse;
+                supportsFutureApi = systemData != null;
                 if (!supportsFutureApi) {
                     throw new NeoHubException("new API not supported");
                 }
-            } catch (Exception e) {
+            } catch (JsonSyntaxException | NeoHubException | IOException e) {
                 // we learned that this API is not currently supported; no big deal
                 logger.debug("New API is not supported!");
             }
@@ -450,7 +450,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
             try {
                 responseJson = socket.sendMessage(CMD_CODE_GET_ENGINEERS);
                 return NeoHubGetEngineersData.createEngineersData(responseJson);
-            } catch (Exception e) {
+            } catch (JsonSyntaxException | IOException | NeoHubException e) {
                 logger.warn(MSG_FMT_ENGINEERS_POLL_ERR, e.getMessage());
             }
         }
