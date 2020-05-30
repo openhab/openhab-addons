@@ -73,6 +73,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
     private FreeboxApiManager apiManager;
     private long uptime;
     private List<FreeboxDataListener> dataListeners = new CopyOnWriteArrayList<>();
+    private FreeboxServerConfiguration configuration;
 
     public FreeboxHandler(Bridge bridge) {
         super(bridge);
@@ -137,7 +138,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("initializing Freebox Server handler for thing {}", getThing().getUID());
 
-        FreeboxServerConfiguration configuration = getConfigAs(FreeboxServerConfiguration.class);
+        configuration = getConfigAs(FreeboxServerConfiguration.class);
 
         // Update the discovery configuration
         Map<String, Object> configDiscovery = new HashMap<>();
@@ -201,7 +202,6 @@ public class FreeboxHandler extends BaseBridgeHandler {
     private void authorize() {
         logger.debug("Authorize job...");
 
-        FreeboxServerConfiguration configuration = getConfigAs(FreeboxServerConfiguration.class);
         String fqdn = configuration.fqdn;
         FreeboxDiscoveryResponse result = null;
         boolean httpsRequestOk = false;
@@ -307,7 +307,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
     }
 
     public String getAppToken() {
-        return getConfigAs(FreeboxServerConfiguration.class).appToken;
+        return configuration == null ? null : configuration.appToken;
     }
 
     public boolean registerDataListener(FreeboxDataListener dataListener) {

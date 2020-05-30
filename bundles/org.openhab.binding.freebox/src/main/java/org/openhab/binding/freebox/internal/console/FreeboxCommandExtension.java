@@ -81,7 +81,6 @@ public class FreeboxCommandExtension extends AbstractConsoleCommandExtension {
 
     @Override
     public List<String> getUsages() {
-        return Arrays
-                .asList(new String[] { buildCommandUsage("<bridgeUID> " + APP_TOKEN, "show the application token") });
+        return Arrays.asList(buildCommandUsage("<bridgeUID> " + APP_TOKEN, "show the application token"));
     }
 }
