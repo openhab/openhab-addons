@@ -79,6 +79,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     protected final MagentaTVHandlerFactory handlerFactory;
     protected MagentaTVControl control = new MagentaTVControl();
 
+    private String thingId = "";
     private volatile int idRefresh = 0;
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private @Nullable ScheduledFuture<?> pairingWatchdogJob;
@@ -117,13 +118,15 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     public void initialize() {
         // The framework requires you to return from this method quickly. For that the initialization itself is executed
         // asynchronously
-        logger.debug("Initializing Thing...");
-        // updateStatus(ThingStatus.UNKNOWN);
-        scheduler.execute(() -> {
+        String label = getThing().getLabel();
+        thingId = label != null ? label : "";
+        updateStatus(ThingStatus.UNKNOWN);
+        scheduler.schedule(() -> {
             String errorMessage = "";
             try {
                 thingConfig.fromProperties(getThing().getProperties());
                 thingConfig.initializeConfig(getConfig().getProperties());
+                thingId = thingConfig.getFriendlyName();
                 if (thingConfig.getUDN().isEmpty()) {
                     // get UDN from device name
                     String uid = this.getThing().getUID().getAsString();
@@ -138,22 +141,10 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                     thingConfig.setMacAddress(macAddress);
                 }
 
+                logger.info("{}: Authenticate Account {}", thingId, thingConfig.getAccountName());
                 control = new MagentaTVControl(thingConfig, network);
                 thingConfig.updateConfig(control.getConfig().getProperties()); // get network parameters from control
                 authenticateUser();
-
-                // wait for NotifyServlet to initialze
-                if (!handlerFactory.getNotifyServletStatus()) {
-                    logger.debug("Waiting on NotifyServlet to start...");
-                    int iRetries = 30;
-                    while ((iRetries-- > 0) && !handlerFactory.getNotifyServletStatus()) {
-                        logger.trace("Waiting for init, {} sec remaining", iRetries);
-                        Thread.sleep(1000);
-                    }
-                    if ((iRetries <= 0) && !handlerFactory.getNotifyServletStatus()) {
-                        throw new MagentaTVException("Can't initialize, NotifyServlet not started!");
-                    }
-                }
 
                 connectReceiver(); // throws MagentaTVException on error
 
@@ -161,15 +152,13 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                 // (see onPairingResult())
             } catch (MagentaTVException e) {
                 errorMessage = e.toString();
-            } catch (InterruptedException e) {
-                errorMessage = e.toString();
             } finally {
                 if (!errorMessage.isEmpty()) {
-                    logger.debug("{}", errorMessage);
+                    logger.debug("{}: {}", thingId, errorMessage);
                     setOnlineState(ThingStatus.OFFLINE, errorMessage);
                 }
             }
-        });
+        }, 5, TimeUnit.SECONDS);
     }
 
     /**
@@ -188,19 +177,19 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
 
         try {
             if (!isOnline() || command.toString().equalsIgnoreCase("PAIR")) {
-                logger.debug("Device {} is offline, try to (re-)connect", deviceName());
+                logger.debug("{}: Receiver {} is offline, try to (re-)connect", thingId, deviceName());
                 connectReceiver(); // reconnect to MR, throws an exception if this fails
             }
 
-            logger.debug("Channel command for device {}: {} for channel {}", thingConfig.getFriendlyName(),
+            logger.debug("{}: Channel command for device {}: {} for channel {}", thingId, thingConfig.getFriendlyName(),
                     command.toString(), channelUID.getId().toString());
             switch (channelUID.getId()) {
                 case CHANNEL_POWER: // toggle power
-                    logger.debug("Toggle power, new state={}", command.toString());
+                    logger.debug("{}: Toggle power, new state={}", thingId, command);
                     control.sendKey("POWER");
                     break;
                 case CHANNEL_PLAYER:
-                    logger.debug("Player command: {}", command);
+                    logger.debug("{}: Player command: {}", thingId, command);
                     if (command instanceof OnOffType) {
                         control.sendKey("POWER");
                     } else if (command instanceof PlayPauseType) {
@@ -222,7 +211,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                             control.sendKey("REWIND");
                         }
                     } else {
-                        logger.debug("Unknown media command: {}", command.toString());
+                        logger.debug("{}: Unknown media command: {}", thingId, command);
                     }
                     break;
                 case CHANNEL_STOP:
@@ -270,19 +259,19 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                     break;
                 case CHANNEL_KEY:
                     if (command.toString().equalsIgnoreCase("PAIR")) { // special key to re-pair receiver
-                        logger.debug("PAIRing key received, reconnect device {}", deviceName());
+                        logger.debug("{}: PAIRing key received, reconnect receiver {}", thingId, deviceName());
                     } else {
                         control.sendKey(command.toString());
                         mapKeyToMediateState(command.toString());
                     }
                     break;
                 default:
-                    logger.debug("Command for unknown channel {}", channelUID.getAsString());
+                    logger.debug("{}: Command {} for unknown channel {}", thingId, command, channelUID.getAsString());
             }
         } catch (MagentaTVException e) {
             String errorMessage = MessageFormat.format("Channel operation failed (command={0}, value={1}): {2}",
                     command.toString(), channelUID.getId().toString(), e.toString());
-            logger.debug("{}", errorMessage);
+            logger.debug("{}: {}", thingId, errorMessage);
             setOnlineState(ThingStatus.OFFLINE, errorMessage);
         }
     }
@@ -304,7 +293,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                 break;
         }
         if (state != null) {
-            logger.debug("Setting Player state to {}", state);
+            logger.debug("{}: Setting Player state to {}", thingId, state);
             updateState(CHANNEL_PLAYER, state);
         }
     }
@@ -314,9 +303,8 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
      *
      * @throws MagentaTVException something failed
      */
-    @SuppressWarnings("null")
     protected void connectReceiver() throws MagentaTVException {
-        if ((control != null) && control.checkDev()) {
+        if (control.checkDev()) {
             thingConfig.updateConfig(control.getConfig().getProperties()); // get description data
             updateThingProperties(thingConfig.getProperties());
             handlerFactory.registerDevice(thingConfig.getUDN(), thingConfig.getTerminalID(), thingConfig.getIpAddress(),
@@ -361,7 +349,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
             thingConfig.setAccountName("");
             thingConfig.setAccountPassword("");
         } else {
-            logger.debug("Skip OAuth, use existing userID");
+            logger.debug("{}: Skip OAuth, use existing userID {}", thingId, thingConfig.getUserID());
         }
     }
 
@@ -375,14 +363,14 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
         ThingStatus status = this.getThing().getStatus();
         if (status != newStatus) {
             if (newStatus == ThingStatus.INITIALIZING) {
-                logger.debug("Invalid new thing state: {}", newStatus.toString());
+                logger.debug("{}: Invalid new thing state: {}", thingId, newStatus.toString());
             }
             if (newStatus == ThingStatus.ONLINE) {
                 updateStatus(newStatus);
                 updateState(CHANNEL_POWER, OnOffType.ON);
             } else {
                 if (!errorMessage.isEmpty()) {
-                    logger.debug("Communication Error - {}, switch Thing offline", errorMessage);
+                    logger.debug("{}: Communication Error - {}, switch Thing offline", thingId, errorMessage);
                     updateStatus(newStatus, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
                 } else {
                     updateStatus(newStatus);
@@ -403,7 +391,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
             // Device sent a UPnP discovery information, trigger to reconnect
             connectReceiver();
         } else {
-            logger.debug("Refesh device status for {} (UDN={}", deviceName(), thingConfig.getUDN());
+            logger.debug("{}: Refesh device status for {} (UDN={}", thingId, deviceName(), thingConfig.getUDN());
             setOnlineState(ThingStatus.ONLINE, "");
         }
     }
@@ -424,33 +412,33 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                 thingConfig.setPairingCode(pairingCode);
                 logger.debug(
                         "{}: Pairing code received (UDN {}, terminalID {}, pairingCode={}, verificationCode={}, userID={})",
-                        thingConfig.getFriendlyName(), thingConfig.getUDN(), thingConfig.getTerminalID(),
-                        thingConfig.getPairingCode(), thingConfig.getVerificationCode(), thingConfig.getUserID());
+                        thingId, thingConfig.getUDN(), thingConfig.getTerminalID(), thingConfig.getPairingCode(),
+                        thingConfig.getVerificationCode(), thingConfig.getUserID());
 
                 // verify pairing completes the pairing process
                 if (control.verifyPairing()) {
-                    logger.debug("Pairing completed for device {} ({}), Thing now ONLINE",
+                    logger.debug("{}: Pairing completed for device {} ({}), Thing now ONLINE", thingId,
                             thingConfig.getFriendlyName(), thingConfig.getTerminalID());
                     setOnlineState(ThingStatus.ONLINE, "");
                     cancelPairingCheck(); // stop timeout check
                 }
             }
         } else {
-            logger.debug("control not yet initialized!");
+            logger.debug("{}: control not yet initialized!", thingId);
         }
     }
 
     @Override
     public void onMREvent(String jsonInput) {
-        logger.trace("Process MR event for device {}, json={}", deviceName(), jsonInput);
+        logger.trace("{}: Process MR event for device {}, json={}", thingId, deviceName(), jsonInput);
         boolean flUpdatePower = false;
         String jsonEvent = fixEventJson(jsonInput);
         if (jsonEvent.contains(MR_EVENT_EIT_CHANGE)) {
-            logger.debug("EVENT_EIT_CHANGE event received.");
+            logger.debug("{}: EVENT_EIT_CHANGE event received.", thingId);
 
             MRProgramInfoEvent pinfo = gson.fromJson(jsonEvent, MRProgramInfoEvent.class);
             if (!pinfo.channelNum.isEmpty()) {
-                logger.debug("EVENT_EIT_CHANGE for channel {}/{}", pinfo.channelNum, pinfo.channelCode);
+                logger.debug("{}: EVENT_EIT_CHANGE for channel {}/{}", thingId, pinfo.channelNum, pinfo.channelCode);
                 updateState(CHANNEL_CHANNEL, new StringType(pinfo.channelNum));
                 updateState(CHANNEL_CHANNEL_CODE, new StringType(pinfo.channelCode));
             }
@@ -458,15 +446,15 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                 int i = 0;
                 for (MRProgramStatus ps : pinfo.programInfo) {
                     if ((ps.startTime == null) || ps.startTime.isEmpty()) {
-                        logger.debug("EVENT_EIT_CHANGE: empty event data = {}", jsonEvent);
+                        logger.debug("{}: EVENT_EIT_CHANGE: empty event data = {}", thingId, jsonEvent);
                         continue; // empty program_info
                     }
-                    updateState(CHANNEL_RUN_STATUS, new StringType(control.getRunStatus(ps.running_status)));
+                    updateState(CHANNEL_RUN_STATUS, new StringType(control.getRunStatus(ps.runningStatus)));
 
                     if (ps.shortEvent != null) {
                         for (MRShortProgramInfo se : ps.shortEvent) {
                             if ((ps.startTime == null) || ps.startTime.isEmpty()) {
-                                logger.debug("EVENT_EIT_CHANGE: empty program info");
+                                logger.debug("{}: EVENT_EIT_CHANGE: empty program info", thingId);
                                 continue;
                             }
                             // Convert UTC to local time
@@ -477,10 +465,10 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                             tsLocal = StringUtils.substringBeforeLast(localTime.toString(), "[");
                             tsLocal = StringUtils.substringBefore(tsLocal.replace('-', '/').replace('T', ' '), "+");
 
-                            logger.debug("Info for channel {} / {} - {} {}.{}, start time={}, duration={}",
-                                    pinfo.channelNum, pinfo.channelCode, control.getRunStatus(ps.running_status),
+                            logger.debug("{}: Info for channel {} / {} - {} {}.{}, start time={}, duration={}", thingId,
+                                    pinfo.channelNum, pinfo.channelCode, control.getRunStatus(ps.runningStatus),
                                     se.eventName, se.textChar, tsLocal, ps.duration);
-                            if (ps.running_status != EV_EITCHG_RUNNING_NOT_RUNNING) {
+                            if (ps.runningStatus != EV_EITCHG_RUNNING_NOT_RUNNING) {
                                 updateState(CHANNEL_PROG_TITLE, new StringType(se.eventName));
                                 updateState(CHANNEL_PROG_TEXT, new StringType(se.textChar));
                                 updateState(CHANNEL_PROG_START, new StringType(tsLocal));
@@ -501,7 +489,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
             if (event.playPostion == null) {
                 event.playPostion = -1;
             }
-            logger.debug("STB event playContent: playMode={}, duration={}, playPosition={}",
+            logger.debug("{}: STB event playContent: playMode={}, duration={}, playPosition={}", thingId,
                     control.getPlayStatus(event.newPlayMode), event.duration.toString(), event.playPostion.toString());
 
             // If we get a playConfig event there MR must be online. However it also sends a
@@ -521,7 +509,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                 updateState(CHANNEL_PROG_POS, new StringType(Integer.toString(event.playPostion)));
             }
         } else {
-            logger.debug("Unknown MR event, JSON={}", jsonEvent);
+            logger.debug("{}: Unknown MR event, JSON={}", thingId, jsonEvent);
         }
         if (flUpdatePower) {
             // We received a non-stopped event -> MR must be on
@@ -535,13 +523,13 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
             case "playing (MC)":
             case "playing (UC)":
             case "buffering":
-                logger.debug("Setting Player state to PLAY");
+                logger.debug("{}: Setting Player state to PLAY", thingId);
                 updateState(CHANNEL_PLAYER, PlayPauseType.PLAY);
                 updateState(CHANNEL_STOP, OnOffType.OFF);
                 break;
             case "paused":
             case "stopped":
-                logger.debug("Setting Player state to PAUSE");
+                logger.debug("{}: Setting Player state to PAUSE", thingId);
                 updateState(CHANNEL_PLAYER, PlayPauseType.PAUSE);
                 break;
         }
@@ -552,7 +540,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
      */
     @Override
     public void onPowerOff() throws MagentaTVException {
-        logger.debug("Power-Off received for device {}", deviceName());
+        logger.debug("{}: Power-Off received for device {}", thingId, deviceName());
         // MR was powered off -> update pwoer status, reset items
         updateState(CHANNEL_POWER, OnOffType.OFF);
         updateState(CHANNEL_PROG_DURATION, StringType.EMPTY);
@@ -570,7 +558,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
         // MR201: channel_num is an int -> fix JSON formatting to String
         if (jsonEvent.contains(MR_EVENT_CHAN_TAG) && !jsonEvent.contains(MR_EVENT_CHAN_TAG + "\"")) {
             // hack: reformat the JSON string to make it compatible with the GSON parsing
-            logger.trace("malformed JSON->fix channel_num");
+            logger.trace("{}: malformed JSON->fix channel_num", thingId);
             String start = StringUtils.substringBefore(jsonEvent, MR_EVENT_CHAN_TAG); // up to "channel_num":
             String end = StringUtils.substringAfter(jsonEvent, MR_EVENT_CHAN_TAG); // behind "channel_num":
             String chan = StringUtils.substringBetween(jsonEvent, MR_EVENT_CHAN_TAG, ",");
@@ -592,14 +580,14 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
         if (!control.isInitialized()) {
             return;
         }
-        logger.debug("Check receiver status, current state  {}/{}",
+        logger.debug("{}: Check receiver status, current state  {}/{}", thingId,
                 this.getThing().getStatusInfo().getStatus().toString(),
                 this.getThing().getStatusInfo().getStatusDetail());
 
         try {
             // when pairing is completed re-new event channel subscription
             if ((this.getThing().getStatus() != ThingStatus.OFFLINE) && !thingConfig.getVerificationCode().isEmpty()) {
-                logger.debug("{}: Renew MR event subscription", deviceName());
+                logger.debug("{}: Renew MR event subscription for device {}", thingId, deviceName());
                 control.subscribeEventChannel();
             }
         } catch (MagentaTVException e) {
@@ -619,7 +607,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
         }
     }
 
-    public void updateThingProperties(Map<String, Object> properties) {
+    public void updateThingProperties(Map<String, String> properties) {
         // copy all attributes except thos, which begin with $
         Map<String, String> map = new HashMap<String, String>();
         for (String key : properties.keySet()) {
@@ -643,9 +631,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     @Override
     public void dispose() {
         cancelPairingCheck();
-        if (handlerFactory != null) {
-            handlerFactory.removeDevice(thingConfig.getTerminalID());
-        }
+        handlerFactory.removeDevice(thingConfig.getTerminalID());
         scheduler.shutdownNow();
         super.dispose();
     }

@@ -80,9 +80,6 @@ public class MagentaTVOAuth {
         // OAuth autentication results
         String oAuthScope = "";
         String oAuthService = "";
-        String oAuthClientSecret = "";
-        String oAuthClientId = "";
-        String accessToken = "";
         String epghttpsurl = "";
         String retcode = "";
         String retmsg = "";
@@ -119,10 +116,6 @@ public class MagentaTVOAuth {
                         oAuthScope = si.value;
                     } else if (si.key.equalsIgnoreCase("SAM3ServiceURL")) {
                         oAuthService = si.value;
-                    } else if (si.key.equalsIgnoreCase("oAuthClientSecret")) {
-                        oAuthClientSecret = si.value;
-                    } else if (si.key.equalsIgnoreCase("oAuthClientId")) {
-                        oAuthClientId = si.value;
                     }
                 }
             }
@@ -148,7 +141,7 @@ public class MagentaTVOAuth {
             httpResponse = HttpUtil.executeUrl(HttpMethod.POST, url, httpHeader, dataStream, null, NETWORK_TIMEOUT_MS);
             logger.trace("http response={}", httpResponse);
             OAuthTokenResponse resp = gson.fromJson(httpResponse, OAuthTokenResponse.class);
-            if ((resp == null) || resp.accessToken.isEmpty()) {
+            if (resp.accessToken.isEmpty()) {
                 throw new MagentaTVException("Unable to authenticate");
             }
 

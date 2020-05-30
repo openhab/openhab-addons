@@ -37,21 +37,4 @@ public class MagentaTVException extends Exception {
     public MagentaTVException(Exception e, String message, Object... a) {
         super(MessageFormat.format(message, a) + " (" + e.getClass() + ": " + e.getMessage() + ")", e);
     }
-
-    @Override
-    public String toString() {
-        String str = getLocalizedMessage();
-        if (getClass().equals(RuntimeException.class)) {
-            str = str + getStackTrace();
-        }
-        return str;
-    }
-
-    public String getStackTrace(Exception e) {
-        StringBuilder sb = new StringBuilder();
-        for (StackTraceElement s : e.getStackTrace()) {
-            sb.append(s.toString()).append("\n");
-        }
-        return "\nStack Trace:\n" + sb.toString();
-    }
 }

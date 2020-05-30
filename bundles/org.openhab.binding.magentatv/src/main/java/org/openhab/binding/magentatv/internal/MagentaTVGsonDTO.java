@@ -44,6 +44,7 @@ public class MagentaTVGsonDTO {
      */
     // The following classes are used to map the JSON data into objects using GSon.
     public static class MRProgramInfoEvent {
+        @SerializedName("type")
         public String type = "";
         @SerializedName("instance_id")
         public Integer instanceId = 0;
@@ -51,6 +52,7 @@ public class MagentaTVGsonDTO {
         public String channelCode = "";
         @SerializedName("channel_num")
         public String channelNum = "";
+        @SerializedName("mediaId")
         public String mediaId = "";
         @SerializedName("program_info")
         public ArrayList<MRProgramStatus> programInfo = new ArrayList<>();
@@ -68,10 +70,12 @@ public class MagentaTVGsonDTO {
         public String startTime = "";
         @SerializedName("event_id")
         public String eventId = "";
+        @SerializedName("duration")
         public String duration = "";
         @SerializedName("free_CA_mode")
         public Boolean freeCAMmode = false;
-        public Integer running_status = EV_EITCHG_RUNNING_NONE;
+        @SerializedName("running_status")
+        public Integer runningStatus = EV_EITCHG_RUNNING_NONE;
         @SerializedName("short_event")
         public ArrayList<MRShortProgramInfo> shortEvent = new ArrayList<>();
     }

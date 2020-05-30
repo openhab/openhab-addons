@@ -113,14 +113,13 @@ public class MagentaTVHttp {
      */
     public String sendData(String remoteIp, String remotePort, String data) throws MagentaTVException {
         String response = "";
-        Socket socket = null;
         String errorMessage = "";
 
-        try {
+        try (Socket socket = new Socket()) {
             // logger.trace("Sending data to {}:{}: {}", remoteIp, remotePort, data);
-            socket = new Socket();
-            socket.setSoTimeout(4 * 1000); // set read timeout < 5s
-            socket.connect(new InetSocketAddress(remoteIp, Integer.parseInt(remotePort)), 3000);
+            ;
+            socket.setSoTimeout(NETWORK_TIMEOUT_MS); // set read timeout
+            socket.connect(new InetSocketAddress(remoteIp, Integer.parseInt(remotePort)), NETWORK_TIMEOUT_MS);
 
             OutputStream out = socket.getOutputStream();
             PrintStream ps = new PrintStream(out, true);
@@ -130,28 +129,15 @@ public class MagentaTVHttp {
             BufferedReader buff = new BufferedReader(new InputStreamReader(in));
 
             // wait until somthing to read is available or socket I/O fails (IOException)
-            int retry = NETWORK_TIMEOUT_MS / 50;
-            while (!buff.ready() && retry-- > 0) {
-                Thread.sleep(50);
-            }
-            if (retry <= 0) {
-                errorMessage = MessageFormat.format("No response on {0}", data);
-            } else {
-                while (buff.ready()) {
-                    response = response + buff.readLine() + "\r\n";
-                }
-            }
+            String line = "";
+            do {
+                line = buff.readLine();
+                response = response + line + "\r\n";
+            } while (buff.ready());
         } catch (UnknownHostException e) {
             errorMessage = "Unknown host!";
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException /* | InterruptedException */ e) {
             errorMessage = MessageFormat.format("{0} ({1})", e.getMessage(), e.getClass());
-        } finally {
-            try {
-                if (socket != null) {
-                    socket.close();
-                }
-            } catch (Exception e) {
-            }
         }
 
         if (!errorMessage.isEmpty()) {

@@ -210,7 +210,7 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
                 deviceList.replace(dev.udn, dev);
             }
         }
-        logger.debug("{}: (UDN={} ,deviceId={}, ipAddress={}, macAddress={}), now {} devices.",
+        logger.debug("New device {}: (UDN={} ,deviceId={}, ipAddress={}, macAddress={}), now {} devices.",
                 newDev ? "added" : "updated", udn, deviceId, ipAddress, mac, deviceList.size());
     }
 

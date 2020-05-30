@@ -15,8 +15,8 @@ package org.openhab.binding.magentatv.internal;
 import static org.eclipse.smarthome.core.thing.Thing.*;
 import static org.openhab.binding.magentatv.internal.MagentaTVBindingConstants.*;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -28,7 +28,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class MagentaTVConfiguration {
-    private Map<String, Object> properties = new HashMap<>();
+    private Map<String, String> properties = new TreeMap<>();
 
     /**
      * Initialize config
@@ -36,7 +36,11 @@ public class MagentaTVConfiguration {
      * @param config set of properties (thing config)
      */
     public void initializeConfig(Map<String, Object> newConfig) {
-        updateConfig(newConfig);
+        Map<String, String> prop = new TreeMap<>();
+        for (Map.Entry<String, Object> p : newConfig.entrySet()) {
+            prop.put(p.getKey(), (String) p.getValue());
+        }
+        updateConfig(prop);
         setDefault(PROPERTY_PORT, MR400_DEF_REMOTE_PORT);
     }
 
@@ -51,7 +55,7 @@ public class MagentaTVConfiguration {
      *
      * @param config set of properties (thing config)
      */
-    public synchronized void updateConfig(Map<String, Object> newConfig) {
+    public synchronized void updateConfig(Map<String, String> newConfig) {
         synchronized (properties) {
             properties.putAll(newConfig);
         }
@@ -62,7 +66,7 @@ public class MagentaTVConfiguration {
      *
      * @return property map of current thing config
      */
-    public Map<String, Object> getProperties() {
+    public Map<String, String> getProperties() {
         return properties;
     }
 
@@ -227,7 +231,7 @@ public class MagentaTVConfiguration {
 
     private synchronized void setDefault(String key, String value) {
         if (properties.containsKey(key)) {
-            String v = (String) properties.get(key);
+            String v = properties.get(key);
             if (v.isEmpty()) {
                 properties.remove(key);
             }
@@ -239,11 +243,11 @@ public class MagentaTVConfiguration {
     }
 
     private String getValue(String key, String defValue) {
+        String value = "";
         if (properties.containsKey(key)) {
-            Object o = properties.get(key);
-            return o != null ? (String) o : defValue;
+            value = properties.get(key);
         }
-        return defValue;
+        return value.isEmpty() ? defValue : value;
     }
 
     private synchronized void setValue(String key, String value) {

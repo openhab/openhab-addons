@@ -47,6 +47,7 @@ public class MagentaTVControl {
     private final MagentaTVOAuth oauth = new MagentaTVOAuth();
     private final MagentaTVConfiguration thingConfig;
     private boolean initialized = false;
+    private String thingId = "";
 
     public MagentaTVControl() {
         thingConfig = new MagentaTVConfiguration();
@@ -54,6 +55,7 @@ public class MagentaTVControl {
     }
 
     public MagentaTVControl(MagentaTVConfiguration config, MagentaTVNetwork network) {
+        thingId = config.getFriendlyName();
         this.network = network;
         thingConfig = config;
         thingConfig.setTerminalID(computeMD5(network.getLocalMAC().toUpperCase() + thingConfig.getUDN()).toUpperCase());
@@ -115,7 +117,7 @@ public class MagentaTVControl {
      * @throws MagentaTVException
      */
     public boolean checkDev() throws MagentaTVException {
-        logger.debug("Check device {} ({}:{})", thingConfig.getTerminalID(), thingConfig.getIpAddress(),
+        logger.debug("{}: Check device {} ({}:{})", thingId, thingConfig.getTerminalID(), thingConfig.getIpAddress(),
                 thingConfig.getPort());
 
         String url = MessageFormat.format(CHECKDEV_URI, thingConfig.getIpAddress(), thingConfig.getPort(),
@@ -135,7 +137,7 @@ public class MagentaTVControl {
             {
                 String wol = StringUtils.substringBetween(result, "<X_wakeOnLan>", "</X_wakeOnLan>");
                 thingConfig.setWakeOnLAN(wol);
-                logger.debug("Wake-on-LAN is {}", wol.equals("0") ? "disabled" : "enabled");
+                logger.debug("{}: Wake-on-LAN is {}", thingId, wol.equals("0") ? "disabled" : "enabled");
             }
         }
         if (result.contains("<productVersionNumber>")) {
@@ -162,8 +164,8 @@ public class MagentaTVControl {
                 thingConfig.setUDN(udn);
             }
         }
-        logger.trace("Online status verified for device {} ({}:{}, UDN={})", thingConfig.getFriendlyName(),
-                thingConfig.getIpAddress(), thingConfig.getPort(), thingConfig.getUDN());
+        logger.trace("{}: Online status verified for device {}:{}, UDN={}", thingId, thingConfig.getIpAddress(),
+                thingConfig.getPort(), thingConfig.getUDN());
         return true;
     }
 
@@ -183,8 +185,8 @@ public class MagentaTVControl {
      */
     public void subscribeEventChannel() throws MagentaTVException {
         String sid = "";
-        logger.debug("Subscribe Event Channel for device {} (deviceID={}, {}:{})", thingConfig.getFriendlyName(),
-                thingConfig.getTerminalID(), thingConfig.getIpAddress(), thingConfig.getPort());
+        logger.debug("{}: Subscribe Event Channel (terminalID={}, {}:{}", thingId, thingConfig.getTerminalID(),
+                thingConfig.getIpAddress(), thingConfig.getPort());
         String subscribe = MessageFormat.format(PAIRING_SUBSCRIBE, thingConfig.getIpAddress(), thingConfig.getPort(),
                 network.getLocalIP(), network.getLocalPort(), PAIRING_NOTIFY_URI, PAIRING_TIMEOUT_SEC);
         String response = http.sendData(thingConfig.getIpAddress(), thingConfig.getPort(), subscribe);
@@ -202,7 +204,7 @@ public class MagentaTVControl {
             if (!str.isEmpty()) {
                 if (str.contains(NOTIFY_SID)) {
                     sid = str.substring("SID: uuid:".length());
-                    logger.debug("SUBSCRIBE returned SID {}", sid);
+                    logger.debug("{}: SUBSCRIBE returned SID {}", thingId, sid);
                     continue;
                 }
             }
@@ -227,8 +229,8 @@ public class MagentaTVControl {
      * @throws MagentaTVException
      */
     public boolean sendPairingRequest() throws MagentaTVException {
-        logger.debug("{}: Send Pairing Request (deviceID={}, type={}, userID={})", thingConfig.getFriendlyName(),
-                thingConfig.getTerminalID(), DEF_FRIENDLY_NAME, thingConfig.getUserID());
+        logger.debug("{}: Send Pairing Request (deviceID={}, type={}, userID={})", thingId, thingConfig.getTerminalID(),
+                DEF_FRIENDLY_NAME, thingConfig.getUserID());
         resetPairing();
 
         String soapBody = MessageFormat.format(PAIRING_SOAP_BODY, thingConfig.getTerminalID(), DEF_FRIENDLY_NAME,
@@ -248,8 +250,7 @@ public class MagentaTVControl {
             throw new MagentaTVException("Pairing failed, result=" + result);
         }
 
-        logger.debug("{}: Pairing initiated (deviceID={}).", thingConfig.getFriendlyName(),
-                thingConfig.getTerminalID());
+        logger.debug("{}: Pairing initiated (deviceID={}).", thingId, thingConfig.getTerminalID());
         return true;
     }
 
@@ -264,15 +265,15 @@ public class MagentaTVControl {
      */
     public boolean generateVerificationCode(String pairingCode) {
         if (thingConfig.getPairingCode().equals(pairingCode) && !thingConfig.getVerificationCode().isEmpty()) {
-            logger.debug("{}: Pairing code ({}) refreshed, verificationCode={}", thingConfig.getFriendlyName(),
-                    pairingCode, thingConfig.getVerificationCode());
+            logger.debug("{}: Pairing code ({}) refreshed, verificationCode={}", thingId, pairingCode,
+                    thingConfig.getVerificationCode());
             return false;
         }
         thingConfig.setPairingCode(pairingCode);
         String md5Input = pairingCode + thingConfig.getTerminalID() + thingConfig.getUserID();
         thingConfig.setVerificationCode(computeMD5(md5Input).toUpperCase());
-        logger.debug("{}: VerificationCode({}): Input={}, code={}", thingConfig.getFriendlyName(),
-                thingConfig.getTerminalID(), md5Input, thingConfig.getVerificationCode());
+        logger.debug("{}: VerificationCode({}): Input={}, code={}", thingId, thingConfig.getTerminalID(), md5Input,
+                thingConfig.getVerificationCode());
         return true;
     }
 
@@ -286,7 +287,7 @@ public class MagentaTVControl {
      * @throws MagentaTVException
      */
     public boolean verifyPairing() throws MagentaTVException {
-        logger.debug("{}: Verify pairing (id={}, code={}", thingConfig.getFriendlyName(), thingConfig.getTerminalID(),
+        logger.debug("{}: Verify pairing (id={}, code={}", thingId, thingConfig.getTerminalID(),
                 thingConfig.getVerificationCode());
         String soapBody = MessageFormat.format(PAIRCHECK_SOAP_BODY, thingConfig.getTerminalID(),
                 thingConfig.getVerificationCode());
@@ -301,8 +302,7 @@ public class MagentaTVControl {
 
         String result = getXmlValue(response, "pairingResult");
         if (!result.equals("0")) {
-            logger.debug("{}: Pairing failed or pairing no longer valid, result={}", thingConfig.getFriendlyName(),
-                    result);
+            logger.debug("{}: Pairing failed or pairing no longer valid, result={}", thingId, result);
             resetPairing();
             // let the caller decide how to proceed
             return false;
@@ -311,7 +311,7 @@ public class MagentaTVControl {
         if (!thingConfig.isMR400()) {
             String enable4K = getXmlValue(response, "Enable4K");
             String enableSAT = getXmlValue(response, "EnableSAT");
-            logger.debug("{}: Features: Enable4K:{}, EnableSAT:{}", thingConfig.getFriendlyName(), enable4K, enableSAT);
+            logger.debug("{}: Features: Enable4K:{}, EnableSAT:{}", thingId, enable4K, enableSAT);
         }
         return true;
     }
@@ -355,19 +355,18 @@ public class MagentaTVControl {
      */
     public boolean sendKey(String keyName) throws MagentaTVException {
         String keyCode = getKeyCode(keyName);
-        logger.debug("{}: Send Key {} (keyCode={}, tid={})", thingConfig.getFriendlyName(), keyName, keyCode,
-                thingConfig.getTerminalID());
+        logger.debug("{}: Send Key {} (keyCode={}, tid={})", thingId, keyName, keyCode, thingConfig.getTerminalID());
         if (keyCode.length() <= "0x".length()) {
-            logger.debug("{}: Key {} is unkown!", thingConfig.getFriendlyName(), keyCode);
+            logger.debug("{}: Key {} is unkown!", thingId, keyCode);
             return false;
         }
 
         String soapBody = MessageFormat.format(SENDKEY_SOAP_BODY, keyCode, thingConfig.getTerminalID(),
                 thingConfig.getVerificationCode(), thingConfig.getUserID());
         String soapXml = MessageFormat.format(SOAP_ENVELOPE, soapBody);
-        logger.debug("{}: send keyCode={} to {}:{}", thingConfig.getFriendlyName(), keyCode, thingConfig.getIpAddress(),
+        logger.debug("{}: send keyCode={} to {}:{}", thingId, keyCode, thingConfig.getIpAddress(),
                 thingConfig.getPort());
-        logger.trace("sendKey terminalid={}, pairingCode={}, verificationCode={}, userId={}",
+        logger.trace("{}: sendKey terminalid={}, pairingCode={}, verificationCode={}, userId={}", thingId,
                 thingConfig.getTerminalID(), thingConfig.getPairingCode(), thingConfig.getVerificationCode(),
                 thingConfig.getUserID());
         http.httpPOST(buildHost(), buildReceiverUrl(SENDKEY_URI), soapXml, SENDKEY_SOAP_ACTION, CONNECTION_CLOSE);
@@ -383,10 +382,14 @@ public class MagentaTVControl {
      * @return true:ok, false: failed
      */
     public boolean selectChannel(String channel) throws MagentaTVException {
-        logger.debug("Select channel {}", channel);
+        logger.debug("{}: Select channel {}", thingId, channel);
         for (int i = 0; i < channel.length(); i++) {
             if (!sendKey("" + channel.charAt(i))) {
                 return false;
+            }
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
             }
         }
         return true;
@@ -398,7 +401,6 @@ public class MagentaTVControl {
      * @param key Key for which to get the key code
      * @return
      */
-    @SuppressWarnings("null")
     private String getKeyCode(String key) {
         if (key.contains("0x")) {
             // direct key code
@@ -527,9 +529,6 @@ public class MagentaTVControl {
      */
     private static void initializeKeyMap() {
         keyMap.put("POWER", "0x0100");
-        keyMap.put("TV", "0x");
-        keyMap.put("RADIO", "0x");
-        keyMap.put("MOVIES", "0x");
         keyMap.put("MEDIA", "0x0462");
         keyMap.put("TTEXT", "0x0560");
         keyMap.put("1", "0x0031");
@@ -586,5 +585,10 @@ public class MagentaTVControl {
         keyMap.put("F1", "0x0070");
         keyMap.put("F2", "0x0071");
         keyMap.put("PORTAL", "0x0110");
+
+        // Those key codes are missing and not included in the spec
+        // keyMap.put("TV", "0x");
+        // keyMap.put("RADIO", "0x");
+        // keyMap.put("MOVIES", "0x");
     }
 }

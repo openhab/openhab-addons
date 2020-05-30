@@ -104,7 +104,7 @@ public class MagentaTVBindingConstants {
     public static final String MR401B_DEF_DESCRIPTION_URL = "/xml/dial.xml";
     public static final String DEF_FRIENDLY_NAME = "PAD:openHAB";
 
-    public static final Integer DEF_REFRESH_INTERVAL_SEC = 60;
+    public static final int DEF_REFRESH_INTERVAL_SEC = 60;
     public static final int NETWORK_TIMEOUT_MS = 3000;
 
     public static final String UTF_8 = StandardCharsets.UTF_8.name();
@@ -140,38 +140,38 @@ public class MagentaTVBindingConstants {
      * EVENT_EIT_CHANGE: for a complete list see
      * http://support.huawei.com/hedex/pages/DOC1100366313CEH0713H/01/DOC1100366313CEH0713H/01/resources/dsv_hdx_idp/DSV/en/en-us_topic_0094619523.html
      */
-    public static final Integer EV_EITCHG_RUNNING_NONE = 0;
-    public static final Integer EV_EITCHG_RUNNING_NOT_RUNNING = 1;
-    public static final Integer EV_EITCHG_RUNNING_STARTING = 2;
-    public static final Integer EV_EITCHG_RUNNING_PAUSING = 3;
-    public static final Integer EV_EITCHG_RUNNING_RUNNING = 4;
+    public static final int EV_EITCHG_RUNNING_NONE = 0;
+    public static final int EV_EITCHG_RUNNING_NOT_RUNNING = 1;
+    public static final int EV_EITCHG_RUNNING_STARTING = 2;
+    public static final int EV_EITCHG_RUNNING_PAUSING = 3;
+    public static final int EV_EITCHG_RUNNING_RUNNING = 4;
 
     /**
      * playStatus event data
      * EVENT_PLAYMODE_CHANGE: for a complete list see
      * http://support.huawei.com/hedex/pages/DOC1100366313CEH0713H/01/DOC1100366313CEH0713H/01/resources/dsv_hdx_idp/DSV/en/en-us_topic_0094619231.html
      */
-    public static final Integer EV_PLAYCHG_STOP = 0; // STOP: stop status.
-    public static final Integer EV_PLAYCHG_PAUSE = 1; // PAUSE: pause status.
-    public static final Integer EV_PLAYCHG_PLAY = 2; // NORMAL_PLAY: normal playback status for non-live content
-                                                     // (including TSTV).
-    public static final Integer EV_PLAYCHG_TRICK = 3; // TRICK_MODE: trick play mode, such as fast-forward, rewind,
-                                                      // slow-forward, and slow-rewind.
-    public static final Integer EV_PLAYCHG_MC_PLAY = 4; // MULTICAST_CHANNEL_PLAY: live broadcast status of IPTV
-                                                        // multicast channels and DVB channels.
-    public static final Integer EV_PLAYCHG_UC_PLAY = 5; // UNICAST_CHANNEL_PLAY: live broadcast status of IPTV unicast
-                                                        // channels and OTT channels. //
-    public static final Integer EV_PLAYCHG_BUFFERING = 20; // BUFFERING: playback buffering status, including playing
-                                                           // cPVR content during the recording, playing content
-                                                           // during the download, playing the OTT content, and no
-                                                           // data in the buffer area.
+    public static final int EV_PLAYCHG_STOP = 0; // STOP: stop status.
+    public static final int EV_PLAYCHG_PAUSE = 1; // PAUSE: pause status.
+    public static final int EV_PLAYCHG_PLAY = 2; // NORMAL_PLAY: normal playback status for non-live content
+                                                 // (including TSTV).
+    public static final int EV_PLAYCHG_TRICK = 3; // TRICK_MODE: trick play mode, such as fast-forward, rewind,
+                                                  // slow-forward, and slow-rewind.
+    public static final int EV_PLAYCHG_MC_PLAY = 4; // MULTICAST_CHANNEL_PLAY: live broadcast status of IPTV
+                                                    // multicast channels and DVB channels.
+    public static final int EV_PLAYCHG_UC_PLAY = 5; // UNICAST_CHANNEL_PLAY: live broadcast status of IPTV unicast
+                                                    // channels and OTT channels. //
+    public static final int EV_PLAYCHG_BUFFERING = 20; // BUFFERING: playback buffering status, including playing
+                                                       // cPVR content during the recording, playing content
+                                                       // during the download, playing the OTT content, and no
+                                                       // data in the buffer area.
 
     //
     // MagentaTVControl SOAP requests
     //
     public static final String CHECKDEV_URI = "http://{0}:{1}{2}";
 
-    public static final Integer PAIRING_TIMEOUT_SEC = 300;
+    public static final int PAIRING_TIMEOUT_SEC = 300;
     public static final String PAIRING_CONTROL_URI = "/upnp/service/X-CTC_RemotePairing/Control";
     public static final String PAIRING_SUBSCRIBE = "SUBSCRIBE /upnp/service/X-CTC_RemotePairing/Event HTTP/1.1\r\nHOST: {0}:{1}\r\nCALLBACK: <http://{2}:{3}{4}>\r\nNT: upnp:event\r\nTIMEOUT: Second-{5}\r\nCONNECTION: close\r\n\r\n";
     public static final String CONNECTION_CLOSE = "close";
