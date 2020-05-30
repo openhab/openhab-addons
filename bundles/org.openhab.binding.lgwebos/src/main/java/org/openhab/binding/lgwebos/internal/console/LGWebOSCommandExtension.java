@@ -39,6 +39,7 @@ public class LGWebOSCommandExtension extends AbstractConsoleCommandExtension {
 
     private static final String APPLICATIONS = "applications";
     private static final String CHANNELS = "channels";
+    private static final String ACCESS_KEY = "accesskey";
 
     private final ThingRegistry thingRegistry;
 
@@ -72,6 +73,9 @@ public class LGWebOSCommandExtension extends AbstractConsoleCommandExtension {
                     case CHANNELS:
                         handler.reportChannels().forEach(console::println);
                         break;
+                    case ACCESS_KEY:
+                        console.println("Your access key is " + handler.getKey());
+                        break;
                     default:
                         printUsage(console);
                         break;
@@ -85,6 +89,7 @@ public class LGWebOSCommandExtension extends AbstractConsoleCommandExtension {
     @Override
     public List<String> getUsages() {
         return Arrays.asList(new String[] { buildCommandUsage("<thingUID> " + APPLICATIONS, "list applications"),
-                buildCommandUsage("<thingUID> " + CHANNELS, "list channels") });
+                buildCommandUsage("<thingUID> " + CHANNELS, "list channels"),
+                buildCommandUsage("<thingUID> " + ACCESS_KEY, "show the access key") });
     }
 }
