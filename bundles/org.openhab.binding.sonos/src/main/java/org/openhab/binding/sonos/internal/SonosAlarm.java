@@ -12,16 +12,47 @@
  */
 package org.openhab.binding.sonos.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link SonosAlarm} is a datastructure to describe
  * alarms in the Sonos ecosystem
  *
  * @author Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public class SonosAlarm implements Cloneable {
 
+    private final int id;
+    private String startTime;
+    private final String duration;
+    private final String recurrence;
+    private boolean enabled;
+    private final String roomUUID;
+    private final String programURI;
+    private final String programMetaData;
+    private final String playMode;
+    private final int volume;
+    private final boolean includeLinkedZones;
+
+    public SonosAlarm(int id, String startTime, String duration, String recurrence, boolean enabled, String roomUUID,
+            String programURI, String programMetaData, String playMode, int volume, boolean includeLinkedZones) {
+        this.id = id;
+        this.startTime = startTime;
+        this.duration = duration;
+        this.recurrence = recurrence;
+        this.enabled = enabled;
+        this.roomUUID = roomUUID;
+        this.programURI = programURI;
+        this.programMetaData = programMetaData;
+        this.playMode = playMode;
+        this.volume = volume;
+        this.includeLinkedZones = includeLinkedZones;
+    }
+
     @Override
-    public Object clone() {
+    public @Nullable Object clone() {
         try {
             return super.clone();
         } catch (Exception e) {
@@ -29,12 +60,11 @@ public class SonosAlarm implements Cloneable {
         }
     }
 
-    public int getID() {
-        return ID;
+    public int getId() {
+        return id;
     }
 
     public String getStartTime() {
-        // public DateTime getStartTime() {
         return startTime;
     }
 
@@ -88,36 +118,9 @@ public class SonosAlarm implements Cloneable {
         return includeLinkedZones;
     }
 
-    private final int ID;
-    private String startTime;
-    private final String duration;
-    private final String recurrence;
-    private boolean enabled;
-    private final String roomUUID;
-    private final String programURI;
-    private final String programMetaData;
-    private final String playMode;
-    private final int volume;
-    private final boolean includeLinkedZones;
-
-    public SonosAlarm(int ID, String startTime, String duration, String recurrence, boolean enabled, String roomUUID,
-            String programURI, String programMetaData, String playMode, int volume, boolean includeLinkedZones) {
-        this.ID = ID;
-        this.startTime = startTime;
-        this.duration = duration;
-        this.recurrence = recurrence;
-        this.enabled = enabled;
-        this.roomUUID = roomUUID;
-        this.programURI = programURI;
-        this.programMetaData = programMetaData;
-        this.playMode = playMode;
-        this.volume = volume;
-        this.includeLinkedZones = includeLinkedZones;
-    }
-
     @Override
     public String toString() {
-        return "SonosAlarm [ID=" + ID + ", start=" + startTime + ", duration=" + duration + ", enabled=" + enabled
+        return "SonosAlarm [ID=" + id + ", start=" + startTime + ", duration=" + duration + ", enabled=" + enabled
                 + ", UUID=" + roomUUID + "]";
     }
 }

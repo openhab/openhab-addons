@@ -16,12 +16,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link SonosZoneGroup} is data structure to describe
  * Groups of Zone Players in the Sonos ecosystem
  *
  * @author Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public class SonosZoneGroup implements Cloneable {
 
     private final List<String> members;
@@ -30,7 +34,7 @@ public class SonosZoneGroup implements Cloneable {
     private final String id;
 
     @Override
-    public Object clone() {
+    public @Nullable Object clone() {
         try {
             return super.clone();
         } catch (Exception e) {
@@ -45,15 +49,6 @@ public class SonosZoneGroup implements Cloneable {
             this.members.add(coordinator);
         }
         this.memberZoneNames = new ArrayList<>(memberZoneNames);
-        this.coordinator = coordinator;
-        this.id = id;
-    }
-
-    public SonosZoneGroup(String id, String coordinator, Collection<String> members) {
-        this.members = new ArrayList<>(members);
-        if (!this.members.contains(coordinator)) {
-            this.members.add(coordinator);
-        }
         this.coordinator = coordinator;
         this.id = id;
     }
@@ -75,7 +70,7 @@ public class SonosZoneGroup implements Cloneable {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (obj == null) {
             return false;
         }

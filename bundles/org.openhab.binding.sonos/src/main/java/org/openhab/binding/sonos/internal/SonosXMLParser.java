@@ -26,6 +26,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
@@ -41,6 +43,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
  *
  * @author Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public class SonosXMLParser {
 
     static final Logger LOGGER = LoggerFactory.getLogger(SonosXMLParser.class);
@@ -129,7 +132,7 @@ public class SonosXMLParser {
      * @return The value of the desc xml tag
      * @throws SAXException
      */
-    public static SonosResourceMetaData getResourceMetaData(String xml) throws SAXException {
+    public static @Nullable SonosResourceMetaData getResourceMetaData(String xml) throws SAXException {
         XMLReader reader = XMLReaderFactory.createXMLReader();
         ResourceMetaDataHandler handler = new ResourceMetaDataHandler();
         reader.setContentHandler(handler);
@@ -182,7 +185,7 @@ public class SonosXMLParser {
         return handler.getTextFields();
     }
 
-    public static Map<String, String> getRenderingControlFromXML(String xml) {
+    public static Map<String, @Nullable String> getRenderingControlFromXML(String xml) {
         RenderingControlEventHandler handler = new RenderingControlEventHandler();
         try {
             XMLReader reader = XMLReaderFactory.createXMLReader();
@@ -197,7 +200,7 @@ public class SonosXMLParser {
         return handler.getChanges();
     }
 
-    public static Map<String, String> getAVTransportFromXML(String xml) {
+    public static Map<String, @Nullable String> getAVTransportFromXML(String xml) {
         AVTransportEventHandler handler = new AVTransportEventHandler();
         try {
             XMLReader reader = XMLReaderFactory.createXMLReader();
@@ -247,10 +250,10 @@ public class SonosXMLParser {
 
         // Maintain a set of elements about which it is unuseful to complain about.
         // This list will be initialized on the first failure case
-        private static List<String> ignore = null;
+        private static @Nullable List<String> ignore;
 
-        private String id;
-        private String parentId;
+        private String id = "";
+        private String parentId = "";
         private StringBuilder upnpClass = new StringBuilder();
         private StringBuilder res = new StringBuilder();
         private StringBuilder title = new StringBuilder();
@@ -259,7 +262,7 @@ public class SonosXMLParser {
         private StringBuilder creator = new StringBuilder();
         private StringBuilder trackNumber = new StringBuilder();
         private StringBuilder desc = new StringBuilder();
-        private Element element = null;
+        private @Nullable Element element;
 
         private List<SonosEntry> artists = new ArrayList<>();
 
@@ -268,37 +271,41 @@ public class SonosXMLParser {
         }
 
         @Override
-        public void startElement(String uri, String localName, String qName, Attributes attributes)
-                throws SAXException {
-            if (qName.equals("container") || qName.equals("item")) {
-                id = attributes.getValue("id");
-                parentId = attributes.getValue("parentID");
-            } else if (qName.equals("res")) {
+        public void startElement(@Nullable String uri, @Nullable String localName, @Nullable String qName,
+                @Nullable Attributes attributes) throws SAXException {
+            if (("container".equals(qName) || "item".equals(qName))) {
+                if (attributes != null) {
+                    id = attributes.getValue("id");
+                    parentId = attributes.getValue("parentID");
+                }
+            } else if ("res".equals(qName)) {
                 element = Element.RES;
-            } else if (qName.equals("dc:title")) {
+            } else if ("dc:title".equals(qName)) {
                 element = Element.TITLE;
-            } else if (qName.equals("upnp:class")) {
+            } else if ("upnp:class".equals(qName)) {
                 element = Element.CLASS;
-            } else if (qName.equals("dc:creator")) {
+            } else if ("dc:creator".equals(qName)) {
                 element = Element.CREATOR;
-            } else if (qName.equals("upnp:album")) {
+            } else if ("upnp:album".equals(qName)) {
                 element = Element.ALBUM;
-            } else if (qName.equals("upnp:albumArtURI")) {
+            } else if ("upnp:albumArtURI".equals(qName)) {
                 element = Element.ALBUM_ART_URI;
-            } else if (qName.equals("upnp:originalTrackNumber")) {
+            } else if ("upnp:originalTrackNumber".equals(qName)) {
                 element = Element.TRACK_NUMBER;
-            } else if (qName.equals("r:resMD")) {
+            } else if ("r:resMD".equals(qName)) {
                 element = Element.RESMD;
             } else {
-                if (ignore == null) {
-                    ignore = new ArrayList<>();
-                    ignore.add("DIDL-Lite");
-                    ignore.add("type");
-                    ignore.add("ordinal");
-                    ignore.add("description");
+                List<String> curIgnore = ignore;
+                if (curIgnore == null) {
+                    curIgnore = new ArrayList<>();
+                    curIgnore.add("DIDL-Lite");
+                    curIgnore.add("type");
+                    curIgnore.add("ordinal");
+                    curIgnore.add("description");
+                    ignore = curIgnore;
                 }
 
-                if (!ignore.contains(localName)) {
+                if (!curIgnore.contains(localName)) {
                     LOGGER.debug("Did not recognise element named {}", localName);
                 }
                 element = null;
@@ -306,11 +313,12 @@ public class SonosXMLParser {
         }
 
         @Override
-        public void characters(char[] ch, int start, int length) throws SAXException {
-            if (element == null) {
+        public void characters(char @Nullable [] ch, int start, int length) throws SAXException {
+            Element elt = element;
+            if (elt == null) {
                 return;
             }
-            switch (element) {
+            switch (elt) {
                 case TITLE:
                     title.append(ch, start, length);
                     break;
@@ -341,8 +349,9 @@ public class SonosXMLParser {
         }
 
         @Override
-        public void endElement(String uri, String localName, String qName) throws SAXException {
-            if (qName.equals("container") || qName.equals("item")) {
+        public void endElement(@Nullable String uri, @Nullable String localName, @Nullable String qName)
+                throws SAXException {
+            if (("container".equals(qName) || "item".equals(qName))) {
                 element = null;
 
                 int trackNumberVal = 0;
@@ -382,29 +391,31 @@ public class SonosXMLParser {
 
     private static class ResourceMetaDataHandler extends DefaultHandler {
 
-        private String id;
-        private String parentId;
+        private String id = "";
+        private String parentId = "";
         private StringBuilder title = new StringBuilder();
         private StringBuilder upnpClass = new StringBuilder();
         private StringBuilder desc = new StringBuilder();
-        private Element element = null;
-        private SonosResourceMetaData metaData = null;
+        private @Nullable Element element;
+        private @Nullable SonosResourceMetaData metaData;
 
         ResourceMetaDataHandler() {
             // shouldn't be used outside of this package.
         }
 
         @Override
-        public void startElement(String uri, String localName, String qName, Attributes attributes)
-                throws SAXException {
-            if (qName.equals("container") || qName.equals("item")) {
-                id = attributes.getValue("id");
-                parentId = attributes.getValue("parentID");
-            } else if (qName.equals("desc")) {
+        public void startElement(@Nullable String uri, @Nullable String localName, @Nullable String qName,
+                @Nullable Attributes attributes) throws SAXException {
+            if (("container".equals(qName) || "item".equals(qName))) {
+                if (attributes != null) {
+                    id = attributes.getValue("id");
+                    parentId = attributes.getValue("parentID");
+                }
+            } else if ("desc".equals(qName)) {
                 element = Element.DESC;
-            } else if (qName.equals("upnp:class")) {
+            } else if ("upnp:class".equals(qName)) {
                 element = Element.CLASS;
-            } else if (qName.equals("dc:title")) {
+            } else if ("dc:title".equals(qName)) {
                 element = Element.TITLE;
             } else {
                 element = null;
@@ -412,11 +423,12 @@ public class SonosXMLParser {
         }
 
         @Override
-        public void characters(char[] ch, int start, int length) throws SAXException {
-            if (element == null) {
+        public void characters(char @Nullable [] ch, int start, int length) throws SAXException {
+            Element elt = element;
+            if (elt == null) {
                 return;
             }
-            switch (element) {
+            switch (elt) {
                 case TITLE:
                     title.append(ch, start, length);
                     break;
@@ -432,8 +444,9 @@ public class SonosXMLParser {
         }
 
         @Override
-        public void endElement(String uri, String localName, String qName) throws SAXException {
-            if (qName.equals("DIDL-Lite")) {
+        public void endElement(@Nullable String uri, @Nullable String localName, @Nullable String qName)
+                throws SAXException {
+            if ("DIDL-Lite".equals(qName)) {
                 metaData = new SonosResourceMetaData(id, parentId, title.toString(), upnpClass.toString(),
                         desc.toString());
                 element = null;
@@ -443,24 +456,24 @@ public class SonosXMLParser {
             }
         }
 
-        public SonosResourceMetaData getMetaData() {
+        public @Nullable SonosResourceMetaData getMetaData() {
             return metaData;
         }
     }
 
     private static class AlarmHandler extends DefaultHandler {
 
-        private String id;
-        private String startTime;
-        private String duration;
-        private String recurrence;
-        private String enabled;
-        private String roomUUID;
-        private String programURI;
-        private String programMetaData;
-        private String playMode;
-        private String volume;
-        private String includeLinkedZones;
+        private @Nullable String id;
+        private String startTime = "";
+        private String duration = "";
+        private String recurrence = "";
+        private @Nullable String enabled;
+        private String roomUUID = "";
+        private String programURI = "";
+        private String programMetaData = "";
+        private String playMode = "";
+        private @Nullable String volume;
+        private @Nullable String includeLinkedZones;
 
         private List<SonosAlarm> alarms = new ArrayList<>();
 
@@ -469,9 +482,9 @@ public class SonosXMLParser {
         }
 
         @Override
-        public void startElement(String uri, String localName, String qName, Attributes attributes)
-                throws SAXException {
-            if (qName.equals("Alarm")) {
+        public void startElement(@Nullable String uri, @Nullable String localName, @Nullable String qName,
+                @Nullable Attributes attributes) throws SAXException {
+            if ("Alarm".equals(qName) && attributes != null) {
                 id = attributes.getValue("ID");
                 duration = attributes.getValue("Duration");
                 recurrence = attributes.getValue("Recurrence");
@@ -487,27 +500,17 @@ public class SonosXMLParser {
         }
 
         @Override
-        public void endElement(String uri, String localName, String qName) throws SAXException {
-            if (qName.equals("Alarm")) {
+        public void endElement(@Nullable String uri, @Nullable String localName, @Nullable String qName)
+                throws SAXException {
+            if ("Alarm".equals(qName)) {
                 int finalID = 0;
                 int finalVolume = 0;
-                boolean finalEnabled = false;
-                boolean finalIncludeLinkedZones = false;
+                boolean finalEnabled = !"0".equals(enabled);
+                boolean finalIncludeLinkedZones = !"0".equals(includeLinkedZones);
 
                 try {
                     finalID = Integer.parseInt(id);
                     finalVolume = Integer.parseInt(volume);
-                    if (enabled.equals("0")) {
-                        finalEnabled = false;
-                    } else {
-                        finalEnabled = true;
-                    }
-
-                    if (includeLinkedZones.equals("0")) {
-                        finalIncludeLinkedZones = false;
-                    } else {
-                        finalIncludeLinkedZones = true;
-                    }
                 } catch (Exception e) {
                     LOGGER.debug("Error parsing Integer");
                 }
@@ -527,16 +530,16 @@ public class SonosXMLParser {
         private final List<SonosZoneGroup> groups = new ArrayList<>();
         private final List<String> currentGroupPlayers = new ArrayList<>();
         private final List<String> currentGroupPlayerZones = new ArrayList<>();
-        private String coordinator;
-        private String groupId;
+        private String coordinator = "";
+        private String groupId = "";
 
         @Override
-        public void startElement(String uri, String localName, String qName, Attributes attributes)
-                throws SAXException {
-            if (qName.equals("ZoneGroup")) {
+        public void startElement(@Nullable String uri, @Nullable String localName, @Nullable String qName,
+                @Nullable Attributes attributes) throws SAXException {
+            if ("ZoneGroup".equals(qName) && attributes != null) {
                 groupId = attributes.getValue("ID");
                 coordinator = attributes.getValue("Coordinator");
-            } else if (qName.equals("ZoneGroupMember")) {
+            } else if ("ZoneGroupMember".equals(qName) && attributes != null) {
                 currentGroupPlayers.add(attributes.getValue("UUID"));
                 String zoneName = attributes.getValue("ZoneName");
                 if (zoneName != null) {
@@ -550,8 +553,9 @@ public class SonosXMLParser {
         }
 
         @Override
-        public void endElement(String uri, String localName, String qName) throws SAXException {
-            if (qName.equals("ZoneGroup")) {
+        public void endElement(@Nullable String uri, @Nullable String localName, @Nullable String qName)
+                throws SAXException {
+            if ("ZoneGroup".equals(qName)) {
                 groups.add(new SonosZoneGroup(groupId, coordinator, currentGroupPlayers, currentGroupPlayerZones));
                 currentGroupPlayers.clear();
                 currentGroupPlayerZones.clear();
@@ -597,17 +601,17 @@ public class SonosXMLParser {
         // </opml>
 
         private final List<String> textFields = new ArrayList<>();
-        private String textField;
-        private String type;
+        private @Nullable String textField;
+        private @Nullable String type;
         // private String logo;
 
         @Override
-        public void startElement(String uri, String localName, String qName, Attributes attributes)
-                throws SAXException {
-            if (qName.equals("outline")) {
-                type = attributes.getValue("type");
-                if (type.equals("text")) {
-                    textField = attributes.getValue("text");
+        public void startElement(@Nullable String uri, @Nullable String localName, @Nullable String qName,
+                @Nullable Attributes attributes) throws SAXException {
+            if ("outline".equals(qName)) {
+                type = attributes == null ? null : attributes.getValue("type");
+                if ("text".equals(type)) {
+                    textField = attributes == null ? null : attributes.getValue("text");
                 } else {
                     textField = null;
                 }
@@ -615,10 +619,12 @@ public class SonosXMLParser {
         }
 
         @Override
-        public void endElement(String uri, String localName, String qName) throws SAXException {
-            if (qName.equals("outline")) {
-                if (textField != null) {
-                    textFields.add(textField);
+        public void endElement(@Nullable String uri, @Nullable String localName, @Nullable String qName)
+                throws SAXException {
+            if ("outline".equals(qName)) {
+                String field = textField;
+                if (field != null) {
+                    textFields.add(field);
                 }
             }
         }
@@ -677,32 +683,34 @@ public class SonosXMLParser {
          * </Event>
          */
 
-        private final Map<String, String> changes = new HashMap<>();
+        private final Map<String, @Nullable String> changes = new HashMap<>();
 
         @Override
-        public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
+        public void startElement(@Nullable String uri, @Nullable String localName, @Nullable String qName,
+                @Nullable Attributes attributes) throws SAXException {
             /*
              * The events are all of the form <qName val="value"/> so we can get all
              * the info we need from here.
              */
-            try {
-                if (atts.getValue("val") != null) {
-                    changes.put(localName, atts.getValue("val"));
-                }
-            } catch (IllegalArgumentException e) {
+            if (localName == null) {
                 // this means that localName isn't defined in EventType, which is expected for some elements
                 LOGGER.info("{} is not defined in EventType. ", localName);
+            } else {
+                String val = attributes == null ? null : attributes.getValue("val");
+                if (val != null) {
+                    changes.put(localName, val);
+                }
             }
         }
 
-        public Map<String, String> getChanges() {
+        public Map<String, @Nullable String> getChanges() {
             return changes;
         }
     }
 
     private static class MetaDataHandler extends DefaultHandler {
 
-        private CurrentElement currentElement = null;
+        private @Nullable CurrentElement currentElement;
 
         private String id = "-1";
         private String parentId = "-1";
@@ -716,11 +724,14 @@ public class SonosXMLParser {
         private StringBuilder albumArtist = new StringBuilder();
 
         @Override
-        public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
+        public void startElement(@Nullable String uri, @Nullable String localName, @Nullable String qName,
+                @Nullable Attributes attributes) throws SAXException {
             if ("item".equals(localName)) {
                 currentElement = CurrentElement.item;
-                id = atts.getValue("id");
-                parentId = atts.getValue("parentID");
+                if (attributes != null) {
+                    id = attributes.getValue("id");
+                    parentId = attributes.getValue("parentID");
+                }
             } else if ("res".equals(localName)) {
                 currentElement = CurrentElement.res;
             } else if ("streamContent".equals(localName)) {
@@ -744,38 +755,40 @@ public class SonosXMLParser {
         }
 
         @Override
-        public void characters(char[] ch, int start, int length) throws SAXException {
-            if (currentElement != null) {
-                switch (currentElement) {
-                    case item:
-                        break;
-                    case res:
-                        resource.append(ch, start, length);
-                        break;
-                    case streamContent:
-                        streamContent.append(ch, start, length);
-                        break;
-                    case albumArtURI:
-                        albumArtUri.append(ch, start, length);
-                        break;
-                    case title:
-                        title.append(ch, start, length);
-                        break;
-                    case upnpClass:
-                        upnpClass.append(ch, start, length);
-                        break;
-                    case creator:
-                        creator.append(ch, start, length);
-                        break;
-                    case album:
-                        album.append(ch, start, length);
-                        break;
-                    case albumArtist:
-                        albumArtist.append(ch, start, length);
-                        break;
-                    case desc:
-                        break;
-                }
+        public void characters(char @Nullable [] ch, int start, int length) throws SAXException {
+            CurrentElement elt = currentElement;
+            if (elt == null) {
+                return;
+            }
+            switch (elt) {
+                case item:
+                    break;
+                case res:
+                    resource.append(ch, start, length);
+                    break;
+                case streamContent:
+                    streamContent.append(ch, start, length);
+                    break;
+                case albumArtURI:
+                    albumArtUri.append(ch, start, length);
+                    break;
+                case title:
+                    title.append(ch, start, length);
+                    break;
+                case upnpClass:
+                    upnpClass.append(ch, start, length);
+                    break;
+                case creator:
+                    creator.append(ch, start, length);
+                    break;
+                case album:
+                    album.append(ch, start, length);
+                    break;
+                case albumArtist:
+                    albumArtist.append(ch, start, length);
+                    break;
+                case desc:
+                    break;
             }
         }
 
@@ -788,46 +801,75 @@ public class SonosXMLParser {
 
     private static class RenderingControlEventHandler extends DefaultHandler {
 
-        private final Map<String, String> changes = new HashMap<>();
+        private final Map<String, @Nullable String> changes = new HashMap<>();
 
         private boolean getPresetName = false;
-        private String presetName;
+        private @Nullable String presetName;
 
         @Override
-        public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
+        public void startElement(@Nullable String uri, @Nullable String localName, @Nullable String qName,
+                @Nullable Attributes attributes) throws SAXException {
+            if (qName == null) {
+                return;
+            }
             if ("Volume".equals(qName)) {
-                changes.put(qName + atts.getValue("channel"), atts.getValue("val"));
+                String channel = attributes == null ? null : attributes.getValue("channel");
+                String val = attributes == null ? null : attributes.getValue("val");
+                if (channel != null && val != null) {
+                    changes.put(qName + channel, val);
+                }
             } else if ("Mute".equals(qName)) {
-                changes.put(qName + atts.getValue("channel"), atts.getValue("val"));
+                String channel = attributes == null ? null : attributes.getValue("channel");
+                String val = attributes == null ? null : attributes.getValue("val");
+                if (channel != null && val != null) {
+                    changes.put(qName + channel, val);
+                }
             } else if ("Bass".equals(qName)) {
-                changes.put(qName, atts.getValue("val"));
+                String val = attributes == null ? null : attributes.getValue("val");
+                if (val != null) {
+                    changes.put(qName, val);
+                }
             } else if ("Treble".equals(qName)) {
-                changes.put(qName, atts.getValue("val"));
+                String val = attributes == null ? null : attributes.getValue("val");
+                if (val != null) {
+                    changes.put(qName, val);
+                }
             } else if ("Loudness".equals(qName)) {
-                changes.put(qName + atts.getValue("channel"), atts.getValue("val"));
+                String channel = attributes == null ? null : attributes.getValue("channel");
+                String val = attributes == null ? null : attributes.getValue("val");
+                if (channel != null && val != null) {
+                    changes.put(qName + channel, val);
+                }
             } else if ("OutputFixed".equals(qName)) {
-                changes.put(qName, atts.getValue("val"));
+                String val = attributes == null ? null : attributes.getValue("val");
+                if (val != null) {
+                    changes.put(qName, val);
+                }
             } else if ("PresetNameList".equals(qName)) {
                 getPresetName = true;
             }
         }
 
         @Override
-        public void characters(char[] ch, int start, int length) throws SAXException {
+        public void characters(char @Nullable [] ch, int start, int length) throws SAXException {
             if (getPresetName) {
                 presetName = new String(ch, start, length);
             }
         }
 
         @Override
-        public void endElement(String uri, String localName, String qName) throws SAXException {
+        public void endElement(@Nullable String uri, @Nullable String localName, @Nullable String qName)
+                throws SAXException {
             if (getPresetName) {
                 getPresetName = false;
-                changes.put(qName, presetName);
+                String preset = presetName;
+                if (qName != null && preset != null) {
+                    changes.put(qName, preset);
+                }
             }
         }
 
-        public Map<String, String> getChanges() {
+        public Map<String, @Nullable String> getChanges() {
             return changes;
         }
     }
@@ -837,10 +879,12 @@ public class SonosXMLParser {
         private final List<SonosMusicService> services = new ArrayList<>();
 
         @Override
-        public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
+        public void startElement(@Nullable String uri, @Nullable String localName, @Nullable String qName,
+                @Nullable Attributes attributes) throws SAXException {
             // All services are of the form <services Id="value" Name="value">...</Service>
-            if ("Service".equals(qName) && atts.getValue("Id") != null && atts.getValue("Name") != null) {
-                services.add(new SonosMusicService(atts.getValue("Id"), atts.getValue("Name")));
+            if ("Service".equals(qName) && attributes != null && attributes.getValue("Id") != null
+                    && attributes.getValue("Name") != null) {
+                services.add(new SonosMusicService(attributes.getValue("Id"), attributes.getValue("Name")));
             }
         }
 
@@ -849,7 +893,7 @@ public class SonosXMLParser {
         }
     }
 
-    public static String getRoomName(String descriptorXML) {
+    public static @Nullable String getRoomName(String descriptorXML) {
         RoomNameHandler roomNameHandler = new RoomNameHandler();
         try {
             XMLReader reader = XMLReaderFactory.createXMLReader();
@@ -864,30 +908,31 @@ public class SonosXMLParser {
 
     private static class RoomNameHandler extends DefaultHandler {
 
-        private String roomName;
+        private @Nullable String roomName;
         private boolean roomNameTag;
 
         @Override
-        public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
+        public void startElement(@Nullable String uri, @Nullable String localName, @Nullable String qName,
+                @Nullable Attributes attributes) throws SAXException {
             if ("roomName".equalsIgnoreCase(localName)) {
                 roomNameTag = true;
             }
         }
 
         @Override
-        public void characters(char[] ch, int start, int length) throws SAXException {
+        public void characters(char @Nullable [] ch, int start, int length) throws SAXException {
             if (roomNameTag) {
                 roomName = new String(ch, start, length);
                 roomNameTag = false;
             }
         }
 
-        public String getRoomName() {
+        public @Nullable String getRoomName() {
             return roomName;
         }
     }
 
-    public static String parseModelDescription(URL descriptorURL) {
+    public static @Nullable String parseModelDescription(URL descriptorURL) {
         ModelNameHandler modelNameHandler = new ModelNameHandler();
         try {
             XMLReader reader = XMLReaderFactory.createXMLReader();
@@ -902,25 +947,26 @@ public class SonosXMLParser {
 
     private static class ModelNameHandler extends DefaultHandler {
 
-        private String modelName;
+        private @Nullable String modelName;
         private boolean modelNameTag;
 
         @Override
-        public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
+        public void startElement(@Nullable String uri, @Nullable String localName, @Nullable String qName,
+                @Nullable Attributes attributes) throws SAXException {
             if ("modelName".equalsIgnoreCase(localName)) {
                 modelNameTag = true;
             }
         }
 
         @Override
-        public void characters(char[] ch, int start, int length) throws SAXException {
+        public void characters(char @Nullable [] ch, int start, int length) throws SAXException {
             if (modelNameTag) {
                 modelName = new String(ch, start, length);
                 modelNameTag = false;
             }
         }
 
-        public String getModelName() {
+        public @Nullable String getModelName() {
             return modelName;
         }
     }
@@ -967,12 +1013,13 @@ public class SonosXMLParser {
         /**
          * If resource meta data exists, use it over the parent data
          */
-        if (entry.getResourceMetaData() != null) {
-            id = entry.getResourceMetaData().getId();
-            parentId = entry.getResourceMetaData().getParentId();
-            title = entry.getResourceMetaData().getTitle();
-            desc = entry.getResourceMetaData().getDesc();
-            upnpClass = entry.getResourceMetaData().getUpnpClass();
+        SonosResourceMetaData resourceMetaData = entry.getResourceMetaData();
+        if (resourceMetaData != null) {
+            id = resourceMetaData.getId();
+            parentId = resourceMetaData.getParentId();
+            title = resourceMetaData.getTitle();
+            desc = resourceMetaData.getDesc();
+            upnpClass = resourceMetaData.getUpnpClass();
         }
 
         title = StringEscapeUtils.escapeXml(title);
