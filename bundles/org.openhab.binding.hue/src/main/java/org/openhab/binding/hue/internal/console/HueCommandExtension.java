@@ -82,6 +82,6 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension {
 
     @Override
     public List<String> getUsages() {
-        return Arrays.asList(new String[] { buildCommandUsage("<bridgeUID> " + USER_NAME, "show the user name") });
+        return Arrays.asList(buildCommandUsage("<bridgeUID> " + USER_NAME, "show the user name"));
     }
 }
