@@ -46,7 +46,7 @@ The thermostat information that is retrieved is available as these channels:
 | Channel ID             | Item Type            | Description                                                               |
 |------------------------|----------------------|---------------------------------------------------------------------------|
 | temperature            | Number:Temperature   | The current temperature reading of the thermostat                         |
-| humidity               | Number               | The current humidity reading of the thermostat (CT80 only)                |
+| humidity               | Number:Dimensionless | The current humidity reading of the thermostat (CT80 only)                |
 | mode                   | Number               | The current operating mode of the HVAC system                             |
 | fan_mode               | Number               | The current operating mode of the fan                                     |
 | program_mode           | Number               | The program schedule that the thermostat is running (CT80 Rev B only)     |
@@ -59,10 +59,10 @@ The thermostat information that is retrieved is available as these channels:
 | hour                   | Number               | The current hour of the day reported by the thermostat  (24 hr)           |
 | minute                 | Number               | The current minute past the hour reported by the thermostat               |
 | dt_stamp               | String               | The current day of the week and time reported by the thermostat (E HH:mm) |
-| today_heat_runtime     | Number               | The total number of minutes of heating run-time today                     |
-| today_cool_runtime     | Number               | The total number of minutes of cooling run-time today                     |
-| yesterday_heat_runtime | Number               | The total number of minutes of heating run-time yesterday                 |
-| yesterday_cool_runtime | Number               | The total number of minutes of cooling run-time yesterday                 |
+| today_heat_runtime     | Number:Time          | The total number of minutes of heating run-time today                     |
+| today_cool_runtime     | Number:Time          | The total number of minutes of cooling run-time today                     |
+| yesterday_heat_runtime | Number:Time          | The total number of minutes of heating run-time yesterday                 |
+| yesterday_cool_runtime | Number:Time          | The total number of minutes of cooling run-time yesterday                 |
 
 ## Full Example
 

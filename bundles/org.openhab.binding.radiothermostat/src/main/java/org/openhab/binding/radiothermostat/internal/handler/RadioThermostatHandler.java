@@ -197,7 +197,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
                 try {
                     // parse out an Integer from the string
                     // ie '70.5 F' becomes 70, also handles negative numbers 
-                    cmdInt = ((Number)NumberFormat.getInstance().parse(cmdStr)).intValue();
+                    cmdInt = NumberFormat.getInstance().parse(cmdStr).intValue();
                 } catch (ParseException e) {
                     logger.debug("Command: {} -> Not an integer", cmdStr);
                 }
