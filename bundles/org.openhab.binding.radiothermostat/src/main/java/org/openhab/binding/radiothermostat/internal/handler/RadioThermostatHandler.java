@@ -15,6 +15,8 @@ package org.openhab.binding.radiothermostat.internal.handler;
 import static org.openhab.binding.radiothermostat.internal.RadioThermostatBindingConstants.*;
 
 import java.math.BigDecimal;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -193,9 +195,10 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
             String cmdStr = command.toString();
             if (cmdStr != null) {
                 try {
-                    // remove all non-numeric characters except negative '-' and parse int
-                    cmdInt = Integer.parseInt(cmdStr.replaceAll("[^\\d-]", ""));
-                } catch (NumberFormatException e) {
+                    // parse out an Integer from the string
+                    // ie '70.5 F' becomes 70, also handles negative numbers 
+                    cmdInt = ((Number)NumberFormat.getInstance().parse(cmdStr)).intValue();
+                } catch (ParseException e) {
                     logger.debug("Command: {} -> Not an integer", cmdStr);
                 }
             }
