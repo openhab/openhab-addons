@@ -18,12 +18,12 @@
 			<label>User credential</label>
 			<description>User credential to communicate with the PlayStation 4.</description>
 		</parameter>
-		<parameter name="passCode" type="text" max="4" pattern="[0-9]*">
+		<parameter name="passCode" type="text" min="4" max="4" pattern="[0-9]*">
 			<context>password</context>
 			<label>Pass code</label>
 			<description>Pass code to log in to PlayStation 4.</description>
 		</parameter>
-		<parameter name="pairingCode" type="text" max="8" pattern="[0-9]*">
+		<parameter name="pairingCode" type="text" min="8" max="8" pattern="[0-9]*">
 			<label>Pairing code</label>
 			<description>Code to pair OpenHAB device to PlayStation 4. Only needed during pairing.</description>
 		</parameter>

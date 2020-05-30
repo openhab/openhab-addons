@@ -337,7 +337,6 @@ public class PS4Handler extends BaseThingHandler {
         return true;
     }
 
-    @NonNullByDefault
     private class SocketChannelHandler extends Thread {
         private SocketChannel socketChannel;
 
