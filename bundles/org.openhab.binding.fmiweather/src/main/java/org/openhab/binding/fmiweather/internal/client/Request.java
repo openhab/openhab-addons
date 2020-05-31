@@ -37,6 +37,9 @@ public class Request {
     public final String storedQueryId;
     public final String[] parameters;
 
+    private static ZoneId UTC = ZoneId.of("Z");
+    private static DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+
     public Request(String storedQueryId, QueryParameter location, long startEpoch, long endEpoch,
             long timestepMinutes) {
         this(storedQueryId, location, startEpoch, endEpoch, timestepMinutes, new String[0]);
@@ -73,7 +76,6 @@ public class Request {
      * @return
      */
     private static String epochToIsoDateTime(long epoch) {
-        return ZonedDateTime.ofInstant(Instant.ofEpochSecond(epoch), ZoneId.of("Z"))
-                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'"));
+        return ZonedDateTime.ofInstant(Instant.ofEpochSecond(epoch), UTC).format(FORMATTER);
     }
 }
