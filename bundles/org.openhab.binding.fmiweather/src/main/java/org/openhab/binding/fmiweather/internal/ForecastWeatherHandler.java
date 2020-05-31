@@ -95,7 +95,11 @@ public class ForecastWeatherHandler extends AbstractWeatherHandler {
             }
             String latlon = location.toString();
             String[] split = latlon.split(",");
-            this.location = null;
+            if (split.length != 2) {
+                throw new NumberFormatException(String.format(
+                        "Expecting location parameter to have latitude and longitude separated by comma (LATITUDE,LONGITUDE). Found {} values instead.",
+                        split.length));
+            }
             this.location = new LatLon(new BigDecimal(split[0].trim()), new BigDecimal(split[1].trim()));
             super.initialize();
         } catch (IllegalStateException e) {
@@ -106,6 +110,12 @@ public class ForecastWeatherHandler extends AbstractWeatherHandler {
                     String.format("location parameter should be in format LATITUDE,LONGITUDE. Error: %s %s",
                             e.getClass().getName(), e.getMessage()));
         }
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        this.location = null;
     }
 
     @Override
