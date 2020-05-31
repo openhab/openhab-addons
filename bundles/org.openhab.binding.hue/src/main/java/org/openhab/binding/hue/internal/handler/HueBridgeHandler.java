@@ -343,9 +343,6 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         }
     };
 
-    private long lightPollingInterval = TimeUnit.SECONDS.toSeconds(10);
-    private long sensorPollingInterval = TimeUnit.MILLISECONDS.toMillis(500);
-
     private boolean lastBridgeConnectionState = false;
 
     private boolean propertiesInitializedSuccessfully = false;
@@ -560,12 +557,16 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     }
 
     private void startLightPolling() {
-        if (lightPollingJob == null || lightPollingJob.isCancelled()) {
-            if (hueBridgeConfig.getPollingInterval() < 1) {
+        ScheduledFuture<?> job = lightPollingJob;
+        if (job == null || job.isCancelled()) {
+            long lightPollingInterval;
+            int configPollingInterval = hueBridgeConfig.getPollingInterval();
+            if (configPollingInterval < 1) {
+                lightPollingInterval = TimeUnit.SECONDS.toSeconds(10);
                 logger.info("Wrong configuration value for polling interval. Using default value: {}s",
                         lightPollingInterval);
             } else {
-                lightPollingInterval = hueBridgeConfig.getPollingInterval();
+                lightPollingInterval = configPollingInterval;
             }
             lightPollingJob = scheduler.scheduleWithFixedDelay(lightPollingRunnable, 1, lightPollingInterval,
                     TimeUnit.SECONDS);
@@ -573,30 +574,38 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     }
 
     private void stopLightPolling() {
-        if (lightPollingJob != null && !lightPollingJob.isCancelled()) {
-            lightPollingJob.cancel(true);
-            lightPollingJob = null;
+        ScheduledFuture<?> job = lightPollingJob;
+        if (job != null) {
+            job.cancel(true);
         }
+        lightPollingJob = null;
     }
 
     private void startSensorPolling() {
-        if (sensorPollingJob == null || sensorPollingJob.isCancelled()) {
-            if (hueBridgeConfig.getSensorPollingInterval() < 50) {
-                logger.info("Wrong configuration value for sensor polling interval. Using default value: {}ms",
-                        sensorPollingInterval);
-            } else {
-                sensorPollingInterval = hueBridgeConfig.getSensorPollingInterval();
+        ScheduledFuture<?> job = sensorPollingJob;
+        if (job == null || job.isCancelled()) {
+            int configSensorPollingInterval = hueBridgeConfig.getSensorPollingInterval();
+            if (configSensorPollingInterval > 0) {
+                long sensorPollingInterval;
+                if (configSensorPollingInterval < 50) {
+                    sensorPollingInterval = TimeUnit.MILLISECONDS.toMillis(500);
+                    logger.info("Wrong configuration value for sensor polling interval. Using default value: {}ms",
+                            sensorPollingInterval);
+                } else {
+                    sensorPollingInterval = configSensorPollingInterval;
+                }
+                sensorPollingJob = scheduler.scheduleWithFixedDelay(sensorPollingRunnable, 1, sensorPollingInterval,
+                        TimeUnit.MILLISECONDS);
             }
-            sensorPollingJob = scheduler.scheduleWithFixedDelay(sensorPollingRunnable, 1, sensorPollingInterval,
-                    TimeUnit.MILLISECONDS);
         }
     }
 
     private void stopSensorPolling() {
-        if (sensorPollingJob != null && !sensorPollingJob.isCancelled()) {
-            sensorPollingJob.cancel(true);
-            sensorPollingJob = null;
+        ScheduledFuture<?> job = sensorPollingJob;
+        if (job != null) {
+            job.cancel(true);
         }
+        sensorPollingJob = null;
     }
 
     @Override
