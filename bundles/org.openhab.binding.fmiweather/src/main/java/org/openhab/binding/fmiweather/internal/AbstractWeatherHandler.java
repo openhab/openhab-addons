@@ -58,7 +58,7 @@ public abstract class AbstractWeatherHandler extends BaseThingHandler {
     protected static final String PROP_REGION = "region";
     private static final long REFRESH_THROTTLE_MILLIS = 10_000;
 
-    protected static final int TIMEOUT_MILLIS = 30_000;
+    protected static final int TIMEOUT_MILLIS = 10_000;
     private final Logger logger = LoggerFactory.getLogger(AbstractWeatherHandler.class);
 
     protected @NonNullByDefault({}) Client client;
