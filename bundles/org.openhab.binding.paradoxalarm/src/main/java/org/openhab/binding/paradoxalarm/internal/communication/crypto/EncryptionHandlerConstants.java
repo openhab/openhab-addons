@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.paradoxalarm.internal.communication.crypto;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  *
  * Constant
@@ -20,6 +22,7 @@ package org.openhab.binding.paradoxalarm.internal.communication.crypto;
  *
  * @see <a href=https://www.samiam.org/key-schedule.html>Sam Trendholme's page about AES</a>
  */
+@NonNullByDefault
 public class EncryptionHandlerConstants {
     protected static final int[] S = { 99, 124, 119, 123, 242, 107, 111, 197, 48, 1, 103, 43, 254, 215, 171, 118, 202,
             130, 201, 125, 250, 89, 71, 240, 173, 212, 162, 175, 156, 164, 114, 192, 183, 253, 147, 38, 54, 63, 247,

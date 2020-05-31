@@ -48,6 +48,7 @@ public class EncryptionHandler {
     private static final int TABLE_SIZE = 256;
     private static final int KEY_LENGTH = 240;
     private static final int PAYLOAD_RATE_LENGTH = 16;
+    private static final int ROUNDS = 14;
 
     private static int[] lTable = new int[TABLE_SIZE];
     private static int[] aTable = new int[TABLE_SIZE];
@@ -55,6 +56,27 @@ public class EncryptionHandler {
     private static EncryptionHandler instance = new EncryptionHandler(new byte[] {});
     static {
         generateTables();
+    }
+
+    private static void generateTables() {
+        int a = 1;
+        int d;
+        for (int index = 0; index < 255; index++) {
+            aTable[index] = a & 0xFF;
+            /* Multiply by three */
+            d = (a & 0x80) & 0xFF;
+            a <<= 1;
+            if (d == 0x80) {
+                a ^= 0x1b;
+                a &= 0xFF;
+            }
+            a ^= aTable[index];
+            a &= 0xFF;
+            /* Set the log table value */
+            lTable[aTable[index]] = index & 0xFF;
+        }
+        aTable[255] = aTable[0];
+        lTable[0] = 0;
     }
 
     private int[] expandedKey = new int[KEY_LENGTH];
@@ -69,6 +91,11 @@ public class EncryptionHandler {
         return instance;
     }
 
+    public synchronized EncryptionHandler updateKey(byte[] newKey) {
+        instance = new EncryptionHandler(newKey);
+        return instance;
+    }
+
     public byte[] encrypt(byte[] payload) {
         if (payload.length % 16 != 0) {
             payload = ParadoxUtil.extendArray(payload, PAYLOAD_RATE_LENGTH);
@@ -80,20 +107,20 @@ public class EncryptionHandler {
 
         final int[] s = EncryptionHandlerConstants.S;
         byte[] result = new byte[0];
-        for (int i = 0, rounds = 14; i < payloadAsIntArray.length / 16; i++) {
-            int[] a = Arrays.copyOfRange(payloadAsIntArray, i * 16, (i + 1) * 16);
-            keyAddition(a, Arrays.copyOfRange(expandedKey, 0, 16));
+        for (int i = 0; i < payloadAsIntArray.length / 16; i++) {
+            int[] tempArray = Arrays.copyOfRange(payloadAsIntArray, i * 16, (i + 1) * 16);
+            keyAddition(tempArray, 0);
 
-            for (int r = 1; r <= rounds; r++) {
-                sBox(a, s);
-                shiftRow(a, 0);
-                if (r != rounds) {
-                    mixColumn(a);
+            for (int r = 1; r <= ROUNDS; r++) {
+                sBox(tempArray, s);
+                shiftRow(tempArray, 0);
+                if (r != ROUNDS) {
+                    mixColumn(tempArray);
                 }
-                keyAddition(a, Arrays.copyOfRange(expandedKey, r * 16, (r + 1) * 16));
+                keyAddition(tempArray, r * 16);
             }
 
-            result = ParadoxUtil.mergeByteArrays(result, ParadoxUtil.toByteArray(a));
+            result = ParadoxUtil.mergeByteArrays(result, ParadoxUtil.toByteArray(tempArray));
         }
 
         printArray("Encrypted array", result);
@@ -105,21 +132,21 @@ public class EncryptionHandler {
 
         final int[] si = EncryptionHandlerConstants.Si;
         byte[] result = new byte[0];
-        for (int i = 0, rounds = 14; i < payloadAsIntArray.length / 16; i++) {
-            int[] a = Arrays.copyOfRange(payloadAsIntArray, i * 16, (i + 1) * 16);
+        for (int i = 0; i < payloadAsIntArray.length / 16; i++) {
+            int[] tempArray = Arrays.copyOfRange(payloadAsIntArray, i * 16, (i + 1) * 16);
 
-            for (int r = rounds; r > 0; r--) {
-                keyAddition(a, Arrays.copyOfRange(expandedKey, r * 16, (r + 1) * 16));
-                if (r != rounds) {
-                    invMixColumn(a);
+            for (int r = ROUNDS; r > 0; r--) {
+                keyAddition(tempArray, r * 16);
+                if (r != ROUNDS) {
+                    invMixColumn(tempArray);
                 }
-                sBox(a, si);
-                shiftRow(a, 1);
+                sBox(tempArray, si);
+                shiftRow(tempArray, 1);
             }
 
-            keyAddition(a, expandedKey);
+            keyAddition(tempArray, 0);
 
-            result = ParadoxUtil.mergeByteArrays(result, ParadoxUtil.toByteArray(a));
+            result = ParadoxUtil.mergeByteArrays(result, ParadoxUtil.toByteArray(tempArray));
         }
 
         printArray("Decrypted array", result);
@@ -138,11 +165,6 @@ public class EncryptionHandler {
 
         byte[] expandedArray = ParadoxUtil.extendArray(byteArray, KEY_ARRAY_LENGTH);
         return expandedArray;
-    }
-
-    public synchronized EncryptionHandler updateKey(byte[] newKey) {
-        instance = new EncryptionHandler(newKey);
-        return instance;
     }
 
     private void expandKey(byte[] input) {
@@ -197,27 +219,6 @@ public class EncryptionHandler {
             s = 0;
         }
         return s;
-    }
-
-    private static void generateTables() {
-        int a = 1;
-        int d;
-        for (int index = 0; index < 255; index++) {
-            aTable[index] = a & 0xFF;
-            /* Multiply by three */
-            d = (a & 0x80) & 0xFF;
-            a <<= 1;
-            if (d == 0x80) {
-                a ^= 0x1b;
-                a &= 0xFF;
-            }
-            a ^= aTable[index];
-            a &= 0xFF;
-            /* Set the log table value */
-            lTable[aTable[index]] = index & 0xFF;
-        }
-        aTable[255] = aTable[0];
-        lTable[0] = 0;
     }
 
     private void sBox(int[] a, int[] box) {
@@ -276,9 +277,9 @@ public class EncryptionHandler {
         }
     }
 
-    private void keyAddition(int[] a, int[] rk) {
+    private void keyAddition(int[] result, int startIndex) {
         for (int i = 0; i < 16; i++) {
-            a[i] ^= rk[i];
+            result[i] ^= expandedKey[i + startIndex];
         }
     }
 }

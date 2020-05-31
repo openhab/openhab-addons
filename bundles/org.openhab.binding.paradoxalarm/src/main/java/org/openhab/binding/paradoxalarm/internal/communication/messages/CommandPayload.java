@@ -28,8 +28,8 @@ public class CommandPayload implements IPayload {
     private final byte[] EMPTY_FOUR_BYTES = { 0, 0, 0, 0 };
     private final byte CHECKSUM = 0;
 
-    private int partitionNumber;
-    private PartitionCommand command;
+    private final int partitionNumber;
+    private final PartitionCommand command;
 
     public CommandPayload(int partitionNumber, PartitionCommand command) {
         this.partitionNumber = partitionNumber;

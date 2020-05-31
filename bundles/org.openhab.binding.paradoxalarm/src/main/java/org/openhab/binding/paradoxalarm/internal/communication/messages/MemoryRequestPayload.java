@@ -28,13 +28,12 @@ import org.slf4j.LoggerFactory;
 public abstract class MemoryRequestPayload implements IPayload {
 
     private static final int BUFFER_LENGTH = 8;
+    private static final short MESSAGE_START = (short) ((0x50 << 8) | 0x08);
 
     private final Logger logger = LoggerFactory.getLogger(MemoryRequestPayload.class);
 
-    private static final short MESSAGE_START = (short) ((0x50 << 8) | 0x08);
-
-    private int address;
-    private byte bytesToRead;
+    private final int address;
+    private final byte bytesToRead;
 
     public MemoryRequestPayload(int address, byte bytesToRead) throws ParadoxException {
         if (bytesToRead < 1 || bytesToRead > 64) {

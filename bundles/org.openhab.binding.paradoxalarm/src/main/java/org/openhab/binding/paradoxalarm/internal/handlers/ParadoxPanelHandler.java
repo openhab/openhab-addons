@@ -14,10 +14,13 @@ package org.openhab.binding.paradoxalarm.internal.handlers;
 
 import static org.openhab.binding.paradoxalarm.internal.handlers.ParadoxAlarmBindingConstants.*;
 
+import javax.measure.quantity.ElectricPotential;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.paradoxalarm.internal.model.ParadoxInformation;
 import org.openhab.binding.paradoxalarm.internal.model.ParadoxPanel;
@@ -59,9 +62,12 @@ public class ParadoxPanelHandler extends EntityBaseHandler {
             updateProperty(PANEL_BOOTLOADER_VERSION_PROPERTY_NAME, panelInformation.getBootLoaderVersion().toString());
 
             updateState(PANEL_TIME, new DateTimeType(panel.getPanelTime()));
-            updateState(PANEL_INPUT_VOLTAGE, new DecimalType(panel.getVdcLevel()));
-            updateState(PANEL_BOARD_VOLTAGE, new DecimalType(panel.getDcLevel()));
-            updateState(PANEL_BATTERY_VOLTAGE, new DecimalType(panel.getBatteryLevel()));
+            updateState(PANEL_INPUT_VOLTAGE,
+                    new QuantityType<ElectricPotential>(panel.getVdcLevel(), SmartHomeUnits.VOLT));
+            updateState(PANEL_BOARD_VOLTAGE,
+                    new QuantityType<ElectricPotential>(panel.getDcLevel(), SmartHomeUnits.VOLT));
+            updateState(PANEL_BATTERY_VOLTAGE,
+                    new QuantityType<ElectricPotential>(panel.getBatteryLevel(), SmartHomeUnits.VOLT));
         }
     }
 }

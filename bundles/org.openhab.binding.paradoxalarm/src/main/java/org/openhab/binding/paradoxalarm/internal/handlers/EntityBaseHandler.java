@@ -98,7 +98,7 @@ public abstract class EntityBaseHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        if (delayedSchedule != null && !delayedSchedule.isCancelled() && !delayedSchedule.isDone()) {
+        if (delayedSchedule != null) {
             boolean cancelingResult = delayedSchedule.cancel(true);
             String cancelingSuccessful = cancelingResult ? "successful" : "failed";
             logger.debug("Canceling schedule of {} is {}", delayedSchedule, cancelingSuccessful);
