@@ -15,7 +15,6 @@ package org.openhab.binding.hpprinter.internal.api;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 /**
  * The {@link HPScannerStatusFeatures} is responsible for determining what type of printer scanner
@@ -35,16 +34,8 @@ public class HPScannerStatusFeatures {
         boolean localHasAdf = false;
 
         Element nodes = (Element) document.getDocumentElement();
-
-        NodeList state = nodes.getElementsByTagName("pwg:State");
-        if (state.getLength() > 0) {
-            localHasStatus = true;
-        }
-        
-        NodeList adfState = nodes.getElementsByTagName("scan:AdfState");
-        if (adfState.getLength() > 0) {
-            localHasAdf = true;
-        }
+        localHasStatus = (nodes.getElementsByTagName("pwg:State").getLength() > 0);
+        localHasAdf = (nodes.getElementsByTagName("scan:AdfState").getLength() > 0);
        
         hasStatus = localHasStatus;
         hasAdf = localHasAdf;

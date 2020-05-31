@@ -28,26 +28,26 @@ public class HPProductUsageFeatures {
     public static final String ENDPOINT = "/DevMgmt/ProductUsageDyn.xml";
 
     private PrinterType printerType = PrinterType.UNKNOWN;
-    private boolean jamEvents;
-    private boolean mispickEvents;
-    private boolean subscriptionImpressions;
-    private boolean frontPanelCancel;
-    private boolean cumuMarking;
-    private boolean pagesRemaining;
+    private boolean jamEvents = false;
+    private boolean mispickEvents = false;
+    private boolean subscriptionImpressions = false;
+    private boolean frontPanelCancel = false;
+    private boolean cumuMarking = false;
+    private boolean pagesRemaining = false;
 
-    private boolean scanAdf;
-    private boolean scanFlatbed;
-    private boolean scanToHost;
-    private boolean scanToEmail;
-    private boolean scanToFolder;
+    private boolean scanAdf = false;
+    private boolean scanFlatbed = false;
+    private boolean scanToHost = false;
+    private boolean scanToEmail = false;
+    private boolean scanToFolder = false;
 
-    private boolean printApplication;
-    private boolean printApplicationChrome;
+    private boolean printApplication = false;
+    private boolean printApplicationChrome = false;
 
-    private boolean scannerEngine;
-    private boolean copyApplication;
+    private boolean scannerEngine = false;
+    private boolean copyApplication = false;
 
-    private boolean cloudPrint;
+    private boolean cloudPrint = false;
 
     public enum PrinterType {
         UNKNOWN,
@@ -56,23 +56,20 @@ public class HPProductUsageFeatures {
         MULTICOLOR
     }
 
-    public HPProductUsageFeatures(Document document) {
+    public HPProductUsageFeatures(final Document document) {
         // Check what Ink/Toner colours are present
-        NodeList consumableInk = document.getDocumentElement().getElementsByTagName("pudyn:Consumable");
+        final NodeList consumableInk = document.getDocumentElement().getElementsByTagName("pudyn:Consumable");
 
         for (int i = 0; i < consumableInk.getLength(); i++) {
-            Element currInk = (Element) consumableInk.item(i);
-
-            String inkName = currInk.getElementsByTagName("dd:MarkerColor").item(0).getTextContent();
-
-            String consumeType = currInk.getElementsByTagName("dd:ConsumableTypeEnum").item(0).getTextContent();
+            final Element currInk = (Element) consumableInk.item(i);
+            final String inkName = currInk.getElementsByTagName("dd:MarkerColor").item(0).getTextContent();
+            final String consumeType = currInk.getElementsByTagName("dd:ConsumableTypeEnum").item(0).getTextContent();
+            
             if (consumeType.equalsIgnoreCase("printhead")) {
                 continue;
             }
 
-            if (currInk.getElementsByTagName("dd2:CumulativeMarkingAgentUsed").getLength() > 0) {
-                cumuMarking = true;
-            }
+            cumuMarking = (currInk.getElementsByTagName("dd2:CumulativeMarkingAgentUsed").getLength() > 0);
 
             switch (inkName.toLowerCase()) {
                 case "cyan":
@@ -93,85 +90,50 @@ public class HPProductUsageFeatures {
             }
         }
         
-        if (((Element) consumableInk.item(0)).getElementsByTagName("dd:EstimatedPagesRemaining").getLength() > 0) {
-            pagesRemaining = true;
-        }
+        pagesRemaining = (((Element) consumableInk.item(0)).getElementsByTagName("dd:EstimatedPagesRemaining").getLength() > 0);
 
-        NodeList printerSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:PrinterSubunit");
+        final NodeList printerSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:PrinterSubunit");
         if (printerSubUnit.getLength() > 0) {
-            Element currPrinterSubUnit = (Element) printerSubUnit.item(0);
+            final Element currPrinterSubUnit = (Element) printerSubUnit.item(0);
 
-            if (currPrinterSubUnit.getElementsByTagName("dd:JamEvents").getLength() > 0) {
-                jamEvents = true;
-            }
-
-            if (currPrinterSubUnit.getElementsByTagName("dd:MispickEvents").getLength() > 0) {
-                mispickEvents = true;
-            }
-
-            if (currPrinterSubUnit.getElementsByTagName("pudyn:SubscriptionImpressions").getLength() > 0) {
-                subscriptionImpressions = true;
-            }
-
-            if (currPrinterSubUnit.getElementsByTagName("dd:TotalFrontPanelCancelPresses").getLength() > 0) {
-                frontPanelCancel = true;
-            }
+            jamEvents = (currPrinterSubUnit.getElementsByTagName("dd:JamEvents").getLength() > 0);
+            mispickEvents = (currPrinterSubUnit.getElementsByTagName("dd:MispickEvents").getLength() > 0);
+            subscriptionImpressions = (currPrinterSubUnit.getElementsByTagName("pudyn:SubscriptionImpressions").getLength() > 0);
+            frontPanelCancel = (currPrinterSubUnit.getElementsByTagName("dd:TotalFrontPanelCancelPresses").getLength() > 0);
         }
 
-        NodeList scannerSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:ScanApplicationSubunit");
+        final NodeList scannerSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:ScanApplicationSubunit");
         if (scannerSubUnit.getLength() > 0) {
-            Element currScannerSubUnit = (Element) scannerSubUnit.item(0);
+            final Element currScannerSubUnit = (Element) scannerSubUnit.item(0);
 
-            if (currScannerSubUnit.getElementsByTagName("dd:AdfImages").getLength() > 0) {
-                scanAdf = true;
-            }
-
-            if (currScannerSubUnit.getElementsByTagName("dd:FlatbedImages").getLength() > 0) {
-                scanFlatbed = true;
-            }
-
-            if (currScannerSubUnit.getElementsByTagName("dd:ImagesSentToEmail").getLength() > 0) {
-                scanToEmail = true;
-            }
-
-            if (currScannerSubUnit.getElementsByTagName("dd:ImagesSentToFolder").getLength() > 0) {
-                scanToFolder = true;
-            }
-
-            if (currScannerSubUnit.getElementsByTagName("dd:ScanToHostImages").getLength() > 0) {
-                scanToHost = true;
-            }
+            scanAdf = (currScannerSubUnit.getElementsByTagName("dd:AdfImages").getLength() > 0);
+            scanFlatbed = (currScannerSubUnit.getElementsByTagName("dd:FlatbedImages").getLength() > 0);
+            scanToEmail = (currScannerSubUnit.getElementsByTagName("dd:ImagesSentToEmail").getLength() > 0);
+            scanToFolder = (currScannerSubUnit.getElementsByTagName("dd:ImagesSentToFolder").getLength() > 0);
+            scanToHost = (currScannerSubUnit.getElementsByTagName("dd:ScanToHostImages").getLength() > 0);
         }
 
-        NodeList scanAppSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:ScanApplicationSubunit");
+        final NodeList scanAppSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:ScanApplicationSubunit");
         if (scanAppSubUnit.getLength() > 0) {
             printApplication = true;
 
-            Element currAppSubUnit = (Element) scanAppSubUnit.item(0);
+            final Element currAppSubUnit = (Element) scanAppSubUnit.item(0);
             
-            if (currAppSubUnit.getElementsByTagName("pudyn:RemoteDeviceType").getLength() > 0) {
-                printApplicationChrome = true;
-            }
+            printApplicationChrome = (currAppSubUnit.getElementsByTagName("pudyn:RemoteDeviceType").getLength() > 0);
         }
 
-        NodeList printAppSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:PrintApplicationSubunit");
+        final NodeList printAppSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:PrintApplicationSubunit");
         if (printAppSubUnit.getLength() > 0) {
-            Element currPrintAppSubUnit = (Element) printAppSubUnit.item(0);
+            final Element currPrintAppSubUnit = (Element) printAppSubUnit.item(0);
 
-            if (currPrintAppSubUnit.getElementsByTagName("dd:CloudPrintImpressions").getLength() > 0) {
-                cloudPrint = true;
-            }
+            cloudPrint = (currPrintAppSubUnit.getElementsByTagName("dd:CloudPrintImpressions").getLength() > 0);
         }
 
-        NodeList scannerEngineSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:ScannerEngineSubunit");
-        if (scannerEngineSubUnit.getLength() > 0) {
-            scannerEngine = true;
-        }
+        final NodeList scannerEngineSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:ScannerEngineSubunit");
+        scannerEngine = (scannerEngineSubUnit.getLength() > 0);
 
-        NodeList copyAppSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:CopyApplicationSubunit");
-        if (copyAppSubUnit.getLength() > 0) {
-            copyApplication = true;
-        }
+        final NodeList copyAppSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:CopyApplicationSubunit");
+        copyApplication = (copyAppSubUnit.getLength() > 0);
     }
 
     public PrinterType getType() {
