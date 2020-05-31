@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hpprinter.internal.handler;
+package org.openhab.binding.hpprinter.internal;
 
 import static org.openhab.binding.hpprinter.internal.HPPrinterBindingConstants.*;
 
