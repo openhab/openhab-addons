@@ -27,12 +27,12 @@ import org.w3c.dom.NodeList;
 public class HPScannerStatusFeatures {
     public static final String ENDPOINT = "/eSCL/ScannerStatus";
 
-    private final Boolean hasStatus;
-    private final Boolean hasAdf;
+    private final boolean hasStatus;
+    private final boolean hasAdf;
 
     public HPScannerStatusFeatures(Document document) {
-        Boolean localHasStatus = false;
-        Boolean localHasAdf = false;
+        boolean localHasStatus = false;
+        boolean localHasAdf = false;
 
         Element nodes = (Element) document.getDocumentElement();
 
@@ -50,11 +50,11 @@ public class HPScannerStatusFeatures {
         hasAdf = localHasAdf;
     }
 
-    public Boolean hasStatus() {
+    public boolean hasStatus() {
         return hasStatus;
     }
 
-    public Boolean hasAdf() {
+    public boolean hasAdf() {
         return hasAdf;
     }
 }

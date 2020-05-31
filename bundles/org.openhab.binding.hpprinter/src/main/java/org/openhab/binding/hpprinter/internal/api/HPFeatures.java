@@ -27,16 +27,16 @@ import org.w3c.dom.NodeList;
 public class HPFeatures {
     public static final String ENDPOINT = "/DevMgmt/DiscoveryTree.xml";
 
-    Boolean productStatus;
-    Boolean productUsage;
-    Boolean scannerStatus;
+    private final boolean productStatus;
+    private final boolean productUsage;
+    private final boolean scannerStatus;
 
     public HPFeatures(Document document) {
         Element root = (Element) document.getDocumentElement();
 
-        Boolean localProductStatus = false;
-        Boolean localProductUsage = false;
-        Boolean localScannerStatus = false;
+        boolean localProductStatus = false;
+        boolean localProductUsage = false;
+        boolean localScannerStatus = false;
 
         for (Node n = root.getFirstChild(); n != null; n = n.getNextSibling()) {
             if (n instanceof Element) {
@@ -67,15 +67,15 @@ public class HPFeatures {
         scannerStatus = localScannerStatus;
     }
 
-    public Boolean getProductStatusSupported() {
+    public boolean getProductStatusSupported() {
         return productStatus;
     }
 
-    public Boolean getProductUsageSupported() {
+    public boolean getProductUsageSupported() {
         return productUsage;
     }
 
-    public Boolean getScannerStatusSupported() {
+    public boolean getScannerStatusSupported() {
         return scannerStatus;
     }
 }

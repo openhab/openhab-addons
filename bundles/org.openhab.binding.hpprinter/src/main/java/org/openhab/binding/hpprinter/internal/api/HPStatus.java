@@ -33,13 +33,13 @@ public class HPStatus {
     private static final Map<String, String> STATUS_MESSAGES = initializeStatus();
 
     private final String printerStatus;
-    private final Boolean trayEmptyOrOpen;
+    private final boolean trayEmptyOrOpen;
 
     public HPStatus(Document document) {
         NodeList nodes = document.getDocumentElement().getElementsByTagName("psdyn:Status");
 
         String localPrinterStatus = "Unknown";
-        Boolean localTrayEmptyOrOpen = false;
+        boolean localTrayEmptyOrOpen = false;
         for (int i = 0; i < nodes.getLength(); i++) {
             Element element = (Element) nodes.item(i);
             String statusCategory = element.getElementsByTagName("pscat:StatusCategory").item(0).getTextContent();
@@ -68,7 +68,7 @@ public class HPStatus {
         return statusMap;
     }
 
-    public Boolean getTrayEmptyOrOpen() {
+    public boolean getTrayEmptyOrOpen() {
         return trayEmptyOrOpen;
     }
 
