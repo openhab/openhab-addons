@@ -198,7 +198,7 @@ public class GreeHandler extends BaseThingHandler {
 
     private int getOnOff(Command command) {
         if (command instanceof OnOffType) {
-            return getOnOff(command);
+            return ((OnOffType) command) == OnOffType.ON ? 1 : 0;
         }
         if ((command instanceof DecimalType) && (((DecimalType) command).intValue() <= 2)) {
             return ((DecimalType) command).intValue();
@@ -207,7 +207,6 @@ public class GreeHandler extends BaseThingHandler {
     }
 
     private int getNumber(Command command) {
-        int value = -1;
         if (command instanceof DecimalType) {
             return ((DecimalType) command).intValue();
         }
