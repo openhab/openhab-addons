@@ -15,9 +15,7 @@ package org.openhab.binding.netatmo.internal.welcome;
 import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
-import java.util.Calendar;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import io.swagger.client.model.*;
 import org.eclipse.jdt.annotation.NonNull;
@@ -32,6 +30,7 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.netatmo.internal.handler.AbstractNetatmoThingHandler;
 import org.openhab.binding.netatmo.internal.handler.NetatmoDeviceHandler;
+import org.openhab.binding.netatmo.internal.webhook.NAWebhookCameraEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +49,7 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
     private int iUnknowns = -1;
     @Nullable
     private NAWelcomeEvent lastEvent;
+    private boolean isNewLastEvent;
     @Nullable
     private Integer dataTimeStamp;
 
@@ -84,11 +84,14 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
                     }
                 });
 
+                @Nullable NAWelcomeEvent previousLastEvent = lastEvent;
                 result.getEvents().forEach(event -> {
                     if (lastEvent == null || lastEvent.getTime() < event.getTime()) {
                         lastEvent = event;
                     }
                 });
+
+                isNewLastEvent = previousLastEvent != null && !previousLastEvent.equals(lastEvent);
             }
         }
         return result;
@@ -164,14 +167,52 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
                         : UnDefType.UNDEF;
             case CHANNEL_WELCOME_EVENT_SUBTYPE:
                 return lastEvent != null ? toDecimalType(lastEvent.getSubType()) : UnDefType.UNDEF;
-            case CHANNEL_HOME_EVENT_HUMAN_DETECTED:
-                return getIsDetectedState(NAWelcomeSubEvent.TypeEnum.HUMAN);
-            case CHANNEL_HOME_EVENT_ANIMAL_DETECTED:
-                return getIsDetectedState(NAWelcomeSubEvent.TypeEnum.ANIMAL);
-            case CHANNEL_HOME_EVENT_VEHICLE_DETECTED:
-                return getIsDetectedState(NAWelcomeSubEvent.TypeEnum.VEHICLE);
         }
         return super.getNAThingProperty(channelId);
+    }
+
+    @Override
+    protected void triggerChannelIfRequired(String channelId) {
+        if(isNewLastEvent) {
+            if(CHANNEL_CAMERA_EVENT.equals(channelId)) {
+                Set<String> detectedObjectTypes = findDetectedObjectTypes(lastEvent);
+                for(String detectedType: detectedObjectTypes) {
+                    triggerChannel(channelId, detectedType);
+                }
+            }
+        }
+        super.triggerChannelIfRequired(channelId);
+    }
+
+    private static Set<String> findDetectedObjectTypes(@Nullable NAWelcomeEvent event) {
+        Set<String> detectedObjectTypes = new TreeSet<>();
+        if(event == null) {
+            return detectedObjectTypes;
+        }
+
+        if(event.getPersonId() != null) {
+            detectedObjectTypes.add(CAMERA_EVENT_OPTION_HUMAN_DETECTED);
+        }
+
+        if(NAWebhookCameraEvent.EventTypeEnum.MOVEMENT.toString().equals(event.getType())) {
+            detectedObjectTypes.add(CAMERA_EVENT_OPTION_MOVEMENT_DETECTED);
+        }
+
+        List<NAWelcomeSubEvent> subEvents = event.getEventList();
+        for(NAWelcomeSubEvent subEvent: subEvents) {
+            String detectedObjectType = translateDetectedObjectType(subEvent.getType());
+            detectedObjectTypes.add(detectedObjectType);
+        }
+        return detectedObjectTypes;
+    }
+
+    private static String translateDetectedObjectType(NAWelcomeSubEvent.TypeEnum type) {
+        switch (type) {
+            case HUMAN: return CAMERA_EVENT_OPTION_HUMAN_DETECTED;
+            case ANIMAL: return CAMERA_EVENT_OPTION_ANIMAL_DETECTED;
+            case VEHICLE: return CAMERA_EVENT_OPTION_VEHICLE_DETECTED;
+            default: throw new IllegalArgumentException("Unknown detected object type!");
+        }
     }
 
     private @Nullable String findEventMessage() {
@@ -216,17 +257,6 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
     @Override
     protected @Nullable Integer getDataTimestamp() {
         return dataTimeStamp;
-    }
-
-    private State getIsDetectedState(NAWelcomeSubEvent.TypeEnum detectedType) {
-        if(lastEvent != null) {
-            List<NAWelcomeSubEvent> subEvents = lastEvent.getEventList();
-            if(subEvents != null && !subEvents.isEmpty()) {
-                boolean isDetected = subEvents.stream().anyMatch(e -> e.getType().equals(detectedType));
-                return toOnOffType(isDetected);
-            }
-        }
-        return OnOffType.OFF;
     }
 
     private static @Nullable NAWelcomeSubEvent findFirstSubEvent(@Nullable NAWelcomeEvent event) {

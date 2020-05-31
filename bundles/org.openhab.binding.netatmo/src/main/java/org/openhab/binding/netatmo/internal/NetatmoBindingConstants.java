@@ -74,6 +74,12 @@ public class NetatmoBindingConstants {
     public static final String MAX_TEMP = "max_temp";
     public static final String SUM_RAIN = "sum_rain";
 
+    // Camera event options
+    public static final String CAMERA_EVENT_OPTION_ANIMAL_DETECTED = "ANIMAL_DETECTED";
+    public static final String CAMERA_EVENT_OPTION_HUMAN_DETECTED = "HUMAN_DETECTED";
+    public static final String CAMERA_EVENT_OPTION_MOVEMENT_DETECTED = "MOVEMENT_DETECTED";
+    public static final String CAMERA_EVENT_OPTION_VEHICLE_DETECTED = "VEHICLE_DETECTED";
+
     // List of Bridge Type UIDs
     public static final ThingTypeUID APIBRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, "netatmoapi");
 
@@ -227,9 +233,7 @@ public class NetatmoBindingConstants {
 
     public static final String CHANNEL_WELCOME_HOME_EVENT = "welcomeHomeEvent";
 
-    public static final String CHANNEL_HOME_EVENT_HUMAN_DETECTED = "homeEventHumanDetected";
-    public static final String CHANNEL_HOME_EVENT_ANIMAL_DETECTED = "homeEventAnimalDetected";
-    public static final String CHANNEL_HOME_EVENT_VEHICLE_DETECTED = "homeEventVehicleDetected";
+    public static final String CHANNEL_CAMERA_EVENT = "cameraEvent";
 
     public static final String CHANNEL_WELCOME_PERSON_LASTSEEN = "welcomePersonLastSeen";
     public static final String CHANNEL_WELCOME_PERSON_ATHOME = "welcomePersonAtHome";

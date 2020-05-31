@@ -447,6 +447,8 @@ All these channels except Sp_Temperature, SetpointMode and Planning are read onl
 
 ### Welcome Home
 
+All these channels are read only.
+
 **Supported channels for the Home thing:**
 
 | Channel ID               | Item Type | Description                                              |
@@ -467,12 +469,36 @@ All these channels except Sp_Temperature, SetpointMode and Planning are read onl
 | welcomeEventIsArrival    | Switch    | If person was considered "away" before being seen during this event |
 | welcomeEventMessage      | String    | Message sent by Netatmo corresponding to given event     |
 | welcomeEventSubType      | String    | Sub-type of SD and Alim events                           |
-| homeEventHumanDetected   | Switch    | If the last event recorded a human                       |
-| homeEventAnimalDetected  | Switch    | If the last event recorded an animal                     |
-| homeEventVehicleDetected | Switch    | If the last event recorded a vehicle                     |
 
-All these channels are read only.
+**Supported trigger channels for the Home thing:**
 
+| Channel Type ID  | Options                | Description                                           |
+|------------------|------------------------|-------------------------------------------------------|
+| cameraEvent      |                        | A camera event is triggered with a short delay but without requiring a webhook. The information of the event can get retrieved from the other "welcomeEvent" home thing channels |
+|                  | HUMAN_DETECTED         | Triggered when a human (or person) was detected       |
+|                  | ANIMAL_DETECTED        | Triggered when an animal was detected                 |
+|                  | MOVEMENT_DETECTED      | Triggered when an unspecified movement was detected   |
+|                  | VEHICLE_DETECTED       | Triggered when a vehicle was detected                 |
+| welcomeHomeEvent |                        | A welcome home event is triggered directly via a configured webhook |
+|                  | PERSON                 | Triggered when a concrete person was detected         |
+|                  | PERSON_AWAY            | Triggered when a concrete person leaves               |
+|                  | MOVEMENT               | Triggered when a movement was detected                |
+|                  | CONNECTION             | Triggered when a camera connection gets created       |
+|                  | DISCONNECTION          | Triggered when a camera connection got lost           |
+|                  | ON                     | Triggered when camera monitoring is switched on       |
+|                  | OFF                    | Triggered when camera monitoring is switched off      |
+|                  | BOOT                   | Triggered when a camera is booting                    |
+|                  | SD                     | Triggered when a camera SD card status was changed    |
+|                  | ALIM                   | Triggered when a power supply status was changed      |
+|                  | NEW_MODULE             | Triggered when a new module was discovered            |
+|                  | MODULE_CONNECT         | Triggered when a module gets connected                |
+|                  | MODULE_DISCONNECT      | Triggered when a module gets disconnected             |
+|                  | MODULE_LOW_BATTERY     | Triggered when the battery of a module gets low       |
+|                  | MODULE_END_UPDATE      | Triggered when a firmware update of a module is done  |
+|                  | TAG_BIG_MOVE           | Triggered when a big movement of a tag was detected   |
+|                  | TAG_SMALL_MOVE         | Triggered when a small movement of a tag was detected |
+|                  | TAG_UNINSTALLED        | Triggered when a tag gets uninstalled                 |
+|                  | TAG_OPEN               | Triggered when an open event of a tag was detected    |
 
 ### Welcome and Presence Camera
 

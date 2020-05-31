@@ -33,9 +33,7 @@
 			<channel id="welcomeEventSubType" typeId="sub_type"></channel>
 			<channel id="welcomeHomeEvent" typeId="homeEvent"></channel>
 			
-			<channel id="homeEventHumanDetected" typeId="humanDetected"/>
-			<channel id="homeEventAnimalDetected" typeId="animalDetected"/>
-			<channel id="homeEventVehicleDetected" typeId="vehicleDetected"/>
+			<channel id="cameraEvent" typeId="cameraEvent"/>
 		</channels>
 
 		<representation-property>id</representation-property>
@@ -141,24 +139,18 @@
 		<description>Sub-type of SD and Alim events. Go to Welcome page for further details.</description>
 		<state readOnly="true"></state>
 	</channel-type>
-	
-	<channel-type id="humanDetected" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Human detected</label>
-		<description>Switched to true/on when the camera detects a person/human.</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="animalDetected" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Animal detected</label>
-		<description>Switched to true/on when the camera detects an animal.</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="vehicleDetected" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Vehicle detected</label>
-		<description>Switched to true/on when the camera detects a vehicle.</description>
-		<state readOnly="true"></state>
+
+	<channel-type id="cameraEvent">
+		<kind>trigger</kind>
+		<label>Camera Event</label>
+		<event>
+			<options>
+				<option value="ANIMAL_DETECTED">Animal detected</option>
+				<option value="HUMAN_DETECTED">Human detected</option>
+				<option value="MOVEMENT_DETECTED">Unspecified movement detected</option>
+				<option value="VEHICLE_DETECTED">Vehicle detected</option>
+			</options>
+		</event>
 	</channel-type>
 
 </thing:thing-descriptions>

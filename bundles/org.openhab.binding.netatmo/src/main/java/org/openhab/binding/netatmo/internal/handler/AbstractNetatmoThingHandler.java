@@ -32,12 +32,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
-import org.eclipse.smarthome.core.thing.Bridge;
-import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.ThingStatusInfo;
+import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.thing.type.ChannelKind;
@@ -137,16 +132,39 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
     }
 
     protected void updateChannels() {
-        getThing().getChannels().stream().filter(channel -> channel.getKind() != ChannelKind.TRIGGER)
+        updateNonTriggerChannels();
+
+        triggerTriggerChannels();
+    }
+
+    private void updateNonTriggerChannels() {
+        getThing().getChannels().stream().filter(channel -> !channel.getKind().equals(ChannelKind.TRIGGER))
                 .forEach(channel -> {
-                    String channelId = channel.getUID().getId();
-                    if (isLinked(channelId)) {
-                        State state = getNAThingProperty(channelId);
-                        if (state != null) {
-                            updateState(channel.getUID(), state);
-                        }
-                    }
-                });
+
+            String channelId = channel.getUID().getId();
+            if (isLinked(channelId)) {
+                State state = getNAThingProperty(channelId);
+                if (state != null) {
+                    updateState(channel.getUID(), state);
+                }
+            }
+        });
+    }
+
+    /**
+     * Triggers all trigger channels
+     * (when a channel is triggered, a rule can get all other information from the updated non-trigger channels)
+     */
+    private void triggerTriggerChannels() {
+        getThing().getChannels().stream().filter(channel -> channel.getKind().equals(ChannelKind.TRIGGER))
+                .forEach(channel -> triggerChannelIfRequired(channel.getUID().getId()));
+    }
+
+    /**
+     * Triggers the trigger channel with the given channel id when required (when an update is available)
+     * @param channelId channel id
+     */
+    protected void triggerChannelIfRequired(@NonNull String channelId) {
     }
 
     @Override
