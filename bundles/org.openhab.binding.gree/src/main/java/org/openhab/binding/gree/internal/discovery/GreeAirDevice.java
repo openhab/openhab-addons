@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.commons.lang.Validate;
@@ -144,7 +143,7 @@ public class GreeAirDevice {
             String bindReqPackStr = gson.toJson(bindReqPackGson);
 
             // Now Encrypt the Binding Request pack
-            String encryptedBindReqPacket = GreeCryptoUtil.encryptPack(GreeCryptoUtil.GetAESGeneralKeyByteArray(),
+            String encryptedBindReqPacket = GreeCryptoUtil.encryptPack(GreeCryptoUtil.getAESGeneralKeyByteArray(),
                     bindReqPackStr);
 
             // Prep the Binding Request
@@ -166,12 +165,12 @@ public class GreeAirDevice {
             // Recieve a response
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
             clientSocket.receive(receivePacket);
-            String modifiedSentence = new String(receivePacket.getData());
+            String modifiedSentence = new String(receivePacket.getData(), "UTF-8");
 
             // Read the response
             StringReader stringReader = new StringReader(modifiedSentence);
             bindResponseGson = gson.fromJson(new JsonReader(stringReader), GreeBindResponse4GsonDTO.class);
-            bindResponseGson.decryptedPack = GreeCryptoUtil.decryptPack(GreeCryptoUtil.GetAESGeneralKeyByteArray(),
+            bindResponseGson.decryptedPack = GreeCryptoUtil.decryptPack(GreeCryptoUtil.getAESGeneralKeyByteArray(),
                     bindResponseGson.pack);
 
             // Create the JSON to hold the response values
@@ -186,10 +185,10 @@ public class GreeAirDevice {
         }
     }
 
-    public void setDevicePower(DatagramSocket clientSocket, Integer value) throws GreeException {
+    public void setDevicePower(DatagramSocket clientSocket, int value) throws GreeException {
         // Only allow this to happen if this device has been bound and values are valid
-        if ((!Objects.equals(getIsBound(), Boolean.TRUE)) || (value.intValue() < 0 || value.intValue() > 1)) {
-            return;
+        if (!getIsBound() || (value < 0 || value > 1)) {
+            throw new GreeException("Device not bound or value out of range!");
         }
 
         // Set the values in the HashMap
@@ -198,10 +197,10 @@ public class GreeAirDevice {
         executeCommand(clientSocket, parameters);
     }
 
-    public void SetDeviceMode(DatagramSocket clientSocket, Integer value) throws GreeException {
+    public void SetDeviceMode(DatagramSocket clientSocket, int value) throws GreeException {
         // Only allow this to happen if this device has been bound and values are valid
-        if ((!Objects.equals(getIsBound(), Boolean.TRUE)) || (value.intValue() < 0 || value.intValue() > 4)) {
-            return;
+        if (!getIsBound() || (value < 0 || value > 4)) {
+            throw new GreeException("Device not bound or value out of range!");
         }
 
         // Set the values in the HashMap
@@ -210,16 +209,27 @@ public class GreeAirDevice {
         executeCommand(clientSocket, parameters);
     }
 
-    public void setDeviceSwingVertical(DatagramSocket clientSocket, Integer value) throws GreeException {
+    public void setDeviceSwingUpDown(DatagramSocket clientSocket, int value) throws GreeException {
         // Only allow this to happen if this device has been bound and values are valid
         // Only values 0,1,2,3,4,5,6,10,11 allowed
-        if ((!Objects.equals(getIsBound(), Boolean.TRUE)) || (value.intValue() < 0 || value.intValue() > 11)
-                || (value.intValue() > 6 && value.intValue() < 10)) {
-            return;
+        if (!getIsBound() || (value < 0 || value > 11) || (value > 6 && value < 10)) {
+            throw new GreeException("Device not bound or value out of range!");
         }
         // Set the values in the HashMap
         HashMap<String, Integer> parameters = new HashMap<>();
         parameters.put("SwUpDn", value);
+        executeCommand(clientSocket, parameters);
+    }
+
+    public void setDeviceSwingLeftRight(DatagramSocket clientSocket, int value) throws GreeException {
+        // Only allow this to happen if this device has been bound and values are valid
+        // Only values 0,1,2,3,4,5,6 allowed
+        if (!getIsBound() || (value < 0) || (value > 6)) {
+            throw new GreeException("Device not bound or value out of range!");
+        }
+        // Set the values in the HashMap
+        HashMap<String, Integer> parameters = new HashMap<>();
+        parameters.put("SwingLfRig", value);
         executeCommand(clientSocket, parameters);
     }
 
@@ -233,9 +243,9 @@ public class GreeAirDevice {
      * 4 : Medium High
      * 5 : High
      */
-    public void setDeviceWindspeed(DatagramSocket clientSocket, Integer value) throws GreeException {
-        if ((!Objects.equals(getIsBound(), Boolean.TRUE)) || (value.intValue() < 0 || value.intValue() > 5)) {
-            return;
+    public void setDeviceWindspeed(DatagramSocket clientSocket, int value) throws GreeException {
+        if (!getIsBound() || (value < 0 || value > 5)) {
+            throw new GreeException("Device not bound or value out of range!");
         }
 
         // Set the values in the HashMap
@@ -247,10 +257,10 @@ public class GreeAirDevice {
         executeCommand(clientSocket, parameters);
     }
 
-    public void setDeviceTurbo(DatagramSocket clientSocket, Integer value) throws GreeException {
+    public void setDeviceTurbo(DatagramSocket clientSocket, int value) throws GreeException {
         // Only allow this to happen if this device has been bound and values are valid
-        if ((!Objects.equals(getIsBound(), Boolean.TRUE)) || (value.intValue() < 0 || value.intValue() > 1)) {
-            return;
+        if (!getIsBound() || (value < 0 || value > 1)) {
+            throw new GreeException("Device not bound or value out of range!");
         }
 
         // Set the values in the HashMap
@@ -259,14 +269,26 @@ public class GreeAirDevice {
         executeCommand(clientSocket, parameters);
     }
 
+    public void setQuietMode(DatagramSocket clientSocket, int value) throws GreeException {
+        // Only allow this to happen if this device has been bound and values are valid
+        if (!getIsBound() || (value < 0 || value > 2)) {
+            throw new GreeException("Device not bound or value out of range!");
+        }
+
+        // Set the values in the HashMap
+        HashMap<String, Integer> parameters = new HashMap<>();
+        parameters.put("Quiet", value);
+        executeCommand(clientSocket, parameters);
+    }
+
     public int getDeviceTurbo() {
         return getIntStatusVal("Tur");
     }
 
-    public void setDeviceLight(DatagramSocket clientSocket, Integer value) throws GreeException {
+    public void setDeviceLight(DatagramSocket clientSocket, int value) throws GreeException {
         // Only allow this to happen if this device has been bound and values are valid
-        if ((!Objects.equals(getIsBound(), Boolean.TRUE)) || (value.intValue() < 0 || value.intValue() > 1)) {
-            return;
+        if (!getIsBound() || (value < 0 || value > 1)) {
+            throw new GreeException("Device not bound or value out of range!");
         }
 
         // Set the values in the HashMap
@@ -284,12 +306,12 @@ public class GreeAirDevice {
         HashMap<String, Integer> hmf = new HashMap<>();
         HashMap<String, Integer> hmc = new HashMap<>();
 
-        hmf.put("min", new Integer(61)); // F
-        hmf.put("max", new Integer(86));
+        hmf.put("min", 61); // F
+        hmf.put("max", 86);
         tempRanges.put("F", hmf);
 
-        hmc.put("min", new Integer(16)); // C
-        hmc.put("max", new Integer(30));
+        hmc.put("min", 16); // C
+        hmc.put("max", 30);
         tempRanges.put("C", hmc);
 
         return tempRanges;
@@ -300,14 +322,14 @@ public class GreeAirDevice {
      * Uses newVal as priority and tries to validate and determine intent
      * For example if value is 75 and TempUn says Celsius, change TempUn to Fahrenheit
      */
-    private Integer[] validateTemperatureRangeForTempSet(Integer newValIn, @Nullable Integer CorFIn) {
+    private Integer[] validateTemperatureRangeForTempSet(int newValIn, @Nullable Integer CorFIn) {
         final String[] minMaxLUT = { "max", "min" }; // looks up 0 = C = max, 1 = F = min
         final String[] tempScaleLUT = { "C", "F" }; // Look Up Table used to convert TempUn integer 0,1 to "C" to "F"
                                                     // string for hashmap
         HashMap<String, Integer> nullCorFLUT = new HashMap<>(); // simple look up table for logic
-        nullCorFLUT.put("C", new Integer(0));
-        nullCorFLUT.put("F", new Integer(1));
-        nullCorFLUT.put("INVALID", new Integer(0));
+        nullCorFLUT.put("C", 0);
+        nullCorFLUT.put("F", 1);
+        nullCorFLUT.put("INVALID", 0);
 
         String validRangeCorF; // stores if the input range is a valid C or F temperature
 
@@ -327,9 +349,9 @@ public class GreeAirDevice {
         // if CorF wasnt initialized or is null set it from lookup
         Integer CorF = CorFIn != null ? CorFIn : nullCorFLUT.get(validRangeCorF);
 
-        if ((CorF == 1) && (validRangeCorF == "C")) {
+        if ((CorF == 1) && validRangeCorF.equals("C")) {
             CorF = 0; // input temp takes priority
-        } else if ((CorF == 0) && (validRangeCorF == "F")) {
+        } else if ((CorF == 0) && validRangeCorF.equals("F")) {
             CorF = 1; // input temp takes priority
         } else if (validRangeCorF == "INVALID") {
             // force min or max temp based on CorF scale to be used
@@ -339,22 +361,22 @@ public class GreeAirDevice {
         return new Integer[] { newVal, CorF };
     }
 
-    public void setDeviceTempSet(DatagramSocket clientSocket, Integer value) throws GreeException {
+    public void setDeviceTempSet(DatagramSocket clientSocket, int value) throws GreeException {
         // **value** : set temperature in degrees celsius or Fahrenheit
         // Only allow this to happen if this device has been bound
-        if (getIsBound() != Boolean.TRUE) {
-            return;
+        if (!getIsBound()) {
+            throw new GreeException("Device is not bound!");
         }
         Integer[] retList;
-        Integer newVal = new Integer(value);
-        Integer outVal = new Integer(value);
+        Integer newVal = value;
+        Integer outVal = value;
         // Get Celsius or Fahrenheit from status message
         Integer CorF = getIntStatusVal("TemUn");
         // TODO put a param in openhab to allow setting this from the config
 
         // If commanding Fahrenheit set halfStep to 1 or 0 to tell the A/C which F integer
         // temperature to use as celsius alone is ambigious
-        Integer halfStep = new Integer(0); // default to C
+        Integer halfStep = 0; // default to C
 
         retList = validateTemperatureRangeForTempSet(newVal, CorF);
         newVal = retList[0];
@@ -372,7 +394,7 @@ public class GreeAirDevice {
             // TemSet = [20, 21, 21, 22, 22, 23, 23, 24, 25, 25, 26, 26, 27, 27, 28, 28, 29, 29, 30, 30]
             // TemRec = [ 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0]
             // ******************TempRec TemSet Mapping for setting Fahrenheit****************************
-            // subtract the float verison - the int version to get the fractional difference
+            // subtract the float version - the int version to get the fractional difference
             // if the difference is positive set halfStep to 1, negative to 0
             halfStep = ((((newVal - 32.) * 5.0 / 9.0) - outVal) > 0) ? 1 : 0;
         }
@@ -386,10 +408,10 @@ public class GreeAirDevice {
         executeCommand(clientSocket, parameters);
     }
 
-    public void setDeviceAir(DatagramSocket clientSocket, Integer value) throws GreeException {
+    public void setDeviceAir(DatagramSocket clientSocket, int value) throws GreeException {
         // Only allow this to happen if this device has been bound
-        if (getIsBound() != Boolean.TRUE) {
-            return;
+        if (!getIsBound()) {
+            throw new GreeException("Device is not bound!");
         }
 
         // Set the values in the HashMap
@@ -399,10 +421,10 @@ public class GreeAirDevice {
         executeCommand(clientSocket, parameters);
     }
 
-    public void setDeviceDry(DatagramSocket clientSocket, Integer value) throws GreeException {
+    public void setDeviceDry(DatagramSocket clientSocket, int value) throws GreeException {
         // Only allow this to happen if this device has been bound
-        if (getIsBound() != Boolean.TRUE) {
-            return;
+        if (!getIsBound()) {
+            throw new GreeException("Device is not bound!");
         }
 
         // Set the values in the HashMap
@@ -412,10 +434,10 @@ public class GreeAirDevice {
         executeCommand(clientSocket, parameters);
     }
 
-    public void setDeviceHealth(DatagramSocket clientSocket, Integer value) throws GreeException {
+    public void setDeviceHealth(DatagramSocket clientSocket, int value) throws GreeException {
         // Only allow this to happen if this device has been bound
-        if (getIsBound() != Boolean.TRUE) {
-            return;
+        if (!getIsBound()) {
+            throw new GreeException("Device is not bound!");
         }
 
         // Set the values in the HashMap
@@ -425,20 +447,20 @@ public class GreeAirDevice {
         executeCommand(clientSocket, parameters);
     }
 
-    public void setDevicePwrSaving(DatagramSocket clientSocket, Integer value) throws GreeException {
+    public void setDevicePwrSaving(DatagramSocket clientSocket, int value) throws GreeException {
         // Only allow this to happen if this device has been bound
-        if (getIsBound() != Boolean.TRUE) {
-            return;
+        if (!getIsBound()) {
+            throw new GreeException("Device is not bound!");
         }
 
         // Set the values in the HashMap
         HashMap<String, Integer> parameters = new HashMap<>();
         parameters.put("SvSt", value);
-        parameters.put("WdSpd", new Integer(0));
-        parameters.put("Quiet", new Integer(0));
-        parameters.put("Tur", new Integer(0));
-        parameters.put("SwhSlp", new Integer(0));
-        parameters.put("SlpMod", new Integer(0));
+        parameters.put("WdSpd", 0);
+        parameters.put("Quiet", 0);
+        parameters.put("Tur", 0);
+        parameters.put("SwhSlp", 0);
+        parameters.put("SlpMod", 0);
 
         executeCommand(clientSocket, parameters);
     }

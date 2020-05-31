@@ -79,17 +79,15 @@ public class GreeHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private synchronized void unregisterDeviceDiscoveryService() {
-        if (serviceRegistration != null) {
-            serviceRegistration.unregister();
-            GreeDiscoveryService discoveryService = (GreeDiscoveryService) bundleContext
-                    .getService(serviceRegistration.getReference());
+        @Nullable
+        ServiceRegistration<?> reg = serviceRegistration;
+
+        if (reg != null) {
+            reg.unregister();
+            GreeDiscoveryService discoveryService = (GreeDiscoveryService) bundleContext.getService(reg.getReference());
             if (discoveryService != null) {
                 discoveryService.deactivate();
             }
         }
-    }
-
-    public void dispose() {
-        unregisterDeviceDiscoveryService();
     }
 }

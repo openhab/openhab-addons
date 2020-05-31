@@ -49,6 +49,8 @@ import org.openhab.binding.gree.internal.discovery.GreeDeviceFinder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import tec.uom.se.unit.Units;
+
 /**
  * The {@link GreeHandler} is responsible for handling commands, which are sent to one of the channels.
  *
@@ -147,49 +149,87 @@ public class GreeHandler extends BaseThingHandler {
 
             DatagramSocket socket = clientSocket.get();
             logger.debug("Issue command {} to channe {}", command, channelUID.getIdWithoutGroup());
+            String channelId = channelUID.getIdWithoutGroup();
             try {
-                switch (channelUID.getIdWithoutGroup()) {
+                switch (channelId) {
                     case MODE_CHANNEL:
                         handleModeCommand(command, socket);
                         break;
                     case POWER_CHANNEL:
-                        device.setDevicePower(socket, (OnOffType) command == OnOffType.ON ? 1 : 0);
+                        device.setDevicePower(socket, getOnOff(command));
                         break;
                     case TURBO_CHANNEL:
-                        device.setDeviceTurbo(socket, (OnOffType) command == OnOffType.ON ? 1 : 0);
+                        device.setDeviceTurbo(socket, getOnOff(command));
                         break;
                     case LIGHT_CHANNEL:
-                        device.setDeviceLight(socket, (OnOffType) command == OnOffType.ON ? 1 : 0);
+                        device.setDeviceLight(socket, getOnOff(command));
                         break;
                     case TEMP_CHANNEL:
-                        device.setDeviceTempSet(socket, ((DecimalType) command).intValue());
+                        device.setDeviceTempSet(socket, getNumber(command));
                         break;
-                    case SWINGV_CHANNEL:
-                        device.setDeviceSwingVertical(socket, ((DecimalType) command).intValue());
+                    case SWINGUD_CHANNEL:
+                        device.setDeviceSwingUpDown(socket, getNumber(command));
+                        break;
+                    case SWINGLR_CHANNEL:
+                        device.setDeviceSwingLeftRight(socket, getNumber(command));
                         break;
                     case WINDSPEED_CHANNEL:
-                        device.setDeviceWindspeed(socket, ((DecimalType) command).intValue());
+                        device.setDeviceWindspeed(socket, getNumber(command));
+                        break;
+                    case QUIET_CHANNEL:
+                        device.setQuietMode(socket, getNumber(command));
                         break;
                     case AIR_CHANNEL:
-                        device.setDeviceAir(socket, (OnOffType) command == OnOffType.ON ? 1 : 0);
+                        device.setDeviceAir(socket, getOnOff(command));
                         break;
                     case DRY_CHANNEL:
-                        device.setDeviceDry(socket, (OnOffType) command == OnOffType.ON ? 1 : 0);
+                        device.setDeviceDry(socket, getOnOff(command));
                         break;
                     case HEALTH_CHANNEL:
-                        device.setDeviceHealth(socket, (OnOffType) command == OnOffType.ON ? 1 : 0);
+                        device.setDeviceHealth(socket, getOnOff(command));
                         break;
                     case PWRSAV_CHANNEL:
-                        device.setDevicePwrSaving(socket, (OnOffType) command == OnOffType.ON ? 1 : 0);
+                        device.setDevicePwrSaving(socket, getOnOff(command));
                         break;
                 }
             } catch (GreeException e) {
-                logger.debug("Unable to execute command {} for channel {}: {}", command, channelUID.getId(),
-                        e.toString());
+                logger.debug("Unable to execute command {} for channel {}: {}", command, channelId, e.toString());
+            } catch (IllegalArgumentException e) {
+                logger.warn("Invalid command value {} for channel {}", command, channelUID.getId());
             } catch (RuntimeException e) {
-                logger.debug("Unable to execute command {} for channel {}", command, channelUID.getId(), e);
+                logger.debug("Unable to execute command {} for channel {}", command, channelId, e);
             }
         }
+    }
+
+    private int getOnOff(Command command) {
+        if (command instanceof OnOffType) {
+            return getOnOff(command);
+        }
+        if ((command instanceof DecimalType) && (((DecimalType) command).intValue() <= 2)) {
+            return ((DecimalType) command).intValue();
+        }
+        throw new IllegalArgumentException();
+    }
+
+    private int getNumber(Command command) {
+        int value = -1;
+        if (command instanceof DecimalType) {
+            return ((DecimalType) command).intValue();
+        }
+        if (command instanceof QuantityType) {
+            QuantityType<?> q = (QuantityType<?>) command;
+            if (q.getUnit() == Units.CELSIUS) {
+                return q.intValue();
+            }
+        }
+        if (command instanceof StringType) {
+            String temp = ((StringType) command).toString();
+            temp = temp.replace("°C", "");
+            temp = temp.replace(" ", "");
+            return Integer.parseInt(temp);
+        }
+        throw new IllegalArgumentException();
     }
 
     private void handleModeCommand(Command command, DatagramSocket socket) throws GreeException {
@@ -202,7 +242,7 @@ public class GreeHandler extends BaseThingHandler {
         } else if (command instanceof OnOffType) {
             // Switch
             logger.debug("Send Power-{}", command);
-            device.setDevicePower(socket, (OnOffType) command == OnOffType.ON ? 1 : 0);
+            device.setDevicePower(socket, getOnOff(command));
         } else /* String */ {
             modeStr = command.toString().toLowerCase();
             switch (modeStr) {
@@ -243,29 +283,32 @@ public class GreeHandler extends BaseThingHandler {
             logger.debug("Mode {} mapped to {}", modeStr, mode);
         }
 
-        if (mode != -1) {
-            // Turn on the unit if currently off
-            if (!isNumber && (device.getIntStatusVal("Pow") == 0)) {
-                logger.debug("Send Auto-ON for mode {}", mode);
-                device.setDevicePower(socket, 1);
-            }
-
-            // Select mode
-            logger.debug("Select mode {}", mode);
-            device.SetDeviceMode(socket, mode);
-
-            // Check for secondary action
-            switch (modeStr) {
-                case MODE_ECO:
-                    // Turn on power saving for eco mode
-                    logger.debug("Turn on Power-Saving");
-                    device.setDevicePwrSaving(socket, 1);
-                    break;
-                case MODE_TURBO:
-                    device.setDeviceTurbo(socket, 1);
-                    break;
-            }
+        if (mode == -1) {
+            throw new IllegalArgumentException();
         }
+
+        // Turn on the unit if currently off
+        if (!isNumber && (device.getIntStatusVal("Pow") == 0)) {
+            logger.debug("Send Auto-ON for mode {}", mode);
+            device.setDevicePower(socket, 1);
+        }
+
+        // Select mode
+        logger.debug("Select mode {}", mode);
+        device.SetDeviceMode(socket, mode);
+
+        // Check for secondary action
+        switch (modeStr) {
+            case MODE_ECO:
+                // Turn on power saving for eco mode
+                logger.debug("Turn on Power-Saving");
+                device.setDevicePwrSaving(socket, 1);
+                break;
+            case MODE_TURBO:
+                device.setDeviceTurbo(socket, 1);
+                break;
+        }
+
     }
 
     private boolean isMinimumRefreshTimeExceeded() {
@@ -335,11 +378,17 @@ public class GreeHandler extends BaseThingHandler {
                 case TEMP_CHANNEL:
                     state = updateTemp("SetTem");
                     break;
-                case SWINGV_CHANNEL:
+                case SWINGUD_CHANNEL:
                     state = updateNumber("SwUpDn");
+                    break;
+                case SWINGLR_CHANNEL:
+                    state = updateNumber("SwingLfRig");
                     break;
                 case WINDSPEED_CHANNEL:
                     state = updateNumber("WdSpd");
+                    break;
+                case QUIET_CHANNEL:
+                    state = updateNumber("Quiet");
                     break;
                 case AIR_CHANNEL:
                     state = updateOnOff("Air");

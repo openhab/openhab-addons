@@ -28,7 +28,6 @@ public class GreeConfiguration {
 
     @Override
     public String toString() {
-        return "Config: ipAddress=" + ipAddress + ", broadcastAddress=" + broadcastAddress + ", refresh="
-                + String.valueOf(refresh);
+        return "Config: ipAddress=" + ipAddress + ", broadcastAddress=" + broadcastAddress + ", refresh=" + refresh;
     }
 }

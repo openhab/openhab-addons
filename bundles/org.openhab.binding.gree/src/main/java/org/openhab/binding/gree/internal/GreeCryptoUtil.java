@@ -12,10 +12,16 @@
  */
 package org.openhab.binding.gree.internal;
 
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
 import java.security.Key;
+import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -29,31 +35,29 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class GreeCryptoUtil {
-    static String AES_General_Key = "a3K8Bx%2r8Y7#xDh";
+    private static final String AES_KEY = "a3K8Bx%2r8Y7#xDh";
 
     public static String GetAESGeneralKey() {
-        return AES_General_Key;
+        return AES_KEY;
     }
 
-    public static byte[] GetAESGeneralKeyByteArray() {
-        return AES_General_Key.getBytes();
+    public static byte[] getAESGeneralKeyByteArray() {
+        return AES_KEY.getBytes();
     }
 
     public static String decryptPack(byte[] keyarray, String message) throws GreeException {
         try {
             Key key = new SecretKeySpec(keyarray, "AES");
-            // BASE64Decoder decoder = new BASE64Decoder();
             Base64.Decoder decoder = Base64.getDecoder();
-            // Decoder decoder = new Decoder();
             byte[] imageByte = decoder.decode(message);
-            // byte[] imageByte = decoder.decodeBuffer(message);
 
             Cipher aesCipher = Cipher.getInstance("AES");
             aesCipher.init(Cipher.DECRYPT_MODE, key);
             byte[] bytePlainText = aesCipher.doFinal(imageByte);
 
-            return new String(bytePlainText);
-        } catch (Exception ex) {
+            return new String(bytePlainText, "UTF-8");
+        } catch (NoSuchAlgorithmException | UnsupportedEncodingException | NoSuchPaddingException | BadPaddingException
+                | InvalidKeyException | IllegalBlockSizeException ex) {
             throw new GreeException(ex, "Decryption of recieved data failed");
         }
     }
@@ -68,7 +72,8 @@ public class GreeCryptoUtil {
             Base64.Encoder newencoder = Base64.getEncoder();
             String encrytpedMessage = new String(newencoder.encode(bytePlainText));
             return encrytpedMessage.substring(0, encrytpedMessage.length());
-        } catch (Exception ex) {
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | BadPaddingException | InvalidKeyException
+                | IllegalBlockSizeException ex) {
             throw new GreeException(ex, "Unable to encrypt outbound data");
         }
     }
