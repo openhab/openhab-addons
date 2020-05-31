@@ -34,12 +34,11 @@ import org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal;
 import org.openhab.binding.modbus.internal.config.ModbusPollerConfiguration;
 import org.openhab.binding.modbus.internal.handler.ModbusDataThingHandler;
 import org.openhab.io.transport.modbus.AsyncModbusReadResult;
-import org.openhab.io.transport.modbus.ModbusManager;
+import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
 import org.openhab.io.transport.modbus.ModbusReadCallback;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.PollTask;
-import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -159,17 +158,16 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
     private ModbusPollerConfiguration config;
     private long cacheMillis;
     private volatile @Nullable PollTask pollTask;
-    private volatile @Nullable ModbusSlaveEndpoint endpoint;
     private volatile @Nullable ModbusReadRequestBlueprint request;
-    private ModbusManager modbusManager;
     private volatile boolean disposed;
     private volatile List<ModbusReadCallback> childCallbacks = new CopyOnWriteArrayList<>();
+    @NonNullByDefault({})
+    private ModbusCommunicationInterface comms;
 
     private ReadCallbackDelegator callbackDelegator = new ReadCallbackDelegator();
 
-    public ModbusPollerThingHandler(Bridge bridge, ModbusManager modbusManager) {
+    public ModbusPollerThingHandler(Bridge bridge) {
         super(bridge);
-        this.modbusManager = modbusManager;
     }
 
     @Override
@@ -211,6 +209,7 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE);
         }
         this.callbackDelegator.resetCache();
+        comms = null;
         disposed = false;
         logger.trace("Initializing {} from status {}", this.getThing().getUID(), this.getThing().getStatus());
         try {
@@ -233,6 +232,7 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
         disposed = true;
         unregisterPollTask();
         this.callbackDelegator.resetCache();
+        comms = null;
     }
 
     /**
@@ -248,11 +248,11 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
         PollTask localPollTask = this.pollTask;
         if (localPollTask != null) {
             logger.debug("Unregistering polling from ModbusManager");
-            modbusManager.unregisterRegularPoll(localPollTask);
+            comms.unregisterRegularPoll(localPollTask);
         }
         this.pollTask = null;
         request = null;
-        endpoint = null;
+        comms = null;
         updateStatus(ThingStatus.OFFLINE);
     }
 
@@ -278,14 +278,14 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
             logger.debug("No bridge handler available -- aborting init for {}", this);
             return;
         }
-        ModbusSlaveEndpoint localEndpoint = slaveEndpointThingHandler.asSlaveEndpoint();
-        this.endpoint = localEndpoint;
-        if (localEndpoint == null) {
+        ModbusCommunicationInterface localComms = slaveEndpointThingHandler.getCommunicationInterface();
+        if (localComms == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, String.format(
                     "Bridge '%s' not completely initialized", Optional.ofNullable(getBridge()).map(b -> b.getLabel())));
-            logger.debug("Bridge not initialized fully (no endpoint) -- aborting init for {}", this);
+            logger.debug("Bridge not initialized fully (no communication interface) -- aborting init for {}", this);
             return;
         }
+        this.comms = localComms;
 
         ModbusReadRequestBlueprint localRequest = new ModbusPollerReadRequest(config, slaveEndpointThingHandler);
         this.request = localRequest;
@@ -295,8 +295,7 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Not polling");
         } else {
             logger.debug("Registering polling with ModbusManager");
-            pollTask = modbusManager.registerRegularPoll(localEndpoint, localRequest, config.getRefresh(), 0,
-                    callbackDelegator);
+            pollTask = localComms.registerRegularPoll(localRequest, config.getRefresh(), 0, callbackDelegator);
             assert pollTask != null;
             updateStatus(ThingStatus.ONLINE);
         }
@@ -331,15 +330,6 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Get {@link ModbusManager}
-     *
-     * @return ModbusManger instance
-     */
-    public ModbusManager getModbusManager() {
-        return modbusManager;
-    }
-
-    /**
      * Return {@link ModbusReadRequestBlueprint} represented by this thing.
      *
      * Note that request might be <code>null</code> in case initialization is not complete.
@@ -351,14 +341,12 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Return {@link ModbusSlaveEndpoint} associated with this thing
+     * Get communication interface associated with this poller
      *
-     * Note that endpoint might be <code>null</code> in case initialization is not complete.
-     *
-     * @return endpoint associated with this poller
+     * @return
      */
-    public @Nullable ModbusSlaveEndpoint getEndpoint() {
-        return endpoint;
+    public ModbusCommunicationInterface getCommunicationInterface() {
+        return comms;
     }
 
     /**
@@ -383,9 +371,9 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
             // cache expired, poll new data
             logger.debug("Poller {} received refresh() but the cache is not applicable. Polling new data",
                     getThing().getUID());
-            ModbusSlaveEndpoint localEndpoint = endpoint;
-            if (localEndpoint != null) {
-                modbusManager.submitOneTimePoll(localEndpoint, localRequest, callbackDelegator);
+            ModbusCommunicationInterface localComms = comms;
+            if (localComms != null) {
+                localComms.submitOneTimePoll(localRequest, callbackDelegator);
             }
         }
     }

@@ -65,9 +65,9 @@ import org.openhab.io.transport.modbus.AsyncModbusReadResult;
 import org.openhab.io.transport.modbus.AsyncModbusWriteResult;
 import org.openhab.io.transport.modbus.BitArray;
 import org.openhab.io.transport.modbus.ModbusBitUtilities;
+import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
 import org.openhab.io.transport.modbus.ModbusConstants;
 import org.openhab.io.transport.modbus.ModbusConstants.ValueType;
-import org.openhab.io.transport.modbus.ModbusManager;
 import org.openhab.io.transport.modbus.ModbusReadCallback;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
@@ -77,10 +77,8 @@ import org.openhab.io.transport.modbus.ModbusWriteCallback;
 import org.openhab.io.transport.modbus.ModbusWriteCoilRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusWriteRegisterRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusWriteRequestBlueprint;
-import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 import org.openhab.io.transport.modbus.exception.ModbusConnectionException;
 import org.openhab.io.transport.modbus.exception.ModbusTransportException;
-import org.openhab.io.transport.modbus.internal.BasicWriteTask;
 import org.openhab.io.transport.modbus.json.WriteRequestJsonUtilities;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
@@ -143,8 +141,8 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
     private volatile @Nullable ModbusReadFunctionCode functionCode;
     private volatile @Nullable ModbusReadRequestBlueprint readRequest;
     private volatile long updateUnchangedValuesEveryMillis;
-    private volatile @Nullable ModbusSlaveEndpoint slaveEndpoint;
-    private volatile @Nullable ModbusManager modbusManager;
+    @NonNullByDefault({})
+    private volatile ModbusCommunicationInterface comms;
     private volatile boolean isWriteEnabled;
     private volatile boolean isReadEnabled;
     private volatile boolean writeParametersHavingTransformationOnly;
@@ -168,8 +166,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         logger.trace("Thing {} '{}' received command '{}' to channel '{}'", getThing().getUID(), getThing().getLabel(),
                 command, channelUID);
         ModbusDataConfiguration config = this.config;
-        ModbusManager manager = this.modbusManager;
-        if (config == null || manager == null) {
+        if (config == null) {
             return;
         }
 
@@ -223,14 +220,12 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
 
         ModbusWriteRequestBlueprint request = requestFromCommand(channelUID, command, config, transformedCommand.get(),
                 writeStart);
-        ModbusSlaveEndpoint slaveEndpoint = this.slaveEndpoint;
-        if (request == null || slaveEndpoint == null) {
+        if (request == null) {
             return;
         }
 
-        BasicWriteTask writeTask = new BasicWriteTask(slaveEndpoint, request, this);
-        logger.trace("Submitting write task: {}", writeTask);
-        manager.submitOneTimeWrite(writeTask);
+        logger.trace("Submitting write task {} to endpoint {}", request, comms.getEndpoint());
+        comms.submitOneTimeWrite(request, this);
     }
 
     /**
@@ -316,9 +311,8 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
     }
 
     private void processJsonTransform(Command command, String transformOutput) {
-        ModbusSlaveEndpoint slaveEndpoint = this.slaveEndpoint;
-        ModbusManager manager = this.modbusManager;
-        if (slaveEndpoint == null || manager == null) {
+        ModbusCommunicationInterface localComms = this.comms;
+        if (localComms == null) {
             return;
         }
         Collection<ModbusWriteRequestBlueprint> requests;
@@ -331,9 +325,10 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
             return;
         }
 
-        requests.stream().map(request -> new BasicWriteTask(slaveEndpoint, request, this)).forEach(writeTask -> {
-            logger.trace("Submitting write task: {} (based from transformation {})", writeTask, transformOutput);
-            manager.submitOneTimeWrite(writeTask);
+        requests.stream().forEach(request -> {
+            logger.trace("Submitting write request: {} to endpoint {} (based from transformation {})", request,
+                    localComms.getEndpoint(), transformOutput);
+            localComms.submitOneTimeWrite(request, this);
         });
     }
 
@@ -362,8 +357,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 // Write-only thing, parent is endpoint
                 ModbusEndpointThingHandler endpointHandler = (ModbusEndpointThingHandler) bridgeHandler;
                 slaveId = endpointHandler.getSlaveId();
-                slaveEndpoint = endpointHandler.asSlaveEndpoint();
-                modbusManager = endpointHandler.getModbusManager();
+                comms = endpointHandler.getCommunicationInterface();
                 childOfEndpoint = true;
                 functionCode = null;
                 readRequest = null;
@@ -371,7 +365,6 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 ModbusPollerThingHandler localPollerHandler = (ModbusPollerThingHandler) bridgeHandler;
                 pollerHandler = localPollerHandler;
                 ModbusReadRequestBlueprint localReadRequest = localPollerHandler.getRequest();
-                ModbusSlaveEndpoint localEndpoint = localPollerHandler.getEndpoint();
                 if (localReadRequest == null) {
                     logger.debug("Poller {} '{}' has no read request -- configuration is changing?", bridge.getUID(),
                             bridge.getLabel());
@@ -381,9 +374,8 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 }
                 readRequest = localReadRequest;
                 slaveId = localReadRequest.getUnitID();
-                slaveEndpoint = localEndpoint;
                 functionCode = localReadRequest.getFunctionCode();
-                modbusManager = localPollerHandler.getModbusManager();
+                comms = localPollerHandler.getCommunicationInterface();
                 pollStart = localReadRequest.getReference();
                 childOfEndpoint = false;
             }
@@ -413,8 +405,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         writeStart = null;
         pollStart = 0;
         slaveId = 0;
-        slaveEndpoint = null;
-        modbusManager = null;
+        comms = null;
         functionCode = null;
         readRequest = null;
         isWriteEnabled = false;

@@ -15,7 +15,6 @@ package org.openhab.binding.modbus.internal.handler;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;

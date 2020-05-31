@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 import org.openhab.io.transport.modbus.BitArray;
+import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
 import org.openhab.io.transport.modbus.ModbusManagerListener;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
@@ -114,28 +115,29 @@ public class SmokeTest extends IntegrationTestSupport {
     /**
      * Test handling of slave error responses. In this case, error code = 2, illegal data address, since no data.
      *
-     * @throws InterruptedException
+     * @throws Exception
      */
     @Test
-    public void testSlaveReadErrorResponse() throws InterruptedException {
+    public void testSlaveReadErrorResponse() throws Exception {
         ModbusSlaveEndpoint endpoint = getEndpoint();
         AtomicInteger okCount = new AtomicInteger();
         AtomicInteger errorCount = new AtomicInteger();
         CountDownLatch callbackCalled = new CountDownLatch(1);
         AtomicReference<Exception> lastError = new AtomicReference<>();
-        modbusManager.submitOneTimePoll(endpoint,
-                new ModbusReadRequestBlueprint(SLAVE_UNIT_ID, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 0, 5, 1),
-                result -> {
-                    callbackCalled.countDown();
-                    if (result.getRegisters() != null) {
-                        assert !result.hasError();
-                        okCount.incrementAndGet();
-                    } else {
-                        errorCount.incrementAndGet();
-                        lastError.set(result.getCause());
-                    }
-                });
-        callbackCalled.await(5, TimeUnit.SECONDS);
+        try (ModbusCommunicationInterface comms = modbusManager.newModbusCommunicationInterface(endpoint, null)) {
+            comms.submitOneTimePoll(new ModbusReadRequestBlueprint(SLAVE_UNIT_ID,
+                    ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 0, 5, 1), result -> {
+                        callbackCalled.countDown();
+                        if (result.getRegisters() != null) {
+                            assert !result.hasError();
+                            okCount.incrementAndGet();
+                        } else {
+                            errorCount.incrementAndGet();
+                            lastError.set(result.getCause());
+                        }
+                    });
+            callbackCalled.await(5, TimeUnit.SECONDS);
+        }
         assertThat(okCount.get(), is(equalTo(0)));
         assertThat(errorCount.get(), is(equalTo(1)));
         assertTrue(lastError.toString(), lastError.get() instanceof ModbusSlaveErrorResponseException);
@@ -144,35 +146,36 @@ public class SmokeTest extends IntegrationTestSupport {
     /**
      * Test handling of connection error responses.
      *
-     * @throws InterruptedException
+     * @throws Exception
      */
     @Test
-    public void testSlaveConnectionError() throws InterruptedException {
+    public void testSlaveConnectionError() throws Exception {
         // In the test we have non-responding slave (see http://stackoverflow.com/a/904609), and we use short connection
         // timeout
         ModbusSlaveEndpoint endpoint = new ModbusTCPSlaveEndpoint("10.255.255.1", 9999);
         EndpointPoolConfiguration configuration = new EndpointPoolConfiguration();
         configuration.setConnectTimeoutMillis(100);
-        modbusManager.setEndpointPoolConfiguration(endpoint, configuration);
 
         AtomicInteger okCount = new AtomicInteger();
         AtomicInteger errorCount = new AtomicInteger();
         CountDownLatch callbackCalled = new CountDownLatch(1);
         AtomicReference<Exception> lastError = new AtomicReference<>();
-        modbusManager.submitOneTimePoll(endpoint,
-                new ModbusReadRequestBlueprint(SLAVE_UNIT_ID, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 0, 5, 1),
-                result -> {
-                    callbackCalled.countDown();
-                    if (result.getRegisters() != null) {
-                        assert !result.hasError();
-                        okCount.incrementAndGet();
-                    } else {
-                        assert result.hasError();
-                        errorCount.incrementAndGet();
-                        lastError.set(result.getCause());
-                    }
-                });
-        callbackCalled.await(5, TimeUnit.SECONDS);
+        try (ModbusCommunicationInterface comms = modbusManager.newModbusCommunicationInterface(endpoint,
+                configuration)) {
+            comms.submitOneTimePoll(new ModbusReadRequestBlueprint(SLAVE_UNIT_ID,
+                    ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 0, 5, 1), result -> {
+                        callbackCalled.countDown();
+                        if (result.getRegisters() != null) {
+                            assert !result.hasError();
+                            okCount.incrementAndGet();
+                        } else {
+                            assert result.hasError();
+                            errorCount.incrementAndGet();
+                            lastError.set(result.getCause());
+                        }
+                    });
+            callbackCalled.await(5, TimeUnit.SECONDS);
+        }
         assertThat(okCount.get(), is(equalTo(0)));
         assertThat(errorCount.get(), is(equalTo(1)));
         assertTrue(lastError.toString(), lastError.get() instanceof ModbusConnectionException);
@@ -182,10 +185,10 @@ public class SmokeTest extends IntegrationTestSupport {
      * Have super slow connection response, eventually resulting as timeout (due to default timeout of 3 s in
      * net.wimpi.modbus.Modbus.DEFAULT_TIMEOUT)
      *
-     * @throws InterruptedException
+     * @throws Exception
      */
     @Test
-    public void testIOError() throws InterruptedException {
+    public void testIOError() throws Exception {
         artificialServerWait = 30000;
         ModbusSlaveEndpoint endpoint = getEndpoint();
 
@@ -193,27 +196,27 @@ public class SmokeTest extends IntegrationTestSupport {
         AtomicInteger errorCount = new AtomicInteger();
         CountDownLatch callbackCalled = new CountDownLatch(1);
         AtomicReference<Exception> lastError = new AtomicReference<>();
-        modbusManager.submitOneTimePoll(endpoint,
-                new ModbusReadRequestBlueprint(SLAVE_UNIT_ID, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 0, 5, 1),
-                result -> {
-                    callbackCalled.countDown();
-                    if (result.getRegisters() != null) {
-                        assert !result.hasError();
-                        okCount.incrementAndGet();
-                    } else {
-                        assert result.hasError();
-                        errorCount.incrementAndGet();
-                        lastError.set(result.getCause());
-                    }
-                });
-        callbackCalled.await(15, TimeUnit.SECONDS);
+        try (ModbusCommunicationInterface comms = modbusManager.newModbusCommunicationInterface(endpoint, null)) {
+            comms.submitOneTimePoll(new ModbusReadRequestBlueprint(SLAVE_UNIT_ID,
+                    ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 0, 5, 1), result -> {
+                        callbackCalled.countDown();
+                        if (result.getRegisters() != null) {
+                            assert !result.hasError();
+                            okCount.incrementAndGet();
+                        } else {
+                            assert result.hasError();
+                            errorCount.incrementAndGet();
+                            lastError.set(result.getCause());
+                        }
+                    });
+            callbackCalled.await(15, TimeUnit.SECONDS);
+        }
         assertThat(okCount.get(), is(equalTo(0)));
         assertThat(lastError.toString(), errorCount.get(), is(equalTo(1)));
         assertTrue(lastError.toString(), lastError.get() instanceof ModbusSlaveIOException);
     }
 
-    public void testOneOffReadWithDiscreteOrCoils(ModbusReadFunctionCode functionCode, int count)
-            throws InterruptedException {
+    public void testOneOffReadWithDiscreteOrCoils(ModbusReadFunctionCode functionCode, int count) throws Exception {
         assertThat(functionCode, is(anyOf(equalTo(ModbusReadFunctionCode.READ_INPUT_DISCRETES),
                 equalTo(ModbusReadFunctionCode.READ_COILS))));
         generateData();
@@ -225,16 +228,18 @@ public class SmokeTest extends IntegrationTestSupport {
 
         final int offset = 1;
 
-        modbusManager.submitOneTimePoll(endpoint,
-                new ModbusReadRequestBlueprint(SLAVE_UNIT_ID, functionCode, offset, count, 1), result -> {
-                    callbackCalled.countDown();
-                    if (result.getBits() != null) {
-                        lastData.set(result.getBits());
-                    } else {
-                        unexpectedCount.incrementAndGet();
-                    }
-                });
-        callbackCalled.await(5, TimeUnit.SECONDS);
+        try (ModbusCommunicationInterface comms = modbusManager.newModbusCommunicationInterface(endpoint, null)) {
+            comms.submitOneTimePoll(new ModbusReadRequestBlueprint(SLAVE_UNIT_ID, functionCode, offset, count, 1),
+                    result -> {
+                        callbackCalled.countDown();
+                        if (result.getBits() != null) {
+                            lastData.set(result.getBits());
+                        } else {
+                            unexpectedCount.incrementAndGet();
+                        }
+                    });
+            callbackCalled.await(5, TimeUnit.SECONDS);
+        }
         assertThat(unexpectedCount.get(), is(equalTo(0)));
         BitArray bits = (BitArray) lastData.get();
         assertThat(bits.size(), is(equalTo(count)));
@@ -246,69 +251,69 @@ public class SmokeTest extends IntegrationTestSupport {
     }
 
     @Test
-    public void testOneOffReadWithDiscrete1() throws InterruptedException {
+    public void testOneOffReadWithDiscrete1() throws Exception {
         testOneOffReadWithDiscreteOrCoils(ModbusReadFunctionCode.READ_INPUT_DISCRETES, 1);
     }
 
     @Test
-    public void testOneOffReadWithDiscrete7() throws InterruptedException {
+    public void testOneOffReadWithDiscrete7() throws Exception {
         // less than byte
         testOneOffReadWithDiscreteOrCoils(ModbusReadFunctionCode.READ_INPUT_DISCRETES, 7);
     }
 
     @Test
-    public void testOneOffReadWithDiscrete8() throws InterruptedException {
+    public void testOneOffReadWithDiscrete8() throws Exception {
         // exactly one byte
         testOneOffReadWithDiscreteOrCoils(ModbusReadFunctionCode.READ_INPUT_DISCRETES, 8);
     }
 
     @Test
-    public void testOneOffReadWithDiscrete13() throws InterruptedException {
+    public void testOneOffReadWithDiscrete13() throws Exception {
         // larger than byte, less than word (16 bit)
         testOneOffReadWithDiscreteOrCoils(ModbusReadFunctionCode.READ_INPUT_DISCRETES, 13);
     }
 
     @Test
-    public void testOneOffReadWithDiscrete18() throws InterruptedException {
+    public void testOneOffReadWithDiscrete18() throws Exception {
         // larger than word (16 bit)
         testOneOffReadWithDiscreteOrCoils(ModbusReadFunctionCode.READ_INPUT_DISCRETES, 18);
     }
 
     @Test
-    public void testOneOffReadWithCoils1() throws InterruptedException {
+    public void testOneOffReadWithCoils1() throws Exception {
         testOneOffReadWithDiscreteOrCoils(ModbusReadFunctionCode.READ_COILS, 1);
     }
 
     @Test
-    public void testOneOffReadWithCoils7() throws InterruptedException {
+    public void testOneOffReadWithCoils7() throws Exception {
         // less than byte
         testOneOffReadWithDiscreteOrCoils(ModbusReadFunctionCode.READ_COILS, 7);
     }
 
     @Test
-    public void testOneOffReadWithCoils8() throws InterruptedException {
+    public void testOneOffReadWithCoils8() throws Exception {
         // exactly one byte
         testOneOffReadWithDiscreteOrCoils(ModbusReadFunctionCode.READ_COILS, 8);
     }
 
     @Test
-    public void testOneOffReadWithCoils13() throws InterruptedException {
+    public void testOneOffReadWithCoils13() throws Exception {
         // larger than byte, less than word (16 bit)
         testOneOffReadWithDiscreteOrCoils(ModbusReadFunctionCode.READ_COILS, 13);
     }
 
     @Test
-    public void testOneOffReadWithCoils18() throws InterruptedException {
+    public void testOneOffReadWithCoils18() throws Exception {
         // larger than word (16 bit)
         testOneOffReadWithDiscreteOrCoils(ModbusReadFunctionCode.READ_COILS, 18);
     }
 
     /**
      *
-     * @throws InterruptedException
+     * @throws Exception
      */
     @Test
-    public void testOneOffReadWithHolding() throws InterruptedException {
+    public void testOneOffReadWithHolding() throws Exception {
         generateData();
         ModbusSlaveEndpoint endpoint = getEndpoint();
 
@@ -316,17 +321,18 @@ public class SmokeTest extends IntegrationTestSupport {
         CountDownLatch callbackCalled = new CountDownLatch(1);
         AtomicReference<Object> lastData = new AtomicReference<>();
 
-        modbusManager.submitOneTimePoll(endpoint,
-                new ModbusReadRequestBlueprint(SLAVE_UNIT_ID, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 1, 15, 1),
-                result -> {
-                    callbackCalled.countDown();
-                    if (result.getRegisters() != null) {
-                        lastData.set(result.getRegisters());
-                    } else {
-                        unexpectedCount.incrementAndGet();
-                    }
-                });
-        callbackCalled.await(5, TimeUnit.SECONDS);
+        try (ModbusCommunicationInterface comms = modbusManager.newModbusCommunicationInterface(endpoint, null)) {
+            comms.submitOneTimePoll(new ModbusReadRequestBlueprint(SLAVE_UNIT_ID,
+                    ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 1, 15, 1), result -> {
+                        callbackCalled.countDown();
+                        if (result.getRegisters() != null) {
+                            lastData.set(result.getRegisters());
+                        } else {
+                            unexpectedCount.incrementAndGet();
+                        }
+                    });
+            callbackCalled.await(5, TimeUnit.SECONDS);
+        }
         assertThat(unexpectedCount.get(), is(equalTo(0)));
         ModbusRegisterArray registers = (ModbusRegisterArray) lastData.get();
         assertThat(registers.size(), is(equalTo(15)));
@@ -335,28 +341,28 @@ public class SmokeTest extends IntegrationTestSupport {
 
     /**
      *
-     * @throws InterruptedException
+     * @throws Exception
      */
     @Test
-    public void testOneOffReadWithInput() throws InterruptedException {
+    public void testOneOffReadWithInput() throws Exception {
         generateData();
         ModbusSlaveEndpoint endpoint = getEndpoint();
 
         AtomicInteger unexpectedCount = new AtomicInteger();
         CountDownLatch callbackCalled = new CountDownLatch(1);
         AtomicReference<Object> lastData = new AtomicReference<>();
-
-        modbusManager.submitOneTimePoll(endpoint,
-                new ModbusReadRequestBlueprint(SLAVE_UNIT_ID, ModbusReadFunctionCode.READ_INPUT_REGISTERS, 1, 15, 1),
-                result -> {
-                    callbackCalled.countDown();
-                    if (result.getRegisters() != null) {
-                        lastData.set(result.getRegisters());
-                    } else {
-                        unexpectedCount.incrementAndGet();
-                    }
-                });
-        callbackCalled.await(5, TimeUnit.SECONDS);
+        try (ModbusCommunicationInterface comms = modbusManager.newModbusCommunicationInterface(endpoint, null)) {
+            comms.submitOneTimePoll(new ModbusReadRequestBlueprint(SLAVE_UNIT_ID,
+                    ModbusReadFunctionCode.READ_INPUT_REGISTERS, 1, 15, 1), result -> {
+                        callbackCalled.countDown();
+                        if (result.getRegisters() != null) {
+                            lastData.set(result.getRegisters());
+                        } else {
+                            unexpectedCount.incrementAndGet();
+                        }
+                    });
+            callbackCalled.await(5, TimeUnit.SECONDS);
+        }
         assertThat(unexpectedCount.get(), is(equalTo(0)));
         ModbusRegisterArray registers = (ModbusRegisterArray) lastData.get();
         assertThat(registers.size(), is(equalTo(15)));
@@ -365,10 +371,10 @@ public class SmokeTest extends IntegrationTestSupport {
 
     /**
      *
-     * @throws InterruptedException
+     * @throws Exception
      */
     @Test
-    public void testOneOffWriteMultipleCoil() throws InterruptedException {
+    public void testOneOffWriteMultipleCoil() throws Exception {
         LoggerFactory.getLogger(this.getClass()).error("STARTING MULTIPLE");
         generateData();
         ModbusSlaveEndpoint endpoint = getEndpoint();
@@ -377,40 +383,41 @@ public class SmokeTest extends IntegrationTestSupport {
         AtomicReference<Object> lastData = new AtomicReference<>();
 
         BitArray bits = new BitArray(true, true, false, false, true, true);
-        modbusManager.submitOneTimeWrite(endpoint, new ModbusWriteCoilRequestBlueprint(SLAVE_UNIT_ID, 3, bits, true, 1),
-                result -> {
-                    if (result.hasError()) {
-                        unexpectedCount.incrementAndGet();
-                    } else {
-                        lastData.set(result.getResponse());
-                    }
-                });
-        waitForAssert(() -> {
-            assertThat(unexpectedCount.get(), is(equalTo(0)));
-            assertThat(lastData.get(), is(notNullValue()));
+        try (ModbusCommunicationInterface comms = modbusManager.newModbusCommunicationInterface(endpoint, null)) {
+            comms.submitOneTimeWrite(new ModbusWriteCoilRequestBlueprint(SLAVE_UNIT_ID, 3, bits, true, 1), result -> {
+                if (result.hasError()) {
+                    unexpectedCount.incrementAndGet();
+                } else {
+                    lastData.set(result.getResponse());
+                }
+            });
+            waitForAssert(() -> {
+                assertThat(unexpectedCount.get(), is(equalTo(0)));
+                assertThat(lastData.get(), is(notNullValue()));
 
-            ModbusResponse response = (ModbusResponse) lastData.get();
-            assertThat(response.getFunctionCode(), is(equalTo(15)));
+                ModbusResponse response = (ModbusResponse) lastData.get();
+                assertThat(response.getFunctionCode(), is(equalTo(15)));
 
-            assertThat(modbustRequestCaptor.getAllReturnValues().size(), is(equalTo(1)));
-            ModbusRequest request = modbustRequestCaptor.getAllReturnValues().get(0);
-            assertThat(request.getFunctionCode(), is(equalTo(15)));
-            assertThat(((WriteMultipleCoilsRequest) request).getReference(), is(equalTo(3)));
-            assertThat(((WriteMultipleCoilsRequest) request).getBitCount(), is(equalTo(bits.size())));
-            BitVector writeRequestCoils = ((WriteMultipleCoilsRequest) request).getCoils();
-            BitArray writtenBits = new BitArray(BitSet.valueOf(writeRequestCoils.getBytes()), bits.size());
-            assertThat(writtenBits, is(equalTo(bits)));
-        }, 6000, 10);
+                assertThat(modbustRequestCaptor.getAllReturnValues().size(), is(equalTo(1)));
+                ModbusRequest request = modbustRequestCaptor.getAllReturnValues().get(0);
+                assertThat(request.getFunctionCode(), is(equalTo(15)));
+                assertThat(((WriteMultipleCoilsRequest) request).getReference(), is(equalTo(3)));
+                assertThat(((WriteMultipleCoilsRequest) request).getBitCount(), is(equalTo(bits.size())));
+                BitVector writeRequestCoils = ((WriteMultipleCoilsRequest) request).getCoils();
+                BitArray writtenBits = new BitArray(BitSet.valueOf(writeRequestCoils.getBytes()), bits.size());
+                assertThat(writtenBits, is(equalTo(bits)));
+            }, 6000, 10);
+        }
         LoggerFactory.getLogger(this.getClass()).error("ENDINGMULTIPLE");
     }
 
     /**
      * Write is out-of-bounds, slave should return error
      *
-     * @throws InterruptedException
+     * @throws Exception
      */
     @Test
-    public void testOneOffWriteMultipleCoilError() throws InterruptedException {
+    public void testOneOffWriteMultipleCoilError() throws Exception {
         generateData();
         ModbusSlaveEndpoint endpoint = getEndpoint();
 
@@ -419,17 +426,18 @@ public class SmokeTest extends IntegrationTestSupport {
         AtomicReference<Exception> lastError = new AtomicReference<>();
 
         BitArray bits = new BitArray(500);
-        modbusManager.submitOneTimeWrite(endpoint, new ModbusWriteCoilRequestBlueprint(SLAVE_UNIT_ID, 3, bits, true, 1),
-                result -> {
-                    if (result.hasError()) {
-                        lastError.set(result.getCause());
-                        callbackCalled.countDown();
-                    } else {
-                        unexpectedCount.incrementAndGet();
-                        callbackCalled.countDown();
-                    }
-                });
-        callbackCalled.await(5, TimeUnit.SECONDS);
+        try (ModbusCommunicationInterface comms = modbusManager.newModbusCommunicationInterface(endpoint, null)) {
+            comms.submitOneTimeWrite(new ModbusWriteCoilRequestBlueprint(SLAVE_UNIT_ID, 3, bits, true, 1), result -> {
+                if (result.hasError()) {
+                    lastError.set(result.getCause());
+                    callbackCalled.countDown();
+                } else {
+                    unexpectedCount.incrementAndGet();
+                    callbackCalled.countDown();
+                }
+            });
+            callbackCalled.await(5, TimeUnit.SECONDS);
+        }
 
         assertThat(unexpectedCount.get(), is(equalTo(0)));
         assertTrue(lastError.toString(), lastError.get() instanceof ModbusSlaveErrorResponseException);
@@ -446,10 +454,10 @@ public class SmokeTest extends IntegrationTestSupport {
 
     /**
      *
-     * @throws InterruptedException
+     * @throws Exception
      */
     @Test
-    public void testOneOffWriteSingleCoil() throws InterruptedException {
+    public void testOneOffWriteSingleCoil() throws Exception {
         generateData();
         ModbusSlaveEndpoint endpoint = getEndpoint();
 
@@ -458,18 +466,18 @@ public class SmokeTest extends IntegrationTestSupport {
         AtomicReference<Object> lastData = new AtomicReference<>();
 
         BitArray bits = new BitArray(true);
-        modbusManager.submitOneTimeWrite(endpoint,
-                new ModbusWriteCoilRequestBlueprint(SLAVE_UNIT_ID, 3, bits, false, 1), result -> {
-                    if (result.hasError()) {
-                        unexpectedCount.incrementAndGet();
-                        callbackCalled.countDown();
-                    } else {
-                        lastData.set(result.getResponse());
-                        callbackCalled.countDown();
-                    }
-                });
-        callbackCalled.await(5, TimeUnit.SECONDS);
-
+        try (ModbusCommunicationInterface comms = modbusManager.newModbusCommunicationInterface(endpoint, null)) {
+            comms.submitOneTimeWrite(new ModbusWriteCoilRequestBlueprint(SLAVE_UNIT_ID, 3, bits, false, 1), result -> {
+                if (result.hasError()) {
+                    unexpectedCount.incrementAndGet();
+                    callbackCalled.countDown();
+                } else {
+                    lastData.set(result.getResponse());
+                    callbackCalled.countDown();
+                }
+            });
+            callbackCalled.await(5, TimeUnit.SECONDS);
+        }
         assertThat(unexpectedCount.get(), is(equalTo(0)));
         ModbusResponse response = (ModbusResponse) lastData.get();
         assertThat(response.getFunctionCode(), is(equalTo(5)));
@@ -485,10 +493,10 @@ public class SmokeTest extends IntegrationTestSupport {
      *
      * Write is out-of-bounds, slave should return error
      *
-     * @throws InterruptedException
+     * @throws Exception
      */
     @Test
-    public void testOneOffWriteSingleCoilError() throws InterruptedException {
+    public void testOneOffWriteSingleCoilError() throws Exception {
         generateData();
         ModbusSlaveEndpoint endpoint = getEndpoint();
 
@@ -497,18 +505,19 @@ public class SmokeTest extends IntegrationTestSupport {
         AtomicReference<Exception> lastError = new AtomicReference<>();
 
         BitArray bits = new BitArray(true);
-        modbusManager.submitOneTimeWrite(endpoint,
-                new ModbusWriteCoilRequestBlueprint(SLAVE_UNIT_ID, 300, bits, false, 1), result -> {
-                    if (result.hasError()) {
-                        lastError.set(result.getCause());
-                        callbackCalled.countDown();
-                    } else {
-                        unexpectedCount.incrementAndGet();
-                        callbackCalled.countDown();
-                    }
-                });
-        callbackCalled.await(5, TimeUnit.SECONDS);
-
+        try (ModbusCommunicationInterface comms = modbusManager.newModbusCommunicationInterface(endpoint, null)) {
+            comms.submitOneTimeWrite(new ModbusWriteCoilRequestBlueprint(SLAVE_UNIT_ID, 300, bits, false, 1),
+                    result -> {
+                        if (result.hasError()) {
+                            lastError.set(result.getCause());
+                            callbackCalled.countDown();
+                        } else {
+                            unexpectedCount.incrementAndGet();
+                            callbackCalled.countDown();
+                        }
+                    });
+            callbackCalled.await(5, TimeUnit.SECONDS);
+        }
         assertThat(unexpectedCount.get(), is(equalTo(0)));
         assertTrue(lastError.toString(), lastError.get() instanceof ModbusSlaveErrorResponseException);
 
@@ -524,10 +533,10 @@ public class SmokeTest extends IntegrationTestSupport {
      *
      * Amount of requests is timed, and average poll period is checked
      *
-     * @throws InterruptedException
+     * @throws Exception
      */
     @Test
-    public void testRegularReadEvery150msWithCoil() throws InterruptedException {
+    public void testRegularReadEvery150msWithCoil() throws Exception {
         generateData();
         ModbusSlaveEndpoint endpoint = getEndpoint();
 
@@ -536,26 +545,28 @@ public class SmokeTest extends IntegrationTestSupport {
         AtomicInteger dataReceived = new AtomicInteger();
 
         long start = System.currentTimeMillis();
-        modbusManager.registerRegularPoll(endpoint,
-                new ModbusReadRequestBlueprint(SLAVE_UNIT_ID, ModbusReadFunctionCode.READ_COILS, 1, 15, 1), 150, 0,
-                result -> {
-                    callbackCalled.countDown();
-                    if (result.getBits() != null) {
-                        dataReceived.incrementAndGet();
+        try (ModbusCommunicationInterface comms = modbusManager.newModbusCommunicationInterface(endpoint, null)) {
+            comms.registerRegularPoll(
+                    new ModbusReadRequestBlueprint(SLAVE_UNIT_ID, ModbusReadFunctionCode.READ_COILS, 1, 15, 1), 150, 0,
+                    result -> {
+                        callbackCalled.countDown();
+                        if (result.getBits() != null) {
+                            dataReceived.incrementAndGet();
 
-                        BitArray bits = result.getBits();
-                        try {
-                            assertThat(bits.size(), is(equalTo(15)));
-                            testCoilValues(bits, 1);
-                        } catch (AssertionError e) {
+                            BitArray bits = result.getBits();
+                            try {
+                                assertThat(bits.size(), is(equalTo(15)));
+                                testCoilValues(bits, 1);
+                            } catch (AssertionError e) {
+                                unexpectedCount.incrementAndGet();
+                            }
+
+                        } else {
                             unexpectedCount.incrementAndGet();
                         }
-
-                    } else {
-                        unexpectedCount.incrementAndGet();
-                    }
-                });
-        callbackCalled.await(5, TimeUnit.SECONDS);
+                    });
+            callbackCalled.await(5, TimeUnit.SECONDS);
+        }
         long end = System.currentTimeMillis();
         assertPollDetails(unexpectedCount, dataReceived, start, end, 145, 500);
     }
@@ -565,10 +576,10 @@ public class SmokeTest extends IntegrationTestSupport {
      *
      * Amount of requests is timed, and average poll period is checked
      *
-     * @throws InterruptedException
+     * @throws Exception
      */
     @Test
-    public void testRegularReadEvery150msWithHolding() throws InterruptedException {
+    public void testRegularReadEvery150msWithHolding() throws Exception {
         generateData();
         ModbusSlaveEndpoint endpoint = getEndpoint();
 
@@ -577,31 +588,32 @@ public class SmokeTest extends IntegrationTestSupport {
         AtomicInteger dataReceived = new AtomicInteger();
 
         long start = System.currentTimeMillis();
-        modbusManager.registerRegularPoll(endpoint,
-                new ModbusReadRequestBlueprint(SLAVE_UNIT_ID, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 1, 15, 1),
-                150, 0, result -> {
-                    callbackCalled.countDown();
-                    if (result.getRegisters() != null) {
-                        dataReceived.incrementAndGet();
-                        ModbusRegisterArray registers = result.getRegisters();
-                        try {
-                            assertThat(registers.size(), is(equalTo(15)));
-                            testHoldingValues(registers, 1);
-                        } catch (AssertionError e) {
+        try (ModbusCommunicationInterface comms = modbusManager.newModbusCommunicationInterface(endpoint, null)) {
+            comms.registerRegularPoll(new ModbusReadRequestBlueprint(SLAVE_UNIT_ID,
+                    ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 1, 15, 1), 150, 0, result -> {
+                        callbackCalled.countDown();
+                        if (result.getRegisters() != null) {
+                            dataReceived.incrementAndGet();
+                            ModbusRegisterArray registers = result.getRegisters();
+                            try {
+                                assertThat(registers.size(), is(equalTo(15)));
+                                testHoldingValues(registers, 1);
+                            } catch (AssertionError e) {
+                                unexpectedCount.incrementAndGet();
+                            }
+
+                        } else {
                             unexpectedCount.incrementAndGet();
                         }
-
-                    } else {
-                        unexpectedCount.incrementAndGet();
-                    }
-                });
-        callbackCalled.await(5, TimeUnit.SECONDS);
+                    });
+            callbackCalled.await(5, TimeUnit.SECONDS);
+        }
         long end = System.currentTimeMillis();
         assertPollDetails(unexpectedCount, dataReceived, start, end, 145, 500);
     }
 
     @Test
-    public void testRegularReadFirstErrorThenOK() throws InterruptedException {
+    public void testRegularReadFirstErrorThenOK() throws Exception {
         generateData();
         ModbusSlaveEndpoint endpoint = getEndpoint();
 
@@ -610,26 +622,26 @@ public class SmokeTest extends IntegrationTestSupport {
         AtomicInteger dataReceived = new AtomicInteger();
 
         long start = System.currentTimeMillis();
-        PollTask task = modbusManager.registerRegularPoll(endpoint,
-                new ModbusReadRequestBlueprint(SLAVE_UNIT_ID, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 1, 15, 1),
-                150, 0, result -> {
-                    callbackCalled.countDown();
-                    if (result.getRegisters() != null) {
-                        dataReceived.incrementAndGet();
-                        ModbusRegisterArray registers = result.getRegisters();
-                        try {
-                            assertThat(registers.size(), is(equalTo(15)));
-                            testHoldingValues(registers, 1);
-                        } catch (AssertionError e) {
+        try (ModbusCommunicationInterface comms = modbusManager.newModbusCommunicationInterface(endpoint, null)) {
+            PollTask task = comms.registerRegularPoll(new ModbusReadRequestBlueprint(SLAVE_UNIT_ID,
+                    ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 1, 15, 1), 150, 0, result -> {
+                        callbackCalled.countDown();
+                        if (result.getRegisters() != null) {
+                            dataReceived.incrementAndGet();
+                            ModbusRegisterArray registers = result.getRegisters();
+                            try {
+                                assertThat(registers.size(), is(equalTo(15)));
+                                testHoldingValues(registers, 1);
+                            } catch (AssertionError e) {
+                                unexpectedCount.incrementAndGet();
+                            }
+
+                        } else {
                             unexpectedCount.incrementAndGet();
                         }
-
-                    } else {
-                        unexpectedCount.incrementAndGet();
-                    }
-                });
-        callbackCalled.await(5, TimeUnit.SECONDS);
-        modbusManager.unregisterRegularPoll(task);
+                    });
+            callbackCalled.await(5, TimeUnit.SECONDS);
+        }
         long end = System.currentTimeMillis();
         assertPollDetails(unexpectedCount, dataReceived, start, end, 145, 500);
     }
@@ -661,7 +673,7 @@ public class SmokeTest extends IntegrationTestSupport {
     }
 
     @Test
-    public void testUnregisterPolling() throws InterruptedException {
+    public void testUnregisterPollingOnClose() throws Exception {
         ModbusSlaveEndpoint endpoint = getEndpoint();
 
         AtomicInteger unexpectedCount = new AtomicInteger();
@@ -670,29 +682,29 @@ public class SmokeTest extends IntegrationTestSupport {
         AtomicInteger expectedReceived = new AtomicInteger();
 
         long start = System.currentTimeMillis();
-        PollTask task = modbusManager.registerRegularPoll(endpoint,
-                new ModbusReadRequestBlueprint(SLAVE_UNIT_ID, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 1, 15, 1),
-                200, 0, result -> {
-                    callbackCalled.countDown();
-                    if (result.getRegisters() != null) {
-                        expectedReceived.incrementAndGet();
-                    } else if (result.hasError()) {
-                        if (spi.getDigitalInCount() > 0) {
-                            // No errors expected after server filled with data
-                            unexpectedCount.incrementAndGet();
-                        } else {
+        try (ModbusCommunicationInterface comms = modbusManager.newModbusCommunicationInterface(endpoint, null)) {
+            PollTask task = comms.registerRegularPoll(new ModbusReadRequestBlueprint(SLAVE_UNIT_ID,
+                    ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 1, 15, 1), 200, 0, result -> {
+                        callbackCalled.countDown();
+                        if (result.getRegisters() != null) {
                             expectedReceived.incrementAndGet();
-                            errorCount.incrementAndGet();
-                            generateData();
-                            callbackCalled.countDown();
+                        } else if (result.hasError()) {
+                            if (spi.getDigitalInCount() > 0) {
+                                // No errors expected after server filled with data
+                                unexpectedCount.incrementAndGet();
+                            } else {
+                                expectedReceived.incrementAndGet();
+                                errorCount.incrementAndGet();
+                                generateData();
+                                callbackCalled.countDown();
+                            }
+                        } else {
+                            // bits
+                            unexpectedCount.incrementAndGet();
                         }
-                    } else {
-                        // bits
-                        unexpectedCount.incrementAndGet();
-                    }
-                });
-        callbackCalled.await(5, TimeUnit.SECONDS);
-        modbusManager.unregisterRegularPoll(task);
+                    });
+            callbackCalled.await(5, TimeUnit.SECONDS);
+        }
         long end = System.currentTimeMillis();
         assertPollDetails(unexpectedCount, expectedReceived, start, end, 190, 600);
 
@@ -701,27 +713,78 @@ public class SmokeTest extends IntegrationTestSupport {
         assertThat(unexpectedCount.get(), is(equalTo(0)));
     }
 
+    @Test
+    public void testUnregisterPollingExplicit() throws Exception {
+        ModbusSlaveEndpoint endpoint = getEndpoint();
+
+        AtomicInteger unexpectedCount = new AtomicInteger();
+        AtomicInteger errorCount = new AtomicInteger();
+        CountDownLatch callbackCalled = new CountDownLatch(3);
+        AtomicInteger expectedReceived = new AtomicInteger();
+
+        long start = System.currentTimeMillis();
+        try (ModbusCommunicationInterface comms = modbusManager.newModbusCommunicationInterface(endpoint, null)) {
+            PollTask task = comms.registerRegularPoll(new ModbusReadRequestBlueprint(SLAVE_UNIT_ID,
+                    ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 1, 15, 1), 200, 0, result -> {
+                        callbackCalled.countDown();
+                        if (result.getRegisters() != null) {
+                            expectedReceived.incrementAndGet();
+                        } else if (result.hasError()) {
+                            if (spi.getDigitalInCount() > 0) {
+                                // No errors expected after server filled with data
+                                unexpectedCount.incrementAndGet();
+                            } else {
+                                expectedReceived.incrementAndGet();
+                                errorCount.incrementAndGet();
+                                generateData();
+                                callbackCalled.countDown();
+                            }
+                        } else {
+                            // bits
+                            unexpectedCount.incrementAndGet();
+                        }
+                    });
+            callbackCalled.await(5, TimeUnit.SECONDS);
+            long end = System.currentTimeMillis();
+            assertPollDetails(unexpectedCount, expectedReceived, start, end, 190, 600);
+
+            // Explicitly unregister the regular poll
+            comms.unregisterRegularPoll(task);
+
+            // wait some more and ensure nothing comes back
+            Thread.sleep(500);
+            assertThat(unexpectedCount.get(), is(equalTo(0)));
+        }
+
+    }
+
     @SuppressWarnings("null")
     @Test
-    public void testPoolConfigurationWithoutListener() {
+    public void testPoolConfigurationWithoutListener() throws Exception {
         EndpointPoolConfiguration defaultConfig = modbusManager.getEndpointPoolConfiguration(getEndpoint());
         assertThat(defaultConfig, is(notNullValue()));
 
         EndpointPoolConfiguration newConfig = new EndpointPoolConfiguration();
         newConfig.setConnectMaxTries(5);
-        modbusManager.setEndpointPoolConfiguration(getEndpoint(), newConfig);
+        try (ModbusCommunicationInterface comms = modbusManager.newModbusCommunicationInterface(getEndpoint(),
+                newConfig)) {
+            // Sets configuration for the endpoint implicitly
+        }
+
         assertThat(modbusManager.getEndpointPoolConfiguration(getEndpoint()).getConnectMaxTries(), is(equalTo(5)));
         assertThat(modbusManager.getEndpointPoolConfiguration(getEndpoint()), is(not(equalTo(defaultConfig))));
 
         // Reset config
-        modbusManager.setEndpointPoolConfiguration(getEndpoint(), null);
-        // Should matc hdefault
+        try (ModbusCommunicationInterface comms = modbusManager.newModbusCommunicationInterface(getEndpoint(), null)) {
+            // Sets configuration for the endpoint implicitly
+        }
+        // Should match the default
         assertThat(modbusManager.getEndpointPoolConfiguration(getEndpoint()), is(equalTo(defaultConfig)));
     }
 
     @SuppressWarnings("null")
     @Test
-    public void testPoolConfigurationListenerAndChanges() {
+    public void testPoolConfigurationListenerAndChanges() throws Exception {
         AtomicInteger expectedCount = new AtomicInteger();
         AtomicInteger unexpectedCount = new AtomicInteger();
         CountDownLatch callbackCalled = new CountDownLatch(2);
@@ -744,7 +807,10 @@ public class SmokeTest extends IntegrationTestSupport {
 
         EndpointPoolConfiguration newConfig = new EndpointPoolConfiguration();
         newConfig.setConnectMaxTries(50);
-        modbusManager.setEndpointPoolConfiguration(getEndpoint(), newConfig);
+        try (ModbusCommunicationInterface comms = modbusManager.newModbusCommunicationInterface(getEndpoint(),
+                newConfig)) {
+            // Sets configuration for the endpoint implicitly
+        }
         assertThat(modbusManager.getEndpointPoolConfiguration(getEndpoint()).getConnectMaxTries(), is(equalTo(50)));
         assertThat(modbusManager.getEndpointPoolConfiguration(getEndpoint()), is(not(equalTo(defaultConfig))));
 
@@ -752,7 +818,9 @@ public class SmokeTest extends IntegrationTestSupport {
         assertThat(callbackCalled.getCount(), is(equalTo(1L)));
 
         // Reset config
-        modbusManager.setEndpointPoolConfiguration(getEndpoint(), null);
+        try (ModbusCommunicationInterface comms = modbusManager.newModbusCommunicationInterface(getEndpoint(), null)) {
+            // Sets configuration for the endpoint implicitly
+        }
         // Should match default
         assertThat(modbusManager.getEndpointPoolConfiguration(getEndpoint()), is(equalTo(defaultConfig)));
 
@@ -760,16 +828,5 @@ public class SmokeTest extends IntegrationTestSupport {
         assertThat(unexpectedCount.get(), is(equalTo(0)));
         assertThat(expectedCount.get(), is(equalTo(2)));
         assertThat(callbackCalled.getCount(), is(equalTo(0L)));
-    }
-
-    @Test
-    public void testGetRegisteredRegularPolls() {
-        ModbusSlaveEndpoint endpoint = getEndpoint();
-        PollTask task = modbusManager.registerRegularPoll(endpoint,
-                new ModbusReadRequestBlueprint(SLAVE_UNIT_ID, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 1, 15, 1),
-                50, 0, null);
-        PollTask task2 = modbusManager.registerRegularPoll(endpoint,
-                new ModbusReadRequestBlueprint(SLAVE_UNIT_ID, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 1, 16, 2),
-                50, 0, null);
     }
 }

@@ -22,6 +22,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
 import org.openhab.binding.modbus.internal.ModbusConfigurationException;
+import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
 import org.openhab.io.transport.modbus.ModbusManager;
 import org.openhab.io.transport.modbus.ModbusManagerListener;
 import org.openhab.io.transport.modbus.endpoint.EndpointPoolConfiguration;
@@ -49,6 +50,8 @@ public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEn
     @Nullable
     protected volatile EndpointPoolConfiguration poolConfiguration;
     private final Logger logger = LoggerFactory.getLogger(AbstractModbusEndpointThingHandler.class);
+    @NonNullByDefault({})
+    private ModbusCommunicationInterface comms;
 
     public AbstractModbusEndpointThingHandler(Bridge bridge, ModbusManager modbusManager) {
         super(bridge);
@@ -76,7 +79,7 @@ public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEn
                     throw new IllegalArgumentException("endpoint null after configuration!");
                 }
                 modbusManager.addListener(this);
-                modbusManager.setEndpointPoolConfiguration(endpoint, poolConfiguration);
+                comms = modbusManager.newModbusCommunicationInterface(endpoint, poolConfiguration);
                 updateStatus(ThingStatus.ONLINE);
             } catch (ModbusConfigurationException e) {
                 logger.debug("Exception during initialization", e);
@@ -91,16 +94,13 @@ public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEn
     @Override
     public void dispose() {
         modbusManager.removeListener(this);
-    }
-
-    @Override
-    public @Nullable ModbusSlaveEndpoint asSlaveEndpoint() {
-        return endpoint;
-    }
-
-    @Override
-    public ModbusManager getModbusManager() {
-        return modbusManager;
+        try {
+            comms.close();
+        } catch (Exception e) {
+            logger.error("Error closing modbus communication interface", e);
+        } finally {
+            comms = null;
+        }
     }
 
     @Override
@@ -117,6 +117,11 @@ public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEn
                         formatConflictingParameterError(otherPoolConfiguration));
             }
         }
+    }
+
+    @Override
+    public @Nullable ModbusCommunicationInterface getCommunicationInterface() {
+        return comms;
     }
 
     @Override

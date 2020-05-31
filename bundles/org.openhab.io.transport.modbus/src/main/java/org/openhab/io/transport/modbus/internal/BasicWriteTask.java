@@ -37,10 +37,10 @@ public class BasicWriteTask implements WriteTask {
 
     private ModbusSlaveEndpoint endpoint;
     private ModbusWriteRequestBlueprint request;
-    private ModbusWriteCallback callback;
+    private @Nullable ModbusWriteCallback callback;
 
     public BasicWriteTask(ModbusSlaveEndpoint endpoint, ModbusWriteRequestBlueprint request,
-            ModbusWriteCallback callback) {
+            @Nullable ModbusWriteCallback callback) {
         super();
         this.endpoint = endpoint;
         this.request = request;
@@ -65,6 +65,6 @@ public class BasicWriteTask implements WriteTask {
     @Override
     public String toString() {
         return new ToStringBuilder(this, TO_STRING_STYLE).append("request", request).append("endpoint", endpoint)
-                .append("callback", getCallback()).toString();
+                .append("callback", callback).toString();
     }
 }
