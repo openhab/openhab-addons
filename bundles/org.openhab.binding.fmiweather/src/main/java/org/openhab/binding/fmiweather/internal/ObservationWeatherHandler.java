@@ -22,6 +22,7 @@ import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import javax.measure.Unit;
@@ -93,8 +94,13 @@ public class ObservationWeatherHandler extends AbstractWeatherHandler {
 
     @Override
     public void initialize() {
-        fmisid = getConfig().get(BindingConstants.FMISID).toString();
-        super.initialize();
+        fmisid = Objects.toString(getConfig().get(BindingConstants.FMISID), null);
+        if (fmisid == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    String.format("%s parameter not set", FMISID));
+        } else {
+            super.initialize();
+        }
     }
 
     @Override
