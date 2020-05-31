@@ -40,6 +40,7 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
 import org.openhab.io.homekit.internal.HomekitException;
+import org.openhab.io.homekit.internal.HomekitOHItemProxy;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -355,10 +356,8 @@ public class HomekitCharacteristicFactory {
             }
             return CompletableFuture.completedFuture(value);
         }, (hue) -> {
-            State state = item.getItem().getState();
             if (item.getItem() instanceof ColorItem) {
-                ((ColorItem) item.getItem()).send(new HSBType(new DecimalType(hue), ((HSBType) state).getSaturation(),
-                        ((HSBType) state).getBrightness()));
+                item.sendCommandProxy(HomekitOHItemProxy.HUE_COMMAND, new DecimalType(hue));
             } else {
                 logger.warn("Item type {} is not supported for {}. Only Color type is supported.",
                         item.getItem().getType(), item.getName());
@@ -379,12 +378,8 @@ public class HomekitCharacteristicFactory {
             return CompletableFuture.completedFuture(value);
         }, (brightness) -> {
             final Item oItem = item.getItem();
-            final State state = oItem.getState();
-            if (oItem instanceof ColorItem) {
-                ((ColorItem) oItem).send(new HSBType(((HSBType) state).getHue(), ((HSBType) state).getSaturation(),
-                        new PercentType(brightness)));
-            } else if (oItem instanceof DimmerItem) {
-                ((DimmerItem) oItem).send(new PercentType(brightness));
+            if (oItem instanceof DimmerItem) {
+                item.sendCommandProxy(HomekitOHItemProxy.BRIGHTNESS_COMMAND, new PercentType(brightness));
             } else {
                 logger.warn("Item type {} is not supported for {}. Only ColorItem and DimmerItem are supported.",
                         oItem.getType(), item.getName());
@@ -404,10 +399,8 @@ public class HomekitCharacteristicFactory {
             }
             return CompletableFuture.completedFuture(value);
         }, (saturation) -> {
-            final State state = item.getItem().getState();
             if (item.getItem() instanceof ColorItem) {
-                ((ColorItem) item.getItem()).send(new HSBType(((HSBType) state).getHue(),
-                        new PercentType(saturation.intValue()), ((HSBType) state).getBrightness()));
+                item.sendCommandProxy(HomekitOHItemProxy.SATURATION_COMMAND, new PercentType(saturation.intValue()));
             } else {
                 logger.warn("Item type {} is not supported for {}. Only Color type is supported.",
                         item.getItem().getType(), item.getName());
@@ -495,7 +488,7 @@ public class HomekitCharacteristicFactory {
             int value = getIntFromItem(item);
             if (value == 0) { // check for default duration
                 final Object duration = item.getConfiguration().get(HomekitValveImpl.CONFIG_DEFAULT_DURATION);
-                if ((duration != null) && (duration instanceof BigDecimal)) {
+                if (duration instanceof BigDecimal) {
                     value = ((BigDecimal) duration).intValue();
                     if (item.getItem() instanceof NumberItem) {
                         ((NumberItem) item.getItem()).setState(new DecimalType(value));

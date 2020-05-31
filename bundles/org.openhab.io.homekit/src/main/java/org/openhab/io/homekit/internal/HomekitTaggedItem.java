@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.items.GroupItem;
 import org.eclipse.smarthome.core.items.Item;
+import org.eclipse.smarthome.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,18 +40,26 @@ public class HomekitTaggedItem {
     public final static String STEP = "step";
 
     private static final Map<Integer, String> CREATED_ACCESSORY_IDS = new ConcurrentHashMap<>();
-    /**
-     * The type of HomekitDevice we've decided this was. If the item is question is the member of a group which is a
-     * HomekitDevice, then this is null.
-     */
-    private final Item item;
+
+    // proxy item used to group commands for complex item types like Color or Dimmer
+    private final HomekitOHItemProxy item;
+
+    // type of HomeKit accessory/service, e.g. TemperatureSensor
     private final HomekitAccessoryType homekitAccessoryType;
+
+    // type of HomeKit characteristic, e.g. CurrentTemperature
     private @Nullable HomekitCharacteristicType homekitCharacteristicType;
+
+    // configuration attached to the openHAB Item, e.g. minValue, maxValue, valveType
     private @Nullable Map<String, Object> configuration;
+
+    // link to the groupItem if item is part of a group
     private @Nullable GroupItem parentGroupItem;
+
+    // HomeKit accessory id (aid) which is generated from item name
     private final int id;
 
-    public HomekitTaggedItem(Item item, HomekitAccessoryType homekitAccessoryType,
+    public HomekitTaggedItem(HomekitOHItemProxy item, HomekitAccessoryType homekitAccessoryType,
             @Nullable Map<String, Object> configuration) {
         this.item = item;
         this.parentGroupItem = null;
@@ -58,20 +67,20 @@ public class HomekitTaggedItem {
         this.homekitAccessoryType = homekitAccessoryType;
         this.homekitCharacteristicType = HomekitCharacteristicType.EMPTY;
         if (homekitAccessoryType != DUMMY) {
-            this.id = calculateId(item);
+            this.id = calculateId(item.getItem());
         } else {
             this.id = 0;
         }
     }
 
-    public HomekitTaggedItem(Item item, HomekitAccessoryType homekitAccessoryType,
+    public HomekitTaggedItem(HomekitOHItemProxy item, HomekitAccessoryType homekitAccessoryType,
             @Nullable HomekitCharacteristicType homekitCharacteristicType,
             @Nullable Map<String, Object> configuration) {
         this(item, homekitAccessoryType, configuration);
         this.homekitCharacteristicType = homekitCharacteristicType;
     }
 
-    public HomekitTaggedItem(Item item, HomekitAccessoryType homekitAccessoryType,
+    public HomekitTaggedItem(HomekitOHItemProxy item, HomekitAccessoryType homekitAccessoryType,
             @Nullable HomekitCharacteristicType homekitCharacteristicType, @Nullable GroupItem parentGroup,
             @Nullable Map<String, Object> configuration) {
         this(item, homekitAccessoryType, homekitCharacteristicType, configuration);
@@ -79,7 +88,7 @@ public class HomekitTaggedItem {
     }
 
     public boolean isGroup() {
-        return (isAccessory() && (this.item instanceof GroupItem));
+        return (isAccessory() && (item.getItem() instanceof GroupItem));
     }
 
     public HomekitAccessoryType getAccessoryType() {
@@ -112,8 +121,34 @@ public class HomekitTaggedItem {
         return homekitCharacteristicType != null && homekitCharacteristicType != HomekitCharacteristicType.EMPTY;
     }
 
+    /**
+     * return openHAB item responsible for the HomeKit item
+     * 
+     * @return openHAB item
+     */
     public Item getItem() {
+        return item.getItem();
+    }
+
+    /**
+     * return proxy item which is used to group commands.
+     * 
+     * @return proxy item
+     */
+    public HomekitOHItemProxy getProxyItem() {
         return item;
+    }
+
+    /**
+     * send openHAB item command via proxy item, which allows to group commands.
+     * e.g. sendCommandProxy(hue), sendCommandProxy(brightness) would lead to one openHAB command that updates hue and
+     * brightness at once
+     *
+     * @param commandType type of the command, e.g. OHItemProxy.HUE_COMMAND
+     * @param command command/state
+     */
+    public void sendCommandProxy(String commandType, State command) {
+        item.sendCommandProxy(commandType, command);
     }
 
     public int getId() {
@@ -121,7 +156,7 @@ public class HomekitTaggedItem {
     }
 
     public String getName() {
-        return item.getName();
+        return item.getItem().getName();
     }
 
     /**
