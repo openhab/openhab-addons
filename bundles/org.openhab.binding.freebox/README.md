@@ -89,19 +89,13 @@ The *airplay* thing requires the following configuration parameters:
 
 You will have to authorize openHAB to connect to your Freebox. Here is the process described :
 
-**Step 1** At binding startup, if no token is recorded in the Freebox Server (bridge) configuration, the following message will be displayed in the OSGi console :
-
-```text
-            ####################################################################
-            # Please accept activation request directly on your freebox        #
-            # Once done, record Apptoken in the Freebox thing configuration    #
-            # bEK7a7O8GkxxxxxxxxxxXBsKu/xxxttttwj5bXSssd5gUvSXs4vrpuhZwelEo804 #
-            ####################################################################
-```
+**Step 1** At binding startup, if no token is recorded in the Freebox Server (bridge) configuration, the binding will run a pairing request
 
 **Step 2** Run to your Freebox and approve the pairing request for openHAB Freebox Binding that is displayed on the Freebox screen
 
-**Step 3** Record the apptoken in the Freebox Server (bridge) configuration
+**Step 3** the application token is automatically recorded in the Freebox Server (bridge) configuration
+
+**Step 4** you can use the console command `freebox <bridgeUID> apptoken` to display the application token and use it later to set up your thing in a configuration file
 
 **Optionally** you can log in your Freebox admin console to allocate needed rights to openHAB
 
