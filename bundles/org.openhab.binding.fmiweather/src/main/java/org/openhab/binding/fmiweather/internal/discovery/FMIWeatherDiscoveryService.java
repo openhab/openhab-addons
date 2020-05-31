@@ -154,12 +154,7 @@ public class FMIWeatherDiscoveryService extends AbstractDiscoveryService {
     }
 
     private void createForecastsForCities(@Nullable PointType currentLocation) {
-        List<Location> filteredCities = new LinkedList<>();
-        CITIES_OF_FINLAND.stream().filter(location2 -> isClose(currentLocation, location2)).peek(station -> {
-            if (logger.isDebugEnabled()) {
-                filteredCities.add(station);
-            }
-        }).forEach(city -> {
+        CITIES_OF_FINLAND.stream().filter(location2 -> isClose(currentLocation, location2)).forEach(city -> {
             Map<String, Object> properties = new HashMap<>();
             properties.put(LOCATION,
                     String.format("%s,%s", city.latitude.toPlainString(), city.longitude.toPlainString()));
@@ -169,11 +164,6 @@ public class FMIWeatherDiscoveryService extends AbstractDiscoveryService {
                     .build();
             thingDiscovered(discoveryResult);
         });
-        if (logger.isDebugEnabled()) {
-            logger.debug("Filtered cities for forecasts: {}",
-                    filteredCities.stream().map(station -> String.format("%s (%s)", station.name, station.id))
-                            .collect(Collectors.toCollection(TreeSet<String>::new)));
-        }
     }
 
     private void createObservationsForStations(@Nullable PointType location) {
