@@ -135,16 +135,9 @@ public class FreeboxApiManager {
             if (token == null || token.isEmpty()) {
                 FreeboxAuthorizeRequest request = new FreeboxAuthorizeRequest(appId, appName, appVersion, deviceName);
                 FreeboxAuthorizeResult response = executePostUrl("login/authorize/", gson.toJson(request),
-                        FreeboxAuthorizeResponse.class, false);
+                        FreeboxAuthorizeResponse.class, false, false, true);
                 token = response.getAppToken();
                 int trackId = response.getTrackId();
-
-                logger.info("####################################################################");
-                logger.info("# Please accept activation request directly on your freebox        #");
-                logger.info("# Once done, record Apptoken in the Freebox thing configuration    #");
-                logger.info("# {} #", token);
-                logger.info("####################################################################");
-
                 FreeboxAuthorizationStatus result;
                 do {
                     Thread.sleep(2000);
@@ -187,6 +180,10 @@ public class FreeboxApiManager {
             }
             sessionToken = null;
         }
+    }
+
+    public String getAppToken() {
+        return appToken;
     }
 
     public synchronized String getSessionToken() {
