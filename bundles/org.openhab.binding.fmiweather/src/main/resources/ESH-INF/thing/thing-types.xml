@@ -6,7 +6,7 @@
 
 	<!-- Things -->
 	<thing-type id="observation">
-		<label>FMI current weather (observation)</label>
+		<label>FMI Current Weather (Observation)</label>
 		<description>Finnish Meteorological Institute (FMI) weather observation</description>
 
 		<channel-groups>
@@ -15,7 +15,7 @@
 
 		<config-description>
 			<parameter name="fmisid" type="text" required="true">
-				<label>FMISID of the weather station</label>
+				<label>FMISID of the Weather Station</label>
 				<description><![CDATA[Station ID (FMISID) of the weather observation station
 				<br />
 				<br />See https://en.ilmatieteenlaitos.fi/observation-stations for a list of observation stations. Select 'Weather' station for widest set of observations.]]></description>
@@ -24,12 +24,12 @@
 
 	</thing-type>
 	<thing-type id="forecast">
-		<label>FMI weather forecast</label>
+		<label>FMI Weather Forecast</label>
 		<description>Finnish Meteorological Institute (FMI) weather forecast</description>
 
 		<channel-groups>
 			<channel-group id="forecastNow" typeId="group-forecast">
-				<label>Forecast for the current time</label>
+				<label>Forecast for the Current Time</label>
 				<description>This is the weather forecast for the current time</description>
 			</channel-group>
 			<channel-group id="forecastHours01" typeId="group-forecast">
@@ -374,7 +374,7 @@
 	</channel-type>
 	<channel-type id="present-weather-channel">
 		<item-type>Number</item-type>
-		<label>Prevailing weather</label>
+		<label>Prevailing Weather</label>
 		<description>Prevailing weather code (WaWa field) according to WMO code 4680. For Finnish explanation, consult
 			https://www.ilmatieteenlaitos.fi/latauspalvelun-pikaohje</description>
 		<state readOnly="true" min="0" max="99" pattern="%s">
@@ -490,7 +490,7 @@
 
 	<channel-type id="weather-id-channel">
 		<item-type>Number</item-type>
-		<label>Prevailing weather id</label>
+		<label>Prevailing Weather Id</label>
 		<description>Prevailing weather code (WeatherSymbol3 field). For Finnish explanation, consult
 			https://www.ilmatieteenlaitos.fi/latauspalvelun-pikaohje</description>
 		<state readOnly="true" min="1" max="177" pattern="%s">
