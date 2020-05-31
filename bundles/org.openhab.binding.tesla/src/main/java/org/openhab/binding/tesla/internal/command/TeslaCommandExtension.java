@@ -115,8 +115,8 @@ public class TeslaCommandExtension extends AbstractConsoleCommandExtension {
 
     @Override
     public List<String> getUsages() {
-        return Arrays.asList(new String[] { buildCommandUsage(CMD_LOGIN + " [<user email>] [<password>]",
-                "Authenticates the user and provides a refresh token."), });
+        return Arrays.asList(buildCommandUsage(CMD_LOGIN + " [<user email>] [<password>]",
+                "Authenticates the user and provides a refresh token."));
     }
 
     private void login(Console console, String username, String password) {

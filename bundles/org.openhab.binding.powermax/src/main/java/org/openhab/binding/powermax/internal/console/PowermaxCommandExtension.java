@@ -18,6 +18,7 @@ import java.util.List;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingRegistry;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.io.console.Console;
 import org.eclipse.smarthome.io.console.extensions.AbstractConsoleCommandExtension;
 import org.eclipse.smarthome.io.console.extensions.ConsoleCommandExtension;
@@ -49,9 +50,11 @@ public class PowermaxCommandExtension extends AbstractConsoleCommandExtension {
             try {
                 ThingUID bridgeUID = new ThingUID(args[0]);
                 Thing thing = thingRegistry.get(bridgeUID);
-                if ((thing != null) && (thing.getHandler() != null)
-                        && (thing.getHandler() instanceof PowermaxBridgeHandler)) {
-                    handler = (PowermaxBridgeHandler) thing.getHandler();
+                if (thing != null) {
+                    ThingHandler thingHandler = thing.getHandler();
+                    if (thingHandler instanceof PowermaxBridgeHandler) {
+                        handler = (PowermaxBridgeHandler) thingHandler;
+                    }
                 }
             } catch (Exception e) {
                 handler = null;
