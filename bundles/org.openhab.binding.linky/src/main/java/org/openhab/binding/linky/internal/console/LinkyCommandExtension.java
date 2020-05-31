@@ -116,8 +116,7 @@ public class LinkyCommandExtension extends AbstractConsoleCommandExtension {
 
     @Override
     public List<String> getUsages() {
-        return Arrays.asList(
-                new String[] { buildCommandUsage("<thingUID> " + REPORT + " <start day> <end day> [<separator>]",
-                        "report daily consumptions between two dates") });
+        return Arrays.asList(buildCommandUsage("<thingUID> " + REPORT + " <start day> <end day> [<separator>]",
+                "report daily consumptions between two dates"));
     }
 }
