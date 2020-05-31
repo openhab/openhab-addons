@@ -62,7 +62,6 @@ public class GreeHandlerFactory extends BaseThingHandlerFactory {
                 defBroadcastIp);
         this.serviceRegistration = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
                 new Hashtable<String, Object>());
-        discoveryService.activate();
     }
 
     @Override

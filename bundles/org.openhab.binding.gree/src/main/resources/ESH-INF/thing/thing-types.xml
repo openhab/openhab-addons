@@ -59,7 +59,7 @@
 				<option value="fan">Fan</option>
 				<option value="turbo">Turbo</option>
 				<option value="heat">Heat</option>
-				<option value="ont">ON</option>
+				<option value="on">ON</option>
 				<option value="off">OFF</option>
 				<option value="0">Auto</option>
 				<option value="1">Cool</option>

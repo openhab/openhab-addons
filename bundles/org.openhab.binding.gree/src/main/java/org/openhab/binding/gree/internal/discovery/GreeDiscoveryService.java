@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class GreeDiscoveryService extends AbstractDiscoveryService {
-    private static final int TIMEOUT = 10;
+    private static final int TIMEOUT_SEC = 10;
     private final Logger logger = LoggerFactory.getLogger(GreeDiscoveryService.class);
     private final GreeTranslationProvider messages;
     private final String broadcastAddress;
@@ -51,13 +51,10 @@ public class GreeDiscoveryService extends AbstractDiscoveryService {
     private GreeDeviceFinder deviceFinder = new GreeDeviceFinder();
 
     public GreeDiscoveryService(Bundle bundle, GreeTranslationProvider messages, String broadcastAddress) {
-        super(SUPPORTED_THING_TYPES_UIDS, TIMEOUT);
+        super(SUPPORTED_THING_TYPES_UIDS, TIMEOUT_SEC);
         this.messages = messages;
         this.broadcastAddress = !broadcastAddress.isEmpty() ? broadcastAddress : "192.168.255.255";
         logger.debug("Auto-detected broadcast IP = {}", this.broadcastAddress);
-    }
-
-    public void activate() {
     }
 
     @Override
@@ -86,11 +83,10 @@ public class GreeDiscoveryService extends AbstractDiscoveryService {
                 logger.debug("Adding uinits to Inbox");
                 createResult(deviceFinder.getDevices());
             }
-        } catch (IOException e) {
-            logger.debug("{}",
-                    new GreeException(e, "I/O exception while scanning the network for GREE devices").toString());
         } catch (GreeException e) {
-            logger.debug("Discovery failed: {}", e.toString());
+            logger.warn("Discovery failed: {}", e.toString());
+        } catch (IOException | RuntimeException e) {
+            logger.debug("Discovery failed", e);
         } finally {
             if (clientSocket.isPresent()) {
                 clientSocket.get().close();

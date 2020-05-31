@@ -76,11 +76,10 @@ public class GreeHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        // logger.debug("Start initializing!");
         config = getConfigAs(GreeConfiguration.class);
         logger.debug("Config for {} is {}", thing.getUID(), config.toString());
         if (config.ipAddress.isEmpty() || (config.refresh < 0)) {
-            logger.debug("Config of {} is invalid. Check configuration", thing.getUID());
+            logger.warn("Config of {} is invalid. Check configuration", thing.getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Invalid configuration. Check thing configuration.");
             return;
@@ -101,10 +100,6 @@ public class GreeHandler extends BaseThingHandler {
         try {
             // Create a new Datagram socket with a specified timeout
             clientSocket = Optional.of(new DatagramSocket());
-            if (!clientSocket.isPresent()) {
-                logger.debug("Unable to create datagram socket, discovery aborted!");
-                return;
-            }
             clientSocket.get().setSoTimeout(DATAGRAM_SOCKET_TIMEOUT);
 
             // Find the GREE device
@@ -119,7 +114,6 @@ public class GreeHandler extends BaseThingHandler {
                 device = newDevice;
                 device.bindWithDevice(clientSocket);
                 if (device.getIsBound()) {
-                    logger.debug("GREE AirConditioner {} bound successful", thing.getUID());
                     updateStatus(ThingStatus.ONLINE);
 
                     // Start the automatic refresh cycles
@@ -129,9 +123,9 @@ public class GreeHandler extends BaseThingHandler {
             }
             logger.debug("GREE unit is not responding");
         } catch (GreeException e) {
-            logger.debug("Initialization failed: {}", messages.get("thinginit.exception", e.toString()));
+            logger.warn("Initialization failed: {}", messages.get("thinginit.exception", e.toString()));
         } catch (IOException | RuntimeException e) {
-            logger.debug("Exception on inituialization", e);
+            logger.debug("Exception on initialization", e);
         }
 
         updateStatus(ThingStatus.OFFLINE);
@@ -143,7 +137,7 @@ public class GreeHandler extends BaseThingHandler {
             // The thing is updated by the scheduled automatic refresh so do nothing here.
         } else {
             if (!clientSocket.isPresent()) {
-                logger.debug("Thing not properly initialized, abort command");
+                logger.warn("Thing not properly initialized, abort command");
                 return;
             }
 
@@ -209,7 +203,7 @@ public class GreeHandler extends BaseThingHandler {
         if ((command instanceof DecimalType) && (((DecimalType) command).intValue() <= 2)) {
             return ((DecimalType) command).intValue();
         }
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException("Invalid OonOffType");
     }
 
     private int getNumber(Command command) {
@@ -229,13 +223,13 @@ public class GreeHandler extends BaseThingHandler {
             temp = temp.replace(" ", "");
             return Integer.parseInt(temp);
         }
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException("Invalud Number type");
     }
 
     private void handleModeCommand(Command command, DatagramSocket socket) throws GreeException {
         int mode = -1;
         String modeStr = "";
-        boolean isNumber = StringUtils.isNumeric(command.toString());
+        boolean isNumber = false;
         if (command instanceof DecimalType) {
             // backward compatibility when channel was Number
             mode = ((DecimalType) command).intValue();
@@ -244,6 +238,7 @@ public class GreeHandler extends BaseThingHandler {
             logger.debug("Send Power-{}", command);
             device.setDevicePower(socket, getOnOff(command));
         } else /* String */ {
+            isNumber = StringUtils.isNumeric(command.toString());
             modeStr = command.toString().toLowerCase();
             switch (modeStr) {
                 case MODE_AUTO:
@@ -284,7 +279,7 @@ public class GreeHandler extends BaseThingHandler {
         }
 
         if (mode == -1) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Invalid Mode selection");
         }
 
         // Turn on the unit if currently off
@@ -346,10 +341,8 @@ public class GreeHandler extends BaseThingHandler {
                     }
                 } catch (GreeException e) {
                     if (!e.isTimeout()) {
-                        logger.debug("Unable to perform auto-update: {}", e.toString());
+                        logger.warn("Unable to perform auto-update: {}", e.toString());
                     }
-                } catch (IllegalArgumentException e) {
-                    logger.warn("Illegal argument on auto-update", e);
                 } catch (RuntimeException e) {
                     logger.debug("Unable to perform auto-update", e);
                 }
@@ -410,7 +403,7 @@ public class GreeHandler extends BaseThingHandler {
                 updateState(channelID, state.get());
             }
         } catch (GreeException e) {
-            logger.debug("Exception on channel update (IllegalArgument): {}", e.toString());
+            logger.warn("Exception on channel update: {}", e.toString());
         } catch (RuntimeException e) {
             logger.debug("Exception on channel update", e);
         }
