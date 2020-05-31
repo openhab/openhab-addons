@@ -28,26 +28,26 @@ public class HPProductUsageFeatures {
     public static final String ENDPOINT = "/DevMgmt/ProductUsageDyn.xml";
 
     private PrinterType printerType = PrinterType.UNKNOWN;
-    private boolean jamEvents = false;
-    private boolean mispickEvents = false;
-    private boolean subscriptionImpressions = false;
-    private boolean frontPanelCancel = false;
-    private boolean cumuMarking = false;
-    private boolean pagesRemaining = false;
+    private boolean jamEvents;
+    private boolean mispickEvents;
+    private boolean subscriptionImpressions;
+    private boolean frontPanelCancel;
+    private boolean cumuMarking;
+    private boolean pagesRemaining;
 
-    private boolean scanAdf = false;
-    private boolean scanFlatbed = false;
-    private boolean scanToHost = false;
-    private boolean scanToEmail = false;
-    private boolean scanToFolder = false;
+    private boolean scanAdf;
+    private boolean scanFlatbed;
+    private boolean scanToHost;
+    private boolean scanToEmail;
+    private boolean scanToFolder;
 
-    private boolean printApplication = false;
-    private boolean printApplicationChrome = false;
+    private boolean printApplication;
+    private boolean printApplicationChrome;
 
-    private boolean scannerEngine = false;
-    private boolean copyApplication = false;
+    private boolean scannerEngine;
+    private boolean copyApplication;
 
-    private boolean cloudPrint = false;
+    private boolean cloudPrint;
 
     public enum PrinterType {
         UNKNOWN,
