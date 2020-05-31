@@ -15,14 +15,12 @@ package org.openhab.binding.lcn.internal;
 import static org.openhab.binding.lcn.internal.LcnBindingConstants.*;
 
 import java.util.Collections;
-import java.util.Hashtable;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -61,13 +59,7 @@ public class LcnHandlerFactory extends BaseThingHandlerFactory {
         }
 
         if (THING_TYPE_PCK_GATEWAY.equals(thingTypeUID)) {
-            PckGatewayHandler handler = new PckGatewayHandler((Bridge) thing);
-
-            LcnModuleDiscoveryService discoveryService = new LcnModuleDiscoveryService(handler);
-
-            bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
-                    new Hashtable<@Nullable String, @Nullable Object>());
-            return handler;
+            return new PckGatewayHandler((Bridge) thing);
         }
         return null;
     }
