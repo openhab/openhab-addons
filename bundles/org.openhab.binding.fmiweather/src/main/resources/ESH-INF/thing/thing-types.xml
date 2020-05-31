@@ -14,7 +14,7 @@
 		</channel-groups>
 
 		<config-description>
-			<parameter name="fmisid" type="text" required="true">
+			<parameter name="fmisid" type="integer" min="100000" required="true">
 				<label>FMISID of the Weather Station</label>
 				<description><![CDATA[Station ID (FMISID) of the weather observation station
 				<br />
