@@ -11,6 +11,11 @@
 			<channel-group typeId="printerStatus" id="status"/>
 			<channel-group typeId="ink" id="ink"/>
 			<channel-group typeId="usageInfo" id="usage"/>
+			<channel-group typeId="scanner" id="scanner"/>
+			<channel-group typeId="scan" id="scan"/>
+			<channel-group typeId="copy" id="copy"/>
+			<channel-group typeId="app" id="app"/>
+			<channel-group typeId="other" id="other"/>
 		</channel-groups>
 		<properties>
 			<property name="vendor">HP</property>
