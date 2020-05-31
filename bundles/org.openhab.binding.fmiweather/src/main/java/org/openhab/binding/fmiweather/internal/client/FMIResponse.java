@@ -70,7 +70,6 @@ public class FMIResponse {
                 timestampsByParameter.entrySet().stream().forEach(entry2 -> {
                     String parameter = entry2.getKey();
                     long[] timestamps = entry2.getValue().stream().mapToLong(Long::longValue).toArray();
-                    @Nullable
                     BigDecimal[] values = valuesByLocationByParameter.get(location).get(parameter)
                             .toArray(new @Nullable BigDecimal[0]);
                     Data dataValues = new Data(timestamps, values);
