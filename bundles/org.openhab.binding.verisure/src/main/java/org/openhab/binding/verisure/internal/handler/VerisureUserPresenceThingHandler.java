@@ -52,8 +52,8 @@ public class VerisureUserPresenceThingHandler extends VerisureThingHandler<Veris
     @Override
     public synchronized void update(VerisureUserPresencesDTO thing) {
         logger.debug("update on thing: {}", thing);
-        updateStatus(ThingStatus.ONLINE);
         updateUserPresenceState(thing);
+        updateStatus(ThingStatus.ONLINE);
     }
 
     private void updateUserPresenceState(VerisureUserPresencesDTO userPresenceJSON) {
@@ -94,5 +94,11 @@ public class VerisureUserPresenceThingHandler extends VerisureThingHandler<Veris
 
         }
         return UnDefType.UNDEF;
+    }
+
+    @Override
+    public void updateTriggerChannel(String event) {
+        // TODO Auto-generated method stub
+
     }
 }

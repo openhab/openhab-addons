@@ -60,8 +60,8 @@ public class VerisureMiceDetectionThingHandler extends VerisureThingHandler<Veri
     @Override
     public synchronized void update(VerisureMiceDetectionDTO thing) {
         logger.debug("update on thing: {}", thing);
-        updateStatus(ThingStatus.ONLINE);
         updateMiceDetectionState(thing);
+        updateStatus(ThingStatus.ONLINE);
     }
 
     private void updateMiceDetectionState(VerisureMiceDetectionDTO miceDetectionJSON) {
@@ -121,5 +121,11 @@ public class VerisureMiceDetectionThingHandler extends VerisureThingHandler<Veri
                         : UnDefType.UNDEF;
         }
         return UnDefType.UNDEF;
+    }
+
+    @Override
+    public void updateTriggerChannel(String event) {
+        logger.debug("MiceThingHandler trigger event {}", event);
+        triggerChannel(CHANNEL_MICE_DETECTION_TRIGGER_CHANNEL, event);
     }
 }

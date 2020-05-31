@@ -112,6 +112,7 @@ public abstract class VerisureThingHandler<T extends VerisureThingDTO> extends B
         VerisureSession session = getSession();
         if (session != null) {
             session.unregisterDeviceStatusListener(this);
+            session.removeVerisureThingHandler(config.getDeviceId());
         }
     }
 
@@ -130,6 +131,7 @@ public abstract class VerisureThingHandler<T extends VerisureThingDTO> extends B
                     logger.warn("Thing is null!");
                 }
                 session.registerDeviceStatusListener(this);
+                session.setVerisureThingHandler(this, config.getDeviceId());
             }
         }
         super.bridgeStatusChanged(bridgeStatusInfo);
@@ -153,26 +155,83 @@ public abstract class VerisureThingHandler<T extends VerisureThingDTO> extends B
         updateState(CHANNEL_INSTALLATION_NAME, new StringType(thing.getSiteName()));
     }
 
-    @Override
-    public void onDeviceRemoved(T thing) {
-        logger.trace("onDeviceRemoved on thing: {}", thing);
-    }
-
-    @Override
-    public void onDeviceAdded(T thing) {
-        logger.trace("onDeviceAdded on thing: {}", thing);
-    }
-
-    protected void scheduleImmediateRefresh(int refreshDelay) {
-        logger.debug("scheduleImmediateRefresh on thing: {}", thing);
-        Bridge bridge = getBridge();
-        if (bridge != null && bridge.getHandler() != null) {
-            VerisureBridgeHandler vbh = (VerisureBridgeHandler) bridge.getHandler();
-            if (vbh != null) {
-                vbh.scheduleImmediateRefresh(refreshDelay);
+    protected void updateTriggerChannel(@Nullable String deviceId, @Nullable String eventType) {
+        VerisureSession session = getSession();
+        if (session != null && deviceId != null && eventType != null) {
+            String deviceIdTransformed = deviceId.replaceAll("[^a-zA-Z0-9]+", "");
+            @Nullable
+            T thing = session.getVerisureThing(deviceIdTransformed);
+            if (thing != null) {
+                logger.debug("Trigger event {} on thing {}", eventType, thing);
+                VerisureThingHandler<?> vth = session.getVerisureThinghandler(deviceIdTransformed);
+                if (vth == null) {
+                    logger.debug("No VerisureThingHandler found for thing {}", thing);
+                    return;
+                }
+                String eventTranslation = "UNKNOWN_EVENT_TYPE";
+                switch (eventType) {
+                    case "FA":
+                        eventTranslation = TRIGGER_EVENT_FIRE;
+                        break;
+                    case "XT":
+                        eventTranslation = TRIGGER_EVENT_BATTERY_LOW;
+                        break;
+                    case "XR":
+                        eventTranslation = TRIGGER_EVENT_BATTERY_RESTORED;
+                        break;
+                    case "SB":
+                    case "BP":
+                        eventTranslation = TRIGGER_EVENT_COM_TEST;
+                        break;
+                    case "YC":
+                        eventTranslation = TRIGGER_EVENT_COM_FAILURE;
+                        break;
+                    case "YK":
+                        eventTranslation = TRIGGER_EVENT_COM_RESTORED;
+                        break;
+                    case "TA":
+                        eventTranslation = TRIGGER_EVENT_SABOTAGE_ALARM;
+                        break;
+                    case "TR":
+                        eventTranslation = TRIGGER_EVENT_SABOTAGE_RESTORED;
+                        break;
+                    case "CO":
+                    case "CL":
+                        eventTranslation = TRIGGER_EVENT_ARM;
+                        break;
+                    case "OP":
+                    case "OO":
+                        eventTranslation = TRIGGER_EVENT_DISARM;
+                        break;
+                    case "LM":
+                    case "LO":
+                        eventTranslation = TRIGGER_EVENT_LOCK;
+                        break;
+                    case "FK":
+                        eventTranslation = TRIGGER_EVENT_LOCK_FAILURE;
+                        break;
+                    case "UA":
+                    case "DC":
+                    case "DO":
+                        eventTranslation = TRIGGER_EVENT_UNLOCK;
+                        break;
+                    case "WA":
+                        eventTranslation = TRIGGER_EVENT_WATER;
+                        break;
+                    case "IA":
+                        eventTranslation = TRIGGER_EVENT_MICE;
+                        break;
+                    default:
+                        logger.debug("Unhandled event type: {}", eventType);
+                }
+                vth.updateTriggerChannel(eventTranslation);
+            } else {
+                logger.warn("Thing is null!");
             }
         }
     }
+
+    public abstract void updateTriggerChannel(String event);
 
     protected void updateTimeStamp(@Nullable String lastUpdatedTimeStamp) {
         updateTimeStamp(lastUpdatedTimeStamp, CHANNEL_TIMESTAMP);
@@ -209,5 +268,26 @@ public abstract class VerisureThingHandler<T extends VerisureThingDTO> extends B
             }
         }
         return null;
+    }
+
+    @Override
+    public void onDeviceRemoved(T thing) {
+        logger.trace("onDeviceRemoved on thing: {}", thing);
+    }
+
+    @Override
+    public void onDeviceAdded(T thing) {
+        logger.trace("onDeviceAdded on thing: {}", thing);
+    }
+
+    protected void scheduleImmediateRefresh(int refreshDelay) {
+        logger.debug("scheduleImmediateRefresh on thing: {}", thing);
+        Bridge bridge = getBridge();
+        if (bridge != null && bridge.getHandler() != null) {
+            VerisureBridgeHandler vbh = (VerisureBridgeHandler) bridge.getHandler();
+            if (vbh != null) {
+                vbh.scheduleImmediateRefresh(refreshDelay);
+            }
+        }
     }
 }

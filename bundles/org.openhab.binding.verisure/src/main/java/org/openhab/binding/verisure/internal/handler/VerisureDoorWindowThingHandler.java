@@ -53,8 +53,8 @@ public class VerisureDoorWindowThingHandler extends VerisureThingHandler<Verisur
     @Override
     public synchronized void update(VerisureDoorWindowsDTO thing) {
         logger.debug("update on thing: {}", thing);
-        updateStatus(ThingStatus.ONLINE);
         updateDoorWindowState(thing);
+        updateStatus(ThingStatus.ONLINE);
     }
 
     private void updateDoorWindowState(VerisureDoorWindowsDTO doorWindowJSON) {
@@ -85,5 +85,12 @@ public class VerisureDoorWindowThingHandler extends VerisureThingHandler<Verisur
                 return location != null ? new StringType(location) : UnDefType.UNDEF;
         }
         return UnDefType.UNDEF;
+    }
+
+    @Override
+    public void updateTriggerChannel(String event) {
+        logger.debug("DoorWindowThingHandler trigger event {}", event);
+        triggerChannel(CHANNEL_DOOR_WINDOW_TRIGGER_CHANNEL, event);
+
     }
 }

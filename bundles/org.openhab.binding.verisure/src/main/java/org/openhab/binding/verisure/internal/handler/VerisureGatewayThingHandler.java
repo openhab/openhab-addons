@@ -52,8 +52,8 @@ public class VerisureGatewayThingHandler extends VerisureThingHandler<VerisureGa
     @Override
     public synchronized void update(VerisureGatewayDTO thing) {
         logger.debug("update on thing: {}", thing);
-        updateStatus(ThingStatus.ONLINE);
         updateGatewayState(thing);
+        updateStatus(ThingStatus.ONLINE);
     }
 
     private void updateGatewayState(VerisureGatewayDTO gatewayJSON) {
@@ -97,5 +97,11 @@ public class VerisureGatewayThingHandler extends VerisureThingHandler<VerisureGa
                 return location != null ? new StringType(location) : UnDefType.NULL;
         }
         return UnDefType.UNDEF;
+    }
+
+    @Override
+    public void updateTriggerChannel(String event) {
+        logger.debug("GatewayThingHandler trigger event {}", event);
+        triggerChannel(CHANNEL_GATEWAY_TRIGGER_CHANNEL, event);
     }
 }

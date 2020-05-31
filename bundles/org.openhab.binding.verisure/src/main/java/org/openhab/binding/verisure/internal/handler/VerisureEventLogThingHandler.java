@@ -14,10 +14,12 @@ package org.openhab.binding.verisure.internal.handler;
 
 import static org.openhab.binding.verisure.internal.VerisureBindingConstants.*;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -37,6 +39,8 @@ import org.openhab.binding.verisure.internal.dto.VerisureEventLogDTO.EventLog;
 @NonNullByDefault
 public class VerisureEventLogThingHandler extends VerisureThingHandler<VerisureEventLogDTO> {
 
+    private BigDecimal lastEventId = BigDecimal.ZERO;
+
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_EVENT_LOG);
 
     public VerisureEventLogThingHandler(Thing thing) {
@@ -51,8 +55,8 @@ public class VerisureEventLogThingHandler extends VerisureThingHandler<VerisureE
     @Override
     public synchronized void update(VerisureEventLogDTO thing) {
         logger.debug("update on thing: {}", thing);
-        updateStatus(ThingStatus.ONLINE);
         updateEventLogState(thing);
+        updateStatus(ThingStatus.ONLINE);
     }
 
     private void updateEventLogState(VerisureEventLogDTO eventLogJSON) {
@@ -81,6 +85,17 @@ public class VerisureEventLogThingHandler extends VerisureThingHandler<VerisureE
             case CHANNEL_LAST_EVENT_DEVICE_ID:
                 String lastEventDeviceId = eventLog.getPagedList().get(0).getDevice().getDeviceLabel();
                 return lastEventDeviceId != null ? new StringType(lastEventDeviceId) : UnDefType.NULL;
+            case CHANNEL_LAST_EVENT_ID:
+                if (!lastEventId.equals(BigDecimal.ZERO)) {
+                    triggerEventChannels(eventLog);
+                }
+                String eventId = eventLog.getPagedList().get(0).getEventId();
+                if (eventId != null) {
+                    lastEventId = new BigDecimal(eventId);
+                    return new DecimalType(lastEventId);
+                } else {
+                    return UnDefType.NULL;
+                }
             case CHANNEL_LAST_EVENT_DEVICE_TYPE:
                 String lastEventDeviceType = eventLog.getPagedList().get(0).getDevice().getGui().getLabel();
                 return lastEventDeviceType != null ? new StringType(lastEventDeviceType) : UnDefType.NULL;
@@ -98,5 +113,24 @@ public class VerisureEventLogThingHandler extends VerisureThingHandler<VerisureE
                 return eventLogJSON != null ? new StringType(eventLogJSON) : UnDefType.NULL;
         }
         return UnDefType.UNDEF;
+    }
+
+    private void triggerEventChannels(EventLog eventLog) {
+        eventLog.getPagedList().forEach(event -> {
+            BigDecimal eventId = new BigDecimal(event.getEventId());
+            logger.debug("Event Id: {} Last Event Id: {}", eventId, lastEventId);
+            if (eventId.compareTo(lastEventId) == 1) {
+                updateTriggerChannel(event.getDevice().getDeviceLabel(), event.getEventType());
+            } else {
+                logger.debug("No new events to trigger");
+                return;
+            }
+        });
+    }
+
+    @Override
+    public void updateTriggerChannel(String event) {
+        // TODO Auto-generated method stub
+
     }
 }

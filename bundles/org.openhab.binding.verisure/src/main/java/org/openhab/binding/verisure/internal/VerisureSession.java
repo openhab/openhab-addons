@@ -58,6 +58,7 @@ import org.openhab.binding.verisure.internal.dto.VerisureSmartLocksDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureSmartPlugsDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureThingDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureUserPresencesDTO;
+import org.openhab.binding.verisure.internal.handler.VerisureThingHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,6 +76,7 @@ public class VerisureSession {
 
     @NonNullByDefault({})
     private final Map<String, VerisureThingDTO> verisureThings = new ConcurrentHashMap<>();
+    private final Map<String, VerisureThingHandler> verisureHandlers = new ConcurrentHashMap<>();
     private final Logger logger = LoggerFactory.getLogger(VerisureSession.class);
     private final Gson gson = new Gson();
     private final List<DeviceStatusListener<VerisureThingDTO>> deviceStatusListeners = new CopyOnWriteArrayList<>();
@@ -150,13 +152,36 @@ public class VerisureSession {
         return deviceStatusListeners.add((DeviceStatusListener<VerisureThingDTO>) deviceStatusListener);
     }
 
-    @SuppressWarnings({ "unchecked", "null" })
+    @SuppressWarnings({ "unchecked" })
     public <T extends VerisureThingDTO> @Nullable T getVerisureThing(String deviceId, Class<T> thingType) {
         VerisureThingDTO thing = verisureThings.get(deviceId);
         if (thing != null && thingType.isInstance(thing)) {
             return (T) thing;
         }
         return null;
+    }
+
+    public <T extends VerisureThingDTO> @Nullable T getVerisureThing(String deviceId) {
+        VerisureThingDTO thing = verisureThings.get(deviceId);
+        if (thing != null) {
+            @SuppressWarnings("unchecked")
+            T thing2 = (T) thing;
+            return thing2;
+        }
+        return null;
+    }
+
+    public @Nullable VerisureThingHandler<?> getVerisureThinghandler(String deviceId) {
+        VerisureThingHandler<?> thingHandler = verisureHandlers.get(deviceId);
+        return thingHandler;
+    }
+
+    public void setVerisureThingHandler(VerisureThingHandler<?> vth, String deviceId) {
+        verisureHandlers.put(deviceId, vth);
+    };
+
+    public void removeVerisureThingHandler(String deviceId) {
+        verisureHandlers.remove(deviceId);
     }
 
     public Collection<VerisureThingDTO> getVerisureThings() {

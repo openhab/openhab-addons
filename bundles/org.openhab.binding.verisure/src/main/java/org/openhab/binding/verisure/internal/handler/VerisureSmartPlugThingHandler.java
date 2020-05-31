@@ -122,8 +122,8 @@ public class VerisureSmartPlugThingHandler extends VerisureThingHandler<Verisure
     @Override
     public synchronized void update(VerisureSmartPlugsDTO thing) {
         logger.debug("update on thing: {}", thing);
-        updateStatus(ThingStatus.ONLINE);
         updateSmartPlugState(thing);
+        updateStatus(ThingStatus.ONLINE);
     }
 
     private void updateSmartPlugState(VerisureSmartPlugsDTO smartPlugJSON) {
@@ -209,5 +209,11 @@ public class VerisureSmartPlugThingHandler extends VerisureThingHandler<Verisure
         public void setState(boolean state) {
             this.state = state;
         }
+    }
+
+    @Override
+    public void updateTriggerChannel(String event) {
+        logger.debug("SmartPlugThingHandler trigger event {}", event);
+        triggerChannel(CHANNEL_SMARTPLUG_TRIGGER_CHANNEL, event);
     }
 }

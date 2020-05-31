@@ -60,9 +60,12 @@ public class VerisureBindingConstants {
     public static final String CHANNEL_USER_DEVICE_NAME = "userDeviceName";
     public static final String CHANNEL_SMARTLOCK_VOLUME = "smartLockVolume";
     public static final String CHANNEL_SMARTLOCK_VOICE_LEVEL = "smartLockVoiceLevel";
+    public static final String CHANNEL_SMARTLOCK_TRIGGER_CHANNEL = "smartLockTriggerChannel";
     public static final String CHANNEL_AUTO_RELOCK = "autoRelock";
     public static final String CHANNEL_SMARTPLUG_STATUS = "smartPlugStatus";
+    public static final String CHANNEL_SMARTPLUG_TRIGGER_CHANNEL = "smartPlugTriggerChannel";
     public static final String CHANNEL_ALARM_STATUS = "alarmStatus";
+    public static final String CHANNEL_ALARM_TRIGGER_CHANNEL = "alarmTriggerChannel";
     public static final String CHANNEL_SMARTLOCK_STATUS = "smartLockStatus";
     public static final String CHANNEL_CHANGED_BY_USER = "changedByUser";
     public static final String CHANNEL_CHANGED_VIA = "changedVia";
@@ -77,6 +80,7 @@ public class VerisureBindingConstants {
     public static final String CHANNEL_DURATION_LATEST_DETECTION = "durationLatestDetection";
     public static final String CHANNEL_DURATION_LAST_24_HOURS = "durationLast24Hours";
     public static final String CHANNEL_LAST_EVENT_LOCATION = "lastEventLocation";
+    public static final String CHANNEL_LAST_EVENT_ID = "lastEventId";
     public static final String CHANNEL_LAST_EVENT_DEVICE_ID = "lastEventDeviceId";
     public static final String CHANNEL_LAST_EVENT_DEVICE_TYPE = "lastEventDeviceType";
     public static final String CHANNEL_LAST_EVENT_TYPE = "lastEventType";
@@ -93,6 +97,30 @@ public class VerisureBindingConstants {
     public static final String CHANNEL_TEST_TIME_GPRS_OVER_UDP = "testTimeGPRSOverUDP";
     public static final String CHANNEL_TEST_TIME_ETH_OVER_UDP = "testTimeETHOverUDP";
     public static final String CHANNEL_GATEWAY_MODEL = "model";
+    public static final String CHANNEL_SMOKE_DETECTION_TRIGGER_CHANNEL = "smokeDetectionTriggerChannel";
+    public static final String CHANNEL_MICE_DETECTION_TRIGGER_CHANNEL = "miceDetectionTriggerChannel";
+    public static final String CHANNEL_WATER_DETECTION_TRIGGER_CHANNEL = "waterDetectionTriggerChannel";
+    public static final String CHANNEL_SIREN_TRIGGER_CHANNEL = "sirenTriggerChannel";
+    public static final String CHANNEL_NIGHT_CONTROL_TRIGGER_CHANNEL = "nightControlTriggerChannel";
+    public static final String CHANNEL_DOOR_WINDOW_TRIGGER_CHANNEL = "doorWindowTriggerChannel";
+    public static final String CHANNEL_GATEWAY_TRIGGER_CHANNEL = "gatewayTriggerChannel";
+
+    // Trigger channel events
+    public static final String TRIGGER_EVENT_LOCK = "LOCK";
+    public static final String TRIGGER_EVENT_UNLOCK = "UNLOCK";
+    public static final String TRIGGER_EVENT_LOCK_FAILURE = "LOCK_FAILURE";
+    public static final String TRIGGER_EVENT_ARM = "ARM";
+    public static final String TRIGGER_EVENT_DISARM = "DISARM";
+    public static final String TRIGGER_EVENT_FIRE = "FIRE";
+    public static final String TRIGGER_EVENT_WATER = "WATER";
+    public static final String TRIGGER_EVENT_MICE = "MICE";
+    public static final String TRIGGER_EVENT_BATTERY_LOW = "BATTERY_LOW";
+    public static final String TRIGGER_EVENT_BATTERY_RESTORED = "BATTERY_RESTORED";
+    public static final String TRIGGER_EVENT_COM_FAILURE = "COM_FAILURE";
+    public static final String TRIGGER_EVENT_COM_RESTORED = "COM_RESTORED";
+    public static final String TRIGGER_EVENT_COM_TEST = "COM_TEST";
+    public static final String TRIGGER_EVENT_SABOTAGE_ALARM = "SABOTAGE_ALARM";
+    public static final String TRIGGER_EVENT_SABOTAGE_RESTORED = "SABOTAGE_RESTORED";
 
     // REST URI constants
     public static final String USERNAME = "username";

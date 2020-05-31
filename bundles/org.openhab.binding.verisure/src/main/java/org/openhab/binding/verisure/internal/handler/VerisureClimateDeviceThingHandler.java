@@ -62,8 +62,8 @@ public class VerisureClimateDeviceThingHandler extends VerisureThingHandler<Veri
     @Override
     public synchronized void update(VerisureClimatesDTO thing) {
         logger.debug("update on thing: {}", thing);
-        updateStatus(ThingStatus.ONLINE);
         updateClimateDeviceState(thing);
+        updateStatus(ThingStatus.ONLINE);
     }
 
     private void updateClimateDeviceState(VerisureClimatesDTO climateJSON) {
@@ -99,5 +99,12 @@ public class VerisureClimateDeviceThingHandler extends VerisureThingHandler<Veri
                 return location != null ? new StringType(location) : UnDefType.NULL;
         }
         return UnDefType.UNDEF;
+    }
+
+    @Override
+    public void updateTriggerChannel(String event) {
+        logger.debug("ClimateThingHandler trigger event {}", event);
+        triggerChannel(CHANNEL_SMOKE_DETECTION_TRIGGER_CHANNEL, event);
+
     }
 }

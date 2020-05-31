@@ -238,8 +238,8 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler<Verisure
     @Override
     public synchronized void update(VerisureSmartLocksDTO thing) {
         logger.debug("update on thing: {}", thing);
-        updateStatus(ThingStatus.ONLINE);
         updateSmartLockState(thing);
+        updateStatus(ThingStatus.ONLINE);
     }
 
     private void updateSmartLockState(VerisureSmartLocksDTO smartLocksJSON) {
@@ -364,5 +364,11 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler<Verisure
         public void setCode(String code) {
             this.code = code;
         }
+    }
+
+    @Override
+    public void updateTriggerChannel(String event) {
+        logger.debug("SmartLockThingHandler trigger event {}", event);
+        triggerChannel(CHANNEL_SMARTLOCK_TRIGGER_CHANNEL, event);
     }
 }

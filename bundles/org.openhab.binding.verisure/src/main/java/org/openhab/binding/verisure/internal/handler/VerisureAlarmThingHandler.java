@@ -135,8 +135,8 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler<VerisureAlar
     @Override
     public synchronized void update(VerisureAlarmsDTO thing) {
         logger.debug("update on thing: {}", thing);
-        updateStatus(ThingStatus.ONLINE);
         updateAlarmState(thing);
+        updateStatus(ThingStatus.ONLINE);
     }
 
     private void updateAlarmState(VerisureAlarmsDTO alarmsJSON) {
@@ -204,5 +204,12 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler<VerisureAlar
         public void setCode(String code) {
             this.code = code;
         }
+    }
+
+    @Override
+    public void updateTriggerChannel(String event) {
+        logger.debug("ThingHandler trigger event {}", event);
+        triggerChannel(CHANNEL_SMARTLOCK_TRIGGER_CHANNEL, event);
+
     }
 }

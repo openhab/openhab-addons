@@ -49,8 +49,8 @@ public class VerisureBroadbandConnectionThingHandler extends VerisureThingHandle
     @Override
     public synchronized void update(VerisureBroadbandConnectionsDTO thing) {
         logger.debug("update on thing: {}", thing);
-        updateStatus(ThingStatus.ONLINE);
         updateBroadbandConnection(thing);
+        updateStatus(ThingStatus.ONLINE);
     }
 
     private void updateBroadbandConnection(VerisureBroadbandConnectionsDTO vbcJSON) {
@@ -62,6 +62,12 @@ public class VerisureBroadbandConnectionThingHandler extends VerisureThingHandle
             updateState(cuid, OnOffType.from(broadbandConnected));
             updateInstallationChannels(vbcJSON);
         }
+    }
+
+    @Override
+    public void updateTriggerChannel(String event) {
+        // TODO Auto-generated method stub
+
     }
 
 }
