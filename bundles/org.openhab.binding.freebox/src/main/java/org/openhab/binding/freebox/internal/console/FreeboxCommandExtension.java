@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingRegistry;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.io.console.Console;
 import org.eclipse.smarthome.io.console.extensions.AbstractConsoleCommandExtension;
 import org.eclipse.smarthome.io.console.extensions.ConsoleCommandExtension;
@@ -54,8 +55,11 @@ public class FreeboxCommandExtension extends AbstractConsoleCommandExtension {
             try {
                 ThingUID thingUID = new ThingUID(args[0]);
                 Thing thing = thingRegistry.get(thingUID);
-                if ((thing != null) && (thing.getHandler() != null) && (thing.getHandler() instanceof FreeboxHandler)) {
-                    handler = (FreeboxHandler) thing.getHandler();
+                if (thing != null) {
+                    ThingHandler thingHandler = thing.getHandler();
+                    if (thingHandler instanceof FreeboxHandler) {
+                        handler = (FreeboxHandler) thingHandler;
+                    }
                 }
             } catch (IllegalArgumentException e) {
                 handler = null;
