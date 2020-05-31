@@ -221,7 +221,7 @@ public class FMIWeatherDiscoveryService extends AbstractDiscoveryService {
     protected void stopBackgroundDiscovery() {
         logger.debug("Stopping FMI Weather background discovery");
         ScheduledFuture<?> discoveryJob = this.discoveryJob;
-        if (discoveryJob != null && !discoveryJob.isCancelled()) {
+        if (discoveryJob != null) {
             if (discoveryJob.cancel(true)) {
                 this.discoveryJob = null;
                 logger.debug("Stopped FMI Weather background discovery");
@@ -232,16 +232,13 @@ public class FMIWeatherDiscoveryService extends AbstractDiscoveryService {
     @Reference
     protected void setLocationProvider(LocationProvider locationProvider) {
         this.locationProvider = locationProvider;
-        logger.debug("LocationProvider set: {}", this.locationProvider);
     }
 
     protected void unsetLocationProvider(LocationProvider provider) {
         this.locationProvider = null;
-        logger.debug("LocationProvider unset");
     }
 
     protected LocationProvider getLocationProvider() {
-        logger.trace("getLocationProvider: {}", locationProvider);
         return locationProvider;
     }
 }
