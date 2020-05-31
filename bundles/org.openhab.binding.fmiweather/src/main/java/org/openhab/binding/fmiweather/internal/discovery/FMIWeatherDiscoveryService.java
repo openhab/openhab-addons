@@ -77,7 +77,7 @@ public class FMIWeatherDiscoveryService extends AbstractDiscoveryService {
         try {
             return new Client().queryWeatherStations(STATIONS_TIMEOUT_MILLIS);
         } catch (FMIResponseException e) {
-            logger.error("Error when querying stations", e);
+            logger.warn("Error when querying stations", e);
         }
         return Collections.emptySet();
     });
@@ -92,7 +92,6 @@ public class FMIWeatherDiscoveryService extends AbstractDiscoveryService {
     @Override
     @Activate
     protected void activate(@Nullable Map<String, @Nullable Object> configProperties) {
-        logger.debug("Activating FMI Weather discovery service");
         super.activate(configProperties);
     }
 
@@ -105,7 +104,6 @@ public class FMIWeatherDiscoveryService extends AbstractDiscoveryService {
     @Override
     @Deactivate
     public void deactivate() {
-        logger.debug("Deactivating FMI Weather discovery service");
         super.deactivate();
     }
 
