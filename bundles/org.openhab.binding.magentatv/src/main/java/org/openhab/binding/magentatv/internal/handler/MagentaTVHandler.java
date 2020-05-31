@@ -612,7 +612,8 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
         Map<String, String> map = new HashMap<String, String>();
         for (String key : properties.keySet()) {
             if ((key.charAt(0) != '$') && !key.contains("component.")) {
-                map.put(key, properties.get(key).toString());
+                String prop = properties.get(key);
+                map.put(key, prop != null ? prop : "");
             }
         }
         this.updateProperties(map);
