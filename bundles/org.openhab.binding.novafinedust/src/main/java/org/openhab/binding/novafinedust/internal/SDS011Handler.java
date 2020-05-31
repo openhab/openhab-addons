@@ -56,7 +56,7 @@ public class SDS011Handler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(SDS011Handler.class);
     private final SerialPortManager serialPortManager;
 
-    private @Nullable NovaFineDustConfiguration config;
+    private NovaFineDustConfiguration config = new NovaFineDustConfiguration();
     private @Nullable SDS011Communicator communicator;
 
     private @Nullable ScheduledFuture<?> pollingJob;
@@ -68,7 +68,7 @@ public class SDS011Handler extends BaseThingHandler {
     private Duration timeBetweenDataShouldArrive = Duration.ofDays(1);
     private final Duration dataCanBeLateTolerance = Duration.ofSeconds(5);
 
-    // cached values fro refresh command
+    // cached values for refresh command
     private State statePM10 = UnDefType.UNDEF;
     private State statePM25 = UnDefType.UNDEF;
 
@@ -125,9 +125,16 @@ public class SDS011Handler extends BaseThingHandler {
     }
 
     private void initializeCommunicator(WorkMode mode, Duration interval) {
+        SDS011Communicator localCommunicator = communicator;
+        if (localCommunicator == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                    "Could not create communicator instance");
+            return;
+        }
+
         boolean initSuccessful = false;
         try {
-            initSuccessful = communicator.initialize(mode, interval);
+            initSuccessful = localCommunicator.initialize(mode, interval);
         } catch (final IOException ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "I/O error!");
             return;
@@ -151,7 +158,7 @@ public class SDS011Handler extends BaseThingHandler {
             if (mode == WorkMode.POLLING) {
                 pollingJob = scheduler.scheduleWithFixedDelay(() -> {
                     try {
-                        communicator.requestSensorData();
+                        localCommunicator.requestSensorData();
                     } catch (IOException e) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                                 "Cannot query data from device");
@@ -167,13 +174,7 @@ public class SDS011Handler extends BaseThingHandler {
     }
 
     private boolean validateConfiguration() {
-        if (config == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Configuration could not be parsed");
-            return false;
-        }
-
-        if (config.port == null || config.port.isEmpty()) {
+        if (config.port.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Port must be set!");
             return false;
         }
@@ -195,18 +196,21 @@ public class SDS011Handler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        if (pollingJob != null) {
-            pollingJob.cancel(true);
-            pollingJob = null;
+        ScheduledFuture<?> localPollingJob = this.pollingJob;
+        if (localPollingJob != null) {
+            localPollingJob.cancel(true);
+            this.pollingJob = null;
         }
 
-        if (connectionMonitor != null) {
-            connectionMonitor.cancel(true);
-            connectionMonitor = null;
+        ScheduledFuture<?> localConnectionMonitor = this.connectionMonitor;
+        if (localConnectionMonitor != null) {
+            localConnectionMonitor.cancel(true);
+            this.connectionMonitor = null;
         }
 
-        if (communicator != null) {
-            communicator.dispose();
+        SDS011Communicator localCommunicator = this.communicator;
+        if (localCommunicator != null) {
+            localCommunicator.dispose();
         }
 
         this.statePM10 = UnDefType.UNDEF;

@@ -53,7 +53,7 @@ public class SDS011Communicator implements SerialPortEventListener {
 
     private SerialPortIdentifier portId;
     private SDS011Handler thingHandler;
-    private @NonNullByDefault({}) SerialPort serialPort;
+    private @Nullable SerialPort serialPort;
 
     private @Nullable OutputStream outputStream;
     private @Nullable InputStream inputStream;
@@ -115,8 +115,9 @@ public class SDS011Communicator implements SerialPortEventListener {
         if (logger.isDebugEnabled()) {
             logger.debug("Will send command: {} ({})", HexUtils.bytesToHex(commandData), Arrays.toString(commandData));
         }
-        outputStream.write(commandData);
-        outputStream.flush();
+
+        write(commandData);
+
         try {
             // Give the sensor some time to handle the command
             Thread.sleep(500);
@@ -131,6 +132,14 @@ public class SDS011Communicator implements SerialPortEventListener {
             reply = readReply();
         }
         return reply;
+    }
+
+    private void write(byte[] commandData) throws IOException {
+        OutputStream localOutputStream = outputStream;
+        if (localOutputStream != null) {
+            localOutputStream.write(commandData);
+            localOutputStream.flush();
+        }
     }
 
     private boolean setWorkingPeriod(byte period) throws IOException {
@@ -219,20 +228,21 @@ public class SDS011Communicator implements SerialPortEventListener {
         if (logger.isDebugEnabled()) {
             logger.debug("Requesting sensor data, will send: {}", HexUtils.bytesToHex(data));
         }
-        outputStream.write(data);
-        outputStream.flush();
+        write(data);
     }
 
     private @Nullable SensorReply readReply() throws IOException {
         byte[] readBuffer = new byte[Constants.REPLY_LENGTH];
 
+        InputStream localInpuStream = inputStream;
+
         int b = -1;
-        if (inputStream.available() > 0) {
-            while ((b = inputStream.read()) != Constants.MESSAGE_START_AS_INT) {
+        if (localInpuStream != null && localInpuStream.available() > 0) {
+            while ((b = localInpuStream.read()) != Constants.MESSAGE_START_AS_INT) {
                 logger.debug("Trying to find first reply byte now...");
             }
             readBuffer[0] = (byte) b;
-            int remainingBytesRead = inputStream.read(readBuffer, 1, Constants.REPLY_LENGTH - 1);
+            int remainingBytesRead = localInpuStream.read(readBuffer, 1, Constants.REPLY_LENGTH - 1);
             if (logger.isDebugEnabled()) {
                 logger.debug("Read remaining bytes: {}, full reply={}", remainingBytesRead,
                         HexUtils.bytesToHex(readBuffer));
@@ -269,7 +279,8 @@ public class SDS011Communicator implements SerialPortEventListener {
      * Shutdown the communication, i.e. send the device to sleep and close the serial port
      */
     public void dispose() {
-        if (serialPort != null) {
+        SerialPort localSerialPort = serialPort;
+        if (localSerialPort != null) {
             try {
                 // send the device to sleep to preserve power and extend the lifetime of the sensor
                 sendSleep(true);
@@ -277,20 +288,26 @@ public class SDS011Communicator implements SerialPortEventListener {
                 // ignore because we are shutting down anyway
                 logger.debug("Exception while disposing communicator (will ignore it)", e);
             } finally {
-                serialPort.removeEventListener();
-                serialPort.close();
+                localSerialPort.removeEventListener();
+                localSerialPort.close();
                 serialPort = null;
             }
         }
 
         try {
-            inputStream.close();
+            InputStream localInputStream = inputStream;
+            if (localInputStream != null) {
+                localInputStream.close();
+            }
         } catch (IOException e) {
             logger.debug("Error while closing the input stream: {}", e.getMessage());
         }
 
         try {
-            outputStream.close();
+            OutputStream localOutputStream = outputStream;
+            if (localOutputStream != null) {
+                localOutputStream.close();
+            }
         } catch (IOException e) {
             logger.debug("Error while closing the output stream: {}", e.getMessage());
         }
