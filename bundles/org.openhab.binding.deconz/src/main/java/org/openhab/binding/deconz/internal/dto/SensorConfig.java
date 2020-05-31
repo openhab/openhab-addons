@@ -30,4 +30,7 @@ public class SensorConfig {
     public boolean reachable = true;
     public @Nullable Integer battery;
     public @Nullable Float temperature;
+    public @Nullable Integer heatsetpoint;
+    public @Nullable String mode;
+    public @Nullable Integer offset;
 }
