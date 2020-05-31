@@ -1,5 +1,9 @@
 # MQTT Broker Moquette
 
+**Attention:** Moquette is no longer maintained upstream and this add-on is therefore considered deprecated in openHAB. 
+It is recommended to switch to an external broker like mosquitto.
+The Moquette add-on will be removed in a future release of openHAB.
+
 MQTT is a machine-to-machine (M2M)/"Internet of Things" connectivity protocol.
 It was designed as an extremely lightweight publish/subscribe messaging transport.
 

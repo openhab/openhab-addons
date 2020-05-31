@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * An enumeration for the possible mower status. 
+ * An enumeration for the possible mower status.
  *
  * @author Marco Meyer - Initial contribution
  */
@@ -72,6 +72,11 @@ public enum MowerStatus {
     SLEEPING(17),
 
     /**
+     * Mower waits for door to open
+     */
+    DOORDELAY(18),
+
+    /**
      * unknown status. If the module return any not listed code here it will result in this state in the binding.
      */
     UNKNOWN(99);
@@ -86,6 +91,7 @@ public enum MowerStatus {
 
     /**
      * translates a numeric code into an enum value. If code is not known the value {@link #UNKNOWN} is returned.
+     * 
      * @param code - the code to translate
      * @return - the correpsonding enum value.
      */
@@ -101,10 +107,10 @@ public enum MowerStatus {
 
     /**
      * returns the numeric code of the status.
+     * 
      * @return
      */
     public int getStatusCode() {
         return statusCode;
     }
-
 }

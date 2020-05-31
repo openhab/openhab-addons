@@ -186,5 +186,4 @@ public class TradfriColorTest {
         PercentType mixed2 = new TradfriColor(1000000, 0, null).getColorTemperature();
         assertEquals(100, mixed2.intValue());
     }
-
 }

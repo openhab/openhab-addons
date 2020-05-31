@@ -41,7 +41,7 @@
 		<description>Color temperature of the TV picture. Minimum value is 0 and
 			maximum 4.
 		</description>
-		<state min="0" max="4" />
+		<state min="0" max="4"/>
 	</channel-type>
 
 	<channel-type id="sourcename">
@@ -54,7 +54,7 @@
 		<item-type>Number</item-type>
 		<label>Source ID</label>
 		<description>Id of the current source.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="channel">
@@ -67,14 +67,14 @@
 		<item-type>String</item-type>
 		<label>Program Title</label>
 		<description>Program title of the current channel.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="channelname">
 		<item-type>String</item-type>
 		<label>Channel Name</label>
 		<description>Name of the current TV channel.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="url" advanced="true">

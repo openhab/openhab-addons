@@ -19,21 +19,19 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.TooManyListenersException;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.io.transport.serial.PortInUseException;
+import org.eclipse.smarthome.io.transport.serial.SerialPort;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEvent;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEventListener;
+import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
+import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
 import org.openhab.binding.dscalarm.internal.config.IT100BridgeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import gnu.io.CommPort;
-import gnu.io.CommPortIdentifier;
-import gnu.io.NoSuchPortException;
-import gnu.io.PortInUseException;
-import gnu.io.SerialPort;
-import gnu.io.SerialPortEvent;
-import gnu.io.SerialPortEventListener;
-import gnu.io.UnsupportedCommOperationException;
 
 /**
  * The bridge handler for the DSC IT100 RS232 Serial interface.
@@ -44,15 +42,7 @@ import gnu.io.UnsupportedCommOperationException;
 public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements SerialPortEventListener {
 
     private final Logger logger = LoggerFactory.getLogger(IT100BridgeHandler.class);
-
-    /**
-     * Constructor.
-     *
-     * @param bridge
-     */
-    public IT100BridgeHandler(Bridge bridge) {
-        super(bridge, DSCAlarmBridgeType.IT100, DSCAlarmProtocol.IT100_API);
-    }
+    private final SerialPortManager serialPortManager;
 
     private String serialPortName = "";
     private int baudRate;
@@ -60,51 +50,49 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
     private OutputStreamWriter serialOutput = null;
     private BufferedReader serialInput = null;
 
+    public IT100BridgeHandler(Bridge bridge, SerialPortManager serialPortManager) {
+        super(bridge, DSCAlarmBridgeType.IT100, DSCAlarmProtocol.IT100_API);
+        this.serialPortManager = serialPortManager;
+    }
+
     @Override
     public void initialize() {
         logger.debug("Initializing the DSC IT100 Bridge handler.");
 
         IT100BridgeConfiguration configuration = getConfigAs(IT100BridgeConfiguration.class);
 
-        serialPortName = configuration.serialPort;
-
-        if (serialPortName != null) {
+        if (configuration.serialPort == null || configuration.serialPort.trim().isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Set a serial port in the thing configuration.");
+        } else {
+            serialPortName = configuration.serialPort.trim();
             baudRate = configuration.baud.intValue();
             pollPeriod = configuration.pollPeriod.intValue();
 
-            if (this.pollPeriod > 15) {
-                this.pollPeriod = 15;
-            } else if (this.pollPeriod < 1) {
-                this.pollPeriod = 1;
-            }
+            super.initialize();
 
             logger.debug("IT100 Bridge Handler Initialized.");
             logger.debug("   Serial Port: {},", serialPortName);
             logger.debug("   Baud:        {},", baudRate);
-            logger.debug("   Password:    {},", getPassword());
             logger.debug("   PollPeriod:  {},", pollPeriod);
-
-            updateStatus(ThingStatus.OFFLINE);
-            startPolling();
         }
     }
 
     @Override
-    public void dispose() {
-        stopPolling();
-        closeConnection();
-        super.dispose();
-    }
-
-    @Override
     public void openConnection() {
+        logger.debug("openConnection(): Connecting to IT-100");
+
+        SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(serialPortName);
+        if (portIdentifier == null) {
+            logger.error("openConnection(): No Such Port: {}", serialPort);
+            setConnected(false);
+            return;
+        }
+
         try {
-            logger.debug("openConnection(): Connecting to IT-100 ");
+            SerialPort commPort = portIdentifier.open(this.getClass().getName(), 2000);
 
-            CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(serialPortName);
-            CommPort commPort = portIdentifier.open(this.getClass().getName(), 2000);
-
-            serialPort = (SerialPort) commPort;
+            serialPort = commPort;
             serialPort.setSerialPortParams(baudRate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
                     SerialPort.PARITY_NONE);
             serialPort.enableReceiveThreshold(1);
@@ -116,10 +104,6 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
             setSerialEventHandler(this);
 
             setConnected(true);
-
-        } catch (NoSuchPortException noSuchPortException) {
-            logger.error("openConnection(): No Such Port Exception: {}", noSuchPortException.getMessage());
-            setConnected(false);
         } catch (PortInUseException portInUseException) {
             logger.error("openConnection(): Port in Use Exception: {}", portInUseException.getMessage());
             setConnected(false);
@@ -138,11 +122,11 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
     }
 
     @Override
-    public void write(String writeString) {
+    public void write(String writeString, boolean doNotLog) {
         try {
             serialOutput.write(writeString);
             serialOutput.flush();
-            logger.debug("write(): Message Sent: {}", writeString);
+            logger.debug("write(): Message Sent: {}", doNotLog ? "***" : writeString);
         } catch (IOException ioException) {
             logger.error("write(): {}", ioException.getMessage());
             setConnected(false);
@@ -168,7 +152,6 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
         }
 
         return message;
-
     }
 
     /**
@@ -193,12 +176,20 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
         serialPort.removeEventListener();
 
         if (serialInput != null) {
-            IOUtils.closeQuietly(serialInput);
+            try {
+                serialInput.close();
+            } catch (IOException e) {
+                logger.debug("Error while closing the input stream: {}", e.getMessage());
+            }
             serialInput = null;
         }
 
         if (serialOutput != null) {
-            IOUtils.closeQuietly(serialOutput);
+            try {
+                serialOutput.close();
+            } catch (IOException e) {
+                logger.debug("Error while closing the output stream: {}", e.getMessage());
+            }
             serialOutput = null;
         }
 

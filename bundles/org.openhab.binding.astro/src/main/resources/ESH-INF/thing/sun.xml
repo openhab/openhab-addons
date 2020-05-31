@@ -64,16 +64,16 @@
 			<channel-group id="position" typeId="position">
 				<description>The position of the sun</description>
 			</channel-group>
-			<channel-group id="radiation" typeId="radiation" />
-			<channel-group id="zodiac" typeId="sunZodiac" />
-			<channel-group id="season" typeId="season" />
-			<channel-group id="eclipse" typeId="sunEclipse" />
-			<channel-group id="phase" typeId="sunPhase" />
+			<channel-group id="radiation" typeId="radiation"/>
+			<channel-group id="zodiac" typeId="sunZodiac"/>
+			<channel-group id="season" typeId="season"/>
+			<channel-group id="eclipse" typeId="sunEclipse"/>
+			<channel-group id="phase" typeId="sunPhase"/>
 		</channel-groups>
 
 		<representation-property>geolocation</representation-property>
 
-		<config-description-ref uri="thing-type:astro:config" />
+		<config-description-ref uri="thing-type:astro:config"/>
 	</thing-type>
 
 </thing:thing-descriptions>

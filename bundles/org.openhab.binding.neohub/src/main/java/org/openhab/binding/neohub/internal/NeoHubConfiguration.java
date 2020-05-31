@@ -12,16 +12,19 @@
  */
 package org.openhab.binding.neohub.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link NeoHubConfiguration} class contains the thing configuration
  * parameters
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
+@NonNullByDefault
 public class NeoHubConfiguration {
-
-    public String hostName;
+    public String hostName = "";
     public int portNumber;
     public int pollingInterval;
-
+    public int socketTimeout;
+    public boolean preferLegacyApi;
 }

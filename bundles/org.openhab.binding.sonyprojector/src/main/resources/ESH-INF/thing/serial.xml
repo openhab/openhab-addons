@@ -10,41 +10,42 @@
 		<description>Serial connection to the Sony projector</description>
 
 		<channels>
-			<channel id="power" typeId="power" />
-			<channel id="powerstate" typeId="powerstate" />
-			<channel id="input" typeId="input" />
-			<channel id="calibrationpreset" typeId="calibrationpreset" />
-			<channel id="contrast" typeId="contrast" />
-			<channel id="brightness" typeId="brightness" />
-			<channel id="color" typeId="color" />
-			<channel id="hue" typeId="hue" />
-			<channel id="sharpness" typeId="sharpness" />
-			<channel id="colortemperature" typeId="colortemperature" />
-			<channel id="irismode" typeId="irismode" />
-			<channel id="irismanual" typeId="irismanual" />
-			<channel id="irissensitivity" typeId="irissensitivity" />
-			<channel id="lampcontrol" typeId="lampcontrol" />
-			<channel id="filmprojection" typeId="filmprojection" />
-			<channel id="motionenhancer" typeId="motionenhancer" />
-			<channel id="contrastenhancer" typeId="contrastenhancer" />
-			<channel id="filmmode" typeId="filmmode" />
-			<channel id="gammacorrection" typeId="gammacorrection" />
-			<channel id="colorspace" typeId="colorspace" />
-			<channel id="nr" typeId="nr" />
-			<channel id="blocknr" typeId="blocknr" />
-			<channel id="mosquitonr" typeId="mosquitonr" />
-			<channel id="mpegnr" typeId="mpegnr" />
-			<channel id="xvcolor" typeId="xvcolor" />
-			<channel id="picturemuting" typeId="picturemuting" />
-			<channel id="aspect" typeId="aspect" />
-			<channel id="overscan" typeId="overscan" />
-			<channel id="pictureposition" typeId="pictureposition" />
-			<channel id="lampusetime" typeId="lampusetime" />
+			<channel id="power" typeId="power"/>
+			<channel id="powerstate" typeId="powerstate"/>
+			<channel id="input" typeId="input"/>
+			<channel id="calibrationpreset" typeId="calibrationpreset"/>
+			<channel id="contrast" typeId="contrast"/>
+			<channel id="brightness" typeId="brightness"/>
+			<channel id="color" typeId="color"/>
+			<channel id="hue" typeId="hue"/>
+			<channel id="sharpness" typeId="sharpness"/>
+			<channel id="colortemperature" typeId="colortemperature"/>
+			<channel id="irismode" typeId="irismode"/>
+			<channel id="irismanual" typeId="irismanual"/>
+			<channel id="irissensitivity" typeId="irissensitivity"/>
+			<channel id="lampcontrol" typeId="lampcontrol"/>
+			<channel id="filmprojection" typeId="filmprojection"/>
+			<channel id="motionenhancer" typeId="motionenhancer"/>
+			<channel id="contrastenhancer" typeId="contrastenhancer"/>
+			<channel id="filmmode" typeId="filmmode"/>
+			<channel id="gammacorrection" typeId="gammacorrection"/>
+			<channel id="colorspace" typeId="colorspace"/>
+			<channel id="nr" typeId="nr"/>
+			<channel id="blocknr" typeId="blocknr"/>
+			<channel id="mosquitonr" typeId="mosquitonr"/>
+			<channel id="mpegnr" typeId="mpegnr"/>
+			<channel id="xvcolor" typeId="xvcolor"/>
+			<channel id="picturemuting" typeId="picturemuting"/>
+			<channel id="aspect" typeId="aspect"/>
+			<channel id="overscan" typeId="overscan"/>
+			<channel id="pictureposition" typeId="pictureposition"/>
+			<channel id="lampusetime" typeId="lampusetime"/>
 		</channels>
 
 		<config-description>
 			<parameter name="port" type="text" required="true">
 				<context>serial-port</context>
+				<limitToOptions>false</limitToOptions>
 				<label>Serial Port</label>
 				<description>Serial port to use for connecting to the projector</description>
 			</parameter>

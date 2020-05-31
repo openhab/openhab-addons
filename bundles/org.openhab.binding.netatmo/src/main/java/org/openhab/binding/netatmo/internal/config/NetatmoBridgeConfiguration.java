@@ -27,6 +27,7 @@ public class NetatmoBridgeConfiguration {
     public Boolean readThermostat;
     public Boolean readHealthyHomeCoach;
     public Boolean readWelcome;
+    public Boolean readPresence;
     public String webHookUrl;
     public Integer reconnectInterval;
 }

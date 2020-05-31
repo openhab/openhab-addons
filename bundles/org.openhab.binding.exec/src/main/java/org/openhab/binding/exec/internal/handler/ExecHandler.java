@@ -12,6 +12,22 @@
  */
 package org.openhab.binding.exec.internal.handler;
 
+import static org.openhab.binding.exec.internal.ExecBindingConstants.*;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.math.BigDecimal;
+import java.time.ZonedDateTime;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.IllegalFormatException;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -33,22 +49,6 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.math.BigDecimal;
-import java.time.ZonedDateTime;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.IllegalFormatException;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
-
-import static org.openhab.binding.exec.internal.ExecBindingConstants.*;
 
 /**
  * The {@link ExecHandler} is responsible for handling commands, which are
@@ -127,8 +127,7 @@ public class ExecHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         if (executionJob == null || executionJob.isCancelled()) {
-            if ((getConfig().get(INTERVAL)) != null && ((BigDecimal) getConfig().get(INTERVAL))
-                    .intValue() > 0) {
+            if ((getConfig().get(INTERVAL)) != null && ((BigDecimal) getConfig().get(INTERVAL)).intValue() > 0) {
                 int pollingInterval = ((BigDecimal) getConfig().get(INTERVAL)).intValue();
                 executionJob = scheduler.scheduleWithFixedDelay(this::execute, 0, pollingInterval, TimeUnit.SECONDS);
             }
@@ -309,8 +308,8 @@ public class ExecHandler extends BaseThingHandler {
             String transformationType = parts[0];
             String transformationFunction = parts[1];
 
-            TransformationService transformationService = TransformationHelper
-                    .getTransformationService(bundleContext, transformationType);
+            TransformationService transformationService = TransformationHelper.getTransformationService(bundleContext,
+                    transformationType);
             if (transformationService != null) {
                 transformedResponse = transformationService.transform(transformationFunction, response);
             } else {
@@ -341,8 +340,8 @@ public class ExecHandler extends BaseThingHandler {
         Matcher matcher = EXTRACT_FUNCTION_PATTERN.matcher(transformation);
 
         if (!matcher.matches()) {
-            throw new IllegalArgumentException(
-                    "given transformation function '" + transformation + "' does not follow the expected pattern '<function>(<pattern>)'");
+            throw new IllegalArgumentException("given transformation function '" + transformation
+                    + "' does not follow the expected pattern '<function>(<pattern>)'");
         }
         matcher.reset();
 
@@ -394,7 +393,12 @@ public class ExecHandler extends BaseThingHandler {
      * @author Constantin Piber (for Memin) - Initial contribution
      */
     public enum OS {
-        WINDOWS, LINUX, MAC, SOLARIS, UNKNOWN, NOT_SET
+        WINDOWS,
+        LINUX,
+        MAC,
+        SOLARIS,
+        UNKNOWN,
+        NOT_SET
     }
 
     private static OS os = OS.NOT_SET;
@@ -420,5 +424,4 @@ public class ExecHandler extends BaseThingHandler {
     public static String getOperatingSystemName() {
         return System.getProperty("os.name");
     }
-
 }

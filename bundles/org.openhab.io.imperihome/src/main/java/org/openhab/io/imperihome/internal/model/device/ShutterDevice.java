@@ -44,5 +44,4 @@ public class ShutterDevice extends AbstractEnergyLinkDevice {
         addParam(new DeviceParam(ParamType.STOPPABLE, getLinks().containsKey("stopper") ? "1" : "0"));
         addParam(new DeviceParam(ParamType.LEVEL, String.valueOf(level)));
     }
-
 }

@@ -48,5 +48,4 @@ public interface ModbusPollerThingHandler {
      * Refresh data
      */
     public void refresh();
-
 }

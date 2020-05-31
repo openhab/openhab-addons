@@ -213,6 +213,7 @@ public class BAE0910 extends AbstractOwDevice {
     @Override
     public void refresh(OwserverBridgeHandler bridgeHandler, Boolean forcedRefresh) throws OwException {
         if (isConfigured) {
+            logger.trace("refresh of sensor {} started", sensorId);
             // Counter
             if (enabledChannels.contains(CHANNEL_COUNTER)) {
                 State counterValue = bridgeHandler.readDecimalType(sensorId, pin1CounterParameter);

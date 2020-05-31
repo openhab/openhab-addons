@@ -42,7 +42,7 @@ public interface AtomicReferenceTrait {
      * updates a job reference with a new job. the old job will be cancelled if there is one.
      *
      * @param jobReference reference to be updated
-     * @param newJob       job to be assigned
+     * @param newJob job to be assigned
      */
     default void updateJobReference(AtomicReference<@Nullable Future<?>> jobReference, Future<?> newJob) {
         cancelJob(jobReference.getAndSet(newJob));
@@ -56,5 +56,4 @@ public interface AtomicReferenceTrait {
     default void cancelJobReference(AtomicReference<@Nullable Future<?>> jobReference) {
         cancelJob(jobReference.getAndSet(null));
     }
-
 }

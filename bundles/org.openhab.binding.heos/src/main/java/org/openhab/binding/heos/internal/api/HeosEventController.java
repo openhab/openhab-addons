@@ -14,9 +14,17 @@ package org.openhab.binding.heos.internal.api;
 
 import static org.openhab.binding.heos.internal.resources.HeosConstants.*;
 
+import java.io.IOException;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.heos.internal.json.dto.HeosCommunicationAttribute;
+import org.openhab.binding.heos.internal.json.dto.HeosEvent;
+import org.openhab.binding.heos.internal.json.dto.HeosEventObject;
+import org.openhab.binding.heos.internal.json.dto.HeosResponseObject;
+import org.openhab.binding.heos.internal.json.payload.Media;
 import org.openhab.binding.heos.internal.resources.HeosCommands;
-import org.openhab.binding.heos.internal.resources.HeosResponseDecoder;
 import org.openhab.binding.heos.internal.resources.HeosSystemEventListener;
+import org.openhab.binding.heos.internal.resources.Telnet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,225 +34,86 @@ import org.slf4j.LoggerFactory;
  *
  * @author Johannes Einig - Initial contribution
  */
+@NonNullByDefault
 public class HeosEventController extends HeosSystemEventListener {
     private final Logger logger = LoggerFactory.getLogger(HeosEventController.class);
 
-    private HeosResponseDecoder heosDecoder;
-    private HeosSystem system;
-    private HeosCommands command;
-    private String eventType;
-    private String eventCommand;
+    private final HeosSystem system;
 
-    public HeosEventController(HeosResponseDecoder heosDecoder, HeosCommands command, HeosSystem system) {
-        this.heosDecoder = heosDecoder;
+    private long lastEventTime;
+
+    public HeosEventController(HeosSystem system) {
         this.system = system;
-        this.command = command;
+        lastEventTime = System.currentTimeMillis();
     }
 
-    public void handleEvent(int client) {
-        if (client == 0) {
-            logger.debug("HEOS send response: {}", heosDecoder.getRawResponseMessage());
-        } else if (client == 1) {
-            logger.debug("HEOS event response: {}", heosDecoder.getRawResponseMessage());
+    public void handleEvent(HeosEventObject eventObject) {
+        HeosEvent command = eventObject.command;
+        lastEventTime = System.currentTimeMillis();
+
+        logger.debug("Handling event: {}", eventObject);
+
+        if (command == null) {
+            return;
         }
 
-        if (heosDecoder.getSendResult().equals(FAIL)) {
-            String errorCode = heosDecoder.getErrorCode();
-            String errorMessage = heosDecoder.getErrorMessage();
-
-            logger.debug("HEOS System response failure with error code '{}' and message '{}'", errorCode, errorMessage);
-        } else {
-            this.eventType = heosDecoder.getEventType();
-            this.eventCommand = heosDecoder.getCommandType();
-
-            switch (eventType) {
-                case EVENTTYPE_EVENT:
-                    eventTypeEvent();
-                    break;
-                case EVENTTYPE_PLAYER:
-                    eventTypePlayer();
-                    break;
-                case EVENTTYPE_SYSTEM:
-                    eventTypeSystem();
-                    break;
-                case EVENTTYPE_BROWSE:
-                    eventTypeBrowse();
-                    break;
-                case EVENTTYPE_GROUP:
-                    eventTypeGroup();
-                    break;
-            }
-        }
-    }
-
-    private void eventTypeEvent() {
-        switch (eventCommand) {
+        switch (command) {
             case PLAYER_NOW_PLAYING_PROGRESS:
-                playerProgressChanged();
-                break;
-            case PLAYERS_CHANGED:
-                fireBridgeEvent(EVENTTYPE_EVENT, SUCCESS, eventCommand);
-                break;
-            case PLAYER_NOW_PLAYING_CHANGED:
-                mediaStateChanged();
-                break;
             case PLAYER_STATE_CHANGED:
-                playerStateChanged();
-                break;
-            case PLAYER_QUEUE_CHANGED:
-                break;
-            case SOURCES_CHANGED:
-                break;
             case PLAYER_VOLUME_CHANGED:
-                volumeChanged();
-                break;
-            case GROUPS_CHANGED:
-                fireBridgeEvent(EVENTTYPE_EVENT, SUCCESS, eventCommand);
-                break;
-            case USER_CHANGED:
-                userChanged();
-                break;
             case SHUFFLE_MODE_CHANGED:
-                shuffleModeChanged();
-                break;
             case REPEAT_MODE_CHANGED:
-                repeatModeChanged();
+            case PLAYER_PLAYBACK_ERROR:
+            case GROUP_VOLUME_CHANGED:
+            case PLAYER_QUEUE_CHANGED:
+            case SOURCES_CHANGED:
+                fireStateEvent(eventObject);
+                break;
+
+            case USER_CHANGED:
+                fireBridgeEvent(EVENT_TYPE_SYSTEM, true, command);
+                break;
+
+            case PLAYER_NOW_PLAYING_CHANGED:
+                String pid = eventObject.getAttribute(HeosCommunicationAttribute.PLAYER_ID);
+
+                if (pid == null) {
+                    logger.debug("HEOS did not mention which player changed, unlikely but ignore");
+                    break;
+                }
+
+                try {
+                    HeosResponseObject<Media> mediaResponse = system.send(HeosCommands.getNowPlayingMedia(pid),
+                            Media.class);
+                    Media responseMedia = mediaResponse.payload;
+                    if (responseMedia != null) {
+                        fireMediaEvent(pid, responseMedia);
+                    }
+                } catch (IOException | Telnet.ReadException e) {
+                    logger.debug("Failed to retrieve current playing media, will try again next time.", e);
+                }
+                break;
+
+            case GROUPS_CHANGED:
+            case PLAYERS_CHANGED:
+                fireBridgeEvent(EVENT_TYPE_EVENT, true, command);
                 break;
         }
-    }
-
-    private void eventTypePlayer() {
-        switch (eventCommand) {
-            case GET_NOW_PLAYING_MEDIA:
-                getMediaState();
-                break;
-            case GET_PLAYER_INFO:
-                break;
-            case GET_PLAY_STATE:
-                playerStateChanged();
-                break;
-            case GET_VOLUME:
-                volumeChanged();
-                break;
-            case GET_MUTE:
-                muteChanged();
-                break;
-            case GET_PLAY_MODE:
-                playModeChanged();
-                break;
-            case GET_QUEUE:
-                break;
-            case SET_PLAY_STATE:
-                break;
-            case SET_VOLUME:
-                break;
-        }
-    }
-
-    private void eventTypeBrowse() {
-        switch (eventCommand) {
-            case GET_MUSIC_SOURCES:
-                break;
-            case BROWSE:
-                break;
-        }
-    }
-
-    private void eventTypeSystem() {
-        switch (eventCommand) {
-            case SING_IN:
-                signIn();
-                break;
-        }
-    }
-
-    private void eventTypeGroup() {
-        switch (eventCommand) {
-            case GET_VOLUME:
-                volumeChanged();
-                break;
-            case GET_MUTE:
-                muteChanged();
-                break;
-        }
-    }
-
-    private void playerStateChanged() {
-        String pid = heosDecoder.getPid();
-        String event = STATE;
-        String command = heosDecoder.getPlayState();
-        fireStateEvent(pid, event, command);
-    }
-
-    private void playerProgressChanged() {
-        String pos = heosDecoder.getPlayerCurrentPosition();
-        String duration = heosDecoder.getPlayerDuration();
-        String pid = heosDecoder.getPid();
-
-        int intPosition = Integer.valueOf(pos) / 1000;
-        int intDuration = Integer.valueOf(duration) / 1000;
-
-        fireStateEvent(pid, CUR_POS, String.valueOf(intPosition));
-        fireStateEvent(pid, DURATION, String.valueOf(intDuration));
-    }
-
-    private void volumeChanged() {
-        String pid = heosDecoder.getPid();
-        String event = VOLUME;
-        String command = heosDecoder.getPlayerVolume();
-        fireStateEvent(pid, event, command);
-        event = MUTE;
-        command = heosDecoder.getPlayerMuteState();
-        fireStateEvent(pid, event, command);
-    }
-
-    private void muteChanged() {
-        String pid = heosDecoder.getPid();
-        String event = MUTE;
-        String command = heosDecoder.getPlayerMuteState();
-        fireStateEvent(pid, event, command);
-    }
-
-    private void playModeChanged() {
-        shuffleModeChanged();
-        repeatModeChanged();
-    }
-
-    private void mediaStateChanged() {
-        String pid = heosDecoder.getPid();
-        system.send(command.getNowPlayingMedia(pid));
-        fireMediaEvent(pid, heosDecoder.getNowPlayingMedia());
-    }
-
-    private void getMediaState() {
-        String pid = heosDecoder.getPid();
-        fireMediaEvent(pid, heosDecoder.getNowPlayingMedia());
-    }
-
-    private void signIn() {
-        if (!heosDecoder.isCommandUnderProgress()) {
-            fireBridgeEvent(EVENTTYPE_SYSTEM, SUCCESS, SING_IN);
-        }
-    }
-
-    private void shuffleModeChanged() {
-        fireStateEvent(heosDecoder.getPid(), SHUFFLE_MODE_CHANGED, heosDecoder.getShuffleMode());
-
-    }
-
-    private void repeatModeChanged() {
-        fireStateEvent(heosDecoder.getPid(), REPEAT_MODE_CHANGED, heosDecoder.getRepeateMode());
-    }
-
-    private void userChanged() {
-        fireBridgeEvent(EVENTTYPE_SYSTEM, SUCCESS, USER_CHANGED);
     }
 
     public void connectionToSystemLost() {
-        fireBridgeEvent(EVENTTYPE_EVENT, FAIL, CONNECTION_LOST);
+        fireBridgeEvent(EVENT_TYPE_EVENT, false, CONNECTION_LOST);
     }
 
-    public void connectionToSystemRestored() {
-        fireBridgeEvent(EVENTTYPE_EVENT, SUCCESS, CONNECTION_RESTORED);
+    public void eventStreamTimeout() {
+        fireBridgeEvent(EVENT_TYPE_EVENT, false, EVENT_STREAM_TIMEOUT);
+    }
+
+    public void systemReachable() {
+        fireBridgeEvent(EVENT_TYPE_EVENT, true, CONNECTION_RESTORED);
+    }
+
+    long getLastEventTime() {
+        return lastEventTime;
     }
 }

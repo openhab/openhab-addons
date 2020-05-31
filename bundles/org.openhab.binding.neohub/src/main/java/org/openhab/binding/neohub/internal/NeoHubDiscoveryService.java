@@ -13,7 +13,6 @@
 package org.openhab.binding.neohub.internal;
 
 import static org.openhab.binding.neohub.internal.NeoHubBindingConstants.*;
-import org.openhab.binding.neohub.internal.NeoHubInfoResponse.DeviceInfo;
 
 import java.util.Collections;
 import java.util.List;
@@ -23,13 +22,17 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-
+import org.openhab.binding.neohub.internal.NeoHubAbstractDeviceData.AbstractRecord;
+import org.openhab.binding.neohub.internal.NeoHubInfoResponse.InfoRecord;
+import org.openhab.binding.neohub.internal.NeoHubLiveDeviceData.LiveDataRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,15 +42,18 @@ import org.slf4j.LoggerFactory;
  * @author Andrew Fiddian-Green - Initial contribution
  * 
  */
+@NonNullByDefault
 public class NeoHubDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(NeoHubDiscoveryService.class);
 
-    private ScheduledFuture<?> discoveryScheduler;
+    private @Nullable ScheduledFuture<?> discoveryScheduler;
+
     private NeoHubHandler hub;
 
-    public static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_NEOSTAT, THING_TYPE_NEOPLUG).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Collections.unmodifiableSet(
+            Stream.of(THING_TYPE_NEOSTAT, THING_TYPE_NEOPLUG, THING_TYPE_NEOCONTACT, THING_TYPE_NEOTEMPERATURESENSOR)
+                    .collect(Collectors.toSet()));
 
     public NeoHubDiscoveryService(NeoHubHandler hub) {
         // note: background discovery is enabled in the super method
@@ -75,8 +81,9 @@ public class NeoHubDiscoveryService extends AbstractDiscoveryService {
     protected void startBackgroundDiscovery() {
         logger.debug("start background discovery..");
 
+        ScheduledFuture<?> discoveryScheduler = this.discoveryScheduler;
         if (discoveryScheduler == null || discoveryScheduler.isCancelled()) {
-            discoveryScheduler = scheduler.scheduleWithFixedDelay(this::startScan, 10, DISCOVERY_REFRESH_PERIOD,
+            this.discoveryScheduler = scheduler.scheduleWithFixedDelay(this::startScan, 10, DISCOVERY_REFRESH_PERIOD,
                     TimeUnit.SECONDS);
         }
     }
@@ -85,52 +92,95 @@ public class NeoHubDiscoveryService extends AbstractDiscoveryService {
     protected void stopBackgroundDiscovery() {
         logger.debug("stop background discovery..");
 
+        ScheduledFuture<?> discoveryScheduler = this.discoveryScheduler;
         if (discoveryScheduler != null && !discoveryScheduler.isCancelled()) {
             discoveryScheduler.cancel(true);
         }
     }
 
     private void discoverDevices() {
-        NeoHubInfoResponse infoResponse;
-        if ((infoResponse = hub.fromNeoHubFetchPollingResponse()) != null) {
-            List<DeviceInfo> devices;
-            if ((devices = infoResponse.getDevices()) != null) {
-                for (DeviceInfo device : devices) {
-                    publishDevice(device);
+        NeoHubAbstractDeviceData deviceData = hub.fromNeoHubGetDeviceData();
+        NeoHubGetEngineersData engineerData = hub.isLegacyApiSelected() ? null : hub.fromNeoHubGetEngineersData();
+
+        if (deviceData != null) {
+            List<? extends AbstractRecord> deviceRecords = deviceData.getDevices();
+
+            if (deviceRecords != null) {
+                int deviceType;
+
+                for (AbstractRecord deviceRecord : deviceRecords) {
+
+                    // the record came from the legacy API (deviceType included)
+                    if (deviceRecord instanceof InfoRecord) {
+                        deviceType = ((InfoRecord) deviceRecord).getDeviceType();
+                        publishDevice((InfoRecord) deviceRecord, deviceType);
+                        continue;
+                    }
+
+                    // the record came from the now API (deviceType NOT included)
+                    if (deviceRecord instanceof LiveDataRecord) {
+                        if (engineerData == null) {
+                            break;
+                        }
+                        String deviceName = ((LiveDataRecord) deviceRecord).getDeviceName();
+                        // exclude repeater nodes from being discovered
+                        if (MATCHER_HEATMISER_REPEATER.matcher(deviceName).matches()) {
+                            continue;
+                        }
+                        deviceType = engineerData.getDeviceType(deviceName);
+                        publishDevice((LiveDataRecord) deviceRecord, deviceType);
+                    }
                 }
             }
         }
     }
 
-    private void publishDevice(DeviceInfo deviceInfo) {
+    private void publishDevice(AbstractRecord device, int deviceId) {
+        if (deviceId <= 0) {
+            return;
+        }
+
         String deviceType;
         String deviceOpenHabId;
         String deviceNeohubName;
-        ThingUID bridgeUID;
         ThingUID deviceUID;
         ThingTypeUID deviceTypeUID;
-        DiscoveryResult device;
+        DiscoveryResult discoveredDevice;
 
-        bridgeUID = hub.getThing().getUID();
+        ThingUID bridgeUID = hub.getThing().getUID();
 
-        if (deviceInfo.getDeviceType().intValue() == 6) {
-            deviceType = DEVICE_ID_NEOPLUG;
-            deviceTypeUID = THING_TYPE_NEOPLUG;
-        } else {
-            deviceType = DEVICE_ID_NEOSTAT;
-            deviceTypeUID = THING_TYPE_NEOSTAT;
+        switch (deviceId) {
+            case HEATMISER_DEVICE_TYPE_CONTACT: {
+                deviceType = DEVICE_ID_NEOCONTACT;
+                deviceTypeUID = THING_TYPE_NEOCONTACT;
+                break;
+            }
+            case HEATMISER_DEVICE_TYPE_PLUG: {
+                deviceType = DEVICE_ID_NEOPLUG;
+                deviceTypeUID = THING_TYPE_NEOPLUG;
+                break;
+            }
+            case HEATMISER_DEVICE_TYPE_TEMPERATURE_SENSOR: {
+                deviceType = DEVICE_ID_NEOTEMPERATURESENSOR;
+                deviceTypeUID = THING_TYPE_NEOTEMPERATURESENSOR;
+                break;
+            }
+            // all other device types are assumed to be thermostats
+            default: {
+                deviceType = DEVICE_ID_NEOSTAT;
+                deviceTypeUID = THING_TYPE_NEOSTAT;
+            }
         }
 
-        deviceNeohubName = deviceInfo.getDeviceName();
+        deviceNeohubName = device.getDeviceName();
         deviceOpenHabId = deviceNeohubName.replaceAll("\\s+", "_");
         deviceUID = new ThingUID(deviceTypeUID, bridgeUID, deviceOpenHabId);
 
-        device = DiscoveryResultBuilder.create(deviceUID).withBridge(bridgeUID).withLabel(deviceOpenHabId)
+        discoveredDevice = DiscoveryResultBuilder.create(deviceUID).withBridge(bridgeUID).withLabel(deviceOpenHabId)
                 .withProperty(DEVICE_NAME, deviceNeohubName).withRepresentationProperty(DEVICE_NAME).build();
 
-        thingDiscovered(device);
+        thingDiscovered(discoveredDevice);
 
-        logger.debug("discovered device={}, name={} ..", deviceType, deviceOpenHabId);
+        logger.debug("discovered device: id={}, type={}, name={} ..", deviceId, deviceType, deviceOpenHabId);
     }
-
 }

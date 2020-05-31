@@ -8,27 +8,42 @@
 
 	<channel-group-type id="ink">
 		<label>Ink/Toner Levels</label>
-		<channels>
-			<channel typeId="inkLevel" id="blackLevel">
-				<label>Black Level</label>
-			</channel>
-		</channels>
+		<description>Ink/Toner amounts for each cartridge.</description>
 	</channel-group-type>
 
 	<channel-group-type id="usageInfo">
-		<label>Usage Information</label>
-		<channels>
-			<channel typeId="totals" id="totalCount">
-				<label>Total Pages</label>
-			</channel>
-		</channels>
+		<label>Printer</label>
+		<description>Print Engine Usage Information</description>
 	</channel-group-type>
 
 	<channel-group-type id="printerStatus">
 		<label>Status</label>
-		<channels>
-			<channel id="status" typeId="status" />
-		</channels>
+		<description>Printer Statuses</description>
+	</channel-group-type>
+
+	<channel-group-type id="scanner">
+		<label>Scanner</label>
+		<description>Scanner Engine Usage Information</description>
+	</channel-group-type>
+
+	<channel-group-type id="scan">
+		<label>Scan</label>
+		<description>Scan Application Usage Information</description>
+	</channel-group-type>
+
+	<channel-group-type id="copy">
+		<label>Copy</label>
+		<description>Copy Application Usage Information</description>
+	</channel-group-type>
+
+	<channel-group-type id="app">
+		<label>Application</label>
+		<description>Application Usage by Device or Operating System</description>
+	</channel-group-type>
+
+	<channel-group-type id="other">
+		<label>Other</label>
+		<description>Other Usage or Details</description>
 	</channel-group-type>
 
 </thing:thing-descriptions>

@@ -92,7 +92,6 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         super(thing, miIoDatabaseWatchService);
         this.cloudConnector = cloudConnector;
         mapChannelUid = new ChannelUID(thing.getUID(), CHANNEL_VACUUM_MAP);
-        initializeData();
         status = new ExpiringCache<>(CACHE_EXPIRY, () -> {
             try {
                 int ret = sendCommand(MiIoCommand.GET_STATUS);
@@ -404,8 +403,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     @Override
     protected boolean initializeData() {
         updateState(CHANNEL_CONSUMABLE_RESET, new StringType("none"));
-        this.miioCom = getConnection();
-        return true;
+        return super.initializeData();
     }
 
     @Override

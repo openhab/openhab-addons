@@ -76,5 +76,4 @@ public class StringField extends Field<String> {
         charset = StandardCharsets.UTF_8;
         return this;
     }
-
 }

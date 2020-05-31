@@ -463,5 +463,4 @@ public abstract class RpcClient<T> {
     private boolean isConfigurationChannel(HmChannel channel) {
         return channel.getNumber() == CONFIGURATION_CHANNEL_NUMBER;
     }
-
 }

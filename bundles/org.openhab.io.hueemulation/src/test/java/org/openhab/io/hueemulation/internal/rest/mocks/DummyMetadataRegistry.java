@@ -93,7 +93,5 @@ public class DummyMetadataRegistry implements MetadataRegistry {
 
     @Override
     public void removeItemMetadata(String name) {
-
     }
-
 }

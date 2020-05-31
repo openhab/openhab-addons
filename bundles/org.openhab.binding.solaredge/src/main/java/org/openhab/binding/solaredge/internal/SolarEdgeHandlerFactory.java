@@ -71,5 +71,4 @@ public class SolarEdgeHandlerFactory extends BaseThingHandlerFactory {
         logger.debug("unsetHttpClientFactory");
         this.httpClient = null;
     }
-
 }

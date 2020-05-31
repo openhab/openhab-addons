@@ -142,7 +142,7 @@ public class WSTimeManagerSettings {
             setTimeAndDateInUTC(timeAndDateInUTC);
 
             return this;
-        } catch (IOException | XPathExpressionException| NumberFormatException  e) {
+        } catch (IOException | XPathExpressionException | NumberFormatException e) {
             throw new IhcExecption("Error occured during XML data parsing", e);
         }
     }

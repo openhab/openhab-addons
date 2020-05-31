@@ -32,5 +32,4 @@ public class ParamTypeSerializer implements JsonSerializer<ParamType> {
     public JsonElement serialize(ParamType paramType, Type type, JsonSerializationContext jsonSerializationContext) {
         return new JsonPrimitive(paramType.getApiString());
     }
-
 }

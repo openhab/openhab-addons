@@ -47,7 +47,6 @@ public class SeneyeBindingConstants {
     public static final String CHANNEL_SLIDESERIAL = "slideserial";
     public static final String CHANNEL_OUTOFWATER = "outofwater";
     public static final String CHANNEL_DISCONNECTED = "disconnected";
-
     // List of all Parameters
     public static final String PARAMETER_AQUARIUMNAME = "aquariumname";
     public static final String PARAMETER_USERNAME = "username";
@@ -55,5 +54,4 @@ public class SeneyeBindingConstants {
     public static final String PARAMETER_POLLTIME = "polltime";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SENEYE);
-
 }

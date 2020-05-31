@@ -58,5 +58,4 @@ class AtlonaPro3Constants {
     static final String CMD_MATRIXRESET = "resetmatrix";
     static final String CMD_MATRIXRESETPORTS = "resetports";
     static final String CMD_MATRIXPORTALL = "allports";
-
 }

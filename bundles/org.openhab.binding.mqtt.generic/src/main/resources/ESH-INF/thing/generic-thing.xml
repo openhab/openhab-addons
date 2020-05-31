@@ -5,10 +5,10 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="topic"
-		extensible="string,number,dimmer,switch,contact,colorRGB,colorHSB,datetime,image,location,rollershutter">
+		extensible="string,number,dimmer,switch,contact,colorRGB,colorHSB,datetime,image,location,rollershutter,trigger">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="broker" />
-			<bridge-type-ref id="systemBroker" />
+			<bridge-type-ref id="broker"/>
+			<bridge-type-ref id="systemBroker"/>
 		</supported-bridge-type-refs>
 		<label>Generic MQTT Thing</label>
 		<description>You need a configured Broker first. Dynamically add channels of various types to this Thing. Link

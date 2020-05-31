@@ -7,19 +7,19 @@
 	<thing-type id="zone">
 
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="serial" />
-			<bridge-type-ref id="ip" />
+			<bridge-type-ref id="serial"/>
+			<bridge-type-ref id="ip"/>
 		</supported-bridge-type-refs>
 
 		<label>Alarm Zone</label>
 		<description>This thing represents a physical device such as a door, window or a motion sensor.</description>
 
 		<channels>
-			<channel id="tripped" typeId="tripped" />
-			<channel id="armed" typeId="armed" />
-			<channel id="last_trip" typeId="last_trip" />
-			<channel id="low_battery" typeId="system.low-battery" />
-			<channel id="bypassed" typeId="bypassed" />
+			<channel id="tripped" typeId="tripped"/>
+			<channel id="armed" typeId="armed"/>
+			<channel id="last_trip" typeId="last_trip"/>
+			<channel id="low_battery" typeId="system.low-battery"/>
+			<channel id="bypassed" typeId="bypassed"/>
 		</channels>
 
 		<config-description>

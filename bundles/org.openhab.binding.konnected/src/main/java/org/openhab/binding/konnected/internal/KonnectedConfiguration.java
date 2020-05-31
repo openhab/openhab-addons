@@ -22,7 +22,7 @@ import org.eclipse.smarthome.config.core.Configuration;
 public class KonnectedConfiguration extends Configuration {
 
     /**
-     * @param blink     identifies whether the Konnected Alarm Panel LED will blink on transmission of Wifi Commands
+     * @param blink identifies whether the Konnected Alarm Panel LED will blink on transmission of Wifi Commands
      * @param discovery identifies whether the Konnected Alarm Panel will be discoverable via UPnP
      */
     public boolean blink;

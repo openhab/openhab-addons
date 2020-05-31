@@ -42,6 +42,13 @@ import org.slf4j.LoggerFactory;
  */
 public class PanelThingHandler extends DSCAlarmBaseThingHandler {
 
+    private static final int PANEL_COMMAND_POLL = 0;
+    private static final int PANEL_COMMAND_STATUS_REPORT = 1;
+    private static final int PANEL_COMMAND_LABELS_REQUEST = 2;
+    private static final int PANEL_COMMAND_DUMP_ZONE_TIMERS = 8;
+    private static final int PANEL_COMMAND_SET_TIME_DATE = 10;
+    private static final int PANEL_COMMAND_CODE_SEND = 200;
+
     private final Logger logger = LoggerFactory.getLogger(PanelThingHandler.class);
 
     /**
@@ -53,13 +60,6 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
         super(thing);
         setDSCAlarmThingType(DSCAlarmThingType.PANEL);
     }
-
-    private static final int PANEL_COMMAND_POLL = 0;
-    private static final int PANEL_COMMAND_STATUS_REPORT = 1;
-    private static final int PANEL_COMMAND_LABELS_REQUEST = 2;
-    private static final int PANEL_COMMAND_DUMP_ZONE_TIMERS = 8;
-    private static final int PANEL_COMMAND_SET_TIME_DATE = 10;
-    private static final int PANEL_COMMAND_CODE_SEND = 200;
 
     @Override
     public void updateChannel(ChannelUID channelUID, int state, String description) {

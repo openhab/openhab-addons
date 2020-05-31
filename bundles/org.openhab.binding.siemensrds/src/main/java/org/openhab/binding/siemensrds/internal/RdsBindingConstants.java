@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.siemensrds.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -19,6 +20,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
+@NonNullByDefault
 public class RdsBindingConstants {
 
     /*
@@ -39,7 +41,7 @@ public class RdsBindingConstants {
 
     public static final ThingTypeUID THING_TYPE_RDS = new ThingTypeUID(BINDING_ID, DEVICE_ID_STAT);
 
-// ==========================  URLs and HTTP stuff =========================
+    // ========================== URLs and HTTP stuff =========================
 
     private static final String API = "https://api.climatixic.com/";
 
@@ -101,42 +103,46 @@ public class RdsBindingConstants {
     public static final String PROP_PLANT_ID = "plantId";
 
     /*
-     * ==================== USED DATA POINTS ========================== where: HIE_
-     * = the Hierarchy Name in the ClimatixIc server CHA_ = the Channel ID in the
-     * OpenHAB binding
+     * ==================== USED DATA POINTS ==========================
+     * 
+     * where: HIE_xxx = the point class suffix part of the hierarchy name in the
+     * ClimatixIc server, and CHA_xxx = the Channel ID in the OpenHAB binding
+     * 
      */
-
     // device name
-    protected static final String HIE_DESCRIPTION = "R(1)'Description";
+    public static final String HIE_DESCRIPTION = "'Description";
+
+    // online state
+    public static final String HIE_ONLINE = "#Online";
 
     // room (actual) temperature (read-only)
     protected static final String CHA_ROOM_TEMP = "roomTemperature";
-    private static final String HIE_ROOM_TEMP = "RTemp";
+    public static final String HIE_ROOM_TEMP = "'RTemp";
 
     // room relative humidity (read-only)
     protected static final String CHA_ROOM_HUMIDITY = "roomHumidity";
-    private static final String HIE_ROOM_HUMIDITY = "RHuRel";
+    public static final String HIE_ROOM_HUMIDITY = "'RHuRel";
 
     // room air quality (low/med/high) (read-only)
     protected static final String CHA_ROOM_AIR_QUALITY = "roomAirQuality";
-    private static final String HIE_ROOM_AIR_QUALITY = "RAQualInd";
+    public static final String HIE_ROOM_AIR_QUALITY = "'RAQualInd";
 
     // energy savings level (green leaf) (poor..excellent) (read-write)
     // note: writing the value "5" forces the device to green leaf mode
     protected static final String CHA_ENERGY_SAVINGS_LEVEL = "energySavingsLevel";
-    protected static final String HIE_ENERGY_SAVINGS_LEVEL = "REei";
+    public static final String HIE_ENERGY_SAVINGS_LEVEL = "'REei";
 
     // outside air temperature (read-only)
     protected static final String CHA_OUTSIDE_TEMP = "outsideTemperature";
-    private static final String HIE_OUTSIDE_TEMP = "TOa";
+    public static final String HIE_OUTSIDE_TEMP = "'TOa";
 
     // set-point override (read-write)
     protected static final String CHA_TARGET_TEMP = "targetTemperature";
-    private static final String HIE_TARGET_TEMP = "SpTR";
+    public static final String HIE_TARGET_TEMP = "'SpTR";
 
     // heating/cooling state (read-only)
     protected static final String CHA_OUTPUT_STATE = "thermostatOutputState";
-    private static final String HIE_OUTPUT_STATE = "HCSta";
+    public static final String HIE_OUTPUT_STATE = "'HCSta";
 
     /*
      * thermostat occupancy state (absent, present) (read-write) NOTE: uses
@@ -144,7 +150,7 @@ public class RdsBindingConstants {
      * absent, present states
      */
     protected static final String CHA_STAT_OCC_MODE_PRESENT = "occupancyModePresent";
-    protected static final String HIE_STAT_OCC_MODE_PRESENT = "OccMod";
+    public static final String HIE_STAT_OCC_MODE_PRESENT = "'OccMod";
 
     /*
      * thermostat program mode (read-write) NOTE: uses different parameters as
@@ -153,8 +159,8 @@ public class RdsBindingConstants {
      * to command to the auto mode
      */
     protected static final String CHA_STAT_AUTO_MODE = "thermostatAutoMode";
-    private static final String HIE_PR_OP_MOD_RSN = "PrOpModRsn";
-    protected static final String HIE_STAT_CMF_BTN = "CmfBtn";
+    public static final String HIE_PR_OP_MOD_RSN = "'PrOpModRsn";
+    public static final String HIE_STAT_CMF_BTN = "'CmfBtn";
 
     /*
      * domestic hot water state (off, on) (read-write) NOTE: uses different
@@ -162,7 +168,7 @@ public class RdsBindingConstants {
      * states
      */
     protected static final String CHA_DHW_OUTPUT_STATE = "hotWaterOutputState";
-    private static final String HIE_DHW_OUTPUT_STATE = "DhwMod";
+    public static final String HIE_DHW_OUTPUT_STATE = "'DhwMod";
 
     /*
      * domestic hot water program mode (manual, auto) (read-write) NOTE: uses
@@ -178,10 +184,8 @@ public class RdsBindingConstants {
     protected static final String STATE_NEITHER = "Neither";
     protected static final String STATE_OFF = "Off";
 
-    public static final ChannelMap[] CHAN_MAP = { 
-            new ChannelMap(CHA_ROOM_TEMP, HIE_ROOM_TEMP),
-            new ChannelMap(CHA_ROOM_HUMIDITY, HIE_ROOM_HUMIDITY), 
-            new ChannelMap(CHA_OUTSIDE_TEMP, HIE_OUTSIDE_TEMP),
+    public static final ChannelMap[] CHAN_MAP = { new ChannelMap(CHA_ROOM_TEMP, HIE_ROOM_TEMP),
+            new ChannelMap(CHA_ROOM_HUMIDITY, HIE_ROOM_HUMIDITY), new ChannelMap(CHA_OUTSIDE_TEMP, HIE_OUTSIDE_TEMP),
             new ChannelMap(CHA_TARGET_TEMP, HIE_TARGET_TEMP),
             new ChannelMap(CHA_ROOM_AIR_QUALITY, HIE_ROOM_AIR_QUALITY),
             new ChannelMap(CHA_ENERGY_SAVINGS_LEVEL, HIE_ENERGY_SAVINGS_LEVEL),
@@ -218,17 +222,37 @@ public class RdsBindingConstants {
      * 
      */
 
+    /*
+     * logger strings
+     */
+    public static final String LOG_HTTP_COMMAND = "{} for url {} characters long";
+    public static final String LOG_CONTENT_LENGTH = "{} {} characters..";
+    public static final String LOG_PAYLOAD_FMT = "{} {}";
+
+    public static final String LOG_HTTP_COMMAND_ABR = "{} for url {} characters long (set log level to TRACE to see full url)..";
+    public static final String LOG_CONTENT_LENGTH_ABR = "{} {} characters (set log level to TRACE to see full string)..";
+    public static final String LOG_PAYLOAD_FMT_ABR = "{} {} ...";
+
+    public static final String LOG_RECEIVED_MSG = "received";
+    public static final String LOG_RECEIVED_MARK = "<<";
+
+    public static final String LOG_SENDING_MSG = "sending";
+    public static final String LOG_SENDING_MARK = ">>";
+
+    public static final String LOG_SYSTEM_EXCEPTION = "system exception in {}, type={}, message=\"{}\"";
+    public static final String LOG_RUNTIME_EXCEPTION = "runtime exception in {}, type={}, message=\"{}\"";
 }
 
 /**
  * @author Andrew Fiddian-Green - Initial contribution
  */
+@NonNullByDefault
 class ChannelMap {
-    public String channelId;
-    public String hierarchyName;
+    public String id;
+    public String clazz;
 
-    public ChannelMap(String channelId, String hierarchyName) {
-        this.channelId = channelId;
-        this.hierarchyName = hierarchyName;
+    public ChannelMap(String channelId, String pointClass) {
+        this.id = channelId;
+        this.clazz = pointClass;
     }
 }

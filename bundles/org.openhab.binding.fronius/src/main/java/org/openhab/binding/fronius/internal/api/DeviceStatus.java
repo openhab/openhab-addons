@@ -81,5 +81,4 @@ public class DeviceStatus {
     public void setStateToReset(boolean stateToReset) {
         this.stateToReset = stateToReset;
     }
-
 }

@@ -23,7 +23,8 @@
 		<parameter name="apikey" type="text" required="false">
 			<label>API Key</label>
 			<context>password</context>
-			<description>If no API Key is provided, a new one will be requested. You need to authorize the access on the deCONZ web interface.</description>
+			<description>If no API Key is provided, a new one will be requested. You need to authorize the access on the deCONZ
+				web interface.</description>
 		</parameter>
 		<parameter name="timeout" type="integer" required="false" unit="ms" min="0">
 			<label>Timeout</label>
@@ -35,8 +36,20 @@
 
 	<config-description uri="thing-type:deconz:sensor">
 		<parameter name="id" type="text" required="true">
-			<label>Sensor ID</label>
-			<description>The deCONZ bridge assigns an integer number ID to each sensor.</description>
+			<label>Device ID</label>
+			<description>The deCONZ bridge assigns an integer number ID to each device.</description>
+		</parameter>
+	</config-description>
+
+
+	<config-description uri="thing-type:deconz:light">
+		<parameter name="id" type="text" required="true">
+			<label>Device ID</label>
+			<description>The deCONZ bridge assigns an integer number ID to each device.</description>
+		</parameter>
+		<parameter name="transitiontime" type="decimal" required="false" min="0" unit="s">
+			<label>Transition Time</label>
+			<description>Time to move between two states. If empty, the default of the device is used. Resolution is 1/10 second.</description>
 		</parameter>
 	</config-description>
 

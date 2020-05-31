@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.bsblan.internal.api.dto;
 
-import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiContentDTO;
-
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -31,6 +29,7 @@ public class BsbLanApiParameterSetRequestDTO implements BsbLanApiContentDTO {
         SET("SET");
 
         private final String value;
+
         Type(String value) {
             this.value = value;
         }

@@ -126,5 +126,4 @@ public class XmlTVHandler extends BaseBridgeHandler {
     public Tv getXmlFile() {
         return currentXmlFile;
     }
-
 }

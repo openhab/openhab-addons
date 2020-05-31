@@ -9,12 +9,12 @@
 		<description>A PJLink compatible device, e.g. a digital projector</description>
 
 		<channels>
-			<channel id="power" typeId="power" />
-			<channel id="input" typeId="input" />
-			<channel id="audioMute" typeId="audioMute" />
-			<channel id="videoMute" typeId="videoMute" />
-			<channel id="lamp1Hours" typeId="lampHours" />
-			<channel id="lamp1Active" typeId="lampActive" />
+			<channel id="power" typeId="power"/>
+			<channel id="input" typeId="input"/>
+			<channel id="audioMute" typeId="audioMute"/>
+			<channel id="videoMute" typeId="videoMute"/>
+			<channel id="lamp1Hours" typeId="lampHours"/>
+			<channel id="lamp1Active" typeId="lampActive"/>
 		</channels>
 
 		<config-description>
@@ -107,7 +107,7 @@
 		<item-type>Number</item-type>
 		<label>Lamp Hours</label>
 		<description>How long the lamp has been in use (in hours)</description>
-		<state readOnly="true" pattern="%d h" />
+		<state readOnly="true" pattern="%d h"/>
 		<config-description>
 			<parameter name="lampNumber" type="integer" min="1" max="8">
 				<label>Lamp Number</label>
@@ -121,7 +121,7 @@
 		<item-type>Switch</item-type>
 		<label>Lamp Active</label>
 		<description>Is the lamp in use?</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 		<config-description>
 			<parameter name="lampNumber" type="integer" min="1" max="8">
 				<label>Lamp Number</label>

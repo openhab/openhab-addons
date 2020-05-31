@@ -78,5 +78,4 @@ public class CoffeeMachineHandler extends MieleApplianceHandler<CoffeeMachineCha
                     channelID, command.toString());
         }
     }
-
 }

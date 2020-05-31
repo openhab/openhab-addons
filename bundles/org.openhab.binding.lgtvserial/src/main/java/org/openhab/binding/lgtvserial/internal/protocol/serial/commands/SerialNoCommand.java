@@ -23,5 +23,4 @@ public class SerialNoCommand extends BaseStringCommand {
     protected SerialNoCommand(int setId) {
         super('f', 'y', setId);
     }
-
 }

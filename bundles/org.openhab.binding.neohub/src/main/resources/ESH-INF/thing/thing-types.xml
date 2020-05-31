@@ -9,13 +9,16 @@
 		<label>NeoHub</label>
 		<description>Heatmiser NeoHub bridge to NeoStat and NeoPlug devices</description>
 
+		<channels>
+			<channel typeId="meshNetworkQoS" id="meshNetworkQoS"/>
+		</channels>
+
 		<properties>
 			<property name="vendor">Heatmiser</property>
 			<property name="modelId">NeoHub</property>
 		</properties>
 
 		<config-description>
-
 			<parameter name="hostName" type="text" required="true">
 				<label>Host Name</label>
 				<context>network-address</context>
@@ -26,15 +29,29 @@
 				<label>Port Number</label>
 				<description>Port number of the NeoHub</description>
 				<default>4242</default>
+				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="pollingInterval" type="integer" min="10"
-				required="false">
+			<parameter name="pollingInterval" type="integer" min="4" max="60" required="false" unit="s">
 				<label>Polling Interval</label>
 				<description>Time (seconds) between polling the NeoHub (min=4, max/default=60)</description>
 				<default>60</default>
+				<advanced>true</advanced>
 			</parameter>
 
+			<parameter name="socketTimeout" type="integer" min="5" max="20" required="false" unit="s">
+				<label>Socket Timeout</label>
+				<description>Time (seconds) to wait for connections to the Hub (min/default=5, max=20)</description>
+				<default>5</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="preferLegacyApi" type="boolean" required="false">
+				<label>Prefer Legacy API</label>
+				<description>Use the legacy API instead of the new API (if available)</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 
 	</bridge-type>
@@ -42,11 +59,11 @@
 	<thing-type id="neostat">
 
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="neohub" />
+			<bridge-type-ref id="neohub"/>
 		</supported-bridge-type-refs>
 
-		<label>NeoStat</label>
-		<description>Heatmiser Neostat Smart Thermostat</description>
+		<label>Heatmiser NeoStat</label>
+		<description>Heatmiser Neo Smart Thermostat</description>
 
 		<channels>
 			<channel id="roomTemperature" typeId="temperature">
@@ -54,26 +71,16 @@
 				<description>Actual room temperature</description>
 			</channel>
 
-			<channel id="targetTemperature" typeId="targetTemperature">
-				<label>Target Temperature</label>
-				<description>Target temperature setting for the room</description>
-			</channel>
+			<channel id="targetTemperature" typeId="targetTemperature"/>
 
 			<channel id="floorTemperature" typeId="temperature">
 				<label>Floor Temperature</label>
 				<description>Actual floor temperature</description>
 			</channel>
 
-			<channel id="thermostatOutputState" typeId="thermostatOutputState">
-				<label>Thermostat Output State</label>
-				<description>Status of whether the thermostat is Off, or calling for Heat</description>
-			</channel>
-
-			<channel id="occupancyModePresent"
-				typeId="occupancyModePresent">
-				<label>Occupancy Mode Present</label>
-				<description>The Thermostat is in the Present Occupancy Mode (Off=Absent, On=Present)</description>
-			</channel>
+			<channel id="thermostatOutputState" typeId="thermostatOutputState"/>
+			<channel id="occupancyModePresent" typeId="occupancyModePresent"/>
+			<channel id="batteryLowAlarm" typeId="system.low-battery"/>
 
 		</channels>
 
@@ -84,8 +91,7 @@
 		<representation-property>deviceNameInHub</representation-property>
 
 		<config-description>
-			<parameter name="deviceNameInHub" type="text"
-				required="true">
+			<parameter name="deviceNameInHub" type="text" required="true">
 				<label>Device Name</label>
 				<description>Device Name that identifies the NeoStat device in the NeoHub and Heatmiser App</description>
 			</parameter>
@@ -96,22 +102,15 @@
 	<thing-type id="neoplug">
 
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="neohub" />
+			<bridge-type-ref id="neohub"/>
 		</supported-bridge-type-refs>
 
-		<label>NeoPlug</label>
-		<description>Heatmiser NeoPlug Smart Plug</description>
+		<label>Heatmiser NeoPlug</label>
+		<description>Heatmiser Neo Smart Plug</description>
 
 		<channels>
-			<channel id="plugOutputState" typeId="plugOutputState">
-				<label>Plug Output State</label>
-				<description>The output state of the Plug switch (Off, On)</description>
-			</channel>
-
-			<channel id="plugAutoMode" typeId="plugAutoMode">
-				<label>Plug Auto Mode</label>
-				<description>The Plug is in Automatic Mode (Off=Manual, On=Automatic)</description>
-			</channel>
+			<channel id="plugOutputState" typeId="plugOutputState"/>
+			<channel id="plugAutoMode" typeId="plugAutoMode"/>
 		</channels>
 
 		<properties>
@@ -121,10 +120,77 @@
 		<representation-property>deviceNameInHub</representation-property>
 
 		<config-description>
-			<parameter name="deviceNameInHub" type="text"
-				required="true">
+			<parameter name="deviceNameInHub" type="text" required="true">
 				<label>Device Name</label>
-				<description>Device Name that identifies the NeoPlugt device in the NeoHub and Heatmiser App</description>
+				<description>Device Name that identifies the NeoPlug device in the NeoHub and Heatmiser App</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<thing-type id="neocontact">
+
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="neohub"/>
+		</supported-bridge-type-refs>
+
+		<label>Heatmiser Contact Sensor</label>
+		<description>Heatmiser (wireless) Window or Door Contact</description>
+
+		<channels>
+			<channel id="contactState" typeId="contactState"/>
+			<channel id="batteryLowAlarm" typeId="system.low-battery">
+				<label>Battery Low Alarm</label>
+				<description>ON if the device has a low battery</description>
+			</channel>
+		</channels>
+
+		<properties>
+			<property name="vendor">Heatmiser</property>
+			<property name="modelId">Contact Sensor</property>
+		</properties>
+		<representation-property>deviceNameInHub</representation-property>
+
+		<config-description>
+			<parameter name="deviceNameInHub" type="text" required="true">
+				<label>Device Name</label>
+				<description>Device Name that identifies the Contact in the NeoHub and Heatmiser App</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<thing-type id="neotemperaturesensor">
+
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="neohub"/>
+		</supported-bridge-type-refs>
+
+		<label>Heatmiser Wireless Air Sensor</label>
+		<description>Heatmiser (wireless) Temperature Sensor</description>
+
+		<channels>
+			<channel id="sensorTemperature" typeId="temperature">
+				<label>Temperature</label>
+				<description>Measured temperature value (Read-Only)</description>
+			</channel>
+
+			<channel id="batteryLowAlarm" typeId="system.low-battery">
+				<label>Battery Low Alarm</label>
+				<description>ON if the device has a low battery</description>
+			</channel>
+		</channels>
+
+		<properties>
+			<property name="vendor">Heatmiser</property>
+			<property name="modelId">Wireless Air Sensor</property>
+		</properties>
+		<representation-property>deviceNameInHub</representation-property>
+
+		<config-description>
+			<parameter name="deviceNameInHub" type="text" required="true">
+				<label>Device Name</label>
+				<description>Device Name that identifies the Temperature Sensor in the NeoHub and Heatmiser App</description>
 			</parameter>
 		</config-description>
 
@@ -135,16 +201,29 @@
 		<label>Temperature</label>
 		<description>Measured temperature value (Read-Only)</description>
 		<category>temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
+		<config-description>
+			<parameter name="holdOnlineState" type="boolean" required="false">
+				<label>Hold Online State</label>
+				<description>If the device loses its RF mesh connection, hold the last known state display value</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
 	</channel-type>
 
 	<channel-type id="targetTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Target Temperature</label>
-		<description>Target temperature setting</description>
+		<description>Target temperature setting of the room</description>
 		<category>temperature</category>
-		<state readOnly="false" pattern="%.1f %unit%" min="5" max="30"
-			step="1" />
+		<state readOnly="false" pattern="%.1f %unit%" step="1"/>
+		<config-description>
+			<parameter name="holdOnlineState" type="boolean" required="false">
+				<label>Hold Online State</label>
+				<description>If the device loses its RF mesh connection, hold the last known state display value</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
 	</channel-type>
 
 	<channel-type id="thermostatOutputState">
@@ -152,7 +231,14 @@
 		<label>Thermostat Output State</label>
 		<description>Status of whether the thermostat is Off, or calling for Heat</description>
 		<category>fire</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
+		<config-description>
+			<parameter name="holdOnlineState" type="boolean" required="false">
+				<label>Hold Online State</label>
+				<description>If the device loses its RF mesh connection, hold the last known state display value</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
 	</channel-type>
 
 	<channel-type id="occupancyModePresent">
@@ -160,21 +246,65 @@
 		<label>Occupancy Mode Present</label>
 		<description>The Thermostat is in the Present Occupancy Mode (Off=Absent, On=Present)</description>
 		<category>presence</category>
-		<state readOnly="false" />
+		<state readOnly="false"/>
+		<config-description>
+			<parameter name="holdOnlineState" type="boolean" required="false">
+				<label>Hold Online State</label>
+				<description>If the device loses its RF mesh connection, hold the last known state display value</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
 	</channel-type>
 
 	<channel-type id="plugAutoMode">
 		<item-type>Switch</item-type>
 		<label>Plug Auto Mode</label>
 		<description>The Plug is in Automatic Mode (Off=Manual, On=Automatic)</description>
-		<state readOnly="false" />
+		<category>energy</category>
+		<state readOnly="false"/>
+		<config-description>
+			<parameter name="holdOnlineState" type="boolean" required="false">
+				<label>Hold Online State</label>
+				<description>If the device loses its RF mesh connection, hold the last known state display value</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
 	</channel-type>
 
 	<channel-type id="plugOutputState">
 		<item-type>Switch</item-type>
 		<label>Plug Output State</label>
 		<description>The state of the Plug switch, Off or On</description>
-		<state readOnly="false" />
+		<state readOnly="false"/>
+		<config-description>
+			<parameter name="holdOnlineState" type="boolean" required="false">
+				<label>Hold Online State</label>
+				<description>If the device loses its RF mesh connection, hold the last known state display value</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="contactState">
+		<item-type>Contact</item-type>
+		<label>Contact State</label>
+		<description>The state of the contact</description>
+		<category>window</category>
+		<state readOnly="true"/>
+		<config-description>
+			<parameter name="holdOnlineState" type="boolean" required="false">
+				<label>Hold Online State</label>
+				<description>If the device loses its RF mesh connection, hold the last known state display value</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="meshNetworkQoS">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Mesh Network QoS</label>
+		<description>Quality of Service: percentage of configured devices currently connected to the RF mesh network</description>
+		<state readOnly="true" pattern="%.0f %%"></state>
 	</channel-type>
 
 </thing:thing-descriptions>

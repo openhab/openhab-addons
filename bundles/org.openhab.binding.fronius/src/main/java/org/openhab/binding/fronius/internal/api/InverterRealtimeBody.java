@@ -34,5 +34,4 @@ public class InverterRealtimeBody {
     public void setData(InverterRealtimeBodyData data) {
         this.data = data;
     }
-
 }

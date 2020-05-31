@@ -70,5 +70,4 @@ public class RainDevice extends AbstractNumericValueDevice {
         DecimalType value = (DecimalType) item.getStateAs(DecimalType.class);
         addParam(new NumericValueParam(ParamType.RAIN_VALUE, getUnit(), value));
     }
-
 }

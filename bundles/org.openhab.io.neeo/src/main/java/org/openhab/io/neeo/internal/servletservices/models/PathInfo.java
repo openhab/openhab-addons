@@ -171,5 +171,4 @@ public class PathInfo {
                 + channelNbr + ", componentType=" + componentType + ", componentSubType=" + componentSubType
                 + ", actionValue=" + actionValue + "]";
     }
-
 }

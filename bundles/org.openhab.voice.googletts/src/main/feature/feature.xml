@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <features name="org.openhab.voice.googletts-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
-    <repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${ohc.version}/xml/features</repository>
+	<repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${ohc.version}/xml/features</repository>
 
-    <feature name="openhab-voice-googletts" description="Google Cloud Text-to-Speech" version="${project.version}">
-        <feature>openhab-runtime-base</feature>
-        <bundle dependency="true">mvn:org.apache.httpcomponents/httpclient-osgi/4.5.5</bundle>
-        <bundle dependency="true">mvn:org.apache.httpcomponents/httpcore-osgi/4.4.9</bundle>
-        <bundle dependency="true">mvn:org.openhab.osgiify/com.google.api.api-common/1.7.0</bundle>
-        <bundle dependency="true">mvn:org.openhab.osgiify/com.google.api.gax/1.42.0</bundle>
-        <bundle dependency="true">mvn:org.openhab.osgiify/com.google.auth.google-auth-library-credentials/0.13.0</bundle>
-        <bundle dependency="true">mvn:org.openhab.osgiify/com.google.auth.google-auth-library-oauth2-http/0.13.0</bundle>
-        <bundle dependency="true">mvn:org.openhab.osgiify/com.google.http-client.google-http-client-jackson2/1.27.0</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/2.9.6</bundle>
-        <bundle dependency="true">mvn:com.google.guava/guava/20.0</bundle>
-        <bundle dependency="true">mvn:com.google.http-client/google-http-client/1.27.0</bundle>
-        <bundle dependency="true">mvn:commons-codec/commons-codec/1.10</bundle>
-        <bundle dependency="true">mvn:org.threeten/threetenbp/1.3.3</bundle>
-        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.voice.googletts/${project.version}</bundle>
-    </feature>
+	<feature name="openhab-voice-googletts" description="Google Cloud Text-to-Speech" version="${project.version}">
+		<feature>openhab-runtime-base</feature>
+		<bundle dependency="true">mvn:org.apache.httpcomponents/httpclient-osgi/4.5.5</bundle>
+		<bundle dependency="true">mvn:org.apache.httpcomponents/httpcore-osgi/4.4.9</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/com.google.api.api-common/1.7.0</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/com.google.api.gax/1.42.0</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/com.google.auth.google-auth-library-credentials/0.13.0</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/com.google.auth.google-auth-library-oauth2-http/0.13.0</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/com.google.http-client.google-http-client-jackson2/1.27.0</bundle>
+		<bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/2.9.6</bundle>
+		<bundle dependency="true">mvn:com.google.guava/guava/20.0</bundle>
+		<bundle dependency="true">mvn:com.google.http-client/google-http-client/1.27.0</bundle>
+		<bundle dependency="true">mvn:commons-codec/commons-codec/1.10</bundle>
+		<bundle dependency="true">mvn:org.threeten/threetenbp/1.3.3</bundle>
+		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.voice.googletts/${project.version}</bundle>
+	</feature>
 </features>

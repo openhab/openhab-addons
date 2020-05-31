@@ -93,7 +93,7 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
                 });
             }
         }
-        if (netatmoBridgeHandler.configuration.readWelcome) {
+        if (netatmoBridgeHandler.configuration.readWelcome || netatmoBridgeHandler.configuration.readPresence) {
             NAWelcomeHomeData welcomeHomeData = netatmoBridgeHandler.getWelcomeDataBody(null);
             if (welcomeHomeData != null) {
                 welcomeHomeData.getHomes().forEach(home -> {
@@ -194,5 +194,4 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
 
         throw new IllegalArgumentException("Unsupported device type discovered : " + thingType);
     }
-
 }

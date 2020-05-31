@@ -384,5 +384,4 @@ public class LinkyHandler extends BaseThingHandler {
             logger.debug("The Linky binding is read-only and can not handle command {}", command);
         }
     }
-
 }

@@ -67,10 +67,13 @@ public class ValueFactory {
             case MqttBindingConstants.ROLLERSHUTTER:
                 value = new RollershutterValue(config.on, config.off, config.stop);
                 break;
+            case MqttBindingConstants.TRIGGER:
+                config.trigger = true;
+                value = new TextValue();
+                break;
             default:
                 throw new IllegalArgumentException("ChannelTypeUID not recognised: " + channelTypeID);
         }
         return value;
     }
-
 }

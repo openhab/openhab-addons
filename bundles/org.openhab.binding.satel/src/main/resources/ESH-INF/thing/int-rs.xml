@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="satel" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="satel"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -12,6 +13,7 @@
 				<label>Serial Port</label>
 				<description>Serial port connected to the module.</description>
 				<context>serial-port</context>
+				<limitToOptions>false</limitToOptions>
 			</parameter>
 			<parameter name="timeout" type="integer" unit="ms">
 				<label>Timeout</label>
@@ -34,6 +36,12 @@
 				<label>Encoding</label>
 				<description>Encoding for all the texts received from the module.</description>
 				<default>windows-1250</default>
+			</parameter>
+			<parameter name="extCommands" type="boolean">
+				<label>Extended Commands Support</label>
+				<description>Check this option to enable extended commands supported only by version 2.xx of INT-RS. Turn off in
+					case of communication timeouts.</description>
+				<default>true</default>
 			</parameter>
 		</config-description>
 	</bridge-type>

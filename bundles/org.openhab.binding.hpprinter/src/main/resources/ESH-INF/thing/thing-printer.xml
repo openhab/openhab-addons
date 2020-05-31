@@ -8,15 +8,20 @@
 		<label>HP Printer</label>
 		<description>An HP Printer.</description>
 		<channel-groups>
-			<channel-group typeId="printerStatus" id="status" />
-			<channel-group typeId="ink" id="ink" />
-			<channel-group typeId="usageInfo" id="usage" />
+			<channel-group typeId="printerStatus" id="status"/>
+			<channel-group typeId="ink" id="ink"/>
+			<channel-group typeId="usageInfo" id="usage"/>
+			<channel-group typeId="scanner" id="scanner"/>
+			<channel-group typeId="scan" id="scan"/>
+			<channel-group typeId="copy" id="copy"/>
+			<channel-group typeId="app" id="app"/>
+			<channel-group typeId="other" id="other"/>
 		</channel-groups>
 		<properties>
 			<property name="vendor">HP</property>
 		</properties>
 		<representation-property>serialNumber</representation-property>
-		<config-description-ref uri="thing-type:hpprinter:config" />
+		<config-description-ref uri="thing-type:hpprinter:config"/>
 	</thing-type>
 
 </thing:thing-descriptions>

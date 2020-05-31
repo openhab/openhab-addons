@@ -21,34 +21,29 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.siemensrds.points.BasePoint;
+import org.openhab.binding.siemensrds.points.PointDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -58,20 +53,29 @@ import com.google.gson.annotations.SerializedName;
  * @author Andrew Fiddian-Green - Initial contribution
  *
  */
-class RdsDataPoints {
+@NonNullByDefault
+public class RdsDataPoints {
 
     /*
      * NOTE: requires a static logger because the class has static methods
      */
-    protected static final Logger LOGGER = LoggerFactory.getLogger(RdsDataPoints.class);
+    protected final Logger logger = LoggerFactory.getLogger(RdsDataPoints.class);
 
     private static final Gson GSON = new GsonBuilder().registerTypeAdapter(BasePoint.class, new PointDeserializer())
             .create();
 
+    /*
+     * this is a second index into to the JSON "values" points Map below; the
+     * purpose is to allow point lookups by a) pointId (which we do directly from
+     * the Map, and b) by pointClass (which we do indirectly "double dereferenced"
+     * via this index
+     */
+    private final Map<String, @Nullable String> indexClassToId = new HashMap<>();
+
     @SerializedName("totalCount")
-    private String totalCount;
+    private @Nullable String totalCount;
     @SerializedName("values")
-    private Map<String, BasePoint> points;
+    public @Nullable Map<String, @Nullable BasePoint> points;
 
     private String valueFilter = "";
 
@@ -97,10 +101,8 @@ class RdsDataPoints {
         https.setRequestProperty(SUBSCRIPTION_KEY, apiKey);
         https.setRequestProperty(AUTHORIZATION, String.format(BEARER, token));
 
-        int responseCode = https.getResponseCode();
-
-        if (responseCode != HttpURLConnection.HTTP_OK) {
-            throw new RdsCloudException("invalid HTTP response");
+        if (https.getResponseCode() != HttpURLConnection.HTTP_OK) {
+            throw new IOException(https.getResponseMessage());
         }
 
         try (InputStream inputStream = https.getInputStream();
@@ -116,30 +118,17 @@ class RdsDataPoints {
     }
 
     /*
-     * public static method: execute a GET on the cloud server, parse the JSON, and
-     * create a real instance of this class that encapsulates all the retrieved data
-     * point values
+     * public static method: parse the JSON, and create a real instance of this
+     * class that encapsulates the data data point values
      */
-    public static @Nullable RdsDataPoints create(String apiKey, String token, String plantId) {
-        try {
-            String json = httpGenericGetJson(apiKey, token, String.format(URL_POINTS, plantId));
-
-            LOGGER.debug("create: received {} characters (log:set TRACE to see all)", json.length());
-            if (LOGGER.isTraceEnabled()) {
-                LOGGER.trace("create: response={}", json);
-            }
-
-            return GSON.fromJson(json, RdsDataPoints.class); 
-        } catch (JsonSyntaxException | RdsCloudException | IOException e) {
-            LOGGER.warn("create {}: \"{}\"", e.getClass().getName(), e.getMessage());
-            return null;
-        }
+    public static @Nullable RdsDataPoints createFromJson(String json) {
+        return GSON.fromJson(json, RdsDataPoints.class);
     }
 
     /*
      * private method: execute an HTTP PUT on the server to set a data point value
      */
-    private void httpSetPointValueJson(String apiKey, String token, String pointId, String json)
+    private void httpSetPointValueJson(String apiKey, String token, String pointUrl, String json)
             throws RdsCloudException, UnsupportedEncodingException, ProtocolException, MalformedURLException,
             IOException {
         /*
@@ -147,7 +136,7 @@ class RdsDataPoints {
          * preferred JETTY library; the reason is that JETTY does not allow sending the
          * square brackets characters "[]" verbatim over HTTP connections
          */
-        URL url = new URL(String.format(URL_SETVAL, pointId));
+        URL url = new URL(pointUrl);
 
         HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
 
@@ -166,150 +155,95 @@ class RdsDataPoints {
         }
 
         if (https.getResponseCode() != HttpURLConnection.HTTP_OK) {
-            throw new RdsCloudException("invalid HTTP response");
+            throw new IOException(https.getResponseMessage());
         }
     }
 
     /*
-     * private method: retrieve the data point with the given hierarchyName
+     * public method: retrieve the data point with the given pointClass
      */
-    private BasePoint getPoint(String hierarchyName) {
-        if (hierarchyName != null) {
-            for (Map.Entry<String, BasePoint> entry : points.entrySet()) {
-                BasePoint point = entry.getValue();
-                if (point != null && point.hierarchyName != null && point.hierarchyName.contains(hierarchyName)) {
-                    return point;
-                }
-            }
+    public BasePoint getPointByClass(String pointClass) throws RdsCloudException {
+        if (indexClassToId.isEmpty()) {
+            initClassToIdNameIndex();
         }
-        return null;
+        @Nullable
+        String pointId = indexClassToId.get(pointClass);
+        if (pointId != null) {
+            return getPointById(pointId);
+        }
+        throw new RdsCloudException(String.format("pointClass \"%s\" not found", pointClass));
     }
 
     /*
-     * private method: retrieve the data point with the given hierarchyName
+     * public method: retrieve the data point with the given pointId
      */
-    private String getPointId(String hierarchyName) {
-        if (hierarchyName != null) {
-            for (Map.Entry<String, BasePoint> entry : points.entrySet()) {
-                BasePoint point = entry.getValue();
-                if (point != null && point.hierarchyName != null && point.hierarchyName.contains(hierarchyName)) {
-                    return entry.getKey();
-                }
+    public BasePoint getPointById(String pointId) throws RdsCloudException {
+        Map<String, @Nullable BasePoint> points = this.points;
+        if (points != null) {
+            @Nullable
+            BasePoint point = points.get(pointId);
+            if (point != null) {
+                return point;
             }
         }
-        return null;
+        throw new RdsCloudException(String.format("pointId \"%s\" not found", pointId));
     }
 
     /*
-     * public method: retrieve the state of the data point with the given
-     * hierarchyName
+     * private method: retrieve Id of data point with the given pointClass
      */
-    public synchronized State getRaw(String hierarchyName) {
-        BasePoint point = getPoint(hierarchyName);
-        if (point != null) {
-            State state = point.getRaw();
-
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("getRaw: {}={}", hierarchyName, state.toString());
-            }
-            return state;
+    public String pointClassToId(String pointClass) throws RdsCloudException {
+        if (indexClassToId.isEmpty()) {
+            initClassToIdNameIndex();
         }
-        LOGGER.warn("getRaw: {}=No Value!", hierarchyName);
-        return null;
-    }
-
-    /*
-     * public method: return the presentPriority of the data point with the given
-     * hierarchyName
-     */
-    public synchronized int getPresPrio(String hierarchyName) {
-        BasePoint point = getPoint(hierarchyName);
-        if (point != null) {
-            int presentPriority = point.getPresentPriority();
-
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("getPresentPriority: {}={}", hierarchyName, presentPriority);
-            }
-            return presentPriority;
+        @Nullable
+        String pointId = indexClassToId.get(pointClass);
+        if (pointId != null) {
+            return pointId;
         }
-        LOGGER.warn("getPresentPriority: {}=No Value!", hierarchyName);
-        return 0;
-    }
-
-    /*
-     * public method: return the presentPriority of the data point with the given
-     * hierarchyName
-     */
-    public synchronized int asInt(String hierarchyName) {
-        BasePoint point = getPoint(hierarchyName);
-        if (point != null) {
-            int value = point.asInt();
-
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("asInt: {}={}", hierarchyName, value);
-            }
-            return value;
-        }
-        LOGGER.warn("getAsInt: {}=No Value!", hierarchyName);
-        return 0;
-    }
-
-    /*
-     * public method: retrieve the enum state of the data point with the given
-     * hierarchyName
-     */
-    public synchronized State getEnum(String hierarchyName) {
-        BasePoint point = getPoint(hierarchyName);
-        if (point != null) {
-            State state = point.getEnum();
-
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("getEnum: {}={}", hierarchyName, state.toString());
-            }
-            return state;
-        }
-        LOGGER.warn("getEnum: {}=No Value!", hierarchyName);
-        return null;
+        throw new RdsCloudException(String.format("no pointId to match pointClass \"%s\"", pointClass));
     }
 
     /*
      * public method: return the state of the "Online" data point
      */
-    public Boolean isOnline() {
-        for (Map.Entry<String, BasePoint> entry : points.entrySet()) {
-            BasePoint point = entry.getValue();
-            if (point != null && point.memberName != null && point.memberName.equals("Online")) {
-                return (point.asInt() == 1);
-            }
-        }
-        return false;
+    public boolean isOnline() throws RdsCloudException {
+        BasePoint point = getPointByClass(HIE_ONLINE);
+        return "Online".equals(point.getEnum().toString());
     }
 
     /*
      * public method: set a new data point value on the server
      */
-    public void setValue(String apiKey, String token, String hierarchyName, String value) {
-        String pointId = getPointId(hierarchyName);
-        BasePoint point = getPoint(hierarchyName);
+    public void setValue(String apiKey, String token, String pointClass, String value) {
+        try {
+            String pointId = pointClassToId(pointClass);
+            BasePoint point = getPointByClass(pointClass);
 
-        if (pointId != null && point != null) {
-            String json = point.commandJson(value);
+            String url = String.format(URL_SETVAL, pointId);
+            String payload = point.commandJson(value);
 
-            LOGGER.debug("setValue: {}=>{}", hierarchyName, json);
-
-            try {
-                httpSetPointValueJson(apiKey, token, pointId, json);
-            } catch (RdsCloudException | IOException e) {
-                LOGGER.warn("setValue {} {}: \"{}\"", hierarchyName, e.getClass().getName(), e.getMessage());
-                return;
+            if (logger.isTraceEnabled()) {
+                logger.trace(LOG_HTTP_COMMAND, HTTP_PUT, url.length());
+                logger.trace(LOG_PAYLOAD_FMT, LOG_SENDING_MARK, url);
+                logger.trace(LOG_PAYLOAD_FMT, LOG_SENDING_MARK, payload);
+            } else if (logger.isDebugEnabled()) {
+                logger.debug(LOG_HTTP_COMMAND_ABR, HTTP_PUT, url.length());
+                logger.debug(LOG_PAYLOAD_FMT_ABR, LOG_SENDING_MARK, url.substring(0, Math.min(url.length(), 30)));
+                logger.debug(LOG_PAYLOAD_FMT_ABR, LOG_SENDING_MARK,
+                        payload.substring(0, Math.min(payload.length(), 30)));
             }
-        } else {
-            LOGGER.warn("setValue: point or pointId not found for {}", hierarchyName);
+
+            httpSetPointValueJson(apiKey, token, url, payload);
+        } catch (RdsCloudException e) {
+            logger.warn(LOG_SYSTEM_EXCEPTION, "setValue()", e.getClass().getName(), e.getMessage());
+        } catch (JsonParseException | IOException e) {
+            logger.warn(LOG_RUNTIME_EXCEPTION, "setValue()", e.getClass().getName(), e.getMessage());
         }
     }
 
     /*
-     * public method: set a new data point value on the server
+     * public method: refresh the data point value from the server
      */
     public boolean refresh(String apiKey, String token) {
         try {
@@ -319,338 +253,117 @@ class RdsDataPoints {
                 String pointId;
 
                 for (ChannelMap chan : CHAN_MAP) {
-                    pointId = getPointId(chan.hierarchyName);
-                    if (pointId != null) {
+                    pointId = pointClassToId(chan.clazz);
+                    if (!pointId.isEmpty()) {
                         set.add(String.format("\"%s\"", pointId));
                     }
                 }
 
-                for (Map.Entry<String, BasePoint> entry : points.entrySet()) {
-                    BasePoint point = entry.getValue();
-                    if (point != null && point.memberName != null && point.memberName.equals("Online")) {
-                        set.add(String.format("\"%s\"", entry.getKey()));
-                        break;
+                Map<String, @Nullable BasePoint> points = this.points;
+                if (points != null) {
+                    for (Map.Entry<String, @Nullable BasePoint> entry : points.entrySet()) {
+                        @Nullable
+                        BasePoint point = entry.getValue();
+                        if (point != null) {
+                            if ("Online".equals(point.getMemberName())) {
+                                set.add(String.format("\"%s\"", entry.getKey()));
+                                break;
+                            }
+                        }
                     }
                 }
 
                 valueFilter = String.join(",", set);
             }
 
-            if (LOGGER.isTraceEnabled()) {
-                LOGGER.trace("refresh: request={}", valueFilter);
+            String url = String.format(URL_VALUES, valueFilter);
+
+            if (logger.isTraceEnabled()) {
+                logger.trace(LOG_HTTP_COMMAND, HTTP_GET, url.length());
+                logger.trace(LOG_PAYLOAD_FMT, LOG_SENDING_MARK, url);
+            } else if (logger.isDebugEnabled()) {
+                logger.debug(LOG_HTTP_COMMAND_ABR, HTTP_GET, url.length());
+                logger.debug(LOG_PAYLOAD_FMT_ABR, LOG_SENDING_MARK, url.substring(0, Math.min(url.length(), 30)));
             }
 
-            String json = httpGenericGetJson(apiKey, token, String.format(URL_VALUES, valueFilter));
+            String json = httpGenericGetJson(apiKey, token, url);
 
-            LOGGER.debug("refresh: received {} characters (log:set TRACE to see all)", json.length());
-
-            if (LOGGER.isTraceEnabled()) {
-                LOGGER.trace("refresh: response={}", json);
+            if (logger.isTraceEnabled()) {
+                logger.trace(LOG_CONTENT_LENGTH, LOG_RECEIVED_MSG, json.length());
+                logger.trace(LOG_PAYLOAD_FMT, LOG_RECEIVED_MARK, json);
+            } else if (logger.isDebugEnabled()) {
+                logger.debug(LOG_CONTENT_LENGTH_ABR, LOG_RECEIVED_MSG, json.length());
+                logger.debug(LOG_PAYLOAD_FMT_ABR, LOG_RECEIVED_MARK, json.substring(0, Math.min(json.length(), 30)));
             }
 
             @Nullable
             RdsDataPoints newPoints = GSON.fromJson(json, RdsDataPoints.class);
 
+            Map<String, @Nullable BasePoint> newPointsMap = newPoints.points;
+
+            if (newPointsMap == null) {
+                throw new RdsCloudException("new points map empty");
+            }
+
             synchronized (this) {
-                for (Map.Entry<String, BasePoint> entry : newPoints.points.entrySet()) {
+                for (Entry<String, @Nullable BasePoint> entry : newPointsMap.entrySet()) {
+                    @Nullable
+                    String pointId = entry.getKey();
+
+                    @Nullable
                     BasePoint newPoint = entry.getValue();
-                    BasePoint existingPoint = points.get(entry.getKey());
-
-                    if (newPoint instanceof BooleanPoint && existingPoint instanceof BooleanPoint) {
-                        ((BooleanPoint) existingPoint).value = ((BooleanPoint) newPoint).value;
-                    } else
-
-                    if (newPoint instanceof TextPoint && existingPoint instanceof TextPoint) {
-                        ((TextPoint) existingPoint).value = ((TextPoint) newPoint).value;
-                    } else
-
-                    if (newPoint instanceof NumericPoint && existingPoint instanceof NumericPoint) {
-                        ((NumericPoint) existingPoint).value = ((NumericPoint) newPoint).value;
-                    } else
-
-                    if (newPoint instanceof InnerValuePoint && existingPoint instanceof InnerValuePoint) {
-                        ((InnerValuePoint) existingPoint).inner.value = ((InnerValuePoint) newPoint).inner.value;
-                        ((InnerValuePoint) existingPoint).inner.presentPriority = ((InnerValuePoint) newPoint).inner.presentPriority;
-                    } else {
-                        LOGGER.warn("refresh: point type mismatch");
+                    if (newPoint == null) {
+                        throw new RdsCloudException("invalid new point");
                     }
 
+                    @Nullable
+                    BasePoint myPoint = getPointById(pointId);
+
+                    if (!(newPoint.getClass().equals(myPoint.getClass()))) {
+                        throw new RdsCloudException("existing vs. new point class mismatch");
+                    }
+
+                    myPoint.refreshValueFrom((BasePoint) newPoint);
+
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("refresh {}.{}: {} << {}", getDescription(), myPoint.getPointClass(),
+                                myPoint.getState(), ((BasePoint) newPoint).getState());
+                    }
                 }
             }
 
             return true;
-        } catch (JsonSyntaxException | RdsCloudException | IOException e) {
-            LOGGER.warn("refresh {}: \"{}\"", e.getClass().getName(), e.getMessage());
-            return false;
+        } catch (RdsCloudException e) {
+            logger.warn(LOG_SYSTEM_EXCEPTION, "refresh()", e.getClass().getName(), e.getMessage());
+        } catch (JsonParseException | IOException e) {
+            logger.warn(LOG_RUNTIME_EXCEPTION, "refresh()", e.getClass().getName(), e.getMessage());
         }
-    }
-}
-
-/**
- * private class: a generic data point
- *
- * @author Andrew Fiddian-Green - Initial contribution
- *
- */
-abstract class BasePoint {
-    @SerializedName("rep")
-    protected int rep;
-    @SerializedName("type")
-    protected int type;
-    @SerializedName("write")
-    protected boolean write;
-    @SerializedName("descr")
-    protected String descr;
-    @SerializedName("limits")
-    protected float[] limits;
-    @SerializedName("descriptionName")
-    protected String descriptionName;
-    @SerializedName("objectName")
-    protected String objectName;
-    @SerializedName("memberName")
-    protected String memberName;
-    @SerializedName("hierarchyName")
-    protected String hierarchyName;
-    @SerializedName("translated")
-    protected boolean translated;
-
-    private String[] enumVals;
-    private boolean enumParsed = false;
-    protected boolean isEnum = false;
-
-    /*
-     * initialize the enum value list
-     */
-    private boolean initEnum() {
-        if (!enumParsed) {
-            if (descr != null && descr.contains("*")) {
-                enumVals = descr.split("\\*");
-                isEnum = true;
-            }
-        }
-        enumParsed = true;
-        return isEnum;
-    }
-
-    public int getPresentPriority() {
-        return 0;
+        return false;
     }
 
     /*
-     * => MUST be overridden
+     * initialize the second index into to the points Map
      */
-    protected abstract int asInt();
-
-    protected boolean isEnum() {
-        return (enumParsed ? isEnum : initEnum());
-    }
-
-    public State getEnum() {
-        if (isEnum()) {
-            int index = asInt();
-            if (index >= 0 && index < enumVals.length) {
-                return new StringType(enumVals[index]);
-            }
-        }
-        return null;
-    }
-
-    /*
-     * property getter for openHAB => MUST be overridden
-     */
-    public State getRaw() {
-        return null;
-    }
-
-    /*
-     * property getter for openHAB returns the "Units" of the point value
-     */
-    public String getUnits() {
-        return (descr != null ? descr : "");
-    }
-
-    /*
-     * property getter for JSON => MAY be overridden
-     */
-    public String commandJson(String newVal) {
-        if (isEnum()) {
-            for (int index = 0; index < enumVals.length; index++) {
-                if (enumVals[index].equals(newVal)) {
-                    return String.format("{\"value\":%d}", index);
+    private void initClassToIdNameIndex() {
+        Map<String, @Nullable BasePoint> points = this.points;
+        if (points != null) {
+            indexClassToId.clear();
+            for (Entry<String, @Nullable BasePoint> entry : points.entrySet()) {
+                @Nullable
+                String pointKey = entry.getKey();
+                @Nullable
+                BasePoint pointValue = entry.getValue();
+                if (pointValue != null) {
+                    indexClassToId.put(pointValue.getPointClass(), pointKey);
                 }
             }
         }
-        return String.format("{\"value\":%s}", newVal);
-    }
-
-}
-
-/**
- * private class a data point where "value" is a JSON text element
- *
- * @author Andrew Fiddian-Green - Initial contribution
- *
- */
-class TextPoint extends BasePoint {
-    @SerializedName("value")
-    protected String value;
-
-    @Override
-    protected int asInt() {
-        try {
-            return Integer.parseInt(value);
-        } catch (Exception e) {
-            return -1;
-        }
     }
 
     /*
-     * if appropriate return the enum string representation, otherwise return the
-     * decimal representation
+     * public method: return the state of the "Description" data point
      */
-    @Override
-    public State getRaw() {
-        return new StringType(value);
-    }
-}
-
-/**
- * private class a data point where "value" is a JSON boolean element
- *
- * @author Andrew Fiddian-Green - Initial contribution
- *
- */
-class BooleanPoint extends BasePoint {
-    @SerializedName("value")
-    protected boolean value;
-
-    @Override
-    protected int asInt() {
-        return (value ? 1 : 0);
-    }
-
-    @Override
-    public State getRaw() {
-        return OnOffType.from(value);
-    }
-}
-
-/**
- * private class inner (helper) class for an embedded JSON numeric element
- *
- * @author Andrew Fiddian-Green - Initial contribution
- *
- */
-class NestedValue {
-    @SerializedName("value")
-    protected float value;
-    @SerializedName("presentPriority")
-    protected float presentPriority;
-}
-
-/**
- * private class a data point where "value" is a nested JSON numeric element
- *
- * @author Andrew Fiddian-Green - Initial contribution
- *
- */
-class InnerValuePoint extends BasePoint {
-    @SerializedName("value")
-    protected NestedValue inner;
-
-    @Override
-    protected int asInt() {
-        return (inner != null ? (int) inner.value : -1);
-    }
-
-    /*
-     * if appropriate return the enum string representation, otherwise return the
-     * decimal representation
-     */
-    @Override
-    public State getRaw() {
-        if (inner != null) {
-            return new DecimalType(inner.value);
-        }
-        return null;
-    }
-
-    @Override
-    public int getPresentPriority() {
-        if (inner != null) {
-            return (int) inner.presentPriority;
-        }
-        return 0;
-    }
-}
-
-/**
- * private class a data point where "value" is a JSON numeric element
- *
- * @author Andrew Fiddian-Green - Initial contribution
- *
- */
-class NumericPoint extends BasePoint {
-    @SerializedName("value")
-    protected float value;
-
-    @Override
-    protected int asInt() {
-        return (int) value;
-    }
-
-    /*
-     * if appropriate return the enum string representation, otherwise return the
-     * decimal representation
-     */
-    @Override
-    public State getRaw() {
-        return new DecimalType(value);
-    }
-}
-
-/**
- * private class a JSON de-serializer for the Data Point classes above
- *
- * @author Andrew Fiddian-Green - Initial contribution
- *
- */
-class PointDeserializer implements JsonDeserializer<BasePoint> {
-
-    @Override
-    public BasePoint deserialize(JsonElement element, Type guff, JsonDeserializationContext ctxt)
-            throws JsonParseException {
-        JsonObject obj = element.getAsJsonObject();
-        JsonElement val = obj.get("value");
-
-        if (val != null) {
-            if (val.isJsonPrimitive()) {
-                if (val.getAsJsonPrimitive().isBoolean()) {
-                    return ctxt.deserialize(obj, BooleanPoint.class);
-                }
-                if (val.getAsJsonPrimitive().isNumber()) {
-                    return ctxt.deserialize(obj, NumericPoint.class);
-                }
-                if (val.getAsJsonPrimitive().isString()) {
-                    return ctxt.deserialize(obj, TextPoint.class);
-                }
-            } else {
-                if (val.isJsonObject()) {
-                    JsonElement rep = obj.get("rep");
-                    if (rep == null) {
-                        return ctxt.deserialize(obj, InnerValuePoint.class);
-                    } else {
-                        if (rep.isJsonPrimitive() && rep.getAsJsonPrimitive().isNumber()) {
-                            switch (rep.getAsInt()) {
-                                case 1:
-                                case 3:
-                                    return ctxt.deserialize(obj, InnerValuePoint.class);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return null;
+    public String getDescription() throws RdsCloudException {
+        return getPointByClass(HIE_DESCRIPTION).getState().toString();
     }
 }

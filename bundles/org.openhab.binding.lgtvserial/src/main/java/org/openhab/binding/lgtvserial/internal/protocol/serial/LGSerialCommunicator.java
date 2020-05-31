@@ -20,12 +20,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.io.transport.serial.PortInUseException;
+import org.eclipse.smarthome.io.transport.serial.SerialPort;
+import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
+import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import gnu.io.NRSerialPort;
-import gnu.io.SerialPort;
-import gnu.io.UnsupportedCommOperationException;
 
 /**
  * This class handles the communication (read/writes) between the COM port and the things.
@@ -37,7 +37,7 @@ public class LGSerialCommunicator {
 
     private OutputStream output;
     private InputStream input;
-    private NRSerialPort port;
+    private SerialPort port;
 
     private Map<Integer, LGSerialResponseListener> handlers = new HashMap<>();
     private RegistrationCallback callback;
@@ -51,16 +51,11 @@ public class LGSerialCommunicator {
 
     private static final int BAUD_RATE = 9600;
 
-    public LGSerialCommunicator(String portName, RegistrationCallback callback) {
-        NRSerialPort port = new NRSerialPort(portName, BAUD_RATE);
-        if (port.connect()) {
-            try {
-                port.getSerialPortInstance().setSerialPortParams(BAUD_RATE, SerialPort.DATABITS_8,
-                        SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
-            } catch (UnsupportedCommOperationException e) {
-                logger.warn("Failed to set serial port communication parameters", e);
-            }
-        }
+    public LGSerialCommunicator(SerialPortIdentifier serialPortIdentifier, RegistrationCallback callback)
+            throws IOException, PortInUseException, UnsupportedCommOperationException {
+        SerialPort port = serialPortIdentifier.open(LGSerialCommunicator.class.getCanonicalName(), 2000);
+        port.setSerialPortParams(BAUD_RATE, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
+
         this.port = port;
         this.output = port.getOutputStream();
         this.input = port.getInputStream();
@@ -148,9 +143,9 @@ public class LGSerialCommunicator {
         } catch (IOException e) {
             logger.debug("An error occured while closing the serial output stream", e);
         }
-        port.disconnect();
+        port.close();
         // For some reason, there needs some delay after close so we don't fail to open back the serial device
-        // TODO : investigate if this is still a real issue with the latest NRSerialPort jar
+        // TODO : investigate if this is still a real issue with the serial transport
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
@@ -158,5 +153,4 @@ public class LGSerialCommunicator {
             logger.debug("Thread interrupted while closing the communicator");
         }
     }
-
 }

@@ -12,53 +12,78 @@
  */
 package org.openhab.binding.heos.internal.handler;
 
+import java.io.IOException;
+import java.util.Map;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.heos.handler.HeosBridgeHandler;
-import org.openhab.binding.heos.internal.api.HeosFacade;
+import org.openhab.binding.heos.internal.exception.HeosNotFoundException;
+import org.openhab.binding.heos.internal.json.payload.Media;
+import org.openhab.binding.heos.internal.resources.HeosEventListener;
+import org.openhab.binding.heos.internal.resources.Telnet.ReadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link HeosChannelHandlerInputs} handles the Input channel command
  * from the implementing thing.
  *
  * @author Johannes Einig - Initial contribution
- *
  */
-public class HeosChannelHandlerInputs extends HeosChannelHandler {
+@NonNullByDefault
+public class HeosChannelHandlerInputs extends BaseHeosChannelHandler {
+    protected final Logger logger = LoggerFactory.getLogger(HeosChannelHandlerInputs.class);
 
-    public HeosChannelHandlerInputs(HeosBridgeHandler bridge, HeosFacade api) {
-        super(bridge, api);
+    private final HeosEventListener eventListener;
+
+    public HeosChannelHandlerInputs(HeosEventListener eventListener, HeosBridgeHandler bridge) {
+        super(bridge);
+        this.eventListener = eventListener;
     }
 
     @Override
-    protected void handleCommandPlayer() {
-        handleCommand();
+    public void handlePlayerCommand(Command command, String id, ThingUID uid) throws IOException, ReadException {
+        handleCommand(command, id);
     }
 
     @Override
-    protected void handleCommandGroup() {
-        handleCommand();
+    public void handleGroupCommand(Command command, @Nullable String id, ThingUID uid,
+            HeosGroupHandler heosGroupHandler) throws IOException, ReadException {
+        if (id == null) {
+            throw new HeosNotFoundException();
+        }
+        handleCommand(command, id);
     }
 
     @Override
-    protected void handleCommandBridge() {
+    public void handleBridgeCommand(Command command, ThingUID uid) {
         // not used on bridge
     }
 
-    private void handleCommand() {
+    private void handleCommand(Command command, String id) throws IOException, ReadException {
         if (command instanceof RefreshType) {
-            api.getNowPlayingMedia(id);
+            @Nullable
+            Media payload = getApi().getNowPlayingMedia(id).payload;
+            if (payload != null) {
+                eventListener.playerMediaChangeEvent(id, payload);
+            }
             return;
         }
-        if (bridge.getSelectedPlayer().isEmpty()) {
-            api.playInputSource(id, command.toString());
-        } else if (bridge.getSelectedPlayer().size() > 1) {
+
+        Map<String, String> selectedPlayers = bridge.getSelectedPlayer();
+        if (selectedPlayers.isEmpty()) {
+            // no selected player, just play it from the player itself
+            getApi().playInputSource(id, command.toString());
+        } else if (selectedPlayers.size() > 1) {
             logger.debug("Only one source can be selected for HEOS Input. Selected amount of sources: {} ",
-                    bridge.getSelectedPlayer().size());
+                    selectedPlayers.size());
         } else {
-            for (String sourcePid : bridge.getSelectedPlayer().keySet()) {
-                api.playInputSource(id, sourcePid, command.toString());
+            for (String sourcePid : selectedPlayers.keySet()) {
+                getApi().playInputSource(id, sourcePid, command.toString());
             }
         }
-        bridge.getSelectedPlayer().clear();
     }
 }

@@ -7,6 +7,7 @@
 	<config-description uri="bridge-type:velbus:bridge">
 		<parameter name="port" type="text">
 			<context>serial-port</context>
+			<limitToOptions>false</limitToOptions>
 			<label>Serial Port</label>
 			<description>Select serial port (COM1, /dev/ttyS0, ...)</description>
 			<required>true</required>
@@ -267,7 +268,8 @@
 		</parameter>
 		<parameter name="refresh" type="integer">
 			<label>Refresh Interval</label>
-			<description>Refresh interval for the temperature sensor (in seconds), default 300. If set to 0 or left empty, no refresh will be scheduled.</description>
+			<description>Refresh interval for the temperature sensor (in seconds), default 300. If set to 0 or left empty, no
+				refresh will be scheduled.</description>
 			<default>300</default>
 			<advanced>true</advanced>
 		</parameter>
@@ -334,7 +336,8 @@
 		</parameter>
 		<parameter name="refresh" type="integer">
 			<label>Refresh Interval</label>
-			<description>Refresh interval for the temperature sensor (in seconds), default 300. If set to 0 or left empty, no refresh will be scheduled.</description>
+			<description>Refresh interval for the temperature sensor (in seconds), default 300. If set to 0 or left empty, no
+				refresh will be scheduled.</description>
 			<default>300</default>
 			<advanced>true</advanced>
 		</parameter>
