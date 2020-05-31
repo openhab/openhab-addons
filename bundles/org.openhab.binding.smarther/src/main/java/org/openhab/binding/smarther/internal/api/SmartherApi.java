@@ -18,7 +18,6 @@ import static org.openhab.binding.smarther.internal.SmartherBindingConstants.*;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +27,7 @@ import java.util.function.Function;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -40,26 +40,27 @@ import org.eclipse.smarthome.core.auth.client.oauth2.OAuthException;
 import org.eclipse.smarthome.core.auth.client.oauth2.OAuthResponseException;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.openhab.binding.smarther.internal.api.dto.Enums.MeasureUnit;
 import org.openhab.binding.smarther.internal.api.dto.Module;
-import org.openhab.binding.smarther.internal.api.dto.ModuleSettings;
 import org.openhab.binding.smarther.internal.api.dto.ModuleStatus;
 import org.openhab.binding.smarther.internal.api.dto.Plant;
 import org.openhab.binding.smarther.internal.api.dto.Plants;
 import org.openhab.binding.smarther.internal.api.dto.Program;
 import org.openhab.binding.smarther.internal.api.dto.Subscription;
 import org.openhab.binding.smarther.internal.api.dto.Topology;
-import org.openhab.binding.smarther.internal.api.dto.Enums.MeasureUnit;
 import org.openhab.binding.smarther.internal.api.exception.SmartherAuthorizationException;
 import org.openhab.binding.smarther.internal.api.exception.SmartherGatewayException;
 import org.openhab.binding.smarther.internal.api.exception.SmartherTokenExpiredException;
+import org.openhab.binding.smarther.internal.model.ModuleSettings;
 import org.openhab.binding.smarther.internal.util.ModelUtil;
+import org.openhab.binding.smarther.internal.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.reflect.TypeToken;
 
 /**
- * Class to handle BTicino/Legrand API gateway calls.
+ * The {@code SmartherApi} class is used to communicate with the BTicino/Legrand API gateway.
  *
  * @author Fabio Possieri - Initial contribution
  */
@@ -69,27 +70,63 @@ public class SmartherApi {
     private static final String CONTENT_TYPE = "application/json";
     private static final String BEARER = "Bearer ";
 
+    // API gateway request headers
+    private static final String HEADER_ACCEPT = "Accept";
+    // API gateway request attributes
+    private static final String ATTR_FUNCTION = "function";
+    private static final String ATTR_MODE = "mode";
+    private static final String ATTR_PROGRAMS = "programs";
+    private static final String ATTR_NUMBER = "number";
+    private static final String ATTR_SETPOINT = "setPoint";
+    private static final String ATTR_VALUE = "value";
+    private static final String ATTR_UNIT = "unit";
+    private static final String ATTR_ACTIVATION_TIME = "activationTime";
+    private static final String ATTR_ENDPOINT_URL = "EndPointUrl";
+    // API gateway operation paths
+    private static final String PATH_PLANTS = "/plants";
+    private static final String PATH_TOPOLOGY = PATH_PLANTS + "/%s/topology";
+    private static final String PATH_MODULE = "/chronothermostat/thermoregulation/addressLocation/plants/%s/modules/parameter/id/value/%s";
+    private static final String PATH_PROGRAMS = "/programlist";
+    private static final String PATH_SUBSCRIPTIONS = "/subscription";
+    private static final String PATH_SUBSCRIBE = PATH_PLANTS + "/%s/subscription";
+    private static final String PATH_UNSUBSCRIBE = PATH_SUBSCRIBE + "/%s";
+
     private final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private final String oAuthSubscriptionKey;
     private final OAuthClientService oAuthClientService;
+    private final String oAuthSubscriptionKey;
     private final SmartherApiConnector connector;
 
     /**
-     * Constructor.
+     * Constructs a {@code SmartherApi} to the API gateway with the specified OAuth2 attributes (subscription key and
+     * client service), scheduler service and http client.
+     *
+     * @param clientService
+     *            the OAuth2 authorization client service to be used
+     * @param subscriptionKey
+     *            the OAuth2 subscription key to be used with the given client service
+     * @param scheduler
+     *            the scheduler to be used to reschedule calls when rate limit exceeded or call not succeeded
+     * @param httpClient
+     *            the http client to be used to make http calls to the API gateway
      */
-    public SmartherApi(String oAuthSubscriptionKey, OAuthClientService oAuthClientService,
-            ScheduledExecutorService scheduler, HttpClient httpClient) {
-        this.oAuthSubscriptionKey = oAuthSubscriptionKey;
-        this.oAuthClientService = oAuthClientService;
+    public SmartherApi(OAuthClientService clientService, String subscriptionKey, ScheduledExecutorService scheduler,
+            HttpClient httpClient) {
+        this.oAuthClientService = clientService;
+        this.oAuthSubscriptionKey = subscriptionKey;
         connector = new SmartherApiConnector(scheduler, httpClient);
     }
 
     /**
-     * @return Calls API gateway and returns the list of plants or an empty list if nothing was returned
+     * Returns the plants registered under the Smarther account the bridge has been configured with.
+     *
+     * @return the list of registered plants, or an empty {@link List} in case of no plants found
+     *
+     * @throws {@link SmartherGatewayException}
+     *             in case of communication issues with the API gateway
      */
-    public List<Plant> getPlantList() {
-        final ContentResponse response = requestBasic(GET, "plants");
+    public List<Plant> getPlants() throws SmartherGatewayException {
+        final ContentResponse response = requestBasic(GET, PATH_PLANTS);
         if (response.getStatus() == HttpStatus.NO_CONTENT_204) {
             return new ArrayList<Plant>();
         } else {
@@ -98,45 +135,65 @@ public class SmartherApi {
     }
 
     /**
-     * @param plantId Identifier of the location plant to query the topology map for
-     * @return Calls API gateway and returns the list of modules contained in the given location plant or an empty list
-     *         if nothing was returned
+     * Returns the chronothermostat modules registered in the given plant.
+     *
+     * @param plantId
+     *            the identifier of the plant
+     *
+     * @return the list of registered modules, or an empty {@link List} in case the plant contains no module
+     *
+     * @throws {@link SmartherGatewayException}
+     *             in case of communication issues with the API gateway
      */
-    public List<Module> getTopology(String plantId) {
-        final ContentResponse response = requestBasic(GET, String.format("plants/%s/topology", plantId));
+    public List<Module> getPlantModules(String plantId) throws SmartherGatewayException {
+        final ContentResponse response = requestBasic(GET, String.format(PATH_TOPOLOGY, plantId));
         final Topology topology = ModelUtil.gsonInstance().fromJson(response.getContentAsString(), Topology.class);
 
-        return (topology.getModules() == null) ? Collections.emptyList() : topology.getModules();
+        return (topology.getModules() == null) ? new ArrayList<Module>() : topology.getModules();
     }
 
     /**
-     * @param plantId Identifier of the location plant the module is contained in
-     * @param moduleId Identifier of the module to query the status for
-     * @return Calls API gateway and returns the module current status or an empty list if
-     *         nothing was returned
+     * Returns the current status of a given chronothermostat module.
+     *
+     * @param plantId
+     *            the identifier of the plant
+     * @param moduleId
+     *            the identifier of the chronothermostat module inside the plant
+     *
+     * @return the current status of the chronothermostat module
+     *
+     * @throws {@link SmartherGatewayException}
+     *             in case of communication issues with the API gateway
      */
-    public ModuleStatus getModuleStatus(String plantId, String moduleId) {
-        final ContentResponse response = requestModule(GET, plantId, moduleId, "");
+    public ModuleStatus getModuleStatus(String plantId, String moduleId) throws SmartherGatewayException {
+        final ContentResponse response = requestModule(GET, plantId, moduleId, null);
         return ModelUtil.gsonInstance().fromJson(response.getContentAsString(), ModuleStatus.class);
     }
 
     /**
-     * @param settings The new settings to be sent to the API gateway in order to be remotely applied to the module
-     * @return true if the call returned with success response, false otherwise
+     * Sends new settings to be applied to a given chronothermostat module.
+     *
+     * @param settings
+     *            the module settings to be applied
+     *
+     * @return {@code true} if the settings have been successfully applied, {@code false} otherwise
+     *
+     * @throws {@link SmartherGatewayException}
+     *             in case of communication issues with the API gateway
      */
-    public boolean setModuleStatus(ModuleSettings settings) {
+    public boolean setModuleStatus(ModuleSettings settings) throws SmartherGatewayException {
         // Prepare request payload
         Map<String, Object> rootMap = new IdentityHashMap<String, Object>();
-        rootMap.put("function", settings.getFunction().getValue());
-        rootMap.put("mode", settings.getMode().getValue());
+        rootMap.put(ATTR_FUNCTION, settings.getFunction().getValue());
+        rootMap.put(ATTR_MODE, settings.getMode().getValue());
         switch (settings.getMode()) {
             case AUTOMATIC:
                 // {"function":"heating","mode":"automatic","programs":[{"number":0}]}
                 Map<String, Integer> programMap = new IdentityHashMap<String, Integer>();
-                programMap.put("number", Integer.valueOf(settings.getProgram()));
+                programMap.put(ATTR_NUMBER, Integer.valueOf(settings.getProgram()));
                 List<Map<String, Integer>> programsList = new ArrayList<Map<String, Integer>>();
                 programsList.add(programMap);
-                rootMap.put("programs", programsList);
+                rootMap.put(ATTR_PROGRAMS, programsList);
                 break;
             case MANUAL:
                 // {"function":"heating","mode":"manual","setPoint":{"value":0.0,"unit":"C"},"activationTime":"X"}
@@ -145,14 +202,14 @@ public class SmartherApi {
                     throw new SmartherGatewayException("Invalid temperature unit transformation");
                 }
                 Map<String, Object> setPointMap = new IdentityHashMap<String, Object>();
-                setPointMap.put("value", newTemperature.doubleValue());
-                setPointMap.put("unit", MeasureUnit.CELSIUS.getValue());
-                rootMap.put("setPoint", setPointMap);
-                rootMap.put("activationTime", settings.getActivationTime());
+                setPointMap.put(ATTR_VALUE, newTemperature.doubleValue());
+                setPointMap.put(ATTR_UNIT, MeasureUnit.CELSIUS.getValue());
+                rootMap.put(ATTR_SETPOINT, setPointMap);
+                rootMap.put(ATTR_ACTIVATION_TIME, settings.getActivationTime());
                 break;
             case BOOST:
                 // {"function":"heating","mode":"boost","activationTime":"X"}
-                rootMap.put("activationTime", settings.getActivationTime());
+                rootMap.put(ATTR_ACTIVATION_TIME, settings.getActivationTime());
                 break;
             case OFF:
                 // {"function":"heating","mode":"off"}
@@ -162,6 +219,7 @@ public class SmartherApi {
                 break;
         }
         final String jsonPayload = ModelUtil.gsonInstance().toJson(rootMap);
+
         // Send request to server
         final ContentResponse response = requestModule(POST, settings.getPlantId(), settings.getModuleId(),
                 jsonPayload);
@@ -169,25 +227,38 @@ public class SmartherApi {
     }
 
     /**
-     * @param plantId Identifier of the location plant the module is contained in
-     * @param moduleId Identifier of the module to get the program list for
-     * @return Calls API gateway and returns the module current program list or an empty list if
-     *         nothing was returned
+     * Returns the automatic mode programs registered for the given chronothermostat module.
+     *
+     * @param plantId
+     *            the identifier of the plant
+     * @param moduleId
+     *            the identifier of the chronothermostat module inside the plant
+     *
+     * @return the list of registered programs, or an empty {@link List} in case of no programs found
+     *
+     * @throws {@link SmartherGatewayException}
+     *             in case of communication issues with the API gateway
      */
-    public List<Program> getProgramList(String plantId, String moduleId) {
-        final ContentResponse response = requestModule(GET, plantId, moduleId, "programlist", "");
+    public List<Program> getModulePrograms(String plantId, String moduleId) throws SmartherGatewayException {
+        final ContentResponse response = requestModule(GET, plantId, moduleId, PATH_PROGRAMS, null);
         final ModuleStatus moduleStatus = ModelUtil.gsonInstance().fromJson(response.getContentAsString(),
                 ModuleStatus.class);
 
         return (moduleStatus.hasChronothermostat()) ? moduleStatus.toChronothermostat().getPrograms()
-                : Collections.emptyList();
+                : new ArrayList<Program>();
     }
 
     /**
-     * @return Calls API gateway and returns the list of C2C subscriptions or an empty list if nothing was returned
+     * Returns the subscriptions registered to the C2C Webhook, where modules status notifications are currently sent
+     * for all the plants.
+     *
+     * @return the list of registered subscriptions, or an empty {@link List} in case of no subscriptions found
+     *
+     * @throws {@link SmartherGatewayException}
+     *             in case of communication issues with the API gateway
      */
-    public List<Subscription> getSubscriptionList() {
-        final ContentResponse response = requestBasic(GET, "subscription");
+    public List<Subscription> getSubscriptions() throws SmartherGatewayException {
+        final ContentResponse response = requestBasic(GET, PATH_SUBSCRIPTIONS);
         if (response.getStatus() == HttpStatus.NO_CONTENT_204) {
             return new ArrayList<Subscription>();
         } else {
@@ -198,16 +269,25 @@ public class SmartherApi {
     }
 
     /**
-     * @return Calls API gateway to subscribe a plant for C2C notifications and returns the subscription Id
+     * Subscribes a plant to the C2C Webhook to start receiving modules status notifications.
+     *
+     * @param plantId
+     *            the identifier of the plant to be subscribed
+     * @param notificationUrl
+     *            the url notifications will have to be sent to for the given plant
+     *
+     * @return the identifier this subscription has been registered under
+     *
+     * @throws {@link SmartherGatewayException}
+     *             in case of communication issues with the API gateway
      */
-    public String subscribe(String plantId, String notificationUrl) {
+    public String subscribePlant(String plantId, String notificationUrl) throws SmartherGatewayException {
         // Prepare request payload
         Map<String, Object> rootMap = new IdentityHashMap<String, Object>();
-        rootMap.put("EndPointUrl", notificationUrl);
+        rootMap.put(ATTR_ENDPOINT_URL, notificationUrl);
         final String jsonPayload = ModelUtil.gsonInstance().toJson(rootMap);
         // Send request to server
-        final ContentResponse response = requestBasic(POST, String.format("plants/%s/subscription", plantId),
-                jsonPayload);
+        final ContentResponse response = requestBasic(POST, String.format(PATH_SUBSCRIBE, plantId), jsonPayload);
         // Handle response payload
         final Subscription subscription = ModelUtil.gsonInstance().fromJson(response.getContentAsString(),
                 Subscription.class);
@@ -215,80 +295,134 @@ public class SmartherApi {
     }
 
     /**
-     * @return Calls API gateway to unsubscribe a plant from receiving C2C notifications
+     * Unsubscribes a plant from the C2C Webhook to stop receiving modules status notifications.
+     *
+     * @param plantId
+     *            the identifier of the plant to be unsubscribed
+     * @param subscriptionId
+     *            the identifier of the subscription to be removed for the given plant
+     *
+     * @return {@code true} if the plant is successfully unsubscribed, {@code false} otherwise
+     *
+     * @throws {@link SmartherGatewayException}
+     *             in case of communication issues with the API gateway
      */
-    public boolean unsubscribe(String plantId, String subscriptionId) {
-        final ContentResponse response = requestBasic(DELETE,
-                String.format("plants/%s/subscription/%s", plantId, subscriptionId));
+    public boolean unsubscribePlant(String plantId, String subscriptionId) throws SmartherGatewayException {
+        final ContentResponse response = requestBasic(DELETE, String.format(PATH_UNSUBSCRIBE, plantId, subscriptionId));
         return (response.getStatus() == HttpStatus.OK_200);
     }
 
+    // ===========================================================================
+    //
+    // Internal API call handling methods
+    //
+    // ===========================================================================
+
     /**
-     * Calls the BTicino/Legrand API gateway with the given method and appends the given url as parameters of the call.
+     * Calls the API gateway with the given http method, request url and actual data.
      *
-     * @param method Http method to perform
-     * @param url url path to call to API gateway
-     * @return the response give by API gateway
+     * @param method
+     *            the http method to make the call with
+     * @param url
+     *            the API operation url to call
+     * @param requestData
+     *            the actual data to send in the request body, may be {@code null}
+     *
+     * @return the response received from the API gateway
+     *
+     * @throws {@link SmartherGatewayException}
+     *             in case of communication issues with the API gateway
      */
-    private ContentResponse requestBasic(HttpMethod method, String url) {
-        return requestBasic(method, url, "");
+    private ContentResponse requestBasic(HttpMethod method, String url, @Nullable String requestData)
+            throws SmartherGatewayException {
+        return request(method, SMARTHER_API_URL + url, requestData);
     }
 
     /**
-     * Calls the BTicino/Legrand API gateway with the given method and appends the given url as parameters of the call.
+     * Calls the API gateway with the given http method and request url.
      *
-     * @param method Http method to perform
-     * @param url url path to call to API gateway
-     * @param requestData data to pass along with the call as content
-     * @return the response give by API gateway
+     * @param method
+     *            the http method to make the call with
+     * @param url
+     *            the API operation url to call
+     *
+     * @return the response received from the API gateway
+     *
+     * @throws {@link SmartherGatewayException}
+     *             in case of communication issues with the API gateway
      */
-    private ContentResponse requestBasic(HttpMethod method, String url, String requestData) {
-        return request(method, SMARTHER_API_URL + (url.isEmpty() ? "" : ('/' + url)), requestData);
+    private ContentResponse requestBasic(HttpMethod method, String url) throws SmartherGatewayException {
+        return requestBasic(method, url, null);
     }
 
     /**
-     * Calls the BTicino/Legrand API gateway with the given method for the given plant and module as parameters of the
-     * call.
+     * Calls the API gateway with the given http method, plant id, module id, request path and actual data.
      *
-     * @param method Http method to perform
-     * @param plantId Location plant id to call to API gateway
-     * @param moduleId Module id to call to API gateway
-     * @param path Additional url path to call to API gateway
-     * @param requestData data to pass along with the call as content
-     * @return the response give by API gateway
+     * @param method
+     *            the http method to make the call with
+     * @param plantId
+     *            the identifier of the plant to use
+     * @param moduleId
+     *            the identifier of the module to use
+     * @param path
+     *            the API operation relative path to call, may be {@code null}
+     * @param requestData
+     *            the actual data to send in the request body, may be {@code null}
+     *
+     * @return the response received from the API gateway
+     *
+     * @throws {@link SmartherGatewayException}
+     *             in case of communication issues with the API gateway
      */
-    private ContentResponse requestModule(HttpMethod method, String plantId, String moduleId, String path,
-            String requestData) {
-        final String url = String.format("/plants/%s/modules/parameter/id/value/%s", plantId, moduleId);
-        return request(method, SMARTHER_MODULE_URL + url + (path.isEmpty() ? "" : ('/' + path)), requestData);
+    private ContentResponse requestModule(HttpMethod method, String plantId, String moduleId, @Nullable String path,
+            @Nullable String requestData) throws SmartherGatewayException {
+        final String url = String.format(PATH_MODULE, plantId, moduleId) + StringUtil.defaultString(path);
+        return requestBasic(method, url, requestData);
     }
 
     /**
-     * Calls the BTicino/Legrand API gateway with the given method for the given plant and module as parameters of the
-     * call.
+     * Calls the API gateway with the given http method, plant id, module id and actual data.
      *
-     * @param method Http method to perform
-     * @param plantId Location plant id to call to API gateway
-     * @param moduleId Module id to call to API gateway
-     * @param requestData data to pass along with the call as content
-     * @return the response give by API gateway
+     * @param method
+     *            the http method to make the call with
+     * @param plantId
+     *            the identifier of the plant to use
+     * @param moduleId
+     *            the identifier of the module to use
+     * @param requestData
+     *            the actual data to send in the request body, may be {@code null}
+     *
+     * @return the response received from the API gateway
+     *
+     * @throws {@link SmartherGatewayException}
+     *             in case of communication issues with the API gateway
      */
-    private ContentResponse requestModule(HttpMethod method, String plantId, String moduleId, String requestData) {
-        return requestModule(method, plantId, moduleId, "", requestData);
+    private ContentResponse requestModule(HttpMethod method, String plantId, String moduleId,
+            @Nullable String requestData) throws SmartherGatewayException {
+        return requestModule(method, plantId, moduleId, null, requestData);
     }
 
     /**
-     * Calls the BTicino/Legrand API gateway with the given method and given url as parameters of the call.
+     * Calls the API gateway with the given http method, request url and actual data.
      *
-     * @param method Http method to perform
-     * @param url url path to call to API gateway
-     * @param requestData data to pass along with the call as content
-     * @return the response given by API gateway
+     * @param method
+     *            the http method to make the call with
+     * @param url
+     *            the API operation url to call
+     * @param requestData
+     *            the actual data to send in the request body, may be {@code null}
+     *
+     * @return the response received from the API gateway
+     *
+     * @throws {@link SmartherGatewayException}
+     *             in case of communication issues with the API gateway
      */
-    private ContentResponse request(HttpMethod method, String url, String requestData) {
-        logger.debug("Request: ({}) {} - {}", method, url, requestData);
-        final Function<HttpClient, Request> call = httpClient -> httpClient.newRequest(url).method(method)
-                .header("Accept", CONTENT_TYPE).content(new StringContentProvider(requestData), CONTENT_TYPE);
+    private ContentResponse request(HttpMethod method, String url, @Nullable String requestData)
+            throws SmartherGatewayException {
+        logger.debug("Request: ({}) {} - {}", method, url, StringUtil.defaultString(requestData));
+        Function<HttpClient, Request> call = httpClient -> httpClient.newRequest(url).method(method)
+                .header(HEADER_ACCEPT, CONTENT_TYPE)
+                .content(new StringContentProvider(StringUtil.defaultString(requestData)), CONTENT_TYPE);
 
         try {
             final AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
@@ -300,15 +434,35 @@ public class SmartherApi {
             } else {
                 return requestWithRetry(call, accessToken);
             }
-        } catch (IOException e) {
-            throw new SmartherGatewayException(e.getMessage(), e);
+        } catch (SmartherGatewayException e) {
+            throw e;
         } catch (OAuthException | OAuthResponseException e) {
             throw new SmartherAuthorizationException(e.getMessage(), e);
+        } catch (IOException e) {
+            throw new SmartherGatewayException(e.getMessage(), e);
         }
     }
 
+    /**
+     * Manages a generic call to the API gateway using the given authorization access token.
+     * Retries the call if the access token is expired (refreshing it on behalf of further calls).
+     *
+     * @param call
+     *            the http call to make
+     * @param accessToken
+     *            the authorization access token to use
+     *
+     * @return the response received from the API gateway
+     *
+     * @throws {@link OAuthException}
+     *             in case of issues during the OAuth process
+     * @throws {@link OAuthResponseException}
+     *             in case of response issues during the OAuth process
+     * @throws {@link IOException}
+     *             in case of I/O issues of some sort
+     */
     private ContentResponse requestWithRetry(final Function<HttpClient, Request> call, final String accessToken)
-            throws OAuthException, IOException, OAuthResponseException {
+            throws OAuthException, OAuthResponseException, IOException {
         try {
             return connector.request(call, this.oAuthSubscriptionKey, BEARER + accessToken);
         } catch (SmartherTokenExpiredException e) {

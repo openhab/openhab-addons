@@ -15,7 +15,7 @@ package org.openhab.binding.smarther.internal.api.dto;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Smarther API Notification DTO class.
+ * The {@code Notification} class defines the dto for Smarther API notification object.
  *
  * @author Fabio Possieri - Initial contribution
  */

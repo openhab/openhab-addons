@@ -39,8 +39,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link SmartherAuthorizationServlet} manages the authorization with the BTicino/Legrand API gateway. The servlet
- * implements the Authorization Code flow and saves the resulting refreshToken with the bridge.
+ * The {@code SmartherAuthorizationServlet} class acts as the registered endpoint for the user to automatically manage
+ * the BTicino/Legrand API authorization process.
+ * The servlet follows the OAuth2 Authorization Code flow, saving the resulting refreshToken within the Smarther Bridge.
  *
  * @author Fabio Possieri - Initial contribution
  */
@@ -51,6 +52,11 @@ public class SmartherAuthorizationServlet extends HttpServlet {
 
     private static final String CONTENT_TYPE = "text/html;charset=UTF-8";
     private static final String X_FORWARDED_PROTO = "X-Forwarded-Proto";
+
+    // Http request parameters
+    private static final String PARAM_CODE = "code";
+    private static final String PARAM_STATE = "state";
+    private static final String PARAM_ERROR = "error";
 
     // Simple HTML templates for inserting messages.
     private static final String HTML_EMPTY_APPLICATIONS = "<p class='block'>Manually add a Smarther Bridge to authorize it here<p>";
@@ -79,6 +85,17 @@ public class SmartherAuthorizationServlet extends HttpServlet {
     private final String indexTemplate;
     private final String applicationTemplate;
 
+    /**
+     * Constructs a {@code SmartherAuthorizationServlet} associated to the given {@link SmartherAccountService} service
+     * and with the given html index/application templates.
+     *
+     * @param accountService
+     *            the account service to associate to the servlet
+     * @param indexTemplate
+     *            the html template to use as index page for the user
+     * @param applicationTemplate
+     *            the html template to use as application page for the user
+     */
     public SmartherAuthorizationServlet(SmartherAccountService accountService, String indexTemplate,
             String applicationTemplate) {
         this.accountService = accountService;
@@ -87,52 +104,57 @@ public class SmartherAuthorizationServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp)
+    protected void doGet(@Nullable HttpServletRequest request, @Nullable HttpServletResponse response)
             throws ServletException, IOException {
-        if (req == null || resp == null) {
+        if (request == null || response == null) {
             throw new SmartherAuthorizationException("Authorization callback with null request/response");
         }
 
-        final String servletBaseURL = extractServletBaseURL(req);
+        final String servletBaseURL = extractServletBaseURL(request);
         final Map<String, String> replaceMap = new HashMap<>();
         logger.debug("Authorization callback servlet received GET request {}", servletBaseURL);
 
         // Handle the received data
-        handleSmartherRedirect(replaceMap, servletBaseURL, req.getQueryString());
+        handleSmartherRedirect(replaceMap, servletBaseURL, request.getQueryString());
 
         // Build response for the caller
-        resp.setContentType(CONTENT_TYPE);
+        response.setContentType(CONTENT_TYPE);
         replaceMap.put(KEY_REDIRECT_URI, servletBaseURL);
         replaceMap.put(KEY_APPLICATIONS, formatApplications(applicationTemplate, servletBaseURL));
-        resp.getWriter().append(replaceKeysFromMap(indexTemplate, replaceMap));
-        resp.getWriter().close();
+        response.getWriter().append(replaceKeysFromMap(indexTemplate, replaceMap));
+        response.getWriter().close();
     }
 
     /**
-     * Extracts the servlet base URL from received HTTP request, possibly handling reverse proxies.
+     * Extracts the servlet base url from the received http request, handling eventual reverse proxy.
      *
-     * @param req The received HTTP request
-     * @return A string containing the servlet base URL
+     * @param request
+     *            the received http request
+     *
+     * @return a string containing the servlet base url
      */
-    private String extractServletBaseURL(HttpServletRequest req) {
-        final StringBuffer requestURL = req.getRequestURL();
+    private String extractServletBaseURL(HttpServletRequest request) {
+        final StringBuffer requestURL = request.getRequestURL();
 
         // Try to infer the real protocol from request headers
-        final String realProtocol = StringUtil.defaultIfBlank(req.getHeader(X_FORWARDED_PROTO), req.getScheme());
+        final String realProtocol = StringUtil.defaultIfBlank(request.getHeader(X_FORWARDED_PROTO),
+                request.getScheme());
 
         return requestURL.replace(0, requestURL.indexOf(":"), realProtocol).toString();
     }
 
     /**
-     * Handles a possible call from BTicino/Legrand API gateway to the redirect_uri. If that is the case,
-     * BTicino/Legrand API gateway will pass the authorization codes via the url and these are processed. In case of an
-     * error this is shown to the user. If the user was authorized this is passed on to the handler. Based on all these
-     * different outcomes the HTML is generated to inform the user.
+     * Handles a call from BTicino/Legrand API gateway to the redirect_uri, dispatching the authorization flow to the
+     * proper authorization handler.
+     * If the user was authorized, this is passed on to the handler; in case of an error, this is shown to the user.
+     * Based on all these different outcomes the html response is generated to inform the user.
      *
-     * @param replaceMap a map with key String values that will be mapped in the HTML templates
-     * @param servletBaseURL the servlet base, which should be used as the BTicino/Legrand API gateway redirect_uri
-     *            value
-     * @param queryString the query part of the GET request this servlet is processing
+     * @param replaceMap
+     *            a map with key string values to use in the html templates
+     * @param servletBaseURL
+     *            the servlet base url to compose the correct API gateway redirect_uri
+     * @param queryString
+     *            the querystring part of the received request, may be {@code null}
      */
     private void handleSmartherRedirect(Map<String, String> replaceMap, String servletBaseURL,
             @Nullable String queryString) {
@@ -143,9 +165,9 @@ public class SmartherAuthorizationServlet extends HttpServlet {
         if (queryString != null) {
             final MultiMap<String> params = new MultiMap<>();
             UrlEncoded.decodeTo(queryString, params, StandardCharsets.UTF_8.name());
-            final String reqCode = params.getString("code");
-            final String reqState = params.getString("state");
-            final String reqError = params.getString("error");
+            final String reqCode = params.getString(PARAM_CODE);
+            final String reqState = params.getString(PARAM_STATE);
+            final String reqError = params.getString(PARAM_ERROR);
 
             replaceMap.put(KEY_PAGE_REFRESH,
                     params.isEmpty() ? "" : String.format(HTML_META_REFRESH_CONTENT, servletBaseURL));
@@ -156,8 +178,8 @@ public class SmartherAuthorizationServlet extends HttpServlet {
                 try {
                     logger.debug("Received from authorization - state:[{}] code:[{}]", reqState, reqCode);
                     replaceMap.put(KEY_AUTHORIZED_BRIDGE, String.format(HTML_BRIDGE_AUTHORIZED,
-                            accountService.authorize(servletBaseURL, reqState, reqCode)));
-                } catch (SmartherAuthorizationException | SmartherGatewayException e) {
+                            accountService.dispatchAuthorization(servletBaseURL, reqState, reqCode)));
+                } catch (SmartherGatewayException e) {
                     logger.debug("Exception during authorizaton: ", e);
                     replaceMap.put(KEY_ERROR, String.format(HTML_ERROR, e.getMessage()));
                 }
@@ -166,11 +188,14 @@ public class SmartherAuthorizationServlet extends HttpServlet {
     }
 
     /**
-     * Formats the HTML of all available Smarther Bridge application and returns it as a String
+     * Returns an html formatted text representing all the available Smarther Bridge applications.
      *
-     * @param applicationTemplate The application template to format the application values in
-     * @param servletBaseURL the redirect_uri to be used in the authorization url created on the authorization button.
-     * @return A String with the applications formatted with the application template
+     * @param applicationTemplate
+     *            the html template to format the application with
+     * @param servletBaseURL
+     *            the redirect_uri to link to the authorization button as authorization url
+     *
+     * @return a string containing the html formatted text
      */
     private String formatApplications(String applicationTemplate, String servletBaseURL) {
         final List<SmartherAccountHandler> applications = accountService.getSmartherAccountHandlers();
@@ -181,12 +206,16 @@ public class SmartherAuthorizationServlet extends HttpServlet {
     }
 
     /**
-     * Formats the HTML of a Smarther Bridge application and returns it as a String
+     * Returns an html formatted text representing a given Smarther Bridge application.
      *
-     * @param applicationTemplate The application template to format the application values in
-     * @param handler The handler for the application to format
-     * @param servletBaseURL the redirect_uri to be used in the authorization url created on the authorization button
-     * @return A String with the application formatted with the application template
+     * @param applicationTemplate
+     *            the html template to format the application with
+     * @param handler
+     *            the Smarther application handler to use
+     * @param servletBaseURL
+     *            the redirect_uri to link to the authorization button as authorization url
+     *
+     * @return a string containing the html formatted text
      */
     private String formatApplication(String applicationTemplate, SmartherAccountHandler handler,
             String servletBaseURL) {
@@ -196,7 +225,7 @@ public class SmartherAuthorizationServlet extends HttpServlet {
         map.put(APPLICATION_NAME, handler.getLabel());
 
         if (handler.isAuthorized()) {
-            final String availableLocations = Location.toNameString(handler.listLocations());
+            final String availableLocations = Location.toNameString(handler.getLocations());
             map.put(APPLICATION_AUTHORIZED_CLASS, " authorized");
             map.put(APPLICATION_LOCATIONS, String.format(" (Available locations: %s)", availableLocations));
         } else {
@@ -209,12 +238,15 @@ public class SmartherAuthorizationServlet extends HttpServlet {
     }
 
     /**
-     * Replaces all keys from the map found in the template with values from the map. If the key is not found the key
-     * will be kept in the template.
+     * Replaces all keys found in the template with the values matched from the map.
+     * If a key is not found in the map, it is kept unchanged in the template.
      *
-     * @param template template to replace keys with values
-     * @param map map with key value pairs to replace in the template
-     * @return a template with keys replaced
+     * @param template
+     *            the template to replace keys on
+     * @param map
+     *            the map containing the key/value pairs to replace in the template
+     *
+     * @return a string containing the resulting template after the replace process
      */
     private String replaceKeysFromMap(String template, Map<String, String> map) {
         final Matcher m = MESSAGE_KEY_PATTERN.matcher(template);

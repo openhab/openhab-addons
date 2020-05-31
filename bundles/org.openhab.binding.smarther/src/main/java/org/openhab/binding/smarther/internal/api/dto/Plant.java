@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Smarther API Plant DTO class.
+ * The {@code Plant} class defines the dto for Smarther API plant object.
  *
  * @author Fabio Possieri - Initial contribution
  */

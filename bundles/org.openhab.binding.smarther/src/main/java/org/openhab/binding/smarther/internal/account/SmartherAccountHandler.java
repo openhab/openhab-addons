@@ -15,18 +15,21 @@ package org.openhab.binding.smarther.internal.account;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.smarther.internal.api.dto.Location;
 import org.openhab.binding.smarther.internal.api.dto.Module;
-import org.openhab.binding.smarther.internal.api.dto.ModuleSettings;
 import org.openhab.binding.smarther.internal.api.dto.ModuleStatus;
 import org.openhab.binding.smarther.internal.api.dto.Plant;
 import org.openhab.binding.smarther.internal.api.dto.Program;
 import org.openhab.binding.smarther.internal.api.dto.Subscription;
+import org.openhab.binding.smarther.internal.api.exception.SmartherGatewayException;
+import org.openhab.binding.smarther.internal.model.ModuleSettings;
 
 /**
- * Interface to decouple Smarther Account Handler implementation from other code.
+ * The {@code SmartherAccountHandler} interface is used to decouple the Smarther account handler implementation from
+ * other Bridge code.
  *
  * @author Fabio Possieri - Initial contribution
  */
@@ -34,109 +37,188 @@ import org.openhab.binding.smarther.internal.api.dto.Subscription;
 public interface SmartherAccountHandler extends ThingHandler {
 
     /**
-     * @return The {@link ThingUID} associated with this Smarther Account Handler
+     * Returns the {@link ThingUID} associated with this Smarther account handler.
+     *
+     * @return the thing UID associated with this Smarther account handler
      */
     ThingUID getUID();
 
     /**
-     * @return The label of the Smarther Bridge associated with this Smarther Account Handler
+     * Returns the label of the Smarther Bridge associated with this Smarther account handler.
+     *
+     * @return a string containing the bridge label associated with the account handler
      */
     String getLabel();
 
     /**
-     * @return List of available locations associated with this Smarther Account Handler
+     * Returns the available locations associated with this Smarther account handler.
+     *
+     * @return the list of available locations, or an empty {@link List} in case of no locations found
      */
-    List<Location> listLocations();
+    List<Location> getLocations();
 
     /**
-     * @param plantId Id of the location to search for
-     * @return true if the given location is managed by the handler
+     * Checks whether the given location is managed by this Smarther account handler
+     *
+     * @param plantId
+     *            the identifier of the location to search for
+     *
+     * @return {@code true} if the given location is found, {@code false} otherwise
      */
     boolean hasLocation(String plantId);
 
     /**
-     * @return List of available plants or an empty list if nothing was returned
+     * Returns the plants registered under the Smarther account the bridge has been configured with.
+     *
+     * @return the list of registered plants, or an empty {@link List} in case of no plants found
+     *
+     * @throws {@link SmartherGatewayException}
+     *             in case of communication issues with the Smarther API
      */
-    List<Plant> listPlants();
+    List<Plant> getPlants() throws SmartherGatewayException;
 
     /**
-     * @return The plant current subscription list or an empty list if nothing was returned
+     * Returns the subscriptions registered to the C2C Webhook, where modules status notifications are currently sent
+     * for all the plants.
+     *
+     * @return the list of registered subscriptions, or an empty {@link List} in case of no subscriptions found
+     *
+     * @throws {@link SmartherGatewayException}
+     *             in case of communication issues with the Smarther API
      */
-    List<Subscription> getSubscriptionList();
+    List<Subscription> getSubscriptions() throws SmartherGatewayException;
 
     /**
-     * @param plantId Identifier of the location plant the module is contained in
-     * @param notificationUrl Notification Url the new subscription will send notifications to
-     * @return The identifier of the newly added subscription
+     * Subscribes a plant to the C2C Webhook to start receiving modules status notifications.
+     *
+     * @param plantId
+     *            the identifier of the plant to be subscribed
+     * @param notificationUrl
+     *            the url notifications will have to be sent to for the given plant
+     *
+     * @return the identifier this subscription has been registered under
+     *
+     * @throws {@link SmartherGatewayException}
+     *             in case of communication issues with the Smarther API
      */
-    String addSubscription(String plantId, String notificationUrl);
+    String subscribePlant(String plantId, String notificationUrl) throws SmartherGatewayException;
 
     /**
-     * @param plantId Identifier of the location plant the module is contained in
-     * @param subscriptionId Identifier of the subscription to be removed
+     * Unsubscribes a plant from the C2C Webhook to stop receiving modules status notifications.
+     *
+     * @param plantId
+     *            the identifier of the plant to be unsubscribed
+     * @param subscriptionId
+     *            the identifier of the subscription to be removed for the given plant
+     *
+     * @return {@code true} if the plant is successfully unsubscribed, {@code false} otherwise
+     *
+     * @throws {@link SmartherGatewayException}
+     *             in case of communication issues with the Smarther API
      */
-    void removeSubscription(String plantId, String subscriptionId);
+    void unsubscribePlant(String plantId, String subscriptionId) throws SmartherGatewayException;
 
     /**
-     * @param location Location plant to get the topology map of
-     * @return List of modules contained in the given location or an empty list if nothing was returned
+     * Returns the chronothermostat modules registered at the given location.
+     *
+     * @param location
+     *            the identifier of the location
+     *
+     * @return the list of registered modules, or an empty {@link List} if the location contains no module or in case of
+     *         communication issues with the Smarther API
      */
-    List<Module> listModules(Location location);
+    List<Module> getLocationModules(Location location);
 
     /**
-     * @param plantId Identifier of the location plant the module is contained in
-     * @param moduleId Identifier of the module to query the status for
-     * @return The module current status or an empty list if nothing was returned
+     * Returns the current status of a given chronothermostat module.
+     *
+     * @param plantId
+     *            the identifier of the plant
+     * @param moduleId
+     *            the identifier of the chronothermostat module inside the plant
+     *
+     * @return the current status of the chronothermostat module
+     *
+     * @throws {@link SmartherGatewayException}
+     *             in case of communication issues with the Smarther API
      */
-    ModuleStatus getModuleStatus(String plantId, String moduleId);
+    ModuleStatus getModuleStatus(String plantId, String moduleId) throws SmartherGatewayException;
 
     /**
-     * @param settings The new settings to be remotely applied to the module
-     * @return true if the operation succeeded, false otherwise
+     * Sends new settings to be applied to a given chronothermostat module.
+     *
+     * @param settings
+     *            the module settings to be applied
+     *
+     * @return {@code true} if the settings have been successfully applied, {@code false} otherwise
+     *
+     * @throws {@link SmartherGatewayException}
+     *             in case of communication issues with the Smarther API
      */
-    boolean setModuleStatus(ModuleSettings moduleSettings);
+    boolean setModuleStatus(ModuleSettings moduleSettings) throws SmartherGatewayException;
 
     /**
-     * @param plantId Identifier of the location plant the module is contained in
-     * @param moduleId Identifier of the module to get the program list for
-     * @return The module current program list or an empty list if nothing was returned
+     * Returns the automatic mode programs registered for the given chronothermostat module.
+     *
+     * @param plantId
+     *            the identifier of the plant
+     * @param moduleId
+     *            the identifier of the chronothermostat module inside the plant
+     *
+     * @return the list of registered programs, or an empty {@link List} in case of no programs found
+     *
+     * @throws {@link SmartherGatewayException}
+     *             in case of communication issues with the Smarther API
      */
-    List<Program> getModuleProgramList(String plantId, String moduleId);
+    List<Program> getModulePrograms(String plantId, String moduleId) throws SmartherGatewayException;
 
     /**
-     * @return true if the Smarther Bridge is authorized.
+     * Checks whether the Smarther Bridge associated with this Smarther account handler is authorized by Smarther API.
+     *
+     * @return {@code true} if the Bridge is authorized, {@code false} otherwise
      */
     boolean isAuthorized();
 
     /**
-     * @return true if the device is online
+     * Checks whether the Smarther Bridge thing is online.
+     *
+     * @return {@code true} if the Bridge is online, {@code false} otherwise
      */
     boolean isOnline();
 
     /**
-     * Calls BTicino/Legrand API gateway to obtain refresh and access tokens and persist data with Thing.
+     * Performs the authorization procedure with Legrand/Bticino portal.
+     * In case of success, the returned refresh/access tokens and the notification url are stored in the Bridge.
      *
-     * @param redirectUrl The redirect url BTicino/Legrand portal calls back to
-     * @param reqCode The unique code passed by BTicino/Legrand portal to obtain the refresh and access tokens
-     * @param notificationUrl The endpoint BTicino/Legrand C2C notification service will send status notifications to
-     *            once authorized
-     * @return The name of the BTicino/Legrand portal user that is authorized
+     * @param redirectUrl
+     *            the redirect url BTicino/Legrand portal calls back to
+     * @param reqCode
+     *            the unique code passed by BTicino/Legrand portal to obtain the refresh and access tokens
+     * @param notificationUrl
+     *            the endpoint C2C Webhook service will send module status notifications to, once authorized
+     *
+     * @return a string containing the name of the BTicino/Legrand portal user that is authorized
      */
-    String authorize(String redirectUrl, String reqCode, String notificationUrl);
+    String authorize(String redirectUrl, String reqCode, String notificationUrl) throws SmartherGatewayException;
 
     /**
-     * Returns true if the given Thing UID relates to this {@link SmartherAccountHandler} instance.
+     * Compares this Smarther account handler instance to a given {@link Thing} UID.
      *
-     * @param thingUID The Thing UID to check
-     * @return true if it relates to the given Thing UID
+     * @param thingUID
+     *            the Thing UID the account handler is compared to
+     *
+     * @return {@code true} if the two instances match, {@code false} otherwise
      */
     boolean equalsThingUID(String thingUID);
 
     /**
-     * Formats the Url to use to call BTicino/Legrand API gateway to authorize the application.
+     * Formats the url used to call the Smarther API in order to authorize the Smarther Bridge associated with this
+     * Smarther account handler.
      *
-     * @param redirectUri The uri BTicino/Legrand portal will redirect back to
-     * @return The formatted url that should be used to call BTicino/Legrand API gateway with
+     * @param redirectUri
+     *            the uri BTicino/Legrand portal redirects back to
+     *
+     * @return a string containing the formatted url, or the empty string ("") in case of issue
      */
     String formatAuthorizationUrl(String redirectUri);
 

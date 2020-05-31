@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Smarther API Modules DTO class.
+ * The {@code Modules} class defines the dto for Smarther API list of modules.
  *
  * @author Fabio Possieri - Initial contribution
  */

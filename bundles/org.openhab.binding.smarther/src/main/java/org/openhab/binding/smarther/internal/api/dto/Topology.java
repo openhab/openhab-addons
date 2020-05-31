@@ -15,7 +15,7 @@ package org.openhab.binding.smarther.internal.api.dto;
 import java.util.List;
 
 /**
- * Smarther API Topology DTO class.
+ * The {@code Topology} class defines the dto for Smarther API topology object.
  *
  * @author Fabio Possieri - Initial contribution
  */

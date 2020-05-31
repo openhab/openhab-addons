@@ -15,19 +15,20 @@ package org.openhab.binding.smarther.internal.api.exception;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Smarther exception indicating that a subscription for given plant already exists.
+ * Signals that a "subscription for given plant already exists" C2C Webhook issue with API gateway has occurred.
  *
  * @author Fabio Possieri - Initial contribution
  */
 @NonNullByDefault
-public class SmartherSubscriptionAlreadyExistsException extends SmartherGatewayException {
+public class SmartherSubscriptionAlreadyExistsException extends SmartherNotificationException {
 
     private static final long serialVersionUID = 5185321219105493105L;
 
     /**
-     * Constructor
+     * Constructs a {@code SmartherSubscriptionAlreadyExistsException} with the specified detail message.
      *
-     * @param message BTicino/Legrand API gateway error message
+     * @param message
+     *            the error message returned from the API gateway
      */
     public SmartherSubscriptionAlreadyExistsException(String message) {
         super(message);

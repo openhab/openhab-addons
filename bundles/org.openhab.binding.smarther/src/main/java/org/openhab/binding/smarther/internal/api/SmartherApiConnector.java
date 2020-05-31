@@ -29,6 +29,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.smarther.internal.api.exception.SmartherAuthorizationException;
 import org.openhab.binding.smarther.internal.api.exception.SmartherGatewayException;
+import org.openhab.binding.smarther.internal.api.exception.SmartherInvalidResponseException;
 import org.openhab.binding.smarther.internal.api.exception.SmartherSubscriptionAlreadyExistsException;
 import org.openhab.binding.smarther.internal.api.exception.SmartherTokenExpiredException;
 import org.slf4j.Logger;
@@ -40,8 +41,8 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * Class to perform the actual call to the BTicino/Legrand API gateway, interprets the returned Http status codes, and
- * handles the error codes returned by the API gateway.
+ * The {@code SmartherApiConnector} class is used to perform the actual call to the API gateway.
+ * It handles the returned http status codes and the error codes eventually returned by the API gateway itself.
  *
  * Response mappings:
  * <ul>
@@ -89,10 +90,12 @@ public class SmartherApiConnector {
     private final ScheduledExecutorService scheduler;
 
     /**
-     * Constructor.
+     * Constructs a {@code SmartherApiConnector} to the API gateway with the specified scheduler and http client.
      *
-     * @param scheduler Scheduler to reschedule calls when rate limit exceeded or call not ready
-     * @param httpClient http client to use to make http calls
+     * @param scheduler
+     *            the scheduler to be used to reschedule calls when rate limit exceeded or call not succeeded
+     * @param httpClient
+     *            the http client to be used to make http calls to the API gateway
      */
     public SmartherApiConnector(ScheduledExecutorService scheduler, HttpClient httpClient) {
         this.scheduler = scheduler;
@@ -100,16 +103,23 @@ public class SmartherApiConnector {
     }
 
     /**
-     * Performs a call to the BTicino/Legrand API gateway and returns the raw response. In there are problems this
-     * method can throw a SmartherGateway exception.
+     * Performs a call to the API gateway and returns the raw response.
      *
-     * @param requester The function to construct the request with http client that is passed as argument to the
-     *            function
-     * @param subscription The subscription string to use in the Subscription header
-     * @param authorization The authorization string to use in the Authorization header
-     * @return the raw reponse given
+     * @param requester
+     *            the function to construct the request, using the http client that is passed as argument to the
+     *            function itself
+     * @param subscription
+     *            the subscription string to be used in the call {@code Subscription} header
+     * @param authorization
+     *            the authorization string to be used in the call {@code Authorization} header
+     *
+     * @return the raw response returned by the API gateway
+     *
+     * @throws {@link SmartherGatewayException}
+     *             if the call failed due to an issue with the API gateway
      */
-    public ContentResponse request(Function<HttpClient, Request> requester, String subscription, String authorization) {
+    public ContentResponse request(Function<HttpClient, Request> requester, String subscription, String authorization)
+            throws SmartherGatewayException {
         final Caller caller = new Caller(requester, subscription, authorization);
 
         try {
@@ -120,8 +130,8 @@ public class SmartherApiConnector {
         } catch (ExecutionException e) {
             final Throwable cause = e.getCause();
 
-            if (cause instanceof RuntimeException) {
-                throw (RuntimeException) cause;
+            if (cause instanceof SmartherGatewayException) {
+                throw (SmartherGatewayException) cause;
             } else {
                 throw new SmartherGatewayException(e.getMessage(), e);
             }
@@ -129,8 +139,9 @@ public class SmartherApiConnector {
     }
 
     /**
-     * Class to handle a call to the BTicino/Legrand API gateway. In case of rate limiting or not finished jobs it will
-     * retry in a specified time frame. It retries a number of times and then gives up with an exception.
+     * The {@code Caller} class represents the handler to make calls to the API gateway.
+     * In case of rate limiting or not finished jobs, it will retry a number of times in a specified timeframe then
+     * gives up with an exception.
      *
      * @author Fabio Possieri - Initial contribution
      */
@@ -144,12 +155,15 @@ public class SmartherApiConnector {
         private int attempts;
 
         /**
-         * Constructor.
+         * Constructs a {@code Caller} to the API gateway with the specified requester, subscription and authorization.
          *
-         * @param requester The function to construct the request with http client that is passed as argument to the
-         *            function
-         * @param subscription The subscription string to use in the Subscription header
-         * @param authorization The authorization string to use in the Authorization header
+         * @param requester
+         *            the function to construct the request, using the http client that is passed as argument to the
+         *            function itself
+         * @param subscription
+         *            the subscription string to be used in the call {@code Subscription} header
+         * @param authorization
+         *            the authorization string to be used in the call {@code Authorization} header
          */
         public Caller(Function<HttpClient, Request> requester, String subscription, String authorization) {
             this.requester = requester;
@@ -158,12 +172,12 @@ public class SmartherApiConnector {
         }
 
         /**
-         * Performs the request as a Future. It will set the Future state once it's finished. This method will be
-         * scheduled again when the call is to be retried. The original caller should call the get method on the Future
-         * to wait for the call to finish. The first try is not scheduled so if it succeeds on the first call the get
-         * method directly returns the value.
+         * Performs the request as a {@link CompletableFuture}, setting its state once finished.
+         * The original caller should call the {@code get} method on the Future to wait for the call to finish.
+         * The first attempt is not scheduled so, if the first call succeeds, the {@code get} method directly returns
+         * the value. This method is rescheduled in case the call is to be retried.
          *
-         * @return the Future holding the call
+         * @return the {@link CompletableFuture} holding the call
          */
         public CompletableFuture<ContentResponse> call() {
             attempts++;
@@ -185,6 +199,8 @@ public class SmartherApiConnector {
                 }
             } catch (ExecutionException e) {
                 future.completeExceptionally(e.getCause());
+            } catch (SmartherGatewayException e) {
+                future.completeExceptionally(e);
             } catch (RuntimeException | TimeoutException e) {
                 future.completeExceptionally(e);
             } catch (InterruptedException e) {
@@ -195,15 +211,18 @@ public class SmartherApiConnector {
         }
 
         /**
-         * Processes the response of the BTicino/Legrand API gateway call and handles the HTTP status codes. The method
-         * returns true
-         * if the response indicates a successful and false if the call should be retried. If there were other problems
-         * a SmartherGateway exception is thrown indicating no retry should be done an the user should be informed.
+         * Processes the response from the API gateway call and handles the http status codes.
          *
-         * @param response the response given by the API gateway
-         * @return true if the response indicated a successful call, false if the call should be retried
+         * @param response
+         *            the response content returned by the API gateway
+         *
+         * @return {@code true} if the call was successful, {@code false} if the call failed in a way that can be
+         *         retried
+         *
+         * @throws {@link SmartherGatewayException}
+         *             if the call failed due to an irrecoverable issue and cannot be retried (user should be informed)
          */
-        private boolean processResponse(ContentResponse response) {
+        private boolean processResponse(ContentResponse response) throws SmartherGatewayException {
             boolean success = false;
 
             logger.debug("Response Code: {}", response.getStatus());
@@ -269,16 +288,22 @@ public class SmartherApiConnector {
         }
 
         /**
-         * Processes the responded content if the status code indicated an error. If the response could be parsed the
-         * content error message is returned. If the error indicated a token or authorization error a specific exception
-         * is thrown. If an error message is thrown the caller throws the appropriate exception based on the state with
-         * which the error was returned by the BTicino/Legrand API gateway.
+         * Processes the responded content if the status code indicated an error.
          *
-         * @param response content returned by API gateway
-         * @return the error messages
+         * @param response
+         *            the response content returned by the API gateway
+         *
+         * @return the error message extracted from the response content
+         *
+         * @throws {@link SmartherTokenExpiredException}
+         *             if the authorization access token used to communicate with the API gateway has expired
+         * @throws {@link SmartherAuthorizationException}
+         *             if a generic authorization issue with the API gateway has occurred
+         * @throws {@link SmartherInvalidResponseException}
+         *             if the response received from the API gateway cannot be parsed
          */
         private String processErrorState(ContentResponse response)
-                throws SmartherTokenExpiredException, SmartherAuthorizationException {
+                throws SmartherTokenExpiredException, SmartherAuthorizationException, SmartherInvalidResponseException {
             try {
                 final JsonElement element = parser.parse(response.getContentAsString());
 
@@ -304,7 +329,7 @@ public class SmartherApiConnector {
                 return "Unknown response";
             } catch (JsonSyntaxException e) {
                 logger.warn("Response was not json: ", e);
-                return "Unknown response";
+                throw new SmartherInvalidResponseException(e.getMessage());
             }
         }
     }

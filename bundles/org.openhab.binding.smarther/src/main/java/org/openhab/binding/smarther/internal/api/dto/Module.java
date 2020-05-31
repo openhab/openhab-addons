@@ -12,10 +12,12 @@
  */
 package org.openhab.binding.smarther.internal.api.dto;
 
+import org.openhab.binding.smarther.internal.util.StringUtil;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Smarther API Module DTO class.
+ * The {@code Module} class defines the dto for Smarther API module object.
  *
  * @author Fabio Possieri - Initial contribution
  */
@@ -27,7 +29,7 @@ public class Module {
     private String name;
 
     public String getDeviceType() {
-        return deviceType;
+        return StringUtil.capitalizeAll(deviceType);
     }
 
     public String getId() {

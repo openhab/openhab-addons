@@ -19,7 +19,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
- * Utility class to get the Gson instance used to parse the Smarther API data.
+ * The {@code ModelUtil} utility class to get the {@code Gson} instance to parse the Smarther API data with.
  *
  * @author Fabio Possieri - Initial contribution
  */
@@ -34,7 +34,9 @@ public final class ModelUtil {
     }
 
     /**
-     * @return Returns the Gson instance to parse the Smarther API data.
+     * Returns the {@code Gson} instance to parse the Smarther API data with.
+     *
+     * @return the {@code Gson} instance
      */
     public static Gson gsonInstance() {
         return GSON;

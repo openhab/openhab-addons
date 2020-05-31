@@ -26,7 +26,7 @@ import org.openhab.binding.smarther.internal.util.DateUtil;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Smarther API Chronothermostat DTO class.
+ * The {@code Chronothermostat} class defines the dto for Smarther API chronothermostat object.
  *
  * @author Fabio Possieri - Initial contribution
  */

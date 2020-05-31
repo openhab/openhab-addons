@@ -16,12 +16,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link StringUtil} class defines common String utility functions, which are used across the whole binding.
+ * The {@code StringUtil} class defines common string utility functions used across the whole binding.
  *
  * @author Fabio Possieri - Initial contribution
  */
@@ -32,31 +34,52 @@ public class StringUtil {
     private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
 
     /**
-     * Checks if a String is whitespace, empty ("") or null.
+     * Checks if a string is whitespace, empty ("") or {@code null}.
      *
-     * @param str the String to check, may be null
-     * @return true if the String is null, empty or whitespace
+     * @param str
+     *            the string to check, may be {@code null}
+     *
+     * @return {@code true} if the string is {@code null}, empty or whitespace
      */
     public static boolean isBlank(@Nullable String str) {
         return (str == null || str.trim().isEmpty());
     }
 
     /**
-     * Returns either the passed in String, or if the String is whitespace, empty ("") or null, the value of defaultStr.
+     * Returns either the passed in string or, if the string is {@code null}, an empty string ("").
      *
-     * @param str the String to check, may be null
-     * @param defaultStr the default String to return
-     * @return the passed in String, or the default
+     * @param str
+     *            the string to check, may be {@code null}
+     *
+     * @return the passed in string, or the empty string if it was {@code null}
+     *
+     */
+    public static final String defaultString(@Nullable String str) {
+        return (str == null) ? "" : str;
+    }
+
+    /**
+     * Returns either the passed in string or, if the string is whitespace, empty ("") or {@code null}, a default value.
+     *
+     * @param str
+     *            the string to check, may be {@code null}
+     * @param defaultStr
+     *            the default string to return
+     *
+     * @return the passed in string, or the default one
      */
     public static String defaultIfBlank(String str, String defaultStr) {
         return StringUtil.isBlank(str) ? defaultStr : str;
     }
 
     /**
-     * Strips whitespace from the start and end of a String returning null if the String is empty ("") after the strip.
+     * Strips whitespace from the start and end of a string returning {@code null} if the string is empty ("") after the
+     * strip.
      *
-     * @param str the String to be stripped, may be null
-     * @return the stripped String, null if whitespace, empty or null String input
+     * @param str
+     *            the string to be stripped, may be {@code null}
+     *
+     * @return the stripped string, {@code null} if whitespace, empty or {@code null} input string
      */
     public static @Nullable String stripToNull(@Nullable String str) {
         if (str == null) {
@@ -67,11 +90,13 @@ public class StringUtil {
     }
 
     /**
-     * Capitalizes a String changing the first letter to title case as per {@link Character#toTitleCase(char)}. No other
+     * Capitalizes a string changing the first letter to title case as per {@link Character#toTitleCase(char)}. No other
      * letters are changed.
      *
-     * @param str the String to capitalize, may be null
-     * @return the capitalized String, null if null String input
+     * @param str
+     *            the string to capitalize, may be {@code null}
+     *
+     * @return the capitalized string, {@code null} if {@code null} input string
      */
     public static @Nullable String capitalize(@Nullable String str) {
         if (str == null || str.isEmpty()) {
@@ -81,13 +106,39 @@ public class StringUtil {
     }
 
     /**
-     * Get the contents of an <code>InputStream</code> as a String using the default character encoding of the platform.
-     * This method buffers the input internally, so there is no need to use a <code>BufferedInputStream</code>.
+     * Converts all the whitespace separated words in a string into capitalized words, that is each word is made up of a
+     * titlecase character and then a series of lowercase characters.
      *
-     * @param input the <code>InputStream</code> to read from
-     * @return the requested String
-     * @throws NullPointerException if the input is null
-     * @throws IOException if an I/O error occurs
+     * @param str
+     *            the string to capitalize, may be {@code null}
+     *
+     * @return the capitalized string, {@code null} if {@code null} input string
+     */
+    public static @Nullable String capitalizeAll(@Nullable String str) {
+        if (str == null || str.isEmpty()) {
+            return str;
+        }
+        // Java 8 version
+        return Arrays.stream(str.split("\\s+")).map(t -> t.substring(0, 1).toUpperCase() + t.substring(1).toLowerCase())
+                .collect(Collectors.joining(" "));
+        // Ready for Java 9+
+        // return Pattern.compile("\\b(.)(.*?)\\b").matcher(str)
+        // .replaceAll(match -> match.group(1).toUpperCase() + match.group(2).toLowerCase());
+    }
+
+    /**
+     * Get the contents of an {@link InputStream} as a string using the default character encoding of the platform.
+     * This method buffers the input internally, so there is no need to use a {@code BufferedInputStream}.
+     *
+     * @param input
+     *            the {@code InputStream} to read from
+     *
+     * @return the requested string
+     *
+     * @throws {@link NullPointerException}
+     *             if the input is {@code null}
+     * @throws {@link IOException}
+     *             if an I/O error occurs
      */
     public static String streamToString(InputStream input) throws IOException {
         InputStreamReader reader = new InputStreamReader(input);

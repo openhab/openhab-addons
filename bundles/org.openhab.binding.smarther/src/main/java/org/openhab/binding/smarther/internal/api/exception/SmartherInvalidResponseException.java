@@ -15,22 +15,22 @@ package org.openhab.binding.smarther.internal.api.exception;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Signals that an "access token expired" OAuth2 authorization issue with API gateway has occurred.
+ * Signals that an "invalid response" messaging issue with API gateway has occurred.
  *
  * @author Fabio Possieri - Initial contribution
  */
 @NonNullByDefault
-public class SmartherTokenExpiredException extends SmartherAuthorizationException {
+public class SmartherInvalidResponseException extends SmartherGatewayException {
 
-    private static final long serialVersionUID = 6967072975936269922L;
+    private static final long serialVersionUID = 3166922285185480855L;
 
     /**
-     * Constructs a {@code SmartherTokenExpiredException} with the specified detail message.
+     * Constructs a {@code SmartherInvalidResponseException} with the specified detail message.
      *
      * @param message
      *            the error message returned from the API gateway
      */
-    public SmartherTokenExpiredException(String message) {
+    public SmartherInvalidResponseException(String message) {
         super(message);
     }
 

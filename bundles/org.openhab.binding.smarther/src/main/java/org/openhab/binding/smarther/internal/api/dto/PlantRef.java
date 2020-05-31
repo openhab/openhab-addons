@@ -13,7 +13,7 @@
 package org.openhab.binding.smarther.internal.api.dto;
 
 /**
- * Smarther API PlantRef DTO class.
+ * The {@code PlantRef} class defines the dto for Smarther API plant reference object.
  *
  * @author Fabio Possieri - Initial contribution
  */

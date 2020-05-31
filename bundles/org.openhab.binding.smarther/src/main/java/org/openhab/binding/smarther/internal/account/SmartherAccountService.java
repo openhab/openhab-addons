@@ -45,7 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link SmartherAccountService} class to manage the servlets and bind authorization servlet to bridges.
+ * The {@code SmartherAccountService} class manages the servlets and bind authorization servlet to Bridges.
  *
  * @author Fabio Possieri - Initial contribution
  */
@@ -57,11 +57,11 @@ public class SmartherAccountService {
     private static final String IMAGE_PATH = "web";
     private static final String TEMPLATE_APPLICATION = TEMPLATE_PATH + "application.html";
     private static final String TEMPLATE_INDEX = TEMPLATE_PATH + "index.html";
-    private static final String ERROR_UKNOWN_BRIDGE = "Returned 'state' by doesn't match any Bridges. Has the bridge been removed?";
+    private static final String ERROR_UKNOWN_BRIDGE = "Returned 'state' doesn't match any Bridges. Has the bridge been removed?";
 
     private final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private final List<SmartherAccountHandler> handlers = new ArrayList<>();
+    private final List<SmartherAccountHandler> handlers = new ArrayList<SmartherAccountHandler>();
 
     private @NonNullByDefault({}) HttpService httpService;
     private @NonNullByDefault({}) BundleContext bundleContext;
@@ -95,17 +95,19 @@ public class SmartherAccountService {
     }
 
     /**
-     * Creates a new {@link SmartherAuthorizationServlet}.
+     * Constructs a {@code SmartherAuthorizationServlet}.
      *
      * @return the newly created servlet
-     * @throws IOException thrown when an HTML template could not be read
+     *
+     * @throws {@link IOException}
+     *             in case of issues reading one of the internal html templates
      */
     private HttpServlet createAuthorizationServlet() throws IOException {
         return new SmartherAuthorizationServlet(this, readTemplate(TEMPLATE_INDEX), readTemplate(TEMPLATE_APPLICATION));
     }
 
     /**
-     * Creates a new {@link SmartherNotificationServlet}.
+     * Constructs a {@code SmartherNotificationServlet}.
      *
      * @return the newly created servlet
      */
@@ -114,11 +116,15 @@ public class SmartherAccountService {
     }
 
     /**
-     * Reads a template from file and returns the content as String.
+     * Reads a template from file and returns its content as string.
      *
-     * @param templateName name of the template file to read
-     * @return The content of the template file
-     * @throws IOException thrown when an HTML template could not be read
+     * @param templateName
+     *            the name of the template file to read
+     *
+     * @return a string representing the content of the template file
+     *
+     * @throws {@link IOException}
+     *             in case of issues reading the template from file
      */
     private String readTemplate(String templateName) throws IOException {
         final URL index = bundleContext.getBundle().getEntry(templateName);
@@ -134,15 +140,23 @@ public class SmartherAccountService {
     }
 
     /**
-     * Call with BTicino/Legrand API redirect uri returned State and Code values to get the refresh and access tokens
-     * and persist these values
+     * Dispatches the received Smarther API authorization response to the proper Smarther account handler.
+     * Part of the Legrand/Bticino OAuth2 authorization process.
      *
-     * @param servletBaseURL the servlet base, which will be the BTicino/Legrand API redirect url
-     * @param state The BTicino/Legrand API returned state value
+     * @param servletBaseURL
+     *            the authorization servlet url needed to derive the notification endpoint url
+     * @param state
+     *            the authorization state needed to match the correct Smarther account handler to authorize
      * @param code The BTicino/Legrand API returned code value
-     * @return returns the name of the BTicino/Legrand portal user that is authorized
+     *            the authorization code to authorize with the account handler
+     *
+     * @return a string containing the name of the authorized BTicino/Legrand portal user
+     *
+     * @throws {@link SmartherGatewayException}
+     *             in case of communication issues with the Smarther API or no account handler found
      */
-    public String authorize(String servletBaseURL, String state, String code) {
+    public String dispatchAuthorization(String servletBaseURL, String state, String code)
+            throws SmartherGatewayException {
         // Searches the SmartherAccountHandler instance that matches the given state
         final SmartherAccountHandler listener = getAccountListenerByUID(state);
 
@@ -163,11 +177,15 @@ public class SmartherAccountService {
     }
 
     /**
-     * Listener to BTicino/Legrand C2C notification service received a new notification to be handled
+     * Dispatches the received C2C Webhook notification to the proper Smarther notification handler.
      *
-     * @param notification The received notification
+     * @param notification
+     *            the received notification to handle
+     *
+     * @throws {@link SmartherGatewayException}
+     *             in case of communication issues with the Smarther API or no notification handler found
      */
-    public void handleNotification(Notification notification) {
+    public void dispatchNotification(Notification notification) throws SmartherGatewayException {
         // Searches the SmartherAccountHandler instance that matches the given location
         final SmartherAccountHandler listener = getAccountListenerByLocation(
                 notification.getData().toChronothermostat().getSender().getPlant().getId());
@@ -192,33 +210,43 @@ public class SmartherAccountService {
     }
 
     /**
-     * @param listener Adds the given handler
+     * Adds a {@link SmartherAccountHandler} handler to the account service handlers list.
+     *
+     * @param handler
+     *            the handler to add to the handlers list
      */
-    public void addSmartherAccountHandler(SmartherAccountHandler listener) {
-        if (!handlers.contains(listener)) {
-            handlers.add(listener);
+    public void addSmartherAccountHandler(SmartherAccountHandler handler) {
+        if (!handlers.contains(handler)) {
+            handlers.add(handler);
         }
     }
 
     /**
-     * @param handler Removes the given handler
+     * Removes a {@link SmartherAccountHandler} handler from the account service handlers list.
+     *
+     * @param handler
+     *            the handler to remove from the handlers list
      */
     public void removeSmartherAccountHandler(SmartherAccountHandler handler) {
         handlers.remove(handler);
     }
 
     /**
-     * @return Returns all {@link SmartherAccountHandler}s.
+     * Returns all the account service {@link SmartherAccountHandler} handlers list.
+     *
+     * @return the account service handlers list
      */
     public List<SmartherAccountHandler> getSmartherAccountHandlers() {
         return handlers;
     }
 
     /**
-     * Searches the {@link SmartherAccountHandler} that matches the given thing UID
+     * Searches the {@link SmartherAccountHandler} handler that matches the given Thing UID.
      *
-     * @param thingUID UID of the thing to match the handler with
-     * @return the {@link SmartherAccountHandler} matching the given thing UID or null
+     * @param thingUID
+     *            the UID of the Thing to match the handler with
+     *
+     * @return the handler matching the given Thing UID, or {@code null} if none matches
      */
     private @Nullable SmartherAccountHandler getAccountListenerByUID(String thingUID) {
         final Optional<SmartherAccountHandler> maybeListener = handlers.stream().filter(l -> l.equalsThingUID(thingUID))
@@ -227,10 +255,12 @@ public class SmartherAccountService {
     }
 
     /**
-     * Searches the {@link SmartherAccountHandler} that matches the given location ID
+     * Searches the {@link SmartherAccountHandler} handler that matches the given location plant.
      *
-     * @param plantId Id of the location to match the handler with
-     * @return the {@link SmartherAccountHandler} matching the given location or null
+     * @param plantId
+     *            the identifier of the plant to match the handler with
+     *
+     * @return the handler matching the given location plant, or {@code null} if none matches
      */
     private @Nullable SmartherAccountHandler getAccountListenerByLocation(String plantId) {
         final Optional<SmartherAccountHandler> maybeListener = handlers.stream().filter(l -> l.hasLocation(plantId))

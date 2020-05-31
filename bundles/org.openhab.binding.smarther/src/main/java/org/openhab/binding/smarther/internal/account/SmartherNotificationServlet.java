@@ -26,7 +26,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.smarther.internal.api.dto.Notification;
-import org.openhab.binding.smarther.internal.api.exception.SmartherAuthorizationException;
 import org.openhab.binding.smarther.internal.api.exception.SmartherGatewayException;
 import org.openhab.binding.smarther.internal.api.exception.SmartherNotificationException;
 import org.openhab.binding.smarther.internal.util.ModelUtil;
@@ -37,7 +36,8 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.reflect.TypeToken;
 
 /**
- * The {@link SmartherNotificationServlet} manages the notifications from BTicino/Legrand C2C notification service.
+ * The {@code SmartherNotificationServlet} class acts as the registered endpoint to receive module status notifications
+ * from the Legrand/Bticino C2C Webhook notification service.
  *
  * @author Fabio Possieri - Initial contribution
  */
@@ -53,6 +53,12 @@ public class SmartherNotificationServlet extends HttpServlet {
 
     private final SmartherAccountService accountService;
 
+    /**
+     * Constructs a {@code SmartherNotificationServlet} associated to the given {@link SmartherAccountService} service.
+     *
+     * @param accountService
+     *            the account service to associate to the servlet
+     */
     public SmartherNotificationServlet(SmartherAccountService accountService) {
         this.accountService = accountService;
     }
@@ -68,7 +74,7 @@ public class SmartherNotificationServlet extends HttpServlet {
 
         // Handle the received data
         final String requestBody = req.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
-        final String responseBody = handleSmartherNotifications(requestBody);
+        final String responseBody = dispatchNotifications(requestBody);
 
         // Build response for the caller
         resp.setContentType(CONTENT_TYPE);
@@ -78,14 +84,15 @@ public class SmartherNotificationServlet extends HttpServlet {
     }
 
     /**
-     * Handles a notification payload received from BTicino/Legrand C2C notification service. If that is the case,
-     * BTicino/Legrand C2C notification service will pass a list of notifications via the url and these are processed.
-     * In case of an error, this is logged and the notifications are not passed on to the handler. Based on all these
-     * different outcomes, the response is generated to inform the C2C service.
+     * Dispatches all the notifications contained in the received payload to the proper notification handlers.
+     * The response to the notification service is generated based on the different outcomes.
      *
-     * @param payload the body part of the POST request this servlet is processing
+     * @param payload
+     *            the received servlet payload to process, may be {@code null}
+     *
+     * @return a string containing the response to the notification service
      */
-    private String handleSmartherNotifications(@Nullable String payload) {
+    private String dispatchNotifications(@Nullable String payload) {
         logger.trace("C2C listener received payload: {}", payload);
         if (!StringUtil.isBlank(payload)) {
             List<Notification> notifications = ModelUtil.gsonInstance().fromJson(payload,
@@ -100,9 +107,10 @@ public class SmartherNotificationServlet extends HttpServlet {
     }
 
     /**
-     * Handles a single notification received from BTicino/Legrand C2C notification service.
+     * Dispatches a single notification contained in the received payload to the proper notification handler.
      *
-     * @param notification the received notification
+     * @param notification
+     *            the notification to dispatch
      */
     private void handleSmartherNotification(Notification notification) {
         if (!notification.hasData()) {
@@ -113,8 +121,8 @@ public class SmartherNotificationServlet extends HttpServlet {
             logger.warn("C2C notification {}: no sender reference received", notification.getId());
         } else {
             try {
-                accountService.handleNotification(notification);
-            } catch (SmartherAuthorizationException | SmartherGatewayException e) {
+                accountService.dispatchNotification(notification);
+            } catch (SmartherGatewayException e) {
                 logger.warn("C2C notification {}: not applied: {}", notification.getId(), e.getMessage());
             }
         }

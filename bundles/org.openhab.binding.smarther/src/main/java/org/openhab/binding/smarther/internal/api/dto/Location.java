@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smarther.internal.util.StringUtil;
 
 /**
- * Smarther API Location data class.
+ * The {@code Location} class defines the dto for Smarther API location object.
  *
  * @author Fabio Possieri - Initial contribution
  */

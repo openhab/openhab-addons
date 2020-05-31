@@ -21,6 +21,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -29,7 +30,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -60,7 +60,6 @@ import org.openhab.binding.smarther.internal.account.SmartherNotificationHandler
 import org.openhab.binding.smarther.internal.api.SmartherApi;
 import org.openhab.binding.smarther.internal.api.dto.Location;
 import org.openhab.binding.smarther.internal.api.dto.Module;
-import org.openhab.binding.smarther.internal.api.dto.ModuleSettings;
 import org.openhab.binding.smarther.internal.api.dto.ModuleStatus;
 import org.openhab.binding.smarther.internal.api.dto.Notification;
 import org.openhab.binding.smarther.internal.api.dto.Plant;
@@ -71,11 +70,15 @@ import org.openhab.binding.smarther.internal.api.exception.SmartherGatewayExcept
 import org.openhab.binding.smarther.internal.config.SmartherBridgeConfiguration;
 import org.openhab.binding.smarther.internal.discovery.SmartherModuleDiscoveryService;
 import org.openhab.binding.smarther.internal.model.BridgeStatus;
+import org.openhab.binding.smarther.internal.model.ModuleSettings;
+import org.openhab.binding.smarther.internal.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link SmartherBridgeHandler} is responsible for accessing the BTicino/Legrand Smarther API gateway.
+ * The {@code SmartherBridgeHandler} class is responsible of the handling of a Smarther Bridge thing.
+ * The Smarther Bridge is used to manage a set of Smarther Chronothermostat Modules registered under the same
+ * Legrand/Bticino account credentials.
  *
  * @author Fabio Possieri - Initial contribution
  */
@@ -100,6 +103,16 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
     private @NonNullByDefault({}) ExpiringCache<List<Location>> locationCache;
     private @NonNullByDefault({}) BridgeStatus bridgeStatus;
 
+    /**
+     * Constructs a {@code SmartherBridgeHandler} for the given Bridge thing, authorization factory and http client.
+     *
+     * @param bridge
+     *            the {@link Bridge} thing to be used
+     * @param oAuthFactory
+     *            the OAuth2 authorization factory to be used
+     * @param httpClient
+     *            the http client to be used
+     */
     public SmartherBridgeHandler(Bridge bridge, OAuthFactory oAuthFactory, HttpClient httpClient) {
         super(bridge);
         this.oAuthFactory = oAuthFactory;
@@ -111,15 +124,54 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
         return Collections.singleton(SmartherModuleDiscoveryService.class);
     }
 
+    // ===========================================================================
+    //
+    // Bridge thing lifecycle management methods
+    //
+    // ===========================================================================
+
+    @Override
+    public void initialize() {
+        logger.debug("Bridge[{}] Initialize handler", thing.getUID());
+
+        config = getConfigAs(SmartherBridgeConfiguration.class);
+        if (StringUtil.isBlank(config.getSubscriptionKey())) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "The 'Subscription Key' property is not set or empty. If you have an older thing please recreate it.");
+            return;
+        }
+        if (StringUtil.isBlank(config.getClientId())) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "The 'Client Id' property is not set or empty. If you have an older thing please recreate it.");
+            return;
+        }
+        if (StringUtil.isBlank(config.getClientSecret())) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "The 'Client Secret' property is not set or empty. If you have an older thing please recreate it.");
+            return;
+        }
+
+        updateStatus(ThingStatus.UNKNOWN);
+
+        // Initialize OAuth2 authentication support
+        oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(), SMARTHER_API_TOKEN_URL,
+                SMARTHER_AUTHORIZE_URL, config.getClientId(), config.getClientSecret(), SMARTHER_API_SCOPES, false);
+        oAuthService.addAccessTokenRefreshListener(SmartherBridgeHandler.this);
+        smartherApi = new SmartherApi(oAuthService, config.getSubscriptionKey(), scheduler, httpClient);
+
+        // Setup locations (plant Ids) local cache
+        locationCache = new ExpiringCache<>(Duration.ofMinutes(config.getStatusRefreshPeriod()),
+                this::locationCacheAction);
+        bridgeStatus = new BridgeStatus();
+
+        schedulePoll();
+
+        logger.debug("Bridge[{}] Finished initializing!", thing.getUID());
+    }
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         switch (channelUID.getId()) {
-            case CHANNEL_ACCESS_TOKEN:
-                if (command instanceof RefreshType) {
-                    onAccessTokenResponse(getAccessTokenResponse());
-                    return;
-                }
-                break;
             case CHANNEL_FETCH_CONFIG:
                 if (command instanceof OnOffType) {
                     if (OnOffType.ON.equals(command)) {
@@ -143,43 +195,72 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
     }
 
     @Override
-    public void initialize() {
-        logger.debug("Bridge[{}] Initialize handler", thing.getUID());
-
-        config = getConfigAs(SmartherBridgeConfiguration.class);
-        if (StringUtils.isBlank(config.getSubscriptionKey())) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "The 'Subscription Key' property is not set or empty. If you have an older thing please recreate it.");
-            return;
-        }
-        if (StringUtils.isBlank(config.getClientId())) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "The 'Client Id' property is not set or empty. If you have an older thing please recreate it.");
-            return;
-        }
-        if (StringUtils.isBlank(config.getClientSecret())) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "The 'Client Secret' property is not set or empty. If you have an older thing please recreate it.");
-            return;
-        }
-
-        updateStatus(ThingStatus.UNKNOWN);
-
-        // Initialize OAuth2 authentication support
-        oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(), SMARTHER_API_TOKEN_URL,
-                SMARTHER_AUTHORIZE_URL, config.getClientId(), config.getClientSecret(), SMARTHER_API_SCOPES, false);
-        oAuthService.addAccessTokenRefreshListener(SmartherBridgeHandler.this);
-        smartherApi = new SmartherApi(config.getSubscriptionKey(), oAuthService, scheduler, httpClient);
-
-        // Setup locations (plant Ids) local cache
-        locationCache = new ExpiringCache<>(Duration.ofMinutes(config.getStatusRefreshPeriod()), this::getLocationList);
-        bridgeStatus = new BridgeStatus();
-
-        schedulePoll();
-
-        logger.debug("Bridge[{}] Finished initializing!", thing.getUID());
+    public void handleRemoval() {
+        super.handleRemoval();
+        stopPoll(true);
     }
 
+    @Override
+    public void dispose() {
+        logger.debug("Bridge[{}] Dispose handler", thing.getUID());
+        if (oAuthService != null) {
+            oAuthService.removeAccessTokenRefreshListener(this);
+        }
+        oAuthFactory.ungetOAuthService(thing.getUID().getAsString());
+        stopPoll(true);
+        logger.debug("Bridge[{}] Finished disposing!", thing.getUID());
+    }
+
+    // ===========================================================================
+    //
+    // Bridge data cache management methods
+    //
+    // ===========================================================================
+
+    /**
+     * Returns the available locations to be cached for this Bridge.
+     *
+     * @return the available locations to be cached for this Bridge, or {@code null} if the list of available locations
+     *         cannot be retrieved
+     */
+    private @Nullable List<Location> locationCacheAction() {
+        try {
+            // Retrieve the plants list from the API Gateway
+            final List<Plant> plants = getPlants();
+
+            List<Location> locations;
+            if (config.isUseNotifications()) {
+                // Retrieve the subscriptions list from the API Gateway
+                final List<Subscription> subscriptions = getSubscriptions();
+
+                // Enrich the notifications list with externally registered subscriptions
+                updateNotifications(subscriptions);
+
+                // Get the notifications list from bridge config
+                final List<String> notifications = config.getNotifications();
+
+                locations = plants.stream().map(p -> Location.fromPlant(p, subscriptions.stream()
+                        .filter(s -> s.getPlantId().equals(p.getId()) && notifications.contains(s.getSubscriptionId()))
+                        .findFirst())).collect(Collectors.toList());
+            } else {
+                locations = plants.stream().map(p -> Location.fromPlant(p)).collect(Collectors.toList());
+            }
+            logger.debug("Bridge[{}] Available locations: {}", thing.getUID(), locations);
+
+            return locations;
+
+        } catch (SmartherGatewayException e) {
+            logger.warn("Bridge[{}] Cannot retrieve available locations: {}", thing.getUID(), e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Updates this Bridge local notifications list with externally registered subscriptions.
+     *
+     * @param subscriptions
+     *            the externally registered subscriptions to be added to the local notifications list
+     */
     private void updateNotifications(List<Subscription> subscriptions) {
         // Get the notifications list from bridge config
         List<String> notifications = config.getNotifications();
@@ -198,52 +279,22 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
         }
     }
 
-    private List<Location> getLocationList() {
-        // Retrieve the plants list from the API Gateway
-        final List<Plant> plants = listPlants();
-
-        List<Location> locations;
-        if (config.isUseNotifications()) {
-            // Retrieve the subscriptions list from the API Gateway
-            final List<Subscription> subscriptions = getSubscriptionList();
-
-            // Enrich the notifications list with externally registered subscriptions
-            updateNotifications(subscriptions);
-
-            // Get the notifications list from bridge config
-            final List<String> notifications = config.getNotifications();
-
-            locations = plants.stream().map(p -> Location.fromPlant(p, subscriptions.stream()
-                    .filter(s -> s.getPlantId().equals(p.getId()) && notifications.contains(s.getSubscriptionId()))
-                    .findFirst())).collect(Collectors.toList());
-        } else {
-            locations = plants.stream().map(p -> Location.fromPlant(p)).collect(Collectors.toList());
-        }
-        logger.debug("Bridge[{}] Available locations: {}", thing.getUID(), locations);
-
-        return locations;
+    /**
+     * Sets all the cache to "expired" for this Bridge.
+     */
+    private void expireCache() {
+        logger.debug("Bridge[{}] Invalidating location cache", thing.getUID());
+        locationCache.invalidateValue();
     }
 
-    @Override
-    public void handleRemoval() {
-        super.handleRemoval();
-        stopPoll(true);
-    }
-
-    @Override
-    public void dispose() {
-        logger.debug("Bridge[{}] Dispose handler", thing.getUID());
-        if (oAuthService != null) {
-            oAuthService.removeAccessTokenRefreshListener(this);
-        }
-        oAuthFactory.ungetOAuthService(thing.getUID().getAsString());
-        stopPoll(true);
-        logger.debug("Bridge[{}] Finished disposing!", thing.getUID());
-    }
+    // ===========================================================================
+    //
+    // Bridge status polling mechanism methods
+    //
+    // ===========================================================================
 
     /**
-     * This method initiates a new thread for polling the available Smarther plants and update the plants
-     * information.
+     * Starts a new scheduler to periodically poll and update this Bridge status.
      */
     private void schedulePoll() {
         stopPoll(false);
@@ -255,10 +306,11 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
     }
 
     /**
-     * Cancels all running schedulers.
+     * Cancels all running poll schedulers.
      *
-     * @param mayInterruptIfRunning true if the thread executing this task should be interrupted; otherwise, in-progress
-     *            tasks are allowed to complete.
+     * @param mayInterruptIfRunning
+     *            {@code true} if the thread executing this task should be interrupted, {@code false} if the in-progress
+     *            tasks are allowed to complete
      */
     private synchronized void stopPoll(boolean mayInterruptIfRunning) {
         if (pollFuture != null && !pollFuture.isCancelled()) {
@@ -268,27 +320,23 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
     }
 
     /**
-     * Calls the Smarther API and collects plant data. Returns true if method completed without errors.
+     * Polls to update this Bridge status, calling the Smarther API to refresh its plants list.
      *
-     * @return true if method completed without errors.
+     * @return {@code true} if the method completes without errors, {@code false} otherwise
      */
     private synchronized boolean poll() {
         try {
             onAccessTokenResponse(getAccessTokenResponse());
 
             expireCache();
-            listLocations();
+            locationCacheAction();
 
             updateStatus(ThingStatus.ONLINE);
             return true;
+
         } catch (SmartherAuthorizationException e) {
             logger.warn("Bridge[{}] Authorization error during polling: {}", thing.getUID(), e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-            schedulePoll();
-            return false;
-        } catch (SmartherGatewayException e) {
-            logger.warn("Bridge[{}] API Gateway error during polling: {}", thing.getUID(), e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             schedulePoll();
             return false;
         } catch (RuntimeException e) {
@@ -301,16 +349,36 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
         }
     }
 
-    private void expireCache() {
-        logger.debug("Bridge[{}] Invalidating location cache", thing.getUID());
-        locationCache.invalidateValue();
+    @Override
+    public void onAccessTokenResponse(@Nullable AccessTokenResponse tokenResponse) {
+        updateChannelState(CHANNEL_ACCESS_TOKEN,
+                new StringType((tokenResponse == null) ? null : tokenResponse.getAccessToken()));
     }
 
+    // ===========================================================================
+    //
+    // Bridge convenience methods
+    //
+    // ===========================================================================
+
+    /**
+     * Convenience method to get this Bridge configuration.
+     *
+     * @return a {@link SmartherBridgeConfiguration} object containing the Bridge configuration
+     */
     public SmartherBridgeConfiguration getSmartherBridgeConfig() {
         return config;
     }
 
-    private @Nullable AccessTokenResponse getAccessTokenResponse() {
+    /**
+     * Convenience method to get the access token from Smarther API authorization layer.
+     *
+     * @return the autorization access token, may be {@code null}
+     *
+     * @throws {@link SmartherAuthorizationException}
+     *             in case of authorization issues with the Smarther API
+     */
+    private @Nullable AccessTokenResponse getAccessTokenResponse() throws SmartherAuthorizationException {
         try {
             return (oAuthService == null) ? null : oAuthService.getAccessTokenResponse();
         } catch (OAuthException | IOException | OAuthResponseException | RuntimeException e) {
@@ -318,17 +386,13 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
         }
     }
 
-    @Override
-    public void onAccessTokenResponse(@Nullable AccessTokenResponse tokenResponse) {
-        updateChannelState(CHANNEL_ACCESS_TOKEN,
-                new StringType((tokenResponse == null) ? null : tokenResponse.getAccessToken()));
-    }
-
     /**
-     * Convenience method to update the channel state but only if the channel is linked.
+     * Convenience method to update the given Channel state "only" if the Channel is linked.
      *
-     * @param channelId id of the channel to update
-     * @param state State to set on the channel
+     * @param channelId
+     *            the identifier of the Channel to be updated
+     * @param state
+     *            the new state to be applied to the given Channel
      */
     private void updateChannelState(String channelId, State state) {
         final Channel channel = thing.getChannel(channelId);
@@ -339,7 +403,7 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
     }
 
     /**
-     * Convenience method to update the api calls counter of local bridge status.
+     * Convenience method to update the Smarther API calls counter for this Bridge.
      */
     private void updateApiCallsCounter() {
         updateChannelState(CHANNEL_API_CALLS_HANDLED, new DecimalType(bridgeStatus.incrementApiCallsHandled()));
@@ -347,7 +411,7 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
 
     // ===========================================================================
     //
-    // Implementation of SmartherAccountHandler interface
+    // Implementation of the SmartherAccountHandler interface
     //
     // ===========================================================================
 
@@ -358,13 +422,13 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
 
     @Override
     public String getLabel() {
-        return StringUtils.defaultString(thing.getLabel());
+        return StringUtil.defaultString(thing.getLabel());
     }
 
     @Override
-    public List<Location> listLocations() {
+    public List<Location> getLocations() {
         final List<Location> locations = locationCache.getValue();
-        return (locations == null) ? Collections.emptyList() : locations;
+        return (locations == null) ? new ArrayList<Location>() : locations;
     }
 
     @Override
@@ -374,60 +438,65 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
     }
 
     @Override
-    public List<Plant> listPlants() {
+    public List<Plant> getPlants() throws SmartherGatewayException {
         updateApiCallsCounter();
-        return smartherApi.getPlantList();
+        return smartherApi.getPlants();
     }
 
     @Override
-    public List<Subscription> getSubscriptionList() {
+    public List<Subscription> getSubscriptions() throws SmartherGatewayException {
         updateApiCallsCounter();
-        return smartherApi.getSubscriptionList();
+        return smartherApi.getSubscriptions();
     }
 
     @Override
-    public String addSubscription(String plantId, String notificationUrl) {
+    public String subscribePlant(String plantId, String notificationUrl) throws SmartherGatewayException {
         updateApiCallsCounter();
-        return smartherApi.subscribe(plantId, notificationUrl);
+        return smartherApi.subscribePlant(plantId, notificationUrl);
     }
 
     @Override
-    public void removeSubscription(String plantId, String subscriptionId) {
+    public void unsubscribePlant(String plantId, String subscriptionId) throws SmartherGatewayException {
         updateApiCallsCounter();
-        smartherApi.unsubscribe(plantId, subscriptionId);
+        smartherApi.unsubscribePlant(plantId, subscriptionId);
     }
 
     @Override
-    public List<Module> listModules(Location location) {
-        updateApiCallsCounter();
-        return smartherApi.getTopology(location.getPlantId());
+    public List<Module> getLocationModules(Location location) {
+        try {
+            updateApiCallsCounter();
+            return smartherApi.getPlantModules(location.getPlantId());
+        } catch (SmartherGatewayException e) {
+            return new ArrayList<Module>();
+        }
     }
 
     @Override
-    public ModuleStatus getModuleStatus(String plantId, String moduleId) {
+    public ModuleStatus getModuleStatus(String plantId, String moduleId) throws SmartherGatewayException {
         updateApiCallsCounter();
         return smartherApi.getModuleStatus(plantId, moduleId);
     }
 
     @Override
-    public boolean setModuleStatus(ModuleSettings moduleSettings) {
+    public boolean setModuleStatus(ModuleSettings moduleSettings) throws SmartherGatewayException {
         updateApiCallsCounter();
         return smartherApi.setModuleStatus(moduleSettings);
     }
 
     @Override
-    public List<Program> getModuleProgramList(String plantId, String moduleId) {
+    public List<Program> getModulePrograms(String plantId, String moduleId) throws SmartherGatewayException {
         updateApiCallsCounter();
-        return smartherApi.getProgramList(plantId, moduleId);
+        return smartherApi.getModulePrograms(plantId, moduleId);
     }
 
     @Override
     public boolean isAuthorized() {
         try {
-            final AccessTokenResponse accessTokenResponse = getAccessTokenResponse();
+            final AccessTokenResponse tokenResponse = getAccessTokenResponse();
+            onAccessTokenResponse(tokenResponse);
 
-            return (accessTokenResponse != null && accessTokenResponse.getAccessToken() != null
-                    && accessTokenResponse.getRefreshToken() != null);
+            return (tokenResponse != null && tokenResponse.getAccessToken() != null
+                    && tokenResponse.getRefreshToken() != null);
         } catch (SmartherAuthorizationException e) {
             return false;
         }
@@ -439,7 +508,8 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
     }
 
     @Override
-    public String authorize(String redirectUrl, String reqCode, String notificationUrl) {
+    public String authorize(String redirectUrl, String reqCode, String notificationUrl)
+            throws SmartherGatewayException {
         try {
             logger.debug("Bridge[{}] Call API gateway to get access token. RedirectUri: {}", thing.getUID(),
                     redirectUrl);
@@ -458,11 +528,11 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
             schedulePoll();
 
             return config.getClientId();
+        } catch (OAuthResponseException e) {
+            throw new SmartherAuthorizationException(e.toString(), e);
         } catch (OAuthException | IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             throw new SmartherGatewayException(e.getMessage(), e);
-        } catch (OAuthResponseException e) {
-            throw new SmartherAuthorizationException(e.toString(), e);
         }
     }
 
@@ -483,7 +553,7 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
 
     // ===========================================================================
     //
-    // Implementation of SmartherNotificationHandler interface
+    // Implementation of the SmartherNotificationHandler interface
     //
     // ===========================================================================
 
@@ -493,7 +563,7 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
     }
 
     @Override
-    public synchronized void registerNotification(String plantId) {
+    public synchronized void registerNotification(String plantId) throws SmartherGatewayException {
         if (!config.isUseNotifications()) {
             return;
         }
@@ -509,7 +579,7 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
                     final String notificationUrl = config.getNotificationUrl();
                     if (isValidNotificationUrl(notificationUrl)) {
                         // Call gateway to register plant subscription
-                        String subscriptionId = addSubscription(plantId, config.getNotificationUrl());
+                        String subscriptionId = subscribePlant(plantId, config.getNotificationUrl());
                         logger.debug("Bridge[{}] Notification registered: [plantId={}, subscriptionId={}]",
                                 thing.getUID(), plantId, subscriptionId);
 
@@ -558,7 +628,7 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
     }
 
     @Override
-    public synchronized void unregisterNotification(String plantId) {
+    public synchronized void unregisterNotification(String plantId) throws SmartherGatewayException {
         if (!config.isUseNotifications()) {
             return;
         }
@@ -576,7 +646,7 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
                 final String subscriptionId = location.getSubscriptionId();
                 if (location.hasSubscription() && (subscriptionId != null)) {
                     // Call gateway to unregister plant subscription
-                    removeSubscription(plantId, subscriptionId);
+                    unsubscribePlant(plantId, subscriptionId);
                     logger.debug("Bridge[{}] Notification unregistered: [plantId={}, subscriptionId={}]",
                             thing.getUID(), plantId, subscriptionId);
 
@@ -601,16 +671,18 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
     }
 
     /**
-     * Check whether the passed string is a formally valid Notification Url (non-null, public https address).
+     * Checks if the passed string is a formally valid Notification Url (non-null, public https address).
      *
-     * @param notificationUrl The string to be checked.
-     * @return true if the string is a valid Notification Url, false otherwise.
+     * @param str
+     *            the string to check
+     *
+     * @return {@code true} if the given string is a formally valid Notification Url, {@code false} otherwise
      */
-    private boolean isValidNotificationUrl(String notificationUrl) {
+    private boolean isValidNotificationUrl(String str) {
         try {
-            URI maybeValidUrl = new URI(notificationUrl);
-            if (HTTPS_SCHEMA.equals(maybeValidUrl.getScheme())) {
-                InetAddress address = InetAddress.getByName(maybeValidUrl.getHost());
+            URI maybeValidNotificationUrl = new URI(str);
+            if (HTTPS_SCHEMA.equals(maybeValidNotificationUrl.getScheme())) {
+                InetAddress address = InetAddress.getByName(maybeValidNotificationUrl.getHost());
                 if (!address.isLoopbackAddress() && !address.isSiteLocalAddress()) {
                     return true;
                 }

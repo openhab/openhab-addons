@@ -15,32 +15,35 @@ package org.openhab.binding.smarther.internal.api.exception;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * BTicino/Legrand API gateway authorization problems exception class.
+ * Signals that a generic OAuth2 authorization issue with API gateway has occurred.
  *
  * @author Fabio Possieri - Initial contribution
  */
 @NonNullByDefault
-public class SmartherAuthorizationException extends RuntimeException {
+public class SmartherAuthorizationException extends SmartherGatewayException {
 
-    private static final long serialVersionUID = 6206604010680564607L;
+    private static final long serialVersionUID = 2608406239134276285L;
 
     /**
-     * Constructor.
+     * Constructs a {@code SmartherAuthorizationException} with the specified detail message.
      *
-     * @param message BTicino/Legrand API gateway error message
+     * @param message
+     *            the error message returned from the API gateway
      */
     public SmartherAuthorizationException(String message) {
         super(message);
     }
 
     /**
-     * Constructor.
+     * Constructs a {@code SmartherAuthorizationException} with the specified detail message and cause.
      *
-     * @param message BTicino/Legrand API gateway error message
-     * @param exception Original cause of this exception
+     * @param message
+     *            the error message returned from the API gateway
+     * @param cause
+     *            the cause (a null value is permitted, and indicates that the cause is nonexistent or unknown)
      */
-    public SmartherAuthorizationException(String message, Throwable exception) {
-        super(message, exception);
+    public SmartherAuthorizationException(String message, Throwable cause) {
+        super(message, cause);
     }
 
 }

@@ -13,7 +13,7 @@
 package org.openhab.binding.smarther.internal.api.dto;
 
 /**
- * Smarther API Program DTO class.
+ * The {@code Program} class defines the dto for Smarther API program object.
  *
  * @author Fabio Possieri - Initial contribution
  */

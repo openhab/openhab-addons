@@ -13,8 +13,8 @@
 package org.openhab.binding.smarther.internal.config;
 
 /**
- * The {@link SmartherModuleConfiguration} is the class used to match the SmartherModuleHandler
- * configuration.
+ * The {@code SmartherModuleConfiguration} class defines the internal configuration of a {@code SmartherModuleHandler}
+ * instance.
  *
  * @author Fabio Possieri - Initial contribution
  */
@@ -27,50 +27,118 @@ public class SmartherModuleConfiguration {
     private int numberOfEndDays;
     private int statusRefreshPeriod;
 
+    /**
+     * Returns the location plant identifier.
+     *
+     * @return a string containing the plant identifier
+     */
     public String getPlantId() {
         return plantId;
     }
 
+    /**
+     * Sets the location plant identifier.
+     *
+     * @param plantId
+     *            the new plant identifier
+     */
     public void setPlantId(String plantId) {
         this.plantId = plantId;
     }
 
+    /**
+     * Returns the chronothermostat module identifier.
+     *
+     * @return a string containing the module identifier
+     */
     public String getModuleId() {
         return moduleId;
     }
 
+    /**
+     * Sets the chronothermostat module identifier.
+     *
+     * @param moduleId
+     *            the new module identifier
+     */
     public void setModuleId(String moduleId) {
         this.moduleId = moduleId;
     }
 
+    /**
+     * Tells whether the Module settings are updated with its status.
+     *
+     * @return {@code true} if the settings are updated whenever the module status is updated, {@code false} if the
+     *         settings are updated only upon module initialization
+     */
     public boolean isSettingsAutoupdate() {
         return settingsAutoupdate;
     }
 
+    /**
+     * Sets whether the Module settings are updated with its status.
+     *
+     * @param settingsAutoupdate
+     *            {@code true} if the settings are updated whenever the module status is updated, {@code false} if the
+     *            settings are updated only upon module initialization
+     */
     public void setSettingsAutoupdate(boolean settingsAutoupdate) {
         this.settingsAutoupdate = settingsAutoupdate;
     }
 
+    /**
+     * Returns the automatic mode programs refresh period (in hours).
+     *
+     * @return the automatic mode programs refresh period
+     */
     public int getProgramsRefreshPeriod() {
         return programsRefreshPeriod;
     }
 
+    /**
+     * Sets the automatic mode programs refresh period (in hours).
+     *
+     * @param programsRefreshPeriod
+     *            the new automatic mode programs refresh period
+     */
     public void setProgramsRefreshPeriod(int programsRefreshPeriod) {
         this.programsRefreshPeriod = programsRefreshPeriod;
     }
 
+    /**
+     * Returns the number of end days to be displayed in manual mode.
+     *
+     * @return the number of end days to be displayed
+     */
     public int getNumberOfEndDays() {
         return numberOfEndDays;
     }
 
+    /**
+     * Sets the number of end days to be displayed in manual mode.
+     *
+     * @param numberOfEndDays
+     *            the new number of end days to be displayed
+     */
     public void setNumberOfEndDays(int numberOfEndDays) {
         this.numberOfEndDays = numberOfEndDays;
     }
 
+    /**
+     * Returns the Module status refresh period (in minutes).
+     *
+     * @return the Module status refresh period
+     */
     public int getStatusRefreshPeriod() {
         return statusRefreshPeriod;
     }
 
+    /**
+     * Sets the Module status refresh period (in minutes).
+     *
+     * @param statusRefreshPeriod
+     *            the new Module status refresh period
+     */
     public void setStatusRefreshPeriod(int statusRefreshPeriod) {
         this.statusRefreshPeriod = statusRefreshPeriod;
     }

@@ -15,7 +15,7 @@ package org.openhab.binding.smarther.internal.api.dto;
 import java.util.List;
 
 /**
- * Smarther API Plants DTO class.
+ * The {@code Plants} class defines the dto for Smarther API list of plants.
  *
  * @author Fabio Possieri - Initial contribution
  */

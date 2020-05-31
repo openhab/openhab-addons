@@ -15,7 +15,7 @@ package org.openhab.binding.smarther.internal.api.dto;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Smarther API Sender DTO class.
+ * The {@code Sender} class defines the dto for Smarther API sender object.
  *
  * @author Fabio Possieri - Initial contribution
  */

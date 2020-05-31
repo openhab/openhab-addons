@@ -22,7 +22,6 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.WordUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
@@ -36,14 +35,13 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.openhab.binding.smarther.internal.account.SmartherAccountHandler;
 import org.openhab.binding.smarther.internal.api.dto.Location;
 import org.openhab.binding.smarther.internal.api.dto.Module;
-import org.openhab.binding.smarther.internal.api.exception.SmartherAuthorizationException;
-import org.openhab.binding.smarther.internal.api.exception.SmartherGatewayException;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link SmartherModuleDiscoveryService} queries the Smarther API gateway for available modules.
+ * The {@code SmartherModuleDiscoveryService} queries the Smarther API gateway to discover available Chronothermostat
+ * modules inside existing plants registered under the configured Bridges.
  *
  * @author Fabio Possieri - Initial contribution
  */
@@ -56,9 +54,12 @@ public class SmartherModuleDiscoveryService extends AbstractDiscoveryService
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_MODULE);
     // The call to listModules is fast
     private static final int DISCOVERY_TIME_SECONDS = 10;
+
     // Handling of the background scan for new devices
     private static final boolean BACKGROUND_SCAN_ENABLED = false;
     private static final long BACKGROUND_SCAN_REFRESH_MINUTES = 1;
+
+    private static final String ID_SEPARATOR = "-";
 
     private final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -67,6 +68,9 @@ public class SmartherModuleDiscoveryService extends AbstractDiscoveryService
 
     private @Nullable ScheduledFuture<?> backgroundFuture;
 
+    /**
+     * Constructs a {@code SmartherModuleDiscoveryService}.
+     */
     public SmartherModuleDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, DISCOVERY_TIME_SECONDS);
     }
@@ -124,22 +128,26 @@ public class SmartherModuleDiscoveryService extends AbstractDiscoveryService
         removeOlderResults(getTimestampOfLastScan());
         if (bridgeHandler != null && bridgeHandler.isOnline()) {
             logger.debug("Starting modules discovery for bridge {}", bridgeUID);
-            try {
-                bridgeHandler.listLocations()
-                        .forEach(l -> bridgeHandler.listModules(l).forEach(m -> thingDiscovered(l, m)));
-            } catch (SmartherAuthorizationException | SmartherGatewayException e) {
-                logger.warn("Finding modules failed with message: {}", e.getMessage());
-            }
+            bridgeHandler.getLocations()
+                    .forEach(l -> bridgeHandler.getLocationModules(l).forEach(m -> thingDiscovered(l, m)));
         }
     }
 
+    /**
+     * Creates a Chronothermostat module Thing based on the remotely discovered location and module.
+     *
+     * @param location
+     *            the location containing the discovered module
+     * @param module
+     *            the discovered module
+     */
     private void thingDiscovered(Location location, Module module) {
         Map<String, Object> properties = new HashMap<String, Object>();
 
         properties.put(PROPERTY_PLANT_ID, location.getPlantId());
         properties.put(PROPERTY_MODULE_ID, module.getId());
         properties.put(PROPERTY_MODULE_NAME, module.getName());
-        properties.put(PROPERTY_DEVICE_TYPE, WordUtils.capitalizeFully(module.getDeviceType()));
+        properties.put(PROPERTY_DEVICE_TYPE, module.getDeviceType());
         ThingUID thing = new ThingUID(THING_TYPE_MODULE, bridgeUID, getThingIdFromModule(module));
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thing).withBridge(bridgeUID)
@@ -149,9 +157,17 @@ public class SmartherModuleDiscoveryService extends AbstractDiscoveryService
         thingDiscovered(discoveryResult);
     }
 
+    /**
+     * Generates the Thing identifier based on the Chronothermostat module identifier.
+     *
+     * @param module
+     *            the Chronothermostat module to use
+     *
+     * @return a string containing the generated Thing identifier
+     */
     private String getThingIdFromModule(Module module) {
         final String moduleId = module.getId();
-        return moduleId.substring(0, moduleId.indexOf("-"));
+        return moduleId.substring(0, moduleId.indexOf(ID_SEPARATOR));
     }
 
 }

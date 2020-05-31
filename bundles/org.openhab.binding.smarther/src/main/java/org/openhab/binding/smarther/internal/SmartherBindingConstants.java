@@ -21,8 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
- * The {@link SmartherBindingConstants} class defines common constants, which are
- * used across the whole binding.
+ * The {@code SmartherBindingConstants} class defines the common constants used across the whole binding.
  *
  * @author Fabio Possieri - Initial contribution
  */
@@ -49,8 +48,6 @@ public class SmartherBindingConstants {
     public static final String SMARTHER_API_SCOPES = Stream.of("comfort.read", "comfort.write")
             .collect(Collectors.joining(" "));
     public static final String SMARTHER_API_URL = "https://api.developer.legrand.com/smarther/v2.0";
-    public static final String SMARTHER_MODULE_URL = SMARTHER_API_URL
-            + "/chronothermostat/thermoregulation/addressLocation";
 
     // Servlets and resources aliases
     public static final String AUTH_SERVLET_ALIAS = "/" + BINDING_ID + "/connectsmarther";

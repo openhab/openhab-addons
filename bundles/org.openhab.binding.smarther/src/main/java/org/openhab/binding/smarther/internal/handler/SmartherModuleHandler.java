@@ -21,6 +21,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -43,20 +44,21 @@ import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.smarther.internal.api.dto.Chronothermostat;
 import org.openhab.binding.smarther.internal.api.dto.Enums.BoostTime;
 import org.openhab.binding.smarther.internal.api.dto.Enums.Mode;
-import org.openhab.binding.smarther.internal.api.dto.ModuleSettings;
 import org.openhab.binding.smarther.internal.api.dto.ModuleStatus;
 import org.openhab.binding.smarther.internal.api.dto.Notification;
 import org.openhab.binding.smarther.internal.api.dto.Program;
 import org.openhab.binding.smarther.internal.api.exception.SmartherGatewayException;
 import org.openhab.binding.smarther.internal.api.exception.SmartherSubscriptionAlreadyExistsException;
 import org.openhab.binding.smarther.internal.config.SmartherModuleConfiguration;
+import org.openhab.binding.smarther.internal.model.ModuleSettings;
 import org.openhab.binding.smarther.internal.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link SmartherModuleHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@code SmartherModuleHandler} class is responsible of a single Smarther Chronothermostat, handling the commands
+ * that are sent to one of its channels.
+ * Each Smarther Chronothermostat communicates with the Smarther API via its assigned {@code SmartherBridgeHandler}.
  *
  * @author Fabio Possieri - Initial contribution
  */
@@ -85,9 +87,14 @@ public class SmartherModuleHandler extends BaseThingHandler {
     private @NonNullByDefault({}) ModuleSettings moduleSettings;
 
     /**
-     * Constructor.
+     * Constructs a {@code SmartherModuleHandler} for the given thing, scheduler and dynamic state description provider.
      *
-     * @param thing Thing representing this module.
+     * @param thing
+     *            the {@link Thing} thing to be used
+     * @param scheduler
+     *            the {@link CronScheduler} periodic job scheduler to be used
+     * @param provider
+     *            the {@link SmartherDynamicStateDescriptionProvider} dynamic state description provider to be used
      */
     public SmartherModuleHandler(Thing thing, CronScheduler scheduler,
             SmartherDynamicStateDescriptionProvider provider) {
@@ -96,6 +103,64 @@ public class SmartherModuleHandler extends BaseThingHandler {
         this.dynamicStateDescriptionProvider = provider;
         this.programChannelUID = new ChannelUID(thing.getUID(), CHANNEL_SETTINGS_PROGRAM);
         this.endDateChannelUID = new ChannelUID(thing.getUID(), CHANNEL_SETTINGS_ENDDATE);
+    }
+
+    // ===========================================================================
+    //
+    // Chronothermostat thing lifecycle management methods
+    //
+    // ===========================================================================
+
+    @Override
+    public void initialize() {
+        logger.debug("Module[{}] Initialize handler", thing.getUID());
+
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            return;
+        }
+
+        bridgeHandler = (SmartherBridgeHandler) bridge.getHandler();
+        if (bridgeHandler == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
+                    "Missing configuration from the Smarther Bridge (UID:%s). Fix configuration or report if this problem remains.",
+                    bridge.getBridgeUID()));
+            return;
+        }
+
+        config = getConfigAs(SmartherModuleConfiguration.class);
+        if (StringUtil.isBlank(config.getPlantId())) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "The 'Plant Id' property is not set or empty. If you have an older thing please recreate it.");
+            return;
+        }
+        if (StringUtil.isBlank(config.getModuleId())) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "The 'Module Id' property is not set or empty. If you have an older thing please recreate it.");
+            return;
+        }
+        if (config.getProgramsRefreshPeriod() <= 0) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "The 'Programs Refresh Period' must be > 0. If you have an older thing please recreate it.");
+            return;
+        }
+        if (config.getStatusRefreshPeriod() <= 0) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "The 'Module Status Refresh Period' must be > 0. If you have an older thing please recreate it.");
+            return;
+        }
+
+        programCache = new ExpiringCache<>(Duration.ofHours(config.getProgramsRefreshPeriod()),
+                this::programCacheAction);
+        moduleSettings = new ModuleSettings(config.getPlantId(), config.getModuleId());
+
+        updateStatus(ThingStatus.UNKNOWN);
+
+        scheduleJob();
+        schedulePoll();
+
+        logger.debug("Module[{}] Finished initializing!", thing.getUID());
     }
 
     @Override
@@ -110,6 +175,17 @@ public class SmartherModuleHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * Handles the command sent to a given Channel of this Chronothermostat.
+     *
+     * @param channelUID
+     *            the identifier of the Channel
+     * @param command
+     *            the command sent to the given Channel
+     *
+     * @throws {@link SmartherGatewayException}
+     *             in case of communication issues with the Smarther API
+     */
     private void handleCommandInternal(ChannelUID channelUID, Command command) throws SmartherGatewayException {
         switch (channelUID.getId()) {
             case CHANNEL_SETTINGS_MODE:
@@ -166,7 +242,7 @@ public class SmartherModuleHandler extends BaseThingHandler {
                     if (OnOffType.ON.equals(command)) {
                         logger.debug("Module[{}] Manually triggered channel to refresh the Module config",
                                 thing.getUID());
-                        programCache.invalidateValue();
+                        expireCache();
                         programCache.getValue();
                         updateChannelState(CHANNEL_FETCH_CONFIG, OnOffType.OFF);
                     }
@@ -184,7 +260,13 @@ public class SmartherModuleHandler extends BaseThingHandler {
                 command.getClass().getTypeName(), channelUID.getId());
     }
 
-    private void applyModuleSettings() {
+    /**
+     * Remotely applies the new settings to the Chronothermostat associated to this handler.
+     *
+     * @throws {@link SmartherGatewayException}
+     *             in case of communication issues with the Smarther API
+     */
+    private void applyModuleSettings() throws SmartherGatewayException {
         // Send change to the remote module
         if (bridgeHandler.setModuleStatus(moduleSettings)) {
             // Change applied, update module status
@@ -192,6 +274,15 @@ public class SmartherModuleHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * Changes the "temperature" in module settings, based on the received Command.
+     * The new value is checked against the temperature limits allowed by the device.
+     *
+     * @param command
+     *            the command received on temperature Channel
+     *
+     * @return {@code true} if the change succeeded, {@code false} otherwise
+     */
     private boolean changeTemperature(Command command) {
         if (!(command instanceof QuantityType)) {
             return false;
@@ -211,6 +302,15 @@ public class SmartherModuleHandler extends BaseThingHandler {
         return false;
     }
 
+    /**
+     * Changes the "end hour" for manual mode in module settings, based on the received Command.
+     * The new value is checked against the 24-hours clock allowed range.
+     *
+     * @param command
+     *            the command received on end hour Channel
+     *
+     * @return {@code true} if the change succeeded, {@code false} otherwise
+     */
     private boolean changeTimeHour(Command command) {
         if (command instanceof DecimalType) {
             int endHour = ((DecimalType) command).intValue();
@@ -222,6 +322,15 @@ public class SmartherModuleHandler extends BaseThingHandler {
         return false;
     }
 
+    /**
+     * Changes the "end minute" for manual mode in module settings, based on the received Command.
+     * The new value is modified to match a 15 min step increment.
+     *
+     * @param command
+     *            the command received on end minute Channel
+     *
+     * @return {@code true} if the change succeeded, {@code false} otherwise
+     */
     private boolean changeTimeMinute(Command command) {
         if (command instanceof DecimalType) {
             int endMinute = ((DecimalType) command).intValue();
@@ -235,6 +344,12 @@ public class SmartherModuleHandler extends BaseThingHandler {
         return false;
     }
 
+    /**
+     * Handles the notification dispatched to this Chronothermostat from the reference Smarther Bridge.
+     *
+     * @param notification
+     *            the notification to handle
+     */
     public void handleNotification(Notification notification) {
         chronothermostat = notification.getData().toChronothermostat();
         if (config.isSettingsAutoupdate()) {
@@ -246,60 +361,17 @@ public class SmartherModuleHandler extends BaseThingHandler {
     }
 
     @Override
-    public void initialize() {
-        logger.debug("Module[{}] Initialize handler", thing.getUID());
-
-        Bridge bridge = getBridge();
-        if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
-            return;
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        if (bridgeStatusInfo.getStatus() != ThingStatus.ONLINE) {
+            // Put module offline when the parent bridge goes offline
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Smarther Bridge Offline");
+            logger.debug("Module[{}] Bridge switched {}", thing.getUID(), bridgeStatusInfo.getStatus());
+        } else {
+            // Update the module status when the parent bridge return online
+            logger.debug("Module[{}] Bridge is back ONLINE", thing.getUID());
+            // Restart polling to collect module data
+            schedulePoll();
         }
-
-        bridgeHandler = (SmartherBridgeHandler) bridge.getHandler();
-        if (bridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
-                    "Missing configuration from the Smarther Bridge (UID:%s). Fix configuration or report if this problem remains.",
-                    bridge.getBridgeUID()));
-            return;
-        }
-
-        config = getConfigAs(SmartherModuleConfiguration.class);
-        if (StringUtil.isBlank(config.getPlantId())) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "The 'Plant Id' property is not set or empty. If you have an older thing please recreate it.");
-            return;
-        }
-        if (StringUtil.isBlank(config.getModuleId())) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "The 'Module Id' property is not set or empty. If you have an older thing please recreate it.");
-            return;
-        }
-        if (config.getProgramsRefreshPeriod() <= 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "The 'Programs Refresh Period' must be > 0. If you have an older thing please recreate it.");
-            return;
-        }
-        if (config.getStatusRefreshPeriod() <= 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "The 'Module Status Refresh Period' must be > 0. If you have an older thing please recreate it.");
-            return;
-        }
-
-        programCache = new ExpiringCache<>(Duration.ofHours(config.getProgramsRefreshPeriod()), this::getProgramList);
-        moduleSettings = new ModuleSettings(config.getPlantId(), config.getModuleId());
-
-        updateStatus(ThingStatus.UNKNOWN);
-
-        scheduleJob();
-        schedulePoll();
-
-        logger.debug("Module[{}] Finished initializing!", thing.getUID());
-    }
-
-    private List<Program> getProgramList() {
-        final List<Program> programs = bridgeHandler.getModuleProgramList(config.getPlantId(), config.getModuleId());
-        logger.debug("Module[{}] Programs: {}", thing.getUID(), programs);
-        return programs;
     }
 
     @Override
@@ -322,8 +394,47 @@ public class SmartherModuleHandler extends BaseThingHandler {
         logger.debug("Module[{}] Finished disposing!", thing.getUID());
     }
 
+    // ===========================================================================
+    //
+    // Chronothermostat data cache management methods
+    //
+    // ===========================================================================
+
     /**
-     * This method initiates a new thread for executing internal recurring jobs.
+     * Returns the available automatic mode programs to be cached for this Chronothermostat.
+     *
+     * @return the available programs to be cached for this Chronothermostat, or {@code null} if the list of available
+     *         programs cannot be retrieved
+     */
+    private @Nullable List<Program> programCacheAction() {
+        try {
+            final List<Program> programs = bridgeHandler.getModulePrograms(config.getPlantId(), config.getModuleId());
+            logger.debug("Module[{}] Available programs: {}", thing.getUID(), programs);
+
+            return programs;
+
+        } catch (SmartherGatewayException e) {
+            logger.warn("Module[{}] Cannot retrieve available programs: {}", thing.getUID(), e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Sets all the cache to "expired" for this Chronothermostat.
+     */
+    private void expireCache() {
+        logger.debug("Module[{}] Invalidating program cache", thing.getUID());
+        programCache.invalidateValue();
+    }
+
+    // ===========================================================================
+    //
+    // Chronothermostat job scheduler methods
+    //
+    // ===========================================================================
+
+    /**
+     * Starts a new cron scheduler to execute the internal recurring jobs.
      */
     private synchronized void scheduleJob() {
         stopJob(false);
@@ -338,8 +449,9 @@ public class SmartherModuleHandler extends BaseThingHandler {
     /**
      * Cancels all running jobs.
      *
-     * @param mayInterruptIfRunning true if the thread executing this task should be interrupted; otherwise, in-progress
-     *            tasks are allowed to complete.
+     * @param mayInterruptIfRunning
+     *            {@code true} if the thread executing this task should be interrupted, {@code false} if the in-progress
+     *            tasks are allowed to complete
      */
     private synchronized void stopJob(boolean mayInterruptIfRunning) {
         if (jobFuture != null && !jobFuture.isCancelled()) {
@@ -362,8 +474,14 @@ public class SmartherModuleHandler extends BaseThingHandler {
         }
     }
 
+    // ===========================================================================
+    //
+    // Chronothermostat status polling mechanism methods
+    //
+    // ===========================================================================
+
     /**
-     * This method initiates a new thread for polling the Module status.
+     * Starts a new scheduler to periodically poll and update this Chronothermostat status.
      */
     private void schedulePoll() {
         stopPoll(false);
@@ -375,10 +493,11 @@ public class SmartherModuleHandler extends BaseThingHandler {
     }
 
     /**
-     * Cancels all running schedulers.
+     * Cancels all running poll schedulers.
      *
-     * @param mayInterruptIfRunning true if the thread executing this task should be interrupted; otherwise, in-progress
-     *            tasks are allowed to complete.
+     * @param mayInterruptIfRunning
+     *            {@code true} if the thread executing this task should be interrupted, {@code false} if the in-progress
+     *            tasks are allowed to complete
      */
     private synchronized void stopPoll(boolean mayInterruptIfRunning) {
         if (pollFuture != null && !pollFuture.isCancelled()) {
@@ -388,9 +507,9 @@ public class SmartherModuleHandler extends BaseThingHandler {
     }
 
     /**
-     * Calls the Smarther API and collects module data. Returns true if method completed without errors.
+     * Polls to update this Chronothermostat status.
      *
-     * @return true if method completed without errors.
+     * @return {@code true} if the method completes without errors, {@code false} otherwise
      */
     private synchronized boolean poll() {
         try {
@@ -412,7 +531,10 @@ public class SmartherModuleHandler extends BaseThingHandler {
                     logger.debug("Module[{}] Status: [{}]", thing.getUID(), chronothermostat);
 
                     // Refresh the programs list for "automatic" mode
-                    dynamicStateDescriptionProvider.setPrograms(programChannelUID, programCache.getValue());
+                    final List<Program> programs = programCache.getValue();
+                    if (programs != null) {
+                        dynamicStateDescriptionProvider.setPrograms(programChannelUID, programs);
+                    }
 
                     updateModuleStatus();
 
@@ -448,6 +570,65 @@ public class SmartherModuleHandler extends BaseThingHandler {
         }
     }
 
+    // ===========================================================================
+    //
+    // Chronothermostat convenience methods
+    //
+    // ===========================================================================
+
+    /**
+     * Returns this Chronothermostat plant identifier
+     *
+     * @return a string containing the plant identifier
+     */
+    public String getPlantId() {
+        return config.getPlantId();
+    }
+
+    /**
+     * Returns this Chronothermostat module identifier
+     *
+     * @return a string containing the module identifier
+     */
+    public String getModuleId() {
+        return config.getModuleId();
+    }
+
+    /**
+     * Checks whether this Chronothermostat matches with the given plant and module identifiers.
+     *
+     * @param plantId
+     *            the plant identifier to match to
+     * @param moduleId
+     *            the module identifier to match to
+     *
+     * @return {@code true} if the Chronothermostat matches the given plant and module identifiers, {@code false}
+     *         otherwise
+     */
+    public boolean isLinkedTo(String plantId, String moduleId) {
+        return (config.getPlantId().equals(plantId) && config.getModuleId().equals(moduleId));
+    }
+
+    /**
+     * Convenience method to update the given Channel state "only" if the Channel is linked.
+     *
+     * @param channelId
+     *            the identifier of the Channel to be updated
+     * @param state
+     *            the new state to be applied to the given Channel
+     */
+    private void updateChannelState(String channelId, State state) {
+        final Channel channel = thing.getChannel(channelId);
+
+        if (channel != null && isLinked(channel.getUID())) {
+            updateState(channel.getUID(), state);
+        }
+    }
+
+    /**
+     * Convenience method to update the whole status of the Chronothermostat associated to this handler.
+     * Channels are updated based on the local {@code chronothermostat} and {@code moduleSettings} objects.
+     */
     private void updateModuleStatus() {
         if (chronothermostat != null) {
             // Update the Measures channels
@@ -475,46 +656,6 @@ public class SmartherModuleHandler extends BaseThingHandler {
             updateChannelState(CHANNEL_SETTINGS_ENDMINUTE, new DecimalType(moduleSettings.getEndMinute()));
         }
         updateChannelState(CHANNEL_SETTINGS_POWER, OnOffType.OFF);
-    }
-
-    public String getPlantId() {
-        return config.getPlantId();
-    }
-
-    public String getModuleId() {
-        return config.getModuleId();
-    }
-
-    public boolean isLinkedTo(String plantId, String moduleId) {
-        return (config.getPlantId().equals(plantId) && config.getModuleId().equals(moduleId));
-    }
-
-    @Override
-    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        if (bridgeStatusInfo.getStatus() != ThingStatus.ONLINE) {
-            // Put module offline when the parent bridge goes offline
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Smarther Bridge Offline");
-            logger.debug("Module[{}] Bridge switched {}", thing.getUID(), bridgeStatusInfo.getStatus());
-        } else {
-            // Update the module status when the parent bridge return online
-            logger.debug("Module[{}] Bridge is back ONLINE", thing.getUID());
-            // Restart polling to collect module data
-            schedulePoll();
-        }
-    }
-
-    /**
-     * Convenience method to update the channel state but only if the channel is linked.
-     *
-     * @param channelId id of the channel to update
-     * @param state State to set on the channel
-     */
-    private void updateChannelState(String channelId, State state) {
-        final Channel channel = thing.getChannel(channelId);
-
-        if (channel != null && isLinked(channel.getUID())) {
-            updateState(channel.getUID(), state);
-        }
     }
 
 }

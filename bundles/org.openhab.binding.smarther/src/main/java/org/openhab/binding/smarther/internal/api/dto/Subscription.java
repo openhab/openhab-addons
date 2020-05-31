@@ -15,7 +15,7 @@ package org.openhab.binding.smarther.internal.api.dto;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Smarther API Subscription DTO class.
+ * The {@code Subscription} class defines the dto for Smarther API subscription object.
  *
  * @author Fabio Possieri - Initial contribution
  */

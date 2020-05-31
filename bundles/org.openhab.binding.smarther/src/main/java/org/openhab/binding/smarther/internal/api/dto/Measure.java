@@ -31,7 +31,7 @@ import com.google.gson.annotations.SerializedName;
 import tec.uom.se.unit.Units;
 
 /**
- * Smarther API Measure DTO class.
+ * The {@code Measure} class defines the dto for Smarther API measure object.
  *
  * @author Fabio Possieri - Initial contribution
  */

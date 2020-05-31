@@ -12,35 +12,53 @@
  */
 package org.openhab.binding.smarther.internal.api.exception;
 
+import java.io.IOException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Generic BTicino/Legrand API gateway exception class.
+ * Signals that a generic communication issue with API gateway has occurred.
  *
  * @author Fabio Possieri - Initial contribution
  */
 @NonNullByDefault
-public class SmartherGatewayException extends RuntimeException {
+public class SmartherGatewayException extends IOException {
 
     private static final long serialVersionUID = -3614645621941830547L;
 
     /**
-     * Constructor.
+     * Constructs a {@code SmartherGatewayException} with the specified detail message.
      *
-     * @param message BTicino/Legrand API gateway error message
+     * @param message
+     *            the error message returned from the API gateway
      */
     public SmartherGatewayException(String message) {
         super(message);
     }
 
     /**
-     * Constructor.
+     * Constructs a {@code SmartherGatewayException} with the specified detail message and cause.
      *
-     * @param message BTicino/Legrand API gateway error message
-     * @param cause Original cause of this exception
+     * @param message
+     *            the error message returned from the API gateway
+     * @param cause
+     *            the cause (a null value is permitted, and indicates that the cause is nonexistent or unknown)
      */
     public SmartherGatewayException(String message, Throwable cause) {
         super(message, cause);
+    }
+
+    /**
+     * Constructs a {@code SmartherGatewayException} with the specified cause and a detail message of
+     * {@code (cause==null ? null : cause.toString())} (which typically contains the class and detail message of
+     * {@code cause}).
+     * This constructor is useful for API gateway exceptions that are little more than wrappers for other throwables.
+     *
+     * @param cause
+     *            the cause (a null value is permitted, and indicates that the cause is nonexistent or unknown)
+     */
+    public SmartherGatewayException(Throwable cause) {
+        super(cause);
     }
 
 }

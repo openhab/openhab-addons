@@ -15,7 +15,7 @@ package org.openhab.binding.smarther.internal.api.dto;
 import java.util.List;
 
 /**
- * Smarther API ModuleStatus DTO class.
+ * The {@code ModuleStatus} class defines the dto for Smarther API module status object.
  *
  * @author Fabio Possieri - Initial contribution
  */

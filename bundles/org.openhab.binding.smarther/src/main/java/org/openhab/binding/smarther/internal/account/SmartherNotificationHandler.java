@@ -15,9 +15,11 @@ package org.openhab.binding.smarther.internal.account;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.smarther.internal.api.dto.Notification;
+import org.openhab.binding.smarther.internal.api.exception.SmartherGatewayException;
 
 /**
- * Interface to decouple Smarther Notification Handler implementation from other code.
+ * The {@code SmartherNotificationHandler} interface is used to decouple the Smarther notification handler
+ * implementation from other Bridge code.
  *
  * @author Fabio Possieri - Initial contribution
  */
@@ -25,31 +27,40 @@ import org.openhab.binding.smarther.internal.api.dto.Notification;
 public interface SmartherNotificationHandler extends ThingHandler {
 
     /**
-     * Tells whether the handler supports notifications.
+     * Tells whether the Smarther Bridge associated with this handler supports notifications.
      *
-     * @return true if the handler supports notifications; false otherwise
+     * @return {@code true} if the Bridge supports notifications, {@code false} otherwise
      */
     boolean useNotifications();
 
     /**
-     * Registers a new notification endpoint to BTicino/Legrand C2C notification service.
+     * Calls the Smarther API to register a new notification endpoint to the C2C Webhook service.
      *
-     * @param plantId Id of the location the endpoint belongs to
+     * @param plantId
+     *            the identifier of the plant the notification endpoint belongs to
+     *
+     * @throws {@link SmartherGatewayException}
+     *             in case of communication issues with the Smarther API
      */
-    void registerNotification(String plantId);
+    void registerNotification(String plantId) throws SmartherGatewayException;
 
     /**
-     * Handles a new notifications arrived from the BTicino/Legrand C2C notification service.
+     * Handles a new notifications received from the C2C Webhook notification service.
      *
-     * @param notification Then received notification
+     * @param notification
+     *            the received notification
      */
     void handleNotification(Notification notification);
 
     /**
-     * Unregisters a notification endpoint previously registered to BTicino/Legrand C2C notification service.
+     * Calls the Smarther API to unregister a notification endpoint already registered to the C2C Webhook service.
      *
-     * @param plantId Id of the location the endpoint belongs to
+     * @param plantId
+     *            the identifier of the plant the notification endpoint belongs to
+     *
+     * @throws {@link SmartherGatewayException}
+     *             in case of communication issues with the Smarther API
      */
-    void unregisterNotification(String plantId);
+    void unregisterNotification(String plantId) throws SmartherGatewayException;
 
 }

@@ -33,8 +33,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link SmartherHandlerFactory} is responsible for creating things and thing
- * handlers.
+ * The {@code SmartherHandlerFactory} class is responsible for creating things and thing handlers.
  *
  * @author Fabio Possieri - Initial contribution
  */

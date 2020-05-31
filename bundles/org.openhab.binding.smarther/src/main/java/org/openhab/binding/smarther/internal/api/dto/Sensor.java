@@ -18,7 +18,7 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 
 /**
- * Smarther API Sensor DTO class.
+ * The {@code Sensor} class defines the dto for Smarther API sensor object.
  *
  * @author Fabio Possieri - Initial contribution
  */
