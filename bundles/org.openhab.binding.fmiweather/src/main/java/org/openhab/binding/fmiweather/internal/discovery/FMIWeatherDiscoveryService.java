@@ -218,12 +218,6 @@ public class FMIWeatherDiscoveryService extends AbstractDiscoveryService {
                         .distanceFrom(location).doubleValue() < FIND_STATION_METERS;
     }
 
-    @Override
-    protected void thingDiscovered(DiscoveryResult discoveryResult) {
-        logger.trace("Discovered: {}", discoveryResult);
-        super.thingDiscovered(discoveryResult);
-    }
-
     @SuppressWarnings("null")
     private Stream<Location> cachedStations() {
         Set<Location> stations = stationsCache.getValue();
