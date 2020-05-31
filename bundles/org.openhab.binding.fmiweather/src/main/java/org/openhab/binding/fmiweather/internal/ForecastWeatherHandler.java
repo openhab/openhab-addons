@@ -97,7 +97,7 @@ public class ForecastWeatherHandler extends AbstractWeatherHandler {
             String[] split = latlon.split(",");
             if (split.length != 2) {
                 throw new NumberFormatException(String.format(
-                        "Expecting location parameter to have latitude and longitude separated by comma (LATITUDE,LONGITUDE). Found {} values instead.",
+                        "Expecting location parameter to have latitude and longitude separated by comma (LATITUDE,LONGITUDE). Found %d values instead.",
                         split.length));
             }
             this.location = new LatLon(new BigDecimal(split[0].trim()), new BigDecimal(split[1].trim()));
@@ -172,7 +172,6 @@ public class ForecastWeatherHandler extends AbstractWeatherHandler {
                     updateEpochSecondStateIfLinked(channelUID, data.timestampsEpochSecs[timeIndex]);
                 } else {
                     String field = getDataField(channelUID);
-                    @Nullable
                     Unit<?> unit = getUnit(channelUID);
                     if (field == null) {
                         logger.error("Channel {} not handled. Bug?", channelUID.getId());
