@@ -72,6 +72,16 @@ public class ButtonModel {
     }
 
     @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (identifier != null ? identifier.hashCode() : 0);
+        result = prime * result + (buttonId != null ? buttonId.hashCode() : 0);
+        result = prime * result + (name != null ? name.hashCode() : 0);
+        return result;
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
@@ -82,7 +92,10 @@ public class ButtonModel {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        return buttonId != null ? buttonId.equals(((ButtonModel) obj).getButtonId()) : false;
+        ButtonModel other = (ButtonModel) obj;
+        return (identifier != null ? identifier.equals(other.identifier) : other.identifier == null) && //
+                (buttonId != null ? buttonId.equals(other.buttonId) : other.buttonId == null) && //
+                (name != null ? name.equals(other.name) : other.name == null);
     }
 
     @Override
