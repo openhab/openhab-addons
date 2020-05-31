@@ -184,7 +184,9 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
             ZonedDateTime timestamp = ZonedDateTime.ofInstant(Instant.ofEpochSecond(lastPressedTimestamp), zoneId);
             Instant then = timestamp.toInstant();
             ZonedDateTime now = ZonedDateTime.now(zoneId);
-            Instant someSecondsEarlier = now.minusSeconds(15).toInstant();
+            Instant someSecondsEarlier = now.minusSeconds(3).toInstant();
+            // Avoid dispatching events if "lastpressedtimestamp" is older than now minus 3 seconds (e.g. during
+            // restart)
             if (then.isAfter(someSecondsEarlier) && then.isBefore(now.toInstant())) {
                 triggerThingChannel(CHANNEL_PRESS, event);
             }
