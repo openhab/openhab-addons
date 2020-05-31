@@ -156,7 +156,6 @@ public class ObservationWeatherHandler extends AbstractWeatherHandler {
                     updateEpochSecondStateIfLinked(channelUID, data.timestampsEpochSecs[lastValidIndex]);
                 } else {
                     String field = getDataField(channelUID);
-                    @Nullable
                     Unit<?> unit = getUnit(channelUID);
                     if (field == null) {
                         logger.error("Channel {} not handled. Bug?", channelUID.getId());
