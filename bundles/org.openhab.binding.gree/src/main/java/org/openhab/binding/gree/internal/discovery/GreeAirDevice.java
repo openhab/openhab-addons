@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.gree.internal.GreeCryptoUtil;
 import org.openhab.binding.gree.internal.GreeException;
@@ -68,7 +67,7 @@ public class GreeAirDevice {
     private GreeStatusResponse4GsonDTO statusResponseGson;
     private GreeStatusResponsePack4GsonDTO prevStatusResponsePackGson;
 
-    public Boolean getIsBound() {
+    public boolean getIsBound() {
         return isBound;
     }
 
@@ -129,7 +128,7 @@ public class GreeAirDevice {
     }
 
     public void bindWithDevice(Optional<DatagramSocket> socket) throws GreeException {
-        Validate.isTrue(socket.isPresent());
+        validateSocket(socket);
         byte[] sendData = new byte[1024];
         byte[] receiveData = new byte[347];
         Gson gson = new Gson();
@@ -182,6 +181,12 @@ public class GreeAirDevice {
             setIsBound(true);
         } catch (IOException e) {
             throw new GreeException(e, "failed");
+        }
+    }
+
+    private void validateSocket(Optional<DatagramSocket> socket) {
+        if (!socket.isPresent()) {
+            throw new IllegalArgumentException("Socket not initialized!");
         }
     }
 
@@ -334,7 +339,7 @@ public class GreeAirDevice {
         String validRangeCorF; // stores if the input range is a valid C or F temperature
 
         // force to global min/max
-        Integer newVal = Math.max(newValIn, Math.min(tempRanges.get("C").get("min"), tempRanges.get("F").get("min")));
+        int newVal = (Math.max(newValIn, Math.min(tempRanges.get("C").get("min"), tempRanges.get("F").get("min"))));
         newVal = Math.min(newVal, Math.max(tempRanges.get("C").get("max"), tempRanges.get("F").get("max")));
 
         if ((newVal >= tempRanges.get("C").get("min")) && (newVal <= tempRanges.get("C").get("max"))) {
@@ -368,15 +373,15 @@ public class GreeAirDevice {
             throw new GreeException("Device is not bound!");
         }
         Integer[] retList;
-        Integer newVal = value;
-        Integer outVal = value;
+        int newVal = value;
+        int outVal = value;
         // Get Celsius or Fahrenheit from status message
         Integer CorF = getIntStatusVal("TemUn");
         // TODO put a param in openhab to allow setting this from the config
 
         // If commanding Fahrenheit set halfStep to 1 or 0 to tell the A/C which F integer
         // temperature to use as celsius alone is ambigious
-        Integer halfStep = 0; // default to C
+        int halfStep = 0; // default to C
 
         retList = validateTemperatureRangeForTempSet(newVal, CorF);
         newVal = retList[0];
@@ -385,7 +390,7 @@ public class GreeAirDevice {
         if (CorF == 1) { // If Fahrenheit,
             // value argument is degrees F, convert Fahrenheit to Celsius,
             // SetTem input to A/C always in Celsius despite passing in 1 to TemUn
-            outVal = new Integer((int) Math.round((newVal - 32.) * 5.0 / 9.0)); // Integer Truncated
+            outVal = (int) (Math.round((newVal - 32.) * 5.0 / 9.0)); // Integer Truncated
             // ******************TempRec TemSet Mapping for setting Fahrenheit****************************
             // F = [68. , 69. , 70. , 71. , 72. , 73. , 74. , 75. , 76. , 77. , 78. , 79. , 80. , 81. , 82. , 83. ,
             // 84. , 85. , 86. ]
@@ -575,9 +580,7 @@ public class GreeAirDevice {
             // Recieve a response
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
             clientSocket.receive(receivePacket);
-            String modifiedSentence = new String(receivePacket.getData());
-            // System.out.println("FROM SERVER:" + modifiedSentence);
-            // byte[] modifiedSentenceArray = receivePacket.getData();
+            String modifiedSentence = new String(receivePacket.getData(), "UTF-8");
 
             // Read the response
             StringReader stringReader = new StringReader(modifiedSentence);
@@ -652,7 +655,7 @@ public class GreeAirDevice {
             // Recieve a response
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
             clientSocket.receive(receivePacket);
-            String modifiedSentence = new String(receivePacket.getData());
+            String modifiedSentence = new String(receivePacket.getData(), "UTF-8");
 
             // Keep a copy of the old response to be used to check if values have changed
             // If first time running, there will not be a previous GreeStatusResponsePack4Gson
@@ -702,7 +705,7 @@ public class GreeAirDevice {
                 // Perform the float Celsius to Fahrenheit conversion add or subtract 0.5 based on the value of TemRec
                 // (0 = -0.5, 1 = +0.5). Pass into a rounding function, this yeild the correct Fahrenheit Temperature to
                 // match A/C display
-                newVal = new Integer((int) Math.round(((newVal * 9.0 / 5.0) + 32.0) + halfStep - 0.5));
+                newVal = (int) (Math.round(((newVal * 9.0 / 5.0) + 32.0) + halfStep - 0.5));
 
                 // Update the status array with F temp, assume this is updating the array in situ
                 values[valueArrayposition] = newVal;

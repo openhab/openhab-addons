@@ -348,6 +348,8 @@ public class GreeHandler extends BaseThingHandler {
                     if (!e.isTimeout()) {
                         logger.debug("Unable to perform auto-update: {}", e.toString());
                     }
+                } catch (IllegalArgumentException e) {
+                    logger.warn("Illegal argument on auto-update", e);
                 } catch (RuntimeException e) {
                     logger.debug("Unable to perform auto-update", e);
                 }
@@ -407,7 +409,9 @@ public class GreeHandler extends BaseThingHandler {
                 logger.trace("Updating channel {} : {}", channelID, state.get());
                 updateState(channelID, state.get());
             }
-        } catch (GreeException | IllegalArgumentException e) {
+        } catch (GreeException e) {
+            logger.debug("Exception on channel update (IllegalArgument): {}", e.toString());
+        } catch (RuntimeException e) {
             logger.debug("Exception on channel update", e);
         }
     }

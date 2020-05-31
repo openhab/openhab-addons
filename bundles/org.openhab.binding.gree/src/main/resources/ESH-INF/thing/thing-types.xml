@@ -118,30 +118,32 @@
 	<channel-type id="swingUpDown">
 		<item-type>Number</item-type>
 		<label>Swing Up/Down</label>
-		<description>Sets the vertical swing action on the Air Conditioner: Full Swing: 1, Up: 2, MidUp: 3, Mid: 4, Mid Down: 5, Down : 6</description>
+		<description>Sets the vertical swing action on the Air Conditioner: OFF: 0, Full Swing: 1, Up: 2, MidUp: 3, Mid: 4, Mid Down: 5, Down: 6</description>
 		<state>
 			<options>
-				<option value="Full">1</option>
-				<option value="Upl">2</option>
-				<option value="MidUp">3</option>
-				<option value="Mid">4</option>
-				<option value="MidDown">5</option>
-				<option value="Down">6</option>
+				<option value="0">OFF</option>
+				<option value="1">Full</option>
+				<option value="2">Up</option>
+				<option value="3">MidUp</option>
+				<option value="4">Mid</option>
+				<option value="5">MidDown</option>
+				<option value="6">Down</option>
 			</options>
 		</state>
 	</channel-type>
 	<channel-type id="swingLeftRight">
 		<item-type>Number</item-type>
 		<label>Swing Left/Right</label>
-		<description>Sets the horizontal swing action on the Air Conditioner: Full Swing: 1, Left: 2, Mid Left: 3, Mid: 4, Mid Right: 5, Right : 6</description>
+		<description>Sets the horizontal swing action on the Air Conditioner: OFF: 0, Full Swing: 1, Left: 2, Mid Left: 3, Mid: 4, Mid Right: 5, Right : 6</description>
 		<state>
 			<options>
-				<option value="Full">1</option>
-				<option value="Leftl">2</option>
-				<option value="MidLeft">3</option>
-				<option value="Mid">4</option>
-				<option value="MidRight">5</option>
-				<option value="Right">6</option>
+				<option value="0">OFF</option>
+				<option value="1">Full</option>
+				<option value="2">Left</option>
+				<option value="3">MidLeft</option>
+				<option value="4">Mid</option>
+				<option value="5">MidRight</option>
+				<option value="6">Right</option>
 			</options>
 		</state>
 	</channel-type>

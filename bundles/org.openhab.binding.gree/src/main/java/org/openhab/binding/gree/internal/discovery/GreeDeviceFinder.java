@@ -26,7 +26,6 @@ import java.util.Iterator;
 import java.util.Optional;
 import java.util.Set;
 
-import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.gree.internal.GreeCryptoUtil;
@@ -64,7 +63,7 @@ public class GreeDeviceFinder {
     }
 
     public void scan(Optional<DatagramSocket> socket, boolean scanNetwork) throws GreeException {
-        Validate.isTrue(socket.isPresent());
+        validateSocket(socket);
         byte[] sendData = new byte[1024];
         byte[] receiveData = new byte[1024];
 
@@ -182,4 +181,11 @@ public class GreeDeviceFinder {
     public Integer getScannedDeviceCount() {
         return new Integer(mDevicesHashMap.size());
     }
+
+    private void validateSocket(Optional<DatagramSocket> socket) {
+        if (!socket.isPresent()) {
+            throw new IllegalArgumentException("Socket not initialized!");
+        }
+    }
+
 }

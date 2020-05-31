@@ -46,7 +46,7 @@ public class GreeBindingConstants {
     public static final String TURBO_CHANNEL = "turbo";
     public static final String LIGHT_CHANNEL = "light";
     public static final String TEMP_CHANNEL = "temperature";
-    public static final String SWINGUD_CHANNEL = "swingUpDpw";
+    public static final String SWINGUD_CHANNEL = "swingUpDown";
     public static final String SWINGLR_CHANNEL = "swingLeftRight";
     public static final String WINDSPEED_CHANNEL = "windspeed";
     public static final String QUIET_CHANNEL = "quiet";

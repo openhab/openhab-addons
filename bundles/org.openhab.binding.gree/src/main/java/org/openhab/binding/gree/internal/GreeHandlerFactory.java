@@ -90,4 +90,10 @@ public class GreeHandlerFactory extends BaseThingHandlerFactory {
             }
         }
     }
+
+    @Override
+    public void deactivate(ComponentContext componentContext) {
+        super.deactivate(componentContext);
+        unregisterDeviceDiscoveryService();
+    }
 }
