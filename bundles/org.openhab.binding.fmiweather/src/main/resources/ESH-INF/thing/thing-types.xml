@@ -366,11 +366,11 @@
 		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 	<channel-type id="clouds-channel">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Cloudiness</label>
-		<description>Given in numbers out of eight: 0 = clear skies, 8 = overcast, 9 = cloud coverage could not be determined.
+		<description>Given as percentage, 0% being clear skies, and 100% being overcast. UNDEF when cloud coverage could not be determined.
 			Takes into account all cloud layers.</description>
-		<state readOnly="true" pattern="%.0f %unit%" min="0" max="9" step="1" />
+		<state readOnly="true" pattern="%.0f %unit%" />
 	</channel-type>
 	<channel-type id="present-weather-channel">
 		<item-type>Number</item-type>

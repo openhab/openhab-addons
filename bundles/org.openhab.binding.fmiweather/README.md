@@ -65,7 +65,7 @@ Observation channels are grouped in single group, `current`.
 | `precipitation`   | `Number:Length`        | Precipitation in one hour                                                                                                                                                         |
 | `snow-depth`      | `Number:Length`        | Snow depth                                                                                                                                                                        |
 | `visibility`      | `Number:Length`        | Visibility                                                                                                                                                                        |
-| `clouds`          | `Number`               | Cloudiness. Given in numbers out of eight: 0 = clear skies, 8 = overcast, 9 = cloud coverage could not be determined.                                                             |
+| `clouds`          | `Number:Dimensionless` | Cloudiness. Given as percentage, 0 % being clear skies, and 100 % being overcast. `UNDEF` when cloud coverage could not be determined.                                            |
 | `present-weather` | `Number`               | Prevailing weather as WMO code 4680. For details, see e.g. [description at Centre for Environmental Data Analysis](https://artefacts.ceda.ac.uk/badc_datadocs/surface/code.html). |
 
 You can check the exact observation time by using the `time` channel.
@@ -154,7 +154,7 @@ Number:Pressure HelsinkiPressure "Pressure [%.1f %unit%]" <pressure>{ channel="f
 Number:Length HelsinkiPrecipitation "Precipitation [%.1f %unit%]" <rain> { channel="fmiweather:observation:station_Helsinki_Kumpula:current#precipitation" }
 Number:Length HelsinkiSnowDepth "Snow depth [%.1f %unit%]" <snow> { channel="fmiweather:observation:station_Helsinki_Kumpula:current#snow-depth" }
 Number:Length HelsinkiVisibility "Visibility [%.1f %unit%]" { channel="fmiweather:observation:station_Helsinki_Kumpula:current#visibility" }
-Number HelsinkiClouds "Cloudiness [%d]" { channel="fmiweather:observation:station_Helsinki_Kumpula:current#clouds" }
+Number HelsinkiClouds "Cloudiness [%.1f %unit%]" { channel="fmiweather:observation:station_Helsinki_Kumpula:current#clouds" }
 Number HelsinkiPresentWeatherCode "Prevailing weather [%d]" <sun_clouds> { channel="fmiweather:observation:station_Helsinki_Kumpula:current#present-weather" }
 ```
 

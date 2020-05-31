@@ -17,6 +17,7 @@ import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.*;
 import static org.openhab.binding.fmiweather.internal.BindingConstants.*;
 import static org.openhab.binding.fmiweather.internal.client.ObservationRequest.*;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.AbstractMap;
 import java.util.HashMap;
@@ -24,6 +25,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 import javax.measure.Unit;
 import javax.measure.quantity.Length;
@@ -59,30 +61,40 @@ public class ObservationWeatherHandler extends AbstractWeatherHandler {
     private static final long OBSERVATION_LOOK_BACK_SECONDS = TimeUnit.MINUTES.toSeconds(30);
     private static final int STEP_MINUTES = 10;
     private static final int POLL_INTERVAL_SECONDS = 600;
+    private static BigDecimal HUNDRED = BigDecimal.valueOf(100);
+    private static BigDecimal NA_CLOUD_MAX = BigDecimal.valueOf(8); // API value when having full clouds (overcast)
+    private static BigDecimal NA_CLOUD_COVERAGE = BigDecimal.valueOf(9); // API value when cloud coverage could not be
+                                                                         // determined.
 
     public static final Unit<Length> MILLIMETRE = MetricPrefix.MILLI(METRE);
     public static final Unit<Length> CENTIMETRE = MetricPrefix.CENTI(METRE);
 
     private static final Map<String, Map.Entry<String, @Nullable Unit<?>>> CHANNEL_TO_OBSERVATION_FIELD_NAME_AND_UNIT = new HashMap<>(
             11);
+    private static final Map<String, @Nullable Function<BigDecimal, @Nullable BigDecimal>> OBSERVATION_FIELD_NAME_TO_CONVERSION_FUNC = new HashMap<>(
+            11);
 
-    private static void addMapping(String channelId, String requestField, @Nullable Unit<?> unit) {
+    private static void addMapping(String channelId, String requestField, @Nullable Unit<?> result_unit,
+            @Nullable Function<BigDecimal, @Nullable BigDecimal> conversion) {
         CHANNEL_TO_OBSERVATION_FIELD_NAME_AND_UNIT.put(channelId,
-                new AbstractMap.SimpleImmutableEntry<>(requestField, unit));
+                new AbstractMap.SimpleImmutableEntry<>(requestField, result_unit));
+        OBSERVATION_FIELD_NAME_TO_CONVERSION_FUNC.put(requestField, conversion);
     }
 
     static {
-        addMapping(CHANNEL_TEMPERATURE, PARAM_TEMPERATURE, CELSIUS);
-        addMapping(CHANNEL_HUMIDITY, PARAM_HUMIDITY, PERCENT);
-        addMapping(CHANNEL_WIND_DIRECTION, PARAM_WIND_DIRECTION, DEGREE_ANGLE);
-        addMapping(CHANNEL_WIND_SPEED, PARAM_WIND_SPEED, METRE_PER_SECOND);
-        addMapping(CHANNEL_GUST, PARAM_WIND_GUST, METRE_PER_SECOND);
-        addMapping(CHANNEL_PRESSURE, PARAM_PRESSURE, MILLIBAR);
-        addMapping(CHANNEL_PRECIPITATION_AMOUNT, PARAM_PRECIPITATION_AMOUNT, MILLIMETRE);
-        addMapping(CHANNEL_SNOW_DEPTH, PARAM_SNOW_DEPTH, CENTIMETRE);
-        addMapping(CHANNEL_VISIBILITY, PARAM_VISIBILITY, METRE);
-        addMapping(CHANNEL_CLOUDS, PARAM_CLOUDS, null);
-        addMapping(CHANNEL_OBSERVATION_PRESENT_WEATHER, PARAM_PRESENT_WEATHER, null);
+        addMapping(CHANNEL_TEMPERATURE, PARAM_TEMPERATURE, CELSIUS, null);
+        addMapping(CHANNEL_HUMIDITY, PARAM_HUMIDITY, PERCENT, null);
+        addMapping(CHANNEL_WIND_DIRECTION, PARAM_WIND_DIRECTION, DEGREE_ANGLE, null);
+        addMapping(CHANNEL_WIND_SPEED, PARAM_WIND_SPEED, METRE_PER_SECOND, null);
+        addMapping(CHANNEL_GUST, PARAM_WIND_GUST, METRE_PER_SECOND, null);
+        addMapping(CHANNEL_PRESSURE, PARAM_PRESSURE, MILLIBAR, null);
+        addMapping(CHANNEL_PRECIPITATION_AMOUNT, PARAM_PRECIPITATION_AMOUNT, MILLIMETRE, null);
+        addMapping(CHANNEL_SNOW_DEPTH, PARAM_SNOW_DEPTH, CENTIMETRE, null);
+        addMapping(CHANNEL_VISIBILITY, PARAM_VISIBILITY, METRE, null);
+        // Converting 0...8 scale to percentage 0...100%. Value of 9 is converted to null/UNDEF
+        addMapping(CHANNEL_CLOUDS, PARAM_CLOUDS, PERCENT, clouds -> clouds.compareTo(NA_CLOUD_COVERAGE) == 0 ? null
+                : clouds.divide(NA_CLOUD_MAX).multiply(HUNDRED));
+        addMapping(CHANNEL_OBSERVATION_PRESENT_WEATHER, PARAM_PRESENT_WEATHER, null, null);
     }
 
     private @NonNullByDefault({}) String fmisid;
@@ -163,7 +175,9 @@ public class ObservationWeatherHandler extends AbstractWeatherHandler {
                     }
                     Data data = unwrap(response.getData(location, field),
                             "Field %s not present for location % in response. Bug?", field, location);
-                    updateStateIfLinked(channelUID, data.values[lastValidIndex], unit);
+                    BigDecimal rawValue = data.values[lastValidIndex];
+                    BigDecimal processedValue = preprocess(field, rawValue);
+                    updateStateIfLinked(channelUID, processedValue, unit);
                 }
             }
         } catch (IllegalStateException e) {
@@ -175,7 +189,7 @@ public class ObservationWeatherHandler extends AbstractWeatherHandler {
         }
     }
 
-    @SuppressWarnings({ "unused", "null" })
+    @SuppressWarnings({ "null", "unused" })
     private static @Nullable String getDataField(ChannelUID channelUID) {
         Entry<String, @Nullable Unit<?>> entry = CHANNEL_TO_OBSERVATION_FIELD_NAME_AND_UNIT
                 .get(channelUID.getIdWithoutGroup());
@@ -185,7 +199,7 @@ public class ObservationWeatherHandler extends AbstractWeatherHandler {
         return entry.getKey();
     }
 
-    @SuppressWarnings({ "unused", "null" })
+    @SuppressWarnings({ "null", "unused" })
     private static @Nullable Unit<?> getUnit(ChannelUID channelUID) {
         Entry<String, @Nullable Unit<?>> entry = CHANNEL_TO_OBSERVATION_FIELD_NAME_AND_UNIT
                 .get(channelUID.getIdWithoutGroup());
@@ -193,6 +207,18 @@ public class ObservationWeatherHandler extends AbstractWeatherHandler {
             return null;
         }
         return entry.getValue();
+    }
+
+    private static @Nullable BigDecimal preprocess(String fieldName, @Nullable BigDecimal rawValue) {
+        if (rawValue == null) {
+            return null;
+        }
+        Function<BigDecimal, @Nullable BigDecimal> func = OBSERVATION_FIELD_NAME_TO_CONVERSION_FUNC.get(fieldName);
+        if (func == null) {
+            // No conversion required
+            return rawValue;
+        }
+        return func.apply(rawValue);
     }
 
 }
