@@ -17,7 +17,7 @@ By using the binding, you agree to license terms as explained in [FMI website](h
 There are two supported things:
 
 - `observation` thing shows current weather observation for a given station. Data is updated automatically every 10 minutes.
-- `forecast` thing shows current weather observation for a given station. Data is updated automatically every 20 minutes.
+- `forecast` thing shows forecasted weather conditions for a location. Data is updated automatically every 20 minutes.
 
 ## Discovery
 
@@ -86,18 +86,18 @@ You can check the exact forecast time by using the `time` channel.
 
 Since forecasts are updated at certain times of the day, the last forecast values might be unavailable (`UNDEF`). Typically forecasts between now and 44 hours should be available at all times.
 
-| Channel ID                | Item Type              | Description                                                                                                                                                                                       |     |     |     |
-| ------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | --- | --- |
-| `time`                    | `DateTime`             | Date of data forecasted                                                                                                                                                                           |     |     |     |
-| `temperature`             | `Number:Temperature`   | Forecasted air temperature                                                                                                                                                                        |     |     |     |
-| `humidity`                | `Number:Dimensionless` | Forecasted relative Humidity                                                                                                                                                                      |     |     |     |
-| `wind-direction`          | `Number:Angle`         | Forecasted wind Direction                                                                                                                                                                         |     |     |     |
-| `wind-speed`              | `Number:Speed`         | Forecasted wind Speed                                                                                                                                                                             |     |     |     |
-| `wind-gust`               | `Number:Speed`         | Forecasted wind Gust Speed                                                                                                                                                                        |     |     |     |
-| `pressure`                | `Number:Pressure`      | Forecasted air pressure                                                                                                                                                                           |     |     |     |
-| `precipitation-intensity` | `Number:Speed`         | Forecasted precipitation intensity at the forecast time in mm/h                                                                                                                                   |     |     |     |
-| `total-cloud-cover`       | `Number:Dimensionless` | Forecasted total cloud cover as percentage                                                                                                                                                        |     |     |     |
-| `weather-id`              | `Number`               | Number indicating forecasted weather condition. Corresponds to `WeatherSymbol3` parameter. For descriptions in Finnish, see [FMI web site](https://ilmatieteenlaitos.fi/latauspalvelun-pikaohje). |     |     |     |
+| Channel ID                | Item Type              | Description                                                                                                                                                                                       |
+| ------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `time`                    | `DateTime`             | Date of data forecasted                                                                                                                                                                           |
+| `temperature`             | `Number:Temperature`   | Forecasted air temperature                                                                                                                                                                        |
+| `humidity`                | `Number:Dimensionless` | Forecasted relative Humidity                                                                                                                                                                      |
+| `wind-direction`          | `Number:Angle`         | Forecasted wind Direction                                                                                                                                                                         |
+| `wind-speed`              | `Number:Speed`         | Forecasted wind Speed                                                                                                                                                                             |
+| `wind-gust`               | `Number:Speed`         | Forecasted wind Gust Speed                                                                                                                                                                        |
+| `pressure`                | `Number:Pressure`      | Forecasted air pressure                                                                                                                                                                           |
+| `precipitation-intensity` | `Number:Speed`         | Forecasted precipitation intensity at the forecast time in mm/h                                                                                                                                   |
+| `total-cloud-cover`       | `Number:Dimensionless` | Forecasted total cloud cover as percentage                                                                                                                                                        |
+| `weather-id`              | `Number`               | Number indicating forecasted weather condition. Corresponds to `WeatherSymbol3` parameter. For descriptions in Finnish, see [FMI web site](https://ilmatieteenlaitos.fi/latauspalvelun-pikaohje). |
 
 To refer to certain channel, use the normal convention `THING_ID:GROUP_ID#CHANNEL_ID`, e.g. `fmiweather:forecast:ParisForecast:forecastHours06#wind-speed`.
 
