@@ -34,10 +34,10 @@ import javax.xml.xpath.XPathFactory;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.fmiweather.internal.client.FMIResponse.Builder;
 import org.openhab.binding.fmiweather.internal.client.exception.FMIExceptionReportException;
 import org.openhab.binding.fmiweather.internal.client.exception.FMIResponseException;
-import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;

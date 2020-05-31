@@ -298,7 +298,7 @@
 
 
 	<!-- Channel types -->
-	<!-- Some descriptions from https://en.ilmatieteenlaitos.fi/guidance-to-observations  -->
+	<!-- Some descriptions from https://en.ilmatieteenlaitos.fi/guidance-to-observations -->
 	<channel-type id="time-channel">
 		<item-type>DateTime</item-type>
 		<label>Observation Time</label>
@@ -368,17 +368,19 @@
 	<channel-type id="clouds-channel">
 		<item-type>Number</item-type>
 		<label>Cloudiness</label>
-		<description>Given in numbers out of eight: 0 = clear skies, 8 = overcast, 9 = cloud coverage could not be determined. Takes into account all cloud layers.</description>
-		<state readOnly="true" pattern="%.0f %unit%" min="0" max="9" step="1"/>
+		<description>Given in numbers out of eight: 0 = clear skies, 8 = overcast, 9 = cloud coverage could not be determined.
+			Takes into account all cloud layers.</description>
+		<state readOnly="true" pattern="%.0f %unit%" min="0" max="9" step="1" />
 	</channel-type>
 	<channel-type id="present-weather-channel">
 		<item-type>Number</item-type>
 		<label>Prevailing weather</label>
-		<description>Prevailing weather code (WaWa field) according to WMO code 4680. For Finnish explanation, consult https://www.ilmatieteenlaitos.fi/latauspalvelun-pikaohje</description>
+		<description>Prevailing weather code (WaWa field) according to WMO code 4680. For Finnish explanation, consult
+			https://www.ilmatieteenlaitos.fi/latauspalvelun-pikaohje</description>
 		<state readOnly="true" min="0" max="99" pattern="%s">
 			<options>
 				<!-- This corresponds to WaWa field in observations -->
-				<!-- WaWa refers to WMO code 4680 (google it)  -->
+				<!-- WaWa refers to WMO code 4680 (google it) -->
 				<!-- See e.g. https://helda.helsinki.fi/bitstream/handle/10138/37284/PRO_GRADU_BOOK_HERMAN.pdf?sequence=2 -->
 				<option value="00">No significant weather observed</option>
 				<option value="01">Clouds generally dissolving or becoming less developed during the past hour</option>
@@ -386,15 +388,15 @@
 				<option value="03">Clouds generally forming or developing during the past hour</option>
 				<option value="04">Haze or smoke, or dust in suspension in the air, visibility equal to, or greater than, 1 km</option>
 				<option value="05">Haze or smoke, or dust in suspension in the air, visibility less than 1 km</option>
-				<!-- 6-9: Reserved-->
+				<!-- 6-9: Reserved -->
 				<option value="10">Mist</option>
 				<option value="11">Diamond dust</option>
 				<option value="12">Distant lightning</option>
-				<!-- 13-17: Reserved-->
+				<!-- 13-17: Reserved -->
 				<option value="18">Squalls</option>
 				<option value="19">Reserved</option>
 				<!-- Code figures 20–26 are used to report precipitation, fog (or ice fog) or thunderstorm at the station during the
-preceding hour but not at the time of observation -->
+					preceding hour but not at the time of observation -->
 				<option value="20">Fog</option>
 				<option value="21">Precipitation</option>
 				<option value="22">Drizzle (not freezing) or snow grains</option>
@@ -411,7 +413,7 @@ preceding hour but not at the time of observation -->
 				<option value="33">Fog or ice fog, no appreciable change during the past hour</option>
 				<option value="34">Fog or ice fog, has begun or become thicker during the past hour</option>
 				<option value="35">Fog, depositing rime</option>
-				<!-- 36-39: Reserved-->
+				<!-- 36-39: Reserved -->
 				<option value="40">Precipitation</option>
 				<option value="41">Precipitation, slight or moderate</option>
 				<option value="42">Precipitation, heavy</option>
@@ -469,7 +471,7 @@ preceding hour but not at the time of observation -->
 				<option value="94">Thunderstorm, heavy, with no precipitation</option>
 				<option value="95">Thunderstorm, heavy, with rain showers and/or snow showers</option>
 				<option value="96">Thunderstorm, heavy, with hail</option>
-				<!-- 97-98: Reserved-->
+				<!-- 97-98: Reserved -->
 				<option value="99">Tornado</option>
 			</options>
 		</state>
@@ -485,15 +487,16 @@ preceding hour but not at the time of observation -->
 		<description>Equivalent to the precipitation amount if the same intensity prevails for an hour. </description>
 		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
-	
+
 	<channel-type id="weather-id-channel">
 		<item-type>Number</item-type>
 		<label>Prevailing weather id</label>
-		<description>Prevailing weather code (WeatherSymbol3 field). For Finnish explanation, consult https://www.ilmatieteenlaitos.fi/latauspalvelun-pikaohje</description>
+		<description>Prevailing weather code (WeatherSymbol3 field). For Finnish explanation, consult
+			https://www.ilmatieteenlaitos.fi/latauspalvelun-pikaohje</description>
 		<state readOnly="true" min="1" max="177" pattern="%s">
 			<options>
 				<!-- This corresponds to WeatherSymbol3 -->
-				<!-- Finnish descriptions: https://ilmatieteenlaitos.fi/latauspalvelun-pikaohje -->				
+				<!-- Finnish descriptions: https://ilmatieteenlaitos.fi/latauspalvelun-pikaohje -->
 				<option value="1">clear</option>
 				<option value="2">partly cloudy</option>
 				<option value="21">light showers</option>
