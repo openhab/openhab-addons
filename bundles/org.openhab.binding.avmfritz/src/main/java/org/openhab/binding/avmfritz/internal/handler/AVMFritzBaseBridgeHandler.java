@@ -292,7 +292,8 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
         ThingUID bridgeUID = thing.getUID();
         String thingName = getThingName(device);
 
-        if (SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID)) {
+        if (SUPPORTED_BUTTON_THING_TYPES_UIDS.contains(thingTypeUID)
+                || SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new ThingUID(thingTypeUID, bridgeUID, thingName);
         } else if (device.isHeatingThermostat()) {
             return new ThingUID(GROUP_HEATING_THING_TYPE, bridgeUID, thingName);
