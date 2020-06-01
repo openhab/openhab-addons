@@ -17,9 +17,9 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Optional;
-import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
@@ -61,13 +61,13 @@ public abstract class AbstractWeatherHandler extends BaseThingHandler {
     protected static final int TIMEOUT_MILLIS = 10_000;
     private final Logger logger = LoggerFactory.getLogger(AbstractWeatherHandler.class);
 
-    protected @NonNullByDefault({}) Client client;
-    private @Nullable ScheduledFuture<?> future;
-    protected @Nullable FMIResponse response;
-    protected int pollIntervalSeconds = 120;
+    protected volatile @NonNullByDefault({}) Client client;
+    protected final AtomicReference<@Nullable ScheduledFuture<?>> futureRef = new AtomicReference<>();
+    protected volatile @Nullable FMIResponse response;
+    protected volatile int pollIntervalSeconds = 120; // reset by subclasses
 
     private volatile long lastRefreshMillis = 0;
-    private volatile @Nullable Future<?> updateChannelsFuture;
+    private final AtomicReference<@Nullable ScheduledFuture<?>> updateChannelsFutureRef = new AtomicReference<>();
 
     public AbstractWeatherHandler(Thing thing) {
         super(thing);
@@ -77,10 +77,18 @@ public abstract class AbstractWeatherHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (RefreshType.REFRESH == command) {
             synchronized (this) {
-                Future<?> localUpdateChannelsFuture = updateChannelsFuture;
-                if (localUpdateChannelsFuture == null || localUpdateChannelsFuture.isDone()) {
-                    submitUpdateChannelsThrottled();
+                ScheduledFuture<?> prevFuture = updateChannelsFutureRef.get();
+                ScheduledFuture<?> newFuture = updateChannelsFutureRef
+                        .updateAndGet(fut -> fut == null || fut.isDone() ? submitUpdateChannelsThrottled() : fut);
+                assert newFuture != null; // invariant
+                long delayRemainingMillis = newFuture.getDelay(TimeUnit.MILLISECONDS);
+                if (delayRemainingMillis <= 0) {
+                    logger.trace("REFRESH received. Channels are updated");
                 } else {
+                    logger.trace("REFRESH received. Delaying by {} ms to avoid throttle excessive REFRESH",
+                            delayRemainingMillis);
+                }
+                if (prevFuture == newFuture) {
                     logger.trace("REFRESH received. Previous refresh ongoing, will wait for it to complete in {} ms",
                             lastRefreshMillis + REFRESH_THROTTLE_MILLIS - System.currentTimeMillis());
                 }
@@ -92,28 +100,28 @@ public abstract class AbstractWeatherHandler extends BaseThingHandler {
     public void initialize() {
         client = new Client();
         updateStatus(ThingStatus.UNKNOWN);
-        future = scheduler.scheduleWithFixedDelay(this::update, 0, pollIntervalSeconds, TimeUnit.SECONDS);
+        rescheduleUpdate(0, false);
     }
 
     /**
      * Call updateChannels asynchronously, possibly in a delayed fashion to throttle updates. This protects against a
-     * situation where many channels receive REFRESH command, e.g. when openHAB is requesting tp update channels
+     * situation where many channels receive REFRESH command, e.g. when openHAB is requesting to update channels
+     *
+     * @return scheduled future
      */
-    private synchronized void submitUpdateChannelsThrottled() {
+    private synchronized ScheduledFuture<?> submitUpdateChannelsThrottled() {
         long now = System.currentTimeMillis();
         long nextRefresh = lastRefreshMillis + REFRESH_THROTTLE_MILLIS;
         lastRefreshMillis = now;
         if (now > nextRefresh) {
-            logger.trace("REFRESH received. Updating channels");
-            updateChannelsFuture = scheduler.submit(this::updateChannels);
+            return scheduler.schedule(this::updateChannels, 0, TimeUnit.MILLISECONDS);
         } else {
             long delayMillis = nextRefresh - now;
-            logger.trace("REFRESH received. Delaying by {} ms to avoid throttle excessive REFRESH", delayMillis);
-            updateChannelsFuture = scheduler.schedule(this::updateChannels, delayMillis, TimeUnit.MILLISECONDS);
+            return scheduler.schedule(this::updateChannels, delayMillis, TimeUnit.MILLISECONDS);
         }
     }
 
-    protected abstract void update();
+    protected abstract void update(int retry);
 
     protected abstract void updateChannels();
 
@@ -121,16 +129,8 @@ public abstract class AbstractWeatherHandler extends BaseThingHandler {
     public void dispose() {
         super.dispose();
         response = null;
-        if (future != null) {
-            future.cancel(true);
-            future = null;
-        }
-        synchronized (this) {
-            if (updateChannelsFuture != null) {
-                updateChannelsFuture.cancel(true);
-                updateChannelsFuture = null;
-            }
-        }
+        cancel(futureRef.getAndSet(null), true);
+        cancel(updateChannelsFutureRef.getAndSet(null), true);
     }
 
     protected static int lastValidIndex(Data data) {
@@ -215,6 +215,21 @@ public abstract class AbstractWeatherHandler extends BaseThingHandler {
             String formattedMessage = String.format(messageIfNotPresent, args);
             logger.error("Unwrapping error: {}", formattedMessage);
             throw new IllegalStateException("unwrapping");
+        }
+    }
+
+    protected void rescheduleUpdate(long delayMillis, boolean mayInterruptIfRunning) {
+        rescheduleUpdate(delayMillis, mayInterruptIfRunning, 0);
+    }
+
+    protected void rescheduleUpdate(long delayMillis, boolean mayInterruptIfRunning, int retry) {
+        cancel(futureRef.getAndSet(scheduler.schedule(() -> this.update(retry), delayMillis, TimeUnit.MILLISECONDS)),
+                mayInterruptIfRunning);
+    }
+
+    private static void cancel(@Nullable ScheduledFuture<?> future, boolean mayInterruptIfRunning) {
+        if (future != null) {
+            future.cancel(mayInterruptIfRunning);
         }
     }
 

@@ -119,11 +119,11 @@ public class ForecastWeatherHandler extends AbstractWeatherHandler {
     }
 
     @Override
-    protected void update() {
+    protected void update(int retry) {
         if (location == null) {
             return;
         }
-        for (int retry = 0; retry < RETRIES; retry++) {
+        if (retry < RETRIES) {
             try {
                 long now = Instant.now().getEpochSecond();
                 response = client.query(new ForecastRequest(location, floorToEvenMinutes(now, QUERY_RESOLUTION_MINUTES),
@@ -134,15 +134,18 @@ public class ForecastWeatherHandler extends AbstractWeatherHandler {
                 response = null;
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         String.format("%s: %s", e.getClass().getSimpleName(), e.getMessage()));
-                try {
-                    Thread.sleep(RETRY_DELAY_MILLIS);
-                } catch (InterruptedException e1) {
-                    break;
-                }
-                continue;
+                logger.trace("Query failed. Increase retry count {} and try again. Error: {} {}", retry,
+                        e.getClass().getName(), e.getMessage());
+                // Try again, with increased retry count
+                rescheduleUpdate(RETRY_DELAY_MILLIS, false, retry + 1);
+                return;
             }
+        } else {
+            logger.trace("Query failed. Retries exhausted, not trying again.");
         }
         updateChannels();
+        // Channels updated successfully. Reschedule new update
+        rescheduleUpdate(pollIntervalSeconds * 1000, false);
     }
 
     @Override
