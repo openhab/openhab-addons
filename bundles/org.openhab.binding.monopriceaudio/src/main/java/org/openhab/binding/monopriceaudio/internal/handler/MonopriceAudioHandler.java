@@ -550,7 +550,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                             Thread.sleep(150);
 
                             // prevUpdateTime should have changed if a zone update was received
-                            if (lastPollingUpdate > prevUpdateTime) {
+                            if (lastPollingUpdate == prevUpdateTime) {
                                 error = "Controller not responding to status requests";
                             }
 
