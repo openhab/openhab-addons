@@ -74,18 +74,18 @@ public class OpenWeatherMapAPIHandler extends BaseBridgeHandler {
         config = getConfigAs(OpenWeatherMapAPIConfiguration.class);
 
         boolean configValid = true;
-        if (config.getApikey() == null || config.getApikey().trim().isEmpty()) {
+        if (config.apikey == null || config.apikey.trim().isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-missing-apikey");
             configValid = false;
         }
-        int refreshInterval = config.getRefreshInterval();
+        int refreshInterval = config.refreshInterval;
         if (refreshInterval < 10) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-not-supported-refreshInterval");
             configValid = false;
         }
-        String language = config.getLanguage();
+        String language = config.language;
         if (language != null && !(language = language.trim()).isEmpty()) {
             if (!OpenWeatherMapAPIConfiguration.SUPPORTED_LANGUAGES.contains(language.toLowerCase())) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -107,7 +107,8 @@ public class OpenWeatherMapAPIHandler extends BaseBridgeHandler {
 
             updateStatus(ThingStatus.UNKNOWN);
 
-            if (refreshJob == null || refreshJob.isCancelled()) {
+            ScheduledFuture<?> localRefreshJob = refreshJob;
+            if (localRefreshJob == null || localRefreshJob.isCancelled()) {
                 logger.debug("Start refresh job at interval {} min.", refreshInterval);
                 refreshJob = scheduler.scheduleWithFixedDelay(this::updateThings, INITIAL_DELAY_IN_SECONDS,
                         TimeUnit.MINUTES.toSeconds(refreshInterval), TimeUnit.SECONDS);
@@ -118,9 +119,10 @@ public class OpenWeatherMapAPIHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         logger.debug("Dispose OpenWeatherMap API handler '{}'.", getThing().getUID());
-        if (refreshJob != null && !refreshJob.isCancelled()) {
+        ScheduledFuture<?> localRefreshJob = refreshJob;
+        if (localRefreshJob != null && !localRefreshJob.isCancelled()) {
             logger.debug("Stop refresh job.");
-            if (refreshJob.cancel(true)) {
+            if (localRefreshJob.cancel(true)) {
                 refreshJob = null;
             }
         }
