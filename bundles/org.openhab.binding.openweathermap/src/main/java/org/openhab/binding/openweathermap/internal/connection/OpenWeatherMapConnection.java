@@ -99,7 +99,7 @@ public class OpenWeatherMapConnection {
         this.httpClient = httpClient;
 
         OpenWeatherMapAPIConfiguration config = handler.getOpenWeatherMapAPIConfig();
-        cache = new ExpiringCacheMap<>(TimeUnit.MINUTES.toMillis(config.getRefreshInterval()));
+        cache = new ExpiringCacheMap<>(TimeUnit.MINUTES.toMillis(config.refreshInterval));
     }
 
     /**
@@ -246,7 +246,7 @@ public class OpenWeatherMapConnection {
 
         Map<String, String> params = new HashMap<>();
         // API key (see http://openweathermap.org/appid)
-        String apikey = config.getApikey();
+        String apikey = config.apikey;
         if (apikey == null || (apikey = apikey.trim()).isEmpty()) {
             throw new OpenWeatherMapConfigurationException("@text/offline.conf-error-missing-apikey");
         }
@@ -260,7 +260,7 @@ public class OpenWeatherMapConnection {
         params.put(PARAM_LON, location.getLongitude().toString());
 
         // Multilingual support (see https://openweathermap.org/current#multi)
-        String language = config.getLanguage();
+        String language = config.language;
         if (language != null && !(language = language.trim()).isEmpty()) {
             params.put(PARAM_LANG, language.toLowerCase());
         }

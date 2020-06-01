@@ -29,37 +29,12 @@ import org.openhab.binding.openweathermap.internal.handler.OpenWeatherMapAPIHand
  */
 @NonNullByDefault
 public class OpenWeatherMapAPIConfiguration {
-
     // supported languages (see https://openweathermap.org/current#multi)
     public static final Set<String> SUPPORTED_LANGUAGES = Collections.unmodifiableSet(Stream.of("ar", "bg", "ca", "cz",
             "de", "el", "en", "es", "fa", "fi", "fr", "gl", "hr", "hu", "it", "ja", "kr", "la", "lt", "mk", "nl", "pl",
             "pt", "ro", "ru", "se", "sk", "sl", "tr", "ua", "vi", "zh_cn", "zh_tw").collect(Collectors.toSet()));
 
-    private @Nullable String apikey;
-    private int refreshInterval;
-    private @Nullable String language;
-
-    public @Nullable String getApikey() {
-        return apikey;
-    }
-
-    public void setApikey(String apikey) {
-        this.apikey = apikey;
-    }
-
-    public int getRefreshInterval() {
-        return refreshInterval;
-    }
-
-    public void setRefreshInterval(int refreshInterval) {
-        this.refreshInterval = refreshInterval;
-    }
-
-    public @Nullable String getLanguage() {
-        return language;
-    }
-
-    public void setLanguage(String language) {
-        this.language = language;
-    }
+    public @Nullable String apikey;
+    public int refreshInterval;
+    public @Nullable String language;
 }
