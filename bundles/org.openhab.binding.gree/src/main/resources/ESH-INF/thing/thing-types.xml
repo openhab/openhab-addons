@@ -90,7 +90,7 @@
 		<description>Set on/off the Air Conditioner's Dry function if applicable to the Air Conditioner model.</description>
 	</channel-type>
 	<channel-type id="temperature">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Sets the desired room temperature</description>
 	</channel-type>
@@ -134,7 +134,7 @@
 	<channel-type id="swingLeftRight">
 		<item-type>Number</item-type>
 		<label>Swing Left/Right</label>
-		<description>Sets the horizontal swing action on the Air Conditioner: OFF: 0, Full Swing: 1, Left: 2, Mid Left: 3, Mid: 4, Mid Right: 5, Right : 6</description>
+		<description>Sets the horizontal swing action on the Air Conditioner: OFF: 0, Full Swing: 1, Left: 2, Mid Left: 3, Mid: 4, Mid Right: 5, Right: 6</description>
 		<state>
 			<options>
 				<option value="0">OFF</option>

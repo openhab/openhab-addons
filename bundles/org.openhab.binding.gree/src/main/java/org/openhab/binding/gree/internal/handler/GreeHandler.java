@@ -31,6 +31,7 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.ImperialUnits;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -144,6 +145,7 @@ public class GreeHandler extends BaseThingHandler {
             DatagramSocket socket = clientSocket.get();
             logger.debug("Issue command {} to channe {}", command, channelUID.getIdWithoutGroup());
             String channelId = channelUID.getIdWithoutGroup();
+            logger.debug("Handle command {} for channel {}, command class {}", command, channelId, command.getClass());
             try {
                 switch (channelId) {
                     case MODE_CHANNEL:
@@ -159,7 +161,7 @@ public class GreeHandler extends BaseThingHandler {
                         device.setDeviceLight(socket, getOnOff(command));
                         break;
                     case TEMP_CHANNEL:
-                        device.setDeviceTempSet(socket, getNumber(command));
+                        device.setDeviceTempSet(socket, (int) getTemp(command));
                         break;
                     case SWINGUD_CHANNEL:
                         device.setDeviceSwingUpDown(socket, getNumber(command));
@@ -210,19 +212,24 @@ public class GreeHandler extends BaseThingHandler {
         if (command instanceof DecimalType) {
             return ((DecimalType) command).intValue();
         }
+        throw new IllegalArgumentException("Invalud Number type");
+    }
+
+    private double getTemp(Command command) {
+        if (command instanceof DecimalType) {
+            // assume Celsius
+            return ((DecimalType) command).doubleValue();
+        }
         if (command instanceof QuantityType) {
             QuantityType<?> q = (QuantityType<?>) command;
             if (q.getUnit() == Units.CELSIUS) {
                 return q.intValue();
             }
+            if (q.getUnit() == ImperialUnits.FAHRENHEIT) {
+                return ImperialUnits.FAHRENHEIT.getConverterTo(Units.CELSIUS).convert(q.doubleValue());
+            }
         }
-        if (command instanceof StringType) {
-            String temp = ((StringType) command).toString();
-            temp = temp.replace("°C", "");
-            temp = temp.replace(" ", "");
-            return Integer.parseInt(temp);
-        }
-        throw new IllegalArgumentException("Invalud Number type");
+        throw new IllegalArgumentException("Invalud Temp type");
     }
 
     private void handleModeCommand(Command command, DatagramSocket socket) throws GreeException {
