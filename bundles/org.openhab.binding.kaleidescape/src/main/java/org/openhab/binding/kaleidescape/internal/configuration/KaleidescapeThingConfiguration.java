@@ -28,6 +28,6 @@ public class KaleidescapeThingConfiguration {
     public @Nullable String host;
     public @Nullable Integer port;
     public @Nullable Integer updatePeriod;
-    public @Nullable Integer volumeEnabled;
+    public boolean volumeEnabled;
     public @Nullable Integer initialVolume;
 }

@@ -17,6 +17,8 @@ import static org.openhab.binding.kaleidescape.internal.KaleidescapeBindingConst
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.EventObject;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
@@ -40,11 +42,13 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.kaleidescape.internal.KaleidescapeBindingConstants;
 import org.openhab.binding.kaleidescape.internal.KaleidescapeException;
+import org.openhab.binding.kaleidescape.internal.KaleidescapeThingActions;
 import org.openhab.binding.kaleidescape.internal.communication.KaleidescapeConnector;
 import org.openhab.binding.kaleidescape.internal.communication.KaleidescapeIpConnector;
 import org.openhab.binding.kaleidescape.internal.communication.KaleidescapeMessageEvent;
@@ -80,6 +84,8 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
     private @Nullable ScheduledFuture<?> reconnectJob;
     private @Nullable ScheduledFuture<?> pollingJob;
 
+    private @Nullable KaleidescapeThingConfiguration config;
+
     private SerialPortManager serialPortManager;
 
     protected @Nullable KaleidescapeConnector connector;
@@ -109,7 +115,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
 
     @Override
     public void initialize() {
-        KaleidescapeThingConfiguration config = getConfigAs(KaleidescapeThingConfiguration.class);
+        this.config = getConfigAs(KaleidescapeThingConfiguration.class);
 
         // Check configuration settings
         String configError = null;
@@ -131,7 +137,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
         List<Channel> channels = new ArrayList<>(this.getThing().getChannels());
 
         // check if volume is enabled, if not remove the volume & mute channels
-        if (config.volumeEnabled != null && config.volumeEnabled == 1) {
+        if (config.volumeEnabled) {
             this.volumeEnabled = true;
             if (config.initialVolume != null) {
                 this.volume = config.initialVolume;
@@ -189,6 +195,20 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
         super.dispose();
     }
 
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singletonList(KaleidescapeThingActions.class);
+    }
+
+    public void handleRawCommand(@Nullable String command) {
+        try {
+            connector.sendCommand(command);
+        } catch (KaleidescapeException e) {
+            logger.warn("K Command: {} failed", command);
+        }
+    }
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         String channel = channelUID.getId();
@@ -207,9 +227,6 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
         synchronized (sequenceLock) {
             try {
                 switch (channel) {
-                    case SEND_COMMAND:
-                        connector.sendCommand(command.toString());
-                        break;
                     case POWER:
                         if (command instanceof OnOffType && command == OnOffType.ON) {
                             connector.sendCommand("LEAVE_STANDBY");
@@ -252,7 +269,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                         break;
                     default:
                         success = false;
-                        logger.debug("Command {} from channel {} failed: unexpected command", command, channel);
+                        logger.warn("Command {} from channel {} failed: unexpected command", command, channel);
                         break;
                 }
 
@@ -330,7 +347,6 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
         cancelReconnectJob();
         reconnectJob = scheduler.scheduleWithFixedDelay(() -> {
             if (!connector.isConnected()) {
-                KaleidescapeThingConfiguration config = getConfigAs(KaleidescapeThingConfiguration.class);
                 logger.debug("Trying to reconnect...");
                 closeConnection();
                 String error = null;

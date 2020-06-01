@@ -171,7 +171,7 @@ public abstract class KaleidescapeConnector {
      *
      * @throws KaleidescapeException - In case of any problem
      */
-    public void sendCommand(String cmd) throws KaleidescapeException {
+    public void sendCommand(@Nullable String cmd) throws KaleidescapeException {
         String messageStr = BEGIN_CMD + cmd + END_CMD;
 
         byte[] message;

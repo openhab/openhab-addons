@@ -67,12 +67,12 @@
 					Content Playing.</description>
 				<default>0</default>
 			</parameter>
-			<parameter name="volumeEnabled" type="integer" min="0" max="1" required="false">
+			<parameter name="volumeEnabled" type="boolean" required="false">
 				<label>Volume Control Enabled</label>
 				<description>Enable the Volume and Mute Controls in the Kaleidescape iPad &amp; Phone Apps and Track Their Status in
 					the Binding. Disabled by Default to Prevent Conflicts With Other Control Systems That May Already Be Controlling
 					Volume On This Zone.</description>
-				<default>0</default>
+				<default>false</default>
 			</parameter>
 			<parameter name="initialVolume" type="integer" min="0" max="75" required="false">
 				<label>Initial Volume Setting</label>
@@ -118,7 +118,6 @@
 			<channel id="ui_state" typeId="ui_state"/>
 			<channel id="child_mode_state" typeId="child_mode_state"/>
 			<channel id="highlighted_selection" typeId="highlighted_selection"/>
-			<channel id="send_command" typeId="send_command"/>
 			<channel id="user_defined_event" typeId="user_defined_event"/>
 			<channel id="user_input" typeId="user_input"/>
 			<channel id="user_input_prompt" typeId="user_input_prompt"/>
@@ -388,12 +387,6 @@
 		<label>Highlighted Selection</label>
 		<description>Specifies the Handle of the Movie or Album Currently Selected On the User Interface</description>
 		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="send_command" advanced="true">
-		<item-type>String</item-type>
-		<label>Send Command to Component</label>
-		<description>Sends a Command String to the Component, ie: "PAUSE", "PLAY" or "PLAY_SCRIPT:Great Vistas"</description>
 	</channel-type>
 
 	<channel-type id="user_defined_event" advanced="true">

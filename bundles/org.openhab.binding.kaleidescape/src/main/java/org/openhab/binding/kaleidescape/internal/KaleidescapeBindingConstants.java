@@ -82,7 +82,6 @@ public class KaleidescapeBindingConstants {
     public static final String UI_STATE = "ui#ui_state";
     public static final String CHILD_MODE_STATE = "ui#child_mode_state";
     public static final String HIGHLIGHTED_SELECTION = "ui#highlighted_selection";
-    public static final String SEND_COMMAND = "ui#send_command";
     public static final String USER_DEFINED_EVENT = "ui#user_defined_event";
     public static final String USER_INPUT = "ui#user_input";
     public static final String USER_INPUT_PROMPT = "ui#user_input_prompt";
