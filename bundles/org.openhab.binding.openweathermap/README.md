@@ -58,7 +58,7 @@ Once the system location will be changed, the background discovery updates the c
 
 Once the parameters `forecastHours` or `forecastDays` will be changed, the available channel groups on the thing will be created or removed accordingly.
 
-### Current UV INdex And Forecast
+### Current UV Index And Forecast
 
 | Parameter      | Description                                                                                                                    |
 |----------------|--------------------------------------------------------------------------------------------------------------------------------|
