@@ -13,7 +13,6 @@
 package org.openhab.io.homekit.internal.accessories;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.smarthome.core.items.GenericItem;
@@ -52,18 +51,17 @@ class HomekitLightbulbImpl extends AbstractHomekitAccessoryImpl implements Light
 
     @Override
     public CompletableFuture<Void> setLightbulbPowerState(boolean value) {
-        final Optional<HomekitTaggedItem> taggedItem = getCharacteristic(HomekitCharacteristicType.ON_STATE);
-        if (taggedItem.isPresent()) {
+        getCharacteristic(HomekitCharacteristicType.ON_STATE).ifPresent(tItem -> {
             final OnOffType onOffState = OnOffType.from(value);
-            final GenericItem item = (GenericItem) taggedItem.get().getItem();
+            final GenericItem item = (GenericItem) tItem.getItem();
             if (item instanceof DimmerItem) {
-                taggedItem.get().sendCommandProxy(HomekitOHItemProxy.ON_COMMAND, onOffState);
+                tItem.sendCommandProxy(HomekitOHItemProxy.ON_COMMAND, onOffState);
             } else if (item instanceof SwitchItem) {
                 ((SwitchItem) item).send(onOffState);
             } else if (item instanceof GroupItem) {
                 ((GroupItem) item).send(onOffState);
             }
-        }
+        });
         return CompletableFuture.completedFuture(null);
     }
 

@@ -18,7 +18,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.library.items.ColorItem;
@@ -48,9 +47,12 @@ public class HomekitOHItemProxy {
     public static final String BRIGHTNESS_COMMAND = "brightness";
     public static final String ON_COMMAND = "on";
 
-    // delay, how long wait for further commands.
-    // TODO: make it configurable ?
-    private final int DELAY = 50;
+    public static final int DIMMER_MODE_NONE = 0;
+    public static final int DIMMER_MODE_FILTER_BRIGHTNESS_100 = 1;
+    public static final int DIMMER_MODE_FILTER_ON = 2;
+    public static final int DIMMER_MODE_FILTER_ON_EXCEPT_BRIGHTNESS_100 = 3;
+
+    private static final int DEFAULT_DELAY = 50;
 
     private final ScheduledExecutorService scheduler = ThreadPoolManager
             .getScheduledPool(ThreadPoolManager.THREAD_POOL_NAME_COMMON);
@@ -58,8 +60,11 @@ public class HomekitOHItemProxy {
 
     private final Item item;
 
-    @Nullable
-    private ConcurrentHashMap<String, State> commandCache;
+    private int dimmerMode = DIMMER_MODE_NONE;
+
+    // delay, how long wait for further commands. in ms.
+    private int delay = DEFAULT_DELAY;
+    private ConcurrentHashMap<String, State> commandCache = new ConcurrentHashMap<>();
 
     public HomekitOHItemProxy(final Item item) {
         this.item = item;
@@ -69,51 +74,68 @@ public class HomekitOHItemProxy {
         return item;
     }
 
-    private void sendCommand() {
-        if (item instanceof ColorItem) {
-            final State currentState = item.getState() instanceof UnDefType ? HSBType.BLACK : item.getState();
-            final State hue = commandCache.containsKey(HUE_COMMAND) ? commandCache.remove(HUE_COMMAND)
-                    : ((HSBType) currentState).getHue();
-            final State saturation = commandCache.containsKey(SATURATION_COMMAND)
-                    ? commandCache.remove(SATURATION_COMMAND)
-                    : ((HSBType) currentState).getSaturation();
-            final State brightness = commandCache.containsKey(BRIGHTNESS_COMMAND)
-                    ? commandCache.remove(BRIGHTNESS_COMMAND)
-                    : ((HSBType) currentState).getBrightness();
-            ((ColorItem) item).send(new HSBType((DecimalType) hue, (PercentType) saturation, (PercentType) brightness));
-            logger.trace("send HSB command for item {} with following values h {} s{} b{}", item, hue, saturation,
-                    brightness);
-        } else if (item instanceof DimmerItem) { // not ColorItem but DimmerItem
-            final State on = commandCache.remove(ON_COMMAND);
-            final State brightness = commandCache.remove(BRIGHTNESS_COMMAND);
+    public void setDimmerMode(int mode) {
+        dimmerMode = mode;
+    }
 
-            // if "ON" command received we dont need to send brightness.
-            // TODO: make brightness suppression on "On" configurable.
-            if (on != null) {
+    public void setDelay(int delay) {
+        this.delay = delay;
+    }
+
+    private void sendCommand() {
+        final OnOffType on = (OnOffType) commandCache.remove(ON_COMMAND);
+        final PercentType brightness = (PercentType) commandCache.remove(BRIGHTNESS_COMMAND);
+        final DecimalType hue = (DecimalType) commandCache.remove(HUE_COMMAND);
+        final PercentType saturation = (PercentType) commandCache.remove(SATURATION_COMMAND);
+
+        if (on != null) {
+            // always sends OFF.
+            // sends ON only if
+            // - DIMMER_MODE_NONE is enabled OR
+            // - DIMMER_MODE_FILTER_BRIGHTNESS_100 is enabled OR
+            // - DIMMER_MODE_FILTER_ON_EXCEPT100 is not enabled and brightness is null or below 100
+            if ((on == OnOffType.OFF) || (dimmerMode == DIMMER_MODE_NONE)
+                    || (dimmerMode == DIMMER_MODE_FILTER_BRIGHTNESS_100)
+                    || ((dimmerMode == DIMMER_MODE_FILTER_ON_EXCEPT_BRIGHTNESS_100)
+                            && ((brightness == null) || (brightness.intValue() == 100)))) {
                 logger.trace("send OnOff command for item {} with value {}", item, on);
-                ((DimmerItem) item).send((OnOffType) on);
-            } else {
-                if (brightness != null) {
-                    logger.trace("send brightness command for item {} with value {}", item, brightness);
-                    ((DimmerItem) item).send((PercentType) brightness);
-                }
+                ((DimmerItem) item).send(on);
             }
         }
+
+        // if hue or saturation present, send an HSBType state update. no filter applied for HUE & Saturation
+        if ((hue != null) || (saturation != null)) {
+            if (item instanceof ColorItem) {
+                // logic for ColorItem = combine hue, saturation and brightness update to one command
+                final HSBType currentState = item.getState() instanceof UnDefType ? HSBType.BLACK
+                        : (HSBType) item.getState();
+                ((ColorItem) item).send(new HSBType(hue != null ? hue : currentState.getHue(),
+                        saturation != null ? saturation : currentState.getSaturation(),
+                        brightness != null ? brightness : currentState.getBrightness()));
+                logger.trace("send HSB command for item {} with following values hue={} saturation={} brightness={}",
+                        item, hue, saturation, brightness);
+            }
+        } else if ((brightness != null) && (item instanceof DimmerItem)) {
+            // sends brightness:
+            // - DIMMER_MODE_NONE
+            // - DIMMER_MODE_FILTER_ON
+            // - other modes (DIMMER_MODE_FILTER_BRIGHTNESS_100 or DIMMER_MODE_FILTER_ON_EXCEPT_BRIGHTNESS_100) and
+            // <100%.
+            if ((dimmerMode == DIMMER_MODE_NONE) || (dimmerMode == DIMMER_MODE_FILTER_ON)
+                    || (brightness.intValue() < 100)) {
+                logger.trace("send brightness command for item {} with value {}", item, brightness);
+                ((DimmerItem) item).send(brightness);
+            }
+        }
+        commandCache.clear();
     }
 
     public synchronized void sendCommandProxy(final String commandType, final State state) {
-        if (commandCache == null) {
-            // we dont need commandCache for all item types, therefore late instantiation here only for item we use
-            // commandProxy
-            commandCache = new ConcurrentHashMap<>();
-        }
         commandCache.put(commandType, state);
-
         logger.trace("add command to command cache: item {}, command type {}, command state {}. cache state after: {}",
                 this, commandType, state, commandCache);
 
-        // if cache has already HUE+SATURATION or BRIGTHNESS+ON then we dont expect any further relevant command
-        // send the command immediately
+        // if cache has already HUE+SATURATION or BRIGHTNESS+ON then we don't expect any further relevant command
         if ((commandCache.containsKey(HUE_COMMAND) && commandCache.containsKey(SATURATION_COMMAND))
                 || (commandCache.containsKey(BRIGHTNESS_COMMAND) && commandCache.containsKey(ON_COMMAND))) {
             if (future != null)
@@ -122,13 +144,13 @@ public class HomekitOHItemProxy {
             return;
         }
 
-        // it timer is not there create one. this will ensure that we will send command out even if no follow up
-        // commands were received.
+        // if timer is not already set, create a new one to ensure that the command command is send even if no follow up
+        // commands are received.
         if (future == null || future.isDone()) {
             future = scheduler.schedule(() -> {
                 logger.trace("timer is over, sending the command");
                 sendCommand();
-            }, DELAY, TimeUnit.MILLISECONDS);
+            }, delay, TimeUnit.MILLISECONDS);
         }
     }
 }

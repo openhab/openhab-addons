@@ -14,6 +14,7 @@ package org.openhab.io.homekit.internal;
 
 import static org.openhab.io.homekit.internal.HomekitAccessoryType.DUMMY;
 
+import java.math.BigDecimal;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -38,11 +39,13 @@ public class HomekitTaggedItem {
     public final static String MIN_VALUE = "minValue";
     public final static String MAX_VALUE = "maxValue";
     public final static String STEP = "step";
+    public final static String DIMMER_MODE = "dimmerMode";
+    public final static String DELAY = "commandDelay";
 
     private static final Map<Integer, String> CREATED_ACCESSORY_IDS = new ConcurrentHashMap<>();
 
     // proxy item used to group commands for complex item types like Color or Dimmer
-    private final HomekitOHItemProxy item;
+    private final HomekitOHItemProxy proxyItem;
 
     // type of HomeKit accessory/service, e.g. TemperatureSensor
     private final HomekitAccessoryType homekitAccessoryType;
@@ -61,7 +64,7 @@ public class HomekitTaggedItem {
 
     public HomekitTaggedItem(HomekitOHItemProxy item, HomekitAccessoryType homekitAccessoryType,
             @Nullable Map<String, Object> configuration) {
-        this.item = item;
+        this.proxyItem = item;
         this.parentGroupItem = null;
         this.configuration = configuration;
         this.homekitAccessoryType = homekitAccessoryType;
@@ -71,6 +74,7 @@ public class HomekitTaggedItem {
         } else {
             this.id = 0;
         }
+        parseConfiguration();
     }
 
     public HomekitTaggedItem(HomekitOHItemProxy item, HomekitAccessoryType homekitAccessoryType,
@@ -88,7 +92,7 @@ public class HomekitTaggedItem {
     }
 
     public boolean isGroup() {
-        return (isAccessory() && (item.getItem() instanceof GroupItem));
+        return (isAccessory() && (proxyItem.getItem() instanceof GroupItem));
     }
 
     public HomekitAccessoryType getAccessoryType() {
@@ -127,7 +131,7 @@ public class HomekitTaggedItem {
      * @return openHAB item
      */
     public Item getItem() {
-        return item.getItem();
+        return proxyItem.getItem();
     }
 
     /**
@@ -136,7 +140,7 @@ public class HomekitTaggedItem {
      * @return proxy item
      */
     public HomekitOHItemProxy getProxyItem() {
-        return item;
+        return proxyItem;
     }
 
     /**
@@ -148,7 +152,7 @@ public class HomekitTaggedItem {
      * @param command command/state
      */
     public void sendCommandProxy(String commandType, State command) {
-        item.sendCommandProxy(commandType, command);
+        proxyItem.sendCommandProxy(commandType, command);
     }
 
     public int getId() {
@@ -156,7 +160,7 @@ public class HomekitTaggedItem {
     }
 
     public String getName() {
-        return item.getItem().getName();
+        return proxyItem.getItem().getName();
     }
 
     /**
@@ -174,6 +178,28 @@ public class HomekitTaggedItem {
      */
     public boolean isMemberOfAccessoryGroup() {
         return parentGroupItem != null;
+    }
+
+    private void parseConfiguration() {
+        if (configuration != null) {
+            Object dimmerModeConfig = configuration.get(DIMMER_MODE);
+            if (dimmerModeConfig instanceof String) {
+                final String dimmerModeConfigStr = (String) dimmerModeConfig;
+                if (dimmerModeConfigStr.equalsIgnoreCase("none")) {
+                    proxyItem.setDimmerMode(HomekitOHItemProxy.DIMMER_MODE_NONE);
+                } else if (dimmerModeConfigStr.equalsIgnoreCase("filterOn")) {
+                    proxyItem.setDimmerMode(HomekitOHItemProxy.DIMMER_MODE_FILTER_ON);
+                } else if (dimmerModeConfigStr.equalsIgnoreCase("filterBrightness100")) {
+                    proxyItem.setDimmerMode(HomekitOHItemProxy.DIMMER_MODE_FILTER_BRIGHTNESS_100);
+                } else if (dimmerModeConfigStr.equalsIgnoreCase("filterOnExceptBrightness100")) {
+                    proxyItem.setDimmerMode(HomekitOHItemProxy.DIMMER_MODE_FILTER_ON_EXCEPT_BRIGHTNESS_100);
+                }
+            }
+            Object delayConfig = configuration.get(DELAY);
+            if (delayConfig instanceof BigDecimal) {
+                proxyItem.setDelay(((BigDecimal) delayConfig).intValue());
+            }
+        }
     }
 
     private int calculateId(Item item) {
@@ -199,7 +225,7 @@ public class HomekitTaggedItem {
     }
 
     public String toString() {
-        return "Item:" + item + "  HomeKit type:" + homekitAccessoryType + " HomeKit characteristic:"
+        return "Item:" + proxyItem + "  HomeKit type:" + homekitAccessoryType + " HomeKit characteristic:"
                 + homekitCharacteristicType;
     }
 }
