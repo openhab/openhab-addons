@@ -54,10 +54,10 @@ import org.openhab.binding.radiothermostat.internal.RadioThermostatThingActions;
 import org.openhab.binding.radiothermostat.internal.communication.RadioThermostatConnector;
 import org.openhab.binding.radiothermostat.internal.communication.RadioThermostatEvent;
 import org.openhab.binding.radiothermostat.internal.communication.RadioThermostatEventListener;
-import org.openhab.binding.radiothermostat.internal.json.RadioThermostatData;
-import org.openhab.binding.radiothermostat.internal.json.RadioThermostatJsonHumidity;
-import org.openhab.binding.radiothermostat.internal.json.RadioThermostatJsonResponse;
-import org.openhab.binding.radiothermostat.internal.json.RadioThermostatJsonRuntime;
+import org.openhab.binding.radiothermostat.internal.dto.RadioThermostatDTO;
+import org.openhab.binding.radiothermostat.internal.dto.RadioThermostatHumidityDTO;
+import org.openhab.binding.radiothermostat.internal.dto.RadioThermostatTstatDTO;
+import org.openhab.binding.radiothermostat.internal.dto.RadioThermostatRuntimeDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,7 +82,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
 
     private final HttpClient httpClient;
     private final Gson gson;
-    private final RadioThermostatData rthermData = new RadioThermostatData();
+    private final RadioThermostatDTO rthermData = new RadioThermostatDTO();
 
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable ScheduledFuture<?> logRefreshJob;
@@ -283,15 +283,15 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
             // Map the JSON response to the correct object and update appropriate channels
             switch (evtKey) {
                 case DEFAULT_RESOURCE:
-                    rthermData.setThermostatData(gson.fromJson(evtVal, RadioThermostatJsonResponse.class));
+                    rthermData.setThermostatData(gson.fromJson(evtVal, RadioThermostatTstatDTO.class));
                     updateAllChannels();
                     break;
                 case HUMIDITY_RESOURCE:
-                    rthermData.setHumidity(gson.fromJson(evtVal, RadioThermostatJsonHumidity.class).getHumidity());
+                    rthermData.setHumidity(gson.fromJson(evtVal, RadioThermostatHumidityDTO.class).getHumidity());
                     updateChannel(HUMIDITY, rthermData);
                     break;
                 case RUNTIME_RESOURCE:
-                    rthermData.setRuntime(gson.fromJson(evtVal, RadioThermostatJsonRuntime.class));
+                    rthermData.setRuntime(gson.fromJson(evtVal, RadioThermostatRuntimeDTO.class));
                     updateChannel(TODAY_HEAT_RUNTIME, rthermData);
                     updateChannel(TODAY_COOL_RUNTIME, rthermData);
                     updateChannel(YESTERDAY_HEAT_RUNTIME, rthermData);
@@ -306,7 +306,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
      *
      * @param channelId the id identifying the channel to be updated
      */
-    private void updateChannel(String channelId, RadioThermostatData rthermData) {
+    private void updateChannel(String channelId, RadioThermostatDTO rthermData) {
         if (isLinked(channelId)) {
             Object value;
             try {
@@ -354,17 +354,17 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
      * @param data the RadioThermostat dto
      * @return the value to be set in the state
      */
-    public static @Nullable Object getValue(String channelId, RadioThermostatData data) {
+    public static @Nullable Object getValue(String channelId, RadioThermostatDTO data) {
         switch (channelId) {
             case TEMPERATURE:
-                if (!data.getThermostatData().getTemperature().equals(0d)) {
+                if (data.getThermostatData().getTemperature() != null) {
                     return new QuantityType<Temperature>(data.getThermostatData().getTemperature(),
                             API_TEMPERATURE_UNIT);
                 } else {
                     return null;
                 }
             case HUMIDITY:
-                if (data.getHumidity() != 0) {
+                if (data.getHumidity() != null) {
                     return new QuantityType<>(data.getHumidity(), API_HUMIDITY_UNIT);
                 } else {
                     return null;

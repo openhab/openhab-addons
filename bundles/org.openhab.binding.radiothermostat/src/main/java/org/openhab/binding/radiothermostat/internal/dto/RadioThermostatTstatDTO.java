@@ -10,63 +10,59 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.radiothermostat.internal.json;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+package org.openhab.binding.radiothermostat.internal.dto;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link RadioThermostatJsonResponse} is responsible for storing
+ * The {@link RadioThermostatTstatDTO} is responsible for storing
  * the data from the thermostat 'tstat' JSON response
  *
  * @author Michael Lobstein - Initial contribution
  */
-@NonNullByDefault
-public class RadioThermostatJsonResponse {
+public class RadioThermostatTstatDTO {
 
     @SerializedName("temp")
-    private Double temperature = 0d;
+    private Double temperature;
 
     @SerializedName("tmode")
-    private @Nullable Integer mode;
+    private Integer mode;
 
     @SerializedName("fmode")
-    private @Nullable Integer fanMode;
+    private Integer fanMode;
 
     @SerializedName("program_mode")
-    private @Nullable Integer programMode;
+    private Integer programMode;
 
     @SerializedName("t_heat")
-    private Integer heatTarget = 0;
+    private Integer heatTarget;
 
     @SerializedName("t_cool")
-    private Integer coolTarget = 0;
+    private Integer coolTarget;
 
     @SerializedName("override")
-    private @Nullable Integer override;
+    private Integer override;
 
     @SerializedName("hold")
-    private @Nullable Integer hold;
+    private Integer hold;
 
     @SerializedName("tstate")
-    private @Nullable Integer status;
+    private Integer status;
 
     @SerializedName("fstate")
-    private @Nullable Integer fanStatus;
+    private Integer fanStatus;
 
     @SerializedName("time")
-    private @Nullable RadioThermostatJsonTime time;
+    private RadioThermostatTimeDTO time;
 
-    public RadioThermostatJsonResponse() {
+    public RadioThermostatTstatDTO() {
     }
 
     public Double getTemperature() {
         return temperature;
     }
 
-    public @Nullable Integer getMode() {
+    public Integer getMode() {
         return mode;
     }
 
@@ -74,7 +70,7 @@ public class RadioThermostatJsonResponse {
         this.mode = mode;
     }
 
-    public @Nullable Integer getFanMode() {
+    public Integer getFanMode() {
         return fanMode;
     }
 
@@ -82,7 +78,7 @@ public class RadioThermostatJsonResponse {
         this.fanMode = fanMode;
     }
 
-    public @Nullable Integer getProgramMode() {
+    public Integer getProgramMode() {
         return programMode;
     }
 
@@ -90,7 +86,7 @@ public class RadioThermostatJsonResponse {
         this.programMode = programMode;
     }
 
-    public @Nullable Integer getHeatTarget() {
+    public Integer getHeatTarget() {
         return heatTarget;
     }
 
@@ -98,7 +94,7 @@ public class RadioThermostatJsonResponse {
         this.heatTarget = heatTarget;
     }
 
-    public @Nullable Integer getCoolTarget() {
+    public Integer getCoolTarget() {
         return coolTarget;
     }
 
@@ -106,11 +102,11 @@ public class RadioThermostatJsonResponse {
         this.coolTarget = coolTarget;
     }
 
-    public @Nullable Integer getOverride() {
+    public Integer getOverride() {
         return override;
     }
 
-    public @Nullable Integer getHold() {
+    public Integer getHold() {
         return hold;
     }
 
@@ -118,11 +114,11 @@ public class RadioThermostatJsonResponse {
         this.hold = hold;
     }
 
-    public @Nullable Integer getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public @Nullable Integer getFanStatus() {
+    public Integer getFanStatus() {
         return fanStatus;
     }
 
@@ -146,7 +142,7 @@ public class RadioThermostatJsonResponse {
      *
      * @return {RadioThermostatJsonTime}
      */
-    public @Nullable RadioThermostatJsonTime getTime() {
+    public RadioThermostatTimeDTO getTime() {
         return time;
     }
 }

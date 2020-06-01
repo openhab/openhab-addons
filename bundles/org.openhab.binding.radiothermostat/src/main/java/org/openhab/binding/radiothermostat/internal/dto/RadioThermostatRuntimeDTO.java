@@ -10,29 +10,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.radiothermostat.internal.json;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+package org.openhab.binding.radiothermostat.internal.dto;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link RadioThermostatJsonRuntime} is responsible for storing
+ * The {@link RadioThermostatRuntimeDTO} is responsible for storing
  * the "today" and "yesterday" node from the "tstat/datalog" JSON response
  *
  * @author Michael Lobstein - Initial contribution
  */
-@NonNullByDefault
-public class RadioThermostatJsonRuntime {
+public class RadioThermostatRuntimeDTO {
 
     @SerializedName("today")
-    private @Nullable RadioThermostatJsonRuntimeHeatCool today;
+    private RadioThermostatRuntimeHeatCoolDTO today;
 
     @SerializedName("yesterday")
-    private @Nullable RadioThermostatJsonRuntimeHeatCool yesterday;
+    private RadioThermostatRuntimeHeatCoolDTO yesterday;
 
-    public RadioThermostatJsonRuntime() {
+    public RadioThermostatRuntimeDTO() {
     }
 
     /**
@@ -40,7 +36,7 @@ public class RadioThermostatJsonRuntime {
      *
      * @return {RadioThermostatRuntimeHeatCool}
      */
-    public @Nullable RadioThermostatJsonRuntimeHeatCool getToday() {
+    public RadioThermostatRuntimeHeatCoolDTO getToday() {
         return today;
     }
 
@@ -49,7 +45,7 @@ public class RadioThermostatJsonRuntime {
      *
      * @return {RadioThermostatRuntimeHeatCool}
      */
-    public @Nullable RadioThermostatJsonRuntimeHeatCool getYesterday() {
+    public RadioThermostatRuntimeHeatCoolDTO getYesterday() {
         return yesterday;
     }
 }

@@ -10,37 +10,33 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.radiothermostat.internal.json;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+package org.openhab.binding.radiothermostat.internal.dto;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link RadioThermostatJsonRuntimeHeatCool} is responsible for storing
+ * The {@link RadioThermostatRuntimeHeatCoolDTO} is responsible for storing
  * the "heat_runtime" and "cool_runtime" node from the thermostat JSON response
  *
  * @author Michael Lobstein - Initial contribution
  */
-@NonNullByDefault
-public class RadioThermostatJsonRuntimeHeatCool {
+public class RadioThermostatRuntimeHeatCoolDTO {
 
-    public RadioThermostatJsonRuntimeHeatCool() {
+    public RadioThermostatRuntimeHeatCoolDTO() {
     }
 
     @SerializedName("heat_runtime")
-    private @Nullable RadioThermostatJsonTime heatTime;
+    private RadioThermostatTimeDTO heatTime;
 
     @SerializedName("cool_runtime")
-    private @Nullable RadioThermostatJsonTime coolTime;
+    private RadioThermostatTimeDTO coolTime;
 
     /**
      * Receives "heat_runtime" node from the JSON response
      *
      * @return {RadioThermostatJsonTime}
      */
-    public @Nullable RadioThermostatJsonTime getHeatTime() {
+    public RadioThermostatTimeDTO getHeatTime() {
         return heatTime;
     }
 
@@ -49,7 +45,7 @@ public class RadioThermostatJsonRuntimeHeatCool {
      *
      * @return {RadioThermostatJsonTime}
      */
-    public @Nullable RadioThermostatJsonTime getCoolTime() {
+    public RadioThermostatTimeDTO getCoolTime() {
         return coolTime;
     }
 }

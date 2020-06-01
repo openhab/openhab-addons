@@ -10,24 +10,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.radiothermostat.internal.json;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
+package org.openhab.binding.radiothermostat.internal.dto;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link RadioThermostatJsonHumidity} is responsible for storing
+ * The {@link RadioThermostatHumidityDTO} is responsible for storing
  * the data from the thermostat 'tstat/humidity' JSON response
  *
  * @author Michael Lobstein - Initial contribution
  */
-@NonNullByDefault
-public class RadioThermostatJsonHumidity {
+public class RadioThermostatHumidityDTO {
     @SerializedName("humidity")
-    private Integer humidity = 0;
+    private Integer humidity;
 
-    public RadioThermostatJsonHumidity() {
+    public RadioThermostatHumidityDTO() {
     }
 
     public Integer getHumidity() {

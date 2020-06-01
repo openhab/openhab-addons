@@ -10,30 +10,27 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.radiothermostat.internal.json;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
+package org.openhab.binding.radiothermostat.internal.dto;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link RadioThermostatJsonTime} is responsible for storing
+ * The {@link RadioThermostatTimeDTO} is responsible for storing
  * the "time" node from the thermostat JSON response
  *
  * @author Michael Lobstein - Initial contribution
  */
-@NonNullByDefault
-public class RadioThermostatJsonTime {
+public class RadioThermostatTimeDTO {
     @SerializedName("day")
-    private Integer dayOfWeek = -1;
+    private Integer dayOfWeek;
 
     @SerializedName("hour")
-    private Integer hour = 0;
+    private Integer hour;
 
     @SerializedName("minute")
-    private Integer minute = 0;
+    private Integer minute;
 
-    public RadioThermostatJsonTime() {
+    public RadioThermostatTimeDTO() {
     }
 
     public Integer getDayOfWeek() {

@@ -10,31 +10,27 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.radiothermostat.internal.json;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+package org.openhab.binding.radiothermostat.internal.dto;
 
 /**
- * The {@link RadioThermostatData} is responsible for storing
+ * The {@link RadioThermostatDTO} is responsible for storing
  * all of the JSON data objects that are retrieved from the thermostat
  *
  * @author Michael Lobstein - Initial contribution
  */
-@NonNullByDefault
-public class RadioThermostatData {
-    private @Nullable RadioThermostatJsonResponse thermostatData;
-    private Integer humidity = 0;
-    private @Nullable RadioThermostatJsonRuntime runtime;
+public class RadioThermostatDTO {
+    private RadioThermostatTstatDTO thermostatData;
+    private Integer humidity;
+    private RadioThermostatRuntimeDTO runtime;
 
-    public RadioThermostatData() {
+    public RadioThermostatDTO() {
     }
 
-    public @Nullable RadioThermostatJsonResponse getThermostatData() {
+    public RadioThermostatTstatDTO getThermostatData() {
         return thermostatData;
     }
 
-    public void setThermostatData(RadioThermostatJsonResponse thermostatData) {
+    public void setThermostatData(RadioThermostatTstatDTO thermostatData) {
         this.thermostatData = thermostatData;
     }
 
@@ -46,11 +42,11 @@ public class RadioThermostatData {
         this.humidity = humidity;
     }
 
-    public @Nullable RadioThermostatJsonRuntime getRuntime() {
+    public RadioThermostatRuntimeDTO getRuntime() {
         return runtime;
     }
 
-    public void setRuntime(RadioThermostatJsonRuntime runtime) {
+    public void setRuntime(RadioThermostatRuntimeDTO runtime) {
         this.runtime = runtime;
     }
 }
