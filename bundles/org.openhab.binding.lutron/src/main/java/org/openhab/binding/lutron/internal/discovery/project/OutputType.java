@@ -33,6 +33,7 @@ public enum OutputType {
     NON_DIM,
     NON_DIM_ELV,
     NON_DIM_INC,
+    RELAY_LIGHTING,
     SHEER_BLIND,
     SYSTEM_SHADE,
     VENETIAN_BLIND,

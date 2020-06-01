@@ -54,9 +54,11 @@ public class Ethm1Module extends SatelModule {
      * @param port TCP port the module listens on
      * @param timeout timeout value in milliseconds for connect/read/write operations
      * @param encryptionKey encryption key for encrypted communication
+     * @param extPayloadSupport if <code>true</code>, the module supports extended command payload for reading
+     *            INTEGRA 256 state
      */
-    public Ethm1Module(String host, int port, int timeout, String encryptionKey) {
-        super(timeout);
+    public Ethm1Module(String host, int port, int timeout, String encryptionKey, boolean extPayloadSupport) {
+        super(timeout, extPayloadSupport);
 
         this.host = host;
         this.port = port;

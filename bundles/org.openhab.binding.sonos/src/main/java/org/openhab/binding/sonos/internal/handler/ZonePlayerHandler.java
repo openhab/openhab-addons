@@ -33,7 +33,6 @@ import java.util.TimeZone;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.NextPreviousType;
@@ -98,6 +97,9 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     private static final String STATE_PAUSED_PLAYBACK = "PAUSED_PLAYBACK";
     private static final String STATE_STOPPED = "STOPPED";
 
+    private static final String LINEINCONNECTED = "LineInConnected";
+    private static final String TOSLINEINCONNECTED = "TOSLinkConnected";
+
     private static final Collection<String> SERVICE_SUBSCRIPTIONS = Arrays.asList("DeviceProperties", "AVTransport",
             "ZoneGroupTopology", "GroupManagement", "RenderingControl", "AudioIn", "HTControl", "ContentDirectory");
     protected static final int SUBSCRIPTION_DURATION = 1800;
@@ -147,6 +149,12 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     private ZonePlayerHandler coordinatorHandler;
 
     private List<SonosMusicService> musicServices;
+
+    private enum LineInType {
+        ANALOG,
+        DIGITAL,
+        ANY
+    }
 
     public ZonePlayerHandler(ThingRegistry thingRegistry, Thing thing, UpnpIOService upnpIOService, String opmlUrl,
             SonosStateDescriptionOptionProvider stateDescriptionProvider) {
@@ -276,7 +284,13 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                     becomeStandAlonePlayer();
                     break;
                 case PUBLICADDRESS:
-                    publicAddress();
+                    publicAddress(LineInType.ANY);
+                    break;
+                case PUBLICANALOGADDRESS:
+                    publicAddress(LineInType.ANALOG);
+                    break;
+                case PUBLICDIGITALADDRESS:
+                    publicAddress(LineInType.DIGITAL);
                     break;
                 case RADIO:
                     playRadio(command);
@@ -487,10 +501,22 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 case "DialogLevel":
                     updateChannel(SPEECHENHANCEMENT);
                     break;
-                case "LineInConnected":
-                case "TOSLinkConnected":
+                case LINEINCONNECTED:
                     if (SonosBindingConstants.WITH_LINEIN_THING_TYPES_UIDS.contains(getThing().getThingTypeUID())) {
                         updateChannel(LINEIN);
+                    }
+                    if (SonosBindingConstants.WITH_ANALOG_LINEIN_THING_TYPES_UIDS
+                            .contains(getThing().getThingTypeUID())) {
+                        updateChannel(ANALOGLINEIN);
+                    }
+                    break;
+                case TOSLINEINCONNECTED:
+                    if (SonosBindingConstants.WITH_LINEIN_THING_TYPES_UIDS.contains(getThing().getThingTypeUID())) {
+                        updateChannel(LINEIN);
+                    }
+                    if (SonosBindingConstants.WITH_DIGITAL_LINEIN_THING_TYPES_UIDS
+                            .contains(getThing().getThingTypeUID())) {
+                        updateChannel(DIGITALLINEIN);
                     }
                     break;
                 case "AlarmRunning":
@@ -697,10 +723,20 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 }
                 break;
             case LINEIN:
-                if (stateMap.get("LineInConnected") != null) {
-                    newState = stateMap.get("LineInConnected").equals("true") ? OnOffType.ON : OnOffType.OFF;
-                } else if (stateMap.get("TOSLinkConnected") != null) {
-                    newState = stateMap.get("TOSLinkConnected").equals("true") ? OnOffType.ON : OnOffType.OFF;
+                if (stateMap.get(LINEINCONNECTED) != null) {
+                    newState = stateMap.get(LINEINCONNECTED).equals("true") ? OnOffType.ON : OnOffType.OFF;
+                } else if (stateMap.get(TOSLINEINCONNECTED) != null) {
+                    newState = stateMap.get(TOSLINEINCONNECTED).equals("true") ? OnOffType.ON : OnOffType.OFF;
+                }
+                break;
+            case ANALOGLINEIN:
+                if (stateMap.get(LINEINCONNECTED) != null) {
+                    newState = stateMap.get(LINEINCONNECTED).equals("true") ? OnOffType.ON : OnOffType.OFF;
+                }
+                break;
+            case DIGITALLINEIN:
+                if (stateMap.get(TOSLINEINCONNECTED) != null) {
+                    newState = stateMap.get(TOSLINEINCONNECTED).equals("true") ? OnOffType.ON : OnOffType.OFF;
                 }
                 break;
             case ALARMRUNNING:
@@ -944,20 +980,25 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         }
 
         Map<String, String> properties = editProperties();
-        if (StringUtils.isNotEmpty(this.stateMap.get("HardwareVersion"))) {
-            properties.put(Thing.PROPERTY_HARDWARE_VERSION, this.stateMap.get("HardwareVersion"));
+        String value = stateMap.get("HardwareVersion");
+        if (value != null && !value.isEmpty()) {
+            properties.put(Thing.PROPERTY_HARDWARE_VERSION, value);
         }
-        if (StringUtils.isNotEmpty(this.stateMap.get("DisplaySoftwareVersion"))) {
-            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, this.stateMap.get("DisplaySoftwareVersion"));
+        value = stateMap.get("DisplaySoftwareVersion");
+        if (value != null && !value.isEmpty()) {
+            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, value);
         }
-        if (StringUtils.isNotEmpty(this.stateMap.get("SerialNumber"))) {
-            properties.put(Thing.PROPERTY_SERIAL_NUMBER, this.stateMap.get("SerialNumber"));
+        value = stateMap.get("SerialNumber");
+        if (value != null && !value.isEmpty()) {
+            properties.put(Thing.PROPERTY_SERIAL_NUMBER, value);
         }
-        if (StringUtils.isNotEmpty(this.stateMap.get("MACAddress"))) {
-            properties.put(MAC_ADDRESS, this.stateMap.get("MACAddress"));
+        value = stateMap.get("MACAddress");
+        if (value != null && !value.isEmpty()) {
+            properties.put(MAC_ADDRESS, value);
         }
-        if (StringUtils.isNotEmpty(this.stateMap.get("IPAddress"))) {
-            properties.put(IP_ADDRESS, this.stateMap.get("IPAddress"));
+        value = stateMap.get("IPAddress");
+        if (value != null && !value.isEmpty()) {
+            properties.put(IP_ADDRESS, value);
         }
         updateProperties(properties);
 
@@ -1014,8 +1055,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                     String mac = getMACAddress();
                     if (stationID != null && !stationID.isEmpty() && mac != null && !mac.isEmpty()) {
                         String url = opmlUrl;
-                        url = StringUtils.replace(url, "%id", stationID);
-                        url = StringUtils.replace(url, "%serial", mac);
+                        url = url.replace("%id", stationID);
+                        url = url.replace("%serial", mac);
 
                         String response = null;
                         try {
@@ -1119,11 +1160,24 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     private String extractStationId(String uri) {
         String stationID = null;
         if (isPlayingStream(uri)) {
-            stationID = StringUtils.substringBetween(uri, ":s", "?sid");
+            stationID = substringBetween(uri, ":s", "?sid");
         } else if (isPlayingRadioStartedByAmazonEcho(uri)) {
-            stationID = StringUtils.substringBetween(uri, "sid=s", "&");
+            stationID = substringBetween(uri, "sid=s", "&");
         }
         return stationID;
+    }
+
+    private String substringBetween(String str, String open, String close) {
+        String result = null;
+        int idx1 = str.indexOf(open);
+        if (idx1 >= 0) {
+            idx1 += open.length();
+            int idx2 = str.indexOf(close, idx1);
+            if (idx2 >= 0) {
+                result = str.substring(idx1, idx2);
+            }
+        }
+        return result;
     }
 
     public boolean isGroupCoordinator() {
@@ -1174,7 +1228,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     public String getMACAddress() {
-        if (StringUtils.isEmpty(stateMap.get("MACAddress"))) {
+        if (stateMap.get("MACAddress") == null || stateMap.get("MACAddress").isEmpty()) {
             updateZoneInfo();
         }
         return stateMap.get("MACAddress");
@@ -1883,17 +1937,26 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     public void playLineIn(Command command) {
         if (command != null && command instanceof StringType) {
             try {
+                LineInType lineInType = LineInType.ANY;
                 String remotePlayerName = command.toString();
+                if (remotePlayerName.toUpperCase().startsWith("ANALOG,")) {
+                    lineInType = LineInType.ANALOG;
+                    remotePlayerName = remotePlayerName.substring(7);
+                } else if (remotePlayerName.toUpperCase().startsWith("DIGITAL,")) {
+                    lineInType = LineInType.DIGITAL;
+                    remotePlayerName = remotePlayerName.substring(8);
+                }
                 ZonePlayerHandler coordinatorHandler = getCoordinatorHandler();
                 ZonePlayerHandler remoteHandler = getHandlerByName(remotePlayerName);
 
                 // check if player has a line-in connected
-                if (remoteHandler.isAnalogLineInConnected() || remoteHandler.isOpticalLineInConnected()) {
+                if ((lineInType != LineInType.DIGITAL && remoteHandler.isAnalogLineInConnected())
+                        || (lineInType != LineInType.ANALOG && remoteHandler.isOpticalLineInConnected())) {
                     // stop whatever is currently playing
                     coordinatorHandler.stop();
 
                     // set the URI
-                    if (remoteHandler.isAnalogLineInConnected()) {
+                    if (lineInType != LineInType.DIGITAL && remoteHandler.isAnalogLineInConnected()) {
                         coordinatorHandler.setCurrentURI(ANALOG_LINE_IN_URI + remoteHandler.getUDN(), "");
                     } else {
                         coordinatorHandler.setCurrentURI(OPTICAL_LINE_IN_URI + remoteHandler.getUDN() + SPDIF, "");
@@ -2155,12 +2218,11 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     public Boolean isAnalogLineInConnected() {
-        return ((stateMap.get("LineInConnected") != null) && stateMap.get("LineInConnected").equals("true")) ? true
-                : false;
+        return ((stateMap.get(LINEINCONNECTED) != null) && stateMap.get(LINEINCONNECTED).equals("true")) ? true : false;
     }
 
     public Boolean isOpticalLineInConnected() {
-        return ((stateMap.get("TOSLinkConnected") != null) && stateMap.get("TOSLinkConnected").equals("true")) ? true
+        return ((stateMap.get(TOSLINEINCONNECTED) != null) && stateMap.get(TOSLINEINCONNECTED).equals("true")) ? true
                 : false;
     }
 
@@ -2184,9 +2246,10 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         }
     }
 
-    public boolean publicAddress() {
+    public boolean publicAddress(LineInType lineInType) {
         // check if sourcePlayer has a line-in connected
-        if (isAnalogLineInConnected() || isOpticalLineInConnected()) {
+        if ((lineInType != LineInType.DIGITAL && isAnalogLineInConnected())
+                || (lineInType != LineInType.ANALOG && isOpticalLineInConnected())) {
             // first remove this player from its own group if any
             becomeStandAlonePlayer();
 
@@ -2215,7 +2278,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 ZonePlayerHandler coordinator = getCoordinatorHandler();
                 // set the URI of the group to the line-in
                 SonosEntry entry = new SonosEntry("", "", "", "", "", "", "", ANALOG_LINE_IN_URI + getUDN());
-                if (isOpticalLineInConnected()) {
+                if (lineInType != LineInType.ANALOG && isOpticalLineInConnected()) {
                     entry = new SonosEntry("", "", "", "", "", "", "", OPTICAL_LINE_IN_URI + getUDN() + SPDIF);
                 }
                 coordinator.setCurrentURI(entry);

@@ -105,7 +105,8 @@ public class RFZoneHandler extends ADThingHandler {
             firstUpdateReceived.set(true);
 
             updateState(CHANNEL_RF_LOWBAT, (rfxMsg.data & RFXMessage.BIT_LOWBAT) == 0 ? OnOffType.OFF : OnOffType.ON);
-            updateState(CHANNEL_RF_SUPERVISION, (rfxMsg.data & RFXMessage.BIT_SUPER) == 0 ? OnOffType.OFF : OnOffType.ON);
+            updateState(CHANNEL_RF_SUPERVISION,
+                    (rfxMsg.data & RFXMessage.BIT_SUPER) == 0 ? OnOffType.OFF : OnOffType.ON);
 
             updateState(CHANNEL_RF_LOOP1,
                     (rfxMsg.data & RFXMessage.BIT_LOOP1) == 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN);

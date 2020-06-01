@@ -391,6 +391,7 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
                 case NON_DIM:
                 case NON_DIM_INC:
                 case NON_DIM_ELV:
+                case RELAY_LIGHTING:
                     notifyDiscovery(THING_TYPE_SWITCH, output.getIntegrationId(), label);
                     break;
 

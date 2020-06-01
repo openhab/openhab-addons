@@ -43,6 +43,22 @@ A value of 365 removes files that have been unused for a year.
 Use "default" to select the system default audio format.
 The default audio format can be overriden with the value "mp3" or "ogg".
 
+
+### Service Configuration via Text files
+
+Create a new file in `$OPENHAB_ROOT/conf/services` named `pollytts.cfg`
+
+It's contents should look similar to:
+
+```
+org.openhab.pollytts:accessKey=ACCESS_KEY_ID
+org.openhab.pollytts:secretKey=SECRET_KEY
+org.openhab.pollytts:serviceRegion=SERVICE_REGION
+org.openhab.pollytts:cacheExpiration=EXPIRATION_IN_DAYS
+```
+
+These have the same meanings as described in the **Service Configuration** block above.
+
 ## Rule Examples
 
 ```

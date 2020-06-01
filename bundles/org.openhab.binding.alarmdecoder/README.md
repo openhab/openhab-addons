@@ -23,6 +23,7 @@ The binding supports the following thing types:
 * `keypad` - Reports keypad status and optionally sends keypad messages.
 * `zone` - Reports status from zone expanders and relay expanders, and also from built-in zones via emulation.
 * `rfzone` - Reports status from RF zones.
+* `vzone` - Sends commands to virtual zones.
 * `lrr` - Reports messages sent from the panel to a Long Range Radio (LRR) or emulated LRR device.
 
 ## Discovery
@@ -86,6 +87,30 @@ Bridge alarmdecoder:serialbridge:ad1 [ serialPort="/dev/ttyS1", bitrate=115200, 
 }
 ```
 
+### keypad
+
+The `keypad` thing reports keypad status and optionally sends keypad messages.
+For panels that support multiple keypad addresses, it can be configured with an address mask of one or more keypad(s) for which it will receive messages.
+When sending messages, it will send from the configured keypad address if only one is configured.
+If a mask containing multiple addresses or 0 (all) is configured, it will send messages from the Alarm Decoder's configured address.
+
+Commands sent from the keypad thing are limited to the set of valid keypad command characters supported by the Alarm Decoder (0-9,*,#,<,>).
+In addition, the characters A-H will be translated to special keys 1-8.
+Command strings containing invalid characters will be ignored.
+
+Parameters:
+
+* `addressMask` (required) Keypad address mask (0 = All addresses)
+* `sendCommands` (default = false) Allow keypad commands to be sent to the alarm system from openHAB. Enabling this means the alarm system will be only as secure as your openHAB system.
+* `sendStar` (default = false) When disarmed/faulted, automatically send the * character to obtain zone fault information.
+* `commandMapping` (optional) Comma separated list of key/value pairs mapping integers to command strings for `intcommand` channel.
+
+Thing config file example:
+
+```
+  Thing keypad keypad1 [ addressMask=0, sendCommands=true ]
+```
+
 ### zone
 
 The `zone` thing reports status from zone expanders and relay expanders, and also from built-in zones via emulation.
@@ -115,34 +140,28 @@ Thing config file example:
   Thing rfzone motion1 [ serial=0180010 ]
 ```
 
-### keypad
+### vzone
 
-The `keypad` thing reports keypad status and optionally sends keypad messages.
-For panels that support multiple keypad addresses, it can be configured with an address mask of one or more keypad(s) for which it will receive messages.
-When sending messages, it will send from the configured keypad address if only one is configured.
-If a mask containing multiple addresses or 0 (all) is configured, it will send messages from the Alarm Decoder's configured address.
-
-Commands sent from the keypad thing are limited to the set of valid keypad command characters supported by the Alarm Decoder (0-9,*,#,<,>).
-In addition, the characters A-H will be translated to special keys 1-8.
-Command strings containing invalid characters will be ignored.
+The `vzone` thing sends open/close commands a virtual zone.
+After enabling zone expander emulation on both the alarm panel and the Alarm Decoder device, it can be used to control the state of a virtual zone.
+The `command` channel is write-only, and accepts either the string "OPEN" or the string "CLOSED".
+The `state` channel is a switch type channel that reflects the current state of the virtual zone (ON=closed/OFF=open).
 
 Parameters:
 
-* `addressMask` (required) Keypad address mask (0 = All addresses)
-* `sendCommands` (default = false) Allow keypad commands to be sent to the alarm system from openHAB. Enabling this means the alarm system will be only as secure as your openHAB system.
-* `sendStar` (default = false) When disarmed/faulted, automatically send the * character to obtain zone fault information.
-* `commandMapping` (optional) Comma separated list of key/value pairs mapping integers to command strings for `intcommand` channel.
+* `address` (required) Virtual zone number (0-99)
 
 Thing config file example:
 
 ```
-  Thing keypad keypad1 [ addressMask=0, sendCommands=true ]
+  Thing vzone watersensor [ address=41 ]
 ```
 
 ### lrr
 
 The `lrr` thing reports messages sent to a Long Range Radio (LRR) or emulated LRR device.
-These are specifically formatted messages as described in the [SIA DC-05-1999.09](http://www.alarmdecoder.com/wiki/index.php/File:SIA-ContactIDCodes_Protocol.pdf) standard for Contact ID reporting.
+These are normally specifically formatted messages as described in the [SIA DC-05-1999.09](http://www.alarmdecoder.com/wiki/index.php/File:SIA-ContactIDCodes_Protocol.pdf) standard for Contact ID reporting.
+They can also, depending on configuration, be other types of messages as described [here](http://www.alarmdecoder.com/wiki/index.php/LRR_Support).
 For panels that support multiple partitions, the partition for which a given lrr thing will receive messages can be defined.
 
 * `partition` (default = 0) Partition for which to receive LRR events (0 = All)
@@ -174,12 +193,20 @@ The alarmdecoder things expose the following channels:
 | loop3        | Contact | RO  |Loop 3 state                  |
 | loop4        | Contact | RO  |Loop 4 state                  |
 
+**vzone**
+
+|  channel     | type    |RO/RW| description                  |
+|--------------|---------|-----|------------------------------|
+| command      | String  | WO  |"OPEN" or "CLOSED" command    |
+| state        | Switch  | RW  |Zone state (ON = closed)      |
+
 **keypad**
 
 |  channel     | type    |RO/RW| description                  |
 |--------------|---------|-----|------------------------------|
 | zone         | Number  | RO  |Zone number for status        |
 | text         | String  | RO  |Keypad message text           |
+| ready        | Switch  | RO  |Panel ready                   |
 | armedaway    | Switch  | RO  |Armed/Away Indicator          |
 | armedhome    | Switch  | RO  |Armed/Stay Indicator          |
 | backlight    | Switch  | RO  |Keypad backlight on           |
@@ -220,6 +247,7 @@ Bridge alarmdecoder:ipbridge:ad1 [ hostname="cerberus.home", tcpPort=10000, disc
     Thing zone frontdoor [ address=10, channel=1 ]
     Thing zone backdoor [ address=11, channel=1 ]
     Thing rfzone motion1 [ serial=0180010 ]
+    Thing vzone watersensor [ address=41 ]
     Thing keypad keypad1 [ addressMask=0, sendCommands=true ]
     Thing lrr lrr [ partition=0 ]
 }
@@ -244,6 +272,8 @@ Contact Motion1Loop1 "Loop 1" {channel="alarmdecoder:rfzone:ad1:motion1:loop1"}
 Contact Motion1Loop2 "Loop 2" {channel="alarmdecoder:rfzone:ad1:motion1:loop2"}
 Contact Motion1Loop3 "Loop 3" {channel="alarmdecoder:rfzone:ad1:motion1:loop3"}
 Contact Motion1Loop4 "Loop 4" {channel="alarmdecoder:rfzone:ad1:motion1:loop4"}
+
+String WaterSensorCmd "Virtual Zone Command" {channel="alarmdecoder:vzone:ad1:watersensor:command"}
 
 Number LrrPartition "Partition Number [%d]" {channel="alarmdecoder:lrr:ad1:lrr:partition"}
 Number LrrEventData "CID Event Data [%d]" {channel="alarmdecoder:lrr:ad1:lrr:eventdata"}

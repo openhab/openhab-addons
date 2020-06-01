@@ -11,7 +11,7 @@
 
   <groupId>org.openhab.addons</groupId>
   <artifactId>org.openhab.addons.reactor</artifactId>
-  <version>2.5.5-SNAPSHOT</version>
+  <version>2.5.6-SNAPSHOT</version>
 
   <packaging>pom</packaging>
 
@@ -79,7 +79,7 @@
 
     <feature.directory>src/main/feature/feature.xml</feature.directory>
     <spotless.check.skip>true</spotless.check.skip> <!-- Spotless disabled for now -->
-    <spotless.version>1.30.0</spotless.version>
+    <spotless.version>1.31.1</spotless.version>
   </properties>
 
   <dependencyManagement>

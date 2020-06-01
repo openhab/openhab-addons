@@ -36,13 +36,9 @@ import org.openhab.binding.hue.internal.FullGroup;
 import org.openhab.binding.hue.internal.FullHueObject;
 import org.openhab.binding.hue.internal.FullLight;
 import org.openhab.binding.hue.internal.FullSensor;
-import org.openhab.binding.hue.internal.HueBridge;
-import org.openhab.binding.hue.internal.handler.GroupStatusListener;
 import org.openhab.binding.hue.internal.handler.HueBridgeHandler;
 import org.openhab.binding.hue.internal.handler.HueGroupHandler;
 import org.openhab.binding.hue.internal.handler.HueLightHandler;
-import org.openhab.binding.hue.internal.handler.LightStatusListener;
-import org.openhab.binding.hue.internal.handler.SensorStatusListener;
 import org.openhab.binding.hue.internal.handler.sensors.ClipHandler;
 import org.openhab.binding.hue.internal.handler.sensors.DimmerSwitchHandler;
 import org.openhab.binding.hue.internal.handler.sensors.LightLevelHandler;
@@ -67,8 +63,7 @@ import org.slf4j.LoggerFactory;
  * @author Laurent Garnier - Added support for groups
  */
 @NonNullByDefault
-public class HueLightDiscoveryService extends AbstractDiscoveryService
-        implements LightStatusListener, SensorStatusListener, GroupStatusListener {
+public class HueLightDiscoveryService extends AbstractDiscoveryService {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.unmodifiableSet(Stream
             .of(HueLightHandler.SUPPORTED_THING_TYPES.stream(), DimmerSwitchHandler.SUPPORTED_THING_TYPES.stream(),
                     TapSwitchHandler.SUPPORTED_THING_TYPES.stream(), PresenceHandler.SUPPORTED_THING_TYPES.stream(),
@@ -107,17 +102,13 @@ public class HueLightDiscoveryService extends AbstractDiscoveryService
     }
 
     public void activate() {
-        hueBridgeHandler.registerLightStatusListener(this);
-        hueBridgeHandler.registerSensorStatusListener(this);
-        hueBridgeHandler.registerGroupStatusListener(this);
+        hueBridgeHandler.registerDiscoveryListener(this);
     }
 
     @Override
     public void deactivate() {
         removeOlderResults(new Date().getTime(), hueBridgeHandler.getThing().getUID());
-        hueBridgeHandler.unregisterLightStatusListener(this);
-        hueBridgeHandler.unregisterSensorStatusListener(this);
-        hueBridgeHandler.unregisterGroupStatusListener(this);
+        hueBridgeHandler.unregisterDiscoveryListener();
     }
 
     @Override
@@ -129,15 +120,15 @@ public class HueLightDiscoveryService extends AbstractDiscoveryService
     public void startScan() {
         List<FullLight> lights = hueBridgeHandler.getFullLights();
         for (FullLight l : lights) {
-            onLightAddedInternal(l);
+            addLightDiscovery(l);
         }
         List<FullSensor> sensors = hueBridgeHandler.getFullSensors();
         for (FullSensor s : sensors) {
-            onSensorAddedInternal(s);
+            addSensorDiscovery(s);
         }
         List<FullGroup> groups = hueBridgeHandler.getFullGroups();
         for (FullGroup g : groups) {
-            onGroupAddedInternal(g);
+            addGroupDiscovery(g);
         }
         // search for unpaired lights
         hueBridgeHandler.startSearch();
@@ -149,12 +140,7 @@ public class HueLightDiscoveryService extends AbstractDiscoveryService
         removeOlderResults(getTimestampOfLastScan(), hueBridgeHandler.getThing().getUID());
     }
 
-    @Override
-    public void onLightAdded(@Nullable HueBridge bridge, FullLight light) {
-        onLightAddedInternal(light);
-    }
-
-    private void onLightAddedInternal(FullLight light) {
+    public void addLightDiscovery(FullLight light) {
         ThingUID thingUID = getThingUID(light);
         ThingTypeUID thingTypeUID = getThingTypeUID(light);
 
@@ -183,27 +169,12 @@ public class HueLightDiscoveryService extends AbstractDiscoveryService
         }
     }
 
-    @Override
-    public void onLightGone(@Nullable HueBridge bridge, FullLight light) {
-        onLightRemovedInternal(light);
-    }
-
-    @Override
-    public void onLightRemoved(@Nullable HueBridge bridge, FullLight light) {
-        onLightRemovedInternal(light);
-    }
-
-    private void onLightRemovedInternal(FullLight light) {
+    public void removeLightDiscovery(FullLight light) {
         ThingUID thingUID = getThingUID(light);
 
         if (thingUID != null) {
             thingRemoved(thingUID);
         }
-    }
-
-    @Override
-    public void onLightStateChanged(@Nullable HueBridge bridge, FullLight light) {
-        // nothing to do
     }
 
     private @Nullable ThingUID getThingUID(FullHueObject hueObject) {
@@ -223,12 +194,7 @@ public class HueLightDiscoveryService extends AbstractDiscoveryService
         return thingTypeId != null ? new ThingTypeUID(BINDING_ID, thingTypeId) : null;
     }
 
-    @Override
-    public void onSensorAdded(@Nullable HueBridge bridge, FullSensor sensor) {
-        onSensorAddedInternal(sensor);
-    }
-
-    private void onSensorAddedInternal(FullSensor sensor) {
+    public void addSensorDiscovery(FullSensor sensor) {
         ThingUID thingUID = getThingUID(sensor);
         ThingTypeUID thingTypeUID = getThingTypeUID(sensor);
 
@@ -256,17 +222,7 @@ public class HueLightDiscoveryService extends AbstractDiscoveryService
         }
     }
 
-    @Override
-    public void onSensorGone(@Nullable HueBridge bridge, FullSensor sensor) {
-        onSensorRemovedInternal(sensor);
-    }
-
-    @Override
-    public void onSensorRemoved(@Nullable HueBridge bridge, FullSensor sensor) {
-        onSensorRemovedInternal(sensor);
-    }
-
-    private void onSensorRemovedInternal(FullSensor sensor) {
+    public void removeSensorDiscovery(FullSensor sensor) {
         ThingUID thingUID = getThingUID(sensor);
 
         if (thingUID != null) {
@@ -274,17 +230,7 @@ public class HueLightDiscoveryService extends AbstractDiscoveryService
         }
     }
 
-    @Override
-    public void onSensorStateChanged(@Nullable HueBridge bridge, FullSensor sensor) {
-        // nothing to do
-    }
-
-    @Override
-    public void onGroupAdded(@Nullable HueBridge bridge, FullGroup group) {
-        onGroupAddedInternal(group);
-    }
-
-    private void onGroupAddedInternal(FullGroup group) {
+    public void addGroupDiscovery(FullGroup group) {
         // Ignore the Hue Entertainment Areas
         if ("Entertainment".equalsIgnoreCase(group.getType())) {
             return;
@@ -305,25 +251,9 @@ public class HueLightDiscoveryService extends AbstractDiscoveryService
         thingDiscovered(discoveryResult);
     }
 
-    @Override
-    public void onGroupGone(@Nullable HueBridge bridge, FullGroup group) {
-        onGroupRemovedInternal(group);
-    }
-
-    @Override
-    public void onGroupRemoved(@Nullable HueBridge bridge, FullGroup group) {
-        onGroupRemovedInternal(group);
-    }
-
-    private void onGroupRemovedInternal(FullGroup group) {
+    public void removeGroupDiscovery(FullGroup group) {
         ThingUID bridgeUID = hueBridgeHandler.getThing().getUID();
         ThingUID thingUID = new ThingUID(THING_TYPE_GROUP, bridgeUID, group.getId());
         thingRemoved(thingUID);
     }
-
-    @Override
-    public void onGroupStateChanged(@Nullable HueBridge bridge, FullGroup group) {
-        // nothing to do
-    }
-
 }

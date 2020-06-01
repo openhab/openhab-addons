@@ -69,21 +69,28 @@ public final class SeneyeHandler extends BaseThingHandler implements ReadingsUpd
     @Override
     public void newState(SeneyeDeviceReading readings) {
         if (readings != null) {
-            updateState(CHANNEL_TEMPERATURE, new DecimalType(readings.temperature.curr));
-            updateState(CHANNEL_NH3, new DecimalType(readings.nh3.curr));
-            updateState(CHANNEL_NH4, new DecimalType(readings.nh4.curr));
-            updateState(CHANNEL_O2, new DecimalType(readings.o2.curr));
-            updateState(CHANNEL_PAR, new DecimalType(readings.par.curr));
-            updateState(CHANNEL_PH, new DecimalType(readings.ph.curr));
-            updateState(CHANNEL_LUX, new DecimalType(readings.lux.curr));
-            updateState(CHANNEL_KELVIN, new DecimalType(readings.kelvin.curr));
-            updateState(CHANNEL_LASTREADING, new DateTimeType(readings.status.getLast_experimentDate()));
-            updateState(CHANNEL_SLIDEEXPIRES, new DateTimeType(readings.status.getSlide_expiresDate()));
-            updateState(CHANNEL_WRONGSLIDE, new StringType(readings.status.getWrong_slideString()));
-            updateState(CHANNEL_SLIDESERIAL, new StringType(readings.status.getSlide_serialString()));
-            updateState(CHANNEL_OUTOFWATER, new StringType(readings.status.getOut_of_waterString()));
-            updateState(CHANNEL_DISCONNECTED, new StringType(readings.status.getDisconnectedString()));
+            logger.debug("Updating readings for sensor type {}", seneyeService.seneyeType);
+            switch (seneyeService.seneyeType) {
+                case 3: 
+                    updateState(CHANNEL_NH4, new DecimalType(readings.nh4.curr));
+                    updateState(CHANNEL_PAR, new DecimalType(readings.par.curr));
+                    updateState(CHANNEL_LUX, new DecimalType(readings.lux.curr));
+                    updateState(CHANNEL_KELVIN, new DecimalType(readings.kelvin.curr));
+                case 2:
+                    updateState(CHANNEL_O2, new DecimalType(readings.o2.curr));
+                case 1:
+                    updateState(CHANNEL_TEMPERATURE, new DecimalType(readings.temperature.curr));
+                    updateState(CHANNEL_NH3, new DecimalType(readings.nh3.curr));
+                    updateState(CHANNEL_PH, new DecimalType(readings.ph.curr));
+                    updateState(CHANNEL_LASTREADING, new DateTimeType(readings.status.getLast_experimentDate()));
+                    updateState(CHANNEL_SLIDEEXPIRES, new DateTimeType(readings.status.getSlide_expiresDate()));
+                    updateState(CHANNEL_WRONGSLIDE, new StringType(readings.status.getWrong_slideString()));
+                    updateState(CHANNEL_SLIDESERIAL, new StringType(readings.status.getSlide_serialString()));
+                    updateState(CHANNEL_OUTOFWATER, new StringType(readings.status.getOut_of_waterString()));
+                    updateState(CHANNEL_DISCONNECTED, new StringType(readings.status.getDisconnectedString()));
+            }
         }
+
     }
 
     @Override

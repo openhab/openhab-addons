@@ -37,7 +37,11 @@
 			<label>Network Interface</label>
 			<description>Defines the IP address of the network interface to expose the HomeKit integration on.</description>
 		</parameter>
-
+		<parameter name="startDelay" type="integer" required="true" groupName="core" unit="s">
+			<label>Start Delay</label>
+			<description>HomeKit start delay in case of item configuration differences.</description>
+			<default>30</default>
+		</parameter>
 		<parameter name="useFahrenheitTemperature" type="boolean" required="true" groupName="thermostat">
 			<label>Use Fahrenheit Temperature</label>
 			<description>Defines whether or not to direct HomeKit clients to use fahrenheit temperatures instead of celsius.</description>

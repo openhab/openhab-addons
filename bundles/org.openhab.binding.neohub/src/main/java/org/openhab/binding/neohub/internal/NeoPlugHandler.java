@@ -14,6 +14,7 @@ package org.openhab.binding.neohub.internal;
 
 import static org.openhab.binding.neohub.internal.NeoHubBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
@@ -25,6 +26,7 @@ import org.eclipse.smarthome.core.types.Command;
  * @author Andrew Fiddian-Green - Initial contribution
  * 
  */
+@NonNullByDefault
 public class NeoPlugHandler extends NeoBaseHandler {
 
     public NeoPlugHandler(Thing thing) {
@@ -35,12 +37,14 @@ public class NeoPlugHandler extends NeoBaseHandler {
 
     @Override
     protected String toNeoHubBuildCommandString(String channelId, Command command) {
-        if (command instanceof OnOffType && channelId.equals(CHAN_PLUG_OUTPUT_STATE)) {
-            return String.format(CMD_CODE_TIMER, ((OnOffType) command).toString(), config.deviceNameInHub);
-        } else
-
-        if (command instanceof OnOffType && channelId.equals(CHAN_PLUG_AUTO_MODE)) {
-            return String.format(CMD_CODE_MANUAL, invert((OnOffType) command).toString(), config.deviceNameInHub);
+        NeoBaseConfiguration config = this.config;
+        if (config != null) {
+            if (command instanceof OnOffType && channelId.equals(CHAN_PLUG_OUTPUT_STATE)) {
+                return String.format(CMD_CODE_TIMER, ((OnOffType) command).toString(), config.deviceNameInHub);
+            }
+            if (command instanceof OnOffType && channelId.equals(CHAN_PLUG_AUTO_MODE)) {
+                return String.format(CMD_CODE_MANUAL, invert((OnOffType) command).toString(), config.deviceNameInHub);
+            }
         }
         return "";
     }
@@ -56,9 +60,9 @@ public class NeoPlugHandler extends NeoBaseHandler {
     }
 
     @Override
-    protected void toOpenHabSendChannelValues(NeoHubInfoResponse.DeviceInfo deviceInfo) {
-        toOpenHabSendValueDebounced(CHAN_PLUG_AUTO_MODE, OnOffType.from(!deviceInfo.stateManual()));
-
-        toOpenHabSendValueDebounced(CHAN_PLUG_OUTPUT_STATE, OnOffType.from(deviceInfo.isTimerOn()));
+    protected void toOpenHabSendChannelValues(NeoHubAbstractDeviceData.AbstractRecord deviceRecord) {
+        boolean offline = deviceRecord.offline();
+        toOpenHabSendValueDebounced(CHAN_PLUG_AUTO_MODE, OnOffType.from(!deviceRecord.stateManual()), offline);
+        toOpenHabSendValueDebounced(CHAN_PLUG_OUTPUT_STATE, OnOffType.from(deviceRecord.isTimerOn()), offline);
     }
 }

@@ -14,6 +14,7 @@ package org.openhab.binding.daikin.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -38,10 +39,13 @@ import org.osgi.service.component.annotations.Reference;
 public class DaikinHandlerFactory extends BaseThingHandlerFactory {
 
     private final DaikinDynamicStateDescriptionProvider stateDescriptionProvider;
+    private final @Nullable HttpClient httpClient;
 
     @Activate
-    public DaikinHandlerFactory(@Reference DaikinDynamicStateDescriptionProvider stateDescriptionProvider) {
+    public DaikinHandlerFactory(@Reference DaikinDynamicStateDescriptionProvider stateDescriptionProvider,
+            @Reference DaikinHttpClientFactory httpClientFactory) {
         this.stateDescriptionProvider = stateDescriptionProvider;
+        this.httpClient = httpClientFactory.getHttpClient();
     }
 
     @Override
@@ -54,9 +58,9 @@ public class DaikinHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(DaikinBindingConstants.THING_TYPE_AC_UNIT)) {
-            return new DaikinAcUnitHandler(thing, stateDescriptionProvider);
+            return new DaikinAcUnitHandler(thing, stateDescriptionProvider, httpClient);
         } else if (thingTypeUID.equals(DaikinBindingConstants.THING_TYPE_AIRBASE_AC_UNIT)) {
-            return new DaikinAirbaseUnitHandler(thing, stateDescriptionProvider);
+            return new DaikinAirbaseUnitHandler(thing, stateDescriptionProvider, httpClient);
         }
         return null;
     }

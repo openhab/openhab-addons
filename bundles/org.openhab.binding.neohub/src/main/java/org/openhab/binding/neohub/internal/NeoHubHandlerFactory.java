@@ -22,6 +22,7 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -39,11 +40,13 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
+@NonNullByDefault
 @Component(configurationPid = "binding.neohub", service = ThingHandlerFactory.class)
 public class NeoHubHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(new HashSet<>(Arrays.asList(THING_TYPE_NEOHUB, THING_TYPE_NEOSTAT, THING_TYPE_NEOPLUG)));
+            .unmodifiableSet(new HashSet<>(Arrays.asList(THING_TYPE_NEOHUB, THING_TYPE_NEOSTAT, THING_TYPE_NEOPLUG,
+                    THING_TYPE_NEOCONTACT, THING_TYPE_NEOTEMPERATURESENSOR)));
 
     private final Map<ThingUID, ServiceRegistration<?>> discoServices = new HashMap<>();
 
@@ -68,6 +71,14 @@ public class NeoHubHandlerFactory extends BaseThingHandlerFactory {
 
         if (thingTypeUID.equals(THING_TYPE_NEOPLUG)) {
             return new NeoPlugHandler(thing);
+        }
+
+        if (thingTypeUID.equals(THING_TYPE_NEOCONTACT)) {
+            return new NeoContactHandler(thing);
+        }
+
+        if (thingTypeUID.equals(THING_TYPE_NEOTEMPERATURESENSOR)) {
+            return new NeoTemperatureSensorHandler(thing);
         }
 
         return null;
@@ -105,6 +116,7 @@ public class NeoHubHandlerFactory extends BaseThingHandlerFactory {
     /*
      * destroy the discovery service
      */
+    @SuppressWarnings("null")
     private synchronized void destroyDiscoveryService(NeoHubHandler handler) {
         // fetch the respective thing's service registration from our list
         ServiceRegistration<?> serviceReg = discoServices.remove(handler.getThing().getUID());

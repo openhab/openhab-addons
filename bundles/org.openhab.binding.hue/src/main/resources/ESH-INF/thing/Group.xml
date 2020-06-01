@@ -6,17 +6,18 @@
 	<!-- Generic thing for Groups/Rooms -->
 	<thing-type id="group">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Hue Group</label>
 		<description>A group of lights or a room that could be switched on and off.</description>
 
 		<channels>
-			<channel id="switch" typeId="switch" />
-			<channel id="color_temperature" typeId="color_temperature" />
-			<channel id="brightness" typeId="brightness" />
-			<channel id="color" typeId="color" />
+			<channel id="switch" typeId="switch"/>
+			<channel id="color_temperature" typeId="color_temperature"/>
+			<channel id="brightness" typeId="brightness"/>
+			<channel id="color" typeId="color"/>
+			<channel id="alert" typeId="alert"/>
 		</channels>
 
 		<representation-property>groupId</representation-property>

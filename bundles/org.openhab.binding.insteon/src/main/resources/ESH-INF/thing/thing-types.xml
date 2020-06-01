@@ -19,12 +19,6 @@
 				<description>Device poll interval in seconds.</description>
 			</parameter>
 
-			<parameter name="modemDbRetryTimeoutSeconds" type="integer" min="30" max="600">
-				<label>Modem DB Retry Timeout</label>
-				<description>Modem DB retry timeout in seconds.</description>
-			</parameter>
-
-
 			<parameter name="additionalDevices" type="text">
 				<label>Additional Devices</label>
 				<description>Optional file with additional device types.</description>
@@ -321,7 +315,7 @@
 	</channel-type>
 
 	<channel-type id="kWh">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Kilowatt Hour</label>
 	</channel-type>
 
@@ -481,7 +475,7 @@
 	</channel-type>
 
 	<channel-type id="watts">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Watts</label>
 	</channel-type>
 

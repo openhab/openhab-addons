@@ -256,7 +256,6 @@ public abstract class BaseBluetoothDevice extends BluetoothDevice {
      */
     @Override
     protected void dispose() {
-
     }
 
     @Override

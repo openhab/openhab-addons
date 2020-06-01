@@ -13,15 +13,17 @@
 package org.openhab.binding.phc.internal;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 
 /**
- * The {@link PHCHelper} is responsible for finding the appropriate Thing(UID) to the Channel of the PHC module.
+ * The {@link PHCHelper} is responsible for finding the appropriate Thing(UID)
+ * to the Channel of the PHC module.
  *
  * @author Jonas Hohaus - Initial contribution
  */
-
+@NonNullByDefault
 public class PHCHelper {
 
     /**
@@ -47,17 +49,13 @@ public class PHCHelper {
      * @param b
      * @return
      */
-    public static Object byteToBinaryString(byte b) {
-        return StringUtils.leftPad(StringUtils.trim(Integer.toBinaryString(b & 0xFF)), 8, '0') + " ";
-    }
+    public static Object bytesToBinaryString(byte[] bytes) {
+        StringBuilder bin = new StringBuilder();
+        for (byte b : bytes) {
+            bin.append(StringUtils.leftPad(StringUtils.trim(Integer.toBinaryString(b & 0xFF)), 8, '0'));
+            bin.append(' ');
+        }
 
-    /**
-     * Convert the byte b into an hex String
-     *
-     * @param b
-     * @return
-     */
-    public static Object byteToHexString(byte b) {
-        return Integer.toHexString(b & 0xFF) + " ";
+        return bin.toString();
     }
 }

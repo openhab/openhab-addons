@@ -1,0 +1,1625 @@
+{
+	"totalCount": 70,
+	"values": {
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;0!0083FFFFF00000C": {
+			"rep": 0,
+			"type": 0,
+			"write": false,
+			"webhookEnabled": false,
+			"value": "AAS-20:SU=SiUn;APT=HvacFnct18z_A;APTV=2.003;APS=1;",
+			"descriptionName": "ApplicationSoftwareVersion",
+			"objectName": "ApplicationSoftwareVersion",
+			"memberName": "ApplicationSoftwareVersion",
+			"hierarchyName": "ApplicationSoftwareVersion",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;0!0083FFFFF00001C": {
+			"rep": 0,
+			"type": 0,
+			"write": false,
+			"webhookEnabled": false,
+			"value": "Device object",
+			"descriptionName": "Device Description",
+			"objectName": "Device Description",
+			"memberName": "Description",
+			"hierarchyName": "Device Description",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;0!0083FFFFF00002C": {
+			"rep": 0,
+			"type": 0,
+			"write": false,
+			"webhookEnabled": false,
+			"value": "FW=02.32.02.27;SVS-300.1:SBC=13.22;I",
+			"descriptionName": "FirmwareRevision",
+			"objectName": "FirmwareRevision",
+			"memberName": "FirmwareRevision",
+			"hierarchyName": "FirmwareRevision",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;0!0083FFFFF000046": {
+			"rep": 0,
+			"type": 0,
+			"write": false,
+			"webhookEnabled": false,
+			"value": "RDS110",
+			"descriptionName": "ModelName",
+			"objectName": "ModelName",
+			"memberName": "ModelName",
+			"hierarchyName": "ModelName",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;0!0083FFFFF000070": {
+			"rep": 3,
+			"type": 0,
+			"write": false,
+			"webhookEnabled": false,
+			"value": 0,
+			"limits": [
+				0,
+				5
+			],
+			"descr": "operational*operational-read-only*download-required*download-in-progress*non-operational*backup-in-progress",
+			"descriptionName": "SystemStatus",
+			"objectName": "SystemStatus",
+			"memberName": "SystemStatus",
+			"hierarchyName": "SystemStatus",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;0!0083FFFFF000077": {
+			"rep": 2,
+			"type": 0,
+			"write": false,
+			"webhookEnabled": false,
+			"value": 0,
+			"descriptionName": "UtcOffset",
+			"objectName": "UtcOffset",
+			"memberName": "UtcOffset",
+			"hierarchyName": "UtcOffset",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;0!0083FFFFF00009B": {
+			"rep": 2,
+			"type": 0,
+			"write": false,
+			"webhookEnabled": false,
+			"value": 29,
+			"descriptionName": "DatabaseRevision",
+			"objectName": "DatabaseRevision",
+			"memberName": "DatabaseRevision",
+			"hierarchyName": "DatabaseRevision",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;0!0083FFFFF0000C4": {
+			"rep": 3,
+			"type": 0,
+			"write": false,
+			"webhookEnabled": false,
+			"value": 4,
+			"limits": [
+				0,
+				7
+			],
+			"descr": "unknown*coldstart*warmstart*detected-power-lost*detected-powered-off*hardware-watchdog*software-watchdog*suspended",
+			"descriptionName": "LastRestartReason",
+			"objectName": "LastRestartReason",
+			"memberName": "LastRestartReason",
+			"hierarchyName": "LastRestartReason",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;0!0083FFFFF0012DB": {
+			"rep": 0,
+			"type": 0,
+			"write": false,
+			"webhookEnabled": false,
+			"value": "MDL:ASN= RDS110;HW=0.2.0;",
+			"descriptionName": "ModelInformation",
+			"objectName": "ModelInformation",
+			"memberName": "4827",
+			"hierarchyName": "ModelInformation",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;0!0083FFFFF001355": {
+			"rep": 3,
+			"type": 0,
+			"write": false,
+			"webhookEnabled": false,
+			"value": 1,
+			"limits": [
+				0,
+				26
+			],
+			"descr": "-*en*de*fr*es*cs*da*nl*fi*it*hu*nb*pl*pt*ru*sk*sv*zh*zh*ko*ro*tr*en-US*fr-CA*es-mx*pt-BR",
+			"descriptionName": "Active SystemLanguge",
+			"objectName": "Active SystemLanguge",
+			"memberName": "4949",
+			"hierarchyName": "Active SystemLanguge",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;0!0083FFFFF0013B0": {
+			"rep": 3,
+			"type": 0,
+			"write": false,
+			"webhookEnabled": false,
+			"value": 26,
+			"limits": [
+				0,
+				72
+			],
+			"descr": "GMT-12:00 Kwajalein*GMT-11:00 Samoa, Midway*GMT-10:00 Hawaii*GMT-09:00 Alaska*GMT-08:00 Pacific Time*GMT-07:00 Arizona*GMT-07:00 Chihuahua*GMT-07:00 Mountain Time*GMT-06:00 Central America*GMT-06:00 Central Time*GMT-06:00 Mexico City*GMT-06:00 Saskatchewan*GMT-05:00 Bogota, Lima*GMT-05:00 Eastern Time*GMT-05:00 Indiana (USA)*GMT-04:00 Atlantic Time*GMT-04:00 Caracas, La Paz*GMT-04:00 Santiago*18*GMT-03:00 Brasilia*20*21*GMT-02:00 Mid-Atlantic*23*24*25*GMT London, Dublin, Lisbon*GMT+01:00 Berlin, Rome*GMT+01:00 Budapest, Prague*GMT+01:00 Paris, Madrid*GMT+01:00 Vienna, Warsaw*31*GMT+02:00 Athens, Istanbul*GMT+02:00 Bucharest*GMT+02:00 Cairo*GMT+02:00 Johannesburg, Harare*GMT+02:00 Helsinki, Riga*GMT+02:00 Jerusalem*38*GMT+03:00 Kuwait, Riyadh*GMT+04:00 Moscow*41*GMT+03:30 Tehran*GMT+04:00 Abu Dhabi, Muscat*GMT+04:00 Baku, Tbilisi*45*GMT+06:00 Ekaterinburg*47*GMT+05:30 New Delhi*49*GMT+07:00 Omsk, Novosibirsk *51*52*53*GMT+07:00 Bangkok, Jakarta*GMT+08:00 Krasnoyarsk*GMT+08:00 Beijing, Hong Kong*GMT+09:00 Irkutsk*GMT+08:00 Kuala Lumpur*GMT+08:00 Perth*GMT+08:00 Taipei*GMT+09:00 Tokyo, Osaka*GMT+09:00 Seoul*GMT+10:00 Yakutsk*GMT+09:30 Adelaide*GMT+09:30 Darwin*GMT+10:00 Brisbane*GMT+10:00 Melbourne, Sydney*68*69*GMT+11:00 Vladivostok*71*GMT+12:00 Auckland, Wellington",
+			"descriptionName": "TimeZone",
+			"objectName": "TimeZone",
+			"memberName": "5040",
+			"hierarchyName": "TimeZone",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;0!0083FFFFF0013EC": {
+			"rep": 0,
+			"type": 0,
+			"write": false,
+			"webhookEnabled": false,
+			"value": "160100078A",
+			"descriptionName": "SerialNumber",
+			"objectName": "SerialNumber",
+			"memberName": "5100",
+			"hierarchyName": "SerialNumber",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;0!0083FFFFF0013F4": {
+			"rep": 0,
+			"type": 0,
+			"write": false,
+			"webhookEnabled": false,
+			"value": "'10010'B",
+			"descriptionName": "Device Features",
+			"objectName": "Device Features",
+			"memberName": "5108",
+			"hierarchyName": "Device Features",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;0!01D00000700001C": {
+			"rep": 0,
+			"type": 0,
+			"write": true,
+			"webhookEnabled": false,
+			"value": "Downstairs",
+			"descriptionName": "R(1)'Description",
+			"objectName": "R(1)'Description",
+			"memberName": "Description",
+			"hierarchyName": "R(1)'Description",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;0!10800000000130B": {
+			"rep": 0,
+			"type": 0,
+			"write": false,
+			"webhookEnabled": false,
+			"value": "192.168.1.1",
+			"descriptionName": "NwkPortIP'IP gefault gateway",
+			"objectName": "NwkPortIP'IP gefault gateway",
+			"memberName": "4875",
+			"hierarchyName": "NwkPortIP'IP gefault gateway",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;0!10800000000130C": {
+			"rep": 0,
+			"type": 0,
+			"write": false,
+			"webhookEnabled": false,
+			"value": "255.255.255.0",
+			"descriptionName": "NwkPortIP'IP subnet mask",
+			"objectName": "NwkPortIP'IP subnet mask",
+			"memberName": "4876",
+			"hierarchyName": "NwkPortIP'IP subnet mask",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;0!10800000000130D": {
+			"rep": 0,
+			"type": 0,
+			"write": false,
+			"webhookEnabled": false,
+			"value": "192.168.1.41",
+			"descriptionName": "NwkPortIP'IP address",
+			"objectName": "NwkPortIP'IP address",
+			"memberName": "4877",
+			"hierarchyName": "NwkPortIP'IP address",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;0!10800000000130E": {
+			"rep": 2,
+			"type": 0,
+			"write": false,
+			"webhookEnabled": false,
+			"value": 47808,
+			"descriptionName": "NwkPortIP'UDP Port",
+			"objectName": "NwkPortIP'UDP Port",
+			"memberName": "4878",
+			"hierarchyName": "NwkPortIP'UDP Port",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;0!108000000001313": {
+			"rep": 0,
+			"type": 0,
+			"write": false,
+			"webhookEnabled": false,
+			"value": "'F0C77F6C10A1'H",
+			"descriptionName": "NwkPortIP'BACnet MAC address",
+			"objectName": "NwkPortIP'BACnet MAC address",
+			"memberName": "4883",
+			"hierarchyName": "NwkPortIP'BACnet MAC address",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;0!108000001001286": {
+			"rep": 0,
+			"type": 0,
+			"write": false,
+			"webhookEnabled": false,
+			"value": "sth.connectivity.ccl-siemens.com",
+			"descriptionName": "NwkPortCCL'Connection URI",
+			"objectName": "NwkPortCCL'Connection URI",
+			"memberName": "4742",
+			"hierarchyName": "NwkPortCCL'Connection URI",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;0!108000001001287": {
+			"rep": 0,
+			"type": 0,
+			"write": false,
+			"webhookEnabled": false,
+			"value": "HABEAS-XXQFD-JRHUP-YNAFG-FNE4Q",
+			"descriptionName": "NwkPortCCL'Activation Key",
+			"objectName": "NwkPortCCL'Activation Key",
+			"memberName": "4743",
+			"hierarchyName": "NwkPortCCL'Activation Key",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;0!108000001001288": {
+			"rep": 2,
+			"type": 0,
+			"write": false,
+			"webhookEnabled": false,
+			"value": 60,
+			"descriptionName": "NwkPortCCL'Reconection delay",
+			"objectName": "NwkPortCCL'Reconection delay",
+			"memberName": "4744",
+			"hierarchyName": "NwkPortCCL'Reconection delay",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;0!DPUpdCurMon": {
+			"rep": 2,
+			"type": 0,
+			"write": false,
+			"webhookEnabled": false,
+			"value": 3685,
+			"descriptionName": "Target",
+			"objectName": "Target",
+			"memberName": "Item Updates Current Month",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;0!DPUpdPerMin": {
+			"rep": 2,
+			"type": 0,
+			"write": false,
+			"webhookEnabled": false,
+			"value": 1,
+			"descriptionName": "Target",
+			"objectName": "Target",
+			"memberName": "Item Updates per Minute",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;0!DPUpdTotal": {
+			"rep": 2,
+			"type": 0,
+			"write": false,
+			"webhookEnabled": false,
+			"value": 429857,
+			"descriptionName": "Target",
+			"objectName": "Target",
+			"memberName": "Item Updates Total",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;0!Languages": {
+			"rep": 0,
+			"type": 0,
+			"write": false,
+			"webhookEnabled": false,
+			"value": "-;en",
+			"limits": [
+				0,
+				1
+			],
+			"objectName": "CSL-Config",
+			"memberName": "Languages",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;0!Online": {
+			"rep": 3,
+			"type": 0,
+			"write": false,
+			"webhookEnabled": false,
+			"value": 1,
+			"limits": [
+				0,
+				1
+			],
+			"descr": "Offline*Online",
+			"descriptionName": "Target",
+			"objectName": "Target",
+			"memberName": "Online",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;0!TrfcInCurMon": {
+			"rep": 2,
+			"type": 0,
+			"write": false,
+			"webhookEnabled": false,
+			"value": 6836970,
+			"descr": "bytes",
+			"descriptionName": "Target",
+			"objectName": "Target",
+			"memberName": "Traffic Inbound Current Month",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;0!TrfcInPerMin": {
+			"rep": 2,
+			"type": 0,
+			"write": false,
+			"webhookEnabled": false,
+			"value": 183,
+			"descr": "bytes",
+			"descriptionName": "Target",
+			"objectName": "Target",
+			"memberName": "Traffic Inbound per Minute",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;0!TrfcInTotal": {
+			"rep": 2,
+			"type": 0,
+			"write": false,
+			"webhookEnabled": false,
+			"value": 361410891,
+			"descr": "bytes",
+			"descriptionName": "Target",
+			"objectName": "Target",
+			"memberName": "Traffic Inbound Total",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;0!TrfcOutCurMon": {
+			"rep": 2,
+			"type": 0,
+			"write": false,
+			"webhookEnabled": false,
+			"value": 1641440,
+			"descr": "bytes",
+			"descriptionName": "Target",
+			"objectName": "Target",
+			"memberName": "Traffic Outbound Current Month",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;0!TrfcOutPerMin": {
+			"rep": 2,
+			"type": 0,
+			"write": false,
+			"webhookEnabled": false,
+			"value": 62,
+			"descr": "bytes",
+			"descriptionName": "Target",
+			"objectName": "Target",
+			"memberName": "Traffic Outbound per Minute",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;0!TrfcOutTotal": {
+			"rep": 2,
+			"type": 0,
+			"write": false,
+			"webhookEnabled": false,
+			"value": 105878276,
+			"descr": "bytes",
+			"descriptionName": "Target",
+			"objectName": "Target",
+			"memberName": "Traffic Outbound Total",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;1!00000000E000055": {
+			"rep": 1,
+			"type": 0,
+			"write": false,
+			"webhookEnabled": false,
+			"value": {
+				"value": 21.4816036,
+				"statusFlags": 0,
+				"reliability": 0,
+				"eventState": 0,
+				"minValue": -50,
+				"maxValue": 80
+			},
+			"limits": [
+				-50,
+				80
+			],
+			"descr": "�C",
+			"descriptionName": "Outside air temperature",
+			"objectName": "R(1)'TOa",
+			"memberName": "PresentValue",
+			"hierarchyName": "R(1)'FvrBscOp'TOa",
+			"translated": false,
+			"resolution": 0.5,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;1!00200007F000055": {
+			"rep": 1,
+			"type": 0,
+			"write": true,
+			"webhookEnabled": false,
+			"value": {
+				"value": 24,
+				"statusFlags": 0,
+				"reliability": 0,
+				"presentPriority": 17,
+				"eventState": 0,
+				"minValue": 0,
+				"maxValue": 50
+			},
+			"limits": [
+				0,
+				50
+			],
+			"descr": "�C",
+			"descriptionName": "Comfort heating setpoint",
+			"objectName": "R(1)'RHvacCoo'TCtlH'SpHCmf",
+			"memberName": "PresentValue",
+			"hierarchyName": "R(1)'FvrBscOp'SpHCmf",
+			"translated": false,
+			"resolution": 0.5,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;1!002000080000055": {
+			"rep": 1,
+			"type": 0,
+			"write": true,
+			"webhookEnabled": false,
+			"value": {
+				"value": 24,
+				"statusFlags": 0,
+				"reliability": 0,
+				"eventState": 0,
+				"minValue": 0,
+				"maxValue": 50
+			},
+			"limits": [
+				0,
+				50
+			],
+			"descr": "�C",
+			"descriptionName": "Economy heating setpoint",
+			"objectName": "R(1)'RHvacCoo'TCtlH'SpHPcf",
+			"memberName": "PresentValue",
+			"hierarchyName": "R(1)'FvrBscOp'SpHPcf",
+			"translated": false,
+			"resolution": 0.5,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;1!002000081000055": {
+			"rep": 1,
+			"type": 0,
+			"write": true,
+			"webhookEnabled": false,
+			"value": {
+				"value": 16,
+				"statusFlags": 0,
+				"reliability": 0,
+				"eventState": 0,
+				"minValue": 0,
+				"maxValue": 50
+			},
+			"limits": [
+				0,
+				50
+			],
+			"descr": "�C",
+			"descriptionName": "Unoccupied heating setpoint",
+			"objectName": "R(1)'RHvacCoo'TCtlH'SpHEco",
+			"memberName": "PresentValue",
+			"hierarchyName": "R(1)'FvrBscOp'SpHEco",
+			"translated": false,
+			"resolution": 0.5,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;1!002000082000055": {
+			"rep": 1,
+			"type": 0,
+			"write": true,
+			"webhookEnabled": false,
+			"value": {
+				"value": 6,
+				"statusFlags": 0,
+				"reliability": 0,
+				"eventState": 0,
+				"minValue": 0,
+				"maxValue": 50
+			},
+			"limits": [
+				0,
+				50
+			],
+			"descr": "�C",
+			"descriptionName": "Protection heating setpoint",
+			"objectName": "R(1)'RHvacCoo'TCtlH'SpHPrt",
+			"memberName": "PresentValue",
+			"hierarchyName": "R(1)'FvrAplSet'SpHPrt",
+			"translated": false,
+			"resolution": 0.5,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;1!002000083000055": {
+			"rep": 1,
+			"type": 0,
+			"write": true,
+			"webhookEnabled": false,
+			"value": {
+				"value": 16,
+				"statusFlags": 0,
+				"reliability": 0,
+				"presentPriority": 15,
+				"eventState": 0,
+				"minValue": 6,
+				"maxValue": 35
+			},
+			"limits": [
+				6,
+				35
+			],
+			"descr": "�C",
+			"descriptionName": "Room temperature setpoint",
+			"objectName": "R(1)'RHvacCoo'SpTRDtr'SpTR",
+			"memberName": "PresentValue",
+			"hierarchyName": "R(1)'FvrBscOp'SpTR",
+			"translated": false,
+			"resolution": 0.5,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;1!002000084000055": {
+			"rep": 1,
+			"type": 0,
+			"write": true,
+			"webhookEnabled": false,
+			"value": {
+				"value": 0,
+				"statusFlags": 0,
+				"reliability": 0,
+				"presentPriority": 15,
+				"eventState": 0,
+				"minValue": -10,
+				"maxValue": 19
+			},
+			"limits": [
+				-18,
+				11
+			],
+			"descr": "K",
+			"descriptionName": "Room temperature setpoint shift",
+			"objectName": "R(1)'RHvacCoo'SpTRDtr'SpTRShft",
+			"memberName": "PresentValue",
+			"hierarchyName": "R(1)'FvrBscOp'SpTRShft",
+			"translated": false,
+			"resolution": 0.10000000149011612,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;1!002000085000055": {
+			"rep": 1,
+			"type": 0,
+			"write": false,
+			"webhookEnabled": false,
+			"value": {
+				"value": 36.1050224,
+				"statusFlags": 0,
+				"reliability": 0,
+				"eventState": 0,
+				"minValue": 0,
+				"maxValue": 100
+			},
+			"limits": [
+				0,
+				100
+			],
+			"descr": "%r.H.",
+			"descriptionName": "Relative humidity for room",
+			"objectName": "R(1)'RHvacCoo'RHuRel",
+			"memberName": "PresentValue",
+			"hierarchyName": "R(1)'FvrBscOp'RHuRel",
+			"translated": false,
+			"resolution": 1,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;1!002000086000055": {
+			"rep": 1,
+			"type": 0,
+			"write": false,
+			"webhookEnabled": false,
+			"value": {
+				"value": 24.2482586,
+				"statusFlags": 0,
+				"reliability": 0,
+				"eventState": 0,
+				"minValue": 0,
+				"maxValue": 50
+			},
+			"limits": [
+				0,
+				50
+			],
+			"descr": "�C",
+			"descriptionName": "Room temperature",
+			"objectName": "R(1)'RHvacCoo'RTemp",
+			"memberName": "PresentValue",
+			"hierarchyName": "R(1)'FvrBscOp'RTemp",
+			"translated": false,
+			"resolution": 0.10000000149011612,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;1!0020000B2000055": {
+			"rep": 1,
+			"type": 0,
+			"write": true,
+			"webhookEnabled": false,
+			"value": {
+				"value": 35,
+				"statusFlags": 0,
+				"reliability": 0,
+				"eventState": 0,
+				"minValue": 0,
+				"maxValue": 50
+			},
+			"limits": [
+				0,
+				50
+			],
+			"descr": "�C",
+			"descriptionName": "Max. heating setpoint",
+			"objectName": "R(1)'SpTRMaxHCmf",
+			"memberName": "PresentValue",
+			"hierarchyName": "R(1)'FvrAplSet'SpTRMaxHCmf",
+			"translated": false,
+			"resolution": 0.5,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;1!0020000B4000055": {
+			"rep": 1,
+			"type": 0,
+			"write": true,
+			"webhookEnabled": false,
+			"value": {
+				"value": 30,
+				"statusFlags": 0,
+				"reliability": 0,
+				"eventState": 0,
+				"minValue": 0,
+				"maxValue": 120
+			},
+			"limits": [
+				0,
+				120
+			],
+			"descr": "Unknown Unit(236)",
+			"descriptionName": "Warm-up gradient",
+			"objectName": "R(1)'WarmUpGrdnt",
+			"memberName": "PresentValue",
+			"hierarchyName": "R(1)'FvrAplSet'WarmUpGrdnt",
+			"translated": false,
+			"resolution": 5,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;1!0020000B5000055": {
+			"rep": 1,
+			"type": 0,
+			"write": true,
+			"webhookEnabled": false,
+			"value": {
+				"value": 2,
+				"statusFlags": 0,
+				"reliability": 0,
+				"eventState": 0,
+				"minValue": -5,
+				"maxValue": 5
+			},
+			"limits": [
+				-5,
+				5
+			],
+			"descr": "K",
+			"descriptionName": "Built-in temp. sensor adj.",
+			"objectName": "R(1)'TRBltnMsvAdj",
+			"memberName": "PresentValue",
+			"hierarchyName": "R(1)'FvrAplSet'TRBltnMsvAdj",
+			"translated": false,
+			"resolution": 0.5,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;1!0020000C6000055": {
+			"rep": 1,
+			"type": 0,
+			"write": true,
+			"webhookEnabled": false,
+			"value": {
+				"value": 0,
+				"statusFlags": 0,
+				"reliability": 0,
+				"eventState": 0,
+				"minValue": 0,
+				"maxValue": 5
+			},
+			"limits": [
+				0,
+				5
+			],
+			"descr": "A",
+			"descriptionName": "Heating device electrical load",
+			"objectName": "R(1)'HDevElLd",
+			"memberName": "PresentValue",
+			"hierarchyName": "R(1)'FvrAplSet'HDevElLd",
+			"translated": false,
+			"resolution": 0.5,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;1!0020000CB000055": {
+			"rep": 1,
+			"type": 0,
+			"write": true,
+			"webhookEnabled": false,
+			"value": {
+				"value": 0,
+				"statusFlags": 0,
+				"reliability": 0,
+				"eventState": 0,
+				"minValue": 0,
+				"maxValue": 5
+			},
+			"limits": [
+				0,
+				5
+			],
+			"descr": "A",
+			"descriptionName": "Q22/Q24 electrical load",
+			"objectName": "R(1)'Q22Q24ElLd",
+			"memberName": "PresentValue",
+			"hierarchyName": "R(1)'FvrAplSet'Q22Q24ElLd",
+			"translated": false,
+			"resolution": 0.5,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;1!0020000CD000055": {
+			"rep": 1,
+			"type": 0,
+			"write": false,
+			"webhookEnabled": false,
+			"value": {
+				"value": 585.4,
+				"statusFlags": 0,
+				"reliability": 0,
+				"eventState": 0,
+				"minValue": 0,
+				"maxValue": 5000
+			},
+			"limits": [
+				0,
+				5000
+			],
+			"descr": "ppm",
+			"descriptionName": "Room air quality",
+			"objectName": "R(1)'RHvacCoo'RAQual",
+			"memberName": "PresentValue",
+			"hierarchyName": "R(1)'FvrBscOp'RAQual",
+			"translated": false,
+			"resolution": 100,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;1!005000038000055": {
+			"rep": 3,
+			"type": 0,
+			"write": true,
+			"webhookEnabled": false,
+			"value": {
+				"value": 0,
+				"statusFlags": 0,
+				"reliability": 0,
+				"presentPriority": 13,
+				"eventState": 0
+			},
+			"limits": [
+				0,
+				2
+			],
+			"descr": "Inactive*Active*Null",
+			"descriptionName": "Temporary comfort button",
+			"objectName": "R(1)'ROpModDtr'TmpCmfBtn",
+			"memberName": "PresentValue",
+			"hierarchyName": "R(1)'FvrBscOp'TmpCmfBtn",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;1!005000039000055": {
+			"rep": 3,
+			"type": 0,
+			"write": true,
+			"webhookEnabled": false,
+			"value": {
+				"value": 0,
+				"statusFlags": 0,
+				"reliability": 0,
+				"presentPriority": 13,
+				"eventState": 0
+			},
+			"limits": [
+				0,
+				2
+			],
+			"descr": "Inactive*Active*Null",
+			"descriptionName": "Comfort button",
+			"objectName": "R(1)'ROpModDtr'CmfBtn",
+			"memberName": "PresentValue",
+			"hierarchyName": "R(1)'FvrBscOp'CmfBtn",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;1!00500003B000055": {
+			"rep": 3,
+			"type": 0,
+			"write": false,
+			"webhookEnabled": false,
+			"value": {
+				"value": 0,
+				"statusFlags": 0,
+				"reliability": 0,
+				"eventState": 0
+			},
+			"limits": [
+				0,
+				2
+			],
+			"descr": "Absent*Present*Null",
+			"descriptionName": "Room presence detection",
+			"objectName": "R(1)'RHvacCoo'RPscDet",
+			"memberName": "PresentValue",
+			"hierarchyName": "R(1)'FvrBscOp'RPscDet",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;1!00500003F000055": {
+			"rep": 3,
+			"type": 0,
+			"write": true,
+			"webhookEnabled": false,
+			"value": {
+				"value": 1,
+				"statusFlags": 0,
+				"reliability": 0,
+				"presentPriority": 17,
+				"eventState": 0
+			},
+			"limits": [
+				0,
+				2
+			],
+			"descr": "No*Yes*Null",
+			"descriptionName": "Enable heating control",
+			"objectName": "R(1)'RHvacCoo'TCtlH'EnHCtl",
+			"memberName": "PresentValue",
+			"hierarchyName": "R(1)'FvrBscOp'EnHCtl",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;1!005000054000055": {
+			"rep": 3,
+			"type": 0,
+			"write": true,
+			"webhookEnabled": false,
+			"value": {
+				"value": 0,
+				"statusFlags": 0,
+				"reliability": 0,
+				"eventState": 0
+			},
+			"limits": [
+				0,
+				2
+			],
+			"descr": "Inactive*Active*Null",
+			"descriptionName": "Room presence detector",
+			"objectName": "R(1)'EnRPscDet",
+			"memberName": "PresentValue",
+			"hierarchyName": "R(1)'FvrAplSet'EnRPscDet",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;1!01300004C000055": {
+			"rep": 3,
+			"type": 0,
+			"write": true,
+			"webhookEnabled": false,
+			"value": {
+				"value": 2,
+				"statusFlags": 0,
+				"reliability": 0,
+				"eventState": 0
+			},
+			"limits": [
+				0,
+				2
+			],
+			"descr": "Null*Off*Protection",
+			"descriptionName": "Off/protection configuration",
+			"objectName": "R(1)'OffPrtCnf",
+			"memberName": "PresentValue",
+			"hierarchyName": "R(1)'FvrAplSet'OffPrtCnf",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;1!013000051000055": {
+			"rep": 3,
+			"type": 0,
+			"write": true,
+			"webhookEnabled": false,
+			"value": {
+				"value": 2,
+				"statusFlags": 0,
+				"reliability": 0,
+				"presentPriority": 13,
+				"eventState": 0
+			},
+			"limits": [
+				0,
+				3
+			],
+			"descr": "Null*Off*Absent*Present",
+			"descriptionName": "Occupancy mode",
+			"objectName": "R(1)'ROpModDtr'OccMod",
+			"memberName": "PresentValue",
+			"hierarchyName": "R(1)'FvrBscOp'OccMod",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;1!013000052000055": {
+			"rep": 3,
+			"type": 0,
+			"write": true,
+			"webhookEnabled": false,
+			"value": {
+				"value": 5,
+				"statusFlags": 0,
+				"reliability": 0,
+				"presentPriority": 15,
+				"eventState": 0
+			},
+			"limits": [
+				0,
+				5
+			],
+			"descr": "Null*Undefined*Poor*Satisfactory*Good*Excellent",
+			"descriptionName": "Energy efficiency indication room",
+			"objectName": "R(1)'RGrnLf'REei",
+			"memberName": "PresentValue",
+			"hierarchyName": "R(1)'FvrBscOp'REei",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;1!013000053000055": {
+			"rep": 3,
+			"type": 0,
+			"write": true,
+			"webhookEnabled": false,
+			"value": {
+				"value": 1,
+				"statusFlags": 0,
+				"reliability": 0,
+				"presentPriority": 15,
+				"eventState": 0
+			},
+			"limits": [
+				0,
+				2
+			],
+			"descr": "Null*Off*On",
+			"descriptionName": "Domestic hot water mode",
+			"objectName": "R(1)'RHvacCoo'DhwOp'DhwMod",
+			"memberName": "PresentValue",
+			"hierarchyName": "R(1)'FvrBscOp'DhwMod",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;1!013000056000055": {
+			"rep": 3,
+			"type": 0,
+			"write": false,
+			"webhookEnabled": false,
+			"value": {
+				"value": 1,
+				"statusFlags": 0,
+				"reliability": 0,
+				"eventState": 0
+			},
+			"limits": [
+				0,
+				3
+			],
+			"descr": "Null*Neither*Heating*Cooling",
+			"descriptionName": "Heating/cooling state",
+			"objectName": "R(1)'RHvacCoo'HCStaDtr'HCSta",
+			"memberName": "PresentValue",
+			"hierarchyName": "R(1)'FvrBscOp'HCSta",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;1!01300005A000055": {
+			"rep": 3,
+			"type": 0,
+			"write": true,
+			"webhookEnabled": false,
+			"value": {
+				"value": 2,
+				"statusFlags": 0,
+				"reliability": 0,
+				"presentPriority": 13,
+				"eventState": 0
+			},
+			"limits": [
+				0,
+				4
+			],
+			"descr": "Null*Protection*Unoccupied*Economy*Comfort",
+			"descriptionName": "Present operating mode and reason",
+			"objectName": "R(1)'RHvacCoo'PrOpModRsn",
+			"memberName": "PresentValue",
+			"hierarchyName": "R(1)'FvrBscOp'PrOpModRsn",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;1!013000071000055": {
+			"rep": 3,
+			"type": 0,
+			"write": true,
+			"webhookEnabled": false,
+			"value": {
+				"value": 6,
+				"statusFlags": 0,
+				"reliability": 0,
+				"eventState": 0
+			},
+			"limits": [
+				0,
+				6
+			],
+			"descr": "Null*Default*Slow*Medium*Fast*2-position*Self-adaptive",
+			"descriptionName": "Heating control loop",
+			"objectName": "R(1)'HCtrSet",
+			"memberName": "PresentValue",
+			"hierarchyName": "R(1)'FvrAplSet'HCtrSet",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;1!013000072000055": {
+			"rep": 3,
+			"type": 0,
+			"write": true,
+			"webhookEnabled": false,
+			"value": {
+				"value": 2,
+				"statusFlags": 0,
+				"reliability": 0,
+				"eventState": 0
+			},
+			"limits": [
+				0,
+				2
+			],
+			"descr": "Null*Warm-up gradient*Self-adaptive",
+			"descriptionName": "Optimum start control setting",
+			"objectName": "R(1)'OsscSet",
+			"memberName": "PresentValue",
+			"hierarchyName": "R(1)'FvrAplSet'OsscSet",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;1!013000074000055": {
+			"rep": 3,
+			"type": 0,
+			"write": false,
+			"webhookEnabled": false,
+			"value": {
+				"value": 4,
+				"statusFlags": 0,
+				"reliability": 0,
+				"eventState": 0
+			},
+			"limits": [
+				0,
+				4
+			],
+			"descr": "Null*Undefined*Poor*Okay*Good",
+			"descriptionName": "Room air quality indication",
+			"objectName": "R(1)'RHvacCoo'RAQualInd",
+			"memberName": "PresentValue",
+			"hierarchyName": "R(1)'FvrBscOp'RAQualInd",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;1!030000000000055": {
+			"rep": 2,
+			"type": 0,
+			"write": true,
+			"webhookEnabled": false,
+			"value": {
+				"value": 500,
+				"statusFlags": 0,
+				"reliability": 0,
+				"eventState": 0,
+				"minValue": 1,
+				"maxValue": 8760
+			},
+			"limits": [
+				1,
+				8760
+			],
+			"descr": "h",
+			"descriptionName": "Pump/valve kick cycle",
+			"objectName": "R(1)'KickCyc",
+			"memberName": "PresentValue",
+			"hierarchyName": "R(1)'FvrAplSet'KickCyc",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;1!030000001000055": {
+			"rep": 2,
+			"type": 0,
+			"write": true,
+			"webhookEnabled": false,
+			"value": {
+				"value": 180000,
+				"statusFlags": 0,
+				"reliability": 0,
+				"eventState": 0,
+				"minValue": 0,
+				"maxValue": 3600000
+			},
+			"limits": [
+				0,
+				3600000
+			],
+			"descr": "ms",
+			"descriptionName": "DHW min. ON time",
+			"objectName": "R(1)'BoDhwTiOnMin",
+			"memberName": "PresentValue",
+			"hierarchyName": "R(1)'FvrAplSet'BoDhwTiOnMin",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;1!030000002000055": {
+			"rep": 2,
+			"type": 0,
+			"write": true,
+			"webhookEnabled": false,
+			"value": {
+				"value": 180000,
+				"statusFlags": 0,
+				"reliability": 0,
+				"eventState": 0,
+				"minValue": 0,
+				"maxValue": 3600000
+			},
+			"limits": [
+				0,
+				3600000
+			],
+			"descr": "ms",
+			"descriptionName": "DHW min. OFF time",
+			"objectName": "R(1)'BoDhwTiOffMin",
+			"memberName": "PresentValue",
+			"hierarchyName": "R(1)'FvrAplSet'BoDhwTiOffMin",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;1!030000007000055": {
+			"rep": 2,
+			"type": 0,
+			"write": true,
+			"webhookEnabled": false,
+			"value": {
+				"value": 604800,
+				"statusFlags": 0,
+				"reliability": 0,
+				"eventState": 0,
+				"minValue": 0,
+				"maxValue": 4294967295
+			},
+			"limits": [
+				0,
+				4294967295
+			],
+			"descr": "min",
+			"descriptionName": "Operating hours heating",
+			"objectName": "R(1)'RHvacCoo'OphHCDtr'OphH",
+			"memberName": "PresentValue",
+			"hierarchyName": "R(1)'FvrBscOp'OphH",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;2!011000004000055": {
+			"rep": 8,
+			"type": 0,
+			"write": true,
+			"webhookEnabled": false,
+			"value": {
+				"value": {
+					"cmd": "Command",
+					"cal": null,
+					"act": 0,
+					"null": 3,
+					"default": 0,
+					"schedStart": 4294967295,
+					"schedEnd": 4294967295,
+					"days": [
+						[
+							[
+								0,
+								3
+							],
+							[
+								7687,
+								4
+							],
+							[
+								7701,
+								3
+							]
+						],
+						[
+							[
+								0,
+								3
+							],
+							[
+								7687,
+								4
+							],
+							[
+								7701,
+								3
+							]
+						],
+						[
+							[
+								0,
+								3
+							],
+							[
+								7687,
+								4
+							],
+							[
+								7701,
+								3
+							]
+						],
+						[
+							[
+								0,
+								3
+							],
+							[
+								7687,
+								4
+							],
+							[
+								7701,
+								3
+							]
+						],
+						[
+							[
+								0,
+								3
+							],
+							[
+								7687,
+								4
+							],
+							[
+								7701,
+								3
+							]
+						],
+						[
+							[
+								0,
+								3
+							],
+							[
+								7687,
+								4
+							],
+							[
+								7701,
+								3
+							]
+						],
+						[
+							[
+								0,
+								3
+							],
+							[
+								7687,
+								4
+							],
+							[
+								7701,
+								3
+							]
+						],
+						[
+						]
+					],
+					"timeTillNextValue": 509,
+					"nextValue": 3
+				},
+				"statusFlags": 0,
+				"reliability": 0
+			},
+			"limits": [
+				0,
+				4
+			],
+			"descriptionName": "Room operating mode scheduler",
+			"objectName": "R(1)'CenOpMod'ROpModSched",
+			"memberName": "PresentValue",
+			"hierarchyName": "R(1)'FvrBscOp'ROpModSched",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;2!011000005000055": {
+			"rep": 8,
+			"type": 0,
+			"write": true,
+			"webhookEnabled": false,
+			"value": {
+				"value": {
+					"cmd": "Command",
+					"cal": null,
+					"act": 0,
+					"null": 3,
+					"default": 0,
+					"schedStart": 4294967295,
+					"schedEnd": 4294967295,
+					"days": [
+						[
+							[
+								0,
+								1
+							],
+							[
+								9,
+								2
+							],
+							[
+								7689,
+								1
+							],
+							[
+								21,
+								2
+							],
+							[
+								7701,
+								1
+							]
+						],
+						[
+							[
+								0,
+								1
+							],
+							[
+								9,
+								2
+							],
+							[
+								7689,
+								1
+							],
+							[
+								21,
+								2
+							],
+							[
+								7701,
+								1
+							]
+						],
+						[
+							[
+								0,
+								1
+							],
+							[
+								9,
+								2
+							],
+							[
+								7689,
+								1
+							],
+							[
+								21,
+								2
+							],
+							[
+								7701,
+								1
+							]
+						],
+						[
+							[
+								0,
+								1
+							],
+							[
+								9,
+								2
+							],
+							[
+								7689,
+								1
+							],
+							[
+								21,
+								2
+							],
+							[
+								7701,
+								1
+							]
+						],
+						[
+							[
+								0,
+								1
+							],
+							[
+								9,
+								2
+							],
+							[
+								7689,
+								1
+							],
+							[
+								21,
+								2
+							],
+							[
+								7701,
+								1
+							]
+						],
+						[
+							[
+								0,
+								1
+							],
+							[
+								9,
+								2
+							],
+							[
+								7689,
+								1
+							],
+							[
+								21,
+								2
+							],
+							[
+								7701,
+								1
+							]
+						],
+						[
+							[
+								0,
+								1
+							],
+							[
+								9,
+								2
+							],
+							[
+								7689,
+								1
+							],
+							[
+								21,
+								2
+							],
+							[
+								7701,
+								1
+							]
+						],
+						[
+						]
+					],
+					"timeTillNextValue": 479,
+					"nextValue": 2
+				},
+				"statusFlags": 0,
+				"reliability": 0
+			},
+			"limits": [
+				0,
+				2
+			],
+			"descriptionName": "Domestic hot water scheduler",
+			"objectName": "R(1)'CenDhw'DhwSched",
+			"memberName": "PresentValue",
+			"hierarchyName": "R(1)'FvrBscOp'DhwSched",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;3!01100000400004E": {
+			"rep": 9,
+			"type": 0,
+			"write": true,
+			"webhookEnabled": false,
+			"descriptionName": "Room operating mode scheduler",
+			"objectName": "R(1)'CenOpMod'ROpModSched",
+			"memberName": "PresentValue",
+			"hierarchyName": "R(1)'FvrBscOp'ROpModSched",
+			"translated": false,
+			"isVirtual": false
+		},
+		"Pfaf770c8-abeb-4742-ad65-ead39030d369;3!01100000500004E": {
+			"rep": 9,
+			"type": 0,
+			"write": true,
+			"webhookEnabled": false,
+			"descriptionName": "Domestic hot water scheduler",
+			"objectName": "R(1)'CenDhw'DhwSched",
+			"memberName": "PresentValue",
+			"hierarchyName": "R(1)'FvrBscOp'DhwSched",
+			"translated": false,
+			"isVirtual": false
+		}
+	}
+}

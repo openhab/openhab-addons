@@ -12,41 +12,46 @@
  */
 package org.openhab.binding.heos.internal.handler;
 
+import java.io.IOException;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.heos.handler.HeosBridgeHandler;
-import org.openhab.binding.heos.internal.api.HeosFacade;
+import org.openhab.binding.heos.internal.resources.Telnet.ReadException;
 
 /**
  * The {@link HeosChannelHandlerReboot} handles the Reboot channel command
  * from the implementing thing.
  *
  * @author Johannes Einig - Initial contribution
- *
  */
-public class HeosChannelHandlerReboot extends HeosChannelHandler {
-
-    public HeosChannelHandlerReboot(HeosBridgeHandler bridge, HeosFacade api) {
-        super(bridge, api);
+@NonNullByDefault
+public class HeosChannelHandlerReboot extends BaseHeosChannelHandler {
+    public HeosChannelHandlerReboot(HeosBridgeHandler bridge) {
+        super(bridge);
     }
 
     @Override
-    protected void handleCommandPlayer() {
+    public void handlePlayerCommand(Command command, String id, ThingUID uid) {
         // not used on player
     }
 
     @Override
-    protected void handleCommandGroup() {
+    public void handleGroupCommand(Command command, @Nullable String id, ThingUID uid,
+            HeosGroupHandler heosGroupHandler) {
         // Not used on group
     }
 
     @Override
-    protected void handleCommandBridge() {
+    public void handleBridgeCommand(Command command, ThingUID uid) throws IOException, ReadException {
         if (command instanceof RefreshType) {
             return;
         }
-        if (command.equals(OnOffType.ON)) {
-            api.reboot();
+        if (command == OnOffType.ON) {
+            getApi().reboot();
         }
     }
 }

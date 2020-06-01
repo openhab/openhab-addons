@@ -42,7 +42,7 @@ The FRITZ!Box has to run at least on firmware FRITZ!OS 6.35.
 The following sensors have been successfully tested using FRITZ!OS 7 for FRITZ!Box 7490 / 7590:
 
 - [SmartHome Tür-/Fensterkontakt (optisch)](https://www.smarthome.de/geraete/eurotronic-smarthome-tuer-fensterkontakt-optisch) - an optical door/window contact
-- SmartHome Tür-/Fensterkontakt (magnetisch) - a magnetic door/window contact
+- [SmartHome Tür-/Fensterkontakt (magnetisch)](https://www.smarthome.de/geraete/smarthome-tuer-fensterkontakt-magnetisch-weiss) - a magnetic door/window contact
 - [SmartHome Bewegungsmelder](https://www.smarthome.de/geraete/telekom-smarthome-bewegungsmelder-innen) - a motion sensor
 - [SmartHome Rauchmelder](https://www.smarthome.de/geraete/smarthome-rauchmelder-weiss) - a smoke detector
 - [SmartHome Wandtaster](https://www.smarthome.de/geraete/telekom-smarthome-wandtaster) - a switch with two buttons

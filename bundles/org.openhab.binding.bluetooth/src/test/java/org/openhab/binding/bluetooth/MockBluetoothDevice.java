@@ -116,5 +116,4 @@ public class MockBluetoothDevice extends BaseBluetoothDevice {
     public boolean disableNotifications(BluetoothDescriptor descriptor) {
         return false;
     }
-
 }
