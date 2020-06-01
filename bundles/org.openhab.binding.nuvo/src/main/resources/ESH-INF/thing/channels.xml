@@ -135,12 +135,12 @@
 				<description>Number of Zones On the Amplifier to Utilize in the Binding (Up to 20 Zones When Using Expansion Module)</description>
 				<default>6</default>
 			</parameter>
-			<parameter name="clockSync" type="integer" min="0" max="1" required="false">
+			<parameter name="clockSync" type="boolean" required="false">
 				<label>Sync Clock On GConcerto</label>
-				<description>If Set to 1, the Binding Will Sync the Internal Clock On the Grand Concerto to Match the openHAB Host's
+				<description>If Set to true, the Binding Will Sync the Internal Clock On the Grand Concerto to Match the openHAB Host's
 					System Clock. The Sync Job Runs at Binding Startup and Once an Hour Thereafter. The Essentia G Has No RTC, So This
 					Setting Has No Effect On That Component.</description>
-				<default>0</default>
+				<default>false</default>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -152,7 +152,6 @@
 			<channel id="alloff" typeId="alloff"/>
 			<channel id="allmute" typeId="system.mute"/>
 			<channel id="page" typeId="page"/>
-			<channel id="sendcmd" typeId="sendcmd"/>
 		</channels>
 	</channel-group-type>
 
@@ -636,12 +635,6 @@
 		<item-type>Switch</item-type>
 		<label>Page</label>
 		<description>Activates the Page Mode for All Zones</description>
-	</channel-type>
-
-	<channel-type id="sendcmd">
-		<item-type>String</item-type>
-		<label>Send Command</label>
-		<description>Send a Custom Command to the Controller</description>
 	</channel-type>
 
 	<channel-type id="source">

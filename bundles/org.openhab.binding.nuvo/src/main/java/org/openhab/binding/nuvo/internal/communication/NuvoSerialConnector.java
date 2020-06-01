@@ -99,20 +99,15 @@ public class NuvoSerialConnector extends NuvoConnector {
             logger.debug("Serial connection opened");
         } catch (PortInUseException e) {
             setConnected(false);
-            logger.warn("Opening serial connection failed: Port in Use Exception: {}", e.getMessage(), e);
             throw new NuvoException("Opening serial connection failed: Port in Use Exception");
         } catch (UnsupportedCommOperationException e) {
             setConnected(false);
-            logger.warn("Opening serial connection failed: Unsupported Comm Operation Exception: {}", e.getMessage(),
-                    e);
             throw new NuvoException("Opening serial connection failed: Unsupported Comm Operation Exception");
         } catch (UnsupportedEncodingException e) {
             setConnected(false);
-            logger.warn("Opening serial connection failed: Unsupported Encoding Exception: {}", e.getMessage(), e);
             throw new NuvoException("Opening serial connection failed: Unsupported Encoding Exception");
         } catch (IOException e) {
             setConnected(false);
-            logger.warn("Opening serial connection failed: IO Exception: {}", e.getMessage(), e);
             throw new NuvoException("Opening serial connection failed: IO Exception");
         }
     }

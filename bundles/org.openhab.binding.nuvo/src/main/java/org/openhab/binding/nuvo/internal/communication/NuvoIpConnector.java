@@ -37,7 +37,7 @@ public class NuvoIpConnector extends NuvoConnector {
 
     private final Logger logger = LoggerFactory.getLogger(NuvoIpConnector.class);
 
-    private String address;
+    private @Nullable String address;
     private int port;
 
     private @Nullable Socket clientSocket;
@@ -48,7 +48,7 @@ public class NuvoIpConnector extends NuvoConnector {
      * @param address the IP address of the serial over ip adapter
      * @param port the TCP port to be used
      */
-    public NuvoIpConnector(String address, Integer port) {
+    public NuvoIpConnector(@Nullable String address, @Nullable Integer port) {
         this.address = address;
         this.port = port;
     }
@@ -74,7 +74,6 @@ public class NuvoIpConnector extends NuvoConnector {
             logger.debug("IP connection opened");
         } catch (IOException | SecurityException | IllegalArgumentException e) {
             setConnected(false);
-            logger.warn("Opening IP connection failed: {}", e.getMessage());
             throw new NuvoException("Opening IP connection failed: " + e.getMessage());
         }
     }
@@ -121,7 +120,6 @@ public class NuvoIpConnector extends NuvoConnector {
         } catch (SocketTimeoutException e) {
             return 0;
         } catch (IOException e) {
-            logger.debug("readInput failed: {}", e.getMessage());
             throw new NuvoException("readInput failed: " + e.getMessage());
         }
     }

@@ -51,6 +51,19 @@ public abstract class NuvoConnector {
     public static final String TYPE_ZONE_BUTTON = "zone_button";
     public static final String TYPE_ZONE_CONFIG = "zone_config";
 
+    private static final byte[] WAKE_STR = "\r".getBytes(StandardCharsets.US_ASCII);
+
+    private static final Pattern SRC_PATTERN = Pattern.compile("^#(S\\d{1})(.*)$");
+    private static final Pattern ZONE_PATTERN = Pattern.compile("^#(Z\\d{1,2}),(.*)$");
+    private static final Pattern ZONE_BUTTON_PATTERN = Pattern.compile("^#(Z\\d{1,2})(S\\d{1})(.*)$");
+    private static final Pattern ZONE_CFG_PATTERN = Pattern.compile("^#ZCFG(\\d{1,2}),(.*)$");
+
+    private static final String VER_STR = "#VER\"NV-";
+    private static final String ALL_OFF = "#ALLOFF";
+    private static final String MUTE = "#MUTE";
+    private static final String PAGE = "#PAGE";
+    private static final String Z = "Z";
+
     /** The output stream */
     protected @Nullable OutputStream dataOut;
 
@@ -167,7 +180,6 @@ public abstract class NuvoConnector {
         try {
             return dataIn.read(dataBuffer);
         } catch (IOException e) {
-            logger.debug("readInput failed: {}", e.getMessage());
             throw new NuvoException("readInput failed: " + e.getMessage());
         }
     }
@@ -242,14 +254,11 @@ public abstract class NuvoConnector {
      * @throws NuvoException - In case of any problem
      */
     public void sendCommand(String command) throws NuvoException {
-        byte[] wakeString = "\r".getBytes(StandardCharsets.US_ASCII);
-
         String messageStr = NuvoCommand.BEGIN_CMD.getValue() + command + NuvoCommand.END_CMD.getValue();
 
         logger.debug("sending command: {}", messageStr);
 
         byte[] message = messageStr.getBytes(StandardCharsets.US_ASCII);
-        logger.debug("Send command {}", messageStr);
 
         OutputStream dataOut = this.dataOut;
         if (dataOut == null) {
@@ -259,17 +268,15 @@ public abstract class NuvoConnector {
             // Essentia G needs time to wake up when in standby mode
             // I don't want to track that in the binding, so just do this always
             if (this.isEssentia) {
-                dataOut.write(wakeString);
+                dataOut.write(WAKE_STR);
                 dataOut.flush();
                 Thread.sleep(5);
             }
             dataOut.write(message);
             dataOut.flush();
         } catch (IOException | InterruptedException e) {
-            logger.debug("Send command \"{}\" failed: {}", messageStr, e.getMessage());
             throw new NuvoException("Send command \"" + command + "\" failed: " + e.getMessage());
         }
-        logger.debug("Send command \"{}\" succeeded", messageStr);
     }
 
     /**
@@ -296,7 +303,7 @@ public abstract class NuvoConnector {
      * @param incomingMessage the received message
      */
     public void handleIncomingMessage(byte[] incomingMessage) {
-        String message = new String(incomingMessage).trim();
+        String message = new String(incomingMessage, StandardCharsets.US_ASCII).trim();
 
         logger.debug("handleIncomingMessage: {}", message);
 
@@ -305,80 +312,66 @@ public abstract class NuvoConnector {
             return;
         }
 
-        if (message.contains("#VER\"NV-")) {
+        if (message.contains(VER_STR)) {
             // example: #VER"NV-E6G FWv2.66 HWv0"
             // split on " and return the version number
             dispatchKeyValue(TYPE_VERSION, "", message.split("\"")[1]);
             return;
         }
 
-        if (message.equals("#ALLOFF")) {
+        if (message.equals(ALL_OFF)) {
             dispatchKeyValue(TYPE_ALLOFF, "", "");
             return;
         }
 
-        if (message.contains("#MUTE")) {
+        if (message.contains(MUTE)) {
             dispatchKeyValue(TYPE_ALLMUTE, "", message.substring(message.length() - 1));
             return;
         }
 
-        if (message.contains("#PAGE")) {
+        if (message.contains(PAGE)) {
             dispatchKeyValue(TYPE_PAGE, "", message.substring(message.length() - 1));
             return;
         }
 
-        Pattern p;
-
         // Amp controller send a source update ie: #S2DISPINFO,DUR3380,POS3090,STATUS2
         // or #S2DISPLINE1,"1 of 17"
-        p = Pattern.compile("^#(S\\d{1})(.*)$");
-
-        try {
-            Matcher matcher = p.matcher(message);
-            matcher.find();
+        Matcher matcher = SRC_PATTERN.matcher(message);
+        if (matcher.find()) {
             // pull out the source id and the remainder of the message
             dispatchKeyValue(TYPE_SOURCE_UPDATE, matcher.group(1), matcher.group(2));
             return;
-        } catch (IllegalStateException e) {
+        } else {
             logger.debug("no match on message: {}", message);
         }
 
         // Amp controller send a zone update ie: #Z11,ON,SRC3,VOL63,DND0,LOCK0
-        p = Pattern.compile("^#(Z\\d{1,2}),(.*)$");
-
-        try {
-            Matcher matcher = p.matcher(message);
-            matcher.find();
+        matcher = ZONE_PATTERN.matcher(message);
+        if (matcher.find()) {
             // pull out the zone id and the remainder of the message
             dispatchKeyValue(TYPE_ZONE_UPDATE, matcher.group(1), matcher.group(2));
             return;
-        } catch (IllegalStateException e) {
+        } else {
             logger.debug("no match on message: {}", message);
         }
 
         // Amp controller send a zone button press event ie: #Z11S3PLAYPAUSE
-        p = Pattern.compile("^#(Z\\d{1,2})(S\\d{1})(.*)$");
-
-        try {
-            Matcher matcher = p.matcher(message);
-            matcher.find();
+        matcher = ZONE_BUTTON_PATTERN.matcher(message);
+        if (matcher.find()) {
             // pull out the source id and the remainder of the message, ignore the zone id
             dispatchKeyValue(TYPE_ZONE_BUTTON, matcher.group(2), matcher.group(3));
             return;
-        } catch (IllegalStateException e) {
+        } else {
             logger.debug("no match on message: {}", message);
         }
 
         // Amp controller send a zone configuration response ie: #ZCFG1,BASS1,TREB-2,BALR2,LOUDCMP1
-        p = Pattern.compile("^#ZCFG(\\d{1,2}),(.*)$");
-
-        try {
-            Matcher matcher = p.matcher(message);
-            matcher.find();
+        matcher = ZONE_CFG_PATTERN.matcher(message);
+        if (matcher.find()) {
             // pull out the zone id and the remainder of the message
-            dispatchKeyValue(TYPE_ZONE_CONFIG, "Z" + matcher.group(1), matcher.group(2));
+            dispatchKeyValue(TYPE_ZONE_CONFIG, Z + matcher.group(1), matcher.group(2));
             return;
-        } catch (IllegalStateException e) {
+        } else {
             logger.debug("no match on message: {}", message);
         }
 
@@ -394,8 +387,6 @@ public abstract class NuvoConnector {
      */
     private void dispatchKeyValue(String type, String key, String value) {
         NuvoMessageEvent event = new NuvoMessageEvent(this, type, key, value);
-        for (int i = 0; i < listeners.size(); i++) {
-            listeners.get(i).onNewMessageEvent(event);
-        }
+        listeners.forEach(l -> l.onNewMessageEvent(event));
     }
 }

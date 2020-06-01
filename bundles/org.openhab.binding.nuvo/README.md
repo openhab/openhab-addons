@@ -32,13 +32,13 @@ All settings are through thing configuration parameters.
 
 The thing has the following configuration parameters:
 
-| Parameter Label         | Parameter ID | Description                                                                                                                     | Accepted values    |
-|-------------------------|--------------|---------------------------------------------------------------------------------------------------------------------------------|--------------------|
-| Serial Port             | serialPort   | Serial port to use for connecting to the Nuvo whole house amplifier device                                                      | a comm port name | |
-| Address                 | host         | Host name or IP address of the machine connected to the Nuvo whole house amplifier device (serial over IP)                      | host name or ip  | |
-| Port                    | port         | Communication port (serial over IP).                                                                                            | ip port number   | |
-| Number of Zones         | numZones     | (Optional) Number of zones on the amplifier to utilize in the binding (up to 20 zones when zone expansion modules are used)     | (1-20; default 6)| |
-| Sync Clock on GConcerto | clockSync    | (Optional) If set to 1, the binding will sync the internal clock on the Grand Concerto to match the openHAB host's system clock | (0-1; default 0) | |
+| Parameter Label         | Parameter ID | Description                                                                                                                        | Accepted values          |
+|-------------------------|--------------|------------------------------------------------------------------------------------------------------------------------------------|--------------------------|
+| Serial Port             | serialPort   | Serial port to use for connecting to the Nuvo whole house amplifier device                                                         | a comm port name       | |
+| Address                 | host         | Host name or IP address of the machine connected to the Nuvo whole house amplifier device (serial over IP)                         | host name or ip        | |
+| Port                    | port         | Communication port (serial over IP).                                                                                               | ip port number         | |
+| Number of Zones         | numZones     | (Optional) Number of zones on the amplifier to utilize in the binding (up to 20 zones when zone expansion modules are used)        | (1-20; default 6)      | |
+| Sync Clock on GConcerto | clockSync    | (Optional) If set to true, the binding will sync the internal clock on the Grand Concerto to match the openHAB host's system clock | Boolean; default false | |
 
 Some notes:
 
@@ -65,7 +65,6 @@ The following channels are available:
 | system#alloff                        | Switch      | Turn all zones off simultaneously                                                                             |
 | system#allmute                       | Switch      | Mute or unmute all zones simultaneously                                                                       |
 | system#page                          | Switch      | Turn on or off the Page All Zones feature (while on the amplifier switches to source 6)                       |
-| system#sendcmd                       | String      | Send a custom command string directly to the amplifier controller                                             |
 | zoneN#power (where N= 1-20)          | Switch      | Turn the power for a zone on or off                                                                           |
 | zoneN#source (where N= 1-20)         | Number      | Select the source input for a zone (1-6)                                                                      |
 | zoneN#volume (where N= 1-20)         | Dimmer      | Control the volume for a zone (0-100%) [translates to 0-79]                                                   |
@@ -93,10 +92,10 @@ nuvo.things:
 
 ```java
 //serial port connection
-nuvo:amplifier:myamp "Nuvo WHA" [ serialPort="COM5", numZones=6, clockSync=0]
+nuvo:amplifier:myamp "Nuvo WHA" [ serialPort="COM5", numZones=6, clockSync=false]
 
 // serial over IP connection
-nuvo:amplifier:myamp "Nuvo WHA" [ host="192.168.0.10", port=4444, numZones=6, clockSync=0]
+nuvo:amplifier:myamp "Nuvo WHA" [ host="192.168.0.10", port=4444, numZones=6, clockSync=false]
 
 ```
 
@@ -107,7 +106,6 @@ nuvo.items:
 Switch nuvo_system_alloff "All Zones Off" { channel="nuvo:amplifier:myamp:system#alloff" }
 Switch nuvo_system_allmute "All Zones Mute" { channel="nuvo:amplifier:myamp:system#allmute" }
 Switch nuvo_system_page "Page All Zones" { channel="nuvo:amplifier:myamp:system#page" }
-String nuvo_system_sendcmd "Command: [%s]" { channel="nuvo:amplifier:myamp:system#sendcmd" }
 
 // zones
 Switch nuvo_z1_power "Power" { channel="nuvo:amplifier:myamp:zone1#power" }
@@ -188,77 +186,76 @@ nuvo.sitemap:
 sitemap nuvo label="Audio Control" {
     Frame label="System" {
         Switch item=nuvo_system_alloff mappings=[ON=" "]
-		Switch item=nuvo_system_allmute
-		Switch item=nuvo_system_page
-        Text item=nuvo_system_sendcmd icon="settings"
+        Switch item=nuvo_system_allmute
+        Switch item=nuvo_system_page
     }
-    
-    Frame label="Zone 1"	{
+
+    Frame label="Zone 1"
         Switch item=nuvo_z1_power visibility=[nuvo_z1_lock!="1"]
         Selection item=nuvo_z1_source visibility=[nuvo_z1_power==ON] icon="player"
         //Volume can be a Setpoint also
         Slider item=nuvo_z1_volume minValue=0 maxValue=100 step=1 visibility=[nuvo_z1_power==ON] icon="soundvolume"
         Switch item=nuvo_z1_mute visibility=[nuvo_z1_power==ON] icon="soundvolume_mute"
-		Default item=nuvo_z1_control visibility=[nuvo_z1_power==ON]
-		
-		Text item=nuvo_s1_display_line1 visibility=[nuvo_z1_source=="1"] icon="zoom"
-		Text item=nuvo_s1_display_line2 visibility=[nuvo_z1_source=="1"] icon="zoom"
-		Text item=nuvo_s1_display_line3 visibility=[nuvo_z1_source=="1"] icon="zoom"
-		Text item=nuvo_s1_display_line4 visibility=[nuvo_z1_source=="1"] icon="zoom"
-		Text item=nuvo_s1_play_mode visibility=[nuvo_z1_source=="1"] icon="player"
-		Text item=nuvo_s1_track_length visibility=[nuvo_z1_source=="1"]
-		Text item=nuvo_s1_track_position visibility=[nuvo_z1_source=="1"]
-		Text item=nuvo_s1_button_press visibility=[nuvo_z1_source=="1"] icon="none"
-		
-		Text item=nuvo_s2_display_line1 visibility=[nuvo_z1_source=="2"] icon="zoom"
-		Text item=nuvo_s2_display_line2 visibility=[nuvo_z1_source=="2"] icon="zoom"
-		Text item=nuvo_s2_display_line3 visibility=[nuvo_z1_source=="2"] icon="zoom"
-		Text item=nuvo_s2_display_line4 visibility=[nuvo_z1_source=="2"] icon="zoom"
-		Text item=nuvo_s2_play_mode visibility=[nuvo_z1_source=="2"] icon="player"
-		Text item=nuvo_s2_track_length visibility=[nuvo_z1_source=="2"]
-		Text item=nuvo_s2_track_position visibility=[nuvo_z1_source=="2"]
-		Text item=nuvo_s2_button_press visibility=[nuvo_z1_source=="2"] icon="none"
-		
-		Text item=nuvo_s3_display_line1 visibility=[nuvo_z1_source=="3"] icon="zoom"
-		Text item=nuvo_s3_display_line2 visibility=[nuvo_z1_source=="3"] icon="zoom"
-		Text item=nuvo_s3_display_line3 visibility=[nuvo_z1_source=="3"] icon="zoom"
-		Text item=nuvo_s3_display_line4 visibility=[nuvo_z1_source=="3"] icon="zoom"
-		Text item=nuvo_s3_play_mode visibility=[nuvo_z1_source=="3"] icon="player"
-		Text item=nuvo_s3_track_length visibility=[nuvo_z1_source=="3"]
-		Text item=nuvo_s3_track_position visibility=[nuvo_z1_source=="3"]
-		Text item=nuvo_s3_button_press visibility=[nuvo_z1_source=="3"] icon="none"
-		
-		Text item=nuvo_s4_display_line1 visibility=[nuvo_z1_source=="4"] icon="zoom"
-		Text item=nuvo_s4_display_line2 visibility=[nuvo_z1_source=="4"] icon="zoom"
-		Text item=nuvo_s4_display_line3 visibility=[nuvo_z1_source=="4"] icon="zoom"
-		Text item=nuvo_s4_display_line4 visibility=[nuvo_z1_source=="4"] icon="zoom"
-		Text item=nuvo_s4_play_mode visibility=[nuvo_z1_source=="4"] icon="player"
-		Text item=nuvo_s4_track_length visibility=[nuvo_z1_source=="4"]
-		Text item=nuvo_s4_track_position visibility=[nuvo_z1_source=="4"]
-		Text item=nuvo_s4_button_press visibility=[nuvo_z1_source=="4"] icon="none"
-		
-		Text item=nuvo_s5_display_line1 visibility=[nuvo_z1_source=="5"] icon="zoom"
-		Text item=nuvo_s5_display_line2 visibility=[nuvo_z1_source=="5"] icon="zoom"
-		Text item=nuvo_s5_display_line3 visibility=[nuvo_z1_source=="5"] icon="zoom"
-		Text item=nuvo_s5_display_line4 visibility=[nuvo_z1_source=="5"] icon="zoom"
-		Text item=nuvo_s5_play_mode visibility=[nuvo_z1_source=="5"] icon="player"
-		Text item=nuvo_s5_track_length visibility=[nuvo_z1_source=="5"]
-		Text item=nuvo_s5_track_position visibility=[nuvo_z1_source=="5"]
-		Text item=nuvo_s5_button_press visibility=[nuvo_z1_source=="5"] icon="none"
-		
-		Text item=nuvo_s6_display_line1 visibility=[nuvo_z1_source=="6"] icon="zoom"
-		Text item=nuvo_s6_display_line2 visibility=[nuvo_z1_source=="6"] icon="zoom"
-		Text item=nuvo_s6_display_line3 visibility=[nuvo_z1_source=="6"] icon="zoom"
-		Text item=nuvo_s6_display_line4 visibility=[nuvo_z1_source=="6"] icon="zoom"
-		Text item=nuvo_s6_play_mode visibility=[nuvo_z1_source=="6"] icon="player"
-		Text item=nuvo_s6_track_length visibility=[nuvo_z1_source=="6"]
-		Text item=nuvo_s6_track_position visibility=[nuvo_z1_source=="6"]
-		Text item=nuvo_s6_button_press visibility=[nuvo_z1_source=="6"] icon="none"
-		
-		Setpoint item=nuvo_z1_treble label="Treble Adjustment [%d]" minValue=-18 maxValue=18 step=2 visibility=[nuvo_z1_power==ON]
+        Default item=nuvo_z1_control visibility=[nuvo_z1_power==ON]
+
+        Text item=nuvo_s1_display_line1 visibility=[nuvo_z1_source=="1"] icon="zoom"
+        Text item=nuvo_s1_display_line2 visibility=[nuvo_z1_source=="1"] icon="zoom"
+        Text item=nuvo_s1_display_line3 visibility=[nuvo_z1_source=="1"] icon="zoom"
+        Text item=nuvo_s1_display_line4 visibility=[nuvo_z1_source=="1"] icon="zoom"
+        Text item=nuvo_s1_play_mode visibility=[nuvo_z1_source=="1"] icon="player"
+        Text item=nuvo_s1_track_length visibility=[nuvo_z1_source=="1"]
+        Text item=nuvo_s1_track_position visibility=[nuvo_z1_source=="1"]
+        Text item=nuvo_s1_button_press visibility=[nuvo_z1_source=="1"] icon="none"
+
+        Text item=nuvo_s2_display_line1 visibility=[nuvo_z1_source=="2"] icon="zoom"
+        Text item=nuvo_s2_display_line2 visibility=[nuvo_z1_source=="2"] icon="zoom"
+        Text item=nuvo_s2_display_line3 visibility=[nuvo_z1_source=="2"] icon="zoom"
+        Text item=nuvo_s2_display_line4 visibility=[nuvo_z1_source=="2"] icon="zoom"
+        Text item=nuvo_s2_play_mode visibility=[nuvo_z1_source=="2"] icon="player"
+        Text item=nuvo_s2_track_length visibility=[nuvo_z1_source=="2"]
+        Text item=nuvo_s2_track_position visibility=[nuvo_z1_source=="2"]
+        Text item=nuvo_s2_button_press visibility=[nuvo_z1_source=="2"] icon="none"
+
+        Text item=nuvo_s3_display_line1 visibility=[nuvo_z1_source=="3"] icon="zoom"
+        Text item=nuvo_s3_display_line2 visibility=[nuvo_z1_source=="3"] icon="zoom"
+        Text item=nuvo_s3_display_line3 visibility=[nuvo_z1_source=="3"] icon="zoom"
+        Text item=nuvo_s3_display_line4 visibility=[nuvo_z1_source=="3"] icon="zoom"
+        Text item=nuvo_s3_play_mode visibility=[nuvo_z1_source=="3"] icon="player"
+        Text item=nuvo_s3_track_length visibility=[nuvo_z1_source=="3"]
+        Text item=nuvo_s3_track_position visibility=[nuvo_z1_source=="3"]
+        Text item=nuvo_s3_button_press visibility=[nuvo_z1_source=="3"] icon="none"
+
+        Text item=nuvo_s4_display_line1 visibility=[nuvo_z1_source=="4"] icon="zoom"
+        Text item=nuvo_s4_display_line2 visibility=[nuvo_z1_source=="4"] icon="zoom"
+        Text item=nuvo_s4_display_line3 visibility=[nuvo_z1_source=="4"] icon="zoom"
+        Text item=nuvo_s4_display_line4 visibility=[nuvo_z1_source=="4"] icon="zoom"
+        Text item=nuvo_s4_play_mode visibility=[nuvo_z1_source=="4"] icon="player"
+        Text item=nuvo_s4_track_length visibility=[nuvo_z1_source=="4"]
+        Text item=nuvo_s4_track_position visibility=[nuvo_z1_source=="4"]
+        Text item=nuvo_s4_button_press visibility=[nuvo_z1_source=="4"] icon="none"
+
+        Text item=nuvo_s5_display_line1 visibility=[nuvo_z1_source=="5"] icon="zoom"
+        Text item=nuvo_s5_display_line2 visibility=[nuvo_z1_source=="5"] icon="zoom"
+        Text item=nuvo_s5_display_line3 visibility=[nuvo_z1_source=="5"] icon="zoom"
+        Text item=nuvo_s5_display_line4 visibility=[nuvo_z1_source=="5"] icon="zoom"
+        Text item=nuvo_s5_play_mode visibility=[nuvo_z1_source=="5"] icon="player"
+        Text item=nuvo_s5_track_length visibility=[nuvo_z1_source=="5"]
+        Text item=nuvo_s5_track_position visibility=[nuvo_z1_source=="5"]
+        Text item=nuvo_s5_button_press visibility=[nuvo_z1_source=="5"] icon="none"
+
+        Text item=nuvo_s6_display_line1 visibility=[nuvo_z1_source=="6"] icon="zoom"
+        Text item=nuvo_s6_display_line2 visibility=[nuvo_z1_source=="6"] icon="zoom"
+        Text item=nuvo_s6_display_line3 visibility=[nuvo_z1_source=="6"] icon="zoom"
+        Text item=nuvo_s6_display_line4 visibility=[nuvo_z1_source=="6"] icon="zoom"
+        Text item=nuvo_s6_play_mode visibility=[nuvo_z1_source=="6"] icon="player"
+        Text item=nuvo_s6_track_length visibility=[nuvo_z1_source=="6"]
+        Text item=nuvo_s6_track_position visibility=[nuvo_z1_source=="6"]
+        Text item=nuvo_s6_button_press visibility=[nuvo_z1_source=="6"] icon="none"
+
+        Setpoint item=nuvo_z1_treble label="Treble Adjustment [%d]" minValue=-18 maxValue=18 step=2 visibility=[nuvo_z1_power==ON]
         Setpoint item=nuvo_z1_bass label="Bass Adjustment [%d]" minValue=-18 maxValue=18 step=2 visibility=[nuvo_z1_power==ON]
         Setpoint item=nuvo_z1_balance label="Balance Adjustment [%d]" minValue=-18 maxValue=18 step=2 visibility=[nuvo_z1_power==ON]
-		Switch item=nuvo_z1_loudness visibility=[nuvo_z1_power==ON]
+        Switch item=nuvo_z1_loudness visibility=[nuvo_z1_power==ON]
         Switch item=nuvo_z1_dnd visibility=[nuvo_z1_power==ON]
         Text item=nuvo_z1_lock icon="lock"
         Switch item=nuvo_z1_party visibility=[nuvo_z1_power==ON]
@@ -274,23 +271,29 @@ nuvo.rules:
 ```java
 import java.text.Normalizer
 
+val actions = getActions("nuvo","nuvo:amplifier:myamp")
+
 // send command a custom command to the Nuvo Amplifier
 // see 'NuVo Grand Concerto Serial Control Protocol.pdf' for more command examples
 // commands send through the binding do not need the leading '*'
 
 rule "Nuvo Custom Command example"
 when
-	Item SomeItemTrigger received command
+    Item SomeItemTrigger received command
 then
-	
-	// Send a message to Source 3
-	//nuvo_system_sendcmd.sendCommand("S3MSG\"Hello World\",0,0")
-	
-	// Send a message to Zone 11
-	//nuvo_system_sendcmd.sendCommand("Z11MSG\"Hello World\",0,0")
-	
-	// Select a Favorite (1-12) for Zone 2
-	//nuvo_system_sendcmd.sendCommand("Z2FAV1")
+    if(null === actions) {
+        logInfo("actions", "Actions not found, check thing ID")
+        return
+    }
+
+    // Send a message to Source 3
+    //actions.sendNuvoCommand("S3MSG\"Hello World\",0,0")
+
+    // Send a message to Zone 11
+    //actions.sendNuvoCommand("Z11MSG\"Hello World\",0,0")
+
+    // Select a Favorite (1-12) for Zone 2
+    //actions.sendNuvoCommand("Z2FAV1")
 
 end
 
@@ -302,49 +305,53 @@ end
 
 rule "Load track play info for Source 3"
 when
-	Item Item_Containing_TrackLength received update
+    Item Item_Containing_TrackLength received update
 then
-	// strip off any non-numeric characters and multiply seconds by 10 (Nuvo expects tenths of a second)
-	var int trackLength = Integer::parseInt(Item_Containing_TrackLength.state.toString.replaceAll("[\\D]", "")) * 10
-	
-	// '0' indicates the track is just starting (at position 0), '2' indicates to Nuvo that the track is playing
-	// The Nuvo keypad will now begin counting up the elapsed time displayed (starting from 0)
-	nuvo_system_sendcmd.sendCommand("S3DISPINFO," + trackLength.toString() + ",0,2")
-	
+    if(null === actions) {
+        logInfo("actions", "Actions not found, check thing ID")
+        return
+    }
+    // strip off any non-numeric characters and multiply seconds by 10 (Nuvo expects tenths of a second)
+    var int trackLength = Integer::parseInt(Item_Containing_TrackLength.state.toString.replaceAll("[\\D]", "")) * 10
+
+    // '0' indicates the track is just starting (at position 0), '2' indicates to Nuvo that the track is playing
+    // The Nuvo keypad will now begin counting up the elapsed time displayed (starting from 0)
+    actions.sendNuvoCommand("S3DISPINFO," + trackLength.toString() + ",0,2")
+    
 end
 
 rule "Load track name for Source 3"
 when
-	Item Item_Containing_TrackName changed
+    Item Item_Containing_TrackName changed
 then
-	// The Nuvo keypad cannot display extended ASCII characters (accent, umulat, etc.)
-	// Below we transform extended ASCII chars into their basic counterparts
-	// example: 'La Touché' becomes 'La Touche' and 'Nöel' becomes 'Noel'
-	var trackName = Normalizer::normalize(Item_Containing_TrackName.state.toString, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
+    // The Nuvo keypad cannot display extended ASCII characters (accent, umulat, etc.)
+    // Below we transform extended ASCII chars into their basic counterparts
+    // example: 'La Touché' becomes 'La Touche' and 'Nöel' becomes 'Noel'
+    var trackName = Normalizer::normalize(Item_Containing_TrackName.state.toString, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
 
-	nuvo_s3_display_line4.sendCommand(trackName)
-	nuvo_s3_display_line1.sendCommand("")
-	
+    nuvo_s3_display_line4.sendNuvoCommand(trackName)
+    nuvo_s3_display_line1.sendNuvoCommand("")
+    
 end
 
 rule "Load album name for Source 3"
 when
-	Item Item_Containing_AlbumName changed
+    Item Item_Containing_AlbumName changed
 then
-	// fix extended ASCII chars
-	var albumName = Normalizer::normalize(Item_Containing_AlbumName.state.toString, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
-	
-	nuvo_s3_display_line2.sendCommand(albumName)
+    // fix extended ASCII chars
+    var albumName = Normalizer::normalize(Item_Containing_AlbumName.state.toString, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
+
+    nuvo_s3_display_line2.sendNuvoCommand(albumName)
 end
 
 rule "Load artist name for Source 3"
 when
-	Item Item_Containing_ArtistName changed
+    Item Item_Containing_ArtistName changed
 then
-	// fix extended ASCII chars
-	var artistName = Normalizer::normalize(Item_Containing_ArtistName.state.toString, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
-	
-	nuvo_s3_display_line3.sendCommand(artistName)
+    // fix extended ASCII chars
+    var artistName = Normalizer::normalize(Item_Containing_ArtistName.state.toString, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
+
+    nuvo_s3_display_line3.sendNuvoCommand(artistName)
 end
 
 // In this rule we have three items: Item_Containing_PlayMode, Item_Containing_TrackLength & Item_Containing_TrackPosition
@@ -354,30 +361,35 @@ end
 
 rule "Update play state info for Source 3"
 when
-	Item Item_Containing_PlayMode changed
+    Item Item_Containing_PlayMode changed
 then
-	var playMode = Item_Containing_PlayMode.state.toString()
-	
-	// strip off any non-numeric characters and multiply seconds by 10 (Nuvo expects tenths of a second)
-	var int trackLength = Integer::parseInt(Item_Containing_TrackLength.state.toString.replaceAll("[\\D]", "")) * 10
-	var int trackPosition = Integer::parseInt(Item_Containing_TrackPosition.state.toString.replaceAll("[\\D]", "")) * 10
-	
-	switch playMode {
-		case "Nothing playing": {
-			// when idle, '1' tells Nuvo to display 'idle' on the keypad
-			nuvo_system_sendcmd.sendCommand("S3DISPINFO,0,0,1")
-		}
-		case "Playing": {
-			// when playback starts or resumes, '2' tells Nuvo to display 'playing' on the keypad
-			// trackPosition does not need to be updated continuously, Nuvo will automatically count up the elapsed time displayed on the keypad 
-			nuvo_system_sendcmd.sendCommand("S3DISPINFO," + trackLength.toString() + "," + trackPosition.toString() + ",2")
-		}
-		case "Paused": {
-			// when playback is paused, '3' tells Nuvo to display 'paused' on the keypad and stop counting up the elapsed time
-			// trackPosition should indicate the time elapsed of the track when playback was paused
-			nuvo_system_sendcmd.sendCommand("S3DISPINFO," + trackLength.toString() + "," + trackPosition.toString() + ",3")
-		}
-	}
+    var playMode = Item_Containing_PlayMode.state.toString()
+
+    // strip off any non-numeric characters and multiply seconds by 10 (Nuvo expects tenths of a second)
+    var int trackLength = Integer::parseInt(Item_Containing_TrackLength.state.toString.replaceAll("[\\D]", "")) * 10
+    var int trackPosition = Integer::parseInt(Item_Containing_TrackPosition.state.toString.replaceAll("[\\D]", "")) * 10
+
+    if(null === actions) {
+        logInfo("actions", "Actions not found, check thing ID")
+        return
+    }
+
+    switch playMode {
+        case "Nothing playing": {
+            // when idle, '1' tells Nuvo to display 'idle' on the keypad
+            actions.sendNuvoCommand("S3DISPINFO,0,0,1")
+        }
+        case "Playing": {
+            // when playback starts or resumes, '2' tells Nuvo to display 'playing' on the keypad
+            // trackPosition does not need to be updated continuously, Nuvo will automatically count up the elapsed time displayed on the keypad 
+            actions.sendNuvoCommand("S3DISPINFO," + trackLength.toString() + "," + trackPosition.toString() + ",2")
+        }
+        case "Paused": {
+            // when playback is paused, '3' tells Nuvo to display 'paused' on the keypad and stop counting up the elapsed time
+            // trackPosition should indicate the time elapsed of the track when playback was paused
+            actions.sendNuvoCommand("S3DISPINFO," + trackLength.toString() + "," + trackPosition.toString() + ",3")
+        }
+    }
 end
 
 ```

@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.nuvo.internal.handler.NuvoHandler;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -53,6 +54,11 @@ public class NuvoHandlerFactory extends BaseThingHandlerFactory {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
+    @Activate
+    public NuvoHandlerFactory(final @Reference NuvoStateDescriptionOptionProvider provider) {
+        this.stateDescriptionProvider = provider;
+    }
+
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
@@ -71,14 +77,5 @@ public class NuvoHandlerFactory extends BaseThingHandlerFactory {
 
     protected void unsetSerialPortManager(final SerialPortManager serialPortManager) {
         this.serialPortManager = null;
-    }
-
-    @Reference
-    protected void setDynamicStateDescriptionProvider(NuvoStateDescriptionOptionProvider stateDescriptionProvider) {
-        this.stateDescriptionProvider = stateDescriptionProvider;
-    }
-
-    protected void unsetDynamicStateDescriptionProvider(NuvoStateDescriptionOptionProvider stateDescriptionProvider) {
-        this.stateDescriptionProvider = null;
     }
 }

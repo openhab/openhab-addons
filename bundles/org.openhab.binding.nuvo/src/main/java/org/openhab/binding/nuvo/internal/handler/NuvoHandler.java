@@ -17,6 +17,8 @@ import static org.openhab.binding.nuvo.internal.NuvoBindingConstants.*;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.EventObject;
 import java.util.List;
@@ -46,6 +48,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateOption;
@@ -53,6 +56,7 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.nuvo.internal.NuvoException;
 import org.openhab.binding.nuvo.internal.NuvoStateDescriptionOptionProvider;
+import org.openhab.binding.nuvo.internal.NuvoThingActions;
 import org.openhab.binding.nuvo.internal.communication.NuvoCommand;
 import org.openhab.binding.nuvo.internal.communication.NuvoConnector;
 import org.openhab.binding.nuvo.internal.communication.NuvoEnum;
@@ -74,7 +78,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventListener {
-
     private final Logger logger = LoggerFactory.getLogger(NuvoHandler.class);
 
     private static final long RECON_POLLING_INTERVAL = TimeUnit.SECONDS.toSeconds(60);
@@ -82,21 +85,26 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
     private static final long CLOCK_SYNC_INTERVAL = TimeUnit.HOURS.toSeconds(1);
     private static final long INITIAL_POLLING_DELAY = TimeUnit.SECONDS.toSeconds(30);
     private static final long INITIAL_CLOCK_SYNC_DELAY = TimeUnit.SECONDS.toSeconds(10);
-    // spec says wait 50ms, lets wait 70
-    private static final long SLEEP_BETWEEN_CMD = TimeUnit.MILLISECONDS.toMillis(70);
+    // spec says wait 50ms, min is 100
+    private static final long SLEEP_BETWEEN_CMD = TimeUnit.MILLISECONDS.toMillis(100);
     private static final Unit<Time> API_SECOND_UNIT = SmartHomeUnits.SECOND;
 
     private static final String ZONE = "ZONE";
     private static final String CHANNEL_DELIMIT = "#";
     private static final String UNDEF = "UNDEF";
 
-    private static final Integer ONE = 1;
-    private static final Integer MAX_ZONES = 20;
-    private static final Integer MAX_SRC = 6;
-    private static final Integer MIN_VOLUME = 0;
-    private static final Integer MAX_VOLUME = 79;
-    private static final Integer MIN_EQ = -18;
-    private static final Integer MAX_EQ = 18;
+    private static final int ONE = 1;
+    private static final int MAX_ZONES = 20;
+    private static final int MAX_SRC = 6;
+    private static final int MIN_VOLUME = 0;
+    private static final int MAX_VOLUME = 79;
+    private static final int MIN_EQ = -18;
+    private static final int MAX_EQ = 18;
+
+    private static final Pattern ZONE_PATTERN = Pattern.compile("^ON,SRC(\\d{1}),(MUTE|VOL\\d{1,2}),DND([0-1]),LOCK([0-1])$");
+    private static final Pattern DISP_PATTERN = Pattern.compile("^DISPLINE(\\d{1}),\"(.*)\"$");
+    private static final Pattern DISP_INFO_PATTERN = Pattern.compile("^DISPINFO,DUR(\\d{1,6}),POS(\\d{1,6}),STATUS(\\d{1,2})$");
+    private static final Pattern ZONE_CFG_PATTERN = Pattern.compile("^BASS(.*),TREB(.*),BAL(.*),LOUDCMP([0-1])$");
 
     private @Nullable ScheduledFuture<?> reconnectJob;
     private @Nullable ScheduledFuture<?> pollingJob;
@@ -107,13 +115,13 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
 
     private @Nullable NuvoConnector connector;
 
-    private Integer numZones = 1;
+    private int numZones = 1;
     List<Integer> activeZones = new ArrayList<Integer>(1);
 
     // A state option list for the source labels
     List<StateOption> sourceLabels = new ArrayList<>();
 
-    private Long lastEventReceived = System.currentTimeMillis();
+    private long lastEventReceived = System.currentTimeMillis();
 
     private Object sequenceLock = new Object();
 
@@ -133,8 +141,6 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
 
     @Override
     public void initialize() {
-        logger.debug("Start initializing handler for thing {}", getThing().getUID());
-
         NuvoThingConfiguration config = getConfigAs(NuvoThingConfiguration.class);
 
         // Check configuration settings
@@ -154,7 +160,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
             }
         }
 
-        if (config.clockSync != null && config.clockSync == 1) {
+        if (config.clockSync) {
             scheduleClockSyncJob();
         }
 
@@ -178,11 +184,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                         .collect(Collectors.toList());
 
                 zonesToRemove.forEach(zone -> {
-                    if (channels.removeIf(c -> (c.getUID().getId().contains("zone" + zone.toString())))) {
-                        logger.debug("Removed channels for zone: {}", zone);
-                    } else {
-                        logger.debug("Could NOT remove channels for zone: {}", zone);
-                    }
+                    channels.removeIf(c -> (c.getUID().getId().contains("zone" + zone.toString())));
                 });
                 updateThing(editThing().withChannels(channels).build());
             }
@@ -191,18 +193,28 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
             scheduleReconnectJob();
             schedulePollingJob();
         }
-
-        logger.debug("Finished initializing!");
     }
 
     @Override
     public void dispose() {
-        logger.debug("Disposing handler for thing {}", getThing().getUID());
         cancelReconnectJob();
         cancelPollingJob();
         cancelClockSyncJob();
         closeConnection();
         super.dispose();
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singletonList(NuvoThingActions.class);
+    }
+
+    public void handleRawCommand(@Nullable String command) {
+        try {
+            connector.sendCommand(command.toString());
+        } catch (NuvoException e) {
+            logger.warn("Nuvo Command: {} failed", command);
+        }
     }
 
     /**
@@ -221,12 +233,12 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
         String channelType = channelSplit[1];
 
         if (getThing().getStatus() != ThingStatus.ONLINE) {
-            logger.debug("Thing is not ONLINE; command {} from channel {} is ignored", command, channel);
+            logger.warn("Thing is not ONLINE; command {} from channel {} is ignored", command, channel);
             return;
         }
 
         if (!connector.isConnected()) {
-            logger.debug("Command {} from channel {} is ignored: connection not established", command, channel);
+            logger.warn("Command {} from channel {} is ignored: connection not established", command, channel);
             return;
         }
 
@@ -242,21 +254,21 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                         break;
                     case CHANNEL_TYPE_SOURCE:
                         if (command instanceof DecimalType) {
-                            Integer value = ((DecimalType) command).intValue();
+                            int value = ((DecimalType) command).intValue();
                             if (value >= ONE && value <= MAX_SRC) {
                                 logger.debug("Got source command {} zone {}", value, target);
-                                connector.sendCommand(target, NuvoCommand.SOURCE, value.toString());
+                                connector.sendCommand(target, NuvoCommand.SOURCE, String.valueOf(value));
                             }
                         }
                         break;
                     case CHANNEL_TYPE_VOLUME:
                         if (command instanceof PercentType) {
-                            Integer value = (MAX_VOLUME
+                            int value = (MAX_VOLUME
                                     - (int) Math.round(
                                             ((PercentType) command).doubleValue() / 100.0 * (MAX_VOLUME - MIN_VOLUME))
                                     + MIN_VOLUME);
                             logger.debug("Got volume command {} zone {}", value, target);
-                            connector.sendCommand(target, NuvoCommand.VOLUME, value.toString());
+                            connector.sendCommand(target, NuvoCommand.VOLUME, String.valueOf(value));
                         }
                         break;
                     case CHANNEL_TYPE_MUTE:
@@ -268,25 +280,25 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                         break;
                     case CHANNEL_TYPE_TREBLE:
                         if (command instanceof DecimalType) {
-                            Integer value = ((DecimalType) command).intValue();
+                            int value = ((DecimalType) command).intValue();
                             if (value >= MIN_EQ && value <= MAX_EQ && value % 2 == 0) {
                                 logger.debug("Got treble command {} zone {}", value, target);
-                                connector.sendCfgCommand(target, NuvoCommand.TREBLE, value.toString());
+                                connector.sendCfgCommand(target, NuvoCommand.TREBLE, String.valueOf(value));
                             }
                         }
                         break;
                     case CHANNEL_TYPE_BASS:
                         if (command instanceof DecimalType) {
-                            Integer value = ((DecimalType) command).intValue();
+                            int value = ((DecimalType) command).intValue();
                             if (value >= MIN_EQ && value <= MAX_EQ && value % 2 == 0) {
                                 logger.debug("Got bass command {} zone {}", value, target);
-                                connector.sendCfgCommand(target, NuvoCommand.BASS, value.toString());
+                                connector.sendCfgCommand(target, NuvoCommand.BASS, String.valueOf(value));
                             }
                         }
                         break;
                     case CHANNEL_TYPE_BALANCE:
                         if (command instanceof DecimalType) {
-                            Integer value = ((DecimalType) command).intValue();
+                            int value = ((DecimalType) command).intValue();
                             if (value >= MIN_EQ && value <= MAX_EQ && value % 2 == 0) {
                                 logger.debug("Got balance command {} zone {}", value, target);
                                 connector.sendCfgCommand(target, NuvoCommand.BALANCE,
@@ -349,9 +361,6 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                             connector.sendCommand(NuvoCommand.PAGE_OFF);
                         }
                         break;
-                    case CHANNEL_TYPE_SENDCMD:
-                        connector.sendCommand(command.toString());
-                        break;
                 }
             } catch (NuvoException e) {
                 logger.warn("Command {} from channel {} failed: {}", command, channel, e.getMessage());
@@ -406,7 +415,6 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
         if (this.getThing().getStatus() == ThingStatus.OFFLINE) {
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, this.versionString);
         }
-        Pattern p;
 
         switch (type) {
             case NuvoConnector.TYPE_VERSION:
@@ -445,27 +453,21 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
 
                 if (updateData.contains("DISPLINE")) {
                     // example: DISPLINE2,"Play My Song (Featuring Dee Ajayi)"
-                    p = Pattern.compile("^DISPLINE(\\d{1}),\"(.*)\"$");
-
-                    try {
-                        Matcher matcher = p.matcher(updateData);
-                        matcher.find();
+                    Matcher matcher = DISP_PATTERN.matcher(updateData);
+                    if (matcher.find()) {
                         updateChannelState(targetSource, CHANNEL_DISPLAY_LINE + matcher.group(1), matcher.group(2));
-                    } catch (IllegalStateException e) {
+                    } else {
                         logger.debug("no match on message: {}", updateData);
                     }
                 } else if (updateData.contains("DISPINFO,")) {
                     // example: DISPINFO,DUR0,POS70,STATUS2 (DUR and POS are expressed in tenths of a second)
                     //6 places(tenths of a second)-> max 999,999 /10/60/60/24 = 1.15 days
-                    p = Pattern.compile("^DISPINFO,DUR(\\d{1,6}),POS(\\d{1,6}),STATUS(\\d{1,2})$");
-                    
-                    try {
-                        Matcher matcher = p.matcher(updateData);
-                        matcher.find();
+                    Matcher matcher = DISP_INFO_PATTERN.matcher(updateData);
+                    if (matcher.find()) {
                         updateChannelState(targetSource, CHANNEL_TRACK_LENGTH, matcher.group(1));
                         updateChannelState(targetSource, CHANNEL_TRACK_POSITION, matcher.group(2));
                         updateChannelState(targetSource, CHANNEL_PLAY_MODE, matcher.group(3));
-                    } catch (IllegalStateException e) {
+                    } else {
                         logger.debug("no match on message: {}", updateData);
                     }
                 } else if (updateData.contains("NAME\"") && sourceLabels.size() <= MAX_SRC) {
@@ -488,12 +490,8 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                     updateChannelState(targetZone, CHANNEL_TYPE_POWER, NuvoCommand.OFF.getValue());
                     updateChannelState(targetZone, CHANNEL_TYPE_SOURCE, UNDEF);
                 } else {
-                    p = Pattern.compile("^ON,SRC(\\d{1}),(MUTE|VOL\\d{1,2}),DND([0-1]),LOCK([0-1])$");
-
-                    try {
-                        Matcher matcher = p.matcher(updateData);
-                        matcher.find();
-
+                    Matcher matcher = ZONE_PATTERN.matcher(updateData);
+                    if (matcher.find()) {
                         updateChannelState(targetZone, CHANNEL_TYPE_POWER, NuvoCommand.ON.getValue());
                         updateChannelState(targetZone, CHANNEL_TYPE_SOURCE, matcher.group(1));
 
@@ -507,7 +505,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                         updateChannelState(targetZone, CHANNEL_TYPE_DND,
                                 "1".equals(matcher.group(3)) ? NuvoCommand.ON.getValue() : NuvoCommand.OFF.getValue());
                         updateChannelState(targetZone, CHANNEL_TYPE_LOCK, matcher.group(4));
-                    } catch (IllegalStateException e) {
+                    } else {
                         logger.debug("no match on message: {}", updateData);
                     }
                 }
@@ -521,18 +519,15 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
             case NuvoConnector.TYPE_ZONE_CONFIG:
                 logger.debug("Zone Configuration: Zone: {} - Value: {}", key, updateData);
                 // example: BASS1,TREB-2,BALR2,LOUDCMP1
-                p = Pattern.compile("^BASS(.*),TREB(.*),BAL(.*),LOUDCMP([0-1])$");
-
-                try {
-                    Matcher matcher = p.matcher(updateData);
-                    matcher.find();
+                Matcher matcher = ZONE_CFG_PATTERN.matcher(updateData);
+                if (matcher.find()) {
                     updateChannelState(NuvoEnum.ZONE_MAP.get(key), CHANNEL_TYPE_BASS, matcher.group(1));
                     updateChannelState(NuvoEnum.ZONE_MAP.get(key), CHANNEL_TYPE_TREBLE, matcher.group(2));
                     updateChannelState(NuvoEnum.ZONE_MAP.get(key), CHANNEL_TYPE_BALANCE,
                             NuvoStatusCodes.getBalanceFromStr(matcher.group(3)));
                     updateChannelState(NuvoEnum.ZONE_MAP.get(key), CHANNEL_TYPE_LOUDNESS,
                             "1".equals(matcher.group(4)) ? NuvoCommand.ON.getValue() : NuvoCommand.OFF.getValue());
-                } catch (IllegalStateException e) {
+                } else {
                     logger.debug("no match on message: {}", updateData);
                 }
                 break;
@@ -557,7 +552,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                 if (openConnection()) {
                     synchronized (sequenceLock) {
                         try {
-                            Long prevUpdateTime = lastEventReceived;
+                            long prevUpdateTime = lastEventReceived;
 
                             connector.sendCommand(NuvoCommand.GET_CONTROLLER_VERSION);
 
@@ -588,7 +583,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                             });
 
                             // prevUpdateTime should have changed if a zone update was received
-                            if (prevUpdateTime.equals(lastEventReceived)) {
+                            if (prevUpdateTime == lastEventReceived) {
                                 error = "Controller not responding to status requests";
                             } else {
                                 // Put the source labels on all active zones
@@ -622,7 +617,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
      */
     private void cancelReconnectJob() {
         ScheduledFuture<?> reconnectJob = this.reconnectJob;
-        if (reconnectJob != null && !reconnectJob.isCancelled()) {
+        if (reconnectJob != null) {
             reconnectJob.cancel(true);
             this.reconnectJob = null;
         }
@@ -667,7 +662,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
      */
     private void cancelPollingJob() {
         ScheduledFuture<?> pollingJob = this.pollingJob;
-        if (pollingJob != null && !pollingJob.isCancelled()) {
+        if (pollingJob != null) {
             pollingJob.cancel(true);
             this.pollingJob = null;
         }
@@ -760,7 +755,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                 break;
             case CHANNEL_TRACK_LENGTH:
             case CHANNEL_TRACK_POSITION:
-                state = new QuantityType<Time>(Integer.parseInt(value) / 10, this.API_SECOND_UNIT);
+                state = new QuantityType<Time>(Integer.parseInt(value) / 10, NuvoHandler.API_SECOND_UNIT);
                 break;
             default:
                 break;
@@ -784,7 +779,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                 connector.sendCommand(target, NuvoCommand.PREV);
             }
         } else {
-            logger.debug("Unknown control command: {}", command);
+            logger.warn("Unknown control command: {}", command);
         }
     }
 }

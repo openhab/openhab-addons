@@ -13,6 +13,7 @@
 package org.openhab.binding.nuvo.internal.configuration;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link NuvoThingConfiguration} class contains fields mapping thing configuration parameters.
@@ -23,8 +24,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class NuvoThingConfiguration {
 
     public @NonNullByDefault({}) String serialPort;
-    public @NonNullByDefault({}) String host;
-    public @NonNullByDefault({}) Integer port;
-    public @NonNullByDefault({}) Integer numZones;
-    public @NonNullByDefault({}) Integer clockSync;
+    public @Nullable String host;
+    public @Nullable Integer port;
+    public @Nullable Integer numZones;
+    public boolean clockSync;
 }
