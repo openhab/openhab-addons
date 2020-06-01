@@ -87,5 +87,4 @@ public class TestGetBytes {
         ParadoxUtil.printByteArray("Expected =", EXPECTED_MEMORY_PAYLOAD);
         ParadoxUtil.printByteArray("Result   =", bytes);
     }
-
 }

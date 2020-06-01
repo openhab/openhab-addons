@@ -61,13 +61,13 @@ Currently binding supports the following panels: EVO192, EVO48(not tested), EVO9
 | disarmEnabled     | Optional boolean flag. Valid for partitions. When set to true the command DISARM will be allowed for the partition where the flag is enabled. CAUTION: Enabling DISARM command can be dangerous. If attacker can gain access to your OpenHAB (via API or UI), this command can be used to disarm your armed partition (area) |
 
 ### Panel channels:
-| Channel                  | Type     | Description                                                                               |
-|--------------------------|----------|-------------------------------------------------------------------------------------------|
-| state                    | String   | Overall panel state                                                                       |
-| inputVoltage             | Number   | Supply Voltage                                                                          |
-| boardVoltage             | Number   | Board DC Voltage                                                                          |
-| batteryVoltage           | Number   | Battery Voltage                                                                           |
-| panelTime                | DateTime | Panel internal time (Timezone is set to default zone of the Java virtual machine)         |
+| Channel                  | Type                       | Description                                                                               |
+|--------------------------|----------------------------|-------------------------------------------------------------------------------------------|
+| state                    | String                     | Overall panel state                                                                       |
+| inputVoltage             | Number:ElectricPotential   | Supply Voltage                                                                            |
+| boardVoltage             | Number:ElectricPotential   | Board DC Voltage                                                                          |
+| batteryVoltage           | Number:ElectricPotential   | Battery Voltage                                                                           |
+| panelTime                | DateTime                   | Panel internal time (Timezone is set to default zone of the Java virtual machine)         |
 
 ### Partition channels:
 

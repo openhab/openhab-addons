@@ -142,7 +142,6 @@ public enum CommunicationState implements IResponseReceiver {
             logger.debug("Phase {}", this);
             byte[] message4 = new byte[37];
             message4[0] = 0x72;
-            // message4[message4.length - 1] = 0x72;
             ParadoxIPPacket packet = new ParadoxIPPacket(message4, true)
                     .setMessageType(HeaderMessageType.SERIAL_PASSTHRU_REQUEST);
             sendLogonPhasePacket(communicator, packet);

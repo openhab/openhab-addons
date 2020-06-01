@@ -50,8 +50,8 @@ public class EncryptionHandler {
     private static final int PAYLOAD_RATE_LENGTH = 16;
     private static final int ROUNDS = 14;
 
-    private static int[] lTable = new int[TABLE_SIZE];
-    private static int[] aTable = new int[TABLE_SIZE];
+    private static final int[] lTable = new int[TABLE_SIZE];
+    private static final int[] aTable = new int[TABLE_SIZE];
 
     private static EncryptionHandler instance = new EncryptionHandler(new byte[] {});
     static {
@@ -79,7 +79,7 @@ public class EncryptionHandler {
         lTable[0] = 0;
     }
 
-    private int[] expandedKey = new int[KEY_LENGTH];
+    private final int[] expandedKey = new int[KEY_LENGTH];
 
     private EncryptionHandler(byte[] newKey) {
         if (newKey.length > 0) {

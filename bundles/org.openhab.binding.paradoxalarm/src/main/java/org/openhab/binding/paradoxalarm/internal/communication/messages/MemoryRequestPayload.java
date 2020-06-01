@@ -15,6 +15,7 @@ package org.openhab.binding.paradoxalarm.internal.communication.messages;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Konstantin Polihronov - Initial contribution
  */
+@NonNullByDefault
 public abstract class MemoryRequestPayload implements IPayload {
 
     private static final int BUFFER_LENGTH = 8;

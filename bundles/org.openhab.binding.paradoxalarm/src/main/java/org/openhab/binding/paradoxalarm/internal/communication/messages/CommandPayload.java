@@ -14,11 +14,14 @@ package org.openhab.binding.paradoxalarm.internal.communication.messages;
 
 import java.nio.ByteBuffer;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link CommandPayload} Class that structures the payload for partition commands.
  *
  * @author Konstantin Polihronov - Initial contribution
  */
+@NonNullByDefault
 public class CommandPayload implements IPayload {
 
     private static final int BYTES_LENGTH = 15;

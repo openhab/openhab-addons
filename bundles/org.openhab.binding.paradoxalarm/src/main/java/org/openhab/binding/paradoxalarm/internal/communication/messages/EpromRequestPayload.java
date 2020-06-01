@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.paradoxalarm.internal.communication.messages;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxException;
 import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
 import org.slf4j.Logger;
@@ -22,6 +23,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Konstantin Polihronov - Initial contribution
  */
+@NonNullByDefault
 public class EpromRequestPayload extends MemoryRequestPayload implements IPayload {
 
     private final Logger logger = LoggerFactory.getLogger(EpromRequestPayload.class);

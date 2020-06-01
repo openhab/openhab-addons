@@ -15,6 +15,7 @@ package org.openhab.binding.paradoxalarm.internal.communication.messages;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.paradoxalarm.internal.communication.crypto.EncryptionHandler;
 import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
 
@@ -23,6 +24,7 @@ import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
  *
  * @author Konstantin Polihronov - Initial contribution
  */
+@NonNullByDefault
 public class ParadoxIPPacket implements IPPacket {
 
     public static final byte[] EMPTY_PAYLOAD = new byte[0];
