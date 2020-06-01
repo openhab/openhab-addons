@@ -36,9 +36,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class MonopriceAudioConnector {
-
-    private final Logger logger = LoggerFactory.getLogger(MonopriceAudioConnector.class);
-
     public static final String READ_ERROR = "Command Error.";
 
     // Message types
@@ -46,6 +43,10 @@ public abstract class MonopriceAudioConnector {
     // Special keys used by the binding
     public static final String KEY_ERROR = "error";
     public static final String MSG_VALUE_ON = "on";
+
+    private static final Pattern PATTERN = Pattern.compile("^.*#>(\\d{22})$", Pattern.DOTALL);
+
+    private final Logger logger = LoggerFactory.getLogger(MonopriceAudioConnector.class);
 
     /** The output stream */
     protected @Nullable OutputStream dataOut;
@@ -152,7 +153,6 @@ public abstract class MonopriceAudioConnector {
         try {
             return dataIn.read(dataBuffer);
         } catch (IOException e) {
-            logger.debug("readInput failed: {}", e.getMessage());
             throw new MonopriceAudioException("readInput failed: " + e.getMessage());
         }
     }
@@ -192,7 +192,7 @@ public abstract class MonopriceAudioConnector {
     public void sendCommand(MonopriceAudioZone zone, MonopriceAudioCommand cmd, @Nullable Integer value)
             throws MonopriceAudioException {
         String messageStr = MonopriceAudioCommand.BEGIN_CMD.getValue() + zone.getZoneId() + cmd.getValue();
-        byte[] message = new byte[0];
+        byte[] message;
 
         if (cmd == MonopriceAudioCommand.QUERY) {
             // query special case - redo messageStr (ie: ? + zoneId)
@@ -228,10 +228,8 @@ public abstract class MonopriceAudioConnector {
             dataOut.write(message);
             dataOut.flush();
         } catch (IOException e) {
-            logger.debug("Send command \"{}\" failed: {}", messageStr, e.getMessage());
             throw new MonopriceAudioException("Send command \"" + cmd.getValue() + "\" failed: " + e.getMessage());
         }
-        logger.debug("Send command \"{}\" succeeded", messageStr);
     }
 
     /**
@@ -258,7 +256,7 @@ public abstract class MonopriceAudioConnector {
      * @param incomingMessage the received message
      */
     public void handleIncomingMessage(byte[] incomingMessage) {
-        String message = new String(incomingMessage).trim();
+        String message = new String(incomingMessage, StandardCharsets.US_ASCII).trim();
 
         logger.debug("handleIncomingMessage: {}", message);
 
@@ -268,14 +266,11 @@ public abstract class MonopriceAudioConnector {
         }
 
         // Amp controller sends status string: #>1200010000130809100601
-        Pattern p = Pattern.compile("^.*#>(\\d{22})$", Pattern.DOTALL);
-
-        try {
-            Matcher matcher = p.matcher(message);
-            matcher.find();
+        Matcher matcher = PATTERN.matcher(message);
+        if (matcher.find()) {
             // pull out just the digits and send them as an event
             dispatchKeyValue(KEY_ZONE_UPDATE, matcher.group(1));
-        } catch (IllegalStateException e) {
+        } else {
             logger.debug("no match on message: {}", message);
         }
     }
@@ -288,8 +283,6 @@ public abstract class MonopriceAudioConnector {
      */
     private void dispatchKeyValue(String key, String value) {
         MonopriceAudioMessageEvent event = new MonopriceAudioMessageEvent(this, key, value);
-        for (int i = 0; i < listeners.size(); i++) {
-            listeners.get(i).onNewMessageEvent(event);
-        }
+        listeners.forEach(l -> l.onNewMessageEvent(event));
     }
 }

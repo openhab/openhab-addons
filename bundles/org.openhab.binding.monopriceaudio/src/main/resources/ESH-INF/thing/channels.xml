@@ -8,7 +8,7 @@
 	<thing-type id="amplifier">
 		<label>Whole House Amplifier</label>
 		<description>
-			A multi-zone whole house amplifier system
+			A Multi-zone Whole House Amplifier System
 		</description>
 
 		<channel-groups>
@@ -112,7 +112,7 @@
 					Together)</description>
 				<default>6</default>
 			</parameter>
-			<parameter name="pollingInterval" type="integer" min="5" max="60" required="false">
+			<parameter name="pollingInterval" type="integer" min="5" max="60" unit="s" required="false">
 				<label>Polling Interval</label>
 				<description>Configures How Often to Poll the Controller to Check for Zone Updates (5-60; Default 15)</description>
 				<default>15</default>
@@ -495,6 +495,7 @@
 		<item-type>Number</item-type>
 		<label>Source Input</label>
 		<description>Select the Source Input</description>
+		<state min="1" max="6"/>
 	</channel-type>
 
 	<channel-type id="treble">

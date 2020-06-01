@@ -13,6 +13,7 @@
 package org.openhab.binding.monopriceaudio.internal.configuration;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link MonopriceAudioThingConfiguration} class contains fields mapping thing configuration parameters.
@@ -21,18 +22,17 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class MonopriceAudioThingConfiguration {
-
-    public @NonNullByDefault({}) Integer numZones;
-    public @NonNullByDefault({}) Integer pollingInterval;
+    public @Nullable Integer numZones;
+    public @Nullable Integer pollingInterval;
     public @NonNullByDefault({}) String serialPort;
-    public @NonNullByDefault({}) String host;
-    public @NonNullByDefault({}) Integer port;
-    public @NonNullByDefault({}) String ignoreZones;
-    public @NonNullByDefault({}) Integer initialAllVolume;
-    public @NonNullByDefault({}) String inputLabel1;
-    public @NonNullByDefault({}) String inputLabel2;
-    public @NonNullByDefault({}) String inputLabel3;
-    public @NonNullByDefault({}) String inputLabel4;
-    public @NonNullByDefault({}) String inputLabel5;
-    public @NonNullByDefault({}) String inputLabel6;
+    public @Nullable String host;
+    public @Nullable Integer port;
+    public @Nullable String ignoreZones;
+    public @Nullable Integer initialAllVolume;
+    public @Nullable String inputLabel1;
+    public @Nullable String inputLabel2;
+    public @Nullable String inputLabel3;
+    public @Nullable String inputLabel4;
+    public @Nullable String inputLabel5;
+    public @Nullable String inputLabel6;
 }

@@ -49,29 +49,6 @@ public enum MonopriceAudioZone {
 
     private String zoneId;
 
-    // make a map to enable lookup by the zone id value
-    public static final Map<String, MonopriceAudioZone> ZONE_MAP = new HashMap<>();
-    static {
-        ZONE_MAP.put(ZONE1.getZoneId(), ZONE1);
-        ZONE_MAP.put(ZONE2.getZoneId(), ZONE2);
-        ZONE_MAP.put(ZONE3.getZoneId(), ZONE3);
-        ZONE_MAP.put(ZONE4.getZoneId(), ZONE4);
-        ZONE_MAP.put(ZONE5.getZoneId(), ZONE5);
-        ZONE_MAP.put(ZONE6.getZoneId(), ZONE6);
-        ZONE_MAP.put(ZONE7.getZoneId(), ZONE7);
-        ZONE_MAP.put(ZONE8.getZoneId(), ZONE8);
-        ZONE_MAP.put(ZONE9.getZoneId(), ZONE9);
-        ZONE_MAP.put(ZONE10.getZoneId(), ZONE10);
-        ZONE_MAP.put(ZONE11.getZoneId(), ZONE11);
-        ZONE_MAP.put(ZONE12.getZoneId(), ZONE12);
-        ZONE_MAP.put(ZONE13.getZoneId(), ZONE13);
-        ZONE_MAP.put(ZONE14.getZoneId(), ZONE14);
-        ZONE_MAP.put(ZONE15.getZoneId(), ZONE15);
-        ZONE_MAP.put(ZONE16.getZoneId(), ZONE16);
-        ZONE_MAP.put(ZONE17.getZoneId(), ZONE17);
-        ZONE_MAP.put(ZONE18.getZoneId(), ZONE18);
-    }
-
     // make a map to enable lookup of controller zone id by binding zone id (1-18)
     public static final Map<String, String> BINDING_ZONE_MAP = new HashMap<>();
     static {

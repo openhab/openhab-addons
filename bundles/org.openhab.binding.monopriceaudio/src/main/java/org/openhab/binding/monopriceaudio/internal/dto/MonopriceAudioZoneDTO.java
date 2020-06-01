@@ -10,31 +10,28 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.monopriceaudio.internal.communication;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
+package org.openhab.binding.monopriceaudio.internal.dto;
 
 /**
  * Represents the data elements of a single zone of the Monoprice Whole House Amplifier
  *
  * @author Michael Lobstein - Initial contribution
  */
-@NonNullByDefault
-public class MonopriceAudioZoneData {
+public class MonopriceAudioZoneDTO {
 
-    private String zone = "";
-    private String page = "";
-    private String power = "";
-    private String mute = "";
-    private String dnd = "";
-    private String volume = "";
-    private String treble = "";
-    private String bass = "";
-    private String balance = "";
-    private String source = "";
-    private String keypad = "";
+    private String zone;
+    private String page;
+    private String power;
+    private String mute;
+    private String dnd;
+    private String volume;
+    private String treble;
+    private String bass;
+    private String balance;
+    private String source;
+    private String keypad;
 
-    public MonopriceAudioZoneData() {
+    public MonopriceAudioZoneDTO() {
     }
 
     public void setZone(String zone) {

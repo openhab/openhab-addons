@@ -37,8 +37,8 @@ public class MonopriceAudioIpConnector extends MonopriceAudioConnector {
 
     private final Logger logger = LoggerFactory.getLogger(MonopriceAudioIpConnector.class);
 
-    private String address;
-    private int port;
+    private @Nullable String address;
+    private @Nullable Integer port;
 
     private @Nullable Socket clientSocket;
 
@@ -48,7 +48,7 @@ public class MonopriceAudioIpConnector extends MonopriceAudioConnector {
      * @param address the IP address of the serial over IP device
      * @param port the TCP port to be used
      */
-    public MonopriceAudioIpConnector(String address, Integer port) {
+    public MonopriceAudioIpConnector(@Nullable String address, @Nullable Integer port) {
         this.address = address;
         this.port = port;
     }
@@ -74,7 +74,6 @@ public class MonopriceAudioIpConnector extends MonopriceAudioConnector {
             logger.debug("IP connection opened");
         } catch (IOException | SecurityException | IllegalArgumentException e) {
             setConnected(false);
-            logger.warn("Opening IP connection failed: {}", e.getMessage());
             throw new MonopriceAudioException("Opening IP connection failed: " + e.getMessage());
         }
     }
@@ -121,7 +120,6 @@ public class MonopriceAudioIpConnector extends MonopriceAudioConnector {
         } catch (SocketTimeoutException e) {
             return 0;
         } catch (IOException e) {
-            logger.debug("readInput failed: {}", e.getMessage());
             throw new MonopriceAudioException("readInput failed: " + e.getMessage());
         }
     }
