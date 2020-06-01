@@ -20,8 +20,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -73,6 +71,8 @@ import com.google.gson.GsonBuilder;
 @NonNullByDefault
 public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListener {
     private final Logger logger = LoggerFactory.getLogger(MagentaTVHandler.class);
+    private static final String EMPTY_CRED = "***";
+
     protected final MagentaTVConfiguration thingConfig = new MagentaTVConfiguration();
     private final Gson gson;
     protected final MagentaTVNetwork network;
@@ -81,8 +81,9 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
 
     private String thingId = "";
     private volatile int idRefresh = 0;
-    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private @Nullable ScheduledFuture<?> initializeJob;
     private @Nullable ScheduledFuture<?> pairingWatchdogJob;
+    private @Nullable ScheduledFuture<?> renewEventJob;
 
     /**
      * Constructor, save bindingConfig (services as default for thingConfig)
@@ -98,14 +99,6 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                 .registerTypeAdapter(OAuthTokenResponse.class, new MRProgramStatusInstanceCreator())
                 .registerTypeAdapter(OAuthAutenhicateResponse.class, new MRShortProgramInfoInstanceCreator())
                 .registerTypeAdapter(OAuthAutenhicateResponse.class, new MRPayEventInstanceCreator()).create();
-
-        // setup background device check
-        scheduler.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                renewEventSubscription();
-            }
-        }, 2, 5, TimeUnit.MINUTES);
     }
 
     /**
@@ -121,44 +114,92 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
         String label = getThing().getLabel();
         thingId = label != null ? label : "";
         updateStatus(ThingStatus.UNKNOWN);
-        scheduler.schedule(() -> {
-            String errorMessage = "";
-            try {
-                thingConfig.fromProperties(getThing().getProperties());
-                thingConfig.initializeConfig(getConfig().getProperties());
-                thingId = thingConfig.getFriendlyName();
-                if (thingConfig.getUDN().isEmpty()) {
-                    // get UDN from device name
-                    String uid = this.getThing().getUID().getAsString();
-                    thingConfig.setUDN(StringUtils.substringAfterLast(uid, ":"));
-                }
-                if (thingConfig.getMacAddress().isEmpty()) {
-                    // get MAC address from UDN (last 12 digits)
-                    String macAddress = StringUtils.substringAfterLast(thingConfig.getUDN(), "_");
-                    if (macAddress.isEmpty()) {
-                        macAddress = StringUtils.substringAfterLast(thingConfig.getUDN(), "-");
-                    }
-                    thingConfig.setMacAddress(macAddress);
-                }
 
-                logger.info("{}: Authenticate Account {}", thingId, thingConfig.getAccountName());
-                control = new MagentaTVControl(thingConfig, network);
-                thingConfig.updateConfig(control.getConfig().getProperties()); // get network parameters from control
-                authenticateUser();
+        thingConfig.fromProperties(getThing().getProperties());
+        thingConfig.initializeConfig(getConfig().getProperties());
+        thingId = thingConfig.getFriendlyName();
 
-                connectReceiver(); // throws MagentaTVException on error
+        try {
+            initializeJob = scheduler.schedule(() -> {
+                initializeThing();
+            }, 5, TimeUnit.SECONDS);
+        } catch (RuntimeException e) {
+            logger.warn("Unable to schedule thing initialization", e);
+        }
+    }
 
-                // change to ThingStatus.ONLINE will be done when the pairing result is received
-                // (see onPairingResult())
-            } catch (MagentaTVException e) {
-                errorMessage = e.toString();
-            } finally {
-                if (!errorMessage.isEmpty()) {
-                    logger.debug("{}: {}", thingId, errorMessage);
-                    setOnlineState(ThingStatus.OFFLINE, errorMessage);
-                }
+    private void initializeThing() {
+        String errorMessage = "";
+        try {
+            if (thingConfig.getUDN().isEmpty()) {
+                // get UDN from device name
+                String uid = this.getThing().getUID().getAsString();
+                thingConfig.setUDN(StringUtils.substringAfterLast(uid, ":"));
             }
-        }, 5, TimeUnit.SECONDS);
+            if (thingConfig.getMacAddress().isEmpty()) {
+                // get MAC address from UDN (last 12 digits)
+                String macAddress = StringUtils.substringAfterLast(thingConfig.getUDN(), "_");
+                if (macAddress.isEmpty()) {
+                    macAddress = StringUtils.substringAfterLast(thingConfig.getUDN(), "-");
+                }
+                thingConfig.setMacAddress(macAddress);
+            }
+            control = new MagentaTVControl(thingConfig, network);
+
+            // Check for emoty credentials (e.g. missing in .things file)
+            String account = thingConfig.getAccountName();
+            if (thingConfig.getUserID().isEmpty()
+                    && (thingConfig.getAccountName().isEmpty() || account.equals(EMPTY_CRED))) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Missing credentials for login!");
+                return;
+            }
+
+            logger.info("{}: Authenticate account {}", thingId, account);
+            thingConfig.updateConfig(control.getConfig().getProperties()); // get network parameters from control
+            authenticateUser();
+            connectReceiver(); // throws MagentaTVException on error
+
+            // setup background device check
+            renewEventJob = scheduler.scheduleWithFixedDelay(new Runnable() {
+                @Override
+                public void run() {
+                    renewEventSubscription();
+                }
+            }, 2, 5, TimeUnit.MINUTES);
+
+            // change to ThingStatus.ONLINE will be done when the pairing result is received
+            // (see onPairingResult())
+        } catch (MagentaTVException e) {
+            errorMessage = e.toString();
+        } catch (RuntimeException e) {
+            logger.warn("{}: Exception on initialization", thingId, e);
+        } finally {
+            if (!errorMessage.isEmpty()) {
+                logger.debug("{}: {}", thingId, errorMessage);
+                setOnlineState(ThingStatus.OFFLINE, errorMessage);
+            }
+        }
+    }
+
+    /**
+     * This routine is called every time the Thing configuration has been changed (e.g. PaperUI)
+     */
+    @Override
+    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
+        logger.debug("{}: Thing config updated, re-initialize", thingId);
+        cancelAllJobs();
+        if (configurationParameters.containsKey(PROPERTY_ACCT_NAME)) {
+            String newAccount = (String) configurationParameters.get(PROPERTY_ACCT_NAME);
+            if (!newAccount.equals(EMPTY_CRED)) {
+                // new account info, need to renew userId
+                thingConfig.setUserID("");
+            }
+        }
+
+        super.handleConfigurationUpdate(configurationParameters);
+
+        // initializeThing();
     }
 
     /**
@@ -332,24 +373,29 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
      * @throws MagentaTVException
      */
     private void authenticateUser() throws MagentaTVException {
-        if (thingConfig.getUserID().isEmpty()) {
+        String userId = thingConfig.getUserID();
+        if (userId.isEmpty()) {
             // run OAuth authentication, this finally provides the userID
-            String userID = control.authenticateUser(thingConfig.getAccountName(), thingConfig.getAccountPassword());
-            thingConfig.setUserID(userID);
+            userId = control.authenticateUser(thingConfig.getAccountName(), thingConfig.getAccountPassword());
 
             // Update thing configuration (persistent) - remove credentials, add userID
             Configuration configuration = this.getConfig();
             configuration.remove(PROPERTY_ACCT_NAME);
             configuration.remove(PROPERTY_ACCT_PWD);
             configuration.remove(PROPERTY_USERID);
-            configuration.put(PROPERTY_ACCT_NAME, "***");
-            configuration.put(PROPERTY_ACCT_PWD, "***");
-            configuration.put(PROPERTY_USERID, userID);
+            configuration.put(PROPERTY_ACCT_NAME, EMPTY_CRED);
+            configuration.put(PROPERTY_ACCT_PWD, EMPTY_CRED);
+            configuration.put(PROPERTY_USERID, userId);
             this.updateConfiguration(configuration);
-            thingConfig.setAccountName("");
-            thingConfig.setAccountPassword("");
+            thingConfig.setAccountName(EMPTY_CRED);
+            thingConfig.setAccountPassword(EMPTY_CRED);
         } else {
             logger.debug("{}: Skip OAuth, use existing userID {}", thingId, thingConfig.getUserID());
+        }
+        if (!userId.isEmpty()) {
+            thingConfig.setUserID(userId);
+        } else {
+            logger.warn("{}: Unable to obtain userId from OAuth", thingId);
         }
     }
 
@@ -623,17 +669,34 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
         return thingConfig.getFriendlyName() + "(" + thingConfig.getTerminalID() + ")";
     }
 
-    protected void cancelPairingCheck() {
-        if (pairingWatchdogJob != null) {
-            pairingWatchdogJob.cancel(true);
+    private void cancelJob(@Nullable ScheduledFuture<?> job) {
+        if ((job != null) && !job.isCancelled()) {
+            job.cancel(true);
         }
+    }
+
+    protected void cancelInitialize() {
+        cancelJob(initializeJob);
+    }
+
+    protected void cancelPairingCheck() {
+        cancelJob(pairingWatchdogJob);
+    }
+
+    protected void cancelRenewEvent() {
+        cancelJob(renewEventJob);
+    }
+
+    private void cancelAllJobs() {
+        cancelInitialize();
+        cancelPairingCheck();
+        cancelRenewEvent();
     }
 
     @Override
     public void dispose() {
-        cancelPairingCheck();
+        cancelAllJobs();
         handlerFactory.removeDevice(thingConfig.getTerminalID());
-        scheduler.shutdownNow();
         super.dispose();
     }
 }

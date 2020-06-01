@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link MagentaTVConfiguration} contains the thing config (updated at
@@ -36,18 +37,18 @@ public class MagentaTVConfiguration {
      * @param config set of properties (thing config)
      */
     public void initializeConfig(Map<String, Object> newConfig) {
+        properties.clear();
         Map<String, String> prop = new TreeMap<>();
+        // beaware: event it makes no sense sometimes the property value received is null
         for (Map.Entry<String, Object> p : newConfig.entrySet()) {
-            prop.put(p.getKey(), (String) p.getValue());
+            prop.put(p.getKey(), getString(p.getValue()));
         }
         updateConfig(prop);
         setDefault(PROPERTY_PORT, MR400_DEF_REMOTE_PORT);
     }
 
     public void fromProperties(Map<String, String> newConfig) {
-        for (Map.Entry<String, String> p : newConfig.entrySet()) {
-            setValue(p.getKey(), p.getValue());
-        }
+        updateConfig(newConfig);
     }
 
     /**
@@ -57,7 +58,9 @@ public class MagentaTVConfiguration {
      */
     public synchronized void updateConfig(Map<String, String> newConfig) {
         synchronized (properties) {
-            properties.putAll(newConfig);
+            for (Map.Entry<String, String> p : newConfig.entrySet()) {
+                setValue(p.getKey(), getString(p.getValue()));
+            }
         }
     }
 
@@ -231,13 +234,11 @@ public class MagentaTVConfiguration {
 
     private synchronized void setDefault(String key, String value) {
         if (properties.containsKey(key)) {
-            String v = properties.get(key);
+            String v = getString(properties.get(key));
             if (v.isEmpty()) {
-                properties.remove(key);
+                properties.replace(key, value);
             }
-        }
-
-        if (!properties.containsKey(key)) {
+        } else {
             properties.put(key, value);
         }
     }
@@ -254,7 +255,11 @@ public class MagentaTVConfiguration {
         if (properties.containsKey(key)) {
             properties.replace(key, value);
         } else {
-            properties.put(key, value);
+            properties.put(key, getString(value));
         }
+    }
+
+    private String getString(@Nullable Object value) {
+        return value != null ? (String) value : "";
     }
 }

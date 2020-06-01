@@ -156,14 +156,15 @@ public class MagentaTVOAuth {
                     + "\"caDeviceInfo\":[{\"caDeviceType\":6,\"caDeviceId\":\"" + uuid + "\"}]," + "\"accessToken\":\""
                     + resp.accessToken + "\",\"preSharedKeyID\":\"PC01P00002\",\"cnonce\":\"" + cnonce + "\"}";
             dataStream = new ByteArrayInputStream(postData.getBytes(Charset.forName("UTF-8")));
+            logger.debug("HTTP POST {}, postData={}", url, postData);
             httpResponse = HttpUtil.executeUrl(HttpMethod.POST, url, httpHeader, dataStream, null, NETWORK_TIMEOUT_MS);
 
             logger.trace("http response={}", httpResponse);
             OAuthAutenhicateResponse authResp = gson.fromJson(httpResponse, OAuthAutenhicateResponse.class);
-            if (getString(authResp.retcode).isEmpty() || !authResp.retcode.equals("0")) {
-                retmsg = getString(authResp.desc);
+            if (!authResp.userID.isEmpty()
+                    && (getString(authResp.retcode).isEmpty() || !authResp.retcode.equals("0"))) {
                 String errorMessage = MessageFormat.format("Unable to authenticate: accountName={0}, rc={1} - {2}",
-                        accountName, retcode, retmsg);
+                        accountName, authResp.retcode, getString(authResp.desc));
                 logger.warn("{}", errorMessage);
                 throw new MagentaTVException(errorMessage);
             }
