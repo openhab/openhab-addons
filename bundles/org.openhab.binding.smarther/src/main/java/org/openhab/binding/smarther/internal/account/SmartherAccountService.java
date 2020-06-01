@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServlet;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smarther.internal.api.dto.Notification;
+import org.openhab.binding.smarther.internal.api.dto.Sender;
 import org.openhab.binding.smarther.internal.api.exception.SmartherGatewayException;
 import org.openhab.binding.smarther.internal.util.StringUtil;
 import org.osgi.framework.BundleContext;
@@ -61,7 +62,7 @@ public class SmartherAccountService {
 
     private final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private final List<SmartherAccountHandler> handlers = new ArrayList<SmartherAccountHandler>();
+    private final List<SmartherAccountHandler> handlers = new ArrayList<>();
 
     private @NonNullByDefault({}) HttpService httpService;
     private @NonNullByDefault({}) BundleContext bundleContext;
@@ -187,25 +188,31 @@ public class SmartherAccountService {
      */
     public void dispatchNotification(Notification notification) throws SmartherGatewayException {
         // Searches the SmartherAccountHandler instance that matches the given location
-        final SmartherAccountHandler listener = getAccountListenerByLocation(
-                notification.getData().toChronothermostat().getSender().getPlant().getId());
+        final Sender sender = notification.getSender();
+        if (sender != null) {
+            final SmartherAccountHandler listener = getAccountListenerByLocation(sender.getPlant().getId());
 
-        if (listener == null) {
-            logger.warn("C2C notification [{}]: no matching bridge was found. Possible bridge has been removed.",
-                    notification.getId());
-            throw new SmartherGatewayException(ERROR_UKNOWN_BRIDGE);
-        } else if (listener.isOnline()) {
-            final SmartherNotificationHandler handler = (SmartherNotificationHandler) listener;
+            if (listener == null) {
+                logger.warn("C2C notification [{}]: no matching bridge was found. Possible bridge has been removed.",
+                        notification.getId());
+                throw new SmartherGatewayException(ERROR_UKNOWN_BRIDGE);
+            } else if (listener.isOnline()) {
+                final SmartherNotificationHandler handler = (SmartherNotificationHandler) listener;
 
-            if (handler.useNotifications()) {
-                // Passes the notification to the handler
-                handler.handleNotification(notification);
+                if (handler.useNotifications()) {
+                    // Passes the notification to the handler
+                    handler.handleNotification(notification);
+                } else {
+                    logger.debug(
+                            "C2C notification [{}]: notification discarded as bridge does not handle notifications.",
+                            notification.getId());
+                }
             } else {
-                logger.debug("C2C notification [{}]: notification discarded as bridge does not handle notifications.",
+                logger.debug("C2C notification [{}]: notification discarded as bridge is offline.",
                         notification.getId());
             }
         } else {
-            logger.debug("C2C notification [{}]: notification discarded as bridge is offline.", notification.getId());
+            logger.debug("C2C notification [{}]: notification discarded as payload is invalid.", notification.getId());
         }
     }
 

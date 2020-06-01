@@ -23,6 +23,11 @@ public class Plants {
 
     private List<Plant> plants;
 
+    /**
+     * Returns the list of plants contained in this object.
+     *
+     * @return the list of plants
+     */
     public List<Plant> getPlants() {
         return plants;
     }

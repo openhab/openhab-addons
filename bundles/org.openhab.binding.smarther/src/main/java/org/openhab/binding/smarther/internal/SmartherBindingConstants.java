@@ -40,6 +40,9 @@ public class SmartherBindingConstants {
 
     // Generic constants
     public static final String HTTPS_SCHEMA = "https";
+    public static final String NAME_SEPARATOR = ", ";
+    public static final String UNAVAILABLE = "N/A";
+    public static final String DEFAULT_PROGRAM = "Default";
 
     // List of BTicino/Legrand API gateway related urls, information
     public static final String SMARTHER_ACCOUNT_URL = "https://partners-login.eliotbylegrand.com";

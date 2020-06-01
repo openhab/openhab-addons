@@ -17,7 +17,7 @@ import org.openhab.binding.smarther.internal.util.StringUtil;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@code Module} class defines the dto for Smarther API module object.
+ * The {@code Module} class defines the dto for Smarther API chronothermostat module object.
  *
  * @author Fabio Possieri - Initial contribution
  */
@@ -28,14 +28,29 @@ public class Module {
     private String id;
     private String name;
 
+    /**
+     * Returns the device type of the chronothermostat module.
+     *
+     * @return a string containing the module device type
+     */
     public String getDeviceType() {
         return StringUtil.capitalizeAll(deviceType);
     }
 
+    /**
+     * Returns the identifier of the chronothermostat module.
+     *
+     * @return a string containing the module identifier
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     * Returns the chronothermostat module reference label (i.e. the module "name").
+     *
+     * @return a string containing the module reference label
+     */
     public String getName() {
         return name;
     }

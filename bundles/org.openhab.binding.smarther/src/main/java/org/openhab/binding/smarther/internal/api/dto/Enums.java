@@ -57,7 +57,7 @@ public class Enums {
          * @throws {@link SmartherIllegalPropertyValueException}
          *             if the raw value cannot be mapped to any valid enum value
          */
-        public static Function fromValue(String value) {
+        public static Function fromValue(String value) throws SmartherIllegalPropertyValueException {
             return lookup(Function.class, value);
         }
     }
@@ -94,7 +94,7 @@ public class Enums {
          * @throws {@link SmartherIllegalPropertyValueException}
          *             if the raw value cannot be mapped to any valid enum value
          */
-        public static Mode fromValue(String value) {
+        public static Mode fromValue(String value) throws SmartherIllegalPropertyValueException {
             return lookup(Mode.class, value);
         }
     }
@@ -137,7 +137,7 @@ public class Enums {
          * @throws {@link SmartherIllegalPropertyValueException}
          *             if the raw value cannot be mapped to any valid enum value
          */
-        public static LoadState fromValue(String value) {
+        public static LoadState fromValue(String value) throws SmartherIllegalPropertyValueException {
             return lookup(LoadState.class, value);
         }
     }
@@ -193,7 +193,7 @@ public class Enums {
          * @throws {@link SmartherIllegalPropertyValueException}
          *             if the raw value cannot be mapped to any valid enum value
          */
-        public static MeasureUnit fromValue(String value) {
+        public static MeasureUnit fromValue(String value) throws SmartherIllegalPropertyValueException {
             return lookup(MeasureUnit.class, value);
         }
     }
@@ -228,7 +228,7 @@ public class Enums {
          * @throws {@link SmartherIllegalPropertyValueException}
          *             if the raw value cannot be mapped to any valid enum value
          */
-        public static BoostTime fromValue(int value) {
+        public static BoostTime fromValue(int value) throws SmartherIllegalPropertyValueException {
             return lookup(BoostTime.class, value);
         }
     }
@@ -241,7 +241,8 @@ public class Enums {
         int getValue();
     }
 
-    public static <E extends Enum<E> & TypeWithIntProperty> E lookup(Class<E> en, int value) {
+    public static <E extends Enum<E> & TypeWithIntProperty> E lookup(Class<E> en, int value)
+            throws SmartherIllegalPropertyValueException {
         for (E constant : en.getEnumConstants()) {
             if (constant.getValue() == value) {
                 return constant;
@@ -254,7 +255,8 @@ public class Enums {
         String getValue();
     }
 
-    public static <E extends Enum<E> & TypeWithStringProperty> E lookup(Class<E> en, String value) {
+    public static <E extends Enum<E> & TypeWithStringProperty> E lookup(Class<E> en, String value)
+            throws SmartherIllegalPropertyValueException {
         for (E constant : en.getEnumConstants()) {
             if (constant.getValue().equals(value)) {
                 return constant;

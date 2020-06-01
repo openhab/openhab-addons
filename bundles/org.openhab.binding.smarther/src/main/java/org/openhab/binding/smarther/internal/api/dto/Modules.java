@@ -12,8 +12,12 @@
  */
 package org.openhab.binding.smarther.internal.api.dto;
 
+import static org.openhab.binding.smarther.internal.SmartherBindingConstants.NAME_SEPARATOR;
+
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@code Modules} class defines the dto for Smarther API list of modules.
@@ -24,22 +28,29 @@ public class Modules {
 
     private List<Module> modules;
 
-    public List<Module> getModules() {
+    /**
+     * Returns the list of modules contained in this object.
+     *
+     * @return the list of modules
+     */
+    public @Nullable List<Module> getModules() {
         return modules;
     }
 
     /**
-     * Converts the list into a string with comma separated module names.
+     * Converts a list of {@link Module} objects into a string containing the module names, comma separated.
      *
-     * @param plants The modules list to be converted.
-     * @return A string containing the module names, comma separated (or null, if the list is null or empty).
+     * @param modules
+     *            the list of module objects to be converted, may be {@code null}
+     *
+     * @return a string containing the comma separated module names, or {@code null} if the list is {@code null} or
+     *         empty.
      */
-    public static String toNameString(List<Module> modules) {
+    public static @Nullable String toNameString(@Nullable List<Module> modules) {
         if (modules == null || modules.isEmpty()) {
             return null;
-        } else {
-            return modules.stream().map(a -> String.valueOf(a.getName())).collect(Collectors.joining(", "));
         }
+        return modules.stream().map(a -> String.valueOf(a.getName())).collect(Collectors.joining(NAME_SEPARATOR));
     }
 
 }

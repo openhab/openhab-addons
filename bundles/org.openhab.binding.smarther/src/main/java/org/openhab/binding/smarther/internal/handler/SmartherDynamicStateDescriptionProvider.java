@@ -44,7 +44,7 @@ public class SmartherDynamicStateDescriptionProvider extends BaseDynamicStateDes
     private static final String LABEL_TOMORROW = "Tomorrow";
 
     public void setEndDates(ChannelUID channelUID, int maxEndDays) {
-        List<StateOption> endDates = new ArrayList<StateOption>();
+        List<StateOption> endDates = new ArrayList<>();
 
         endDates.add(new StateOption("", LABEL_FOREVER));
 

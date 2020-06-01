@@ -29,10 +29,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.MultiMap;
 import org.eclipse.jetty.util.UrlEncoded;
 import org.openhab.binding.smarther.internal.api.dto.Location;
-import org.openhab.binding.smarther.internal.api.exception.SmartherAuthorizationException;
 import org.openhab.binding.smarther.internal.api.exception.SmartherGatewayException;
 import org.openhab.binding.smarther.internal.util.StringUtil;
 import org.slf4j.Logger;
@@ -106,23 +106,29 @@ public class SmartherAuthorizationServlet extends HttpServlet {
     @Override
     protected void doGet(@Nullable HttpServletRequest request, @Nullable HttpServletResponse response)
             throws ServletException, IOException {
-        if (request == null || response == null) {
-            throw new SmartherAuthorizationException("Authorization callback with null request/response");
+        if (request != null && response != null) {
+            final String servletBaseURL = extractServletBaseURL(request);
+            logger.debug("Authorization callback servlet received GET request {}", servletBaseURL);
+
+            // Handle the received data
+            final Map<String, String> replaceMap = new HashMap<>();
+            handleSmartherRedirect(replaceMap, servletBaseURL, request.getQueryString());
+
+            // Build a http 200 (Success) response for the caller
+            response.setContentType(CONTENT_TYPE);
+            response.setStatus(HttpStatus.OK_200);
+            replaceMap.put(KEY_REDIRECT_URI, servletBaseURL);
+            replaceMap.put(KEY_APPLICATIONS, formatApplications(applicationTemplate, servletBaseURL));
+            response.getWriter().append(replaceKeysFromMap(indexTemplate, replaceMap));
+            response.getWriter().close();
+        } else if (response != null) {
+            // Build a http 400 (Bad Request) error response for the caller
+            response.setContentType(CONTENT_TYPE);
+            response.setStatus(HttpStatus.BAD_REQUEST_400);
+            response.getWriter().close();
+        } else {
+            throw new ServletException("Authorization callback with null request/response");
         }
-
-        final String servletBaseURL = extractServletBaseURL(request);
-        final Map<String, String> replaceMap = new HashMap<>();
-        logger.debug("Authorization callback servlet received GET request {}", servletBaseURL);
-
-        // Handle the received data
-        handleSmartherRedirect(replaceMap, servletBaseURL, request.getQueryString());
-
-        // Build response for the caller
-        response.setContentType(CONTENT_TYPE);
-        replaceMap.put(KEY_REDIRECT_URI, servletBaseURL);
-        replaceMap.put(KEY_APPLICATIONS, formatApplications(applicationTemplate, servletBaseURL));
-        response.getWriter().append(replaceKeysFromMap(indexTemplate, replaceMap));
-        response.getWriter().close();
     }
 
     /**

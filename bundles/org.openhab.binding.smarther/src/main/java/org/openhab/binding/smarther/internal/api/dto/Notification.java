@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.smarther.internal.api.dto;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -29,28 +31,76 @@ public class Notification {
     private String eventTime;
     private ModuleStatus data;
 
+    /**
+     * Returns the identifier of this notification.
+     *
+     * @return a string containing the notification identifier
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     * Returns the event type of this notification.
+     *
+     * @return a string containing the notification event type
+     */
     public String getEventType() {
         return eventType;
     }
 
+    /**
+     * Returns the subject of this notification.
+     *
+     * @return a string containing the notification subject
+     */
     public String getSubject() {
         return subject;
     }
 
+    /**
+     * Returns the event time of this notification.
+     *
+     * @return a string containing the notification event time
+     */
     public String getEventTime() {
         return eventTime;
     }
 
-    public ModuleStatus getData() {
+    /**
+     * Returns the module status data (i.e. the payload) of this notification.
+     *
+     * @return the module status data, or {@code null} in case of no data found
+     */
+    public @Nullable ModuleStatus getData() {
         return data;
     }
 
-    public boolean hasData() {
-        return (data != null);
+    /**
+     * Returns the chronothermostat details of this notification.
+     *
+     * @return the chronothermostat details, or {@code null} in case of no data found
+     */
+    public @Nullable Chronothermostat getChronothermostat() {
+        if (data != null) {
+            return data.toChronothermostat();
+        }
+        return null;
+    }
+
+    /**
+     * Returns the sender details of this notification.
+     *
+     * @return the sender details, or {@code null} in case of no data found
+     */
+    public @Nullable Sender getSender() {
+        if (data != null) {
+            final Chronothermostat chronothermostat = data.toChronothermostat();
+            if (chronothermostat != null) {
+                return chronothermostat.getSender();
+            }
+        }
+        return null;
     }
 
     @Override

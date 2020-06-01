@@ -47,8 +47,7 @@ import org.slf4j.LoggerFactory;
  */
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.smarther")
 @NonNullByDefault
-public class SmartherModuleDiscoveryService extends AbstractDiscoveryService
-        implements DiscoveryService, ThingHandlerService {
+public class SmartherModuleDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
 
     // Only modules can be discovered. A bridge must be manually added.
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_MODULE);

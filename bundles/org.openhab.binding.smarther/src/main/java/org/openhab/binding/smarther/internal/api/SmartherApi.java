@@ -40,6 +40,7 @@ import org.eclipse.smarthome.core.auth.client.oauth2.OAuthException;
 import org.eclipse.smarthome.core.auth.client.oauth2.OAuthResponseException;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.openhab.binding.smarther.internal.api.dto.Chronothermostat;
 import org.openhab.binding.smarther.internal.api.dto.Enums.MeasureUnit;
 import org.openhab.binding.smarther.internal.api.dto.Module;
 import org.openhab.binding.smarther.internal.api.dto.ModuleStatus;
@@ -128,7 +129,7 @@ public class SmartherApi {
     public List<Plant> getPlants() throws SmartherGatewayException {
         final ContentResponse response = requestBasic(GET, PATH_PLANTS);
         if (response.getStatus() == HttpStatus.NO_CONTENT_204) {
-            return new ArrayList<Plant>();
+            return new ArrayList<>();
         } else {
             return ModelUtil.gsonInstance().fromJson(response.getContentAsString(), Plants.class).getPlants();
         }
@@ -148,8 +149,7 @@ public class SmartherApi {
     public List<Module> getPlantModules(String plantId) throws SmartherGatewayException {
         final ContentResponse response = requestBasic(GET, String.format(PATH_TOPOLOGY, plantId));
         final Topology topology = ModelUtil.gsonInstance().fromJson(response.getContentAsString(), Topology.class);
-
-        return (topology.getModules() == null) ? new ArrayList<Module>() : topology.getModules();
+        return topology.getModules();
     }
 
     /**
@@ -191,7 +191,7 @@ public class SmartherApi {
                 // {"function":"heating","mode":"automatic","programs":[{"number":0}]}
                 Map<String, Integer> programMap = new IdentityHashMap<String, Integer>();
                 programMap.put(ATTR_NUMBER, Integer.valueOf(settings.getProgram()));
-                List<Map<String, Integer>> programsList = new ArrayList<Map<String, Integer>>();
+                List<Map<String, Integer>> programsList = new ArrayList<>();
                 programsList.add(programMap);
                 rootMap.put(ATTR_PROGRAMS, programsList);
                 break;
@@ -244,8 +244,8 @@ public class SmartherApi {
         final ModuleStatus moduleStatus = ModelUtil.gsonInstance().fromJson(response.getContentAsString(),
                 ModuleStatus.class);
 
-        return (moduleStatus.hasChronothermostat()) ? moduleStatus.toChronothermostat().getPrograms()
-                : new ArrayList<Program>();
+        final Chronothermostat chronothermostat = moduleStatus.toChronothermostat();
+        return (chronothermostat != null) ? chronothermostat.getPrograms() : new ArrayList<>();
     }
 
     /**
@@ -260,7 +260,7 @@ public class SmartherApi {
     public List<Subscription> getSubscriptions() throws SmartherGatewayException {
         final ContentResponse response = requestBasic(GET, PATH_SUBSCRIPTIONS);
         if (response.getStatus() == HttpStatus.NO_CONTENT_204) {
-            return new ArrayList<Subscription>();
+            return new ArrayList<>();
         } else {
             return ModelUtil.gsonInstance().fromJson(response.getContentAsString(),
                     new TypeToken<List<Subscription>>() {

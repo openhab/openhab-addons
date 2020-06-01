@@ -13,7 +13,7 @@
 package org.openhab.binding.smarther.internal.api.dto;
 
 /**
- * The {@code ModuleRef} class defines the dto for Smarther API module reference object.
+ * The {@code ModuleRef} class defines the dto for Smarther API chronothermostat module reference object.
  *
  * @author Fabio Possieri - Initial contribution
  */
@@ -21,6 +21,11 @@ public class ModuleRef {
 
     private String id;
 
+    /**
+     * Returns the identifier of the chronothermostat module.
+     *
+     * @return a string containing the module identifier
+     */
     public String getId() {
         return id;
     }

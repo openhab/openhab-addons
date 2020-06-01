@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.smarther.internal.api.dto;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@code Topology} class defines the dto for Smarther API topology object.
@@ -23,12 +26,23 @@ public class Topology {
 
     private Plant plant;
 
-    public Plant getPlant() {
+    /**
+     * Returns a {@link Plant} object representing the plant contained in this topology.
+     *
+     * @return the plant contained in this topology, or {@code null} if the topology has no plant
+     */
+    public @Nullable Plant getPlant() {
         return plant;
     }
 
+    /**
+     * Returns the list of chronothermostat modules contained in this topology.
+     *
+     * @return the list of chronothermostat modules contained in this topology, or an empty list in case the topology
+     *         has no modules
+     */
     public List<Module> getModules() {
-        return plant.getModules();
+        return (plant != null) ? plant.getModules() : new ArrayList<>();
     }
 
 }

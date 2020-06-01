@@ -29,6 +29,7 @@ import org.openhab.binding.smarther.internal.api.dto.Chronothermostat;
 import org.openhab.binding.smarther.internal.api.dto.Enums.BoostTime;
 import org.openhab.binding.smarther.internal.api.dto.Enums.Function;
 import org.openhab.binding.smarther.internal.api.dto.Enums.Mode;
+import org.openhab.binding.smarther.internal.api.exception.SmartherIllegalPropertyValueException;
 import org.openhab.binding.smarther.internal.util.DateUtil;
 import org.openhab.binding.smarther.internal.util.StringUtil;
 
@@ -77,8 +78,12 @@ public class ModuleSettings {
      *
      * @param chronothermostat
      *            the chronothermostat dto to get data from
+     * 
+     * @throws {@link SmartherIllegalPropertyValueException}
+     *             if at least one of the module properties cannot be mapped to any valid enum value
      */
-    public void updateFromChronothermostat(Chronothermostat chronothermostat) {
+    public void updateFromChronothermostat(Chronothermostat chronothermostat)
+            throws SmartherIllegalPropertyValueException {
         this.function = Function.fromValue(chronothermostat.getFunction());
     }
 
@@ -284,7 +289,8 @@ public class ModuleSettings {
      * For boost mode a range is returned, as duration is limited to 30, 60 or 90 minutes, indicating starting (current)
      * and final date and time.
      *
-     * @return a string containing the module settings activation time
+     * @return a string containing the module settings activation time, or and empty ("") string if the module operation
+     *         mode doesn't allow for an activation time
      */
     public String getActivationTime() {
         if (mode.equals(Mode.MANUAL) && (endDate != null)) {

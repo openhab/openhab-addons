@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.smarther.internal.api.dto;
 
+import static org.openhab.binding.smarther.internal.SmartherBindingConstants.DEFAULT_PROGRAM;
+
 /**
  * The {@code Program} class defines the dto for Smarther API program object.
  *
@@ -19,15 +21,23 @@ package org.openhab.binding.smarther.internal.api.dto;
  */
 public class Program {
 
-    private static final String DEFAULT_PROGRAM = "Default";
-
     private int number;
     private String name;
 
+    /**
+     * Returns the program number.
+     *
+     * @return the program number
+     */
     public int getNumber() {
         return number;
     }
 
+    /**
+     * Returns the program reference label (i.e. the program "name").
+     *
+     * @return a string containing the program reference label
+     */
     public String getName() {
         return (number == 0) ? DEFAULT_PROGRAM : name;
     }

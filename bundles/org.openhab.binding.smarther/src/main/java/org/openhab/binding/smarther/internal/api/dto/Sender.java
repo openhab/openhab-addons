@@ -26,14 +26,29 @@ public class Sender {
     private String system;
     private PlantRef plant;
 
+    /**
+     * Returns the sender address type.
+     *
+     * @return a string containing the sender address type
+     */
     public String getAddressType() {
         return addressType;
     }
 
+    /**
+     * Returns the sender system.
+     *
+     * @return a string containing the sender system
+     */
     public String getSystem() {
         return system;
     }
 
+    /**
+     * Returns the sender plant reference.
+     *
+     * @return a {@link PlantRef} object representing the sender plant reference
+     */
     public PlantRef getPlant() {
         return plant;
     }

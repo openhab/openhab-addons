@@ -15,16 +15,17 @@ package org.openhab.binding.smarther.internal.api.exception;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Signals that an "invalid property value" messaging issue with API gateway has occurred.
+ * Signals that an "invalid property value" issue has occurred when deailng with enumerated type chronothermostat
+ * properties.
  *
  * @author Fabio Possieri - Initial contribution
  */
 @NonNullByDefault
-public class SmartherIllegalPropertyValueException extends IllegalArgumentException {
+public class SmartherIllegalPropertyValueException extends Exception {
 
     private static final long serialVersionUID = -2549779559688846805L;
 
-    private static final String MSG_FORMAT = "Invalid value '%s' received for enum '%s'";
+    private static final String MSG_FORMAT = "'%s' = '%s'";
 
     /**
      * Constructs a {@code SmartherIllegalPropertyValueException} with the specified detail message.
@@ -46,7 +47,7 @@ public class SmartherIllegalPropertyValueException extends IllegalArgumentExcept
      *            the invalid value returned by the API gateway for {@code PropertyName}
      */
     public SmartherIllegalPropertyValueException(String propertyName, String invalidValue) {
-        super(String.format(MSG_FORMAT, invalidValue, propertyName));
+        super(String.format(MSG_FORMAT, propertyName, invalidValue));
     }
 
 }

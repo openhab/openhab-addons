@@ -22,10 +22,20 @@ public class PlantRef {
     private String id;
     private ModuleRef module;
 
+    /**
+     * Returns the identifier of the plant.
+     *
+     * @return a string containing the plant identifier
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     * Returns the chronothermostat reference inside the plant.
+     *
+     * @return a {@link ModuleRef} object representing the chronothermostat module reference
+     */
     public ModuleRef getModule() {
         return module;
     }

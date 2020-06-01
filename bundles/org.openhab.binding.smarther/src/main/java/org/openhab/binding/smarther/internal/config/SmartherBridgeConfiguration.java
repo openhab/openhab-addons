@@ -156,7 +156,7 @@ public class SmartherBridgeConfiguration {
      */
     public List<String> addNotification(String notificationId) {
         if (notifications == null) {
-            notifications = new ArrayList<String>();
+            notifications = new ArrayList<>();
         }
         if (!notifications.contains(notificationId)) {
             notifications.add(notificationId);

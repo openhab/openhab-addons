@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.smarther.internal.api.dto;
 
+import static org.openhab.binding.smarther.internal.SmartherBindingConstants.NAME_SEPARATOR;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -33,6 +35,14 @@ public class Location {
     private @Nullable String subscriptionId;
     private @Nullable String endpointUrl;
 
+    /**
+     * Constructs a new {@code Location} with the given plant and subscription.
+     *
+     * @param plant
+     *            the location plant to use
+     * @param subscription
+     *            the notification subscription endpoint to use, may be {@code null}
+     */
     private Location(Plant plant, @Nullable Subscription subscription) {
         super();
         this.plantId = plant.getId();
@@ -43,62 +53,127 @@ public class Location {
         }
     }
 
+    /**
+     * Returns a new {@code Location} with the given plant and subscription.
+     *
+     * @param plant
+     *            the location plant to use
+     * @param subscription
+     *            the notification subscription endpoint to use, may be {@code null}
+     *
+     * @return the newly created Location object
+     */
     public static Location fromPlant(Plant plant, @Nullable Subscription subscription) {
         return new Location(plant, subscription);
     }
 
+    /**
+     * Returns a new {@code Location} with the given plant and no subscription.
+     *
+     * @param plant
+     *            the location plant to use
+     *
+     * @return the newly created Location object
+     */
     public static Location fromPlant(Plant plant) {
         return new Location(plant, null);
     }
 
+    /**
+     * Returns a new {@code Location} with the given plant and optional subscription.
+     *
+     * @param plant
+     *            the location plant to use
+     * @param subscription
+     *            the optional notification subscription endpoint to use, may contain no subscription
+     *
+     * @return the newly created Location object
+     */
     public static Location fromPlant(Plant plant, Optional<Subscription> subscription) {
         return (subscription.isPresent()) ? new Location(plant, subscription.get()) : new Location(plant, null);
     }
 
+    /**
+     * Returns the plant identifier associated with this location.
+     *
+     * @return a string containing the plant identifier
+     */
     public String getPlantId() {
         return plantId;
     }
 
+    /**
+     * Returns the plant name associated with this location.
+     *
+     * @return a string containing the plant name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Tells whether the location has an associated subscription.
+     *
+     * @return {@code true} if the location has a subscription, {@code false} otherwise
+     */
     public boolean hasSubscription() {
         return !StringUtil.isBlank(subscriptionId);
     }
 
+    /**
+     * Sets the notification subscription details for the location.
+     *
+     * @param subscriptionId
+     *            the subscription identifier to use
+     * @param endpointUrl
+     *            the notification endpoint to use
+     */
     public void setSubscription(String subscriptionId, String endpointUrl) {
         this.subscriptionId = subscriptionId;
         this.endpointUrl = endpointUrl;
     }
 
+    /**
+     * Unsets the notification subscription details for the location.
+     * I.e. resets all of its details to {@code null}.
+     */
     public void unsetSubscription() {
         this.subscriptionId = null;
         this.endpointUrl = null;
     }
 
-    @Nullable
-    public String getSubscriptionId() {
+    /**
+     * Returns the notification subscription identifier for this location.
+     *
+     * @return a string containing the subscription identifier, may be {@code null}
+     */
+    public @Nullable String getSubscriptionId() {
         return subscriptionId;
     }
 
-    @Nullable
-    public String getEndpointUrl() {
+    /**
+     * Returns the notification endpoint for this location.
+     *
+     * @return a string containing the notification endpoint, may be {@code null}
+     */
+    public @Nullable String getEndpointUrl() {
         return endpointUrl;
     }
 
     /**
-     * Converts the list into a string with comma separated location names.
+     * Converts a list of {@link Location} objects into a string containing the location names, comma separated.
      *
-     * @param locations The locations list to be converted.
-     * @return A string containing the location names, comma separated (or null, if the list is null or empty).
+     * @param locations
+     *            the list of location objects to be converted, may be {@code null}
+     *
+     * @return a string containing the comma separated location names, or {@code null} if the list is {@code null} or
+     *         empty.
      */
-    public static String toNameString(List<Location> locations) {
-        if (locations.isEmpty()) {
-            return "N/A";
-        } else {
-            return locations.stream().map(a -> String.valueOf(a.getName())).collect(Collectors.joining(", "));
+    public static @Nullable String toNameString(@Nullable List<Location> locations) {
+        if (locations == null || locations.isEmpty()) {
+            return null;
         }
+        return locations.stream().map(a -> String.valueOf(a.getName())).collect(Collectors.joining(NAME_SEPARATOR));
     }
 
     @Override

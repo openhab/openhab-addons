@@ -14,8 +14,10 @@ package org.openhab.binding.smarther.internal.api.dto;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.smarther.internal.api.exception.SmartherIllegalPropertyValueException;
 
 /**
  * The {@code Sensor} class defines the dto for Smarther API sensor object.
@@ -26,16 +28,38 @@ public class Sensor {
 
     private List<Measure> measures;
 
-    public List<Measure> getMeasures() {
+    /**
+     * Returns the list of measures this sensor takes.
+     *
+     * @return the measures this sensor takes, may be {@code null}
+     */
+    public @Nullable List<Measure> getMeasures() {
         return measures;
     }
 
-    public Measure getMeasure(int index) {
-        return (measures != null) ? measures.get(index) : null;
+    /**
+     * Returns the measure taken by this sensor at the given index.
+     *
+     * @param index
+     *            the index to get the measure for
+     *
+     * @return the requested measure, or {@code null} in case of no measure found at given index
+     */
+    public @Nullable Measure getMeasure(int index) {
+        return (measures != null && measures.size() > index) ? measures.get(index) : null;
     }
 
-    public State toState() {
-        return (measures != null && !measures.isEmpty()) ? measures.get(0).toState() : UnDefType.UNDEF;
+    /**
+     * Returns the overall state of the sensor.
+     *
+     * @return a {@link State} object representing the overall state of the sensor
+     *
+     * @throws {@link SmartherIllegalPropertyValueException}
+     *             if the sensor internal raw state cannot be mapped to any valid value
+     */
+    public State toState() throws SmartherIllegalPropertyValueException {
+        final Measure measure = getMeasure(0);
+        return (measure != null) ? measure.toState() : UnDefType.UNDEF;
     }
 
     @Override

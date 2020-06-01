@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.smarther.internal.api.dto.Enums.MeasureUnit;
+import org.openhab.binding.smarther.internal.api.exception.SmartherIllegalPropertyValueException;
 import org.openhab.binding.smarther.internal.util.StringUtil;
 
 import com.google.gson.annotations.SerializedName;
@@ -46,19 +47,45 @@ public class Measure {
         return timestamp;
     }
 
+    /**
+     * Returns the value of this measure.
+     *
+     * @return a string containing the measure value
+     */
     public String getValue() {
         return value;
     }
 
+    /**
+     * Returns the measure unit of this measure.
+     *
+     * @return a string containing the measure unit
+     */
     public String getUnit() {
         return unit;
     }
 
-    public MeasureUnit getMeasureUnit() {
+    /**
+     * Returns the measure unit of this measure.
+     *
+     * @return a {@link MeasureUnit} object representing the measure unit
+     *
+     * @throws {@link SmartherIllegalPropertyValueException}
+     *             if the measure internal raw unit cannot be mapped to any valid measure unit
+     */
+    public MeasureUnit getMeasureUnit() throws SmartherIllegalPropertyValueException {
         return MeasureUnit.fromValue(unit);
     }
 
-    public State toState() {
+    /**
+     * Returns the value and measure unit of this measure as a combined {@link State} object.
+     *
+     * @return the value and measure unit
+     *
+     * @throws {@link SmartherIllegalPropertyValueException}
+     *             if the measure internal raw unit cannot be mapped to any valid measure unit
+     */
+    public State toState() throws SmartherIllegalPropertyValueException {
         State state = UnDefType.UNDEF;
         final Optional<Double> optValue = (StringUtil.isBlank(value)) ? Optional.empty()
                 : Optional.of(Double.parseDouble(value));

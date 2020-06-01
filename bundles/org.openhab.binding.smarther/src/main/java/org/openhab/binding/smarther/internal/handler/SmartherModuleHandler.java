@@ -48,6 +48,7 @@ import org.openhab.binding.smarther.internal.api.dto.ModuleStatus;
 import org.openhab.binding.smarther.internal.api.dto.Notification;
 import org.openhab.binding.smarther.internal.api.dto.Program;
 import org.openhab.binding.smarther.internal.api.exception.SmartherGatewayException;
+import org.openhab.binding.smarther.internal.api.exception.SmartherIllegalPropertyValueException;
 import org.openhab.binding.smarther.internal.api.exception.SmartherSubscriptionAlreadyExistsException;
 import org.openhab.binding.smarther.internal.config.SmartherModuleConfiguration;
 import org.openhab.binding.smarther.internal.model.ModuleSettings;
@@ -80,11 +81,11 @@ public class SmartherModuleHandler extends BaseThingHandler {
     private @NonNullByDefault({}) Future<?> pollFuture;
     private @NonNullByDefault({}) SmartherBridgeHandler bridgeHandler;
     private @NonNullByDefault({}) SmartherModuleConfiguration config;
+    private @NonNullByDefault({}) ExpiringCache<List<Program>> programCache;
+    private @NonNullByDefault({}) ModuleSettings moduleSettings;
 
     // Chronothermostat local status
-    private @NonNullByDefault({}) ExpiringCache<List<Program>> programCache;
-    private @NonNullByDefault({}) Chronothermostat chronothermostat;
-    private @NonNullByDefault({}) ModuleSettings moduleSettings;
+    private @Nullable Chronothermostat chronothermostat;
 
     /**
      * Constructs a {@code SmartherModuleHandler} for the given thing, scheduler and dynamic state description provider.
@@ -103,6 +104,7 @@ public class SmartherModuleHandler extends BaseThingHandler {
         this.dynamicStateDescriptionProvider = provider;
         this.programChannelUID = new ChannelUID(thing.getUID(), CHANNEL_SETTINGS_PROGRAM);
         this.endDateChannelUID = new ChannelUID(thing.getUID(), CHANNEL_SETTINGS_ENDDATE);
+        this.chronothermostat = null;
     }
 
     // ===========================================================================
@@ -167,11 +169,13 @@ public class SmartherModuleHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
             handleCommandInternal(channelUID, command);
-
             updateModuleStatus();
-        } catch (SmartherGatewayException ex) {
+        } catch (SmartherIllegalPropertyValueException e) {
+            logger.warn("Module[{}] Received command {} with illegal value {} on channel {}", thing.getUID(), command,
+                    e.getMessage(), channelUID.getId());
+        } catch (SmartherGatewayException e) {
             // catch exceptions and handle it in your binding
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -183,10 +187,13 @@ public class SmartherModuleHandler extends BaseThingHandler {
      * @param command
      *            the command sent to the given Channel
      *
+     * @throws {@link SmartherIllegalPropertyValueException}
+     *             if the command contains an illegal value that cannot be mapped to any valid enum value
      * @throws {@link SmartherGatewayException}
      *             in case of communication issues with the Smarther API
      */
-    private void handleCommandInternal(ChannelUID channelUID, Command command) throws SmartherGatewayException {
+    private void handleCommandInternal(ChannelUID channelUID, Command command)
+            throws SmartherIllegalPropertyValueException, SmartherGatewayException {
         switch (channelUID.getId()) {
             case CHANNEL_SETTINGS_MODE:
                 if (command instanceof StringType) {
@@ -351,13 +358,19 @@ public class SmartherModuleHandler extends BaseThingHandler {
      *            the notification to handle
      */
     public void handleNotification(Notification notification) {
-        chronothermostat = notification.getData().toChronothermostat();
-        if (config.isSettingsAutoupdate()) {
-            moduleSettings.updateFromChronothermostat(chronothermostat);
+        try {
+            final Chronothermostat notificationChrono = notification.getChronothermostat();
+            if (notificationChrono != null) {
+                this.chronothermostat = notificationChrono;
+                if (config.isSettingsAutoupdate()) {
+                    moduleSettings.updateFromChronothermostat(notificationChrono);
+                }
+                logger.debug("Module[{}] Handle notification: [{}]", thing.getUID(), this.chronothermostat);
+                updateModuleStatus();
+            }
+        } catch (SmartherIllegalPropertyValueException e) {
+            logger.warn("Module[{}] Notification has illegal value: [{}]", thing.getUID(), e.getMessage());
         }
-        logger.debug("Module[{}] Handle notification: [{}]", thing.getUID(), chronothermostat);
-
-        updateModuleStatus();
     }
 
     @Override
@@ -468,7 +481,7 @@ public class SmartherModuleHandler extends BaseThingHandler {
         // Refresh the end dates list for "manual" mode
         dynamicStateDescriptionProvider.setEndDates(endDateChannelUID, config.getNumberOfEndDays());
         // If expired, update EndDate in module settings
-        if (moduleSettings != null && moduleSettings.isEndDateExpired()) {
+        if (moduleSettings.isEndDateExpired()) {
             moduleSettings.refreshEndDate();
             updateChannelState(CHANNEL_SETTINGS_ENDDATE, new StringType(moduleSettings.getEndDate()));
         }
@@ -519,16 +532,17 @@ public class SmartherModuleHandler extends BaseThingHandler {
                 if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
                     ModuleStatus moduleStatus = bridgeHandler.getModuleStatus(config.getPlantId(),
                             config.getModuleId());
-                    if (!moduleStatus.hasChronothermostat()) {
+
+                    final Chronothermostat statusChrono = moduleStatus.toChronothermostat();
+                    if (statusChrono != null) {
+                        if ((this.chronothermostat == null) || config.isSettingsAutoupdate()) {
+                            moduleSettings.updateFromChronothermostat(statusChrono);
+                        }
+                        this.chronothermostat = statusChrono;
+                        logger.debug("Module[{}] Status: [{}]", thing.getUID(), this.chronothermostat);
+                    } else {
                         throw new SmartherGatewayException("No chronothermostat data found");
                     }
-
-                    boolean isFirstRemoteUpdate = (chronothermostat == null);
-                    chronothermostat = moduleStatus.toChronothermostat();
-                    if (isFirstRemoteUpdate || config.isSettingsAutoupdate()) {
-                        moduleSettings.updateFromChronothermostat(chronothermostat);
-                    }
-                    logger.debug("Module[{}] Status: [{}]", thing.getUID(), chronothermostat);
 
                     // Refresh the programs list for "automatic" mode
                     final List<Program> programs = programCache.getValue();
@@ -549,6 +563,11 @@ public class SmartherModuleHandler extends BaseThingHandler {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Smarther Bridge Offline");
                 }
             }
+            return false;
+        } catch (SmartherIllegalPropertyValueException e) {
+            logger.debug("Module[{}] Illegal property value error during polling: {}", thing.getUID(), e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
+            schedulePoll();
             return false;
         } catch (SmartherSubscriptionAlreadyExistsException e) {
             logger.debug("Module[{}] Subscription error during polling: {}", thing.getUID(), e.getMessage());
@@ -628,33 +647,37 @@ public class SmartherModuleHandler extends BaseThingHandler {
     /**
      * Convenience method to update the whole status of the Chronothermostat associated to this handler.
      * Channels are updated based on the local {@code chronothermostat} and {@code moduleSettings} objects.
+     *
+     * @throws {@link SmartherIllegalPropertyValueException}
+     *             if at least one of the module properties cannot be mapped to any valid enum value
      */
-    private void updateModuleStatus() {
-        if (chronothermostat != null) {
+    private void updateModuleStatus() throws SmartherIllegalPropertyValueException {
+        if (this.chronothermostat != null) {
+            final Chronothermostat c = this.chronothermostat;
             // Update the Measures channels
-            updateChannelState(CHANNEL_MEASURES_TEMPERATURE, chronothermostat.getThermometer().toState());
-            updateChannelState(CHANNEL_MEASURES_HUMIDITY, chronothermostat.getHygrometer().toState());
+            updateChannelState(CHANNEL_MEASURES_TEMPERATURE, c.getThermometer().toState());
+            updateChannelState(CHANNEL_MEASURES_HUMIDITY, c.getHygrometer().toState());
             // Update the Status channels
-            updateChannelState(CHANNEL_STATUS_STATE, (chronothermostat.isActive() ? OnOffType.ON : OnOffType.OFF));
+            updateChannelState(CHANNEL_STATUS_STATE, (c.isActive() ? OnOffType.ON : OnOffType.OFF));
             updateChannelState(CHANNEL_STATUS_FUNCTION,
-                    new StringType(StringUtil.capitalize(chronothermostat.getFunction().toLowerCase())));
-            updateChannelState(CHANNEL_STATUS_MODE,
-                    new StringType(StringUtil.capitalize(chronothermostat.getMode().toLowerCase())));
-            updateChannelState(CHANNEL_STATUS_TEMPERATURE, chronothermostat.getSetPointTemperature().toState());
-            updateChannelState(CHANNEL_STATUS_PROGRAM, new StringType("" + chronothermostat.getProgram().getNumber()));
-            updateChannelState(CHANNEL_STATUS_ENDTIME, new StringType(chronothermostat.getActivationTimeLabel()));
-            updateChannelState(CHANNEL_STATUS_TEMP_FORMAT, new StringType(chronothermostat.getTemperatureFormat()));
+                    new StringType(StringUtil.capitalize(c.getFunction().toLowerCase())));
+            updateChannelState(CHANNEL_STATUS_MODE, new StringType(StringUtil.capitalize(c.getMode().toLowerCase())));
+            updateChannelState(CHANNEL_STATUS_TEMPERATURE, c.getSetPointTemperature().toState());
+            updateChannelState(CHANNEL_STATUS_ENDTIME, new StringType(c.getActivationTimeLabel()));
+            updateChannelState(CHANNEL_STATUS_TEMP_FORMAT, new StringType(c.getTemperatureFormat()));
+            final Program program = c.getProgram();
+            if (program != null) {
+                updateChannelState(CHANNEL_STATUS_PROGRAM, new StringType("" + program.getNumber()));
+            }
         }
-        if (moduleSettings != null) {
-            // Update the Settings channels
-            updateChannelState(CHANNEL_SETTINGS_MODE, new StringType(moduleSettings.getMode().getValue()));
-            updateChannelState(CHANNEL_SETTINGS_TEMPERATURE, moduleSettings.getSetPointTemperature());
-            updateChannelState(CHANNEL_SETTINGS_PROGRAM, new DecimalType(moduleSettings.getProgram()));
-            updateChannelState(CHANNEL_SETTINGS_BOOSTTIME, new DecimalType(moduleSettings.getBoostTime().getValue()));
-            updateChannelState(CHANNEL_SETTINGS_ENDDATE, new StringType(moduleSettings.getEndDate()));
-            updateChannelState(CHANNEL_SETTINGS_ENDHOUR, new DecimalType(moduleSettings.getEndHour()));
-            updateChannelState(CHANNEL_SETTINGS_ENDMINUTE, new DecimalType(moduleSettings.getEndMinute()));
-        }
+        // Update the Settings channels
+        updateChannelState(CHANNEL_SETTINGS_MODE, new StringType(moduleSettings.getMode().getValue()));
+        updateChannelState(CHANNEL_SETTINGS_TEMPERATURE, moduleSettings.getSetPointTemperature());
+        updateChannelState(CHANNEL_SETTINGS_PROGRAM, new DecimalType(moduleSettings.getProgram()));
+        updateChannelState(CHANNEL_SETTINGS_BOOSTTIME, new DecimalType(moduleSettings.getBoostTime().getValue()));
+        updateChannelState(CHANNEL_SETTINGS_ENDDATE, new StringType(moduleSettings.getEndDate()));
+        updateChannelState(CHANNEL_SETTINGS_ENDHOUR, new DecimalType(moduleSettings.getEndHour()));
+        updateChannelState(CHANNEL_SETTINGS_ENDMINUTE, new DecimalType(moduleSettings.getEndMinute()));
         updateChannelState(CHANNEL_SETTINGS_POWER, OnOffType.OFF);
     }
 

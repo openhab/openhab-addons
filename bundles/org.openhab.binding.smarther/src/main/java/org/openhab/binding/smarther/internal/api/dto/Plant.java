@@ -12,8 +12,9 @@
  */
 package org.openhab.binding.smarther.internal.api.dto;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@code Plant} class defines the dto for Smarther API plant object.
@@ -24,17 +25,32 @@ public class Plant {
 
     private String id;
     private String name;
-    private List<Module> modules = new ArrayList<Module>();
+    private List<Module> modules;
 
+    /**
+     * Returns the identifier of the plant.
+     *
+     * @return a string containing the plant identifier
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     * Returns the plant reference label (i.e. the plant "name").
+     *
+     * @return a string containing the plant reference label
+     */
     public String getName() {
         return name;
     }
 
-    public List<Module> getModules() {
+    /**
+     * Returns the list of chronothermostat modules of the plant.
+     *
+     * @return the list of chronothermostat modules of the plant, or {@code null} in case the plant has no modules
+     */
+    public @Nullable List<Module> getModules() {
         return modules;
     }
 

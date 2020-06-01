@@ -27,7 +27,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.smarther.internal.api.dto.Notification;
 import org.openhab.binding.smarther.internal.api.exception.SmartherGatewayException;
-import org.openhab.binding.smarther.internal.api.exception.SmartherNotificationException;
 import org.openhab.binding.smarther.internal.util.ModelUtil;
 import org.openhab.binding.smarther.internal.util.StringUtil;
 import org.slf4j.Logger;
@@ -64,23 +63,28 @@ public class SmartherNotificationServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp)
+    protected void doPost(@Nullable HttpServletRequest request, @Nullable HttpServletResponse response)
             throws ServletException, IOException {
-        if (req == null || resp == null) {
-            throw new SmartherNotificationException("Notification callback with null request/response");
+        if (request != null && response != null) {
+            logger.debug("Notification callback servlet received POST request {}", request.getRequestURI());
+
+            // Handle the received data
+            final String requestBody = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+            final String responseBody = dispatchNotifications(requestBody);
+
+            // Build a http 200 (Success) response for the caller
+            response.setContentType(CONTENT_TYPE);
+            response.setStatus(HttpStatus.OK_200);
+            response.getWriter().append(responseBody);
+            response.getWriter().close();
+        } else if (response != null) {
+            // Build a http 400 (Bad Request) error response for the caller
+            response.setContentType(CONTENT_TYPE);
+            response.setStatus(HttpStatus.BAD_REQUEST_400);
+            response.getWriter().close();
+        } else {
+            throw new ServletException("Notification callback with null request/response");
         }
-
-        logger.debug("Notification callback servlet received POST request {}", req.getRequestURI());
-
-        // Handle the received data
-        final String requestBody = req.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
-        final String responseBody = dispatchNotifications(requestBody);
-
-        // Build response for the caller
-        resp.setContentType(CONTENT_TYPE);
-        resp.getWriter().append(responseBody);
-        resp.setStatus(HttpStatus.OK_200);
-        resp.getWriter().close();
     }
 
     /**
@@ -113,18 +117,10 @@ public class SmartherNotificationServlet extends HttpServlet {
      *            the notification to dispatch
      */
     private void handleSmartherNotification(Notification notification) {
-        if (!notification.hasData()) {
-            logger.warn("C2C notification {}: no valid data received", notification.getId());
-        } else if (!notification.getData().hasChronothermostat()) {
-            logger.warn("C2C notification {}: no chronothermostat data received", notification.getId());
-        } else if (!notification.getData().toChronothermostat().hasSender()) {
-            logger.warn("C2C notification {}: no sender reference received", notification.getId());
-        } else {
-            try {
-                accountService.dispatchNotification(notification);
-            } catch (SmartherGatewayException e) {
-                logger.warn("C2C notification {}: not applied: {}", notification.getId(), e.getMessage());
-            }
+        try {
+            accountService.dispatchNotification(notification);
+        } catch (SmartherGatewayException e) {
+            logger.warn("C2C notification {}: not applied: {}", notification.getId(), e.getMessage());
         }
     }
 

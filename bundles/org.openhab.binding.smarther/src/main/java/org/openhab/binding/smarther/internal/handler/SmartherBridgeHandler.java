@@ -64,6 +64,7 @@ import org.openhab.binding.smarther.internal.api.dto.ModuleStatus;
 import org.openhab.binding.smarther.internal.api.dto.Notification;
 import org.openhab.binding.smarther.internal.api.dto.Plant;
 import org.openhab.binding.smarther.internal.api.dto.Program;
+import org.openhab.binding.smarther.internal.api.dto.Sender;
 import org.openhab.binding.smarther.internal.api.dto.Subscription;
 import org.openhab.binding.smarther.internal.api.exception.SmartherAuthorizationException;
 import org.openhab.binding.smarther.internal.api.exception.SmartherGatewayException;
@@ -428,7 +429,7 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
     @Override
     public List<Location> getLocations() {
         final List<Location> locations = locationCache.getValue();
-        return (locations == null) ? new ArrayList<Location>() : locations;
+        return (locations == null) ? new ArrayList<>() : locations;
     }
 
     @Override
@@ -467,7 +468,7 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
             updateApiCallsCounter();
             return smartherApi.getPlantModules(location.getPlantId());
         } catch (SmartherGatewayException e) {
-            return new ArrayList<Module>();
+            return new ArrayList<>();
         }
     }
 
@@ -609,21 +610,23 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
 
     @Override
     public void handleNotification(Notification notification) {
-        logger.debug("Bridge[{}] Notification received: [id={}]", thing.getUID(), notification.getId());
+        final Sender sender = notification.getSender();
+        if (sender != null) {
+            logger.debug("Bridge[{}] Notification received: [id={}]", thing.getUID(), notification.getId());
+            updateChannelState(CHANNEL_NOTIFS_RECEIVED, new DecimalType(bridgeStatus.incrementNotificationsReceived()));
 
-        updateChannelState(CHANNEL_NOTIFS_RECEIVED, new DecimalType(bridgeStatus.incrementNotificationsReceived()));
+            final String plantId = sender.getPlant().getId();
+            final String moduleId = sender.getPlant().getModule().getId();
+            Optional<SmartherModuleHandler> maybeModuleHandler = getThing().getThings().stream()
+                    .map(t -> (SmartherModuleHandler) t.getHandler()).filter(h -> h.isLinkedTo(plantId, moduleId))
+                    .findFirst();
 
-        final String plantId = notification.getData().toChronothermostat().getSender().getPlant().getId();
-        final String moduleId = notification.getData().toChronothermostat().getSender().getPlant().getModule().getId();
-
-        Optional<SmartherModuleHandler> maybeModuleHandler = getThing().getThings().stream()
-                .map(t -> (SmartherModuleHandler) t.getHandler()).filter(h -> h.isLinkedTo(plantId, moduleId))
-                .findFirst();
-
-        if (config.isUseNotifications() && maybeModuleHandler.isPresent()) {
-            maybeModuleHandler.get().handleNotification(notification);
-        } else {
-            updateChannelState(CHANNEL_NOTIFS_REJECTED, new DecimalType(bridgeStatus.incrementNotificationsRejected()));
+            if (config.isUseNotifications() && maybeModuleHandler.isPresent()) {
+                maybeModuleHandler.get().handleNotification(notification);
+            } else {
+                updateChannelState(CHANNEL_NOTIFS_REJECTED,
+                        new DecimalType(bridgeStatus.incrementNotificationsRejected()));
+            }
         }
     }
 

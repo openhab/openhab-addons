@@ -14,6 +14,8 @@ package org.openhab.binding.smarther.internal.api.dto;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@code ModuleStatus} class defines the dto for Smarther API module status object.
  *
@@ -23,16 +25,22 @@ public class ModuleStatus {
 
     private List<Chronothermostat> chronothermostats;
 
+    /**
+     * Returns the chronothermostat details of this module status.
+     *
+     * @return the chronothermostat details
+     */
     public List<Chronothermostat> getChronothermostats() {
         return chronothermostats;
     }
 
-    public boolean hasChronothermostat() {
-        return (!chronothermostats.isEmpty() && (chronothermostats.get(0) != null));
-    }
-
-    public Chronothermostat toChronothermostat() {
-        return (hasChronothermostat()) ? chronothermostats.get(0) : null;
+    /**
+     * Returns the first chronothermostat item contained in this module status.
+     *
+     * @return the first chronothermostat item, or {@code null} in case of no item found
+     */
+    public @Nullable Chronothermostat toChronothermostat() {
+        return (!chronothermostats.isEmpty() && chronothermostats.get(0) != null) ? chronothermostats.get(0) : null;
     }
 
     @Override
