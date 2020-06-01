@@ -79,8 +79,8 @@ The following channels are available:
 | zoneN#bass (where N= 1-18)    | Number               | Adjust the bass control for a zone (-7 to 7) -7=none, 0=flat, 7=full                                          |
 | zoneN#balance (where N= 1-18) | Number               | Adjust the balance control for a zone (-10 to 10) -10=left, 0=center, 10=right                                |
 | zoneN#dnd (where N= 1-18)     | Switch               | Turn on or off the Do Not Disturb for the zone (for when the controller's external page trigger is activated) |
-| zoneN#page (where N= 1-18)    | Number               | Indicates if the page input is activated for the zone (ReadOnly 0-1)                                          |
-| zoneN#keypad (where N= 1-18)  | Number               | Indicates if the physical keypad is attached to a zone (ReadOnly 0-1)                                         |
+| zoneN#page (where N= 1-18)    | Contact              | Indicates if the page input is activated for the zone                                                         |
+| zoneN#keypad (where N= 1-18)  | Contact              | Indicates if the physical keypad is attached to a zone                                                        |
 
 ## Full Example
 
@@ -140,8 +140,8 @@ sitemap monoprice label="Audio Control" {
         Setpoint item=z1_bass label="Bass Adjustment [%d]" minValue=-7 maxValue=7 step=1 visibility=[z1_power==ON]
         Setpoint item=z1_balance label="Balance Adjustment [%d]" minValue=-10 maxValue=10 step=1 visibility=[z1_power==ON]
         Switch item=z1_dnd visibility=[z1_power==ON]
-        Text item=z1_page visibility=[z1_power==ON]
-        Text item=z1_keypad visibility=[z1_power==ON]
+        Switch item=z1_page visibility=[z1_power==ON]
+        Swtich item=z1_keypad visibility=[z1_power==ON]
     }
     
     //repeat for zones 2-18 (substitute z1)

@@ -526,17 +526,27 @@
 	</channel-type>
 
 	<channel-type id="page">
-		<item-type>Number</item-type>
+		<item-type>Contact</item-type>
 		<label>Page Active</label>
-		<description>A Number (0 or 1) to Indicate if the Page Mode is Active for This Zone</description>
-		<state readOnly="true"/>
+		<description>Indicates if the Page Mode is Active for This Zone</description>
+		<state readOnly="true">
+			<options>
+				<option value="CLOSED">Inactive</option>
+				<option value="OPEN">Active</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="keypad">
-		<item-type>Number</item-type>
-		<label>Keypad Active</label>
-		<description>A Number (0 or 1) to Indicate if a Physical Keypad is Attached to This Zone</description>
-		<state readOnly="true"/>
+		<item-type>Contact</item-type>
+		<label>Keypad Connected</label>
+		<description>Indicates if a Physical Keypad is Attached to This Zone</description>
+		<state readOnly="true">
+			<options>
+				<option value="CLOSED">Disconnected</option>
+				<option value="OPEN">Connected</option>
+			</options>
+		</state>
 	</channel-type>
 
 </thing:thing-descriptions>

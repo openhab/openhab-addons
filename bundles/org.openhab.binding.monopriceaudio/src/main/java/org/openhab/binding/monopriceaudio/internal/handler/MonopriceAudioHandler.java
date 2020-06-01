@@ -33,6 +33,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -674,10 +675,10 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                 state = zoneData.isDndOn() ? OnOffType.ON : OnOffType.OFF;
                 break;
             case CHANNEL_TYPE_PAGE:
-                state = new DecimalType(zoneData.isPageActive() ? 1 : 0);
+                state = zoneData.isPageActive() ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
                 break;
             case CHANNEL_TYPE_KEYPAD:
-                state = new DecimalType(zoneData.isKeypadActive() ? 1 : 0);
+                state = zoneData.isKeypadActive() ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
                 break;
             default:
                 break;
