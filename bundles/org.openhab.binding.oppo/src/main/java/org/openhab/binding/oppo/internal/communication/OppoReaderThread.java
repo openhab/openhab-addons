@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.oppo.internal.communication;
 
-import java.io.InterruptedIOException;
 import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -32,6 +31,8 @@ public class OppoReaderThread extends Thread {
     private final Logger logger = LoggerFactory.getLogger(OppoReaderThread.class);
 
     private static final int READ_BUFFER_SIZE = 16;
+    private static final int SIZE = 64;
+    private static final char TERM_CHAR = '\r';
 
     private OppoConnector connector;
 
@@ -48,23 +49,21 @@ public class OppoReaderThread extends Thread {
     public void run() {
         logger.debug("Data listener started");
 
-        final int size = 64;
         byte[] readDataBuffer = new byte[READ_BUFFER_SIZE];
-        byte[] dataBuffer = new byte[size];
+        byte[] dataBuffer = new byte[SIZE];
         int index = 0;
-        final char terminatingChar = '\r';
 
         try {
             while (!Thread.interrupted()) {
                 int len = connector.readInput(readDataBuffer);
                 if (len > 0) {
                     for (int i = 0; i < len; i++) {
-                        if (index < size) {
+                        if (index < SIZE) {
                             dataBuffer[index++] = readDataBuffer[i];
                         }
-                        if (readDataBuffer[i] == terminatingChar) {
-                            if (index >= size) {
-                                dataBuffer[index - 1] = (byte) terminatingChar;
+                        if (readDataBuffer[i] == TERM_CHAR) {
+                            if (index >= SIZE) {
+                                dataBuffer[index - 1] = (byte) TERM_CHAR;
                             }
                             byte[] msg = Arrays.copyOf(dataBuffer, index);
                             connector.handleIncomingMessage(msg);
@@ -73,9 +72,6 @@ public class OppoReaderThread extends Thread {
                     }
                 }
             }
-        } catch (InterruptedIOException e) {
-            Thread.currentThread().interrupt();
-            logger.debug("Interrupted via InterruptedIOException");
         } catch (OppoException e) {
             logger.debug("Reading failed: {}", e.getMessage(), e);
         }

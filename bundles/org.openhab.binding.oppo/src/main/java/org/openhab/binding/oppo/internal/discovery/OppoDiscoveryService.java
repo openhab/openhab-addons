@@ -224,7 +224,7 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
                 // for the 10x we need to get the DLNA service list page and find modelNumber there
                 // in order to determine if this is a BDP-103 or BDP-105
                 try {
-                    String result = HttpUtil.executeUrl("GET", "http://" + host + ":2870/dmr.xml", 10000);
+                    String result = HttpUtil.executeUrl("GET", "http://" + host + ":2870/dmr.xml", 5000);
 
                     if (result != null && result.contains("<modelName>OPPO BDP-103</modelName>")) {
                         model = MODEL103;

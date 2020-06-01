@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.oppo.internal.handler.OppoHandler;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -48,6 +49,11 @@ public class OppoHandlerFactory extends BaseThingHandlerFactory {
 
     private @NonNullByDefault({}) OppoStateDescriptionOptionProvider stateDescriptionProvider;
 
+    @Activate
+    public OppoHandlerFactory(final @Reference OppoStateDescriptionOptionProvider provider) {
+        this.stateDescriptionProvider = provider;
+    }
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -62,7 +68,6 @@ public class OppoHandlerFactory extends BaseThingHandlerFactory {
 
             return handler;
         }
-
         return null;
     }
 
@@ -73,14 +78,5 @@ public class OppoHandlerFactory extends BaseThingHandlerFactory {
 
     protected void unsetSerialPortManager(final SerialPortManager serialPortManager) {
         this.serialPortManager = null;
-    }
-
-    @Reference
-    protected void setDynamicStateDescriptionProvider(OppoStateDescriptionOptionProvider stateDescriptionProvider) {
-        this.stateDescriptionProvider = stateDescriptionProvider;
-    }
-
-    protected void unsetDynamicStateDescriptionProvider(OppoStateDescriptionOptionProvider stateDescriptionProvider) {
-        this.stateDescriptionProvider = null;
     }
 }

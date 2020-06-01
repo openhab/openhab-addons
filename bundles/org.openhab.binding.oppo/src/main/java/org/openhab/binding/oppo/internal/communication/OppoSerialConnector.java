@@ -62,7 +62,6 @@ public class OppoSerialConnector extends OppoConnector {
             SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(serialPortName);
             if (portIdentifier == null) {
                 setConnected(false);
-                logger.warn("Opening serial connection failed: No Such Port: {}", serialPortName);
                 throw new OppoException("Opening serial connection failed: No Such Port");
             }
 
@@ -99,20 +98,15 @@ public class OppoSerialConnector extends OppoConnector {
             logger.debug("Serial connection opened");
         } catch (PortInUseException e) {
             setConnected(false);
-            logger.warn("Opening serial connection failed: Port in Use Exception: {}", e.getMessage(), e);
             throw new OppoException("Opening serial connection failed: Port in Use Exception");
         } catch (UnsupportedCommOperationException e) {
             setConnected(false);
-            logger.warn("Opening serial connection failed: Unsupported Comm Operation Exception: {}", e.getMessage(),
-                    e);
             throw new OppoException("Opening serial connection failed: Unsupported Comm Operation Exception");
         } catch (UnsupportedEncodingException e) {
             setConnected(false);
-            logger.warn("Opening serial connection failed: Unsupported Encoding Exception: {}", e.getMessage(), e);
             throw new OppoException("Opening serial connection failed: Unsupported Encoding Exception");
         } catch (IOException e) {
             setConnected(false);
-            logger.warn("Opening serial connection failed: IO Exception: {}", e.getMessage(), e);
             throw new OppoException("Opening serial connection failed: IO Exception");
         }
     }

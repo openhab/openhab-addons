@@ -37,7 +37,7 @@ public class OppoIpConnector extends OppoConnector {
 
     private final Logger logger = LoggerFactory.getLogger(OppoIpConnector.class);
 
-    private String address;
+    private @Nullable String address;
     private int port;
 
     private @Nullable Socket clientSocket;
@@ -48,7 +48,7 @@ public class OppoIpConnector extends OppoConnector {
      * @param address the IP address of the player or serial over ip adapter
      * @param port the TCP port to be used
      */
-    public OppoIpConnector(String address, Integer port) {
+    public OppoIpConnector(@Nullable String address, @Nullable Integer port) {
         this.address = address;
         this.port = port;
     }
@@ -74,7 +74,6 @@ public class OppoIpConnector extends OppoConnector {
             logger.debug("IP connection opened");
         } catch (IOException | SecurityException | IllegalArgumentException e) {
             setConnected(false);
-            logger.warn("Opening IP connection failed: {}", e.getMessage());
             throw new OppoException("Opening IP connection failed: " + e.getMessage());
         }
     }
@@ -111,7 +110,7 @@ public class OppoIpConnector extends OppoConnector {
      * @throws InterruptedIOException - if the thread was interrupted during the reading of the input stream
      */
     @Override
-    protected int readInput(byte[] dataBuffer) throws OppoException, InterruptedIOException {
+    protected int readInput(byte[] dataBuffer) throws OppoException {
         InputStream dataIn = this.dataIn;
         if (dataIn == null) {
             throw new OppoException("readInput failed: input stream is null");
@@ -121,7 +120,6 @@ public class OppoIpConnector extends OppoConnector {
         } catch (SocketTimeoutException e) {
             return 0;
         } catch (IOException e) {
-            logger.debug("readInput failed: {}", e.getMessage());
             throw new OppoException("readInput failed: " + e.getMessage());
         }
     }

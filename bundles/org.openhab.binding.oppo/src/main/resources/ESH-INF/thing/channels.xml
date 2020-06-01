@@ -69,15 +69,11 @@
 					Player.</description>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="verboseMode" type="integer" required="true">
+			<parameter name="verboseMode" type="boolean" required="false">
 				<label>Verbose Mode</label>
-				<description>Choose Verbose Mode</description>
-				<limitToOptions>true</limitToOptions>
-				<options>
-					<option value="2">2</option>
-					<option value="3">3</option>
-				</options>
-				<default>2</default>
+				<description>If true, the player will send time updates every second. If false, the binding polls the player evey 30
+					seconds</description>
+				<default>false</default>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>

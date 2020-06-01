@@ -14,7 +14,6 @@ package org.openhab.binding.oppo.internal.communication;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -37,6 +36,13 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class OppoConnector {
     private final Logger logger = LoggerFactory.getLogger(OppoConnector.class);
+
+    private static final Pattern QRY_PATTERN = Pattern.compile("^@(Q[A-Z0-9]{2}|VUP|VDN) OK (.*)$");
+    private static final Pattern STUS_PATTERN = Pattern.compile("^@(U[A-Z0-9]{2}) (.*)$");
+
+    private static final String NOP_OK = "@NOP OK";
+    private static final String NOP = "NOP";
+    private static final String OK = "OK";
 
     private String beginCmd = "#";
     private String endCmd = "\r";
@@ -147,9 +153,8 @@ public abstract class OppoConnector {
      * @throws OppoException - If the input stream is null, if the first byte cannot be read for any reason
      *             other than the end of the file, if the input stream has been closed, or if some other I/O error
      *             occurs.
-     * @throws InterruptedIOException - if the thread was interrupted during the reading of the input stream
      */
-    protected int readInput(byte[] dataBuffer) throws OppoException, InterruptedIOException {
+    protected int readInput(byte[] dataBuffer) throws OppoException {
         InputStream dataIn = this.dataIn;
         if (dataIn == null) {
             throw new OppoException("readInput failed: input stream is null");
@@ -157,7 +162,6 @@ public abstract class OppoConnector {
         try {
             return dataIn.read(dataBuffer);
         } catch (IOException e) {
-            logger.debug("readInput failed: {}", e.getMessage());
             throw new OppoException("readInput failed: " + e.getMessage());
         }
     }
@@ -209,7 +213,6 @@ public abstract class OppoConnector {
             logger.debug("Send command \"{}\" failed: {}", messageStr, e.getMessage());
             throw new OppoException("Send command \"" + command + "\" failed: " + e.getMessage());
         }
-        logger.debug("Send command \"{}\" succeeded", messageStr);
     }
 
     /**
@@ -236,40 +239,32 @@ public abstract class OppoConnector {
      * @param incomingMessage the received message
      */
     public void handleIncomingMessage(byte[] incomingMessage) {
-        String message = new String(incomingMessage).trim();
+        String message = new String(incomingMessage, StandardCharsets.US_ASCII).trim();
 
         logger.debug("handleIncomingMessage: {}", message);
 
-        if ("@NOP OK".equals(message)) {
-            dispatchKeyValue("NOP", "OK");
+        if (NOP_OK.equals(message)) {
+            dispatchKeyValue(NOP, OK);
             return;
         }
 
-        Pattern p;
-
         // Player sent an OK response to a query: @QDT OK DVD-VIDEO or a volume update @VUP OK 100
-        p = Pattern.compile("^@(Q[A-Z0-9]{2}|VUP|VDN) OK (.*)$");
-
-        try {
-            Matcher matcher = p.matcher(message);
-            matcher.find();
+        Matcher matcher = QRY_PATTERN.matcher(message);
+        if (matcher.find()) {
             // pull out the inquiry type and the remainder of the message
             dispatchKeyValue(matcher.group(1), matcher.group(2));
             return;
-        } catch (IllegalStateException e) {
+        } else {
             logger.debug("no match on message: {}", message);
         }
 
         // Player sent a status update ie: @UTC 000 000 T 00:00:01
-        p = Pattern.compile("^@(U[A-Z0-9]{2}) (.*)$");
-
-        try {
-            Matcher matcher = p.matcher(message);
-            matcher.find();
+        matcher = STUS_PATTERN.matcher(message);
+        if (matcher.find()) {
             // pull out the update type and the remainder of the message
             dispatchKeyValue(matcher.group(1), matcher.group(2));
             return;
-        } catch (IllegalStateException e) {
+        } else {
             logger.debug("no match on message: {}", message);
         }
 
@@ -284,8 +279,6 @@ public abstract class OppoConnector {
      */
     private void dispatchKeyValue(String key, String value) {
         OppoMessageEvent event = new OppoMessageEvent(this, key, value);
-        for (int i = 0; i < listeners.size(); i++) {
-            listeners.get(i).onNewMessageEvent(event);
-        }
+        listeners.forEach(l -> l.onNewMessageEvent(event));
     }
 }

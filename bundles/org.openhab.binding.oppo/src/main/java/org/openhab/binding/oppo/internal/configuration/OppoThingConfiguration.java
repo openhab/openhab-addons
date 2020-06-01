@@ -13,6 +13,7 @@
 package org.openhab.binding.oppo.internal.configuration;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link OppoThingConfiguration} class contains fields mapping thing configuration parameters.
@@ -21,9 +22,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class OppoThingConfiguration {
-    public @NonNullByDefault({}) Integer model;
+    public @Nullable Integer model;
     public @NonNullByDefault({}) String serialPort;
-    public @NonNullByDefault({}) String host;
-    public @NonNullByDefault({}) Integer port;
-    public @NonNullByDefault({}) Integer verboseMode;
+    public @Nullable String host;
+    public @Nullable Integer port;
+    public boolean verboseMode;
 }
