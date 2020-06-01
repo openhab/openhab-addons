@@ -53,16 +53,15 @@ public abstract class NuvoConnector {
 
     private static final byte[] WAKE_STR = "\r".getBytes(StandardCharsets.US_ASCII);
 
-    private static final Pattern SRC_PATTERN = Pattern.compile("^#(S\\d{1})(.*)$");
-    private static final Pattern ZONE_PATTERN = Pattern.compile("^#(Z\\d{1,2}),(.*)$");
-    private static final Pattern ZONE_BUTTON_PATTERN = Pattern.compile("^#(Z\\d{1,2})(S\\d{1})(.*)$");
+    private static final Pattern SRC_PATTERN = Pattern.compile("^#S(\\d{1})(.*)$");
+    private static final Pattern ZONE_PATTERN = Pattern.compile("^#Z(\\d{1,2}),(.*)$");
+    private static final Pattern ZONE_BUTTON_PATTERN = Pattern.compile("^#Z(\\d{1,2})(S\\d{1})(.*)$");
     private static final Pattern ZONE_CFG_PATTERN = Pattern.compile("^#ZCFG(\\d{1,2}),(.*)$");
 
     private static final String VER_STR = "#VER\"NV-";
     private static final String ALL_OFF = "#ALLOFF";
     private static final String MUTE = "#MUTE";
     private static final String PAGE = "#PAGE";
-    private static final String Z = "Z";
 
     /** The output stream */
     protected @Nullable OutputStream dataOut;
@@ -369,7 +368,7 @@ public abstract class NuvoConnector {
         matcher = ZONE_CFG_PATTERN.matcher(message);
         if (matcher.find()) {
             // pull out the zone id and the remainder of the message
-            dispatchKeyValue(TYPE_ZONE_CONFIG, Z + matcher.group(1), matcher.group(2));
+            dispatchKeyValue(TYPE_ZONE_CONFIG, matcher.group(1), matcher.group(2));
             return;
         } else {
             logger.debug("no match on message: {}", message);

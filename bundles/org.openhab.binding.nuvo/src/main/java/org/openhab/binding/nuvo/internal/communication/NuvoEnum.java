@@ -14,8 +14,6 @@ package org.openhab.binding.nuvo.internal.communication;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -26,7 +24,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public enum NuvoEnum {
-
     SYSTEM("SYSTEM", "SYSTEM"),
     ZONE1("Z1", "ZCFG1"),
     ZONE2("Z2", "ZCFG2"),
@@ -57,42 +54,6 @@ public enum NuvoEnum {
 
     private String id;
     private String cfgId;
-
-    // make a map to enable lookup by the zone id value
-    public static final Map<String, NuvoEnum> ZONE_MAP = new HashMap<>();
-    static {
-        ZONE_MAP.put(ZONE1.getId(), ZONE1);
-        ZONE_MAP.put(ZONE2.getId(), ZONE2);
-        ZONE_MAP.put(ZONE3.getId(), ZONE3);
-        ZONE_MAP.put(ZONE4.getId(), ZONE4);
-        ZONE_MAP.put(ZONE5.getId(), ZONE5);
-        ZONE_MAP.put(ZONE6.getId(), ZONE6);
-        ZONE_MAP.put(ZONE7.getId(), ZONE7);
-        ZONE_MAP.put(ZONE8.getId(), ZONE8);
-        ZONE_MAP.put(ZONE9.getId(), ZONE9);
-        ZONE_MAP.put(ZONE10.getId(), ZONE10);
-        ZONE_MAP.put(ZONE11.getId(), ZONE11);
-        ZONE_MAP.put(ZONE12.getId(), ZONE12);
-        ZONE_MAP.put(ZONE13.getId(), ZONE13);
-        ZONE_MAP.put(ZONE14.getId(), ZONE14);
-        ZONE_MAP.put(ZONE15.getId(), ZONE15);
-        ZONE_MAP.put(ZONE16.getId(), ZONE16);
-        ZONE_MAP.put(ZONE17.getId(), ZONE17);
-        ZONE_MAP.put(ZONE18.getId(), ZONE18);
-        ZONE_MAP.put(ZONE19.getId(), ZONE19);
-        ZONE_MAP.put(ZONE20.getId(), ZONE20);
-    }
-
-    // make a map to enable lookup by the source id value
-    public static final Map<String, NuvoEnum> SOURCE_MAP = new HashMap<>();
-    static {
-        SOURCE_MAP.put(SOURCE1.getId(), SOURCE1);
-        SOURCE_MAP.put(SOURCE2.getId(), SOURCE2);
-        SOURCE_MAP.put(SOURCE3.getId(), SOURCE3);
-        SOURCE_MAP.put(SOURCE4.getId(), SOURCE4);
-        SOURCE_MAP.put(SOURCE5.getId(), SOURCE5);
-        SOURCE_MAP.put(SOURCE6.getId(), SOURCE6);
-    }
 
     // make a list of all valid source ids
     public static final ArrayList<String> VALID_SOURCES = new ArrayList<String>(Arrays.asList(SOURCE1.getId(),

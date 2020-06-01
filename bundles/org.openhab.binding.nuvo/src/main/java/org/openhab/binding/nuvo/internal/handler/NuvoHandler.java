@@ -90,6 +90,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
     private static final Unit<Time> API_SECOND_UNIT = SmartHomeUnits.SECOND;
 
     private static final String ZONE = "ZONE";
+    private static final String SOURCE = "SOURCE";
     private static final String CHANNEL_DELIMIT = "#";
     private static final String UNDEF = "UNDEF";
 
@@ -428,7 +429,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
 
             case NuvoConnector.TYPE_ALLOFF:
                 activeZones.forEach(zoneNum -> {
-                    updateChannelState(NuvoEnum.ZONE_MAP.get("Z" + zoneNum.toString()), CHANNEL_TYPE_POWER,
+                    updateChannelState(NuvoEnum.valueOf(ZONE + zoneNum.toString()), CHANNEL_TYPE_POWER,
                             NuvoCommand.OFF.getValue());
                 });
                 break;
@@ -437,7 +438,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                 updateChannelState(NuvoEnum.SYSTEM, CHANNEL_TYPE_ALLMUTE,
                         "1".equals(updateData) ? NuvoCommand.ON.getValue() : NuvoCommand.OFF.getValue());
                 activeZones.forEach(zoneNum -> {
-                    updateChannelState(NuvoEnum.ZONE_MAP.get("Z" + zoneNum.toString()), CHANNEL_TYPE_MUTE,
+                    updateChannelState(NuvoEnum.valueOf(ZONE + zoneNum.toString()), CHANNEL_TYPE_MUTE,
                             "1".equals(updateData) ? NuvoCommand.ON.getValue() : NuvoCommand.OFF.getValue());
                 });
                 break;
@@ -449,7 +450,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
 
             case NuvoConnector.TYPE_SOURCE_UPDATE:
                 logger.debug("Source update: Source: {} - Value: {}", key, updateData);
-                NuvoEnum targetSource = NuvoEnum.SOURCE_MAP.get(key);
+                NuvoEnum targetSource = NuvoEnum.valueOf(SOURCE + key);
 
                 if (updateData.contains("DISPLINE")) {
                     // example: DISPLINE2,"Play My Song (Featuring Dee Ajayi)"
@@ -473,7 +474,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                 } else if (updateData.contains("NAME\"") && sourceLabels.size() <= MAX_SRC) {
                     // example: NAME"Ipod"
                     String name = updateData.split("\"")[1];
-                    sourceLabels.add(new StateOption(key.replace("S", ""), name));
+                    sourceLabels.add(new StateOption(key, name));
                 }
 
                 break;
@@ -484,7 +485,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                 // or: ON,SRC3,VOL63,DND0,LOCK0
                 // or: ON,SRC3,MUTE,DND0,LOCK0
 
-                NuvoEnum targetZone = NuvoEnum.ZONE_MAP.get(key);
+                NuvoEnum targetZone = NuvoEnum.valueOf(ZONE + key);
 
                 if ("OFF".equals(updateData)) {
                     updateChannelState(targetZone, CHANNEL_TYPE_POWER, NuvoCommand.OFF.getValue());
@@ -513,7 +514,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
 
             case NuvoConnector.TYPE_ZONE_BUTTON:
                 logger.debug("Zone Button pressed: Source: {} - Button: {}", key, updateData);
-                updateChannelState(NuvoEnum.SOURCE_MAP.get(key), CHANNEL_BUTTON_PRESS, updateData);
+                updateChannelState(NuvoEnum.valueOf(SOURCE + key), CHANNEL_BUTTON_PRESS, updateData);
                 break;
 
             case NuvoConnector.TYPE_ZONE_CONFIG:
@@ -521,11 +522,11 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                 // example: BASS1,TREB-2,BALR2,LOUDCMP1
                 Matcher matcher = ZONE_CFG_PATTERN.matcher(updateData);
                 if (matcher.find()) {
-                    updateChannelState(NuvoEnum.ZONE_MAP.get(key), CHANNEL_TYPE_BASS, matcher.group(1));
-                    updateChannelState(NuvoEnum.ZONE_MAP.get(key), CHANNEL_TYPE_TREBLE, matcher.group(2));
-                    updateChannelState(NuvoEnum.ZONE_MAP.get(key), CHANNEL_TYPE_BALANCE,
+                    updateChannelState(NuvoEnum.valueOf(ZONE + key), CHANNEL_TYPE_BASS, matcher.group(1));
+                    updateChannelState(NuvoEnum.valueOf(ZONE + key), CHANNEL_TYPE_TREBLE, matcher.group(2));
+                    updateChannelState(NuvoEnum.valueOf(ZONE + key), CHANNEL_TYPE_BALANCE,
                             NuvoStatusCodes.getBalanceFromStr(matcher.group(3)));
-                    updateChannelState(NuvoEnum.ZONE_MAP.get(key), CHANNEL_TYPE_LOUDNESS,
+                    updateChannelState(NuvoEnum.valueOf(ZONE + key), CHANNEL_TYPE_LOUDNESS,
                             "1".equals(matcher.group(4)) ? NuvoCommand.ON.getValue() : NuvoCommand.OFF.getValue());
                 } else {
                     logger.debug("no match on message: {}", updateData);
@@ -558,11 +559,11 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
 
                             NuvoEnum.VALID_SOURCES.forEach(source -> {
                                 try {
-                                    connector.sendQuery(NuvoEnum.SOURCE_MAP.get(source), NuvoCommand.NAME);
+                                    connector.sendQuery(NuvoEnum.valueOf(NuvoEnum.class, source), NuvoCommand.NAME);
                                     Thread.sleep(SLEEP_BETWEEN_CMD);
-                                    connector.sendQuery(NuvoEnum.SOURCE_MAP.get(source), NuvoCommand.DISPINFO);
+                                    connector.sendQuery(NuvoEnum.valueOf(NuvoEnum.class, source), NuvoCommand.DISPINFO);
                                     Thread.sleep(SLEEP_BETWEEN_CMD);
-                                    connector.sendQuery(NuvoEnum.SOURCE_MAP.get(source), NuvoCommand.DISPLINE);
+                                    connector.sendQuery(NuvoEnum.valueOf(NuvoEnum.class, source), NuvoCommand.DISPLINE);
                                     Thread.sleep(SLEEP_BETWEEN_CMD);
                                 } catch (NuvoException | InterruptedException e) {
                                     logger.debug("Error Querying Source data: {}", e.getMessage());
@@ -766,7 +767,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
     /**
      * Handle a button press from a UI Player item
      *
-     * @param target the nuvo zone to recieve the command
+     * @param target the nuvo zone to receive the command
      * @param command the button press command to send to the zone
      */
     private void handleControlCommand(NuvoEnum target, Command command) throws NuvoException {
