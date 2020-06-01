@@ -142,7 +142,10 @@ public class MagentaTVOAuth {
             logger.trace("http response={}", httpResponse);
             OAuthTokenResponse resp = gson.fromJson(httpResponse, OAuthTokenResponse.class);
             if (resp.accessToken.isEmpty()) {
-                throw new MagentaTVException("Unable to authenticate");
+                String errorMessage = MessageFormat.format("Unable to authenticate: accountName={0}, rc={1} ({2})",
+                        accountName, getString(resp.errorDescription), getString(resp.error));
+                logger.warn("{}", errorMessage);
+                throw new MagentaTVException(errorMessage);
             }
 
             uuid = "t_" + MagentaTVControl.computeMD5(accountName);
@@ -161,9 +164,9 @@ public class MagentaTVOAuth {
 
             logger.trace("http response={}", httpResponse);
             OAuthAutenhicateResponse authResp = gson.fromJson(httpResponse, OAuthAutenhicateResponse.class);
-            if (authResp.userID.isEmpty() || !getString(authResp.retcode).isEmpty() || !authResp.retcode.equals("0")) {
+            if (authResp.userID.isEmpty()) {
                 String errorMessage = MessageFormat.format("Unable to authenticate: accountName={0}, rc={1} - {2}",
-                        accountName, authResp.retcode, getString(authResp.desc));
+                        accountName, getString(authResp.retcode), getString(authResp.desc));
                 logger.warn("{}", errorMessage);
                 throw new MagentaTVException(errorMessage);
             }
