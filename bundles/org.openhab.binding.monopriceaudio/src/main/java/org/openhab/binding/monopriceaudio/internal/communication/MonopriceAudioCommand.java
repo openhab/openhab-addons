@@ -13,7 +13,6 @@
 package org.openhab.binding.monopriceaudio.internal.communication;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Represents the different kinds of commands
@@ -22,7 +21,6 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public enum MonopriceAudioCommand {
-
     QUERY("?"),
     BEGIN_CMD("<"),
     END_CMD("\r"),

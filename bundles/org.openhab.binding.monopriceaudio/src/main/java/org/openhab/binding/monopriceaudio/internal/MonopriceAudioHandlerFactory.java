@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.monopriceaudio.internal.handler.MonopriceAudioHandler;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -47,6 +48,11 @@ public class MonopriceAudioHandlerFactory extends BaseThingHandlerFactory {
     private @NonNullByDefault({}) SerialPortManager serialPortManager;
 
     private @NonNullByDefault({}) MonopriceAudioStateDescriptionOptionProvider stateDescriptionProvider;
+
+    @Activate
+    public MonopriceAudioHandlerFactory(final @Reference MonopriceAudioStateDescriptionOptionProvider provider) {
+        this.stateDescriptionProvider = provider;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -71,16 +77,5 @@ public class MonopriceAudioHandlerFactory extends BaseThingHandlerFactory {
 
     protected void unsetSerialPortManager(final SerialPortManager serialPortManager) {
         this.serialPortManager = null;
-    }
-
-    @Reference
-    protected void setDynamicStateDescriptionProvider(
-            MonopriceAudioStateDescriptionOptionProvider stateDescriptionProvider) {
-        this.stateDescriptionProvider = stateDescriptionProvider;
-    }
-
-    protected void unsetDynamicStateDescriptionProvider(
-            MonopriceAudioStateDescriptionOptionProvider stateDescriptionProvider) {
-        this.stateDescriptionProvider = null;
     }
 }
