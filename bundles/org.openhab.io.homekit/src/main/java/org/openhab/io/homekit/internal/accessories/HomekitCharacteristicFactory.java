@@ -39,8 +39,8 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
+import org.openhab.io.homekit.internal.HomekitCommandType;
 import org.openhab.io.homekit.internal.HomekitException;
-import org.openhab.io.homekit.internal.HomekitOHItemProxy;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -360,7 +360,7 @@ public class HomekitCharacteristicFactory {
             return CompletableFuture.completedFuture(value);
         }, (hue) -> {
             if (taggedItem.getItem() instanceof ColorItem) {
-                taggedItem.sendCommandProxy(HomekitOHItemProxy.HUE_COMMAND, new DecimalType(hue));
+                taggedItem.sendCommandProxy(HomekitCommandType.HUE_COMMAND, new DecimalType(hue));
             } else {
                 logger.warn("Item type {} is not supported for {}. Only Color type is supported.",
                         taggedItem.getItem().getType(), taggedItem.getName());
@@ -382,7 +382,7 @@ public class HomekitCharacteristicFactory {
         }, (brightness) -> {
             final Item item = taggedItem.getItem();
             if (item instanceof DimmerItem) {
-                taggedItem.sendCommandProxy(HomekitOHItemProxy.BRIGHTNESS_COMMAND, new PercentType(brightness));
+                taggedItem.sendCommandProxy(HomekitCommandType.BRIGHTNESS_COMMAND, new PercentType(brightness));
             } else {
                 logger.warn("Item type {} is not supported for {}. Only ColorItem and DimmerItem are supported.",
                         item.getType(), taggedItem.getName());
@@ -403,7 +403,7 @@ public class HomekitCharacteristicFactory {
             return CompletableFuture.completedFuture(value);
         }, (saturation) -> {
             if (taggedItem.getItem() instanceof ColorItem) {
-                taggedItem.sendCommandProxy(HomekitOHItemProxy.SATURATION_COMMAND,
+                taggedItem.sendCommandProxy(HomekitCommandType.SATURATION_COMMAND,
                         new PercentType(saturation.intValue()));
             } else {
                 logger.warn("Item type {} is not supported for {}. Only Color type is supported.",

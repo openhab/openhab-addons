@@ -22,7 +22,7 @@ import org.eclipse.smarthome.core.library.items.SwitchItem;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
-import org.openhab.io.homekit.internal.HomekitOHItemProxy;
+import org.openhab.io.homekit.internal.HomekitCommandType;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
@@ -55,7 +55,7 @@ class HomekitLightbulbImpl extends AbstractHomekitAccessoryImpl implements Light
             final OnOffType onOffState = OnOffType.from(value);
             final GenericItem item = (GenericItem) tItem.getItem();
             if (item instanceof DimmerItem) {
-                tItem.sendCommandProxy(HomekitOHItemProxy.ON_COMMAND, onOffState);
+                tItem.sendCommandProxy(HomekitCommandType.ON_COMMAND, onOffState);
             } else if (item instanceof SwitchItem) {
                 ((SwitchItem) item).send(onOffState);
             } else if (item instanceof GroupItem) {

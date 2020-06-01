@@ -14,7 +14,6 @@ package org.openhab.io.homekit.internal;
 
 import static org.openhab.io.homekit.internal.HomekitAccessoryType.DUMMY;
 
-import java.math.BigDecimal;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -148,10 +147,10 @@ public class HomekitTaggedItem {
      * e.g. sendCommandProxy(hue), sendCommandProxy(brightness) would lead to one openHAB command that updates hue and
      * brightness at once
      *
-     * @param commandType type of the command, e.g. OHItemProxy.HUE_COMMAND
+     * @param commandType type of the command, e.g. HomekitCommandType.HUE_COMMAND
      * @param command command/state
      */
-    public void sendCommandProxy(String commandType, State command) {
+    public void sendCommandProxy(HomekitCommandType commandType, State command) {
         proxyItem.sendCommandProxy(commandType, command);
     }
 
@@ -184,20 +183,11 @@ public class HomekitTaggedItem {
         if (configuration != null) {
             Object dimmerModeConfig = configuration.get(DIMMER_MODE);
             if (dimmerModeConfig instanceof String) {
-                final String dimmerModeConfigStr = (String) dimmerModeConfig;
-                if (dimmerModeConfigStr.equalsIgnoreCase("none")) {
-                    proxyItem.setDimmerMode(HomekitOHItemProxy.DIMMER_MODE_NONE);
-                } else if (dimmerModeConfigStr.equalsIgnoreCase("filterOn")) {
-                    proxyItem.setDimmerMode(HomekitOHItemProxy.DIMMER_MODE_FILTER_ON);
-                } else if (dimmerModeConfigStr.equalsIgnoreCase("filterBrightness100")) {
-                    proxyItem.setDimmerMode(HomekitOHItemProxy.DIMMER_MODE_FILTER_BRIGHTNESS_100);
-                } else if (dimmerModeConfigStr.equalsIgnoreCase("filterOnExceptBrightness100")) {
-                    proxyItem.setDimmerMode(HomekitOHItemProxy.DIMMER_MODE_FILTER_ON_EXCEPT_BRIGHTNESS_100);
-                }
+                HomekitDimmerMode.valueOfTag((String) dimmerModeConfig).ifPresent(proxyItem::setDimmerMode);
             }
             Object delayConfig = configuration.get(DELAY);
-            if (delayConfig instanceof BigDecimal) {
-                proxyItem.setDelay(((BigDecimal) delayConfig).intValue());
+            if (delayConfig instanceof Number) {
+                proxyItem.setDelay(((Number) delayConfig).intValue());
             }
         }
     }

@@ -13,11 +13,17 @@
 
 package org.openhab.io.homekit.internal;
 
+import static org.openhab.io.homekit.internal.HomekitCommandType.*;
+import static org.openhab.io.homekit.internal.HomekitDimmerMode.*;
+
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.library.items.ColorItem;
@@ -36,35 +42,28 @@ import org.slf4j.LoggerFactory;
  * Proxy class that can collect multiple commands for the same openHAB item and merge them to one command.
  * e.g. Hue and Saturation update for Color Item
  * 
- * @author Eugen Freiter Initial contribution
+ * @author Eugen Freiter - Initial contribution
  *
  */
-
+@NonNullByDefault
 public class HomekitOHItemProxy {
-    private static final Logger logger = LoggerFactory.getLogger(HomekitOHItemProxy.class);
-    public static final String HUE_COMMAND = "hue";
-    public static final String SATURATION_COMMAND = "saturation";
-    public static final String BRIGHTNESS_COMMAND = "brightness";
-    public static final String ON_COMMAND = "on";
-
-    public static final int DIMMER_MODE_NONE = 0;
-    public static final int DIMMER_MODE_FILTER_BRIGHTNESS_100 = 1;
-    public static final int DIMMER_MODE_FILTER_ON = 2;
-    public static final int DIMMER_MODE_FILTER_ON_EXCEPT_BRIGHTNESS_100 = 3;
+    private final Logger logger = LoggerFactory.getLogger(HomekitOHItemProxy.class);
 
     private static final int DEFAULT_DELAY = 50;
 
     private final ScheduledExecutorService scheduler = ThreadPoolManager
             .getScheduledPool(ThreadPoolManager.THREAD_POOL_NAME_COMMON);
+
+    @Nullable
     private ScheduledFuture<?> future;
 
     private final Item item;
 
-    private int dimmerMode = DIMMER_MODE_NONE;
+    private HomekitDimmerMode dimmerMode = DIMMER_MODE_NORMAL;
 
     // delay, how long wait for further commands. in ms.
     private int delay = DEFAULT_DELAY;
-    private ConcurrentHashMap<String, State> commandCache = new ConcurrentHashMap<>();
+    private Map<HomekitCommandType, State> commandCache = new ConcurrentHashMap<>();
 
     public HomekitOHItemProxy(final Item item) {
         this.item = item;
@@ -74,7 +73,7 @@ public class HomekitOHItemProxy {
         return item;
     }
 
-    public void setDimmerMode(int mode) {
+    public void setDimmerMode(HomekitDimmerMode mode) {
         dimmerMode = mode;
     }
 
@@ -82,7 +81,15 @@ public class HomekitOHItemProxy {
         this.delay = delay;
     }
 
+    @SuppressWarnings("null")
     private void sendCommand() {
+
+        if (!(item instanceof DimmerItem)) {
+            // currently supports only DimmerItem and ColorItem (which extends DimmerItem)
+            logger.debug("unexpected item type {}. Only DimmerItem and ColorItem are supported.", item);
+            return;
+        }
+
         final OnOffType on = (OnOffType) commandCache.remove(ON_COMMAND);
         final PercentType brightness = (PercentType) commandCache.remove(BRIGHTNESS_COMMAND);
         final DecimalType hue = (DecimalType) commandCache.remove(HUE_COMMAND);
@@ -94,7 +101,7 @@ public class HomekitOHItemProxy {
             // - DIMMER_MODE_NONE is enabled OR
             // - DIMMER_MODE_FILTER_BRIGHTNESS_100 is enabled OR
             // - DIMMER_MODE_FILTER_ON_EXCEPT100 is not enabled and brightness is null or below 100
-            if ((on == OnOffType.OFF) || (dimmerMode == DIMMER_MODE_NONE)
+            if ((on == OnOffType.OFF) || (dimmerMode == DIMMER_MODE_NORMAL)
                     || (dimmerMode == DIMMER_MODE_FILTER_BRIGHTNESS_100)
                     || ((dimmerMode == DIMMER_MODE_FILTER_ON_EXCEPT_BRIGHTNESS_100)
                             && ((brightness == null) || (brightness.intValue() == 100)))) {
@@ -121,25 +128,27 @@ public class HomekitOHItemProxy {
             // - DIMMER_MODE_FILTER_ON
             // - other modes (DIMMER_MODE_FILTER_BRIGHTNESS_100 or DIMMER_MODE_FILTER_ON_EXCEPT_BRIGHTNESS_100) and
             // <100%.
-            if ((dimmerMode == DIMMER_MODE_NONE) || (dimmerMode == DIMMER_MODE_FILTER_ON)
+            if ((dimmerMode == DIMMER_MODE_NORMAL) || (dimmerMode == DIMMER_MODE_FILTER_ON)
                     || (brightness.intValue() < 100)) {
-                logger.trace("send brightness command for item {} with value {}", item, brightness);
+                logger.trace("send Brightness command for item {} with value {}", item, brightness);
                 ((DimmerItem) item).send(brightness);
             }
         }
         commandCache.clear();
     }
 
-    public synchronized void sendCommandProxy(final String commandType, final State state) {
+    public synchronized void sendCommandProxy(final HomekitCommandType commandType, final State state) {
         commandCache.put(commandType, state);
         logger.trace("add command to command cache: item {}, command type {}, command state {}. cache state after: {}",
                 this, commandType, state, commandCache);
 
         // if cache has already HUE+SATURATION or BRIGHTNESS+ON then we don't expect any further relevant command
-        if ((commandCache.containsKey(HUE_COMMAND) && commandCache.containsKey(SATURATION_COMMAND))
+        if (((item instanceof ColorItem) && commandCache.containsKey(HUE_COMMAND)
+                && commandCache.containsKey(SATURATION_COMMAND))
                 || (commandCache.containsKey(BRIGHTNESS_COMMAND) && commandCache.containsKey(ON_COMMAND))) {
-            if (future != null)
-                future.cancel(true);
+            if (future != null) {
+                future.cancel(false);
+            }
             sendCommand();
             return;
         }
@@ -148,7 +157,7 @@ public class HomekitOHItemProxy {
         // commands are received.
         if (future == null || future.isDone()) {
             future = scheduler.schedule(() -> {
-                logger.trace("timer is over, sending the command");
+                logger.trace("timer of {} ms is over, sending the command", delay);
                 sendCommand();
             }, delay, TimeUnit.MILLISECONDS);
         }
