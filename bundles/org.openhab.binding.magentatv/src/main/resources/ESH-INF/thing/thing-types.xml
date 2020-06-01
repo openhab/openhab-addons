@@ -90,11 +90,11 @@
 		<label>Program Information</label>
 		<description>Information on the running program</description>
 		<channels>
-			<channel id="programTitle" typeId="system.media-title" />
-			<channel id="programText" typeId="programText" />
-			<channel id="programStart" typeId="programStart" />
-			<channel id="programDuration" typeId="programDuration" />
-			<channel id="programPosition" typeId="programPosition" />
+			<channel id="title" typeId="system.media-title" />
+			<channel id="text" typeId="programText" />
+			<channel id="start" typeId="programStart" />
+			<channel id="duration" typeId="programDuration" />
+			<channel id="position" typeId="programPosition" />
 		</channels>
 	</channel-group-type>
 

@@ -96,11 +96,11 @@ The binding uses the network settings in openHAB system configuration to determi
 |        |key            |Send key code to the receiver (see code table below)                     |
 |status  |channelCode    |The channel code from the EPG                                            |
 |        |playMode       |Current play mode - this info is not reliable                            |
-|program |programTitle   |Title of the running program or video being played                       |
-|        |programText    | Some description (as reported by the receiver, could be empty)          |
-|        |programStart   |Time when the program started                                            |
-|        |programDuration| Remaining time, usually not updated for TV program                      | 
-|        |programPosition| Position within a movie (0 for regular programs).                       |
+|program |title          |Title of the running program or video being played                       |
+|        |text           | Some description (as reported by the receiver, could be empty)          |
+|        |start          |Time when the program started                                            |
+|        |duration       | Remaining time, usually not updated for TV program                      | 
+|        |position       | Position within a movie (0 for regular programs).                       |
 
 Channels receiving event information when changing the channel or playing a video.
 

@@ -74,11 +74,11 @@ public class MagentaTVBindingConstants {
     public static final String CHANNEL_KEY = CHGROUP_CONTROL + "#" + "key";
 
     public static final String CHGROUP_PROGRAM = "program";
-    public static final String CHANNEL_PROG_TITLE = CHGROUP_PROGRAM + "#" + "programTitle";
-    public static final String CHANNEL_PROG_TEXT = CHGROUP_PROGRAM + "#" + "programText";
-    public static final String CHANNEL_PROG_START = CHGROUP_PROGRAM + "#" + "programStart";
-    public static final String CHANNEL_PROG_DURATION = CHGROUP_PROGRAM + "#" + "programDuration";
-    public static final String CHANNEL_PROG_POS = CHGROUP_PROGRAM + "#" + "programPosition";
+    public static final String CHANNEL_PROG_TITLE = CHGROUP_PROGRAM + "#" + "title";
+    public static final String CHANNEL_PROG_TEXT = CHGROUP_PROGRAM + "#" + "text";
+    public static final String CHANNEL_PROG_START = CHGROUP_PROGRAM + "#" + "start";
+    public static final String CHANNEL_PROG_DURATION = CHGROUP_PROGRAM + "#" + "duration";
+    public static final String CHANNEL_PROG_POS = CHGROUP_PROGRAM + "#" + "position";
 
     public static final String CHGROUP_STATUS = "status";
     public static final String CHANNEL_CHANNEL_CODE = CHGROUP_STATUS + "#" + "channelCode";
