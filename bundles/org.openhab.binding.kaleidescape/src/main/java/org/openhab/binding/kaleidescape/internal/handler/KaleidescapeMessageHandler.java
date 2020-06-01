@@ -69,19 +69,16 @@ public enum KaleidescapeMessageHandler {
 
             // example: 1:1
             // power_state, zone 1 state, zone n state
-            Pattern p = Pattern.compile("^(\\d{1}):(.*)$");
+            final Pattern p = Pattern.compile("^(\\d{1}):(.*)$");
 
-            try {
-                Matcher matcher = p.matcher(message);
-                matcher.find();
-
+            Matcher matcher = p.matcher(message);
+            if (matcher.find()) {
                 if (("1").equals(matcher.group(1))) {
                     handler.updateChannel(KaleidescapeBindingConstants.POWER, OnOffType.ON);
                 } else if (("0").equals(matcher.group(1))) {
                     handler.updateChannel(KaleidescapeBindingConstants.POWER, OnOffType.OFF);
                 }
-
-            } catch (IllegalStateException | IllegalArgumentException e) {
+            } else {
                 logger.debug("DEVICE_POWER_STATE - no match on message: {}", message);
             }
         }
@@ -100,12 +97,10 @@ public enum KaleidescapeMessageHandler {
 
             // example: 0:0:00:00000:00000:000:00000:00000
             // mode, speed, title_num, title_length, title_loc, chapter_num, chapter_length, chapter_loc
-            Pattern p = Pattern.compile("^(\\d{1}):(\\d{1}):(\\d{2}):(\\d{5}):(\\d{5}):(\\d{3}):(\\d{5}):(\\d{5})$");
+            final Pattern p = Pattern.compile("^(\\d{1}):(\\d{1}):(\\d{2}):(\\d{5}):(\\d{5}):(\\d{3}):(\\d{5}):(\\d{5})$");
 
-            try {
-                Matcher matcher = p.matcher(message);
-                matcher.find();
-
+            Matcher matcher = p.matcher(message);
+            if (matcher.find()) {
                 handler.updateChannel(KaleidescapeBindingConstants.PLAY_MODE,
                         new StringType(KaleidescapeStatusCodes.PLAY_MODE.get(matcher.group(1))));
 
@@ -128,8 +123,7 @@ public enum KaleidescapeMessageHandler {
 
                 handler.updateChannel(KaleidescapeBindingConstants.CHAPTER_LOC,
                         new QuantityType<Time>(Integer.parseInt(matcher.group(8)), handler.apiSecondUnit));
-
-            } catch (IllegalStateException | IllegalArgumentException e) {
+            } else {
                 logger.debug("PLAY_STATUS - no match on message: {}", message);
             }
         }
@@ -157,12 +151,10 @@ public enum KaleidescapeMessageHandler {
 
             // example: 00:00:00
             // composite, component, hdmi
-            Pattern p = Pattern.compile("^(\\d{2}):(\\d{2}):(\\d{2})$");
+            final Pattern p = Pattern.compile("^(\\d{2}):(\\d{2}):(\\d{2})$");
 
-            try {
-                Matcher matcher = p.matcher(message);
-                matcher.find();
-
+            Matcher matcher = p.matcher(message);
+            if (matcher.find()) {
                 handler.updateChannel(KaleidescapeBindingConstants.VIDEO_MODE_COMPOSITE,
                         new StringType(KaleidescapeStatusCodes.VIDEO_MODE.get(matcher.group(1))));
 
@@ -171,8 +163,7 @@ public enum KaleidescapeMessageHandler {
 
                 handler.updateChannel(KaleidescapeBindingConstants.VIDEO_MODE_HDMI,
                         new StringType(KaleidescapeStatusCodes.VIDEO_MODE.get(matcher.group(3))));
-
-            } catch (IllegalStateException | IllegalArgumentException e) {
+            } else {
                 logger.debug("VIDEO_MODE - no match on message: {}", message);
             }
         }
@@ -186,16 +177,13 @@ public enum KaleidescapeMessageHandler {
 
             // example: 02:01:24:01
             // eotf, color_space, color_depth, color_sampling
-            Pattern p = Pattern.compile("^(\\d{2}):(\\d{2}):(\\d{2}):(\\d{2})$");
+            final Pattern p = Pattern.compile("^(\\d{2}):(\\d{2}):(\\d{2}):(\\d{2})$");
 
-            try {
-                Matcher matcher = p.matcher(message);
-                matcher.find();
-
+            Matcher matcher = p.matcher(message);
+            if (matcher.find()) {
                 handler.updateChannel(KaleidescapeBindingConstants.VIDEO_COLOR_EOTF,
                         new StringType(KaleidescapeStatusCodes.EOTF.get(matcher.group(1))));
-
-            } catch (IllegalStateException | IllegalArgumentException e) {
+            } else {
                 logger.debug("VIDEO_COLOR - no match on message: {}", message);
             }
         }
@@ -209,16 +197,13 @@ public enum KaleidescapeMessageHandler {
 
             // example: 02:01:24:01
             // eotf, color_space, color_depth, color_sampling
-            Pattern p = Pattern.compile("^(\\d{2}):(\\d{2}):(\\d{2}):(\\d{2})$");
+            final Pattern p = Pattern.compile("^(\\d{2}):(\\d{2}):(\\d{2}):(\\d{2})$");
 
-            try {
-                Matcher matcher = p.matcher(message);
-                matcher.find();
-
+            Matcher matcher = p.matcher(message);
+            if (matcher.find()) {
                 handler.updateChannel(KaleidescapeBindingConstants.CONTENT_COLOR_EOTF,
                         new StringType(KaleidescapeStatusCodes.EOTF.get(matcher.group(1))));
-
-            } catch (IllegalStateException | IllegalArgumentException e) {
+            } else {
                 logger.debug("CONTENT_COLOR - no match on message: {}", message);
             }
         }
@@ -274,13 +259,11 @@ public enum KaleidescapeMessageHandler {
 
             // example: You:Radiohead:Pablo Honey:1.9b5f4d786d7e2c49-t301_577:1.R_1493833:2.200c5
             // track, artist, album, track handle, album handle, now playing handle
-            Pattern p = Pattern.compile("^(.*):(.*):(.*):(.*):(.*):(.*)$");
+            final Pattern p = Pattern.compile("^(.*):(.*):(.*):(.*):(.*):(.*)$");
 
-            try {
-                // first replace delimited : in track/artist/album name with ||, fix it later in formatString()
-                Matcher matcher = p.matcher(message.replace("\\:", "||"));
-                matcher.find();
-
+            // first replace delimited : in track/artist/album name with ||, fix it later in formatString()
+            Matcher matcher = p.matcher(message.replace("\\:", "||"));
+            if (matcher.find()) {
                 handler.updateChannel(KaleidescapeBindingConstants.MUSIC_TRACK,
                         new StringType(KaleidescapeFormatter.formatString(matcher.group(1))));
 
@@ -298,8 +281,7 @@ public enum KaleidescapeMessageHandler {
 
                 handler.updateChannel(KaleidescapeBindingConstants.MUSIC_NOWPLAY_HANDLE,
                         new StringType(matcher.group(6)));
-
-            } catch (IllegalStateException | IllegalArgumentException e) {
+            } else {
                 logger.debug("MUSIC_TITLE - no match on message: {}", message);
             }
         }
@@ -312,12 +294,10 @@ public enum KaleidescapeMessageHandler {
             // example: 2:0:00207:+00000:000.00
             // 2:0:00331:+00183:055.29
             // mode, speed, track length, track position, track progress %
-            Pattern p = Pattern.compile("^(\\d{1}):(\\d{1}):(\\d{5}):(.\\d{5}):(\\d{3}\\.\\d{2})$");
+            final Pattern p = Pattern.compile("^(\\d{1}):(\\d{1}):(\\d{5}):(.\\d{5}):(\\d{3}\\.\\d{2})$");
 
-            try {
-                Matcher matcher = p.matcher(message);
-                matcher.find();
-
+            Matcher matcher = p.matcher(message);
+            if (matcher.find()) {
                 handler.updateChannel(KaleidescapeBindingConstants.MUSIC_PLAY_MODE,
                         new StringType(KaleidescapeStatusCodes.PLAY_MODE.get(matcher.group(1))));
 
@@ -331,8 +311,7 @@ public enum KaleidescapeMessageHandler {
 
                 handler.updateChannel(KaleidescapeBindingConstants.MUSIC_TRACK_PROGRESS,
                         new DecimalType(BigDecimal.valueOf(Math.round(Double.parseDouble(matcher.group(5))))));
-
-            } catch (IllegalStateException | IllegalArgumentException e) {
+            } else {
                 logger.debug("MUSIC_PLAY_STATUS - no match on message: {}", message);
             }
         }
@@ -345,12 +324,10 @@ public enum KaleidescapeMessageHandler {
             // example: 00013:00000:0:0:0000000238:2.200c5
             // total # tracks in list, list index, repeat, random, generation, now_playing handle
             // only using repeat & random right now
-            Pattern p = Pattern.compile("^(\\d{5}):(\\d{5}):(\\d{1}):(\\d{1}):(\\d{10}):(.*)$");
+            final Pattern p = Pattern.compile("^(\\d{5}):(\\d{5}):(\\d{1}):(\\d{1}):(\\d{10}):(.*)$");
 
-            try {
-                Matcher matcher = p.matcher(message);
-                matcher.find();
-
+            Matcher matcher = p.matcher(message);
+            if (matcher.find()) {
                 // update REPEAT switch state
                 if (("1").equals(matcher.group(3))) {
                     handler.updateChannel(KaleidescapeBindingConstants.MUSIC_REPEAT, OnOffType.ON);
@@ -364,8 +341,7 @@ public enum KaleidescapeMessageHandler {
                 } else {
                     handler.updateChannel(KaleidescapeBindingConstants.MUSIC_RANDOM, OnOffType.OFF);
                 }
-
-            } catch (IllegalStateException | IllegalArgumentException e) {
+            } else {
                 logger.debug("MUSIC_NOW_PLAYING_STATUS - no match on message: {}", message);
             }
         }
@@ -386,11 +362,10 @@ public enum KaleidescapeMessageHandler {
             // g1=meta id, g2=meta type, g3=data
             // example: 6:Year:1995
             // or: 10:Genres:Pop\/Rock
-            Pattern p = Pattern.compile("^(\\d{1,2}):([^:^/]*):(.*)$");
+            final Pattern p = Pattern.compile("^(\\d{1,2}):([^:^/]*):(.*)$");
 
-            try {
-                Matcher matcher = p.matcher(message);
-                matcher.find();
+            Matcher matcher = p.matcher(message);
+            if (matcher.find()) {
                 String metaType = matcher.group(2).toLowerCase();
                 String value = KaleidescapeFormatter.formatString(matcher.group(3));
 
@@ -458,7 +433,7 @@ public enum KaleidescapeMessageHandler {
                         handler.updateDetailChannel(metaType, new StringType(value));
                     }
                 }
-            } catch (IllegalStateException | IllegalArgumentException e) {
+            } else {
                 logger.debug("CONTENT_DETAILS - no match on message: {}", message);
             }
         }
@@ -562,17 +537,13 @@ public enum KaleidescapeMessageHandler {
 
             // example: 16:8.6.0-21023
             // protocol version, kOS version
-            Pattern p = Pattern.compile("^(\\d{2}):(.*)$");
+            final Pattern p = Pattern.compile("^(\\d{2}):(.*)$");
 
-            try {
-                Matcher matcher = p.matcher(message);
-                matcher.find();
-
+            Matcher matcher = p.matcher(message);
+            if (matcher.find()) {
                 handler.updateChannel(KaleidescapeBindingConstants.PROTOCOL_VERSION, new StringType(matcher.group(1)));
-
                 handler.updateChannel(KaleidescapeBindingConstants.SYSTEM_VERSION, new StringType(matcher.group(2)));
-
-            } catch (IllegalStateException | IllegalArgumentException e) {
+            } else {
                 logger.debug("SYSTEM_VERSION - no match on message: {}", message);
             }
         }
@@ -583,19 +554,16 @@ public enum KaleidescapeMessageHandler {
 
             // example: 07:000000000000558F:00:192.168.001.100
             // device type (deprecated), serial number, cpdid, ip address
-            Pattern p = Pattern.compile("^(\\d{2}):(.*):(\\d{2}):(.*)$");
+            final Pattern p = Pattern.compile("^(\\d{2}):(.*):(\\d{2}):(.*)$");
 
-            try {
-                Matcher matcher = p.matcher(message);
-                matcher.find();
-
+            Matcher matcher = p.matcher(message);
+            if (matcher.find()) {
                 handler.updateChannel(KaleidescapeBindingConstants.SERIAL_NUMBER,
                         new StringType(matcher.group(2).replaceFirst("^0+(?!$)", ""))); // take off leading zeros
 
                 handler.updateChannel(KaleidescapeBindingConstants.CONTROL_PROTOCOL_ID,
                         new StringType(matcher.group(3)));
-
-            } catch (IllegalStateException | IllegalArgumentException e) {
+            } else {
                 logger.debug("DEVICE_INFO - no match on message: {}", message);
             }
         }

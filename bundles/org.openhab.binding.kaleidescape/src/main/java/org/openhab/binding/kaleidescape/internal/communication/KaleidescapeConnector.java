@@ -36,13 +36,14 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class KaleidescapeConnector {
-
-    private final Logger logger = LoggerFactory.getLogger(KaleidescapeConnector.class);
-
     public static final String SUCCESS_MSG = "01/1/000:/89";
     public static final String BEGIN_CMD = "01/1/";
     public static final String END_CMD = ":\r";
     public static final String STANDBY_MSG = "Device is in standby";
+
+    private static final Pattern PATTERN = Pattern.compile("^(\\d{2})/./(\\d{3})\\:([^:^/]*)\\:(.*?)\\:/(\\d{2})$");
+
+    private final Logger logger = LoggerFactory.getLogger(KaleidescapeConnector.class);
 
     /** The output stream */
     protected @Nullable OutputStream dataOut;
@@ -173,7 +174,7 @@ public abstract class KaleidescapeConnector {
     public void sendCommand(String cmd) throws KaleidescapeException {
         String messageStr = BEGIN_CMD + cmd + END_CMD;
 
-        byte[] message = new byte[0];
+        byte[] message;
 
         message = messageStr.getBytes(StandardCharsets.US_ASCII);
         logger.debug("Send command {}", messageStr);
@@ -216,7 +217,7 @@ public abstract class KaleidescapeConnector {
      * @param incomingMessage the received message
      */
     public void handleIncomingMessage(byte[] incomingMessage) {
-        String message = new String(incomingMessage).trim();
+        String message = new String(incomingMessage, StandardCharsets.US_ASCII).trim();
 
         // ignore empty success messages
         if (!SUCCESS_MSG.equals(message)) {
@@ -226,13 +227,12 @@ public abstract class KaleidescapeConnector {
             // or: 01/!/000:PLAY_STATUS:2:0:01:07124:00138:001:00311:00138:/27
             // or: 01/1/000:TIME:2020:04:27:11:38:52:CDT:/84
             // g1=zoneid, g2=sequence, g3=message name, g4=message, g5=checksum
-            Pattern p = Pattern.compile("^(\\d{2})/./(\\d{3})\\:([^:^/]*)\\:(.*?)\\:/(\\d{2})$");
+            // pattern : "^(\\d{2})/./(\\d{3})\\:([^:^/]*)\\:(.*?)\\:/(\\d{2})$");
 
-            try {
-                Matcher matcher = p.matcher(message);
-                matcher.find();
+            Matcher matcher = PATTERN.matcher(message);
+            if (matcher.find()) {
                 dispatchKeyValue(matcher.group(3), matcher.group(4));
-            } catch (IllegalStateException | IllegalArgumentException e) {
+            } else {
                 logger.debug("no match on message: {}", message);
                 if (message.contains(STANDBY_MSG)) {
                     dispatchKeyValue(STANDBY_MSG, "");
@@ -249,8 +249,6 @@ public abstract class KaleidescapeConnector {
      */
     private void dispatchKeyValue(String key, String value) {
         KaleidescapeMessageEvent event = new KaleidescapeMessageEvent(this, key, value);
-        for (int i = 0; i < listeners.size(); i++) {
-            listeners.get(i).onNewMessageEvent(event);
-        }
+        listeners.forEach(l -> l.onNewMessageEvent(event));
     }
 }

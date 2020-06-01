@@ -13,6 +13,7 @@
 package org.openhab.binding.kaleidescape.internal.configuration;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link KaleidescapeThingConfiguration} class contains fields mapping thing configuration parameters.
@@ -22,11 +23,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class KaleidescapeThingConfiguration {
 
-    public @NonNullByDefault({}) String componentType;
+    public @Nullable String componentType;
     public @NonNullByDefault({}) String serialPort;
-    public @NonNullByDefault({}) String host;
-    public @NonNullByDefault({}) Integer port;
-    public @NonNullByDefault({}) Integer updatePeriod;
-    public @NonNullByDefault({}) Integer volumeEnabled;
-    public @NonNullByDefault({}) Integer initialVolume;
+    public @Nullable String host;
+    public @Nullable Integer port;
+    public @Nullable Integer updatePeriod;
+    public @Nullable Integer volumeEnabled;
+    public @Nullable Integer initialVolume;
 }

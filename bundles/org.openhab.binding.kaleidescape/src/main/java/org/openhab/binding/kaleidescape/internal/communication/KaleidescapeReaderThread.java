@@ -28,10 +28,11 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class KaleidescapeReaderThread extends Thread {
+    private static final int READ_BUFFER_SIZE = 16;
+    private static final int SIZE = 512;
+    private static final char TERM_CHAR = '\r';
 
     private final Logger logger = LoggerFactory.getLogger(KaleidescapeReaderThread.class);
-
-    private static final int READ_BUFFER_SIZE = 16;
 
     private KaleidescapeConnector connector;
 
@@ -48,11 +49,9 @@ public class KaleidescapeReaderThread extends Thread {
     public void run() {
         logger.debug("Data listener started");
 
-        final int size = 512;
         byte[] readDataBuffer = new byte[READ_BUFFER_SIZE];
-        byte[] dataBuffer = new byte[size];
+        byte[] dataBuffer = new byte[SIZE];
         int index = 0;
-        final char terminatingChar = '\r';
 
         try {
             while (!Thread.interrupted()) {
@@ -60,12 +59,12 @@ public class KaleidescapeReaderThread extends Thread {
                 if (len > 0) {
                     for (int i = 0; i < len; i++) {
 
-                        if (index < size) {
+                        if (index < SIZE) {
                             dataBuffer[index++] = readDataBuffer[i];
                         }
-                        if (readDataBuffer[i] == terminatingChar) {
-                            if (index >= size) {
-                                dataBuffer[index - 1] = (byte) terminatingChar;
+                        if (readDataBuffer[i] == TERM_CHAR) {
+                            if (index >= SIZE) {
+                                dataBuffer[index - 1] = (byte) TERM_CHAR;
                             }
                             byte[] msg = Arrays.copyOf(dataBuffer, index);
                             connector.handleIncomingMessage(msg);

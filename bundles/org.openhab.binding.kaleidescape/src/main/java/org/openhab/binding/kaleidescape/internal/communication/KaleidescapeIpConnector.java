@@ -37,7 +37,7 @@ public class KaleidescapeIpConnector extends KaleidescapeConnector {
 
     private final Logger logger = LoggerFactory.getLogger(KaleidescapeIpConnector.class);
 
-    private String address;
+    private @Nullable String address;
     private int port;
 
     private @Nullable Socket clientSocket;
@@ -48,7 +48,7 @@ public class KaleidescapeIpConnector extends KaleidescapeConnector {
      * @param address the IP address of the Kaleidescape component
      * @param port the TCP port to be used
      */
-    public KaleidescapeIpConnector(String address, Integer port) {
+    public KaleidescapeIpConnector(@Nullable String address, @Nullable Integer port) {
         this.address = address;
         this.port = port;
     }
@@ -74,7 +74,6 @@ public class KaleidescapeIpConnector extends KaleidescapeConnector {
             logger.debug("IP connection opened");
         } catch (IOException | SecurityException | IllegalArgumentException e) {
             setConnected(false);
-            logger.warn("Opening IP connection failed: {}", e.getMessage());
             throw new KaleidescapeException("Opening IP connection failed: " + e.getMessage());
         }
     }
@@ -121,7 +120,6 @@ public class KaleidescapeIpConnector extends KaleidescapeConnector {
         } catch (SocketTimeoutException e) {
             return 0;
         } catch (IOException e) {
-            logger.debug("readInput failed: {}", e.getMessage());
             throw new KaleidescapeException("readInput failed: " + e.getMessage());
         }
     }

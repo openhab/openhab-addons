@@ -63,12 +63,11 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class KaleidescapeHandler extends BaseThingHandler implements KaleidescapeMessageEventListener {
-
-    private final Logger logger = LoggerFactory.getLogger(KaleidescapeHandler.class);
-
     private static final long RECON_POLLING_INTERVAL = TimeUnit.SECONDS.toSeconds(60);
     private static final long POLLING_INTERVAL = TimeUnit.SECONDS.toSeconds(20);
-    private static final long SLEEP_BETWEEN_CMD = TimeUnit.MILLISECONDS.toMillis(50);
+    private static final long SLEEP_BETWEEN_CMD = TimeUnit.MILLISECONDS.toMillis(100);
+
+    private final Logger logger = LoggerFactory.getLogger(KaleidescapeHandler.class);
 
     protected final Unit<Time> apiSecondUnit = SmartHomeUnits.SECOND;
     protected int metaRuntimeMultiple = 1;
@@ -85,7 +84,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
 
     protected @Nullable KaleidescapeConnector connector;
 
-    private Long lastPollingUpdate = System.currentTimeMillis();
+    private long lastPollingUpdate = System.currentTimeMillis();
 
     private Object sequenceLock = new Object();
 
@@ -110,8 +109,6 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
 
     @Override
     public void initialize() {
-        logger.debug("Start initializing handler for thing {}", getThing().getUID());
-
         KaleidescapeThingConfiguration config = getConfigAs(KaleidescapeThingConfiguration.class);
 
         // Check configuration settings
@@ -182,13 +179,10 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
             scheduleReconnectJob();
             schedulePollingJob();
         }
-
-        logger.debug("Finished initializing!");
     }
 
     @Override
     public void dispose() {
-        logger.debug("Disposing handler for thing {}", getThing().getUID());
         cancelReconnectJob();
         cancelPollingJob();
         closeConnection();
@@ -304,7 +298,6 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
     @Override
     public void onNewMessageEvent(EventObject event) {
         KaleidescapeMessageEvent evt = (KaleidescapeMessageEvent) event;
-        // logger.debug("onNewMessageEvent: key {} = {}", evt.getKey(), evt.getValue());
         lastPollingUpdate = System.currentTimeMillis();
 
         // check if we are in standby
@@ -344,7 +337,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                 if (openConnection()) {
                     synchronized (sequenceLock) {
                         try {
-                            Long prevUpdateTime = lastPollingUpdate;
+                            long prevUpdateTime = lastPollingUpdate;
 
                             ArrayList<String> initialCommands = new ArrayList<String>(
                                     Arrays.asList("GET_DEVICE_TYPE_NAME", "GET_FRIENDLY_NAME", "GET_DEVICE_INFO",
@@ -387,7 +380,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                             }
 
                             // prevUpdateTime should have changed if a response was received
-                            if (prevUpdateTime.equals(lastPollingUpdate)) {
+                            if (lastPollingUpdate == prevUpdateTime) {
                                 error = "Component not responding to status requests";
                             }
 
@@ -415,7 +408,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
      */
     private void cancelReconnectJob() {
         ScheduledFuture<?> reconnectJob = this.reconnectJob;
-        if (reconnectJob != null && !reconnectJob.isCancelled()) {
+        if (reconnectJob != null) {
             reconnectJob.cancel(true);
             this.reconnectJob = null;
         }
@@ -459,7 +452,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
      */
     private void cancelPollingJob() {
         ScheduledFuture<?> pollingJob = this.pollingJob;
-        if (pollingJob != null && !pollingJob.isCancelled()) {
+        if (pollingJob != null) {
             pollingJob.cancel(true);
             this.pollingJob = null;
         }
@@ -485,7 +478,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                 connector.sendCommand("SCAN_REVERSE");
             }
         } else {
-            logger.debug("Unknown control command: {}", command);
+            logger.warn("Unknown control command: {}", command);
         }
     }
 }
