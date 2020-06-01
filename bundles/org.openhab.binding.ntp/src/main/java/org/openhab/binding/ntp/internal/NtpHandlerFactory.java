@@ -16,7 +16,7 @@ import static org.openhab.binding.ntp.internal.NtpBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.i18n.LocaleProvider;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -38,11 +38,11 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.ntp")
 public class NtpHandlerFactory extends BaseThingHandlerFactory {
 
-    private final LocaleProvider localeProvider;
+    private final TimeZoneProvider timeZoneProvider;
 
     @Activate
-    public NtpHandlerFactory(final @Reference LocaleProvider localeProvider) {
-        this.localeProvider = localeProvider;
+    public NtpHandlerFactory(final @Reference TimeZoneProvider timeZoneProvider) {
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -55,7 +55,7 @@ public class NtpHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_NTP.equals(thingTypeUID)) {
-            return new NtpHandler(thing, localeProvider);
+            return new NtpHandler(thing, timeZoneProvider);
         }
 
         return null;

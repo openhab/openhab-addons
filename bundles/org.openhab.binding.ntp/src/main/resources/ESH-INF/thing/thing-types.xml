@@ -17,14 +17,14 @@
 				<description>The NTP server hostname.</description>
 				<default>0.pool.ntp.org</default>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" required="true" unit="s">
+			<parameter name="refreshInterval" type="integer" unit="s">
 				<label>Refresh Interval</label>
 				<description>
 					Interval that new time updates are posted to the event bus in seconds.
 				</description>
 				<default>60</default>
 			</parameter>
-			<parameter name="refreshNtp" type="integer" required="true">
+			<parameter name="refreshNtp" type="integer">
 				<label>NTP Refresh Frequency</label>
 				<description>
 					Number of updates before querying the NTP server.
@@ -36,13 +36,9 @@
 				<description>The port that the NTP server could use.</description>
 				<default>123</default>
 			</parameter>
-			<parameter name="timeZone" type="text" required="false">
+			<parameter name="timeZone" type="text">
 				<label>Timezone</label>
 				<description>The configured timezone.</description>
-			</parameter>
-			<parameter name="locale" type="text" required="false">
-				<label>Locale</label>
-				<description>The configured locale.</description>
 			</parameter>
 		</config-description>
 	</thing-type>

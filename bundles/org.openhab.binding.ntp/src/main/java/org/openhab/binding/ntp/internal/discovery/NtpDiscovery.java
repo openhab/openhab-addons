@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -26,6 +28,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.i18n.LocaleProvider;
 import org.eclipse.smarthome.core.i18n.TranslationProvider;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.openhab.binding.ntp.internal.config.NtpThingConfiguration;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -36,6 +39,7 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.ntp")
 public class NtpDiscovery extends AbstractDiscoveryService {
 
@@ -44,12 +48,12 @@ public class NtpDiscovery extends AbstractDiscoveryService {
     }
 
     @Override
-    protected void activate(Map<String, Object> configProperties) {
+    protected void activate(@Nullable Map<String, @Nullable Object> configProperties) {
         super.activate(configProperties);
     }
 
     @Override
-    protected void modified(Map<String, Object> configProperties) {
+    protected void modified(@Nullable Map<String, @Nullable Object> configProperties) {
         super.modified(configProperties);
     }
 
@@ -70,7 +74,7 @@ public class NtpDiscovery extends AbstractDiscoveryService {
      */
     private void discoverNtp() {
         Map<String, Object> properties = new HashMap<>(4);
-        properties.put(PROPERTY_TIMEZONE, TimeZone.getDefault().getID());
+        properties.put(NtpThingConfiguration.TIMEZONE, TimeZone.getDefault().getID());
         ThingUID uid = new ThingUID(THING_TYPE_NTP, "local");
         DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel("Local Time")
                 .build();

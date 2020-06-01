@@ -67,6 +67,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.openhab.binding.ntp.internal.NtpBindingConstants;
+import org.openhab.binding.ntp.internal.config.NtpStringChannelConfiguration;
+import org.openhab.binding.ntp.internal.config.NtpThingConfiguration;
 import org.openhab.binding.ntp.internal.handler.NtpHandler;
 import org.openhab.binding.ntp.server.SimpleNTPServer;
 
@@ -192,13 +194,13 @@ public class NtpOSGiTest extends JavaOSGiTest {
         final String expectedTimeZonePST = "PST";
 
         Configuration configuration = new Configuration();
-        configuration.put(NtpBindingConstants.PROPERTY_TIMEZONE, TEST_TIME_ZONE_ID);
+        configuration.put(NtpThingConfiguration.TIMEZONE, TEST_TIME_ZONE_ID);
         Configuration channelConfig = new Configuration();
         /*
          * Set the format of the date, so it is updated in the item registry in
          * a format from which we can easily get the time zone.
          */
-        channelConfig.put(NtpBindingConstants.PROPERTY_DATE_TIME_FORMAT, TEST_DATE_TIME_FORMAT);
+        channelConfig.put(NtpStringChannelConfiguration.DATE_TIME_FORMAT, TEST_DATE_TIME_FORMAT);
 
         initialize(configuration, NtpBindingConstants.CHANNEL_STRING, ACCEPTED_ITEM_TYPE_STRING, channelConfig, null);
 
@@ -210,7 +212,7 @@ public class NtpOSGiTest extends JavaOSGiTest {
     @Test
     public void testDateTimeChannelTimeZoneUpdate() {
         Configuration configuration = new Configuration();
-        configuration.put(NtpBindingConstants.PROPERTY_TIMEZONE, TEST_TIME_ZONE_ID);
+        configuration.put(NtpThingConfiguration.TIMEZONE, TEST_TIME_ZONE_ID);
         initialize(configuration, NtpBindingConstants.CHANNEL_DATE_TIME, ACCEPTED_ITEM_TYPE_DATE_TIME, null, null);
 
         String testItemState = getItemState(ACCEPTED_ITEM_TYPE_DATE_TIME).toString();
@@ -226,7 +228,7 @@ public class NtpOSGiTest extends JavaOSGiTest {
     @Test
     public void testDateTimeChannelCalendarTimeZoneUpdate() {
         Configuration configuration = new Configuration();
-        configuration.put(NtpBindingConstants.PROPERTY_TIMEZONE, TEST_TIME_ZONE_ID);
+        configuration.put(NtpThingConfiguration.TIMEZONE, TEST_TIME_ZONE_ID);
         initialize(configuration, NtpBindingConstants.CHANNEL_DATE_TIME, ACCEPTED_ITEM_TYPE_DATE_TIME, null, null);
         ZonedDateTime timeZoneIdFromItemRegistry = ((DateTimeType) getItemState(ACCEPTED_ITEM_TYPE_DATE_TIME))
                 .getZonedDateTime();
@@ -247,7 +249,7 @@ public class NtpOSGiTest extends JavaOSGiTest {
          * Set the format of the date, so it is updated in the item registry in
          * a format from which we can easily get the time zone.
          */
-        channelConfig.put(NtpBindingConstants.PROPERTY_DATE_TIME_FORMAT, TEST_DATE_TIME_FORMAT);
+        channelConfig.put(NtpStringChannelConfiguration.DATE_TIME_FORMAT, TEST_DATE_TIME_FORMAT);
 
         // Initialize with configuration with no time zone property set.
         initialize(configuration, NtpBindingConstants.CHANNEL_STRING, ACCEPTED_ITEM_TYPE_STRING, null, null);
@@ -293,7 +295,7 @@ public class NtpOSGiTest extends JavaOSGiTest {
 
         Configuration configuration = new Configuration();
         Configuration channelConfig = new Configuration();
-        channelConfig.put(NtpBindingConstants.PROPERTY_DATE_TIME_FORMAT, formatPattern);
+        channelConfig.put(NtpStringChannelConfiguration.DATE_TIME_FORMAT, formatPattern);
         initialize(configuration, NtpBindingConstants.CHANNEL_STRING, ACCEPTED_ITEM_TYPE_STRING, channelConfig, null);
 
         String dateFromItemRegistry = getItemState(ACCEPTED_ITEM_TYPE_STRING).toString();
@@ -317,7 +319,7 @@ public class NtpOSGiTest extends JavaOSGiTest {
         Configuration configuration = new Configuration();
         Configuration channelConfig = new Configuration();
         // Empty string
-        channelConfig.put(NtpBindingConstants.PROPERTY_DATE_TIME_FORMAT, "");
+        channelConfig.put(NtpStringChannelConfiguration.DATE_TIME_FORMAT, "");
 
         initialize(configuration, NtpBindingConstants.CHANNEL_STRING, ACCEPTED_ITEM_TYPE_STRING, channelConfig, null);
 
@@ -330,7 +332,7 @@ public class NtpOSGiTest extends JavaOSGiTest {
     public void testNullPropertyFormatting() {
         Configuration configuration = new Configuration();
         Configuration channelConfig = new Configuration();
-        channelConfig.put(NtpBindingConstants.PROPERTY_DATE_TIME_FORMAT, null);
+        channelConfig.put(NtpStringChannelConfiguration.DATE_TIME_FORMAT, null);
 
         initialize(configuration, NtpBindingConstants.CHANNEL_STRING, ACCEPTED_ITEM_TYPE_STRING, channelConfig, null);
 
@@ -378,16 +380,16 @@ public class NtpOSGiTest extends JavaOSGiTest {
         // There are 2 tests which require wrong hostnames.
         boolean isWrongHostNameTest = wrongHostname != null;
         if (isWrongHostNameTest) {
-            configuration.put(NtpBindingConstants.PROPERTY_NTP_SERVER_HOST, wrongHostname);
+            configuration.put(NtpThingConfiguration.HOSTNAME, wrongHostname);
         } else {
-            configuration.put(NtpBindingConstants.PROPERTY_NTP_SERVER_HOST, TEST_HOSTNAME);
+            configuration.put(NtpThingConfiguration.HOSTNAME, TEST_HOSTNAME);
         }
         initialize(configuration, channelID, acceptedItemType, channelConfiguration);
     }
 
     private void initialize(Configuration configuration, String channelID, String acceptedItemType,
             Configuration channelConfiguration) {
-        configuration.put(NtpBindingConstants.PROPERTY_NTP_SERVER_PORT, TEST_PORT);
+        configuration.put(NtpThingConfiguration.SERVER_PORT, TEST_PORT);
         ThingUID ntpUid = new ThingUID(NtpBindingConstants.THING_TYPE_NTP, TEST_THING_ID);
 
         ChannelUID channelUID = new ChannelUID(ntpUid, channelID);
