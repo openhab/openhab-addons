@@ -39,7 +39,7 @@ public enum MonopriceAudioCommand {
     DND_ON("DT01"),
     DND_OFF("DT00");
 
-    private @Nullable String value;
+    private String value;
 
     MonopriceAudioCommand(String value) {
         this.value = value;
@@ -50,7 +50,7 @@ public enum MonopriceAudioCommand {
      *
      * @return the command name
      */
-    public @Nullable String getValue() {
+    public String getValue() {
         return value;
     }
 }
