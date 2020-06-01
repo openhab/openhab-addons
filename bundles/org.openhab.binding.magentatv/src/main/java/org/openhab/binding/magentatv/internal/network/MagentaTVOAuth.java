@@ -165,7 +165,7 @@ public class MagentaTVOAuth {
             logger.trace("http response={}", httpResponse);
             OAuthAutenhicateResponse authResp = gson.fromJson(httpResponse, OAuthAutenhicateResponse.class);
             if (authResp.userID.isEmpty()) {
-                String errorMessage = MessageFormat.format("Unable to authenticate: accountName={0}, rc={1} - {2}",
+                String errorMessage = MessageFormat.format("Unable to authenticate: accountName={0}, rc={1} {2}",
                         accountName, getString(authResp.retcode), getString(authResp.desc));
                 logger.warn("{}", errorMessage);
                 throw new MagentaTVException(errorMessage);
