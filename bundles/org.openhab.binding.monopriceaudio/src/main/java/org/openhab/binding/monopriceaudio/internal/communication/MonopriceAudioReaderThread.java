@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.monopriceaudio.internal.communication;
 
-import java.io.InterruptedIOException;
 import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -73,9 +72,6 @@ public class MonopriceAudioReaderThread extends Thread {
                     }
                 }
             }
-        } catch (InterruptedIOException e) {
-            Thread.currentThread().interrupt();
-            logger.debug("Interrupted via InterruptedIOException");
         } catch (MonopriceAudioException e) {
             logger.debug("Reading failed: {}", e.getMessage(), e);
             connector.handleIncomingMessage(MonopriceAudioConnector.READ_ERROR.getBytes());

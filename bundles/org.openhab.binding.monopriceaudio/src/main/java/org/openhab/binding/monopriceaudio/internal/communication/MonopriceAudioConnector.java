@@ -14,7 +14,6 @@ package org.openhab.binding.monopriceaudio.internal.communication;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -143,9 +142,8 @@ public abstract class MonopriceAudioConnector {
      * @throws MonopriceAudioException - If the input stream is null, if the first byte cannot be read for any reason
      *             other than the end of the file, if the input stream has been closed, or if some other I/O error
      *             occurs.
-     * @throws InterruptedIOException - if the thread was interrupted during the reading of the input stream
      */
-    protected int readInput(byte[] dataBuffer) throws MonopriceAudioException, InterruptedIOException {
+    protected int readInput(byte[] dataBuffer) throws MonopriceAudioException {
         InputStream dataIn = this.dataIn;
         if (dataIn == null) {
             throw new MonopriceAudioException("readInput failed: input stream is null");
