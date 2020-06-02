@@ -68,7 +68,7 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage</label>
 		<description>Voltage</description>
-		<state readOnly="true" pattern="%fV"/>
+		<state readOnly="true" pattern="%f %unit%"/>
 	</channel-type>
 	<channel-type id="panelTime">
 		<item-type>DateTime</item-type>
