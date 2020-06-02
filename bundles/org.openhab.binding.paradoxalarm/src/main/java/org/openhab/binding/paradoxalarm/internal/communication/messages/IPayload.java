@@ -10,22 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.paradoxalarm.internal.communication;
+package org.openhab.binding.paradoxalarm.internal.communication.messages;
 
 /**
- * The {@link IResponse} - interface for the response used in communication on the way back.
+ * Interface representing what we need to add IPPacketPayload.
+ * Not sure if we need it as it needs only getBytes() method so far.
  *
  * @author Konstantin Polihronov - Initial contribution
  */
-interface IResponse {
+public interface IPayload {
 
-    RequestType getType();
-
-    IRequest getRequest();
-
-    byte[] getPacketBytes();
-
-    byte[] getHeader();
-
-    byte[] getPayload();
+    byte[] getBytes();
 }
