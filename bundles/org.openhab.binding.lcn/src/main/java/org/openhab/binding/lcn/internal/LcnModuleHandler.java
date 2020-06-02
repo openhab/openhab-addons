@@ -92,7 +92,6 @@ public class LcnModuleHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN);
         LcnModuleConfiguration localConfig = getConfigAs(LcnModuleConfiguration.class);
         LcnAddrMod localModuleAddress = moduleAddress = new LcnAddrMod(localConfig.segmentId, localConfig.moduleId);
 
@@ -100,7 +99,6 @@ public class LcnModuleHandler extends BaseThingHandler {
             // create sub handlers
             ModInfo info = getPckGatewayHandler().getModInfo(localModuleAddress);
             for (LcnChannelGroup type : LcnChannelGroup.values()) {
-
                 AbstractLcnModuleSubHandler newHandler = type.getSubHandlerClass()
                         .getDeclaredConstructor(LcnModuleHandler.class, ModInfo.class).newInstance(this, info);
 
@@ -108,8 +106,6 @@ public class LcnModuleHandler extends BaseThingHandler {
             }
 
             // meta sub handlers, which are not assigned to a channel group
-            // initialize() can be invoked multiple times on the same handler, when changing a Channel's config
-            metadataSubHandlers.clear();
             metadataSubHandlers.add(new LcnModuleMetaAckSubHandler(this, info));
             metadataSubHandlers.add(new LcnModuleMetaFirmwareSubHandler(this, info));
 
@@ -417,5 +413,10 @@ public class LcnModuleHandler extends BaseThingHandler {
         } else {
             return new LcnAddrMod(0, 0);
         }
+    }
+
+    @Override
+    public void dispose() {
+        metadataSubHandlers.clear();
     }
 }
