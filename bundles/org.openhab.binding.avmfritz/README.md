@@ -37,6 +37,10 @@ Additionally you can check the eco temperature, the comfort temperature and the 
 The FRITZ!Box has to run at least on firmware FRITZ!OS 6.35.
 **NOTE:** The `battery_level` channel will be added to the thing during runtime - if the interface supports it (FRITZ!OS 7 or higher).
 
+### FRITZ!DECT 400
+
+The [FRITZ!DECT 400](https://avm.de/produkte/fritzdect/fritzdect-400/) is a button for convenient operation of FRITZ! Smart Home devices (FRITZ!OS 7.08 or higher).
+
 ### DECT-ULE / HAN-FUN devices
 
 The following sensors have been successfully tested using FRITZ!OS 7 for FRITZ!Box 7490 / 7590:
@@ -138,16 +142,17 @@ The AIN (actor identification number) can be found in the FRITZ!Box interface ->
 | radiator_mode   | String                   | Mode of heating thermostat (ON/OFF/COMFORT/ECO/BOOST/WINDOW_OPEN)                                                                                  | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                          |
 | next_change     | DateTime                 | Next change of the Set Temperature if scheduler is activated in the FRITZ!Box settings - FRITZ!OS 6.80                                             | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                          |
 | next_temp       | Number:Temperature       | Next Set Temperature if scheduler is activated in the FRITZ!Box settings - FRITZ!OS 6.80                                                           | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                          |
-| battery_level   | Number                   | Battery level (in %) - FRITZ!OS 7                                                                                                                  | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                          |
-| battery_low     | Switch                   | Battery level low (ON/OFF) - FRITZ!OS 6.80                                                                                                         | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                          |
+| battery_level   | Number                   | Battery level (in %) - FRITZ!OS 7                                                                                                                  | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT, FRITZ!DECT 400                                          |
+| battery_low     | Switch                   | Battery level low (ON/OFF) - FRITZ!OS 6.80                                                                                                         | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT, FRITZ!DECT 400                                          |
 | contact_state   | Contact                  | Contact state information (OPEN/CLOSED).                                                                                                           | HAN-FUN contact (e.g. SmartHome Tür-/Fensterkontakt or SmartHome Bewegungsmelder)- FRITZ!OS 7       |
-| last_change     | DateTime                 | States the last time the button was pressed.                                                                                                       | HAN-FUN switch (e.g. SmartHome Wandtaster) - FRITZ!OS 7                                             |
+| last_change     | DateTime                 | States the last time the button was pressed.                                                                                                       | FRITZ!DECT 400, HAN-FUN switch (e.g. SmartHome Wandtaster) - FRITZ!OS 7                             |
 
 ### Triggers
 
-| Channel Type ID | Item Type | Description                                            | Available on thing                                      |
-|-----------------|-----------|--------------------------------------------------------|---------------------------------------------------------|
-| press           | Trigger   | Dispatches a `PRESSED` event when a button is pressed. | HAN-FUN switch (e.g. SmartHome Wandtaster) - FRITZ!OS 7 |
+| Channel Type ID | Item Type | Description                                                                    | Available on thing                                      |
+|-----------------|-----------|--------------------------------------------------------------------------------|---------------------------------------------------------|
+| press           | Trigger   | Dispatches a `PRESSED` event when a button is pressed.                         | HAN-FUN switch (e.g. SmartHome Wandtaster) - FRITZ!OS 7 |
+| press           | Trigger   | Dispatches a `SHORT_PRESSED` or `LONG_PRESSED` event when a button is pressed. | FRITZ!DECT 400 - FRITZ!OS 7.08                          |
 
 The trigger channel `press` is of type `system.rawbutton` to allow the usage of the `rawbutton-toggle-switch` profile.
 
