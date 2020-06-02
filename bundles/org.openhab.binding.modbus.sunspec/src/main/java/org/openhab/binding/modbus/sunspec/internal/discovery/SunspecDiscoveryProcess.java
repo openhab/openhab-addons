@@ -34,11 +34,11 @@ import org.openhab.binding.modbus.sunspec.internal.dto.CommonModelBlock;
 import org.openhab.binding.modbus.sunspec.internal.dto.ModelBlock;
 import org.openhab.binding.modbus.sunspec.internal.parser.CommonModelParser;
 import org.openhab.io.transport.modbus.ModbusBitUtilities;
+import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
 import org.openhab.io.transport.modbus.ModbusConstants.ValueType;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
-import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 import org.openhab.io.transport.modbus.exception.ModbusSlaveErrorResponseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,11 +63,6 @@ public class SunspecDiscoveryProcess {
      * The handler instance for this device
      */
     private final ModbusEndpointThingHandler handler;
-
-    /**
-     * The endpoint where we can reach the device
-     */
-    private final ModbusSlaveEndpoint endpoint;
 
     /**
      * Listener for the discovered devices. We get this
@@ -113,6 +108,11 @@ public class SunspecDiscoveryProcess {
     private @Nullable CommonModelBlock lastCommonBlock = null;
 
     /**
+     * Communication interface to the endpoint
+     */
+    private ModbusCommunicationInterface comms;
+
+    /**
      * New instances of this class should get a reference to the handler
      *
      * @throws EndpointNotInitializedException
@@ -121,9 +121,9 @@ public class SunspecDiscoveryProcess {
             throws EndpointNotInitializedException {
         this.handler = handler;
 
-        ModbusSlaveEndpoint endpoint = this.handler.asSlaveEndpoint();
-        if (endpoint != null) {
-            this.endpoint = endpoint;
+        ModbusCommunicationInterface localComms = handler.getCommunicationInterface();
+        if (localComms != null) {
+            this.comms = localComms;
         } else {
             throw new EndpointNotInitializedException();
         }
@@ -159,7 +159,7 @@ public class SunspecDiscoveryProcess {
                 SUNSPEC_ID_SIZE, // number or words to return
                 maxTries);
 
-        handler.getModbusManager().submitOneTimePoll(endpoint, request, result -> {
+        comms.submitOneTimePoll(request, result -> {
             if (result.hasError()) {
                 Exception error = (@NonNull Exception) result.getCause();
                 handleError(error);
@@ -201,7 +201,7 @@ public class SunspecDiscoveryProcess {
                 MODEL_HEADER_SIZE, // number or words to return
                 maxTries);
 
-        handler.getModbusManager().submitOneTimePoll(endpoint, request, result -> {
+        comms.submitOneTimePoll(request, result -> {
             if (result.hasError()) {
                 Exception error = (@NonNull Exception) result.getCause();
                 handleError(error);
@@ -261,7 +261,7 @@ public class SunspecDiscoveryProcess {
                 block.length, // number or words to return
                 maxTries);
 
-        handler.getModbusManager().submitOneTimePoll(endpoint, request, result -> {
+        comms.submitOneTimePoll(request, result -> {
             if (result.hasError()) {
                 Exception error = (@NonNull Exception) result.getCause();
                 handleError(error);

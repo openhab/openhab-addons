@@ -39,12 +39,12 @@ import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
 import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
 import org.openhab.binding.modbus.sunspec.internal.SunSpecConfiguration;
 import org.openhab.binding.modbus.sunspec.internal.dto.ModelBlock;
+import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
 import org.openhab.io.transport.modbus.ModbusManager;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.io.transport.modbus.PollTask;
-import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,9 +82,9 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
     private volatile @Nullable PollTask pollTask = null;
 
     /**
-     * This is the slave endpoint we're connecting to
+     * Communication interface to the slave endpoint we're connecting to
      */
-    protected volatile @Nullable ModbusSlaveEndpoint endpoint = null;
+    protected volatile @Nullable ModbusCommunicationInterface comms = null;
 
     /**
      * This is the slave id, we store this once initialization is complete
@@ -139,7 +139,7 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
 
         connectEndpoint();
 
-        if (endpoint == null || config == null) {
+        if (comms == null || config == null) {
             logger.debug("Invalid endpoint/config/manager ref for sunspec handler");
             return;
         }
@@ -278,7 +278,7 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
      * Get a reference to the modbus endpoint
      */
     private void connectEndpoint() {
-        if (endpoint != null) {
+        if (comms != null) {
             return;
         }
 
@@ -294,13 +294,12 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
 
         try {
             slaveId = slaveEndpointThingHandler.getSlaveId();
-
-            endpoint = slaveEndpointThingHandler.asSlaveEndpoint();
+            comms = slaveEndpointThingHandler.getCommunicationInterface();
         } catch (EndpointNotInitializedException e) {
             // this will be handled below as endpoint remains null
         }
 
-        if (endpoint == null) {
+        if (comms == null) {
             @SuppressWarnings("null")
             String label = Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
@@ -314,7 +313,8 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
      * Remove the endpoint if exists
      */
     private void unregisterEndpoint() {
-        endpoint = null;
+        // Comms will be close()'d by endpoint thing handler
+        comms = null;
     }
 
     /**
@@ -327,10 +327,10 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
             throw new IllegalStateException("pollTask should be unregistered before registering a new one!");
         }
         @Nullable
-        ModbusSlaveEndpoint myendpoint = endpoint;
+        ModbusCommunicationInterface mycomms = comms;
         @Nullable
         SunSpecConfiguration myconfig = config;
-        if (myconfig == null || myendpoint == null) {
+        if (myconfig == null || mycomms == null) {
             throw new IllegalStateException("registerPollTask called without proper configuration");
         }
 
@@ -340,7 +340,7 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
                 ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, mainBlock.address, mainBlock.length, myconfig.maxTries);
 
         long refreshMillis = myconfig.getRefreshMillis();
-        pollTask = managerRef.registerRegularPoll(myendpoint, request, refreshMillis, 1000, result -> {
+        pollTask = mycomms.registerRegularPoll(request, refreshMillis, 1000, result -> {
             if (result.hasError()) {
                 Exception error = (@NonNull Exception) result.getCause();
                 handleError(error);
@@ -384,8 +384,11 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
             return;
         }
         logger.debug("Unregistering polling from ModbusManager");
-        managerRef.unregisterRegularPoll(task);
-
+        @Nullable
+        ModbusCommunicationInterface mycomms = comms;
+        if (mycomms != null) {
+            mycomms.unregisterRegularPoll(task);
+        }
         pollTask = null;
     }
 
