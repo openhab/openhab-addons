@@ -636,6 +636,10 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         }
     }
 
+    public @Nullable String getUserName() {
+        return hueBridgeConfig == null ? null : hueBridgeConfig.getUserName();
+    }
+
     private synchronized void onUpdate() {
         if (hueBridge != null) {
             startLightPolling();
@@ -742,7 +746,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         logger.info("Creating new user on Hue bridge {} - please press the pairing button on the bridge.",
                 hueBridgeConfig.getIpAddress());
         String userName = hueBridge.link(DEVICE_TYPE);
-        logger.info("User '{}' has been successfully added to Hue bridge.", userName);
+        logger.info("User has been successfully added to Hue bridge.");
         return userName;
     }
 
@@ -751,17 +755,17 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         config.put(USER_NAME, userName);
         try {
             updateConfiguration(config);
-            logger.debug("Updated configuration parameter '{}' to '{}'", USER_NAME, userName);
+            logger.debug("Updated configuration parameter '{}'", USER_NAME);
             hueBridgeConfig = getConfigAs(HueBridgeConfig.class);
         } catch (IllegalStateException e) {
             logger.trace("Configuration update failed.", e);
             logger.warn("Unable to update configuration of Hue bridge.");
-            logger.warn("Please configure the following user name manually: {}", userName);
+            logger.warn("Please configure the user name manually.");
         }
     }
 
     private void handleAuthenticationFailure(Exception ex, String userName) {
-        logger.warn("User {} is not authenticated on Hue bridge {}", userName, hueBridgeConfig.getIpAddress());
+        logger.warn("User is not authenticated on Hue bridge {}", hueBridgeConfig.getIpAddress());
         logger.warn("Please configure a valid user or remove user from configuration to generate a new one.");
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                 "@text/offline.conf-error-invalid-username");
