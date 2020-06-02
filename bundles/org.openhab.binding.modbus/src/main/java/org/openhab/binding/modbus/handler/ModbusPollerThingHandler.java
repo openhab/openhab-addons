@@ -114,7 +114,6 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
                         childCallbacks.forEach(handler -> handler.handle(result.getValue()));
                         return true;
                     }).orElse(false);
-
         }
 
         /**

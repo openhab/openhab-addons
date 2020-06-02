@@ -86,5 +86,4 @@ public abstract class ModbusWriteRequestBlueprint {
      * @param visitor
      */
     public abstract void accept(ModbusWriteRequestBlueprintVisitor visitor);
-
 }

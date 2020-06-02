@@ -905,7 +905,6 @@ public class ModbusManagerImpl implements ModbusManager {
         public ModbusSlaveEndpoint getEndpoint() {
             return endpoint;
         }
-
     }
 
     @Override

@@ -358,9 +358,8 @@ public class ModbusBitUtilities {
                 byte b6 = (byte) (longValue >> 16);
                 byte b7 = (byte) (longValue >> 8);
                 byte b8 = (byte) longValue;
-                return new ModbusRegisterArray(
-                        new ModbusRegister[] { new ModbusRegister(b1, b2), new ModbusRegister(b3, b4),
-                                new ModbusRegister(b5, b6), new ModbusRegister(b7, b8) });
+                return new ModbusRegisterArray(new ModbusRegister[] { new ModbusRegister(b1, b2),
+                        new ModbusRegister(b3, b4), new ModbusRegister(b5, b6), new ModbusRegister(b7, b8) });
             }
             case INT64_SWAP:
             case UINT64_SWAP: {
@@ -374,9 +373,8 @@ public class ModbusBitUtilities {
                 byte b6 = (byte) (longValue >> 16);
                 byte b7 = (byte) (longValue >> 8);
                 byte b8 = (byte) longValue;
-                return new ModbusRegisterArray(
-                        new ModbusRegister[] { new ModbusRegister(b7, b8), new ModbusRegister(b5, b6),
-                                new ModbusRegister(b3, b4), new ModbusRegister(b1, b2) });
+                return new ModbusRegisterArray(new ModbusRegister[] { new ModbusRegister(b7, b8),
+                        new ModbusRegister(b5, b6), new ModbusRegister(b3, b4), new ModbusRegister(b1, b2) });
             }
             default:
                 throw new NotImplementedException(

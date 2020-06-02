@@ -755,7 +755,6 @@ public class SmokeTest extends IntegrationTestSupport {
             Thread.sleep(500);
             assertThat(unexpectedCount.get(), is(equalTo(0)));
         }
-
     }
 
     @SuppressWarnings("null")

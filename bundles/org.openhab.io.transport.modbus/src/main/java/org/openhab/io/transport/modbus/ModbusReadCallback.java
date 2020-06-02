@@ -29,5 +29,4 @@ public interface ModbusReadCallback extends ModbusCallback {
      * @param result result of the read operation
      */
     void handle(AsyncModbusReadResult result);
-
 }

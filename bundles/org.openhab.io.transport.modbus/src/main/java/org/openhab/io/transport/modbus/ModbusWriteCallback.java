@@ -29,5 +29,4 @@ public interface ModbusWriteCallback extends ModbusCallback {
      * @param asyncModbusWriteResult result of the write operation
      */
     void handle(AsyncModbusWriteResult result);
-
 }

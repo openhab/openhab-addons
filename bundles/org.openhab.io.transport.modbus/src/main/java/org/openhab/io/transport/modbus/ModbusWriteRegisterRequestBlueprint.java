@@ -105,5 +105,4 @@ public class ModbusWriteRegisterRequestBlueprint extends ModbusWriteRequestBluep
     public void accept(ModbusWriteRequestBlueprintVisitor visitor) {
         visitor.visit(this);
     }
-
 }

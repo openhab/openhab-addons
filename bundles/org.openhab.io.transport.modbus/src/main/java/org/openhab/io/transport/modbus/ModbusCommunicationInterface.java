@@ -90,5 +90,4 @@ public interface ModbusCommunicationInterface extends AutoCloseable {
      */
     public ScheduledFuture<?> submitOneTimeWrite(ModbusWriteRequestBlueprint request,
             @Nullable ModbusWriteCallback callback);
-
 }

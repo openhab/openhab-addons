@@ -58,5 +58,4 @@ public interface ModbusManager {
      * @return general connection settings of the given endpoint
      */
     public @Nullable EndpointPoolConfiguration getEndpointPoolConfiguration(ModbusSlaveEndpoint endpoint);
-
 }
