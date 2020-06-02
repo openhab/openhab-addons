@@ -29,7 +29,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * @author Christoph Weitkamp - Added channels 'voltage' and 'battery_level'
  */
 @NonNullByDefault
-public class BindingConstants {
+public class AVMFritzBindingConstants {
 
     public static final String INVALID_PATTERN = "[^a-zA-Z0-9_]";
 
@@ -39,6 +39,7 @@ public class BindingConstants {
     public static final String POWERLINE_MODEL_NAME = "FRITZ!Powerline";
 
     // List of main device types
+    public static final String DEVICE_DECT400 = "FRITZ_DECT_400";
     public static final String DEVICE_DECT301 = "FRITZ_DECT_301";
     public static final String DEVICE_DECT300 = "FRITZ_DECT_300";
     public static final String DEVICE_DECT210 = "FRITZ_DECT_210";
@@ -56,6 +57,7 @@ public class BindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID BRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, BRIDGE_FRITZBOX);
+    public static final ThingTypeUID DECT400_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_DECT400);
     public static final ThingTypeUID DECT301_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_DECT301);
     public static final ThingTypeUID DECT300_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_DECT300);
     public static final ThingTypeUID DECT210_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_DECT210);
@@ -131,10 +133,14 @@ public class BindingConstants {
     public static final String MODE_WINDOW_OPEN = "WINDOW_OPEN";
     public static final String MODE_UNKNOWN = "UNKNOWN";
 
-    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
-            .of(DECT100_THING_TYPE, DECT200_THING_TYPE, DECT210_THING_TYPE, DECT300_THING_TYPE, DECT301_THING_TYPE,
-                    PL546E_THING_TYPE, COMETDECT_THING_TYPE, HAN_FUN_CONTACT_THING_TYPE, HAN_FUN_SWITCH_THING_TYPE)
-            .collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_BUTTON_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(DECT400_THING_TYPE, HAN_FUN_SWITCH_THING_TYPE).collect(Collectors.toSet()));
+
+    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream
+                    .of(DECT100_THING_TYPE, DECT200_THING_TYPE, DECT210_THING_TYPE, DECT300_THING_TYPE,
+                            DECT301_THING_TYPE, PL546E_THING_TYPE, COMETDECT_THING_TYPE, HAN_FUN_CONTACT_THING_TYPE)
+                    .collect(Collectors.toSet()));
 
     public static final Set<ThingTypeUID> SUPPORTED_GROUP_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(GROUP_HEATING_THING_TYPE, GROUP_SWITCH_THING_TYPE).collect(Collectors.toSet()));
@@ -143,7 +149,7 @@ public class BindingConstants {
             .unmodifiableSet(Stream.of(BRIDGE_THING_TYPE, PL546E_STANDALONE_THING_TYPE).collect(Collectors.toSet()));
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
-            .of(SUPPORTED_DEVICE_THING_TYPES_UIDS.stream(), SUPPORTED_GROUP_THING_TYPES_UIDS.stream(),
-                    SUPPORTED_BRIDGE_THING_TYPES_UIDS.stream())
+            .of(SUPPORTED_BUTTON_THING_TYPES_UIDS.stream(), SUPPORTED_DEVICE_THING_TYPES_UIDS.stream(),
+                    SUPPORTED_GROUP_THING_TYPES_UIDS.stream(), SUPPORTED_BRIDGE_THING_TYPES_UIDS.stream())
             .reduce(Stream::concat).orElseGet(Stream::empty).collect(Collectors.toSet()));
 }
