@@ -28,6 +28,7 @@ public class ParadoxIP150BridgeConfiguration {
     private int reconnectWaitTime;
     private Integer maxZones;
     private Integer maxPartitions;
+    private boolean encrypt;
 
     public int getRefresh() {
         return refresh;
@@ -99,5 +100,13 @@ public class ParadoxIP150BridgeConfiguration {
 
     public void setMaxPartitions(Integer maxPartitions) {
         this.maxPartitions = maxPartitions;
+    }
+
+    public boolean isEncrypt() {
+        return encrypt;
+    }
+
+    public void setEncrypt(boolean encrypt) {
+        this.encrypt = encrypt;
     }
 }

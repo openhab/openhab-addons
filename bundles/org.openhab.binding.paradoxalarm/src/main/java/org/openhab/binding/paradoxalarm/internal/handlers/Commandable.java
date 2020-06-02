@@ -10,22 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.paradoxalarm.internal.communication;
+package org.openhab.binding.paradoxalarm.internal.handlers;
 
 /**
- * The {@link IResponse} - interface for the response used in communication on the way back.
+ * The {@link Commandable} Interface for entities that can handle string commands
  *
  * @author Konstantin Polihronov - Initial contribution
  */
-interface IResponse {
+public interface Commandable {
 
-    RequestType getType();
-
-    IRequest getRequest();
-
-    byte[] getPacketBytes();
-
-    byte[] getHeader();
-
-    byte[] getPayload();
+    void handleCommand(String command);
 }
