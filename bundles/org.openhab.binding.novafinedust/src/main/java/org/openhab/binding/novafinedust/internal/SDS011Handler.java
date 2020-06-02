@@ -111,12 +111,10 @@ public class SDS011Handler extends BaseThingHandler {
 
         if (config.reporting) {
             timeBetweenDataShouldArrive = Duration.ofMinutes(config.reportingInterval);
-            scheduler.schedule(() -> initializeCommunicator(WorkMode.REPORTING, timeBetweenDataShouldArrive), 0,
-                    TimeUnit.SECONDS);
+            scheduler.submit(() -> initializeCommunicator(WorkMode.REPORTING, timeBetweenDataShouldArrive));
         } else {
             timeBetweenDataShouldArrive = Duration.ofSeconds(config.pollingInterval);
-            scheduler.schedule(() -> initializeCommunicator(WorkMode.POLLING, timeBetweenDataShouldArrive), 0,
-                    TimeUnit.SECONDS);
+            scheduler.submit(() -> initializeCommunicator(WorkMode.POLLING, timeBetweenDataShouldArrive));
         }
 
         Duration connectionMonitorStartDelay = timeBetweenDataShouldArrive.plus(CONNECTION_MONITOR_START_DELAY_OFFSET);
