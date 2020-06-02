@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.paradoxalarm.internal.communication;
 
-import org.openhab.binding.paradoxalarm.internal.communication.messages.IPPacketPayload;
+import org.openhab.binding.paradoxalarm.internal.communication.messages.IPPacket;
 
 /**
  * The {@link Request}. Abstract request class. Used to be derived for the particular types of requests to Paradox.
@@ -21,23 +21,20 @@ import org.openhab.binding.paradoxalarm.internal.communication.messages.IPPacket
  */
 public abstract class Request implements IRequest {
 
-    private IPPacketPayload payload;
+    private IPPacket packet;
     private long timestamp;
     private RequestType type;
+    private IResponseReceiver receiver;
 
-    public Request(RequestType type, IPPacketPayload payload) {
-        this.payload = payload;
+    public Request(RequestType type, IPPacket packet, IResponseReceiver receiver) {
+        this.packet = packet;
         this.type = type;
+        this.receiver = receiver;
     }
 
     @Override
-    public IPPacketPayload getRequestPayload() {
-        return payload;
-    }
-
-    @Override
-    public String toString() {
-        return "Request [type=" + type + "]";
+    public IPPacket getRequestPacket() {
+        return packet;
     }
 
     @Override
@@ -53,5 +50,15 @@ public abstract class Request implements IRequest {
     @Override
     public RequestType getType() {
         return type;
+    }
+
+    @Override
+    public String toString() {
+        return "Request [packet=" + packet + ", timestamp=" + timestamp + ", type=" + type + "]";
+    }
+
+    @Override
+    public IResponseReceiver getResponseReceiver() {
+        return receiver;
     }
 }

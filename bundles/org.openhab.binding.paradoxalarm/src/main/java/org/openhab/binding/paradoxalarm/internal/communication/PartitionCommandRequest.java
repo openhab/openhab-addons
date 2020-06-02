@@ -10,15 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.paradoxalarm.internal.communication.messages;
+package org.openhab.binding.paradoxalarm.internal.communication;
+
+import org.openhab.binding.paradoxalarm.internal.communication.messages.IPPacket;
 
 /**
- * Interface representing what we need to add IPPacketPayload.
- * Not sure if we need it as it needs only getBytes() method so far.
+ * The {@link PartitionCommandRequest} Request object for wrapping partition command.
  *
  * @author Konstantin Polihronov - Initial contribution
  */
-public interface IPPacketPayload {
+public class PartitionCommandRequest extends Request {
 
-    byte[] getBytes();
+    public PartitionCommandRequest(RequestType type, IPPacket packet, IResponseReceiver receiver) {
+        super(type, packet, receiver);
+    }
 }

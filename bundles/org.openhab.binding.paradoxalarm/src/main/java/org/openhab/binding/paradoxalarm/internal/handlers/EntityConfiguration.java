@@ -19,8 +19,13 @@ package org.openhab.binding.paradoxalarm.internal.handlers;
  */
 public class EntityConfiguration {
     private int id;
+    private boolean disarmEnabled;
 
     public int getId() {
         return id;
+    }
+
+    public boolean isDisarmEnabled() {
+        return disarmEnabled;
     }
 }
