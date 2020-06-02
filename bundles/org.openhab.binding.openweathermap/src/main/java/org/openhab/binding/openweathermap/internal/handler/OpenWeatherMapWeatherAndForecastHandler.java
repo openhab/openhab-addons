@@ -82,7 +82,8 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
     }
 
     @Override
-    protected void initializeThing() {
+    public void initialize() {
+        super.initialize();
         logger.debug("Initialize OpenWeatherMapWeatherAndForecastHandler handler '{}'.", getThing().getUID());
         OpenWeatherMapWeatherAndForecastConfiguration config = getConfigAs(
                 OpenWeatherMapWeatherAndForecastConfiguration.class);
