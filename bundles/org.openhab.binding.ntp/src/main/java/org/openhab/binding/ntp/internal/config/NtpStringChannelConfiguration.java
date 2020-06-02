@@ -13,7 +13,6 @@
 package org.openhab.binding.ntp.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link NtpStringChannelConfiguration} is responsible for holding
@@ -24,7 +23,5 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class NtpStringChannelConfiguration {
 
-    public static final String DATE_TIME_FORMAT = "DateTimeFormat";
-
-    public @Nullable String DateTimeFormat;
+    public String DateTimeFormat = "yyyy-MM-dd HH:mm:ss z";
 }

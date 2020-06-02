@@ -37,5 +37,14 @@ public class NtpBindingConstants {
     public static final String CHANNEL_DATE_TIME = "dateTime";
     public static final String CHANNEL_STRING = "string";
 
+    // Custom Properties
+    public static final String PROPERTY_NTP_SERVER_HOST = "hostname";
+    public static final String PROPERTY_REFRESH_INTERVAL = "refreshInterval";
+    public static final String PROPERTY_REFRESH_NTP = "refreshNtp";
+    public static final String PROPERTY_TIMEZONE = "timeZone";
+    public static final String PROPERTY_LOCALE = "locale";
+    public static final String PROPERTY_DATE_TIME_FORMAT = "DateTimeFormat";
+    public static final String PROPERTY_NTP_SERVER_PORT = "serverPort";
+
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_NTP);
 }

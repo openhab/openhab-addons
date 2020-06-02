@@ -24,44 +24,9 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class NtpThingConfiguration {
 
-    public static final String HOSTNAME = "hostname";
-    public static final String REFRESH_INTERVAL = "refreshInterval";
-    public static final String REFRESH_NTP = "refreshNtp";
-    public static final String SERVER_PORT = "serverPort";
-    public static final String TIMEZONE = "timeZone";
-
-    private static final String DEFAULT_SERVER_HOSTNAME = "0.pool.ntp.org";
-    private static final int DEFAULT_REFRESH_INTERVAL = 60;
-    private static final int DEFAULT_REFRESH_NTP = 30;
-    private static final int DEFAULT_SERVER_PORT = 123;
-
-    public @Nullable String hostname;
-    public @Nullable Integer refreshInterval;
-    public @Nullable Integer refreshNtp;
-    public @Nullable Integer serverPort;
+    public String hostname = "0.pool.ntp.org";
+    public int refreshInterval = 60;
+    public int refreshNtp = 30;
+    public int serverPort = 123;
     public @Nullable String timeZone;
-
-    public String getHostname() {
-        String name = hostname;
-        return name != null && !name.trim().isEmpty() ? name.trim() : DEFAULT_SERVER_HOSTNAME;
-    }
-
-    public int getRefreshInterval() {
-        Integer interval = refreshInterval;
-        return interval != null ? interval : DEFAULT_REFRESH_INTERVAL;
-    }
-
-    public int getRefreshNtp() {
-        Integer number = refreshNtp;
-        return number != null ? number : DEFAULT_REFRESH_NTP;
-    }
-
-    public int getServerPort() {
-        Integer port = serverPort;
-        return port != null ? port : DEFAULT_SERVER_PORT;
-    }
-
-    public @Nullable String getTimeZone() {
-        return timeZone;
-    }
 }

@@ -17,11 +17,11 @@ import static org.openhab.binding.ntp.internal.NtpBindingConstants.*;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.DateTimeException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.TimeZone;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
  * to one of the channels.
  *
  * @author Marcel Verpaalen - Initial contribution OH2 ntp binding
- * @author Thomas.Eichstaedt - Engelen OH1 ntp binding (getTime routine)
+ * @author Thomas.Eichstaedt-Engelen - OH1 ntp binding (getTime routine)
  * @author Markus Rathgeb - Add locale provider
  * @author Erdoan Hadzhiyusein - Adapted the class to work with the new DateTimeType
  * @author Laurent Garnier - null annotations, TimeZoneProvider, configuration settings cleanup
@@ -73,7 +73,7 @@ public class NtpHandler extends BaseThingHandler {
     /** for publish purposes */
     private DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern(DATE_PATTERN_WITH_TZ);
 
-    private @Nullable NtpThingConfiguration configuration;
+    private NtpThingConfiguration configuration = new NtpThingConfiguration();
 
     private @Nullable ScheduledFuture<?> refreshJob;
 
@@ -103,33 +103,31 @@ public class NtpHandler extends BaseThingHandler {
     public void initialize() {
         logger.debug("Initializing NTP handler for '{}'.", getThing().getUID());
 
-        NtpThingConfiguration config = getConfigAs(NtpThingConfiguration.class);
-        configuration = config;
+        configuration = getConfigAs(NtpThingConfiguration.class);
 
         refreshNtpCount = 0;
 
-        String timeZoneConfigValue = config.getTimeZone();
-        if (timeZoneConfigValue != null) {
+        if (configuration.timeZone != null) {
             logger.debug("{} with timezone '{}' set in configuration setting '{}'", getThing().getUID(),
-                    timeZoneConfigValue, NtpThingConfiguration.TIMEZONE);
+                    configuration.timeZone, PROPERTY_TIMEZONE);
             try {
-                timeZoneId = TimeZone.getTimeZone(timeZoneConfigValue).toZoneId();
-            } catch (Exception e) {
+                timeZoneId = ZoneId.of(configuration.timeZone);
+            } catch (DateTimeException e) {
                 timeZoneId = defaultTimeZoneId;
-                logger.debug("{} using default timezone '{}' due to an occurred exception: ", getThing().getUID(),
-                        timeZoneId, e);
+                logger.debug("{} using default timezone '{}', because configuration setting '{}' is invalid: {}",
+                        getThing().getUID(), timeZoneId, PROPERTY_TIMEZONE, e.getMessage());
             }
         } else {
             timeZoneId = defaultTimeZoneId;
             logger.debug("{} using default timezone '{}', because configuration setting '{}' is null.",
-                    getThing().getUID(), timeZoneId, NtpThingConfiguration.TIMEZONE);
+                    getThing().getUID(), timeZoneId, PROPERTY_TIMEZONE);
         }
 
         Channel stringChannel = getThing().getChannel(CHANNEL_STRING);
         if (stringChannel != null) {
             String dateTimeFormatString = stringChannel.getConfiguration()
                     .as(NtpStringChannelConfiguration.class).DateTimeFormat;
-            if (dateTimeFormatString != null && !dateTimeFormatString.isEmpty()) {
+            if (!dateTimeFormatString.isEmpty()) {
                 logger.debug("Date format set in config for channel '{}': {}", CHANNEL_STRING, dateTimeFormatString);
                 try {
                     dateTimeFormat = DateTimeFormatter.ofPattern(dateTimeFormatString);
@@ -149,8 +147,8 @@ public class NtpHandler extends BaseThingHandler {
 
         logger.debug(
                 "Initialized NTP handler '{}' with configuration: host '{}', port {}, refresh interval {}, refresh frequency {}, timezone {}.",
-                getThing().getUID(), config.getHostname(), config.getServerPort(), config.getRefreshInterval(),
-                config.getRefreshNtp(), timeZoneId);
+                getThing().getUID(), configuration.hostname, configuration.serverPort, configuration.refreshInterval,
+                configuration.refreshNtp, timeZoneId);
 
         refreshJob = scheduler.scheduleWithFixedDelay(() -> {
             try {
@@ -158,7 +156,7 @@ public class NtpHandler extends BaseThingHandler {
             } catch (Exception e) {
                 logger.debug("Exception occurred during refresh: {}", e.getMessage(), e);
             }
-        }, 0, config.getRefreshInterval(), TimeUnit.SECONDS);
+        }, 0, configuration.refreshInterval, TimeUnit.SECONDS);
     }
 
     @Override
@@ -173,17 +171,12 @@ public class NtpHandler extends BaseThingHandler {
     }
 
     private synchronized void refreshTimeDate() {
-        NtpThingConfiguration config = configuration;
-        if (config == null) {
-            return;
-        }
-
         long networkTimeInMillis;
         if (refreshNtpCount <= 0) {
-            networkTimeInMillis = getTime(config.getHostname(), config.getServerPort());
+            networkTimeInMillis = getTime(configuration.hostname, configuration.serverPort);
             timeOffset = networkTimeInMillis - System.currentTimeMillis();
             logger.debug("{} delta system time: {}", getThing().getUID(), timeOffset);
-            refreshNtpCount = config.getRefreshNtp();
+            refreshNtpCount = configuration.refreshNtp;
         } else {
             networkTimeInMillis = System.currentTimeMillis() + timeOffset;
             refreshNtpCount--;
@@ -215,7 +208,7 @@ public class NtpHandler extends BaseThingHandler {
             ZonedDateTime zoned = ZonedDateTime.ofInstant(Instant.ofEpochMilli(serverMillis), timeZoneId);
             logger.debug("{} Got time update from host '{}': {}.", getThing().getUID(), hostname,
                     zoned.format(DATE_FORMATTER_WITH_TZ));
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+            updateStatus(ThingStatus.ONLINE);
             return serverMillis;
         } catch (UnknownHostException uhe) {
             logger.debug(
