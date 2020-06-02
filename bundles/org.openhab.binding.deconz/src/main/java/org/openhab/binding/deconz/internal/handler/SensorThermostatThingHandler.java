@@ -26,18 +26,20 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.deconz.internal.dto.SensorConfig;
 import org.openhab.binding.deconz.internal.dto.SensorState;
+import org.openhab.binding.deconz.internal.dto.ThermostatConfig;
 import org.openhab.binding.deconz.internal.netutils.AsyncHttpClient;
+import org.openhab.binding.deconz.internal.types.ThermostatMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +69,6 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SensorThermostatThingHandler.class);
 
-
     public SensorThermostatThingHandler(Thing thing, Gson gson) {
         super(thing, gson);
     }
@@ -79,23 +80,40 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
             valueUpdated(channelUID.getId(), sensorState, false);
             return;
         }
-        SensorConfig newConfig = new SensorConfig();
+        ThermostatConfig newConfig = new ThermostatConfig();
         String channelId = channelUID.getId();
         switch (channelId) {
             case CHANNEL_HEATSETPOINT:
-                BigDecimal newTemperature;
-                if (command instanceof DecimalType) {
-                    newTemperature = ((DecimalType) command).toBigDecimal();
-                } else if (command instanceof QuantityType) {
-                    newTemperature = ((QuantityType) command).toUnit(CELSIUS).toBigDecimal();
-                } else {
+                Integer newHeatsetpoint = getTemperatureFromCommand(command);
+                if (newHeatsetpoint == null) {
+                    logger.warn("Heatsetpoint must not be null.");
                     return;
                 }
-                newConfig.heatsetpoint = newTemperature.scaleByPowerOfTen(2).intValue();
+                newConfig.heatsetpoint = newHeatsetpoint;
+                break;
+            case CHANNEL_TEMPERATURE_OFFSET:
+                Integer newOffset = getTemperatureFromCommand(command);
+                if (newOffset == null) {
+                    logger.warn("Offset must not be null.");
+                    return;
+                }
+                newConfig.offset = newOffset;
                 break;
             case CHANNEL_THERMOSTAT_MODE:
                 if (command instanceof StringType) {
-                    newConfig.mode = ((StringType) command).toString();
+                    String thermostatMode = ((StringType) command).toString();
+                    try {
+                        newConfig.mode = ThermostatMode.valueOf(thermostatMode);
+                    } catch (IllegalArgumentException ex) {
+                        logger.warn("Invalid thermostat mode: {}. Valid values: {}", thermostatMode,
+                                ThermostatMode.values());
+                        return;
+                    }
+                    if (newConfig.mode == ThermostatMode.UNKNOWN) {
+                        logger.warn("Invalid thermostat mode: {}. Valid values: {}", thermostatMode,
+                                ThermostatMode.values());
+                        return;
+                    }
                 } else {
                     return;
                 }
@@ -116,7 +134,12 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
         String json = gson.toJson(newConfig);
         logger.trace("Sending {} to sensor {} via {}", json, config.id, url);
         asyncHttpClient.put(url, json, bridgeConfig.timeout).thenAccept(v -> {
-            logger.trace("Result code={}, body={}", v.getResponseCode(), v.getBody());
+            String bodyContent = v.getBody();
+            logger.trace("Result code={}, body={}", v.getResponseCode(), bodyContent);
+            if (!bodyContent.contains("success")) {
+                logger.debug("Sending command {} to channel {} failed:", command, channelUID, bodyContent);
+            }
+
         }).exceptionally(e -> {
             logger.debug("Sending command {} to channel {} failed:", command, channelUID, e);
             return null;
@@ -124,16 +147,16 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
     }
 
     @Override
-    public void valueUpdated(ChannelUID channelUID, SensorConfig newConfig) {
+    protected void valueUpdated(ChannelUID channelUID, SensorConfig newConfig) {
         super.valueUpdated(channelUID, newConfig);
-        String mode = newConfig.mode;
+        String mode = newConfig.mode != null ? newConfig.mode.name() : ThermostatMode.UNKNOWN.name();
         String channelID = channelUID.getId();
         switch (channelID) {
             case CHANNEL_HEATSETPOINT:
                 updateQuantityTypeChannel(channelID, newConfig.heatsetpoint, CELSIUS, 1.0 / 100);
                 break;
             case CHANNEL_TEMPERATURE_OFFSET:
-                updateDecimalTypeChannel(channelID, newConfig.offset);
+                updateQuantityTypeChannel(channelID, newConfig.offset, CELSIUS, 1.0 / 100);
                 break;
             case CHANNEL_THERMOSTAT_MODE:
                 if (mode != null) {
@@ -144,7 +167,7 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
     }
 
     @Override
-    public void valueUpdated(String channelID, SensorState newState, boolean initializing) {
+    protected void valueUpdated(String channelID, SensorState newState, boolean initializing) {
         super.valueUpdated(channelID, newState, initializing);
         switch (channelID) {
             case CHANNEL_TEMPERATURE:
@@ -158,32 +181,45 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
 
     @Override
     protected void createTypeSpecificChannels(SensorConfig sensorConfig, SensorState sensorState) {
-        // some Xiaomi sensors
-        if (sensorConfig.temperature != null || sensorState.temperature != null) {
-            createChannel(CHANNEL_TEMPERATURE, ChannelKind.STATE);
-        }
-
-        // (Eurotronics) Thermostat
-        if (sensorState.valve != null) {
-            createChannel(CHANNEL_VALVE_POSITION, ChannelKind.STATE);
-        }
-
-        if (sensorConfig.heatsetpoint != null) {
-            createChannel(CHANNEL_HEATSETPOINT, ChannelKind.STATE);
-        }
-
-        if (sensorConfig.mode != null) {
-            createChannel(CHANNEL_THERMOSTAT_MODE, ChannelKind.STATE);
-        }
-
-        if (sensorConfig.offset != null) {
-            createChannel(CHANNEL_TEMPERATURE_OFFSET, ChannelKind.STATE);
-        }
-
+        /*
+         * // some Xiaomi sensors
+         * if (sensorConfig.temperature != null || sensorState.temperature != null) {
+         * createChannel(CHANNEL_TEMPERATURE, ChannelKind.STATE);
+         * }
+         *
+         * // (Eurotronics) Thermostat
+         * if (sensorState.valve != null) {
+         * createChannel(CHANNEL_VALVE_POSITION, ChannelKind.STATE);
+         * }
+         *
+         * if (sensorConfig.heatsetpoint != null) {
+         * createChannel(CHANNEL_HEATSETPOINT, ChannelKind.STATE);
+         * }
+         *
+         * if (sensorConfig.mode != null) {
+         * createChannel(CHANNEL_THERMOSTAT_MODE, ChannelKind.STATE);
+         * }
+         *
+         * if (sensorConfig.offset != null) {
+         * createChannel(CHANNEL_TEMPERATURE_OFFSET, ChannelKind.STATE);
+         * }
+         */
     }
 
     @Override
     protected List<String> getConfigChannels() {
         return CONFIG_CHANNELS;
+    }
+
+    private @Nullable Integer getTemperatureFromCommand(Command command) {
+        BigDecimal newTemperature;
+        if (command instanceof DecimalType) {
+            newTemperature = ((DecimalType) command).toBigDecimal();
+        } else if (command instanceof QuantityType) {
+            newTemperature = ((QuantityType) command).toUnit(CELSIUS).toBigDecimal();
+        } else {
+            return null;
+        }
+        return newTemperature.scaleByPowerOfTen(2).intValue();
     }
 }

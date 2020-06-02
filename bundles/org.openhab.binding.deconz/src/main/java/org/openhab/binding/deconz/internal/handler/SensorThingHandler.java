@@ -85,7 +85,7 @@ public class SensorThingHandler extends SensorBaseThingHandler {
     }
 
     @Override
-    public void valueUpdated(ChannelUID channelUID, SensorConfig newConfig) {
+    protected void valueUpdated(ChannelUID channelUID, SensorConfig newConfig) {
         super.valueUpdated(channelUID, newConfig);
         Float temperature = newConfig.temperature;
 
@@ -99,7 +99,7 @@ public class SensorThingHandler extends SensorBaseThingHandler {
     }
 
     @Override
-    public void valueUpdated(String channelID, SensorState newState, boolean initializing) {
+    protected void valueUpdated(String channelID, SensorState newState, boolean initializing) {
         super.valueUpdated(channelID, newState, initializing);
         switch (channelID) {
             case CHANNEL_LIGHT:

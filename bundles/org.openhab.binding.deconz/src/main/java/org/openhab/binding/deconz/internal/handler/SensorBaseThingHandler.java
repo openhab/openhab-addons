@@ -196,7 +196,13 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler<Sens
         }
     }
 
-    public void valueUpdated(ChannelUID channelUID, SensorConfig newConfig) {
+    /**
+     * Update channel value from {@link SensorConfig} object - override to include further channels
+     * 
+     * @param channelUID
+     * @param newConfig
+     */
+    protected void valueUpdated(ChannelUID channelUID, SensorConfig newConfig) {
         Integer batteryLevel = newConfig.battery;
         switch (channelUID.getId()) {
             case CHANNEL_BATTERY_LEVEL:
@@ -209,10 +215,19 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler<Sens
                     updateState(channelUID, OnOffType.from(batteryLevel <= 10));
                 }
                 break;
+            default:
+                // other cases covered by sub-class
         }
     }
 
-    public void valueUpdated(String channelID, SensorState newState, boolean initializing) {
+    /**
+     * Update channel value from {@link SensorState} object - override to include further channels
+     * 
+     * @param channelID
+     * @param newState
+     * @param initializing
+     */
+    protected void valueUpdated(String channelID, SensorState newState, boolean initializing) {
         switch (channelID) {
             case CHANNEL_LAST_UPDATED:
                 String lastUpdated = newState.lastupdated;
@@ -223,6 +238,8 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler<Sens
                                     ZoneOffset.UTC, ZoneId.systemDefault())));
                 }
                 break;
+            default:
+                // other cases covered by sub-class
         }
     }
 

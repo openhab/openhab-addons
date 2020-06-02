@@ -505,17 +505,17 @@
 		<description>Current mode</description>
 		<state>
 			<options>
-				<option value="auto">auto</option>
-				<option value="heat">heat</option>
-				<option value="off">off</option>
+				<option value="AUTO">auto</option>
+				<option value="HEAT">heat</option>
+				<option value="OFF">off</option>
 		</options>
 		</state>
 	</channel-type>
 	<channel-type id="offset">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Offset</label>
 		<description>Temperature offset</description>
-		<state pattern="%d" readOnly="true"></state>
+		<state pattern="%.2f %unit%" step="0.01"></state>
 	</channel-type>
 	<channel-type id="valve">
 		<item-type>Number:Dimensionless</item-type>

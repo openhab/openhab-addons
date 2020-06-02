@@ -40,6 +40,8 @@ import org.openhab.binding.deconz.internal.handler.SensorThermostatThingHandler;
 import org.openhab.binding.deconz.internal.handler.SensorThingHandler;
 import org.openhab.binding.deconz.internal.types.LightType;
 import org.openhab.binding.deconz.internal.types.LightTypeDeserializer;
+import org.openhab.binding.deconz.internal.types.ThermostatMode;
+import org.openhab.binding.deconz.internal.types.ThermostatModeGsonTypeAdapter;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -63,6 +65,7 @@ public class SensorsTest {
 
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(LightType.class, new LightTypeDeserializer());
+        gsonBuilder.registerTypeAdapter(ThermostatMode.class, new ThermostatModeGsonTypeAdapter());
         gson = gsonBuilder.create();
     }
 
@@ -105,7 +108,8 @@ public class SensorsTest {
                 eq(new QuantityType<>(100.0, SmartHomeUnits.PERCENT)));
         Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelHeatSetPointUID),
                 eq(new QuantityType<>(25, SIUnits.CELSIUS)));
-        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelModeUID), eq(new StringType("auto")));
+        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelModeUID),
+                eq(new StringType(ThermostatMode.AUTO.name())));
         Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelTemperatureUID),
                 eq(new QuantityType<>(16.5, SIUnits.CELSIUS)));
     }
