@@ -51,21 +51,29 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension {
     @Override
     public void execute(String[] args, Console console) {
         if (args.length == 2) {
-            HueBridgeHandler bridgeHandler = null;
+            Thing thing = null;
             try {
                 ThingUID thingUID = new ThingUID(args[0]);
-                Thing thing = thingRegistry.get(thingUID);
-                if (thing != null) {
-                    ThingHandler thingHandler = thing.getHandler();
-                    if (thingHandler instanceof HueBridgeHandler) {
-                        bridgeHandler = (HueBridgeHandler) thingHandler;
-                    }
-                }
+                thing = thingRegistry.get(thingUID);
             } catch (IllegalArgumentException e) {
-                bridgeHandler = null;
+                thing = null;
             }
-            if (bridgeHandler == null) {
-                console.println("Bad bridge id '" + args[0] + "'");
+            ThingHandler thingHandler = null;
+            HueBridgeHandler bridgeHandler = null;
+            if (thing != null) {
+                thingHandler = thing.getHandler();
+                if (thingHandler instanceof HueBridgeHandler) {
+                    bridgeHandler = (HueBridgeHandler) thingHandler;
+                }
+            }
+            if (thing == null) {
+                console.println("Bad thing id '" + args[0] + "'");
+                printUsage(console);
+            } else if (thingHandler == null) {
+                console.println("No handler initialized for the thing id '" + args[0] + "'");
+                printUsage(console);
+            } else if (bridgeHandler == null) {
+                console.println("'" + args[0] + "' is not a hue bridge id");
                 printUsage(console);
             } else {
                 switch (args[1]) {
