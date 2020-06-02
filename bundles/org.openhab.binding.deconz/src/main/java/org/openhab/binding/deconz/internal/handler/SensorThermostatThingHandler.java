@@ -137,7 +137,7 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
             String bodyContent = v.getBody();
             logger.trace("Result code={}, body={}", v.getResponseCode(), bodyContent);
             if (!bodyContent.contains("success")) {
-                logger.debug("Sending command {} to channel {} failed:", command, channelUID, bodyContent);
+                logger.debug("Sending command {} to channel {} failed: {}", command, channelUID, bodyContent);
             }
 
         }).exceptionally(e -> {
