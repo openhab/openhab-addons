@@ -12,12 +12,16 @@
  */
 package org.openhab.io.homekit.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  *
  * Different command types supported by HomekitOHItemProxy.
  *
  * @author Eugen Freiter - Initial contribution
  */
+
+@NonNullByDefault
 public enum HomekitCommandType {
     HUE_COMMAND,
     SATURATION_COMMAND,

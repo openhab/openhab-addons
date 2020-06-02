@@ -15,6 +15,7 @@ package org.openhab.io.homekit.internal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Dimmer commands are handled differently by different devices.
@@ -30,6 +31,8 @@ import java.util.Optional;
  *
  * @author Eugen Freiter - Initial contribution
  */
+
+@NonNullByDefault
 public enum HomekitDimmerMode {
     DIMMER_MODE_NORMAL("normal"),
     DIMMER_MODE_FILTER_ON("filterOn"),
