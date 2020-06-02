@@ -38,11 +38,12 @@ Both thing types only require a single configuration parameter `address`, which 
 
 ## Channels
 
-Every Bluetooth thing has the following channel:
+Every Bluetooth thing has the following channels:
 
-| Channel ID | Item Type | Description                                                                                         |
-|------------|-----------|-----------------------------------------------------------------------------------------------------|
-| rssi       | Number    | The "Received Signal Strength Indicator", the [RSSI](https://blog.bluetooth.com/proximity-and-rssi) |
+| Channel ID    | Item Type | Description                                                                                         |
+|---------------|-----------|-----------------------------------------------------------------------------------------------------|
+| rssi          | Number    | The "Received Signal Strength Indicator", the [RSSI](https://blog.bluetooth.com/proximity-and-rssi) |
+| last-activity | DateTime  | The last time that any radio activity was received from this device                                 |
 
 `connected` Things are dynamically queried for their services and if they support certain standard GATT characteristics, the appropriate channels are automatically added as well:
 
@@ -55,7 +56,6 @@ Devices which use a `roaming` adapter as their bridge also gain the following ch
 
 | Channel ID       | Item Type | Description                                                     |
 |------------------|-----------|-----------------------------------------------------------------|
-| last-activity    | DateTime  | The time that any radio activity was received from this device  |
 | adapter-uid      | String    | The thingUID of the adapter that is nearest to this device      |
 | adapter-location | String    | The value of the `Location` specified for the nearest adapter    |
 
