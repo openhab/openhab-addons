@@ -47,11 +47,9 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
 
     private int iPersons = -1;
     private int iUnknowns = -1;
-    @Nullable
-    private NAWelcomeEvent lastEvent;
+    @Nullable private NAWelcomeEvent lastEvent;
     private boolean isNewLastEvent;
-    @Nullable
-    private Integer dataTimeStamp;
+    @Nullable private Integer dataTimeStamp;
 
     public NAWelcomeHomeHandler(@NonNull Thing thing) {
         super(thing);

@@ -132,12 +132,12 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
     }
 
     protected void updateChannels() {
-        updateNonTriggerChannels();
+        updateDataChannels();
 
-        triggerTriggerChannels();
+        triggerEventChannels();
     }
 
-    private void updateNonTriggerChannels() {
+    private void updateDataChannels() {
         getThing().getChannels().stream().filter(channel -> !channel.getKind().equals(ChannelKind.TRIGGER))
                 .forEach(channel -> {
 
@@ -152,10 +152,10 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Triggers all trigger channels
+     * Triggers all event/trigger channels
      * (when a channel is triggered, a rule can get all other information from the updated non-trigger channels)
      */
-    private void triggerTriggerChannels() {
+    private void triggerEventChannels() {
         getThing().getChannels().stream().filter(channel -> channel.getKind().equals(ChannelKind.TRIGGER))
                 .forEach(channel -> triggerChannelIfRequired(channel.getUID().getId()));
     }
