@@ -12,9 +12,11 @@
  */
 package org.openhab.io.homekit.internal;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -23,11 +25,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * This enum describes different modes of dimmer handling in the context of HomeKit binding.
  *
  * Following modes are supported:
- * DIMMER_MODE_NORMAL - no filtering. The commands will be send to device as received from HomeKit.
+ * DIMMER_MODE_NORMAL - no filtering. The commands will be sent to device as received from HomeKit.
  * DIMMER_MODE_FILTER_ON - ON events are filtered out. only OFF and brightness information are sent
  * DIMMER_MODE_FILTER_BRIGHTNESS_100 - only Brightness=100% is filtered out. everything else unchanged. This allows
  * custom logic for soft launch in devices.
- * DIMMER_MODE_FILTER_ON_EXCEPT_BRIGHTNESS_100 - ON events are filter out in all cases except of Brightness = 100%.
+ * DIMMER_MODE_FILTER_ON_EXCEPT_BRIGHTNESS_100 - ON events are filtered out in all cases except of Brightness = 100%.
  *
  * @author Eugen Freiter - Initial contribution
  */
@@ -39,13 +41,8 @@ public enum HomekitDimmerMode {
     DIMMER_MODE_FILTER_BRIGHTNESS_100("filterBrightness100"),
     DIMMER_MODE_FILTER_ON_EXCEPT_BRIGHTNESS_100("filterOnExceptBrightness100");
 
-    private static final Map<String, HomekitDimmerMode> TAG_MAP = new HashMap<>();
-
-    static {
-        for (HomekitDimmerMode type : HomekitDimmerMode.values()) {
-            TAG_MAP.put(type.tag.toUpperCase(), type);
-        }
-    }
+    private static final Map<String, HomekitDimmerMode> TAG_MAP = Arrays.stream(HomekitDimmerMode.values())
+        .collect(Collectors.toMap(type -> type.tag.toUpperCase(), type -> type));
 
     private final String tag;
 

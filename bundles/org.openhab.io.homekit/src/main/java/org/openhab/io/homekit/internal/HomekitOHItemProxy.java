@@ -49,13 +49,13 @@ import org.slf4j.LoggerFactory;
 public class HomekitOHItemProxy {
     private final Logger logger = LoggerFactory.getLogger(HomekitOHItemProxy.class);
 
-    private static final int DEFAULT_DELAY = 50;
+    private static final int DEFAULT_DELAY = 50; // in ms
 
     private final ScheduledExecutorService scheduler = ThreadPoolManager
             .getScheduledPool(ThreadPoolManager.THREAD_POOL_NAME_COMMON);
 
-    @Nullable
-    private ScheduledFuture<?> future;
+
+    private @Nullable ScheduledFuture<?> future;
 
     private final Item item;
 
