@@ -152,8 +152,6 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
             return;
         }
 
-        updateStatus(ThingStatus.UNKNOWN);
-
         // Initialize OAuth2 authentication support
         oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(), SMARTHER_API_TOKEN_URL,
                 SMARTHER_AUTHORIZE_URL, config.getClientId(), config.getClientSecret(), SMARTHER_API_SCOPES, false);
@@ -164,6 +162,8 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
         locationCache = new ExpiringCache<>(Duration.ofMinutes(config.getStatusRefreshPeriod()),
                 this::locationCacheAction);
         bridgeStatus = new BridgeStatus();
+
+        updateStatus(ThingStatus.UNKNOWN);
 
         schedulePoll();
 
