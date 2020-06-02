@@ -11,10 +11,11 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.openhab.binding.wlanthermo.internal.api.data;
+package org.openhab.binding.wlanthermo.internal.api.nano.data;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 

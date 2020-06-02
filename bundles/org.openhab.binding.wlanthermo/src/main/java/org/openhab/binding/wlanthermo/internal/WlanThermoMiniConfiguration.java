@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Christian Schlipp - Initial contribution
  */
-public class WlanThermoConfiguration {
+public class WlanThermoMiniConfiguration {
 
     /**
      * IP Address of WlanThermo.
@@ -72,24 +72,6 @@ public class WlanThermoConfiguration {
     
     public void setIpAddress(String ipAddress) {
         this.ipAddress = ipAddress;
-    }
-
-    @Nullable
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    @Nullable
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public int getPollingInterval() {

@@ -27,7 +27,8 @@ public class WlanThermoBindingConstants {
     private static final String BINDING_ID = "wlanthermo";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_WLANTHERMO  = new ThingTypeUID(BINDING_ID, "thermometer");
+    public static final ThingTypeUID THING_TYPE_WLANTHERMO_NANO = new ThingTypeUID(BINDING_ID, "nano");
+    public static final ThingTypeUID THING_TYPE_WLANTHERMO_MINI = new ThingTypeUID(BINDING_ID, "mini");
 
     // List of all Channel ids
     //System Channels
@@ -36,8 +37,10 @@ public class WlanThermoBindingConstants {
     public static final String SYSTEM_CHARGE                = "charge";
     public static final String SYSTEM_RSSI                  = "rssi";
     public static final String SYSTEM_ONLINE                = "online";
+    public static final String SYSTEM_CPU_LOAD              = "cpu_load";
+    public static final String SYSTEM_CPU_TEMP              = "cpu_temp";
 
-    //Temp Channel 1
+    public static final String CHANNEL0                     = "channel0";
     public static final String CHANNEL1                     = "channel1";
     public static final String CHANNEL2                     = "channel2";
     public static final String CHANNEL3                     = "channel3";
@@ -46,6 +49,7 @@ public class WlanThermoBindingConstants {
     public static final String CHANNEL6                     = "channel6";
     public static final String CHANNEL7                     = "channel7";
     public static final String CHANNEL8                     = "channel8";
+    public static final String CHANNEL9                     = "channel9";
     
     public static final String CHANNEL_NAME                 = "name";
     public static final String CHANNEL_TYP                  = "typ";

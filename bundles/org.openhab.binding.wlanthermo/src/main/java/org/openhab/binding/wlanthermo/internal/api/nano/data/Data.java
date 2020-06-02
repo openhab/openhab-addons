@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.openhab.binding.wlanthermo.internal.api.data;
+package org.openhab.binding.wlanthermo.internal.api.nano.data;
 
 import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.CHANNEL_ALARM_DEVICE;
 import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.CHANNEL_ALARM_OPENHAB_HIGH;
@@ -46,8 +46,8 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.wlanthermo.internal.WlanThermoHandler;
-import org.openhab.binding.wlanthermo.internal.api.settings.Settings;
+import org.openhab.binding.wlanthermo.internal.WlanThermoNanoHandler;
+import org.openhab.binding.wlanthermo.internal.api.nano.settings.Settings;
 
 public class Data {
 
@@ -120,7 +120,7 @@ public class Data {
         return this;
     }
 
-    public State getState(ChannelUID channelUID, WlanThermoHandler wlanThermoHandler) {
+    public State getState(ChannelUID channelUID, WlanThermoNanoHandler wlanThermoHandler) {
         State state = null;
         if (channelUID.getId().startsWith("system#") && system != null) {
             switch (channelUID.getIdWithoutGroup()) {

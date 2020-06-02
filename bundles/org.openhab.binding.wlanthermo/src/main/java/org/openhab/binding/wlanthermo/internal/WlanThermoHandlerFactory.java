@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.wlanthermo.internal;
 
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -34,7 +35,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.wlanthermo", service = ThingHandlerFactory.class)
 public class WlanThermoHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(WlanThermoBindingConstants.THING_TYPE_WLANTHERMO);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(Arrays.asList(WlanThermoBindingConstants.THING_TYPE_WLANTHERMO_NANO, WlanThermoBindingConstants.THING_TYPE_WLANTHERMO_MINI));
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -45,8 +46,10 @@ public class WlanThermoHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         
-        if (WlanThermoBindingConstants.THING_TYPE_WLANTHERMO.equals(thingTypeUID)) {
-            return new WlanThermoHandler(thing);
+        if (WlanThermoBindingConstants.THING_TYPE_WLANTHERMO_NANO.equals(thingTypeUID)) {
+            return new WlanThermoNanoHandler(thing);
+        } else if (WlanThermoBindingConstants.THING_TYPE_WLANTHERMO_MINI.equals(thingTypeUID)) {
+            return new WlanThermoMiniHandler(thing);
         }
 
         return null;

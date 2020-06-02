@@ -1,5 +1,5 @@
 
-package org.openhab.binding.wlanthermo.internal.api.settings;
+package org.openhab.binding.wlanthermo.internal.api.nano.settings;
 
 import java.util.ArrayList;
 import java.util.List;
