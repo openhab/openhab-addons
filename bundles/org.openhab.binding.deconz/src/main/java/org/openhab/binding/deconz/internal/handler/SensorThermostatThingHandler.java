@@ -22,8 +22,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -61,8 +59,7 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class SensorThermostatThingHandler extends SensorBaseThingHandler {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_THERMOSTAT).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_THERMOSTAT);
 
     private static final List<String> CONFIG_CHANNELS = Arrays.asList(CHANNEL_BATTERY_LEVEL, CHANNEL_BATTERY_LOW,
             CHANNEL_HEATSETPOINT, CHANNEL_TEMPERATURE_OFFSET, CHANNEL_THERMOSTAT_MODE);
@@ -181,29 +178,6 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
 
     @Override
     protected void createTypeSpecificChannels(SensorConfig sensorConfig, SensorState sensorState) {
-        /*
-         * // some Xiaomi sensors
-         * if (sensorConfig.temperature != null || sensorState.temperature != null) {
-         * createChannel(CHANNEL_TEMPERATURE, ChannelKind.STATE);
-         * }
-         *
-         * // (Eurotronics) Thermostat
-         * if (sensorState.valve != null) {
-         * createChannel(CHANNEL_VALVE_POSITION, ChannelKind.STATE);
-         * }
-         *
-         * if (sensorConfig.heatsetpoint != null) {
-         * createChannel(CHANNEL_HEATSETPOINT, ChannelKind.STATE);
-         * }
-         *
-         * if (sensorConfig.mode != null) {
-         * createChannel(CHANNEL_THERMOSTAT_MODE, ChannelKind.STATE);
-         * }
-         *
-         * if (sensorConfig.offset != null) {
-         * createChannel(CHANNEL_TEMPERATURE_OFFSET, ChannelKind.STATE);
-         * }
-         */
     }
 
     @Override
