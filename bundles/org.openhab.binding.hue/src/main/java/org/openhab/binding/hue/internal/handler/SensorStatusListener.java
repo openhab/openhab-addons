@@ -37,33 +37,25 @@ public interface SensorStatusListener {
      * This method is called whenever the state of the given sensor has changed. The new state can be obtained by
      * {@link FullSensor#getState()}.
      *
-     * @param bridge The bridge the changed sensor is connected to.
      * @param sensor The sensor which received the state update.
      * @return The sensor handler returns true if it accepts the new state.
      */
-    boolean onSensorStateChanged(@Nullable HueBridge bridge, FullSensor sensor);
+    boolean onSensorStateChanged(FullSensor sensor);
 
     /**
      * This method is called whenever a sensor is removed.
-     *
-     * @param bridge The bridge the removed sensor was connected to.
-     * @param sensor The removed sensor
      */
-    void onSensorRemoved(@Nullable HueBridge bridge, FullSensor sensor);
+    void onSensorRemoved();
 
     /**
      * This method is called whenever a sensor is reported as gone.
-     *
-     * @param bridge The bridge the reported sensor was connected to.
-     * @param sensor The sensor which is reported as gone.
      */
-    void onSensorGone(@Nullable HueBridge bridge, FullSensor sensor);
+    void onSensorGone();
 
     /**
      * This method is called whenever a sensor is added.
      *
-     * @param bridge The bridge the added sensor was connected to.
      * @param sensor The added sensor
      */
-    void onSensorAdded(@Nullable HueBridge bridge, FullSensor sensor);
+    void onSensorAdded(FullSensor sensor);
 }
