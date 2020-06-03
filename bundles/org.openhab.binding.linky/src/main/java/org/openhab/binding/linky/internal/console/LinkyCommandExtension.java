@@ -54,21 +54,29 @@ public class LinkyCommandExtension extends AbstractConsoleCommandExtension {
     @Override
     public void execute(String[] args, Console console) {
         if (args.length >= 2) {
-            LinkyHandler handler = null;
+            Thing thing = null;
             try {
                 ThingUID thingUID = new ThingUID(args[0]);
-                Thing thing = thingRegistry.get(thingUID);
-                if (thing != null) {
-                    ThingHandler thingHandler = thing.getHandler();
-                    if (thingHandler instanceof LinkyHandler) {
-                        handler = (LinkyHandler) thingHandler;
-                    }
-                }
+                thing = thingRegistry.get(thingUID);
             } catch (IllegalArgumentException e) {
-                handler = null;
+                thing = null;
             }
-            if (handler == null) {
+            ThingHandler thingHandler = null;
+            LinkyHandler handler = null;
+            if (thing != null) {
+                thingHandler = thing.getHandler();
+                if (thingHandler instanceof LinkyHandler) {
+                    handler = (LinkyHandler) thingHandler;
+                }
+            }
+            if (thing == null) {
                 console.println("Bad thing id '" + args[0] + "'");
+                printUsage(console);
+            } else if (thingHandler == null) {
+                console.println("No handler initialized for the thing id '" + args[0] + "'");
+                printUsage(console);
+            } else if (handler == null) {
+                console.println("'" + args[0] + "' is not a Linky thing id");
                 printUsage(console);
             } else if (REPORT.equals(args[1])) {
                 LocalDate now = LocalDate.now();
