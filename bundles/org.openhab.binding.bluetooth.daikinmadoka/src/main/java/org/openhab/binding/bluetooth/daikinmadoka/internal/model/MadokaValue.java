@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
 
 /**
  *
- * @author Benjamin Lafois
+ * @author Benjamin Lafois - Initial contribution
  */
 @NonNullByDefault
 public class MadokaValue {

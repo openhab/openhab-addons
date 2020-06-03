@@ -9,8 +9,8 @@
 			<bridge-type-ref id="dbusbluez" />
 		</supported-bridge-type-refs>
 
-		<label>DaikinMadoka Binding Thing</label>
-		<description>DaikinMadoka Binding for BRC1H (BLE)</description>
+		<label>Daikin BRC1H Thermostat</label>
+		<description>A Daikin Madoka BRC1H Thermostat (BLE)</description>
 
 		<channels>
 			<channel id="rssi" typeId="rssi" />
@@ -32,80 +32,72 @@
 				<description>Bluetooth address in XX:XX:XX:XX:XX:XX format</description>
 			</parameter>
 
-		<parameter name="refreshInterval" type="integer" min="1" max="86400" unit="s">
-			<label>Refresh Interval</label>
-			<advanced>true</advanced>
-			<description>Refresh interval for battery and light sensor data (in seconds). This could impact battery lifetime</description>
-			<default>60</default>
-		</parameter>
-		<parameter name="commandTimeout" type="integer" unit="ms">
-			<label>Command Timeout</label>
-			<advanced>true</advanced>
-			<description>The amount of time, in milliseconds, a command should take before it times out.</description>
-			<default>1000</default>
-		</parameter>
-	</config-description>
+			<parameter name="refreshInterval" type="integer" min="1" max="86400" unit="s">
+				<label>Refresh Interval</label>
+				<advanced>true</advanced>
+				<description>Refresh interval for battery and light sensor data (in seconds). This could impact battery lifetime</description>
+				<default>60</default>
+			</parameter>
+			<parameter name="commandTimeout" type="integer" unit="ms">
+				<label>Command Timeout</label>
+				<advanced>true</advanced>
+				<description>The amount of time, in milliseconds, a command should take before it times out.</description>
+				<default>1000</default>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<channel-type id="brc1h_onOffStatus">
 		<item-type>Switch</item-type>
-		<label>Unit Status Switch</label>
-		<description>Unit Status Switch</description>
+		<label>Unit Power Status</label>
 	</channel-type>
 
 	<channel-type id="brc1h_indoorTemperature">
 		<item-type>Number:Temperature</item-type>
-		<label>Unit Status Switch</label>
-		<description>Unit Status Switch</description>
+		<label>Indoor Temperature</label>
 	</channel-type>
 
 	<channel-type id="brc1h_outdoorTemperature">
 		<item-type>Number:Temperature</item-type>
-		<label>Unit Status Switch</label>
-		<description>Unit Status Switch</description>
+		<label>Outdoor Temperature</label>
 	</channel-type>
 
 	<channel-type id="brc1h_remoteCtrlVersion">
 		<item-type>String</item-type>
 		<label>Remote Controller Version</label>
-		<description>Remote Controller Version</description>
 	</channel-type>
 
 	<channel-type id="brc1h_commCtrlVersion">
 		<item-type>String</item-type>
 		<label>Communication Controller Version</label>
-		<description>Communication Controller Version</description>
 	</channel-type>
 
 	<channel-type id="brc1h_operationMode">
 		<item-type>String</item-type>
 		<label>Operation Mode</label>
-		<description>Operation Mode</description>
+		<description>Valid modes are FAN, DRY, AUTO, COOL, HEAT, VENTILATION</description>
 	</channel-type>
 
 	<channel-type id="brc1h_setpoint">
 		<item-type>Number:Temperature</item-type>
-		<label>Setpoint depending on operation mode</label>
-		<description>Setpoint depending on operation mode</description>
+		<label>Setpoint</label>
 	</channel-type>
 
 	<channel-type id="brc1h_fanSpeed">
 		<item-type>Number</item-type>
-		<label>Fan Speed depending on the mode</label>
-		<description>Fan Speed depending on the mode</description>
+		<label>Fan Speed</label>
 	</channel-type>
 
 	<channel-type id="brc1h_homekitCurrentHeatingCoolingMode">
 		<item-type>String</item-type>
-		<label>HomeKit Current Operation Mode</label>
-		<description>HomeKit Current Operation Mode</description>
+		<label>HomeKit CurrentMode</label>
+		<description>Readonly value. Off, Heating, Cooling, Auto</description>
 	</channel-type>
 
 	<channel-type id="brc1h_homekitTargetHeatingCoolingMode">
 		<item-type>String</item-type>
-		<label>HomeKit Target Operation Mode</label>
-		<description>HomeKit Target Operation Mode</description>
+		<label>HomeKit Target Mode</label>
+		<description>Valid values: Off, CoolOn, CoolOff, Auto</description>
 	</channel-type>
-
 
 </thing:thing-descriptions>

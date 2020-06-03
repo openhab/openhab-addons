@@ -12,7 +12,7 @@
 
 	<artifactId>org.openhab.binding.bluetooth.daikinmadoka</artifactId>
 
-	<name>openHAB Add-ons :: Bundles :: Bluetooth DaikinMadoka Binding</name>
+	<name>openHAB Add-ons :: Bundles :: DaikinMadoka Bluetooth Adapter</name>
 
 	<dependencies>
 		<dependency>

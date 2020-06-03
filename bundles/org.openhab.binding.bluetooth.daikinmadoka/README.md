@@ -1,20 +1,20 @@
-# DaikinMadoka Binding
+# DaikinMadoka
 
-This binding implements communication with Daikin Madoka BRC1H thermostat, over Bluetooth Low Energy (BLE) communication protocol.
+This extension implements communication with Daikin Madoka BRC1H thermostat over Bluetooth Low Energy (BLE) communication protocol.
 The device uses an UART over BLE serial communication protocol over BLE WriteWithoutResponse and Notify characteristics.
 
-The binding supports all operations as well as HomeKit compatibility through OpenHAB MISC HomeKit plugin.
+[BRC1H on Daikin website (FR)](https://www.daikin.fr/fr_fr/famille-produits/Systemes-commande-intelligents/BRC1H.html)
 
-This binding has been developed/tested with DBusBlueZ Bluetooth binding.
-
-<https://www.daikin.fr/fr_fr/famille-produits/Systemes-commande-intelligents/BRC1H.html>
-
-<https://www.daikin.eu/en_us/product-group/control-systems/BRC1H.html>
+[BRC1H on Daikin website (EN)](https://www.daikin.eu/en_us/product-group/control-systems/BRC1H.html)
 
 
 ## Supported Things
 
-Any Daikin unit using a BRC1H / Madoka wired thermostat.
+
+| Thing Type ID | Description |
+| ------------- | ----------- |
+| brc1h         | BRC1H BLE Thermostat |
+
 
 ## Discovery
 
@@ -90,26 +90,21 @@ String climSalon_TargetHeatingCoolingMode                      (g_climSalon) [ "
 
 ```
 
-## Pairing the BRC1H with your OpenHAB
+## Pairing the BRC1H
 
-The Daikin Madoka BRC1H Thermostat requires Bluetooth Pairing before it can be used. This pairing process can be a bit challenging, as it seems the timing is very important for it success.
+The Daikin Madoka BRC1H Thermostat requires Bluetooth Pairing before it can be used.
+This pairing process can be a bit challenging, as it seems the timing is very important for it success.
 
-We suggest that the Bluetooth adapter is not being used by another component during the pairing phase. As such, if you have other Bluetooth Things in your OpenHAB, it is suggested to stop the openhab service before doing the pairing.
+We suggest that the Bluetooth adapter is not being used by another component during the pairing phase.
+As such, if you have other Bluetooth Things in your OpenHAB, it is suggested to stop the openhab service before doing the pairing.
 
   * Ensure that your BRC1H has Bluetooth enabled in the menu
-  * Open `bluetoothctl` on your OpenHAB server - preferably as `root`
+  * Open `bluetoothctl` on your openHAB server - preferably as `root`
   * start scanning by typing `scan on`
   * After few seconds, stop scanning `scan off`
   * Start the pairing process by typing `pair <mac address of your brc1h>`
   * On the BRC1H, confirm the pairing request, and quickly confirm as well on your server by typing `yes`
-  
-A successful pairing ends with `pairing successful`
 
-For more information on pairing a device in command line on Linux, refer to official documentation.
+A successful pairing ends with `pairing successful`.
 
-https://docs.ubuntu.com/core/en/stacks/bluetooth/bluez/docs/reference/pairing/outbound
-  
-
-
-
-
+For more information on pairing a device in command line on Linux, refer to [official documentation](https://docs.ubuntu.com/core/en/stacks/bluetooth/bluez/docs/reference/pairing/outbound).

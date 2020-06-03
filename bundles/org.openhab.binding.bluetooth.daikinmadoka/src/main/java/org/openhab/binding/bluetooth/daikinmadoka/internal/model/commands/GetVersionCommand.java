@@ -21,7 +21,7 @@ import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaParsingEx
 
 /**
  *
- * @author Benjamin Lafois
+ * @author Benjamin Lafois - Initial contribution
  *
  */
 @NonNullByDefault

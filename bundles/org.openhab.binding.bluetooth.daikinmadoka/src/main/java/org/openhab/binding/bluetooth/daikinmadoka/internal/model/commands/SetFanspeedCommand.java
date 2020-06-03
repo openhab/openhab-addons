@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Benjamin Lafois
+ * @author Benjamin Lafois - Initial contribution
  *
  */
 @NonNullByDefault

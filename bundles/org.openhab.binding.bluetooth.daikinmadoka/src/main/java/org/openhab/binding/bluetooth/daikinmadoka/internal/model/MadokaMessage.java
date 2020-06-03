@@ -27,9 +27,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * This class represents a message transmitted or received from the BRC1H controller.
  *
- * @author Benjamin Lafois
- *
+ * @author Benjamin Lafois - Initial contribution
  */
 @NonNullByDefault
 public class MadokaMessage {

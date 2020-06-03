@@ -20,9 +20,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.ResponseListener;
 
 /**
+ * As the protocol emutes an UART communication over BLE (characteristics write/notify), this class takes care of BLE
+ * transport.
  *
- * @author Benjamin Lafois
- *
+ * @author Benjamin Lafois - Initial contribution
  */
 @NonNullByDefault
 public class BRC1HUartProcessor {
@@ -45,10 +46,6 @@ public class BRC1HUartProcessor {
         this.responseListener = responseListener;
     }
 
-    /**
-     *
-     * @return
-     */
     private boolean isMessageComplete() {
         int messagesInQueue = this.uartMessages.size();
 

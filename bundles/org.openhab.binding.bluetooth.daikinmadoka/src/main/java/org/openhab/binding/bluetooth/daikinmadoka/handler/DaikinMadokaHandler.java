@@ -371,7 +371,6 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
                     command.setState(BRC1HCommand.State.FAILED);
                 }
             }
-
         } catch (Exception e) {
             logger.debug("Error", e);
         } finally {
@@ -470,7 +469,6 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
 
         switch (operationMode) {
             case AUTO:
-                // TODO confirm it works in all conditions
                 logger.debug("In AutoMode, CoolingFanSpeed = {}, HeatingFanSpeed = {}", command.getCoolingFanSpeed(),
                         command.getHeatingFanSpeed());
                 fs = command.getHeatingFanSpeed();
@@ -514,7 +512,6 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
 
         switch (operationMode) {
             case AUTO:
-                // TODO confirm it works in all conditions
                 logger.debug("In AutoMode, CoolingSetpoint = {}, HeatingSetpoint = {}", command.getCoolingSetpoint(),
                         command.getHeatingSetpoint());
                 sp = command.getHeatingSetpoint();
@@ -643,7 +640,6 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
 
     @Override
     public void receivedResponse(GetIndoorOutoorTemperatures command) {
-
         DecimalType newIndoorTemp = command.getIndoorTemperature();
         if (newIndoorTemp != null) {
             if (!newIndoorTemp.equals(this.madokaSettings.getIndoorTemperature())) {
