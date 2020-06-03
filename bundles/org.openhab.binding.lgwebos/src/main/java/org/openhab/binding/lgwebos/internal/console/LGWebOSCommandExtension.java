@@ -53,21 +53,29 @@ public class LGWebOSCommandExtension extends AbstractConsoleCommandExtension {
     @Override
     public void execute(String[] args, Console console) {
         if (args.length == 2) {
-            LGWebOSHandler handler = null;
+            Thing thing = null;
             try {
                 ThingUID thingUID = new ThingUID(args[0]);
-                Thing thing = thingRegistry.get(thingUID);
-                if (thing != null) {
-                    ThingHandler thingHandler = thing.getHandler();
-                    if (thingHandler instanceof LGWebOSHandler) {
-                        handler = (LGWebOSHandler) thingHandler;
-                    }
-                }
+                thing = thingRegistry.get(thingUID);
             } catch (IllegalArgumentException e) {
-                handler = null;
+                thing = null;
             }
-            if (handler == null) {
+            ThingHandler thingHandler = null;
+            LGWebOSHandler handler = null;
+            if (thing != null) {
+                thingHandler = thing.getHandler();
+                if (thingHandler instanceof LGWebOSHandler) {
+                    handler = (LGWebOSHandler) thingHandler;
+                }
+            }
+            if (thing == null) {
                 console.println("Bad thing id '" + args[0] + "'");
+                printUsage(console);
+            } else if (thingHandler == null) {
+                console.println("No handler initialized for the thing id '" + args[0] + "'");
+                printUsage(console);
+            } else if (handler == null) {
+                console.println("'" + args[0] + "' is not a LG webOS thing id");
                 printUsage(console);
             } else {
                 switch (args[1]) {
