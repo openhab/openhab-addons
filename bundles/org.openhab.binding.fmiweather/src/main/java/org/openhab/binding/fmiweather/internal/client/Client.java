@@ -37,7 +37,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.fmiweather.internal.client.FMIResponse.Builder;
 import org.openhab.binding.fmiweather.internal.client.exception.FMIExceptionReportException;
-import org.openhab.binding.fmiweather.internal.client.exception.FMIResponseException;
+import org.openhab.binding.fmiweather.internal.client.exception.FMIIOException;
+import org.openhab.binding.fmiweather.internal.client.exception.FMIUnexpectedResponseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -116,20 +117,25 @@ public class Client {
      * @param request request to process
      * @param timeoutMillis timeout for the http call
      * @return data corresponding to the query
-     * @throws FMIResponseException on all I/O or XML errors
+     * @throws FMIIOException on all I/O errors
+     * @throws FMIUnexpectedResponseException on all unexpected content errors
+     * @throw FMIExceptionReportException on explicit error responses from the server
      */
-    public FMIResponse query(Request request, int timeoutMillis) throws FMIResponseException {
+    public FMIResponse query(Request request, int timeoutMillis)
+            throws FMIExceptionReportException, FMIUnexpectedResponseException, FMIIOException {
         try {
             String url = request.toUrl();
             String responseText = HttpUtil.executeUrl("GET", url, timeoutMillis);
             if (responseText == null) {
-                throw new FMIResponseException(String.format("HTTP error with %s", request.toUrl()));
+                throw new FMIIOException(String.format("HTTP error with %s", request.toUrl()));
             }
             FMIResponse response = parseMultiPointCoverageXml(responseText);
             logger.debug("Request {} translated to url {}. Response: {}", request, url, response);
             return response;
-        } catch (SAXException | IOException | XPathExpressionException e) {
-            throw new FMIResponseException(e);
+        } catch (IOException e) {
+            throw new FMIIOException(e);
+        } catch (SAXException | XPathExpressionException e) {
+            throw new FMIUnexpectedResponseException(e);
         }
     }
 
@@ -138,22 +144,27 @@ public class Client {
      *
      * @param timeoutMillis timeout for the http call
      * @return locations representing stations
-     * @throws FMIResponseException on all I/O or XML errors
+     * @throws FMIIOException on all I/O errors
+     * @throws FMIUnexpectedResponseException on all unexpected content errors
+     * @throw FMIExceptionReportException on explicit error responses from the server
      */
-    public Set<Location> queryWeatherStations(int timeoutMillis) throws FMIResponseException {
+    public Set<Location> queryWeatherStations(int timeoutMillis)
+            throws FMIIOException, FMIUnexpectedResponseException, FMIExceptionReportException {
         try {
             String response = HttpUtil.executeUrl("GET", WEATHER_STATIONS_URL, timeoutMillis);
             if (response == null) {
-                throw new FMIResponseException(String.format("HTTP error with %s", WEATHER_STATIONS_URL));
+                throw new FMIIOException(String.format("HTTP error with %s", WEATHER_STATIONS_URL));
             }
             return parseStations(response);
-        } catch (XPathExpressionException | SAXException | IOException e) {
-            throw new FMIResponseException(e);
+        } catch (IOException e) {
+            throw new FMIIOException(e);
+        } catch (XPathExpressionException | SAXException e) {
+            throw new FMIUnexpectedResponseException(e);
         }
     }
 
-    private Set<Location> parseStations(String response)
-            throws FMIResponseException, SAXException, IOException, XPathExpressionException {
+    private Set<Location> parseStations(String response) throws FMIExceptionReportException,
+            FMIUnexpectedResponseException, SAXException, IOException, XPathExpressionException {
         Document document = documentBuilder.parse(new InputSource(new StringReader(response)));
 
         XPath xPath = XPathFactory.newInstance().newXPath();
@@ -180,7 +191,7 @@ public class Client {
                 document);
 
         if (fmisids.length != names.length || fmisids.length != representativePoints.length) {
-            throw new FMIResponseException(String.format(
+            throw new FMIUnexpectedResponseException(String.format(
                     "Could not all properties of locations: fmisids: %d, names: %d, representativePoints: %d",
                     fmisids.length, names.length, representativePoints.length));
         }
@@ -196,15 +207,9 @@ public class Client {
     /**
      * Parse FMI multipointcoverage formatted xml response
      *
-     * @param response
-     * @return
-     * @throws FMIResponseException
-     * @throws SAXException
-     * @throws IOException
-     * @throws XPathExpressionException
      */
-    private FMIResponse parseMultiPointCoverageXml(String response)
-            throws FMIResponseException, SAXException, IOException, XPathExpressionException {
+    private FMIResponse parseMultiPointCoverageXml(String response) throws FMIUnexpectedResponseException,
+            FMIExceptionReportException, SAXException, IOException, XPathExpressionException {
         Document document = documentBuilder.parse(new InputSource(new StringReader(response)));
 
         XPath xPath = XPathFactory.newInstance().newXPath();
@@ -236,7 +241,7 @@ public class Client {
                 xPath.compile("//target:Location/target:representativePoint/@xlink:href"), document);
 
         if ((ids.length > 0 && ids.length != names.length) || names.length != representativePointRefs.length) {
-            throw new FMIResponseException(String.format(
+            throw new FMIUnexpectedResponseException(String.format(
                     "Could not all properties of locations: ids: %d, names: %d, representativePointRefs: %d",
                     ids.length, names.length, representativePointRefs.length));
         }
@@ -275,9 +280,9 @@ public class Client {
         logger.trace("valuesText: {}", valuesText);
         logger.trace("valuesEntries ({}): {}", valuesEntries.length, valuesEntries);
         if (valuesEntries.length != locations.length * parameters.length * countTimestamps) {
-            throw new FMIResponseException(String.format("Wrong number of values (%d). Expecting %d * %d * %d = %d",
-                    valuesEntries.length, locations.length, parameters.length, countTimestamps,
-                    countTimestamps * locations.length * parameters.length));
+            throw new FMIUnexpectedResponseException(String.format(
+                    "Wrong number of values (%d). Expecting %d * %d * %d = %d", valuesEntries.length, locations.length,
+                    parameters.length, countTimestamps, countTimestamps * locations.length * parameters.length));
         }
         IntStream.range(0, locations.length).forEach(locationIndex -> {
             for (int parameterIndex = 0; parameterIndex < parameters.length; parameterIndex++) {
@@ -304,13 +309,13 @@ public class Client {
      * @param document document object
      * @param href xlink href attribute value. Should start with #
      * @return latitude and longitude values as array
-     * @throws FMIResponseException parsing errors or when entry is not found
-     * @throws XPathExpressionException
+     * @throws FMIUnexpectedResponseException parsing errors or when entry is not found
+     * @throws XPathExpressionException xpath errors
      */
     private BigDecimal[] findLatLon(XPath xPath, int entryIndex, Document document, String href)
-            throws FMIResponseException, XPathExpressionException {
+            throws FMIUnexpectedResponseException, XPathExpressionException {
         if (!href.startsWith("#")) {
-            throw new FMIResponseException(
+            throw new FMIUnexpectedResponseException(
                     "Could not find valid representativePoint xlink:href, does not start with #");
         }
         String pointId = href.substring(1);
@@ -324,16 +329,22 @@ public class Client {
      *
      * @param pointLatLon latitude longitude string separated by space
      * @return latitude and longitude values as array
-     * @throws FMIResponseException on parsing errors
+     * @throws FMIUnexpectedResponseException on parsing errors
      */
-    private BigDecimal[] parseLatLon(String pointLatLon) throws FMIResponseException {
+    private BigDecimal[] parseLatLon(String pointLatLon) throws FMIUnexpectedResponseException {
         String[] latlon = pointLatLon.split(" ");
         BigDecimal lat, lon;
+        if (latlon.length != 2) {
+            throw new FMIUnexpectedResponseException(String.format(
+                    "Invalid latitude or longitude format, expected two values separated by space, got %d values: '%s'",
+                    latlon.length, latlon));
+        }
         try {
             lat = new BigDecimal(latlon[0]);
             lon = new BigDecimal(latlon[1]);
         } catch (NumberFormatException e) {
-            throw new FMIResponseException(e.getMessage());
+            throw new FMIUnexpectedResponseException(
+                    String.format("Invalid latitude or longitude format: %s", e.getMessage()));
         }
         return new BigDecimal[] { lat, lon };
     }
@@ -353,11 +364,11 @@ public class Client {
      * @param errorDescription error description for FMIResponseException
      * @param values
      * @return
-     * @throws FMIResponseException when length of values != 1
+     * @throws FMIUnexpectedResponseException when length of values != 1
      */
-    private String takeFirstOrError(String errorDescription, String[] values) throws FMIResponseException {
+    private String takeFirstOrError(String errorDescription, String[] values) throws FMIUnexpectedResponseException {
         if (values.length != 1) {
-            throw new FMIResponseException(String.format("No unique match found: %s", errorDescription));
+            throw new FMIUnexpectedResponseException(String.format("No unique match found: %s", errorDescription));
         }
         return values[0];
     }
@@ -395,10 +406,10 @@ public class Client {
      * @param timestampsEpoch expected timestamps
      * @param latLonTimeTripletEntries flat array of strings representing the array, [row1_cell1, row1_cell2,
      *            row2_cell1, ...]
-     * @throws FMIResponseException when value ordering is not matching the expected
+     * @throws FMIUnexpectedResponseException when value ordering is not matching the expected
      */
     private void validatePositionEntries(Location[] locations, long[] timestampsEpoch,
-            String[] latLonTimeTripletEntries) throws FMIResponseException {
+            String[] latLonTimeTripletEntries) throws FMIUnexpectedResponseException {
         int countTimestamps = timestampsEpoch.length;
         for (int locationIndex = 0; locationIndex < locations.length; locationIndex++) {
             String firstLat = latLonTimeTripletEntries[locationIndex * countTimestamps * 3];
@@ -411,20 +422,20 @@ public class Client {
                 String timeEpochSec = latLonTimeTripletEntries[locationIndex * countTimestamps * 3 + timestepIndex * 3
                         + 2];
                 if (!lat.equals(firstLat) || !lon.equals(fistLon)) {
-                    throw new FMIResponseException(String.format(
+                    throw new FMIUnexpectedResponseException(String.format(
                             "positions[%d] lat, lon for time index [%d] was not matching expected ordering",
                             locationIndex, timestepIndex));
                 }
                 String expectedLat = locations[locationIndex].latitude.toPlainString();
                 String expectedLon = locations[locationIndex].longitude.toPlainString();
                 if (!lat.equals(expectedLat) || !lon.equals(expectedLon)) {
-                    throw new FMIResponseException(String.format(
+                    throw new FMIUnexpectedResponseException(String.format(
                             "positions[%d] lat, lon for time index [%d] was not matching representativePoint",
                             locationIndex, timestepIndex));
                 }
 
                 if (Long.parseLong(timeEpochSec) != timestampsEpoch[timestepIndex]) {
-                    throw new FMIResponseException(String.format(
+                    throw new FMIUnexpectedResponseException(String.format(
                             "positions[%d] time (%s) for time index [%d] was not matching expected (%d) ordering",
                             locationIndex, timeEpochSec, timestepIndex, timestampsEpoch[timestepIndex]));
                 }

@@ -40,6 +40,7 @@ import org.openhab.binding.fmiweather.internal.client.ForecastRequest;
 import org.openhab.binding.fmiweather.internal.client.LatLon;
 import org.openhab.binding.fmiweather.internal.client.Location;
 import org.openhab.binding.fmiweather.internal.client.exception.FMIResponseException;
+import org.openhab.binding.fmiweather.internal.client.exception.FMIUnexpectedResponseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -131,6 +132,11 @@ public class ForecastWeatherHandler extends AbstractWeatherHandler {
                                 QUERY_RESOLUTION_MINUTES),
                         QUERY_RESOLUTION_MINUTES), TIMEOUT_MILLIS);
             } catch (FMIResponseException e) {
+                if (e instanceof FMIUnexpectedResponseException) {
+                    logger.warn(
+                            "Unexpected error with the response, potentially API format has changed. Printing out details",
+                            e);
+                }
                 response = null;
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         String.format("%s: %s", e.getClass().getSimpleName(), e.getMessage()));

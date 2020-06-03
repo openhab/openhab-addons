@@ -44,6 +44,7 @@ import org.openhab.binding.fmiweather.internal.BindingConstants;
 import org.openhab.binding.fmiweather.internal.client.Client;
 import org.openhab.binding.fmiweather.internal.client.Location;
 import org.openhab.binding.fmiweather.internal.client.exception.FMIResponseException;
+import org.openhab.binding.fmiweather.internal.client.exception.FMIUnexpectedResponseException;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -74,7 +75,13 @@ public class FMIWeatherDiscoveryService extends AbstractDiscoveryService {
         try {
             return new Client().queryWeatherStations(STATIONS_TIMEOUT_MILLIS);
         } catch (FMIResponseException e) {
-            logger.warn("Error when querying stations", e);
+            if (e instanceof FMIUnexpectedResponseException) {
+                logger.warn(
+                        "Unexpected error with the response, potentially API format has changed. Printing out details",
+                        e);
+            } else {
+                logger.warn("Error when querying stations, {}: {}", e.getClass().getSimpleName(), e.getMessage());
+            }
         }
         return Collections.emptySet();
     });
