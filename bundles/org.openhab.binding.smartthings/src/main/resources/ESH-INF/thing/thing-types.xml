@@ -1608,6 +1608,59 @@
 		</config-description>
 	</thing-type>
 
+	<!-- Washing machine related -->
+	<thing-type id="washerMode">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings" />
+		</supported-bridge-type-refs>
+		<label>Washer mode</label>
+		<description>Controls a washer temperature</description>
+		<channels>
+			<channel id="washerMode" typeId="washer-mode-channel">
+				<label>Washer Mode</label>
+			</channel>
+		</channels>
+		<config-description>
+			<parameter name="smartthingsName" type="text" required="true">
+				<label>Smartthings Name</label>
+				<description>User assigned Smartthings device name</description>
+			</parameter>
+			<parameter name="smartthingsLocation" type="text">
+				<label>Smartthings Location</label>
+				<description>Where the device is located</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="washerOperatingState">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings" />
+		</supported-bridge-type-refs>
+		<label>Washer operating state</label>
+		<description>Washer operating state info</description>
+		<channels>
+			<channel id="machineState" typeId="machine-state-channel">
+				<label>Machine state</label>
+			</channel>
+			<channel id="washerJobState" typeId="washer-job-state-channel">
+				<label>Washer job state</label>
+			</channel>
+			<channel id="completionTime" typeId="completion-time-channel">
+				<label>Completion time</label>
+			</channel>
+		</channels>
+		<config-description>
+			<parameter name="smartthingsName" type="text" required="true">
+				<label>Smartthings Name</label>
+				<description>User assigned Smartthings device name</description>
+			</parameter>
+			<parameter name="smartthingsLocation" type="text">
+				<label>Smartthings Location</label>
+				<description>Where the device is located</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
 	<!-- Water Sensor -->
 	<thing-type id="waterSensor">
 		<supported-bridge-type-refs>
@@ -2251,6 +2304,24 @@
 		<item-type>Number</item-type>
 		<label>Voltage measurement</label>
 		<category></category>
+	</channel-type>
+
+	<channel-type id="washer-mode-channel">
+		<item-type>String</item-type>
+		<label>Washer mode</label>
+		<state>
+			<options>
+				<option value="regular">Regular</option>
+				<option value="heavy">Heavy</option>
+				<option value="rinse">Rinse</option>
+				<option value="spinDry">Spin dry</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="washer-job-state-channel">
+		<item-type>String</item-type>
+		<label>Washer job state</label>
 	</channel-type>
 
 	<channel-type id="water-channel">

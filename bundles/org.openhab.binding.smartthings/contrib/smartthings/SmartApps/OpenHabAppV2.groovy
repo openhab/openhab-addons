@@ -161,7 +161,7 @@ import groovy.transform.Field
         attributes: [
             "dryerMode"
         ],
-        action: "actionDryerMode"
+        action: "actionApplianceMode"
     ],
     "dryerOperatingState": [
         name: "Dryer Operating State",
@@ -515,6 +515,23 @@ import groovy.transform.Field
             "voltage"
         ]
     ], 
+    "washerMode": [
+        name: "Washer Mode",
+        capability: "capability.washerMode",
+        attributes: [
+            "washerMode"
+        ],
+        action: "actionApplianceMode"
+    ],
+    "washerOperatingState": [
+        name: "Washer Operating State",
+        capability: "capability.washerOperatingState",
+        attributes: [
+            "machineState",
+            "washerJobState"
+        ],
+        action: "actionMachineState"
+    ],
     "waterSensor": [
         name: "Water Sensor",
         capability: "capability.waterSensor",
@@ -996,18 +1013,31 @@ def actionTimedSession(device, attribute, value) {
     }
 }
 
-def actionDryerMode(device, attribute, value) {
+def actionApplianceMode(device, attribute, value) {
     //log.debug "actionDryeMode: attribute: ${attribute} value: ${value}"
     // Through trial and error I figured out that changing the dryerMode requires the following code
+    // Originally this was called actionDryerMode but then the washer was added I renamed and added washer modes
     switch (value) {
+        // Modes used by both washer and dryer
         case "regular":
             device.regular()
         break
+        // Dryer modes
         case "lowHeat":
             device.lowHeat()
         break
         case "highHeat":
             device.highHeat()
+        break
+        // washer modes
+        case "heavy":
+            device.heavy()
+        break
+        case "rinse":
+            device.rinse()
+        break
+        case "spinDry":
+            device.spinDry()
         break
     }
 }
