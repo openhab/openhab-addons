@@ -811,8 +811,9 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         final String lightId = lightStatusListener.getLightId();
         if (!lightStatusListeners.containsKey(lightId)) {
             lightStatusListeners.put(lightId, lightStatusListener);
-            if (hueBridge != null) {
-                lightStatusListener.onLightAdded(hueBridge, lastLightStates.get(lightId));
+            final FullLight lastLightState = lastLightStates.get(lightId);
+            if (hueBridge != null && lastLightState != null) {
+                lightStatusListener.onLightAdded(hueBridge, lastLightState);
             }
 
             return true;
@@ -830,8 +831,9 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         final String sensorId = sensorStatusListener.getSensorId();
         if (!sensorStatusListeners.containsKey(sensorId)) {
             sensorStatusListeners.put(sensorId, sensorStatusListener);
-            if (hueBridge != null) {
-                sensorStatusListener.onSensorAdded(hueBridge, lastSensorStates.get(sensorId));
+            final FullSensor lastSensorState = lastSensorStates.get(sensorId);
+            if (hueBridge != null && lastSensorState != null) {
+                sensorStatusListener.onSensorAdded(hueBridge, lastSensorState);
             }
             return true;
         }
@@ -849,8 +851,9 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         final String groupId = groupStatusListener.getGroupId();
         if (!groupStatusListeners.containsKey(groupId)) {
             groupStatusListeners.put(groupId, groupStatusListener);
-            if (hueBridge != null) {
-                groupStatusListener.onGroupAdded(hueBridge, lastGroupStates.get(groupId));
+            final FullGroup lastGroupState = lastGroupStates.get(groupId);
+            if (hueBridge != null && lastGroupState != null) {
+                groupStatusListener.onGroupAdded(hueBridge, lastGroupState);
             }
             return true;
         }
