@@ -132,7 +132,12 @@ for channel in observation['value']['channels']:
     channel_id = ':'.join(channel['uid']['segments'])
     label = channel['label']    
     item_type = channel['acceptedItemType']
-    unit = '%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS' if item_type == 'DateTime' else '%.1f %unit%'
+    if 'clouds' in channel_id:
+        unit = '%.0f %unit%'
+    else if item_type == 'DateTime':
+        unit = '%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS'
+    else:
+        unit = '%.1f %unit%'
     channel_name = channel['uid']['segments'][-1].split('#')[1]
     item_name = 'Helsinki'
     for item_name_part in channel_name.split('-'):
@@ -154,7 +159,7 @@ Number:Pressure HelsinkiPressure "Pressure [%.1f %unit%]" <pressure>{ channel="f
 Number:Length HelsinkiPrecipitation "Precipitation [%.1f %unit%]" <rain> { channel="fmiweather:observation:station_Helsinki_Kumpula:current#precipitation" }
 Number:Length HelsinkiSnowDepth "Snow depth [%.1f %unit%]" <snow> { channel="fmiweather:observation:station_Helsinki_Kumpula:current#snow-depth" }
 Number:Length HelsinkiVisibility "Visibility [%.1f %unit%]" { channel="fmiweather:observation:station_Helsinki_Kumpula:current#visibility" }
-Number HelsinkiClouds "Cloudiness [%.1f %unit%]" { channel="fmiweather:observation:station_Helsinki_Kumpula:current#clouds" }
+Number HelsinkiClouds "Cloudiness [%.0f %unit%]" { channel="fmiweather:observation:station_Helsinki_Kumpula:current#clouds" }
 Number HelsinkiPresentWeatherCode "Prevailing weather [%d]" <sun_clouds> { channel="fmiweather:observation:station_Helsinki_Kumpula:current#present-weather" }
 ```
 
@@ -184,7 +189,12 @@ for channel in forecast['channels']:
     label = channel['label'] + group_name.replace('forecast', ' ').replace('Hours', 'hour ')
     
     item_type = channel['itemType']
-    unit = '%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS' if item_type == 'DateTime' else '%.1f %unit%'
+    if 'cloud' in channel_id:
+        unit = '%.0f %unit%'
+    else if item_type == 'DateTime':
+        unit = '%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS'
+    else:
+        unit = '%.1f %unit%'
     
     item_name = 'Paris'
     item_name += group_name[0].upper() + group_name[1:]
@@ -219,7 +229,7 @@ Number:Speed ParisForecastNowWindSpeed "Wind Speed Now [%.1f %unit%]" <wind> { c
 Number:Speed ParisForecastNowWindGust "Wind Gust Now [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastNow#wind-gust" }
 Number:Pressure ParisForecastNowPressure "Pressure Now [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastNow#pressure" }
 Number:Speed ParisForecastNowPrecipitationIntensity "Precipitation Intensity Now [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastNow#precipitation-intensity" }
-Number:Dimensionless ParisForecastNowTotalCloudCover "Total Cloud Cover Now [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastNow#total-cloud-cover" }
+Number:Dimensionless ParisForecastNowTotalCloudCover "Total Cloud Cover Now [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastNow#total-cloud-cover" }
 Number ParisForecastNowWeatherId "Prevailing weather id Now [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastNow#weather-id" }
 
 DateTime ParisForecastHours01Time "Forecast Time hour 01 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours01#time" }
@@ -230,7 +240,7 @@ Number:Speed ParisForecastHours01WindSpeed "Wind Speed hour 01 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours01WindGust "Wind Gust hour 01 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours01#wind-gust" }
 Number:Pressure ParisForecastHours01Pressure "Pressure hour 01 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours01#pressure" }
 Number:Speed ParisForecastHours01PrecipitationIntensity "Precipitation Intensity hour 01 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours01#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours01TotalCloudCover "Total Cloud Cover hour 01 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours01#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours01TotalCloudCover "Total Cloud Cover hour 01 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours01#total-cloud-cover" }
 Number ParisForecastHours01WeatherId "Prevailing weather id hour 01 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours01#weather-id" }
 
 DateTime ParisForecastHours02Time "Forecast Time hour 02 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours02#time" }
@@ -241,7 +251,7 @@ Number:Speed ParisForecastHours02WindSpeed "Wind Speed hour 02 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours02WindGust "Wind Gust hour 02 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours02#wind-gust" }
 Number:Pressure ParisForecastHours02Pressure "Pressure hour 02 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours02#pressure" }
 Number:Speed ParisForecastHours02PrecipitationIntensity "Precipitation Intensity hour 02 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours02#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours02TotalCloudCover "Total Cloud Cover hour 02 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours02#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours02TotalCloudCover "Total Cloud Cover hour 02 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours02#total-cloud-cover" }
 Number ParisForecastHours02WeatherId "Prevailing weather id hour 02 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours02#weather-id" }
 
 DateTime ParisForecastHours03Time "Forecast Time hour 03 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours03#time" }
@@ -252,7 +262,7 @@ Number:Speed ParisForecastHours03WindSpeed "Wind Speed hour 03 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours03WindGust "Wind Gust hour 03 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours03#wind-gust" }
 Number:Pressure ParisForecastHours03Pressure "Pressure hour 03 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours03#pressure" }
 Number:Speed ParisForecastHours03PrecipitationIntensity "Precipitation Intensity hour 03 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours03#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours03TotalCloudCover "Total Cloud Cover hour 03 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours03#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours03TotalCloudCover "Total Cloud Cover hour 03 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours03#total-cloud-cover" }
 Number ParisForecastHours03WeatherId "Prevailing weather id hour 03 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours03#weather-id" }
 
 DateTime ParisForecastHours04Time "Forecast Time hour 04 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours04#time" }
@@ -263,7 +273,7 @@ Number:Speed ParisForecastHours04WindSpeed "Wind Speed hour 04 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours04WindGust "Wind Gust hour 04 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours04#wind-gust" }
 Number:Pressure ParisForecastHours04Pressure "Pressure hour 04 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours04#pressure" }
 Number:Speed ParisForecastHours04PrecipitationIntensity "Precipitation Intensity hour 04 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours04#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours04TotalCloudCover "Total Cloud Cover hour 04 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours04#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours04TotalCloudCover "Total Cloud Cover hour 04 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours04#total-cloud-cover" }
 Number ParisForecastHours04WeatherId "Prevailing weather id hour 04 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours04#weather-id" }
 
 DateTime ParisForecastHours05Time "Forecast Time hour 05 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours05#time" }
@@ -274,7 +284,7 @@ Number:Speed ParisForecastHours05WindSpeed "Wind Speed hour 05 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours05WindGust "Wind Gust hour 05 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours05#wind-gust" }
 Number:Pressure ParisForecastHours05Pressure "Pressure hour 05 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours05#pressure" }
 Number:Speed ParisForecastHours05PrecipitationIntensity "Precipitation Intensity hour 05 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours05#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours05TotalCloudCover "Total Cloud Cover hour 05 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours05#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours05TotalCloudCover "Total Cloud Cover hour 05 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours05#total-cloud-cover" }
 Number ParisForecastHours05WeatherId "Prevailing weather id hour 05 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours05#weather-id" }
 
 DateTime ParisForecastHours06Time "Forecast Time hour 06 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours06#time" }
@@ -285,7 +295,7 @@ Number:Speed ParisForecastHours06WindSpeed "Wind Speed hour 06 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours06WindGust "Wind Gust hour 06 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours06#wind-gust" }
 Number:Pressure ParisForecastHours06Pressure "Pressure hour 06 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours06#pressure" }
 Number:Speed ParisForecastHours06PrecipitationIntensity "Precipitation Intensity hour 06 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours06#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours06TotalCloudCover "Total Cloud Cover hour 06 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours06#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours06TotalCloudCover "Total Cloud Cover hour 06 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours06#total-cloud-cover" }
 Number ParisForecastHours06WeatherId "Prevailing weather id hour 06 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours06#weather-id" }
 
 DateTime ParisForecastHours07Time "Forecast Time hour 07 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours07#time" }
@@ -296,7 +306,7 @@ Number:Speed ParisForecastHours07WindSpeed "Wind Speed hour 07 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours07WindGust "Wind Gust hour 07 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours07#wind-gust" }
 Number:Pressure ParisForecastHours07Pressure "Pressure hour 07 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours07#pressure" }
 Number:Speed ParisForecastHours07PrecipitationIntensity "Precipitation Intensity hour 07 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours07#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours07TotalCloudCover "Total Cloud Cover hour 07 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours07#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours07TotalCloudCover "Total Cloud Cover hour 07 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours07#total-cloud-cover" }
 Number ParisForecastHours07WeatherId "Prevailing weather id hour 07 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours07#weather-id" }
 
 DateTime ParisForecastHours08Time "Forecast Time hour 08 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours08#time" }
@@ -307,7 +317,7 @@ Number:Speed ParisForecastHours08WindSpeed "Wind Speed hour 08 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours08WindGust "Wind Gust hour 08 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours08#wind-gust" }
 Number:Pressure ParisForecastHours08Pressure "Pressure hour 08 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours08#pressure" }
 Number:Speed ParisForecastHours08PrecipitationIntensity "Precipitation Intensity hour 08 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours08#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours08TotalCloudCover "Total Cloud Cover hour 08 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours08#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours08TotalCloudCover "Total Cloud Cover hour 08 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours08#total-cloud-cover" }
 Number ParisForecastHours08WeatherId "Prevailing weather id hour 08 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours08#weather-id" }
 
 DateTime ParisForecastHours09Time "Forecast Time hour 09 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours09#time" }
@@ -318,7 +328,7 @@ Number:Speed ParisForecastHours09WindSpeed "Wind Speed hour 09 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours09WindGust "Wind Gust hour 09 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours09#wind-gust" }
 Number:Pressure ParisForecastHours09Pressure "Pressure hour 09 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours09#pressure" }
 Number:Speed ParisForecastHours09PrecipitationIntensity "Precipitation Intensity hour 09 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours09#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours09TotalCloudCover "Total Cloud Cover hour 09 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours09#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours09TotalCloudCover "Total Cloud Cover hour 09 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours09#total-cloud-cover" }
 Number ParisForecastHours09WeatherId "Prevailing weather id hour 09 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours09#weather-id" }
 
 DateTime ParisForecastHours10Time "Forecast Time hour 10 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours10#time" }
@@ -329,7 +339,7 @@ Number:Speed ParisForecastHours10WindSpeed "Wind Speed hour 10 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours10WindGust "Wind Gust hour 10 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours10#wind-gust" }
 Number:Pressure ParisForecastHours10Pressure "Pressure hour 10 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours10#pressure" }
 Number:Speed ParisForecastHours10PrecipitationIntensity "Precipitation Intensity hour 10 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours10#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours10TotalCloudCover "Total Cloud Cover hour 10 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours10#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours10TotalCloudCover "Total Cloud Cover hour 10 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours10#total-cloud-cover" }
 Number ParisForecastHours10WeatherId "Prevailing weather id hour 10 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours10#weather-id" }
 
 DateTime ParisForecastHours11Time "Forecast Time hour 11 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours11#time" }
@@ -340,7 +350,7 @@ Number:Speed ParisForecastHours11WindSpeed "Wind Speed hour 11 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours11WindGust "Wind Gust hour 11 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours11#wind-gust" }
 Number:Pressure ParisForecastHours11Pressure "Pressure hour 11 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours11#pressure" }
 Number:Speed ParisForecastHours11PrecipitationIntensity "Precipitation Intensity hour 11 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours11#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours11TotalCloudCover "Total Cloud Cover hour 11 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours11#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours11TotalCloudCover "Total Cloud Cover hour 11 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours11#total-cloud-cover" }
 Number ParisForecastHours11WeatherId "Prevailing weather id hour 11 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours11#weather-id" }
 
 DateTime ParisForecastHours12Time "Forecast Time hour 12 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours12#time" }
@@ -351,7 +361,7 @@ Number:Speed ParisForecastHours12WindSpeed "Wind Speed hour 12 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours12WindGust "Wind Gust hour 12 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours12#wind-gust" }
 Number:Pressure ParisForecastHours12Pressure "Pressure hour 12 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours12#pressure" }
 Number:Speed ParisForecastHours12PrecipitationIntensity "Precipitation Intensity hour 12 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours12#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours12TotalCloudCover "Total Cloud Cover hour 12 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours12#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours12TotalCloudCover "Total Cloud Cover hour 12 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours12#total-cloud-cover" }
 Number ParisForecastHours12WeatherId "Prevailing weather id hour 12 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours12#weather-id" }
 
 DateTime ParisForecastHours13Time "Forecast Time hour 13 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours13#time" }
@@ -362,7 +372,7 @@ Number:Speed ParisForecastHours13WindSpeed "Wind Speed hour 13 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours13WindGust "Wind Gust hour 13 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours13#wind-gust" }
 Number:Pressure ParisForecastHours13Pressure "Pressure hour 13 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours13#pressure" }
 Number:Speed ParisForecastHours13PrecipitationIntensity "Precipitation Intensity hour 13 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours13#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours13TotalCloudCover "Total Cloud Cover hour 13 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours13#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours13TotalCloudCover "Total Cloud Cover hour 13 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours13#total-cloud-cover" }
 Number ParisForecastHours13WeatherId "Prevailing weather id hour 13 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours13#weather-id" }
 
 DateTime ParisForecastHours14Time "Forecast Time hour 14 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours14#time" }
@@ -373,7 +383,7 @@ Number:Speed ParisForecastHours14WindSpeed "Wind Speed hour 14 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours14WindGust "Wind Gust hour 14 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours14#wind-gust" }
 Number:Pressure ParisForecastHours14Pressure "Pressure hour 14 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours14#pressure" }
 Number:Speed ParisForecastHours14PrecipitationIntensity "Precipitation Intensity hour 14 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours14#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours14TotalCloudCover "Total Cloud Cover hour 14 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours14#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours14TotalCloudCover "Total Cloud Cover hour 14 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours14#total-cloud-cover" }
 Number ParisForecastHours14WeatherId "Prevailing weather id hour 14 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours14#weather-id" }
 
 DateTime ParisForecastHours15Time "Forecast Time hour 15 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours15#time" }
@@ -384,7 +394,7 @@ Number:Speed ParisForecastHours15WindSpeed "Wind Speed hour 15 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours15WindGust "Wind Gust hour 15 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours15#wind-gust" }
 Number:Pressure ParisForecastHours15Pressure "Pressure hour 15 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours15#pressure" }
 Number:Speed ParisForecastHours15PrecipitationIntensity "Precipitation Intensity hour 15 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours15#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours15TotalCloudCover "Total Cloud Cover hour 15 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours15#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours15TotalCloudCover "Total Cloud Cover hour 15 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours15#total-cloud-cover" }
 Number ParisForecastHours15WeatherId "Prevailing weather id hour 15 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours15#weather-id" }
 
 DateTime ParisForecastHours16Time "Forecast Time hour 16 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours16#time" }
@@ -395,7 +405,7 @@ Number:Speed ParisForecastHours16WindSpeed "Wind Speed hour 16 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours16WindGust "Wind Gust hour 16 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours16#wind-gust" }
 Number:Pressure ParisForecastHours16Pressure "Pressure hour 16 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours16#pressure" }
 Number:Speed ParisForecastHours16PrecipitationIntensity "Precipitation Intensity hour 16 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours16#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours16TotalCloudCover "Total Cloud Cover hour 16 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours16#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours16TotalCloudCover "Total Cloud Cover hour 16 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours16#total-cloud-cover" }
 Number ParisForecastHours16WeatherId "Prevailing weather id hour 16 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours16#weather-id" }
 
 DateTime ParisForecastHours17Time "Forecast Time hour 17 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours17#time" }
@@ -406,7 +416,7 @@ Number:Speed ParisForecastHours17WindSpeed "Wind Speed hour 17 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours17WindGust "Wind Gust hour 17 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours17#wind-gust" }
 Number:Pressure ParisForecastHours17Pressure "Pressure hour 17 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours17#pressure" }
 Number:Speed ParisForecastHours17PrecipitationIntensity "Precipitation Intensity hour 17 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours17#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours17TotalCloudCover "Total Cloud Cover hour 17 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours17#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours17TotalCloudCover "Total Cloud Cover hour 17 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours17#total-cloud-cover" }
 Number ParisForecastHours17WeatherId "Prevailing weather id hour 17 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours17#weather-id" }
 
 DateTime ParisForecastHours18Time "Forecast Time hour 18 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours18#time" }
@@ -417,7 +427,7 @@ Number:Speed ParisForecastHours18WindSpeed "Wind Speed hour 18 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours18WindGust "Wind Gust hour 18 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours18#wind-gust" }
 Number:Pressure ParisForecastHours18Pressure "Pressure hour 18 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours18#pressure" }
 Number:Speed ParisForecastHours18PrecipitationIntensity "Precipitation Intensity hour 18 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours18#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours18TotalCloudCover "Total Cloud Cover hour 18 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours18#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours18TotalCloudCover "Total Cloud Cover hour 18 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours18#total-cloud-cover" }
 Number ParisForecastHours18WeatherId "Prevailing weather id hour 18 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours18#weather-id" }
 
 DateTime ParisForecastHours19Time "Forecast Time hour 19 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours19#time" }
@@ -428,7 +438,7 @@ Number:Speed ParisForecastHours19WindSpeed "Wind Speed hour 19 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours19WindGust "Wind Gust hour 19 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours19#wind-gust" }
 Number:Pressure ParisForecastHours19Pressure "Pressure hour 19 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours19#pressure" }
 Number:Speed ParisForecastHours19PrecipitationIntensity "Precipitation Intensity hour 19 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours19#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours19TotalCloudCover "Total Cloud Cover hour 19 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours19#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours19TotalCloudCover "Total Cloud Cover hour 19 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours19#total-cloud-cover" }
 Number ParisForecastHours19WeatherId "Prevailing weather id hour 19 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours19#weather-id" }
 
 DateTime ParisForecastHours20Time "Forecast Time hour 20 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours20#time" }
@@ -439,7 +449,7 @@ Number:Speed ParisForecastHours20WindSpeed "Wind Speed hour 20 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours20WindGust "Wind Gust hour 20 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours20#wind-gust" }
 Number:Pressure ParisForecastHours20Pressure "Pressure hour 20 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours20#pressure" }
 Number:Speed ParisForecastHours20PrecipitationIntensity "Precipitation Intensity hour 20 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours20#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours20TotalCloudCover "Total Cloud Cover hour 20 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours20#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours20TotalCloudCover "Total Cloud Cover hour 20 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours20#total-cloud-cover" }
 Number ParisForecastHours20WeatherId "Prevailing weather id hour 20 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours20#weather-id" }
 
 DateTime ParisForecastHours21Time "Forecast Time hour 21 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours21#time" }
@@ -450,7 +460,7 @@ Number:Speed ParisForecastHours21WindSpeed "Wind Speed hour 21 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours21WindGust "Wind Gust hour 21 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours21#wind-gust" }
 Number:Pressure ParisForecastHours21Pressure "Pressure hour 21 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours21#pressure" }
 Number:Speed ParisForecastHours21PrecipitationIntensity "Precipitation Intensity hour 21 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours21#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours21TotalCloudCover "Total Cloud Cover hour 21 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours21#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours21TotalCloudCover "Total Cloud Cover hour 21 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours21#total-cloud-cover" }
 Number ParisForecastHours21WeatherId "Prevailing weather id hour 21 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours21#weather-id" }
 
 DateTime ParisForecastHours22Time "Forecast Time hour 22 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours22#time" }
@@ -461,7 +471,7 @@ Number:Speed ParisForecastHours22WindSpeed "Wind Speed hour 22 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours22WindGust "Wind Gust hour 22 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours22#wind-gust" }
 Number:Pressure ParisForecastHours22Pressure "Pressure hour 22 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours22#pressure" }
 Number:Speed ParisForecastHours22PrecipitationIntensity "Precipitation Intensity hour 22 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours22#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours22TotalCloudCover "Total Cloud Cover hour 22 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours22#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours22TotalCloudCover "Total Cloud Cover hour 22 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours22#total-cloud-cover" }
 Number ParisForecastHours22WeatherId "Prevailing weather id hour 22 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours22#weather-id" }
 
 DateTime ParisForecastHours23Time "Forecast Time hour 23 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours23#time" }
@@ -472,7 +482,7 @@ Number:Speed ParisForecastHours23WindSpeed "Wind Speed hour 23 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours23WindGust "Wind Gust hour 23 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours23#wind-gust" }
 Number:Pressure ParisForecastHours23Pressure "Pressure hour 23 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours23#pressure" }
 Number:Speed ParisForecastHours23PrecipitationIntensity "Precipitation Intensity hour 23 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours23#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours23TotalCloudCover "Total Cloud Cover hour 23 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours23#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours23TotalCloudCover "Total Cloud Cover hour 23 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours23#total-cloud-cover" }
 Number ParisForecastHours23WeatherId "Prevailing weather id hour 23 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours23#weather-id" }
 
 DateTime ParisForecastHours24Time "Forecast Time hour 24 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours24#time" }
@@ -483,7 +493,7 @@ Number:Speed ParisForecastHours24WindSpeed "Wind Speed hour 24 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours24WindGust "Wind Gust hour 24 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours24#wind-gust" }
 Number:Pressure ParisForecastHours24Pressure "Pressure hour 24 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours24#pressure" }
 Number:Speed ParisForecastHours24PrecipitationIntensity "Precipitation Intensity hour 24 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours24#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours24TotalCloudCover "Total Cloud Cover hour 24 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours24#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours24TotalCloudCover "Total Cloud Cover hour 24 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours24#total-cloud-cover" }
 Number ParisForecastHours24WeatherId "Prevailing weather id hour 24 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours24#weather-id" }
 
 DateTime ParisForecastHours25Time "Forecast Time hour 25 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours25#time" }
@@ -494,7 +504,7 @@ Number:Speed ParisForecastHours25WindSpeed "Wind Speed hour 25 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours25WindGust "Wind Gust hour 25 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours25#wind-gust" }
 Number:Pressure ParisForecastHours25Pressure "Pressure hour 25 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours25#pressure" }
 Number:Speed ParisForecastHours25PrecipitationIntensity "Precipitation Intensity hour 25 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours25#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours25TotalCloudCover "Total Cloud Cover hour 25 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours25#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours25TotalCloudCover "Total Cloud Cover hour 25 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours25#total-cloud-cover" }
 Number ParisForecastHours25WeatherId "Prevailing weather id hour 25 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours25#weather-id" }
 
 DateTime ParisForecastHours26Time "Forecast Time hour 26 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours26#time" }
@@ -505,7 +515,7 @@ Number:Speed ParisForecastHours26WindSpeed "Wind Speed hour 26 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours26WindGust "Wind Gust hour 26 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours26#wind-gust" }
 Number:Pressure ParisForecastHours26Pressure "Pressure hour 26 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours26#pressure" }
 Number:Speed ParisForecastHours26PrecipitationIntensity "Precipitation Intensity hour 26 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours26#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours26TotalCloudCover "Total Cloud Cover hour 26 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours26#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours26TotalCloudCover "Total Cloud Cover hour 26 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours26#total-cloud-cover" }
 Number ParisForecastHours26WeatherId "Prevailing weather id hour 26 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours26#weather-id" }
 
 DateTime ParisForecastHours27Time "Forecast Time hour 27 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours27#time" }
@@ -516,7 +526,7 @@ Number:Speed ParisForecastHours27WindSpeed "Wind Speed hour 27 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours27WindGust "Wind Gust hour 27 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours27#wind-gust" }
 Number:Pressure ParisForecastHours27Pressure "Pressure hour 27 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours27#pressure" }
 Number:Speed ParisForecastHours27PrecipitationIntensity "Precipitation Intensity hour 27 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours27#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours27TotalCloudCover "Total Cloud Cover hour 27 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours27#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours27TotalCloudCover "Total Cloud Cover hour 27 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours27#total-cloud-cover" }
 Number ParisForecastHours27WeatherId "Prevailing weather id hour 27 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours27#weather-id" }
 
 DateTime ParisForecastHours28Time "Forecast Time hour 28 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours28#time" }
@@ -527,7 +537,7 @@ Number:Speed ParisForecastHours28WindSpeed "Wind Speed hour 28 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours28WindGust "Wind Gust hour 28 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours28#wind-gust" }
 Number:Pressure ParisForecastHours28Pressure "Pressure hour 28 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours28#pressure" }
 Number:Speed ParisForecastHours28PrecipitationIntensity "Precipitation Intensity hour 28 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours28#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours28TotalCloudCover "Total Cloud Cover hour 28 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours28#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours28TotalCloudCover "Total Cloud Cover hour 28 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours28#total-cloud-cover" }
 Number ParisForecastHours28WeatherId "Prevailing weather id hour 28 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours28#weather-id" }
 
 DateTime ParisForecastHours29Time "Forecast Time hour 29 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours29#time" }
@@ -538,7 +548,7 @@ Number:Speed ParisForecastHours29WindSpeed "Wind Speed hour 29 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours29WindGust "Wind Gust hour 29 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours29#wind-gust" }
 Number:Pressure ParisForecastHours29Pressure "Pressure hour 29 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours29#pressure" }
 Number:Speed ParisForecastHours29PrecipitationIntensity "Precipitation Intensity hour 29 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours29#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours29TotalCloudCover "Total Cloud Cover hour 29 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours29#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours29TotalCloudCover "Total Cloud Cover hour 29 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours29#total-cloud-cover" }
 Number ParisForecastHours29WeatherId "Prevailing weather id hour 29 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours29#weather-id" }
 
 DateTime ParisForecastHours30Time "Forecast Time hour 30 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours30#time" }
@@ -549,7 +559,7 @@ Number:Speed ParisForecastHours30WindSpeed "Wind Speed hour 30 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours30WindGust "Wind Gust hour 30 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours30#wind-gust" }
 Number:Pressure ParisForecastHours30Pressure "Pressure hour 30 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours30#pressure" }
 Number:Speed ParisForecastHours30PrecipitationIntensity "Precipitation Intensity hour 30 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours30#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours30TotalCloudCover "Total Cloud Cover hour 30 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours30#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours30TotalCloudCover "Total Cloud Cover hour 30 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours30#total-cloud-cover" }
 Number ParisForecastHours30WeatherId "Prevailing weather id hour 30 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours30#weather-id" }
 
 DateTime ParisForecastHours31Time "Forecast Time hour 31 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours31#time" }
@@ -560,7 +570,7 @@ Number:Speed ParisForecastHours31WindSpeed "Wind Speed hour 31 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours31WindGust "Wind Gust hour 31 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours31#wind-gust" }
 Number:Pressure ParisForecastHours31Pressure "Pressure hour 31 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours31#pressure" }
 Number:Speed ParisForecastHours31PrecipitationIntensity "Precipitation Intensity hour 31 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours31#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours31TotalCloudCover "Total Cloud Cover hour 31 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours31#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours31TotalCloudCover "Total Cloud Cover hour 31 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours31#total-cloud-cover" }
 Number ParisForecastHours31WeatherId "Prevailing weather id hour 31 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours31#weather-id" }
 
 DateTime ParisForecastHours32Time "Forecast Time hour 32 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours32#time" }
@@ -571,7 +581,7 @@ Number:Speed ParisForecastHours32WindSpeed "Wind Speed hour 32 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours32WindGust "Wind Gust hour 32 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours32#wind-gust" }
 Number:Pressure ParisForecastHours32Pressure "Pressure hour 32 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours32#pressure" }
 Number:Speed ParisForecastHours32PrecipitationIntensity "Precipitation Intensity hour 32 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours32#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours32TotalCloudCover "Total Cloud Cover hour 32 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours32#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours32TotalCloudCover "Total Cloud Cover hour 32 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours32#total-cloud-cover" }
 Number ParisForecastHours32WeatherId "Prevailing weather id hour 32 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours32#weather-id" }
 
 DateTime ParisForecastHours33Time "Forecast Time hour 33 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours33#time" }
@@ -582,7 +592,7 @@ Number:Speed ParisForecastHours33WindSpeed "Wind Speed hour 33 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours33WindGust "Wind Gust hour 33 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours33#wind-gust" }
 Number:Pressure ParisForecastHours33Pressure "Pressure hour 33 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours33#pressure" }
 Number:Speed ParisForecastHours33PrecipitationIntensity "Precipitation Intensity hour 33 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours33#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours33TotalCloudCover "Total Cloud Cover hour 33 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours33#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours33TotalCloudCover "Total Cloud Cover hour 33 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours33#total-cloud-cover" }
 Number ParisForecastHours33WeatherId "Prevailing weather id hour 33 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours33#weather-id" }
 
 DateTime ParisForecastHours34Time "Forecast Time hour 34 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours34#time" }
@@ -593,7 +603,7 @@ Number:Speed ParisForecastHours34WindSpeed "Wind Speed hour 34 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours34WindGust "Wind Gust hour 34 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours34#wind-gust" }
 Number:Pressure ParisForecastHours34Pressure "Pressure hour 34 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours34#pressure" }
 Number:Speed ParisForecastHours34PrecipitationIntensity "Precipitation Intensity hour 34 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours34#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours34TotalCloudCover "Total Cloud Cover hour 34 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours34#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours34TotalCloudCover "Total Cloud Cover hour 34 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours34#total-cloud-cover" }
 Number ParisForecastHours34WeatherId "Prevailing weather id hour 34 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours34#weather-id" }
 
 DateTime ParisForecastHours35Time "Forecast Time hour 35 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours35#time" }
@@ -604,7 +614,7 @@ Number:Speed ParisForecastHours35WindSpeed "Wind Speed hour 35 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours35WindGust "Wind Gust hour 35 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours35#wind-gust" }
 Number:Pressure ParisForecastHours35Pressure "Pressure hour 35 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours35#pressure" }
 Number:Speed ParisForecastHours35PrecipitationIntensity "Precipitation Intensity hour 35 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours35#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours35TotalCloudCover "Total Cloud Cover hour 35 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours35#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours35TotalCloudCover "Total Cloud Cover hour 35 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours35#total-cloud-cover" }
 Number ParisForecastHours35WeatherId "Prevailing weather id hour 35 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours35#weather-id" }
 
 DateTime ParisForecastHours36Time "Forecast Time hour 36 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours36#time" }
@@ -615,7 +625,7 @@ Number:Speed ParisForecastHours36WindSpeed "Wind Speed hour 36 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours36WindGust "Wind Gust hour 36 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours36#wind-gust" }
 Number:Pressure ParisForecastHours36Pressure "Pressure hour 36 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours36#pressure" }
 Number:Speed ParisForecastHours36PrecipitationIntensity "Precipitation Intensity hour 36 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours36#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours36TotalCloudCover "Total Cloud Cover hour 36 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours36#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours36TotalCloudCover "Total Cloud Cover hour 36 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours36#total-cloud-cover" }
 Number ParisForecastHours36WeatherId "Prevailing weather id hour 36 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours36#weather-id" }
 
 DateTime ParisForecastHours37Time "Forecast Time hour 37 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours37#time" }
@@ -626,7 +636,7 @@ Number:Speed ParisForecastHours37WindSpeed "Wind Speed hour 37 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours37WindGust "Wind Gust hour 37 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours37#wind-gust" }
 Number:Pressure ParisForecastHours37Pressure "Pressure hour 37 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours37#pressure" }
 Number:Speed ParisForecastHours37PrecipitationIntensity "Precipitation Intensity hour 37 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours37#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours37TotalCloudCover "Total Cloud Cover hour 37 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours37#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours37TotalCloudCover "Total Cloud Cover hour 37 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours37#total-cloud-cover" }
 Number ParisForecastHours37WeatherId "Prevailing weather id hour 37 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours37#weather-id" }
 
 DateTime ParisForecastHours38Time "Forecast Time hour 38 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours38#time" }
@@ -637,7 +647,7 @@ Number:Speed ParisForecastHours38WindSpeed "Wind Speed hour 38 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours38WindGust "Wind Gust hour 38 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours38#wind-gust" }
 Number:Pressure ParisForecastHours38Pressure "Pressure hour 38 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours38#pressure" }
 Number:Speed ParisForecastHours38PrecipitationIntensity "Precipitation Intensity hour 38 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours38#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours38TotalCloudCover "Total Cloud Cover hour 38 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours38#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours38TotalCloudCover "Total Cloud Cover hour 38 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours38#total-cloud-cover" }
 Number ParisForecastHours38WeatherId "Prevailing weather id hour 38 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours38#weather-id" }
 
 DateTime ParisForecastHours39Time "Forecast Time hour 39 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours39#time" }
@@ -648,7 +658,7 @@ Number:Speed ParisForecastHours39WindSpeed "Wind Speed hour 39 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours39WindGust "Wind Gust hour 39 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours39#wind-gust" }
 Number:Pressure ParisForecastHours39Pressure "Pressure hour 39 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours39#pressure" }
 Number:Speed ParisForecastHours39PrecipitationIntensity "Precipitation Intensity hour 39 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours39#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours39TotalCloudCover "Total Cloud Cover hour 39 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours39#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours39TotalCloudCover "Total Cloud Cover hour 39 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours39#total-cloud-cover" }
 Number ParisForecastHours39WeatherId "Prevailing weather id hour 39 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours39#weather-id" }
 
 DateTime ParisForecastHours40Time "Forecast Time hour 40 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours40#time" }
@@ -659,7 +669,7 @@ Number:Speed ParisForecastHours40WindSpeed "Wind Speed hour 40 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours40WindGust "Wind Gust hour 40 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours40#wind-gust" }
 Number:Pressure ParisForecastHours40Pressure "Pressure hour 40 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours40#pressure" }
 Number:Speed ParisForecastHours40PrecipitationIntensity "Precipitation Intensity hour 40 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours40#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours40TotalCloudCover "Total Cloud Cover hour 40 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours40#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours40TotalCloudCover "Total Cloud Cover hour 40 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours40#total-cloud-cover" }
 Number ParisForecastHours40WeatherId "Prevailing weather id hour 40 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours40#weather-id" }
 
 DateTime ParisForecastHours41Time "Forecast Time hour 41 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours41#time" }
@@ -670,7 +680,7 @@ Number:Speed ParisForecastHours41WindSpeed "Wind Speed hour 41 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours41WindGust "Wind Gust hour 41 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours41#wind-gust" }
 Number:Pressure ParisForecastHours41Pressure "Pressure hour 41 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours41#pressure" }
 Number:Speed ParisForecastHours41PrecipitationIntensity "Precipitation Intensity hour 41 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours41#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours41TotalCloudCover "Total Cloud Cover hour 41 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours41#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours41TotalCloudCover "Total Cloud Cover hour 41 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours41#total-cloud-cover" }
 Number ParisForecastHours41WeatherId "Prevailing weather id hour 41 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours41#weather-id" }
 
 DateTime ParisForecastHours42Time "Forecast Time hour 42 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours42#time" }
@@ -681,7 +691,7 @@ Number:Speed ParisForecastHours42WindSpeed "Wind Speed hour 42 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours42WindGust "Wind Gust hour 42 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours42#wind-gust" }
 Number:Pressure ParisForecastHours42Pressure "Pressure hour 42 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours42#pressure" }
 Number:Speed ParisForecastHours42PrecipitationIntensity "Precipitation Intensity hour 42 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours42#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours42TotalCloudCover "Total Cloud Cover hour 42 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours42#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours42TotalCloudCover "Total Cloud Cover hour 42 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours42#total-cloud-cover" }
 Number ParisForecastHours42WeatherId "Prevailing weather id hour 42 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours42#weather-id" }
 
 DateTime ParisForecastHours43Time "Forecast Time hour 43 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours43#time" }
@@ -692,7 +702,7 @@ Number:Speed ParisForecastHours43WindSpeed "Wind Speed hour 43 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours43WindGust "Wind Gust hour 43 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours43#wind-gust" }
 Number:Pressure ParisForecastHours43Pressure "Pressure hour 43 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours43#pressure" }
 Number:Speed ParisForecastHours43PrecipitationIntensity "Precipitation Intensity hour 43 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours43#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours43TotalCloudCover "Total Cloud Cover hour 43 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours43#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours43TotalCloudCover "Total Cloud Cover hour 43 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours43#total-cloud-cover" }
 Number ParisForecastHours43WeatherId "Prevailing weather id hour 43 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours43#weather-id" }
 
 DateTime ParisForecastHours44Time "Forecast Time hour 44 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours44#time" }
@@ -703,7 +713,7 @@ Number:Speed ParisForecastHours44WindSpeed "Wind Speed hour 44 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours44WindGust "Wind Gust hour 44 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours44#wind-gust" }
 Number:Pressure ParisForecastHours44Pressure "Pressure hour 44 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours44#pressure" }
 Number:Speed ParisForecastHours44PrecipitationIntensity "Precipitation Intensity hour 44 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours44#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours44TotalCloudCover "Total Cloud Cover hour 44 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours44#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours44TotalCloudCover "Total Cloud Cover hour 44 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours44#total-cloud-cover" }
 Number ParisForecastHours44WeatherId "Prevailing weather id hour 44 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours44#weather-id" }
 
 DateTime ParisForecastHours45Time "Forecast Time hour 45 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours45#time" }
@@ -714,7 +724,7 @@ Number:Speed ParisForecastHours45WindSpeed "Wind Speed hour 45 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours45WindGust "Wind Gust hour 45 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours45#wind-gust" }
 Number:Pressure ParisForecastHours45Pressure "Pressure hour 45 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours45#pressure" }
 Number:Speed ParisForecastHours45PrecipitationIntensity "Precipitation Intensity hour 45 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours45#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours45TotalCloudCover "Total Cloud Cover hour 45 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours45#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours45TotalCloudCover "Total Cloud Cover hour 45 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours45#total-cloud-cover" }
 Number ParisForecastHours45WeatherId "Prevailing weather id hour 45 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours45#weather-id" }
 
 DateTime ParisForecastHours46Time "Forecast Time hour 46 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours46#time" }
@@ -725,7 +735,7 @@ Number:Speed ParisForecastHours46WindSpeed "Wind Speed hour 46 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours46WindGust "Wind Gust hour 46 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours46#wind-gust" }
 Number:Pressure ParisForecastHours46Pressure "Pressure hour 46 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours46#pressure" }
 Number:Speed ParisForecastHours46PrecipitationIntensity "Precipitation Intensity hour 46 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours46#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours46TotalCloudCover "Total Cloud Cover hour 46 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours46#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours46TotalCloudCover "Total Cloud Cover hour 46 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours46#total-cloud-cover" }
 Number ParisForecastHours46WeatherId "Prevailing weather id hour 46 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours46#weather-id" }
 
 DateTime ParisForecastHours47Time "Forecast Time hour 47 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours47#time" }
@@ -736,7 +746,7 @@ Number:Speed ParisForecastHours47WindSpeed "Wind Speed hour 47 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours47WindGust "Wind Gust hour 47 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours47#wind-gust" }
 Number:Pressure ParisForecastHours47Pressure "Pressure hour 47 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours47#pressure" }
 Number:Speed ParisForecastHours47PrecipitationIntensity "Precipitation Intensity hour 47 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours47#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours47TotalCloudCover "Total Cloud Cover hour 47 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours47#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours47TotalCloudCover "Total Cloud Cover hour 47 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours47#total-cloud-cover" }
 Number ParisForecastHours47WeatherId "Prevailing weather id hour 47 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours47#weather-id" }
 
 DateTime ParisForecastHours48Time "Forecast Time hour 48 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours48#time" }
@@ -747,7 +757,7 @@ Number:Speed ParisForecastHours48WindSpeed "Wind Speed hour 48 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours48WindGust "Wind Gust hour 48 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours48#wind-gust" }
 Number:Pressure ParisForecastHours48Pressure "Pressure hour 48 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours48#pressure" }
 Number:Speed ParisForecastHours48PrecipitationIntensity "Precipitation Intensity hour 48 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours48#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours48TotalCloudCover "Total Cloud Cover hour 48 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours48#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours48TotalCloudCover "Total Cloud Cover hour 48 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours48#total-cloud-cover" }
 Number ParisForecastHours48WeatherId "Prevailing weather id hour 48 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours48#weather-id" }
 
 DateTime ParisForecastHours49Time "Forecast Time hour 49 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours49#time" }
@@ -758,7 +768,7 @@ Number:Speed ParisForecastHours49WindSpeed "Wind Speed hour 49 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours49WindGust "Wind Gust hour 49 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours49#wind-gust" }
 Number:Pressure ParisForecastHours49Pressure "Pressure hour 49 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours49#pressure" }
 Number:Speed ParisForecastHours49PrecipitationIntensity "Precipitation Intensity hour 49 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours49#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours49TotalCloudCover "Total Cloud Cover hour 49 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours49#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours49TotalCloudCover "Total Cloud Cover hour 49 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours49#total-cloud-cover" }
 Number ParisForecastHours49WeatherId "Prevailing weather id hour 49 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours49#weather-id" }
 
 DateTime ParisForecastHours50Time "Forecast Time hour 50 [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastHours50#time" }
@@ -769,7 +779,7 @@ Number:Speed ParisForecastHours50WindSpeed "Wind Speed hour 50 [%.1f %unit%]" <w
 Number:Speed ParisForecastHours50WindGust "Wind Gust hour 50 [%.1f %unit%]" <wind> { channel="fmiweather:forecast:forecast_Paris:forecastHours50#wind-gust" }
 Number:Pressure ParisForecastHours50Pressure "Pressure hour 50 [%.1f %unit%]" <pressure> { channel="fmiweather:forecast:forecast_Paris:forecastHours50#pressure" }
 Number:Speed ParisForecastHours50PrecipitationIntensity "Precipitation Intensity hour 50 [%.1f %unit%]" <rain> { channel="fmiweather:forecast:forecast_Paris:forecastHours50#precipitation-intensity" }
-Number:Dimensionless ParisForecastHours50TotalCloudCover "Total Cloud Cover hour 50 [%.1f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours50#total-cloud-cover" }
+Number:Dimensionless ParisForecastHours50TotalCloudCover "Total Cloud Cover hour 50 [%.0f %unit%]"  { channel="fmiweather:forecast:forecast_Paris:forecastHours50#total-cloud-cover" }
 Number ParisForecastHours50WeatherId "Prevailing weather id hour 50 [%.1f %unit%]" <sun_clouds> { channel="fmiweather:forecast:forecast_Paris:forecastHours50#weather-id" }
 ```
 
