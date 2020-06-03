@@ -45,5 +45,4 @@ public class FMIResponseParsingExceptionReportTest extends AbstractFMIResponsePa
         }
         fail("FMIResponseException expected");
     }
-
 }

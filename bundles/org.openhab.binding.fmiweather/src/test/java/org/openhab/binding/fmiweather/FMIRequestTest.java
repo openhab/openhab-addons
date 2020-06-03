@@ -73,5 +73,4 @@ public class FMIRequestTest {
                         + "&starttime=2019-03-10T11:01:04Z&endtime=2019-03-10T11:01:05Z&timestep=61&lat=MYLAT&lon=FOO&special=x,y,z"
                         + "&parameters=t2m,rh,wd_10min,ws_10min,wg_10min,p_sea,r_1h,snow_aws,vis,n_man,wawa"));
     }
-
 }

@@ -35,5 +35,4 @@ public class FMIExceptionReportException extends FMIResponseException {
         this(new StringBuilder("Exception report (").append(exceptionCode).append("): ")
                 .append(Arrays.deepToString(messages)).toString());
     }
-
 }

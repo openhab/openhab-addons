@@ -32,5 +32,4 @@ public class FMIIOException extends FMIResponseException {
     public FMIIOException(Exception cause) {
         super(cause);
     }
-
 }

@@ -53,5 +53,4 @@ public class ValuesMatcher extends TypeSafeMatcher<@Nullable BigDecimal[]> {
     protected boolean matchesSafely(@Nullable BigDecimal[] data) {
         return Objects.deepEquals(data, values);
     }
-
 }

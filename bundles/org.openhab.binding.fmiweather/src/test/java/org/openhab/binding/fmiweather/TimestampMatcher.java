@@ -65,5 +65,4 @@ public class TimestampMatcher extends TypeSafeMatcher<long[]> {
         }
         return true;
     }
-
 }

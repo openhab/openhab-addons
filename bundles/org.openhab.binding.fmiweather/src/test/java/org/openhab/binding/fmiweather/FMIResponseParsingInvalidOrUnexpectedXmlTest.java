@@ -39,5 +39,4 @@ public class FMIResponseParsingInvalidOrUnexpectedXmlTest extends AbstractFMIRes
     public void testUnexpectedXml() throws IOException, Throwable {
         parseMultiPointCoverageXml(readTestResourceUtf8(observations1).replace("276.0", "<foo>4</foo>"));
     }
-
 }

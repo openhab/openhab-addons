@@ -145,5 +145,4 @@ public class FMIResponseParsingMultiplePlacesTest extends AbstractFMIResponsePar
         assertThat(wd_10min, is(deeplyEqualTo(1552215600L, 60, "312.0", "286.0", "295.0", "282.0", "271.0", "262.0",
                 "243.0", "252.0", "262.0", null)));
     }
-
 }

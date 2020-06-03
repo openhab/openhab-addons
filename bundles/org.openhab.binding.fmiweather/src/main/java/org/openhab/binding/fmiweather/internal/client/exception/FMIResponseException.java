@@ -32,5 +32,4 @@ public class FMIResponseException extends Exception {
     public FMIResponseException(Throwable e) {
         super(e);
     }
-
 }

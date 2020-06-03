@@ -10,7 +10,7 @@
 		<description>Finnish Meteorological Institute (FMI) weather observation</description>
 
 		<channel-groups>
-			<channel-group id="current" typeId="current-group" />
+			<channel-group id="current" typeId="current-group"/>
 		</channel-groups>
 
 		<config-description>
@@ -249,50 +249,50 @@
 		<label>Current Weather</label>
 		<description>This is the current weather.</description>
 		<channels>
-			<channel id="time" typeId="time-channel" />
-			<channel id="temperature" typeId="temperature-channel" />
-			<channel id="humidity" typeId="humidity-channel" />
-			<channel id="wind-direction" typeId="wind-direction-channel" />
-			<channel id="wind-speed" typeId="wind-speed-channel" />
-			<channel id="wind-gust" typeId="wind-gust-channel" />
-			<channel id="pressure" typeId="pressure-channel" />
-			<channel id="precipitation" typeId="precipitation-channel" />
-			<channel id="snow-depth" typeId="snow-depth-channel" />
-			<channel id="visibility" typeId="visibility-channel" />
-			<channel id="clouds" typeId="clouds-channel" />
-			<channel id="present-weather" typeId="present-weather-channel" />
+			<channel id="time" typeId="time-channel"/>
+			<channel id="temperature" typeId="temperature-channel"/>
+			<channel id="humidity" typeId="humidity-channel"/>
+			<channel id="wind-direction" typeId="wind-direction-channel"/>
+			<channel id="wind-speed" typeId="wind-speed-channel"/>
+			<channel id="wind-gust" typeId="wind-gust-channel"/>
+			<channel id="pressure" typeId="pressure-channel"/>
+			<channel id="precipitation" typeId="precipitation-channel"/>
+			<channel id="snow-depth" typeId="snow-depth-channel"/>
+			<channel id="visibility" typeId="visibility-channel"/>
+			<channel id="clouds" typeId="clouds-channel"/>
+			<channel id="present-weather" typeId="present-weather-channel"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="group-forecast">
 		<label>Forecast</label>
 		<description>This is hourly weather forecast.</description>
 		<channels>
-			<channel id="time" typeId="forecast-time-channel" />
-			<channel id="temperature" typeId="temperature-channel" />
-			<channel id="humidity" typeId="humidity-channel" />
-			<channel id="wind-direction" typeId="wind-direction-channel" />
-			<channel id="wind-speed" typeId="wind-speed-channel" />
-			<channel id="wind-gust" typeId="wind-gust-channel" />
-			<channel id="pressure" typeId="pressure-channel" />
-			<channel id="precipitation-intensity" typeId="precipitation-intensity-channel" />
-			<channel id="total-cloud-cover" typeId="total-cloud-cover-channel" />
-			<channel id="weather-id" typeId="weather-id-channel" />
+			<channel id="time" typeId="forecast-time-channel"/>
+			<channel id="temperature" typeId="temperature-channel"/>
+			<channel id="humidity" typeId="humidity-channel"/>
+			<channel id="wind-direction" typeId="wind-direction-channel"/>
+			<channel id="wind-speed" typeId="wind-speed-channel"/>
+			<channel id="wind-gust" typeId="wind-gust-channel"/>
+			<channel id="pressure" typeId="pressure-channel"/>
+			<channel id="precipitation-intensity" typeId="precipitation-intensity-channel"/>
+			<channel id="total-cloud-cover" typeId="total-cloud-cover-channel"/>
+			<channel id="weather-id" typeId="weather-id-channel"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="group-forecast-advanced" advanced="true">
 		<label>Forecast</label>
 		<description>This is hourly weather forecast.</description>
 		<channels>
-			<channel id="time" typeId="forecast-time-channel" />
-			<channel id="temperature" typeId="temperature-channel" />
-			<channel id="humidity" typeId="humidity-channel" />
-			<channel id="wind-direction" typeId="wind-direction-channel" />
-			<channel id="wind-speed" typeId="wind-speed-channel" />
-			<channel id="wind-gust" typeId="wind-gust-channel" />
-			<channel id="pressure" typeId="pressure-channel" />
-			<channel id="precipitation-intensity" typeId="precipitation-intensity-channel" />
-			<channel id="total-cloud-cover" typeId="total-cloud-cover-channel" />
-			<channel id="weather-id" typeId="weather-id-channel" />
+			<channel id="time" typeId="forecast-time-channel"/>
+			<channel id="temperature" typeId="temperature-channel"/>
+			<channel id="humidity" typeId="humidity-channel"/>
+			<channel id="wind-direction" typeId="wind-direction-channel"/>
+			<channel id="wind-speed" typeId="wind-speed-channel"/>
+			<channel id="wind-gust" typeId="wind-gust-channel"/>
+			<channel id="pressure" typeId="pressure-channel"/>
+			<channel id="precipitation-intensity" typeId="precipitation-intensity-channel"/>
+			<channel id="total-cloud-cover" typeId="total-cloud-cover-channel"/>
+			<channel id="weather-id" typeId="weather-id-channel"/>
 		</channels>
 	</channel-group-type>
 
@@ -303,74 +303,75 @@
 		<item-type>DateTime</item-type>
 		<label>Observation Time</label>
 		<category>Time</category>
-		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS" />
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 	<channel-type id="forecast-time-channel">
 		<item-type>DateTime</item-type>
 		<label>Forecast Time</label>
 		<category>Time</category>
-		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS" />
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 	<channel-type id="temperature-channel">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="humidity-channel">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<category>Humidity</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="wind-direction-channel">
 		<item-type>Number:Angle</item-type>
 		<label>Wind Direction</label>
 		<category>Wind</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="wind-speed-channel">
 		<item-type>Number:Speed</item-type>
 		<label>Wind Speed</label>
 		<category>Wind</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="wind-gust-channel">
 		<item-type>Number:Speed</item-type>
 		<label>Wind Gust</label>
 		<category>Wind</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="pressure-channel">
 		<item-type>Number:Pressure</item-type>
 		<label>Pressure</label>
 		<category>Pressure</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="precipitation-channel">
 		<item-type>Number:Length</item-type>
 		<label>Precipitation</label>
 		<description>Precipitation in one hour</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="snow-depth-channel">
 		<item-type>Number:Length</item-type>
 		<label>Snow depth</label>
 		<category>Snow</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="visibility-channel">
 		<item-type>Number:Length</item-type>
 		<label>Visibility</label>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="clouds-channel">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Cloudiness</label>
-		<description>Given as percentage, 0% being clear skies, and 100% being overcast. UNDEF when cloud coverage could not be determined.
+		<description>Given as percentage, 0% being clear skies, and 100% being overcast. UNDEF when cloud coverage could not
+			be determined.
 			Takes into account all cloud layers.</description>
-		<state readOnly="true" pattern="%.0f %unit%" />
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="present-weather-channel">
 		<item-type>Number</item-type>
@@ -479,13 +480,13 @@
 	<channel-type id="total-cloud-cover-channel">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Total Cloud Cover</label>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="precipitation-intensity-channel">
 		<item-type>Number:Speed</item-type>
 		<label>Precipitation Intensity</label>
 		<description>Equivalent to the precipitation amount if the same intensity prevails for an hour. </description>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="weather-id-channel">

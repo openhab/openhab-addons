@@ -56,5 +56,4 @@ public class BindingConstants {
     // Configuration properties
     public static final String FMISID = "fmisid";
     public static final String LOCATION = "location";
-
 }

@@ -69,5 +69,4 @@ public class ResponseLocationMatcher extends TypeSafeMatcher<Location> {
         return Objects.deepEquals(name, loc.name) && Objects.deepEquals(id, loc.id)
                 && Objects.deepEquals(latitude, loc.latitude) && Objects.deepEquals(longitude, loc.longitude);
     }
-
 }

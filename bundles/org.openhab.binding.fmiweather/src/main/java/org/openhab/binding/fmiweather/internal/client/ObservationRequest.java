@@ -45,5 +45,4 @@ public class ObservationRequest extends Request {
     public ObservationRequest(QueryParameter location, long startEpoch, long endEpoch, long timestepMinutes) {
         super(STORED_QUERY_ID, location, startEpoch, endEpoch, timestepMinutes, PARAMETERS);
     }
-
 }

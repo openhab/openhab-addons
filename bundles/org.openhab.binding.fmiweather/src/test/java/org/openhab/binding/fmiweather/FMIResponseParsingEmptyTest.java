@@ -48,5 +48,4 @@ public class FMIResponseParsingEmptyTest extends AbstractFMIResponseParsingTest 
     public void testLocationsSinglePlace() throws Throwable {
         assertThat(observationsResponse.getLocations().size(), is(0));
     }
-
 }

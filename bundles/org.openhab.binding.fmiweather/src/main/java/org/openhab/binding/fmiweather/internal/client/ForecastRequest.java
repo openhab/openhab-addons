@@ -42,5 +42,4 @@ public class ForecastRequest extends Request {
     public ForecastRequest(QueryParameter location, long startEpoch, long endEpoch, long timestepMinutes) {
         super(STORED_QUERY_ID, location, startEpoch, endEpoch, timestepMinutes, PARAMETERS);
     }
-
 }

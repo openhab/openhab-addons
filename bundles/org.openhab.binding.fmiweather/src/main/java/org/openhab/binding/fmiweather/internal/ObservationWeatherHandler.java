@@ -229,5 +229,4 @@ public class ObservationWeatherHandler extends AbstractWeatherHandler {
         }
         return func.apply(rawValue);
     }
-
 }

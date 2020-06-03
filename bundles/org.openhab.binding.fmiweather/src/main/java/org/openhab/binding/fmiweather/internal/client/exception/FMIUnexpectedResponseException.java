@@ -36,5 +36,4 @@ public class FMIUnexpectedResponseException extends FMIResponseException {
     public FMIUnexpectedResponseException(Exception cause) {
         super(cause);
     }
-
 }

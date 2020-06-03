@@ -230,5 +230,4 @@ public abstract class AbstractWeatherHandler extends BaseThingHandler {
             future.cancel(mayInterruptIfRunning);
         }
     }
-
 }
