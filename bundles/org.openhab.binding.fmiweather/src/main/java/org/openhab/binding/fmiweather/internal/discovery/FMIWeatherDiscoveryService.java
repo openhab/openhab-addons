@@ -44,10 +44,7 @@ import org.openhab.binding.fmiweather.internal.BindingConstants;
 import org.openhab.binding.fmiweather.internal.client.Client;
 import org.openhab.binding.fmiweather.internal.client.Location;
 import org.openhab.binding.fmiweather.internal.client.exception.FMIResponseException;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,24 +84,6 @@ public class FMIWeatherDiscoveryService extends AbstractDiscoveryService {
      */
     public FMIWeatherDiscoveryService() {
         super(SUPPORTED_THING_TYPES, DISCOVER_TIMEOUT_SECONDS, true);
-    }
-
-    @Override
-    @Activate
-    protected void activate(@Nullable Map<String, @Nullable Object> configProperties) {
-        super.activate(configProperties);
-    }
-
-    @Override
-    @Modified
-    protected void modified(@Nullable Map<String, @Nullable Object> configProperties) {
-        super.modified(configProperties);
-    }
-
-    @Override
-    @Deactivate
-    public void deactivate() {
-        super.deactivate();
     }
 
     @Override
