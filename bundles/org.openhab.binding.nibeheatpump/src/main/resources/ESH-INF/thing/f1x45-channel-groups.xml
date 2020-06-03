@@ -744,6 +744,8 @@
 			<channel id="48458" typeId="f1x45-48458"/>
 			<channel id="48459" typeId="f1x45-48459"/>
 			<channel id="48487" typeId="f1x45-48487"/>
+			<channel id="49008" typeId="f1x45-49008"/>
+			<channel id="49009" typeId="f1x45-49009"/>
 		</channels>
 	</channel-group-type>
 
