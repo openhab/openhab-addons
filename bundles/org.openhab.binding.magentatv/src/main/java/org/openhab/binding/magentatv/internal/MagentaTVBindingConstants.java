@@ -64,13 +64,8 @@ public class MagentaTVBindingConstants {
     public static final String CHGROUP_CONTROL = "control";
     public static final String CHANNEL_POWER = CHGROUP_CONTROL + "#" + "power";
     public static final String CHANNEL_PLAYER = CHGROUP_CONTROL + "#" + "player";
-    public static final String CHANNEL_STOP = CHGROUP_CONTROL + "#" + "stop";
-    public static final String CHANNEL_VOLUME_UP = CHGROUP_CONTROL + "#" + "volumeUp";
-    public static final String CHANNEL_VOLUME_DOWN = CHGROUP_CONTROL + "#" + "volumeDown";
     public static final String CHANNEL_MUTE = CHGROUP_CONTROL + "#" + "mute";
     public static final String CHANNEL_CHANNEL = CHGROUP_CONTROL + "#" + "channel";
-    public static final String CHANNEL_CHUP = CHGROUP_CONTROL + "#" + "channelUp";
-    public static final String CHANNEL_CHDOWN = CHGROUP_CONTROL + "#" + "channelDown";
     public static final String CHANNEL_KEY = CHGROUP_CONTROL + "#" + "key";
 
     public static final String CHGROUP_PROGRAM = "program";

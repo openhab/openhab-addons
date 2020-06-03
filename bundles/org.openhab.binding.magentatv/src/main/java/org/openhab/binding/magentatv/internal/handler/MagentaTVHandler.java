@@ -14,14 +14,21 @@ package org.openhab.binding.magentatv.internal.handler;
 
 import static org.openhab.binding.magentatv.internal.MagentaTVBindingConstants.*;
 
+import java.text.DateFormat;
 import java.text.MessageFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
+import javax.measure.Unit;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -31,8 +38,10 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.NextPreviousType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.RewindFastforwardType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -41,6 +50,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.magentatv.internal.MagentaTVConfiguration;
 import org.openhab.binding.magentatv.internal.MagentaTVException;
 import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.MRPayEvent;
@@ -72,6 +82,7 @@ import com.google.gson.GsonBuilder;
 public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListener {
     private final Logger logger = LoggerFactory.getLogger(MagentaTVHandler.class);
     private static final String EMPTY_CRED = "***";
+    private static final DecimalType ZERO = new DecimalType(0);
 
     protected final MagentaTVConfiguration thingConfig = new MagentaTVConfiguration();
     private final Gson gson;
@@ -255,26 +266,9 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                         logger.debug("{}: Unknown media command: {}", thingId, command);
                     }
                     break;
-                case CHANNEL_STOP:
-                    if ((OnOffType) command == OnOffType.ON) {
-                        control.sendKey("STOP");
-                        updateState(CHANNEL_PLAYER, PlayPauseType.PAUSE);
-                    }
-                    updateState(CHANNEL_STOP, OnOffType.OFF);
-                    break;
-                case CHANNEL_VOLUME_UP:
-                    if ((OnOffType) command == OnOffType.ON) {
-                        control.sendKey("VOLUP");
-                        updateState(CHANNEL_MUTE, OnOffType.OFF);
-                    }
-                    updateState(CHANNEL_VOLUME_UP, OnOffType.OFF);
-                    break;
-                case CHANNEL_VOLUME_DOWN:
-                    if ((OnOffType) command == OnOffType.ON) {
-                        control.sendKey("VOLDOWN");
-                        updateState(CHANNEL_MUTE, OnOffType.OFF);
-                    }
-                    updateState(CHANNEL_VOLUME_DOWN, OnOffType.OFF);
+                case CHANNEL_CHANNEL:
+                    String chan = command.toString();
+                    control.selectChannel(chan);
                     break;
                 case CHANNEL_MUTE:
                     if (command == OnOffType.ON) {
@@ -283,23 +277,9 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                         control.sendKey("VOLUP");
                     }
                     break;
-                case CHANNEL_CHANNEL:
-                    control.selectChannel(command.toString());
-                    break;
-                case CHANNEL_CHUP:
-                    if ((OnOffType) command == OnOffType.ON) {
-                        control.sendKey("CHUP");
-                    }
-                    updateState(CHANNEL_CHUP, OnOffType.OFF);
-                    break;
-                case CHANNEL_CHDOWN:
-                    if ((OnOffType) command == OnOffType.ON) {
-                        control.sendKey("CHDOWN");
-                    }
-                    updateState(CHANNEL_CHDOWN, OnOffType.OFF);
-                    break;
                 case CHANNEL_KEY:
-                    if (command.toString().equalsIgnoreCase("PAIR")) { // special key to re-pair receiver
+                    if (command.toString().equalsIgnoreCase("PAIR")) { // special key to re-pair receiver (already done
+                                                                       // above)
                         logger.debug("{}: PAIRing key received, reconnect receiver {}", thingId, deviceName());
                     } else {
                         control.sendKey(command.toString());
@@ -485,8 +465,8 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
             MRProgramInfoEvent pinfo = gson.fromJson(jsonEvent, MRProgramInfoEvent.class);
             if (!pinfo.channelNum.isEmpty()) {
                 logger.debug("{}: EVENT_EIT_CHANGE for channel {}/{}", thingId, pinfo.channelNum, pinfo.channelCode);
-                updateState(CHANNEL_CHANNEL, new StringType(pinfo.channelNum));
-                updateState(CHANNEL_CHANNEL_CODE, new StringType(pinfo.channelCode));
+                updateState(CHANNEL_CHANNEL, new DecimalType(pinfo.channelNum));
+                updateState(CHANNEL_CHANNEL_CODE, new DecimalType(pinfo.channelCode));
             }
             if (pinfo.programInfo != null) {
                 int i = 0;
@@ -518,7 +498,17 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                                 updateState(CHANNEL_PROG_TITLE, new StringType(se.eventName));
                                 updateState(CHANNEL_PROG_TEXT, new StringType(se.textChar));
                                 updateState(CHANNEL_PROG_START, new StringType(tsLocal));
-                                updateState(CHANNEL_PROG_DURATION, new StringType(ps.duration));
+
+                                try {
+                                    DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+                                    dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+                                    Date date = dateFormat.parse(ps.duration);
+                                    long seconds = date.getTime() / 1000L;
+                                    updateState(CHANNEL_PROG_DURATION, toQuantityType(seconds, SmartHomeUnits.SECOND));
+                                } catch (ParseException e) {
+                                    logger.debug("{}: Unable to parse programDuration: {}", thingId, ps.duration);
+                                }
+
                                 if (i++ == 0) {
                                     flUpdatePower = true;
                                 }
@@ -571,8 +561,6 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
             case "buffering":
                 logger.debug("{}: Setting Player state to PLAY", thingId);
                 updateState(CHANNEL_PLAYER, PlayPauseType.PLAY);
-                updateState(CHANNEL_STOP, OnOffType.OFF);
-                break;
             case "paused":
             case "stopped":
                 logger.debug("{}: Setting Player state to PAUSE", thingId);
@@ -594,9 +582,9 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
         updateState(CHANNEL_PROG_TITLE, StringType.EMPTY);
         updateState(CHANNEL_PROG_TEXT, StringType.EMPTY);
         updateState(CHANNEL_PROG_START, StringType.EMPTY);
-        updateState(CHANNEL_PROG_DURATION, StringType.EMPTY);
-
-        updateState(CHANNEL_CHANNEL, new DecimalType(0));
+        updateState(CHANNEL_PROG_DURATION, ZERO);
+        updateState(CHANNEL_CHANNEL, ZERO);
+        updateState(CHANNEL_CHANNEL_CODE, ZERO);
     }
 
     private String fixEventJson(String jsonEvent) {
@@ -663,6 +651,10 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
             }
         }
         this.updateProperties(map);
+    }
+
+    public static State toQuantityType(@Nullable Number value, Unit<?> unit) {
+        return value == null ? UnDefType.NULL : new QuantityType<>(value, unit);
     }
 
     private String deviceName() {

@@ -74,14 +74,9 @@
 		<description>Control function for your Media Receiver</description>
 		<channels>
 			<channel id="power" typeId="system.power" />
+			<channel id="channel" typeId="channelNumber" />
 			<channel id="player" typeId="system.media-control" />
-			<channel id="stop" typeId="stop" />
-			<channel id="volumeUp" typeId="volumeUp" />
-			<channel id="volumeDown" typeId="volumeDown" />
 			<channel id="mute" typeId="system.mute" />
-			<channel id="channel" typeId="channel" />
-			<channel id="channelUp" typeId="channelUp" />
-			<channel id="channelDown" typeId="channelDown" />
 			<channel id="key" typeId="key" />
 		</channels>
 	</channel-group-type>
@@ -108,21 +103,17 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-type id="stop">
-		<item-type>Switch</item-type>
-		<label>Stop</label>
-		<description>Stops the player. ON if the player is stopped.</description>
-	</channel-type>
-	<channel-type id="channel">
-		<item-type>String</item-type>
+	<channel-type id="channelNumber">
+		<item-type>Number</item-type>
 		<label>Channel</label>
 		<description>Send channel number to switch program</description>
+		<state min="1" max="999" step="1"></state>
 	</channel-type>
 	<channel-type id="channelCode" advanced="true">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Channel Code</label>
 		<description>Channel code in the channel list</description>
-		<state readOnly="true" pattern="%s">
+		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="runStatus" advanced="true">
@@ -161,10 +152,10 @@
 		</state>
 	</channel-type>
 	<channel-type id="programDuration">
-		<item-type>String</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Duration</label>
 		<description>Duration of the program</description>
-		<state readOnly="true" pattern="%s">
+		<state pattern="%d %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="programPosition">
@@ -173,26 +164,6 @@
 		<description>Play position since program started</description>
 		<state readOnly="true" pattern="%s">
 		</state>
-	</channel-type>
-	<channel-type id="channelUp">
-		<item-type>Switch</item-type>
-		<label>Channel up</label>
-		<description>Next channel</description>
-	</channel-type>
-	<channel-type id="channelDown">
-		<item-type>Switch</item-type>
-		<label>Channel down</label>
-		<description>Previous channel</description>
-	</channel-type>
-	<channel-type id="volumeUp">
-		<item-type>Switch</item-type>
-		<label>Volume up</label>
-		<description>Increase volume</description>
-	</channel-type>
-	<channel-type id="volumeDown">
-		<item-type>Switch</item-type>
-		<label>Volume Down</label>
-		<description>Decrease volume</description>
 	</channel-type>
 	<channel-type id="key">
 		<item-type>String</item-type>

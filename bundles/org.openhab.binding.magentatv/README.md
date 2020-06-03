@@ -83,23 +83,22 @@ The binding uses the network settings in openHAB system configuration to determi
 
 ## Channels
 
-|Group   |Channel        |Description                                                              |
-|-------|---------------|--------------------------------------------------------------------------|
-|control |power          |Switching the channel simulates pressing the power button (same as sending "POWER" to the key channel). The receiver doesn't offer ON and OFF, but just toggles the power state. For that it's tricky to ensure the power state. Maybe some future versions will use some kind of testing to determine the current state.                                                                    |
-|        |player         |Send commands to the receiver - see below                                |
-|        |volumeUp       |Increase the volume                                                      |
-|        |volumeDown     |Decrease the volume                                                      |
-|        |mute           |Mute volume (mute the speaker)                                           |
-|        |channel        |Select program channel (outbound only, current channel is not available) |
-|        |channelUp      |Switch one channel up (same as sending "CHUP" to the key channel)        |
-|        |channelDown    |Switch one channel down (same as sending "CHDOWN" to the key channel)    |
-|        |key            |Send key code to the receiver (see code table below)                     |
-|status  |channelCode    |The channel code from the EPG                                            |
-|        |playMode       |Current play mode - this info is not reliable                            |
-|program |title          |Title of the running program or video being played                       |
-|        |text           | Some description (as reported by the receiver, could be empty)          |
-|        |start          |Time when the program started                                            |
-|        |duration       | Remaining time, usually not updated for TV program                      | 
+|Group   |Channel        |Item-Type|Description                                                               |
+|-------|----------------|---------|--------------------------------------------------------------------------|
+|control |power          |Switch   |Switching the channel simulates pressing the power button (same as sending 
+"POWER" to the key channel). The receiver doesn't offer ON and OFF, but just toggles the power state.
+For that it's tricky to ensure the power state. Maybe some future versions will use some kind of 
+testing to determine the current state.                                                                       |
+|        |channel        |Number   |Select program channel (outbound only, current channel is not available)  |
+|        |player         |Player   |Send commands to the receiver - see below                                 |
+|        |key            |String   |Send key code to the receiver (see code table below)                      |
+|        |mute           |Switch   |Mute volume (mute the speaker)                                            |
+|status  |channelCode    |Number   |The channel code from the EPG                                             |
+|        |playMode       |String   |Current play mode - this info is not reliable                             |
+|program |title          |String   |Title of the running program or video being played                        |
+|        |text           |String   |Some description (as reported by the receiver, could be empty)            |
+|        |start          |Time when the program started                                                       |
+|        |duration       |Number   |Remaining time in seconds, usually not updated for TV program             | 
 |        |position       | Position within a movie (0 for regular programs).                       |
 
 Channels receiving event information when changing the channel or playing a video.
@@ -117,7 +116,7 @@ The player control supports the following actions:
 |        |FASTFORWARD    |Switch to forward mode            |
 |        |REWIND         |Switch to rewind mode             |
 |        |ON or OFF      |Toggle power - see notes on power |
-|channel |Numeric string |Send channel number key by key    |
+|channel |Number         |Send channel number key by key    |
 
 ## Supported Key Code (channel key)
 
@@ -185,10 +184,7 @@ accountPassword="xxxxxxxxxx"
 ```
 # MagentaTV Control
 Switch MagentaTV_Power        "Power"        {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:control#power"}
-Switch MagentaTV_ChannelUp    "Channel +"    {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:control#channelUp"}
-Switch MagentaTV_ChannelDown  "Channel -"    {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:control#channelDown"}
-Switch MagentaTV_VolumeUp     "Volume +"     {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:control#volumeUp"}
-Switch MagentaTV_VolumeDown   "Volume -"     {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:control#volumeDown"}
+Number MagentaTV_Channel      "Channel"      {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:status#channel"}
 String MagentaTV_Key          "Key"          {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:control#key"}
 
 # MagentaTV Program Information
@@ -199,7 +195,6 @@ String MagentaTV_ProgDur     "Duration"      {channel="magentatv:receiver:xxxxxx
 String MagentaTV_ProgPos     "Position"      {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:program#position"}
 
 # MagentaTV Play Status
-Number MagentaTV_Channel   "Channel"         {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:status#channel"}
 Number MagentaTV_ChCode    "Channel Code"    {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:status#channelCode"}
 String MagentaTV_PlayMode  "Play Mode"       {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:status#playMode"}
 String MagentaTV_RunStatus "Run Status"      {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:status#runStatus"}
