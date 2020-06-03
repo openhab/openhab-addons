@@ -17,7 +17,6 @@ import java.util.Collections;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
@@ -63,10 +62,10 @@ public class ModbusTcpThingHandler
     }
 
     @Override
-    protected String formatConflictingParameterError(@Nullable EndpointPoolConfiguration otherPoolConfig) {
+    protected String formatConflictingParameterError() {
         return String.format(
-                "Endpoint '%s' has conflicting parameters: parameters of this thing (%s '%s') %s are different from some other things parameter: %s. Ensure that all endpoints pointing to tcp slave '%s:%s' have same parameters.",
-                endpoint, thing.getUID(), this.thing.getLabel(), this.poolConfiguration, otherPoolConfig,
+                "Endpoint '%s' has conflicting parameters: parameters of this thing (%s '%s') are different from some other thing's parameter. Ensure that all endpoints pointing to tcp slave '%s:%s' have same parameters.",
+                endpoint, thing.getUID(), this.thing.getLabel(),
                 Optional.ofNullable(this.endpoint).map(e -> e.getAddress()).orElse("<null>"),
                 Optional.ofNullable(this.endpoint).map(e -> String.valueOf(e.getPort())).orElse("<null>"));
     }

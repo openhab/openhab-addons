@@ -44,7 +44,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.openhab.binding.modbus.handler.ModbusPollerThingHandler;
 import org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal;
 import org.openhab.binding.modbus.internal.handler.ModbusDataThingHandler;
-import org.openhab.binding.modbus.internal.handler.ModbusTcpThingHandler;
 import org.openhab.io.transport.modbus.AsyncModbusReadResult;
 import org.openhab.io.transport.modbus.BitArray;
 import org.openhab.io.transport.modbus.ModbusReadCallback;
@@ -53,6 +52,7 @@ import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.io.transport.modbus.PollTask;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
+import org.openhab.io.transport.modbus.endpoint.ModbusTCPSlaveEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,6 +61,9 @@ import org.slf4j.LoggerFactory;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
+
+    private static final String HOST = "thisishost";
+    private static final int PORT = 44;
 
     private final Logger logger = LoggerFactory.getLogger(ModbusPollerThingHandlerTest.class);
 
@@ -88,8 +91,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
      * Verify that basic poller <-> endpoint interaction has taken place (on poller init)
      */
     private void verifyEndpointBasicInitInteraction() {
-        verify(mockedModbusManager, times(1)).addListener(any());
-        verify(mockedModbusManager, times(1)).setEndpointPoolConfiguration(any(), any());
+        verify(mockedModbusManager).newModbusCommunicationInterface(any(), any());
     }
 
     public ModbusReadCallback getPollerCallback(ModbusPollerThingHandler handler)
@@ -104,9 +106,10 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
      */
     @Before
     public void setUp() {
+        mockComms();
         Configuration tcpConfig = new Configuration();
-        tcpConfig.put("host", "thisishost");
-        tcpConfig.put("port", 44);
+        tcpConfig.put("host", HOST);
+        tcpConfig.put("port", PORT);
         tcpConfig.put("id", 9);
         endpoint = createTcpThingBuilder("tcpendpoint").withConfiguration(tcpConfig).build();
         addThing(endpoint);
@@ -148,8 +151,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
     public void testPollingGeneric(String type, ModbusReadFunctionCode expectedFunctionCode)
             throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
         PollTask pollTask = Mockito.mock(PollTask.class);
-        doReturn(pollTask).when(mockedModbusManager).registerRegularPoll(notNull(), notNull(), eq(150l), eq(0L),
-                notNull());
+        doReturn(pollTask).when(comms).registerRegularPoll(notNull(), eq(150l), eq(0L), notNull());
 
         Configuration pollerConfig = new Configuration();
         pollerConfig.put("refresh", 150L);
@@ -160,21 +162,23 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
                 .build();
         addThing(poller);
 
-        assertThat(poller.getStatus(), is(equalTo(ThingStatus.ONLINE)));
+        assertThat(poller.getStatusInfo().toString(), poller.getStatus(), is(equalTo(ThingStatus.ONLINE)));
 
         verifyEndpointBasicInitInteraction();
-        verify(mockedModbusManager).registerRegularPoll(argThat(new TypeSafeMatcher<ModbusSlaveEndpoint>() {
+        verify(mockedModbusManager).newModbusCommunicationInterface(argThat(new TypeSafeMatcher<ModbusSlaveEndpoint>() {
 
             @Override
             public void describeTo(Description description) {
-                description.appendText("correct endpoint");
+                description.appendText("correct endpoint (");
             }
 
             @Override
             protected boolean matchesSafely(ModbusSlaveEndpoint endpoint) {
                 return checkEndpoint(endpoint);
             }
-        }), argThat(new TypeSafeMatcher<ModbusReadRequestBlueprint>() {
+        }), any());
+
+        verify(comms).registerRegularPoll(argThat(new TypeSafeMatcher<ModbusReadRequestBlueprint>() {
 
             @Override
             public void describeTo(Description description) {
@@ -189,10 +193,9 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
         verifyNoMoreInteractions(mockedModbusManager);
     }
 
+    @SuppressWarnings("null")
     private boolean checkEndpoint(ModbusSlaveEndpoint endpointParam) {
-        ModbusTcpThingHandler endPointHandler = (ModbusTcpThingHandler) endpoint.getHandler();
-        assertNotNull(endPointHandler);
-        return endpointParam.equals(endPointHandler.asSlaveEndpoint());
+        return endpointParam.equals(new ModbusTCPSlaveEndpoint(HOST, PORT));
     }
 
     private boolean checkRequest(ModbusReadRequestBlueprint request, ModbusReadFunctionCode functionCode) {
@@ -228,8 +231,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
     public void testPollUnregistrationOnDispose()
             throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
         PollTask pollTask = Mockito.mock(PollTask.class);
-        doReturn(pollTask).when(mockedModbusManager).registerRegularPoll(notNull(), notNull(), eq(150l), eq(0L),
-                notNull());
+        doReturn(pollTask).when(comms).registerRegularPoll(notNull(), eq(150l), eq(0L), notNull());
 
         Configuration pollerConfig = new Configuration();
         pollerConfig.put("refresh", 150L);
@@ -243,18 +245,19 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
 
         // verify registration
         final AtomicReference<ModbusReadCallback> callbackRef = new AtomicReference<>();
-
-        verify(mockedModbusManager).registerRegularPoll(argThat(new TypeSafeMatcher<ModbusSlaveEndpoint>() {
+        verify(mockedModbusManager).newModbusCommunicationInterface(argThat(new TypeSafeMatcher<ModbusSlaveEndpoint>() {
 
             @Override
             public void describeTo(Description description) {
+                description.appendText("correct endpoint");
             }
 
             @Override
             protected boolean matchesSafely(ModbusSlaveEndpoint endpoint) {
                 return checkEndpoint(endpoint);
             }
-        }), argThat(new TypeSafeMatcher<ModbusReadRequestBlueprint>() {
+        }), any());
+        verify(comms).registerRegularPoll(argThat(new TypeSafeMatcher<ModbusReadRequestBlueprint>() {
 
             @Override
             public void describeTo(Description description) {
@@ -268,7 +271,6 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
 
             @Override
             public void describeTo(Description description) {
-
             }
 
             @Override
@@ -276,7 +278,6 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
                 callbackRef.set(callback);
                 return true;
             }
-
         }));
         verifyNoMoreInteractions(mockedModbusManager);
 
@@ -287,7 +288,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
         disposeThing(poller);
 
         // 1) should first unregister poll task
-        verify(mockedModbusManager).unregisterRegularPoll(eq(pollTask));
+        verify(comms).unregisterRegularPoll(eq(pollTask));
 
         verifyNoMoreInteractions(mockedModbusManager);
     }
@@ -335,8 +336,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
     public void testRegistersPassedToChildDataThings()
             throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
         PollTask pollTask = Mockito.mock(PollTask.class);
-        doReturn(pollTask).when(mockedModbusManager).registerRegularPoll(notNull(), notNull(), eq(150l), eq(0L),
-                notNull());
+        doReturn(pollTask).when(comms).registerRegularPoll(notNull(), eq(150l), eq(0L), notNull());
 
         Configuration pollerConfig = new Configuration();
         pollerConfig.put("refresh", 150L);
@@ -351,8 +351,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
         assertThat(poller.getStatus(), is(equalTo(ThingStatus.ONLINE)));
 
         ArgumentCaptor<ModbusReadCallback> callbackCapturer = ArgumentCaptor.forClass(ModbusReadCallback.class);
-        verify(mockedModbusManager).registerRegularPoll(notNull(), notNull(), eq(150l), eq(0L),
-                callbackCapturer.capture());
+        verify(comms).registerRegularPoll(notNull(), eq(150l), eq(0L), callbackCapturer.capture());
         ModbusReadCallback readCallback = callbackCapturer.getValue();
 
         assertNotNull(readCallback);
@@ -400,8 +399,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
     public void testBitsPassedToChildDataThings()
             throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
         PollTask pollTask = Mockito.mock(PollTask.class);
-        doReturn(pollTask).when(mockedModbusManager).registerRegularPoll(notNull(), notNull(), eq(150l), eq(0L),
-                notNull());
+        doReturn(pollTask).when(comms).registerRegularPoll(notNull(), eq(150l), eq(0L), notNull());
 
         Configuration pollerConfig = new Configuration();
         pollerConfig.put("refresh", 150L);
@@ -416,7 +414,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
         assertThat(poller.getStatus(), is(equalTo(ThingStatus.ONLINE)));
 
         ArgumentCaptor<ModbusReadCallback> callbackCapturer = ArgumentCaptor.forClass(ModbusReadCallback.class);
-        verify(mockedModbusManager).registerRegularPoll(any(), any(), eq(150l), eq(0L), callbackCapturer.capture());
+        verify(comms).registerRegularPoll(any(), eq(150l), eq(0L), callbackCapturer.capture());
         ModbusReadCallback readCallback = callbackCapturer.getValue();
 
         assertNotNull(readCallback);
@@ -464,8 +462,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
     public void testErrorPassedToChildDataThings()
             throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
         PollTask pollTask = Mockito.mock(PollTask.class);
-        doReturn(pollTask).when(mockedModbusManager).registerRegularPoll(notNull(), notNull(), eq(150l), eq(0L),
-                notNull());
+        doReturn(pollTask).when(comms).registerRegularPoll(notNull(), eq(150l), eq(0L), notNull());
 
         Configuration pollerConfig = new Configuration();
         pollerConfig.put("refresh", 150L);
@@ -480,7 +477,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
         assertThat(poller.getStatus(), is(equalTo(ThingStatus.ONLINE)));
 
         ArgumentCaptor<ModbusReadCallback> callbackCapturer = ArgumentCaptor.forClass(ModbusReadCallback.class);
-        verify(mockedModbusManager).registerRegularPoll(any(), any(), eq(150l), eq(0L), callbackCapturer.capture());
+        verify(comms).registerRegularPoll(any(), eq(150l), eq(0L), callbackCapturer.capture());
         ModbusReadCallback readCallback = callbackCapturer.getValue();
 
         assertNotNull(readCallback);
@@ -539,11 +536,11 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
 
         assertThat(poller.getStatus(), is(equalTo(ThingStatus.ONLINE)));
 
-        verify(mockedModbusManager, never()).submitOneTimePoll(any(), any(), any());
+        verify(comms, never()).submitOneTimePoll(any(), any());
         ModbusPollerThingHandler thingHandler = (ModbusPollerThingHandler) poller.getHandler();
         assertNotNull(thingHandler);
         thingHandler.refresh();
-        verify(mockedModbusManager).submitOneTimePoll(any(), any(), any());
+        verify(comms).submitOneTimePoll(any(), any());
     }
 
     /**
@@ -575,7 +572,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
 
         assertThat(poller.getStatus(), is(equalTo(ThingStatus.ONLINE)));
 
-        verify(mockedModbusManager, never()).submitOneTimePoll(any(), any(), any());
+        verify(comms, never()).submitOneTimePoll(any(), any());
 
         // data is received
         ModbusReadCallback pollerReadCallback = getPollerCallback(thingHandler);
@@ -592,7 +589,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
         // call refresh
         // cache is still valid, we should not have real data poll this time
         thingHandler.refresh();
-        verify(mockedModbusManager, never()).submitOneTimePoll(any(), any(), any());
+        verify(comms, never()).submitOneTimePoll(any(), any());
 
         // data child receives the cached data
         verify(child1).handle(result);
@@ -628,7 +625,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
 
         assertThat(poller.getStatus(), is(equalTo(ThingStatus.ONLINE)));
 
-        verify(mockedModbusManager, never()).submitOneTimePoll(any(), any(), any());
+        verify(comms, never()).submitOneTimePoll(any(), any());
 
         // data is received
         ModbusReadCallback pollerReadCallback = getPollerCallback(thingHandler);
@@ -646,7 +643,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
         // call refresh
         // caching disabled, should poll from manager
         thingHandler.refresh();
-        verify(mockedModbusManager).submitOneTimePoll(any(), any(), any());
+        verify(comms).submitOneTimePoll(any(), any());
         verifyNoMoreInteractions(mockedModbusManager);
 
         // data child receives the cached data
@@ -683,7 +680,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
 
         assertThat(poller.getStatus(), is(equalTo(ThingStatus.ONLINE)));
 
-        verify(mockedModbusManager, never()).submitOneTimePoll(any(), any(), any());
+        verify(comms, never()).submitOneTimePoll(any(), any());
 
         // data is received
         ModbusReadCallback pollerReadCallback = getPollerCallback(thingHandler);
@@ -715,7 +712,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
         // call refresh, should return latest data (that is, error)
         // cache is still valid, we should not have real data poll this time
         thingHandler.refresh();
-        verify(mockedModbusManager, never()).submitOneTimePoll(any(), any(), any());
+        verify(comms, never()).submitOneTimePoll(any(), any());
 
         // data child receives the cached error
         verify(child1).handle(errorResult);
@@ -725,6 +722,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
     @Test
     public void testRefreshWithOldPreviousData() throws IllegalArgumentException, IllegalAccessException,
             NoSuchFieldException, SecurityException, InterruptedException {
+
         Configuration pollerConfig = new Configuration();
         pollerConfig.put("refresh", 0L);
         pollerConfig.put("start", 5);
@@ -743,7 +741,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
 
         assertThat(poller.getStatus(), is(equalTo(ThingStatus.ONLINE)));
 
-        verify(mockedModbusManager, never()).submitOneTimePoll(any(), any(), any());
+        verify(comms, never()).submitOneTimePoll(any(), any());
 
         // data is received
         ModbusReadCallback pollerReadCallback = getPollerCallback(thingHandler);
@@ -762,8 +760,8 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
         Thread.sleep(15L);
 
         // call refresh. Since cache expired, will poll for more
-        verify(mockedModbusManager, never()).submitOneTimePoll(any(), any(), any());
+        verify(comms, never()).submitOneTimePoll(any(), any());
         thingHandler.refresh();
-        verify(mockedModbusManager).submitOneTimePoll(any(), any(), any());
+        verify(comms).submitOneTimePoll(any(), any());
     }
 }

@@ -26,7 +26,6 @@ import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 import org.openhab.io.transport.modbus.BitArray;
 import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
-import org.openhab.io.transport.modbus.ModbusManagerListener;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
@@ -781,51 +780,4 @@ public class SmokeTest extends IntegrationTestSupport {
         assertThat(modbusManager.getEndpointPoolConfiguration(getEndpoint()), is(equalTo(defaultConfig)));
     }
 
-    @SuppressWarnings("null")
-    @Test
-    public void testPoolConfigurationListenerAndChanges() throws Exception {
-        AtomicInteger expectedCount = new AtomicInteger();
-        AtomicInteger unexpectedCount = new AtomicInteger();
-        CountDownLatch callbackCalled = new CountDownLatch(2);
-        modbusManager.addListener(new ModbusManagerListener() {
-
-            @Override
-            public void onEndpointPoolConfigurationSet(ModbusSlaveEndpoint endpoint,
-                    EndpointPoolConfiguration configuration) {
-                if ((callbackCalled.getCount() == 2L && configuration.getConnectMaxTries() == 50)
-                        || (callbackCalled.getCount() == 1L && configuration == null)) {
-                    expectedCount.incrementAndGet();
-                } else {
-                    unexpectedCount.incrementAndGet();
-                }
-                callbackCalled.countDown();
-            }
-        });
-        EndpointPoolConfiguration defaultConfig = modbusManager.getEndpointPoolConfiguration(getEndpoint());
-        assertThat(defaultConfig, is(notNullValue()));
-
-        EndpointPoolConfiguration newConfig = new EndpointPoolConfiguration();
-        newConfig.setConnectMaxTries(50);
-        try (ModbusCommunicationInterface comms = modbusManager.newModbusCommunicationInterface(getEndpoint(),
-                newConfig)) {
-            // Sets configuration for the endpoint implicitly
-        }
-        assertThat(modbusManager.getEndpointPoolConfiguration(getEndpoint()).getConnectMaxTries(), is(equalTo(50)));
-        assertThat(modbusManager.getEndpointPoolConfiguration(getEndpoint()), is(not(equalTo(defaultConfig))));
-
-        assertThat(unexpectedCount.get(), is(equalTo(0)));
-        assertThat(callbackCalled.getCount(), is(equalTo(1L)));
-
-        // Reset config
-        try (ModbusCommunicationInterface comms = modbusManager.newModbusCommunicationInterface(getEndpoint(), null)) {
-            // Sets configuration for the endpoint implicitly
-        }
-        // Should match default
-        assertThat(modbusManager.getEndpointPoolConfiguration(getEndpoint()), is(equalTo(defaultConfig)));
-
-        // change callback should have been called twice (countdown at zero)
-        assertThat(unexpectedCount.get(), is(equalTo(0)));
-        assertThat(expectedCount.get(), is(equalTo(2)));
-        assertThat(callbackCalled.getCount(), is(equalTo(0L)));
-    }
 }

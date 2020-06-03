@@ -31,23 +31,11 @@ public interface ModbusManager {
      * @param endpoint endpoint pointing to modbus slave
      * @param configuration configuration for the endpoint
      * @return Communication interface for interacting with the slave
+     * @throws IllegalArgumentException if there is already open communication interface with same endpoint but
+     *             differing configuration
      */
     public ModbusCommunicationInterface newModbusCommunicationInterface(ModbusSlaveEndpoint endpoint,
-            @Nullable EndpointPoolConfiguration configuration);
-
-    /**
-     * Register listener for changes
-     *
-     * @param listener
-     */
-    public void addListener(ModbusManagerListener listener);
-
-    /**
-     * Remove listener for changes
-     *
-     * @param listener
-     */
-    public void removeListener(ModbusManagerListener listener);
+            @Nullable EndpointPoolConfiguration configuration) throws IllegalArgumentException;
 
     /**
      * Get general configuration settings applied to a given endpoint

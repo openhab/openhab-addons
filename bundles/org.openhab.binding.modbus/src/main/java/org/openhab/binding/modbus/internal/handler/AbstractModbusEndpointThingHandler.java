@@ -24,7 +24,6 @@ import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
 import org.openhab.binding.modbus.internal.ModbusConfigurationException;
 import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
 import org.openhab.io.transport.modbus.ModbusManager;
-import org.openhab.io.transport.modbus.ModbusManagerListener;
 import org.openhab.io.transport.modbus.endpoint.EndpointPoolConfiguration;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 import org.slf4j.Logger;
@@ -40,7 +39,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEndpoint, C> extends BaseBridgeHandler
-        implements ModbusManagerListener, ModbusEndpointThingHandler {
+        implements ModbusEndpointThingHandler {
 
     @Nullable
     protected volatile C config;
@@ -76,11 +75,15 @@ public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEn
                 @Nullable
                 E endpoint = this.endpoint;
                 if (endpoint == null) {
-                    throw new IllegalArgumentException("endpoint null after configuration!");
+                    throw new IllegalStateException("endpoint null after configuration!");
                 }
-                modbusManager.addListener(this);
-                comms = modbusManager.newModbusCommunicationInterface(endpoint, poolConfiguration);
-                updateStatus(ThingStatus.ONLINE);
+                try {
+                    comms = modbusManager.newModbusCommunicationInterface(endpoint, poolConfiguration);
+                    updateStatus(ThingStatus.ONLINE);
+                } catch (IllegalArgumentException e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            formatConflictingParameterError());
+                }
             } catch (ModbusConfigurationException e) {
                 logger.debug("Exception during initialization", e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
@@ -93,7 +96,6 @@ public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEn
 
     @Override
     public void dispose() {
-        modbusManager.removeListener(this);
         try {
             comms.close();
         } catch (Exception e) {
@@ -104,24 +106,13 @@ public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEn
     }
 
     @Override
-    public void onEndpointPoolConfigurationSet(ModbusSlaveEndpoint otherEndpoint,
-            @Nullable EndpointPoolConfiguration otherPoolConfiguration) {
-        synchronized (this) {
-            if (endpoint == null) {
-                return;
-            }
-            EndpointPoolConfiguration poolConfiguration = this.poolConfiguration;
-            if (poolConfiguration != null && otherEndpoint.equals(this.endpoint)
-                    && !poolConfiguration.equals(otherPoolConfiguration)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        formatConflictingParameterError(otherPoolConfiguration));
-            }
-        }
-    }
-
-    @Override
     public @Nullable ModbusCommunicationInterface getCommunicationInterface() {
         return comms;
+    }
+
+    @Nullable
+    public E getEndpoint() {
+        return endpoint;
     }
 
     @Override
@@ -135,9 +126,6 @@ public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEn
     /**
      * Format error message in case some other endpoint has been configured with different
      * {@link EndpointPoolConfiguration}
-     *
-     * @param otherPoolConfig
-     * @return
      */
-    protected abstract String formatConflictingParameterError(@Nullable EndpointPoolConfiguration otherPoolConfig);
+    protected abstract String formatConflictingParameterError();
 }

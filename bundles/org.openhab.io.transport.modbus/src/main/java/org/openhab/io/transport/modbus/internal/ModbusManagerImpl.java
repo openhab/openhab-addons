@@ -13,13 +13,11 @@
 package org.openhab.io.transport.modbus.internal;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -41,7 +39,6 @@ import org.openhab.io.transport.modbus.AsyncModbusWriteResult;
 import org.openhab.io.transport.modbus.ModbusCallback;
 import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
 import org.openhab.io.transport.modbus.ModbusManager;
-import org.openhab.io.transport.modbus.ModbusManagerListener;
 import org.openhab.io.transport.modbus.ModbusReadCallback;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusWriteCallback;
@@ -321,7 +318,6 @@ public class ModbusManagerImpl implements ModbusManager {
      */
     @Nullable
     private volatile ScheduledExecutorService scheduledThreadPoolExecutor;
-    private volatile Collection<ModbusManagerListener> listeners = new CopyOnWriteArraySet<>();
     @Nullable
     private volatile ScheduledFuture<?> monitorFuture;
 
@@ -748,15 +744,14 @@ public class ModbusManagerImpl implements ModbusManager {
         private volatile ModbusSlaveEndpoint endpoint;
         private volatile Set<PollTask> pollTasks = new ConcurrentHashSet<>();
         private volatile boolean closed;
+        private @Nullable EndpointPoolConfiguration configuration;
 
         @SuppressWarnings("null")
         public ModbusCommunicationInterfaceImpl(ModbusSlaveEndpoint endpoint,
                 @Nullable EndpointPoolConfiguration configuration) {
             this.endpoint = endpoint;
+            this.configuration = configuration;
             connectionFactory.setEndpointPoolConfiguration(endpoint, configuration);
-            for (ModbusManagerListener listener : listeners) {
-                listener.onEndpointPoolConfigurationSet(endpoint, configuration);
-            }
         }
 
         @Override
@@ -909,20 +904,18 @@ public class ModbusManagerImpl implements ModbusManager {
 
     @Override
     public ModbusCommunicationInterface newModbusCommunicationInterface(ModbusSlaveEndpoint endpoint,
-            @Nullable EndpointPoolConfiguration configuration) {
+            @Nullable EndpointPoolConfiguration configuration) throws IllegalArgumentException {
+        boolean openCommFoundWithSameEndpointDifferentConfig = communicationInterfaces.stream()
+                .filter(comm -> comm.endpoint.equals(endpoint))
+                .anyMatch(comm -> comm.configuration != null && !comm.configuration.equals(configuration));
+        if (openCommFoundWithSameEndpointDifferentConfig) {
+            throw new IllegalArgumentException(
+                    "Communication interface is already open with different configuration to this same endpoint");
+        }
+
         ModbusCommunicationInterfaceImpl comm = new ModbusCommunicationInterfaceImpl(endpoint, configuration);
         communicationInterfaces.add(comm);
         return comm;
-    }
-
-    @Override
-    public void addListener(ModbusManagerListener listener) {
-        listeners.add(listener);
-    }
-
-    @Override
-    public void removeListener(ModbusManagerListener listener) {
-        listeners.remove(listener);
     }
 
     @Override
