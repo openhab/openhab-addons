@@ -136,9 +136,10 @@ public class DarkSkyWeatherAndForecastHandler extends BaseThingHandler {
         try {
             location = new PointType(config.location);
         } catch (IllegalArgumentException e) {
-            location = null;
+            logger.warn("Error parsing 'location' parameter: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-parsing-location");
+            location = null;
             configValid = false;
         }
 
