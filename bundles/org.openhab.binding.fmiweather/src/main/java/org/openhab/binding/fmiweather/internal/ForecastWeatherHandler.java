@@ -141,10 +141,11 @@ public class ForecastWeatherHandler extends AbstractWeatherHandler {
                 return;
             }
         } else {
-            logger.trace("Query failed. Retries exhausted, not trying again.");
+            logger.trace("Query failed. Retries exhausted, not trying again until next poll.");
         }
+        // Update channel (if we have received a response)
         updateChannels();
-        // Channels updated successfully. Reschedule new update
+        // Channels updated successfully or exhausted all retries. Reschedule new update
         rescheduleUpdate(pollIntervalSeconds * 1000, false);
     }
 
@@ -185,12 +186,11 @@ public class ForecastWeatherHandler extends AbstractWeatherHandler {
                     updateStateIfLinked(channelUID, data.values[timeIndex], unit);
                 }
             }
+            updateStatus(ThingStatus.ONLINE);
         } catch (IllegalStateException e) {
             // IllegalStateException: Unexpected (possibly bug) issue with response
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     String.format("%s: %s", e.getClass().getName(), e.getMessage()));
-        } finally {
-            updateStatus(ThingStatus.ONLINE);
         }
     }
 
