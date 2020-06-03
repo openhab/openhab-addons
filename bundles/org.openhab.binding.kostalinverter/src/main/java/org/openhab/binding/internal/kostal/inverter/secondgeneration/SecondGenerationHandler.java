@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.measure.Unit;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -55,18 +56,19 @@ import com.google.gson.GsonBuilder;
  * @author Christoph Weitkamp - Incorporated new QuantityType (Units of Measurement)
  * @author Örjan Backsell - Redesigned regarding Piko1020, Piko New Generation
  */
+
 // @NonNullByDefault
 public class SecondGenerationHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SecondGenerationHandler.class);
 
-    private HttpClient httpClient;
+    private final HttpClient httpClient;
 
     // @Nullable
     private SecondGenerationConfiguration config;
 
     @SuppressWarnings("unused")
-    // @Nullable
+    @Nullable
     private SecondGenerationBindingConstants configurationConfig;
 
     private final List<SecondGenerationChannelConfig> channelConfigs = new ArrayList<>();
@@ -253,18 +255,6 @@ public class SecondGenerationHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        config = getConfigAs(SecondGenerationConfiguration.class);
-
-        scheduler.scheduleWithFixedDelay(() -> {
-            try {
-                refresh();
-                updateStatus(ThingStatus.ONLINE);
-            } catch (Exception e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        e.getClass().getName() + ":" + e.getMessage());
-                logger.debug("Error refreshing source = {}", getThing().getUID(), e);
-            }
-        }, 0, SecondGenerationConfiguration.REFRESHINTERVAL, TimeUnit.SECONDS);
 
         updateStatus(ThingStatus.UNKNOWN);
 
@@ -333,6 +323,19 @@ public class SecondGenerationHandler extends BaseThingHandler {
                 .add(new SecondGenerationChannelConfig("batStateOfCharge", "td", 145, SmartHomeUnits.PERCENT));
         channelConfigsExtExt
                 .add(new SecondGenerationChannelConfig("selfConsumption", "td", 148, SmartHomeUnits.KILOWATT_HOUR));
+
+        config = getConfigAs(SecondGenerationConfiguration.class);
+
+        scheduler.scheduleWithFixedDelay(() -> {
+            try {
+                refresh();
+                updateStatus(ThingStatus.ONLINE);
+            } catch (Exception e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        e.getClass().getName() + ":" + e.getMessage());
+                logger.debug("Error refreshing source = {}", getThing().getUID(), e);
+            }
+        }, 0, SecondGenerationConfiguration.REFRESHINTERVAL, TimeUnit.SECONDS);
     }
 
     @SuppressWarnings("null")
@@ -351,7 +354,7 @@ public class SecondGenerationHandler extends BaseThingHandler {
         String dxsEntriesCall = config.url.toString() + "/api/dxs.json?dxsEntries=" + dxsEntries[0];
         String dxsEntriesCallExt = config.url.toString() + "/api/dxs.json?dxsEntries=" + dxsEntriesExt[0];
 
-        for (int i = 1; i < 23; i++) {
+        for (int i = 1; i < dxsEntries.length; i++) {
             dxsEntriesCall += ("&dxsEntries=" + dxsEntries[i]);
             dxsEntriesCallExt += ("&dxsEntries=" + dxsEntriesExt[i]);
         }

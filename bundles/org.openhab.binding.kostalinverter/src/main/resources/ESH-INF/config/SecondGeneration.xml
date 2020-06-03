@@ -21,7 +21,7 @@
             <description>The password for the inverter.</description>
             <required>false</required>
         </parameter>
-        <parameter name="refreshInterval" type="text">
+        <parameter name="refreshInterval" type="integer" unit="s">
             <label>Refresh Interval</label>
             <description>Refresh Interval in seconds.</description>
             <required>false</required>
