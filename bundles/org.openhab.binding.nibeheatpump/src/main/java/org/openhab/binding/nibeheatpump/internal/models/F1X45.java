@@ -763,6 +763,8 @@ public class F1X45 {
                     put(48458, new VariableInformation(   1, NibeDataType.U8 , Type.SETTING , "Max speed circ.pump Heat"));
                     put(48459, new VariableInformation(   1, NibeDataType.U8 , Type.SETTING , "Speed brine pump cooling"));
                     put(48487, new VariableInformation(   1, NibeDataType.U8 , Type.SETTING , "Speed circ.pump Cooling"));
+                    put(49008, new VariableInformation(   1, NibeDataType.S16, Type.SETTING , "Smart energy source, DM diff source prio 2"));
+                    put(49009, new VariableInformation(   1, NibeDataType.S16, Type.SETTING , "Smart energy source, DM start source prio 1"));
                     // @formatter:on
                 }
             });

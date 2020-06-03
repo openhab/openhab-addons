@@ -5308,5 +5308,19 @@
 		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
 		</state>
 	</channel-type>
+	<channel-type id="f1x45-49008" advanced="true">
+		<item-type>Number</item-type>
+		<label>Smart Energy Source, DM Diff Source Prio 2</label>
+		<description>Smart energy source, DM diff source with prio 2</description>
+		<state min="100" max="2000" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f1x45-49009" advanced="true">
+		<item-type>Number</item-type>
+		<label>Smart Energy Source, DM Start Source Prio 1</label>
+		<description>Smart energy source, DM start source with prio 1</description>
+		<state min="-2000" max="-10" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
 
 </thing:thing-descriptions>
