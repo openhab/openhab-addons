@@ -14,10 +14,10 @@ public class Pit {
     private String timestamp;
     @SerializedName("setpoint")
     @Expose
-    private Integer setpoint;
+    private Double setpoint;
     @SerializedName("current")
     @Expose
-    private Integer current;
+    private Double current;
     @SerializedName("control_out")
     @Expose
     private Integer controlOut;
@@ -49,7 +49,7 @@ public class Pit {
      * @param enabled
      * @param timestamp
      */
-    public Pit(Boolean enabled, String timestamp, Integer setpoint, Integer current, Integer controlOut, Integer ch, String type, String openLid) {
+    public Pit(Boolean enabled, String timestamp, Double setpoint, Double current, Integer controlOut, Integer ch, String type, String openLid) {
         super();
         this.enabled = enabled;
         this.timestamp = timestamp;
@@ -87,28 +87,28 @@ public class Pit {
         return this;
     }
 
-    public Integer getSetpoint() {
+    public Double getSetpoint() {
         return setpoint;
     }
 
-    public void setSetpoint(Integer setpoint) {
+    public void setSetpoint(Double setpoint) {
         this.setpoint = setpoint;
     }
 
-    public Pit withSetpoint(Integer setpoint) {
+    public Pit withSetpoint(Double setpoint) {
         this.setpoint = setpoint;
         return this;
     }
 
-    public Integer getCurrent() {
+    public Double getCurrent() {
         return current;
     }
 
-    public void setCurrent(Integer current) {
+    public void setCurrent(Double current) {
         this.current = current;
     }
 
-    public Pit withCurrent(Integer current) {
+    public Pit withCurrent(Double current) {
         this.current = current;
         return this;
     }

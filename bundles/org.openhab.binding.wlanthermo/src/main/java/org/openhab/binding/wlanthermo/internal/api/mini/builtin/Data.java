@@ -8,7 +8,7 @@ public class Data {
 
     @SerializedName("temp")
     @Expose
-    private Integer temp;
+    private Double temp;
     @SerializedName("color")
     @Expose
     private String color;
@@ -17,10 +17,10 @@ public class Data {
     private String state;
     @SerializedName("temp_min")
     @Expose
-    private Integer tempMin;
+    private Double tempMin;
     @SerializedName("temp_max")
     @Expose
-    private Integer tempMax;
+    private Double tempMax;
     @SerializedName("name")
     @Expose
     private String name;
@@ -49,7 +49,7 @@ public class Data {
      * @param state
      * @param tempMin
      */
-    public Data(Integer temp, String color, String state, Integer tempMin, Integer tempMax, String name, Boolean alert, Boolean show) {
+    public Data(Double temp, String color, String state, Double tempMin, Double tempMax, String name, Boolean alert, Boolean show) {
         super();
         this.temp = temp;
         this.color = color;
@@ -61,15 +61,15 @@ public class Data {
         this.show = show;
     }
 
-    public Integer getTemp() {
+    public Double getTemp() {
         return temp;
     }
 
-    public void setTemp(Integer temp) {
+    public void setTemp(Double temp) {
         this.temp = temp;
     }
 
-    public Data withTemp(Integer temp) {
+    public Data withTemp(Double temp) {
         this.temp = temp;
         return this;
     }
@@ -100,28 +100,28 @@ public class Data {
         return this;
     }
 
-    public Integer getTempMin() {
+    public Double getTempMin() {
         return tempMin;
     }
 
-    public void setTempMin(Integer tempMin) {
+    public void setTempMin(Double tempMin) {
         this.tempMin = tempMin;
     }
 
-    public Data withTempMin(Integer tempMin) {
+    public Data withTempMin(Double tempMin) {
         this.tempMin = tempMin;
         return this;
     }
 
-    public Integer getTempMax() {
+    public Double getTempMax() {
         return tempMax;
     }
 
-    public void setTempMax(Integer tempMax) {
+    public void setTempMax(Double tempMax) {
         this.tempMax = tempMax;
     }
 
-    public Data withTempMax(Integer tempMax) {
+    public Data withTempMax(Double tempMax) {
         this.tempMax = tempMax;
         return this;
     }

@@ -8,6 +8,12 @@ import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants
 import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.CHANNEL_MAX;
 import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.CHANNEL_MIN;
 import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.CHANNEL_NAME;
+import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.CHANNEL_PITMASTER_CHANNEL_ID;
+import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.CHANNEL_PITMASTER_CURRENT;
+import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.CHANNEL_PITMASTER_DUTY_CYCLE;
+import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.CHANNEL_PITMASTER_ENABLED;
+import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.CHANNEL_PITMASTER_LID_OPEN;
+import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.CHANNEL_PITMASTER_SETPOINT;
 import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.CHANNEL_TEMP;
 import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.SYSTEM_CPU_LOAD;
 import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.SYSTEM_CPU_TEMP;
@@ -27,8 +33,11 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.wlanthermo.internal.WlanThermoMiniHandler;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 public class App {
+
+    private transient final Logger logger = LoggerFactory.getLogger(App.class);
 
     @SerializedName("temp_unit")
     @Expose
@@ -176,56 +185,99 @@ public class App {
         if (channelUID.getId().startsWith("system#")) {
             switch (channelUID.getIdWithoutGroup()) {
                 case SYSTEM_CPU_TEMP:
-                    state = new DecimalType(getCpuTemp());
+                    if (getCpuTemp() == null) {
+                        state = UnDefType.UNDEF;
+                    } else {
+                        state = new DecimalType();
+                    }
                     break;
                 case SYSTEM_CPU_LOAD:
-                    state = new DecimalType(getCpuLoad());
+                    if (getCpuLoad() == null) {
+                        state = UnDefType.UNDEF;
+                    } else {
+                        state = new DecimalType(getCpuLoad());
+                    }
                     break;
             }
         } else if (channelUID.getId().startsWith("channel")) {
             int channelId = Integer.parseInt(channelUID.getGroupId().substring("channel".length())) - 1;
-            if (channelId >= 0 && channelId <= 10) {
-                Data channel = getChannel().getData(channelId);
+            if (channelId >= 0 && channelId <= 9) {
+                Channel channel = getChannel();
+                if (channel == null) {
+                    return UnDefType.UNDEF;
+                }
+                Data data = channel.getData(channelId);
                 switch (channelUID.getIdWithoutGroup()) {
                     case CHANNEL_NAME:
-                        state = new StringType(channel.getName());
+                        state = new StringType(data.getName());
                         break;
                     case CHANNEL_TEMP:
-                        if (channel.getState().equals("er")) {
+                        if (data.getState().equals("er")) {
                             state = UnDefType.UNDEF;
                         } else {
-                            state = new DecimalType(channel.getTemp());
+                            state = new DecimalType(data.getTemp());
                         }
                         break;
                     case CHANNEL_MIN:
-                        state = new DecimalType(channel.getTempMin());
+                        state = new DecimalType(data.getTempMin());
                         break;
                     case CHANNEL_MAX:
-                        state = new DecimalType(channel.getTempMax());
+                        state = new DecimalType(data.getTempMax());
                         break;
                     case CHANNEL_ALARM_DEVICE:
-                        state = OnOffType.from(channel.getAlert());
+                        state = OnOffType.from(data.getAlert());
                         break;
                     case CHANNEL_ALARM_OPENHAB_HIGH:
-                        if (!channel.getState().equals("er")
-                                && channel.getTemp() > channel.getTempMax()) {
+                        if (!data.getState().equals("er") && data.getTemp() > data.getTempMax()) {
                             state = OnOffType.ON;
                         } else {
                             state = OnOffType.OFF;
                         }
                         break;
                     case CHANNEL_ALARM_OPENHAB_LOW:
-                        if (!channel.getState().equals("er") && channel.getTemp() < channel.getTempMin()) {
+                        if (!data.getState().equals("er") && data.getTemp() < data.getTempMin()) {
                             state = OnOffType.ON;
                         } else {
                             state = OnOffType.OFF;
                         }
                         break;
                     case CHANNEL_COLOR:
-                        Color c = Color.decode(channel.getColor());
+                        Color c = Color.decode(UtilMini.toHex(data.getColor()));
                         state = HSBType.fromRGB(c.getRed(), c.getGreen(), c.getBlue());
                         break;
                 }
+            }
+        } else if (channelUID.getId().startsWith("pit")) {
+            Pit pit;
+            if (channelUID.getGroupId().equals("pit1")) {
+                pit = getPit();
+            } else if (channelUID.getGroupId().equals("pit2")) {
+                pit = getPit2();
+            } else {
+                return UnDefType.UNDEF;
+            }
+            if (pit == null || !pit.getEnabled()) {
+                return UnDefType.UNDEF;
+            }
+            switch (channelUID.getIdWithoutGroup()) {
+                case CHANNEL_PITMASTER_ENABLED:
+                    state = OnOffType.from(pit.getEnabled());
+                    break;
+                case CHANNEL_PITMASTER_CURRENT:
+                    state = new DecimalType(pit.getCurrent());
+                    break;
+                case CHANNEL_PITMASTER_SETPOINT:
+                    state = new DecimalType(pit.getSetpoint());
+                    break;
+                case CHANNEL_PITMASTER_DUTY_CYCLE:
+                    state = new DecimalType(pit.getControlOut());
+                    break;
+                case CHANNEL_PITMASTER_LID_OPEN:
+                    state = OnOffType.from(pit.getOpenLid().equals("True"));
+                    break;
+                case CHANNEL_PITMASTER_CHANNEL_ID:
+                    state = new DecimalType(pit.getCh());
+                    break;
             }
         }
         return state;
@@ -235,14 +287,18 @@ public class App {
         String trigger = null;
         if (channelUID.getId().startsWith("channel")) {
             int channelId = Integer.parseInt(channelUID.getGroupId().substring("channel".length())) - 1;
-            if (channelId >= 0 && channelId <= 10) {
-                Data channel = getChannel().getData(channelId);
+            if (channelId >= 0 && channelId <= 9) {
+                Channel channel = getChannel();
+                if (channel == null) {
+                    return "";
+                }
+                Data data = channel.getData(channelId);
                 switch (channelUID.getIdWithoutGroup()) {
                     case "alarm_openhab":
-                        if (!channel.getState().equals("er")) {
-                            if (channel.getTemp() > channel.getTempMax()) {
+                        if (!data.getState().equals("er")) {
+                            if (data.getTemp() > data.getTempMax()) {
                                 trigger = TRIGGER_ALARM_MAX;
-                            } else if (channel.getTemp() < channel.getTempMin()) {
+                            } else if (data.getTemp() < data.getTempMin()) {
                                 trigger = TRIGGER_ALARM_MIN;
                             }
                         }

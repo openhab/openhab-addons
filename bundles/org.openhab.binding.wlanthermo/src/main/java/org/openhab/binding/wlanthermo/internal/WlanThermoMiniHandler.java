@@ -72,12 +72,13 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
         try {
             httpClient.start();
 
-            scheduler.schedule(() -> {
+            //scheduler.schedule(() -> {
                 checkConnection();
-            }, config.getPollingInterval(), TimeUnit.SECONDS);
+            //}, config.getPollingInterval(), TimeUnit.SECONDS);
 
             logger.debug("Finished initializing!");
         } catch (Exception e) {
+            e.printStackTrace();
             logger.error("Failed to initialize!", e);
         }
     }
@@ -85,7 +86,7 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
     private void checkConnection() {
         updateState(SYSTEM + "#" + SYSTEM_ONLINE, OnOffType.OFF);
         try {
-            if (httpClient.GET(config.getUri()).getStatus() == 200) {
+            if (httpClient.GET(config.getUri("/app.php")).getStatus() == 200) {
                 updateStatus(ThingStatus.ONLINE);
                 if (pollingScheduler != null) {
                     pollingScheduler.cancel(true);

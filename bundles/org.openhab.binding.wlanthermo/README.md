@@ -81,252 +81,378 @@ The following trigger apply for all 8 channels:
 ### Items
 
 ```
-Group                   gWlanThermo     "WlanThermo"
-Number:Dimensionless    soc             "State of Charge"       (gWlanThermo)   {channel="wlanthermo:thermometer:<ThingId>:system#soc"}
-Number                  rssi            "Signal Strength"       (gWlanThermo)   {channel="wlanthermo:thermometer:<ThingId>:system#rssi"}
-Switch                  charging        "Charging"              (gWlanThermo)   {channel="wlanthermo:thermometer:<ThingId>:system#charge"}
-Switch                  online          "Online"                (gWlanThermo)   {channel="wlanthermo:thermometer:<ThingId>:system#online"}
+Group					gWlanThermoNano		"WlanThermo Nano"
+Number:Dimensionless 	nano_soc  			"State of Charge"		(gWlanThermoNano)	{channel="wlanthermo:nano:<nano_thing_id>:system#soc"}
+Number 					nano_rssi 			"Signal Strength"		(gWlanThermoNano)	{channel="wlanthermo:nano:<nano_thing_id>:system#rssi"}
+Switch 					nano_charging 		"Charging"				(gWlanThermoNano)	{channel="wlanthermo:nano:<nano_thing_id>:system#charge"}
+Switch 					nano_online	 		"Online"				(gWlanThermoNano)	{channel="wlanthermo:nano:<nano_thing_id>:system#online"}
 
-Group                   gProbe1         "Probe 1"               (gWlanThermo)
-String                  name_1          "Name"                  (gProbe1)       {channel="wlanthermo:thermometer:<ThingId>:channel1#name"}
-String                  typ_1           "Type"                  (gProbe1)       {channel="wlanthermo:thermometer:<ThingId>:channel1#typ"}
-Number:Temperature      temp_1          "Temperature"           (gProbe1)       {channel="wlanthermo:thermometer:<ThingId>:channel1#temp"}
-Number:Temperature      min_1           "Min Temperature"       (gProbe1)       {channel="wlanthermo:thermometer:<ThingId>:channel1#min"}
-Number:Temperature      max_1           "Max Temperature"       (gProbe1)       {channel="wlanthermo:thermometer:<ThingId>:channel1#max"}
-Switch                  alarm_device_1  "Enable Buzzer Alarm"   (gProbe1)       {channel="wlanthermo:thermometer:<ThingId>:channel1#alarm_device"}
-Switch                  alarm_push_1    "Enable Push Alarm"     (gProbe1)       {channel="wlanthermo:thermometer:<ThingId>:channel1#alarm_push"}
-Switch                  alarm_low_1     "Low Temp. Alarm"       (gProbe1)       {channel="wlanthermo:thermometer:<ThingId>:channel1#alarm_openhab_low"}
-Switch                  alarm_high_1    "High Temp. Alarm"      (gProbe1)       {channel="wlanthermo:thermometer:<ThingId>:channel1#alarm_openhab_high"}
-Color                   color_1         "Color"                 (gProbe1)       {channel="wlanthermo:thermometer:<ThingId>:channel1#color"}
+Group					gProbeNano1			"Probe 1"				(gWlanThermoNano)
+String 					nano_name_1 			"Name"					(gProbeNano1)		{channel="wlanthermo:nano:<nano_thing_id>:channel1#name"}
+String 					nano_typ_1 			"Type"					(gProbeNano1)		{channel="wlanthermo:nano:<nano_thing_id>:channel1#typ"}
+Number:Temperature 		nano_temp_1 			"Temperature"			(gProbeNano1)		{channel="wlanthermo:nano:<nano_thing_id>:channel1#temp"}
+Number:Temperature 		nano_min_1 			"Min Temperature"		(gProbeNano1)		{channel="wlanthermo:nano:<nano_thing_id>:channel1#min"}
+Number:Temperature 		nano_max_1 			"Max Temperature"		(gProbeNano1)		{channel="wlanthermo:nano:<nano_thing_id>:channel1#max"}
+Switch 					nano_alarm_device_1 	"Enable Buzzer Alarm"	(gProbeNano1)		{channel="wlanthermo:nano:<nano_thing_id>:channel1#alarm_device"}
+Switch 					nano_alarm_push_1 	"Enable Push Alarm"		(gProbeNano1)		{channel="wlanthermo:nano:<nano_thing_id>:channel1#alarm_push"}
+Switch 					nano_alarm_low_1 	"Low Temp. Alarm"		(gProbeNano1)		{channel="wlanthermo:nano:<nano_thing_id>:channel1#alarm_openhab_low"}
+Switch 					nano_alarm_high_1 	"High Temp. Alarm"		(gProbeNano1)		{channel="wlanthermo:nano:<nano_thing_id>:channel1#alarm_openhab_high"}
+Color 					nano_color_1 		"Color"					(gProbeNano1)		{channel="wlanthermo:nano:<nano_thing_id>:channel1#color"}
 
-Group                    gProbe2        "Probe 2"               (gWlanThermo)
-String                   name_2         "Name"                  (gProbe2)       {channel="wlanthermo:thermometer:<ThingId>:channel2#name"}
-String                   typ_2          "Type"                  (gProbe2)       {channel="wlanthermo:thermometer:<ThingId>:channel2#typ"}
-Number:Temperature       temp_2         "Temperature"           (gProbe2)       {channel="wlanthermo:thermometer:<ThingId>:channel2#temp"}
-Number:Temperature       min_2          "Min Temperature"       (gProbe2)       {channel="wlanthermo:thermometer:<ThingId>:channel2#min"}
-Number:Temperature       max_2          "Max Temperature"       (gProbe2)       {channel="wlanthermo:thermometer:<ThingId>:channel2#max"}
-Switch                   alarm_device_2 "Enable Buzzer Alarm"   (gProbe2)       {channel="wlanthermo:thermometer:<ThingId>:channel2#alarm_device"}
-Switch                   alarm_push_2   "Enable Push Alarm"     (gProbe2)       {channel="wlanthermo:thermometer:<ThingId>:channel2#alarm_push"}
-Switch                   alarm_low_2    "Low Temp. Alarm"       (gProbe2)       {channel="wlanthermo:thermometer:<ThingId>:channel2#alarm_openhab_low"}
-Switch                   alarm_high_2   "High Temp. Alarm"      (gProbe2)       {channel="wlanthermo:thermometer:<ThingId>:channel2#alarm_openhab_high"}
-Color                    color_2        "Color"                 (gProbe2)       {channel="wlanthermo:thermometer:<ThingId>:channel2#color"}
+Group					gProbeNano2			"Probe 2"				(gWlanThermoNano)
+String 					nano_name_2 			"Name"					(gProbeNano2)		{channel="wlanthermo:nano:<nano_thing_id>:channel2#name"}
+String 					nano_typ_2 			"Type"					(gProbeNano2)		{channel="wlanthermo:nano:<nano_thing_id>:channel2#typ"}
+Number:Temperature 		nano_temp_2 			"Temperature"			(gProbeNano2)		{channel="wlanthermo:nano:<nano_thing_id>:channel2#temp"}
+Number:Temperature 		nano_min_2 			"Min Temperature"		(gProbeNano2)		{channel="wlanthermo:nano:<nano_thing_id>:channel2#min"}
+Number:Temperature 		nano_max_2 			"Max Temperature"		(gProbeNano2)		{channel="wlanthermo:nano:<nano_thing_id>:channel2#max"}
+Switch 					nano_alarm_device_2 	"Enable Buzzer Alarm"	(gProbeNano2)		{channel="wlanthermo:nano:<nano_thing_id>:channel2#alarm_device"}
+Switch 					nano_alarm_push_2 	"Enable Push Alarm"		(gProbeNano2)		{channel="wlanthermo:nano:<nano_thing_id>:channel2#alarm_push"}
+Switch 					nano_alarm_low_2 	"Low Temp. Alarm"		(gProbeNano2)		{channel="wlanthermo:nano:<nano_thing_id>:channel2#alarm_openhab_low"}
+Switch 					nano_alarm_high_2 	"High Temp. Alarm"		(gProbeNano2)		{channel="wlanthermo:nano:<nano_thing_id>:channel2#alarm_openhab_high"}
+Color 					nano_color_2 		"Color"					(gProbeNano2)		{channel="wlanthermo:nano:<nano_thing_id>:channel2#color"}
 
-Group                    gProbe3        "Probe 3"               (gWlanThermo)
-String                   name_3         "Name"                  (gProbe3)       {channel="wlanthermo:thermometer:<ThingId>:channel3#name"}
-String                   typ_3          "Type"                  (gProbe3)       {channel="wlanthermo:thermometer:<ThingId>:channel3#typ"}
-Number:Temperature       temp_3         "Temperature"           (gProbe3)       {channel="wlanthermo:thermometer:<ThingId>:channel3#temp"}
-Number:Temperature       min_3          "Min Temperature"       (gProbe3)       {channel="wlanthermo:thermometer:<ThingId>:channel3#min"}
-Number:Temperature       max_3          "Max Temperature"       (gProbe3)       {channel="wlanthermo:thermometer:<ThingId>:channel3#max"}
-Switch                   alarm_device_3 "Enable Buzzer Alarm"   (gProbe3)       {channel="wlanthermo:thermometer:<ThingId>:channel3#alarm_device"}
-Switch                   alarm_push_3   "Enable Push Alarm"     (gProbe3)       {channel="wlanthermo:thermometer:<ThingId>:channel3#alarm_push"}
-Switch                   alarm_low_3    "Low Temp. Alarm"       (gProbe3)       {channel="wlanthermo:thermometer:<ThingId>:channel3#alarm_openhab_low"}
-Switch                   alarm_high_3   "High Temp. Alarm"      (gProbe3)       {channel="wlanthermo:thermometer:<ThingId>:channel3#alarm_openhab_high"}
-Color                    color_3        "Color"                 (gProbe3)       {channel="wlanthermo:thermometer:<ThingId>:channel3#color"}
+Group					gProbeNano3			"Probe 3"				(gWlanThermoNano)
+String 					nano_name_3 			"Name"					(gProbeNano3)		{channel="wlanthermo:nano:<nano_thing_id>:channel3#name"}
+String 					nano_typ_3 			"Type"					(gProbeNano3)		{channel="wlanthermo:nano:<nano_thing_id>:channel3#typ"}
+Number:Temperature 		nano_temp_3 			"Temperature"			(gProbeNano3)		{channel="wlanthermo:nano:<nano_thing_id>:channel3#temp"}
+Number:Temperature 		nano_min_3 			"Min Temperature"		(gProbeNano3)		{channel="wlanthermo:nano:<nano_thing_id>:channel3#min"}
+Number:Temperature 		nano_max_3 			"Max Temperature"		(gProbeNano3)		{channel="wlanthermo:nano:<nano_thing_id>:channel3#max"}
+Switch 					nano_alarm_device_3 	"Enable Buzzer Alarm"	(gProbeNano3)		{channel="wlanthermo:nano:<nano_thing_id>:channel3#alarm_device"}
+Switch 					nano_alarm_push_3 	"Enable Push Alarm"		(gProbeNano3)		{channel="wlanthermo:nano:<nano_thing_id>:channel3#alarm_push"}
+Switch 					nano_alarm_low_3 	"Low Temp. Alarm"		(gProbeNano3)		{channel="wlanthermo:nano:<nano_thing_id>:channel3#alarm_openhab_low"}
+Switch 					nano_alarm_high_3 	"High Temp. Alarm"		(gProbeNano3)		{channel="wlanthermo:nano:<nano_thing_id>:channel3#alarm_openhab_high"}
+Color 					nano_color_3 		"Color"					(gProbeNano3)		{channel="wlanthermo:nano:<nano_thing_id>:channel3#color"}
 
-Group                    gProbe4        "Probe 4"               (gWlanThermo)
-String                   name_4         "Name"                  (gProbe4)       {channel="wlanthermo:thermometer:<ThingId>:channel4#name"}
-String                   typ_4          "Type"                  (gProbe4)       {channel="wlanthermo:thermometer:<ThingId>:channel4#typ"}
-Number:Temperature       temp_4         "Temperature"           (gProbe4)       {channel="wlanthermo:thermometer:<ThingId>:channel4#temp"}
-Number:Temperature       min_4          "Min Temperature"       (gProbe4)       {channel="wlanthermo:thermometer:<ThingId>:channel4#min"}
-Number:Temperature       max_4          "Max Temperature"       (gProbe4)       {channel="wlanthermo:thermometer:<ThingId>:channel4#max"}
-Switch                   alarm_device_4 "Enable Buzzer Alarm"   (gProbe4)       {channel="wlanthermo:thermometer:<ThingId>:channel4#alarm_device"}
-Switch                   alarm_push_4   "Enable Push Alarm"     (gProbe4)       {channel="wlanthermo:thermometer:<ThingId>:channel4#alarm_push"}
-Switch                   alarm_low_4    "Low Temp. Alarm"       (gProbe4)       {channel="wlanthermo:thermometer:<ThingId>:channel4#alarm_openhab_low"}
-Switch                   alarm_high_4   "High Temp. Alarm"      (gProbe4)       {channel="wlanthermo:thermometer:<ThingId>:channel4#alarm_openhab_high"}
-Color                    color_4        "Color"                 (gProbe4)       {channel="wlanthermo:thermometer:<ThingId>:channel4#color"}
+Group					gProbeNano4			"Probe 4"				(gWlanThermoNano)
+String 					nano_name_4 			"Name"					(gProbeNano4)		{channel="wlanthermo:nano:<nano_thing_id>:channel4#name"}
+String 					nano_typ_4 			"Type"					(gProbeNano4)		{channel="wlanthermo:nano:<nano_thing_id>:channel4#typ"}
+Number:Temperature 		nano_temp_4 			"Temperature"			(gProbeNano4)		{channel="wlanthermo:nano:<nano_thing_id>:channel4#temp"}
+Number:Temperature 		nano_min_4 			"Min Temperature"		(gProbeNano4)		{channel="wlanthermo:nano:<nano_thing_id>:channel4#min"}
+Number:Temperature 		nano_max_4 			"Max Temperature"		(gProbeNano4)		{channel="wlanthermo:nano:<nano_thing_id>:channel4#max"}
+Switch 					nano_alarm_device_4 	"Enable Buzzer Alarm"	(gProbeNano4)		{channel="wlanthermo:nano:<nano_thing_id>:channel4#alarm_device"}
+Switch 					nano_alarm_push_4 	"Enable Push Alarm"		(gProbeNano4)		{channel="wlanthermo:nano:<nano_thing_id>:channel4#alarm_push"}
+Switch 					nano_alarm_low_4 	"Low Temp. Alarm"		(gProbeNano4)		{channel="wlanthermo:nano:<nano_thing_id>:channel4#alarm_openhab_low"}
+Switch 					nano_alarm_high_4 	"High Temp. Alarm"		(gProbeNano4)		{channel="wlanthermo:nano:<nano_thing_id>:channel4#alarm_openhab_high"}
+Color 					nano_color_4 		"Color"					(gProbeNano4)		{channel="wlanthermo:nano:<nano_thing_id>:channel4#color"}
 
-Group                    gProbe5        "Probe 5"               (gWlanThermo)
-String                   name_5         "Name"                  (gProbe5)       {channel="wlanthermo:thermometer:<ThingId>:channel5#name"}
-String                   typ_5          "Type"                  (gProbe5)       {channel="wlanthermo:thermometer:<ThingId>:channel5#typ"}
-Number:Temperature       temp_5         "Temperature"           (gProbe5)       {channel="wlanthermo:thermometer:<ThingId>:channel5#temp"}
-Number:Temperature       min_5          "Min Temperature"       (gProbe5)       {channel="wlanthermo:thermometer:<ThingId>:channel5#min"}
-Number:Temperature       max_5          "Max Temperature"       (gProbe5)       {channel="wlanthermo:thermometer:<ThingId>:channel5#max"}
-Switch                   alarm_device_5 "Enable Buzzer Alarm"   (gProbe5)       {channel="wlanthermo:thermometer:<ThingId>:channel5#alarm_device"}
-Switch                   alarm_push_5   "Enable Push Alarm"     (gProbe5)       {channel="wlanthermo:thermometer:<ThingId>:channel5#alarm_push"}
-Switch                   alarm_low_5    "Low Temp. Alarm"       (gProbe5)       {channel="wlanthermo:thermometer:<ThingId>:channel5#alarm_openhab_low"}
-Switch                   alarm_high_5   "High Temp. Alarm"      (gProbe5)       {channel="wlanthermo:thermometer:<ThingId>:channel5#alarm_openhab_high"}
-Color                    color_5        "Color"                 (gProbe5)       {channel="wlanthermo:thermometer:<ThingId>:channel5#color"}
+Group					gProbeNano5			"Probe 5"				(gWlanThermoNano)
+String 					nano_name_5 			"Name"					(gProbeNano5)		{channel="wlanthermo:nano:<nano_thing_id>:channel5#name"}
+String 					nano_typ_5 			"Type"					(gProbeNano5)		{channel="wlanthermo:nano:<nano_thing_id>:channel5#typ"}
+Number:Temperature 		nano_temp_5 			"Temperature"			(gProbeNano5)		{channel="wlanthermo:nano:<nano_thing_id>:channel5#temp"}
+Number:Temperature 		nano_min_5 			"Min Temperature"		(gProbeNano5)		{channel="wlanthermo:nano:<nano_thing_id>:channel5#min"}
+Number:Temperature 		nano_max_5 			"Max Temperature"		(gProbeNano5)		{channel="wlanthermo:nano:<nano_thing_id>:channel5#max"}
+Switch 					nano_alarm_device_5 	"Enable Buzzer Alarm"	(gProbeNano5)		{channel="wlanthermo:nano:<nano_thing_id>:channel5#alarm_device"}
+Switch 					nano_alarm_push_5 	"Enable Push Alarm"		(gProbeNano5)		{channel="wlanthermo:nano:<nano_thing_id>:channel5#alarm_push"}
+Switch 					nano_alarm_low_5 	"Low Temp. Alarm"		(gProbeNano5)		{channel="wlanthermo:nano:<nano_thing_id>:channel5#alarm_openhab_low"}
+Switch 					nano_alarm_high_5 	"High Temp. Alarm"		(gProbeNano5)		{channel="wlanthermo:nano:<nano_thing_id>:channel5#alarm_openhab_high"}
+Color 					nano_color_5 		"Color"					(gProbeNano5)		{channel="wlanthermo:nano:<nano_thing_id>:channel5#color"}
 
-Group                    gProbe6        "Probe 6"               (gWlanThermo)
-String                   name_6         "Name"                  (gProbe6)       {channel="wlanthermo:thermometer:<ThingId>:channel6#name"}
-String                   typ_6          "Type"                  (gProbe6)       {channel="wlanthermo:thermometer:<ThingId>:channel6#typ"}
-Number:Temperature       temp_6         "Temperature"           (gProbe6)       {channel="wlanthermo:thermometer:<ThingId>:channel6#temp"}
-Number:Temperature       min_6          "Min Temperature"       (gProbe6)       {channel="wlanthermo:thermometer:<ThingId>:channel6#min"}
-Number:Temperature       max_6          "Max Temperature"       (gProbe6)       {channel="wlanthermo:thermometer:<ThingId>:channel6#max"}
-Switch                   alarm_device_6 "Enable Buzzer Alarm"   (gProbe6)       {channel="wlanthermo:thermometer:<ThingId>:channel6#alarm_device"}
-Switch                   alarm_push_6   "Enable Push Alarm"     (gProbe6)       {channel="wlanthermo:thermometer:<ThingId>:channel6#alarm_push"}
-Switch                   alarm_low_6    "Low Temp. Alarm"       (gProbe6)       {channel="wlanthermo:thermometer:<ThingId>:channel6#alarm_openhab_low"}
-Switch                   alarm_high_6   "High Temp. Alarm"      (gProbe6)       {channel="wlanthermo:thermometer:<ThingId>:channel6#alarm_openhab_high"}
-Color                    color_6        "Color"                 (gProbe6)       {channel="wlanthermo:thermometer:<ThingId>:channel6#color"}
+Group					gProbeNano6			"Probe 6"				(gWlanThermoNano)
+String 					nano_name_6 			"Name"					(gProbeNano6)		{channel="wlanthermo:nano:<nano_thing_id>:channel6#name"}
+String 					nano_typ_6 			"Type"					(gProbeNano6)		{channel="wlanthermo:nano:<nano_thing_id>:channel6#typ"}
+Number:Temperature 		nano_temp_6 			"Temperature"			(gProbeNano6)		{channel="wlanthermo:nano:<nano_thing_id>:channel6#temp"}
+Number:Temperature 		nano_min_6 			"Min Temperature"		(gProbeNano6)		{channel="wlanthermo:nano:<nano_thing_id>:channel6#min"}
+Number:Temperature 		nano_max_6 			"Max Temperature"		(gProbeNano6)		{channel="wlanthermo:nano:<nano_thing_id>:channel6#max"}
+Switch 					nano_alarm_device_6 	"Enable Buzzer Alarm"	(gProbeNano6)		{channel="wlanthermo:nano:<nano_thing_id>:channel6#alarm_device"}
+Switch 					nano_alarm_push_6 	"Enable Push Alarm"		(gProbeNano6)		{channel="wlanthermo:nano:<nano_thing_id>:channel6#alarm_push"}
+Switch 					nano_alarm_low_6 	"Low Temp. Alarm"		(gProbeNano6)		{channel="wlanthermo:nano:<nano_thing_id>:channel6#alarm_openhab_low"}
+Switch 					nano_alarm_high_6 	"High Temp. Alarm"		(gProbeNano6)		{channel="wlanthermo:nano:<nano_thing_id>:channel6#alarm_openhab_high"}
+Color 					nano_color_6 		"Color"					(gProbeNano6)		{channel="wlanthermo:nano:<nano_thing_id>:channel6#color"}
 
-Group                    gProbe7        "Probe 7"               (gWlanThermo)
-String                   name_7         "Name"                  (gProbe7)       {channel="wlanthermo:thermometer:<ThingId>:channel7#name"}
-String                   typ_7          "Type"                  (gProbe7)       {channel="wlanthermo:thermometer:<ThingId>:channel7#typ"}
-Number:Temperature       temp_7         "Temperature"           (gProbe7)       {channel="wlanthermo:thermometer:<ThingId>:channel7#temp"}
-Number:Temperature       min_7          "Min Temperature"       (gProbe7)       {channel="wlanthermo:thermometer:<ThingId>:channel7#min"}
-Number:Temperature       max_7          "Max Temperature"       (gProbe7)       {channel="wlanthermo:thermometer:<ThingId>:channel7#max"}
-Switch                   alarm_device_7 "Enable Buzzer Alarm"   (gProbe7)       {channel="wlanthermo:thermometer:<ThingId>:channel7#alarm_device"}
-Switch                   alarm_push_7   "Enable Push Alarm"     (gProbe7)       {channel="wlanthermo:thermometer:<ThingId>:channel7#alarm_push"}
-Switch                   alarm_low_7    "Low Temp. Alarm"       (gProbe7)       {channel="wlanthermo:thermometer:<ThingId>:channel7#alarm_openhab_low"}
-Switch                   alarm_high_7   "High Temp. Alarm"      (gProbe7)       {channel="wlanthermo:thermometer:<ThingId>:channel7#alarm_openhab_high"}
-Color                    color_7        "Color"                 (gProbe7)       {channel="wlanthermo:thermometer:<ThingId>:channel7#color"}
+Group					gProbeNano7			"Probe 7"				(gWlanThermoNano)
+String 					nano_name_7 			"Name"					(gProbeNano7)		{channel="wlanthermo:nano:<nano_thing_id>:channel7#name"}
+String 					nano_typ_7 			"Type"					(gProbeNano7)		{channel="wlanthermo:nano:<nano_thing_id>:channel7#typ"}
+Number:Temperature 		nano_temp_7 			"Temperature"			(gProbeNano7)		{channel="wlanthermo:nano:<nano_thing_id>:channel7#temp"}
+Number:Temperature 		nano_min_7 			"Min Temperature"		(gProbeNano7)		{channel="wlanthermo:nano:<nano_thing_id>:channel7#min"}
+Number:Temperature 		nano_max_7 			"Max Temperature"		(gProbeNano7)		{channel="wlanthermo:nano:<nano_thing_id>:channel7#max"}
+Switch 					nano_alarm_device_7 	"Enable Buzzer Alarm"	(gProbeNano7)		{channel="wlanthermo:nano:<nano_thing_id>:channel7#alarm_device"}
+Switch 					nano_alarm_push_7 	"Enable Push Alarm"		(gProbeNano7)		{channel="wlanthermo:nano:<nano_thing_id>:channel7#alarm_push"}
+Switch 					nano_alarm_low_7 	"Low Temp. Alarm"		(gProbeNano7)		{channel="wlanthermo:nano:<nano_thing_id>:channel7#alarm_openhab_low"}
+Switch 					nano_alarm_high_7 	"High Temp. Alarm"		(gProbeNano7)		{channel="wlanthermo:nano:<nano_thing_id>:channel7#alarm_openhab_high"}
+Color 					nano_color_7 		"Color"					(gProbeNano7)		{channel="wlanthermo:nano:<nano_thing_id>:channel7#color"}
 
-Group                    gProbe8        "Probe 8"               (gWlanThermo)
-String                   name_8         "Name"                  (gProbe8)       {channel="wlanthermo:thermometer:<ThingId>:channel8#name"}
-String                   typ_8          "Type"                  (gProbe8)       {channel="wlanthermo:thermometer:<ThingId>:channel8#typ"}
-Number:Temperature       temp_8         "Temperature"           (gProbe8)       {channel="wlanthermo:thermometer:<ThingId>:channel8#temp"}
-Number:Temperature       min_8          "Min Temperature"       (gProbe8)       {channel="wlanthermo:thermometer:<ThingId>:channel8#min"}
-Number:Temperature       max_8          "Max Temperature"       (gProbe8)       {channel="wlanthermo:thermometer:<ThingId>:channel8#max"}
-Switch                   alarm_device_8 "Enable Buzzer Alarm"   (gProbe8)       {channel="wlanthermo:thermometer:<ThingId>:channel8#alarm_device"}
-Switch                   alarm_push_8   "Enable Push Alarm"     (gProbe8)       {channel="wlanthermo:thermometer:<ThingId>:channel8#alarm_push"}
-Switch                   alarm_low_8    "Low Temp. Alarm"       (gProbe8)       {channel="wlanthermo:thermometer:<ThingId>:channel8#alarm_openhab_low"}
-Switch                   alarm_high_8   "High Temp. Alarm"      (gProbe8)       {channel="wlanthermo:thermometer:<ThingId>:channel8#alarm_openhab_high"}
-Color                    color_8        "Color"                 (gProbe8)       {channel="wlanthermo:thermometer:<ThingId>:channel8#color"}
+Group					gProbeNanoNano8		"Probe 8"				(gWlanThermoNano)
+String 					nano_name_8 		"Name"					(gProbeNano8)		{channel="wlanthermo:nano:<nano_thing_id>:channel8#name"}
+String 					nano_typ_8 			"Type"					(gProbeNano8)		{channel="wlanthermo:nano:<nano_thing_id>:channel8#typ"}
+Number:Temperature 		nano_temp_8 		"Temperature"			(gProbeNano8)		{channel="wlanthermo:nano:<nano_thing_id>:channel8#temp"}
+Number:Temperature 		nano_min_8 			"Min Temperature"		(gProbeNano8)		{channel="wlanthermo:nano:<nano_thing_id>:channel8#min"}
+Number:Temperature 		nano_max_8 			"Max Temperature"		(gProbeNano8)		{channel="wlanthermo:nano:<nano_thing_id>:channel8#max"}
+Switch 					nano_alarm_device_8 "Enable Buzzer Alarm"	(gProbeNano8)		{channel="wlanthermo:nano:<nano_thing_id>:channel8#alarm_device"}
+Switch 					nano_alarm_push_8 	"Enable Push Alarm"		(gProbeNano8)		{channel="wlanthermo:nano:<nano_thing_id>:channel8#alarm_push"}
+Switch 					nano_alarm_low_8 	"Low Temp. Alarm"		(gProbeNano8)		{channel="wlanthermo:nano:<nano_thing_id>:channel8#alarm_openhab_low"}
+Switch 					nano_alarm_high_8 	"High Temp. Alarm"		(gProbeNano8)		{channel="wlanthermo:nano:<nano_thing_id>:channel8#alarm_openhab_high"}
+Color 					nano_color_8 		"Color"					(gProbeNano8)		{channel="wlanthermo:nano:<nano_thing_id>:channel8#color"}
+
+
+
+
+
+Group					gWlanThermoMini		"WlanThermo Mini"
+Number 					mini_cpuload 		"CPU Load"				(gWlanThermoMini)	{channel="wlanthermo:mini:<mini_thing_id>:system#cpu_load"}
+Number:Temperature		mini_cputemp 		"CPU Temp"				(gWlanThermoMini)	{channel="wlanthermo:mini:<mini_thing_id>:system#cpu_temp"}
+Switch 					mini_online	 		"Online"				(gWlanThermoMini)	{channel="wlanthermo:mini:<mini_thing_id>:system#online"}
+
+Group					gProbeMini0			"Probe 0"				(gWlanThermoMini)
+String 					mini_name_0 		"Name"					(gProbeMini0)		{channel="wlanthermo:mini:<mini_thing_id>:channel0#name"}
+Number:Temperature 		mini_temp_0 		"Temperature"			(gProbeMini0)		{channel="wlanthermo:mini:<mini_thing_id>:channel0#temp"}
+Number:Temperature 		mini_min_0 			"Min Temperature"		(gProbeMini0)		{channel="wlanthermo:mini:<mini_thing_id>:channel0#min"}
+Number:Temperature 		mini_max_0 			"Max Temperature"		(gProbeMini0)		{channel="wlanthermo:mini:<mini_thing_id>:channel0#max"}
+Switch 					mini_alarm_device_0 "Enable Buzzer Alarm"	(gProbeMini0)		{channel="wlanthermo:mini:<mini_thing_id>:channel0#alarm_device"}
+Switch 					mini_alarm_low_0 	"Low Temp. Alarm"		(gProbeMini0)		{channel="wlanthermo:mini:<mini_thing_id>:channel0#alarm_openhab_low"}
+Switch 					mini_alarm_high_0 	"High Temp. Alarm"		(gProbeMini0)		{channel="wlanthermo:mini:<mini_thing_id>:channel0#alarm_openhab_high"}
+Color 					mini_color_0 		"Color"					(gProbeMini0)		{channel="wlanthermo:mini:<mini_thing_id>:channel0#color"}
+
+Group					gProbeMini1			"Probe 1"				(gWlanThermoMini)
+String 					mini_name_1 		"Name"					(gProbeMini1)		{channel="wlanthermo:mini:<mini_thing_id>:channel1#name"}
+Number:Temperature 		mini_temp_1 		"Temperature"			(gProbeMini1)		{channel="wlanthermo:mini:<mini_thing_id>:channel1#temp"}
+Number:Temperature 		mini_min_1 			"Min Temperature"		(gProbeMini1)		{channel="wlanthermo:mini:<mini_thing_id>:channel1#min"}
+Number:Temperature 		mini_max_1 			"Max Temperature"		(gProbeMini1)		{channel="wlanthermo:mini:<mini_thing_id>:channel1#max"}
+Switch 					mini_alarm_device_1 "Enable Buzzer Alarm"	(gProbeMini1)		{channel="wlanthermo:mini:<mini_thing_id>:channel1#alarm_device"}
+Switch 					mini_alarm_low_1 	"Low Temp. Alarm"		(gProbeMini1)		{channel="wlanthermo:mini:<mini_thing_id>:channel1#alarm_openhab_low"}
+Switch 					mini_alarm_high_1 	"High Temp. Alarm"		(gProbeMini1)		{channel="wlanthermo:mini:<mini_thing_id>:channel1#alarm_openhab_high"}
+Color 					mini_color_1 		"Color"					(gProbeMini1)		{channel="wlanthermo:mini:<mini_thing_id>:channel1#color"}
+
+Group					gProbeMini2			"Probe 2"				(gWlanThermoMini)
+String 					mini_name_2 		"Name"					(gProbeMini2)		{channel="wlanthermo:mini:<mini_thing_id>:channel2#name"}
+Number:Temperature 		mini_temp_2 		"Temperature"			(gProbeMini2)		{channel="wlanthermo:mini:<mini_thing_id>:channel2#temp"}
+Number:Temperature 		mini_min_2 			"Min Temperature"		(gProbeMini2)		{channel="wlanthermo:mini:<mini_thing_id>:channel2#min"}
+Number:Temperature 		mini_max_2 			"Max Temperature"		(gProbeMini2)		{channel="wlanthermo:mini:<mini_thing_id>:channel2#max"}
+Switch 					mini_alarm_device_2 "Enable Buzzer Alarm"	(gProbeMini2)		{channel="wlanthermo:mini:<mini_thing_id>:channel2#alarm_device"}
+Switch 					mini_alarm_low_2 	"Low Temp. Alarm"		(gProbeMini2)		{channel="wlanthermo:mini:<mini_thing_id>:channel2#alarm_openhab_low"}
+Switch 					mini_alarm_high_2 	"High Temp. Alarm"		(gProbeMini2)		{channel="wlanthermo:mini:<mini_thing_id>:channel2#alarm_openhab_high"}
+Color 					mini_color_2 		"Color"					(gProbeMini2)		{channel="wlanthermo:mini:<mini_thing_id>:channel2#color"}
+
+Group					gProbeMini3			"Probe 3"				(gWlanThermoMini)
+String 					mini_name_3 		"Name"					(gProbeMini3)		{channel="wlanthermo:mini:<mini_thing_id>:channel3#name"}
+Number:Temperature 		mini_temp_3 		"Temperature"			(gProbeMini3)		{channel="wlanthermo:mini:<mini_thing_id>:channel3#temp"}
+Number:Temperature 		mini_min_3 			"Min Temperature"		(gProbeMini3)		{channel="wlanthermo:mini:<mini_thing_id>:channel3#min"}
+Number:Temperature 		mini_max_3 			"Max Temperature"		(gProbeMini3)		{channel="wlanthermo:mini:<mini_thing_id>:channel3#max"}
+Switch 					mini_alarm_device_3 "Enable Buzzer Alarm"	(gProbeMini3)		{channel="wlanthermo:mini:<mini_thing_id>:channel3#alarm_device"}
+Switch 					mini_alarm_low_3 	"Low Temp. Alarm"		(gProbeMini3)		{channel="wlanthermo:mini:<mini_thing_id>:channel3#alarm_openhab_low"}
+Switch 					mini_alarm_high_3 	"High Temp. Alarm"		(gProbeMini3)		{channel="wlanthermo:mini:<mini_thing_id>:channel3#alarm_openhab_high"}
+Color 					mini_color_3 		"Color"					(gProbeMini3)		{channel="wlanthermo:mini:<mini_thing_id>:channel3#color"}
+
+Group					gProbeMini4			"Probe 4"				(gWlanThermoMini)
+String 					mini_name_4 		"Name"					(gProbeMini4)		{channel="wlanthermo:mini:<mini_thing_id>:channel4#name"}
+Number:Temperature 		mini_temp_4 		"Temperature"			(gProbeMini4)		{channel="wlanthermo:mini:<mini_thing_id>:channel4#temp"}
+Number:Temperature 		mini_min_4 			"Min Temperature"		(gProbeMini4)		{channel="wlanthermo:mini:<mini_thing_id>:channel4#min"}
+Number:Temperature 		mini_max_4 			"Max Temperature"		(gProbeMini4)		{channel="wlanthermo:mini:<mini_thing_id>:channel4#max"}
+Switch 					mini_alarm_device_4 "Enable Buzzer Alarm"	(gProbeMini4)		{channel="wlanthermo:mini:<mini_thing_id>:channel4#alarm_device"}
+Switch 					mini_alarm_low_4 	"Low Temp. Alarm"		(gProbeMini4)		{channel="wlanthermo:mini:<mini_thing_id>:channel4#alarm_openhab_low"}
+Switch 					mini_alarm_high_4 	"High Temp. Alarm"		(gProbeMini4)		{channel="wlanthermo:mini:<mini_thing_id>:channel4#alarm_openhab_high"}
+Color 					mini_color_4 		"Color"					(gProbeMini4)		{channel="wlanthermo:mini:<mini_thing_id>:channel4#color"}
+
+Group					gProbeMini5			"Probe 5"				(gWlanThermoMini)
+String 					mini_name_5 		"Name"					(gProbeMini5)		{channel="wlanthermo:mini:<mini_thing_id>:channel5#name"}
+Number:Temperature 		mini_temp_5 		"Temperature"			(gProbeMini5)		{channel="wlanthermo:mini:<mini_thing_id>:channel5#temp"}
+Number:Temperature 		mini_min_5 			"Min Temperature"		(gProbeMini5)		{channel="wlanthermo:mini:<mini_thing_id>:channel5#min"}
+Number:Temperature 		mini_max_5 			"Max Temperature"		(gProbeMini5)		{channel="wlanthermo:mini:<mini_thing_id>:channel5#max"}
+Switch 					mini_alarm_device_5 "Enable Buzzer Alarm"	(gProbeMini5)		{channel="wlanthermo:mini:<mini_thing_id>:channel5#alarm_device"}
+Switch 					mini_alarm_low_5 	"Low Temp. Alarm"		(gProbeMini5)		{channel="wlanthermo:mini:<mini_thing_id>:channel5#alarm_openhab_low"}
+Switch 					mini_alarm_high_5 	"High Temp. Alarm"		(gProbeMini5)		{channel="wlanthermo:mini:<mini_thing_id>:channel5#alarm_openhab_high"}
+Color 					mini_color_5 		"Color"					(gProbeMini5)		{channel="wlanthermo:mini:<mini_thing_id>:channel5#color"}
+
+Group					gProbeMini6			"Probe 6"				(gWlanThermoMini)
+String 					mini_name_6 		"Name"					(gProbeMini6)		{channel="wlanthermo:mini:<mini_thing_id>:channel6#name"}
+Number:Temperature 		mini_temp_6 		"Temperature"			(gProbeMini6)		{channel="wlanthermo:mini:<mini_thing_id>:channel6#temp"}
+Number:Temperature 		mini_min_6 			"Min Temperature"		(gProbeMini6)		{channel="wlanthermo:mini:<mini_thing_id>:channel6#min"}
+Number:Temperature 		mini_max_6 			"Max Temperature"		(gProbeMini6)		{channel="wlanthermo:mini:<mini_thing_id>:channel6#max"}
+Switch 					mini_alarm_device_6 "Enable Buzzer Alarm"	(gProbeMini6)		{channel="wlanthermo:mini:<mini_thing_id>:channel6#alarm_device"}
+Switch 					mini_alarm_low_6 	"Low Temp. Alarm"		(gProbeMini6)		{channel="wlanthermo:mini:<mini_thing_id>:channel6#alarm_openhab_low"}
+Switch 					mini_alarm_high_6 	"High Temp. Alarm"		(gProbeMini6)		{channel="wlanthermo:mini:<mini_thing_id>:channel6#alarm_openhab_high"}
+Color 					mini_color_6 		"Color"					(gProbeMini6)		{channel="wlanthermo:mini:<mini_thing_id>:channel6#color"}
+
+Group					gProbeMini7			"Probe 7"				(gWlanThermoMini)
+String 					mini_name_7 		"Name"					(gProbeMini7)		{channel="wlanthermo:mini:<mini_thing_id>:channel7#name"}
+Number:Temperature 		mini_temp_7 		"Temperature"			(gProbeMini7)		{channel="wlanthermo:mini:<mini_thing_id>:channel7#temp"}
+Number:Temperature 		mini_min_7 			"Min Temperature"		(gProbeMini7)		{channel="wlanthermo:mini:<mini_thing_id>:channel7#min"}
+Number:Temperature 		mini_max_7 			"Max Temperature"		(gProbeMini7)		{channel="wlanthermo:mini:<mini_thing_id>:channel7#max"}
+Switch 					mini_alarm_device_7 "Enable Buzzer Alarm"	(gProbeMini7)		{channel="wlanthermo:mini:<mini_thing_id>:channel7#alarm_device"}
+Switch 					mini_alarm_low_7 	"Low Temp. Alarm"		(gProbeMini7)		{channel="wlanthermo:mini:<mini_thing_id>:channel7#alarm_openhab_low"}
+Switch 					mini_alarm_high_7 	"High Temp. Alarm"		(gProbeMini7)		{channel="wlanthermo:mini:<mini_thing_id>:channel7#alarm_openhab_high"}
+Color 					mini_color_7 		"Color"					(gProbeMini7)		{channel="wlanthermo:mini:<mini_thing_id>:channel7#color"}
+
+Group					gProbeMini8			"Probe 8"				(gWlanThermoMini)
+String 					mini_name_8 		"Name"					(gProbeMini8)		{channel="wlanthermo:mini:<mini_thing_id>:channel8#name"}
+Number:Temperature 		mini_temp_8 		"Temperature"			(gProbeMini8)		{channel="wlanthermo:mini:<mini_thing_id>:channel8#temp"}
+Number:Temperature 		mini_min_8 			"Min Temperature"		(gProbeMini8)		{channel="wlanthermo:mini:<mini_thing_id>:channel8#min"}
+Number:Temperature 		mini_max_8 			"Max Temperature"		(gProbeMini8)		{channel="wlanthermo:mini:<mini_thing_id>:channel8#max"}
+Switch 					mini_alarm_device_8 "Enable Buzzer Alarm"	(gProbeMini8)		{channel="wlanthermo:mini:<mini_thing_id>:channel8#alarm_device"}
+Switch 					mini_alarm_low_8 	"Low Temp. Alarm"		(gProbeMini8)		{channel="wlanthermo:mini:<mini_thing_id>:channel8#alarm_openhab_low"}
+Switch 					mini_alarm_high_8 	"High Temp. Alarm"		(gProbeMini8)		{channel="wlanthermo:mini:<mini_thing_id>:channel8#alarm_openhab_high"}
+Color 					mini_color_8 		"Color"					(gProbeMini8)		{channel="wlanthermo:mini:<mini_thing_id>:channel8#color"}
+
+Group					gProbeMini9			"Probe 9"				(gWlanThermoMini)
+String 					mini_name_9 		"Name"					(gProbeMini9)		{channel="wlanthermo:mini:<mini_thing_id>:channel9#name"}
+Number:Temperature 		mini_temp_9 		"Temperature"			(gProbeMini9)		{channel="wlanthermo:mini:<mini_thing_id>:channel9#temp"}
+Number:Temperature 		mini_min_9 			"Min Temperature"		(gProbeMini9)		{channel="wlanthermo:mini:<mini_thing_id>:channel9#min"}
+Number:Temperature 		mini_max_9 			"Max Temperature"		(gProbeMini9)		{channel="wlanthermo:mini:<mini_thing_id>:channel9#max"}
+Switch 					mini_alarm_device_9 "Enable Buzzer Alarm"	(gProbeMini9)		{channel="wlanthermo:mini:<mini_thing_id>:channel9#alarm_device"}
+Switch 					mini_alarm_low_9 	"Low Temp. Alarm"		(gProbeMini9)		{channel="wlanthermo:mini:<mini_thing_id>:channel9#alarm_openhab_low"}
+Switch 					mini_alarm_high_9 	"High Temp. Alarm"		(gProbeMini9)		{channel="wlanthermo:mini:<mini_thing_id>:channel9#alarm_openhab_high"}
+Color 					mini_color_9 		"Color"					(gProbeMini9)		{channel="wlanthermo:mini:<mini_thing_id>:channel9#color"}
+
+Group					gPitmasterMini1		"Pitmaster 1"			(gWlanThermoMini)
+Switch					mini_pit_enabled_1	"Enabled"				(gPitmasterMini1)	{channel="wlanthermo:mini:<mini_thing_id>:pit1#enabled"}
+Number:Temperature 		mini_pit_current_1 	"Temperature"			(gPitmasterMini1)	{channel="wlanthermo:mini:<mini_thing_id>:pit1#current"}
+Number:Temperature 		mini_pit_setpoint_1 "Setpoint"				(gPitmasterMini1)	{channel="wlanthermo:mini:<mini_thing_id>:pit1#setpoint"}
+Number					mini_pit_cycle_1    "Duty Cycle"			(gPitmasterMini1)	{channel="wlanthermo:mini:<mini_thing_id>:pit1#duty_cycle"}
+Switch 					mini_pit_lidopen_1  "Lid Open Detection"	(gPitmasterMini1)	{channel="wlanthermo:mini:<mini_thing_id>:pit1#lid_open"}
+Number					mini_pit_channel_1  "Input Channel ID"		(gPitmasterMini1)	{channel="wlanthermo:mini:<mini_thing_id>:pit1#channel_id"}
+
+Group					gPitmasterMini2		"Pitmaster 2"			(gWlanThermoMini)
+Switch					mini_pit_enabled_2	"Enabled"				(gPitmasterMini2)	{channel="wlanthermo:mini:<mini_thing_id>:pit2#enabled"}
+Number:Temperature 		mini_pit_current_2 	"Current Temperature"	(gPitmasterMini2)	{channel="wlanthermo:mini:<mini_thing_id>:pit2#current"}
+Number:Temperature 		mini_pit_setpoint_2 "Setpoint"				(gPitmasterMini2)	{channel="wlanthermo:mini:<mini_thing_id>:pit2#setpoint"}
+Number					mini_pit_cycle_2    "Duty Cycle"			(gPitmasterMini2)	{channel="wlanthermo:mini:<mini_thing_id>:pit2#duty_cycle"}
+Switch 					mini_pit_lidopen_2  "Lid Open Detection"	(gPitmasterMini2)	{channel="wlanthermo:mini:<mini_thing_id>:pit2#lid_open"}
+Number					mini_pit_channel_2  "Input Channel ID"		(gPitmasterMini2)	{channel="wlanthermo:mini:<mini_thing_id>:pit2#channel_id"}
 ```
 
 ### Sitemap
 
+(For WlanThermo Nano, adapt items for Mini!)
 ```
 sitemap wlanthermo label="WlanThermo" {
     Frame label="WlanThermo" {
-        Default item=online
-        Default item=rssi icon="qualityofservice"
-        Default item=soc icon="batterylevel"
-        Default item=charging icon="energy"
+        Default item=nano_online
+        Default item=nano_rssi icon="qualityofservice"
+        Default item=nano_soc icon="batterylevel"
+        Default item=nano_charging icon="energy"
         
-        Text item=name_1 icon="fire" {
+        Text item=nano_name_1 icon="fire" {
             Frame {
-                Default item=typ_1 icon="settings"
-                Default item=color_1
+                Default item=nano_typ_1 icon="settings"
+                Default item=nano_color_1
                 
-                Default item=temp_1 icon="temperature"
+                Default item=nano_temp_1 icon="temperature"
                 Text icon=""
-                Setpoint item=min_1 icon="temperature_cold"
-                Setpoint item=max_1 icon="temperature_hot"
+                Setpoint item=nano_min_1 icon="temperature_cold"
+                Setpoint item=nano_max_1 icon="temperature_hot"
                 
-                Default item=alarm_device_1 icon="switch"
-                Default item=alarm_push_1 icon="switch"
-                Default item=alarm_low_1 icon="siren"
-                Default item=alarm_high_1 icon="siren"
+                Default item=nano_alarm_device_1 icon="switch"
+                Default item=nano_alarm_push_1 icon="switch"
+                Default item=nano_alarm_low_1 icon="siren"
+                Default item=nano_alarm_high_1 icon="siren"
             }
         }
         
-        Text item=name_2 icon="fire" {
+        Text item=nano_name_2 icon="fire" {
             Frame {
-                Default item=typ_2 icon="settings"
-                Default item=color_2
+                Default item=nano_typ_2 icon="settings"
+                Default item=nano_color_2
                 
-                Default item=temp_2 icon="temperature"
+                Default item=nano_temp_2 icon="temperature"
                 Text icon=""
-                Setpoint item=min_2 icon="temperature_cold"
-                Setpoint item=max_2 icon="temperature_hot"
+                Setpoint item=nano_min_2 icon="temperature_cold"
+                Setpoint item=nano_max_2 icon="temperature_hot"
                 
-                Default item=alarm_device_2 icon="switch"
-                Default item=alarm_push_2 icon="switch"
-                Default item=alarm_low_2 icon="siren"
-                Default item=alarm_high_2 icon="siren"
+                Default item=nano_alarm_device_2 icon="switch"
+                Default item=nano_alarm_push_2 icon="switch"
+                Default item=nano_alarm_low_2 icon="siren"
+                Default item=nano_alarm_high_2 icon="siren"
             }
         }
         
-        Text item=name_3 icon="fire" {
+        Text item=nano_name_3 icon="fire" {
             Frame {
-                Default item=typ_3 icon="settings"
-                Default item=color_3
+                Default item=nano_typ_3 icon="settings"
+                Default item=nano_color_3
                 
-                Default item=temp_3 icon="temperature"
+                Default item=nano_temp_3 icon="temperature"
                 Text icon=""
-                Setpoint item=min_3 icon="temperature_cold"
-                Setpoint item=max_3 icon="temperature_hot"
+                Setpoint item=nano_min_3 icon="temperature_cold"
+                Setpoint item=nano_max_3 icon="temperature_hot"
                 
-                Default item=alarm_device_3 icon="switch"
-                Default item=alarm_push_3 icon="switch"
-                Default item=alarm_low_3 icon="siren"
-                Default item=alarm_high_3 icon="siren"
+                Default item=nano_alarm_device_3 icon="switch"
+                Default item=nano_alarm_push_3 icon="switch"
+                Default item=nano_alarm_low_3 icon="siren"
+                Default item=nano_alarm_high_3 icon="siren"
             }
         }
         
-        Text item=name_4 icon="fire" {
+        Text item=nano_name_4 icon="fire" {
             Frame {
-                Default item=typ_4 icon="settings"
-                Default item=color_4
+                Default item=nano_typ_4 icon="settings"
+                Default item=nano_color_4
                 
-                Default item=temp_4 icon="temperature"
+                Default item=nano_temp_4 icon="temperature"
                 Text icon=""
-                Setpoint item=min_4 icon="temperature_cold"
-                Setpoint item=max_4 icon="temperature_hot"
+                Setpoint item=nano_min_4 icon="temperature_cold"
+                Setpoint item=nano_max_4 icon="temperature_hot"
                 
-                Default item=alarm_device_4 icon="switch"
-                Default item=alarm_push_4 icon="switch"
-                Default item=alarm_low_4 icon="siren"
-                Default item=alarm_high_4 icon="siren"
+                Default item=nano_alarm_device_4 icon="switch"
+                Default item=nano_alarm_push_4 icon="switch"
+                Default item=nano_alarm_low_4 icon="siren"
+                Default item=nano_alarm_high_4 icon="siren"
             }
         }
         
-        Text item=name_5 icon="fire" {
+        Text item=nano_name_5 icon="fire" {
             Frame {
-                Default item=typ_5 icon="settings"
-                Default item=color_5
+                Default item=nano_typ_5 icon="settings"
+                Default item=nano_color_5
                 
-                Default item=temp_5 icon="temperature"
+                Default item=nano_temp_5 icon="temperature"
                 Text icon=""
-                Setpoint item=min_5 icon="temperature_cold"
-                Setpoint item=max_5 icon="temperature_hot"
+                Setpoint item=nano_min_5 icon="temperature_cold"
+                Setpoint item=nano_max_5 icon="temperature_hot"
                 
-                Default item=alarm_device_5 icon="switch"
-                Default item=alarm_push_5 icon="switch"
-                Default item=alarm_low_5 icon="siren"
-                Default item=alarm_high_5 icon="siren"
+                Default item=nano_alarm_device_5 icon="switch"
+                Default item=nano_alarm_push_5 icon="switch"
+                Default item=nano_alarm_low_5 icon="siren"
+                Default item=nano_alarm_high_5 icon="siren"
             }
         }
         
-        Text item=name_6 icon="fire" {
+        Text item=nano_name_6 icon="fire" {
             Frame {
-                Default item=typ_6 icon="settings"
-                Default item=color_6
+                Default item=nano_typ_6 icon="settings"
+                Default item=nano_color_6
                 
-                Default item=temp_6 icon="temperature"
+                Default item=nano_temp_6 icon="temperature"
                 Text icon=""
-                Setpoint item=min_6 icon="temperature_cold"
-                Setpoint item=max_6 icon="temperature_hot"
+                Setpoint item=nano_min_6 icon="temperature_cold"
+                Setpoint item=nano_max_6 icon="temperature_hot"
                 
-                Default item=alarm_device_6 icon="switch"
-                Default item=alarm_push_6 icon="switch"
-                Default item=alarm_low_6 icon="siren"
-                Default item=alarm_high_6 icon="siren"
+                Default item=nano_alarm_device_6 icon="switch"
+                Default item=nano_alarm_push_6 icon="switch"
+                Default item=nano_alarm_low_6 icon="siren"
+                Default item=nano_alarm_high_6 icon="siren"
             }
         }
         
-        Text item=name_7 icon="fire" {
+        Text item=nano_name_7 icon="fire" {
             Frame {
-                Default item=typ_7 icon="settings"
-                Default item=color_7
+                Default item=nano_typ_7 icon="settings"
+                Default item=nano_color_7
                 
-                Default item=temp_7 icon="temperature"
+                Default item=nano_temp_7 icon="temperature"
                 Text icon=""
-                Setpoint item=min_7 icon="temperature_cold"
-                Setpoint item=max_7 icon="temperature_hot"
+                Setpoint item=nano_min_7 icon="temperature_cold"
+                Setpoint item=nano_max_7 icon="temperature_hot"
                 
-                Default item=alarm_device_7 icon="switch"
-                Default item=alarm_push_7 icon="switch"
-                Default item=alarm_low_7 icon="siren"
-                Default item=alarm_high_7 icon="siren"
+                Default item=nano_alarm_device_7 icon="switch"
+                Default item=nano_alarm_push_7 icon="switch"
+                Default item=nano_alarm_low_7 icon="siren"
+                Default item=nano_alarm_high_7 icon="siren"
             }
         }
         
-        Text item=name_8 icon="fire" {
+        Text item=nano_name_8 icon="fire" {
             Frame {
-                Default item=typ_8 icon="settings"
-                Default item=color_8
+                Default item=nano_typ_8 icon="settings"
+                Default item=nano_color_8
                 
-                Default item=temp_8 icon="temperature"
+                Default item=nano_temp_8 icon="temperature"
                 Text icon=""
-                Setpoint item=min_8 icon="temperature_cold"
-                Setpoint item=max_8 icon="temperature_hot"
+                Setpoint item=nano_min_8 icon="temperature_cold"
+                Setpoint item=nano_max_8 icon="temperature_hot"
                 
-                Default item=alarm_device_8 icon="switch"
-                Default item=alarm_push_8 icon="switch"
-                Default item=alarm_low_8 icon="siren"
-                Default item=alarm_high_8 icon="siren"
+                Default item=nano_alarm_device_8 icon="switch"
+                Default item=nano_alarm_push_8 icon="switch"
+                Default item=nano_alarm_low_8 icon="siren"
+                Default item=nano_alarm_high_8 icon="siren"
             }
         }
     }

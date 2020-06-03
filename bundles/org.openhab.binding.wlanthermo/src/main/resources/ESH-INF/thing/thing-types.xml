@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="nano">
-		<label>WlanThermo</label>
+		<label>WlanThermo Nano</label>
 		<description>WlanThermo Nano V1/V1+</description>
 
 		<channel-groups>
@@ -51,7 +51,7 @@
 	</thing-type>
 
 	<thing-type id="mini">
-		<label>WlanThermo</label>
+		<label>WlanThermo Mini</label>
 		<description>WlanThermo Mini</description>
 
 		<channel-groups>
@@ -302,7 +302,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="cg_temperature_mini1">
-		<label>Temperature Probe 0</label>
+		<label>Temperature Probe 1</label>
 		<description>This group contains all channels for temperature probe 1</description>
 		<category>Sensor</category>
 		<channels>
@@ -319,7 +319,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="cg_temperature_mini2">
-		<label>Temperature Probe 0</label>
+		<label>Temperature Probe 2</label>
 		<description>This group contains all channels for temperature probe 2</description>
 		<category>Sensor</category>
 		<channels>
@@ -336,7 +336,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="cg_temperature_mini3">
-		<label>Temperature Probe 0</label>
+		<label>Temperature Probe 3</label>
 		<description>This group contains all channels for temperature probe 3</description>
 		<category>Sensor</category>
 		<channels>
@@ -353,7 +353,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="cg_temperature_mini4">
-		<label>Temperature Probe 0</label>
+		<label>Temperature Probe 4</label>
 		<description>This group contains all channels for temperature probe 4</description>
 		<category>Sensor</category>
 		<channels>
@@ -370,7 +370,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="cg_temperature_mini5">
-		<label>Temperature Probe 0</label>
+		<label>Temperature Probe 5</label>
 		<description>This group contains all channels for temperature probe 5</description>
 		<category>Sensor</category>
 		<channels>
@@ -387,7 +387,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="cg_temperature_mini6">
-		<label>Temperature Probe 0</label>
+		<label>Temperature Probe 6</label>
 		<description>This group contains all channels for temperature probe 6</description>
 		<category>Sensor</category>
 		<channels>
@@ -404,7 +404,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="cg_temperature_mini7">
-		<label>Temperature Probe 0</label>
+		<label>Temperature Probe 7</label>
 		<description>This group contains all channels for temperature probe 7</description>
 		<category>Sensor</category>
 		<channels>
@@ -421,7 +421,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="cg_temperature_mini8">
-		<label>Temperature Probe 0</label>
+		<label>Temperature Probe 8</label>
 		<description>This group contains all channels for temperature probe 8</description>
 		<category>Sensor</category>
 		<channels>
@@ -438,7 +438,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="cg_temperature_mini9">
-		<label>Temperature Probe 0</label>
+		<label>Temperature Probe 9</label>
 		<description>This group contains all channels for temperature probe 9</description>
 		<category>Sensor</category>
 		<channels>
@@ -608,17 +608,35 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-type id="enabled" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Pitmaster Enabled</label>
+		<state readOnly="true" />
+	</channel-type>
+
 	<channel-type id="temperature_setpoint" advanced="false">
 		<item-type>Number:Temperature</item-type>
-		<label>Setpoint Temperature</label>
+		<label>Pitmaster Setpoint Temperature</label>
 		<category>Temperature</category>
 		<state min="0" pattern="%.1f" readOnly="true" />
 	</channel-type>
 
 	<channel-type id="duty_cycle" advanced="false">
 		<item-type>Number</item-type>
-		<label>Duty Cycle / Control Out</label>
+		<label>Pitmaster Duty Cycle / Control Out</label>
 		<state min="0" max="100" pattern="%d" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="lid_open" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Pitmaster Lid Open</label>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="channel_id" advanced="false">
+		<item-type>Number</item-type>
+		<label>Pitmaster Channel ID</label>
+		<state min="0" max="9" pattern="%d" readOnly="true" />
 	</channel-type>
 
 </thing:thing-descriptions>
