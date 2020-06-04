@@ -37,7 +37,7 @@ public class GroupModel extends AVMFritzBaseModel {
 
     @Override
     public String toString() {
-        return new StringBuilder().append(super.toString()).append(groupinfo).toString();
+        return new StringBuilder().append(super.toString()).append(groupinfo).append("]").toString();
     }
 
     @XmlAccessorType(XmlAccessType.FIELD)

@@ -147,8 +147,8 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
                 return (T) state.as(type);
             }
         }
-        logger.warn("State for characteristic {} at accessory {} cannot be retrieved.", characteristic,
-                accessory.getId());
+        logger.debug("State for characteristic {} at accessory {} cannot be retrieved.", characteristic,
+                accessory.getName());
         return null;
     }
 
@@ -170,8 +170,8 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
     }
 
     @SuppressWarnings("unchecked")
-    protected <T> T getAccessoryConfiguration(String key, @NonNull T defaultValue) {
-        final @Nullable Map<String, Object> configuration = accessory.getConfiguration();
+    private <T> T getItemConfiguration(@NonNull HomekitTaggedItem item, @NonNull String key, @NonNull T defaultValue) {
+        final @Nullable Map<String, Object> configuration = item.getConfiguration();
         if (configuration != null) {
             Object value = configuration.get(key);
             if (value != null && value.getClass().equals(defaultValue.getClass())) {
@@ -179,6 +179,38 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
             }
         }
         return defaultValue;
+    }
+
+    /**
+     * return configuration attached to the root accessory, e.g. groupItem.
+     * Note: result will be casted to the type of the default value.
+     * The type for number is BigDecimal.
+     * 
+     * @param key configuration key
+     * @param defaultValue default value
+     * @param <T> expected type
+     * @return configuration value
+     */
+    protected <T> T getAccessoryConfiguration(@NonNull String key, @NonNull T defaultValue) {
+        return getItemConfiguration(accessory, key, defaultValue);
+    }
+
+    /**
+     * return configuration of the characteristic item, e.g. currentTemperature.
+     * Note: result will be casted to the type of the default value.
+     * The type for number is BigDecimal.
+     * 
+     * @param characteristicType characteristic type
+     * @param key configuration key
+     * @param defaultValue default value
+     * @param <T> expected type
+     * @return configuration value
+     */
+    protected <T> T getAccessoryConfiguration(@NonNull HomekitCharacteristicType characteristicType,
+            @NonNull String key, @NonNull T defaultValue) {
+        final Optional<HomekitTaggedItem> characteristic = getCharacteristic(characteristicType);
+        return characteristic.isPresent() ? getItemConfiguration(characteristic.get(), key, defaultValue)
+                : defaultValue;
     }
 
     protected void addCharacteristic(HomekitTaggedItem characteristic) {

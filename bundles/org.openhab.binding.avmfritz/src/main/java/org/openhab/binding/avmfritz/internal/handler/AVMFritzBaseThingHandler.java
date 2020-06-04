@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.avmfritz.internal.handler;
 
-import static org.openhab.binding.avmfritz.internal.BindingConstants.*;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
 import static org.openhab.binding.avmfritz.internal.dto.HeatingModel.*;
 
 import java.math.BigDecimal;
@@ -38,7 +38,6 @@ import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.CommonTriggerEvents;
 import org.eclipse.smarthome.core.thing.DefaultSystemChannelTypeProvider;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -55,7 +54,7 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.avmfritz.internal.config.AVMFritzDeviceConfiguration;
 import org.openhab.binding.avmfritz.internal.dto.AVMFritzBaseModel;
 import org.openhab.binding.avmfritz.internal.dto.AlertModel;
-import org.openhab.binding.avmfritz.internal.dto.ButtonModel;
+import org.openhab.binding.avmfritz.internal.dto.BatteryModel;
 import org.openhab.binding.avmfritz.internal.dto.DeviceModel;
 import org.openhab.binding.avmfritz.internal.dto.HeatingModel;
 import org.openhab.binding.avmfritz.internal.dto.HeatingModel.NextChangeModel;
@@ -139,36 +138,14 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                 if (deviceModel.isTempSensor()) {
                     updateTemperatureSensor(deviceModel.getTemperature());
                 }
-                if (deviceModel.isAlarmSensor()) {
-                    updateAlarmSensor(deviceModel.getAlert());
-                }
-                if (deviceModel.isButton()) {
-                    updateButton(deviceModel.getButton());
+                if (deviceModel.isHANFUNAlarmSensor()) {
+                    updateHANFUNAlarmSensor(deviceModel.getAlert());
                 }
             }
         }
     }
 
-    private void updateButton(@Nullable ButtonModel buttonModel) {
-        if (buttonModel != null) {
-            int lastPressedTimestamp = buttonModel.getLastpressedtimestamp();
-            if (lastPressedTimestamp == 0) {
-                updateThingChannelState(CHANNEL_LAST_CHANGE, UnDefType.UNDEF);
-            } else {
-                ZoneId zoneId = ZoneId.systemDefault();
-                ZonedDateTime timestamp = ZonedDateTime.ofInstant(Instant.ofEpochSecond(lastPressedTimestamp), zoneId);
-                Instant then = timestamp.toInstant();
-                ZonedDateTime now = ZonedDateTime.now(zoneId);
-                Instant someSecondsEarlier = now.minusSeconds(15).toInstant();
-                if (then.isAfter(someSecondsEarlier) && then.isBefore(now.toInstant())) {
-                    triggerThingChannel(CHANNEL_PRESS, CommonTriggerEvents.PRESSED);
-                }
-                updateThingChannelState(CHANNEL_LAST_CHANGE, new DateTimeType(timestamp));
-            }
-        }
-    }
-
-    private void updateAlarmSensor(@Nullable AlertModel alertModel) {
+    private void updateHANFUNAlarmSensor(@Nullable AlertModel alertModel) {
         if (alertModel != null) {
             updateThingChannelState(CHANNEL_CONTACT_STATE,
                     AlertModel.ON.equals(alertModel.getState()) ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
@@ -210,16 +187,20 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                 updateThingChannelState(CHANNEL_NEXTTEMP, TEMP_FRITZ_UNDEFINED.equals(nextTemperature) ? UnDefType.UNDEF
                         : new QuantityType<>(toCelsius(nextTemperature), SIUnits.CELSIUS));
             }
-            BigDecimal batteryLevel = heatingModel.getBattery();
-            updateThingChannelState(CHANNEL_BATTERY,
-                    batteryLevel == null ? UnDefType.UNDEF : new DecimalType(batteryLevel));
-            BigDecimal lowBattery = heatingModel.getBatterylow();
-            if (lowBattery == null) {
-                updateThingChannelState(CHANNEL_BATTERY_LOW, UnDefType.UNDEF);
-            } else {
-                updateThingChannelState(CHANNEL_BATTERY_LOW,
-                        BATTERY_ON.equals(lowBattery) ? OnOffType.ON : OnOffType.OFF);
-            }
+            updateBattery(heatingModel);
+        }
+    }
+
+    protected void updateBattery(BatteryModel batteryModel) {
+        BigDecimal batteryLevel = batteryModel.getBattery();
+        updateThingChannelState(CHANNEL_BATTERY,
+                batteryLevel == null ? UnDefType.UNDEF : new DecimalType(batteryLevel));
+        BigDecimal lowBattery = batteryModel.getBatterylow();
+        if (lowBattery == null) {
+            updateThingChannelState(CHANNEL_BATTERY_LOW, UnDefType.UNDEF);
+        } else {
+            updateThingChannelState(CHANNEL_BATTERY_LOW,
+                    BatteryModel.BATTERY_ON.equals(lowBattery) ? OnOffType.ON : OnOffType.OFF);
         }
     }
 
@@ -266,7 +247,7 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
      * @param channelId ID of the channel to be updated.
      * @param state State to be set.
      */
-    private void updateThingChannelState(String channelId, State state) {
+    protected void updateThingChannelState(String channelId, State state) {
         Channel channel = thing.getChannel(channelId);
         if (channel != null) {
             updateState(channel.getUID(), state);
@@ -290,21 +271,6 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                     : new ChannelTypeUID(BINDING_ID, channelId);
             Channel channel = callback.createChannelBuilder(channelUID, channelTypeUID).build();
             updateThing(editThing().withoutChannel(channelUID).withChannel(channel).build());
-        }
-    }
-
-    /**
-     * Triggers thing channels.
-     *
-     * @param channelId ID of the channel to be triggered.
-     * @param event Event to emit
-     */
-    private void triggerThingChannel(String channelId, String event) {
-        Channel channel = thing.getChannel(channelId);
-        if (channel != null) {
-            triggerChannel(channel.getUID(), event);
-        } else {
-            logger.debug("Channel '{}' in thing '{}' does not exist.", channelId, thing.getUID());
         }
     }
 

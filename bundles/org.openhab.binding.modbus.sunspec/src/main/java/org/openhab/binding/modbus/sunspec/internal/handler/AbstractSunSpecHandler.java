@@ -497,7 +497,7 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
      * @return the scaled value as a DecimalType
      */
     protected State getScaled(Number value, Short scaleFactor, Unit<?> unit) {
-        if (scaleFactor == 1) {
+        if (scaleFactor == 0) {
             return new QuantityType<>(value.longValue(), unit);
         }
         return new QuantityType<>(BigDecimal.valueOf(value.longValue(), scaleFactor * -1), unit);

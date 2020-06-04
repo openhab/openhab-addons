@@ -23,5 +23,9 @@ interface IResponse {
 
     IRequest getRequest();
 
+    byte[] getPacketBytes();
+
+    byte[] getHeader();
+
     byte[] getPayload();
 }

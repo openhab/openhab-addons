@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.avmfritz.internal;
 
-import static org.openhab.binding.avmfritz.internal.BindingConstants.*;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
+import org.openhab.binding.avmfritz.internal.handler.AVMFritzButtonHandler;
 import org.openhab.binding.avmfritz.internal.handler.BoxHandler;
 import org.openhab.binding.avmfritz.internal.handler.DeviceHandler;
 import org.openhab.binding.avmfritz.internal.handler.GroupHandler;
@@ -73,6 +74,8 @@ public class AVMFritzHandlerFactory extends BaseThingHandlerFactory {
             return new BoxHandler((Bridge) thing, httpClient, stateDescriptionProvider);
         } else if (PL546E_STANDALONE_THING_TYPE.equals(thingTypeUID)) {
             return new Powerline546EHandler((Bridge) thing, httpClient, stateDescriptionProvider);
+        } else if (SUPPORTED_BUTTON_THING_TYPES_UIDS.contains(thingTypeUID)) {
+            return new AVMFritzButtonHandler(thing);
         } else if (SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new DeviceHandler(thing);
         } else if (SUPPORTED_GROUP_THING_TYPES_UIDS.contains(thingTypeUID)) {

@@ -14,6 +14,9 @@ package org.openhab.binding.neohub.internal;
 
 import java.lang.reflect.Type;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -28,16 +31,19 @@ import com.google.gson.JsonPrimitive;
  * @author Andrew Fiddian-Green - Initial contribution
  * 
  */
+@NonNullByDefault
 public class NeohubBoolDeserializer implements JsonDeserializer<NeohubBool> {
 
     @Override
-    public NeohubBool deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-            throws JsonParseException {
-        JsonPrimitive jsonPrimitive = json.getAsJsonPrimitive();
-        if (jsonPrimitive.isBoolean()) {
-            return new NeohubBool(jsonPrimitive.getAsBoolean());
-        } else if (jsonPrimitive.isNumber()) {
-            return new NeohubBool(jsonPrimitive.getAsNumber().intValue() != 0);
+    public NeohubBool deserialize(@Nullable JsonElement json, @Nullable Type typeOfT,
+            @Nullable JsonDeserializationContext context) throws JsonParseException {
+        if (json != null) {
+            JsonPrimitive jsonPrimitive = json.getAsJsonPrimitive();
+            if (jsonPrimitive.isBoolean()) {
+                return new NeohubBool(jsonPrimitive.getAsBoolean());
+            } else if (jsonPrimitive.isNumber()) {
+                return new NeohubBool(jsonPrimitive.getAsNumber().intValue() != 0);
+            }
         }
         return new NeohubBool(false);
     }

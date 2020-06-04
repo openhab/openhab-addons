@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.avmfritz.internal.dto;
 
-import static org.openhab.binding.avmfritz.internal.BindingConstants.*;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(propOrder = { "tist", "tsoll", "absenk", "komfort", "lock", "devicelock", "errorcode", "batterylow",
         "windowopenactiv", "battery", "nextchange", "summeractive", "holidayactive" })
 @XmlRootElement(name = "hkr")
-public class HeatingModel {
+public class HeatingModel implements BatteryModel {
     public static final BigDecimal TEMP_FACTOR = new BigDecimal("0.5");
     public static final BigDecimal BIG_DECIMAL_TWO = new BigDecimal("2.0");
     public static final BigDecimal TEMP_CELSIUS_MIN = new BigDecimal("8.0");
@@ -43,8 +43,6 @@ public class HeatingModel {
     public static final BigDecimal TEMP_FRITZ_OFF = new BigDecimal("253.0");
     public static final BigDecimal TEMP_FRITZ_ON = new BigDecimal("254.0");
     public static final BigDecimal TEMP_FRITZ_UNDEFINED = new BigDecimal("255.0");
-    public static final BigDecimal BATTERY_OFF = BigDecimal.ZERO;
-    public static final BigDecimal BATTERY_ON = BigDecimal.ONE;
 
     private BigDecimal tist;
     private BigDecimal tsoll;
@@ -146,6 +144,7 @@ public class HeatingModel {
         this.errorcode = errorcode;
     }
 
+    @Override
     public BigDecimal getBatterylow() {
         return batterylow;
     }
@@ -162,6 +161,7 @@ public class HeatingModel {
         this.windowopenactiv = windowopenactiv;
     }
 
+    @Override
     public BigDecimal getBattery() {
         return battery;
     }

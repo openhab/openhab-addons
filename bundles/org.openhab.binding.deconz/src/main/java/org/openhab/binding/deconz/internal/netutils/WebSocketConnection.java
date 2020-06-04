@@ -24,9 +24,9 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
-import org.openhab.binding.deconz.internal.dto.SensorConfig;
+import org.openhab.binding.deconz.internal.dto.DeconzBaseMessage;
+import org.openhab.binding.deconz.internal.dto.LightMessage;
 import org.openhab.binding.deconz.internal.dto.SensorMessage;
-import org.openhab.binding.deconz.internal.dto.SensorState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +46,8 @@ public class WebSocketConnection {
 
     private final WebSocketClient client;
     private final WebSocketConnectionListener connectionListener;
-    private final Map<String, WebSocketValueUpdateListener> valueListener = new HashMap<>();
+    private final Map<String, WebSocketMessageListener> sensorListener = new HashMap<>();
+    private final Map<String, WebSocketMessageListener> lightListener = new HashMap<>();
     private final Gson gson;
     private boolean connected = false;
 
@@ -83,12 +84,20 @@ public class WebSocketConnection {
         client.destroy();
     }
 
-    public void registerValueListener(String sensorID, WebSocketValueUpdateListener listener) {
-        valueListener.put(sensorID, listener);
+    public void registerSensorListener(String sensorID, WebSocketMessageListener listener) {
+        sensorListener.put(sensorID, listener);
     }
 
-    public void unregisterValueListener(String sensorID) {
-        valueListener.remove(sensorID);
+    public void unregisterSensorListener(String sensorID) {
+        sensorListener.remove(sensorID);
+    }
+
+    public void registerLightListener(String lightID, WebSocketMessageListener listener) {
+        lightListener.put(lightID, listener);
+    }
+
+    public void unregisterLightListener(String lightID) {
+        sensorListener.remove(lightID);
     }
 
     @OnWebSocketConnect
@@ -101,17 +110,21 @@ public class WebSocketConnection {
     @SuppressWarnings("null")
     @OnWebSocketMessage
     public void onMessage(String message) {
-        SensorMessage changedMessage = gson.fromJson(message, SensorMessage.class);
-        WebSocketValueUpdateListener listener = valueListener.get(changedMessage.id);
-        if (listener != null) {
-            SensorConfig sensorConfig = changedMessage.config;
-            if (sensorConfig != null) {
-                listener.websocketConfigUpdate(changedMessage.id, sensorConfig);
-            }
-            SensorState sensorState = changedMessage.state;
-            if (sensorState != null) {
-                listener.websocketStateUpdate(changedMessage.id, sensorState);
-            }
+        DeconzBaseMessage changedMessage = gson.fromJson(message, DeconzBaseMessage.class);
+        switch (changedMessage.r) {
+            case "sensors":
+                WebSocketMessageListener listener = sensorListener.get(changedMessage.id);
+                if (listener != null) {
+                    listener.messageReceived(changedMessage.id, gson.fromJson(message, SensorMessage.class));
+                }
+                break;
+            case "lights":
+                listener = lightListener.get(changedMessage.id);
+                if (listener != null) {
+                    listener.messageReceived(changedMessage.id, gson.fromJson(message, LightMessage.class));
+                }
+                break;
+            default:
         }
     }
 
