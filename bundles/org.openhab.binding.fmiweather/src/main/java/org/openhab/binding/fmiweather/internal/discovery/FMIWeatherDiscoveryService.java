@@ -16,10 +16,8 @@ import static org.openhab.binding.fmiweather.internal.BindingConstants.*;
 import static org.openhab.binding.fmiweather.internal.discovery.CitiesOfFinland.CITIES_OF_FINLAND;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
@@ -130,24 +128,23 @@ public class FMIWeatherDiscoveryService extends AbstractDiscoveryService {
 
     private void createForecastForCurrentLocation(@Nullable PointType currentLocation) {
         if (currentLocation != null) {
-            Map<String, Object> properties = new HashMap<>();
-            properties.put(LOCATION,
-                    String.format("%s,%s", currentLocation.getLatitude(), currentLocation.getLongitude()));
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(UID_LOCAL_FORECAST)
-                    .withLabel(String.format("FMI local weather forecast")).withProperties(properties).build();
+                    .withLabel(String.format("FMI local weather forecast")).withProperties(properties)
+                    .withProperty(LOCATION,
+                            String.format("%s,%s", currentLocation.getLatitude(), currentLocation.getLongitude()))
+                    .withRepresentationProperty(LOCATION).build();
             thingDiscovered(discoveryResult);
         }
     }
 
     private void createForecastsForCities(@Nullable PointType currentLocation) {
         CITIES_OF_FINLAND.stream().filter(location2 -> isClose(currentLocation, location2)).forEach(city -> {
-            Map<String, Object> properties = new HashMap<>();
-            properties.put(LOCATION,
-                    String.format("%s,%s", city.latitude.toPlainString(), city.longitude.toPlainString()));
             DiscoveryResult discoveryResult = DiscoveryResultBuilder
                     .create(new ThingUID(THING_TYPE_FORECAST, cleanId(String.format("city_%s", city.name))))
-                    .withLabel(String.format("FMI weather forecast for %s", city.name)).withProperties(properties)
-                    .build();
+                    .withProperty(LOCATION,
+                            String.format("%s,%s", city.latitude.toPlainString(), city.longitude.toPlainString()))
+                    .withLabel(String.format("FMI weather forecast for %s", city.name))
+                    .withRepresentationProperty(LOCATION).build();
             thingDiscovered(discoveryResult);
         });
     }
@@ -164,13 +161,12 @@ public class FMIWeatherDiscoveryService extends AbstractDiscoveryService {
                 filteredStations.add(station);
             }
         }).forEach(station -> {
-            Map<String, Object> properties = new HashMap<>();
-            properties.put(BindingConstants.FMISID, station.id);
             DiscoveryResult discoveryResult = DiscoveryResultBuilder
                     .create(new ThingUID(THING_TYPE_OBSERVATION,
                             cleanId(String.format("station_%s_%s", station.id, station.name))))
-                    .withLabel(String.format("FMI weather observation for %s", station.name)).withProperties(properties)
-                    .build();
+                    .withLabel(String.format("FMI weather observation for %s", station.name))
+                    .withProperty(BindingConstants.FMISID, station.id)
+                    .withRepresentationProperty(BindingConstants.FMISID).build();
             thingDiscovered(discoveryResult);
         });
         if (logger.isDebugEnabled()) {
