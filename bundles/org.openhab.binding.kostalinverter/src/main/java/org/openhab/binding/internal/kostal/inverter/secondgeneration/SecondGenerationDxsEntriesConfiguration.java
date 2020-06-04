@@ -16,12 +16,16 @@ package org.openhab.binding.internal.kostal.inverter.secondgeneration;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link SecondGenerationDxsEntriesConfiguration} class defines dxsEntries, which are
  * used in the second generation part of the binding.
  *
  * @author Örjan Backsell - Initial contribution Piko1020, Piko New Generation
  */
+
+@NonNullByDefault
 public class SecondGenerationDxsEntriesConfiguration {
 
     public static String[] getDxsEntriesConfiguration() {

@@ -14,6 +14,7 @@
 package org.openhab.binding.internal.kostal.inverter.secondgeneration;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.net.URL;
@@ -25,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.measure.Unit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -57,15 +59,14 @@ import com.google.gson.GsonBuilder;
  * @author Örjan Backsell - Redesigned regarding Piko1020, Piko New Generation
  */
 
-// @NonNullByDefault
+@NonNullByDefault
 public class SecondGenerationHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SecondGenerationHandler.class);
 
-    private final HttpClient httpClient;
+    private HttpClient httpClient;
 
-    // @Nullable
-    private SecondGenerationConfiguration config;
+    private @Nullable SecondGenerationConfiguration config;
 
     @SuppressWarnings("unused")
     @Nullable
@@ -81,7 +82,7 @@ public class SecondGenerationHandler extends BaseThingHandler {
 
     }
 
-    // @SuppressWarnings("null")
+    @SuppressWarnings("null")
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         String url = config.url.toString();
@@ -103,8 +104,9 @@ public class SecondGenerationHandler extends BaseThingHandler {
             try {
                 SecondGenerationConfigurationHandler.executeConfigurationChanges(httpClient, url, username, password,
                         "33556236", valueConfiguration);
-            } catch (Exception e) {
-                logger.debug("Unexpected error in KostalConfigurationHandler.configurationHandler, chargeTimeEnd !", e);
+            } catch (Exception chargeTimeEndException) {
+                logger.debug("Unexpected error in KostalConfigurationHandler.configurationHandler, chargeTimeEnd !",
+                        chargeTimeEndException);
             }
         }
 
@@ -114,8 +116,9 @@ public class SecondGenerationHandler extends BaseThingHandler {
             try {
                 SecondGenerationConfigurationHandler.executeConfigurationChanges(httpClient, url, username, password,
                         "33556252", valueConfiguration);
-            } catch (Exception e) {
-                logger.debug("Unexpected error in KostalConfigurationHandler.configurationHandler, batteryType !", e);
+            } catch (Exception batteryTypeException) {
+                logger.debug("Unexpected error in KostalConfigurationHandler.configurationHandler, batteryType !",
+                        batteryTypeException);
             }
         }
 
@@ -125,10 +128,10 @@ public class SecondGenerationHandler extends BaseThingHandler {
             try {
                 SecondGenerationConfigurationHandler.executeConfigurationChanges(httpClient, url, username, password,
                         "33556249", valueConfiguration);
-            } catch (Exception e) {
+            } catch (Exception batteryUsageConsumptionException) {
                 logger.debug(
                         "Unexpected error in KostalConfigurationHandler.configurationHandler, batteryUsageConsumption  !",
-                        e);
+                        batteryUsageConsumptionException);
             }
         }
 
@@ -138,10 +141,10 @@ public class SecondGenerationHandler extends BaseThingHandler {
             try {
                 SecondGenerationConfigurationHandler.executeConfigurationChanges(httpClient, url, username, password,
                         "83888896", valueConfiguration);
-            } catch (Exception e) {
+            } catch (Exception batteryUsageStrategyException) {
                 logger.debug(
                         "Unexpected error in KostalConfigurationHandler.configurationHandler, batteryUsageStrategy !",
-                        e);
+                        batteryUsageStrategyException);
             }
         }
 
@@ -157,10 +160,10 @@ public class SecondGenerationHandler extends BaseThingHandler {
             try {
                 SecondGenerationConfigurationHandler.executeConfigurationChanges(httpClient, url, username, password,
                         "33556484", valueConfiguration);
-            } catch (Exception e) {
+            } catch (Exception smartBatteryControlException) {
                 logger.debug(
                         "Unexpected error in KostalConfigurationHandler.configurationHandler, smartBatteryControl !",
-                        e);
+                        smartBatteryControlException);
             }
         }
 
@@ -170,10 +173,10 @@ public class SecondGenerationHandler extends BaseThingHandler {
             try {
                 SecondGenerationConfigurationHandler.executeConfigurationChanges(httpClient, url, username, password,
                         "33556484", valueConfiguration);
-            } catch (Exception e) {
+            } catch (Exception smartBatteryControlTextException) {
                 logger.debug(
                         "Unexpected error in KostalConfigurationHandler.configurationHandler, smartBatteryControlText !",
-                        e);
+                        smartBatteryControlTextException);
             }
         }
 
@@ -183,10 +186,10 @@ public class SecondGenerationHandler extends BaseThingHandler {
             try {
                 SecondGenerationConfigurationHandler.executeConfigurationChanges(httpClient, url, username, password,
                         "33556239", valueConfiguration);
-            } catch (Exception e) {
+            } catch (Exception batteryChargeTimeFromException) {
                 logger.debug(
                         "Unexpected error in KostalConfigurationHandler.configurationHandler, batteryChargeTimeFrom !",
-                        e);
+                        batteryChargeTimeFromException);
             }
         }
 
@@ -196,10 +199,10 @@ public class SecondGenerationHandler extends BaseThingHandler {
             try {
                 SecondGenerationConfigurationHandler.executeConfigurationChanges(httpClient, url, username, password,
                         "33556240", valueConfiguration);
-            } catch (Exception e) {
+            } catch (Exception batteryChargeTimeToException) {
                 logger.debug(
                         "Unexpected error in KostalConfigurationHandler.configurationHandler, batteryChargeTimeTo !",
-                        e);
+                        batteryChargeTimeToException);
             }
         }
 
@@ -209,10 +212,10 @@ public class SecondGenerationHandler extends BaseThingHandler {
             try {
                 SecondGenerationConfigurationHandler.executeConfigurationChanges(httpClient, url, username, password,
                         "33556247", valueConfiguration);
-            } catch (Exception e) {
+            } catch (Exception maxDepthOfDischargeException) {
                 logger.debug(
                         "Unexpected error in KostalConfigurationHandler.configurationHandler, maxDepthOfDischarge !",
-                        e);
+                        maxDepthOfDischargeException);
             }
         }
 
@@ -222,9 +225,9 @@ public class SecondGenerationHandler extends BaseThingHandler {
             try {
                 SecondGenerationConfigurationHandler.executeConfigurationChanges(httpClient, url, username, password,
                         "33556483", valueConfiguration);
-            } catch (Exception e) {
+            } catch (Exception shadowManagementException) {
                 logger.debug("Unexpected error in KostalConfigurationHandler.configurationHandler, shadowManagement !",
-                        e);
+                        shadowManagementException);
             }
         }
 
@@ -234,10 +237,10 @@ public class SecondGenerationHandler extends BaseThingHandler {
             try {
                 SecondGenerationConfigurationHandler.executeConfigurationChanges(httpClient, url, username, password,
                         "33556482", valueConfiguration);
-            } catch (Exception e) {
+            } catch (Exception externalModuleControlException) {
                 logger.debug(
                         "Unexpected error in KostalConfigurationHandler.configurationHandler, externalModuleControl !",
-                        e);
+                        externalModuleControlException);
             }
         }
 
@@ -247,8 +250,9 @@ public class SecondGenerationHandler extends BaseThingHandler {
             try {
                 SecondGenerationConfigurationHandler.executeConfigurationChanges(httpClient, url, username, password,
                         "16777984", valueConfiguration);
-            } catch (Exception e) {
-                logger.debug("Unexpected error in KostalConfigurationHandler.configurationHandler, inverterName !", e);
+            } catch (Exception inverterNameException) {
+                logger.debug("Unexpected error in KostalConfigurationHandler.configurationHandler, inverterName !",
+                        inverterNameException);
             }
         }
     }
@@ -261,7 +265,7 @@ public class SecondGenerationHandler extends BaseThingHandler {
         channelConfigs.add(new SecondGenerationChannelConfig("gridOutputPower", "td", 4, SmartHomeUnits.WATT));
         channelConfigs.add(new SecondGenerationChannelConfig("yieldDay", "td", 7, SmartHomeUnits.WATT));
         channelConfigs.add(new SecondGenerationChannelConfig("yieldTotal", "td", 10, SmartHomeUnits.KILOWATT_HOUR));
-        channelConfigs.add(new SecondGenerationChannelConfig("operatingStatus", "td", 13, null));
+        channelConfigs.add(new SecondGenerationChannelConfig("operatingStatus", "td", 13, SmartHomeUnits.BIT));
         channelConfigs.add(new SecondGenerationChannelConfig("gridVoltageL1", "td", 16, SmartHomeUnits.VOLT));
         channelConfigs.add(new SecondGenerationChannelConfig("gridCurrentL1", "td", 19, SmartHomeUnits.AMPERE));
         channelConfigs.add(new SecondGenerationChannelConfig("gridPowerL1", "td", 22, SmartHomeUnits.WATT));
@@ -310,10 +314,10 @@ public class SecondGenerationHandler extends BaseThingHandler {
         channelConfigsExt.add(new SecondGenerationChannelConfig("totalOperatingTime", "td", 115, SmartHomeUnits.HOUR));
         channelConfigsExt.add(new SecondGenerationChannelConfig("current", "td", 118, SmartHomeUnits.AMPERE));
         channelConfigsExt.add(new SecondGenerationChannelConfig("currentDir", "td", 121, SmartHomeUnits.AMPERE));
-        channelConfigsExt.add(new SecondGenerationChannelConfig("chargeCycles", "td", 124, null));
+        channelConfigsExt.add(new SecondGenerationChannelConfig("chargeCycles", "td", 124, SmartHomeUnits.BIT));
         channelConfigsExt.add(new SecondGenerationChannelConfig("batteryTemperature", "td", 127, SIUnits.CELSIUS));
         channelConfigsExt.add(new SecondGenerationChannelConfig("loginterval", "td", 130, SmartHomeUnits.MINUTE));
-        channelConfigsExt.add(new SecondGenerationChannelConfig("s0InPulseCnt", "td", 133, null));
+        channelConfigsExt.add(new SecondGenerationChannelConfig("s0InPulseCnt", "td", 133, SmartHomeUnits.BIT));
         channelConfigsExt.add(new SecondGenerationChannelConfig("ownConsRateTotal", "td", 136, SmartHomeUnits.PERCENT));
         channelConfigsExt
                 .add(new SecondGenerationChannelConfig("autonomyDegreeTotal", "td", 139, SmartHomeUnits.PERCENT));
@@ -330,10 +334,11 @@ public class SecondGenerationHandler extends BaseThingHandler {
             try {
                 refresh();
                 updateStatus(ThingStatus.ONLINE);
-            } catch (Exception e) {
+            } catch (Exception scheduleWithFixedDelayException) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        e.getClass().getName() + ":" + e.getMessage());
-                logger.debug("Error refreshing source = {}", getThing().getUID(), e);
+                        scheduleWithFixedDelayException.getClass().getName() + ":"
+                                + scheduleWithFixedDelayException.getMessage());
+                logger.debug("Error refreshing source = {}", getThing().getUID(), scheduleWithFixedDelayException);
             }
         }, 0, SecondGenerationConfiguration.REFRESHINTERVAL, TimeUnit.SECONDS);
     }
@@ -454,31 +459,38 @@ public class SecondGenerationHandler extends BaseThingHandler {
                 urlConn.setReadTimeout(60 * 1000);
             }
             if (urlConn != null && urlConn.getInputStream() != null) {
-                in = new InputStreamReader(urlConn.getInputStream(), Charset.defaultCharset());
-                BufferedReader bufferedReader = new BufferedReader(in);
-                if (bufferedReader != null) {
-                    int cp;
-                    while ((cp = bufferedReader.read()) != -1) {
-                        sb.append((char) cp);
+                try {
+                    in = new InputStreamReader(urlConn.getInputStream(), Charset.defaultCharset());
+                    BufferedReader bufferedReader = new BufferedReader(in);
+                    if (bufferedReader != null) {
+                        int cp;
+                        while ((cp = bufferedReader.read()) != -1) {
+                            sb.append((char) cp);
+                        }
+                        bufferedReader.close();
                     }
-                    bufferedReader.close();
+                } catch (IOException getInputStreamReaderException) {
+                    throw new RuntimeException("Exception while calling URL:" + myURL, getInputStreamReaderException);
                 }
             }
+
             in.close();
-        } catch (Exception e) {
-            throw new RuntimeException("Exception while calling URL:" + myURL, e);
+        } catch (IOException callURLException) {
+            throw new RuntimeException("Exception while calling URL:" + myURL, callURLException);
+
         }
         return sb.toString();
     }
 
+    @SuppressWarnings({ "null", "unused" })
     private State getState(String value, Unit<?> unit) {
         if (unit == null) {
             return new StringType(value);
         } else {
             try {
                 return new QuantityType<>(new BigDecimal(value), unit);
-            } catch (NumberFormatException e) {
-                logger.debug("Error parsing value '{}'", value, e);
+            } catch (NumberFormatException getStateException) {
+                logger.debug("Error parsing value '{}'", value, getStateException);
                 return UnDefType.UNDEF;
             }
         }

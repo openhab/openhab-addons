@@ -16,6 +16,7 @@ package org.openhab.binding.internal.kostal.inverter.secondgeneration;
 import java.security.MessageDigest;
 import java.util.Base64;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -34,6 +35,7 @@ import com.google.gson.JsonParser;
  * @author Örjan Backsell - Initial contribution Piko1020, Piko New Generation
  */
 
+@NonNullByDefault
 public class SecondGenerationConfigurationHandler {
 
     public static void executeConfigurationChanges(HttpClient httpClient, String url, String username, String password,
@@ -56,13 +58,13 @@ public class SecondGenerationConfigurationHandler {
                     .getAsJsonObject();
             salt = authenticateJsonObject.get("salt").getAsString();
 
-            String saltedPassword = new StringBuffer(password).append(salt).toString();
+            String saltedPassword = new StringBuilder(password).append(salt).toString();
             MessageDigest mDigest = MessageDigest.getInstance("SHA1");
 
             byte[] mDigestedPassword = mDigest.digest(saltedPassword.getBytes());
-            StringBuffer loginPostStringBuffer = new StringBuffer();
+            StringBuilder loginPostStringBuilder = new StringBuilder();
             for (int i = 0; i < mDigestedPassword.length; i++) {
-                loginPostStringBuffer.append(Integer.toString((mDigestedPassword[i] & 0xff) + 0x100, 16).substring(1));
+                loginPostStringBuilder.append(Integer.toString((mDigestedPassword[i] & 0xff) + 0x100, 16).substring(1));
             }
             String saltedmDigestedPwd = Base64.getEncoder().encodeToString(mDigest.digest(saltedPassword.getBytes()));
 
@@ -114,15 +116,15 @@ public class SecondGenerationConfigurationHandler {
         // Method transformJsonResponse converts response,due to missing [] in JSON getAuthenticateResponse.
 
         int sessionStartPosition = jsonResponse.indexOf("session");
-        StringBuffer transformStringBuffer = new StringBuffer();
+        StringBuilder transformStringBuilder = new StringBuilder();
 
-        transformStringBuffer.append(jsonResponse);
+        transformStringBuilder.append(jsonResponse);
 
-        transformStringBuffer.insert(sessionStartPosition + 9, '[');
+        transformStringBuilder.insert(sessionStartPosition + 9, '[');
         int codeStartPosition = jsonResponse.indexOf("roleId");
-        transformStringBuffer.insert(codeStartPosition + 11, ']');
+        transformStringBuilder.insert(codeStartPosition + 11, ']');
 
-        String transformJsonObject = transformStringBuffer.toString();
+        String transformJsonObject = transformStringBuilder.toString();
 
         return transformJsonObject;
     }

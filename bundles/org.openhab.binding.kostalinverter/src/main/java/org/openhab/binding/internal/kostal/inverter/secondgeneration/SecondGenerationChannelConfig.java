@@ -14,6 +14,8 @@ package org.openhab.binding.internal.kostal.inverter.secondgeneration;
 
 import javax.measure.Unit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link SecondGenerationChannelConfig} class defines methods, which are
  * used in the second generation part of the binding.
@@ -24,6 +26,7 @@ import javax.measure.Unit;
  * @author Örjan Backsell - Added getters and setters (Piko1020, Piko New Generation)
  */
 
+@NonNullByDefault
 public class SecondGenerationChannelConfig {
     public SecondGenerationChannelConfig(String id, String tag, int num, Unit<?> unit) {
         this.id = id;
