@@ -22,13 +22,13 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class MonopriceAudioThingConfiguration {
-    public @Nullable Integer numZones;
-    public @Nullable Integer pollingInterval;
+    public Integer numZones = 1;
+    public Integer pollingInterval = 15;
     public @NonNullByDefault({}) String serialPort;
     public @Nullable String host;
     public @Nullable Integer port;
     public @Nullable String ignoreZones;
-    public @Nullable Integer initialAllVolume;
+    public Integer initialAllVolume = 1;
     public @Nullable String inputLabel1;
     public @Nullable String inputLabel2;
     public @Nullable String inputLabel3;

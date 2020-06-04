@@ -112,8 +112,8 @@ Number z1_treble "Treble Adjustment [%s]" { channel="monopriceaudio:amplifier:my
 Number z1_bass "Bass Adjustment [%s]" { channel="monopriceaudio:amplifier:myamp:zone1#bass" }
 Number z1_balance "Balance Adjustment [%s]" { channel="monopriceaudio:amplifier:myamp:zone1#balance" }
 Switch z1_dnd "Do Not Disturb" { channel="monopriceaudio:amplifier:myamp:zone1#dnd" }
-Number z1_page "Page Active [%s]" { channel="monopriceaudio:amplifier:myamp:zone1#page" }
-Number z1_keypad "Keypad Active [%s]" { channel="monopriceaudio:amplifier:myamp:zone1#keypad" }
+Switch z1_page "Page Active: [%s]" { channel="monopriceaudio:amplifier:myamp:zone1#page" }
+Switch z1_keypad "Keypad Connected: [%s]" { channel="monopriceaudio:amplifier:myamp:zone1#keypad" }
 
 //repeat for zones 2-18 (substitute z1 and zone1)
 ```
@@ -140,8 +140,8 @@ sitemap monoprice label="Audio Control" {
         Setpoint item=z1_bass label="Bass Adjustment [%d]" minValue=-7 maxValue=7 step=1 visibility=[z1_power==ON]
         Setpoint item=z1_balance label="Balance Adjustment [%d]" minValue=-10 maxValue=10 step=1 visibility=[z1_power==ON]
         Switch item=z1_dnd visibility=[z1_power==ON]
-        Switch item=z1_page visibility=[z1_power==ON]
-        Swtich item=z1_keypad visibility=[z1_power==ON]
+        Text item=z1_page label="Page Active: [%s]" visibility=[z1_power==ON]
+        Text item=z1_keypad label="Keypad Connected: [%s]" visibility=[z1_power==ON]
     }
     
     //repeat for zones 2-18 (substitute z1)

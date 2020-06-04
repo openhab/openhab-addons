@@ -14,8 +14,6 @@ package org.openhab.binding.monopriceaudio.internal.communication;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -48,29 +46,6 @@ public enum MonopriceAudioZone {
     ZONE18("36");
 
     private String zoneId;
-
-    // make a map to enable lookup of controller zone id by binding zone id (1-18)
-    public static final Map<String, String> BINDING_ZONE_MAP = new HashMap<>();
-    static {
-        BINDING_ZONE_MAP.put("1", ZONE1.getZoneId());
-        BINDING_ZONE_MAP.put("2", ZONE2.getZoneId());
-        BINDING_ZONE_MAP.put("3", ZONE3.getZoneId());
-        BINDING_ZONE_MAP.put("4", ZONE4.getZoneId());
-        BINDING_ZONE_MAP.put("5", ZONE5.getZoneId());
-        BINDING_ZONE_MAP.put("6", ZONE6.getZoneId());
-        BINDING_ZONE_MAP.put("7", ZONE7.getZoneId());
-        BINDING_ZONE_MAP.put("8", ZONE8.getZoneId());
-        BINDING_ZONE_MAP.put("9", ZONE9.getZoneId());
-        BINDING_ZONE_MAP.put("10", ZONE10.getZoneId());
-        BINDING_ZONE_MAP.put("11", ZONE11.getZoneId());
-        BINDING_ZONE_MAP.put("12", ZONE12.getZoneId());
-        BINDING_ZONE_MAP.put("13", ZONE13.getZoneId());
-        BINDING_ZONE_MAP.put("14", ZONE14.getZoneId());
-        BINDING_ZONE_MAP.put("15", ZONE15.getZoneId());
-        BINDING_ZONE_MAP.put("16", ZONE16.getZoneId());
-        BINDING_ZONE_MAP.put("17", ZONE17.getZoneId());
-        BINDING_ZONE_MAP.put("18", ZONE18.getZoneId());
-    }
 
     // make a list of all valid zone ids
     public static final ArrayList<String> VALID_ZONES = new ArrayList<String>(
