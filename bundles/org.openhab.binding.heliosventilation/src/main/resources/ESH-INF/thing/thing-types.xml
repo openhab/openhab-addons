@@ -42,9 +42,7 @@
 			<parameter name="serialPort" type="text" required="true">
 				<context>serial-port</context>
 				<label>RS485 Interface Serial Port</label>
-				<description>The serial port name for the RS485 interfaces. Valid values
-                    are e.g. COM1 for Windows and /dev/ttyS0 or
-                    /dev/ttyUSB0 for Linux.</description>
+				<description>The serial port name for the RS485 interfaces. Valid values are e.g. COM1 for Windows and /dev/ttyS0 or /dev/ttyUSB0 for Linux.</description>
 			</parameter>
 
 			<parameter name="pollPeriod" type="integer" min="0">
