@@ -129,7 +129,7 @@ public class FMIWeatherDiscoveryService extends AbstractDiscoveryService {
     private void createForecastForCurrentLocation(@Nullable PointType currentLocation) {
         if (currentLocation != null) {
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(UID_LOCAL_FORECAST)
-                    .withLabel(String.format("FMI local weather forecast")).withProperties(properties)
+                    .withLabel(String.format("FMI local weather forecast"))
                     .withProperty(LOCATION,
                             String.format("%s,%s", currentLocation.getLatitude(), currentLocation.getLongitude()))
                     .withRepresentationProperty(LOCATION).build();
