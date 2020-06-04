@@ -185,7 +185,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
 
                     lastSensorStates.put(sensorId, sensor);
                 } else {
-                    if (sensorStatusListener.onSensorStateChanged(hueBridge, sensor)) {
+                    if (sensorStatusListener.onSensorStateChanged(sensor)) {
                         lastSensorStates.put(sensorId, sensor);
                     }
                 }
@@ -198,7 +198,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
 
                 final SensorStatusListener sensorStatusListener = sensorStatusListeners.get(sensorId);
                 if (sensorStatusListener != null) {
-                    sensorStatusListener.onSensorRemoved(hueBridge, sensor);
+                    sensorStatusListener.onSensorRemoved();
                 }
 
                 if (discovery != null) {
@@ -236,7 +236,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
 
                     lastLightStates.put(lightId, fullLight);
                 } else {
-                    if (lightStatusListener.onLightStateChanged(hueBridge, fullLight)) {
+                    if (lightStatusListener.onLightStateChanged(fullLight)) {
                         lastLightStates.put(lightId, fullLight);
                     }
                 }
@@ -249,7 +249,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
 
                 final LightStatusListener lightStatusListener = lightStatusListeners.get(lightId);
                 if (lightStatusListener != null) {
-                    lightStatusListener.onLightRemoved(hueBridge, light);
+                    lightStatusListener.onLightRemoved();
                 }
 
                 if (discovery != null) {
@@ -320,7 +320,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
 
                     lastGroupStates.put(groupId, fullGroup);
                 } else {
-                    if (groupStatusListener.onGroupStateChanged(hueBridge, fullGroup)) {
+                    if (groupStatusListener.onGroupStateChanged(fullGroup)) {
                         lastGroupStates.put(groupId, fullGroup);
                     }
                 }
@@ -333,7 +333,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
 
                 final GroupStatusListener groupStatusListener = groupStatusListeners.get(groupId);
                 if (groupStatusListener != null) {
-                    groupStatusListener.onGroupRemoved(hueBridge, group);
+                    groupStatusListener.onGroupRemoved();
                 }
 
                 if (discovery != null) {
@@ -481,7 +481,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                 discovery.removeLightDiscovery(light);
             }
 
-            listener.onLightGone(hueBridge, light);
+            listener.onLightGone();
         } else if (e instanceof ApiException) {
             // This should not happen - if it does, it is most likely some bug that should be reported.
             logger.warn("Error while accessing light: {}", e.getMessage(), e);
@@ -502,7 +502,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
 
             final SensorStatusListener listener = sensorStatusListeners.get(sensor.getId());
             if (listener != null) {
-                listener.onSensorGone(hueBridge, sensor);
+                listener.onSensorGone();
             }
         } else if (e instanceof ApiException) {
             // This should not happen - if it does, it is most likely some bug that should be reported.
@@ -524,7 +524,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
 
             final GroupStatusListener listener = groupStatusListeners.get(group.getId());
             if (listener != null) {
-                listener.onGroupGone(hueBridge, group);
+                listener.onGroupGone();
             }
         } else if (e instanceof ApiException) {
             // This should not happen - if it does, it is most likely some bug that should be reported.
@@ -546,7 +546,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
 
             final SensorStatusListener listener = sensorStatusListeners.get(sensor.getId());
             if (listener != null) {
-                listener.onSensorGone(hueBridge, sensor);
+                listener.onSensorGone();
             }
         } else if (e instanceof ApiException) {
             // This should not happen - if it does, it is most likely some bug that should be reported.
@@ -811,8 +811,9 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         final String lightId = lightStatusListener.getLightId();
         if (!lightStatusListeners.containsKey(lightId)) {
             lightStatusListeners.put(lightId, lightStatusListener);
-            if (hueBridge != null) {
-                lightStatusListener.onLightAdded(hueBridge, lastLightStates.get(lightId));
+            final FullLight lastLightState = lastLightStates.get(lightId);
+            if (lastLightState != null) {
+                lightStatusListener.onLightAdded(lastLightState);
             }
 
             return true;
@@ -830,8 +831,9 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         final String sensorId = sensorStatusListener.getSensorId();
         if (!sensorStatusListeners.containsKey(sensorId)) {
             sensorStatusListeners.put(sensorId, sensorStatusListener);
-            if (hueBridge != null) {
-                sensorStatusListener.onSensorAdded(hueBridge, lastSensorStates.get(sensorId));
+            final FullSensor lastSensorState = lastSensorStates.get(sensorId);
+            if (lastSensorState != null) {
+                sensorStatusListener.onSensorAdded(lastSensorState);
             }
             return true;
         }
@@ -849,8 +851,9 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         final String groupId = groupStatusListener.getGroupId();
         if (!groupStatusListeners.containsKey(groupId)) {
             groupStatusListeners.put(groupId, groupStatusListener);
-            if (hueBridge != null) {
-                groupStatusListener.onGroupAdded(hueBridge, lastGroupStates.get(groupId));
+            final FullGroup lastGroupState = lastGroupStates.get(groupId);
+            if (lastGroupState != null) {
+                groupStatusListener.onGroupAdded(lastGroupState);
             }
             return true;
         }
