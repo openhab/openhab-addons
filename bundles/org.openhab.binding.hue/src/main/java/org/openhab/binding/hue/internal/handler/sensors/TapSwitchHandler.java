@@ -26,13 +26,11 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.hue.internal.FullSensor;
-import org.openhab.binding.hue.internal.HueBridge;
 import org.openhab.binding.hue.internal.SensorConfigUpdate;
 import org.openhab.binding.hue.internal.handler.HueSensorHandler;
 
@@ -56,7 +54,7 @@ public class TapSwitchHandler extends HueSensorHandler {
     }
 
     @Override
-    protected void doSensorStateChanged(@Nullable HueBridge bridge, FullSensor sensor, Configuration config) {
+    protected void doSensorStateChanged(FullSensor sensor, Configuration config) {
         ZoneId zoneId = ZoneId.systemDefault();
         ZonedDateTime now = ZonedDateTime.now(zoneId), timestamp = now;
 
