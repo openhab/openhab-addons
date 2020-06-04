@@ -82,19 +82,20 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
     }
 
     @Override
-    protected void initializeThing() {
+    public void initialize() {
+        super.initialize();
         logger.debug("Initialize OpenWeatherMapWeatherAndForecastHandler handler '{}'.", getThing().getUID());
         OpenWeatherMapWeatherAndForecastConfiguration config = getConfigAs(
                 OpenWeatherMapWeatherAndForecastConfiguration.class);
 
         boolean configValid = true;
-        int newForecastHours = config.getForecastHours();
+        int newForecastHours = config.forecastHours;
         if (newForecastHours < 0 || newForecastHours > 120 || newForecastHours % 3 != 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-not-supported-number-of-hours");
             configValid = false;
         }
-        int newForecastDays = config.getForecastDays();
+        int newForecastDays = config.forecastDays;
         if (newForecastDays < 0 || newForecastDays > 16) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-not-supported-number-of-days");

@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.neohub.internal;
 
+import java.util.regex.Pattern;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -22,6 +25,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *         code)
  * 
  */
+@NonNullByDefault
 public class NeoHubBindingConstants {
 
     /*
@@ -47,6 +51,11 @@ public class NeoHubBindingConstants {
     public static final ThingTypeUID THING_TYPE_NEOCONTACT = new ThingTypeUID(BINDING_ID, DEVICE_ID_NEOCONTACT);
     public static final ThingTypeUID THING_TYPE_NEOTEMPERATURESENSOR = new ThingTypeUID(BINDING_ID,
             DEVICE_ID_NEOTEMPERATURESENSOR);
+
+    /*
+     * Channel IDs for NeoHub
+     */
+    public static final String CHAN_MESH_NETWORK_QOS = "meshNetworkQoS";
 
     /*
      * Channel IDs common for several device types
@@ -79,6 +88,26 @@ public class NeoHubBindingConstants {
     public static final String CHAN_TEMPERATURE_SENSOR = "sensorTemperature";
 
     /*
+     * Heatmiser Device Types
+     */
+    public static final int HEATMISER_DEVICE_TYPE_CONTACT = 5;
+    public static final int HEATMISER_DEVICE_TYPE_PLUG = 6;
+    public static final int HEATMISER_DEVICE_TYPE_REPEATER = 10;
+    public static final int HEATMISER_DEVICE_TYPE_TEMPERATURE_SENSOR = 14;
+
+    /*
+     * configuration parameters
+     */
+    public static final String PARAM_HOLD_ONLINE_STATE = "holdOnlineState";
+
+    /*
+     * regular expression pattern matchers
+     */
+    public static final Pattern MATCHER_HEATMISER_REPEATER = Pattern.compile("^repeaternode\\d+");
+    public static final Pattern MATCHER_IP_ADDRESS = Pattern
+            .compile("\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b");
+
+    /*
      * enumerator for results of method calls
      */
     public static enum NeoHubReturnResult {
@@ -92,11 +121,6 @@ public class NeoHubBindingConstants {
      * between the NeoHub and the OpenHAB framework
      */
     public static final String DEVICE_NAME = "deviceNameInHub";
-
-    /*
-     * socket timeout in seconds for the TCP connection to the hub
-     */
-    public static final int TCP_SOCKET_TIMEOUT = 5;
 
     /*
      * setup parameters for de-bouncing of state changes (time in seconds) so state
@@ -135,6 +159,20 @@ public class NeoHubBindingConstants {
     public static final String CMD_CODE_READ_DCB = "{\"READ_DCB\":100}";
 
     /*
+     * note: from NeoHub rev2.6 onwards the INFO command is "deprecated" and it
+     * should be replaced partly each by the new GET_LIVE_DATA and GET_ENGINEERS
+     * commands
+     */
+    public static final String CMD_CODE_GET_LIVE_DATA = "{\"GET_LIVE_DATA\":0}";
+    public static final String CMD_CODE_GET_ENGINEERS = "{\"GET_ENGINEERS\":0}";
+
+    /*
+     * note: from NeoHub rev2.6 onwards the READ_DCB command is "deprecated" and it
+     * should be replaced by the new GET_SYSTEM command
+     */
+    public static final String CMD_CODE_GET_SYSTEM = "{\"GET_SYSTEM\":0}";
+
+    /*
      * openHAB status strings
      */
     public static final String VAL_OFF = "Off";
@@ -146,7 +184,8 @@ public class NeoHubBindingConstants {
     public static final String PLEASE_REPORT_BUG = "Unexpected situation - please report a bug: ";
     public static final String MSG_HUB_CONFIG = PLEASE_REPORT_BUG + "hub needs to be initialized!";
     public static final String MSG_HUB_COMM = PLEASE_REPORT_BUG + "error communicating with the hub!";
-    public static final String MSG_FMT_INFO_POLL_ERR = "INFO polling error: {}";
-    public static final String MSG_FMT_DCB_POLL_ERR = "READ_DCB polling error: {}";
+    public static final String MSG_FMT_DEVICE_POLL_ERR = "Device data polling error: {}";
+    public static final String MSG_FMT_SYSTEM_POLL_ERR = "System data polling error: {}";
+    public static final String MSG_FMT_ENGINEERS_POLL_ERR = "Engineers data polling error: {}";
     public static final String MSG_FMT_SET_VALUE_ERR = "{} set value error: {}";
 }

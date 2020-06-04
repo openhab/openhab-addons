@@ -65,12 +65,13 @@ public class OpenWeatherMapUVIndexHandler extends AbstractOpenWeatherMapHandler 
     }
 
     @Override
-    protected void initializeThing() {
+    public void initialize() {
+        super.initialize();
         logger.debug("Initialize OpenWeatherMapUVIndexHandler handler '{}'.", getThing().getUID());
         OpenWeatherMapUVIndexConfiguration config = getConfigAs(OpenWeatherMapUVIndexConfiguration.class);
 
         boolean configValid = true;
-        int newForecastDays = config.getForecastDays();
+        int newForecastDays = config.forecastDays;
         if (newForecastDays < 1 || newForecastDays > 8) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-not-supported-uvindex-number-of-days");

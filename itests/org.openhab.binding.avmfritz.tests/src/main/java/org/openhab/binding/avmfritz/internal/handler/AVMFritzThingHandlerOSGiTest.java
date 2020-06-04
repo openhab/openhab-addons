@@ -14,7 +14,7 @@ package org.openhab.binding.avmfritz.internal.handler;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
-import static org.openhab.binding.avmfritz.internal.BindingConstants.*;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;

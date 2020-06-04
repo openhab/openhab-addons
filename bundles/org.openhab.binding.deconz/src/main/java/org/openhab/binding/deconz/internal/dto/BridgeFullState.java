@@ -40,4 +40,5 @@ public class BridgeFullState {
     }
 
     public Map<String, SensorMessage> sensors = Collections.emptyMap();
+    public Map<String, LightMessage> lights = Collections.emptyMap();
 }

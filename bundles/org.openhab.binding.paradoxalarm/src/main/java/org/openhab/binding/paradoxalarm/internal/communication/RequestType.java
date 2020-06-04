@@ -20,5 +20,6 @@ package org.openhab.binding.paradoxalarm.internal.communication;
 public enum RequestType {
     LOGON_SEQUENCE,
     RAM,
-    EPROM
+    EPROM,
+    PARTITION_COMMAND
 }

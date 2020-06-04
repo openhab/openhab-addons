@@ -13,6 +13,7 @@
 package org.openhab.binding.paradoxalarm.internal.parsers;
 
 import org.openhab.binding.paradoxalarm.internal.model.Version;
+import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,16 +28,22 @@ public abstract class AbstractParser implements IParadoxParser {
 
     @Override
     public Version parseApplicationVersion(byte[] panelInfoBytes) {
-        return new Version(panelInfoBytes[9], panelInfoBytes[10], panelInfoBytes[11]);
+        return new Version(translateAsNibbles(panelInfoBytes[9]), translateAsNibbles(panelInfoBytes[10]),
+                translateAsNibbles(panelInfoBytes[11]));
     }
 
     @Override
     public Version parseHardwareVersion(byte[] panelInfoBytes) {
-        return new Version(panelInfoBytes[16], panelInfoBytes[17]);
+        return new Version(translateAsNibbles(panelInfoBytes[16]), translateAsNibbles(panelInfoBytes[17]));
     }
 
     @Override
     public Version parseBootloaderVersion(byte[] panelInfoBytes) {
-        return new Version(panelInfoBytes[18], panelInfoBytes[19], panelInfoBytes[20]);
+        return new Version(translateAsNibbles(panelInfoBytes[18]), translateAsNibbles(panelInfoBytes[19]),
+                translateAsNibbles(panelInfoBytes[20]));
+    }
+
+    private byte translateAsNibbles(byte byteValue) {
+        return (byte) ((ParadoxUtil.getHighNibble(byteValue) * 10 + ParadoxUtil.getLowNibble(byteValue)) & 0xFF);
     }
 }

@@ -14,8 +14,7 @@ package org.openhab.binding.neohub.internal;
 
 import static org.openhab.binding.neohub.internal.NeoHubBindingConstants.*;
 
-import javax.measure.Unit;
-
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -28,6 +27,7 @@ import org.eclipse.smarthome.core.thing.Thing;
  * @author Andrew Fiddian-Green - Initial contribution
  * 
  */
+@NonNullByDefault
 public class NeoTemperatureSensorHandler extends NeoBaseHandler {
 
     public NeoTemperatureSensorHandler(Thing thing) {
@@ -37,10 +37,12 @@ public class NeoTemperatureSensorHandler extends NeoBaseHandler {
     // =========== methods of NeoBaseHandler that are overridden ================
 
     @Override
-    protected void toOpenHabSendChannelValues(NeoHubInfoResponse.DeviceInfo deviceInfo, Unit<?> temperatureUnit) {
-        toOpenHabSendValueDebounced(CHAN_TEMPERATURE_SENSOR,
-                new QuantityType<>(deviceInfo.getRoomTemperature(), temperatureUnit));
+    protected void toOpenHabSendChannelValues(NeoHubAbstractDeviceData.AbstractRecord deviceRecord) {
+        boolean offline = deviceRecord.offline();
 
-        toOpenHabSendValueDebounced(CHAN_BATTERY_LOW_ALARM, OnOffType.from(deviceInfo.isBatteryLow()));
+        toOpenHabSendValueDebounced(CHAN_TEMPERATURE_SENSOR,
+                new QuantityType<>(deviceRecord.getActualTemperature(), getTemperatureUnit()), offline);
+
+        toOpenHabSendValueDebounced(CHAN_BATTERY_LOW_ALARM, OnOffType.from(deviceRecord.isBatteryLow()), offline);
     }
 }

@@ -33,6 +33,9 @@ public final class ADCommand {
     public static final String SPECIAL_KEY_7 = "\u0007\u0007\u0007";
     public static final String SPECIAL_KEY_8 = "\u0008\u0008\u0008";
 
+    public static final int ZONE_OPEN = 1;
+    public static final int ZONE_CLOSED = 0;
+
     // public static final String KEYPAD_COMMAND_CHARACTERS = "0123456789*#<>";
     public static final String KEYPAD_COMMAND_REGEX = "^[0-9A-H*#<>]+$";
 

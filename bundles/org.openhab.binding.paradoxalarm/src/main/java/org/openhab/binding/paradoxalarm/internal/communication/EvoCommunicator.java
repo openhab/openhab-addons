@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.openhab.binding.paradoxalarm.internal.communication.messages.EpromRequestPayload;
 import org.openhab.binding.paradoxalarm.internal.communication.messages.HeaderMessageType;
-import org.openhab.binding.paradoxalarm.internal.communication.messages.IPPacketPayload;
+import org.openhab.binding.paradoxalarm.internal.communication.messages.IPayload;
 import org.openhab.binding.paradoxalarm.internal.communication.messages.ParadoxIPPacket;
 import org.openhab.binding.paradoxalarm.internal.communication.messages.RamRequestPayload;
 import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxException;
@@ -57,43 +57,48 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
     private Integer maxZones;
 
     private EvoCommunicator(String ipAddress, int tcpPort, String ip150Password, String pcPassword,
-            ScheduledExecutorService scheduler, PanelType panelType, Integer maxPartitions, Integer maxZones)
-            throws UnknownHostException, IOException {
-        super(ipAddress, tcpPort, ip150Password, pcPassword, scheduler);
+            ScheduledExecutorService scheduler, PanelType panelType, Integer maxPartitions, Integer maxZones,
+            boolean useEncryption) throws UnknownHostException, IOException {
+        super(ipAddress, tcpPort, ip150Password, pcPassword, scheduler, useEncryption);
         this.panelType = panelType;
         this.maxPartitions = maxPartitions;
         this.maxZones = maxZones;
-        logger.debug("PanelType={}, max partitions={}, max Zones={}", panelType, maxPartitions, maxZones);
+        logger.debug("PanelType={}, Max Partitions={}, Max Zones={}", panelType, maxPartitions, maxZones);
         initializeMemoryMap();
     }
 
     @Override
-    protected void receiveEpromResponse(IResponse response) throws ParadoxException {
-        EpromRequest request = (EpromRequest) response.getRequest();
-        int entityId = request.getEntityId();
-        EntityType entityType = request.getEntityType();
-
-        byte[] parsedResult = parsePacket(response);
-        updateEntityLabel(entityType, entityId, parsedResult);
+    protected void receiveEpromResponse(IResponse response) {
+        byte[] payload = response.getPayload();
+        if (payload != null) {
+            EpromRequest request = (EpromRequest) response.getRequest();
+            int entityId = request.getEntityId();
+            EntityType entityType = request.getEntityType();
+            updateEntityLabel(entityType, entityId, payload);
+        } else {
+            logger.debug("Wrong parsed result. Probably wrong data received in response. Response={}", response);
+            return;
+        }
     }
 
     @Override
-    protected void receiveRamResponse(IResponse response) throws ParadoxException {
-        RamRequest request = (RamRequest) response.getRequest();
-        int ramBlockNumber = request.getRamBlockNumber();
+    protected void receiveRamResponse(IResponse response) {
+        byte[] payload = response.getPayload();
+        if (payload != null && payload.length >= RAM_BLOCK_SIZE) {
+            RamRequest request = (RamRequest) response.getRequest();
+            int ramBlockNumber = request.getRamBlockNumber();
+            memoryMap.updateElement(ramBlockNumber, payload);
+            if (logger.isTraceEnabled()) {
+                logger.trace("Result for ramBlock={} is [{}]", ramBlockNumber, ParadoxUtil.byteArrayToString(payload));
+            }
 
-        byte[] parsedResult = parsePacket(response);
-        if (parsedResult != null && parsedResult.length == RAM_BLOCK_SIZE) {
-            memoryMap.updateElement(ramBlockNumber, parsedResult);
-            logger.trace("Result for ramBlock={} is [{}]", ramBlockNumber, parsedResult);
+            // Trigger listeners update when last memory page update is received
+            if (ramBlockNumber == panelType.getRamPagesNumber()) {
+                updateListeners();
+            }
         } else {
             logger.debug("Wrong parsed result. Probably wrong data received in response");
             return;
-        }
-
-        // Trigger listeners update when last memory page update is received
-        if (ramBlockNumber == panelType.getRamPagesNumber()) {
-            updateListeners();
         }
     }
 
@@ -110,20 +115,25 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
         byte labelLength = 16;
 
         try {
-            IPPacketPayload payload = new EpromRequestPayload(address, labelLength);
-            ParadoxIPPacket readEpromIPPacket = new ParadoxIPPacket(payload)
-                    .setMessageType(HeaderMessageType.SERIAL_PASSTHRU_REQUEST).setUnknown0((byte) 0x14);
+            IPayload payload = new EpromRequestPayload(address, labelLength);
+            ParadoxIPPacket readEpromIPPacket = createSerialPassthroughPacket(payload);
 
-            IRequest epromRequest = new EpromRequest(partitionNo, EntityType.PARTITION, readEpromIPPacket);
+            IRequest epromRequest = new EpromRequest(partitionNo, EntityType.PARTITION, readEpromIPPacket, this);
             submitRequest(epromRequest);
         } catch (ParadoxException e) {
             logger.debug("Error creating request for with number={}, Exception={} ", partitionNo, e.getMessage());
         }
     }
 
+    private ParadoxIPPacket createSerialPassthroughPacket(IPayload payload) {
+        ParadoxIPPacket packet = new ParadoxIPPacket(payload.getBytes());
+        packet.setMessageType(HeaderMessageType.SERIAL_PASSTHRU_REQUEST).setUnknown0((byte) 0x14);
+        return packet;
+    }
+
     private void retrieveZoneLabel(int zoneNumber) {
         logger.debug("Submitting request for zone label: {}", zoneNumber);
-        byte labelLength = 16;
+        final byte labelLength = 16;
 
         try {
             int address;
@@ -133,10 +143,10 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
                 address = 0x62F7 + (zoneNumber - 96) * 16;
             }
 
-            IPPacketPayload payload = new EpromRequestPayload(address, labelLength);
-            ParadoxIPPacket readEpromIPPacket = createParadoxIpPacket(payload);
+            IPayload payload = new EpromRequestPayload(address, labelLength);
+            ParadoxIPPacket readEpromIPPacket = createSerialPassthroughPacket(payload);
 
-            IRequest epromRequest = new EpromRequest(zoneNumber, EntityType.ZONE, readEpromIPPacket);
+            IRequest epromRequest = new EpromRequest(zoneNumber, EntityType.ZONE, readEpromIPPacket, this);
             submitRequest(epromRequest);
         } catch (ParadoxException e) {
             logger.debug("Error creating request with number={}, Exception={} ", zoneNumber, e.getMessage());
@@ -215,23 +225,24 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
     @Override
     public void refreshMemoryMap() {
         if (!isOnline()) {
+            logger.debug("Attempt to refresh memory map was made, but communicator is not online. Skipping update.");
             return;
         }
 
         SyncQueue queue = SyncQueue.getInstance();
         synchronized (queue) {
             for (int i = 1; i <= panelType.getRamPagesNumber(); i++) {
-                readRAM(i);
+                submitRamRequest(i);
             }
         }
     }
 
-    private void readRAM(int blockNo) {
+    private void submitRamRequest(int blockNo) {
         try {
             logger.trace("Creating RAM page {} read request", blockNo);
-            IPPacketPayload payload = new RamRequestPayload(blockNo, RAM_BLOCK_SIZE);
-            ParadoxIPPacket ipPacket = createParadoxIpPacket(payload);
-            IRequest ramRequest = new RamRequest(blockNo, ipPacket);
+            IPayload payload = new RamRequestPayload(blockNo, RAM_BLOCK_SIZE);
+            ParadoxIPPacket ipPacket = createSerialPassthroughPacket(payload);
+            IRequest ramRequest = new RamRequest(blockNo, ipPacket, this);
             submitRequest(ramRequest);
         } catch (ParadoxException e) {
             logger.debug(
@@ -263,6 +274,7 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
         }
     }
 
+    @Override
     public MemoryMap getMemoryMap() {
         return memoryMap;
     }
@@ -314,26 +326,30 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
         private int tcpPort = 10000;
         private String pcPassword = "0000";
 
+        private boolean useEncryption;
+
         EvoCommunicatorBuilder(PanelType panelType) {
             this.panelType = panelType;
         }
 
         @Override
         public IParadoxCommunicator build() {
-            if (panelType != PanelType.EVO48 && panelType != PanelType.EVO96 && panelType != PanelType.EVO192) {
-                throw new ParadoxRuntimeException("Unknown or unsupported panel type. Type=" + panelType);
-            }
-
             if (ipAddress == null || ipAddress.isEmpty()) {
-                throw new ParadoxRuntimeException("IP address cannot be empty !");
+                final String msg = "IP address cannot be empty !";
+                logger.debug(msg);
+                throw new ParadoxRuntimeException(msg);
             }
 
             if (ip150Password == null || ip150Password.isEmpty()) {
-                throw new ParadoxRuntimeException("Password for IP150 cannot be empty !");
+                final String msg = "Password for IP150 cannot be empty !";
+                logger.debug(msg);
+                throw new ParadoxRuntimeException(msg);
             }
 
             if (scheduler == null) {
-                throw new ParadoxRuntimeException("Scheduler is mandatory parameter !");
+                final String msg = "Scheduler is mandatory parameter !";
+                logger.debug(msg);
+                throw new ParadoxRuntimeException(msg);
             }
 
             if (maxPartitions == null || maxPartitions < 1) {
@@ -346,7 +362,7 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
 
             try {
                 return new EvoCommunicator(ipAddress, tcpPort, ip150Password, pcPassword, scheduler, panelType,
-                        maxPartitions, maxZones);
+                        maxPartitions, maxZones, useEncryption);
             } catch (IOException e) {
                 logger.warn("Unable to create communicator for Panel={}. Message={}", panelType, e.getMessage());
                 throw new ParadoxRuntimeException(e);
@@ -392,6 +408,12 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
         @Override
         public ICommunicatorBuilder withScheduler(ScheduledExecutorService scheduler) {
             this.scheduler = scheduler;
+            return this;
+        }
+
+        @Override
+        public ICommunicatorBuilder withEncryption(boolean useEncryption) {
+            this.useEncryption = useEncryption;
             return this;
         }
     }

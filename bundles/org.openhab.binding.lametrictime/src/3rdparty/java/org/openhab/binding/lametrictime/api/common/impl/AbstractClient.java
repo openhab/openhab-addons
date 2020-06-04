@@ -20,31 +20,24 @@ import javax.ws.rs.client.ClientBuilder;
 
 import com.google.gson.Gson;
 
-public abstract class AbstractClient
-{
-    private final ClientBuilder clientBuilder;
+public abstract class AbstractClient {
+    protected final ClientBuilder clientBuilder;
 
     private volatile Client client;
     private volatile Gson gson;
 
-    public AbstractClient()
-    {
+    public AbstractClient() {
         this(ClientBuilder.newBuilder());
     }
 
-    public AbstractClient(ClientBuilder clientBuilder)
-    {
+    public AbstractClient(ClientBuilder clientBuilder) {
         this.clientBuilder = clientBuilder;
     }
 
-    protected Client getClient()
-    {
-        if (client == null)
-        {
-            synchronized (this)
-            {
-                if (client == null)
-                {
+    protected Client getClient() {
+        if (client == null) {
+            synchronized (this) {
+                if (client == null) {
                     client = createClient();
                 }
             }
@@ -53,14 +46,10 @@ public abstract class AbstractClient
         return client;
     }
 
-    protected Gson getGson()
-    {
-        if (gson == null)
-        {
-            synchronized (this)
-            {
-                if (gson == null)
-                {
+    protected Gson getGson() {
+        if (gson == null) {
+            synchronized (this) {
+                if (gson == null) {
                     gson = createGson();
                 }
             }
@@ -71,13 +60,11 @@ public abstract class AbstractClient
 
     protected abstract Client createClient();
 
-    protected Gson createGson()
-    {
+    protected Gson createGson() {
         return GsonGenerator.create();
     }
 
-    protected ClientBuilder getClientBuilder()
-    {
+    protected ClientBuilder getClientBuilder() {
         return clientBuilder;
     }
 }
