@@ -105,7 +105,9 @@ public class TelegramHandler extends BaseThingHandler {
         }
     }
 
-    private final List<Long> chatIds = new ArrayList<>();
+    private final List<Long> authorizedSenderChatId = new ArrayList<>();
+    private final List<Long> receiverChatId = new ArrayList<>();
+
     private final Logger logger = LoggerFactory.getLogger(TelegramHandler.class);
     private @Nullable ScheduledFuture<?> thingOnlineStatusJob;
 
@@ -138,10 +140,23 @@ public class TelegramHandler extends BaseThingHandler {
         TelegramConfiguration config = getConfigAs(TelegramConfiguration.class);
 
         String botToken = config.getBotToken();
-        chatIds.clear();
+        authorizedSenderChatId.clear();
+        receiverChatId.clear();
+
         for (String chatIdStr : config.getChatIds()) {
             try {
-                chatIds.add(Long.valueOf(chatIdStr));
+                if (chatIdStr.startsWith("<")) {
+                    // inbound only
+                    authorizedSenderChatId.add(Long.valueOf(chatIdStr.replace("<", "")));
+                } else if (chatIdStr.startsWith(">")) {
+                    // outbound only
+                    receiverChatId.add(Long.valueOf(chatIdStr.replace(">", "")));
+                } else {
+                    // bi-directional (default)
+                    Long chatId = Long.valueOf(chatIdStr);
+                    authorizedSenderChatId.add(chatId);
+                    receiverChatId.add(chatId);
+                }
             } catch (NumberFormatException e) {
                 logger.warn("The chat id {} is not a number and will be ignored", chatIdStr);
             }
@@ -233,7 +248,7 @@ public class TelegramHandler extends BaseThingHandler {
 
             if (message != null) {
                 chatId = message.chat().id();
-                if (!chatIds.contains(chatId)) {
+                if (!authorizedSenderChatId.contains(chatId)) {
                     logger.warn(
                             "Ignored message from unknown chat id {}. If you know the sender of that chat, add it to the list of chat ids in the thing configuration to authorize it",
                             chatId);
@@ -344,8 +359,22 @@ public class TelegramHandler extends BaseThingHandler {
         return Collections.singleton(TelegramActions.class);
     }
 
-    public List<Long> getChatIds() {
-        return chatIds;
+    /**
+     * get the list of all authorized senders
+     *
+     * @return list of chatIds
+     */
+    public List<Long> getAuthorizedSenderChatIds() {
+        return authorizedSenderChatId;
+    }
+
+    /**
+     * get the list of all receivers
+     *
+     * @return list of chatIds
+     */
+    public List<Long> getReceiverChatIds() {
+        return receiverChatId;
     }
 
     public void addMessageId(Long chatId, String replyId, Integer messageId) {
