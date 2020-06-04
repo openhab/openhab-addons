@@ -245,7 +245,7 @@ public class GoEChargerHandler extends BaseThingHandler {
                 if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
-				// values come in as A*10, 41 means 4.1A
+                // values come in as A*10, 41 means 4.1A
                 return new QuantityType<>((Double) (goeResponse.energy[4] / 10d), SmartHomeUnits.AMPERE);
             case CURRENT_L2:
                 if (goeResponse.energy == null) {
@@ -261,7 +261,7 @@ public class GoEChargerHandler extends BaseThingHandler {
                 if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
-				// values come in as kW*10, 41 means 4.1kW
+                // values come in as kW*10, 41 means 4.1kW
                 return new QuantityType<>(goeResponse.energy[7] * 100, SmartHomeUnits.WATT);
             case POWER_L2:
                 if (goeResponse.energy == null) {
