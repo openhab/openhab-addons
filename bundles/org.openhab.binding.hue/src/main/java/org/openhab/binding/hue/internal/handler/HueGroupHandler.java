@@ -40,7 +40,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.hue.internal.FullGroup;
-import org.openhab.binding.hue.internal.HueBridge;
 import org.openhab.binding.hue.internal.State;
 import org.openhab.binding.hue.internal.State.ColorMode;
 import org.openhab.binding.hue.internal.StateUpdate;
@@ -332,13 +331,13 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
         if (handler != null) {
             FullGroup group = handler.getGroupById(groupId);
             if (group != null) {
-                onGroupStateChanged(null, group);
+                onGroupStateChanged(group);
             }
         }
     }
 
     @Override
-    public boolean onGroupStateChanged(@Nullable HueBridge bridge, FullGroup group) {
+    public boolean onGroupStateChanged(FullGroup group) {
         logger.trace("onGroupStateChanged() was called for group {}", group.getId());
 
         final FullGroup lastState = lastFullGroup;
@@ -387,17 +386,17 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
     }
 
     @Override
-    public void onGroupAdded(@Nullable HueBridge bridge, FullGroup group) {
-        onGroupStateChanged(bridge, group);
+    public void onGroupAdded(FullGroup group) {
+        onGroupStateChanged(group);
     }
 
     @Override
-    public void onGroupRemoved(@Nullable HueBridge bridge, FullGroup group) {
+    public void onGroupRemoved() {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.group-removed");
     }
 
     @Override
-    public void onGroupGone(@Nullable HueBridge bridge, FullGroup group) {
+    public void onGroupGone() {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "@text/offline.group-removed");
     }
 
