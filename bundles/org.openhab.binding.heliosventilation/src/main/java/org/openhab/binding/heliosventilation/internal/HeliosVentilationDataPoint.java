@@ -235,12 +235,19 @@ public class HeliosVentilationDataPoint {
              * initial value for it
              */
         } else if (datatype == DataType.TEMPERATURE) {
-            int temp = (int) Math.round(value.doubleValue());
-            int i = 0;
-            while (i < TEMP_MAP.length && TEMP_MAP[i] < temp) {
-                i++;
+            QuantityType<?> quantvalue = ((QuantityType<?>) val);
+            quantvalue = quantvalue.toUnit(SIUnits.CELSIUS);
+            if (quantvalue != null) {
+                value = quantvalue.as(DecimalType.class);
+                if (value != null) {
+                    int temp = (int) Math.round(value.doubleValue());
+                    int i = 0;
+                    while (i < TEMP_MAP.length && TEMP_MAP[i] < temp) {
+                        i++;
+                    }
+                    result = (byte) i;
+                }
             }
-            result = (byte) i;
         } else if (datatype == DataType.FANSPEED) {
             int i = value.intValue();
             if (i < 0) {
@@ -260,7 +267,14 @@ public class HeliosVentilationDataPoint {
             }
             result = (byte) d;
         } else if (datatype == DataType.HYSTERESIS) {
-            result = (byte) (value.intValue() * 3);
+            QuantityType<?> quantvalue = ((QuantityType<?>) val);
+            quantvalue = quantvalue.toUnit(SIUnits.CELSIUS);
+            if (quantvalue != null) {
+                value = quantvalue.as(DecimalType.class);
+                if (value != null) {
+                    result = (byte) (value.intValue() * 3);
+                }
+            }
         } else if (datatype == DataType.SWITCH || datatype == DataType.NUMBER) {
             // those are the types supporting bit level specification
             // output only the relevant bits
