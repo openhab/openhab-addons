@@ -14,6 +14,9 @@ package org.openhab.binding.deconz.internal.types;
 
 import java.lang.reflect.Type;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -27,17 +30,22 @@ import com.google.gson.JsonSerializer;
  *
  * @author Lukas Agethen - Initial contribution
  */
+@NonNullByDefault
 public class ThermostatModeGsonTypeAdapter implements JsonDeserializer<ThermostatMode>, JsonSerializer<ThermostatMode> {
     @Override
-    public ThermostatMode deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-            throws JsonParseException {
-        String s = json.getAsString();
-        return s == null ? ThermostatMode.UNKNOWN : ThermostatMode.fromString(s);
+    public ThermostatMode deserialize(@Nullable JsonElement json, @Nullable Type typeOfT,
+            @Nullable JsonDeserializationContext context) throws JsonParseException {
+        JsonElement jsonLocal = json;
+        if (jsonLocal != null) {
+            String s = jsonLocal.getAsString();
+            return s == null ? ThermostatMode.UNKNOWN : ThermostatMode.fromString(s);
+        }
+        return ThermostatMode.UNKNOWN;
     }
 
     @Override
-    public JsonElement serialize(ThermostatMode src, Type typeOfSrc, JsonSerializationContext context)
-            throws JsonParseException {
+    public JsonElement serialize(ThermostatMode src, @Nullable Type typeOfSrc,
+            @Nullable JsonSerializationContext context) throws JsonParseException {
         return new JsonPrimitive(src != ThermostatMode.UNKNOWN ? src.getDeconzValue() : null);
     }
 }

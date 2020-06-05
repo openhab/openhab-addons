@@ -14,6 +14,7 @@ package org.openhab.binding.deconz.internal.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.deconz.internal.types.ThermostatMode;
 
 /**
  * The {@link SensorConfig} is send by the the Rest API.
@@ -26,9 +27,12 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Lukas Agethen - Add Thermostat parameters
  */
 @NonNullByDefault
-public class SensorConfig extends ThermostatConfig {
+public class SensorConfig {
     public boolean on = true;
     public boolean reachable = true;
     public @Nullable Integer battery;
     public @Nullable Float temperature;
+    public @Nullable Integer heatsetpoint;
+    public @Nullable ThermostatMode mode;
+    public @Nullable Integer offset;
 }
