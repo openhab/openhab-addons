@@ -25,9 +25,9 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class Refine {
     @SerializedName("nom_dept")
-    private String nomDept = "";
+    private String departmentName = "";
 
-    public String getNomDept() {
-        return nomDept;
+    public String getDepartmentName() {
+        return departmentName;
     }
 }

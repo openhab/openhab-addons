@@ -18,6 +18,8 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link VigiCruesFields} is the Java class used to map the JSON
  * response to the webservice request.
@@ -26,8 +28,10 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class VigiCruesFields {
-    private @Nullable Double debit;
-    private @Nullable Double hauteur;
+    @SerializedName("debit")
+    private @Nullable Double flow;
+    @SerializedName("hauteur")
+    private @Nullable Double height;
     private @Nullable ZonedDateTime timestamp;
 
     public Optional<ZonedDateTime> getTimestamp() {
@@ -38,18 +42,18 @@ public class VigiCruesFields {
         return Optional.empty();
     }
 
-    public Optional<Double> getDebit() {
-        Double debit = this.debit;
-        if (debit != null) {
-            return Optional.of(debit);
+    public Optional<Double> getFlow() {
+        Double flow = this.flow;
+        if (flow != null) {
+            return Optional.of(flow);
         }
         return Optional.empty();
     }
 
-    public Optional<Double> getHauteur() {
-        Double hauteur = this.hauteur;
-        if (hauteur != null) {
-            return Optional.of(hauteur);
+    public Optional<Double> getHeight() {
+        Double height = this.height;
+        if (height != null) {
+            return Optional.of(height);
         }
         return Optional.empty();
     }

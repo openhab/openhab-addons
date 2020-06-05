@@ -1,6 +1,6 @@
 # VigiCrues Binding
 
-This binding allows to get data regarding water flow and water height on major french rivers.
+This binding allows you to get data regarding water flow and water height on major French rivers.
 These data are made public through OpenDataSoft website. 
 
 ## Supported Things
@@ -10,13 +10,13 @@ It is identified by the `id`.
 
 To get your station id :
 
-1- open https://www.vigicrues.gouv.fr/
+1. open https://www.vigicrues.gouv.fr/
 
-2- Select your region on the France map
+2. Select your region on the France map
 
-3- Select the station nearest to your location
+3. Select the station nearest to your location
 
-4- In the 'Info Station' tab you'll get the id just near the station name (e.g. X9999999299)
+4. In the 'Info Station' tab you'll get the id just near the station name (e.g. X9999999299)
 
 Of course, you can add multiple Things, e.g. for getting measures for different locations.
 

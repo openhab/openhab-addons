@@ -23,5 +23,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class VigiCruesConfiguration {
     public String id = "";
-    public Integer refresh = 30;
+    public int refresh = 30;
 }

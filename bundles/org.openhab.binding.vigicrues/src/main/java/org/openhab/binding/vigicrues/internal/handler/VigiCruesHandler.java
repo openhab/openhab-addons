@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.vigicrues.internal.handler;
 
+import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.CUBICMETRE_PER_SECOND;
 import static org.openhab.binding.vigicrues.internal.VigiCruesBindingConstants.*;
+import static tec.uom.se.unit.Units.METRE;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -28,7 +30,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
-import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -39,12 +40,11 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.vigicrues.internal.VigiCruesConfiguration;
 import org.openhab.binding.vigicrues.internal.json.OpenDatasoftResponse;
+import org.openhab.binding.vigicrues.internal.json.Record;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-
-import tec.uom.se.unit.Units;
 
 /**
  * The {@link VigiCruesHandler} is responsible for querying the API and
@@ -62,7 +62,7 @@ public class VigiCruesHandler extends BaseThingHandler {
     private final TimeZoneProvider timeZoneProvider;
     private final Gson gson;
     private @Nullable ScheduledFuture<?> refreshJob;
-    private String queryUrl = "";
+    private @Nullable String queryUrl;
 
     public VigiCruesHandler(Thing thing, TimeZoneProvider timeZoneProvider, Gson gson) {
         super(thing);
@@ -103,19 +103,19 @@ public class VigiCruesHandler extends BaseThingHandler {
 
     private void updateAndPublish() {
         try {
-            if (queryUrl.isEmpty()) {
-                throw new MalformedURLException("queryUrl not initialized");
+            if (queryUrl != null) {
+                String response = HttpUtil.executeUrl("GET", queryUrl, TIMEOUT_MS);
+                updateStatus(ThingStatus.ONLINE);
+                OpenDatasoftResponse apiResponse = gson.fromJson(response, OpenDatasoftResponse.class);
+                Arrays.stream(apiResponse.getRecords()).findFirst().flatMap(Record::getFields).ifPresent(field -> {
+                    field.getHeight().ifPresent(height -> updateQuantity(HEIGHT, height, METRE));
+                    field.getFlow().ifPresent(flow -> updateQuantity(FLOW, flow, CUBICMETRE_PER_SECOND));
+                    field.getTimestamp().ifPresent(date -> updateDate(OBSERVATION_TIME, date));
+                });
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DISABLED,
+                        "queryUrl should never be null, but it is !");
             }
-            String response = HttpUtil.executeUrl("GET", queryUrl, TIMEOUT_MS);
-            updateStatus(ThingStatus.ONLINE);
-            OpenDatasoftResponse apiResponse = gson.fromJson(response, OpenDatasoftResponse.class);
-            Arrays.stream(apiResponse.getRecords()).findFirst().flatMap(record -> record.getFields())
-                    .ifPresent(field -> {
-                        field.getHauteur().ifPresent(height -> updateQuantity(HEIGHT, height, Units.METRE));
-                        field.getDebit()
-                                .ifPresent(flow -> updateQuantity(FLOW, flow, SmartHomeUnits.CUBICMETRE_PER_SECOND));
-                        field.getTimestamp().ifPresent(date -> updateDate(OBSERVATION_TIME, date));
-                    });
         } catch (MalformedURLException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     String.format("Querying '%s' raised : %s", queryUrl, e.getMessage()));
