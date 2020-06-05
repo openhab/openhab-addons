@@ -93,19 +93,18 @@ testing to determine the current state.                                         
 |        |player         |Player   |Send commands to the receiver - see below                                 |
 |        |key            |String   |Send key code to the receiver (see code table below)                      |
 |        |mute           |Switch   |Mute volume (mute the speaker)                                            |
-|status  |channelCode    |Number   |The channel code from the EPG                                             |
-|        |playMode       |String   |Current play mode - this info is not reliable                             |
+|status  |playMode       |String   |Current play mode - this info is not reliable                             |
+|        |channelCode    |Number   |The channel code from the EPG.                                            |
 |program |title          |String   |Title of the running program or video being played                        |
 |        |text           |String   |Some description (as reported by the receiver, could be empty)            |
-|        |start          |Time when the program started                                                       |
-|        |duration       |Number   |Remaining time in seconds, usually not updated for TV program             | 
-|        |position       | Position within a movie (0 for regular programs).                       |
+|        |start          |DateTime |Time when the program started                                             |
+|        |position       |Number   |Position in minutes within a movie.                                       |
+|        |duration       |Number   |Remaining time in minutes, usually not updated for TV program             | 
 
-Channels receiving event information when changing the channel or playing a video.
+Please note: Channels receiving event information get updated when changing the channel or playing a video.
+There is no way to read the current status, therefore they don't get initialized on startup nor being updated in real-time.
 
-## Player and channel
-
-The player control supports the following actions:
+The player channel supports the following actions:
 
 |Channel |Command        |Description                       |
 |--------|---------------|----------------------------------|
@@ -116,7 +115,6 @@ The player control supports the following actions:
 |        |FASTFORWARD    |Switch to forward mode            |
 |        |REWIND         |Switch to rewind mode             |
 |        |ON or OFF      |Toggle power - see notes on power |
-|channel |Number         |Send channel number key by key    |
 
 ## Supported Key Code (channel key)
 

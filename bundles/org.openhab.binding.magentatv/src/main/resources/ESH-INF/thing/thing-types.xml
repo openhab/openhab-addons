@@ -145,10 +145,10 @@
 		</state>
 	</channel-type>
 	<channel-type id="programStart">
-		<item-type>String</item-type>
+		<item-type>DateTime</item-type>
 		<label>Start</label>
 		<description>Program start time</description>
-		<state readOnly="true" pattern="%s">
+		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="programDuration">
@@ -159,10 +159,10 @@
 		</state>
 	</channel-type>
 	<channel-type id="programPosition">
-		<item-type>String</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Play Position</label>
 		<description>Play position since program started</description>
-		<state readOnly="true" pattern="%s">
+		<state pattern="%d %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="key">

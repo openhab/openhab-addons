@@ -34,6 +34,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.NextPreviousType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -124,6 +125,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
         // asynchronously
         String label = getThing().getLabel();
         thingId = label != null ? label : "";
+        resetEventChannels();
         updateStatus(ThingStatus.UNKNOWN);
 
         thingConfig.fromProperties(getThing().getProperties());
@@ -234,7 +236,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
             }
 
             logger.debug("{}: Channel command for device {}: {} for channel {}", thingId, thingConfig.getFriendlyName(),
-                    command.toString(), channelUID.getId().toString());
+                    command, channelUID.getId());
             switch (channelUID.getId()) {
                 case CHANNEL_POWER: // toggle power
                     logger.debug("{}: Toggle power, new state={}", thingId, command);
@@ -291,7 +293,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
             }
         } catch (MagentaTVException e) {
             String errorMessage = MessageFormat.format("Channel operation failed (command={0}, value={1}): {2}",
-                    command.toString(), channelUID.getId().toString(), e.toString());
+                    command, channelUID.getId(), e.toString());
             logger.debug("{}: {}", thingId, errorMessage);
             setOnlineState(ThingStatus.OFFLINE, errorMessage);
         }
@@ -389,7 +391,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
         ThingStatus status = this.getThing().getStatus();
         if (status != newStatus) {
             if (newStatus == ThingStatus.INITIALIZING) {
-                logger.debug("{}: Invalid new thing state: {}", thingId, newStatus.toString());
+                logger.debug("{}: Invalid new thing state: {}", thingId, newStatus);
             }
             if (newStatus == ThingStatus.ONLINE) {
                 updateStatus(newStatus);
@@ -488,6 +490,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                             String tsLocal = ps.startTime.replace('/', '-').replace(" ", "T") + "Z";
                             Instant timestamp = Instant.parse(tsLocal);
                             ZonedDateTime localTime = timestamp.atZone(ZoneId.of("Europe/Berlin"));
+                            String ts = localTime.toString();
                             tsLocal = StringUtils.substringBeforeLast(localTime.toString(), "[");
                             tsLocal = StringUtils.substringBefore(tsLocal.replace('-', '/').replace('T', ' '), "+");
 
@@ -497,14 +500,14 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                             if (ps.runningStatus != EV_EITCHG_RUNNING_NOT_RUNNING) {
                                 updateState(CHANNEL_PROG_TITLE, new StringType(se.eventName));
                                 updateState(CHANNEL_PROG_TEXT, new StringType(se.textChar));
-                                updateState(CHANNEL_PROG_START, new StringType(tsLocal));
+                                updateState(CHANNEL_PROG_START, new DateTimeType(localTime));
 
                                 try {
                                     DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
                                     dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
                                     Date date = dateFormat.parse(ps.duration);
-                                    long seconds = date.getTime() / 1000L;
-                                    updateState(CHANNEL_PROG_DURATION, toQuantityType(seconds, SmartHomeUnits.SECOND));
+                                    long minutes = date.getTime() / 1000L / 60l;
+                                    updateState(CHANNEL_PROG_DURATION, toQuantityType(minutes, SmartHomeUnits.MINUTE));
                                 } catch (ParseException e) {
                                     logger.debug("{}: Unable to parse programDuration: {}", thingId, ps.duration);
                                 }
@@ -526,7 +529,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                 event.playPostion = -1;
             }
             logger.debug("{}: STB event playContent: playMode={}, duration={}, playPosition={}", thingId,
-                    control.getPlayStatus(event.newPlayMode), event.duration.toString(), event.playPostion.toString());
+                    control.getPlayStatus(event.newPlayMode), event.duration, event.playPostion);
 
             // If we get a playConfig event there MR must be online. However it also sends a
             // plyMode stop before powering off the device, so we filter this.
@@ -542,7 +545,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                 updateState(CHANNEL_PROG_DURATION, new StringType(event.duration.toString()));
             }
             if (event.playPostion != -1) {
-                updateState(CHANNEL_PROG_POS, new StringType(Integer.toString(event.playPostion)));
+                updateState(CHANNEL_PROG_POS, toQuantityType(event.playPostion / 6, SmartHomeUnits.MINUTE));
             }
         } else {
             logger.debug("{}: Unknown MR event, JSON={}", thingId, jsonEvent);
@@ -576,13 +579,16 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     public void onPowerOff() throws MagentaTVException {
         logger.debug("{}: Power-Off received for device {}", thingId, deviceName());
         // MR was powered off -> update pwoer status, reset items
+        resetEventChannels();
+    }
+
+    private void resetEventChannels() {
         updateState(CHANNEL_POWER, OnOffType.OFF);
-        updateState(CHANNEL_PROG_DURATION, StringType.EMPTY);
-        updateState(CHANNEL_PROG_POS, StringType.EMPTY);
         updateState(CHANNEL_PROG_TITLE, StringType.EMPTY);
         updateState(CHANNEL_PROG_TEXT, StringType.EMPTY);
         updateState(CHANNEL_PROG_START, StringType.EMPTY);
         updateState(CHANNEL_PROG_DURATION, ZERO);
+        updateState(CHANNEL_PROG_POS, ZERO);
         updateState(CHANNEL_CHANNEL, ZERO);
         updateState(CHANNEL_CHANNEL_CODE, ZERO);
     }
