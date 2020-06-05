@@ -145,12 +145,12 @@ public class TelegramHandler extends BaseThingHandler {
 
         for (String chatIdStr : config.getChatIds()) {
             try {
-                if (chatIdStr.startsWith("<")) {
+                if (chatIdStr.trim().startsWith("<")) {
                     // inbound only
-                    authorizedSenderChatId.add(Long.valueOf(chatIdStr.replace("<", "")));
-                } else if (chatIdStr.startsWith(">")) {
+                    authorizedSenderChatId.add(Long.valueOf(chatIdStr.substring(1)));
+                } else if (chatIdStr.trim().startsWith(">")) {
                     // outbound only
-                    receiverChatId.add(Long.valueOf(chatIdStr.replace(">", "")));
+                    receiverChatId.add(Long.valueOf(chatIdStr.substring(1)));
                 } else {
                     // bi-directional (default)
                     Long chatId = Long.valueOf(chatIdStr);

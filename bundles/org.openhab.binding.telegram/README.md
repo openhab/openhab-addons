@@ -74,10 +74,17 @@ telegram.thing (no proxy):
 Thing telegram:telegramBot:Telegram_Bot [ chatIds="ID", botToken="TOKEN" ]
 ```
 
-telegram.thing (multiple chat ids and markdown format):
+telegram.thing (multiple chat ids, one bi-directional chat (ID1), one outbound-only (ID2)):
 
 ```
-Thing telegram:telegramBot:Telegram_Bot [ chatIds="ID1","ID2", botToken="TOKEN", parseMode ="Markdown" ]
+Thing telegram:telegramBot:Telegram_Bot [ chatIds="ID1",">ID2", botToken="TOKEN" ]
+```
+
+
+telegram.thing (markdown format):
+
+```
+Thing telegram:telegramBot:Telegram_Bot [ chatIds="ID", botToken="TOKEN", parseMode ="Markdown" ]
 ```
 
 telegram.thing (SOCKS5 proxy server is used): 
