@@ -31,7 +31,8 @@ public class MonopriceAudioDefaultConnector extends MonopriceAudioConnector {
 
     @Override
     public void open() throws MonopriceAudioException {
-        logger.warn("MonopriceAudio binding incorrectly configured. Please configure for Serial or IP over serial connection");
+        logger.warn(
+                "MonopriceAudio binding incorrectly configured. Please configure for Serial or IP over serial connection");
         setConnected(false);
     }
 
@@ -42,7 +43,8 @@ public class MonopriceAudioDefaultConnector extends MonopriceAudioConnector {
 
     @Override
     public void sendCommand(MonopriceAudioZone zone, MonopriceAudioCommand cmd, @Nullable Integer value) {
-        logger.warn("MonopriceAudio binding incorrectly configured. Please configure for Serial or IP over serial connection");
+        logger.warn(
+                "MonopriceAudio binding incorrectly configured. Please configure for Serial or IP over serial connection");
         setConnected(false);
     }
 }

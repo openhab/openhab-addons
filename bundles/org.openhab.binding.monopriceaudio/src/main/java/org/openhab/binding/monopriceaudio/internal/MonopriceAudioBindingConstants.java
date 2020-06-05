@@ -24,7 +24,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class MonopriceAudioBindingConstants {
 
-    private static final String BINDING_ID = "monopriceaudio";
+    public static final String BINDING_ID = "monopriceaudio";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_AMP = new ThingTypeUID(BINDING_ID, "amplifier");

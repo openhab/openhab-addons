@@ -15,6 +15,7 @@ package org.openhab.binding.monopriceaudio.internal.communication;
 import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.monopriceaudio.internal.MonopriceAudioBindingConstants;
 import org.openhab.binding.monopriceaudio.internal.MonopriceAudioException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +41,7 @@ public class MonopriceAudioReaderThread extends Thread {
      * @param connector the object that should handle the received message
      */
     public MonopriceAudioReaderThread(MonopriceAudioConnector connector) {
+        super(MonopriceAudioBindingConstants.BINDING_ID);
         this.connector = connector;
     }
 

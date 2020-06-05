@@ -31,9 +31,6 @@ public class MonopriceAudioZoneDTO {
     private String source;
     private String keypad;
 
-    public MonopriceAudioZoneDTO() {
-    }
-
     public void setZone(String zone) {
         this.zone = zone;
     }

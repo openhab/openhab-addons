@@ -101,7 +101,7 @@
 				<label>Address</label>
 				<description>Host Name or IP Address of the Machine Connected to the Monoprice Amplifier (Serial over IP)</description>
 			</parameter>
-			<parameter name="port" type="integer" required="false">
+			<parameter name="port" type="integer" min="1" max="65535" required="false">
 				<label>Port</label>
 				<description>Communication Port (IP or Serial over IP). For IP connection to the Monoprice Amplifier</description>
 				<default>4444</default>

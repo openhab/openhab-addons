@@ -12,8 +12,9 @@
  */
 package org.openhab.binding.monopriceaudio.internal.communication;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -48,11 +49,8 @@ public enum MonopriceAudioZone {
     private String zoneId;
 
     // make a list of all valid zone ids
-    public static final ArrayList<String> VALID_ZONES = new ArrayList<String>(
-            Arrays.asList(ZONE1.getZoneId(), ZONE2.getZoneId(), ZONE3.getZoneId(), ZONE4.getZoneId(), ZONE5.getZoneId(),
-                    ZONE6.getZoneId(), ZONE7.getZoneId(), ZONE8.getZoneId(), ZONE9.getZoneId(), ZONE10.getZoneId(),
-                    ZONE11.getZoneId(), ZONE12.getZoneId(), ZONE13.getZoneId(), ZONE14.getZoneId(), ZONE15.getZoneId(),
-                    ZONE16.getZoneId(), ZONE17.getZoneId(), ZONE18.getZoneId()));
+    public static final List<String> VALID_ZONES = Arrays.stream(values()).filter(z -> z != ALL).map(z -> z.getZoneId())
+            .collect(Collectors.toList());
 
     MonopriceAudioZone(String zoneId) {
         this.zoneId = zoneId;
