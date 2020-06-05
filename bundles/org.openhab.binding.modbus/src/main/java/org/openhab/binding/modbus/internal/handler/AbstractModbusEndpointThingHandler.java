@@ -97,7 +97,10 @@ public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEn
     @Override
     public void dispose() {
         try {
-            comms.close();
+            ModbusCommunicationInterface localComms = comms;
+            if (localComms != null) {
+                localComms.close();
+            }
         } catch (Exception e) {
             logger.error("Error closing modbus communication interface", e);
         } finally {

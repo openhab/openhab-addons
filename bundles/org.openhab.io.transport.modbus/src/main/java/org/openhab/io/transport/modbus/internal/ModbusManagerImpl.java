@@ -368,6 +368,7 @@ public class ModbusManagerImpl implements ModbusManager {
                         Optional.ofNullable(e).map(ex -> ex.getClass().getSimpleName()).orElse(""),
                         Optional.ofNullable(e).map(ex -> ex.getMessage()).orElse("<null>"), e);
             }
+
         });
         connectionPool = genericKeyedObjectPool;
         this.connectionFactory = connectionFactory;
@@ -927,24 +928,18 @@ public class ModbusManagerImpl implements ModbusManager {
     private void unregisterCommunicationInterface(ModbusCommunicationInterface commInterface) {
         communicationInterfaces.remove(commInterface);
         if (communicationInterfaces.isEmpty()) {
-            // TODO: close interface
-
-            // @Override
-            // public void closeConnections(ModbusSlaveEndpoint endpoint) {
-            // assert connectionFactory != null;
-            // // Make sure connections to this endpoint are closed when they are returned to pool (which
-            // // is usually pretty soon as transactions should be relatively short-lived)
-            // connectionFactory.disconnectOnReturn(endpoint, System.currentTimeMillis());
-            // try {
-            // // Close all idle connections as well (they will be reconnected if necessary on borrow)
-            // if (connectionPool != null) {
-            // connectionPool.clear(endpoint);
-            // }
-            // } catch (Exception e) {
-            // logger.error("Could not clear endpoint {}. Stack trace follows", endpoint, e);
-            // }
-            //
-            // }
+            ModbusSlaveEndpoint endpoint = commInterface.getEndpoint();
+            // Make sure connections to this endpoint are closed when they are returned to pool (which
+            // is usually pretty soon as transactions should be relatively short-lived)
+            connectionFactory.disconnectOnReturn(endpoint, System.currentTimeMillis());
+            try {
+                // Close all idle connections as well (they will be reconnected if necessary on borrow)
+                if (connectionPool != null) {
+                    connectionPool.clear(endpoint);
+                }
+            } catch (Exception e) {
+                logger.error("Could not clear endpoint {}. Stack trace follows", endpoint, e);
+            }
 
         }
     }

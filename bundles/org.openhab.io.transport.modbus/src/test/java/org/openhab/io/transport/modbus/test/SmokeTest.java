@@ -14,9 +14,18 @@ package org.openhab.io.transport.modbus.test;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
-import static org.junit.Assume.assumeFalse;
+import static org.junit.Assume.*;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.SocketImpl;
+import java.net.SocketImplFactory;
+import java.net.UnknownHostException;
 import java.util.BitSet;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -778,6 +787,129 @@ public class SmokeTest extends IntegrationTestSupport {
         }
         // Should match the default
         assertThat(modbusManager.getEndpointPoolConfiguration(getEndpoint()), is(equalTo(defaultConfig)));
+    }
+
+    @Test
+    public void testConnectionCloseAfterLastCommunicationInterfaceClosed() throws IllegalArgumentException, Exception {
+        assumeFalse("Running in CI! Will not test timing-sensitive details", isRunningInCI());
+        ModbusSlaveEndpoint endpoint = getEndpoint();
+        assumeTrue("Connection closing test supported only with TCP slaves",
+                endpoint instanceof ModbusTCPSlaveEndpoint);
+
+        // Starts recording sockets created during the test
+        SpyingSocketFactory socketSpy = new SpyingSocketFactory();
+        Socket.setSocketImplFactory(socketSpy);
+
+        // Generate server data
+        generateData();
+
+        EndpointPoolConfiguration config = new EndpointPoolConfiguration();
+        config.setReconnectAfterMillis(9_000_000);
+
+        // 1. capture open connections at this point
+        long openSocketsBefore = getNumberOfOpenClients(socketSpy);
+        assertThat(openSocketsBefore, is(equalTo(0L)));
+
+        // 2. make poll, binding opens the tcp connection
+        try (ModbusCommunicationInterface comms = modbusManager.newModbusCommunicationInterface(endpoint, config)) {
+            {
+                CountDownLatch latch = new CountDownLatch(1);
+                comms.submitOneTimePoll(new ModbusReadRequestBlueprint(1, ModbusReadFunctionCode.READ_COILS, 0, 1, 1),
+                        response -> {
+                            latch.countDown();
+                        });
+                assertTrue(latch.await(1, TimeUnit.SECONDS));
+            }
+            waitForAssert(() -> {
+                // 3. ensure one open connection
+                long openSocketsAfter = getNumberOfOpenClients(socketSpy);
+                assertThat(openSocketsAfter, is(equalTo(1L)));
+            });
+            try (ModbusCommunicationInterface comms2 = modbusManager.newModbusCommunicationInterface(endpoint,
+                    config)) {
+                {
+                    CountDownLatch latch = new CountDownLatch(1);
+                    comms.submitOneTimePoll(
+                            new ModbusReadRequestBlueprint(1, ModbusReadFunctionCode.READ_COILS, 0, 1, 1), response -> {
+                                latch.countDown();
+                            });
+                    assertTrue(latch.await(1, TimeUnit.SECONDS));
+                }
+                assertThat(getNumberOfOpenClients(socketSpy), is(equalTo(1L)));
+                // wait for moment (to check that no connections are closed)
+                Thread.sleep(1000);
+                // no more than 1 connection, even though requests are going through
+                assertThat(getNumberOfOpenClients(socketSpy), is(equalTo(1L)));
+            }
+            Thread.sleep(1000);
+            // Still one connection open even after closing second connection
+            assertThat(getNumberOfOpenClients(socketSpy), is(equalTo(1L)));
+
+        } // 4. close (the last) comms
+          // ensure that open connections are closed
+          // (despite huge "reconnect after millis")
+        waitForAssert(() -> {
+            long openSocketsAfterClose = getNumberOfOpenClients(socketSpy);
+            assertThat(openSocketsAfterClose, is(equalTo(0L)));
+        });
+    }
+
+    private long getNumberOfOpenClients(SpyingSocketFactory socketSpy) {
+        final InetAddress testServerAddress;
+        try {
+            testServerAddress = localAddress();
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
+        return socketSpy.sockets.stream().filter(socketImpl -> {
+            Socket socket = getSocketOfSocketImpl(socketImpl);
+            return socket.getPort() == tcpModbusPort && socket.isConnected()
+                    && socket.getLocalAddress().equals(testServerAddress);
+        }).count();
+
+    }
+
+    /**
+     * Spy all sockets that are created
+     *
+     * @author Sami Salonen
+     *
+     */
+    private class SpyingSocketFactory implements SocketImplFactory {
+
+        Queue<SocketImpl> sockets = new ConcurrentLinkedQueue<SocketImpl>();
+
+        @Override
+        public SocketImpl createSocketImpl() {
+            SocketImpl socket = newSocksSocketImpl();
+            sockets.add(socket);
+            return socket;
+        }
+
+    }
+
+    private static SocketImpl newSocksSocketImpl() {
+        try {
+            Class<?> defaultSocketImpl = Class.forName("java.net.SocksSocketImpl");
+            Constructor<?> constructor = defaultSocketImpl.getDeclaredConstructor();
+            constructor.setAccessible(true);
+            return (SocketImpl) constructor.newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Get Socket corresponding to SocketImpl using reflection
+     */
+    private static Socket getSocketOfSocketImpl(SocketImpl impl) {
+        try {
+            Method getSocket = SocketImpl.class.getDeclaredMethod("getSocket");
+            getSocket.setAccessible(true);
+            return (Socket) getSocket.invoke(impl);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }
