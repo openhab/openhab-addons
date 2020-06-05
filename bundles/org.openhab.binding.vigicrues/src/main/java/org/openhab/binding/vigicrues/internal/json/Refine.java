@@ -10,19 +10,24 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.astro.internal.config;
+package org.openhab.binding.vigicrues.internal.json;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
- * Channel configuration from Eclipse SmartHome.
+ * The {@link Refine} is the Java class used to map the JSON
+ * response to the webservice request.
  *
- * @author Gerhard Riegler - Initial contribution
+ * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class AstroChannelConfig {
-    public int offset = 0;
-    public @Nullable String earliest;
-    public @Nullable String latest;
+public class Refine {
+    @SerializedName("nom_dept")
+    private String departmentName = "";
+
+    public String getDepartmentName() {
+        return departmentName;
+    }
 }

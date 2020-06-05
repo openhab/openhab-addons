@@ -49,7 +49,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.hue.internal.FullLight;
-import org.openhab.binding.hue.internal.HueBridge;
 import org.openhab.binding.hue.internal.State;
 import org.openhab.binding.hue.internal.State.ColorMode;
 import org.openhab.binding.hue.internal.StateUpdate;
@@ -449,7 +448,7 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
     }
 
     @Override
-    public boolean onLightStateChanged(@Nullable HueBridge bridge, FullLight fullLight) {
+    public boolean onLightStateChanged(FullLight fullLight) {
         logger.trace("onLightStateChanged() was called");
 
         if (System.currentTimeMillis() <= endBypassTime) {
@@ -521,30 +520,24 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
         if (handler != null) {
             FullLight light = handler.getLightById(lightId);
             if (light != null) {
-                onLightStateChanged(null, light);
+                onLightStateChanged(light);
             }
         }
     }
 
     @Override
-    public void onLightRemoved(@Nullable HueBridge bridge, FullLight light) {
-        if (light.getId().equals(lightId)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.light-removed");
-        }
+    public void onLightRemoved() {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.light-removed");
     }
 
     @Override
-    public void onLightGone(@Nullable HueBridge bridge, FullLight light) {
-        if (light.getId().equals(lightId)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "@text/offline.light-not-reachable");
-        }
+    public void onLightGone() {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "@text/offline.light-not-reachable");
     }
 
     @Override
-    public void onLightAdded(@Nullable HueBridge bridge, FullLight light) {
-        if (light.getId().equals(lightId)) {
-            onLightStateChanged(bridge, light);
-        }
+    public void onLightAdded(FullLight light) {
+        onLightStateChanged(light);
     }
 
     /**

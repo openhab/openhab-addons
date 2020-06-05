@@ -10,19 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.astro.internal.config;
+package org.openhab.binding.vigicrues.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Channel configuration from Eclipse SmartHome.
+ * The {@link VigiCruesConfiguration} is the class used to match the
+ * thing configuration.
  *
- * @author Gerhard Riegler - Initial contribution
+ * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class AstroChannelConfig {
-    public int offset = 0;
-    public @Nullable String earliest;
-    public @Nullable String latest;
+public class VigiCruesConfiguration {
+    public String id = "";
+    public int refresh = 30;
 }
