@@ -347,28 +347,36 @@ public class SecondGenerationHandler extends BaseThingHandler {
     private void refresh() throws Exception {
 
         // Create dxsEntries arrays
-        String[] dxsEntries = new String[22];
-        String[] dxsEntriesExt = new String[22];
-        String[] dxsEntriesExtExt = new String[2];
+        List<String> dxsEntries;
+        List<String> dxsEntriesExt;
+        List<String> dxsEntriesExtExt;
 
         // Fill dxsEntries with actual values
         dxsEntries = SecondGenerationDxsEntriesCfg.getDxsEntriesCfg();
-        dxsEntriesExt = SecondGenerationDxsEntriesCfgExt.getDxsEntriesCfgExt();
-        dxsEntriesExtExt = SecondGenerationDxsEntriesCfgExtExt.getDxsEntriesCfgExtExt();
+        dxsEntriesExt = SecondGenerationDxsEntriesCfg.getDxsEntriesCfgExt();
+        dxsEntriesExtExt = SecondGenerationDxsEntriesCfg.getDxsEntriesCfgExtExt();
 
-        String dxsEntriesCall = config.url.toString() + "/api/dxs.json?dxsEntries=" + dxsEntries[0];
-        String dxsEntriesCallExt = config.url.toString() + "/api/dxs.json?dxsEntries=" + dxsEntriesExt[0];
+        // String dxsEntriesCall = config.url.toString() + "/api/dxs.json?dxsEntries=" + dxsEntries[0];
+        String dxsEntriesCall = config.url.toString() + "/api/dxs.json?dxsEntries=" + dxsEntries.get(0);
+        // String dxsEntriesCallExt = config.url.toString() + "/api/dxs.json?dxsEntries=" + dxsEntriesExt[0];
+        String dxsEntriesCallExt = config.url.toString() + "/api/dxs.json?dxsEntries=" + dxsEntriesExt.get(0);
 
-        for (int i = 1; i < dxsEntries.length; i++) {
-            dxsEntriesCall += ("&dxsEntries=" + dxsEntries[i]);
-            dxsEntriesCallExt += ("&dxsEntries=" + dxsEntriesExt[i]);
+        // for (int i = 1; i < dxsEntries.length; i++) {
+        // dxsEntriesCall += ("&dxsEntries=" + dxsEntries[i]);
+        // dxsEntriesCallExt += ("&dxsEntries=" + dxsEntriesExt[i]);
+        // }
+
+        for (int i = 1; i < dxsEntries.size(); i++) {
+            dxsEntriesCall += ("&dxsEntries=" + dxsEntries.get(i));
+            dxsEntriesCallExt += ("&dxsEntries=" + dxsEntriesExt.get(i));
         }
 
         String jsonDxsEntriesResponse = callURL(dxsEntriesCall);
         String jsonDxsEntriesResponseExt = callURL(dxsEntriesCallExt);
 
-        String jsonDxsEntriesResponseExtExt = callURL(config.url.toString() + "/api/dxs.json?dxsEntries="
-                + dxsEntriesExtExt[0] + "&dxsEntries=" + dxsEntriesExtExt[1] + "&dxsEntries=" + dxsEntriesExtExt[2]);
+        String jsonDxsEntriesResponseExtExt = callURL(
+                config.url.toString() + "/api/dxs.json?dxsEntries=" + dxsEntriesExtExt.get(0) + "&dxsEntries="
+                        + dxsEntriesExtExt.get(1) + "&dxsEntries=" + dxsEntriesExtExt.get(2));
 
         // Get Gson object
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
