@@ -17,11 +17,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.TooManyListenersException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -78,7 +78,7 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
     /**
      * store received data for read-modify-write operations on bitlevel
      */
-    private HashMap<Byte, Byte> memory = new HashMap<Byte, Byte>();
+    private Map<Byte, Byte> memory = new HashMap<Byte, Byte>();
 
     public HeliosVentilationHandler(Thing thing, final SerialPortManager serialPortManager) {
         super(thing);
@@ -112,8 +112,8 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "Port " + config.serialPort + " is not known!");
             serialPort = null;
-            IOUtils.closeQuietly(inputStream);
-            IOUtils.closeQuietly(outputStream);
+
+            disconnect();
         } else if (!isConnected()) {
             // initialize serial port
             try {
@@ -121,8 +121,23 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
                 serial.setSerialPortParams(9600, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
                 serial.addEventListener(this);
 
-                IOUtils.closeQuietly(inputStream);
-                IOUtils.closeQuietly(outputStream);
+                try {
+                    if (inputStream != null) {
+                        inputStream.close();
+                    }
+                } catch (IOException e) {
+                    // ignore the exception on close
+                    inputStream = null;
+                }
+                try {
+                    if (outputStream != null) {
+                        outputStream.close();
+                    }
+                } catch (IOException e) {
+                    // ignore the exception on close
+                    outputStream = null;
+                }
+
                 inputStream = serial.getInputStream();
                 outputStream = serial.getOutputStream();
 
@@ -207,16 +222,30 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
             updateStatus(ThingStatus.OFFLINE);
         }
         synchronized (this) {
+            try {
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+            } catch (IOException e) {
+                // ignore the exception on close
+                inputStream = null;
+            }
+            try {
+                if (outputStream != null) {
+                    outputStream.close();
+                }
+            } catch (IOException e) {
+                // ignore the exception on close
+                outputStream = null;
+            }
+
             SerialPort serial = serialPort;
             if (serial != null) {
                 serial.close();
             }
+            serialPort = null;
         }
-        IOUtils.closeQuietly(inputStream);
-        IOUtils.closeQuietly(outputStream);
-        outputStream = null;
-        inputStream = null;
-        serialPort = null;
+
     }
 
     private void poll(HeliosVentilationDataPoint v) {
@@ -290,19 +319,6 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
                                     if (cnt > 0 || frame[0] == 0x01) {
                                         // only proceed if the first byte was 0x01
                                         cnt += bytes;
-                                    }
-                                }
-
-                                if (cnt < 6 && in.available() < 1) {
-                                    // frame not yet complete but no input available, let's wait a little to merge
-                                    // interrupted transmissions
-
-                                    // 9600 baud yields about 1ms per byte, so let's wait the expected remaining time
-                                    // for a frame
-                                    try {
-                                        Thread.sleep(1 * (6 - cnt));
-                                    } catch (InterruptedException e) {
-                                        // ignore interruption
                                     }
                                 }
                             } while (in.available() > 0 && cnt < 6);

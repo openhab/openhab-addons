@@ -22,9 +22,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class HeliosPropertiesFormatException extends Exception {
     private static final long serialVersionUID = 8051109351111509577L;
-    private String channelName;
-    private String fullSpec;
-    private String reason;
+    private final String channelName;
+    private final String fullSpec;
+    private final String reason;
 
     public HeliosPropertiesFormatException(String reason, String channelName, String fullSpec) {
         this.channelName = channelName;

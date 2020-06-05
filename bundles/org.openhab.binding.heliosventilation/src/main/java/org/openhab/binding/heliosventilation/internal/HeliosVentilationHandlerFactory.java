@@ -42,7 +42,7 @@ public class HeliosVentilationHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .singleton(THING_TYPE_HELIOS_VENTILATION);
 
-    private @NonNullByDefault({}) SerialPortManager serialPortManager;
+    private final SerialPortManager serialPortManager;
 
     @Activate
     public HeliosVentilationHandlerFactory(@Reference SerialPortManager serialPortManager) {
