@@ -18,7 +18,6 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import java.util.*;
 
 import io.swagger.client.model.*;
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -47,11 +46,11 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
 
     private int iPersons = -1;
     private int iUnknowns = -1;
-    @Nullable private NAWelcomeEvent lastEvent;
+    private @Nullable NAWelcomeEvent lastEvent;
     private boolean isNewLastEvent;
-    @Nullable private Integer dataTimeStamp;
+    private @Nullable Integer dataTimeStamp;
 
-    public NAWelcomeHomeHandler(@NonNull Thing thing) {
+    public NAWelcomeHomeHandler(Thing thing) {
         super(thing);
     }
 
@@ -234,7 +233,7 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
      */
     protected @Nullable String findSnapshotURL() {
         if(lastEvent != null) {
-            NAWelcomeSnapshot snapshot = lastEvent.getSnapshot();
+            @Nullable NAWelcomeSnapshot snapshot = lastEvent.getSnapshot();
             if (snapshot == null) {
                 @Nullable NAWelcomeSubEvent firstSubEvent = findFirstSubEvent(lastEvent);
                 if (firstSubEvent != null) {
