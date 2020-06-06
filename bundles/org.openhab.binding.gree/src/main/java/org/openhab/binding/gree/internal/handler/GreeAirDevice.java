@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.gree.internal.discovery;
+package org.openhab.binding.gree.internal.handler;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -327,7 +327,7 @@ public class GreeAirDevice {
      * Uses newVal as priority and tries to validate and determine intent
      * For example if value is 75 and TempUn says Celsius, change TempUn to Fahrenheit
      */
-    private Integer[] validateTemperatureRangeForTempSet(int newValIn, @Nullable Integer CorFIn) {
+    private int[] validateTemperatureRangeForTempSet(int newValIn, @Nullable Integer CorFIn) {
         final String[] minMaxLUT = { "max", "min" }; // looks up 0 = C = max, 1 = F = min
         final String[] tempScaleLUT = { "C", "F" }; // Look Up Table used to convert TempUn integer 0,1 to "C" to "F"
                                                     // string for hashmap
@@ -363,7 +363,7 @@ public class GreeAirDevice {
             newVal = tempRanges.get(tempScaleLUT[CorF]).get(minMaxLUT[CorF]);
         }
 
-        return new Integer[] { newVal, CorF };
+        return new int[] { newVal, CorF };
     }
 
     public void setDeviceTempSet(DatagramSocket clientSocket, int value) throws GreeException {
@@ -372,7 +372,6 @@ public class GreeAirDevice {
         if (!getIsBound()) {
             throw new GreeException("Device is not bound!");
         }
-        Integer[] retList;
         int newVal = value;
         int outVal = value;
         // Get Celsius or Fahrenheit from status message
@@ -383,7 +382,7 @@ public class GreeAirDevice {
         // temperature to use as celsius alone is ambigious
         int halfStep = 0; // default to C
 
-        retList = validateTemperatureRangeForTempSet(newVal, CorF);
+        int[] retList = validateTemperatureRangeForTempSet(newVal, CorF);
         newVal = retList[0];
         CorF = retList[1];
 

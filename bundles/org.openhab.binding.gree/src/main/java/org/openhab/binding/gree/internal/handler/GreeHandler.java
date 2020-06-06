@@ -45,7 +45,6 @@ import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.gree.internal.GreeConfiguration;
 import org.openhab.binding.gree.internal.GreeException;
 import org.openhab.binding.gree.internal.GreeTranslationProvider;
-import org.openhab.binding.gree.internal.discovery.GreeAirDevice;
 import org.openhab.binding.gree.internal.discovery.GreeDeviceFinder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

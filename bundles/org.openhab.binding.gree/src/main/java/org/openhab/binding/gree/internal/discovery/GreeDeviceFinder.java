@@ -33,6 +33,7 @@ import org.openhab.binding.gree.internal.GreeException;
 import org.openhab.binding.gree.internal.gson.GreeScanReponsePack4GsonDTO;
 import org.openhab.binding.gree.internal.gson.GreeScanRequest4GsonDTO;
 import org.openhab.binding.gree.internal.gson.GreeScanResponse4GsonDTO;
+import org.openhab.binding.gree.internal.handler.GreeAirDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
