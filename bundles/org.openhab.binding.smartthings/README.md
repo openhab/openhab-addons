@@ -6,7 +6,7 @@ This binding integrates the Samsung Smartthings Hub into OpenHAB. This is implem
 
 ## Supported things
 
-This binding supports all of the Smartthings devices that are defined in the [Smartthings Capabilities list](http://docs.smartthings.com/en/latest/capabilities-reference.html). If you find a device that doesn't work [follow these instructions](Troubleshooting.md) to collect the required data so I can be added in a future release.
+This binding supports all of the Smartthings devices that are defined in the [Smartthings Capabilities list](http://docs.smartthings.com/en/latest/capabilities-reference.html). If you find a device that doesn't work [follow these instructions](Troubleshooting.md) to collect the required data so it can be added in a future release.
 
 ## Discovery
 
