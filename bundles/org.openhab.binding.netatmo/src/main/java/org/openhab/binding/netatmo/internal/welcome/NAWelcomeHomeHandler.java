@@ -16,6 +16,7 @@ import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import java.util.*;
+import java.util.function.Function;
 
 import io.swagger.client.model.*;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -98,11 +99,11 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
     protected State getNAThingProperty(String channelId) {
         switch (channelId) {
             case CHANNEL_WELCOME_HOME_CITY:
-                return device != null ? toStringType(device.getPlace().getCity()) : UnDefType.UNDEF;
+                return getPlaceInfo(NAWelcomePlace::getCity);
             case CHANNEL_WELCOME_HOME_COUNTRY:
-                return device != null ? toStringType(device.getPlace().getCountry()) : UnDefType.UNDEF;
+                return getPlaceInfo(NAWelcomePlace::getCountry);
             case CHANNEL_WELCOME_HOME_TIMEZONE:
-                return device != null ? toStringType(device.getPlace().getTimezone()) : UnDefType.UNDEF;
+                return getPlaceInfo(NAWelcomePlace::getTimezone);
             case CHANNEL_WELCOME_HOME_PERSONCOUNT:
                 return iPersons != -1 ? new DecimalType(iPersons) : UnDefType.UNDEF;
             case CHANNEL_WELCOME_HOME_UNKNOWNCOUNT:
@@ -256,6 +257,12 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
     @Override
     protected @Nullable Integer getDataTimestamp() {
         return dataTimeStamp;
+    }
+
+    private State getPlaceInfo(Function<NAWelcomePlace, String> infoGetFunction) {
+        return Optional.ofNullable(device).map(
+                d -> toStringType(infoGetFunction.apply(d.getPlace()))
+        ).orElse(UnDefType.UNDEF);
     }
 
     private static @Nullable NAWelcomeSubEvent findFirstSubEvent(Optional<NAWelcomeEvent> event) {
