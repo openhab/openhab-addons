@@ -262,14 +262,18 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                 }
                 break;
             case CHANNEL_COLOR:
-                double @Nullable [] xy = newState.xy;
-                Integer hue = newState.hue;
-                Integer sat = newState.sat;
-                if (hue != null && sat != null && bri != null) {
-                    updateState(channelId,
-                            new HSBType(new DecimalType(hue / HUE_FACTOR), toPercentType(sat), toPercentType(bri)));
-                } else if (xy != null && xy.length == 2) {
-                    updateState(channelId, HSBType.fromXY((float) xy[0], (float) xy[1]));
+                if (on != null && on == false) {
+                    updateState(channelId, OnOffType.OFF);
+                } else {
+                    double @Nullable [] xy = newState.xy;
+                    Integer hue = newState.hue;
+                    Integer sat = newState.sat;
+                    if (hue != null && sat != null && bri != null) {
+                        updateState(channelId,
+                                new HSBType(new DecimalType(hue / HUE_FACTOR), toPercentType(sat), toPercentType(bri)));
+                    } else if (xy != null && xy.length == 2) {
+                        updateState(channelId, HSBType.fromXY((float) xy[0], (float) xy[1]));
+                    }
                 }
                 break;
             case CHANNEL_BRIGHTNESS:
