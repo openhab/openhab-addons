@@ -1010,17 +1010,11 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     public String getCoordinator() {
-        String zoneGroupState = stateMap.get("ZoneGroupState");
-        if (zoneGroupState != null) {
-            Collection<SonosZoneGroup> zoneGroups = SonosXMLParser.getZoneGroupFromXML(zoneGroupState);
-
-            for (SonosZoneGroup zg : zoneGroups) {
-                if (zg.getMembers().contains(getUDN())) {
-                    return zg.getCoordinator();
-                }
+        for (SonosZoneGroup zg : getZoneGroups()) {
+            if (zg.getMembers().contains(getUDN())) {
+                return zg.getCoordinator();
             }
         }
-
         return getUDN();
     }
 
@@ -1622,6 +1616,11 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         return zoneGroup == null || zoneGroup.getMembers().size() == 1;
     }
 
+    private Collection<SonosZoneGroup> getZoneGroups() {
+        String zoneGroupState = stateMap.get("ZoneGroupState");
+        return zoneGroupState == null ? Collections.emptyList() : SonosXMLParser.getZoneGroupFromXML(zoneGroupState);
+    }
+
     /**
      * Returns the current zone group
      * (of which the player receiving the command is part)
@@ -1629,14 +1628,9 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
      * @return {@link SonosZoneGroup}
      */
     private @Nullable SonosZoneGroup getCurrentZoneGroup() {
-        String zoneGroupState = stateMap.get("ZoneGroupState");
-        if (zoneGroupState != null) {
-            Collection<SonosZoneGroup> zoneGroups = SonosXMLParser.getZoneGroupFromXML(zoneGroupState);
-
-            for (SonosZoneGroup zoneGroup : zoneGroups) {
-                if (zoneGroup.getMembers().contains(getUDN())) {
-                    return zoneGroup;
-                }
+        for (SonosZoneGroup zoneGroup : getZoneGroups()) {
+            if (zoneGroup.getMembers().contains(getUDN())) {
+                return zoneGroup;
             }
         }
         logger.debug("Could not fetch Sonos group state information");
@@ -1998,10 +1992,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     protected List<String> getZoneGroupMembers() {
         List<String> result = new ArrayList<>();
 
-        String zoneGroupState = stateMap.get("ZoneGroupState");
-        if (zoneGroupState != null) {
-            Collection<SonosZoneGroup> zoneGroups = SonosXMLParser.getZoneGroupFromXML(zoneGroupState);
-
+        Collection<SonosZoneGroup> zoneGroups = getZoneGroups();
+        if (!zoneGroups.isEmpty()) {
             for (SonosZoneGroup zg : zoneGroups) {
                 if (zg.getMembers().contains(getUDN())) {
                     result.addAll(zg.getMembers());
@@ -2256,19 +2248,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
             // first remove this player from its own group if any
             becomeStandAlonePlayer();
 
-            List<SonosZoneGroup> currentSonosZoneGroups = new ArrayList<>();
-            String zoneGroupState = stateMap.get("ZoneGroupState");
-            if (zoneGroupState != null) {
-                for (SonosZoneGroup grp : SonosXMLParser.getZoneGroupFromXML(zoneGroupState)) {
-                    SonosZoneGroup clonedGrp = (SonosZoneGroup) grp.clone();
-                    if (clonedGrp != null) {
-                        currentSonosZoneGroups.add(clonedGrp);
-                    }
-                }
-            }
-
             // add all other players to this new group
-            for (SonosZoneGroup group : currentSonosZoneGroups) {
+            for (SonosZoneGroup group : getZoneGroups()) {
                 for (String player : group.getMembers()) {
                     try {
                         ZonePlayerHandler somePlayer = getHandlerByName(player);

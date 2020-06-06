@@ -17,7 +17,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link SonosZoneGroup} is data structure to describe
@@ -26,21 +25,12 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Karel Goderis - Initial contribution
  */
 @NonNullByDefault
-public class SonosZoneGroup implements Cloneable {
+public class SonosZoneGroup {
 
     private final List<String> members;
     private List<String> memberZoneNames;
     private final String coordinator;
     private final String id;
-
-    @Override
-    public @Nullable Object clone() {
-        try {
-            return super.clone();
-        } catch (Exception e) {
-            return null;
-        }
-    }
 
     public SonosZoneGroup(String id, String coordinator, Collection<String> members,
             Collection<String> memberZoneNames) {
@@ -67,22 +57,5 @@ public class SonosZoneGroup implements Cloneable {
 
     public String getId() {
         return id;
-    }
-
-    @Override
-    public boolean equals(@Nullable Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj instanceof SonosZoneGroup) {
-            SonosZoneGroup group = (SonosZoneGroup) obj;
-            return group.getId().equals(getId());
-        }
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        return id.hashCode();
     }
 }
