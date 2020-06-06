@@ -31,7 +31,7 @@ public class LcnException extends Exception {
         super(message);
     }
 
-    public LcnException(NumberFormatException e) {
+    public LcnException(Exception e) {
         super(e);
     }
 }

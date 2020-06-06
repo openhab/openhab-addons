@@ -50,7 +50,7 @@ public class ConnectionStateConnecting extends AbstractConnectionState {
 
         try {
             // Open Channel by using the system-wide default AynchronousChannelGroup.
-            // So, Threads are used or re-used on demand.
+            // So, Threads are used or re-used on demand by the JVM.
             AsynchronousSocketChannel channel = AsynchronousSocketChannel.open();
             // Do not wait until some buffer is filled, send PCK commands immediately
             channel.setOption(StandardSocketOptions.TCP_NODELAY, true);

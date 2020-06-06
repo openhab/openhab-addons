@@ -47,9 +47,9 @@ public class DimmerOutputProfile implements StateProfile {
     public DimmerOutputProfile(ProfileCallback callback, ProfileContext profileContext) {
         this.callback = callback;
 
-        Optional<Object> ramp = Optional.ofNullable(profileContext.getConfiguration().get("ramp"));
-        Optional<Object> allOutputs = Optional.ofNullable(profileContext.getConfiguration().get("controlAllOutputs"));
-        Optional<Object> outputs12 = Optional.ofNullable(profileContext.getConfiguration().get("controlOutputs12"));
+        Optional<Object> ramp = getConfig(profileContext, "ramp");
+        Optional<Object> allOutputs = getConfig(profileContext, "controlAllOutputs");
+        Optional<Object> outputs12 = getConfig(profileContext, "controlOutputs12");
 
         ramp.ifPresent(b -> {
             if (b instanceof BigDecimal) {
@@ -74,6 +74,10 @@ public class DimmerOutputProfile implements StateProfile {
                 logger.warn("Could not parse 'controlOutputs12', unexpected type, should be true/false: {}", b);
             }
         });
+    }
+
+    private Optional<Object> getConfig(ProfileContext profileContext, String key) {
+        return Optional.ofNullable(profileContext.getConfiguration().get(key));
     }
 
     @Override

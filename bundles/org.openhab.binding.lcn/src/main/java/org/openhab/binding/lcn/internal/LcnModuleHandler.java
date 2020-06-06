@@ -70,7 +70,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link LcnModuleHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * sent to or received from one of the channels.
  *
  * @author Fabian Wolter - Initial contribution
  */
@@ -159,63 +159,55 @@ public class LcnModuleHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUid, Command command) {
-        // this method can be invoked, when initialize() has not finished, yet.
-        if (thing.getStatus() != ThingStatus.ONLINE) {
-            return;
-        }
-
         try {
-            // refresh command can be received, when Bridge is initializing, so synchronize
-            synchronized (getPckGatewayHandler()) {
-                String groupId = channelUid.getGroupId();
+            String groupId = channelUid.getGroupId();
 
-                if (!channelUid.isInGroup()) {
-                    return;
-                }
+            if (!channelUid.isInGroup()) {
+                return;
+            }
 
-                if (groupId == null) {
-                    throw new LcnException("Group ID is null");
-                }
+            if (groupId == null) {
+                throw new LcnException("Group ID is null");
+            }
 
-                LcnChannelGroup channelGroup = LcnChannelGroup.valueOf(groupId.toUpperCase());
-                AbstractLcnModuleSubHandler subHandler = subHandlers.get(channelGroup);
+            LcnChannelGroup channelGroup = LcnChannelGroup.valueOf(groupId.toUpperCase());
+            AbstractLcnModuleSubHandler subHandler = subHandlers.get(channelGroup);
 
-                if (subHandler == null) {
-                    throw new LcnException("Sub Handler not found for: " + channelGroup);
-                }
+            if (subHandler == null) {
+                throw new LcnException("Sub Handler not found for: " + channelGroup);
+            }
 
-                Optional<Integer> number = channelUidToChannelNumber(channelUid, channelGroup);
+            Optional<Integer> number = channelUidToChannelNumber(channelUid, channelGroup);
 
-                if (command instanceof RefreshType) {
-                    number.ifPresent(n -> subHandler.handleRefresh(channelGroup, n));
-                    subHandler.handleRefresh(channelUid.getIdWithoutGroup());
-                } else if (command instanceof OnOffType) {
-                    subHandler.handleCommandOnOff(castCommand(command), channelGroup, number.get());
-                } else if (command instanceof DimmerOutputCommand) {
-                    subHandler.handleCommandDimmerOutput(castCommand(command), number.get());
-                } else if (command instanceof PercentType && number.isPresent()) {
-                    subHandler.handleCommandPercent(castCommand(command), channelGroup, number.get());
-                } else if (command instanceof HSBType) {
-                    subHandler.handleCommandHsb(castCommand(command), channelUid.getIdWithoutGroup());
-                } else if (command instanceof PercentType) {
-                    subHandler.handleCommandPercent(castCommand(command), channelGroup, channelUid.getIdWithoutGroup());
-                } else if (command instanceof StringType) {
-                    subHandler.handleCommandString(castCommand(command), number.get());
-                } else if (command instanceof DecimalType) {
-                    DecimalType decimalType = castCommand(command);
-                    DecimalType nativeValue = getConverter(channelUid).onCommandFromItem(decimalType.doubleValue());
-                    subHandler.handleCommandDecimal(nativeValue, channelGroup, number.get());
-                } else if (command instanceof QuantityType) {
-                    QuantityType<?> quantityType = castCommand(command);
-                    DecimalType nativeValue = getConverter(channelUid).onCommandFromItem(quantityType);
-                    subHandler.handleCommandDecimal(nativeValue, channelGroup, number.get());
-                } else if (command instanceof UpDownType) {
-                    subHandler.handleCommandUpDown(castCommand(command), channelGroup, number.get());
-                } else if (command instanceof StopMoveType) {
-                    subHandler.handleCommandStopMove(castCommand(command), channelGroup, number.get());
-                } else {
-                    throw new LcnException("Unsupported command type");
-                }
+            if (command instanceof RefreshType) {
+                number.ifPresent(n -> subHandler.handleRefresh(channelGroup, n));
+                subHandler.handleRefresh(channelUid.getIdWithoutGroup());
+            } else if (command instanceof OnOffType) {
+                subHandler.handleCommandOnOff(castCommand(command), channelGroup, number.get());
+            } else if (command instanceof DimmerOutputCommand) {
+                subHandler.handleCommandDimmerOutput(castCommand(command), number.get());
+            } else if (command instanceof PercentType && number.isPresent()) {
+                subHandler.handleCommandPercent(castCommand(command), channelGroup, number.get());
+            } else if (command instanceof HSBType) {
+                subHandler.handleCommandHsb(castCommand(command), channelUid.getIdWithoutGroup());
+            } else if (command instanceof PercentType) {
+                subHandler.handleCommandPercent(castCommand(command), channelGroup, channelUid.getIdWithoutGroup());
+            } else if (command instanceof StringType) {
+                subHandler.handleCommandString(castCommand(command), number.get());
+            } else if (command instanceof DecimalType) {
+                DecimalType decimalType = castCommand(command);
+                DecimalType nativeValue = getConverter(channelUid).onCommandFromItem(decimalType.doubleValue());
+                subHandler.handleCommandDecimal(nativeValue, channelGroup, number.get());
+            } else if (command instanceof QuantityType) {
+                QuantityType<?> quantityType = castCommand(command);
+                DecimalType nativeValue = getConverter(channelUid).onCommandFromItem(quantityType);
+                subHandler.handleCommandDecimal(nativeValue, channelGroup, number.get());
+            } else if (command instanceof UpDownType) {
+                subHandler.handleCommandUpDown(castCommand(command), channelGroup, number.get());
+            } else if (command instanceof StopMoveType) {
+                subHandler.handleCommandStopMove(castCommand(command), channelGroup, number.get());
+            } else {
+                throw new LcnException("Unsupported command type");
             }
         } catch (IllegalArgumentException | NoSuchElementException | LcnException e) {
             logger.warn("{}: Failed to handle command {}: {}", channelUid, command.getClass().getSimpleName(),
@@ -252,11 +244,6 @@ public class LcnModuleHandler extends BaseThingHandler {
      */
     @SuppressWarnings("null")
     public void handleStatusMessage(String pck) {
-        // this method can be invoked, when initialize() has not finished, yet.
-        if (thing.getStatus() != ThingStatus.ONLINE) {
-            return;
-        }
-
         synchronized (subHandlers) {
             for (AbstractLcnModuleSubHandler handler : subHandlers.values()) {
                 if (handler.tryParse(pck)) {
@@ -418,5 +405,7 @@ public class LcnModuleHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         metadataSubHandlers.clear();
+        subHandlers.clear();
+        converters.clear();
     }
 }

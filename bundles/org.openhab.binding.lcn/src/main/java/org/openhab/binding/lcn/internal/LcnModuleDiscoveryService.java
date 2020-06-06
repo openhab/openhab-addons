@@ -17,7 +17,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -67,11 +69,12 @@ public class LcnModuleDiscoveryService extends AbstractDiscoveryService
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(LcnBindingConstants.THING_TYPE_MODULE).collect(Collectors.toSet()));
     private @Nullable PckGatewayHandler bridgeHandler;
-    private Map<LcnAddrMod, Map<Integer, String>> moduleNames = new HashMap<>();
-    private Map<LcnAddrMod, DiscoveryResultBuilder> discoveryResultBuilders = new HashMap<>();
+    private Map<LcnAddrMod, Map<Integer, String>> moduleNames = Collections.synchronizedMap(new HashMap<>());
+    private Map<LcnAddrMod, DiscoveryResultBuilder> discoveryResultBuilders = Collections
+            .synchronizedMap(new HashMap<>());
     private List<LcnAddrMod> successfullyDiscovered = new LinkedList<>();
-    private LinkedList<@Nullable LcnAddrMod> serialNumberRequestQueue = new LinkedList<>();
-    private LinkedList<@Nullable LcnAddrMod> moduleNameRequestQueue = new LinkedList<>();
+    private Queue<@Nullable LcnAddrMod> serialNumberRequestQueue = new ConcurrentLinkedQueue<>();
+    private Queue<@Nullable LcnAddrMod> moduleNameRequestQueue = new ConcurrentLinkedQueue<>();
     private volatile ScheduledFuture<?> queueProcessor = NullScheduledFuture.getInstance();
     private ScheduledFuture<?> builderTask = NullScheduledFuture.getInstance();
 
@@ -101,34 +104,37 @@ public class LcnModuleDiscoveryService extends AbstractDiscoveryService
     @Override
     protected void startScan() {
         synchronized (this) {
-            if (bridgeHandler == null) {
+            PckGatewayHandler localBridgeHandler = bridgeHandler;
+            if (localBridgeHandler == null) {
                 logger.warn("Bridge handler not set");
                 return;
             }
 
-            if (bridgeHandler.getConnection() == null) {
+            if (localBridgeHandler.getConnection() == null) {
                 builderTask.cancel(true);
             }
 
-            bridgeHandler.registerPckListener(data -> {
+            localBridgeHandler.registerPckListener(data -> {
                 Matcher matcher;
 
                 if ((matcher = LcnModuleMetaAckSubHandler.PATTERN_POS.matcher(data)).matches()
                         || (matcher = LcnModuleMetaFirmwareSubHandler.PATTERN.matcher(data)).matches()
                         || (matcher = NAME_PATTERN.matcher(data)).matches()) {
                     synchronized (LcnModuleDiscoveryService.this) {
-                        Connection connection = bridgeHandler.getConnection();
+                        Connection connection = localBridgeHandler.getConnection();
 
                         if (connection == null) {
                             return;
                         }
 
                         LcnAddrMod addr = new LcnAddrMod(
-                                bridgeHandler.toLogicalSegmentId(Integer.parseInt(matcher.group("segId"))),
+                                localBridgeHandler.toLogicalSegmentId(Integer.parseInt(matcher.group("segId"))),
                                 Integer.parseInt(matcher.group("modId")));
 
                         if (matcher.pattern() == LcnModuleMetaAckSubHandler.PATTERN_POS) {
-                            // the module could send an Ack with a response to another command. So, ignore the Ack, when
+                            // Received an ACK frame
+
+                            // The module could send an Ack with a response to another command. So, ignore the Ack, when
                             // we received our data already.
                             if (!discoveryResultBuilders.containsKey(addr)) {
                                 serialNumberRequestQueue.add(addr);
@@ -141,11 +147,13 @@ public class LcnModuleDiscoveryService extends AbstractDiscoveryService
                                 rescheduleQueueProcessor(); // delay request of names until all modules finished ACKing
                             }
                         } else if (matcher.pattern() == LcnModuleMetaFirmwareSubHandler.PATTERN) {
+                            // Received a firmware version info frame
+
                             Map<String, Object> properties = new HashMap<>(5);
                             properties.put("segmentId", addr.getSegmentId());
                             properties.put("moduleId", addr.getModuleId());
 
-                            ThingUID bridgeUid = bridgeHandler.getThing().getUID();
+                            ThingUID bridgeUid = localBridgeHandler.getThing().getUID();
                             String thingId = matcher.group("sn");
                             ThingUID thingUid = new ThingUID(LcnBindingConstants.THING_TYPE_MODULE, bridgeUid, thingId);
 
@@ -154,6 +162,8 @@ public class LcnModuleDiscoveryService extends AbstractDiscoveryService
 
                             discoveryResultBuilders.put(addr, discoveryResult);
                         } else if (matcher.pattern() == NAME_PATTERN) {
+                            // Received part of a module's name frame
+
                             final int part = Integer.parseInt(matcher.group("part")) - 1;
                             final String name = matcher.group("name");
 
@@ -177,7 +187,6 @@ public class LcnModuleDiscoveryService extends AbstractDiscoveryService
                     discoveryResultBuilders.entrySet().stream().filter(e -> moduleNames.containsKey(e.getKey()))
                             .filter(e -> moduleNames.get(e.getKey()).size() == MODULE_NAME_PART_COUNT)
                             .filter(e -> !successfullyDiscovered.contains(e.getKey())).forEach(e -> {
-                                // collect() to remove while iterating
                                 StringBuilder thingName = new StringBuilder();
                                 if (e.getKey().getSegmentId() != 0) {
                                     thingName.append("Segment " + e.getKey().getSegmentId() + " ");
@@ -193,7 +202,7 @@ public class LcnModuleDiscoveryService extends AbstractDiscoveryService
                 }
             }, 500, 500, TimeUnit.MILLISECONDS);
 
-            bridgeHandler.sendModuleDiscoveryCommand();
+            localBridgeHandler.sendModuleDiscoveryCommand();
         }
     }
 
@@ -203,23 +212,19 @@ public class LcnModuleDiscoveryService extends AbstractDiscoveryService
         queueProcessor = scheduler.scheduleWithFixedDelay(() -> {
             PckGatewayHandler localBridgeHandler = bridgeHandler;
             if (localBridgeHandler != null) {
-                synchronized (serialNumberRequestQueue) {
-                    synchronized (moduleNameRequestQueue) {
-                        LcnAddrMod serial = serialNumberRequestQueue.poll();
-                        if (serial != null) {
-                            localBridgeHandler.sendSerialNumberRequest(serial);
-                        }
+                LcnAddrMod serial = serialNumberRequestQueue.poll();
+                if (serial != null) {
+                    localBridgeHandler.sendSerialNumberRequest(serial);
+                }
 
-                        LcnAddrMod name = moduleNameRequestQueue.poll();
-                        if (name != null) {
-                            localBridgeHandler.sendModuleNameRequest(name);
-                        }
+                LcnAddrMod name = moduleNameRequestQueue.poll();
+                if (name != null) {
+                    localBridgeHandler.sendModuleNameRequest(name);
+                }
 
-                        // stop scan when all LCN modules have been requested
-                        if (serial == null && name == null) {
-                            scheduler.schedule(this::stopScan, ACK_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-                        }
-                    }
+                // stop scan when all LCN modules have been requested
+                if (serial == null && name == null) {
+                    scheduler.schedule(this::stopScan, ACK_TIMEOUT_MS, TimeUnit.MILLISECONDS);
                 }
             }
         }, ACK_TIMEOUT_MS, ACK_TIMEOUT_MS, TimeUnit.MILLISECONDS);

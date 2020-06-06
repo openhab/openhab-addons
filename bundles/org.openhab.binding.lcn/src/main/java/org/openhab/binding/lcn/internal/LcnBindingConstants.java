@@ -30,7 +30,7 @@ public class LcnBindingConstants {
      * variable updates.
      */
     public static final int FIRMWARE_2013 = 0x170206;
-    /** Firmware version which supports controling all 4 outputs simultaneously */
+    /** Firmware version which supports controlling all 4 outputs simultaneously */
     public static final int FIRMWARE_2014 = 0x180501;
     /** List of all Thing Type UIDs */
     public static final ThingTypeUID THING_TYPE_PCK_GATEWAY = new ThingTypeUID(BINDING_ID, "pckGateway");

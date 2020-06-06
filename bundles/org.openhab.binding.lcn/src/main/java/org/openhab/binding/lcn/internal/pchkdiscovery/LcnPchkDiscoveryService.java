@@ -120,7 +120,7 @@ public class LcnPchkDiscoveryService extends AbstractDiscoveryService {
 
                             ServicesResponse deserialized = xmlToServiceResponse(response);
 
-                            Map<String, Object> properties = new HashMap<>(5);
+                            Map<String, Object> properties = new HashMap<>();
                             properties.put("hostname", addr.getHostAddress());
                             properties.put("port", deserialized.getExtServices().getExtService().getLocalPort());
 
@@ -132,7 +132,7 @@ public class LcnPchkDiscoveryService extends AbstractDiscoveryService {
                                             + deserialized.getServer().getMachineName() + ")");
 
                             thingDiscovered(discoveryResult.build());
-                        } while (true);
+                        } while (true); // left by SocketTimeoutException
                     } catch (SocketTimeoutException e) {
                         // nothing
                     }

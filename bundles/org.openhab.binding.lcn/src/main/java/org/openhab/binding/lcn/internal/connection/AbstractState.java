@@ -13,6 +13,7 @@
 package org.openhab.binding.lcn.internal.connection;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 
@@ -25,7 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public abstract class AbstractState {
-    private List<ScheduledFuture<?>> usedTimers = new ArrayList<>();
+    private List<ScheduledFuture<?>> usedTimers = Collections.synchronizedList(new ArrayList<>());
     protected StateContext context;
 
     public AbstractState(StateContext context) {
@@ -41,9 +42,9 @@ public abstract class AbstractState {
      * Stops all timers, the State has been started.
      */
     void cancelAllTimers() {
-        List<ScheduledFuture<?>> copy = new ArrayList<>(usedTimers);
-
-        copy.forEach(t -> t.cancel(true));
+        synchronized (usedTimers) {
+            usedTimers.forEach(t -> t.cancel(true));
+        }
     }
 
     /**

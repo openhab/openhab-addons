@@ -163,6 +163,7 @@ public class LcnModuleActions implements ThingActions {
         }
     }
 
+    /** Static alias to support the old DSL rules engine and make the action available there. */
     public static void flickerOutput(@Nullable ThingActions actions, int output, int depth, int ramp, int count) {
         if (actions instanceof LcnModuleActions) {
             ((LcnModuleActions) actions).flickerOutput(output, depth, ramp, count);
@@ -172,6 +173,7 @@ public class LcnModuleActions implements ThingActions {
         }
     }
 
+    /** Static alias to support the old DSL rules engine and make the action available there. */
     public static void sendDynamicText(@Nullable ThingActions actions, int row, @Nullable String text) {
         if (actions instanceof LcnModuleActions) {
             ((LcnModuleActions) actions).sendDynamicText(row, text);

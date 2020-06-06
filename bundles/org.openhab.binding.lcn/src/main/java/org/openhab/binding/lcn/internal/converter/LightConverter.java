@@ -39,7 +39,7 @@ public class LightConverter extends AbstractVariableValueConverter {
     public double toHumanReadable(long value) {
         // Max. value hardware can deliver is 100klx. Apply hard limit, because higher native values lead to very big
         // lux values.
-        if (value > 1152) {
+        if (value > toNative(100e3)) {
             return Double.NaN;
         }
         return Math.exp(value / 100d);

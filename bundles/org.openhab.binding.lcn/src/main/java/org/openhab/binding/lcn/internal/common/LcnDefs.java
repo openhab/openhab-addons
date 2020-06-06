@@ -93,38 +93,6 @@ public final class LcnDefs {
         MINUTES,
         HOURS,
         DAYS;
-
-        /**
-         * Parses the given input into a time unit.
-         * It supports several alternative terms.
-         *
-         * @param input the text to parse
-         * @return the parsed {@link TimeUnit}
-         * @throws LcnException if input could not be parsed
-         */
-        public static TimeUnit parse(String input) throws LcnException {
-            switch (input.toUpperCase()) {
-                case "SECONDS":
-                case "SECOND": // Allow singular too
-                case "SEC":
-                case "S":
-                    return SECONDS;
-                case "MINUTES":
-                case "MINUTE": // Allow singular too
-                case "MIN":
-                case "M":
-                    return MINUTES;
-                case "HOURS":
-                case "HOUR": // Allow singular too
-                case "H":
-                    return HOURS;
-                case "DAYS":
-                case "DAY": // Allow singular too
-                case "D":
-                    return DAYS;
-            }
-            throw new LcnException();
-        }
     }
 
     /** Relay-state modifiers used in LCN commands. */

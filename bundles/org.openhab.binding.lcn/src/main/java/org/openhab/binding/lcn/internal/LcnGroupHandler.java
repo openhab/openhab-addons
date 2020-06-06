@@ -21,9 +21,9 @@ import org.openhab.binding.lcn.internal.common.LcnException;
 
 /**
  * The {@link LcnGroupHandler} is responsible for handling commands, which are
- * sent to one of the channels and their destination is an LCN group address.
+ * addressed to an LCN group.
  *
- * The module in the attribute moduleAddress is used for state updates of the group as representative for all modules in
+ * The module in the field moduleAddress is used for state updates of the group as representative for all modules in
  * the group.
  *
  * @author Fabian Wolter - Initial contribution

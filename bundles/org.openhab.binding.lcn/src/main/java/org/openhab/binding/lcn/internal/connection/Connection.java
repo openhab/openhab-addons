@@ -24,6 +24,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -67,10 +68,10 @@ public class Connection {
     private int localSegId;
     private final ByteBuffer readBuffer = ByteBuffer.allocate(1024);
     private final ByteBuffer sendBuffer = ByteBuffer.allocate(MAX_PCK_STRING_LENGTH);
-    private final LinkedBlockingQueue<@Nullable SendData> sendQueue = new LinkedBlockingQueue<>();
-    private final LinkedBlockingQueue<@Nullable PckQueueItem> offlineSendQueue = new LinkedBlockingQueue<>();
+    private final Queue<@Nullable SendData> sendQueue = new LinkedBlockingQueue<>();
+    private final Queue<@Nullable PckQueueItem> offlineSendQueue = new LinkedBlockingQueue<>();
     private final Map<LcnAddr, @Nullable ModInfo> modData = Collections.synchronizedMap(new HashMap<>());
-    private boolean writeInProgress;
+    private volatile boolean writeInProgress;
     private ScheduledExecutorService scheduler;
     private StateMachine stateMachine;
 
@@ -173,10 +174,10 @@ public class Connection {
                     synchronized (Connection.this) {
                         if (transmittedByteCount == null || transmittedByteCount == -1) {
                             String msg = "Connection was closed by foreign host.";
-                            logger.debug(msg);
                             stateMachine.handleConnectionFailed(new LcnException(msg));
                         } else {
                             try {
+                                // read data chunks from socket and separate frames
                                 readBuffer.flip();
                                 int aPos = readBuffer.position(); // 0
                                 String s = new String(readBuffer.array(), aPos, transmittedByteCount,

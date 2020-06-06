@@ -42,8 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link PckGatewayHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link PckGatewayHandler} is responsible for the communication via a PCK gateway.
  *
  * @author Fabian Wolter - Initial contribution
  */
@@ -143,7 +142,7 @@ public class PckGatewayHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Enqueues a PCK command to be sent to an LCN module.
+     * Enqueues a PCK (String) command to be sent to an LCN module.
      *
      * @param addr the modules address
      * @param wantsAck true, if the module shall send an ACK upon successful processing
@@ -159,7 +158,7 @@ public class PckGatewayHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Enqueues a PCK command to be sent to an LCN module.
+     * Enqueues a PCK (ByteBuffer) command to be sent to an LCN module.
      *
      * @param addr the modules address
      * @param wantsAck true, if the module shall send an ACK upon successful processing
@@ -175,7 +174,7 @@ public class PckGatewayHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Sends a broadcast message to all LCN modules. All LCN modules are requested to answer with an Ack.
+     * Sends a broadcast message to all LCN modules: All LCN modules are requested to answer with an Ack.
      */
     void sendModuleDiscoveryCommand() {
         Connection localConnection = connection;

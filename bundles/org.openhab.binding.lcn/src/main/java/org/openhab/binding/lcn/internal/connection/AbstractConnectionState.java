@@ -28,7 +28,7 @@ import org.openhab.binding.lcn.internal.common.LcnDefs;
  */
 @NonNullByDefault
 public abstract class AbstractConnectionState extends AbstractState {
-    /** The PCk gateway's Connection */
+    /** The PCK gateway's Connection */
     protected Connection connection;
     /** An openHAB scheduler */
     protected ScheduledExecutorService scheduler;
