@@ -118,7 +118,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     private final @Nullable String opmlUrl;
     private final SonosStateDescriptionOptionProvider stateDescriptionProvider;
 
-    private @Nullable ZonePlayerConfiguration configuration;
+    private ZonePlayerConfiguration configuration = new ZonePlayerConfiguration();
 
     /**
      * Intrinsic lock used to synchronize the execution of notification sounds
@@ -134,11 +134,6 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     private @Nullable SonosZonePlayerState savedState;
 
     private Map<String, @Nullable Boolean> subscriptionState = new HashMap<>();
-
-    /**
-     * configurable notification timeout (in seconds)
-     */
-    private int notificationTimeout;
 
     /**
      * Thing handler instance of the coordinator speaker used for control delegation
@@ -186,14 +181,11 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
             return;
         }
 
-        ZonePlayerConfiguration config = getConfigAs(ZonePlayerConfiguration.class);
-        configuration = config;
-        String udn = config.udn;
+        configuration = getConfigAs(ZonePlayerConfiguration.class);
+        String udn = configuration.udn;
         if (udn != null && !udn.isEmpty()) {
             service.registerParticipant(this);
-
-            this.notificationTimeout = config.notificationTimeout;
-            pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, config.refresh, TimeUnit.SECONDS);
+            pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, configuration.refresh, TimeUnit.SECONDS);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-missing-udn");
@@ -1197,8 +1189,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
     @Override
     public String getUDN() {
-        ZonePlayerConfiguration config = configuration;
-        String udn = config == null ? null : config.udn;
+        String udn = configuration.udn;
         return udn != null && !udn.isEmpty() ? udn : "undefined";
     }
 
@@ -2578,7 +2569,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         // check Sonos state events to determine the end of the notification sound
         String notificationTitle = stateMap.get("CurrentTitle");
         long playstart = System.currentTimeMillis();
-        while (System.currentTimeMillis() - playstart < (long) this.notificationTimeout * 1000) {
+        while (System.currentTimeMillis() - playstart < (long) configuration.notificationTimeout * 1000) {
             try {
                 Thread.sleep(50);
                 if ((notificationTitle == null && stateMap.get("CurrentTitle") != null)
@@ -2598,7 +2589,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
             while (!state.equals(stateMap.get("TransportState"))) {
                 try {
                     Thread.sleep(50);
-                    if (System.currentTimeMillis() - start > (long) this.notificationTimeout * 1000) {
+                    if (System.currentTimeMillis() - start > (long) configuration.notificationTimeout * 1000) {
                         break;
                     }
                 } catch (InterruptedException e) {
@@ -2614,7 +2605,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
             while (state.equals(stateMap.get("TransportState"))) {
                 try {
                     Thread.sleep(50);
-                    if (System.currentTimeMillis() - start > (long) this.notificationTimeout * 1000) {
+                    if (System.currentTimeMillis() - start > (long) configuration.notificationTimeout * 1000) {
                         break;
                     }
                 } catch (InterruptedException e) {
