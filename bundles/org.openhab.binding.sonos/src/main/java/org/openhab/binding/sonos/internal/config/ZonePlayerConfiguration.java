@@ -28,7 +28,7 @@ public class ZonePlayerConfiguration {
     public static final String NOTIFICATION_VOLUME = "notificationVolume";
 
     public @Nullable String udn;
-    public @Nullable Integer refresh;
-    public @Nullable Integer notificationTimeout;
+    public int refresh = 60;
+    public int notificationTimeout = 20;
     public @Nullable Integer notificationVolume;
 }

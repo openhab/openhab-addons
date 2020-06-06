@@ -109,16 +109,6 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
     private static final int SOCKET_TIMEOUT = 5000;
 
-    /**
-     * The default refresh interval when not specified in channel configuration.
-     */
-    private static final int DEFAULT_REFRESH_INTERVAL = 60;
-
-    /**
-     * Default notification timeout (in seconds)
-     */
-    private static final int DEFAULT_NOTIFICATION_TIMEOUT = 20;
-
     private static final int TUNEIN_DEFAULT_SERVICE_TYPE = 65031;
 
     private final Logger logger = LoggerFactory.getLogger(ZonePlayerHandler.class);
@@ -148,7 +138,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     /**
      * configurable notification timeout (in seconds)
      */
-    private int notificationTimeout = DEFAULT_NOTIFICATION_TIMEOUT;
+    private int notificationTimeout;
 
     /**
      * Thing handler instance of the coordinator speaker used for control delegation
@@ -202,16 +192,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         if (udn != null && !udn.isEmpty()) {
             service.registerParticipant(this);
 
-            Integer configNotificationTimeout = config.notificationTimeout;
-            if (configNotificationTimeout != null) {
-                this.notificationTimeout = configNotificationTimeout.intValue();
-            }
-            int refreshInterval = DEFAULT_REFRESH_INTERVAL;
-            Integer configRefresh = config.refresh;
-            if (configRefresh != null) {
-                refreshInterval = configRefresh.intValue();
-            }
-            pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, refreshInterval, TimeUnit.SECONDS);
+            this.notificationTimeout = config.notificationTimeout;
+            pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, config.refresh, TimeUnit.SECONDS);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-missing-udn");
