@@ -475,10 +475,10 @@ All these channels are read only.
 | Channel Type ID  | Options                | Description                                           |
 |------------------|------------------------|-------------------------------------------------------|
 | cameraEvent      |                        | A camera event is triggered with a short delay but without requiring a webhook. The information of the event can get retrieved from the other "welcomeEvent" home thing channels |
-|                  | HUMAN_DETECTED         | Triggered when a human (or person) was detected       |
-|                  | ANIMAL_DETECTED        | Triggered when an animal was detected                 |
-|                  | MOVEMENT_DETECTED      | Triggered when an unspecified movement was detected   |
-|                  | VEHICLE_DETECTED       | Triggered when a vehicle was detected                 |
+|                  | HUMAN                  | Triggered when a human (or person) was detected       |
+|                  | ANIMAL                 | Triggered when an animal was detected                 |
+|                  | MOVEMENT               | Triggered when an unspecified movement was detected   |
+|                  | VEHICLE                | Triggered when a vehicle was detected                 |
 | welcomeHomeEvent |                        | A welcome home event is triggered directly via a configured webhook |
 |                  | PERSON                 | Triggered when a concrete person was detected         |
 |                  | PERSON_AWAY            | Triggered when a concrete person leaves               |

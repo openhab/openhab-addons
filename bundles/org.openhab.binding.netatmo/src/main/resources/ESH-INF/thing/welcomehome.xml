@@ -145,10 +145,10 @@
 		<label>Camera Event</label>
 		<event>
 			<options>
-				<option value="ANIMAL_DETECTED">Animal detected</option>
-				<option value="HUMAN_DETECTED">Human detected</option>
-				<option value="MOVEMENT_DETECTED">Unspecified movement detected</option>
-				<option value="VEHICLE_DETECTED">Vehicle detected</option>
+				<option value="ANIMAL">Animal detected</option>
+				<option value="HUMAN">Human detected</option>
+				<option value="MOVEMENT">Unspecified movement detected</option>
+				<option value="VEHICLE">Vehicle detected</option>
 			</options>
 		</event>
 	</channel-type>

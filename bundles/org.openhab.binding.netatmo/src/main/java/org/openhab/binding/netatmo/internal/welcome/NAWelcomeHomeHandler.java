@@ -178,27 +178,18 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
         NAWelcomeEvent event = eventOptional.get();
 
         if (event.getPersonId() != null) {
-            detectedObjectTypes.add(CAMERA_EVENT_OPTION_HUMAN_DETECTED);
+            detectedObjectTypes.add(NAWelcomeSubEvent.TypeEnum.HUMAN.name());
         }
 
         if (NAWebhookCameraEvent.EventTypeEnum.MOVEMENT.toString().equals(event.getType())) {
-            detectedObjectTypes.add(CAMERA_EVENT_OPTION_MOVEMENT_DETECTED);
+            detectedObjectTypes.add(NAWebhookCameraEvent.EventTypeEnum.MOVEMENT.name());
         }
 
         event.getEventList().forEach(subEvent -> {
-            String detectedObjectType = translateDetectedObjectType(subEvent.getType());
+            String detectedObjectType = subEvent.getType().name();
             detectedObjectTypes.add(detectedObjectType);
         });
         return detectedObjectTypes;
-    }
-
-    private static String translateDetectedObjectType(NAWelcomeSubEvent.TypeEnum type) {
-        switch (type) {
-            case HUMAN: return CAMERA_EVENT_OPTION_HUMAN_DETECTED;
-            case ANIMAL: return CAMERA_EVENT_OPTION_ANIMAL_DETECTED;
-            case VEHICLE: return CAMERA_EVENT_OPTION_VEHICLE_DETECTED;
-            default: throw new IllegalArgumentException("Unknown detected object type!");
-        }
     }
 
     private Optional<String> findEventMessage() {

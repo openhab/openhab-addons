@@ -74,12 +74,6 @@ public class NetatmoBindingConstants {
     public static final String MAX_TEMP = "max_temp";
     public static final String SUM_RAIN = "sum_rain";
 
-    // Camera event options
-    public static final String CAMERA_EVENT_OPTION_ANIMAL_DETECTED = "ANIMAL_DETECTED";
-    public static final String CAMERA_EVENT_OPTION_HUMAN_DETECTED = "HUMAN_DETECTED";
-    public static final String CAMERA_EVENT_OPTION_MOVEMENT_DETECTED = "MOVEMENT_DETECTED";
-    public static final String CAMERA_EVENT_OPTION_VEHICLE_DETECTED = "VEHICLE_DETECTED";
-
     // List of Bridge Type UIDs
     public static final ThingTypeUID APIBRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, "netatmoapi");
 
