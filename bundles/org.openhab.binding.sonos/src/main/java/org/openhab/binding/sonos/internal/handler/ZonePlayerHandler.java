@@ -550,9 +550,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                     }
                     break;
                 case "RemainingSleepTimerDuration":
-                    String duration = stateMap.get("RemainingSleepTimerDuration");
-                    updateState(SLEEPTIMER,
-                            duration != null ? new DecimalType(sleepStrTimeToSeconds(duration)) : UnDefType.UNDEF);
+                    updateState(SLEEPTIMER, new DecimalType(sleepStrTimeToSeconds(value)));
                     break;
                 case "CurrentTuneInStationId":
                     updateChannel(TUNEINSTATIONID);
