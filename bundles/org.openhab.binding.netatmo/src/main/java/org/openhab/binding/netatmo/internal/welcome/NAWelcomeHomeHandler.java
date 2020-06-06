@@ -95,7 +95,7 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
     }
 
     @Override
-    protected State getNAThingProperty(@Nullable String channelId) {
+    protected State getNAThingProperty(String channelId) {
         switch (channelId) {
             case CHANNEL_WELCOME_HOME_CITY:
                 return device != null ? toStringType(device.getPlace().getCity()) : UnDefType.UNDEF;

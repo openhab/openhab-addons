@@ -115,7 +115,7 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
 
     protected abstract void initializeThing();
 
-    protected State getNAThingProperty(String channelId) {
+    protected State getNAThingProperty(@NonNull String channelId) {
         Optional<State> result;
 
         result = batteryHelper.flatMap(helper -> helper.getNAThingProperty(channelId));
