@@ -213,10 +213,7 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
                 return Optional.of(message);
             }
 
-            @Nullable NAWelcomeSubEvent firstSubEvent = findFirstSubEvent(lastEvent);
-            if (firstSubEvent != null) {
-                return Optional.ofNullable(firstSubEvent.getMessage());
-            }
+            return findFirstSubEvent(lastEvent).map(NAWelcomeSubEvent::getMessage);
         }
         return Optional.empty();
     }
@@ -230,10 +227,7 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
         if(lastEvent.isPresent()) {
             @Nullable NAWelcomeSnapshot snapshot = lastEvent.get().getSnapshot();
             if (snapshot == null) {
-                @Nullable NAWelcomeSubEvent firstSubEvent = findFirstSubEvent(lastEvent);
-                if (firstSubEvent != null) {
-                    snapshot = firstSubEvent.getSnapshot();
-                }
+                snapshot = findFirstSubEvent(lastEvent).map(NAWelcomeSubEvent::getSnapshot).orElse(null);
             }
 
             if (snapshot != null && snapshot.getId() != null && snapshot.getKey() != null) {
@@ -257,13 +251,13 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
         ).orElse(UnDefType.UNDEF);
     }
 
-    private static @Nullable NAWelcomeSubEvent findFirstSubEvent(Optional<NAWelcomeEvent> event) {
+    private static Optional<NAWelcomeSubEvent> findFirstSubEvent(Optional<NAWelcomeEvent> event) {
         if(event.isPresent()) {
             List<NAWelcomeSubEvent> subEvents = event.get().getEventList();
             if (subEvents != null && !subEvents.isEmpty()) {
-                return subEvents.get(0);
+                return Optional.of(subEvents.get(0));
             }
         }
-        return null;
+        return Optional.empty();
     }
 }
