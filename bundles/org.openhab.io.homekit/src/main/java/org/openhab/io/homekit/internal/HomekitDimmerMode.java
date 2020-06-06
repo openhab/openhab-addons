@@ -13,10 +13,10 @@
 package org.openhab.io.homekit.internal;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -42,7 +42,7 @@ public enum HomekitDimmerMode {
     DIMMER_MODE_FILTER_ON_EXCEPT_BRIGHTNESS_100("filterOnExceptBrightness100");
 
     private static final Map<String, HomekitDimmerMode> TAG_MAP = Arrays.stream(HomekitDimmerMode.values())
-        .collect(Collectors.toMap(type -> type.tag.toUpperCase(), type -> type));
+            .collect(Collectors.toMap(type -> type.tag.toUpperCase(), type -> type));
 
     private final String tag;
 

@@ -48,22 +48,15 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class HomekitOHItemProxy {
     private final Logger logger = LoggerFactory.getLogger(HomekitOHItemProxy.class);
-
     private static final int DEFAULT_DELAY = 50; // in ms
-
+    private final Item item;
+    private final Map<HomekitCommandType, State> commandCache = new ConcurrentHashMap<>();
     private final ScheduledExecutorService scheduler = ThreadPoolManager
             .getScheduledPool(ThreadPoolManager.THREAD_POOL_NAME_COMMON);
-
-
     private @Nullable ScheduledFuture<?> future;
-
-    private final Item item;
-
     private HomekitDimmerMode dimmerMode = DIMMER_MODE_NORMAL;
-
     // delay, how long wait for further commands. in ms.
     private int delay = DEFAULT_DELAY;
-    private Map<HomekitCommandType, State> commandCache = new ConcurrentHashMap<>();
 
     public HomekitOHItemProxy(final Item item) {
         this.item = item;
