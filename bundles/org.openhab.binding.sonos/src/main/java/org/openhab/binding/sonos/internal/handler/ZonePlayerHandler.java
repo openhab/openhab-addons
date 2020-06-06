@@ -463,12 +463,12 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                     updateGroupCoordinator();
                     updateMediaInformation();
                     // Update state and control channels for the group members with the coordinator values
-                    String transportState = stateMap.get("TransportState");
+                    String transportState = getTransportState();
                     if (transportState != null) {
                         dispatchOnAllGroupMembers("TransportState", transportState, "AVTransport");
                     }
                     // Update shuffle and repeat channels for the group members with the coordinator values
-                    String playMode = stateMap.get("CurrentPlayMode");
+                    String playMode = getPlayMode();
                     if (playMode != null) {
                         dispatchOnAllGroupMembers("CurrentPlayMode", playMode, "AVTransport");
                     }
@@ -634,13 +634,13 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         String value;
         switch (channelId) {
             case STATE:
-                value = stateMap.get("TransportState");
+                value = getTransportState();
                 if (value != null) {
                     newState = new StringType(value);
                 }
                 break;
             case CONTROL:
-                value = stateMap.get("TransportState");
+                value = getTransportState();
                 if (STATE_PLAYING.equals(value)) {
                     newState = PlayPauseType.PLAY;
                 } else if (STATE_STOPPED.equals(value)) {
@@ -650,34 +650,34 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 }
                 break;
             case STOP:
-                value = stateMap.get("TransportState");
+                value = getTransportState();
                 if (value != null) {
                     newState = STATE_STOPPED.equals(value) ? OnOffType.ON : OnOffType.OFF;
                 }
                 break;
             case SHUFFLE:
-                if (stateMap.get("CurrentPlayMode") != null) {
+                if (getPlayMode() != null) {
                     newState = isShuffleActive() ? OnOffType.ON : OnOffType.OFF;
                 }
                 break;
             case REPEAT:
-                if (stateMap.get("CurrentPlayMode") != null) {
+                if (getPlayMode() != null) {
                     newState = new StringType(getRepeatMode());
                 }
                 break;
             case LED:
-                if (stateMap.get("CurrentLEDState") != null) {
-                    newState = getLed() ? OnOffType.ON : OnOffType.OFF;
+                if (getLed() != null) {
+                    newState = isLedOn() ? OnOffType.ON : OnOffType.OFF;
                 }
                 break;
             case ZONENAME:
-                value = stateMap.get("CurrentZoneName");
+                value = getCurrentZoneName();
                 if (value != null) {
                     newState = new StringType(value);
                 }
                 break;
             case ZONEGROUPID:
-                value = stateMap.get("LocalGroupUUID");
+                value = getZoneGroupID();
                 if (value != null) {
                     newState = new StringType(value);
                 }
@@ -686,58 +686,58 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 newState = new StringType(getCoordinator());
                 break;
             case LOCALCOORDINATOR:
-                if (stateMap.get("GroupCoordinatorIsLocal") != null) {
+                if (getGroupCoordinatorIsLocal() != null) {
                     newState = isGroupCoordinator() ? OnOffType.ON : OnOffType.OFF;
                 }
                 break;
             case VOLUME:
-                value = stateMap.get("VolumeMaster");
+                value = getVolume();
                 if (value != null) {
                     newState = new PercentType(value);
                 }
                 break;
             case MUTE:
-                value = stateMap.get("MuteMaster");
+                value = getMute();
                 if (value != null) {
                     newState = isMuted() ? OnOffType.ON : OnOffType.OFF;
                 }
                 break;
             case NIGHTMODE:
-                value = stateMap.get("NightMode");
+                value = getNightMode();
                 if (value != null) {
                     newState = isNightModeOn() ? OnOffType.ON : OnOffType.OFF;
                 }
                 break;
             case SPEECHENHANCEMENT:
-                value = stateMap.get("DialogLevel");
+                value = getDialogLevel();
                 if (value != null) {
                     newState = isSpeechEnhanced() ? OnOffType.ON : OnOffType.OFF;
                 }
                 break;
             case LINEIN:
-                if (stateMap.get(LINEINCONNECTED) != null) {
+                if (getAnalogLineInConnected() != null) {
                     newState = isAnalogLineInConnected() ? OnOffType.ON : OnOffType.OFF;
-                } else if (stateMap.get(TOSLINEINCONNECTED) != null) {
+                } else if (getOpticalLineInConnected() != null) {
                     newState = isOpticalLineInConnected() ? OnOffType.ON : OnOffType.OFF;
                 }
                 break;
             case ANALOGLINEIN:
-                if (stateMap.get(LINEINCONNECTED) != null) {
+                if (getAnalogLineInConnected() != null) {
                     newState = isAnalogLineInConnected() ? OnOffType.ON : OnOffType.OFF;
                 }
                 break;
             case DIGITALLINEIN:
-                if (stateMap.get(TOSLINEINCONNECTED) != null) {
+                if (getOpticalLineInConnected() != null) {
                     newState = isOpticalLineInConnected() ? OnOffType.ON : OnOffType.OFF;
                 }
                 break;
             case ALARMRUNNING:
-                if (stateMap.get("AlarmRunning") != null) {
+                if (getAlarmRunning() != null) {
                     newState = isAlarmRunning() ? OnOffType.ON : OnOffType.OFF;
                 }
                 break;
             case ALARMPROPERTIES:
-                value = stateMap.get("RunningAlarmProperties");
+                value = getRunningAlarmProperties();
                 if (value != null) {
                     newState = new StringType(value);
                 }
@@ -749,19 +749,19 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 }
                 break;
             case CURRENTTITLE:
-                value = stateMap.get("CurrentTitle");
+                value = getCurrentTitle();
                 if (value != null) {
                     newState = new StringType(value);
                 }
                 break;
             case CURRENTARTIST:
-                value = stateMap.get("CurrentArtist");
+                value = getCurrentArtist();
                 if (value != null) {
                     newState = new StringType(value);
                 }
                 break;
             case CURRENTALBUM:
-                value = stateMap.get("CurrentAlbum");
+                value = getCurrentAlbum();
                 if (value != null) {
                     newState = new StringType(value);
                 }
@@ -777,7 +777,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 }
                 break;
             case CURRENTTRANSPORTURI:
-                value = stateMap.get("CurrentURI");
+                value = getCurrentURI();
                 if (value != null) {
                     newState = new StringType(value);
                 }
@@ -1177,8 +1177,12 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         return result;
     }
 
+    public @Nullable String getGroupCoordinatorIsLocal() {
+        return stateMap.get("GroupCoordinatorIsLocal");
+    }
+
     public boolean isGroupCoordinator() {
-        return "true".equals(stateMap.get("GroupCoordinatorIsLocal"));
+        return "true".equals(getGroupCoordinatorIsLocal());
     }
 
     @Override
@@ -1196,7 +1200,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     public @Nullable SonosMetaData getCurrentURIMetadata() {
-        String metaData = stateMap.get("CurrentURIMetaData");
+        String metaData = getCurrentURIMetadataAsString();
         return metaData != null && !metaData.isEmpty() ? SonosXMLParser.getMetaDataFromXML(metaData) : null;
     }
 
@@ -1218,12 +1222,12 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         return stateMap.get("MACAddress");
     }
 
-    public @Nullable String getPosition() {
+    public @Nullable String getRefreshedPosition() {
         updatePosition();
         return stateMap.get("RelTime");
     }
 
-    public long getCurrenTrackNr() {
+    public long getRefreshedCurrenTrackNr() {
         updatePosition();
         String value = stateMap.get("Track");
         if (value != null) {
@@ -1239,6 +1243,18 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
     public @Nullable String getTransportState() {
         return stateMap.get("TransportState");
+    }
+
+    public @Nullable String getCurrentTitle() {
+        return stateMap.get("CurrentTitle");
+    }
+
+    public @Nullable String getCurrentArtist() {
+        return stateMap.get("CurrentArtist");
+    }
+
+    public @Nullable String getCurrentAlbum() {
+        return stateMap.get("CurrentAlbum");
     }
 
     public List<SonosEntry> getArtists(String filter) {
@@ -1421,7 +1437,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                     // we are playing something that sits in the queue
                     SonosMetaData queued = getEnqueuedTransportURIMetaData();
                     if (queued != null) {
-                        savedState.track = getCurrenTrackNr();
+                        savedState.track = getRefreshedCurrenTrackNr();
 
                         if (queued.getUpnpClass().contains("object.container.playlistContainer")) {
                             // we are playing a real 'saved' playlist
@@ -1469,7 +1485,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                     }
                 }
 
-                savedState.relTime = getPosition();
+                savedState.relTime = getRefreshedPosition();
             } else {
                 savedState.entry = null;
             }
@@ -1859,22 +1875,34 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         }
     }
 
+    public @Nullable String getNightMode() {
+        return stateMap.get("NightMode");
+    }
+
     public boolean isNightModeOn() {
-        return "1".equals(stateMap.get("NightMode"));
+        return "1".equals(getNightMode());
+    }
+
+    public @Nullable String getDialogLevel() {
+        return stateMap.get("DialogLevel");
     }
 
     public boolean isSpeechEnhanced() {
-        return "1".equals(stateMap.get("DialogLevel"));
+        return "1".equals(getDialogLevel());
+    }
+
+    public @Nullable String getPlayMode() {
+        return stateMap.get("CurrentPlayMode");
     }
 
     public Boolean isShuffleActive() {
-        String playMode = stateMap.get("CurrentPlayMode");
+        String playMode = getPlayMode();
         return (playMode != null && playMode.startsWith("SHUFFLE"));
     }
 
     public String getRepeatMode() {
         String mode = "OFF";
-        String playMode = stateMap.get("CurrentPlayMode");
+        String playMode = getPlayMode();
         if (playMode != null) {
             switch (playMode) {
                 case "REPEAT_ALL":
@@ -2180,8 +2208,12 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         return stateMap.get("CurrentLocalTime");
     }
 
+    public @Nullable String getAlarmRunning() {
+        return stateMap.get("AlarmRunning");
+    }
+
     public boolean isAlarmRunning() {
-        return "1".equals(stateMap.get("AlarmRunning"));
+        return "1".equals(getAlarmRunning());
     }
 
     public void snoozeAlarm(Command command) {
@@ -2213,12 +2245,20 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         }
     }
 
+    public @Nullable String getAnalogLineInConnected() {
+        return stateMap.get(LINEINCONNECTED);
+    }
+
     public boolean isAnalogLineInConnected() {
-        return "true".equals(stateMap.get(LINEINCONNECTED));
+        return "true".equals(getAnalogLineInConnected());
+    }
+
+    public @Nullable String getOpticalLineInConnected() {
+        return stateMap.get(TOSLINEINCONNECTED);
     }
 
     public boolean isOpticalLineInConnected() {
-        return "true".equals(stateMap.get(TOSLINEINCONNECTED));
+        return "true".equals(getOpticalLineInConnected());
     }
 
     public void becomeStandAlonePlayer() {
@@ -2457,8 +2497,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     private void handleSharedQueue(@Nullable String currentQueueURI, Command notificationURL,
             ZonePlayerHandler coordinator) {
         String nextAction = coordinator.getTransportState();
-        String trackPosition = coordinator.getPosition();
-        long currentTrackNumber = coordinator.getCurrenTrackNr();
+        String trackPosition = coordinator.getRefreshedPosition();
+        long currentTrackNumber = coordinator.getRefreshedCurrenTrackNr();
         logger.debug("handleSharedQueue: currentQueueURI {} trackPosition {} currentTrackNumber {}", currentQueueURI,
                 trackPosition, currentTrackNumber);
 
@@ -2548,14 +2588,15 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         waitForTransportState(STATE_PLAYING);
 
         // check Sonos state events to determine the end of the notification sound
-        String notificationTitle = stateMap.get("CurrentTitle");
+        String notificationTitle = getCurrentTitle();
         long playstart = System.currentTimeMillis();
         while (System.currentTimeMillis() - playstart < (long) configuration.notificationTimeout * 1000) {
             try {
                 Thread.sleep(50);
-                if ((notificationTitle == null && stateMap.get("CurrentTitle") != null)
-                        || (notificationTitle != null && !notificationTitle.equals(stateMap.get("CurrentTitle")))
-                        || !STATE_PLAYING.equals(stateMap.get("TransportState"))) {
+                String currentTitle = getCurrentTitle();
+                if ((notificationTitle == null && currentTitle != null)
+                        || (notificationTitle != null && !notificationTitle.equals(currentTitle))
+                        || !STATE_PLAYING.equals(getTransportState())) {
                     break;
                 }
             } catch (InterruptedException e) {
@@ -2565,9 +2606,9 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     private void waitForTransportState(String state) {
-        if (stateMap.get("TransportState") != null) {
+        if (getTransportState() != null) {
             long start = System.currentTimeMillis();
-            while (!state.equals(stateMap.get("TransportState"))) {
+            while (!state.equals(getTransportState())) {
                 try {
                     Thread.sleep(50);
                     if (System.currentTimeMillis() - start > (long) configuration.notificationTimeout * 1000) {
@@ -2581,9 +2622,9 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     private void waitForNotTransportState(String state) {
-        if (stateMap.get("TransportState") != null) {
+        if (getTransportState() != null) {
             long start = System.currentTimeMillis();
-            while (state.equals(stateMap.get("TransportState"))) {
+            while (state.equals(getTransportState())) {
                 try {
                     Thread.sleep(50);
                     if (System.currentTimeMillis() - start > (long) configuration.notificationTimeout * 1000) {
@@ -2943,8 +2984,12 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     public @Nullable String getRunningAlarmProperties() {
-        updateRunningAlarmProperties();
         return stateMap.get("RunningAlarmProperties");
+    }
+
+    public @Nullable String getRefreshedRunningAlarmProperties() {
+        updateRunningAlarmProperties();
+        return getRunningAlarmProperties();
     }
 
     public @Nullable String getMute() {
@@ -2952,16 +2997,24 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     public boolean isMuted() {
-        return "1".equals(stateMap.get("MuteMaster"));
+        return "1".equals(getMute());
     }
 
-    public boolean getLed() {
-        return "On".equals(stateMap.get("CurrentLEDState"));
+    public @Nullable String getLed() {
+        return stateMap.get("CurrentLEDState");
+    }
+
+    public boolean isLedOn() {
+        return "On".equals(getLed());
     }
 
     public @Nullable String getCurrentZoneName() {
-        updateCurrentZoneName();
         return stateMap.get("CurrentZoneName");
+    }
+
+    public @Nullable String getRefreshedCurrentZoneName() {
+        updateCurrentZoneName();
+        return getCurrentZoneName();
     }
 
     @Override
