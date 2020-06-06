@@ -13,7 +13,6 @@
 package org.openhab.binding.sonos.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link SonosAlarm} is a datastructure to describe
@@ -22,7 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Karel Goderis - Initial contribution
  */
 @NonNullByDefault
-public class SonosAlarm implements Cloneable {
+public class SonosAlarm {
 
     private final int id;
     private String startTime;
@@ -49,15 +48,6 @@ public class SonosAlarm implements Cloneable {
         this.playMode = playMode;
         this.volume = volume;
         this.includeLinkedZones = includeLinkedZones;
-    }
-
-    @Override
-    public @Nullable Object clone() {
-        try {
-            return super.clone();
-        } catch (Exception e) {
-            return null;
-        }
     }
 
     public int getId() {
