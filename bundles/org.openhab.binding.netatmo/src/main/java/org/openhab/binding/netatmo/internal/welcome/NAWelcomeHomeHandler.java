@@ -43,17 +43,16 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
-    private static final Logger logger = LoggerFactory.getLogger(NAWelcomeHomeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(NAWelcomeHomeHandler.class);
 
     private int iPersons = -1;
     private int iUnknowns = -1;
-    private Optional<NAWelcomeEvent> lastEvent;
+    private Optional<NAWelcomeEvent> lastEvent = Optional.empty();
     private boolean isNewLastEvent;
     private @Nullable Integer dataTimeStamp;
 
     public NAWelcomeHomeHandler(Thing thing) {
         super(thing);
-        lastEvent = Optional.empty();
     }
 
     @Override
@@ -162,12 +161,9 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
 
     @Override
     protected void triggerChannelIfRequired(String channelId) {
-        if(isNewLastEvent) {
-            if(CHANNEL_CAMERA_EVENT.equals(channelId)) {
-                Set<String> detectedObjectTypes = findDetectedObjectTypes(lastEvent);
-                for(String detectedType: detectedObjectTypes) {
-                    triggerChannel(channelId, detectedType);
-                }
+        if (isNewLastEvent) {
+            if (CHANNEL_CAMERA_EVENT.equals(channelId)) {
+                findDetectedObjectTypes(lastEvent).forEach(detectedType -> triggerChannel(channelId, detectedType));
             }
         }
         super.triggerChannelIfRequired(channelId);
@@ -175,25 +171,24 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
 
     private static Set<String> findDetectedObjectTypes(Optional<NAWelcomeEvent> eventOptional) {
         Set<String> detectedObjectTypes = new TreeSet<>();
-        if(!eventOptional.isPresent()) {
+        if (!eventOptional.isPresent()) {
             return detectedObjectTypes;
         }
 
         NAWelcomeEvent event = eventOptional.get();
 
-        if(event.getPersonId() != null) {
+        if (event.getPersonId() != null) {
             detectedObjectTypes.add(CAMERA_EVENT_OPTION_HUMAN_DETECTED);
         }
 
-        if(NAWebhookCameraEvent.EventTypeEnum.MOVEMENT.toString().equals(event.getType())) {
+        if (NAWebhookCameraEvent.EventTypeEnum.MOVEMENT.toString().equals(event.getType())) {
             detectedObjectTypes.add(CAMERA_EVENT_OPTION_MOVEMENT_DETECTED);
         }
 
-        List<NAWelcomeSubEvent> subEvents = event.getEventList();
-        for(NAWelcomeSubEvent subEvent: subEvents) {
+        event.getEventList().forEach(subEvent -> {
             String detectedObjectType = translateDetectedObjectType(subEvent.getType());
             detectedObjectTypes.add(detectedObjectType);
-        }
+        });
         return detectedObjectTypes;
     }
 
@@ -207,7 +202,7 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
     }
 
     private Optional<String> findEventMessage() {
-        if(lastEvent.isPresent()) {
+        if (lastEvent.isPresent()) {
             @Nullable String message = lastEvent.get().getMessage();
             if (message != null) {
                 return Optional.of(message);
@@ -224,7 +219,7 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
      * @return Url of the picture or null
      */
     protected Optional<String> findSnapshotURL() {
-        if(lastEvent.isPresent()) {
+        if (lastEvent.isPresent()) {
             @Nullable NAWelcomeSnapshot snapshot = lastEvent.get().getSnapshot();
             if (snapshot == null) {
                 snapshot = findFirstSubEvent(lastEvent).map(NAWelcomeSubEvent::getSnapshot).orElse(null);
@@ -252,7 +247,7 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
     }
 
     private static Optional<NAWelcomeSubEvent> findFirstSubEvent(Optional<NAWelcomeEvent> event) {
-        if(event.isPresent()) {
+        if (event.isPresent()) {
             List<NAWelcomeSubEvent> subEvents = event.get().getEventList();
             if (subEvents != null && !subEvents.isEmpty()) {
                 return Optional.of(subEvents.get(0));
