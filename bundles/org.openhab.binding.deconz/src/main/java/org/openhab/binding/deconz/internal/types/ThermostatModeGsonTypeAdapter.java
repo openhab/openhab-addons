@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
@@ -46,6 +47,7 @@ public class ThermostatModeGsonTypeAdapter implements JsonDeserializer<Thermosta
     @Override
     public JsonElement serialize(ThermostatMode src, @Nullable Type typeOfSrc,
             @Nullable JsonSerializationContext context) throws JsonParseException {
-        return new JsonPrimitive(src != ThermostatMode.UNKNOWN ? src.getDeconzValue() : null);
+        return src != ThermostatMode.UNKNOWN ? new JsonPrimitive(src.getDeconzValue()) : JsonNull.INSTANCE;
+
     }
 }
