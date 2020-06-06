@@ -62,29 +62,41 @@ In order to send a message, an action must be used instead.
 | `proxyPort`             |  None   | No       | Proxy port for telegram binding.                                                             |
 | `proxyType`             |  SOCKS5 | No       | Type of proxy server for telegram binding (SOCKS5 or HTTP). Default: SOCKS5                  |
 
+By default chat ids are bi-directionally, i.e. they can send and receive messages.
+They can be prefixed with an access modifier:
+- `<` restricts the chat to send only, i.e. this chat id can send messages to openHAB, but will never receive a notification.
+- `>` restricts the chat to receive only, i.e. this chat id will receive all notifications, but messages from this chat id will be discarded. 
+To use the reply function, chat ids need to be bi-directional.
 
 telegram.thing (no proxy):
 
 ```
-Thing telegram:telegramBot:Telegram_Bot [ chatIds="< ID >", botToken="< TOKEN >" ]
+Thing telegram:telegramBot:Telegram_Bot [ chatIds="ID", botToken="TOKEN" ]
 ```
 
-telegram.thing (multiple chat ids and markdown format):
+telegram.thing (multiple chat ids, one bi-directional chat (ID1), one outbound-only (ID2)):
 
 ```
-Thing telegram:telegramBot:Telegram_Bot [ chatIds="< ID1 >","< ID2 >", botToken="< TOKEN >", parseMode ="Markdown" ]
+Thing telegram:telegramBot:Telegram_Bot [ chatIds="ID1",">ID2", botToken="TOKEN" ]
+```
+
+
+telegram.thing (markdown format):
+
+```
+Thing telegram:telegramBot:Telegram_Bot [ chatIds="ID", botToken="TOKEN", parseMode ="Markdown" ]
 ```
 
 telegram.thing (SOCKS5 proxy server is used): 
 
 ```
-Thing telegram:telegramBot:Telegram_Bot [ chatIds="< ID >", botToken="< TOKEN >", proxyHost="< HOST >", proxyPort="< PORT >", proxyType="< TYPE >" ]
+Thing telegram:telegramBot:Telegram_Bot [ chatIds="ID", botToken="TOKEN", proxyHost="HOST", proxyPort="PORT", proxyType="TYPE" ]
 ```
 
 or HTTP proxy server
 
 ```
-Thing telegram:telegramBot:Telegram_Bot [ chatIds="< ID >", botToken="< TOKEN >", proxyHost="localhost", proxyPort="8123", proxyType="HTTP" ]
+Thing telegram:telegramBot:Telegram_Bot [ chatIds="ID", botToken="TOKEN", proxyHost="localhost", proxyPort="8123", proxyType="HTTP" ]
 ```
 
 
@@ -97,7 +109,7 @@ Thing telegram:telegramBot:Telegram_Bot [ chatIds="< ID >", botToken="< TOKEN >"
 | lastMessageDate                      | DateTime  | The date of the last received message (UTC)                     |
 | lastMessageName                      | String    | The full name of the sender of the last received message        |
 | lastMessageUsername                  | String    | The username of the sender of the last received message         |
-| chatId                               | String    | The id of the chat of the last received meesage                 |
+| chatId                               | String    | The id of the chat of the last received message                 |
 | replyId                              | String    | The id of the reply which was passed to sendTelegram() as replyId argument. This id can be used to have an unambiguous assignment of the users reply to the message which was sent by the bot             |
 
 All channels are read-only.
