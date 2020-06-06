@@ -2413,31 +2413,31 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     private boolean isPlayingQueue(@Nullable String currentURI) {
-        return currentURI == null ? false : currentURI.contains(QUEUE_URI);
+        return currentURI != null && currentURI.contains(QUEUE_URI);
     }
 
     private boolean isPlayingStream(@Nullable String currentURI) {
-        return currentURI == null ? false : currentURI.contains(STREAM_URI);
+        return currentURI != null && currentURI.contains(STREAM_URI);
     }
 
     private boolean isPlayingRadio(@Nullable String currentURI) {
-        return currentURI == null ? false : currentURI.contains(RADIO_URI);
+        return currentURI != null && currentURI.contains(RADIO_URI);
     }
 
     private boolean isPlayingRadioStartedByAmazonEcho(@Nullable String currentURI) {
-        return currentURI == null ? false : (currentURI.contains(RADIO_MP3_URI) && currentURI.contains(OPML_TUNE));
+        return currentURI != null && currentURI.contains(RADIO_MP3_URI) && currentURI.contains(OPML_TUNE);
     }
 
     private boolean isPlayingLineIn(@Nullable String currentURI) {
-        return currentURI == null ? false : (isPlayingAnalogLineIn(currentURI) || isPlayingOpticalLineIn(currentURI));
+        return currentURI != null && (isPlayingAnalogLineIn(currentURI) || isPlayingOpticalLineIn(currentURI));
     }
 
     private boolean isPlayingAnalogLineIn(@Nullable String currentURI) {
-        return currentURI == null ? false : currentURI.contains(ANALOG_LINE_IN_URI);
+        return currentURI != null && currentURI.contains(ANALOG_LINE_IN_URI);
     }
 
     private boolean isPlayingOpticalLineIn(@Nullable String currentURI) {
-        return currentURI == null ? false : (currentURI.startsWith(OPTICAL_LINE_IN_URI) && currentURI.endsWith(SPDIF));
+        return currentURI != null && currentURI.startsWith(OPTICAL_LINE_IN_URI) && currentURI.endsWith(SPDIF);
     }
 
     /**
