@@ -27,6 +27,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
+import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
 import org.openhab.binding.netatmo.internal.handler.AbstractNetatmoThingHandler;
 import org.openhab.binding.netatmo.internal.handler.NetatmoDeviceHandler;
 import org.openhab.binding.netatmo.internal.webhook.NAWebhookCameraEvent;
@@ -129,17 +130,9 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
                     return UnDefType.UNDEF;
                 }
             case CHANNEL_WELCOME_EVENT_SNAPSHOT:
-                @Nullable String url = findSnapshotURL();
-                if(url != null) {
-                    return HttpUtil.downloadImage(url);
-                }
-                return UnDefType.UNDEF;
+                return findSnapshotURL().map(url -> (State)HttpUtil.downloadImage(url)).orElse(UnDefType.UNDEF);
             case CHANNEL_WELCOME_EVENT_SNAPSHOT_URL:
-                @Nullable String snapshotURL = findSnapshotURL();
-                if(snapshotURL != null) {
-                    return toStringType(snapshotURL);
-                }
-                return UnDefType.UNDEF;
+                return findSnapshotURL().map(ChannelTypeUtils::toStringType).orElse(UnDefType.UNDEF);
             case CHANNEL_WELCOME_EVENT_VIDEO_URL:
                 if (lastEvent.isPresent() && lastEvent.get().getVideoId() != null) {
                     String cameraId = lastEvent.get().getCameraId();
@@ -158,10 +151,9 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
             case CHANNEL_WELCOME_EVENT_ISARRIVAL:
                 return lastEvent.map(e -> toOnOffType(e.getIsArrival())).orElse(UnDefType.UNDEF);
             case CHANNEL_WELCOME_EVENT_MESSAGE:
-                @Nullable String eventMessage = findEventMessage();
-                return eventMessage != null
-                        ? new StringType(eventMessage.replace("<b>", "").replace("</b>", ""))
-                        : UnDefType.UNDEF;
+                return findEventMessage().map(
+                        m -> (State)new StringType(m.replace("<b>", "").replace("</b>", ""))
+                ).orElse(UnDefType.UNDEF);
             case CHANNEL_WELCOME_EVENT_SUBTYPE:
                 return lastEvent.map(e -> toDecimalType(e.getSubType())).orElse(UnDefType.UNDEF);
         }
@@ -214,19 +206,19 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
         }
     }
 
-    private @Nullable String findEventMessage() {
-        if(!lastEvent.isPresent()) {
-            return null;
-        }
+    private Optional<String> findEventMessage() {
+        if(lastEvent.isPresent()) {
+            @Nullable String message = lastEvent.get().getMessage();
+            if (message != null) {
+                return Optional.of(message);
+            }
 
-        @Nullable String message = lastEvent.get().getMessage();
-        if(message == null) {
             @Nullable NAWelcomeSubEvent firstSubEvent = findFirstSubEvent(lastEvent);
-            if(firstSubEvent != null) {
-                message = firstSubEvent.getMessage();
+            if (firstSubEvent != null) {
+                return Optional.ofNullable(firstSubEvent.getMessage());
             }
         }
-        return message;
+        return Optional.empty();
     }
 
     /**
@@ -234,7 +226,7 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
      *
      * @return Url of the picture or null
      */
-    protected @Nullable String findSnapshotURL() {
+    protected Optional<String> findSnapshotURL() {
         if(lastEvent.isPresent()) {
             @Nullable NAWelcomeSnapshot snapshot = lastEvent.get().getSnapshot();
             if (snapshot == null) {
@@ -245,13 +237,13 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
             }
 
             if (snapshot != null && snapshot.getId() != null && snapshot.getKey() != null) {
-                return WELCOME_PICTURE_URL + "?" + WELCOME_PICTURE_IMAGEID + "=" + snapshot.getId() + "&"
-                        + WELCOME_PICTURE_KEY + "=" + snapshot.getKey();
+                return Optional.of(WELCOME_PICTURE_URL + "?" + WELCOME_PICTURE_IMAGEID + "=" + snapshot.getId() + "&"
+                        + WELCOME_PICTURE_KEY + "=" + snapshot.getKey());
             } else {
                 logger.debug("Unable to build snapshot url for Home : {}", getId());
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     @Override
