@@ -122,7 +122,7 @@ public class GreeHandler extends BaseThingHandler {
         } catch (GreeException e) {
             logger.warn("Initialization failed: {}", messages.get("thinginit.exception", e.toString()));
         } catch (IOException e) {
-            logger.debug("Exception on initialization", e.toString());
+            logger.debug("Exception on initialization: {}", e.toString());
         } catch (RuntimeException e) {
             logger.warn("Initialization failed", e);
         }
@@ -269,7 +269,6 @@ public class GreeHandler extends BaseThingHandler {
                 device.setDeviceTurbo(socket, 1);
                 break;
         }
-
     }
 
     private void handleQuietCommand(Command command, DatagramSocket socket) throws GreeException {

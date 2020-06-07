@@ -188,5 +188,4 @@ public class GreeDeviceFinder {
             throw new IllegalArgumentException("Socket not initialized!");
         }
     }
-
 }

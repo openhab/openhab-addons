@@ -25,5 +25,4 @@ public class GreeReqStatusPack4GsonDTO {
     public String t = null;
     public String[] cols = null;
     public String mac = null;
-
 }

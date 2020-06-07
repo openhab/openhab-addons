@@ -31,5 +31,4 @@ public class GreeExecResponse4GsonDTO {
 
     public transient String decryptedPack = null;
     public transient GreeExecResponsePack4GsonDTO packJson = null;
-
 }

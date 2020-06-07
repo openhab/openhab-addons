@@ -114,7 +114,7 @@ public class GreeDiscoveryService extends AbstractDiscoveryService {
         } catch (GreeException e) {
             logger.warn("Discovery failed: {}", e.toString());
         } catch (IOException e) {
-            logger.debug("Discovery failed", e.toString());
+            logger.debug("Discovery failed: {}", e.toString());
         } catch (RuntimeException e) {
             logger.warn("Discovery failed", e);
         } finally {

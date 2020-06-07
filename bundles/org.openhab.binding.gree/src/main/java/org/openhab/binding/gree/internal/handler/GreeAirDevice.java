@@ -594,7 +594,6 @@ public class GreeAirDevice {
         } catch (IOException e) {
             throw new GreeException(e, "Exception on command execution");
         }
-
     }
 
     public void getDeviceStatus(DatagramSocket clientSocket) throws GreeException {
