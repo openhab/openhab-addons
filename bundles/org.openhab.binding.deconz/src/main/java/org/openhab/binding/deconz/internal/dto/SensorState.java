@@ -72,6 +72,8 @@ public class SensorState {
     public @Nullable Integer buttonevent;
     /** Switches may provide this value. */
     public @Nullable Integer gesture;
+    /** Thermostat may provide this value. */
+    public @Nullable Integer valve;
     /** deCONZ sends a last update string with every event. */
     public @Nullable String lastupdated;
 
