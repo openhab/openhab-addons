@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -126,20 +126,6 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService i
                     thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_DIMMER;
                     thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_DIMMER;
                     deviceWho = Who.LIGHTING;
-                    break;
-                }
-                case SCS_SHUTTER_SWITCH:
-                case SCS_SHUTTER_CONTROL: {
-                    thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_AUTOMATION;
-                    thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_AUTOMATION;
-                    deviceWho = Who.AUTOMATION;
-                    break;
-                }
-                case ZIGBEE_SHUTTER_SWITCH:
-                case ZIGBEE_SHUTTER_CONTROL: {
-                    thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_ZB_AUTOMATION;
-                    thingLabel = OpenWebNetBindingConstants.THING_LABEL_ZB_AUTOMATION;
-                    deviceWho = Who.AUTOMATION;
                     break;
                 }
                 default:

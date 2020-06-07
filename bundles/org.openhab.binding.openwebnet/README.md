@@ -7,7 +7,6 @@ The binding supports:
 - both wired BUS/SCS (MyHOME) and wireless setups (MyHOME ZigBee). The two networks can be configured simultaneously
 - discovery of BUS/SCS IP gateways and ZigBee USB gateways and devices
 - commands from openHAB and feedback (events) from BUS/SCS and wireless network
-- numeric (`12345`) and alpha-numeric (`abcde` - HMAC authentication) gateway passwords
 
 ![F454 Gateway](doc/F454_gateway.png)
 ![USB ZigBee Gateway](doc/USB_gateway.jpg)
@@ -40,7 +39,6 @@ The following Things and OpenWebNet `WHOs` are supported:
 | -------------------- | :----------: | :---------------------------------: | ----------------------------------------------------------- | ---------------- |
 | Gateway Management   | `13`         | `bus_gateway`                       | Any IP gateway supporting OpenWebNet protocol should work (e.g. F454 / MyHOMEServer1 / MH202 / F455 / MH200N, ...) | Successfully tested: F454, MyHOMEServer1, MyHOME_Screen10, F455, F452, F453AV, MH201, MH202, MH200N. Some connection stability issues/gateway resets reported with MH202  |
 | Lightning            | `1`          | `bus_on_off_switch`, `bus_dimmer`   | BUS switches and dimmers. Green switches.                   | Successfully tested: F411/2, F411/4, F411U2, F422, F429. AM5658 Green Switch. Some discovery issues reported with F429 (DALI Dimmers)  |
-| Automation           | `2`          | `bus_automation`                    | BUS roller shutters, with position feedback and auto-calibration | Successfully tested: LN4672M2  |
 
 ### For ZigBee (Radio)
 
@@ -48,7 +46,6 @@ The following Things and OpenWebNet `WHOs` are supported:
 | ---------- | :---: | :-------------------------------: | :-------------------------------------------------------------------: | ------------------------------------ |
 | Gateway    | `13`  | `zb_gateway`                      | Wireless ZigBee USB Gateway (BTicino/Legrand models: BTI-3578/088328) | Tested: BTI-3578 and LG 088328       |
 | Lighting   | `1`   | `zb_dimmer`, `zb_on_off_switch`, `zb_on_off_switch2u` | ZigBee dimmers, switches and 2-unit switches      | Tested: BTI-4591, BTI-3584, BTI-4585 |
-| Automation | `2`   | `zb_automation`                   | ZigBee roller shutters                                                | *To be tested*                       |
 
 ## Discovery
 
@@ -120,7 +117,6 @@ Devices can be also added manually from PaperUI. For each device it must be conf
   - example for BUS/SCS: Point to Point `A=6 PL=4` on local bus --> `WHERE="64#4#01"`
   - example for ZigBee devices: use decimal format address without the UNIT part and network: ZigBee `WHERE=414122201#9` --> `WHERE="4141222"`
 
-
 ## Channels
 
 Devices support some of the following channels:
@@ -129,48 +125,6 @@ Devices support some of the following channels:
 |--------------------------|---------------|-------------------------------------------------------------------------|:----------:|
 | `switch`                 | Switch        | To switch the device `ON` and `OFF`                                     |    R/W     |
 | `brightness`             | Dimmer        | To adjust the brightness value (Percent, `ON`, `OFF`)                   |    R/W     |
-| `shutter`                | Rollershutter | To activate roller shutters (`UP`, `DOWN`, `STOP`, Percent - [see Shutter position](#shutter-position)) |    R/W     |
-
-### Notes on channels
-
-#### `shutter` position
-
-For Percent commands and position feedback to work correctly, the `shutterRun` Thing config parameter must be configured equal to the time taken (in milliseconds) by the roller shutter to go from full UP, to full DOWN.
-It's possible to enter a value manually or set `shutterRun=AUTO` (default) to calibrate `shutterRun` parameter automatically. With `shutterRun=AUTO` the first time a Percent command is sent from openHAB to the roller shutter a *UP >> DOWN >> Position%* cycle will be performed automatically and the `shutterRun` config parameter will then be auto-calibrated to the correct value.
-
-- if `shutterRun` is not set, or is set to AUTO but calibration has not been performed yet, then position estimation will remain `UNDEFINED`
-- if `shutterRun` is set manually but too higher than the actual roller shutter time, then position estimation will remain `UNDEFINED`: try to reduce `shutterRun` until you find the right value
-- before adding/configuring roller shutter Things (or installing a binding update) it is suggested to have all roller shutters `UP`, otherwise the Percent command won’t work until the roller shutter is fully rolled up
-- if the gateway gets disconnected then the binding cannot know anymore the roller shutter position: if `shutterRun` is defined (and correct), then just roll the shutter all UP / DOWN and its position will be estimated again
-- the roller shutter position is estimated based on UP/DOWN timing and therefore an error of ±2% is normal
-
-
-## Integration with assistants
-
-To be visible to assistants like Google Assistant/Amazon Alexa/Apple HomeKit (Siri) an item must have the correct tag.
-Items created automatically with PaperUI (Simple Mode item linking: `Configuration > System > Item Linking > Simple mode > SAVE`) will get automatically the default tag from the binding: in particular items associated with these channels will have the following tags:
-
-- `switch` / `brightness` channels will have the `Lighting` tag
-- `shutter` channel will have the `Blinds` tag
-
-After configuration, you can double-check which tags are set looking at the `tags` attribute in the REST API: http://openhabianpi.local:8080/rest/items.
-
-**NOTE** For items created automatically with PaperUI tags are added automatically by the OpenWebNet binding, but you have to check which tags are actually supported by each openHAB add-on (Google Assistant/Alexa/HomeKit).
-
-After items and their correct tags are set, it will be enough to link openHAB with [myopenhab](https://www.openhab.org/addons/integrations/openhabcloud/) and with the Google Assistant/Alexa/HomeKit add-on, and you will be able to discover/control BTicino items from assistants.
-
-The device name imported in the assistant will be label given to the item, and not the item name; usually you can rename devices in the assistants.
-(item labels are not mandatory in openHAB, but for the Google Assistant Action they are absolutely necessary)
-
-Note that the most flexible configuration is obtained using `.items` file: see the examples below.
-
-See these official docs and other threads in the OH community for more information about Google Assistant/Alexa/HomeKit integration and configuration:
-
-- Google Assistant (Google Home): <https://www.openhab.org/docs/ecosystem/google-assistant/>
-- Amazon Alexa: <https://www.openhab.org/docs/ecosystem/alexa/>
-- Apple HomeKit (Siri): <https://www.openhab.org/addons/integrations/homekit/>
-
-**NOTE** You will need to add tags manually for items created using PaperUI when Simple Mode item linking is de-activated, or for items created using `.items` file.
 
 ## Full Example
 
@@ -181,7 +135,6 @@ Bridge openwebnet:bus_gateway:mybridge "MyHOMEServer1" [ host="192.168.1.35", pa
       bus_on_off_switch        LR_switch        "Living Room Light"       [ where="51" ]
       bus_dimmer               LR_dimmer        "Living Room Dimmer"      [ where="25#4#01" ]
       bus_dimmer               LR_dalidimmer    "Living Room Dali-Dimmer" [ where="0311#4#01" ]
-      bus_automation           LR_shutter       "Living Room Shutter"     [ where="93", shutterRun="10050"]
 }
 ``` 
 
@@ -199,11 +152,10 @@ Bridge openwebnet:zb_gateway:myZBgateway  [serialPort="kkkkkkk"] {
 Items (Light, Dimmer, etc.) will be discovered by Google Assistant/Alexa/HomeKit if their tags are configured like in the example.
 
 ```xtend
-Switch			iLR_switch			"Light"								<light>          (gLivingRoom)                [ "Lighting" ]  { channel="openwebnet:bus_on_off_switch:mybridge:LR_switch:switch" }
-Dimmer			iLR_dimmer			"Dimmer [%.0f %%]"					<DimmableLight>  (gLivingRoom)                [ "Lighting" ]  { channel="openwebnet:bus_dimmer:mybridge:LR_dimmer:brightness" }
-Dimmer			iLR_dalidimmer		"Dali-Dimmer [%.0f %%]"				<DimmableLight>  (gLivingRoom)                [ "Lighting" ]  { channel="openwebnet:bus_dimmer:mybridge:LR_dalidimmer:brightness" }
+Switch          iLR_switch          "Light"                             <light>          (gLivingRoom)                [ "Lighting" ]  { channel="openwebnet:bus_on_off_switch:mybridge:LR_switch:switch" }
+Dimmer          iLR_dimmer          "Dimmer [%.0f %%]"                  <DimmableLight>  (gLivingRoom)                [ "Lighting" ]  { channel="openwebnet:bus_dimmer:mybridge:LR_dimmer:brightness" }
+Dimmer          iLR_dalidimmer      "Dali-Dimmer [%.0f %%]"             <DimmableLight>  (gLivingRoom)                [ "Lighting" ]  { channel="openwebnet:bus_dimmer:mybridge:LR_dalidimmer:brightness" }
 /* For Dimmers, use category DimmableLight to have Off/On switch in addition to the Percent slider in PaperUI */
-Rollershutter	iLR_shutter			"Shutter [%.0f %%]"					<rollershutter>  (gShutters, gLivingRoom)     [ "Blinds"   ]  { channel="openwebnet:bus_automation:mybridge:LR_shutter:shutter" }
 ```
 
 ### openwebnet.sitemap
@@ -216,7 +168,6 @@ sitemap openwebnet label="OpenWebNet Binding Example Sitemap"
           Default item=iLR_switch           icon="light"    
           Default item=iLR_dimmer           icon="light" 
           Default item=iLR_dalidimmer       icon="light"
-          Default item=iLR_shutter
     }
 }
 ```
@@ -227,12 +178,6 @@ sitemap openwebnet label="OpenWebNet Binding Example Sitemap"
 - Contributors of this binding have no liability for any direct, indirect, incidental, special, exemplary, or consequential damage to things or people caused by using the binding connected to a real BTicino/Legrand (OpenWebNet) plant/system and its physical devices. The final user is the only responsible for using this binding in a real environment. See Articles 5. and 6. of [Eclipse Public Licence 2.0](https://www.eclipse.org/legal/epl-2.0/) under which this binding software is distributed
 - The OpenWebNet protocol is maintained and Copyright by BTicino/Legrand. The documentation of the protocol if freely accessible for developers on the [MyOpen Community website - https://www.myopen-legrandgroup.com/developers](https://www.myopen-legrandgroup.com/developers/)
 - OpenWebNet, MyHOME, MyHOME_Play and Living Now are registered trademarks by BTicino/Legrand
-- This binding uses `openwebnet-lib 0.9.x`, an OpenWebNet Java lib partly based on [openwebnet/rx-openwebnet](https://github.com/openwebnet/rx-openwebnet) client library by @niqdev, modified to support:
-    - gateways and OWN frames for ZigBee
-    - frame parsing
-    - monitoring events from BUS
-  
-  The lib also uses few modified classes from the old openHAB 1.x BTicino binding for socket handling and priority queues.
 
 ## Special thanks
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,7 +45,6 @@ import org.openwebnet.OpenGatewayZigBee;
 import org.openwebnet.OpenListener;
 import org.openwebnet.OpenNewDeviceListener;
 import org.openwebnet.OpenWebNet;
-import org.openwebnet.message.Automation;
 import org.openwebnet.message.BaseOpenMessage;
 import org.openwebnet.message.GatewayManagement;
 import org.openwebnet.message.Lighting;
@@ -313,7 +312,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
 
     private void discoverByActivation(BaseOpenMessage baseMsg) {
         logger.debug("==OWN==  BridgeHandler.discoverByActivation() ");
-        if (baseMsg instanceof Lighting || baseMsg instanceof Automation) {
+        if (baseMsg instanceof Lighting) {
             OpenDeviceType type = baseMsg.detectDeviceType();
             if (type != null) {
                 deviceDiscoveryService.newDiscoveryResult(baseMsg.getWhere(), type, baseMsg);
@@ -375,7 +374,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
 
         BaseOpenMessage baseMsg = (BaseOpenMessage) msg;
         // let's try to get the Thing associated with this message...
-        if (baseMsg instanceof Lighting || baseMsg instanceof Automation) {
+        if (baseMsg instanceof Lighting) {
             String ownId = ownIdFromMessage(baseMsg);
             logger.debug("==OWN==  ownId={}", ownId);
             OpenWebNetThingHandler deviceHandler = getDevice(ownId);

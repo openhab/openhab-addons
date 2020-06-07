@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,7 +28,6 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.openwebnet.handler.OpenWebNetAutomationHandler;
 import org.openhab.binding.openwebnet.handler.OpenWebNetBridgeHandler;
 import org.openhab.binding.openwebnet.handler.OpenWebNetGenericHandler;
 import org.openhab.binding.openwebnet.handler.OpenWebNetLightingHandler;
@@ -71,9 +70,6 @@ public class OpenWebNetHandlerFactory extends BaseThingHandlerFactory {
         } else if (OpenWebNetLightingHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             logger.debug("==OWN:HandlerFactory== creating NEW LIGHTING Handler");
             return new OpenWebNetLightingHandler(thing);
-        } else if (OpenWebNetAutomationHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            logger.debug("==OWN:HandlerFactory== creating NEW AUTOMATION Handler");
-            return new OpenWebNetAutomationHandler(thing);
         }
         logger.warn("==OWN:HandlerFactory== ThingType: {} is not supported by this binding", thing.getThingTypeUID());
         return null;
