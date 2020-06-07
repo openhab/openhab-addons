@@ -455,7 +455,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
             try {
                 logger.debug("Sending http request to Bosch to request rooms");
                 contentResponse = this.httpClient
-                        .newRequest("https://" + config.ipAddress + ":8444/smarthome/remote/json-rpc")
+                        .newRequest("https://" + config.ipAddress + ":8444/smarthome/rooms")
                         .header("Content-Type", "application/json").header("Accept", "application/json").method(GET)
                         .send();
 
