@@ -31,8 +31,8 @@ public enum WizLightingModuleType {
     DimmableWifi("TBD", THING_TYPE_WIZ_DIMMABLE_BULB),
     SmartPlug("TBD", THING_TYPE_WIZ_SMART_PLUG);
 
-    private String moduleName;
-    private ThingTypeUID thingTypeUID;
+    private final String moduleName;
+    private final ThingTypeUID thingTypeUID;
 
     private WizLightingModuleType(final String moduleName, final ThingTypeUID thingTypeUID) {
         this.moduleName = moduleName;
