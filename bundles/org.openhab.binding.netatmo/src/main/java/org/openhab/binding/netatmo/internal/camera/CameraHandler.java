@@ -81,7 +81,7 @@ public class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera> {
     }
 
     protected State getIsLocalState() {
-        return module != null ? toOnOffType(module.getIsLocal()) : UnDefType.UNDEF;
+        return module != null ? toOnOffType(module.isIsLocal()) : UnDefType.UNDEF;
     }
 
     protected State getLivePictureURLState() {
@@ -156,6 +156,6 @@ public class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera> {
 
     @SuppressWarnings("null")
     private boolean isLocal() {
-        return (module == null || module.getIsLocal() == null) ? false : module.getIsLocal();
+        return (module == null || module.isIsLocal() == null) ? false : module.isIsLocal();
     }
 }

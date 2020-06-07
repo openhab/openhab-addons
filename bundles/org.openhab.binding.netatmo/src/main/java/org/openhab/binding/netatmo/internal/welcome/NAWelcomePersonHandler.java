@@ -73,7 +73,7 @@ public class NAWelcomePersonHandler extends NetatmoModuleHandler<NAWelcomePerson
             case CHANNEL_WELCOME_PERSON_LASTSEEN:
                 return module != null ? toDateTimeType(module.getLastSeen()) : UnDefType.UNDEF;
             case CHANNEL_WELCOME_PERSON_ATHOME:
-                return module != null ? module.getOutOfSight() ? OnOffType.OFF : OnOffType.ON : UnDefType.UNDEF;
+                return module != null ? module.isOutOfSight() ? OnOffType.OFF : OnOffType.ON : UnDefType.UNDEF;
             case CHANNEL_WELCOME_PERSON_AVATAR_URL:
                 return toStringType(getAvatarURL());
             case CHANNEL_WELCOME_PERSON_AVATAR:
