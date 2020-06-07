@@ -10,11 +10,4 @@ https://www.eclipse.org/legal/epl-2.0/.
 
 == Source Code
 
-https://github.com/openhab/openhab2-addons
-
-== Third-party Content
-
-Modified version of rx-openwebnet
-* License: Mixed License
-* Original Project: https://github.com/openwebnet/rx-openwebnet
-* Original Source:  https://github.com/openwebnet/rx-openwebnet
+https://github.com/openhab/openhab-addons
