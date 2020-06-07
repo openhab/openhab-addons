@@ -66,9 +66,9 @@ It must be a value which is compatible with the item type. See openHAB core defi
 
 The `Authorization_Code` may *optionally* be used as follows:
 
-- When the thing configuration parameter `authorizationCode` is blank, the binding will compare the `Authorization_Code` field to the `authorizationCode` Configuration Parameter, and it will only execute the command if the two strings are the same.
+- When the thing configuration parameter `authorizationCode` is not blank, the binding will compare the `Authorization_Code` field to the `authorizationCode` Configuration Parameter, and it will only execute the command if the two strings are the same.
 
-- When the thing configuration parameter `authorizationCode` is not blank, the binding will NOT check this `Authorization_Code` field, and so it will always execute the command.
+- When the thing configuration parameter `authorizationCode` is blank, the binding will NOT check this `Authorization_Code` field, and so it will always execute the command.
 
  
 ## Full Example
