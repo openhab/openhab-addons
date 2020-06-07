@@ -81,5 +81,4 @@ public class RegistrationRequestParam implements Param {
     public void setPhoneMac(String phoneMac) {
         this.phoneMac = phoneMac;
     }
-
 }

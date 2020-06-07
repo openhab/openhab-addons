@@ -97,10 +97,8 @@ public class WizLightingHandler extends BaseThingHandler {
         super(thing);
         this.registrationInfo = registrationPacket;
         this.mostRecentState = new WizLightingSyncState();
-        this.config = getConfigAs(WizLightingDeviceConfiguration.class);
         fullyInitialized = false;
-        logger.trace("Created handler for WiZ bulb with IP {} and MAC address {}.", config.bulbIpAddress,
-                config.bulbMacAddress);
+        logger.trace("Created handler for WiZ bulb.");
     }
 
     @Override

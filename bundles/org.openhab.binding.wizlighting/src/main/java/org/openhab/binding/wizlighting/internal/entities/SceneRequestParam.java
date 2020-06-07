@@ -43,5 +43,4 @@ public class SceneRequestParam extends StateRequestParam {
     public void setSceneId(int sceneId) {
         this.sceneId = sceneId;
     }
-
 }

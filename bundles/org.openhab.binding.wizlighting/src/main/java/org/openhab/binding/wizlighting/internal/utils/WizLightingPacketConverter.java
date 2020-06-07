@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.wizlighting.internal.utils;
 
+import static java.nio.charset.StandardCharsets.*;
+
 import java.net.DatagramPacket;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -74,7 +76,8 @@ public class WizLightingPacketConverter {
      * @return the {@link WizLightingResponse}
      */
     public @Nullable WizLightingResponse transformResponsePacket(final DatagramPacket packet) {
-        String responseJson = new String(packet.getData(), 0, packet.getLength());
+        byte[] packetdata = packet.getData();
+        String responseJson = new String(packetdata, UTF_8);
         logger.debug("Incoming packet from {} to convert -> {}", packet.getAddress().getHostAddress(), responseJson);
 
         @Nullable

@@ -10,19 +10,19 @@
 		<description>Supports WiZ Full Color with Tunable White Bulbs</description>
 
 		<channels>
-			<channel id="color" typeId="system.color" />
-			<channel id="temperature" typeId="system.color-temperature" />
-			<channel id="dimming" typeId="system.brightness" />
+			<channel id="color" typeId="system.color"/>
+			<channel id="temperature" typeId="system.color-temperature"/>
+			<channel id="dimming" typeId="system.brightness"/>
 			<!-- NOTE: Keeping brightness in two places, color and brightness -->
 			<!-- NOTE: Having it in both places is necessary to allow the brighness to be changed while in color temperature mode -->
-			<channel id="state" typeId="system.power" />
+			<channel id="state" typeId="system.power"/>
 			<!-- NOTE: Yes, state can be controlled by 3 channels -->
-			<channel id="lightMode" typeId="lightMode" />
-			<channel id="speed" typeId="speed" />
-			<channel id="signalstrength" typeId="system.signal-strength" />
-			<channel id="lastUpdate" typeId="lastUpdate" />
+			<channel id="lightMode" typeId="lightMode"/>
+			<channel id="speed" typeId="speed"/>
+			<channel id="signalstrength" typeId="system.signal-strength"/>
+			<channel id="lastUpdate" typeId="lastUpdate"/>
 		</channels>
-		<config-description-ref uri="thing-type:wiz:light" />
+		<config-description-ref uri="thing-type:wiz:light"/>
 	</thing-type>
 
 	<!-- Tunable White WiFi Bulb Thing Type -->
@@ -31,16 +31,16 @@
 		<description>Supports WiZ Tunable White Bulbs</description>
 
 		<channels>
-			<channel id="temperature" typeId="system.color-temperature" />
-			<channel id="dimming" typeId="system.brightness" />
-			<channel id="state" typeId="system.power" />
+			<channel id="temperature" typeId="system.color-temperature"/>
+			<channel id="dimming" typeId="system.brightness"/>
+			<channel id="state" typeId="system.power"/>
 			<!-- NOTE: State can also be changed via dimming channel -->
-			<channel id="lightMode" typeId="lightMode" />
-			<channel id="speed" typeId="speed" />
-			<channel id="signalstrength" typeId="system.signal-strength" />
-			<channel id="lastUpdate" typeId="lastUpdate" />
+			<channel id="lightMode" typeId="lightMode"/>
+			<channel id="speed" typeId="speed"/>
+			<channel id="signalstrength" typeId="system.signal-strength"/>
+			<channel id="lastUpdate" typeId="lastUpdate"/>
 		</channels>
-		<config-description-ref uri="thing-type:wiz:light" />
+		<config-description-ref uri="thing-type:wiz:light"/>
 	</thing-type>
 
 	<!-- Single Color Dimmable WiFi Bulb Thing Type -->
@@ -49,15 +49,15 @@
 		<description>Supports WiZ Single Color Dimmable Bulbs</description>
 
 		<channels>
-			<channel id="dimming" typeId="system.brightness" />
-			<channel id="state" typeId="system.power" />
+			<channel id="dimming" typeId="system.brightness"/>
+			<channel id="state" typeId="system.power"/>
 			<!-- NOTE: State can also be changed via dimming channel -->
-			<channel id="lightMode" typeId="lightMode" />
-			<channel id="speed" typeId="speed" />
-			<channel id="signalstrength" typeId="system.signal-strength" />
-			<channel id="lastUpdate" typeId="lastUpdate" />
+			<channel id="lightMode" typeId="lightMode"/>
+			<channel id="speed" typeId="speed"/>
+			<channel id="signalstrength" typeId="system.signal-strength"/>
+			<channel id="lastUpdate" typeId="lastUpdate"/>
 		</channels>
-		<config-description-ref uri="thing-type:wiz:light" />
+		<config-description-ref uri="thing-type:wiz:light"/>
 	</thing-type>
 
 	<!-- WiFi Smart Plug Thing Type -->
@@ -66,11 +66,11 @@
 		<description>Supports WiZ Smart Plugs</description>
 
 		<channels>
-			<channel id="state" typeId="system.power" />
-			<channel id="signalstrength" typeId="system.signal-strength" />
-			<channel id="lastUpdate" typeId="lastUpdate" />
+			<channel id="state" typeId="system.power"/>
+			<channel id="signalstrength" typeId="system.signal-strength"/>
+			<channel id="lastUpdate" typeId="lastUpdate"/>
 		</channels>
-		<config-description-ref uri="thing-type:wiz:light" />
+		<config-description-ref uri="thing-type:wiz:light"/>
 	</thing-type>
 
 	<!-- Bulb Channel Types -->

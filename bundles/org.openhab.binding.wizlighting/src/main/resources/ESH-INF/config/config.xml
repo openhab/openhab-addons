@@ -6,8 +6,8 @@
 
 	<config-description uri="thing-type:wiz:light">
 		<parameter name="bulbMacAddress" type="text" required="true">
-			<label>Bulb MAC address</label>
-			<description>Mac Address of the bulb</description>
+			<label>Bulb MAC Address</label>
+			<description>MAC address of the bulb</description>
 			<required>true</required>
 		</parameter>
 		<parameter name="bulbIpAddress" type="text" required="true">

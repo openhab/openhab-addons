@@ -148,7 +148,7 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
         // NOTE: Only full color bulbs supported at this time
         ThingUID newThingId = new ThingUID(THING_TYPE_WIZ_COLOR_BULB, lightMacAddress);
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(newThingId).withProperties(properties)
-                .withLabel("WiZ Full Color Bulb at " + lightIpAddress).withRepresentationProperty(lightMacAddress)
+                .withLabel("WiZ Full Color Bulb at " + lightIpAddress).withRepresentationProperty(CONFIG_MAC_ADDRESS)
                 .build();
 
         this.thingDiscovered(discoveryResult);

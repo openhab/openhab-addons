@@ -89,8 +89,8 @@ public class WizResponseDeserializer implements JsonDeserializer<WizLightingResp
             if (jobject.has("method")) {
                 try {
                     String inMethod = jobject.get("method").getAsString();
-                    String ProperCaseMethod = inMethod.substring(0, 1).toUpperCase() + inMethod.substring(1);
-                    method = WizLightingMethodType.valueOf(ProperCaseMethod);
+                    String properCaseMethod = inMethod.substring(0, 1).toUpperCase() + inMethod.substring(1);
+                    method = WizLightingMethodType.valueOf(properCaseMethod);
                     deserializedResponse.setMethod(method);
                 } catch (IllegalArgumentException e) {
                     logger.warn("Bulb returned an invalid method: {}", jobject.get("method"));

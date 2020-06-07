@@ -53,5 +53,4 @@ public final class ValidationUtils {
     public static boolean isMacNotValid(final String macAddress) {
         return !isMacValid(macAddress);
     }
-
 }
