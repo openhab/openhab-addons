@@ -55,6 +55,7 @@ public class GreeBindingConstants {
     public static final String HEALTH_CHANNEL = "health";
     public static final String PWRSAV_CHANNEL = "powersave";
 
+    // Mode channel
     public static final String MODE_AUTO = "auto";
     public static final String MODE_COOL = "cool";
     public static final String MODE_DRY = "dry";
@@ -70,6 +71,14 @@ public class GreeBindingConstants {
     public static final int GREE_MODE_DRY = 2;
     public static final int GREE_MODE_FAN = 3;
     public static final int GREE_MODE_HEAT = 4;
+
+    // Quiet channel
+    public static final String QUIET_OFF = "off";
+    public static final String QUIET_AUTO = "auto";
+    public static final String QUIET_QUIET = "quiet";
+    public static final int GREE_QUIET_OFF = 0;
+    public static final int GREE_QUIET_AUTO = 1;
+    public static final int GREE_QUIET_QUIET = 2;
 
     // UDPPort used to communicate using UDP with GREE Airconditioners. .
     public static final int GREE_PORT = 7000;

@@ -172,7 +172,7 @@ public class GreeHandler extends BaseThingHandler {
                         device.setDeviceWindspeed(socket, getNumber(command));
                         break;
                     case QUIET_CHANNEL:
-                        device.setQuietMode(socket, getNumber(command));
+                        handleQuietCommand(command, socket);
                         break;
                     case AIR_CHANNEL:
                         device.setDeviceAir(socket, getOnOff(command));
@@ -195,40 +195,6 @@ public class GreeHandler extends BaseThingHandler {
                 logger.debug("Unable to execute command {} for channel {}", command, channelId, e);
             }
         }
-    }
-
-    private int getOnOff(Command command) {
-        if (command instanceof OnOffType) {
-            return ((OnOffType) command) == OnOffType.ON ? 1 : 0;
-        }
-        if ((command instanceof DecimalType) && (((DecimalType) command).intValue() <= 2)) {
-            return ((DecimalType) command).intValue();
-        }
-        throw new IllegalArgumentException("Invalid OonOffType");
-    }
-
-    private int getNumber(Command command) {
-        if (command instanceof DecimalType) {
-            return ((DecimalType) command).intValue();
-        }
-        throw new IllegalArgumentException("Invalud Number type");
-    }
-
-    private double getTemp(Command command) {
-        if (command instanceof DecimalType) {
-            // assume Celsius
-            return ((DecimalType) command).doubleValue();
-        }
-        if (command instanceof QuantityType) {
-            QuantityType<?> q = (QuantityType<?>) command;
-            if (q.getUnit() == Units.CELSIUS) {
-                return q.intValue();
-            }
-            if (q.getUnit() == ImperialUnits.FAHRENHEIT) {
-                return ImperialUnits.FAHRENHEIT.getConverterTo(Units.CELSIUS).convert(q.doubleValue());
-            }
-        }
-        throw new IllegalArgumentException("Invalud Temp type");
     }
 
     private void handleModeCommand(Command command, DatagramSocket socket) throws GreeException {
@@ -311,6 +277,63 @@ public class GreeHandler extends BaseThingHandler {
 
     }
 
+    private void handleQuietCommand(Command command, DatagramSocket socket) throws GreeException {
+        int mode = -1;
+        if (command instanceof DecimalType) {
+            mode = ((DecimalType) command).intValue();
+        } else if (command instanceof StringType) {
+            switch (command.toString().toLowerCase()) {
+                case QUIET_OFF:
+                    mode = GREE_QUIET_OFF;
+                    break;
+                case QUIET_AUTO:
+                    mode = GREE_QUIET_AUTO;
+                    break;
+                case QUIET_QUIET:
+                    mode = GREE_QUIET_QUIET;
+                    break;
+            }
+        }
+        if (mode != -1) {
+            device.setQuietMode(socket, mode);
+        }
+        throw new IllegalArgumentException("Invalid QuietType");
+    }
+
+    private int getOnOff(Command command) {
+        if (command instanceof OnOffType) {
+            return ((OnOffType) command) == OnOffType.ON ? 1 : 0;
+        }
+        if ((command instanceof DecimalType) && (((DecimalType) command).intValue() <= 2)) {
+            return ((DecimalType) command).intValue();
+        }
+        throw new IllegalArgumentException("Invalid OnOffType");
+    }
+
+    private int getNumber(Command command) {
+        if (command instanceof DecimalType) {
+            return ((DecimalType) command).intValue();
+        }
+        throw new IllegalArgumentException("Invalud Number type");
+    }
+
+    private double getTemp(Command command) {
+        if (command instanceof DecimalType) {
+            // assume Celsius
+            return ((DecimalType) command).doubleValue();
+        }
+        if (command instanceof QuantityType) {
+            QuantityType<?> q = (QuantityType<?>) command;
+            if (q.getUnit() == Units.CELSIUS) {
+                return q.intValue();
+            }
+            if (q.getUnit() == ImperialUnits.FAHRENHEIT) {
+                return ImperialUnits.FAHRENHEIT.getConverterTo(Units.CELSIUS).convert(q.doubleValue());
+            }
+        }
+        throw new IllegalArgumentException("Invalud Temp type");
+    }
+
     private boolean isMinimumRefreshTimeExceeded() {
         long currentTime = System.currentTimeMillis();
         long timeSinceLastRefresh = currentTime - lastRefreshTime;
@@ -388,7 +411,7 @@ public class GreeHandler extends BaseThingHandler {
                     state = updateNumber("WdSpd");
                     break;
                 case QUIET_CHANNEL:
-                    state = updateNumber("Quiet");
+                    state = updateQuiet();
                     break;
                 case AIR_CHANNEL:
                     state = updateOnOff("Air");
@@ -457,6 +480,20 @@ public class GreeHandler extends BaseThingHandler {
             if (!modeStr.isEmpty()) {
                 logger.debug("Updading mode channel with {}/{}", mode, modeStr);
                 return Optional.of(new StringType(modeStr));
+            }
+        }
+        return Optional.empty();
+    }
+
+    private Optional<State> updateQuiet() throws GreeException {
+        if (device.hasStatusValChanged("Quiet")) {
+            switch (device.getIntStatusVal("Quiet")) {
+                case GREE_QUIET_OFF:
+                    return Optional.of(new StringType(QUIET_OFF));
+                case GREE_QUIET_AUTO:
+                    return Optional.of(new StringType(QUIET_AUTO));
+                case GREE_QUIET_QUIET:
+                    return Optional.of(new StringType(QUIET_QUIET));
             }
         }
         return Optional.empty();
