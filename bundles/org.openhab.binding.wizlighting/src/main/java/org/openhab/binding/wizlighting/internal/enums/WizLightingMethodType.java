@@ -125,7 +125,7 @@ public enum WizLightingMethodType {
      */
     UnknownMethod("unknownMethod");
 
-    private String methodName;
+    private final String methodName;
 
     private WizLightingMethodType(final String methodName) {
         this.methodName = methodName;
