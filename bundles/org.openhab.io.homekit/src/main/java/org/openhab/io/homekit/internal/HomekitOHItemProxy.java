@@ -76,18 +76,15 @@ public class HomekitOHItemProxy {
 
     @SuppressWarnings("null")
     private void sendCommand() {
-
         if (!(item instanceof DimmerItem)) {
             // currently supports only DimmerItem and ColorItem (which extends DimmerItem)
             logger.debug("unexpected item type {}. Only DimmerItem and ColorItem are supported.", item);
             return;
         }
-
         final OnOffType on = (OnOffType) commandCache.remove(ON_COMMAND);
         final PercentType brightness = (PercentType) commandCache.remove(BRIGHTNESS_COMMAND);
         final DecimalType hue = (DecimalType) commandCache.remove(HUE_COMMAND);
         final PercentType saturation = (PercentType) commandCache.remove(SATURATION_COMMAND);
-
         if (on != null) {
             // always sends OFF.
             // sends ON only if
@@ -134,7 +131,6 @@ public class HomekitOHItemProxy {
         commandCache.put(commandType, state);
         logger.trace("add command to command cache: item {}, command type {}, command state {}. cache state after: {}",
                 this, commandType, state, commandCache);
-
         // if cache has already HUE+SATURATION or BRIGHTNESS+ON then we don't expect any further relevant command
         if (((item instanceof ColorItem) && commandCache.containsKey(HUE_COMMAND)
                 && commandCache.containsKey(SATURATION_COMMAND))
@@ -145,7 +141,6 @@ public class HomekitOHItemProxy {
             sendCommand();
             return;
         }
-
         // if timer is not already set, create a new one to ensure that the command command is send even if no follow up
         // commands are received.
         if (future == null || future.isDone()) {
