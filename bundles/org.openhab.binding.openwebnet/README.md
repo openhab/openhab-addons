@@ -13,21 +13,21 @@ The binding supports:
 
 ## Supported Things
 
-In order for this biding to work, a **BTicino/Legrand OpenWebNet gateway** is needed in your home system to talk to devices.
+In order for this binding to work, a **BTicino/Legrand OpenWebNet gateway** is needed in your home system to talk to devices.
 
 These gateways have been tested with the binding:
 
 - **IP gateways** or scenario programmers, such as BTicino 
-[F454](http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?productId=006), 
-[MyHOMEServer1](http://www.bticino.com/products-catalogue/myhome_up-simple-home-automation-system/), 
+[F454](http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?lang=EN&productId=006), 
+[MyHOMEServer1](http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?lang=EN&productId=067), 
 [MyHOME_Screen10](http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?lang=EN&productId=001), 
-[MH201](http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?productId=053),
-[MH202](http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?productId=059), 
-[F455](http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?productId=051),
-[MH200N](http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?productId=016), 
-[F453](http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?productId=027),  etc.
+[MH201](http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?lang=EN&productId=053),
+[MH202](http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?lang=EN&productId=059), 
+[F455](http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?lang=EN&productId=051),
+[MH200N](http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?lang=EN&productId=016), 
+[F453](http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?lang=EN&productId=027),  etc.
 
-- **ZigBee USB Gateways**, such as [BTicino 3578](https://catalogo.bticino.it/BTI-3578-IT) and [Legrand 088328](https://www.legrand.com/ecatalogue/088328-openweb-net-zigbee-gateway-radio-interface.html)
+- **ZigBee USB Gateways**, such as [BTicino 3578](https://catalogo.bticino.it/BTI-3578-IT), also known as Legrand 088328
 
 **NOTE** The new BTicino Living Now&reg; wireless system is not supported as it does not use the OpenWebNet protocol.
 
@@ -62,7 +62,7 @@ For other gateways you can add them manually, see [Thing Configuration](#thing-c
 
 #### Discovery by Activation
 
-Devices can also be discovered if activated while a Inbox Scan is active: start a new Scan, wait 15-20 seconds and then _while the Scan is still active_ (spinning arrow in Inbox), activate the physical device (for example dim the dimmer) to have it discovered by the binding.
+Devices can also be discovered if activated while an Inbox Scan is active: start a new Scan, wait 15-20 seconds and then _while the Scan is still active_ (spinning arrow in Inbox), activate the physical device (for example dim the dimmer) to have it discovered by the binding.
 
 If a device cannot be discovered automatically it's always possible to add them manually, see [Configuring Devices](#configuring-devices).
 
