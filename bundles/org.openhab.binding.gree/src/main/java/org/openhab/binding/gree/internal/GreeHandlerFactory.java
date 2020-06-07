@@ -14,12 +14,10 @@ package org.openhab.binding.gree.internal;
 
 import static org.openhab.binding.gree.internal.GreeBindingConstants.*;
 
-import java.util.Hashtable;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.i18n.LocaleProvider;
 import org.eclipse.smarthome.core.i18n.TranslationProvider;
 import org.eclipse.smarthome.core.net.NetworkAddressService;
@@ -28,9 +26,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.gree.internal.discovery.GreeDiscoveryService;
 import org.openhab.binding.gree.internal.handler.GreeHandler;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -45,23 +41,21 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding." + BINDING_ID, service = ThingHandlerFactory.class)
 public class GreeHandlerFactory extends BaseThingHandlerFactory {
-    private @Nullable ServiceRegistration<?> serviceRegistration;
     private final GreeTranslationProvider messages;
+    // private @Nullable ServiceRegistration<?> serviceRegistration;
 
     @Activate
     public GreeHandlerFactory(@Reference NetworkAddressService networkAddressService,
             @Reference LocaleProvider localeProvider, @Reference TranslationProvider i18nProvider,
             ComponentContext componentContext, Map<String, Object> configProperties) {
         super.activate(componentContext);
-
         messages = new GreeTranslationProvider(bundleContext.getBundle(), i18nProvider, localeProvider);
-
-        String broadcastAddress = networkAddressService.getConfiguredBroadcastAddress();
-        String defBroadcastIp = broadcastAddress != null ? broadcastAddress : "";
-        GreeDiscoveryService discoveryService = new GreeDiscoveryService(bundleContext.getBundle(), messages,
-                defBroadcastIp);
-        this.serviceRegistration = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
-                new Hashtable<String, Object>());
+        /*
+         * GreeDiscoveryService discoveryService = new GreeDiscoveryService(bundleContext.getBundle(), messages,
+         * defBroadcastIp);
+         * this.serviceRegistration = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
+         * new Hashtable<String, Object>());
+         */
     }
 
     @Override
@@ -77,22 +71,24 @@ public class GreeHandlerFactory extends BaseThingHandlerFactory {
         return null;
     }
 
-    private synchronized void unregisterDeviceDiscoveryService() {
-        @Nullable
-        ServiceRegistration<?> reg = serviceRegistration;
-
-        if (reg != null) {
-            reg.unregister();
-            GreeDiscoveryService discoveryService = (GreeDiscoveryService) bundleContext.getService(reg.getReference());
-            if (discoveryService != null) {
-                discoveryService.deactivate();
-            }
-        }
-    }
-
+    /*
+     * private synchronized void unregisterDeviceDiscoveryService() {
+     *
+     * @Nullable
+     * ServiceRegistration<?> reg = serviceRegistration;
+     *
+     * if (reg != null) {
+     * reg.unregister();
+     * GreeDiscoveryService discoveryService = (GreeDiscoveryService) bundleContext.getService(reg.getReference());
+     * if (discoveryService != null) {
+     * discoveryService.deactivate();
+     * }
+     * }
+     * }
+     */
     @Override
     public void deactivate(ComponentContext componentContext) {
         super.deactivate(componentContext);
-        unregisterDeviceDiscoveryService();
+        // unregisterDeviceDiscoveryService();
     }
 }

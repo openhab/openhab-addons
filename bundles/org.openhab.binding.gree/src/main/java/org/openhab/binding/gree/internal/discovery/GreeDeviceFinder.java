@@ -96,7 +96,7 @@ public class GreeDeviceFinder {
                     int remotePort = receivePacket.getPort();
 
                     // Read the response
-                    String modifiedSentence = new String(receivePacket.getData());
+                    String modifiedSentence = new String(receivePacket.getData(), "UTF-8");
                     StringReader stringReader = new StringReader(modifiedSentence);
                     GreeScanResponse4GsonDTO scanResponseGson = gson.fromJson(new JsonReader(stringReader),
                             GreeScanResponse4GsonDTO.class);

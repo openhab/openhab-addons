@@ -26,12 +26,19 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.core.i18n.LocaleProvider;
+import org.eclipse.smarthome.core.i18n.TranslationProvider;
+import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.gree.internal.GreeException;
 import org.openhab.binding.gree.internal.GreeTranslationProvider;
 import org.openhab.binding.gree.internal.handler.GreeAirDevice;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +50,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
+@Component(service = GreeDiscoveryService.class, immediate = true, configurationPid = "discovery.gree")
 public class GreeDiscoveryService extends AbstractDiscoveryService {
     private static final int TIMEOUT_SEC = 10;
     private final Logger logger = LoggerFactory.getLogger(GreeDiscoveryService.class);
@@ -51,22 +59,23 @@ public class GreeDiscoveryService extends AbstractDiscoveryService {
 
     private GreeDeviceFinder deviceFinder = new GreeDeviceFinder();
 
-    public GreeDiscoveryService(Bundle bundle, GreeTranslationProvider messages, String broadcastAddress) {
+    @Activate
+    public GreeDiscoveryService(@Reference NetworkAddressService networkAddressService,
+            @Reference LocaleProvider localeProvider, @Reference TranslationProvider i18nProvider) {
         super(SUPPORTED_THING_TYPES_UIDS, TIMEOUT_SEC);
-        this.messages = messages;
-        this.broadcastAddress = !broadcastAddress.isEmpty() ? broadcastAddress : "192.168.255.255";
-        logger.debug("Auto-detected broadcast IP = {}", this.broadcastAddress);
+        Bundle bundle = FrameworkUtil.getBundle(this.getClass());
+        messages = new GreeTranslationProvider(bundle.getBundleContext().getBundle(), i18nProvider, localeProvider);
+        String ip = networkAddressService.getConfiguredBroadcastAddress();
+        broadcastAddress = ip != null ? ip : "";
     }
 
     @Override
     protected void startBackgroundDiscovery() {
-        logger.trace("Starting background scan");
         startScan();
     }
 
     @Override
     protected void stopBackgroundDiscovery() {
-        logger.trace("Stopping background scan");
         stopScan();
     }
 
