@@ -24,7 +24,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.measure.Unit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -209,7 +208,6 @@ public class GreeHandler extends BaseThingHandler {
             logger.debug("Send Power-{}", command);
             device.setDevicePower(socket, getOnOff(command));
         } else /* String */ {
-            isNumber = StringUtils.isNumeric(command.toString());
             modeStr = command.toString().toLowerCase();
             switch (modeStr) {
                 case MODE_AUTO:
@@ -237,13 +235,10 @@ public class GreeHandler extends BaseThingHandler {
                     device.setDevicePower(socket, modeStr.equals(MODE_ON) ? 1 : 0);
                     break;
                 default:
-                    if (isNumber) {
-                        // Support selecting the mode by number, maybe specific models support
-                        // additional modes
-                        mode = Integer.parseInt(modeStr);
-                    } else {
-                        logger.debug("Invalid mode requested: {}", command);
-                    }
+                    // fallback: mode number, pass transparent
+                    // if string is not parsable parseInt() throws an exception
+                    mode = Integer.parseInt(modeStr);
+                    isNumber = true;
                     break;
             }
             logger.debug("Mode {} mapped to {}", modeStr, mode);
