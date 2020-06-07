@@ -16,7 +16,8 @@ import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.*;
 
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -39,6 +40,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Massimo Valla - Initial contribution
  */
+@NonNullByDefault
 public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(OpenWebNetLightingHandler.class);
@@ -49,14 +51,13 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
 
     private double lastBrightnessChangeSentTS = 0; // timestamp when last brightness change was sent to the device
     private static final int BRIGHTNESS_CHANGE_DELAY = 1500; // ms delay to wait before sending another brightness
-                                                             // status
-                                                             // request
+                                                             // status request
 
     private boolean brightnessLevelRequested = false; // was the brightness level requested ?
     private int latestBrightnessWhat = -1; // latest brightness WHAT value (-1 = unknown)
     private int latestBrightnessWhatBeforeOff = -1; // latest brightness WHAT value before device was set to off
 
-    public OpenWebNetLightingHandler(@NonNull Thing thing) {
+    public OpenWebNetLightingHandler(Thing thing) {
         super(thing);
         logger.debug("==OWN:LightingHandler== constructor");
     }
@@ -370,6 +371,7 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
      *
      * @param unit the device unit
      **/
+    @Nullable
     protected String toWhere(String unit) {
         logger.debug("==OWN:LightingHandler== toWhere(unit) ownId={}", ownId);
         if (bridgeHandler.isBusGateway()) {
@@ -384,6 +386,7 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
      *
      * @param channel the channel
      **/
+    @Nullable
     protected String toWhere(ChannelUID channel) {
         logger.debug("==OWN:LightingHandler== toWhere(ChannelUID) ownId={}", ownId);
         if (bridgeHandler.isBusGateway()) {

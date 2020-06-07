@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -37,7 +39,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Massimo Valla - Initial contribution
  */
-
+@NonNullByDefault
 public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService implements OpenNewDeviceListener {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.DEVICE_SUPPORTED_THING_TYPES;
@@ -81,9 +83,14 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService i
     }
 
     @Override
-    public void onNewDevice(String where, OpenDeviceType deviceType, BaseOpenMessage msg) {
+    public void onNewDevice(@Nullable String where, @Nullable OpenDeviceType deviceType,
+            @Nullable BaseOpenMessage msg) {
         try {
-            newDiscoveryResult(where, deviceType, msg);
+            if (where != null && deviceType != null) {
+                newDiscoveryResult(where, deviceType, msg);
+            } else {
+                logger.warn("==OWN:DeviceDiscovery== onNewDevice with null where/deviceType msg={}", msg);
+            }
         } catch (Exception e) {
             logger.warn("==OWN:DeviceDiscovery== Exception while discovering new device WHERE={}, deviceType={}: {}",
                     where, deviceType, e.getMessage());
@@ -97,42 +104,40 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService i
      * @param deviceType {@link OpenDeviceType} of the discovered device
      * @param message the OWN message received that identified the device (optional)
      */
-    public void newDiscoveryResult(String where, OpenDeviceType deviceType, BaseOpenMessage baseMsg) {
+    public void newDiscoveryResult(String where, OpenDeviceType deviceType, @Nullable BaseOpenMessage baseMsg) {
         logger.info("==OWN:DeviceDiscovery== newDiscoveryResult() WHERE={}, deviceType={}", where, deviceType);
         ThingTypeUID thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_DEVICE; // generic device
         String thingLabel = OpenWebNetBindingConstants.THING_LABEL_DEVICE;
         Who deviceWho = Who.DEVICE_DIAGNOSTIC; // TODO change to another Who (unknown?)
-        if (deviceType != null) {
-            switch (deviceType) {
-                case ZIGBEE_ON_OFF_SWITCH: {
-                    thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_ZB_ON_OFF_SWITCH;
-                    thingLabel = OpenWebNetBindingConstants.THING_LABEL_ZB_ON_OFF_SWITCH;
-                    deviceWho = Who.LIGHTING;
-                    break;
-                }
-                case ZIGBEE_DIMMER_SWITCH: {
-                    thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_ZB_DIMMER;
-                    thingLabel = OpenWebNetBindingConstants.THING_LABEL_ZB_DIMMER;
-                    deviceWho = Who.LIGHTING;
-                    break;
-                }
-                case SCS_ON_OFF_SWITCH: {
-                    thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_ON_OFF_SWITCH;
-                    thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_ON_OFF_SWITCH;
-                    deviceWho = Who.LIGHTING;
-                    break;
-                }
-                case SCS_DIMMER_SWITCH: {
-                    thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_DIMMER;
-                    thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_DIMMER;
-                    deviceWho = Who.LIGHTING;
-                    break;
-                }
-                default:
-                    logger.warn(
-                            "==OWN:DeviceDiscovery== device type {} is not supported, default to generic device (WHERE={})",
-                            deviceType, where);
+        switch (deviceType) {
+            case ZIGBEE_ON_OFF_SWITCH: {
+                thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_ZB_ON_OFF_SWITCH;
+                thingLabel = OpenWebNetBindingConstants.THING_LABEL_ZB_ON_OFF_SWITCH;
+                deviceWho = Who.LIGHTING;
+                break;
             }
+            case ZIGBEE_DIMMER_SWITCH: {
+                thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_ZB_DIMMER;
+                thingLabel = OpenWebNetBindingConstants.THING_LABEL_ZB_DIMMER;
+                deviceWho = Who.LIGHTING;
+                break;
+            }
+            case SCS_ON_OFF_SWITCH: {
+                thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_ON_OFF_SWITCH;
+                thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_ON_OFF_SWITCH;
+                deviceWho = Who.LIGHTING;
+                break;
+            }
+            case SCS_DIMMER_SWITCH: {
+                thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_DIMMER;
+                thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_DIMMER;
+                deviceWho = Who.LIGHTING;
+                break;
+            }
+            default:
+                logger.warn(
+                        "==OWN:DeviceDiscovery== device type {} is not supported, default to generic device (WHERE={})",
+                        deviceType, where);
         }
         String tId = bridgeHandler.thingIdFromWhere(where);
         ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, tId);
@@ -159,8 +164,8 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService i
         // bridgeHandler.ownIdFromWhoWhere(bridgeHandler.normalizeWhere(where), deviceWho.value().toString()));
         properties.put(OpenWebNetBindingConstants.PROPERTY_OWNID,
                 bridgeHandler.ownIdFromWhoWhere(where, deviceWho.value().toString()));
-        if (thingTypeUID == OpenWebNetBindingConstants.THING_TYPE_DEVICE && baseMsg != null) { // generic thing, let's
-                                                                                               // specify the WHO
+        if (thingTypeUID == OpenWebNetBindingConstants.THING_TYPE_DEVICE && baseMsg != null) {
+            // generic thing, let's specify the WHO
             thingLabel = thingLabel + " (WHO=" + baseMsg.getWho() + ", WHERE=" + whereLabel + ")";
         } else {
             thingLabel = thingLabel + " (WHERE=" + whereLabel + ")";

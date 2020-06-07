@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -45,7 +46,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Massimo Valla - Initial contribution
  */
-
+@NonNullByDefault
 @Component(service = UpnpDiscoveryParticipant.class)
 public class BusGatewayUpnpDiscovery implements UpnpDiscoveryParticipant {
 
@@ -66,9 +67,13 @@ public class BusGatewayUpnpDiscovery implements UpnpDiscoveryParticipant {
             this.thingId = thingId;
         }
 
-        public static BusGatewayId fromValue(String s) {
+        public static @Nullable BusGatewayId fromValue(String s) {
             Optional<BusGatewayId> m = Arrays.stream(values()).filter(val -> s.equals(val.value)).findFirst();
-            return m.orElse(null);
+            if (m == null) {
+                return null;
+            } else {
+                return m.get();
+            }
         }
 
         public String getThingId() {
@@ -85,8 +90,10 @@ public class BusGatewayUpnpDiscovery implements UpnpDiscoveryParticipant {
         private String modelDescription = "<unknown>";
         private String modelNumber = "<unknown>";
         private String serialNumber = "<unknown>";
+        @Nullable
         private String host;
         private String manufacturer = "<unknown>";
+        @Nullable
         private UDN udn;
         private boolean isBTicino = false;
 
@@ -153,7 +160,8 @@ public class BusGatewayUpnpDiscovery implements UpnpDiscoveryParticipant {
         }
         ThingUID thingId = generateThingUID(devInfo);
         if (thingId != null) {
-            if (devInfo.host != null) {
+            String host = devInfo.host;
+            if (host != null) {
                 Map<String, Object> properties = new HashMap<>(4);
                 String label = "BUS Gateway (" + thingId.getId().split("-")[0] + ")";
                 try {
@@ -164,7 +172,7 @@ public class BusGatewayUpnpDiscovery implements UpnpDiscoveryParticipant {
                     logger.warn("==OWN:UPnP== Exception while getting devInfo for device UDN={}. Exception={}",
                             devInfo.udn, e.getMessage());
                 }
-                properties.put(OpenWebNetBindingConstants.CONFIG_PROPERTY_HOST, devInfo.host);
+                properties.put(OpenWebNetBindingConstants.CONFIG_PROPERTY_HOST, host);
                 properties.put(OpenWebNetBindingConstants.PROPERTY_FIRMWARE_VERSION, devInfo.modelNumber);
                 properties.put(OpenWebNetBindingConstants.PROPERTY_MODEL, devInfo.modelName);
                 properties.put(OpenWebNetBindingConstants.PROPERTY_SERIAL_NO, devInfo.serialNumber);
@@ -196,7 +204,7 @@ public class BusGatewayUpnpDiscovery implements UpnpDiscoveryParticipant {
      * @return a new ThingUID, or null if the device is not supported by the binding
      */
     private @Nullable ThingUID generateThingUID(DeviceInfo devInfo) {
-        if (devInfo != null && devInfo.isBTicino) {
+        if (devInfo.isBTicino) {
             String idString = devInfo.udn.getIdentifierString();
             BusGatewayId gwId = BusGatewayId.fromValue(idString.split("-")[1]);
             if (gwId != null) {

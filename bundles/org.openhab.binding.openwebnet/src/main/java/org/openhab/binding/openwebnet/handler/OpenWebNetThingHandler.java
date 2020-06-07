@@ -21,6 +21,8 @@ import java.util.concurrent.TimeUnit;
 import javax.measure.Quantity;
 import javax.measure.Unit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -41,14 +43,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author Massimo Valla - Initial contribution
  */
-
+@NonNullByDefault
 public abstract class OpenWebNetThingHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(OpenWebNetThingHandler.class);
 
-    protected OpenWebNetBridgeHandler bridgeHandler;
-    protected String ownId; // OpenWebNet identifier for this device: WHO.WHERE
-    protected String deviceWhere; // this device WHERE address
+    protected @Nullable OpenWebNetBridgeHandler bridgeHandler;
+    protected @Nullable String ownId; // OpenWebNet identifier for this device: WHO.WHERE
+    protected @Nullable String deviceWhere; // this device WHERE address
 
     public OpenWebNetThingHandler(Thing thing) {
         super(thing);
@@ -60,26 +62,27 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
         Bridge bridge = getBridge();
         if (bridge != null && bridge.getHandler() != null) {
             bridgeHandler = (OpenWebNetBridgeHandler) bridge.getHandler();
-            if (getConfig().get(CONFIG_PROPERTY_WHERE) == null) {
+            deviceWhere = (String) getConfig().get(CONFIG_PROPERTY_WHERE);
+            if (deviceWhere == null) {
                 logger.warn("==OWN:ThingHandler== WHERE parameter in configuration is null or invalid for thing {}",
                         thing.getUID());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "WHERE parameter in configuration is null or invalid");
                 return;
+            } else {
+                // TODO check range for WHERE
+                ownId = bridgeHandler.ownIdFromDeviceWhere(deviceWhere, this);
+                final String oid = ownId;
+                Map<String, String> properties = editProperties();
+                properties.put(PROPERTY_OWNID, oid);
+                updateProperties(properties);
+
+                bridgeHandler.registerDevice(oid, this);
+                logger.debug("==OWN:ThingHandler== associated thing to bridge with ownId={}", ownId);
+                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "waiting state update...");
+                // TODO handleCommand(REFRESH) : is it called automatically ? otherwise do here a:
+                // bridgeHandler.requestDeviceState(getThing().getUID());
             }
-            deviceWhere = (String) getConfig().get(CONFIG_PROPERTY_WHERE);
-            // TODO check range for WHERE
-            ownId = bridgeHandler.ownIdFromDeviceWhere(deviceWhere, this);
-
-            Map<String, String> properties = editProperties();
-            properties.put(PROPERTY_OWNID, ownId);
-            updateProperties(properties);
-
-            bridgeHandler.registerDevice(ownId, this);
-            logger.debug("==OWN:ThingHandler== associated thing to bridge with ownId={}", ownId);
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "waiting state update...");
-            // TODO handleCommand(REFRESH) : is it called automatically ? otherwise do here a:
-            // bridgeHandler.requestDeviceState(getThing().getUID());
         } else {
             logger.warn(
                     "==OWN:ThingHandler== No bridge associated, please assign a bridge in thing configuration. thing={}",
@@ -156,8 +159,9 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         logger.debug("==OWN:ThingHandler== dispose() for {}", getThing().getUID());
-        if (bridgeHandler != null) {
-            bridgeHandler.unregisterDevice(ownId);
+        if (bridgeHandler != null && ownId != null) {
+            String id = ownId;
+            bridgeHandler.unregisterDevice(id);
         }
         super.dispose();
     }

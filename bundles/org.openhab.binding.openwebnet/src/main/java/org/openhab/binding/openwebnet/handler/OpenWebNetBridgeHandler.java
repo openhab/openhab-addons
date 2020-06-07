@@ -74,22 +74,19 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     // Association is: String ownId -> OpenWebNetThingHandler, with ownId = WHO.WHERE
     private Map<String, OpenWebNetThingHandler> registeredDevices = new ConcurrentHashMap<>();
 
-    @Nullable
-    protected OpenGateway gateway;
+    protected @Nullable OpenGateway gateway;
     private boolean isBusGateway = false;
 
     private boolean isGatewayConnected = false;
 
-    @Nullable
-    public OpenWebNetDeviceDiscoveryService deviceDiscoveryService;
+    public @Nullable OpenWebNetDeviceDiscoveryService deviceDiscoveryService;
     private boolean searchingGatewayDevices = false; // devices search is in progress on gateway
     private boolean scanIsActive = false; // a device scan has been activated by OpenWebNetDeviceDiscoveryService;
     private boolean discoveryByActivation = CONFIG_GATEWAY_DEFAULT_DISCVERY_ACTIVATION; // discover BUS devices when
                                                                                         // they are activated also when
                                                                                         // a device
     // scan is not active
-    @Nullable
-    private OpenNewDeviceListener deviceDiscoveryListener = null;
+    private @Nullable OpenNewDeviceListener deviceDiscoveryListener = null;
 
     public OpenWebNetBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -505,7 +502,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
      * @param handler the thing handler
      * @return the ownId
      */
-    protected String ownIdFromDeviceWhere(String deviceWhere, OpenWebNetThingHandler handler) {
+    protected String ownIdFromDeviceWhere(@Nullable String deviceWhere, OpenWebNetThingHandler handler) {
         return handler.ownIdPrefix() + "." + deviceWhere;
     }
 
