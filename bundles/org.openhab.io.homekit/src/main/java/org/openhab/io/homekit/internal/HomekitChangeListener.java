@@ -227,7 +227,8 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         if (!accessoryTypes.isEmpty() && groups.isEmpty()) { // it has homekit accessory type and is not part of bigger
                                                              // homekit group item
             logger.trace("Item {} is a HomeKit accessory of types {}", item.getName(), accessoryTypes);
-            accessoryTypes.stream().forEach(rootAccessory -> createRootAccessory(new HomekitTaggedItem(item,
+            final HomekitOHItemProxy itemProxy = new HomekitOHItemProxy(item);
+            accessoryTypes.stream().forEach(rootAccessory -> createRootAccessory(new HomekitTaggedItem(itemProxy,
                     rootAccessory.getKey(), HomekitAccessoryFactory.getItemConfiguration(item, metadataRegistry))));
         }
     }
