@@ -72,6 +72,8 @@
               <inputSpec>https://raw.githubusercontent.com/cbornet/netatmo-swagger-decl/c95b5f5003d91ac9e73e9c855569263cb9013cc2/spec/swagger.yaml</inputSpec>
               <language>java</language>
               <library>retrofit</library>
+              <generateApiTests>false</generateApiTests>
+              <generateModelTests>false</generateModelTests>
               <configOptions>
                 <sourceFolder>src/main/java</sourceFolder>
               </configOptions>
