@@ -30,7 +30,7 @@ Fans can be manually created in the *PaperUI* or *HABmin*, or by placing a *.thi
 | broadcastAddress | IP Address | Broadcast address being used for discovery, usually derived from the IP interface address.    |
 | refresh          | Integer    | Refresh interval in seconds for polling the device status.                                    |
 
-The Air Conditioner's IP address is mandantory, all other parameters are optional. 
+The Air Conditioner's IP address is mandatory, all other parameters are optional. 
 If the broadcast is not set (default) it will be derived from openHAB's network setting (PaperUI:Configuration:System:Network Settings). 
 Change this only for good reasons.
 
@@ -49,7 +49,7 @@ The following channels are supported for fans:
 | dry           | Switch    | Set on/off the Air Conditioner's Dry function if applicable to the Air Conditioner model          |
 | health        | Switch    | Set on/off the Air Conditioner's Health function if applicable to the Air Conditioner model       |
 | turbo         | Switch    | Set on/off the Air Conditioner's Turbo Mode.                                                      |
-| quiet         | Number    | Set Quiet Mode: off/auto/quiet                                                                    |
+| quiet         | String    | Set Quiet Mode: off/auto/quiet                                                                    |
 | swingUpDown   | Number    | Sets the vertical (up..down) swing action on the Air Conditioner,                                 |
 |               |           | OFF: 0, Full Swing: 1, Up: 2, MidUp: 3, Mid: 4, Mid Down: 5, Down : 6                             |
 | swingLeftRight| Number    | Sets the horizontal (left..right) swing action on the Air Conditioner                             |

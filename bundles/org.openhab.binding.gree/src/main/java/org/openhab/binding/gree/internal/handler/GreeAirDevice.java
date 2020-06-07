@@ -358,7 +358,7 @@ public class GreeAirDevice {
             CorF = 0; // input temp takes priority
         } else if ((CorF == 0) && validRangeCorF.equals("F")) {
             CorF = 1; // input temp takes priority
-        } else if (validRangeCorF == "INVALID") {
+        } else if (validRangeCorF.equals("INVALID")) {
             // force min or max temp based on CorF scale to be used
             newVal = tempRanges.get(tempScaleLUT[CorF]).get(minMaxLUT[CorF]);
         }

@@ -94,8 +94,6 @@ public class GreeHandler extends BaseThingHandler {
     }
 
     private void initializeThing() {
-        logger.debug("Thing {} is initializing", thing.getUID());
-
         try {
             // Create a new Datagram socket with a specified timeout
             clientSocket = Optional.of(new DatagramSocket());
@@ -123,8 +121,10 @@ public class GreeHandler extends BaseThingHandler {
             logger.debug("GREE unit is not responding");
         } catch (GreeException e) {
             logger.warn("Initialization failed: {}", messages.get("thinginit.exception", e.toString()));
-        } catch (IOException | RuntimeException e) {
-            logger.debug("Exception on initialization", e);
+        } catch (IOException e) {
+            logger.debug("Exception on initialization", e.toString());
+        } catch (RuntimeException e) {
+            logger.warn("Initialization failed", e);
         }
 
         updateStatus(ThingStatus.OFFLINE);
@@ -191,7 +191,7 @@ public class GreeHandler extends BaseThingHandler {
             } catch (IllegalArgumentException e) {
                 logger.warn("Invalid command value {} for channel {}", command, channelUID.getId());
             } catch (RuntimeException e) {
-                logger.debug("Unable to execute command {} for channel {}", command, channelId, e);
+                logger.warn("Unable to execute command {} for channel {}", command, channelId, e);
             }
         }
     }
@@ -349,7 +349,6 @@ public class GreeHandler extends BaseThingHandler {
                     logger.debug("Executing automatic update of values");
                     // safeguard for multiple REFRESH commands
                     if (isMinimumRefreshTimeExceeded()) {
-                        logger.debug("Fetching status values from device.");
                         // Get the current status from the Airconditioner
                         device.getDeviceStatus(clientSocket.get());
                     } else {
@@ -367,7 +366,7 @@ public class GreeHandler extends BaseThingHandler {
                         logger.warn("Unable to perform auto-update: {}", e.toString());
                     }
                 } catch (RuntimeException e) {
-                    logger.debug("Unable to perform auto-update", e);
+                    logger.warn("Unable to perform auto-update", e);
                 }
             }
         };
@@ -428,7 +427,7 @@ public class GreeHandler extends BaseThingHandler {
         } catch (GreeException e) {
             logger.warn("Exception on channel update: {}", e.toString());
         } catch (RuntimeException e) {
-            logger.debug("Exception on channel update", e);
+            logger.warn("Exception on channel update", e);
         }
     }
 

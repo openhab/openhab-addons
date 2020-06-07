@@ -65,7 +65,7 @@
 		<description>@text/channel-type.gree.turbo.description</description>
 	</channel-type>
 	<channel-type id="windspeed">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>@text/channel-type.gree.windspeed.label</label>
 		<description>@text/channel-type.gree.windspeed.description</description>
 	</channel-type>

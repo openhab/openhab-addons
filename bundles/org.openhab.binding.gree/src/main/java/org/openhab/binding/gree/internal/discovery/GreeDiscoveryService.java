@@ -23,9 +23,11 @@ import java.util.Optional;
 import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.i18n.LocaleProvider;
 import org.eclipse.smarthome.core.i18n.TranslationProvider;
 import org.eclipse.smarthome.core.net.NetworkAddressService;
@@ -38,6 +40,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +53,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-@Component(service = GreeDiscoveryService.class, immediate = true, configurationPid = "discovery.gree")
+@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.gree")
 public class GreeDiscoveryService extends AbstractDiscoveryService {
     private static final int TIMEOUT_SEC = 10;
     private final Logger logger = LoggerFactory.getLogger(GreeDiscoveryService.class);
@@ -70,8 +73,23 @@ public class GreeDiscoveryService extends AbstractDiscoveryService {
     }
 
     @Override
+    protected void activate(@Nullable Map<String, @Nullable Object> configProperties) {
+        super.activate(configProperties);
+    }
+
+    @Override
+    @Modified
+    protected void modified(@Nullable Map<String, @Nullable Object> configProperties) {
+        super.modified(configProperties);
+    }
+
+    @Override
     protected void startBackgroundDiscovery() {
-        startScan();
+        // It's very unusual that a new unit gets installed frequently so we run the discovery once when the binding is
+        // started, but not frequently
+        scheduler.execute(() -> {
+            startScan();
+        });
     }
 
     @Override
@@ -95,8 +113,10 @@ public class GreeDiscoveryService extends AbstractDiscoveryService {
             }
         } catch (GreeException e) {
             logger.warn("Discovery failed: {}", e.toString());
-        } catch (IOException | RuntimeException e) {
-            logger.debug("Discovery failed", e);
+        } catch (IOException e) {
+            logger.debug("Discovery failed", e.toString());
+        } catch (RuntimeException e) {
+            logger.warn("Discovery failed", e);
         } finally {
             if (clientSocket.isPresent()) {
                 clientSocket.get().close();

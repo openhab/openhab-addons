@@ -42,7 +42,6 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding." + BINDING_ID, service = ThingHandlerFactory.class)
 public class GreeHandlerFactory extends BaseThingHandlerFactory {
     private final GreeTranslationProvider messages;
-    // private @Nullable ServiceRegistration<?> serviceRegistration;
 
     @Activate
     public GreeHandlerFactory(@Reference NetworkAddressService networkAddressService,
@@ -50,12 +49,6 @@ public class GreeHandlerFactory extends BaseThingHandlerFactory {
             ComponentContext componentContext, Map<String, Object> configProperties) {
         super.activate(componentContext);
         messages = new GreeTranslationProvider(bundleContext.getBundle(), i18nProvider, localeProvider);
-        /*
-         * GreeDiscoveryService discoveryService = new GreeDiscoveryService(bundleContext.getBundle(), messages,
-         * defBroadcastIp);
-         * this.serviceRegistration = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
-         * new Hashtable<String, Object>());
-         */
     }
 
     @Override
@@ -71,24 +64,8 @@ public class GreeHandlerFactory extends BaseThingHandlerFactory {
         return null;
     }
 
-    /*
-     * private synchronized void unregisterDeviceDiscoveryService() {
-     *
-     * @Nullable
-     * ServiceRegistration<?> reg = serviceRegistration;
-     *
-     * if (reg != null) {
-     * reg.unregister();
-     * GreeDiscoveryService discoveryService = (GreeDiscoveryService) bundleContext.getService(reg.getReference());
-     * if (discoveryService != null) {
-     * discoveryService.deactivate();
-     * }
-     * }
-     * }
-     */
     @Override
     public void deactivate(ComponentContext componentContext) {
         super.deactivate(componentContext);
-        // unregisterDeviceDiscoveryService();
     }
 }
