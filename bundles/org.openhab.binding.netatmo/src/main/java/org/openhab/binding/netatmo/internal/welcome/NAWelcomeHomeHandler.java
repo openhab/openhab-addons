@@ -83,12 +83,7 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
                 });
 
                 Optional<NAWelcomeEvent> previousLastEvent = lastEvent;
-                result.getEvents().forEach(event -> {
-                    if (!lastEvent.isPresent() || lastEvent.get().getTime() < event.getTime()) {
-                        lastEvent = Optional.of(event);
-                    }
-                });
-
+                lastEvent = result.getEvents().stream().min(Comparator.comparingInt(NAWelcomeEvent::getTime));
                 isNewLastEvent = previousLastEvent.isPresent() && !previousLastEvent.equals(lastEvent);
             }
         }
@@ -238,12 +233,6 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
     }
 
     private static Optional<NAWelcomeSubEvent> findFirstSubEvent(Optional<NAWelcomeEvent> event) {
-        if (event.isPresent()) {
-            List<NAWelcomeSubEvent> subEvents = event.get().getEventList();
-            if (subEvents != null && !subEvents.isEmpty()) {
-                return Optional.of(subEvents.get(0));
-            }
-        }
-        return Optional.empty();
+        return event.map(NAWelcomeEvent::getEventList).flatMap(subEvents -> subEvents.stream().findFirst());
     }
 }
