@@ -70,5 +70,5 @@ public class SystemConfigResult {
     // For a full color A19 I get [33,1]
     // For a full coloer BR30 I get [37,1]
     @Expose(serialize = true, deserialize = true)
-    public int drvConf[] = {};
+    public int[] drvConf = {};
 }
