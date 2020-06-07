@@ -218,7 +218,7 @@ A full list of supported accessory types can be found in the table *below*.
 |                      |                             | Name                         | String                   | Name of the light                                                                                                                                                                                                                                                                                         |
 |                      |                             | Hue                          | Dimmer, Color            | Hue                                                                                                                                                                                                                                                                                                       |
 |                      |                             | Saturation                   | Dimmer, Color            | Saturation in % (1-100)                                                                                                                                                                                                                                                                                   |
-|                      |                             | Brightness                   | Dimmer, Color            | Brightness in % (1-100)                                                                                                                                                                                                                                                                                   |
+|                      |                             | Brightness                   | Dimmer, Color            | Brightness in % (1-100). See "Usage of dimmer modes" for configuration details.                                                                                                                                                                                                                                                                                  |
 |                      |                             | ColorTemperature             | Number                   | Color temperature which is represented in reciprocal megaKelvin, values - 50 to 400. should not be used in combination with hue, saturation and brightness                                                                                                                                                |
 | Fan                  |                             |                              |                          | Fan                                                                                                                                                                                                                                                                                                       |
 |                      | ActiveStatus                |                              | Switch                   | accessory current working status. A value of "ON"/"OPEN" indicate that the accessory is active and is functioning without any errors.                                                                                                                                                                     |
@@ -380,6 +380,36 @@ String          security_current_state     "Security Current State"             
 String          security_target_state      "Security Target State"              (gSecuritySystem)    {homekit="SecuritySystem.TargetSecuritySystemState"}
 ```
 
+## Usage of dimmer modes
+
+The way HomeKit handles dimmer devices can be different to the actual dimmers' way of working.
+HomeKit home app sends following commands/update:
+
+- On brightness change home app sends "ON" event along with target brightness, e.g. "Brightness = 50%" + "State = ON". 
+- On "ON" event home app sends "ON" along with brightness 100%, i.e. "Brightness = 100%" + "State = ON"
+- On "OFF" event home app sends "OFF" without brightness information. 
+
+However, some dimmer devices for example do not expect brightness on "ON" event, some others do not expect "ON" upon brightness change. 
+In order to support different devices HomeKit binding can filter some events. Which events should be filtered is defined via dimmerMode configuration. 
+
+```xtend
+Dimmer dimmer_light	"Dimmer Light" 	 {homekit="Lighting, Lighting.Brightness" [dimmerMode="<mode>"]}
+```
+
+Following modes are supported:
+
+- "normal" - no filtering. The commands will be sent to device as received from HomeKit. This is default mode.
+- "filterOn" - ON events are filtered out. only OFF events and brightness information are sent
+- "filterBrightness100" - only Brightness=100% is filtered out. everything else sent unchanged. This allows custom logic for soft launch in devices.
+- "filterOnExceptBrightness100"  - ON events are filtered out in all cases except of brightness = 100%.
+ 
+ Examples:
+ 
+ ```xtend
+ Dimmer dimmer_light_1	"Dimmer Light 1" 	 {homekit="Lighting, Lighting.Brightness" [dimmerMode="filterOn"]}
+ Dimmer dimmer_light_2	"Dimmer Light 2" 	 {homekit="Lighting, Lighting.Brightness" [dimmerMode="filterBrightness100"]}
+ Dimmer dimmer_light_3	"Dimmer Light 3" 	 {homekit="Lighting, Lighting.Brightness" [dimmerMode="filterOnExceptBrightness100"]}
+ ```
 
 ## Usage of valve timer
 
