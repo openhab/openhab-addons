@@ -35,6 +35,7 @@ import org.openhab.binding.deconz.internal.dto.LightMessage;
 import org.openhab.binding.deconz.internal.dto.SensorMessage;
 import org.openhab.binding.deconz.internal.handler.DeconzBridgeHandler;
 import org.openhab.binding.deconz.internal.handler.LightThingHandler;
+import org.openhab.binding.deconz.internal.handler.SensorThermostatThingHandler;
 import org.openhab.binding.deconz.internal.handler.SensorThingHandler;
 import org.openhab.binding.deconz.internal.types.LightType;
 import org.slf4j.Logger;
@@ -49,7 +50,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ThingDiscoveryService extends AbstractDiscoveryService implements DiscoveryService, ThingHandlerService {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
-            .of(LightThingHandler.SUPPORTED_THING_TYPE_UIDS, SensorThingHandler.SUPPORTED_THING_TYPES)
+            .of(LightThingHandler.SUPPORTED_THING_TYPE_UIDS, SensorThingHandler.SUPPORTED_THING_TYPES,
+                    SensorThermostatThingHandler.SUPPORTED_THING_TYPES)
             .flatMap(Set::stream).collect(Collectors.toSet());
     private final Logger logger = LoggerFactory.getLogger(ThingDiscoveryService.class);
 
@@ -193,6 +195,8 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
             thingTypeUID = THING_TYPE_VIBRATION_SENSOR; // ZHAVibration
         } else if (sensor.type.contains("ZHABattery")) {
             thingTypeUID = THING_TYPE_BATTERY_SENSOR; // ZHABattery
+        } else if (sensor.type.contains("ZHAThermostat")) {
+            thingTypeUID = THING_TYPE_THERMOSTAT; // ZHAThermostat
         } else {
             logger.debug("Unknown type {}", sensor.type);
             return;

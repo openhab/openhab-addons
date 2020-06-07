@@ -475,5 +475,53 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<thing-type id="thermostat">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="deconz"/>
+		</supported-bridge-type-refs>
+		<label>Thermostat</label>
+		<description>A Thermostat sensor/actor</description>
+		<channels>
+			<channel typeId="temperature" id="temperature"/>
+			<channel typeId="heatsetpoint" id="heatsetpoint"/>
+			<channel typeId="mode" id="mode"/>
+			<channel typeId="offset" id="offset"/>
+			<channel typeId="valve" id="valve"/>
+			<channel typeId="last_updated" id="last_updated"/>
+		</channels>
+		<representation-property>uid</representation-property>
+		<config-description-ref uri="thing-type:deconz:sensor"/>
+	</thing-type>
+
+	<channel-type id="heatsetpoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Target temperature</label>
+		<description>Target temperature</description>
+		<state pattern="%.1f %unit%" step="0.5" max="28" min="6"></state>
+	</channel-type>
+	<channel-type id="mode">
+		<item-type>String</item-type>
+		<label>Mode</label>
+		<description>Current mode</description>
+		<state>
+			<options>
+				<option value="AUTO">auto</option>
+				<option value="HEAT">heat</option>
+				<option value="OFF">off</option>
+		</options>
+		</state>
+	</channel-type>
+	<channel-type id="offset">
+		<item-type>Number:Temperature</item-type>
+		<label>Offset</label>
+		<description>Temperature offset</description>
+		<state pattern="%.2f %unit%" step="0.01"></state>
+	</channel-type>
+	<channel-type id="valve">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Valve position</label>
+		<description>Current valve position</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
 
 </thing:thing-descriptions>

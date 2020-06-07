@@ -17,21 +17,12 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.deconz.internal.types.ThermostatMode;
 
 /**
- * The {@link SensorConfig} is send by the the Rest API.
- * It is part of a {@link SensorMessage}.
+ * The {@link ThermostatConfig} is send to the Rest API to configure Thermostat.
  *
- * This should be in sync with the supported sensors from
- * https://dresden-elektronik.github.io/deconz-rest-doc/sensors/.
- *
- * @author David Graeff - Initial contribution
- * @author Lukas Agethen - Add Thermostat parameters
+ * @author Lukas Agethen - Initial contribution
  */
 @NonNullByDefault
-public class SensorConfig {
-    public boolean on = true;
-    public boolean reachable = true;
-    public @Nullable Integer battery;
-    public @Nullable Float temperature;
+public class ThermostatConfig {
     public @Nullable Integer heatsetpoint;
     public @Nullable ThermostatMode mode;
     public @Nullable Integer offset;
