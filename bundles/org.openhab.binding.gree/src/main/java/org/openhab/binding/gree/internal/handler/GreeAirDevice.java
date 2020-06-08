@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.gree.internal.GreeCryptoUtil;
 import org.openhab.binding.gree.internal.GreeException;
@@ -53,7 +54,7 @@ import com.google.gson.stream.JsonReader;
  * @author John Cunha - Initial contribution
  * @author Markus Michels - Refactoring, adapted to OH 2.5x
  */
-// @NonNullByDefault
+@NonNullByDefault
 public class GreeAirDevice {
     private final Logger logger = LoggerFactory.getLogger(GreeAirDevice.class);
     private final static Charset UTF8_CHARSET = Charset.forName("UTF-8");
@@ -62,10 +63,10 @@ public class GreeAirDevice {
     private InetAddress ipAddress = InetAddress.getLoopbackAddress();
     private int port = 0;
     private String encKey = "";
-    private GreeScanResponse4GsonDTO mScanResponseGson;
-    private GreeBindResponse4GsonDTO bindResponseGson;
-    private GreeStatusResponse4GsonDTO statusResponseGson;
-    private GreeStatusResponsePack4GsonDTO prevStatusResponsePackGson;
+    private Optional<GreeScanResponse4GsonDTO> mScanResponseGson = Optional.empty();
+    private Optional<GreeBindResponse4GsonDTO> bindResponseGson = Optional.empty();
+    private Optional<GreeStatusResponse4GsonDTO> statusResponseGson = Optional.empty();
+    private Optional<GreeStatusResponsePack4GsonDTO> prevStatusResponsePackGson = Optional.empty();
 
     public boolean getIsBound() {
         return isBound;
@@ -96,35 +97,39 @@ public class GreeAirDevice {
     }
 
     public String getId() {
-        return mScanResponseGson.packJson.mac;
+        return mScanResponseGson.isPresent() ? mScanResponseGson.get().packJson.mac : "";
     }
 
     public String getName() {
-        return mScanResponseGson.packJson.name;
+        return mScanResponseGson.isPresent() ? mScanResponseGson.get().packJson.name : "";
     }
 
     public String getVendor() {
-        return mScanResponseGson.packJson.brand + " " + mScanResponseGson.packJson.vender;
+        return mScanResponseGson.isPresent()
+                ? mScanResponseGson.get().packJson.brand + " " + mScanResponseGson.get().packJson.vender
+                : "";
     }
 
     public String getModel() {
-        return mScanResponseGson.packJson.series + " " + mScanResponseGson.packJson.model;
+        return mScanResponseGson.isPresent()
+                ? mScanResponseGson.get().packJson.series + " " + mScanResponseGson.get().packJson.model
+                : "";
     }
 
     public GreeScanResponse4GsonDTO getScanResponseGson() {
-        return mScanResponseGson;
+        return mScanResponseGson.get();
     }
 
     public void setScanResponseGson(GreeScanResponse4GsonDTO gson) {
-        mScanResponseGson = gson;
+        mScanResponseGson = Optional.of(gson);
     }
 
     public GreeBindResponse4GsonDTO getBindResponseGson() {
-        return bindResponseGson;
+        return bindResponseGson.get();
     }
 
     public GreeStatusResponse4GsonDTO getGreeStatusResponse4Gson() {
-        return statusResponseGson;
+        return statusResponseGson.get();
     }
 
     public void bindWithDevice(Optional<DatagramSocket> socket) throws GreeException {
@@ -168,19 +173,21 @@ public class GreeAirDevice {
 
             // Read the response
             StringReader stringReader = new StringReader(modifiedSentence);
-            bindResponseGson = gson.fromJson(new JsonReader(stringReader), GreeBindResponse4GsonDTO.class);
-            bindResponseGson.decryptedPack = GreeCryptoUtil.decryptPack(GreeCryptoUtil.getAESGeneralKeyByteArray(),
-                    bindResponseGson.pack);
+            GreeBindResponse4GsonDTO resp = gson.fromJson(new JsonReader(stringReader), GreeBindResponse4GsonDTO.class);
+            resp.decryptedPack = GreeCryptoUtil.decryptPack(GreeCryptoUtil.getAESGeneralKeyByteArray(), resp.pack);
 
             // Create the JSON to hold the response values
-            stringReader = new StringReader(bindResponseGson.decryptedPack);
-            bindResponseGson.packJson = gson.fromJson(new JsonReader(stringReader), GreeBindResponsePack4GsonDTO.class);
+            stringReader = new StringReader(resp.decryptedPack);
+            resp.packJson = gson.fromJson(new JsonReader(stringReader), GreeBindResponsePack4GsonDTO.class);
 
             // Now set the key and flag to indicate the bind was succesful
-            encKey = bindResponseGson.packJson.key;
+            encKey = resp.packJson.key;
+
+            // save the outcome
+            bindResponseGson = Optional.of(resp);
             setIsBound(true);
         } catch (IOException e) {
-            throw new GreeException(e, "failed");
+            throw new GreeException(e, "Unable to bind to device");
         }
     }
 
@@ -494,8 +501,8 @@ public class GreeAirDevice {
          * "SvSt": Power Saving
          */
         // Find the valueName in the Returned Status object
-        String columns[] = statusResponseGson.packJson.cols;
-        Integer values[] = statusResponseGson.packJson.dat;
+        String columns[] = statusResponseGson.get().packJson.cols;
+        Integer values[] = statusResponseGson.get().packJson.dat;
         List<String> colList = new ArrayList<>(Arrays.asList(columns));
         List<Integer> valList = new ArrayList<>(Arrays.asList(values));
         int valueArrayposition = colList.indexOf(valueName);
@@ -509,12 +516,12 @@ public class GreeAirDevice {
     }
 
     public boolean hasStatusValChanged(String valueName) throws GreeException {
-        if (prevStatusResponsePackGson == null) {
+        if (!prevStatusResponsePackGson.isPresent()) {
             return true; // update value if there is no previous one
         }
         // Find the valueName in the Current Status object
-        String currcolumns[] = statusResponseGson.packJson.cols;
-        Integer currvalues[] = statusResponseGson.packJson.dat;
+        String currcolumns[] = statusResponseGson.get().packJson.cols;
+        Integer currvalues[] = statusResponseGson.get().packJson.dat;
         List<String> currcolList = new ArrayList<>(Arrays.asList(currcolumns));
         List<Integer> currvalList = new ArrayList<>(Arrays.asList(currvalues));
         int currvalueArrayposition = currcolList.indexOf(valueName);
@@ -525,8 +532,8 @@ public class GreeAirDevice {
         int currvalue = currvalList.get(currvalueArrayposition);
 
         // Find the valueName in the Previous Status object
-        String prevcolumns[] = prevStatusResponsePackGson.cols;
-        Integer prevvalues[] = prevStatusResponsePackGson.dat;
+        String prevcolumns[] = prevStatusResponsePackGson.get().cols;
+        Integer prevvalues[] = prevStatusResponsePackGson.get().dat;
         List<String> prevcolList = new ArrayList<>(Arrays.asList(prevcolumns));
         List<Integer> prevvalList = new ArrayList<>(Arrays.asList(prevvalues));
         int prevvalueArrayposition = prevcolList.indexOf(valueName);
@@ -657,23 +664,25 @@ public class GreeAirDevice {
 
             // Keep a copy of the old response to be used to check if values have changed
             // If first time running, there will not be a previous GreeStatusResponsePack4Gson
-            if (statusResponseGson != null && statusResponseGson.packJson != null) {
-                prevStatusResponsePackGson = new GreeStatusResponsePack4GsonDTO(statusResponseGson.packJson);
+            if (statusResponseGson.isPresent() && statusResponseGson.get().packJson != null) {
+                prevStatusResponsePackGson = Optional
+                        .of(new GreeStatusResponsePack4GsonDTO(statusResponseGson.get().packJson));
             }
 
             // Read the response
             StringReader stringReader = new StringReader(modifiedSentence);
-            statusResponseGson = gson.fromJson(new JsonReader(stringReader), GreeStatusResponse4GsonDTO.class);
-            statusResponseGson.decryptedPack = GreeCryptoUtil.decryptPack(this.getKey().getBytes(),
-                    statusResponseGson.pack);
-
-            logger.trace("Response from device: {}", statusResponseGson.decryptedPack);
+            GreeStatusResponse4GsonDTO resp = gson.fromJson(new JsonReader(stringReader),
+                    GreeStatusResponse4GsonDTO.class);
+            resp.decryptedPack = GreeCryptoUtil.decryptPack(this.getKey().getBytes(), resp.pack);
+            logger.trace("Response from device: {}", resp.decryptedPack);
 
             // Create the JSON to hold the response values
-            stringReader = new StringReader(statusResponseGson.decryptedPack);
+            stringReader = new StringReader(resp.decryptedPack);
 
-            statusResponseGson.packJson = gson.fromJson(new JsonReader(stringReader),
-                    GreeStatusResponsePack4GsonDTO.class);
+            resp.packJson = gson.fromJson(new JsonReader(stringReader), GreeStatusResponsePack4GsonDTO.class);
+
+            // save the results
+            statusResponseGson = Optional.of(resp);
             updateTempFtoC();
         } catch (IOException e) {
             throw new GreeException(e, "I/O exception while receiving data");
@@ -692,8 +701,8 @@ public class GreeAirDevice {
             throw new IllegalArgumentException("SetTem,TemUn or TemRec is invalid, not performing conversion");
         } else if (CorF == 1) { // convert SetTem to Fahrenheit
             // Find the valueName in the Returned Status object
-            String columns[] = statusResponseGson.packJson.cols;
-            Integer values[] = statusResponseGson.packJson.dat;
+            String columns[] = statusResponseGson.get().packJson.cols;
+            Integer values[] = statusResponseGson.get().packJson.dat;
             List<String> colList = new ArrayList<>(Arrays.asList(columns));
             int valueArrayposition = colList.indexOf("SetTem");
             if (valueArrayposition != -1) {
