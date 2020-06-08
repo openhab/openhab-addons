@@ -62,7 +62,7 @@ public class NAPlugHandler extends NetatmoDeviceHandler<NAPlug> {
     }
 
     @Override
-    protected State getNAThingProperty(String channelId) {
+    protected State getNAThingProperty(@NonNull String channelId) {
         switch (channelId) {
             case CHANNEL_CONNECTED_BOILER:
                 return device != null ? toOnOffType(device.getPlugConnectedBoiler()) : UnDefType.UNDEF;
