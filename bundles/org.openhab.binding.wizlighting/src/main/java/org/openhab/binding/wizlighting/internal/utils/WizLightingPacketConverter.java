@@ -77,8 +77,7 @@ public class WizLightingPacketConverter {
      * @return the {@link WizLightingResponse}
      */
     public @Nullable WizLightingResponse transformResponsePacket(final DatagramPacket packet) {
-        byte[] packetdata = packet.getData();
-        String responseJson = new String(packetdata, UTF_8);
+        String responseJson = new String(packet.getData(), 0, packet.getLength(), UTF_8);
         logger.debug("Incoming packet from {} to convert -> {}", packet.getAddress().getHostAddress(), responseJson);
         logger.trace("Raw length: {}  Transformed length: {}", packet.getLength(), responseJson.length());
 
