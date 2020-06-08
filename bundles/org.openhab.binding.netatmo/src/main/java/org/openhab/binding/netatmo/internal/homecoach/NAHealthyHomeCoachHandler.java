@@ -53,7 +53,7 @@ public class NAHealthyHomeCoachHandler extends NetatmoDeviceHandler<NAHealthyHom
     }
 
     @Override
-    protected State getNAThingProperty(String channelId) {
+    protected State getNAThingProperty(@NonNull String channelId) {
         if (device != null) {
             NADashboardData dashboardData = device.getDashboardData();
             switch (channelId) {

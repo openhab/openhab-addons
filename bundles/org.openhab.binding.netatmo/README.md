@@ -42,6 +42,7 @@ Bridge netatmo:netatmoapi:home [ clientId="<CLIENT_ID>", clientSecret="<CLIENT_S
     Thing NATherm1  thermostat [ id="xx:xx:xx:xx:xx:xx", parentId="bb:bb:bb:bb:bb:bb" ]
     Thing NAWelcomeHome home   [ id="58yyacaaexxxebca99x999x", refreshInterval=600000 ]
     Thing NACamera camera [ id="cc:cc:cc:cc:cc:cc", parentId="58yyacaaexxxebca99x999x" ]
+    Thing NOC presenceOutdoorCamera [ id="dd:dd:dd:dd:dd:dd", parentId="58yyacaaexxxebca99x999x" ]
     Thing NAWelcomePerson sysadmin [ id="aaaaaaaa-bbbb-cccc-eeee-zzzzzzzzzzzz", parentId="58yyacaaexxxebca99x999x" ]
     ...
 }
@@ -446,29 +447,58 @@ All these channels except Sp_Temperature, SetpointMode and Planning are read onl
 
 ### Welcome Home
 
-**Supported channels for the Home thing:**
-
-| Channel ID              | Item Type | Description                                              |
-|-------------------------|-----------|----------------------------------------------------------|
-| welcomeHomeCity         | String    | City of the home                                         |
-| welcomeHomeCountry      | String    | Country of the home                                      |
-| welcomeHomeTimezone     | String    | Timezone of the home                                     |
-| welcomeHomePersonCount  | Number    | Total number of Persons that are at home                 |
-| welcomeHomeUnknownCount | Number    | Count how many Unknown Persons are at home               |
-| welcomeEventType        | String    | Type of event                                            |
-| welcomeEventTime        | DateTime  | Time of occurrence of event                               |
-| welcomeEventCameraId    | String    | Camera that detected the event                           |
-| welcomeEventPersonId    | String    | Id of the person the event is about (if any)             |
-| welcomeEventSnapshot    | Image     | picture of the last event, if it applies                 |
-| welcomeEventSnapshotURL | String    | if the last event (depending upon event type) in the home lead a snapshot picture, the picture URL will be available here |
-| welcomeEventVideoURL    | String    | if the last event (depending upon event type) in the home lead a snapshot picture, the corresponding video URL will be available here |
-| welcomeEventVideoStatus | String    | Status of the video (recording, deleted or available)    |
-| welcomeEventIsArrival   | Switch    | If person was considered "away" before being seen during this event |
-| welcomeEventMessage     | String    | Message sent by Netatmo corresponding to given event     |
-| welcomeEventSubType     | String    | Sub-type of SD and Alim events                           |
-
 All these channels are read only.
 
+**Supported channels for the Home thing:**
+
+| Channel ID               | Item Type | Description                                              |
+|--------------------------|-----------|----------------------------------------------------------|
+| welcomeHomeCity          | String    | City of the home                                         |
+| welcomeHomeCountry       | String    | Country of the home                                      |
+| welcomeHomeTimezone      | String    | Timezone of the home                                     |
+| welcomeHomePersonCount   | Number    | Total number of Persons that are at home                 |
+| welcomeHomeUnknownCount  | Number    | Count how many Unknown Persons are at home               |
+| welcomeEventType         | String    | Type of event                                            |
+| welcomeEventTime         | DateTime  | Time of occurrence of event                               |
+| welcomeEventCameraId     | String    | Camera that detected the event                           |
+| welcomeEventPersonId     | String    | Id of the person the event is about (if any)             |
+| welcomeEventSnapshot     | Image     | picture of the last event, if it applies                 |
+| welcomeEventSnapshotURL  | String    | if the last event (depending upon event type) in the home lead a snapshot picture, the picture URL will be available here |
+| welcomeEventVideoURL     | String    | if the last event (depending upon event type) in the home lead a snapshot picture, the corresponding video URL will be available here |
+| welcomeEventVideoStatus  | String    | Status of the video (recording, deleted or available)    |
+| welcomeEventIsArrival    | Switch    | If person was considered "away" before being seen during this event |
+| welcomeEventMessage      | String    | Message sent by Netatmo corresponding to given event     |
+| welcomeEventSubType      | String    | Sub-type of SD and Alim events                           |
+
+**Supported trigger channels for the Home thing:**
+
+| Channel Type ID  | Options                | Description                                           |
+|------------------|------------------------|-------------------------------------------------------|
+| cameraEvent      |                        | A camera event is triggered with a short delay but without requiring a webhook. The information of the event can get retrieved from the other "welcomeEvent" home thing channels |
+|                  | HUMAN                  | Triggered when a human (or person) was detected       |
+|                  | ANIMAL                 | Triggered when an animal was detected                 |
+|                  | MOVEMENT               | Triggered when an unspecified movement was detected   |
+|                  | VEHICLE                | Triggered when a vehicle was detected                 |
+| welcomeHomeEvent |                        | A welcome home event is triggered directly via a configured webhook |
+|                  | PERSON                 | Triggered when a concrete person was detected         |
+|                  | PERSON_AWAY            | Triggered when a concrete person leaves               |
+|                  | MOVEMENT               | Triggered when a movement was detected                |
+|                  | CONNECTION             | Triggered when a camera connection gets created       |
+|                  | DISCONNECTION          | Triggered when a camera connection got lost           |
+|                  | ON                     | Triggered when camera monitoring is switched on       |
+|                  | OFF                    | Triggered when camera monitoring is switched off      |
+|                  | BOOT                   | Triggered when a camera is booting                    |
+|                  | SD                     | Triggered when a camera SD card status was changed    |
+|                  | ALIM                   | Triggered when a power supply status was changed      |
+|                  | NEW_MODULE             | Triggered when a new module was discovered            |
+|                  | MODULE_CONNECT         | Triggered when a module gets connected                |
+|                  | MODULE_DISCONNECT      | Triggered when a module gets disconnected             |
+|                  | MODULE_LOW_BATTERY     | Triggered when the battery of a module gets low       |
+|                  | MODULE_END_UPDATE      | Triggered when a firmware update of a module is done  |
+|                  | TAG_BIG_MOVE           | Triggered when a big movement of a tag was detected   |
+|                  | TAG_SMALL_MOVE         | Triggered when a small movement of a tag was detected |
+|                  | TAG_UNINSTALLED        | Triggered when a tag gets uninstalled                 |
+|                  | TAG_OPEN               | Triggered when an open event of a tag was detected    |
 
 ### Welcome and Presence Camera
 
