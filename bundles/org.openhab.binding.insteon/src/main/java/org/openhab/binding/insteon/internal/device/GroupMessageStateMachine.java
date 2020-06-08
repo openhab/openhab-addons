@@ -29,17 +29,18 @@ import org.slf4j.LoggerFactory;
  * to remove duplicates, yet make sure that a single lost message does not cause
  * the binding to miss an update.
  *
- *
- * "SUCCESS"
- * EXPECT_BCAST
- * ^ / ^ \
- * SUCCESS / / \ \ [BCAST]
- * / /['CLEAN'] 'SUCCESS'\ \
- * / / \ \
- * / V CLEAN \ V
+ * @formatter:off
+ *                          "SUCCESS"
+ *                         EXPECT_BCAST
+ *                    ^ /                ^ \
+ *           SUCCESS / /                  \ \ [BCAST]
+ *                  / /['CLEAN']  'SUCCESS'\ \
+ *                 / /                      \ \
+ *                / V         CLEAN          \ V
  * "CLEAN" EXPECT_SUCCESS <-------------- EXPECT_CLEAN "BCAST"
- * -------------->
- * ['BCAST']
+ *                         -------------->
+ *                            ['BCAST']
+ * @formatter:on
  *
  * How to read this diagram:
  *
