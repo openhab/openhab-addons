@@ -14,17 +14,18 @@ package org.openhab.binding.gree.internal.gson;
 
 /**
  *
- * The GreeExecResponsePack4Gson class is used by Gson to hold values returned from
+ * The GreeExecCommand4Gson class is used by Gson to hold values to be send to
  * the Air Conditioner during requests for Execution of Commands to the
  * Air Conditioner.
  *
  * @author John Cunha - Initial contribution
  */
-public class GreeExecResponsePack4GsonDTO {
+public class GreeExecCommandDTO {
+
+    public String cid = null;
+    public int i = 0;
     public String t = null;
-    public String mac = null;
-    public int r = 0;
-    public String[] opt = null;
-    public Integer[] p = null;
-    public Integer[] val = null;
+    public int uid = 0;
+    public String pack = null;
+    public String tcid = null;
 }

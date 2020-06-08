@@ -20,7 +20,6 @@ import java.net.DatagramSocket;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -106,7 +105,7 @@ public class GreeDiscoveryService extends AbstractDiscoveryService {
             deviceFinder.scan(clientSocket, true);
 
             int count = deviceFinder.getScannedDeviceCount();
-            logger.info("{}", messages.get("discovery.result", count));
+            logger.debug("{}", messages.get("discovery.result", count));
             if (count > 0) {
                 logger.debug("Adding uinits to Inbox");
                 createResult(deviceFinder.getDevices());
@@ -124,12 +123,11 @@ public class GreeDiscoveryService extends AbstractDiscoveryService {
         }
     }
 
-    public void createResult(HashMap<String, GreeAirDevice> deviceList) {
-        for (Map.Entry<String, GreeAirDevice> d : deviceList.entrySet()) {
-            GreeAirDevice device = d.getValue();
+    public void createResult(Map<String, GreeAirDevice> deviceList) {
+        for (GreeAirDevice device : deviceList.values()) {
             String ipAddress = device.getAddress().getHostAddress();
             logger.debug("{}", messages.get("discovery.newunit", device.getName(), ipAddress, device.getId()));
-            Map<String, Object> properties = new TreeMap<String, Object>();
+            Map<String, Object> properties = new HashMap<>();
             properties.put(Thing.PROPERTY_VENDOR, device.getVendor());
             properties.put(Thing.PROPERTY_MODEL_ID, device.getModel());
             properties.put(Thing.PROPERTY_MAC_ADDRESS, device.getId());
@@ -137,14 +135,14 @@ public class GreeDiscoveryService extends AbstractDiscoveryService {
             properties.put(PROPERTY_BROADCAST, broadcastAddress);
             ThingUID thingUID = new ThingUID(THING_TYPE_GREEAIRCON, device.getId());
             DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    .withRepresentationProperty(device.getId()).withLabel(device.getName()).build();
+                    .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).withLabel(device.getName()).build();
             thingDiscovered(result);
         }
     }
 
     @Override
     public void deactivate() {
-        super.deactivate();
         removeOlderResults(getTimestampOfLastScan());
+        super.deactivate();
     }
 }

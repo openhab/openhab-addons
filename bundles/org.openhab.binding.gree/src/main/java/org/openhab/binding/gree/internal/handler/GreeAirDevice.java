@@ -28,19 +28,19 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.gree.internal.GreeCryptoUtil;
 import org.openhab.binding.gree.internal.GreeException;
-import org.openhab.binding.gree.internal.gson.GreeBindRequest4GsonDTO;
-import org.openhab.binding.gree.internal.gson.GreeBindRequestPack4GsonDTO;
-import org.openhab.binding.gree.internal.gson.GreeBindResponse4GsonDTO;
-import org.openhab.binding.gree.internal.gson.GreeBindResponsePack4GsonDTO;
-import org.openhab.binding.gree.internal.gson.GreeExecCommand4GsonDTO;
-import org.openhab.binding.gree.internal.gson.GreeExecResponse4GsonDTO;
-import org.openhab.binding.gree.internal.gson.GreeExecResponsePack4GsonDTO;
-import org.openhab.binding.gree.internal.gson.GreeExecuteCommandPack4GsonDTO;
-import org.openhab.binding.gree.internal.gson.GreeReqStatus4GsonDTO;
-import org.openhab.binding.gree.internal.gson.GreeReqStatusPack4GsonDTO;
-import org.openhab.binding.gree.internal.gson.GreeScanResponse4GsonDTO;
-import org.openhab.binding.gree.internal.gson.GreeStatusResponse4GsonDTO;
-import org.openhab.binding.gree.internal.gson.GreeStatusResponsePack4GsonDTO;
+import org.openhab.binding.gree.internal.gson.GreeBindRequestDTO;
+import org.openhab.binding.gree.internal.gson.GreeBindRequestPackDTO;
+import org.openhab.binding.gree.internal.gson.GreeBindResponseDTO;
+import org.openhab.binding.gree.internal.gson.GreeBindResponsePackDTO;
+import org.openhab.binding.gree.internal.gson.GreeExecCommandDTO;
+import org.openhab.binding.gree.internal.gson.GreeExecResponseDTO;
+import org.openhab.binding.gree.internal.gson.GreeExecResponsePackDTO;
+import org.openhab.binding.gree.internal.gson.GreeExecuteCommandPackDTO;
+import org.openhab.binding.gree.internal.gson.GreeReqStatusDTO;
+import org.openhab.binding.gree.internal.gson.GreeReqStatusPackDTO;
+import org.openhab.binding.gree.internal.gson.GreeScanResponseDTO;
+import org.openhab.binding.gree.internal.gson.GreeStatusResponseDTO;
+import org.openhab.binding.gree.internal.gson.GreeStatusResponsePackDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,10 +63,10 @@ public class GreeAirDevice {
     private InetAddress ipAddress = InetAddress.getLoopbackAddress();
     private int port = 0;
     private String encKey = "";
-    private Optional<GreeScanResponse4GsonDTO> mScanResponseGson = Optional.empty();
-    private Optional<GreeBindResponse4GsonDTO> bindResponseGson = Optional.empty();
-    private Optional<GreeStatusResponse4GsonDTO> statusResponseGson = Optional.empty();
-    private Optional<GreeStatusResponsePack4GsonDTO> prevStatusResponsePackGson = Optional.empty();
+    private Optional<GreeScanResponseDTO> mScanResponseGson = Optional.empty();
+    private Optional<GreeBindResponseDTO> bindResponseGson = Optional.empty();
+    private Optional<GreeStatusResponseDTO> statusResponseGson = Optional.empty();
+    private Optional<GreeStatusResponsePackDTO> prevStatusResponsePackGson = Optional.empty();
 
     public boolean getIsBound() {
         return isBound;
@@ -116,19 +116,19 @@ public class GreeAirDevice {
                 : "";
     }
 
-    public GreeScanResponse4GsonDTO getScanResponseGson() {
+    public GreeScanResponseDTO getScanResponseGson() {
         return mScanResponseGson.get();
     }
 
-    public void setScanResponseGson(GreeScanResponse4GsonDTO gson) {
+    public void setScanResponseGson(GreeScanResponseDTO gson) {
         mScanResponseGson = Optional.of(gson);
     }
 
-    public GreeBindResponse4GsonDTO getBindResponseGson() {
+    public GreeBindResponseDTO getBindResponseGson() {
         return bindResponseGson.get();
     }
 
-    public GreeStatusResponse4GsonDTO getGreeStatusResponse4Gson() {
+    public GreeStatusResponseDTO getGreeStatusResponse4Gson() {
         return statusResponseGson.get();
     }
 
@@ -140,7 +140,7 @@ public class GreeAirDevice {
 
         try {
             // Prep the Binding Request pack
-            GreeBindRequestPack4GsonDTO bindReqPackGson = new GreeBindRequestPack4GsonDTO();
+            GreeBindRequestPackDTO bindReqPackGson = new GreeBindRequestPackDTO();
             bindReqPackGson.mac = getId();
             bindReqPackGson.t = "bind";
             bindReqPackGson.uid = 0;
@@ -151,7 +151,7 @@ public class GreeAirDevice {
                     bindReqPackStr);
 
             // Prep the Binding Request
-            GreeBindRequest4GsonDTO bindReqGson = new GreeBindRequest4GsonDTO();
+            GreeBindRequestDTO bindReqGson = new GreeBindRequestDTO();
             bindReqGson.cid = "app";
             bindReqGson.i = 1;
             bindReqGson.t = "pack";
@@ -169,16 +169,16 @@ public class GreeAirDevice {
             // Recieve a response
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
             clientSocket.receive(receivePacket);
-            String modifiedSentence = new String(receivePacket.getData(), "UTF-8");
+            String modifiedSentence = new String(receivePacket.getData(), UTF8_CHARSET);
 
             // Read the response
             StringReader stringReader = new StringReader(modifiedSentence);
-            GreeBindResponse4GsonDTO resp = gson.fromJson(new JsonReader(stringReader), GreeBindResponse4GsonDTO.class);
+            GreeBindResponseDTO resp = gson.fromJson(new JsonReader(stringReader), GreeBindResponseDTO.class);
             resp.decryptedPack = GreeCryptoUtil.decryptPack(GreeCryptoUtil.getAESGeneralKeyByteArray(), resp.pack);
 
             // Create the JSON to hold the response values
             stringReader = new StringReader(resp.decryptedPack);
-            resp.packJson = gson.fromJson(new JsonReader(stringReader), GreeBindResponsePack4GsonDTO.class);
+            resp.packJson = gson.fromJson(new JsonReader(stringReader), GreeBindResponsePackDTO.class);
 
             // Now set the key and flag to indicate the bind was succesful
             encKey = resp.packJson.key;
@@ -187,7 +187,7 @@ public class GreeAirDevice {
             bindResponseGson = Optional.of(resp);
             setIsBound(true);
         } catch (IOException e) {
-            throw new GreeException(e, "Unable to bind to device");
+            throw new GreeException("Unable to bind to device", e);
         }
     }
 
@@ -559,7 +559,7 @@ public class GreeAirDevice {
             Integer[] valueArray = parameters.values().toArray(new Integer[0]);
 
             // Prep the Command Request pack
-            GreeExecuteCommandPack4GsonDTO execCmdPackGson = new GreeExecuteCommandPack4GsonDTO();
+            GreeExecuteCommandPackDTO execCmdPackGson = new GreeExecuteCommandPackDTO();
             execCmdPackGson.opt = keyArray;
             execCmdPackGson.p = valueArray;
             execCmdPackGson.t = "cmd";
@@ -571,7 +571,7 @@ public class GreeAirDevice {
             // encryptedCommandReqPacket);
 
             // Prep the Command Request
-            GreeExecCommand4GsonDTO execCmdGson = new GreeExecCommand4GsonDTO();
+            GreeExecCommandDTO execCmdGson = new GreeExecCommandDTO();
             execCmdGson.cid = "app";
             execCmdGson.i = 0;
             execCmdGson.t = "pack";
@@ -586,20 +586,20 @@ public class GreeAirDevice {
             // Recieve a response
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
             clientSocket.receive(receivePacket);
-            String modifiedSentence = new String(receivePacket.getData(), "UTF-8");
+            String modifiedSentence = new String(receivePacket.getData(), UTF8_CHARSET);
 
             // Read the response
             StringReader stringReader = new StringReader(modifiedSentence);
-            GreeExecResponse4GsonDTO execResponseGson = gson.fromJson(new JsonReader(stringReader),
-                    GreeExecResponse4GsonDTO.class);
+            GreeExecResponseDTO execResponseGson = gson.fromJson(new JsonReader(stringReader),
+                    GreeExecResponseDTO.class);
             execResponseGson.decryptedPack = GreeCryptoUtil.decryptPack(this.getKey().getBytes(),
                     execResponseGson.pack);
 
             // Create the JSON to hold the response values
             stringReader = new StringReader(execResponseGson.decryptedPack);
-            execResponseGson.packJson = gson.fromJson(new JsonReader(stringReader), GreeExecResponsePack4GsonDTO.class);
+            execResponseGson.packJson = gson.fromJson(new JsonReader(stringReader), GreeExecResponsePackDTO.class);
         } catch (IOException e) {
-            throw new GreeException(e, "Exception on command execution");
+            throw new GreeException("Exception on command execution", e);
         }
     }
 
@@ -635,7 +635,7 @@ public class GreeAirDevice {
             String[] colArray = columns.toArray(new String[0]);
 
             // Prep the Command Request pack
-            GreeReqStatusPack4GsonDTO reqStatusPackGson = new GreeReqStatusPack4GsonDTO();
+            GreeReqStatusPackDTO reqStatusPackGson = new GreeReqStatusPackDTO();
             reqStatusPackGson.t = "status";
             reqStatusPackGson.cols = colArray;
             reqStatusPackGson.mac = getId();
@@ -645,7 +645,7 @@ public class GreeAirDevice {
             String encryptedStatusReqPacket = GreeCryptoUtil.encryptPack(getKey().getBytes(), reqStatusPackStr);
 
             // Prep the Status Request
-            GreeReqStatus4GsonDTO reqStatusGson = new GreeReqStatus4GsonDTO();
+            GreeReqStatusDTO reqStatusGson = new GreeReqStatusDTO();
             reqStatusGson.cid = "app";
             reqStatusGson.i = 0;
             reqStatusGson.t = "pack";
@@ -660,32 +660,31 @@ public class GreeAirDevice {
             // Recieve a response
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
             clientSocket.receive(receivePacket);
-            String modifiedSentence = new String(receivePacket.getData(), "UTF-8");
+            String modifiedSentence = new String(receivePacket.getData(), UTF8_CHARSET);
 
             // Keep a copy of the old response to be used to check if values have changed
             // If first time running, there will not be a previous GreeStatusResponsePack4Gson
             if (statusResponseGson.isPresent() && statusResponseGson.get().packJson != null) {
                 prevStatusResponsePackGson = Optional
-                        .of(new GreeStatusResponsePack4GsonDTO(statusResponseGson.get().packJson));
+                        .of(new GreeStatusResponsePackDTO(statusResponseGson.get().packJson));
             }
 
             // Read the response
             StringReader stringReader = new StringReader(modifiedSentence);
-            GreeStatusResponse4GsonDTO resp = gson.fromJson(new JsonReader(stringReader),
-                    GreeStatusResponse4GsonDTO.class);
+            GreeStatusResponseDTO resp = gson.fromJson(new JsonReader(stringReader), GreeStatusResponseDTO.class);
             resp.decryptedPack = GreeCryptoUtil.decryptPack(this.getKey().getBytes(), resp.pack);
             logger.trace("Response from device: {}", resp.decryptedPack);
 
             // Create the JSON to hold the response values
             stringReader = new StringReader(resp.decryptedPack);
 
-            resp.packJson = gson.fromJson(new JsonReader(stringReader), GreeStatusResponsePack4GsonDTO.class);
+            resp.packJson = gson.fromJson(new JsonReader(stringReader), GreeStatusResponsePackDTO.class);
 
             // save the results
             statusResponseGson = Optional.of(resp);
             updateTempFtoC();
         } catch (IOException e) {
-            throw new GreeException(e, "I/O exception while receiving data");
+            throw new GreeException("I/O exception while receiving data", e);
         }
     }
 

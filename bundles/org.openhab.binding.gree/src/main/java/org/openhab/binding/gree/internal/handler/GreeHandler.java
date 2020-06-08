@@ -30,7 +30,6 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.library.unit.ImperialUnits;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -47,8 +46,6 @@ import org.openhab.binding.gree.internal.GreeTranslationProvider;
 import org.openhab.binding.gree.internal.discovery.GreeDeviceFinder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import tec.uom.se.unit.Units;
 
 /**
  * The {@link GreeHandler} is responsible for handling commands, which are sent to one of the channels.
@@ -159,7 +156,7 @@ public class GreeHandler extends BaseThingHandler {
                         device.setDeviceLight(socket, getOnOff(command));
                         break;
                     case TEMP_CHANNEL:
-                        device.setDeviceTempSet(socket, (int) getTemp(command));
+                        device.setDeviceTempSet(socket, getTemp(command));
                         break;
                     case SWINGUD_CHANNEL:
                         device.setDeviceSwingUpDown(socket, getNumber(command));
@@ -290,8 +287,9 @@ public class GreeHandler extends BaseThingHandler {
         }
         if (mode != -1) {
             device.setQuietMode(socket, mode);
+        } else {
+            throw new IllegalArgumentException("Invalid QuietType");
         }
-        throw new IllegalArgumentException("Invalid QuietType");
     }
 
     private int getOnOff(Command command) {
@@ -311,19 +309,15 @@ public class GreeHandler extends BaseThingHandler {
         throw new IllegalArgumentException("Invalud Number type");
     }
 
-    private double getTemp(Command command) {
+    private int getTemp(Command command) {
         if (command instanceof DecimalType) {
             // assume Celsius
-            return ((DecimalType) command).doubleValue();
+            return ((DecimalType) command).intValue();
         }
         if (command instanceof QuantityType) {
             QuantityType<?> q = (QuantityType<?>) command;
-            if (q.getUnit() == Units.CELSIUS) {
-                return q.intValue();
-            }
-            if (q.getUnit() == ImperialUnits.FAHRENHEIT) {
-                return ImperialUnits.FAHRENHEIT.getConverterTo(Units.CELSIUS).convert(q.doubleValue());
-            }
+            QuantityType<?> c = q.toUnit(SIUnits.CELSIUS);
+            return c != null ? c.intValue() : 0;
         }
         throw new IllegalArgumentException("Invalud Temp type");
     }
@@ -340,33 +334,29 @@ public class GreeHandler extends BaseThingHandler {
 
     private void startAutomaticRefresh() {
 
-        Runnable refresher = new Runnable() {
-            @Override
-            public void run() {
+        Runnable refresher = () -> {
 
-                try {
-                    logger.debug("Executing automatic update of values");
-                    // safeguard for multiple REFRESH commands
-                    if (isMinimumRefreshTimeExceeded()) {
-                        // Get the current status from the Airconditioner
-                        device.getDeviceStatus(clientSocket.get());
-                    } else {
-                        logger.trace(
-                                "Skipped fetching status values from device because minimum refresh time not reached");
-                    }
-
-                    // Update All Channels
-                    List<Channel> channels = getThing().getChannels();
-                    for (Channel channel : channels) {
-                        publishChannel(channel.getUID());
-                    }
-                } catch (GreeException e) {
-                    if (!e.isTimeout()) {
-                        logger.warn("Unable to perform auto-update: {}", e.toString());
-                    }
-                } catch (RuntimeException e) {
-                    logger.warn("Unable to perform auto-update", e);
+            try {
+                logger.debug("Executing automatic update of values");
+                // safeguard for multiple REFRESH commands
+                if (isMinimumRefreshTimeExceeded()) {
+                    // Get the current status from the Airconditioner
+                    device.getDeviceStatus(clientSocket.get());
+                } else {
+                    logger.trace("Skipped fetching status values from device because minimum refresh time not reached");
                 }
+
+                // Update All Channels
+                List<Channel> channels = getThing().getChannels();
+                for (Channel channel : channels) {
+                    publishChannel(channel.getUID());
+                }
+            } catch (GreeException e) {
+                if (!e.isTimeout()) {
+                    logger.warn("Unable to perform auto-update: {}", e.toString());
+                }
+            } catch (RuntimeException e) {
+                logger.warn("Unable to perform auto-update", e);
             }
         };
 

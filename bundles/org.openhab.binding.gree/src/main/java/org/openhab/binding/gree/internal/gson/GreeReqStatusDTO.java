@@ -20,7 +20,7 @@ package org.openhab.binding.gree.internal.gson;
  *
  * @author John Cunha - Initial contribution
  */
-public class GreeReqStatus4GsonDTO {
+public class GreeReqStatusDTO {
     public String cid = null;
     public int i = 0;
     public String t = null;

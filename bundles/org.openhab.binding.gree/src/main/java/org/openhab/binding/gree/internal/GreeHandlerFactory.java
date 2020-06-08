@@ -63,9 +63,4 @@ public class GreeHandlerFactory extends BaseThingHandlerFactory {
         }
         return null;
     }
-
-    @Override
-    public void deactivate(ComponentContext componentContext) {
-        super.deactivate(componentContext);
-    }
 }

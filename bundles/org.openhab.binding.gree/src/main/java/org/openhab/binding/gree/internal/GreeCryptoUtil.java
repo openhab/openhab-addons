@@ -58,7 +58,7 @@ public class GreeCryptoUtil {
             return new String(bytePlainText, "UTF-8");
         } catch (NoSuchAlgorithmException | UnsupportedEncodingException | NoSuchPaddingException | BadPaddingException
                 | InvalidKeyException | IllegalBlockSizeException ex) {
-            throw new GreeException(ex, "Decryption of recieved data failed");
+            throw new GreeException("Decryption of recieved data failed", ex);
         }
     }
 
@@ -70,11 +70,11 @@ public class GreeCryptoUtil {
             byte[] bytePlainText = aesCipher.doFinal(message.getBytes());
 
             Base64.Encoder newencoder = Base64.getEncoder();
-            String encrytpedMessage = new String(newencoder.encode(bytePlainText));
+            String encrytpedMessage = new String(newencoder.encode(bytePlainText), "UTF-8");
             return encrytpedMessage.substring(0, encrytpedMessage.length());
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | BadPaddingException | InvalidKeyException
-                | IllegalBlockSizeException ex) {
-            throw new GreeException(ex, "Unable to encrypt outbound data");
+                | IllegalBlockSizeException | UnsupportedEncodingException ex) {
+            throw new GreeException("Unable to encrypt outbound data", ex);
         }
     }
 }

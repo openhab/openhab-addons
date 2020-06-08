@@ -43,7 +43,7 @@ public class GreeException extends Exception {
         super(message);
     }
 
-    public GreeException(Exception exception, String message) {
+    public GreeException(String message, Exception exception) {
         super(message, exception);
     }
 
