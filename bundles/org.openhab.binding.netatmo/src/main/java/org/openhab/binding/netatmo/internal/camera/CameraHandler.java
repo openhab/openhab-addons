@@ -48,7 +48,7 @@ public class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera> {
 
     @SuppressWarnings("null")
     @Override
-    protected State getNAThingProperty(String channelId) {
+    protected State getNAThingProperty(@NonNull String channelId) {
         switch (channelId) {
             case CHANNEL_CAMERA_STATUS:
                 return getStatusState();

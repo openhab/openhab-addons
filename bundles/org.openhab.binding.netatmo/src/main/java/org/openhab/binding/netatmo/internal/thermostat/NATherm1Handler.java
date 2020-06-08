@@ -100,7 +100,7 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
 
     @SuppressWarnings("null")
     @Override
-    protected State getNAThingProperty(String channelId) {
+    protected State getNAThingProperty(@NonNull String channelId) {
         switch (channelId) {
             case CHANNEL_THERM_ORIENTATION:
                 return module != null ? toDecimalType(module.getThermOrientation()) : UnDefType.UNDEF;

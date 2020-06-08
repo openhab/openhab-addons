@@ -68,7 +68,7 @@ public class NAWelcomePersonHandler extends NetatmoModuleHandler<NAWelcomePerson
     }
 
     @Override
-    protected State getNAThingProperty(String channelId) {
+    protected State getNAThingProperty(@NonNull String channelId) {
         switch (channelId) {
             case CHANNEL_WELCOME_PERSON_LASTSEEN:
                 return module != null ? toDateTimeType(module.getLastSeen()) : UnDefType.UNDEF;
