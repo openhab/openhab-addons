@@ -94,6 +94,6 @@ public class SunHandler extends AstroThingHandler {
         Double latitude = thingConfig.latitude;
         Double longitude = thingConfig.longitude;
         sun = sunCalc.getSunInfo(Calendar.getInstance(), latitude != null ? latitude : 0,
-                longitude != null ? longitude : 0, thingConfig.altitude);
+                longitude != null ? longitude : 0, thingConfig.altitude, thingConfig.useMeteorologicalSeason);
     }
 }

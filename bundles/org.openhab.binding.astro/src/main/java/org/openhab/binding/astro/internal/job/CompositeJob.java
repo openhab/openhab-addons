@@ -15,12 +15,15 @@ package org.openhab.binding.astro.internal.job;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * {@link CompositeJob} comprises multiple {@link Job}s to be executed in order
  *
  * @author Markus Rathgeb - Initial contribution
  * @author Amit Kumar Mondal - Minor modifications
  */
+@NonNullByDefault
 public final class CompositeJob extends AbstractJob {
 
     private final List<Job> jobs;
@@ -35,8 +38,6 @@ public final class CompositeJob extends AbstractJob {
      */
     public CompositeJob(String thingUID, List<Job> jobs) {
         super(thingUID);
-        checkArgument(jobs != null, "Jobs must not be null");
-        checkArgument(!jobs.isEmpty(), "Jobs must not be empty");
 
         this.jobs = jobs;
 
