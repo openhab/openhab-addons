@@ -273,42 +273,55 @@ public class SonosXMLParser {
         @Override
         public void startElement(@Nullable String uri, @Nullable String localName, @Nullable String qName,
                 @Nullable Attributes attributes) throws SAXException {
-            if (("container".equals(qName) || "item".equals(qName))) {
-                if (attributes != null) {
-                    id = attributes.getValue("id");
-                    parentId = attributes.getValue("parentID");
-                }
-            } else if ("res".equals(qName)) {
-                element = Element.RES;
-            } else if ("dc:title".equals(qName)) {
-                element = Element.TITLE;
-            } else if ("upnp:class".equals(qName)) {
-                element = Element.CLASS;
-            } else if ("dc:creator".equals(qName)) {
-                element = Element.CREATOR;
-            } else if ("upnp:album".equals(qName)) {
-                element = Element.ALBUM;
-            } else if ("upnp:albumArtURI".equals(qName)) {
-                element = Element.ALBUM_ART_URI;
-            } else if ("upnp:originalTrackNumber".equals(qName)) {
-                element = Element.TRACK_NUMBER;
-            } else if ("r:resMD".equals(qName)) {
-                element = Element.RESMD;
-            } else {
-                List<String> curIgnore = ignore;
-                if (curIgnore == null) {
-                    curIgnore = new ArrayList<>();
-                    curIgnore.add("DIDL-Lite");
-                    curIgnore.add("type");
-                    curIgnore.add("ordinal");
-                    curIgnore.add("description");
-                    ignore = curIgnore;
-                }
+            String name = qName == null ? "" : qName;
+            switch (name) {
+                case "container":
+                case "item":
+                    if (attributes != null) {
+                        id = attributes.getValue("id");
+                        parentId = attributes.getValue("parentID");
+                    }
+                    break;
+                case "res":
+                    element = Element.RES;
+                    break;
+                case "dc:title":
+                    element = Element.TITLE;
+                    break;
+                case "upnp:class":
+                    element = Element.CLASS;
+                    break;
+                case "dc:creator":
+                    element = Element.CREATOR;
+                    break;
+                case "upnp:album":
+                    element = Element.ALBUM;
+                    break;
+                case "upnp:albumArtURI":
+                    element = Element.ALBUM_ART_URI;
+                    break;
+                case "upnp:originalTrackNumber":
+                    element = Element.TRACK_NUMBER;
+                    break;
+                case "r:resMD":
+                    element = Element.RESMD;
+                    break;
+                default:
+                    List<String> curIgnore = ignore;
+                    if (curIgnore == null) {
+                        curIgnore = new ArrayList<>();
+                        curIgnore.add("DIDL-Lite");
+                        curIgnore.add("type");
+                        curIgnore.add("ordinal");
+                        curIgnore.add("description");
+                        ignore = curIgnore;
+                    }
 
-                if (!curIgnore.contains(localName)) {
-                    LOGGER.debug("Did not recognise element named {}", localName);
-                }
-                element = null;
+                    if (!curIgnore.contains(localName)) {
+                        LOGGER.debug("Did not recognise element named {}", localName);
+                    }
+                    element = null;
+                    break;
             }
         }
 
@@ -406,19 +419,27 @@ public class SonosXMLParser {
         @Override
         public void startElement(@Nullable String uri, @Nullable String localName, @Nullable String qName,
                 @Nullable Attributes attributes) throws SAXException {
-            if (("container".equals(qName) || "item".equals(qName))) {
-                if (attributes != null) {
-                    id = attributes.getValue("id");
-                    parentId = attributes.getValue("parentID");
-                }
-            } else if ("desc".equals(qName)) {
-                element = Element.DESC;
-            } else if ("upnp:class".equals(qName)) {
-                element = Element.CLASS;
-            } else if ("dc:title".equals(qName)) {
-                element = Element.TITLE;
-            } else {
-                element = null;
+            String name = qName == null ? "" : qName;
+            switch (name) {
+                case "container":
+                case "item":
+                    if (attributes != null) {
+                        id = attributes.getValue("id");
+                        parentId = attributes.getValue("parentID");
+                    }
+                    break;
+                case "desc":
+                    element = Element.DESC;
+                    break;
+                case "upnp:class":
+                    element = Element.CLASS;
+                    break;
+                case "dc:title":
+                    element = Element.TITLE;
+                    break;
+                default:
+                    element = null;
+                    break;
             }
         }
 
@@ -726,31 +747,43 @@ public class SonosXMLParser {
         @Override
         public void startElement(@Nullable String uri, @Nullable String localName, @Nullable String qName,
                 @Nullable Attributes attributes) throws SAXException {
-            if ("item".equals(localName)) {
-                currentElement = CurrentElement.item;
-                if (attributes != null) {
-                    id = attributes.getValue("id");
-                    parentId = attributes.getValue("parentID");
-                }
-            } else if ("res".equals(localName)) {
-                currentElement = CurrentElement.res;
-            } else if ("streamContent".equals(localName)) {
-                currentElement = CurrentElement.streamContent;
-            } else if ("albumArtURI".equals(localName)) {
-                currentElement = CurrentElement.albumArtURI;
-            } else if ("title".equals(localName)) {
-                currentElement = CurrentElement.title;
-            } else if ("class".equals(localName)) {
-                currentElement = CurrentElement.upnpClass;
-            } else if ("creator".equals(localName)) {
-                currentElement = CurrentElement.creator;
-            } else if ("album".equals(localName)) {
-                currentElement = CurrentElement.album;
-            } else if ("albumArtist".equals(localName)) {
-                currentElement = CurrentElement.albumArtist;
-            } else {
-                // unknown element
-                currentElement = null;
+            String name = localName == null ? "" : localName;
+            switch (name) {
+                case "item":
+                    currentElement = CurrentElement.item;
+                    if (attributes != null) {
+                        id = attributes.getValue("id");
+                        parentId = attributes.getValue("parentID");
+                    }
+                    break;
+                case "res":
+                    currentElement = CurrentElement.res;
+                    break;
+                case "streamContent":
+                    currentElement = CurrentElement.streamContent;
+                    break;
+                case "albumArtURI":
+                    currentElement = CurrentElement.albumArtURI;
+                    break;
+                case "title":
+                    currentElement = CurrentElement.title;
+                    break;
+                case "class":
+                    currentElement = CurrentElement.upnpClass;
+                    break;
+                case "creator":
+                    currentElement = CurrentElement.creator;
+                    break;
+                case "album":
+                    currentElement = CurrentElement.album;
+                    break;
+                case "albumArtist":
+                    currentElement = CurrentElement.albumArtist;
+                    break;
+                default:
+                    // unknown element
+                    currentElement = null;
+                    break;
             }
         }
 
@@ -812,41 +845,31 @@ public class SonosXMLParser {
             if (qName == null) {
                 return;
             }
-            if ("Volume".equals(qName)) {
-                String channel = attributes == null ? null : attributes.getValue("channel");
-                String val = attributes == null ? null : attributes.getValue("val");
-                if (channel != null && val != null) {
-                    changes.put(qName + channel, val);
-                }
-            } else if ("Mute".equals(qName)) {
-                String channel = attributes == null ? null : attributes.getValue("channel");
-                String val = attributes == null ? null : attributes.getValue("val");
-                if (channel != null && val != null) {
-                    changes.put(qName + channel, val);
-                }
-            } else if ("Bass".equals(qName)) {
-                String val = attributes == null ? null : attributes.getValue("val");
-                if (val != null) {
-                    changes.put(qName, val);
-                }
-            } else if ("Treble".equals(qName)) {
-                String val = attributes == null ? null : attributes.getValue("val");
-                if (val != null) {
-                    changes.put(qName, val);
-                }
-            } else if ("Loudness".equals(qName)) {
-                String channel = attributes == null ? null : attributes.getValue("channel");
-                String val = attributes == null ? null : attributes.getValue("val");
-                if (channel != null && val != null) {
-                    changes.put(qName + channel, val);
-                }
-            } else if ("OutputFixed".equals(qName)) {
-                String val = attributes == null ? null : attributes.getValue("val");
-                if (val != null) {
-                    changes.put(qName, val);
-                }
-            } else if ("PresetNameList".equals(qName)) {
-                getPresetName = true;
+            String channel;
+            String val;
+            switch (qName) {
+                case "Volume":
+                case "Mute":
+                case "Loudness":
+                    channel = attributes == null ? null : attributes.getValue("channel");
+                    val = attributes == null ? null : attributes.getValue("val");
+                    if (channel != null && val != null) {
+                        changes.put(qName + channel, val);
+                    }
+                    break;
+                case "Bass":
+                case "Treble":
+                case "OutputFixed":
+                    val = attributes == null ? null : attributes.getValue("val");
+                    if (val != null) {
+                        changes.put(qName, val);
+                    }
+                    break;
+                case "PresetNameList":
+                    getPresetName = true;
+                    break;
+                default:
+                    break;
             }
         }
 

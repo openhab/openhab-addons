@@ -240,7 +240,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType) {
+        if (command == RefreshType.REFRESH) {
             updateChannel(channelUID.getId());
         } else {
             switch (channelUID.getId()) {
@@ -1331,7 +1331,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
         String initialResult = result.get("Result");
         if (initialResult == null) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
 
         long totalMatches = getResultEntry(result, "TotalMatches", type, filter);
@@ -1554,17 +1554,15 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
             String newValue = null;
             String currentVolume = getVolume();
-            if (command instanceof IncreaseDecreaseType && command == IncreaseDecreaseType.INCREASE
-                    && currentVolume != null) {
+            if (command == IncreaseDecreaseType.INCREASE && currentVolume != null) {
                 int i = Integer.valueOf(currentVolume);
                 newValue = String.valueOf(Math.min(100, i + 1));
-            } else if (command instanceof IncreaseDecreaseType && command == IncreaseDecreaseType.DECREASE
-                    && currentVolume != null) {
+            } else if (command == IncreaseDecreaseType.DECREASE && currentVolume != null) {
                 int i = Integer.valueOf(currentVolume);
                 newValue = String.valueOf(Math.max(0, i - 1));
-            } else if (command instanceof OnOffType && command == OnOffType.ON) {
+            } else if (command == OnOffType.ON) {
                 newValue = "100";
-            } else if (command instanceof OnOffType && command == OnOffType.OFF) {
+            } else if (command == OnOffType.OFF) {
                 newValue = "0";
             } else if (command instanceof DecimalType) {
                 newValue = String.valueOf(((DecimalType) command).intValue());
@@ -2743,12 +2741,12 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     public void stopPlaying(Command command) {
-        try {
-            if (command instanceof OnOffType) {
+        if (command instanceof OnOffType) {
+            try {
                 getCoordinatorHandler().stop();
+            } catch (IllegalStateException e) {
+                logger.debug("Cannot handle stop command ({})", e.getMessage(), e);
             }
-        } catch (IllegalStateException e) {
-            logger.debug("Cannot handle stop command ({})", e.getMessage(), e);
         }
     }
 
