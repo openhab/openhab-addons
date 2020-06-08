@@ -21,10 +21,4 @@ features/**/src/main/feature
 
 .vscode
 .factorypath
-.project
-.classpath
-.settings
-/*.project
-/.classpath
-/.settings
 *.jar
