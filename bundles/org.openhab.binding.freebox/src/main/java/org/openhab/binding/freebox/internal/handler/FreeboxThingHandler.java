@@ -15,12 +15,12 @@ package org.openhab.binding.freebox.internal.handler;
 import static org.openhab.binding.freebox.internal.FreeboxBindingConstants.*;
 
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.TimeZone;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -62,6 +62,7 @@ public class FreeboxThingHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FreeboxThingHandler.class);
 
+    private final ZoneId zoneId;
     private ScheduledFuture<?> phoneJob;
     private ScheduledFuture<?> callsJob;
     private FreeboxHandler bridgeHandler;
@@ -70,8 +71,9 @@ public class FreeboxThingHandler extends BaseThingHandler {
     private String airPlayName;
     private String airPlayPassword;
 
-    public FreeboxThingHandler(Thing thing) {
+    public FreeboxThingHandler(Thing thing, ZoneId zoneId) {
         super(thing);
+        this.zoneId = zoneId;
     }
 
     @Override
@@ -260,7 +262,7 @@ public class FreeboxThingHandler extends BaseThingHandler {
             updateGroupChannelStringState(channelGroup, CALLNUMBER, call.getNumber());
             updateGroupChannelDecimalState(channelGroup, CALLDURATION, call.getDuration());
             ZonedDateTime zoned = ZonedDateTime.ofInstant(Instant.ofEpochMilli(call.getTimeStamp().getTimeInMillis()),
-                    TimeZone.getDefault().toZoneId());
+                    zoneId);
             updateGroupChannelDateTimeState(channelGroup, CALLTIMESTAMP, zoned);
             updateGroupChannelStringState(channelGroup, CALLNAME, call.getName());
             if (channelGroup.equals(ANY)) {
