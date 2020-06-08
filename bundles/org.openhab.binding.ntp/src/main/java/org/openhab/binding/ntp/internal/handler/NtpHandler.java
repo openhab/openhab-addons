@@ -29,7 +29,6 @@ import org.apache.commons.net.ntp.NTPUDPClient;
 import org.apache.commons.net.ntp.TimeInfo;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -85,9 +84,9 @@ public class NtpHandler extends BaseThingHandler {
     /** NTP system time delta */
     private long timeOffset;
 
-    public NtpHandler(final Thing thing, final TimeZoneProvider timeZoneProvider) {
+    public NtpHandler(final Thing thing, final ZoneId timeZoneId) {
         super(thing);
-        this.defaultTimeZoneId = timeZoneProvider.getTimeZone();
+        this.defaultTimeZoneId = timeZoneId;
         this.timeZoneId = defaultTimeZoneId;
     }
 
