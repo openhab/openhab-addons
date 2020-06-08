@@ -71,12 +71,8 @@ public class PropertyUtils {
         }
     }
 
-    public static void setTimeZone(TimeZoneProvider zone) {
-        PropertyUtils.timeZoneProvider = zone;
-    }
-
-    public static void unsetTimeZone() {
-        PropertyUtils.timeZoneProvider = null;
+    public static void setTimeZoneProvider(TimeZoneProvider timeZoneProvider) {
+        PropertyUtils.timeZoneProvider = timeZoneProvider;
     }
 
     /**
