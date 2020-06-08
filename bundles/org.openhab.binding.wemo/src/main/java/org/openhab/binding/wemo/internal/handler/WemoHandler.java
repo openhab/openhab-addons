@@ -481,7 +481,7 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
         return wemoURL;
     }
 
-    public boolean servicePing(String host, int port) throws IOException {
+    public boolean servicePing(String host, int port) {
         logger.trace("Ping WeMo device at '{}:{}'", host, port);
         try {
             HttpUtil.executeUrl("GET", "http://" + host + ":" + port, 250);
