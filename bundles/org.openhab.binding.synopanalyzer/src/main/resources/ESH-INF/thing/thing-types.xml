@@ -76,6 +76,11 @@
 		<description>Overcast</description>
 		<category>Wind</category>
 		<state readOnly="true" pattern="%s">
+		    <options>
+                <option value="CLEAR_SKY">Clear sky</option>
+                <option value="CLOUDY">Cloudy</option>
+                <option value="SKY_NOT_VISIBLE">Sky is not visible</option>
+            </options>
 		</state>
 	</channel-type>
 
@@ -84,7 +89,13 @@
 		<label>Horizontal Visibility</label>
 		<description>Horizontal visibility range</description>
 		<category>Wind</category>
-		<state readOnly="true" pattern="%s km">
+		<state readOnly="true" pattern="%s">
+		    <options>
+                <option value="LESS_THAN_1"> Less than 1 km</option>
+                <option value="LESS_THAN_10">1-10 km</option>
+                <option value="LESS_THAN_50">10-50 km</option>
+                <option value="MORE_THAN_50">More than 50 km</option>
+            </options>
 		</state>
 	</channel-type>
 

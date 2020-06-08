@@ -20,7 +20,7 @@ import java.util.List;
  *
  * @author Jonarzz - Initial contribution
  */
-public abstract class SynopMobile extends Synop {
+public class SynopMobile extends Synop {
 
     private String temp;
 
@@ -37,14 +37,17 @@ public abstract class SynopMobile extends Synop {
         setLongitudeAndQuadrant();
     }
 
-    @Override
-    protected void setStationCode() {
-        if (stringArray.size() < 2 || (temp = stringArray.get(1)).length() > 10 || temp.contains("/")) {
-            return;
-        }
-
-        stationCode = temp;
-    }
+    /*
+     * @Override
+     * protected void setStationCode() {
+     * if (stringArray.size() < 2 || (temp = stringArray.get(1)).length() > 10
+     * || temp.contains(Constants.UNKNOWN_VALUE)) {
+     * return;
+     * }
+     * 
+     * stationCode = temp;
+     * }
+     */
 
     @Override
     protected void setHorizontalVisibilityInt() {
@@ -79,9 +82,11 @@ public abstract class SynopMobile extends Synop {
     }
 
     @Override
-    protected abstract void setPressureString();
+    protected void setPressureString() {
+        return;
+    }
 
-    protected void setLatitude() {
+    private void setLatitude() {
         if (stringArray.size() < 4 || !isValidString((temp = stringArray.get(3)))) {
             return;
         }
@@ -99,7 +104,7 @@ public abstract class SynopMobile extends Synop {
         latitude = (float) tempInt / 10;
     }
 
-    protected void setLongitudeAndQuadrant() {
+    private void setLongitudeAndQuadrant() {
         if (stringArray.size() < 5 || !isValidString((temp = stringArray.get(4)))) {
             return;
         }
@@ -108,7 +113,7 @@ public abstract class SynopMobile extends Synop {
         setLongitude(temp.substring(1, 5));
     }
 
-    protected void setQuadrantMultipliers(char q) {
+    private void setQuadrantMultipliers(char q) {
         switch (q) {
             case '1':
                 verticalQuadrantMultiplier = 1;
@@ -133,7 +138,7 @@ public abstract class SynopMobile extends Synop {
         }
     }
 
-    protected void setLongitude(String str) {
+    private void setLongitude(String str) {
         int tempInt = 0;
 
         try {

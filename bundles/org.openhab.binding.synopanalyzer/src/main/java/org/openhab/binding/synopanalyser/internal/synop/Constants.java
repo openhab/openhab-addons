@@ -30,10 +30,6 @@ public class Constants {
     public static final char PLUS_SIGN_TEMPERATURE = '0';
     public static final char MINUS_SIGN_TEMPERATURE = '1';
 
-    public static final String LAND_STATION_CODE = "AAXX";
-    public static final String SHIP_STATION_CODE = "BBXX";
-    public static final String MOBILE_LAND_STATION_CODE = "OOXX";
-
     /*
      * WS - WIND SPEED
      */
@@ -41,9 +37,6 @@ public class Constants {
     public static final int WS_ANEMOMETER_IN_MPS = 1;
     public static final int WS_WILDTYPE_IN_KNOT = 3;
     public static final int WS_ANEMOMETER_IN_KNOT = 4;
-
-    public static final String WS_MPS = "m/s";
-    public static final String WS_KNOTS = "knots";
 
     /*
      * DFG - DOWNFALL GROUP VALUES FROM '0' TO '4'
@@ -111,19 +104,14 @@ public class Constants {
     public static final int HV_LESS_THAN_10_HP_LIMIT = 96;
     public static final int HV_LESS_THAN_50_HP_LIMIT = 98;
 
-    public static final String HV_LESS_THAN_1_STRING = "<1";
-    public static final String HV_LESS_THAN_10_STRING = "1-10";
-    public static final String HV_LESS_THAN_50_STRING = "10-50";
-    public static final String HV_MORE_THAN_50_STRING = ">50";
-
     /*
      * CLOUDINESS = x/8
      * VALUES FROM '0' TO '9'
      * '/' ACCEPTABLE
      */
-    public static final String CLEAR_SKY = "NO CLOUDS";
-    public static final String CLOUDY = "CLOUDY";
-    public static final String SKY_NOT_VISIBLE = "SKY NOT VISIBLE";
+    // public static final String CLEAR_SKY = "NO CLOUDS";
+    // public static final String CLOUDY = "CLOUDY";
+    // public static final String SKY_NOT_VISIBLE = "SKY NOT VISIBLE";
 
     /*
      * WIND DIRECTION

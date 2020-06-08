@@ -14,20 +14,42 @@ package org.openhab.binding.synopanalyser.internal.synop;
 
 import java.util.List;
 
+import javax.measure.Unit;
+import javax.measure.quantity.Speed;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
+
 /**
  * The {@link Synop} is the ancestor common class for analyzing
  * Synop messages
  *
  * @author Jonarzz - Initial contribution
  */
+@NonNullByDefault
 public abstract class Synop {
+
+    public static enum Overcast {
+        UNDEFINED,
+        CLEAR_SKY,
+        CLOUDY,
+        SKY_NOT_VISIBLE
+    }
+
+    public static enum HorizontalVisibility {
+        UNDEFINED,
+        LESS_THAN_1,
+        LESS_THAN_10,
+        LESS_THAN_50,
+        MORE_THAN_50
+    }
 
     private final int VALID_STRING_LENGTH = 5;
 
     protected final List<String> stringArray;
 
-    private String stationType;
-    protected String stationCode;
+    // protected @Nullable String stationCode;
 
     private int year;
     private int month;
@@ -35,25 +57,23 @@ public abstract class Synop {
     private int hour;
     private int windIndicator;
 
-    private String horizontalVisibility;
+    private HorizontalVisibility horizontalVisibility = HorizontalVisibility.UNDEFINED;
     private float temperature;
 
-    private String overcast;
+    private Overcast overcast = Overcast.UNDEFINED;
     private int octa;
     private int windDirection;
     private int windSpeed;
     private float pressure;
 
-    protected int horizontalVisibilityInt;
-    protected String temperatureString;
-    protected String windString;
-    protected String pressureString;
+    protected int horizontalVisibilityInt = Constants.INITIAL_VALUE;
+    protected @Nullable String temperatureString;
+    protected @Nullable String windString;
+    protected @Nullable String pressureString;
 
     public Synop(List<String> stringArray) {
         this.stringArray = stringArray;
 
-        setStationType();
-        setStationCode();
         setDateHourAndWindIndicator();
         setHorizontalVisibility();
         setTemperature();
@@ -61,19 +81,9 @@ public abstract class Synop {
         setPressure();
     }
 
-    protected void setStationType() {
-        if (!stringArray.isEmpty()) {
-            if (stringArray.get(0).length() == 4) {
-                stationType = stringArray.get(0);
-            } else {
-                stationType = "";
-            }
-        }
-    }
+    // protected abstract void setStationCode();
 
-    protected abstract void setStationCode();
-
-    protected void setDateHourAndWindIndicator() {
+    private void setDateHourAndWindIndicator() {
         String dayHourAndWindIndicator = "";
 
         if (this instanceof SynopLand && stringArray.size() > 1) {
@@ -114,21 +124,22 @@ public abstract class Synop {
     private void setHorizontalVisibility() {
         setHorizontalVisibilityInt();
 
-        if (horizontalVisibilityInt == Constants.INITIAL_VALUE) {
-            return;
-        }
+        if (horizontalVisibilityInt != Constants.INITIAL_VALUE) {
 
-        if (horizontalVisibilityInt < Constants.HV_LESS_THAN_1_LIMIT
-                || horizontalVisibilityInt < Constants.HV_LESS_THAN_1_HP_LIMIT) {
-            horizontalVisibility = Constants.HV_LESS_THAN_1_STRING;
-        } else if (horizontalVisibilityInt < Constants.HV_LESS_THAN_10_LIMIT
-                || horizontalVisibilityInt < Constants.HV_LESS_THAN_10_HP_LIMIT) {
-            horizontalVisibility = Constants.HV_LESS_THAN_10_STRING;
-        } else if (horizontalVisibilityInt < Constants.HV_LESS_THAN_50_LIMIT
-                || horizontalVisibilityInt < Constants.HV_LESS_THAN_50_HP_LIMIT) {
-            horizontalVisibility = Constants.HV_LESS_THAN_50_STRING;
+            if (horizontalVisibilityInt < Constants.HV_LESS_THAN_1_LIMIT
+                    || horizontalVisibilityInt < Constants.HV_LESS_THAN_1_HP_LIMIT) {
+                horizontalVisibility = HorizontalVisibility.LESS_THAN_1;
+            } else if (horizontalVisibilityInt < Constants.HV_LESS_THAN_10_LIMIT
+                    || horizontalVisibilityInt < Constants.HV_LESS_THAN_10_HP_LIMIT) {
+                horizontalVisibility = HorizontalVisibility.LESS_THAN_10;
+            } else if (horizontalVisibilityInt < Constants.HV_LESS_THAN_50_LIMIT
+                    || horizontalVisibilityInt < Constants.HV_LESS_THAN_50_HP_LIMIT) {
+                horizontalVisibility = HorizontalVisibility.LESS_THAN_50;
+            } else {
+                horizontalVisibility = HorizontalVisibility.MORE_THAN_50;
+            }
         } else {
-            horizontalVisibility = Constants.HV_MORE_THAN_50_STRING;
+            horizontalVisibility = HorizontalVisibility.UNDEFINED;
         }
     }
 
@@ -136,26 +147,17 @@ public abstract class Synop {
 
     private void setTemperature() {
         setTemperatureString();
-
-        if (temperatureString == null) {
-            temperature = Constants.INITIAL_VALUE;
-            return;
-        }
-
-        if (temperatureString.charAt(0) == Constants.PLUS_SIGN_TEMPERATURE) {
-            temperature = 1;
-        } else if (temperatureString.charAt(0) == Constants.MINUS_SIGN_TEMPERATURE) {
-            temperature = -1;
-        } else {
-            temperature = Constants.INITIAL_VALUE;
-            return;
-        }
-
-        try {
-            float temp = Float.parseFloat(temperatureString.substring(1, 4)) / 10;
-            temperature *= temp;
-        } catch (NumberFormatException e) {
-            temperature = Constants.INITIAL_VALUE;
+        temperature = Constants.INITIAL_VALUE;
+        String temperatureString = this.temperatureString;
+        if (temperatureString != null) {
+            char firstChar = temperatureString.charAt(0);
+            try {
+                float temp = Float.parseFloat(temperatureString.substring(1, 4)) / 10;
+                temperature = firstChar == Constants.PLUS_SIGN_TEMPERATURE ? temp
+                        : firstChar == Constants.MINUS_SIGN_TEMPERATURE ? -temp : Constants.INITIAL_VALUE;
+            } catch (NumberFormatException e) {
+                // Silently catch it
+            }
         }
     }
 
@@ -163,67 +165,63 @@ public abstract class Synop {
 
     private void setWindAndOvercast() {
         setWindString();
-
-        if (windString == null) {
-            overcast = null;
+        if (windString != null) {
+            String gustyFlag = windString.substring(0, 2);
+            if ("00".equals(gustyFlag)) {
+                setWindSpeed(true);
+            } else {
+                setOvercast();
+                setWindDirection();
+                setWindSpeed(false);
+            }
+        } else {
+            overcast = Overcast.UNDEFINED;
             windDirection = Constants.INITIAL_VALUE;
             windSpeed = Constants.INITIAL_VALUE;
-            return;
-        }
-
-        if (windString.substring(0, 2).equals("00")) {
-            setWindSpeed(true);
-        } else {
-            setOvercast();
-            setWindDirection();
-            setWindSpeed(false);
         }
     }
 
     private void setOvercast() {
-        octa = Character.getNumericValue(windString.charAt(0));
+        if (windString != null) {
+            octa = Character.getNumericValue(windString.charAt(0));
 
-        if (octa < 0 || octa > 9) {
-            return;
-        }
-
-        if (octa == 0) {
-            overcast = Constants.CLEAR_SKY;
-        } else if (octa > 0 && octa < 8) {
-            overcast = Constants.CLOUDY;
-        } else {
-            overcast = Constants.SKY_NOT_VISIBLE;
+            if (octa == 0) {
+                overcast = Overcast.CLEAR_SKY;
+            } else if (octa > 0 && octa < 8) {
+                overcast = Overcast.CLOUDY;
+            } else if (octa == 9) {
+                overcast = Overcast.SKY_NOT_VISIBLE;
+            } else {
+                overcast = Overcast.UNDEFINED;
+            }
         }
     }
 
     private void setWindDirection() {
-        String windDirectionString = windString.substring(1, 3);
+        if (windString != null) {
+            String windDirectionString = windString.substring(1, 3);
 
-        if (windDirectionString.equals("99") || windDirectionString.equals("||")) {
-            windDirection = Constants.INITIAL_VALUE;
-            return;
-        }
-
-        try {
-            windDirection = Integer.parseInt(windDirectionString) * 10;
-        } catch (NumberFormatException e) {
-            windDirection = Constants.INITIAL_VALUE;
+            if (windDirectionString.equals("99") || windDirectionString.equals("||")) {
+                windDirection = Constants.INITIAL_VALUE;
+            } else {
+                try {
+                    windDirection = Integer.parseInt(windDirectionString) * 10;
+                } catch (NumberFormatException e) {
+                    windDirection = Constants.INITIAL_VALUE;
+                }
+            }
         }
     }
 
     private void setWindSpeed(boolean gustyWind) {
         String speedString = null;
-
-        if (gustyWind) {
-            speedString = windString.substring(2, 5);
-        } else {
-            speedString = windString.substring(3, 5);
-        }
-
-        try {
-            windSpeed = Integer.parseInt(speedString);
-        } catch (NumberFormatException e) {
-            windSpeed = Constants.INITIAL_VALUE;
+        if (windString != null) {
+            speedString = windString.substring(gustyWind ? 2 : 3, 5);
+            try {
+                windSpeed = Integer.parseInt(speedString);
+            } catch (NumberFormatException e) {
+                windSpeed = Constants.INITIAL_VALUE;
+            }
         }
     }
 
@@ -232,20 +230,19 @@ public abstract class Synop {
     private void setPressure() {
         setPressureString();
 
-        if (pressureString == null) {
-            return;
-        }
+        if (pressureString != null) {
 
-        String pressureTemp = pressureString.substring(1, 5);
+            String pressureTemp = pressureString.substring(1, 5);
 
-        if (pressureTemp.charAt(0) == '0') {
-            pressureTemp = '1' + pressureTemp;
-        }
+            if (pressureTemp.charAt(0) == '0') {
+                pressureTemp = '1' + pressureTemp;
+            }
 
-        try {
-            pressure = (float) Integer.parseInt(pressureTemp) / 10;
-        } catch (NumberFormatException e) {
-            pressure = Constants.INITIAL_VALUE;
+            try {
+                pressure = (float) Integer.parseInt(pressureTemp) / 10;
+            } catch (NumberFormatException e) {
+                pressure = Constants.INITIAL_VALUE;
+            }
         }
     }
 
@@ -255,13 +252,15 @@ public abstract class Synop {
         return (str.length() == VALID_STRING_LENGTH);
     }
 
-    public String getStationType() {
-        return stationType;
-    }
-
-    public String getStationCode() {
-        return stationCode;
-    }
+    /*
+     * public Optional<String> getStationCode() {
+     * if (stationCode != null) {
+     * return Optional.of(stationCode);
+     * } else {
+     * return Optional.empty();
+     * }
+     * }
+     */
 
     public int getYear() {
         return year;
@@ -283,7 +282,7 @@ public abstract class Synop {
         return windIndicator;
     }
 
-    public String getHorizontalVisibility() {
+    public HorizontalVisibility getHorizontalVisibility() {
         return horizontalVisibility;
     }
 
@@ -291,7 +290,7 @@ public abstract class Synop {
         return temperature;
     }
 
-    public String getOvercast() {
+    public Overcast getOvercast() {
         return overcast;
     }
 
@@ -311,13 +310,10 @@ public abstract class Synop {
         return octa;
     }
 
-    public String getWindUnit() {
-        if (getWindIndicator() == Constants.WS_WILDTYPE_IN_MPS
-                || getWindIndicator() == Constants.WS_ANEMOMETER_IN_MPS) {
-            return Constants.WS_MPS;
-        } else {
-            return Constants.WS_KNOTS;
-        }
+    public Unit<Speed> getWindUnit() {
+        return (getWindIndicator() == Constants.WS_WILDTYPE_IN_MPS
+                || getWindIndicator() == Constants.WS_ANEMOMETER_IN_MPS) ? SmartHomeUnits.METRE_PER_SECOND
+                        : SmartHomeUnits.KNOT;
     }
 
     public String getWindSource() {
@@ -328,39 +324,4 @@ public abstract class Synop {
         }
     }
 
-    /**
-     * display synop data in a human-readable format
-     */
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder("station type : " + this.getStationType());
-        sb.append("\nstation code : " + this.getStationCode());
-        sb.append("\nobservation timestamp (y/m/d h) : " + this.getYear() + "/" + this.getMonth() + "/" + this.getDay()
-                + " " + this.getHour() + ":00 UTC");
-
-        sb.append("\nwind indicator : " + this.getWindIndicator());
-        sb.append(
-                "\nwind speed : " + this.getWindSpeed() + " " + this.getWindUnit() + " (" + this.getWindSource() + ")");
-        sb.append("\nwind dir   : " + getWindDirection() + " degrees");
-
-        sb.append("\novercast : " + this.getOvercast());
-        sb.append("\novercast in Octa : " + this.getOcta() + "/8");
-
-        sb.append("\nhorizontal visibility : " + this.getHorizontalVisibility());
-        sb.append("\ntemperature : " + this.getTemperature());
-
-        sb.append("\npressure   : " + getPressure() + " in hPa");
-
-        return sb.toString();
-    }
-
-    /**
-     * Retrieve the full report string value. This is the report in its original
-     * form
-     *
-     * @return The original report string.
-     */
-    public String getReportString() {
-        return String.join(" ", stringArray);
-    }
 }

@@ -43,10 +43,10 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.synopanalyser.internal.synop.Constants;
 import org.openhab.binding.synopanalyser.internal.synop.Synop;
+import org.openhab.binding.synopanalyser.internal.synop.Synop.Overcast;
 import org.openhab.binding.synopanalyser.internal.synop.SynopLand;
-import org.openhab.binding.synopanalyser.internal.synop.SynopMobileLand;
+import org.openhab.binding.synopanalyser.internal.synop.SynopMobile;
 import org.openhab.binding.synopanalyser.internal.synop.SynopShip;
 import org.openhab.binding.synopanalyzer.internal.config.SynopAnalyzerConfiguration;
 import org.slf4j.Logger;
@@ -106,7 +106,7 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
                     List<String> messageParts = Arrays.asList(message.split(","));
                     String synopMessage = messageParts.get(messageParts.size() - 1);
 
-                    return Optional.of(createSynopObject(synopMessage));
+                    return Optional.of(createSynopObject(synopMessage)).orElse(Optional.empty());
                 }
                 logger.warn("Message does not belong to station {} : {}", configuration.stationId, message);
             }
@@ -133,7 +133,7 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
     private State getChannelState(String channelId, Synop synop) {
         switch (channelId) {
             case HORIZONTAL_VISIBILITY:
-                return new StringType(synop.getHorizontalVisibility());
+                return new StringType(synop.getHorizontalVisibility().name());
             case OCTA:
                 return new DecimalType(Math.max(0, synop.getOcta()));
             case ATTENUATION_FACTOR:
@@ -142,8 +142,8 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
                 kc = 1 - 0.75 * kc;
                 return new DecimalType(kc);
             case OVERCAST:
-                String overcast = synop.getOvercast();
-                return overcast != null ? new StringType(synop.getOvercast()) : UnDefType.NULL;
+                Overcast overcast = synop.getOvercast();
+                return overcast == Overcast.UNDEFINED ? UnDefType.NULL : new StringType(overcast.name());
             case PRESSURE:
                 return new QuantityType<>(synop.getPressure(), PRESSURE_UNIT);
             case TEMPERATURE:
@@ -190,19 +190,19 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
      * Returns the wind strength depending upon the unit of the message.
      */
     private QuantityType<Speed> getWindStrength(Synop synop) {
-        return new QuantityType<>(synop.getWindSpeed(),
-                Constants.WS_MPS.equalsIgnoreCase(synop.getWindUnit()) ? WIND_SPEED_UNIT_MS : WIND_SPEED_UNIT_KNOT);
+        return new QuantityType<>(synop.getWindSpeed(), synop.getWindUnit());
     }
 
-    private Synop createSynopObject(String synopMessage) {
+    private Optional<Synop> createSynopObject(String synopMessage) {
         List<String> list = new ArrayList<>(Arrays.asList(synopMessage.split("\\s+")));
-        if (synopMessage.startsWith(Constants.LAND_STATION_CODE)) {
-            return new SynopLand(list);
-        } else if (synopMessage.startsWith(Constants.SHIP_STATION_CODE)) {
-            return new SynopShip(list);
-        } else {
-            return new SynopMobileLand(list);
+        if (synopMessage.startsWith(LAND_STATION_CODE)) {
+            return Optional.of(new SynopLand(list));
+        } else if (synopMessage.startsWith(SHIP_STATION_CODE)) {
+            return Optional.of(new SynopShip(list));
+        } else if (synopMessage.startsWith(MOBILE_LAND_STATION_CODE)) {
+            return Optional.of(new SynopMobile(list));
         }
+        return Optional.empty();
     }
 
     private String forgeURL() {
