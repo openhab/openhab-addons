@@ -64,7 +64,7 @@ public class NAModule3Handler extends NetatmoModuleHandler<NAStationModule> {
     }
 
     @Override
-    protected State getNAThingProperty(String channelId) {
+    protected State getNAThingProperty(@NonNull String channelId) {
         if (module != null) {
             NADashboardData dashboardData = module.getDashboardData();
             if (dashboardData != null) {

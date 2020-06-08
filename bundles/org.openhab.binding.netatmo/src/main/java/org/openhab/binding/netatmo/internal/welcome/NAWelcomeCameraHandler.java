@@ -33,7 +33,7 @@ public class NAWelcomeCameraHandler extends CameraHandler {
 
     @SuppressWarnings("null")
     @Override
-    protected State getNAThingProperty(String channelId) {
+    protected State getNAThingProperty(@NonNull String channelId) {
         switch (channelId) {
             case CHANNEL_WELCOME_CAMERA_STATUS:
                 return getStatusState();
