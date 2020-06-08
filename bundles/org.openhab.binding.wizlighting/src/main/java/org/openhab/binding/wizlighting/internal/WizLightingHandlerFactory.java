@@ -23,11 +23,9 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.wizlighting.internal.handler.WizLightingHandler;
 import org.openhab.binding.wizlighting.internal.handler.WizLightingMediator;
-import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,33 +40,11 @@ import org.slf4j.LoggerFactory;
 public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(WizLightingHandlerFactory.class);
 
-    @NonNullByDefault({})
-    private WizLightingMediator mediator;
+    private final WizLightingMediator mediator;
 
-    @Override
-    protected void activate(ComponentContext componentContext) {
-        super.activate(componentContext);
-    };
-
-    /**
-     * Used by OSGI to inject the mediator in the handler factory.
-     *
-     * @param mediator the mediator
-     */
-    @Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC)
-    public void setMediator(final WizLightingMediator mediator) {
-        logger.trace("Mediator has been injected on handler factory service.");
+    @Activate
+    public WizLightingHandlerFactory(@Reference WizLightingMediator mediator) {
         this.mediator = mediator;
-    }
-
-    /**
-     * Used by OSGI to unsets the mediator from the handler factory.
-     *
-     * @param mediator the mediator
-     */
-    public void unsetMediator(final WizLightingMediator wizMediator) {
-        logger.trace("Mediator has been unsetted from handler factory service.");
-        this.mediator = null;
     }
 
     @Override
@@ -88,14 +64,7 @@ public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
             handler = new WizLightingHandler(thing, this.mediator.getRegistrationParams());
             logger.debug("WizLightingMediator will register the handler.");
 
-            WizLightingMediator mediator = this.mediator;
-            if (mediator != null) {
-                mediator.registerThingAndWizBulbHandler(thing, handler);
-            } else {
-                logger.error(
-                        "The mediator is missing on Handler factory. Without one mediator the handler cannot work!");
-                return null;
-            }
+            mediator.registerThingAndWizBulbHandler(thing, handler);
             return handler;
         } else {
             logger.info("Thing type {} not supported.", thingTypeUID);
@@ -105,10 +74,6 @@ public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public void unregisterHandler(final Thing thing) {
-        WizLightingMediator mediator = this.mediator;
-        if (mediator != null) {
-            mediator.unregisterWizBulbHandlerByThing(thing);
-        }
-        super.unregisterHandler(thing);
+        mediator.unregisterWizBulbHandlerByThing(thing);
     }
 }

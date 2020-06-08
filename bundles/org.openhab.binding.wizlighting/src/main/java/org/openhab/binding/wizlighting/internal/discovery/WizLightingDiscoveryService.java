@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -35,6 +34,7 @@ import org.openhab.binding.wizlighting.internal.entities.WizLightingRequest;
 import org.openhab.binding.wizlighting.internal.enums.WizLightingMethodType;
 import org.openhab.binding.wizlighting.internal.handler.WizLightingMediator;
 import org.openhab.binding.wizlighting.internal.utils.WizLightingPacketConverter;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
@@ -54,45 +54,22 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(WizLightingDiscoveryService.class);
 
-    @NonNullByDefault({})
-    private WizLightingMediator mediator;
+    private final WizLightingMediator mediator;
 
     private final WizLightingPacketConverter converter = new WizLightingPacketConverter();
-
-    /**
-     * Used by OSGI to inject the mediator in the discovery service.
-     *
-     * @param mediator the mediator
-     */
-    @Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC)
-    public void setMediator(final WizLightingMediator mediator) {
-        logger.trace("Mediator has been injected on discovery service.");
-
-        this.mediator = mediator;
-        mediator.setDiscoveryService(this);
-    }
-
-    /**
-     * Used by OSGI to unset the mediator in the discovery service.
-     *
-     * @param mediator the mediator
-     */
-    public void unsetMediator(final WizLightingMediator mitsubishiMediator) {
-        logger.trace("Mediator has been unsetted from discovery service.");
-        WizLightingMediator mediator = this.mediator;
-        if (mediator != null) {
-            mediator.setDiscoveryService(null);
-            this.mediator = null;
-        }
-    }
 
     /**
      * Constructor of the discovery service.
      *
      * @throws IllegalArgumentException if the timeout < 0
      */
-    public WizLightingDiscoveryService() throws IllegalArgumentException {
-        super(SUPPORTED_THING_TYPES, DISCOVERY_TIMEOUT_SECONDS);
+    @Activate
+    public WizLightingDiscoveryService(
+            @Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC) WizLightingMediator mediator)
+            throws IllegalArgumentException {
+        super(SUPPORTED_THING_TYPES, DISCOVERY_TIMEOUT_SECONDS, true);
+        this.mediator = mediator;
+        mediator.setDiscoveryService(this);
     }
 
     @Override
@@ -160,7 +137,7 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
      *
      * @return {@link WizLightingMediator}.
      */
-    public @Nullable WizLightingMediator getMediator() {
+    public WizLightingMediator getMediator() {
         return this.mediator;
     }
 }

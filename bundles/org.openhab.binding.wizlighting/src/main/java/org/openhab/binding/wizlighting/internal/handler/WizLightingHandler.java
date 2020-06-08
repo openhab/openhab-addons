@@ -290,7 +290,6 @@ public class WizLightingHandler extends BaseThingHandler {
             long timePassedFromLastUpdateInSeconds = (now - latestUpdate) / 1000;
 
             if (getThing().getStatus() != ThingStatus.OFFLINE) {
-
                 logger.trace("MAC address: {}  Latest Update: {} Now: {} Delta: {} seconds", config.bulbMacAddress,
                         latestUpdate, now, timePassedFromLastUpdateInSeconds);
 

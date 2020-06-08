@@ -31,7 +31,7 @@ public final class ValidationUtils {
     }
 
     public static final String MAC_PATTERN = "^([0-9A-Fa-f]{2}[:-]*){5}([0-9A-Fa-f]{2})$";
-    private static final Pattern pattern = Pattern.compile(ValidationUtils.MAC_PATTERN);
+    private static final Pattern validPattern = Pattern.compile(ValidationUtils.MAC_PATTERN);
 
     /**
      * Validates if one Mac address is valid.
@@ -40,7 +40,7 @@ public final class ValidationUtils {
      * @return true if is valid.
      */
     public static boolean isMacValid(final String mac) {
-        Matcher matcher = pattern.matcher(mac);
+        Matcher matcher = validPattern.matcher(mac);
         return matcher.matches();
     }
 

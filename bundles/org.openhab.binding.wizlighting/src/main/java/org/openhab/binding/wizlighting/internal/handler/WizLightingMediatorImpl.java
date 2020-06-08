@@ -29,6 +29,7 @@ import org.openhab.binding.wizlighting.internal.entities.WizLightingResponse;
 import org.openhab.binding.wizlighting.internal.runnable.WizLightingUpdateReceiverRunnable;
 import org.openhab.binding.wizlighting.internal.utils.NetworkUtils;
 import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
@@ -55,16 +56,17 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
 
     private @Nullable WizLightingDiscoveryService wizlightingDiscoveryService;
 
-    @NonNullByDefault({})
-    private NetworkAddressService networkAddressService;
+    private final NetworkAddressService networkAddressService;
 
     /**
-     * Called at the service activation.
+     * Constructor for the mediator implementation.
      *
-     * @param componentContext the componentContext
+     * @param IllegalArgumentException if the timeout < 0
      */
-    protected void activate(final ComponentContext componentContext) {
-        logger.trace("Mediator has been activated by OSGI.");
+    @Activate
+    public WizLightingMediatorImpl(
+            @Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC) NetworkAddressService networkAddressService) {
+        this.networkAddressService = networkAddressService;
         this.initMediatorWizBulbUpdateReceiverRunnable();
     }
 
@@ -196,17 +198,6 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
     @Override
     public Set<Thing> getAllThingsRegistered() {
         return this.handlersRegisteredByThing.keySet();
-    }
-
-    @Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC)
-    public void setNetworkAddressService(NetworkAddressService networkAddressService) {
-        this.networkAddressService = networkAddressService;
-        logger.trace("Network Address Service has been set in the mediator.");
-    }
-
-    public void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
-        this.networkAddressService = null;
-        logger.trace("Network Address Service has been unset from the mediator.");
     }
 
     private String getMyIpAddress() {

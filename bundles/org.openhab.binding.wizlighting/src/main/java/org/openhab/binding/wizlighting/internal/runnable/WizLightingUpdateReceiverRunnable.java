@@ -75,43 +75,45 @@ public class WizLightingUpdateReceiverRunnable implements Runnable {
 
     @Override
     public void run() {
-        // Now loop forever, waiting to receive packets and redirect them to mediator.
-        while (!this.shutdown) {
-            datagramSocketHealthRoutine();
+        try {
+            // Now loop forever, waiting to receive packets and redirect them to mediator.
+            while (!this.shutdown) {
+                datagramSocketHealthRoutine();
 
-            // Create a buffer to read datagrams into. If a
-            // packet is larger than this buffer, the
-            // excess will simply be discarded!
-            byte[] buffer = new byte[2048];
+                // Create a buffer to read datagrams into. If a
+                // packet is larger than this buffer, the
+                // excess will simply be discarded!
+                byte[] buffer = new byte[2048];
 
-            // Create a packet to receive data into the buffer
-            DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+                // Create a packet to receive data into the buffer
+                DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 
-            // Wait to receive a datagram
-            try {
-                datagramSocket.receive(packet);
+                // Wait to receive a datagram
+                try {
+                    datagramSocket.receive(packet);
 
-                logger.trace("Runnable received packet from: {}. Will process the packet...",
-                        packet.getAddress().getHostAddress());
+                    logger.trace("Runnable received packet from: {}. Will process the packet...",
+                            packet.getAddress().getHostAddress());
 
-                // Redirect packet to the mediator
-                WizLightingResponse response = this.packetConverter.transformResponsePacket(packet);
-                if (response != null) {
-                    this.mediator.processReceivedPacket(response);
-                } else {
-                    logger.debug("No WizLightingResponse was parsed from returned packet");
+                    // Redirect packet to the mediator
+                    WizLightingResponse response = this.packetConverter.transformResponsePacket(packet);
+                    if (response != null) {
+                        this.mediator.processReceivedPacket(response);
+                    } else {
+                        logger.debug("No WizLightingResponse was parsed from returned packet");
+                    }
+                } catch (SocketTimeoutException e) {
+                    logger.trace("No incoming data on port {} during {} ms socket was listening.", listeningPort,
+                            TIMEOUT_TO_DATAGRAM_RECEPTION_MILLISECONDS);
+                } catch (IOException e) {
+                    logger.debug("One exception has occurred: {} ", e.getMessage());
                 }
-            } catch (SocketTimeoutException e) {
-                logger.trace("No incoming data on port {} during {} ms socket was listening.", listeningPort,
-                        TIMEOUT_TO_DATAGRAM_RECEPTION_MILLISECONDS);
-            } catch (IOException e) {
-                logger.debug("One exception has occurred: {} ", e.getMessage());
             }
+        } finally {
+            // close the socket
+            logger.trace("Ending run loop; closing socket.");
+            datagramSocket.close();
         }
-
-        // close the socket
-        logger.trace("Ending run loop; closing socket.");
-        datagramSocket.close();
     }
 
     private void datagramSocketHealthRoutine() {
