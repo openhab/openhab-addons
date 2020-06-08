@@ -47,6 +47,7 @@ public class WizLightingPacketConverter {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(WizLightingResponse.class, new WizResponseDeserializer());
         gsonBuilder.excludeFieldsWithoutExposeAnnotation();
+        // gsonBuilder.setLenient();
         Gson gson = gsonBuilder.create();
         this.wizlightingGsonBuilder = gson;
     }
@@ -64,7 +65,7 @@ public class WizLightingPacketConverter {
         String jsonCmd = this.wizlightingGsonBuilder.toJson(requestPacket);
         logger.debug("JSON Command: {}", jsonCmd);
 
-        requestDatagram = jsonCmd.getBytes();
+        requestDatagram = jsonCmd.getBytes(UTF_8);
         return requestDatagram;
     }
 
@@ -79,6 +80,7 @@ public class WizLightingPacketConverter {
         byte[] packetdata = packet.getData();
         String responseJson = new String(packetdata, UTF_8);
         logger.debug("Incoming packet from {} to convert -> {}", packet.getAddress().getHostAddress(), responseJson);
+        logger.trace("Raw length: {}  Transformed length: {}", packet.getLength(), responseJson.length());
 
         @Nullable
         WizLightingResponse response = null;
