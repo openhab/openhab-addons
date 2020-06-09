@@ -15,7 +15,6 @@ package org.openhab.binding.freebox.internal.handler;
 import static org.openhab.binding.freebox.internal.FreeboxBindingConstants.*;
 
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Collections;
@@ -24,6 +23,7 @@ import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -62,7 +62,8 @@ public class FreeboxThingHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FreeboxThingHandler.class);
 
-    private final ZoneId zoneId;
+    private final TimeZoneProvider timeZoneProvider;
+
     private ScheduledFuture<?> phoneJob;
     private ScheduledFuture<?> callsJob;
     private FreeboxHandler bridgeHandler;
@@ -71,9 +72,9 @@ public class FreeboxThingHandler extends BaseThingHandler {
     private String airPlayName;
     private String airPlayPassword;
 
-    public FreeboxThingHandler(Thing thing, ZoneId zoneId) {
+    public FreeboxThingHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
-        this.zoneId = zoneId;
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -262,7 +263,7 @@ public class FreeboxThingHandler extends BaseThingHandler {
             updateGroupChannelStringState(channelGroup, CALLNUMBER, call.getNumber());
             updateGroupChannelDecimalState(channelGroup, CALLDURATION, call.getDuration());
             ZonedDateTime zoned = ZonedDateTime.ofInstant(Instant.ofEpochMilli(call.getTimeStamp().getTimeInMillis()),
-                    zoneId);
+                    timeZoneProvider.getTimeZone());
             updateGroupChannelDateTimeState(channelGroup, CALLTIMESTAMP, zoned);
             updateGroupChannelStringState(channelGroup, CALLNAME, call.getName());
             if (channelGroup.equals(ANY)) {
